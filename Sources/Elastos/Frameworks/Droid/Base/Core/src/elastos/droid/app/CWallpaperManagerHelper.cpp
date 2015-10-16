@@ -1,6 +1,6 @@
 
-#include "app/CWallpaperManagerHelper.h"
-#include "app/CWallpaperManager.h"
+#include "elastos/droid/app/CWallpaperManagerHelper.h"
+#include "elastos/droid/app/CWallpaperManager.h"
 
 namespace Elastos{
 namespace Droid{

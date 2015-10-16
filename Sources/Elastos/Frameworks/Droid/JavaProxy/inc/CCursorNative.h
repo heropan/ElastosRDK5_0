@@ -4,7 +4,7 @@
 
 #include "_CCursorNative.h"
 #include <jni.h>
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContentResolver;

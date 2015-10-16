@@ -3,8 +3,8 @@
 #define  __ELASTOS_DROID_NET_WIFI_WIFIMONITOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "net/wifi/WifiNative.h"
-#include "utility/StateMachine.h"
+#include "elastos/droid/net/wifi/WifiNative.h"
+#include "elastos/droid/utility/StateMachine.h"
 
 using Elastos::Droid::Net::Wifi::P2p::P2pStatus;
 using Elastos::Utility::Regex::IPattern;

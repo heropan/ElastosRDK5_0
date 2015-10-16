@@ -2,7 +2,7 @@
 #ifndef __CMAINACTIVITY_H__
 #define __CMAINACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CMainActivity.h"
 #include <elastos/core/Math.h>
 

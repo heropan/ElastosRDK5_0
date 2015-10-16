@@ -1,7 +1,7 @@
-#include <R.h>
-#include "text/TextUtils.h"
-#include "widget/internal/ActionBarViewHomeView.h"
-#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/widget/internal/ActionBarViewHomeView.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::Math;

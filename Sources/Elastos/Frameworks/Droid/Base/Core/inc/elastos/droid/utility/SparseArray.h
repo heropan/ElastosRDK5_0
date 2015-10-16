@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
 #define __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
 
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/utility/ArrayUtils.h"
 
 namespace Elastos {
 namespace Droid {

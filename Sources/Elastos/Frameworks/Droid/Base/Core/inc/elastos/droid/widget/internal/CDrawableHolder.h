@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CDRAWABLEHOLDER_H__
 
 #include "_Elastos_Droid_Widget_Internal_CDrawableHolder.h"
-#include "widget/internal/DrawableHolder.h"
+#include "elastos/droid/widget/internal/DrawableHolder.h"
 
 namespace Elastos {
 namespace Droid {

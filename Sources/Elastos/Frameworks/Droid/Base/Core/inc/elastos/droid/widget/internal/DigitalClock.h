@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_INTERNALDIGITALCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_INTERNALDIGITALCLOCK_H__
 
-#include "widget/RelativeLayout.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
-#include "text/format/DateFormat.h"
+#include "elastos/droid/widget/RelativeLayout.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/text/format/DateFormat.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

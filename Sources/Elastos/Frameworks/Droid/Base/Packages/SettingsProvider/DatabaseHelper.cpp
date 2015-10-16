@@ -1,7 +1,7 @@
 
 #include "DatabaseHelper.h"
 #include "CSettingsProvider.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "util/XmlUtils.h"
 #include "R.h"
 #include <R.h>

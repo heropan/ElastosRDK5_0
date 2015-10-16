@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_STATUSBARICONVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_STATUSBARICONVIEW_H__
 
-#include "systemui/statusbar/AnimatedImageView.h"
+#include "elastos/droid/systemui/statusbar/AnimatedImageView.h"
 
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::StatusBar::IStatusBarIcon;

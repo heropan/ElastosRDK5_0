@@ -1,5 +1,5 @@
 
-#include "privacy/PrivacySettingsStub.h"
+#include "elastos/droid/privacy/PrivacySettingsStub.h"
 
 namespace Elastos {
 namespace Droid {

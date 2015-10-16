@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINGESTURELISTENER_H__
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinGestureListener.h"
-#include "view/SimpleOnGestureListener.h"
+#include "elastos/droid/view/SimpleOnGestureListener.h"
 
 using Elastos::Droid::Inputmethods::PinyinIME::IPinyinIME;
 using Elastos::Droid::View::IMotionEvent;

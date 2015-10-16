@@ -2,7 +2,7 @@
 #ifndef __ASYNCIMAGELOADER_H__
 #define __ASYNCIMAGELOADER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "ImageCacheService.h"
 

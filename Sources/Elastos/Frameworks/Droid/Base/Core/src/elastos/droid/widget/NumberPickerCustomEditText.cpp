@@ -1,5 +1,5 @@
-#include "widget/NumberPickerCustomEditText.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/widget/NumberPickerCustomEditText.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

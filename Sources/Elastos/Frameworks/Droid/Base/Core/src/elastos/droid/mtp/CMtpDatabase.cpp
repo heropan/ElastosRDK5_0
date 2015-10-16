@@ -1,16 +1,17 @@
 
-#include "ext/frameworkext.h"
-#include "CMtpDatabase.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 // TODO: Need CMediaScanner
-// #include "media/CMediaScanner.h"
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
-#include "content/CContentValues.h"
-#include "mtp/CMtpPropertyList.h"
-#include "mtp/CMtpPropertyGroup.h"
+// #include "elastos/droid/media/CMediaScanner.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/mtp/CMtpDatabase.h"
+#include "elastos/droid/mtp/CMtpPropertyList.h"
+#include "elastos/droid/mtp/CMtpPropertyGroup.h"
+
 #include "MtpDatabase.h"
 #include "MtpDataPacket.h"
 #include "MtpObjectInfo.h"
@@ -19,9 +20,9 @@
 #include "MtpUtils.h"
 #include "mtp.h"
 //TODO: Need provider/CMediaStoreFiles
-// #include "provider/CMediaStoreFiles.h"
+// #include "elastos/droid/provider/CMediaStoreFiles.h"
 //TODO: Need provider/CMediaStoreAudioPlaylists
-// #include "provider/CMediaStoreAudioPlaylists.h"
+// #include "elastos/droid/provider/CMediaStoreAudioPlaylists.h"
 
 extern "C" {
 #include "libexif/exif-content.h"

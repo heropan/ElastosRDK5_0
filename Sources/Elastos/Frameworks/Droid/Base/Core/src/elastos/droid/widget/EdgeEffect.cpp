@@ -1,11 +1,11 @@
-#include <R.h>
-#include "ext/frameworkext.h"
-#include "widget/EdgeEffect.h"
-#include "view/animation/CAnimationUtils.h"
-#include "os/SystemClock.h"
-#include "view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/EdgeEffect.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 #include <elastos/core/Math.h>
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::Animation::IDecelerateInterpolator;

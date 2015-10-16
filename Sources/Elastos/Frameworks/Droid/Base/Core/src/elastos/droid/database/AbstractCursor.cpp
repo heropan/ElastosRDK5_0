@@ -1,10 +1,10 @@
 
-#include "database/AbstractCursor.h"
-#include "database/CDataSetObservable.h"
-#include "database/CContentObservable.h"
-#include "database/DatabaseUtils.h"
-#include "os/CBundle.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/database/AbstractCursor.h"
+#include "elastos/droid/database/CDataSetObservable.h"
+#include "elastos/droid/database/CContentObservable.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/UserHandle.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 

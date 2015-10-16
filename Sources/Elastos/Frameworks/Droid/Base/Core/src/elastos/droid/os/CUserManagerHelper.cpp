@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CUserManagerHelper.h"
-#include "os/CUserManager.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CUserManagerHelper.h"
+#include "elastos/droid/os/CUserManager.h"
 
 namespace Elastos {
 namespace Droid {

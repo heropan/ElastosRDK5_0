@@ -1,10 +1,10 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "CPrivacyLocationManager.h"
 #include "CPrivacySettingsManager.h"
-#include "location/CLocation.h"
-#include "os/ServiceManager.h"
-#include "os/Binder.h"
+#include "elastos/droid/location/CLocation.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Binder.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OS_CBUNDLE_H__
 
 #include "_Elastos_Droid_Os_CBundle.h"
-#include "os/BaseBundle.h"
+#include "elastos/droid/os/BaseBundle.h"
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICloneable;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_STANDALONEACTIONMODE_H__
 #define __ELASTOS_DROID_VIEW_STANDALONEACTIONMODE_H__
 
-#include "view/ActionMode.h"
+#include "elastos/droid/view/ActionMode.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;

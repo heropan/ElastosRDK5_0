@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_CSANDMAN_H__
 
 #include "_Elastos_Droid_service_CSandman.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 
 namespace Elastos {

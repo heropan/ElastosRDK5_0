@@ -1,7 +1,7 @@
 
-#include "widget/CursorTreeAdapter.h"
-#include "widget/CCursorFilter.h"
-#include "os/CHandler.h"
+#include "elastos/droid/widget/CursorTreeAdapter.h"
+#include "elastos/droid/widget/CCursorFilter.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Droid::Os::CHandler;
 

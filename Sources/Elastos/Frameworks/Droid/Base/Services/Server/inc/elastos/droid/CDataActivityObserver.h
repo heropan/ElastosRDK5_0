@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Server_CDataActivityObserver.h"
 #include "CConnectivityService.h"
-#include "net/BaseNetworkObserver.h"
+#include "elastos/droid/net/BaseNetworkObserver.h"
 
 using Elastos::Droid::Server::Net::BaseNetworkObserver;
 

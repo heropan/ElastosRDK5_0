@@ -1,5 +1,5 @@
 
-#include "systemui/statusbar/CStatusBarIconView.h"
+#include "elastos/droid/systemui/statusbar/CStatusBarIconView.h"
 
 using Elastos::Droid::View::EIID_View;
 

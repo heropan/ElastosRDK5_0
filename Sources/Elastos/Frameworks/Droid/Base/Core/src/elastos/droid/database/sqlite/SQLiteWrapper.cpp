@@ -1,8 +1,8 @@
 
-#include "database/sqlite/SQLiteWrapper.h"
-#include "widget/Toast.h"
+#include "elastos/droid/database/sqlite/SQLiteWrapper.h"
+#include "elastos/droid/widget/Toast.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::Toast;

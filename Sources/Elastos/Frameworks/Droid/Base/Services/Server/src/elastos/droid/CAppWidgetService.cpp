@@ -1,9 +1,9 @@
 
 #include "CAppWidgetService.h"
-#include "app/ActivityManagerNative.h"
-#include "app/AppGlobals.h"
-#include "os/Binder.h"
-#include "os/Process.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
 #include "Manifest.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

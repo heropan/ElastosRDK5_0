@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_DATABASE_CURSORWINDOW_H__
 #define __ELASTOS_DROID_DATABASE_CURSORWINDOW_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include "database/sqlite/SQLiteClosable.h"
+#include "elastos/droid/database/sqlite/SQLiteClosable.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Database::Sqlite::SQLiteClosable;

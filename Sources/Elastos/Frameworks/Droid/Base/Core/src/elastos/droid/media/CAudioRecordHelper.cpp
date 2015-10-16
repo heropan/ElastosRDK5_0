@@ -1,6 +1,6 @@
 
-#include "media/CAudioRecordHelper.h"
-#include "media/CAudioRecord.h"
+#include "elastos/droid/media/CAudioRecordHelper.h"
+#include "elastos/droid/media/CAudioRecord.h"
 
 namespace Elastos {
 namespace Droid {

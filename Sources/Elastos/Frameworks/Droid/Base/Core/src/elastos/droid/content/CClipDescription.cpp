@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/CClipDescription.h"
 #include "elastos/droid/content/CClipDescriptionHelper.h"
-// #include "text/TextUtils.h"
+// #include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/etl/List.h>
 
 //using Elastos::Droid::Text::TextUtils;

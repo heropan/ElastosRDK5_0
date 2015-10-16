@@ -1,8 +1,8 @@
 
-#include "location/CGeocoder.h"
-#include "location/CGeocoderParams.h"
-#include "os/CServiceManager.h"
-#include "os/CServiceManager.h"
+#include "elastos/droid/location/CGeocoder.h"
+#include "elastos/droid/location/CGeocoderParams.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/CServiceManager.h"
 
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::CServiceManager;

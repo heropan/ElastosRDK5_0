@@ -1,5 +1,5 @@
 #include "CDnsSdTxtRecord.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 

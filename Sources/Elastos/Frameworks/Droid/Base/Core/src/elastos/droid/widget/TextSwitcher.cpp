@@ -1,5 +1,5 @@
 
-#include "widget/TextSwitcher.h"
+#include "elastos/droid/widget/TextSwitcher.h"
 
 using Elastos::Core::CStringWrapper;
 

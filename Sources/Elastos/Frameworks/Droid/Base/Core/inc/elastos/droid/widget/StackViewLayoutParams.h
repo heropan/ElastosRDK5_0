@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_STACKVIEWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_STACKVIEWLAYOUTPARAMS_H__
 
-#include <ext/frameworkext.h>
-#include "view/ViewGroupLayoutParams.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Graphics::IRect;

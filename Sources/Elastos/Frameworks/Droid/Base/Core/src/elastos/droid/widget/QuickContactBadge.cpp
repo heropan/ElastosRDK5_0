@@ -1,4 +1,4 @@
-#include "widget/QuickContactBadge.h"
+#include "elastos/droid/widget/QuickContactBadge.h"
 
 namespace Elastos {
 namespace Droid {

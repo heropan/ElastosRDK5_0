@@ -1,7 +1,7 @@
 
-#include "media/CAudioTrackHelper.h"
-#include "media/CAudioTrack.h"
-//#include "media/ElAudioSystem.h"
+#include "elastos/droid/media/CAudioTrackHelper.h"
+#include "elastos/droid/media/CAudioTrack.h"
+//#include "elastos/droid/media/ElAudioSystem.h"
 #include <media/AudioTrack.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>

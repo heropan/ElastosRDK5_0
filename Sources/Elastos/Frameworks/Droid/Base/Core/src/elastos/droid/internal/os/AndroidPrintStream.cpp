@@ -1,5 +1,5 @@
 
-#include "internal/os/AndroidPrintStream.h"
+#include "elastos/droid/internal/os/AndroidPrintStream.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

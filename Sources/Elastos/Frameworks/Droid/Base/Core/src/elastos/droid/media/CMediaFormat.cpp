@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaFormat.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaFormat.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IByteBuffer;

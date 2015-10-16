@@ -1,7 +1,7 @@
 
 #include "input/NativeInputWindowHandle.h"
 #include "input/InputWindowHandle.h"
-#include "view/NativeInputChannel.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 
 using Elastos::Droid::View::NativeInputChannel;
 

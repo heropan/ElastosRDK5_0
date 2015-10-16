@@ -1,6 +1,6 @@
 
-#include "app/CApplication.h"
-#include "app/CContextImpl.h"
+#include "elastos/droid/app/CApplication.h"
+#include "elastos/droid/app/CContextImpl.h"
 
 using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::EIID_IContextWrapper;

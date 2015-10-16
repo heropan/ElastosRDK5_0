@@ -1,11 +1,11 @@
 
-#include "view/menu/ActionMenuView.h"
-#include "view/menu/MenuBuilderBase.h"
-#include "view/menu/CActionMenuItemView.h"
-#include "view/menu/CActionMenuViewLayoutParams.h"
-#include "widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/view/menu/ActionMenuView.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/CActionMenuItemView.h"
+#include "elastos/droid/view/menu/CActionMenuViewLayoutParams.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include <elastos/core/Math.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Widget::EIID_ILinearLayoutLayoutParams;

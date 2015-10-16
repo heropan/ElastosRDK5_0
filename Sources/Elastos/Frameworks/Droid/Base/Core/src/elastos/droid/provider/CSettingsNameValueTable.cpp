@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "provider/CSettingsNameValueTable.h"
-#include "provider/Settings.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/provider/CSettingsNameValueTable.h"
+#include "elastos/droid/provider/Settings.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
-#include "app/CHeavyWeightSwitcherActivity.h"
-#include "app/ActivityManagerNative.h"
-#include "utility/CTypedValue.h"
+#include "elastos/droid/app/CHeavyWeightSwitcherActivity.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/utility/CTypedValue.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::Widget::ITextView;

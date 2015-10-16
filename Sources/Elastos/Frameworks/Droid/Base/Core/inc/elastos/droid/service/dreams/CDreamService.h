@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_DREAMS_CDREAMSERVICE_H__
 
 #include "_Elastos_Droid_Service_Dreams_CDreamService.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 
 namespace Elastos {

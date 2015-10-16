@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CZOOMCONTROLS_H__
 
 #include "_Elastos_Droid_Widget_CZoomControls.h"
-#include "widget/ZoomControls.h"
+#include "elastos/droid/widget/ZoomControls.h"
 
 
 

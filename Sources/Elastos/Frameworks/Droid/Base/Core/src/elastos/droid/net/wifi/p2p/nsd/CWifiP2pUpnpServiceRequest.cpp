@@ -1,6 +1,6 @@
 
 #include "CWifiP2pUpnpServiceRequest.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include "CWifiP2pServiceRequest.h"
 #include "CWifiP2pServiceInfo.h"
 #include "WifiP2pServiceInfo.h"

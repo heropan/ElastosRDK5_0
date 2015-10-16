@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "appwidget/CAppWidgetProviderInfo.h"
-#include "content/CComponentName.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/appwidget/CAppWidgetProviderInfo.h"
+#include "elastos/droid/content/CComponentName.h"
 
 using Elastos::Droid::Content::CComponentName;
 

@@ -1,6 +1,6 @@
 
-#include "gesture/Instance.h"
-#include "gesture/GestureUtils.h"
+#include "elastos/droid/gesture/Instance.h"
+#include "elastos/droid/gesture/GestureUtils.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

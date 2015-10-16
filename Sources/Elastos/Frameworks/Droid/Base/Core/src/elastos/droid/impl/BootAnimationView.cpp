@@ -1,10 +1,10 @@
 
-#include "impl/BootAnimationView.h"
-#include "os/SystemProperties.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CPaint.h"
+#include "elastos/droid/impl/BootAnimationView.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

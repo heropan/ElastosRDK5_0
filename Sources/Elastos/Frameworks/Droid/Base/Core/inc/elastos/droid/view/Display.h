@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_DISPLAY_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Graphics::IRect;

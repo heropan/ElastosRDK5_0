@@ -1,5 +1,5 @@
-#include "systemui/statusbar/phone/IconMerger.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/phone/IconMerger.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CCodecProfileLevel.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CCodecProfileLevel.h"
 
 namespace Elastos {
 namespace Droid {

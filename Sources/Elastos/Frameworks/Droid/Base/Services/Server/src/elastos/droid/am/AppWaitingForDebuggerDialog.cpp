@@ -16,8 +16,8 @@ AppWaitingForDebuggerDialog::AppWaitingForDebuggerDialog(
     , mProc(app)
 {
     BaseErrorDialog::Init(context);
-	AutoPtr<IPackageManager> pkgManager;
-	context->GetPackageManager((IPackageManager**)&pkgManager);
+    AutoPtr<IPackageManager> pkgManager;
+    context->GetPackageManager((IPackageManager**)&pkgManager);
     pkgManager->GetApplicationLabel(app->mInfo, (ICharSequence**)&mAppName);
 
     SetCancelable(FALSE);
@@ -62,17 +62,17 @@ void AppWaitingForDebuggerDialog::OnStop()
 {}
 
 ECode AppWaitingForDebuggerDialog::MyHandler::HandleMessage(
-	/* [in] */ IMessage* msg)
+    /* [in] */ IMessage* msg)
 {
-	Int32 what;
-	msg->GetWhat(&what);
-	switch(what) {
-		case 1:
+    Int32 what;
+    msg->GetWhat(&what);
+    switch(what) {
+        case 1:
             // Kill the application.
             mHost->mService->KillAppAtUsersRequest(mHost->mProc, mHost);
             break;
-	}
-	return NOERROR;
+    }
+    return NOERROR;
 }
 
 } // namespace Am

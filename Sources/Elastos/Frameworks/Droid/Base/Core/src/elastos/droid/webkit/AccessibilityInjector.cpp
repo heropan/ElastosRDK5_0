@@ -1,10 +1,10 @@
 
-#include "webkit/AccessibilityInjector.h"
-#include "webkit/CWebViewClassic.h"
-//#include "provider/CSettingsSecure.h"
-#include "speech/tts/CTextToSpeech.h"
-#include "os/CHandler.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/webkit/AccessibilityInjector.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+//#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/speech/tts/CTextToSpeech.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Thread.h>

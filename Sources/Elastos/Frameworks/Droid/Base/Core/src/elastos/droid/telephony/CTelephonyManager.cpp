@@ -1,10 +1,10 @@
 
 #include "CTelephonyManager.h"
 #include "CCellLocationHelper.h"
-#include "os/ServiceManager.h"
-#include "os/SystemProperties.h"
-#include "os/CSystemProperties.h"
-#include "R.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/CSystemProperties.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>

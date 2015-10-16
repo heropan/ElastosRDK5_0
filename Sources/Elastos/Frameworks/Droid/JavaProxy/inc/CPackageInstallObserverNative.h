@@ -12,7 +12,7 @@ namespace JavaProxy {
 CarClass(CPackageInstallObserverNative)
 {
 public:
-	~CPackageInstallObserverNative();
+    ~CPackageInstallObserverNative();
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

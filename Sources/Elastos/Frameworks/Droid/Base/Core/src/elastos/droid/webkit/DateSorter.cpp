@@ -1,7 +1,7 @@
 
-#include "webkit/DateSorter.h"
+#include "elastos/droid/webkit/DateSorter.h"
 #include <elastos/core/Math.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Libcore::ICU::ILocale;
 using Libcore::ICU::CLocaleHelper;

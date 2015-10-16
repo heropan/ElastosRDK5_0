@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEPROGRAM_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEPROGRAM_H__
 
-#include "ext/frameworkdef.h"
-#include "database/sqlite/SQLiteClosable.h"
-#include "database/sqlite/SQLiteSession.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/database/sqlite/SQLiteClosable.h"
+#include "elastos/droid/database/sqlite/SQLiteSession.h"
 #include <sqlite3.h>
 
 using Elastos::Droid::Database::Sqlite::SQLiteClosable;

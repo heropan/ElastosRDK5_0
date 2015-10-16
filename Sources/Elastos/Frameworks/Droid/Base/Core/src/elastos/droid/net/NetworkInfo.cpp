@@ -477,8 +477,8 @@ ECode NetworkInfo::WriteToParcel(
 } // namespace Elastos
 
 #if 0 // old CNetworkInfo.cpp
-#include "net/CNetworkInfo.h"
-#include "net/CConnectivityManager.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CConnectivityManager.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 

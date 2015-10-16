@@ -4,11 +4,11 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
-#include "os/ServiceManager.h"
-#include "app/ActivityManagerNative.h"
-#include "app/AppGlobals.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/app/AppGlobals.h"
 #include "CStatusBarManagerService.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "R.h"
 #include "util/Xml.h"
 

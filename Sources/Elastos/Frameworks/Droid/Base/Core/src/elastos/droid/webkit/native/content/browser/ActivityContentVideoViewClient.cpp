@@ -1,7 +1,7 @@
 
-#include "webkit/native/content/browser/ActivityContentVideoViewClient.h"
-#include "os/Build.h"
-//#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/webkit/native/content/browser/ActivityContentVideoViewClient.h"
+#include "elastos/droid/os/Build.h"
+//#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::IWindow;

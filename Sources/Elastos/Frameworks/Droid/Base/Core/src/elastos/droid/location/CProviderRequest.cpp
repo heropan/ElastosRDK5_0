@@ -1,8 +1,8 @@
 
-#include "location/CProviderRequest.h"
-#include "location/CLocationRequest.h"
-#include "utility/CParcelableObjectContainer.h"
-#include "utility/TimeUtils.h"
+#include "elastos/droid/location/CProviderRequest.h"
+#include "elastos/droid/location/CLocationRequest.h"
+#include "elastos/droid/utility/CParcelableObjectContainer.h"
+#include "elastos/droid/utility/TimeUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 

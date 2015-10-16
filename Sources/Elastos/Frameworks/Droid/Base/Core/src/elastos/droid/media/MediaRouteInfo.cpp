@@ -1,9 +1,9 @@
 
-#include "media/MediaRouteInfo.h"
+#include "elastos/droid/media/MediaRouteInfo.h"
 
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::EIID_IRunnable;

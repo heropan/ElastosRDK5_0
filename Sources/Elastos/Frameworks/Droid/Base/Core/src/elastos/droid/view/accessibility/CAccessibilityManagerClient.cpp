@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "view/accessibility/CAccessibilityManagerClient.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerClient.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #include "elastos/droid/content/AbstractThreadedSyncAdapter.h"
 //***#include "elastos/droid/content/CSyncContext.h"
 //***#include "elastos/droid/content/CSyncResult.h"
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
 #include <elaatomics.h>

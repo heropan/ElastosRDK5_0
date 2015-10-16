@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_EDITABLEINPUTCONNECTION_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_EDITABLEINPUTCONNECTION_H__
 
-#include "view/inputmethod/BaseInputConnection.h"
-#include "view/inputmethod/CExtractedText.h"
+#include "elastos/droid/view/inputmethod/BaseInputConnection.h"
+#include "elastos/droid/view/inputmethod/CExtractedText.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBundle;

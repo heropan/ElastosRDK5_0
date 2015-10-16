@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ROTARYSELECTOR_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_ROTARYSELECTOR_H__
 
-#include "view/View.h"
-#include "view/VelocityTracker.h"
-#include "view/animation/AnimationUtils.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
 
 using Elastos::Droid::Os::IVibrator;
 using Elastos::Droid::View::View;

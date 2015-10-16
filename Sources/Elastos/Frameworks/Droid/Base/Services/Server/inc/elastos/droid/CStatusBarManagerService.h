@@ -2,11 +2,11 @@
 #define __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_CStatusBarManagerService.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include "wm/CWindowManagerService.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;

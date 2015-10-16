@@ -1,6 +1,6 @@
 
-#include "view/inputmethod/CInputMethodSubtype.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/view/inputmethod/CInputMethodSubtype.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::CStringWrapper;

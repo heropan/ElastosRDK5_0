@@ -6,7 +6,7 @@
 
 
 
-#include "widget/TabWidget.h"
+#include "elastos/droid/widget/TabWidget.h"
 
 
 namespace Elastos {

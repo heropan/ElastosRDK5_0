@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_RESOLVERACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_RESOLVERACTIVITY_H__
 
-#include "app/AlertActivity.h"
-#include "content/PackageMonitor.h"
+#include "elastos/droid/app/AlertActivity.h"
+#include "elastos/droid/content/PackageMonitor.h"
 
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;

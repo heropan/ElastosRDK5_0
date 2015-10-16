@@ -1,6 +1,6 @@
 
-#include "media/CFaceDetector.h"
-#include "media/CFace.h"
+#include "elastos/droid/media/CFaceDetector.h"
+#include "elastos/droid/media/CFace.h"
 #include <elastos/utility/logging/Slogger.h>
 
 #include <utils/misc.h>

@@ -1,6 +1,6 @@
 
-#include "graphics/CPointF.h"
-#include "webkit/QuadF.h"
+#include "elastos/droid/graphics/CPointF.h"
+#include "elastos/droid/webkit/QuadF.h"
 
 #include <elastos/core/StringBuilder.h>
 

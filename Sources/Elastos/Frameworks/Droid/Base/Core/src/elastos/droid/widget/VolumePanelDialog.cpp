@@ -1,5 +1,5 @@
-#include "widget/VolumePanelDialog.h"
-#include "widget/CVolumePanel.h"
+#include "elastos/droid/widget/VolumePanelDialog.h"
+#include "elastos/droid/widget/CVolumePanel.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "CStatusBarManager.h"
-#include "os/ServiceManager.h"
-#include "os/CBinder.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CBinder.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLERALERTPARAMS_H__
 
 #include "_Elastos_Droid_Internal_App_CAlertControllerAlertParams.h"
-#include "app/CAlertController.h"
-#include "widget/ArrayAdapter.h"
-#include "widget/CArrayAdapter.h"
-#include "widget/CursorAdapter.h"
-#include "widget/CRecycleListView.h"
-#include "widget/CSimpleCursorAdapter.h"
-#include "utility/CParcelableObjectContainer.h"
+#include "elastos/droid/app/CAlertController.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
+#include "elastos/droid/widget/CArrayAdapter.h"
+#include "elastos/droid/widget/CursorAdapter.h"
+#include "elastos/droid/widget/CRecycleListView.h"
+#include "elastos/droid/widget/CSimpleCursorAdapter.h"
+#include "elastos/droid/utility/CParcelableObjectContainer.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

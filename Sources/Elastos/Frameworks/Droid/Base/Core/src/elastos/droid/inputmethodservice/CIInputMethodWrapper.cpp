@@ -1,10 +1,10 @@
 
-#include "inputmethodservice/CIInputMethodWrapper.h"
-#include "inputmethodservice/CIInputMethodSessionWrapper.h"
-#include "view/LocalInputConnectionWrapper.h"
-// #include "view/inputmethod/CInputBinding.h"
-#include "internal/os/SomeArgs.h"
-#include "internal/os/CHandlerCaller.h"
+#include "elastos/droid/inputmethodservice/CIInputMethodWrapper.h"
+#include "elastos/droid/inputmethodservice/CIInputMethodSessionWrapper.h"
+#include "elastos/droid/view/LocalInputConnectionWrapper.h"
+// #include "elastos/droid/view/inputmethod/CInputBinding.h"
+#include "elastos/droid/internal/os/SomeArgs.h"
+#include "elastos/droid/internal/os/CHandlerCaller.h"
 #include <elastos/utility/logging/Logger.h>
 #include <stdio.h>
 #include <unistd.h>

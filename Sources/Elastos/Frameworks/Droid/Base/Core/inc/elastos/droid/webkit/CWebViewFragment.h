@@ -5,8 +5,8 @@
 #include "_Elastos_Droid_Webkit_CWebViewFragment.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "app/Fragment.h"
-#include "webkit/WebViewFragment.h"
+#include "elastos/droid/app/Fragment.h"
+#include "elastos/droid/webkit/WebViewFragment.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "CBalloonView.h"
 #include "CPinyinEnvironmentHelper.h"
-#include "graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 
 using Elastos::Droid::Graphics::CPaint;
 

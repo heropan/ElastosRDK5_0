@@ -1,5 +1,5 @@
 
-#include "graphics/CSumPathEffect.h"
+#include "elastos/droid/graphics/CSumPathEffect.h"
 #include <SkPathEffect.h>
 
 namespace Elastos {

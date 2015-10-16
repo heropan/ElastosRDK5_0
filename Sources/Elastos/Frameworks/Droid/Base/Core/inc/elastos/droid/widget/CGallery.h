@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CGallery.h"
 
 
-#include "widget/Gallery.h"
+#include "elastos/droid/widget/Gallery.h"
 
 namespace Elastos {
 namespace Droid {

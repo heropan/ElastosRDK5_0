@@ -1,16 +1,16 @@
 
-#include "widget/ScrollView.h"
+#include "elastos/droid/widget/ScrollView.h"
 #include <elastos/core/Math.h>
-#include <R.h>
-#include "view/FocusFinder.h"
-#include "view/CViewConfiguration.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/CViewGroupMarginLayoutParams.h"
-#include "view/animation/AnimationUtils.h"
-#include "widget/CFrameLayoutLayoutParams.h"
-#include "widget/OverScroller.h"
-#include "widget/CEdgeEffect.h"
-#include "os/CStrictMode.h";
+#include "elastos/droid/R.h"
+#include "elastos/droid/view/FocusFinder.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/widget/OverScroller.h"
+#include "elastos/droid/widget/CEdgeEffect.h"
+#include "elastos/droid/os/CStrictMode.h";
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;

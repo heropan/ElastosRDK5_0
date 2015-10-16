@@ -7,8 +7,8 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERADAPTER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "webkit/native/content/browser/LocationProviderFactory.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/webkit/native/content/browser/LocationProviderFactory.h"
 
 // package org.chromium.content.browser;
 // import android.content.Context;

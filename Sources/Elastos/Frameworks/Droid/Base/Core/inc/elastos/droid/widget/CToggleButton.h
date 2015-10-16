@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CCOMPOUNDBUTTON_H__
 
 #include "_Elastos_Droid_Widget_CToggleButton.h"
-#include "widget/ToggleButton.h"
+#include "elastos/droid/widget/ToggleButton.h"
 
 
 

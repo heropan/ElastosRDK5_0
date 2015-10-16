@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "webkit/CPluginList.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/CPluginList.h"
 #include <elastos/utility/etl/Algorithm.h>
 
 

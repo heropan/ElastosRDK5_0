@@ -1,11 +1,11 @@
 
 #include "CWifiP2pConfig.h"
 #include "CWifiP2pGroup.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "net/wifi/CWpsInfo.h"
+#include "elastos/droid/net/wifi/CWpsInfo.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;

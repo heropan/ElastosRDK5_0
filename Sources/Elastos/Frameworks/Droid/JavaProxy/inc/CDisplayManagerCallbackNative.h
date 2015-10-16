@@ -11,8 +11,8 @@ namespace JavaProxy {
 CarClass(CDisplayManagerCallbackNative)
 {
 public:
-	~CDisplayManagerCallbackNative();
-	
+    ~CDisplayManagerCallbackNative();
+
     CARAPI constructor(
         /* [in] */ Handle32 jVM,
         /* [in] */ Handle32 jInstance);

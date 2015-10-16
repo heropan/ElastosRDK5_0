@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CDEBUG_H__
 
 #include "_Elastos_Droid_Os_CDebug.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::IO::IFileDescriptor;
 

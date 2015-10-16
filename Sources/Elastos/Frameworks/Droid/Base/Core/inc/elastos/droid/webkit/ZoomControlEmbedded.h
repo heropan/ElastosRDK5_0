@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_ZOOMCONTROLEMBEDDED_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/ZoomControlBase.h"
+#include "elastos/droid/webkit/ZoomControlBase.h"
 
 using Elastos::Droid::Widget::IOnZoomListener;
 using Elastos::Droid::Widget::IZoomButtonsController;

@@ -1,5 +1,5 @@
 #include "PrivacyCursor.h"
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/utility/logging/Logger.h>
 //#include <Math/CBigInteger.h>
 #include <stdlib.h>

@@ -1,10 +1,10 @@
 
-#include "view/menu/ActionMenuItemView.h"
-#include "view/menu/MenuItemImpl.h"
-#include "R.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/view/menu/ActionMenuItemView.h"
+#include "elastos/droid/view/menu/MenuItemImpl.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
-#include "widget/CToastHelper.h"
+#include "elastos/droid/widget/CToastHelper.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;

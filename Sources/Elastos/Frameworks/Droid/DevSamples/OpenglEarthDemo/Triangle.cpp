@@ -1,5 +1,5 @@
 #include "Triangle.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "ShaderUtil.h"
 #include <elastos/utility/logging/Slogger.h>
 

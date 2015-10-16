@@ -6,7 +6,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "CAudioTrack.h"
 #include <elastos/core/StringBuffer.h>
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <media/JetPlayer.h>
 #include <elastos/core/Math.h>
 

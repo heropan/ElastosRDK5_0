@@ -1,18 +1,18 @@
 
-#include "animation/AnimatorInflater.h"
-// #include "view/animation/AnimationUtils.h"
-#include "animation/CAnimatorSet.h"
-#include "animation/CValueAnimator.h"
-#include "animation/CArgbEvaluator.h"
-#include "animation/CObjectAnimator.h"
-#include "animation/StateListAnimator.h"
-#include "animation/KeyframeSet.h"
-#include "animation/PropertyValuesHolder.h"
-#include "animation/PathKeyframes.h"
-#include "utility/StateSet.h"
+#include "elastos/droid/animation/AnimatorInflater.h"
+// #include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/CValueAnimator.h"
+#include "elastos/droid/animation/CArgbEvaluator.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/animation/StateListAnimator.h"
+#include "elastos/droid/animation/KeyframeSet.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
+#include "elastos/droid/animation/PathKeyframes.h"
+#include "elastos/droid/utility/StateSet.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::IResources;

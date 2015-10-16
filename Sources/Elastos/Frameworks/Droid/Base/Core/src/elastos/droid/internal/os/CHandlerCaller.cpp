@@ -1,6 +1,6 @@
-#include "internal/os/CHandlerCaller.h"
-#include "os/Looper.h"
-#include "internal/os/SomeArgs.h"
+#include "elastos/droid/internal/os/CHandlerCaller.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/internal/os/SomeArgs.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

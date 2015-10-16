@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWGROUPMARGINLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_VIEW_VIEWGROUPMARGINLAYOUTPARAMS_H__
 
-#include "view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
 
 using namespace Elastos;
 

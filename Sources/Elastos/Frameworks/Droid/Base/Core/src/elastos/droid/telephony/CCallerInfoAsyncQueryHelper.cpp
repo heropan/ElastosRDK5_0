@@ -1,7 +1,7 @@
 
 #include "CCallerInfoAsyncQueryHelper.h"
 #include "CPhoneNumberUtils.h"
-#include "net/CUriHelper.h"
+#include "elastos/droid/net/CUriHelper.h"
 #include "CCallerInfoAsyncQuery.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>

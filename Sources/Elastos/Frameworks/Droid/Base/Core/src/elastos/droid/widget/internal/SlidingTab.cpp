@@ -1,15 +1,15 @@
 
-#include "widget/internal/SlidingTab.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "provider/Settings.h"
-#include "os/UserHandle.h"
-#include "graphics/CRect.h"
-#include "widget/CImageView.h"
-#include "widget/CTextView.h"
-#include "utility/CDisplayMetrics.h"
-#include "view/animation/CTranslateAnimation.h"
-#include "view/animation/CAlphaAnimation.h"
-#include "view/animation/CLinearInterpolator.h"
+#include "elastos/droid/widget/internal/SlidingTab.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/view/animation/CTranslateAnimation.h"
+#include "elastos/droid/view/animation/CAlphaAnimation.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
 
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewGroup;

@@ -5,7 +5,7 @@
 #include "impl/RecentApplicationsBackground.h"
 
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 
 namespace Elastos {

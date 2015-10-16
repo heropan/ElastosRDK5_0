@@ -1,4 +1,4 @@
-#include "media/audiofx/CEnvironmentalReverbSettings.h"
+#include "elastos/droid/media/audiofx/CEnvironmentalReverbSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

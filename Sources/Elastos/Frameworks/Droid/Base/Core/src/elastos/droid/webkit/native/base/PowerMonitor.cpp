@@ -1,8 +1,8 @@
 
-#include "webkit/native/base/PowerMonitor.h"
-#include "webkit/native/base/ApplicationState.h"
-//#include "os/CLooper.h"
-#include "os/CLooperHelper.h"
+#include "elastos/droid/webkit/native/base/PowerMonitor.h"
+#include "elastos/droid/webkit/native/base/ApplicationState.h"
+//#include "elastos/droid/os/CLooper.h"
+#include "elastos/droid/os/CLooperHelper.h"
 
 //using Elastos::Droid::Os::CLooper;
 using Elastos::Droid::Os::CLooperHelper;

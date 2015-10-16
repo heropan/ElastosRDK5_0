@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/ScaleDrawable.h"
-#include "graphics/drawable/CScaleDrawable.h"
-// #include "view/CGravity.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/ScaleDrawable.h"
+#include "elastos/droid/graphics/drawable/CScaleDrawable.h"
+// #include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

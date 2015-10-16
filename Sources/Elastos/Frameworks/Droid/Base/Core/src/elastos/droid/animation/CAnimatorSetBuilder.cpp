@@ -1,6 +1,6 @@
 
-#include "animation/CAnimatorSetBuilder.h"
-#include "animation/CValueAnimator.h"
+#include "elastos/droid/animation/CAnimatorSetBuilder.h"
+#include "elastos/droid/animation/CValueAnimator.h"
 
 namespace Elastos {
 namespace Droid {

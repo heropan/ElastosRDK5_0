@@ -1,6 +1,6 @@
 #include "elastos/droid/content/BroadcastReceiver.h"
-//#include "app/ActivityManagerNative.h"
-#include "os/CBundle.h"
+//#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/AutoLock.h>

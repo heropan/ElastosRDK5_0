@@ -1,9 +1,9 @@
 
 #include "power/CPowerManagerService.h"
 #include "power/ShutdownThread.h"
-#include "os/SystemClock.h"
-#include "os/Binder.h"
-#include "os/Looper.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Looper.h"
 #include "R.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>

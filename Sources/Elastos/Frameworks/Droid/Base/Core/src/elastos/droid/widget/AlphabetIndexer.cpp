@@ -1,7 +1,7 @@
 
-#include "widget/AlphabetIndexer.h"
+#include "elastos/droid/widget/AlphabetIndexer.h"
 #include <elastos/core/Math.h>
-//#include "text/Collator.h"
+//#include "elastos/droid/text/Collator.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Text::CCollatorHelper;

@@ -11,13 +11,13 @@ namespace Bluetooth {
 ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceUp(
     /* [in] */ IIBluetooth* bluetoothService)
 {
-	if (CBluetoothAdapter::VDBG) Logger::D(CBluetoothAdapter::TAG, "onBluetoothServiceUp: %p", bluetoothService);
+    if (CBluetoothAdapter::VDBG) Logger::D(CBluetoothAdapter::TAG, "onBluetoothServiceUp: %p", bluetoothService);
     AutoLock lock(mHost->mManagerCallbackLock);
     mHost->mService = bluetoothService;
     List<AutoPtr<IIBluetoothManagerCallback> >::Iterator it = mHost->mProxyServiceStateCallbacks.Begin();
     for (; it != mHost->mProxyServiceStateCallbacks.End(); ++it) {
         AutoPtr<IIBluetoothManagerCallback> cb = *it;
-    	// try {
+        // try {
         if (cb != NULL) {
             cb->OnBluetoothServiceUp(bluetoothService);
         }
@@ -31,13 +31,13 @@ ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceUp(
 
 ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceDown()
 {
-	if (CBluetoothAdapter::VDBG) Logger::D(CBluetoothAdapter::TAG, "onBluetoothServiceDown: %p", mHost->mService.Get());
+    if (CBluetoothAdapter::VDBG) Logger::D(CBluetoothAdapter::TAG, "onBluetoothServiceDown: %p", mHost->mService.Get());
     AutoLock lock(mHost->mManagerCallbackLock);
     mHost->mService = NULL;
     List<AutoPtr<IIBluetoothManagerCallback> >::Iterator it = mHost->mProxyServiceStateCallbacks.Begin();
     for (; it != mHost->mProxyServiceStateCallbacks.End(); ++it) {
         AutoPtr<IIBluetoothManagerCallback> cb = *it;
-    	// try {
+        // try {
         if (cb != NULL) {
             cb->OnBluetoothServiceDown();
         }
@@ -52,8 +52,8 @@ ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceDown()
 ECode CBluetoothAdapterManagerCallback::constructor(
     /* [in] */ IBluetoothAdapter* host)
 {
-	mHost = (CBluetoothAdapter*)host;
-	return NOERROR;
+    mHost = (CBluetoothAdapter*)host;
+    return NOERROR;
 }
 
 } // namespace Bluetooth

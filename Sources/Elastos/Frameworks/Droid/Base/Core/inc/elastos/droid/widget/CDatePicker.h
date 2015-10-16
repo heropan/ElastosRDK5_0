@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CDATEPICKER_H__
 
 #include "_Elastos_Droid_Widget_CDatePicker.h"
-#include "widget/DatePicker.h"
+#include "elastos/droid/widget/DatePicker.h"
 
 
 

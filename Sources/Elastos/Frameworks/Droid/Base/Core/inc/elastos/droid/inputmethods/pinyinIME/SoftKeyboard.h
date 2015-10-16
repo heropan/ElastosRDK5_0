@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYBOARD_H__
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYBOARD_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include "SoftKey.h"
 #include "SkbTemplate.h"

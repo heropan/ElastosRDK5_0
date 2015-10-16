@@ -1,5 +1,5 @@
 
-#include "app/admin/CDeviceAdminInfoPolicyInfo.h"
+#include "elastos/droid/app/admin/CDeviceAdminInfoPolicyInfo.h"
 
 namespace Elastos {
 namespace Droid {

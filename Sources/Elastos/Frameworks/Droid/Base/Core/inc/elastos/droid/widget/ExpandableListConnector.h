@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ExpandableListPosition.h"
-#include "widget/BaseAdapter.h"
-#include "widget/GroupMetadata.h"
-#include "widget/PositionMetadata.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
+#include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/widget/GroupMetadata.h"
+#include "elastos/droid/widget/PositionMetadata.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

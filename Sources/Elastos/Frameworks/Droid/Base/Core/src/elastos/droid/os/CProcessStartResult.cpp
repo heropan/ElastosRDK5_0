@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CProcessStartResult.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CProcessStartResult.h"
 
 namespace Elastos {
 namespace Droid {

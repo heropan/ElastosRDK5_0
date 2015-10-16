@@ -1,8 +1,8 @@
 
-#include "view/DisplayInfo.h"
-#include "ext/frameworkext.h"
-#include "content/res/CCompatibilityInfoHelper.h"
-#include "view/Display.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/DisplayInfo.h"
+#include "elastos/droid/content/res/CCompatibilityInfoHelper.h"
+#include "elastos/droid/view/Display.h"
 
 using Elastos::Droid::Content::Res::ICompatibilityInfoHelper;
 using Elastos::Droid::Content::Res::CCompatibilityInfoHelper;

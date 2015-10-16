@@ -19,7 +19,7 @@ public:
         /* [in] */ Handle32 host);
 
 private:
-	BluetoothPbap* mHost;
+    BluetoothPbap* mHost;
 };
 
 } // namespace Bluetooth

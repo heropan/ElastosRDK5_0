@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/inputmethod/CCompletionInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/inputmethod/CCompletionInfo.h"
 
 using Elastos::Core::CString;
 

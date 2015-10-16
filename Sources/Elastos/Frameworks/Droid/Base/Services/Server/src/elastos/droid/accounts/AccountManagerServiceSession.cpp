@@ -1,8 +1,8 @@
 #include "accounts/AccountManagerServiceSession.h"
 #include "accounts/CAccountManagerService.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

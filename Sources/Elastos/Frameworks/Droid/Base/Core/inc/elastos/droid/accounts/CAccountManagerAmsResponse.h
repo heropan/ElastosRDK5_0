@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERAMSRESPONSE_H__
 
 #include "_Elastos_Droid_Accounts_CAccountManagerAmsResponse.h"
-#include "accounts/CAccountManager.h"
+#include "elastos/droid/accounts/CAccountManager.h"
 
 using Elastos::Droid::Os::IBundle;
 

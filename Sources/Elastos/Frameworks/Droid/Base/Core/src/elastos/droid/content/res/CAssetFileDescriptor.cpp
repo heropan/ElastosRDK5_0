@@ -3,10 +3,10 @@
 #include "elastos/droid/content/res/CAssetFileDescriptor.h"
 #include "elastos/droid/content/res/CAssetFileDescriptorAutoCloseInputStream.h"
 #include "elastos/droid/content/res/CAssetFileDescriptorAutoCloseOutputStream.h"
-#include "os/CBundle.h"
-#include "os/CParcelFileDescriptor.h"
-#include "os/CParcelFileDescriptorAutoCloseInputStream.h"
-#include "os/CParcelFileDescriptorAutoCloseOutputStream.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
+#include "elastos/droid/os/CParcelFileDescriptorAutoCloseInputStream.h"
+#include "elastos/droid/os/CParcelFileDescriptorAutoCloseOutputStream.h"
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IParcelFileDescriptorAutoCloseInputStream;

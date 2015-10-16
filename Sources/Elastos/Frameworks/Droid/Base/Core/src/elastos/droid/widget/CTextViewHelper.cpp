@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "widget/CTextViewHelper.h"
-#include "widget/TextView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CTextViewHelper.h"
+#include "elastos/droid/widget/TextView.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,8 +1,8 @@
 #include "CWifiP2pManager.h"
 #include "CWifiP2pManagerChannel.h"
 #include "CWifiP2pDevice.h"
-#include "os/CBundle.h"
-#include "os/CMessageHelper.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CMessageHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IMessage;

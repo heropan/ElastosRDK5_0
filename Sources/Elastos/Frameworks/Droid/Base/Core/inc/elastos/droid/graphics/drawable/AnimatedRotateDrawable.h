@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATEDROTATEDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATEDROTATEDRAWABLE_H__
 
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Core::IRunnable;
 

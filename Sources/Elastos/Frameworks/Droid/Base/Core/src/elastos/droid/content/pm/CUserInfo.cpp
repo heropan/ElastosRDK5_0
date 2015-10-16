@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/pm/CUserInfo.h"
-#include "os/CUserHandle.h"
+#include "elastos/droid/os/CUserHandle.h"
 
 using Elastos::Droid::Os::CUserHandle;
 

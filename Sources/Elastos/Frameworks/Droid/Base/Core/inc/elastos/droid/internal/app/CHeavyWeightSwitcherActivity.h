@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Internal_App_CHeavyWeightSwitcherActivity.h"
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBundle;

@@ -1,6 +1,6 @@
 
-#include "view/CKeyEvent.h"
-#include "view/CInputDevice.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CInputDevice.h"
 #include <androidfw/Input.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>

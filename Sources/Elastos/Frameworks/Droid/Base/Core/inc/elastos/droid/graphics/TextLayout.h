@@ -18,7 +18,7 @@
 #include <skia/core/SkPaint.h>
 #include <unicode/utypes.h>
 
-#include "graphics/TextLayoutCache.h"
+#include "elastos/droid/graphics/TextLayoutCache.h"
 
 #include <elastos.h>
 

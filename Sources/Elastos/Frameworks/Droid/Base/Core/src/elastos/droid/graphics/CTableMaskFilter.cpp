@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CTableMaskFilter.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CTableMaskFilter.h"
 #include <skia/effects/SkTableMaskFilter.h>
 
 namespace Elastos {

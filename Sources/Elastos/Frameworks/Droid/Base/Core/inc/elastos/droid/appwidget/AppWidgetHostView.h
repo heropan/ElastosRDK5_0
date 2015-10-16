@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APPWIDGET_APPWIDGETHOSTVIEW_H__
 #define __ELASTOS_DROID_APPWIDGET_APPWIDGETHOSTVIEW_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::View::ILayoutInflaterFilter;

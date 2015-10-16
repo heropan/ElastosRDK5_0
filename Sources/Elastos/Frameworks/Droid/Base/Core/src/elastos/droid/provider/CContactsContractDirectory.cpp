@@ -1,8 +1,8 @@
 
-#include "provider/CContactsContractDirectory.h"
-#include "provider/ContactsContract.h"
-#include "net/Uri.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/provider/CContactsContractDirectory.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentValues.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::IContentValues;

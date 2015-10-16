@@ -5,7 +5,7 @@
 #define LAYOUTS_LENGTH 5
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/internal/CPasswordEntryKeyboard.h"
+#include "elastos/droid/widget/internal/CPasswordEntryKeyboard.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;

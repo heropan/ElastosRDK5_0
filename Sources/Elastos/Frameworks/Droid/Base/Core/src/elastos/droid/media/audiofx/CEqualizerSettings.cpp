@@ -1,4 +1,4 @@
-#include "media/audiofx/CEqualizerSettings.h"
+#include "elastos/droid/media/audiofx/CEqualizerSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

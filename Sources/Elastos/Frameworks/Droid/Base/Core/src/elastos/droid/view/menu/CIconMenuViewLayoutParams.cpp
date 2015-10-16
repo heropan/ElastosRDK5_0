@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/menu/CIconMenuViewLayoutParams.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/menu/CIconMenuViewLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

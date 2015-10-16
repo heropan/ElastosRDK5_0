@@ -1,7 +1,7 @@
 
-#include "view/ViewTreeObserver.h"
-#include "graphics/CRect.h"
-#include "graphics/CRegion.h"
+#include "elastos/droid/view/ViewTreeObserver.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRegion.h"
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CRegion;

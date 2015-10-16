@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_ListMenuItemView_H__
 #define  __ELASTOS_DROID_VIEW_MENU_ListMenuItemView_H__
 
-#include "view/menu/MenuItemImpl.h"
-#include "widget/LinearLayout.h"
+#include "elastos/droid/view/menu/MenuItemImpl.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IImageView;

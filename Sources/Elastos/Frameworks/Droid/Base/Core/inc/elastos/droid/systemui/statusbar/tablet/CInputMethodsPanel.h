@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/tablet/InputMethodsPanel.h"
+#include "elastos/droid/systemui/statusbar/tablet/InputMethodsPanel.h"
 
 namespace Elastos {
 namespace Droid {

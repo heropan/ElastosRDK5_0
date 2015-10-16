@@ -1,14 +1,14 @@
 
-#include "app/PlatLogoActivity.h"
-#include "utility/CDisplayMetrics.h"
-#include "os/Build.h"
-#include "content/CIntent.h"
-#include "widget/CTextView.h"
-#include "widget/CImageView.h"
-#include "widget/CLinearLayout.h"
-#include "widget/CLinearLayoutLayoutParams.h"
-#include "graphics/CTypefaceHelper.h"
-#include "view/CViewGroupLayoutParams.h"
+#include "elastos/droid/app/PlatLogoActivity.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/graphics/CTypefaceHelper.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

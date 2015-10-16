@@ -4,10 +4,10 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
-#include "os/HandlerBase.h"
-#include "utility/AsyncChannel.h"
-#include "content/BroadcastReceiver.h"
-#include "R.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/utility/AsyncChannel.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::HandlerBase;

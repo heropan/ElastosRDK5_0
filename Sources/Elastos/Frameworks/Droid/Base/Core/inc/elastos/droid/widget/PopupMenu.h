@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_POPUPMENU_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/menu/CMenuPopupHelper.h"
+#include "elastos/droid/view/menu/CMenuPopupHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;

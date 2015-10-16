@@ -1,5 +1,5 @@
-#include "app/CActionKeyInfo.h"
-#include "R.h"
+#include "elastos/droid/app/CActionKeyInfo.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;

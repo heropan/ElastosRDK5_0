@@ -3,7 +3,7 @@
 #include "CBluetoothA2dpStateChangeCallback.h"
 #include "CBluetoothAdapter.h"
 #include "BluetoothUuid.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 

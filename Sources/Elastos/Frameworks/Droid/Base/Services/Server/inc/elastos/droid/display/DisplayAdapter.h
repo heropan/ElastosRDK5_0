@@ -4,8 +4,8 @@
 
 #include "Elastos.Droid.Server_server.h"
 #include <elastos/Core/Object.h>
-#include "os/Handler.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IPrintWriter;

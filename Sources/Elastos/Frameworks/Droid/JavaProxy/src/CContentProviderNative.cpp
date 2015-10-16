@@ -2,7 +2,7 @@
 #include "CContentProviderNative.h"
 #include "CCursorNative.h"
 #include "CICancellationSignalNative.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Util.h"
 #include <elastos/utility/logging/Logger.h>
 #include <unistd.h>

@@ -1,13 +1,13 @@
 
 #include "BluetoothTetheringDataTracker.h"
 #include "CBluetoothAdapter.h"
-#include "net/CLinkCapabilities.h"
-#include "net/CLinkProperties.h"
-#include "net/CNetworkInfo.h"
-#include "net/CLinkAddress.h"
-#include "net/CRouteInfo.h"
-#include "net/NetworkUtils.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/net/CLinkCapabilities.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CLinkAddress.h"
+#include "elastos/droid/net/CRouteInfo.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>

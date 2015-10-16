@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CRADIALGRADIENT_H__
 
 #include "_Elastos_Droid_Graphics_CRadialGradient.h"
-#include "graphics/Shader.h"
+#include "elastos/droid/graphics/Shader.h"
 
 namespace Elastos {
 namespace Droid {

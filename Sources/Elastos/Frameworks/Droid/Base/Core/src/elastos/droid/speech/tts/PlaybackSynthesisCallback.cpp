@@ -1,6 +1,6 @@
-#include "speech/tts/PlaybackSynthesisCallback.h"
-#include "speech/tts/BlockingAudioTrack.h"
-#include "speech/tts/SynthesisPlaybackQueueItem.h"
+#include "elastos/droid/speech/tts/PlaybackSynthesisCallback.h"
+#include "elastos/droid/speech/tts/BlockingAudioTrack.h"
+#include "elastos/droid/speech/tts/SynthesisPlaybackQueueItem.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

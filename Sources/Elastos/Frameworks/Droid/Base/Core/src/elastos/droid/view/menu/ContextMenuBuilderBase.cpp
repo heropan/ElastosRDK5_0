@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "view/menu/ContextMenuBuilderBase.h"
-#include "view/menu/CMenuDialogHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/menu/ContextMenuBuilderBase.h"
+#include "elastos/droid/view/menu/CMenuDialogHelper.h"
 
 namespace Elastos {
 namespace Droid {

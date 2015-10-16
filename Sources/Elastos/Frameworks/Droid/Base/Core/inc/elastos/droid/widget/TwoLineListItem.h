@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 #include <R.h>
 
 namespace Elastos {

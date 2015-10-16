@@ -1,35 +1,35 @@
-#include "ext/frameworkext.h"
-#include "impl/CPhoneWindow.h"
-#include "impl/CPhoneWindowManager.h"
-#include "impl/CPhoneWindowSavedState.h"
-#include "content/res/CConfiguration.h"
-#include "graphics/CPaint.h"
-#include "graphics/CPixelFormat.h"
-#include "graphics/drawable/Drawable.h"
-#include "os/Build.h"
-#include "os/CBundle.h"
-#include "os/ServiceManager.h"
-#include "view/CContextThemeWrapper.h"
-#include "view/CKeyCharacterMap.h"
-#include "view/CKeyCharacterMapHelper.h"
-#include "view/CKeyEvent.h"
-#include "view/CMotionEvent.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/LayoutInflater.h"
-#include "view/StandaloneActionMode.h"
-#include "view/accessibility/CAccessibilityManager.h"
-#include "view/animation/CAnimationUtils.h"
-#include "view/menu/CContextMenuBuilder.h"
-#include "view/menu/CMenuBuilder.h"
-#include "widget/CPopupWindow.h"
-#include "widget/internal/CActionBarContextView.h"
-#include "utility/CTypedValue.h"
-#include "utility/CTypedValueHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/impl/CPhoneWindow.h"
+#include "elastos/droid/impl/CPhoneWindowManager.h"
+#include "elastos/droid/impl/CPhoneWindowSavedState.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPixelFormat.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyCharacterMapHelper.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/view/StandaloneActionMode.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/view/menu/CContextMenuBuilder.h"
+#include "elastos/droid/view/menu/CMenuBuilder.h"
+#include "elastos/droid/widget/CPopupWindow.h"
+#include "elastos/droid/widget/internal/CActionBarContextView.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/utility/CTypedValueHelper.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "impl/CPhoneWindowRotationWatcher.h"
-#include "R.h"
+#include "elastos/droid/impl/CPhoneWindowRotationWatcher.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::R;
@@ -4808,7 +4808,7 @@ ECode CPhoneWindow::GetPanelState(
         Slogger::E(TAG, "GetPanelState: The feature has not been requested: content: %p, featureId: %d, mFeatures: %08x, mInvalidatePanelMenuFeatures: %08x",
             &mFeatures, featureId, mFeatures, mInvalidatePanelMenuFeatures);
         //throw new RuntimeException("The feature has not been requested");
-		assert(0);
+        assert(0);
         return E_RUNTIME_EXCEPTION;
     }
 

@@ -4,7 +4,7 @@
 
 #include "_CGpsStatusListener.h"
 #include <jni.h>
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +15,7 @@ CarClass(CGpsStatusListener)
 public:
     CGpsStatusListener();
     ~CGpsStatusListener();
-    
+
     CARAPI OnGpsStarted();
 
     CARAPI OnGpsStopped();

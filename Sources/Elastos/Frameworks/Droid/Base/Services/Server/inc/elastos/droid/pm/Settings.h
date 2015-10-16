@@ -9,7 +9,7 @@
 #include "pm/Installer.h"
 #include "pm/DumpState.h"
 #include "pm/PendingPackage.h"
-#include "content/pm/PackageParser.h"
+#include "elastos/droid/content/pm/PackageParser.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::IBoolean;

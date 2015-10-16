@@ -1,12 +1,12 @@
 
-#include "os/Environment.h"
-#include "os/SystemProperties.h"
-#include "os/UserHandle.h"
-//#include "os/FileUtils.h"
+#include "elastos/droid/os/Environment.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/UserHandle.h"
+//#include "elastos/droid/os/FileUtils.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-//#include "text/TextUtils.h"
+//#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::IO::CFile;
 using Elastos::Core::ISystem;

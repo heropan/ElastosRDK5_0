@@ -2,10 +2,10 @@
 #define __ELASTOS_DROID_SERVER_CDROPBOXMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_CDropBoxManagerService.h"
-#include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/Set.h>
 

@@ -1,4 +1,4 @@
-#include "statusbar/CStatusBarNotification.h"
+#include "elastos/droid/statusbar/CStatusBarNotification.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

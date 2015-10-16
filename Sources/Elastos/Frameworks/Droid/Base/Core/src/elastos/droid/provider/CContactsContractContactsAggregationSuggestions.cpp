@@ -1,6 +1,6 @@
 
-#include "provider/CContactsContractContactsAggregationSuggestions.h"
-#include "provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
+#include "elastos/droid/provider/CContactsContractContactsAggregationSuggestions.h"
+#include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include <elastos/coredef.h>
 
 using Elastos::Droid::Provider::IContactsContractContactsAggregationSuggestionsBuilder;

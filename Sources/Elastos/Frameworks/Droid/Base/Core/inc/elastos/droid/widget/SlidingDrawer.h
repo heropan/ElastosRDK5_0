@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_WIDGET_SLIDINGDRAWER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ViewGroup.h"
-#include "view/VelocityTracker.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IView;

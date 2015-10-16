@@ -1,6 +1,6 @@
 
 #include "CWifiP2pWfdInfo.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

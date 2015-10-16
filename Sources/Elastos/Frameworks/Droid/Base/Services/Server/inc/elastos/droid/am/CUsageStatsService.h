@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CUSAGESTATSSERVICE_H__
 
 #include "_Elastos_Droid_Server_Am_CUsageStatsService.h"
-#include "content/PackageMonitor.h"
+#include "elastos/droid/content/PackageMonitor.h"
 #include <ext/frameworkext.h>
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/HashMap.h>

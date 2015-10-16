@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_SYNCACTIVITYTOOMANYDELETES_H__
 #define __ELASTOS_DROID_CONTENT_SYNCACTIVITYTOOMANYDELETES_H__
 
-//#include "app/Activity.h"
+//#include "elastos/droid/app/Activity.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 

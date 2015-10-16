@@ -1,6 +1,6 @@
-#include "systemui/statusbar/phone/PhoneStatusBar.h"
-#include "provider/Settings.h"
-#include "systemui/statusbar/policy/Prefs.h"
+#include "elastos/droid/systemui/statusbar/phone/PhoneStatusBar.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/systemui/statusbar/policy/Prefs.h"
 
 
 using Elastos::Droid::Provide::Settings;

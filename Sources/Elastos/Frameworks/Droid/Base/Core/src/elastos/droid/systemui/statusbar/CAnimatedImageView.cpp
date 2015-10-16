@@ -1,4 +1,4 @@
-#include "systemui/statusbar/CAnimatedImageView.h"
+#include "elastos/droid/systemui/statusbar/CAnimatedImageView.h"
 
 using Elastos::Droid::View::EIID_View;
 

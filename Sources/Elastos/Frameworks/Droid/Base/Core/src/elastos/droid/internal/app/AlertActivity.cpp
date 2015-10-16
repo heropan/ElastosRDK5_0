@@ -1,5 +1,5 @@
 
-#include "app/AlertActivity.h"
+#include "elastos/droid/app/AlertActivity.h"
 
 using Elastos::Droid::App::EIID_IActivity;
 using Elastos::Droid::Content::EIID_IContext;

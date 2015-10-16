@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__
 
-#include "widget/ImageView.h"
+#include "elastos/droid/widget/ImageView.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::IContext;

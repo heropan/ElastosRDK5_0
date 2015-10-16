@@ -3,9 +3,9 @@
 #define  __ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "net/DhcpInfoInternal.h"
-#include "net/wifi/NetworkUpdateResult.h"
-#include "net/wifi/WifiNative.h"
+#include "elastos/droid/net/DhcpInfoInternal.h"
+#include "elastos/droid/net/wifi/NetworkUpdateResult.h"
+#include "elastos/droid/net/wifi/WifiNative.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IRunnable;

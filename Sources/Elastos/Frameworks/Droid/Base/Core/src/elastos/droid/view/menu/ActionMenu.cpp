@@ -1,8 +1,8 @@
 
-#include "view/menu/ActionMenu.h"
-#include "content/CIntent.h"
-#include "content/CComponentName.h"
-#include "view/menu/CActionMenuItem.h"
+#include "elastos/droid/view/menu/ActionMenu.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/view/menu/CActionMenuItem.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Content::CIntent;

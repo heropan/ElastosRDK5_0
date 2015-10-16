@@ -3,10 +3,10 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <Elastos.CoreLibrary.h>
-#include "content/CComponentName.h"
-#include "view/accessibility/CAccessibilityEventHelper.h"
-#include "utility/Xml.h"
-#include "R.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

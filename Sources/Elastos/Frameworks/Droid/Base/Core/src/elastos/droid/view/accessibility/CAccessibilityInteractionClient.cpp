@@ -1,10 +1,10 @@
 
-#include "view/accessibility/CAccessibilityInteractionClient.h"
-#include "graphics/CRect.h"
-#include "os/Binder.h"
-#include "os/Build.h"
-#include "os/Process.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/Thread.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/HashSet.h>

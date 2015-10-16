@@ -1,6 +1,6 @@
 #include "CBrickReceiver.h"
 #include <elastos/utility/logging/Slogger.h>
-//#include "os/SystemService.h"
+//#include "elastos/droid/os/SystemService.h"
 
 using Elastos::Utility::Logging::Slogger;
 //using Elastos::Droid::Os::SystemService;

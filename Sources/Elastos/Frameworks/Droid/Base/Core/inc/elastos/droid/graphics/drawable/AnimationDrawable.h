@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATIONDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATIONDRAWABLE_H__
 
-#include "graphics/drawable/DrawableContainer.h"
+#include "elastos/droid/graphics/drawable/DrawableContainer.h"
 
 namespace Elastos {
 namespace Droid {

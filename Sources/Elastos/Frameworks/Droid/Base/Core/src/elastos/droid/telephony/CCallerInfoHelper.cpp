@@ -2,7 +2,7 @@
 #include "CCallerInfoHelper.h"
 #include "CPhoneNumberUtils.h"
 #include "CCallerInfo.h"
-#include "net/CUriHelper.h"
+#include "elastos/droid/net/CUriHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::IContentResolver;

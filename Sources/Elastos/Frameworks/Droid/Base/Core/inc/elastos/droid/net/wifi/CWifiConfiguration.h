@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATION_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATION_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Net_Wifi_CWifiConfiguration.h"
 
 using Elastos::Utility::IBitSet;

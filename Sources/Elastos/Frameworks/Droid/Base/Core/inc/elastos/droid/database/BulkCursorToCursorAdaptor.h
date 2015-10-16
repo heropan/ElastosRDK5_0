@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_DATABASE_BULKCURSORTOCURSORADAPTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "database/AbstractWindowedCursor.h"
-#include "database/CBulkCursorDescriptor.h"
+#include "elastos/droid/database/AbstractWindowedCursor.h"
+#include "elastos/droid/database/CBulkCursorDescriptor.h"
 
 using Elastos::Droid::Os::IBundle;
 

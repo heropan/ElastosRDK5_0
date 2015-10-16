@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_PUBLIC_BROWSER_WEBCONTENTS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content_public/browser/NavigationController.h"
+#include "elastos/droid/webkit/native/content_public/browser/NavigationController.h"
 
 namespace Elastos {
 namespace Droid {

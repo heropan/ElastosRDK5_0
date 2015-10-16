@@ -1,12 +1,12 @@
 
-#include "ext/frameworkdef.h"
-#include "view/LayoutInflater.h"
-#include "utility/Xml.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 #ifdef DROID_CORE
-#include "widget/CBlinkLayout.h"
+#include "elastos/droid/widget/CBlinkLayout.h"
 #endif
 
 using Elastos::Core::StringUtils;

@@ -1,5 +1,5 @@
 #include "NetworkTimeUpdateService.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CHOOSERACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CHOOSERACTIVITY_H__
 
-#include "app/ResolverActivity.h"
+#include "elastos/droid/app/ResolverActivity.h"
 
 namespace Elastos {
 namespace Droid {

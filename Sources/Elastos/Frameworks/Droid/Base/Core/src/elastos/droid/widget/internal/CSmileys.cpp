@@ -1,5 +1,5 @@
 
-#include "internal/CSmileys.h"
+#include "elastos/droid/internal/CSmileys.h"
 
 namespace Elastos {
 namespace Droid {

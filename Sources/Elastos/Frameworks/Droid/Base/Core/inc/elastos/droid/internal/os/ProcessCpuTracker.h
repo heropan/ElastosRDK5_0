@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_PROCESSCPUTRACKER_H__
 #define __ELASTOS_DROID_INTERNAL_OS_PROCESSCPUTRACKER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/core/Object.h"
 #include <elastos/utility/etl/List.h>
 

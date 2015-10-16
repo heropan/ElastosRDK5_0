@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CBATTERYSTATSSERVICE_H__
 
 #include "_Elastos_Droid_Server_Am_CBatteryStatsService.h"
-#include "os/BatteryStatsImpl.h"
+#include "elastos/droid/os/BatteryStatsImpl.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;

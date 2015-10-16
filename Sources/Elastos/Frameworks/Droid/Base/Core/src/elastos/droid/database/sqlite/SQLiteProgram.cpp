@@ -1,7 +1,7 @@
 
-#include "database/sqlite/SQLiteProgram.h"
-#include "database/sqlite/SQLiteStatementInfo.h"
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/sqlite/SQLiteProgram.h"
+#include "elastos/droid/database/sqlite/SQLiteStatementInfo.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;

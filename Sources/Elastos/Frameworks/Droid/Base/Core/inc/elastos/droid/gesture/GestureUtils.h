@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_GESTUREUTILS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "gesture/CGesture.h"
+#include "elastos/droid/gesture/CGesture.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::IO::ICloseable;

@@ -1,5 +1,5 @@
 
-#include "view/animation/CAlphaAnimation.h"
+#include "elastos/droid/view/animation/CAlphaAnimation.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_STATUSBAR_CSTATUSBARICONLIST_H__
 
 #include "_Elastos_Droid_StatusBar_CStatusBarIconList.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/StringBuilder.h>
-#include "statusbar/CStatusBarIcon.h"
+#include "elastos/droid/statusbar/CStatusBarIcon.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::StatusBar::IStatusBarIcon;

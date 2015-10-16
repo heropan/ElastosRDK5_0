@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Server_CBluetoothManagerService.h"
 #include <elastos/core/Thread.h>
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::IThread;
 using Elastos::Core::Thread;

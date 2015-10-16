@@ -1,7 +1,7 @@
 
-#include "webkit/CookieManager.h"
-#include "webkit/CookieSyncManager.h"
-#include "webkit/WebViewDatabase.h"
+#include "elastos/droid/webkit/CookieManager.h"
+#include "elastos/droid/webkit/CookieSyncManager.h"
+#include "elastos/droid/webkit/WebViewDatabase.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
-#include "database/sqlite/SQLiteConnectionPool.h"
-#include "database/sqlite/SQLiteGlobal.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/database/sqlite/SQLiteConnectionPool.h"
+#include "elastos/droid/database/sqlite/SQLiteGlobal.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/Thread.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>

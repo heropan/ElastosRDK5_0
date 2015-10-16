@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__
 
 #include "Elastos.Droid.Core_server.h"
-//#include "database/CrossProcessCursorWrapper.h"
-#include "os/ParcelFileDescriptor.h"
+//#include "elastos/droid/database/CrossProcessCursorWrapper.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Accounts::IAccount;

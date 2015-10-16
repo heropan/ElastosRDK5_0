@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

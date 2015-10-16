@@ -1,12 +1,12 @@
 
-#include "provider/CMediaStoreImagesMedia.h"
-#include "ext/frameworkext.h"
-#include "net/CUriHelper.h"
-#include "content/CContentUris.h"
-#include "content/CContentValues.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CMatrix.h"
-#include "provider/CMediaStoreImagesThumbnails.h"
+#include "elastos/droid/provider/CMediaStoreImagesMedia.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/provider/CMediaStoreImagesThumbnails.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

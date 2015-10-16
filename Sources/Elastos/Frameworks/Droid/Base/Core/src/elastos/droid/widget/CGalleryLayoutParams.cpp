@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CGalleryLayoutParams.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CGalleryLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

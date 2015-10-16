@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSDIALOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/Dialog.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::App::Dialog;
 using Elastos::Droid::App::IActivityManagerRecentTaskInfo;

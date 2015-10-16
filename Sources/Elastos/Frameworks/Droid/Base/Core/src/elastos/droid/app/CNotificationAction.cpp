@@ -1,6 +1,6 @@
 #include "CNotificationAction.h"
-#include "text/TextUtils.h"
-#include "app/CPendingIntent.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/app/CPendingIntent.h"
 
 using Elastos::Droid::App::CPendingIntent;
 using Elastos::Droid::Text::TextUtils;

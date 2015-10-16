@@ -32,7 +32,7 @@ public:
 #define __ELASTOS_DROID_NET_CNETWORKPOLICYMANAGER_H__
 
 #include "_Elastos_Droid_Net_CNetworkPolicyManager.h"
-#include "text/format/CTime.h"
+#include "elastos/droid/text/format/CTime.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Text::Format::CTime;

@@ -1,11 +1,11 @@
 
 #include "CDevicePolicyManagerService.h"
 #include "Manifest.h"
-#include "os/Binder.h"
-#include "os/Handler.h"
-#include "os/UserHandle.h"
-#include "app/AppGlobals.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
 #include <os/SystemClock.h>

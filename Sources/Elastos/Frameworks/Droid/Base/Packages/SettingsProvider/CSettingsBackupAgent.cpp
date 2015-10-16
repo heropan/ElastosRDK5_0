@@ -1,8 +1,8 @@
 
 #include "CSettingsBackupAgent.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/FileUtils.h"
-#include "os/Process.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::CObjectContainer;

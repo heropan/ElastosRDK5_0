@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPointF.h"
-#include "graphics/CPoint.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPointF.h"
+#include "elastos/droid/graphics/CPoint.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 

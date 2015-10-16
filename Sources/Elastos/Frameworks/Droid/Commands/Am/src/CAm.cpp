@@ -2,7 +2,7 @@
 #include "CAm.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include "CIntentReceiver.h"
 #include <unistd.h>
 #include <elastos/utility/logging/Logger.h>

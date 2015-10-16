@@ -1,6 +1,6 @@
 #include "search/CSearchManagerService.h"
-#include "app/ActivityManagerNative.h"
-#include "os/Process.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/Process.h"
 #include "Manifest.h"
 
 using Elastos::Droid::Content::CIntent;

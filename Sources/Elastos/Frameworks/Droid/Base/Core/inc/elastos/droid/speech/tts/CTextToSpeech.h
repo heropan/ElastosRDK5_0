@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SPEECH_TTS_CTEXTTOSPEECH_H__
 
 #include "_Elastos_Droid_Speech_Tts_CTextToSpeech.h"
-#include "speech/tts/TextToSpeech.h"
+#include "elastos/droid/speech/tts/TextToSpeech.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_USBCAMERADEVICEMANAGEROBSERVER_H__
 #define __ELASTOS_DROID_SERVER_USBCAMERADEVICEMANAGEROBSERVER_H__
 
-#include "content/BroadcastReceiver.h"
-#include "os/UEventObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/UEventObserver.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

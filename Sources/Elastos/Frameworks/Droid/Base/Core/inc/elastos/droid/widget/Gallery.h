@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_WIDGET_GALLERY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "widget/AbsSpinner.h"
-#include "widget/Scroller.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/widget/AbsSpinner.h"
+#include "elastos/droid/widget/Scroller.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IMotionEvent;

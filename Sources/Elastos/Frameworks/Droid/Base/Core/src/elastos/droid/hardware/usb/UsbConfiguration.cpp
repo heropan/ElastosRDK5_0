@@ -1,5 +1,5 @@
 
-#include "hardware/usb/UsbConfiguration.h"
+#include "elastos/droid/hardware/usb/UsbConfiguration.h"
 #include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;

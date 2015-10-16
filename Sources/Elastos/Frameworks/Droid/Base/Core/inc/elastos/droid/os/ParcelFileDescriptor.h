@@ -7,7 +7,7 @@
 #include <elastos/core/Thread.h>
 #include <elastos/io/FileInputStream.h>
 #include <elastos/io/FileOutputStream.h>
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Core::Object;
 using Elastos::Core::Thread;

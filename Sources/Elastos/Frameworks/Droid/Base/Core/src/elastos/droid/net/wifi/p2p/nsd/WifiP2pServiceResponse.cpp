@@ -1,7 +1,7 @@
 
 #include "WifiP2pServiceResponse.h"
 #include <Elastos.CoreLibrary.h>
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

@@ -1,10 +1,10 @@
 
-#include "os/CHandler.h"
-#include "view/CViewConfiguration.h"
-#include "view/animation/CAlphaAnimation.h"
-#include "webkit/ZoomControlExternal.h"
-#include "webkit/CWebViewClassic.h"
-#include "R.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/animation/CAlphaAnimation.h"
+#include "elastos/droid/webkit/ZoomControlExternal.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::CHandler;

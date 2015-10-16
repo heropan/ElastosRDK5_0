@@ -1,6 +1,6 @@
 
-#include "media/CMediaScannerConnectionHelper.h"
-#include "media/CMediaScannerConnection.h"
+#include "elastos/droid/media/CMediaScannerConnectionHelper.h"
+#include "elastos/droid/media/CMediaScannerConnection.h"
 
 namespace Elastos {
 namespace Droid {

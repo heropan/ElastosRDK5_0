@@ -1,6 +1,6 @@
 
-#include "webkit/CWebIconDatabaseHelper.h"
-#include "webkit/WebIconDatabase.h"
+#include "elastos/droid/webkit/CWebIconDatabaseHelper.h"
+#include "elastos/droid/webkit/WebIconDatabase.h"
 
 namespace Elastos {
 namespace Droid {

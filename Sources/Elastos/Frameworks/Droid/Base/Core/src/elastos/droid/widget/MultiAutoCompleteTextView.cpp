@@ -1,8 +1,8 @@
 
-#include "text/method/QwertyKeyListener.h"
-#include "text/TextUtils.h"
-#include "widget/MultiAutoCompleteTextView.h"
-#include "text/CSpannableString.h"
+#include "elastos/droid/text/method/QwertyKeyListener.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/widget/MultiAutoCompleteTextView.h"
+#include "elastos/droid/text/CSpannableString.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Text::TextUtils;

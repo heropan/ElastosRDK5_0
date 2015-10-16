@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_App_Admin_CDeviceAdminInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "utility/SparseArray.h"
+#include "elastos/droid/utility/SparseArray.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 

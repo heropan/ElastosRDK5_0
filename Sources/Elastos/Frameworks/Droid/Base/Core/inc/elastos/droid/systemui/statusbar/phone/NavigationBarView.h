@@ -2,10 +2,10 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_NAVIGATIONBARVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "widget/LinearLayout.h"
-#include "systemui/statusbar/DelegateViewHelper.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/systemui/statusbar/DelegateViewHelper.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IServiceConnection;

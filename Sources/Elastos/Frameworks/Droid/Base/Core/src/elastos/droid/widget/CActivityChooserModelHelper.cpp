@@ -1,5 +1,5 @@
-#include "widget/CActivityChooserModelHelper.h"
-#include "widget/ActivityChooserModel.h"
+#include "elastos/droid/widget/CActivityChooserModelHelper.h"
+#include "elastos/droid/widget/ActivityChooserModel.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/content/res/CAssetManager.h"
-//#include "internal/util/XmlUtils.h"
+//#include "elastos/droid/internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>

@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__
 
 #ifdef DROID_CORE
-#include "location/CGpsStatusListenerTransport.h"
-#include "location/CListenerTransport.h"
+#include "elastos/droid/location/CGpsStatusListenerTransport.h"
+#include "elastos/droid/location/CListenerTransport.h"
 #endif
 
 #include "elastos/droid/ext/frameworkext.h"

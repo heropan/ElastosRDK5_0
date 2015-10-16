@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEWCLIENTCLASSICEXT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/WebViewClient.h"
+#include "elastos/droid/webkit/WebViewClient.h"
 
 using Elastos::Droid::Net::Http::ISslError;
 

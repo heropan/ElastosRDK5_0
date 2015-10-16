@@ -1,7 +1,7 @@
 
-#include "widget/RadioGroup.h"
-#include "R.h"
-#include "widget/CRadioGroupLayoutParams.h"
+#include "elastos/droid/widget/RadioGroup.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/widget/CRadioGroupLayoutParams.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;

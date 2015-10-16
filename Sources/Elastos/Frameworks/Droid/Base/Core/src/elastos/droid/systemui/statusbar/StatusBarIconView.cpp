@@ -1,12 +1,12 @@
-#include "systemui/statusbar/StatusBarIconView.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/systemui/statusbar/StatusBarIconView.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "R.h"
-#include "text/TextUtils.h"
-#include "graphics/CPaint.h"
-#include "statusbar/CStatusBarIcon.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/statusbar/CStatusBarIcon.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;

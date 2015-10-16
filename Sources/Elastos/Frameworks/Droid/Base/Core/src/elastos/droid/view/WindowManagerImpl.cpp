@@ -1,7 +1,7 @@
 
-#include "view/WindowManagerImpl.h"
-#include "view/CWindowManagerGlobal.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/view/WindowManagerImpl.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

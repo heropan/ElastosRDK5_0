@@ -1,4 +1,4 @@
-#include "systemui/statusbar/tablet/CNotificationArea.h"
+#include "elastos/droid/systemui/statusbar/tablet/CNotificationArea.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

@@ -1,7 +1,7 @@
 
 #include "Connection.h"
 #include "Request.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Thread.h>
 

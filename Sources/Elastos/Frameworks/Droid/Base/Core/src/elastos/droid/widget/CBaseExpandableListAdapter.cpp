@@ -1,5 +1,5 @@
 
-#include "widget/CBaseExpandableListAdapter.h"
+#include "elastos/droid/widget/CBaseExpandableListAdapter.h"
 
 ECode CBaseExpandableListAdapter::NotifyDataSetInvalidated()
 {

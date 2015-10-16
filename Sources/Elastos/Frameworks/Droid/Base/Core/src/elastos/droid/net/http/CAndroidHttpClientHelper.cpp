@@ -1,7 +1,7 @@
 
 #include "CAndroidHttpClientHelper.h"
 #include "CHttpDateTime.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using namespace Elastos::IO;
 using namespace Org::Apache::Http;

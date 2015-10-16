@@ -1,5 +1,5 @@
 
-#include "provider/CDrmStoreAudio.h"
+#include "elastos/droid/provider/CDrmStoreAudio.h"
 
 
 ECode CDrmStoreAudio::GetCONTENT_URI(

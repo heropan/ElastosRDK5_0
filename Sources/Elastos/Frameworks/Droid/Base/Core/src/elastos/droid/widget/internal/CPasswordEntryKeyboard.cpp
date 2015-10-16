@@ -1,4 +1,4 @@
-#include "widget/internal/CPasswordEntryKeyboard.h"
+#include "elastos/droid/widget/internal/CPasswordEntryKeyboard.h"
 
 using Elastos::Droid::InputMethodService::IKeyboard;
 using Elastos::Droid::InputMethodService::EIID_IKeyboard;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "widget/AbsSpinnerSavedState.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/AbsSpinnerSavedState.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
-#include "app/FastBitmapDrawable.h"
-#include "graphics/CPaint.h"
-#include "graphics/CPorterDuffXfermode.h"
+#include "elastos/droid/app/FastBitmapDrawable.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPorterDuffXfermode.h"
 
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::IPorterDuffXfermode;

@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Content_CContentQueryMap.h"
 #include <elastos/utility/Observable.h>
-//#include "database/ContentObserver.h"
+//#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::IContentObserver;

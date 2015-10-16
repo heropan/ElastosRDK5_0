@@ -1,6 +1,6 @@
-#include "media/CCamcorderProfile.h"
-#include "hardware/CHardwareCameraHelper.h"
-#include "hardware/CHardwareCamera.h"
+#include "elastos/droid/media/CCamcorderProfile.h"
+#include "elastos/droid/hardware/CHardwareCameraHelper.h"
+#include "elastos/droid/hardware/CHardwareCamera.h"
 #include <media/MediaProfiles.h>
 #include <elastos/utility/logging/Slogger.h>
 

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_PREFERREDACTIVITY_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "content/IntentFilter.h"
+#include "elastos/droid/content/IntentFilter.h"
 #include "PreferredComponent.h"
 
 using Org::Xmlpull::V1::IXmlPullParser;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "gesture/CPrediction.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/gesture/CPrediction.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,21 +16,21 @@ ECode CPrediction::constructor(
 }
 
 ECode CPrediction::GetName(
-	/* [out] */ String* name)
+    /* [out] */ String* name)
 {
-	VALIDATE_NOT_NULL(name);
+    VALIDATE_NOT_NULL(name);
 
-	*name = mName;
-	return NOERROR;
+    *name = mName;
+    return NOERROR;
 }
 
 ECode CPrediction::GetScore(
-	/* [out] */ Double* score)
+    /* [out] */ Double* score)
 {
-	VALIDATE_NOT_NULL(score);
+    VALIDATE_NOT_NULL(score);
 
-	*score = mScore;
-	return NOERROR;
+    *score = mScore;
+    return NOERROR;
 }
 
 }

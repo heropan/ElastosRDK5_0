@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_NET_NETWORKSTATSCOLLECTION_H__
 #define __ELASTOS_DROID_SERVER_NET_NETWORKSTATSCOLLECTION_H__
 
-#include "ext/frameworkext.h"
-#include "net/NetworkIdentitySet.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/NetworkIdentitySet.h"
 #include "util/FileRotator.h"
 #include <elastos/utility/etl/HashMap.h>
 

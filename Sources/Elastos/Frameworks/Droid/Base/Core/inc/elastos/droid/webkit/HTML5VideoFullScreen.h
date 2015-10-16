@@ -3,12 +3,12 @@
 #define __ELASTOS_DROID_WEBKIT_HTML5VIDEOFULLSCREEN_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/HTML5VideoView.h"
+#include "elastos/droid/webkit/HTML5VideoView.h"
 
-#include "widget/MediaController.h"
-#include "view/SurfaceView.h"
+#include "elastos/droid/widget/MediaController.h"
+#include "elastos/droid/view/SurfaceView.h"
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 
 using Elastos::Droid::Content::IContext;

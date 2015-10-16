@@ -1,8 +1,8 @@
 
-#include "app/ListActivity.h"
-#include "R.h"
+#include "elastos/droid/app/ListActivity.h"
+#include "elastos/droid/R.h"
 #ifdef DROID_CORE
-#include "os/CHandler.h"
+#include "elastos/droid/os/CHandler.h"
 #endif
 
 using Elastos::Droid::Os::CHandler;

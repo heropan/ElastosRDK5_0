@@ -1,12 +1,12 @@
 
-#include "hardware/usb/CUsbAccessory.h"
-#include "hardware/usb/CUsbDevice.h"
-#include "hardware/usb/CUsbDeviceConnection.h"
-#include "hardware/usb/CUsbEndpoint.h"
-#include "hardware/usb/CUsbInterface.h"
-#include "hardware/usb/CUsbManager.h"
-#include "hardware/usb/CUsbRequest.h"
-#include "hardware/usb/CUsbConfiguration.h"
+#include "elastos/droid/hardware/usb/CUsbAccessory.h"
+#include "elastos/droid/hardware/usb/CUsbDevice.h"
+#include "elastos/droid/hardware/usb/CUsbDeviceConnection.h"
+#include "elastos/droid/hardware/usb/CUsbEndpoint.h"
+#include "elastos/droid/hardware/usb/CUsbInterface.h"
+#include "elastos/droid/hardware/usb/CUsbManager.h"
+#include "elastos/droid/hardware/usb/CUsbRequest.h"
+#include "elastos/droid/hardware/usb/CUsbConfiguration.h"
 
 namespace Elastos {
 namespace Droid {

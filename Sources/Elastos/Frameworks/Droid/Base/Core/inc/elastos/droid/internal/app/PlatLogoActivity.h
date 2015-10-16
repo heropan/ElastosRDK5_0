@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__
 
-#include "app/Activity.h"
-#include "os/CHandler.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Os::IHandler;

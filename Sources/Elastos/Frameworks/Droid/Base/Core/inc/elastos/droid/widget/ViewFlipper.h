@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_VIEWFLIPPER_H__
 #define __ELASTOS_DROID_WIDGET_VIEWFLIPPER_H__
 
-#include "widget/ViewAnimator.h"
-#include "content/BroadcastReceiver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/widget/ViewAnimator.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::IIntent;

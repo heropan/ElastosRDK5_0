@@ -1,17 +1,18 @@
 
-#include "CMtpPropertyGroup.h"
+#include "elastos/droid/mtp/CMtpPropertyGroup.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include "elastos/droid/mtp/CMtpPropertyList.h"
+//TODO: Need provider/CMediaStoreFiles
+// #include "elastos/droid/provider/CMediaStoreFiles.h"
+//TODO: Need provider/CMediaStoreAudioMedia
+// #include "elastos/droid/provider/CMediaStoreAudioMedia.h"
+//TODO: Need provider/CMediaStoreAudioGenres
+// #include "elastos/droid/provider/CMediaStoreAudioGenres.h"
+
 #include <stdio.h>
 #include <time.h>
 #include <cutils/tztime.h>
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringUtils.h>
-#include "mtp/CMtpPropertyList.h"
-//TODO: Need provider/CMediaStoreFiles
-// #include "provider/CMediaStoreFiles.h"
-//TODO: Need provider/CMediaStoreAudioMedia
-// #include "provider/CMediaStoreAudioMedia.h"
-//TODO: Need provider/CMediaStoreAudioGenres
-// #include "provider/CMediaStoreAudioGenres.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::Core::StringUtils;

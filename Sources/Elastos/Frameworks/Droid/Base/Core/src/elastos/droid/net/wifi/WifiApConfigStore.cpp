@@ -1,14 +1,14 @@
 
-#include "net/wifi/WifiApConfigStore.h"
-#include "net/wifi/WifiStateMachine.h"
-#include "R.h"
+#include "elastos/droid/net/wifi/WifiApConfigStore.h"
+#include "elastos/droid/net/wifi/WifiStateMachine.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 #ifdef DROID_CORE
-#include "net/wifi/CWifiConfiguration.h"
-#include "os/CMessenger.h"
-#include "os/CEnvironment.h"
+#include "elastos/droid/net/wifi/CWifiConfiguration.h"
+#include "elastos/droid/os/CMessenger.h"
+#include "elastos/droid/os/CEnvironment.h"
 #endif
-#include "utility/AsyncChannel.h"
+#include "elastos/droid/utility/AsyncChannel.h"
 
 using Elastos::Core::CThread;
 using Elastos::IO::IFile;

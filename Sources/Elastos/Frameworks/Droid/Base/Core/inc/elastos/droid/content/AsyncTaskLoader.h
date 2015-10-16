@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_CONTENT_ASYNCTASKLOADER_H__
 #define __ELASTOS_DROID_CONTENT_ASYNCTASKLOADER_H__
 
-#include <ext/frameworkext.h>
-#include "os/AsyncTask.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/AsyncTask.h"
 #include "elastos/droid/content/Loader.h"
 
 using Elastos::Droid::Os::IHandler;

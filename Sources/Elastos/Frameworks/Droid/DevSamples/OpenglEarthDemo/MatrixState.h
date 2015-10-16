@@ -3,7 +3,7 @@
 
 #include "Elastos.Droid.Core.h"
 #include "Elastos.Core.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/Stack.h"
 
 using Elastos::Utility::Stack;

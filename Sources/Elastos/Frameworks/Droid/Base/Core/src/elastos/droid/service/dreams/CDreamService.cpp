@@ -1,5 +1,5 @@
 
-#include "media/CDreamService.h"
+#include "elastos/droid/media/CDreamService.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using namespace Elastos::Core;

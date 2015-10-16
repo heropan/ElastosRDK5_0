@@ -1,8 +1,8 @@
 
-#include "ext/frameworkdef.h"
-#include "view/accessibility/AccessibilityRecord.h"
-#include "view/accessibility/CAccessibilityNodeInfo.h"
-#include "view/accessibility/CAccessibilityInteractionClient.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/accessibility/AccessibilityRecord.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

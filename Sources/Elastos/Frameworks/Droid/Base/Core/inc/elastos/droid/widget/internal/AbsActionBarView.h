@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ABSACTIONBARVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_ABSACTIONBARVIEW_H__
 
-#include "ext/frameworkdef.h"
-#include "view/ViewGroup.h"
-#include "view/menu/ActionMenuPresenter.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/menu/ActionMenuPresenter.h"
 
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Animation::IAnimatorListener;

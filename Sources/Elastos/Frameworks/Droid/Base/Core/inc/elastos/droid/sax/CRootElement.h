@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SAX_CROOTELEMENT_H__
 
 #include "_Elastos_Droid_Sax_CRootElement.h"
-#include "sax/Element.h"
+#include "elastos/droid/sax/Element.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

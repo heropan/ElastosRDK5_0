@@ -1,8 +1,8 @@
 
-#include "internal/os/InstallerConnection.h"
-#include "net/CLocalSocket.h"
-#include "net/CLocalSocketAddress.h"
-#include "net/CLocalSocketAddressNamespace.h"
+#include "elastos/droid/internal/os/InstallerConnection.h"
+#include "elastos/droid/net/CLocalSocket.h"
+#include "elastos/droid/net/CLocalSocketAddress.h"
+#include "elastos/droid/net/CLocalSocketAddressNamespace.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

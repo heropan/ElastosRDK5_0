@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "view/accessibility/AccessibilityNodeInfoCache.h"
-#include "view/accessibility/CAccessibilityNodeInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCache.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>

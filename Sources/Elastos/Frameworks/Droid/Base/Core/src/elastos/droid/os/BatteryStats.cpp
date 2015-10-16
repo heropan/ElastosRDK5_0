@@ -1,6 +1,6 @@
 
-#include "os/BatteryStats.h"
-#include "utility/TimeUtils.h"
+#include "elastos/droid/os/BatteryStats.h"
+#include "elastos/droid/utility/TimeUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

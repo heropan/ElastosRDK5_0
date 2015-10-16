@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOPOLICY_CAUDIOMIXINGRULE_H__
 
 #include "_Elastos_Droid_Media_AudioPolicy_CAudioMixingRule.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::IArrayList;

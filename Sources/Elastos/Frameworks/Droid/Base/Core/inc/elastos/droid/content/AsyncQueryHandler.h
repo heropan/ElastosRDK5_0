@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_CONTENT_ASYNCQUERYHANDLER_H__
 #define __ELASTOS_DROID_CONTENT_ASYNCQUERYHANDLER_H__
 
-#include <ext/frameworkext.h>
-#include "os/Handler.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;

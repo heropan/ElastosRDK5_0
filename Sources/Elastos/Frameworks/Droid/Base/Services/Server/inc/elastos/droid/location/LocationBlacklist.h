@@ -7,7 +7,7 @@
 #elif defined(DROID_SERVER)
 #include "Elastos.Droid.Core.h"
 #endif
-#include "database/ContentObserver.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Content::IContext;

@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CWifiManagerHelper.h"
-#include "net/wifi/CWifiManager.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CWifiManagerHelper.h"
+#include "elastos/droid/net/wifi/CWifiManager.h"
 
 namespace Elastos {
 namespace Droid {

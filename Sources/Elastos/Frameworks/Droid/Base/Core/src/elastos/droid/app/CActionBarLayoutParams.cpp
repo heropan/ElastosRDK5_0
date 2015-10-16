@@ -1,6 +1,6 @@
 
-#include "app/CActionBarLayoutParams.h"
-#include "R.h"
+#include "elastos/droid/app/CActionBarLayoutParams.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTCONNECTOR_H__
 
 #include "_Elastos_Droid_Widget_CExpandableListConnector.h"
-#include "widget/ExpandableListConnector.h"
+#include "elastos/droid/widget/ExpandableListConnector.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,8 +1,8 @@
 
-#include "hardware/CSensorManagerHelper.h"
-#include "os/CHandler.h"
-#include "webkit/DeviceOrientationService.h"
-#include "webkit/DeviceMotionAndOrientationManager.h"
+#include "elastos/droid/hardware/CSensorManagerHelper.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/webkit/DeviceOrientationService.h"
+#include "elastos/droid/webkit/DeviceMotionAndOrientationManager.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/core/Thread.h>

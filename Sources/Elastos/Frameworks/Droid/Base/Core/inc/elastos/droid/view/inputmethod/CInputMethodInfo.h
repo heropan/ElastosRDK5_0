@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODINFO_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODINFO_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodInfo.h"
-#include "content/pm/CResolveInfo.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

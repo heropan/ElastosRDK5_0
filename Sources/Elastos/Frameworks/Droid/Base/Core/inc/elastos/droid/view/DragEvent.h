@@ -2,8 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
 #define __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
 
-#include "ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/Mutex.h>
 

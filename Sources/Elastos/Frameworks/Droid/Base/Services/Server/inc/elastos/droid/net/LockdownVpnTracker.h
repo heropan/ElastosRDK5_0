@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_LOCKDOWNVPNTRACKER_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;

@@ -3,7 +3,7 @@
 #define __CADDACCOUNTSETTINGS_H__
 
 #include "_CAddAccountSettings.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 //#include "CAccountManagerCallback.h"
 //#include "CAccountManagerFuture.h"
 

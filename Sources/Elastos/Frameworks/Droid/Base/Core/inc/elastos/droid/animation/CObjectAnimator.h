@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_COBJECTANIMATOR_H__
 
 #include "_Elastos_Droid_Animation_CObjectAnimator.h"
-#include "animation/ObjectAnimator.h"
+#include "elastos/droid/animation/ObjectAnimator.h"
 
 using Elastos::Droid::Utility::IProperty;
 

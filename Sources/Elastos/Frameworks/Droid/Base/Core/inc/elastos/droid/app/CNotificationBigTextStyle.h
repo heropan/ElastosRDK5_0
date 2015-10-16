@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CNOTIFICATIONINBOXSTYLE_H__
 
 #include "_Elastos_Droid_App_CNotificationBigTextStyle.h"
-#include "app/NotificationStyle.h"
+#include "elastos/droid/app/NotificationStyle.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_SERVER_CRECOGNITIONMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_CRecognitionManagerService.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
-#include "content/PackageMonitor.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/PackageMonitor.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;

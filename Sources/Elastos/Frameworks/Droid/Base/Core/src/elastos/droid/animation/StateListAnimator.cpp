@@ -1,6 +1,6 @@
 
-#include "animation/StateListAnimator.h"
-#include "utility/StateSet.h"
+#include "elastos/droid/animation/StateListAnimator.h"
+#include "elastos/droid/utility/StateSet.h"
 
 using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::View::EIID_IView;

@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/SearchPanelView.h"
+#include "elastos/droid/systemui/SearchPanelView.h"
 
 namespace Elastos {
 namespace Droid {

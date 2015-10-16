@@ -1,6 +1,6 @@
 
-#include "media/CAudioSystemHelper.h"
-#include "media/CAudioSystem.h"
+#include "elastos/droid/media/CAudioSystemHelper.h"
+#include "elastos/droid/media/CAudioSystem.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,10 +1,10 @@
 
-#include "webkit/native/base/TraceEvent.h"
-#include "webkit/native/base/CommandLine.h"
-#include "webkit/native/base/BaseSwitches.h"
-#include "webkit/native/base/ThreadUtils.h"
-#include "os/SystemClock.h"
-#include "os/CLooperHelper.h"
+#include "elastos/droid/webkit/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/native/base/CommandLine.h"
+#include "elastos/droid/webkit/native/base/BaseSwitches.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CLooperHelper.h"
 
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;

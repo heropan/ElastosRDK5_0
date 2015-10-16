@@ -1,8 +1,8 @@
 
-#include "view/FocusFinder.h"
-#include "view/View.h"
-#include "view/ViewGroup.h"
-#include "view/CViewConfiguration.h"
+#include "elastos/droid/view/FocusFinder.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/CViewConfiguration.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

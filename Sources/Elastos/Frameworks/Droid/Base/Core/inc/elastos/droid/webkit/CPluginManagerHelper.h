@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CPLUGINMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Webkit_CPluginManagerHelper.h"
-#include "webkit/CPluginManager.h"
+#include "elastos/droid/webkit/CPluginManager.h"
 
 using Elastos::Droid::Content::IContext;
 

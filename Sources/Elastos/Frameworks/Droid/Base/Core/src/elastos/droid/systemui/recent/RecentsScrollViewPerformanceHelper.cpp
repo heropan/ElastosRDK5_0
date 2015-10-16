@@ -1,13 +1,13 @@
 
-#include "systemui/recent/RecentsScrollViewPerformanceHelper.h"
-#include "view/CViewConfigurationHelper.h"
-#include "systemui/recent/RecentsPanelView.h"
-#include "systemui/SystemUIR.h"
-#include "graphics/CPaint.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CLinearGradient.h"
+#include "elastos/droid/systemui/recent/RecentsScrollViewPerformanceHelper.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/systemui/recent/RecentsPanelView.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CLinearGradient.h"
 #include <elastos/core/Math.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

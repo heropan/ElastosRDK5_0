@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CPICTURE_H__
 
 #include "_Elastos_Droid_Graphics_CPicture.h"
-#include "graphics/Canvas.h"
+#include "elastos/droid/graphics/Canvas.h"
 
 using Elastos::IO::IInputStream;
 

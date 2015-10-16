@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SERVER_WIREDACCESSORYMANAGER_H__
 #define __ELASTOS_DROID_SERVER_WIREDACCESSORYMANAGER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "input/CInputManagerService.h"
-#include "os/UEventObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/UEventObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

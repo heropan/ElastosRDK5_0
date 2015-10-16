@@ -1,9 +1,9 @@
-#include "systemui/statusbar/phone/PanelView.h"
+#include "elastos/droid/systemui/statusbar/phone/PanelView.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
-#include "systemui/SystemUIR.h"
-#include "animation/CTimeAnimator.h"
-#include "animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/animation/CTimeAnimator.h"
+#include "elastos/droid/animation/CObjectAnimatorHelper.h"
 
 using Elastos::Core::Math;
 using Elastos::Utility::Logging::Slogger;

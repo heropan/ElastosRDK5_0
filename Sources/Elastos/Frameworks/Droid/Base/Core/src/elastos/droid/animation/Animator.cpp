@@ -1,5 +1,5 @@
 
-#include "animation/Animator.h"
+#include "elastos/droid/animation/Animator.h"
 #include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::EIID_ICloneable;

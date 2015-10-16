@@ -5,7 +5,7 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;

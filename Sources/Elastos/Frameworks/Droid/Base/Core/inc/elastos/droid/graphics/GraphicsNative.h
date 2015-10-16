@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_GRAPHICSNATIVE_H__
 #define __ELASTOS_DROID_GRAPHICS_GRAPHICSNATIVE_H__
 
-#include "graphics/CBitmap.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkRect.h>
 #include <skia/core/SkMallocPixelRef.h>

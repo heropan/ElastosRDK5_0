@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/BuildInfo.h"
-#include "os/Build.h"
+#include "elastos/droid/webkit/native/base/BuildInfo.h"
+#include "elastos/droid/os/Build.h"
 
 #include <elastos/core/Math.h>
 

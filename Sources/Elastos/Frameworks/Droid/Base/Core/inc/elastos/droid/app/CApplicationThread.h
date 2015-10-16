@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONTHREAD_H__
 
 #include "_Elastos_Droid_App_CApplicationThread.h"
-#include "app/CActivityThread.h"
+#include "elastos/droid/app/CActivityThread.h"
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;

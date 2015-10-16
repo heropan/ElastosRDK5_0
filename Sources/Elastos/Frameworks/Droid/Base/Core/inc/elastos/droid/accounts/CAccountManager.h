@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Accounts_CAccountManager.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/FutureTask.h>
 

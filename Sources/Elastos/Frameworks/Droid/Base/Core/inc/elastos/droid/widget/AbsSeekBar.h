@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_ABSSEEKBAR_H__
 #define __ELASTOS_DROID_WIDGET_ABSSEEKBAR_H__
 
-#include "widget/ProgressBar.h"
-#include "R.h"
+#include "elastos/droid/widget/ProgressBar.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "database/MatrixCursor.h"
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/MatrixCursor.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 

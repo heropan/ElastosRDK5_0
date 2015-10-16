@@ -1,6 +1,6 @@
-#include "view/CDisplayManagerAw.h"
-#include "os/CServiceManager.h"
-#include "os/CBinder.h"
+#include "elastos/droid/view/CDisplayManagerAw.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/CBinder.h"
 
 using Elastos::Droid::Os::CServiceManager;
 using Elastos::Droid::Os::IServiceManager;

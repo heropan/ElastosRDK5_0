@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWCLIENT_H__
 
 #include "_Elastos_Droid_Webkit_CWebViewClient.h"
-#include "webkit/WebViewClient.h"
+#include "elastos/droid/webkit/WebViewClient.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::IMessage;

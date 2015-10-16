@@ -1,12 +1,12 @@
 #include "Monkey.h"
 #include <unistd.h>
-#include "os/Process.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/core/StringUtils.h>
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include <stdlib.h>
 #include "MonkeyUtils.h"
 #include <elastos/core/Math.h>
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::IO::IWriter;

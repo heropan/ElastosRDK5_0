@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_COMPATMODEBUTTON_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "widget/ImageView.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/widget/ImageView.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Animation::IAnimatorSet;

@@ -8,8 +8,8 @@
 #include "BluetoothPan.h"
 #include "BluetoothHealth.h"
 #include "BluetoothSocket.h"
-#include "app/CActivityThread.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

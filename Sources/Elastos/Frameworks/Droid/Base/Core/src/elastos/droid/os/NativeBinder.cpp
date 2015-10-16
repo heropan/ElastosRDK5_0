@@ -1,7 +1,7 @@
 
-#include "os/NativeBinder.h"
-#include "os/CBinder.h"
-#include "os/BinderProxy.h"
+#include "elastos/droid/os/NativeBinder.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/BinderProxy.h"
 #include <binder/Binder.h>
 
 namespace Elastos {

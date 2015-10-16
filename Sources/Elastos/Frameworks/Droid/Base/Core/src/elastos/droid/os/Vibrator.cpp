@@ -1,6 +1,6 @@
-#include "os/Vibrator.h"
-#include "os/Process.h"
-// #include "app/CActivityThread.h"
+#include "elastos/droid/os/Vibrator.h"
+#include "elastos/droid/os/Process.h"
+// #include "elastos/droid/app/CActivityThread.h"
 
 // using Elastos::Droid::App::CActivityThread;
 

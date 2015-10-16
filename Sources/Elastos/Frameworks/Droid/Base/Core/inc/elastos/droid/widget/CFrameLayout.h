@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CFrameLayout.h"
 
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 namespace Elastos{
 namespace Droid{

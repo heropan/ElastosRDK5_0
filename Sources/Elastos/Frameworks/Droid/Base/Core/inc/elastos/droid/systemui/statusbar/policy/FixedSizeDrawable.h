@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_FIXEDSIZEDRAWABLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_FIXEDSIZEDRAWABLE_H__
 
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IColorFilter;

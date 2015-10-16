@@ -1,5 +1,5 @@
 
-#include "gesture/CGestureLibraries.h"
+#include "elastos/droid/gesture/CGestureLibraries.h"
 
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;

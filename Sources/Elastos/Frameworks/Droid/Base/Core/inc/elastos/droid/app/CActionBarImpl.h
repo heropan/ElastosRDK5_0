@@ -3,10 +3,10 @@
 
 #include "_Elastos_Droid_Internal_App_CActionBarImpl.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ActionMode.h"
-#include "view/menu/CActionBarPolicy.h"
-#include "animation/AnimatorListenerAdapter.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/view/ActionMode.h"
+#include "elastos/droid/view/menu/CActionBarPolicy.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include <elastos/utility/etl/List.h>
 
 using namespace Elastos;

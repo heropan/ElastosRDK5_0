@@ -1,7 +1,7 @@
 
-#include "view/ViewGroupMarginLayoutParams.h"
-#include "ext/frameworkdef.h"
-#include "R.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {

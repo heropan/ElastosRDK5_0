@@ -1,15 +1,15 @@
 
-#include "webkit/native/content/browser/MediaResourceGetter.h"
-#include "webkit/native/base/PathUtils.h"
+#include "elastos/droid/webkit/native/content/browser/MediaResourceGetter.h"
+#include "elastos/droid/webkit/native/base/PathUtils.h"
 //TODO #include <elastos/core/CInteger32.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 //TODO #include "elastos/utility/CArrayList.h"
-#include "os/Build.h"
-//TODO #include "os/CParcelFileDescriptorHelper.h"
-#include "text/TextUtils.h"
-//TODO #include "utility/CHashMap.h"
-#include "Manifest.h"
+#include "elastos/droid/os/Build.h"
+//TODO #include "elastos/droid/os/CParcelFileDescriptorHelper.h"
+#include "elastos/droid/text/TextUtils.h"
+//TODO #include "elastos/droid/utility/CHashMap.h"
+#include "elastos/droid/Manifest.h"
 
 //TODO using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;

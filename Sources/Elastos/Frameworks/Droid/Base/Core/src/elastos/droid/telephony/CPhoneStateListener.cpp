@@ -1,7 +1,7 @@
 
 #include "CPhoneStateListener.h"
 #include "CCellLocationHelper.h"
-#include "privacy/CPrivacySettingsManager.h"
+#include "elastos/droid/privacy/CPrivacySettingsManager.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

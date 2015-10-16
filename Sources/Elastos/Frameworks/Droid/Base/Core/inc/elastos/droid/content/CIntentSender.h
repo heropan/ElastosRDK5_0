@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Content_CIntentSender.h"
 #include <elastos/core/Object.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBinder;

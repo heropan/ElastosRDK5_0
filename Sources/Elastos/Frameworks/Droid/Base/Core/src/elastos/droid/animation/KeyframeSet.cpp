@@ -1,9 +1,9 @@
 
-#include "animation/KeyframeSet.h"
-#include "animation/Int32KeyframeSet.h"
-#include "animation/FloatKeyframeSet.h"
-#include "animation/Keyframe.h"
-#include "animation/PathKeyframes.h"
+#include "elastos/droid/animation/KeyframeSet.h"
+#include "elastos/droid/animation/Int32KeyframeSet.h"
+#include "elastos/droid/animation/FloatKeyframeSet.h"
+#include "elastos/droid/animation/Keyframe.h"
+#include "elastos/droid/animation/PathKeyframes.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 

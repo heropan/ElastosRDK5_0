@@ -1,9 +1,9 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "accounts/CGetAuthTokenSession.h"
 #include "accounts/CAccountManagerService.h"
-#include "os/Binder.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

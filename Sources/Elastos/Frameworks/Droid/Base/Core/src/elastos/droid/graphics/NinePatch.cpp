@@ -1,11 +1,11 @@
 
-#include "graphics/NinePatch.h"
-#include "graphics/CRectF.h"
-#include "graphics/CBitmap.h"
-#include "graphics/Canvas.h"
-#include "graphics/CPaint.h"
-#include "graphics/CRegion.h"
-#include "graphics/GraphicsNative.h"
+#include "elastos/droid/graphics/NinePatch.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/Canvas.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
 #include <elastos/utility/logging/Logger.h>
 #include <androidfw/ResourceTypes.h>
 #include <skia/core/SkCanvas.h>

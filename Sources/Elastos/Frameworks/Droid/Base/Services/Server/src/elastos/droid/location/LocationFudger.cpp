@@ -1,7 +1,7 @@
 
 #include "location/LocationFudger.h"
 #include <elastos/core/Math.h>
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

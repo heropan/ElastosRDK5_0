@@ -1,6 +1,6 @@
 
-#include "media/CMediaFormatHelper.h"
-#include "media/CMediaFormat.h"
+#include "elastos/droid/media/CMediaFormatHelper.h"
+#include "elastos/droid/media/CMediaFormat.h"
 
 namespace Elastos {
 namespace Droid {

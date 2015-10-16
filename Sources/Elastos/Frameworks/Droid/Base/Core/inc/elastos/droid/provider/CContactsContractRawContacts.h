@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTRAWCONTACTS_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractRawContacts.h"
-#include "content/CursorEntityIterator.h"
-#include "net/Uri.h"
+#include "elastos/droid/content/CursorEntityIterator.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Content::CursorEntityIterator;
 using Elastos::Droid::Content::IContentResolver;

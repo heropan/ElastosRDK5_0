@@ -1,12 +1,12 @@
 
-#include "hardware/input/CInputManager.h"
-#include "hardware/input/TouchCalibration.h"
-#include "hardware/input/CInputManagerInputDevicesChangedListener.h"
-#include "os/CBinder.h"
-#include "os/Looper.h"
-#include "os/CServiceManager.h"
-#include "os/ServiceManager.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/hardware/input/CInputManager.h"
+#include "elastos/droid/hardware/input/TouchCalibration.h"
+#include "elastos/droid/hardware/input/CInputManagerInputDevicesChangedListener.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

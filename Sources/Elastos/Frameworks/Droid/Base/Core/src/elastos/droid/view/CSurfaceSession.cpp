@@ -1,5 +1,5 @@
 
-#include "view/CSurfaceSession.h"
+#include "elastos/droid/view/CSurfaceSession.h"
 
 namespace Elastos {
 namespace Droid {

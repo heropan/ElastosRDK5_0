@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_TIMEANIMATOR_H__
 #define  __ELASTOS_DROID_ANIMATION_TIMEANIMATOR_H__
 
-#include "animation/ValueAnimator.h"
+#include "elastos/droid/animation/ValueAnimator.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/AlertDialog.h"
-#include "R.h"
+#include "elastos/droid/app/AlertDialog.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Text::INumberFormat;
 using Elastos::Droid::Content::Res::ITypedArray;

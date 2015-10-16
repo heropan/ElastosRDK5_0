@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_USB_CUSBDEVICECONNECTION_H__
 
 #include "_Elastos_Droid_Hardware_Usb_CUsbDeviceConnection.h"
-#include "hardware/usb/UsbDeviceConnection.h"
+#include "elastos/droid/hardware/usb/UsbDeviceConnection.h"
 
 namespace Elastos {
 namespace Droid {

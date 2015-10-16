@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "app/CFragmentManagerImplHelper.h"
-#include "app/CFragmentManagerImpl.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CFragmentManagerImplHelper.h"
+#include "elastos/droid/app/CFragmentManagerImpl.h"
 
 namespace Elastos {
 namespace Droid {

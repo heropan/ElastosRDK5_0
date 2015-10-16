@@ -1,6 +1,6 @@
 
-#include "widget/ZoomControls.h"
-#include "view/animation/CAlphaAnimation.h"
+#include "elastos/droid/widget/ZoomControls.h"
+#include "elastos/droid/view/animation/CAlphaAnimation.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

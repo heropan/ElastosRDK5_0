@@ -1,5 +1,5 @@
 
-#include "database/sqlite/CSQLiteQuery.h"
+#include "elastos/droid/database/sqlite/CSQLiteQuery.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

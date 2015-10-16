@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CScrollBarDrawable.h"
 
-#include "widget/ScrollBarDrawable.h"
+#include "elastos/droid/widget/ScrollBarDrawable.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;
 

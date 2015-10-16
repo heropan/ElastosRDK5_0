@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTIONHANDLECONTROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/input/CursorController.h"
-#include "webkit/native/content/browser/input/HandleView.h"
+#include "elastos/droid/webkit/native/content/browser/input/CursorController.h"
+#include "elastos/droid/webkit/native/content/browser/input/HandleView.h"
 
 using Elastos::Droid::View::IView;
 

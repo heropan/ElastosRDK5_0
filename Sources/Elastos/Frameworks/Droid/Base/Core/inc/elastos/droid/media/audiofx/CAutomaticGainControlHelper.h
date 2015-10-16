@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROLHELPER_H__
 
 #include "_Elastos_Droid_Media_Audiofx_CAutomaticGainControlHelper.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>
 
 namespace Elastos {

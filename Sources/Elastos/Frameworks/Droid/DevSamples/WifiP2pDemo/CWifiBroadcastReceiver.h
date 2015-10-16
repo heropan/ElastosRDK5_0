@@ -1,7 +1,7 @@
 
 #include "Elastos.Droid.Core.h"
 #include "Elastos.Core.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_DIALERFILTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IKeyEvent;

@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CDECODINGINFO_H__
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CDecodingInfo.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuffer.h>
 

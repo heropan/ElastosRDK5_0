@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CLISTENERTRANSPORT_H__
 
 #include "_Elastos_Droid_Location_CListenerTransport.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBundle;

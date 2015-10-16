@@ -1,5 +1,5 @@
 #include "_Elastos_Droid_Widget_Internal_CActionBarViewHomeView.h"
-#include "widget/internal/ActionBarViewHomeView.h"
+#include "elastos/droid/widget/internal/ActionBarViewHomeView.h"
 
 
 

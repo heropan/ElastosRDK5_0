@@ -1,5 +1,5 @@
-#include "os/CParcelUuidHelper.h"
-#include "os/CParcelUuid.h"
+#include "elastos/droid/os/CParcelUuidHelper.h"
+#include "elastos/droid/os/CParcelUuid.h"
 
 namespace Elastos {
 namespace Droid {

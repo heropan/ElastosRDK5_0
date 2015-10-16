@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_PANELBACKGROUNDVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_PANELBACKGROUNDVIEW_H__
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 namespace Elastos {
 namespace Droid {

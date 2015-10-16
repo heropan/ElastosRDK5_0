@@ -1,7 +1,7 @@
-#include "systemui/statusbar/policy/IntruderAlertView.h"
-#include "systemui/SystemUIR.h"
-#include "view/CViewConfigurationHelper.h"
-// #include "systemui/CSwipeHelper.h"
+#include "elastos/droid/systemui/statusbar/policy/IntruderAlertView.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+// #include "elastos/droid/systemui/CSwipeHelper.h"
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::EIID_IView;

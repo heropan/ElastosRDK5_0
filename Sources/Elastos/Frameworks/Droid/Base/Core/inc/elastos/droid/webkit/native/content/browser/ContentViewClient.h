@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCLIENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/ContentVideoViewClient.h"
-#include "webkit/native/content/browser/SelectActionModeCallback.h"
+#include "elastos/droid/webkit/native/content/browser/ContentVideoViewClient.h"
+#include "elastos/droid/webkit/native/content/browser/SelectActionModeCallback.h"
 
 //using Elastos::Droid::Content::IActivityNotFoundException;
 using Elastos::Droid::Content::IContext;

@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTENTPROVIDERNATIVE_H__
 #define __ELASTOS_DROID_CONTENT_CONTENTPROVIDERNATIVE_H__
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include "IIContentProviderConstants.h"
-//***#include "os/Binder.h"
+//***#include "elastos/droid/os/Binder.h"
 
 using namespace Elastos;
 using namespace Elastos::Core;

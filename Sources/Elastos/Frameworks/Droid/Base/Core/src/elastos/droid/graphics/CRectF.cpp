@@ -1,7 +1,7 @@
 
-#include "graphics/CRectF.h"
-#include "graphics/CRect.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
 

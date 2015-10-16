@@ -1,11 +1,11 @@
 
-#include "widget/VideoView.h"
+#include "elastos/droid/widget/VideoView.h"
 #include <elastos/core/Math.h>
 #include <Elastos.Droid.Core_server.h>
-#include "net/Uri.h"
-#include "content/CIntent.h"
-#include "app/CAlertDialogBuilder.h"
-#include "R.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::CStringWrapper;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_SHAREDUSERSETTING_H__
 #define __ELASTOS_DROID_SERVER_PM_SHAREDUSERSETTING_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
 #include "pm/GrantedPermissions.h"
 #include "pm/PackageSetting.h"

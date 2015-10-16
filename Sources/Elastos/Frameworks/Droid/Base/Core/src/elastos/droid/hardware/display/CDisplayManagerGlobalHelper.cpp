@@ -1,7 +1,7 @@
 
-// #include "ext/frameworkdef.h"
-#include "hardware/display/CDisplayManagerGlobalHelper.h"
-#include "hardware/display/DisplayManagerGlobal.h"
+// #include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/hardware/display/CDisplayManagerGlobalHelper.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 
 namespace Elastos {
 namespace Droid {

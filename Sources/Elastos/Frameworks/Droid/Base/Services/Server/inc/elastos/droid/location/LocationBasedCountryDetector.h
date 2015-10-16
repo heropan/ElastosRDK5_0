@@ -7,7 +7,7 @@
 #elif defined(DROID_SERVER)
 #include "Elastos.Droid.Core.h"
 #endif
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "location/CountryDetectorBase.h"
 #include <elastos/TimerTask.h>
 #include <elastos/utility/etl/List.h>

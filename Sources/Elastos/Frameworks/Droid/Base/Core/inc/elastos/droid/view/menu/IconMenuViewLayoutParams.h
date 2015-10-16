@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEWLAYOUTPARAMS_H__
 
-#include "view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

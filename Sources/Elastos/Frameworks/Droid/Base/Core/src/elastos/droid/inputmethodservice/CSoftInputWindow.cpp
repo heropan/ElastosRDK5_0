@@ -1,6 +1,6 @@
 
-#include "inputmethodservice/CSoftInputWindow.h"
-// #include "view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/inputmethodservice/CSoftInputWindow.h"
+// #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

@@ -1,5 +1,5 @@
 
-#include "graphics/CImageFormat.h"
+#include "elastos/droid/graphics/CImageFormat.h"
 
 namespace Elastos {
 namespace Droid {

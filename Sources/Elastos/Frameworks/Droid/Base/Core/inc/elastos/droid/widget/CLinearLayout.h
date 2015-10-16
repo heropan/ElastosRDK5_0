@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CLinearLayout.h"
 
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 namespace Elastos{
 namespace Droid{

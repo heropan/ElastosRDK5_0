@@ -1,4 +1,4 @@
-#include "widget/CRecycleListView.h"
+#include "elastos/droid/widget/CRecycleListView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

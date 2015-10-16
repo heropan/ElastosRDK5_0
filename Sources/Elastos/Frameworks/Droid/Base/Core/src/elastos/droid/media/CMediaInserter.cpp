@@ -1,6 +1,6 @@
 
-#include "media/CMediaInserter.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/media/CMediaInserter.h"
+#include "elastos/droid/content/CContentValues.h"
 
 using Elastos::Droid::Content::CContentValues;
 

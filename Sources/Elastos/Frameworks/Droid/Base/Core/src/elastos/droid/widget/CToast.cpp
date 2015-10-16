@@ -1,5 +1,5 @@
 
-#include "widget/CToast.h"
+#include "elastos/droid/widget/CToast.h"
 
 namespace Elastos {
 namespace Droid {

@@ -9,7 +9,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include <stdio.h>
 #include <pthread.h>
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 
 #include <unistd.h>
 

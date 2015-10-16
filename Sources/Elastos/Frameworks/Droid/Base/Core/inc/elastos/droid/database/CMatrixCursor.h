@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CMATRIXCURSOR_H__
 
 #include "_Elastos_Droid_Database_CMatrixCursor.h"
-#include "database/MatrixCursor.h"
+#include "elastos/droid/database/MatrixCursor.h"
 
 namespace Elastos {
 namespace Droid {

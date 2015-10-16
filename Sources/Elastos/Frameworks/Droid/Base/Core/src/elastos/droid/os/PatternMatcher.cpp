@@ -1,6 +1,6 @@
 
 #include <elastos/core/StringBuilder.h>
-#include "os/PatternMatcher.h"
+#include "elastos/droid/os/PatternMatcher.h"
 
 using Elastos::Core::StringBuilder;
 

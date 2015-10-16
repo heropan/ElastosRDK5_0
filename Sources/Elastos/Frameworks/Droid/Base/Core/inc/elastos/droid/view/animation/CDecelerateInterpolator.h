@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
 
 #include "_Elastos_Droid_View_Animation_CDecelerateInterpolator.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

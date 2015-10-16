@@ -1,12 +1,12 @@
 #ifndef __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 #define __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
-//#include "net/Uri.h"
+//#include "elastos/droid/net/Uri.h"
 
 using Elastos::Utility::Set;
 using Elastos::Utility::Etl::HashMap;

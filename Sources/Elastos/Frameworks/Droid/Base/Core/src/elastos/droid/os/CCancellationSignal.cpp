@@ -1,4 +1,4 @@
-#include "os/CCancellationSignal.h"
+#include "elastos/droid/os/CCancellationSignal.h"
 #include <elastos/core/AutoLock.h>
 
 namespace Elastos {

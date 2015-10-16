@@ -1,9 +1,9 @@
 
 #include "CBackupAgentBackupServiceBinder.h"
-#include "app/backup/CBackupDataInput.h"
-#include "app/backup/CBackupDataOutput.h"
-#include "app/backup/CFullBackupDataOutput.h"
-#include "os/Binder.h"
+#include "elastos/droid/app/backup/CBackupDataInput.h"
+#include "elastos/droid/app/backup/CBackupDataOutput.h"
+#include "elastos/droid/app/backup/CFullBackupDataOutput.h"
+#include "elastos/droid/os/Binder.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

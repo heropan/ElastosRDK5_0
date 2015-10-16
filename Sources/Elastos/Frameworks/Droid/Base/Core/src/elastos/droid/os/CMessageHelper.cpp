@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CMessageHelper.h"
-#include "os/CMessage.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/CMessage.h"
 
 namespace Elastos {
 namespace Droid {

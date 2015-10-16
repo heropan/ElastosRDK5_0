@@ -5,7 +5,6 @@ C_DEFINES += -D_FRAMEWORK_CORE
 
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../inc
-INCLUDES += $(MAKEDIR)/../../../inc/os/storage
 
 #SOURCES = COnObbStateChangeListener.cpp
 SOURCES += StorageEventListener.cpp

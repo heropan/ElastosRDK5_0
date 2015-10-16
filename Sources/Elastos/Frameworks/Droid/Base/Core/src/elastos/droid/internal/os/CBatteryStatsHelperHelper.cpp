@@ -1,6 +1,6 @@
 
-#include "internal/os/CBatteryStatsHelperHelper.h"
-#include "internal/os/CBatteryStatsHelper.h"
+#include "elastos/droid/internal/os/CBatteryStatsHelperHelper.h"
+#include "elastos/droid/internal/os/CBatteryStatsHelper.h"
 
 namespace Elastos {
 namespace Droid {

@@ -4,7 +4,7 @@
 
 #include "_CRemoteViewsFactoryNative.h"
 #include <jni.h>
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Widget::IRemoteViews;

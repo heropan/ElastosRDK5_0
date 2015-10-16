@@ -1,6 +1,6 @@
 
 #include "CBluetoothHealthAppConfiguration.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

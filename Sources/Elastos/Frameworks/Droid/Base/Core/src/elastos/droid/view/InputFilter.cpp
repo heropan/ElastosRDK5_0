@@ -1,5 +1,5 @@
 
-#include "view/InputFilter.h"
+#include "elastos/droid/view/InputFilter.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

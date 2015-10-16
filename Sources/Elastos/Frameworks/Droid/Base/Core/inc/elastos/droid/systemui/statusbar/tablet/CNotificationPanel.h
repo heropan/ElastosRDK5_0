@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/tablet/NotificationPanel.h"
+#include "elastos/droid/systemui/statusbar/tablet/NotificationPanel.h"
 
 namespace Elastos {
 namespace Droid {

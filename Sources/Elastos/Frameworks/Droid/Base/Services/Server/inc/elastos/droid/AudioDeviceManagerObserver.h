@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_AUDIODEVICEMANAGEROBSERVER_H__
 #define __ELASTOS_DROID_SERVER_AUDIODEVICEMANAGEROBSERVER_H__
 
-#include "content/BroadcastReceiver.h"
-#include "os/UEventObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/UEventObserver.h"
 
 using Elastos::Droid::Os::UEventObserver;
 using Elastos::Droid::Os::IPowerManagerWakeLock;

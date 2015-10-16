@@ -1,6 +1,6 @@
 
-#include "animation/RectEvaluator.h"
-// #include "graphics/CRect.h"
+#include "elastos/droid/animation/RectEvaluator.h"
+// #include "elastos/droid/graphics/CRect.h"
 
 // using Elastos::Droid::Graphics::CRect;
 

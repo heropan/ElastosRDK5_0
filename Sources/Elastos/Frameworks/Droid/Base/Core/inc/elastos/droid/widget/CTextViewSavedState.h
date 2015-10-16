@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CTEXTVIEWSAVEDSTATE_H__
 
 #include "_Elastos_Droid_Widget_CTextViewSavedState.h"
-#include "widget/TextViewSavedState.h"
+#include "elastos/droid/widget/TextViewSavedState.h"
 
 namespace Elastos{
 namespace Droid{

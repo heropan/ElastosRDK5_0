@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_GRAPHICS_CMATRIXIDENTY_H__
 
 #include "_Elastos_Droid_Graphics_CMatrixIdenty.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/graphics/CMatrix.h"
 #include <SkMatrix.h>
-#include "graphics/Matrix.h"
+#include "elastos/droid/graphics/Matrix.h"
 
 namespace Elastos {
 namespace Droid {

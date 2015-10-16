@@ -1,14 +1,14 @@
 
-#include "graphics/drawable/NinePatchDrawable.h"
-#include "graphics/drawable/CNinePatchDrawable.h"
-// #include "graphics/CBitmap.h"
-#include "graphics/CRect.h"
-// #include "graphics/CPaint.h"
-// #include "graphics/CNinePatch.h"
-// #include "graphics/CBitmapFactoryOptions.h"
-// #include "graphics/CBitmapFactory.h"
-#include "utility/CTypedValue.h"
-#include "R.h"
+#include "elastos/droid/graphics/drawable/NinePatchDrawable.h"
+#include "elastos/droid/graphics/drawable/CNinePatchDrawable.h"
+// #include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CRect.h"
+// #include "elastos/droid/graphics/CPaint.h"
+// #include "elastos/droid/graphics/CNinePatch.h"
+// #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+// #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::R;

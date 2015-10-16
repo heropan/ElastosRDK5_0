@@ -1,6 +1,6 @@
 
-#include "media/CThumbnailUtils.h"
-#include "media/ThumbnailUtils.h"
+#include "elastos/droid/media/CThumbnailUtils.h"
+#include "elastos/droid/media/ThumbnailUtils.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "database/CDatabaseUtils.h"
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/CDatabaseUtils.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 
 namespace Elastos {
 namespace Droid {

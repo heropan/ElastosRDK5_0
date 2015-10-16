@@ -2,7 +2,7 @@
 #include "CRequestHandle.h"
 #include "HttpConnection.h"
 #include "HttpsConnection.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 #include "HttpLog.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>

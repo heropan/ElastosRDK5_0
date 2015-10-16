@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_EDITTEXT_H__
 #define __ELASTOS_DROID_WIDGET_EDITTEXT_H__
 
-#include "R.h"
-#include "widget/TextView.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/widget/TextView.h"
 
 namespace Elastos {
 namespace Droid {

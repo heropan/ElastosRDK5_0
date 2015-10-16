@@ -1,6 +1,6 @@
-#include "os/CUpdateLock.h"
-#include "os/ServiceManager.h"
-#include "os/CBinder.h"
+#include "elastos/droid/os/CUpdateLock.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CBinder.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
 

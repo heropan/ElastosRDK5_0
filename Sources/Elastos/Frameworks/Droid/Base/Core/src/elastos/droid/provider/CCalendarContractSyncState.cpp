@@ -1,7 +1,7 @@
 
-#include "provider/CCalendarContractSyncState.h"
-#include "provider/CalendarContract.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractSyncState.h"
+#include "elastos/droid/provider/CalendarContract.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Provider::ISyncStateContractConstants;

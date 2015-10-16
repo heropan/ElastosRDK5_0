@@ -1,5 +1,5 @@
 #include "CPresentation.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {

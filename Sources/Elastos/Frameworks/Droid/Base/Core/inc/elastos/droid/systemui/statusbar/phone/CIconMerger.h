@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/phone/IconMerger.h"
+#include "elastos/droid/systemui/statusbar/phone/IconMerger.h"
 
 namespace Elastos {
 namespace Droid {

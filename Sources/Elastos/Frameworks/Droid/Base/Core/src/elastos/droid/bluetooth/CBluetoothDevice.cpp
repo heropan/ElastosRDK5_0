@@ -1,5 +1,5 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "CBluetoothDevice.h"
 #include "CBluetoothClass.h"
 #include "BluetoothSocket.h"

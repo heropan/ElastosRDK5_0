@@ -2,7 +2,7 @@
 #include <elastos/core/Math.h>
 #include "Widget/FrameLayout.h"
 #include "View/Animation/AnimationUtils.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "GestureStroke.h"
 
 namespace Elastos {

@@ -4,7 +4,7 @@
 
 #include "Elastos.Droid.Core.h"
 #include "Elastos.Core.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 #include "_CActionServiceCast.h"
 
 using Elastos::Droid::Content::IIntent;

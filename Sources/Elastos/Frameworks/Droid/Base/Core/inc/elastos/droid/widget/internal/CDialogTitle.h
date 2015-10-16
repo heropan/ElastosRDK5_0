@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_Internal_CDialogTitle.h"
 
 
-#include "widget/internal/DialogTitle.h"
+#include "elastos/droid/widget/internal/DialogTitle.h"
 
 namespace Elastos {
 namespace Droid {

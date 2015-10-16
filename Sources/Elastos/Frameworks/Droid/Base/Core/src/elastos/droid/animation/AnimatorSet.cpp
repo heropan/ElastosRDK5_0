@@ -1,7 +1,7 @@
-#include "animation/AnimatorSet.h"
-#include "animation/ValueAnimator.h"
-#include "animation/CAnimatorSet.h"
-#include "animation/CAnimatorSetBuilder.h"
+#include "elastos/droid/animation/AnimatorSet.h"
+#include "elastos/droid/animation/ValueAnimator.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/CAnimatorSetBuilder.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::CArrayList;

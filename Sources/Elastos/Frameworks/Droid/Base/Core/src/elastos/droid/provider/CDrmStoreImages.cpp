@@ -1,5 +1,5 @@
 
-#include "provider/CDrmStoreImages.h"
+#include "elastos/droid/provider/CDrmStoreImages.h"
 
 
 ECode CDrmStoreImages::GetCONTENT_URI(

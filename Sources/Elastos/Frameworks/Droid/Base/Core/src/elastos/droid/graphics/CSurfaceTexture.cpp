@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CSurfaceTexture.h"
-#include "os/Looper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/droid/os/Looper.h"
 
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Looper;

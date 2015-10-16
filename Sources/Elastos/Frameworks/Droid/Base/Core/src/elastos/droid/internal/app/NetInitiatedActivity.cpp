@@ -1,8 +1,8 @@
 
-#include "app/NetInitiatedActivity.h"
-#include "content/CIntentFilter.h"
-#include "content/BroadcastReceiver.h"
-#include "location/LocationManager.h"
+#include "elastos/droid/app/NetInitiatedActivity.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/location/LocationManager.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CString;

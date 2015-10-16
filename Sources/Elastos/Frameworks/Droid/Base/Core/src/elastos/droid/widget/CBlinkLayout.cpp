@@ -1,6 +1,6 @@
 
-#include "widget/CBlinkLayout.h"
-#include "os/CHandler.h"
+#include "elastos/droid/widget/CBlinkLayout.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Droid::Os::EIID_IHandlerCallback;
 using Elastos::Droid::Os::CHandler;

@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "webkit/WebSyncManager.h"
+#include "elastos/droid/webkit/WebSyncManager.h"
 
 using Elastos::Droid::Content::IContext;
 

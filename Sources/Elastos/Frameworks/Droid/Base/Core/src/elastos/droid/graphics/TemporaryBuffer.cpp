@@ -1,5 +1,5 @@
-#include "graphics/TemporaryBuffer.h"
-#include "utility/ArrayUtils.h"
+#include "elastos/droid/graphics/TemporaryBuffer.h"
+#include "elastos/droid/utility/ArrayUtils.h"
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
 

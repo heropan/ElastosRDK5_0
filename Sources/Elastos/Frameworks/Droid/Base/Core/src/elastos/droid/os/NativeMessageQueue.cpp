@@ -1,5 +1,5 @@
 
-#include "os/NativeMessageQueue.h"
+#include "elastos/droid/os/NativeMessageQueue.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_CWIFISERVICE_H__
 #define __ELASTOS_DROID_SERVER_CWIFISERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_CWifiService.h"
-#include "database/ContentObserver.h"
-#include "net/wifi/WifiStateMachine.h"
-#include "net/wifi/WifiWatchdogStateMachine.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/net/wifi/WifiStateMachine.h"
+#include "elastos/droid/net/wifi/WifiWatchdogStateMachine.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "util/AsyncChannel.h"
 #include "R.h"
 #include <elastos/utility/etl/List.h>

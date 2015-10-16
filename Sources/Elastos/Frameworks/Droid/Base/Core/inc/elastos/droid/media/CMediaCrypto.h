@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIACRYPTO_H__
 
 #include "_Elastos_Droid_Media_CMediaCrypto.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <utils/RefBase.h>
 #include <media/ICrypto.h>
 #include <media/IMediaPlayerService.h>

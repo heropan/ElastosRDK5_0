@@ -28,9 +28,9 @@ ECode CActionServiceCast::OnBind(
 
 ECode CActionServiceCast::OnCreate()
 {
-	Service::OnCreate();
-	PFL_EX(" #################CActionServiceCast OnCreate !");
-	return NOERROR;
+    Service::OnCreate();
+    PFL_EX(" #################CActionServiceCast OnCreate !");
+    return NOERROR;
 }
 
 ECode CActionServiceCast::OnStart(
@@ -55,9 +55,9 @@ ECode CActionServiceCast::OnStartCommand(
 
 ECode CActionServiceCast::OnDestroy()
 {
-	Service::OnDestroy();
-	PFL_EX(" #################CActionServiceCast OnDestroy !");
-	return NOERROR;
+    Service::OnDestroy();
+    PFL_EX(" #################CActionServiceCast OnDestroy !");
+    return NOERROR;
 }
 
 }  //AlarmManagerDemo

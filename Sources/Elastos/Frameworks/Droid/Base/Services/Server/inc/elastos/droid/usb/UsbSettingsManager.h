@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_SERVER_USB_USBSETTINGSMANAGER_H__
 #define __ELASTOS_DROID_SERVER_USB_USBSETTINGSMANAGER_H__
 
-#include "ext/frameworkext.h"
-#include "os/Binder.h"
-#include "content/PackageMonitor.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/content/PackageMonitor.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
 #include <elastos/utility/etl/List.h>

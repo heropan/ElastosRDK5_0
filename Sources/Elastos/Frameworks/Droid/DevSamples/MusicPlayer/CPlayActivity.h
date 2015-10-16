@@ -13,7 +13,7 @@
 #define __CPlayACTIVITY_H__
 
 #include "_CPlayActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Media::IMediaPlayer;

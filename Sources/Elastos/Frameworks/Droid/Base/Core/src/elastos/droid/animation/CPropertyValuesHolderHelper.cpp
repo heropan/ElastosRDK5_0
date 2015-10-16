@@ -1,5 +1,5 @@
-#include "animation/CPropertyValuesHolderHelper.h"
-#include "animation/PropertyValuesHolder.h"
+#include "elastos/droid/animation/CPropertyValuesHolderHelper.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
 
 namespace Elastos {
 namespace Droid {

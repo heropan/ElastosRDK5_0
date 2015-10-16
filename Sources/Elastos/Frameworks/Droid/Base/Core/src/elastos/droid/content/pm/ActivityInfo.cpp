@@ -2,7 +2,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/pm/ActivityInfo.h"
 #include "elastos/droid/content/res/CConfiguration.h"
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

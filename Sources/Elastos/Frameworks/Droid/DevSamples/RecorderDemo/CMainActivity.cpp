@@ -37,14 +37,14 @@ ECode CMainActivity::RecorderClickListener::OnClick(
     AutoPtr<IFile> file;
 
 
-	AutoPtr<ILocaleHelper> localeHelper;
-	CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-	AutoPtr<ILocale> locale;
-	localeHelper->GetCHINA((ILocale**)&locale);
-	AutoPtr<ICalendarHelper> calendarHelper;
-	CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
-	AutoPtr<ICalendar> calendar;
-	calendarHelper->GetInstance(locale, (ICalendar**)&calendar);
+    AutoPtr<ILocaleHelper> localeHelper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+    AutoPtr<ILocale> locale;
+    localeHelper->GetCHINA((ILocale**)&locale);
+    AutoPtr<ICalendarHelper> calendarHelper;
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    AutoPtr<ICalendar> calendar;
+    calendarHelper->GetInstance(locale, (ICalendar**)&calendar);
     AutoPtr<IDateFormat> df;
     CDateFormat::AcquireSingleton((IDateFormat**)&df);
 
@@ -54,10 +54,10 @@ ECode CMainActivity::RecorderClickListener::OnClick(
     df->Format(cs1, calendar, (ICharSequence**)&cs2);
 
     String fileName;
-	StringBuilder sb("/sdcard/");
-	sb.AppendCharSequence(cs2);
-	sb += ".amr";
-	sb.ToString(&fileName);
+    StringBuilder sb("/sdcard/");
+    sb.AppendCharSequence(cs2);
+    sb += ".amr";
+    sb.ToString(&fileName);
 
     CFile::New(fileName, (IFile**)&file);
             // + new DateFormat().format("yyyyMMdd_hhmmss",
@@ -76,7 +76,7 @@ ECode CMainActivity::RecorderClickListener::OnClick(
     mMediaRecorder->SetOutputFile(path);
     // try {
         // 创建文件
-    	Boolean b;
+        Boolean b;
         file->CreateNewFile(&b);
         // 准备录制
     Logger::D("CMainActivity::RecorderClickListener::OnClick", "To Prepare");
@@ -90,7 +90,7 @@ ECode CMainActivity::RecorderClickListener::OnClick(
     Logger::D("CMainActivity::RecorderClickListener::OnClick", "To Start");
     mMediaRecorder->Start();
     AutoPtr<ICharSequence> csq;
-	CStringWrapper::New(String("录音中……"), (ICharSequence**)&csq);
+    CStringWrapper::New(String("录音中……"), (ICharSequence**)&csq);
     mRecordButton->SetText(csq);
     mRecordButton->SetEnabled(FALSE);
     return NOERROR;
@@ -105,16 +105,16 @@ ECode CMainActivity::StopClickListener::OnClick(
         // mMediaRecorder->Release();
         // mMediaRecorder = NULL;
         AutoPtr<ICharSequence> csq;
-		CStringWrapper::New(String("录音"), (ICharSequence**)&csq);
+        CStringWrapper::New(String("录音"), (ICharSequence**)&csq);
         mRecordButton->SetText(csq);
-    	mRecordButton->SetEnabled(TRUE);
+        mRecordButton->SetEnabled(TRUE);
         // Toast.makeText(getApplicationContext(), "录音完毕", Toast.LENGTH_LONG).show();
     }
     return NOERROR;
 }
 
 ECode CMainActivity::OnCreate(
-	/* [in] */ IBundle* savedInstanceState)
+    /* [in] */ IBundle* savedInstanceState)
 {
     Logger::D("CMainActivity", "OnCreate");
 

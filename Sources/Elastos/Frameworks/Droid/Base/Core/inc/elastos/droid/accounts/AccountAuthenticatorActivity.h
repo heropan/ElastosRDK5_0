@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_ACCOUNTS_ACCOUNTAUTHENTICATORACTIVITY_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 

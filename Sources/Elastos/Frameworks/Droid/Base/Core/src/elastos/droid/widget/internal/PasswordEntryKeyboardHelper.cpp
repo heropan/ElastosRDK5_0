@@ -1,11 +1,11 @@
 
-#include "widget/internal/PasswordEntryKeyboardHelper.h"
-#include "view/CKeyCharacterMap.h"
-#include "view/View.h"
-#include "view/CKeyEvent.h"
-#include "provider/Settings.h"
-#include "os/SystemClock.h"
-#include "view/ViewRootImpl.h"
+#include "elastos/droid/widget/internal/PasswordEntryKeyboardHelper.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/ViewRootImpl.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Provider::Settings;

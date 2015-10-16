@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_UTILITY_BASE64INPUTSTREAM_H__
 
 #include <elastos/io/FilterInputStream.h>
-#include "utility/CBase64.h"
+#include "elastos/droid/utility/CBase64.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::FilterInputStream;

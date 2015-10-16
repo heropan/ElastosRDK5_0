@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_TEXTPROGRESSBAR_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_TEXTPROGRESSBAR_H__
 
-#include "widget/RelativeLayout.h"
-#include "R.h"
+#include "elastos/droid/widget/RelativeLayout.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::View::IGravity;

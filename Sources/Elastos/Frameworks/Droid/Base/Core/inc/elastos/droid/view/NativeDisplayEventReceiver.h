@@ -7,7 +7,7 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include "os/NativeMessageQueue.h"
+#include "elastos/droid/os/NativeMessageQueue.h"
 #include <utils/Looper.h>
 #include <gui/DisplayEventReceiver.h>
 

@@ -1,13 +1,13 @@
 
-#include "widget/ExpandableListView.h"
-#include "widget/ExpandableListPosition.h"
-#include "widget/CExpandableListPosition.h"
-#include "widget/CExpandableListConnector.h"
-#include "widget/PositionMetadata.h"
-#include "widget/GroupMetadata.h"
-/*#include "widget/ExpandableListViewSavedState.h"
-#include "widget/CExpandableListViewSavedState.h"*/
-#include "view/SoundEffectConstants.h"
+#include "elastos/droid/widget/ExpandableListView.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
+#include "elastos/droid/widget/CExpandableListPosition.h"
+#include "elastos/droid/widget/CExpandableListConnector.h"
+#include "elastos/droid/widget/PositionMetadata.h"
+#include "elastos/droid/widget/GroupMetadata.h"
+/*#include "elastos/droid/widget/ExpandableListViewSavedState.h"
+#include "elastos/droid/widget/CExpandableListViewSavedState.h"*/
+#include "elastos/droid/view/SoundEffectConstants.h"
 //#include <elastos/utility/logging/Logger.h>
 
 //using Elastos::Utility::Logging::Logger;

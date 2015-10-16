@@ -1,10 +1,10 @@
-#include "view/CAccessibilityInteractionController.h"
-#include "view/ViewRootImpl.h"
-#include "view/ViewGroup.h"
-#include "view/accessibility/CAccessibilityNodeInfoHelper.h"
-#include "view/accessibility/CAccessibilityInteractionClientHelper.h"
-#include "os/Process.h"
-#include "internal/os/SomeArgs.h"
+#include "elastos/droid/view/CAccessibilityInteractionController.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfoHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/internal/os/SomeArgs.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

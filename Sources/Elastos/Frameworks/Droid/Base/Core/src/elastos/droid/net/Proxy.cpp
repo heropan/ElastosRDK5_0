@@ -269,10 +269,10 @@ ECode Proxy::SetHttpProxySystemProperty(
 } // namespace Elastos
 
 #if 0 // old CProxy.cpp
-#include "net/CProxy.h"
-#include "net/NetworkUtils.h"
-#include "net/CConnectivityManager.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/net/CProxy.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/net/CConnectivityManager.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

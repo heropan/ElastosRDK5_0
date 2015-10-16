@@ -1,6 +1,6 @@
 
-#include "CAcousticEchoCancelerHelper.h"
-#include "CAcousticEchoCanceler.h"
+#include "elastos/droid/media/audiofx/CAcousticEchoCancelerHelper.h"
+#include "elastos/droid/media/audiofx/CAcousticEchoCanceler.h"
 
 namespace Elastos {
 namespace Droid {

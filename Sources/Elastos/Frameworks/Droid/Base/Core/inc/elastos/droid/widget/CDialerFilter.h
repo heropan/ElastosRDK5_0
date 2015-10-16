@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CDIALERFILTER_H__
 
 #include "_Elastos_Droid_Widget_CDialerFilter.h"
-#include "widget/DialerFilter.h"
+#include "elastos/droid/widget/DialerFilter.h"
 
 
 

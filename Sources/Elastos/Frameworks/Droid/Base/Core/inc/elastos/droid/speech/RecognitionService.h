@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_RecognitionService_H__
 #define __ELASTOS_DROID_SPEECH_RecognitionService_H__
 
-#include "app/Service.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/app/Service.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::App::Service;

@@ -1,7 +1,7 @@
 
-#include "webkit/native/base/JavaHandlerThread.h"
-#include "os/CHandler.h"
-#include "os/CHandlerThread.h"
+#include "elastos/droid/webkit/native/base/JavaHandlerThread.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CHandlerThread.h"
 
 using Elastos::Core::IThread;
 using Elastos::Core::EIID_IThread;

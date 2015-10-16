@@ -1,7 +1,7 @@
 #ifndef __MONKEYCOMMANDRETURN_H_
 #define __MONKEYCOMMANDRETURN_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos.h>
 
 namespace Elastos {

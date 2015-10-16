@@ -7,9 +7,9 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/Stack.h>
 #include <elastos/utility/etl/HashMap.h>
-#include "os/HandlerBase.h"
-#include "database/ContentObserver.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;

@@ -53,11 +53,11 @@ ECode CTextServicesManager::constructor()
  * @return the spell checker session of the spell checker
  */
 ECode CTextServicesManager::NewSpellCheckerSession(
-	/* [in] */ IBundle* bundle,
-	/* [in] */ ILocale* locale,
-	/* [in] */ ISpellCheckerSessionListener* listener,
-	/* [in] */ Boolean referToSpellCheckerLanguageSettings,
-	/* [out] */ ISpellCheckerSession** session)
+    /* [in] */ IBundle* bundle,
+    /* [in] */ ILocale* locale,
+    /* [in] */ ISpellCheckerSessionListener* listener,
+    /* [in] */ Boolean referToSpellCheckerLanguageSettings,
+    /* [out] */ ISpellCheckerSession** session)
 {
     VALIDATE_NOT_NULL(session);
 
@@ -169,7 +169,7 @@ ECode CTextServicesManager::NewSpellCheckerSession(
  * @hide
  */
 ECode CTextServicesManager::GetEnabledSpellCheckers(
-	/* [out] */ ArrayOf<ISpellCheckerInfo*>** infoArray)
+    /* [out] */ ArrayOf<ISpellCheckerInfo*>** infoArray)
 {
     VALIDATE_NOT_NULL(infoArray);
 
@@ -189,7 +189,7 @@ ECode CTextServicesManager::GetEnabledSpellCheckers(
  * @hide
  */
 ECode CTextServicesManager::GetCurrentSpellChecker(
-	/* [out] */ ISpellCheckerInfo** info)
+    /* [out] */ ISpellCheckerInfo** info)
 {
     VALIDATE_NOT_NULL(info);
 
@@ -205,7 +205,7 @@ ECode CTextServicesManager::GetCurrentSpellChecker(
  * @hide
  */
 ECode CTextServicesManager::SetCurrentSpellChecker(
-	/* [in] */ ISpellCheckerInfo* sci)
+    /* [in] */ ISpellCheckerInfo* sci)
 {
     //try {
     //    if (sci == null) {
@@ -226,8 +226,8 @@ ECode CTextServicesManager::SetCurrentSpellChecker(
  * @hide
  */
 ECode CTextServicesManager::GetCurrentSpellCheckerSubtype(
-	/* [in] */ Boolean allowImplicitlySelectedSubtype,
-	/* [out] */ ISpellCheckerSubtype** subtype)
+    /* [in] */ Boolean allowImplicitlySelectedSubtype,
+    /* [out] */ ISpellCheckerSubtype** subtype)
 {
     VALIDATE_NOT_NULL(subtype);
 
@@ -251,7 +251,7 @@ ECode CTextServicesManager::GetCurrentSpellCheckerSubtype(
  * @hide
  */
 ECode CTextServicesManager::SetSpellCheckerSubtype(
-	/* [in] */ ISpellCheckerSubtype* subtype)
+    /* [in] */ ISpellCheckerSubtype* subtype)
 {
     //try {
         Int32 hashCode;
@@ -270,7 +270,7 @@ ECode CTextServicesManager::SetSpellCheckerSubtype(
  * @hide
  */
 ECode CTextServicesManager::SetSpellCheckerEnabled(
-	/* [in] */ Boolean enabled)
+    /* [in] */ Boolean enabled)
 {
     //try {
         return sService->SetSpellCheckerEnabled(enabled);
@@ -283,7 +283,7 @@ ECode CTextServicesManager::SetSpellCheckerEnabled(
  * @hide
  */
 ECode CTextServicesManager::IsSpellCheckerEnabled(
-	/* [out] */ Boolean* enabled)
+    /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
 

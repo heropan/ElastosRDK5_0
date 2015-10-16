@@ -2,18 +2,18 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_WIFISTATEMACHINE_H__
 #define  __ELASTOS_DROID_NET_WIFI_WIFISTATEMACHINE_H__
 
-#include "ext/frameworkdef.h"
-#include "net/DhcpInfoInternal.h"
-#include "net/DhcpStateMachine.h"
-#include "net/wifi/SupplicantStateTracker.h"
-#include "net/wifi/WifiMonitor.h"
-#include "net/wifi/WifiNative.h"
-#include "net/wifi/WifiConfigStore.h"
-#include "utility/AsyncChannel.h"
-#include "utility/State.h"
-#include "utility/StateMachine.h"
-#include "database/ContentObserver.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/DhcpInfoInternal.h"
+#include "elastos/droid/net/DhcpStateMachine.h"
+#include "elastos/droid/net/wifi/SupplicantStateTracker.h"
+#include "elastos/droid/net/wifi/WifiMonitor.h"
+#include "elastos/droid/net/wifi/WifiNative.h"
+#include "elastos/droid/net/wifi/WifiConfigStore.h"
+#include "elastos/droid/utility/AsyncChannel.h"
+#include "elastos/droid/utility/State.h"
+#include "elastos/droid/utility/StateMachine.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;

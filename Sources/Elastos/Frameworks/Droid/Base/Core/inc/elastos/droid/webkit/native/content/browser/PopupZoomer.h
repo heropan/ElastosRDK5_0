@@ -7,8 +7,8 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_POPUPZOOMER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/SystemClock.h"
-#include "view/SimpleOnGestureListener.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/SimpleOnGestureListener.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;

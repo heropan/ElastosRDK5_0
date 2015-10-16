@@ -1,7 +1,7 @@
 
-#include "view/accessibility/CAccessibilityNodeInfo.h"
-#include "view/accessibility/CAccessibilityInteractionClient.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IInteger64;

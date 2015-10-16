@@ -1,12 +1,12 @@
 
-#include "view/menu/MenuItemImpl.h"
-#include "view/menu/MenuBuilderBase.h"
-#include "view/menu/CIconMenuItemView.h"
-#include "view/ActionProvider.h"
-#include "view/LayoutInflater.h"
+#include "elastos/droid/view/menu/MenuItemImpl.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/CIconMenuItemView.h"
+#include "elastos/droid/view/ActionProvider.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include <elastos/core/Character.h>
-#include "widget/CLinearLayout.h"
-#include "R.h"
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/R.h"
 
 using namespace Elastos::Core;
 using Elastos::Droid::R;

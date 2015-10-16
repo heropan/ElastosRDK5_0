@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/Matrix.h"
-#include "graphics/GraphicsNative.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/Matrix.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
 #include <elastos/core/StringBuilder.h>
 #include <skia/core/SkMatrix.h>
 

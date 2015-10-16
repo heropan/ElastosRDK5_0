@@ -1,9 +1,9 @@
 #include "Presentation.h"
-#include "utility/CDisplayMetrics.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
 #include <elastos/utility/logging/Logger.h>
-#include "utility/CTypedValue.h"
-#include "view/WindowManagerImpl.h"
-#include "R.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/view/WindowManagerImpl.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::EIID_IHandler;

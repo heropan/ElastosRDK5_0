@@ -1,4 +1,4 @@
-#include "systemui/statusbar/tablet/CInputMethodsPanel.h"
+#include "elastos/droid/systemui/statusbar/tablet/CInputMethodsPanel.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

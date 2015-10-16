@@ -9,9 +9,9 @@
  * @attr ref android.R.styleable#AbsSpinner_entries
  */
 
-#include "widget/AdapterView.h"
+#include "elastos/droid/widget/AdapterView.h"
 #include <elastos/utility/etl/HashMap.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Core::CString;

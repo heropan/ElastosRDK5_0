@@ -1,10 +1,10 @@
 
 #include <ext/frameworkdef.h>
-#include "app/CActivityThread.h"
-#include "app/CContextImpl.h"
-//#include "app/QueuedWork.h"
-#include "utility/XmlUtils.h"
-#include "app/SharedPreferencesImpl.h"
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/app/CContextImpl.h"
+//#include "elastos/droid/app/QueuedWork.h"
+#include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/app/SharedPreferencesImpl.h"
 #include <os/FileUtils.h>
 #include <os/Looper.h>
 #include <elastos/utility/logging/Slogger.h>

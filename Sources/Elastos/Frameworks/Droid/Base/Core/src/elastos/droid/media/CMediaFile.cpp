@@ -1,8 +1,8 @@
 
-#include "media/CMediaFile.h"
-#include "media/CMediaFileType.h"
-#include "media/CDecoderCapabilitiesHelper.h"
-#include "media/CDecoderCapabilities.h"
+#include "elastos/droid/media/CMediaFile.h"
+#include "elastos/droid/media/CMediaFileType.h"
+#include "elastos/droid/media/CDecoderCapabilitiesHelper.h"
+#include "elastos/droid/media/CDecoderCapabilities.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

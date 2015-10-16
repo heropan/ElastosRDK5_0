@@ -1,5 +1,5 @@
-#include "media/CMediaSyncEventHelper.h"
-#include "media/CMediaSyncEvent.h"
+#include "elastos/droid/media/CMediaSyncEventHelper.h"
+#include "elastos/droid/media/CMediaSyncEvent.h"
 
 namespace Elastos {
 namespace Droid {

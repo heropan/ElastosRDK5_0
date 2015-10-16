@@ -3,8 +3,8 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "database/sqlite/SQLiteDebug.h"
-#include "database/sqlite/SQLiteClosable.h"
+#include "elastos/droid/database/sqlite/SQLiteDebug.h"
+#include "elastos/droid/database/sqlite/SQLiteClosable.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <pthread.h>

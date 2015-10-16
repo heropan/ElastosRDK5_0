@@ -1,6 +1,6 @@
 
-#include "location/CGpsStatus.h"
-#include "location/CGpsSatellite.h"
+#include "elastos/droid/location/CGpsStatus.h"
+#include "elastos/droid/location/CGpsSatellite.h"
 
 
 

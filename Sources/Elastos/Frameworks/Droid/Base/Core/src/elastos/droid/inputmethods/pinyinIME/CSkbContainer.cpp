@@ -1,9 +1,9 @@
 
 #include "CSkbContainer.h"
-#include "view/CMotionEventHelper.h"
-#include "os/SystemClock.h"
-#include "os/CSystemProperties.h"
-#include "widget/CPopupWindow.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CSystemProperties.h"
+#include "elastos/droid/widget/CPopupWindow.h"
 #include "SoftKeyboard.h"
 #include "SkbPool.h"
 #include "CPinyinEnvironmentHelper.h"

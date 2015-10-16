@@ -1,7 +1,7 @@
 
-#include "provider/CContactsPresence.h"
-#include "R.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CContactsPresence.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

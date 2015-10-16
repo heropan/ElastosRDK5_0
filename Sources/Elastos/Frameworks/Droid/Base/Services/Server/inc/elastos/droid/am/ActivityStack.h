@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include "am/UserStartedState.h"
 #include "am/ActivityState.h"
 #include "am/TaskAccessInfo.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBinder;

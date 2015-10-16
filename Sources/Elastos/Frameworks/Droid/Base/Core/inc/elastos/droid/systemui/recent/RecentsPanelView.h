@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSPANELVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSPANELVIEW_H__
 
-#include "widget/FrameLayout.h"
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 
 
 using Elastos::Droid::View::IView;

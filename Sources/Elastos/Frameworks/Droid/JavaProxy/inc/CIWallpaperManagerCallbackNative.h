@@ -12,7 +12,7 @@ namespace JavaProxy {
 CarClass(CIWallpaperManagerCallbackNative)
 {
 public:
-	~CIWallpaperManagerCallbackNative();
+    ~CIWallpaperManagerCallbackNative();
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

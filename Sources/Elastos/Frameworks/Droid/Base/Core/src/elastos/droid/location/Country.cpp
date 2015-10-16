@@ -1,6 +1,6 @@
 
-#include "location/Country.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/location/Country.h"
+#include "elastos/droid/os/SystemClock.h"
 
 #include <elastos/core/StringBuilder.h>
 

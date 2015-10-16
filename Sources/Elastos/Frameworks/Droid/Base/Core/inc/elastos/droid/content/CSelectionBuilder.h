@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_CONTENT_CSELECTIONBUILDER_H__
 
 #include "_Elastos_Droid_Internal_Content_CSelectionBuilder.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>

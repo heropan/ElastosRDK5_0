@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_BASEINPUTCONNECTION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
 
 
 using Elastos::Core::ICharSequence;

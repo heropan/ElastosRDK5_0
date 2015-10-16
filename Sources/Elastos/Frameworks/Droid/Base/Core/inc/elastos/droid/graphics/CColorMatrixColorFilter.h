@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CCOLORMATRIXCOLORFILTER_H__
 
 #include "_Elastos_Droid_Graphics_CColorMatrixColorFilter.h"
-#include "graphics/ColorFilter.h"
+#include "elastos/droid/graphics/ColorFilter.h"
 
 namespace Elastos {
 namespace Droid {

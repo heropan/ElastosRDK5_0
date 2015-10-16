@@ -7,7 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTSOBSERVERANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content_public/browser/WebContents.h"
+#include "elastos/droid/webkit/native/content_public/browser/WebContents.h"
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

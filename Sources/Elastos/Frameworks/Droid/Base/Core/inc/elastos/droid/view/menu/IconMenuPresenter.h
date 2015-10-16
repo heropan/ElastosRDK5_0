@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_ICONMENUPRESENTER_H__
 #define  __ELASTOS_DROID_VIEW_MENU_ICONMENUPRESENTER_H__
 
-#include "view/menu/BaseMenuPresenter.h"
-#include "view/menu/MenuDialogHelper.h"
+#include "elastos/droid/view/menu/BaseMenuPresenter.h"
+#include "elastos/droid/view/menu/MenuDialogHelper.h"
 
 using Elastos::ElRefBase;
 using Elastos::AutoPtr;

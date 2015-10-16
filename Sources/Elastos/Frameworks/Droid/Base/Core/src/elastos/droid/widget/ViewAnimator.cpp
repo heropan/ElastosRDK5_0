@@ -1,9 +1,9 @@
 
-#include "widget/ViewAnimator.h"
+#include "elastos/droid/widget/ViewAnimator.h"
 #ifdef DROID_CORE
-#include "view/animation/CAnimationUtils.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
 #endif
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::View::Animation::CAnimationUtils;

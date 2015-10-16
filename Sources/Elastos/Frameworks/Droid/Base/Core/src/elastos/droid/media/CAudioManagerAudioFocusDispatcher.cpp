@@ -1,7 +1,7 @@
 
-#include "media/CAudioManagerAudioFocusDispatcher.h"
+#include "elastos/droid/media/CAudioManagerAudioFocusDispatcher.h"
 #include <elastos/utility/logging/Logger.h>
-#include "media/CAudioManager.h"
+#include "elastos/droid/media/CAudioManager.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Utility::Logging::Logger;

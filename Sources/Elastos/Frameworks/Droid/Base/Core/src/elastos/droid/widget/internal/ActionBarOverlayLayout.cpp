@@ -1,6 +1,6 @@
 
-#include "internal/ActionBarOverlayLayout.h"
-#include "R.h"
+#include "elastos/droid/internal/ActionBarOverlayLayout.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;

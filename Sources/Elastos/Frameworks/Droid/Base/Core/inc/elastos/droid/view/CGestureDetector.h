@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
 
 #include "_Elastos_Droid_View_CGestureDetector.h"
-#include "os/HandlerBase.h"
-#include "view/VelocityTracker.h"
-#include "view/InputEventConsistencyVerifier.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/InputEventConsistencyVerifier.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;

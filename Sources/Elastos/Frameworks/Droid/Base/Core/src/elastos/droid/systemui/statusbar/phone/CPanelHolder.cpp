@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "systemui/statusbar/phone/CPanelHolder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/systemui/statusbar/phone/CPanelHolder.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

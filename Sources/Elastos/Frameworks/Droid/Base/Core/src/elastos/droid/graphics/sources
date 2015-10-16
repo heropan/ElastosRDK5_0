@@ -6,7 +6,8 @@ include $(MAKEDIR)/../../../../../../sources.inc
 C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../inc/
+
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/skia/effects

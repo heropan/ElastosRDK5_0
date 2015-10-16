@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_DROID_APP_PRESENTATION_H__
 #define __ELASTOS_DROID_APP_PRESENTATION_H__
 
-#include "os/HandlerBase.h"
-#include "app/Dialog.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/app/Dialog.h"
 
 
-#include "view/ContextThemeWrapper.h"
+#include "elastos/droid/view/ContextThemeWrapper.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::App::Dialog;

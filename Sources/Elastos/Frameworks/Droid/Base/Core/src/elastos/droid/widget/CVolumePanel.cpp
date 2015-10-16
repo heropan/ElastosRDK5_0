@@ -1,14 +1,14 @@
 
-#include "widget/CVolumePanel.h"
-#include "widget/CVolumePanelDialog.h"
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
-#include "media/CAudioSystemHelper.h"
-#include "media/CToneGenerator.h"
-#include "media/CRingtoneManagerHelper.h"
-#include "app/CAlertDialogBuilder.h"
+#include "elastos/droid/widget/CVolumePanel.h"
+#include "elastos/droid/widget/CVolumePanelDialog.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/media/CAudioSystemHelper.h"
+#include "elastos/droid/media/CToneGenerator.h"
+#include "elastos/droid/media/CRingtoneManagerHelper.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
 #include <elastos/utility/logging/Logger.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::CIntent;

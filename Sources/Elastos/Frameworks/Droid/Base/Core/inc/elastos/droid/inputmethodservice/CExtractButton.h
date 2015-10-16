@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_InputMethodService_CExtractButton.h"
 #include <elastos/core/Object.h>
-// #include "widget/Button.h"
+// #include "elastos/droid/widget/Button.h"
 
 using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;

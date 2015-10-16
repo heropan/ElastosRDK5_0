@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IIServiceConnection;

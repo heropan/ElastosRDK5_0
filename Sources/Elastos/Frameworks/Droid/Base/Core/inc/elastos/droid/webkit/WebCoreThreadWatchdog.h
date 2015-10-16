@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WEBKIT_WEBCORETHREADWATCHDOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashSet.h>
 
-#include "webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;

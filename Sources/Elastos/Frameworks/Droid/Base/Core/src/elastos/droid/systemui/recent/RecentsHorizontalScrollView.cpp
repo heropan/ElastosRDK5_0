@@ -1,8 +1,8 @@
-#include "systemui/recent/RecentsHorizontalScrollView.h"
-#include "systemui/recent/RecentsPanelView.h"
-#include "systemui/CSwipeHelper.h"
-#include "view/CViewConfigurationHelper.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/recent/RecentsHorizontalScrollView.h"
+#include "elastos/droid/systemui/recent/RecentsPanelView.h"
+#include "elastos/droid/systemui/CSwipeHelper.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::ICharSequence;

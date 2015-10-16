@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "GeckoEvent.h"
 #include "GeckoApp.h"
 #include <elastos/core/Math.h>
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 #include <stdio.h>
 
 using Elastos::Droid::Os::Build;

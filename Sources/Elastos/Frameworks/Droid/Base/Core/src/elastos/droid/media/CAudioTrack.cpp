@@ -1,11 +1,11 @@
 
-#include "media/CAudioTrack.h"
-//#include "media/ElAudioSystem.h"
+#include "elastos/droid/media/CAudioTrack.h"
+//#include "elastos/droid/media/ElAudioSystem.h"
 #include <media/AudioTrack.h>
 #include <media/AudioSystem.h>
 #include <binder/MemoryHeapBase.h>
 #include <binder/MemoryBase.h>
-#include "os/Looper.h"
+#include "elastos/droid/os/Looper.h"
 #include <system/audio.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

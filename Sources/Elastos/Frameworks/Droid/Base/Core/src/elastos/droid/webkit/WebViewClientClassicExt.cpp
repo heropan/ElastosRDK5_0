@@ -1,7 +1,7 @@
 
-#include "webkit/WebViewClientClassicExt.h"
-#include "webkit/HttpAuthHandler.h"
-#include "webkit/ClientCertRequestHandler.h"
+#include "elastos/droid/webkit/WebViewClientClassicExt.h"
+#include "elastos/droid/webkit/HttpAuthHandler.h"
+#include "elastos/droid/webkit/ClientCertRequestHandler.h"
 
 namespace Elastos {
 namespace Droid {
@@ -18,7 +18,7 @@ ECode WebViewClientClassicExt::OnProceededAfterSslError(
     /* [in] */ IWebView* view,
     /* [in] */ ISslError* error)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 /**
@@ -39,7 +39,7 @@ ECode WebViewClientClassicExt::OnReceivedClientCertRequest(
     /* [in] */ ClientCertRequestHandler* handler,
     /* [in] */ const String& host_and_port)
 {
-	VALIDATE_NOT_NULL(handler);
+    VALIDATE_NOT_NULL(handler);
     handler->Cancel();
     return NOERROR;
 }

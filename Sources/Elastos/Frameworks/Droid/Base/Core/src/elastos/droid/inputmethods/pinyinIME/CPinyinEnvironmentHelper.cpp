@@ -1,5 +1,5 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "CPinyinEnvironmentHelper.h"
 #include "CPinyinEnvironment.h"
 

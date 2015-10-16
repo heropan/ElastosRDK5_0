@@ -1,5 +1,5 @@
-#include "media/CTrackInfoVendor.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/media/CTrackInfoVendor.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTIONIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/ChildProcessConnection.h"
-#include "webkit/native/content/browser/FileDescriptorInfo.h"
-#include "webkit/native/content/app/ChildProcessService.h"
-#include "webkit/native/content/app/ChromiumLinkerParams.h"
+#include "elastos/droid/webkit/native/content/browser/ChildProcessConnection.h"
+#include "elastos/droid/webkit/native/content/browser/FileDescriptorInfo.h"
+#include "elastos/droid/webkit/native/content/app/ChildProcessService.h"
+#include "elastos/droid/webkit/native/content/app/ChromiumLinkerParams.h"
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;

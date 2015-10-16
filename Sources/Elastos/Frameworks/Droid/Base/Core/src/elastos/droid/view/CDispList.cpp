@@ -1,8 +1,8 @@
-#include "view/CDispList.h"
-#include "view/CDispListHelper.h"
-#include "view/LayoutInflater.h"
+#include "elastos/droid/view/CDispList.h"
+#include "elastos/droid/view/CDispListHelper.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include <elastos/core/StringBuffer.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Core::CInteger32;

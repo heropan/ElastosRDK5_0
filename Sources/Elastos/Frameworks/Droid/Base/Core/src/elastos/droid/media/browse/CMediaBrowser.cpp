@@ -1,7 +1,7 @@
 #include <elastos/utility/logging/Logger.h>
-#include "media/browse/CMediaBrowser.h"
+#include "elastos/droid/media/browse/CMediaBrowser.h"
 //TODO: Need CIntent
-//#include "content/CIntent.h"
+//#include "elastos/droid/content/CIntent.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

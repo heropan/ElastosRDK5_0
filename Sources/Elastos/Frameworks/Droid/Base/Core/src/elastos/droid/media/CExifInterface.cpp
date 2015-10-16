@@ -1,5 +1,5 @@
 
-#include "media/CExifInterface.h"
+#include "elastos/droid/media/CExifInterface.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <Elastos.CoreLibrary.h>

@@ -3,7 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Gesture_CGestureLibraries.h"
-#include "gesture/GestureLibrary.h"
+#include "elastos/droid/gesture/GestureLibrary.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;

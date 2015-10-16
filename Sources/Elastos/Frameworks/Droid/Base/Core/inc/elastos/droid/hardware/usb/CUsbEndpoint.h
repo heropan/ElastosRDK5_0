@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_USB_CUSBENDPOINT_H__
 
 #include "_Elastos_Droid_Hardware_Usb_CUsbEndpoint.h"
-#include "hardware/usb/UsbEndpoint.h"
+#include "elastos/droid/hardware/usb/UsbEndpoint.h"
 
 namespace Elastos {
 namespace Droid {

@@ -9,7 +9,7 @@
 #include "elastos/droid/text/MeasuredText.h"
 #include "elastos/droid/text/AndroidBidi.h"
 //#include "elastos/droid/text/method/CTextKeyListener.h"
-//#include "emoji/CEmojiFactoryHelper.h"
+//#include "elastos/droid/emoji/CEmojiFactoryHelper.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"

@@ -1,14 +1,14 @@
-#include "systemui/statusbar/tablet/NotificationPanel.h"
-#include "view/CMotionEventHelper.h"
-#include "view/LayoutInflater.h"
-#include "systemui/SystemUIR.h"
-#include "systemui/CExpandHelper.h"
+#include "elastos/droid/systemui/statusbar/tablet/NotificationPanel.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/systemui/CExpandHelper.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "animation/CObjectAnimator.h"
-#include "animation/CAnimatorSet.h"
-#include "view/animation/CAccelerateInterpolator.h"
-#include "view/animation/CDecelerateInterpolator.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/view/animation/CAccelerateInterpolator.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::View::EIID_IView;

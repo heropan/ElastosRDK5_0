@@ -1,5 +1,5 @@
 
-#include "location/CGpsSatellite.h"
+#include "elastos/droid/location/CGpsSatellite.h"
 
 namespace Elastos {
 namespace Droid {

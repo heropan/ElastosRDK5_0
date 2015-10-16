@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CPICTUREDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CPictureDrawable.h"
-#include "graphics/drawable/PictureDrawable.h"
+#include "elastos/droid/graphics/drawable/PictureDrawable.h"
 
 namespace Elastos {
 namespace Droid {

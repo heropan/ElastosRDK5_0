@@ -2,7 +2,7 @@
 #ifndef  __ENGLISHINPUTPROCESSOR_H__
 #define  __ENGLISHINPUTPROCESSOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::InputMethod::IInputConnection;

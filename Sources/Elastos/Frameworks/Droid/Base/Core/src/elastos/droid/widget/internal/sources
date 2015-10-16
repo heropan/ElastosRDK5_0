@@ -6,9 +6,7 @@ C_DEFINES += -DDROID_CORE
 
 include $(MAKEDIR)/../../../../../../../sources.inc
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/widget
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/widget/internal
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES = DialogTitle.cpp
 SOURCES += CDialogTitle.cpp

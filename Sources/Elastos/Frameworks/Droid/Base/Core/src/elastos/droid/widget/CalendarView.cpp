@@ -1,13 +1,13 @@
 #include "CalendarView.h"
-#include "utility/CTypedValueHelper.h"
-#include "text/format/DateUtils.h"
-#include "widget/CAbsListViewLayoutParams.h"
-#include "view/CGestureDetector.h"
-#include "R.h"
+#include "elastos/droid/utility/CTypedValueHelper.h"
+#include "elastos/droid/text/format/DateUtils.h"
+#include "elastos/droid/widget/CAbsListViewLayoutParams.h"
+#include "elastos/droid/view/CGestureDetector.h"
+#include "elastos/droid/R.h"
 #include "Elastos.Core.h"
-#include "graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include <elastos/core/StringUtils.h>
-#include "widget/CCalendarView.h"
+#include "elastos/droid/widget/CCalendarView.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

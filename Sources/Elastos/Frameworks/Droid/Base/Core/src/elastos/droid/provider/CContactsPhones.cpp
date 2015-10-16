@@ -1,7 +1,7 @@
 
-#include "provider/CContactsPhones.h"
-#include "net/Uri.h"
-#include "R.h"
+#include "elastos/droid/provider/CContactsPhones.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::R;

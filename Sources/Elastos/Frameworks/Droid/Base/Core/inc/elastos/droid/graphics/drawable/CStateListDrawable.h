@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSTATELISTDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CStateListDrawable.h"
-#include "graphics/drawable/StateListDrawable.h"
+#include "elastos/droid/graphics/drawable/StateListDrawable.h"
 
 namespace Elastos {
 namespace Droid {

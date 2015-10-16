@@ -1,7 +1,7 @@
 
-#include "view/inputmethod/CCorrectionInfo.h"
-#include "text/TextUtils.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/inputmethod/CCorrectionInfo.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Text::TextUtils;
 

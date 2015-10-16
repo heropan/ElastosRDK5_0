@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__
 
-#include "app/CAlertControllerAlertParams.h"
-#include "app/CAlertController.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/CAlertControllerAlertParams.h"
+#include "elastos/droid/app/CAlertController.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Content::IDialogInterface;
@@ -44,7 +44,7 @@ public:
     /**
      * Sets up the alert, including applying the parameters to the alert model,
      * and installing the alert's content.
-     * 
+     *
      * @see #mAlert
      * @see #mAlertParams
      */
@@ -63,11 +63,11 @@ public:
 protected:
     /**
      * The model for the alert.
-     * 
+     *
      * @see #mAlertParams
      */
     AutoPtr<CAlertController> mAlert;
-    
+
     /**
      * The parameters for the alert.
      */

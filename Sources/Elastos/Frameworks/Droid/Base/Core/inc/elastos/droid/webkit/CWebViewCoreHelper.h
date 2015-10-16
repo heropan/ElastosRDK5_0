@@ -11,7 +11,7 @@ namespace Webkit {
 CarClass(CWebViewCoreHelper)
 {
 public:
-	/**
+    /**
      * Causes all timers to pause. This applies to all WebViews in the current
      * app process.
      */

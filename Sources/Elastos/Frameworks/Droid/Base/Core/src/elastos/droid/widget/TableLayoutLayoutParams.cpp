@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "widget/TableLayoutLayoutParams.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/widget/TableLayoutLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

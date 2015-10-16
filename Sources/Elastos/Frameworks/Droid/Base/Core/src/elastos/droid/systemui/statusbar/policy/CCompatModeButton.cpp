@@ -1,4 +1,4 @@
-#include "systemui/statusbar/policy/CCompatModeButton.h"
+#include "elastos/droid/systemui/statusbar/policy/CCompatModeButton.h"
 
 using Elastos::Droid::View::EIID_View;
 

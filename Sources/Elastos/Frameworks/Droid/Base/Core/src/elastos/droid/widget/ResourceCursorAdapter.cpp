@@ -1,4 +1,4 @@
-#include "widget/ResourceCursorAdapter.h"
+#include "elastos/droid/widget/ResourceCursorAdapter.h"
 
 namespace Elastos {
 namespace Droid {

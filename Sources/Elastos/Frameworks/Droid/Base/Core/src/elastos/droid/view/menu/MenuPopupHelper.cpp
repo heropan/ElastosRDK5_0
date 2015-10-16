@@ -1,14 +1,14 @@
 
-#include "view/menu/MenuPopupHelper.h"
-#include "view/menu/MenuBuilderBase.h"
-#include "view/menu/CListMenuItemView.h"
-#include "view/menu/CMenuPopupHelper.h"
-#include "view/LayoutInflater.h"
-#include "widget/CFrameLayout.h"
-#include "widget/CListPopupWindow.h"
+#include "elastos/droid/view/menu/MenuPopupHelper.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/CListMenuItemView.h"
+#include "elastos/droid/view/menu/CMenuPopupHelper.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/widget/CFrameLayout.h"
+#include "elastos/droid/widget/CListPopupWindow.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/etl/List.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;

@@ -1,9 +1,9 @@
 
-#include "widget/Scroller.h"
-#include "view/CViewConfigurationHelper.h"
-#include "view/animation/AnimationUtils.h"
-#include "os/SystemClock.h"
-#include "os/Build.h"
+#include "elastos/droid/widget/Scroller.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::Build;

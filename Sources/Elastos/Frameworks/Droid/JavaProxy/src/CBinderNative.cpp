@@ -12,7 +12,7 @@ namespace JavaProxy {
 const String CBinderNative::TAG("CBinderNative");
 
 CBinderNative::~CBinderNative(){
-	JNIEnv* env;
+    JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
     env->DeleteGlobalRef(mJInstance);
 }

@@ -1,7 +1,7 @@
-#include "speech/tts/AudioPlaybackQueueItem.h"
-//#include "os/CConditionVariable.h"
+#include "elastos/droid/speech/tts/AudioPlaybackQueueItem.h"
+//#include "elastos/droid/os/CConditionVariable.h"
 #include <elastos/utility/logging/Logger.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

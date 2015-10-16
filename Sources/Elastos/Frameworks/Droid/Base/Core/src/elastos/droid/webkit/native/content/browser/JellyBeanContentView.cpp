@@ -1,7 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
-#include "webkit/native/content/browser/ContentViewCore.h"
-#include "webkit/native/content/browser/JellyBeanContentView.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/browser/JellyBeanContentView.h"
 
 namespace Elastos {
 namespace Droid {

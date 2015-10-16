@@ -1,4 +1,4 @@
-#include "systemui/statusbar/tablet/NotificationIconAreaIconLayout.h"
+#include "elastos/droid/systemui/statusbar/tablet/NotificationIconAreaIconLayout.h"
 
 using Elastos::Droid::View::EIID_IView;
 

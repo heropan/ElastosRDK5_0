@@ -1,7 +1,7 @@
 
 #include "power/DisplayPowerController.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
 #include "R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>

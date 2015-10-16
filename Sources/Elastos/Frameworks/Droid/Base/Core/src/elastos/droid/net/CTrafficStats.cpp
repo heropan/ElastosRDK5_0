@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "net/CTrafficStats.h"
-#include "net/CNetworkStats.h"
-#include "os/Process.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CTrafficStats.h"
+#include "elastos/droid/net/CNetworkStats.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/StringBuffer.h>
 #include <dirent.h>
 #include <errno.h>

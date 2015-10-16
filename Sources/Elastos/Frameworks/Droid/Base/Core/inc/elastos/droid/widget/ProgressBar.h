@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_WIDGET_PROGRESSBAR_H__
 #define __ELASTOS_DROID_WIDGET_PROGRESSBAR_H__
 
-#include "R.h"
-#include "view/View.h"
-#include "utility/Pools.h"
-#include "os/Runnable.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/utility/Pools.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Runnable;

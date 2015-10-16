@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Media_CRouteCategory.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "media/CMediaRouter.h"
+#include "elastos/droid/media/CMediaRouter.h"
 
 using Elastos::Utility::IList;
 

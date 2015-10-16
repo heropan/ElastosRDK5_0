@@ -1,9 +1,9 @@
 
-#include "widget/TimePickerSavedState.h"
+#include "elastos/droid/widget/TimePickerSavedState.h"
 
 TimePickerSavedState::TimePickerSavedState(
-    /* [in] */ IParcelable* superState, 
-    /* [in] */ Int32 hour, 
+    /* [in] */ IParcelable* superState,
+    /* [in] */ Int32 hour,
     /* [in] */ Int32 minute)
 {
     super(superState);
@@ -19,18 +19,18 @@ TimePickerSavedState::TimePickerSavedState(
     mMinute = in.readInt();
 }
 
-Int32 TimePickerSavedState::GetHour() 
+Int32 TimePickerSavedState::GetHour()
 {
     return mHour;
 }
 
-Int32 TimePickerSavedState::GetMinute() 
+Int32 TimePickerSavedState::GetMinute()
 {
     return mMinute;
 }
 
 ECode TimePickerSavedState::WriteToParcel(
-    /* [in] */ IParcel* dest, 
+    /* [in] */ IParcel* dest,
     /* [in] */ Int32 flags)
 {
     super.writeToParcel(dest, flags);

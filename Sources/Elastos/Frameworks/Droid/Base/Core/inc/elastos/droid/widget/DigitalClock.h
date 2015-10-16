@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_WIDGET_DIGITALCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_DIGITALCLOCK_H__
 
-#include <ext/frameworkext.h>
-#include "widget/TextView.h"
-#include "database/ContentObserver.h"
-#include "os/Runnable.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Database::ContentObserver;

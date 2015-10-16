@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/recent/RecentsPanelView.h"
+#include "elastos/droid/systemui/recent/RecentsPanelView.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IMotionEvent;

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_IMAGEVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/View.h"
-#include "graphics/CRectF.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/graphics/CRectF.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Graphics::IBitmap;

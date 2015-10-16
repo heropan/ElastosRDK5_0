@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APPWIDGET_APPWIDGETPROVIDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "CMtpStorage.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/mtp/CMtpStorage.h"
 
 using Elastos::Droid::Content::Res::IResources;
 

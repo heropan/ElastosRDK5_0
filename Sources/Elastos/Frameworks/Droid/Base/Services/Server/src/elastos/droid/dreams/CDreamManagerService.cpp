@@ -1,9 +1,9 @@
 
 #include "dreams/CDreamManagerService.h"
-#include "ext/frameworkext.h"
-#include "os/SystemClock.h"
-#include "os/UserHandle.h"
-#include "os/Binder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/Binder.h"
 #include "Manifest.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

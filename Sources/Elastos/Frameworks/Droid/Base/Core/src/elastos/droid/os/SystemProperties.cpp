@@ -1,5 +1,5 @@
 
-#include "os/SystemProperties.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
 #include <cutils/properties.h>

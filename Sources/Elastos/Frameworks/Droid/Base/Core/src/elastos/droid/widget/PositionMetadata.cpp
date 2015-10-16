@@ -1,5 +1,5 @@
-#include "widget/PositionMetadata.h"
-#include "widget/ExpandableListPosition.h"
+#include "elastos/droid/widget/PositionMetadata.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
 
 namespace Elastos {
 namespace Droid {

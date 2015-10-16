@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_EMOJI_EMOJIFACTORYHELPER_H__
 
 
-#include "graphics/CBitmap.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "CEmojiFactory.h"
 
 namespace Elastos {

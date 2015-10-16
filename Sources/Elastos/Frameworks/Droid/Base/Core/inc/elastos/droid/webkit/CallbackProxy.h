@@ -3,11 +3,11 @@
 #define __ELASTOS_DROID_WEBKIT_CALLBACKPROXY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "webkit/ClientCertRequestHandler.h"
-#include "webkit/WebBackForwardListClassic.h"
-#include "webkit/BrowserFrame.h"
-#include "webkit/CJsPromptResult.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/webkit/ClientCertRequestHandler.h"
+#include "elastos/droid/webkit/WebBackForwardListClassic.h"
+#include "elastos/droid/webkit/BrowserFrame.h"
+#include "elastos/droid/webkit/CJsPromptResult.h"
 #include <elastos/Core/Object.h>
 
 using Elastos::Core::Object;

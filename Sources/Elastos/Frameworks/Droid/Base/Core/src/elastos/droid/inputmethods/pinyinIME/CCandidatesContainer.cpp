@@ -2,9 +2,9 @@
 #include "CCandidatesContainer.h"
 #include "CDecodingInfo.h"
 #include "CPinyinEnvironmentHelper.h"
-#include "view/animation/CAnimationSet.h"
-#include "view/animation/CTranslateAnimation.h"
-#include "view/animation/CAlphaAnimation.h"
+#include "elastos/droid/view/animation/CAnimationSet.h"
+#include "elastos/droid/view/animation/CTranslateAnimation.h"
+#include "elastos/droid/view/animation/CAlphaAnimation.h"
 
 using Elastos::Droid::View::EIID_IViewOnTouchListener;
 using Elastos::Droid::View::EIID_View;

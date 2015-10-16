@@ -3,8 +3,8 @@
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONHINT_H__
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CBalloonHint.h"
-#include "os/HandlerRunnable.h"
-#include "widget/PopupWindow.h"
+#include "elastos/droid/os/HandlerRunnable.h"
+#include "elastos/droid/widget/PopupWindow.h"
 
 using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::Widget::IPopupWindowOnDismissListener;

@@ -1,5 +1,5 @@
 
-#include "graphics/SkiaIOStreamAdaptor.h"
+#include "elastos/droid/graphics/SkiaIOStreamAdaptor.h"
 
 using Elastos::IO::IFlushable;
 

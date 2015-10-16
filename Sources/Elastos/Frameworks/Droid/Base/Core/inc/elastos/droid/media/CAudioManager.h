@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Media_CAudioManager.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::HandlerBase;

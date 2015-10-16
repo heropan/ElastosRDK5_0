@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "CNoiseSuppressor.h"
-#include "CAudioEffectHelper.h"
-#include "AudioEffect.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/audiofx/CNoiseSuppressor.h"
+#include "elastos/droid/media/audiofx/CAudioEffectHelper.h"
+#include "elastos/droid/media/audiofx/AudioEffect.h"
 
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;

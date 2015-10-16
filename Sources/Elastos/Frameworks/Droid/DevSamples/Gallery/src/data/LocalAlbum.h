@@ -2,7 +2,7 @@
 #ifndef __LOCALALBUM_H__
 #define __LOCALALBUM_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "MediaSet.h"
 #include "MediaItem.h"
 #include "Path.h"

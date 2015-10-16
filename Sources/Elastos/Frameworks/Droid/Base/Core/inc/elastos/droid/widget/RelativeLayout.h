@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ViewGroup.h"
-#include "widget/CRelativeLayoutLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
 #include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/StringBuilder.h>
-#include "utility/Pools.h"
+#include "elastos/droid/utility/Pools.h"
 
 using Elastos::String;
 using Elastos::Core::IComparator;

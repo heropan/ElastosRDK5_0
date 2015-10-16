@@ -1,5 +1,5 @@
 
-#include "graphics/CLinearGradient.h"
+#include "elastos/droid/graphics/CLinearGradient.h"
 #include <skia/effects/SkGradientShader.h>
 #include <skia/core/SkTemplates.h>
 

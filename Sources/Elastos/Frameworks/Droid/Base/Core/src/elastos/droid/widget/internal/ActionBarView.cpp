@@ -1,16 +1,16 @@
 
-#include "internal/ActionBarView.h"
-#include "view/LayoutInflater.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/Gravity.h"
-#include "widget/CProgressBar.h"
-#include "widget/CSpinner.h"
-#include "widget/CLinearLayout.h"
-#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/internal/ActionBarView.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/widget/CProgressBar.h"
+#include "elastos/droid/widget/CSpinner.h"
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include <elastos/core/Math.h>
-#include "text/TextUtils.h"
-#include "app/CActionBarLayoutParams.h"
-#include "view/menu/CActionMenuPresenter.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/app/CActionBarLayoutParams.h"
+#include "elastos/droid/view/menu/CActionMenuPresenter.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::Math;

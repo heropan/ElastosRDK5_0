@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractImages.h"
+#include "elastos/droid/provider/CBrowserContractImages.h"
 
 
 ECode CBrowserContractImages::constructor()

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_ASYNCRESULT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Internal::Os::IIResultReceiver;

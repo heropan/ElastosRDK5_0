@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "net/CLegacyVpnInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CLegacyVpnInfo.h"
 
 namespace Elastos {
 namespace Droid {

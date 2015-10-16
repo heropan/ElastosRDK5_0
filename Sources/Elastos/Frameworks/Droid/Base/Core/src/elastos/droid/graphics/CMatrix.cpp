@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CMatrix.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

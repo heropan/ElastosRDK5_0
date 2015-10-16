@@ -21,7 +21,7 @@ ECode CMainActivity::PlayClickListener::OnClick(
     /* [in] */ IView* v)
 {
     Logger::D("CMainActivity::RecorderClickListener", "OnClick");
-	return mHost->PlaySounds(1,1);
+    return mHost->PlaySounds(1,1);
 }
 
 ECode CMainActivity::StopClickListener::OnClick(
@@ -34,8 +34,8 @@ ECode CMainActivity::StopClickListener::OnClick(
 }
 
 ECode CMainActivity::PlaySounds(
-	/* [in] */ Int32 sound,
-	/* [in] */ Int32 number)
+    /* [in] */ Int32 sound,
+    /* [in] */ Int32 number)
 {
     AutoPtr<IInterface> server;
     GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&server);
@@ -52,7 +52,7 @@ ECode CMainActivity::PlaySounds(
 }
 
 ECode CMainActivity::OnCreate(
-	/* [in] */ IBundle* savedInstanceState)
+    /* [in] */ IBundle* savedInstanceState)
 {
     Logger::D("CMainActivity", "OnCreate");
 

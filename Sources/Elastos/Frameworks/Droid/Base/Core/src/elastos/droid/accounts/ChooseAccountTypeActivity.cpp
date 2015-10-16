@@ -1,11 +1,11 @@
 
-#include "accounts/ChooseAccountTypeActivity.h"
-#include "accounts/ChooseTypeAndAccountActivity.h"
-#include "accounts/CAuthenticatorDescription.h"
-#include "accounts/CAccountManager.h"
-#include "os/CBundle.h"
-#include "content/CIntent.h"
-#include "R.h"
+#include "elastos/droid/accounts/ChooseAccountTypeActivity.h"
+#include "elastos/droid/accounts/ChooseTypeAndAccountActivity.h"
+#include "elastos/droid/accounts/CAuthenticatorDescription.h"
+#include "elastos/droid/accounts/CAccountManager.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CString;

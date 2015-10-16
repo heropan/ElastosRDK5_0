@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_ROTATIONTOGGLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_ROTATIONTOGGLE_H__
 
-#include "widget/CompoundButton.h"
+#include "elastos/droid/widget/CompoundButton.h"
 #include "policy/AutoRotateController.h"
 
 using Elastos::Droid::Widget::CompoundButton;

@@ -1,5 +1,5 @@
 
-#include "webkit/CPluginManager.h"
+#include "elastos/droid/webkit/CPluginManager.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

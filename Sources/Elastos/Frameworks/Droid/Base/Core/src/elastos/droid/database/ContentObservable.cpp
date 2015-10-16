@@ -1,5 +1,5 @@
 
-#include "database/ContentObservable.h"
+#include "elastos/droid/database/ContentObservable.h"
 #include <elastos/core/AutoLock.h>
 
 namespace Elastos {

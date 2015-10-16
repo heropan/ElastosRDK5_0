@@ -1,14 +1,14 @@
 
-#include "ext/frameworkext.h"
-#include "gesture/CGesture.h"
-#include "gesture/GestureUtils.h"
-#include "gesture/CGestureStroke.h"
-#include "gesture/GestureConstants.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CPaint.h"
-#include "graphics/CPath.h"
-#include "graphics/CRectF.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/gesture/CGesture.h"
+#include "elastos/droid/gesture/GestureUtils.h"
+#include "elastos/droid/gesture/CGestureStroke.h"
+#include "elastos/droid/gesture/GestureConstants.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ISystem;

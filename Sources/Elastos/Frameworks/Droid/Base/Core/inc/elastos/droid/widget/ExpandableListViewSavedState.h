@@ -3,7 +3,7 @@
 #define __EXPANDABLELISTVIEWSAVEDSTATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 
 class ExpandableListViewSavedState : public ViewBaseSavedState
 {

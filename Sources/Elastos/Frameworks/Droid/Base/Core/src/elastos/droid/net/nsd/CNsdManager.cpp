@@ -1,7 +1,7 @@
 #include "CNsdManager.h"
 #include "CNsdServiceInfo.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/CHandlerThread.h"
+#include "elastos/droid/os/CHandlerThread.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CString;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPEDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPEDRAWABLE_H__
 
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Droid::Graphics::Drawable::Shapes::IShape;
 

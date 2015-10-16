@@ -1,9 +1,9 @@
 
-#include "content/res/CConfiguration.h"
-#include "content/res/CResources.h"
-#include "view/ContextThemeWrapper.h"
-#include "view/LayoutInflater.h"
-#include "R.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/view/ContextThemeWrapper.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::EIID_IContext;

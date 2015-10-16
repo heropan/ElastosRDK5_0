@@ -1,10 +1,10 @@
-#include "impl/RecentApplicationsDialog.h"
-#include "impl/CPhoneWindowManager.h"
-#include "impl/IconUtilities.h"
-#include "os/CHandler.h"
-#include "R.h"
-#include "view/SoundEffectConstants.h"
-#include "content/CIntent.h"
+#include "elastos/droid/impl/RecentApplicationsDialog.h"
+#include "elastos/droid/impl/CPhoneWindowManager.h"
+#include "elastos/droid/impl/IconUtilities.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/content/CIntent.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::R;

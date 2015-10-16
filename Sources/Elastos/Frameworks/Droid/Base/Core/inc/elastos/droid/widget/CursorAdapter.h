@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
 
-#include <ext/frameworkext.h>
-#include "widget/BaseAdapter.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IViewGroup;

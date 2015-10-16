@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CHANDLERTHREAD_H__
 
 #include "_Elastos_Droid_Os_CHandlerThread.h"
-#include "os/HandlerThread.h"
+#include "elastos/droid/os/HandlerThread.h"
 
 namespace Elastos {
 namespace Droid {

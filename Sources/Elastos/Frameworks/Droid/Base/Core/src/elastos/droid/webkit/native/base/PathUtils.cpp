@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/PathUtils.h"
-#include "os/Environment.h"
+#include "elastos/droid/webkit/native/base/PathUtils.h"
+#include "elastos/droid/os/Environment.h"
 
 using Elastos::Droid::Os::Environment;
 

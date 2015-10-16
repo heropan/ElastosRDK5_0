@@ -1,10 +1,10 @@
 
-#include "widget/AbsSpinner.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "widget/CAbsSpinnerSavedState.h"
-#include "widget/CArrayAdapter.h"
+#include "elastos/droid/widget/AbsSpinner.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/widget/CAbsSpinnerSavedState.h"
+#include "elastos/droid/widget/CArrayAdapter.h"
 //#include "utils/AutoStringArray.h"
-#include "utility/CParcelableObjectContainer.h"
+#include "elastos/droid/utility/CParcelableObjectContainer.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Utility::Etl::HashMap;

@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CDropZone.h"
 
-#include "systemui/statusbar/tablet/DropZone.h"
+#include "elastos/droid/systemui/statusbar/tablet/DropZone.h"
 
 namespace Elastos {
 namespace Droid {

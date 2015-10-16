@@ -1,7 +1,7 @@
 
-#include "internal/os/CPowerProfile.h"
-// #include "internal/utility/XmlUtils.h"
-#include "R.h"
+#include "elastos/droid/internal/os/CPowerProfile.h"
+// #include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/etl/List.h>
 

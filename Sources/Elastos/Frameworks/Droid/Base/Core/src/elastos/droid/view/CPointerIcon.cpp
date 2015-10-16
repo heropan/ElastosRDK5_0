@@ -1,9 +1,9 @@
 
-#include "view/CPointerIcon.h"
-#include "utility/XmlUtils.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/view/CPointerIcon.h"
+#include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Logger.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Utility::XmlUtils;
 using Elastos::Droid::Utility::IAttributeSet;

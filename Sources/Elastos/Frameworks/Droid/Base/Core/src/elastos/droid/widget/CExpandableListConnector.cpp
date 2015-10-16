@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CExpandableListConnector.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CExpandableListConnector.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,6 +1,6 @@
 
-#include "os/CDropBoxManagerEntry.h"
-#include "os/CParcelFileDescriptorAutoCloseInputStream.h"
+#include "elastos/droid/os/CDropBoxManagerEntry.h"
+#include "elastos/droid/os/CParcelFileDescriptorAutoCloseInputStream.h"
 
 using Elastos::IO::EIID_IInputStream;
 using Elastos::Droid::Os::CParcelFileDescriptorAutoCloseInputStream;

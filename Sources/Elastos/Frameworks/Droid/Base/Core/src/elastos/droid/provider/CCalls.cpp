@@ -1,11 +1,11 @@
 
-#include "provider/CCalls.h"
-#include "provider/CContactsContractDataUsageFeedback.h"
-#include "provider/CContactsContractCommonDataKindsCallable.h"
-#include "provider/CContactsContractCommonDataKindsPhone.h"
-#include "net/CUriHelper.h"
-#include "net/Uri.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/provider/CCalls.h"
+#include "elastos/droid/provider/CContactsContractDataUsageFeedback.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsCallable.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsPhone.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentValues.h"
 #include <elastos/coredef.h>
 #include <elastos/core/StringUtils.h>
 

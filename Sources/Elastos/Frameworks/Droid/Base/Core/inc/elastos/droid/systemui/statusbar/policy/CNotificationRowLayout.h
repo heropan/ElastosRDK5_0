@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/policy/NotificationRowLayout.h"
+#include "elastos/droid/systemui/statusbar/policy/NotificationRowLayout.h"
 
 namespace Elastos {
 namespace Droid {

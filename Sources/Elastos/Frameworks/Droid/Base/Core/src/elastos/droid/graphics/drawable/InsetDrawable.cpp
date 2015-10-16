@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/InsetDrawable.h"
-#include "graphics/drawable/CInsetDrawable.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/InsetDrawable.h"
+#include "elastos/droid/graphics/drawable/CInsetDrawable.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 

@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Media_CRemoteDisplay.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;

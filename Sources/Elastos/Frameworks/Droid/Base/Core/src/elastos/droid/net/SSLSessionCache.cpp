@@ -79,7 +79,7 @@ ECode SSLSessionCache::constructor(
 } // namespace Elastos
 
 #if 0 // old CSSLSessionCache.cpp
-#include "net/CSSLSessionCache.h"
+#include "elastos/droid/net/CSSLSessionCache.h"
 //#include "CFileClientSessionCache.h"
 
 using Elastos::IO::IFile;

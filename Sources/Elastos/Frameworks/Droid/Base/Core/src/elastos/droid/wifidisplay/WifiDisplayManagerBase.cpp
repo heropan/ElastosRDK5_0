@@ -1,5 +1,5 @@
-#include "wifidisplay/WifiDisplayManagerBase.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/wifidisplay/WifiDisplayManagerBase.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

@@ -1,6 +1,6 @@
 
-#include "webkit/CGeolocationPermissionsHelper.h"
-#include "webkit/GeolocationPermissions.h"
+#include "elastos/droid/webkit/CGeolocationPermissionsHelper.h"
+#include "elastos/droid/webkit/GeolocationPermissions.h"
 
 namespace Elastos {
 namespace Droid {

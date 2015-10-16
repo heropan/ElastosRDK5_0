@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_PASSWORDENTRYKEYBOARD_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_PASSWORDENTRYKEYBOARD_H__
 
-#include "inputmethodservice/Keyboard.h"
-#include "R.h"
+#include "elastos/droid/inputmethodservice/Keyboard.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::InputMethodService::Keyboard;

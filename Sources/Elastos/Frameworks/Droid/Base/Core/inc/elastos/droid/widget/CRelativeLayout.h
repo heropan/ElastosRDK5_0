@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CRelativeLayout.h"
 
 
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 namespace Elastos{
 namespace Droid{

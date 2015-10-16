@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractSettings.h"
+#include "elastos/droid/provider/CBrowserContractSettings.h"
 
 
 ECode CBrowserContractSettings::constructor()

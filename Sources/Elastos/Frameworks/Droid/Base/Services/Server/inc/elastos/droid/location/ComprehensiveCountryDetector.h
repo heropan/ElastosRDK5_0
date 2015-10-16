@@ -9,7 +9,7 @@
 #endif
 #include "location/CountryDetectorBase.h"
 #include <elastos/TimerTask.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

@@ -1,5 +1,5 @@
 
-#include "app/CInstrumentation.h"
+#include "elastos/droid/app/CInstrumentation.h"
 
 namespace Elastos {
 namespace Droid {

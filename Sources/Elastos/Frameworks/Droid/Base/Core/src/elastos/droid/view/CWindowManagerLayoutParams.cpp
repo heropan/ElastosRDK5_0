@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

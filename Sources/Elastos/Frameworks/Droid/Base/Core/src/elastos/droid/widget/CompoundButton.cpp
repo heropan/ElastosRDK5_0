@@ -1,5 +1,5 @@
 
-#include "widget/CompoundButton.h"
+#include "elastos/droid/widget/CompoundButton.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;

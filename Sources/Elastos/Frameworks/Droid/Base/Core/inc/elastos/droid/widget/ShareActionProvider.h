@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_SHAREACTIONPROVIDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ActionProvider.h"
+#include "elastos/droid/view/ActionProvider.h"
 
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IView;

@@ -1,5 +1,5 @@
-#include "utility/ReflectiveProperty.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/utility/ReflectiveProperty.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Core::IInteger16;
 using Elastos::Core::CInteger16;

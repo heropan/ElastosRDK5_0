@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHADAPTER_H__
 
 #include "_Elastos_Droid_Bluetooth_CBluetoothAdapter.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "CBluetoothAdapterManagerCallback.h"
 #include <elastos/utility/etl/List.h>
 

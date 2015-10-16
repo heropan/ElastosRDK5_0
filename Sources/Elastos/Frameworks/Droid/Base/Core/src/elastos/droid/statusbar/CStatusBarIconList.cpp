@@ -1,4 +1,4 @@
-#include "statusbar/CStatusBarIconList.h"
+#include "elastos/droid/statusbar/CStatusBarIconList.h"
 
 namespace Elastos {
 namespace Droid {

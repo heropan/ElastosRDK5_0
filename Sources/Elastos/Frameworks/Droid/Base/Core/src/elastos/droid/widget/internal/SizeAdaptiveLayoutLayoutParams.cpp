@@ -1,10 +1,10 @@
 
 
-#include "widget/internal/SizeAdaptiveLayoutLayoutParams.h"
+#include "elastos/droid/widget/internal/SizeAdaptiveLayoutLayoutParams.h"
 #include <elastos/core/StringBuilder.h>
-#include "view/View.h"
-#include "R.h"
-#include "widget/internal/SizeAdaptiveLayout.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/widget/internal/SizeAdaptiveLayout.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::R;

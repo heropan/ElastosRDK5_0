@@ -1,4 +1,4 @@
-#include "widget/internal/CDigitalClock2.h"
+#include "elastos/droid/widget/internal/CDigitalClock2.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

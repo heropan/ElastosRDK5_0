@@ -1,14 +1,14 @@
 
-#include "app/CAlertDialogBuilder.h"
-#include "os/Looper.h"
-#include "os/CMessageHelper.h"
-#include "os/Process.h"
-#include "webkit/WebCoreThreadWatchdog.h"
-#include "webkit/CWebViewClassic.h"
-#include "webkit/CWebViewCore.h"
-#include "view/View.h"
-#include "view/ViewRootImpl.h"
-#include "R.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/webkit/WebCoreThreadWatchdog.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CThread;

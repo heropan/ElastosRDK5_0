@@ -1,5 +1,5 @@
 
-#include "widget/CSimpleAdapter.h"
+#include "elastos/droid/widget/CSimpleAdapter.h"
 
 namespace Elastos {
 namespace Droid {

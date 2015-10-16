@@ -1,9 +1,9 @@
 
-#include "provider/CContactsContractStatusUpdates.h"
-#include "provider/ContactsContract.h"
-#include "provider/ContactsContractProfile.h"
-#include "net/Uri.h"
-#include "R.h"
+#include "elastos/droid/provider/CContactsContractStatusUpdates.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Net::Uri;
 

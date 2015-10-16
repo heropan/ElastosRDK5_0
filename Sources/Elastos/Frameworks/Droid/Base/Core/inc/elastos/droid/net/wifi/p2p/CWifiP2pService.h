@@ -2,13 +2,13 @@
 #define __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
 
 #include "_Elastos_Droid_Net_CWifiP2pService.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include "utility/StateMachine.h"
-#include "utility/State.h"
-#include "utility/AsyncChannel.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/utility/StateMachine.h"
+#include "elastos/droid/utility/State.h"
+#include "elastos/droid/utility/AsyncChannel.h"
+#include "elastos/droid/os/SystemProperties.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/base/WindowCallbackWrapper.h"
-//#include "app/Application.h"
+#include "elastos/droid/webkit/native/base/WindowCallbackWrapper.h"
+//#include "elastos/droid/app/Application.h"
 
 using Elastos::Droid::App::IActivity;
 //using Elastos::Droid::App::Application;

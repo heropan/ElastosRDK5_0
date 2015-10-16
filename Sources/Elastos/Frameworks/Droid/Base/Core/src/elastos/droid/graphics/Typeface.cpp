@@ -1,6 +1,6 @@
 
-#include "graphics/Typeface.h"
-#include "graphics/CTypeface.h"
+#include "elastos/droid/graphics/Typeface.h"
+#include "elastos/droid/graphics/CTypeface.h"
 #include <skia/core/SkStream.h>
 #include <skia/core/SkTypeface.h>
 #include <androidfw/AssetManager.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_TABLEROW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 #include <elastos/utility/etl/HashMap.h>
 
 namespace Elastos {

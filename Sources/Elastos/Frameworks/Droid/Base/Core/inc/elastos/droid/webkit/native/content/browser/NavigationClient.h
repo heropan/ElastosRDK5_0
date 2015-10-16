@@ -7,7 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONCLIENT_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/NavigationHistory.h"
+#include "elastos/droid/webkit/native/content/browser/NavigationHistory.h"
 
 namespace Elastos {
 namespace Droid {

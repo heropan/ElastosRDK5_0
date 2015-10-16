@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_VIEW_CKEYEVENT_H__
 
 #include "_Elastos_Droid_View_CKeyEvent.h"
-#include "view/InputEvent.h"
-#include "view/CKeyCharacterMap.h"
+#include "elastos/droid/view/InputEvent.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
 
 namespace Elastos {
 namespace Droid {

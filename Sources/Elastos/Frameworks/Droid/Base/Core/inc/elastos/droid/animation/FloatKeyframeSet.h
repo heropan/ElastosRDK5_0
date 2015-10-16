@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_FLOATKEYFRAMESET_H__
 #define  __ELASTOS_DROID_ANIMATION_FLOATKEYFRAMESET_H__
 
-#include "animation/KeyframeSet.h"
+#include "elastos/droid/animation/KeyframeSet.h"
 
 namespace Elastos {
 namespace Droid {

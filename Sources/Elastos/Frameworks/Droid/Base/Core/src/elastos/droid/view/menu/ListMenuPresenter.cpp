@@ -1,12 +1,12 @@
 
-#include "view/menu/ListMenuPresenter.h"
-#include "view/menu/MenuBuilderBase.h"
-#include "view/menu/CMenuDialogHelper.h"
+#include "elastos/droid/view/menu/ListMenuPresenter.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/CMenuDialogHelper.h"
 #include <elastos/utility/etl/List.h>
-#include "view/LayoutInflater.h"
-#include "os/CBundle.h"
-#include "view/CContextThemeWrapper.h"
-#include "R.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::R;

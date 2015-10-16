@@ -1,6 +1,6 @@
 
 #include "DrawableHolder.h"
-#include "view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 
 using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::Animation::EIID_IAnimatorListener;

@@ -2,7 +2,7 @@
 #ifndef __LOCALSOURCE_H__
 #define __LOCALSOURCE_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "MediaSource.h"
 #include "MediaObject.h"
 #include "PathMatcher.h"
@@ -18,11 +18,11 @@ class LocalSource
     : public MediaSource
 {
 public:
-	LocalSource(
+    LocalSource(
         /* [in] */ IContext* context);
 
-	virtual CARAPI_(AutoPtr<MediaObject>) CreateMediaObject(
-		/* [in] */ Path* path);
+    virtual CARAPI_(AutoPtr<MediaObject>) CreateMediaObject(
+        /* [in] */ Path* path);
 
     virtual CARAPI_(AutoPtr<Path>) FindPathByUri(
         /* [in] */ IUri* uri,
@@ -54,12 +54,12 @@ private:
         /* [in] */ Boolean isImage);
 
 public:
-	static const String KEY_BUCKET_ID;
-	// static final Comparator<PathId> sIdComparator = new IdComparator();
+    static const String KEY_BUCKET_ID;
+    // static final Comparator<PathId> sIdComparator = new IdComparator();
 
 private:
     static const String TAG;
-	static const Int32 NO_MATCH;
+    static const Int32 NO_MATCH;
 
     static const Int32 LOCAL_IMAGE_ALBUMSET;
     static const Int32 LOCAL_VIDEO_ALBUMSET;

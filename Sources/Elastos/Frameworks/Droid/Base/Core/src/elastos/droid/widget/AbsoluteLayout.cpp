@@ -1,7 +1,7 @@
 
-#include "widget/AbsoluteLayout.h"
+#include "elastos/droid/widget/AbsoluteLayout.h"
 #include <elastos/core/Math.h>
-#include "widget/CAbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
 
 namespace Elastos{
 namespace Droid{

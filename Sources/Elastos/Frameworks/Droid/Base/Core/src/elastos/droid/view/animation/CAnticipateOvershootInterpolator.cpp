@@ -1,6 +1,6 @@
 
-#include "view/animation/CAnticipateOvershootInterpolator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/animation/CAnticipateOvershootInterpolator.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

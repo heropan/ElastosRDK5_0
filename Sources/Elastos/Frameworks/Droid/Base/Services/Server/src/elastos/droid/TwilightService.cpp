@@ -1,7 +1,7 @@
 
 #include "TwilightService.h"
-#include "os/Handler.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IRunnable;

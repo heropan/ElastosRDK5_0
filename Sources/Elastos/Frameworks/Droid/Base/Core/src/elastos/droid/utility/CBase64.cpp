@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "utility/CBase64.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/utility/CBase64.h"
 
 namespace Elastos {
 namespace Droid {

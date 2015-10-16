@@ -3,7 +3,7 @@
 #define __CMAINACTIVITY_H__
 
 #include "_CMainActivity.h"
-#include "app/ListActivity.h"
+#include "elastos/droid/app/ListActivity.h"
 
 using Elastos::Droid::App::ListActivity;
 using Elastos::Droid::View::IViewOnClickListener;

@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodManager.h"
-#include "view/inputmethod/CControlledInputConnectionWrapper.h"
-#include "os/HandlerBase.h"
-#include "os/Runnable.h"
+#include "elastos/droid/view/inputmethod/CControlledInputConnectionWrapper.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::IObjectMap;

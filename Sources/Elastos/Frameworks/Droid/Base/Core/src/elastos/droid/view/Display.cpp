@@ -1,10 +1,10 @@
 
-#include "view/Display.h"
-#include "view/DisplayAdjustments.h"
-#include "ext/frameworkext.h"
-#include "os/SystemClock.h"
-#include "utility/CDisplayMetrics.h"
-#include "content/res/CCompatibilityInfoHelper.h"
+#include "elastos/droid/view/Display.h"
+#include "elastos/droid/view/DisplayAdjustments.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/content/res/CCompatibilityInfoHelper.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>

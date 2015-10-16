@@ -1,5 +1,5 @@
-#include "systemui/statusbar/tablet/NotificationLinearLayout.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/tablet/NotificationLinearLayout.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 

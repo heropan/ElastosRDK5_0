@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETTICKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ImageView.h"
+#include "elastos/droid/widget/ImageView.h"
 
 
 using Elastos::Droid::Animation::ITransitionListener;

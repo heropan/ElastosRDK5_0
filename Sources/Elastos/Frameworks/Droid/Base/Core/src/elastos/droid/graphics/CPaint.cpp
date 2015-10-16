@@ -1,5 +1,5 @@
 
-#include "graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 
 namespace Elastos {
 namespace Droid {

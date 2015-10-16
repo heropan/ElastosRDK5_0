@@ -1,5 +1,5 @@
 
-#include "hardware/usb/UsbDeviceConnection.h"
+#include "elastos/droid/hardware/usb/UsbDeviceConnection.h"
 #include <usbhost/usbhost.h>
 
 #include <sys/types.h>

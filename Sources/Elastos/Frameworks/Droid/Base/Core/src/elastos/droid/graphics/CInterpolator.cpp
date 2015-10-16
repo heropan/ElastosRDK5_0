@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CInterpolator.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CInterpolator.h"
 #include "SkScalar.h"
 #include "SkTemplates.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <skia/utils/SkInterpolator.h>
 
 using Elastos::Droid::Os::SystemClock;

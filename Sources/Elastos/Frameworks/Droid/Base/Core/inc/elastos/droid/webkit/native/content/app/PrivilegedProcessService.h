@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_APP_PRIVILEGEDPROCESSSERVICE_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_APP_PRIVILEGEDPROCESSSERVICE_H__
 
-#include "webkit/native/content/app/ChildProcessService.h"
+#include "elastos/droid/webkit/native/content/app/ChildProcessService.h"
 
 namespace Elastos {
 namespace Droid {

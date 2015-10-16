@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CSTRICTMODEVOILATIONINFO_H__
 
 #include "_Elastos_Droid_Os_CStrictModeViolationInfo.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/Core/Object.h>
 
 using Elastos::Droid::App::IApplicationErrorReportCrashInfo;

@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractSyncState.h"
+#include "elastos/droid/provider/CBrowserContractSyncState.h"
 
 
 ECode CBrowserContractSyncState::constructor()

@@ -6,7 +6,7 @@
 
 
 
-#include "widget/internal/WeightedLinearLayout.h"
+#include "elastos/droid/widget/internal/WeightedLinearLayout.h"
 
 
 namespace Elastos {

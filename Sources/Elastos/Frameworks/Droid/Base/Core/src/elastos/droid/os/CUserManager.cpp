@@ -1,14 +1,14 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CUserManager.h"
-#include "os/CUserHandle.h"
-#include "os/SystemProperties.h"
-#include "os/Process.h"
-#include "os/UserHandle.h"
-#include "os/CBundle.h"
-//#include "app/ActivityManagerNative.h"
-//#include "content/res/CResourcesHelper.h"
-//#include "provider/Settings.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CUserManager.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CBundle.h"
+//#include "elastos/droid/app/ActivityManagerNative.h"
+//#include "elastos/droid/content/res/CResourcesHelper.h"
+//#include "elastos/droid/provider/Settings.h"
 
 //using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::Content::IContentResolver;

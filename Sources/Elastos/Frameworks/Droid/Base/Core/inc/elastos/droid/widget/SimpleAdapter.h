@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_SIMPLEADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/BaseAdapter.h"
-#include "widget/Filter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/widget/Filter.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

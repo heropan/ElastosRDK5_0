@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CSIMPLEADAPTER_H__
 
 #include "_Elastos_Droid_Widget_CSimpleAdapter.h"
-#include "widget/SimpleAdapter.h"
+#include "elastos/droid/widget/SimpleAdapter.h"
 
 namespace Elastos {
 namespace Droid {

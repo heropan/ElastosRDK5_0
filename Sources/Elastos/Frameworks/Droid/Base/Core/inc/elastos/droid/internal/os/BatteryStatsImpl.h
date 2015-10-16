@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_OS_BATTERYSTATSIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/BatteryStats.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/BatteryStats.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

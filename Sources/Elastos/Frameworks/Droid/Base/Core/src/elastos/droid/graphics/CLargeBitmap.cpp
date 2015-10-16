@@ -1,12 +1,12 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CLargeBitmap.h"
-#include "graphics/CRect.h"
-#include "graphics/CBitmapFactoryOptions.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/AutoDecoderCancel.h"
-#include "graphics/GraphicsNative.h"
-#include "graphics/NBitmapFactory.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CLargeBitmap.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/AutoDecoderCancel.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+#include "elastos/droid/graphics/NBitmapFactory.h"
 #include <skia/core/SkTemplates.h>
 #include <skia/core/SkPixelRef.h>
 

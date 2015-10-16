@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_OS_CSYSTEMVIBRATOR_H__
 
 #include "_Elastos_Droid_Os_CSystemVibrator.h"
-#include "ext/frameworkdef.h"
-#include "os/Vibrator.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/Vibrator.h"
 
 using Elastos::Droid::Os::IVibratorService;
 using Elastos::Droid::Media::IAudioAttributes;

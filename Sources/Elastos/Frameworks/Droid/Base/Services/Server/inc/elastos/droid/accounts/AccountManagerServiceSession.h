@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_ACCOUNTMANAGERSERVICESESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_ACCOUNTMANAGERSERVICESESSION_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "accounts/CAccountManagerService.h"
 
 using Elastos::Droid::Os::IBinder;

@@ -1,6 +1,6 @@
-#include "view/ViewPropertyAnimator.h"
-#include "animation/CValueAnimator.h"
-#include "view/View.h"
+#include "elastos/droid/view/ViewPropertyAnimator.h"
+#include "elastos/droid/animation/CValueAnimator.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Animation::ValueAnimator;
 using Elastos::Droid::Animation::CValueAnimator;

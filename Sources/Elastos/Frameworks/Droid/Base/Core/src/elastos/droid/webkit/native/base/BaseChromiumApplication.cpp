@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/BaseChromiumApplication.h"
-#include "webkit/native/base/ApplicationStatus.h"
+#include "elastos/droid/webkit/native/base/BaseChromiumApplication.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 
 using Elastos::Droid::View::IWindow;
 

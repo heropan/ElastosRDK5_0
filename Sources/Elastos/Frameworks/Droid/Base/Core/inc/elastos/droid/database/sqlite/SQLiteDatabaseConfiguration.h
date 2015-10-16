@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASECONFIGURATION_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASECONFIGURATION_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include "database/sqlite/SQLiteCustomFunction.h"
+#include "elastos/droid/database/sqlite/SQLiteCustomFunction.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::ILocale;

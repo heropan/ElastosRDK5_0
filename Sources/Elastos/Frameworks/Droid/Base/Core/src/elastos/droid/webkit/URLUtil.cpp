@@ -1,8 +1,8 @@
 
-#include "net/Uri.h"
-//#include "net/WebAddress.h"
-#include "webkit/URLUtil.h"
-#include "webkit/MimeTypeMap.h"
+#include "elastos/droid/net/Uri.h"
+//#include "elastos/droid/net/WebAddress.h"
+#include "elastos/droid/webkit/URLUtil.h"
+#include "elastos/droid/webkit/MimeTypeMap.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
@@ -112,7 +112,7 @@ String URLUtil::ComposeSearchUrl(
     //    query = java.net.URLEncoder.encode(inQuery, "utf-8");
     AutoPtr<IURLEncoder> URLEncoder;
     assert(0);
-//    	CURLEncoder::New((IURLEncoder**)&URLEncoder);
+//        CURLEncoder::New((IURLEncoder**)&URLEncoder);
     if (FAILED(URLEncoder->Encode(inQuery, String("utf-8"), &query))){
         return String(NULL);
     }

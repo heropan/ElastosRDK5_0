@@ -1,6 +1,6 @@
 
 #include "CBluetoothA2dpStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -14,7 +14,7 @@ namespace Bluetooth {
 ECode CBluetoothA2dpStateChangeCallback::OnBluetoothStateChange(
     /* [in] */ Boolean up)
 {
-	if (BluetoothA2dp::DBG) Logger::D(BluetoothA2dp::TAG, "onBluetoothStateChange: up=%d", up);
+    if (BluetoothA2dp::DBG) Logger::D(BluetoothA2dp::TAG, "onBluetoothStateChange: up=%d", up);
     if (!up) {
         if (BluetoothA2dp::VDBG) Logger::D(BluetoothA2dp::TAG, "Unbinding service...");
         AutoLock lock(mHost->mConnectionLock);
@@ -54,7 +54,7 @@ ECode CBluetoothA2dpStateChangeCallback::OnBluetoothStateChange(
 ECode CBluetoothA2dpStateChangeCallback::constructor(
     /* [in] */ IInterface* host)
 {
-	mHost = (BluetoothA2dp*)host;
+    mHost = (BluetoothA2dp*)host;
     return NOERROR;
 }
 

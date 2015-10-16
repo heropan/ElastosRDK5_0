@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CREGION_H__
 
 #include "_Elastos_Droid_Graphics_CRegion.h"
-#include "utility/Pools.h"
+#include "elastos/droid/utility/Pools.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::Pools;

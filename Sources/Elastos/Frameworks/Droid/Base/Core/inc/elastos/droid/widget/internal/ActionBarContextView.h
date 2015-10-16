@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARCONTEXTVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARCONTEXTVIEW_H__
 
-#include "widget/internal/AbsActionBarView.h"
+#include "elastos/droid/widget/internal/AbsActionBarView.h"
 
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 

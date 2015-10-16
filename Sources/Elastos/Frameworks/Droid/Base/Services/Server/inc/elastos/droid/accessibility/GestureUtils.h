@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_GESTUREUTILS_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_GESTUREUTILS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::View::IMotionEvent;
 

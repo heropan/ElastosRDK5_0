@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_DATEPICKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/FrameLayout.h"
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 #include <Elastos.CoreLibrary.h>
 #include <Elastos.CoreLibrary.h>
 #include <R.h>

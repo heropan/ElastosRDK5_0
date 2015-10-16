@@ -1,9 +1,9 @@
 
-#include "webkit/FindActionModeCallback.h"
-#include "webkit/CWebViewClassic.h"
-#include "text/Selection.h"
-#include "view/LayoutInflater.h"
-#include "R.h"
+#include "elastos/droid/webkit/FindActionModeCallback.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/text/Selection.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger32;

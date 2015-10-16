@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_VIEWPROPERTYANIMATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

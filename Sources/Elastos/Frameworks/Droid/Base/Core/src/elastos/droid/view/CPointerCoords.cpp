@@ -1,6 +1,6 @@
 
-#include "view/CPointerCoords.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/CPointerCoords.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

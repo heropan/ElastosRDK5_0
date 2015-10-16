@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/shapes/COvalShape.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/shapes/COvalShape.h"
 
 namespace Elastos {
 namespace Droid {

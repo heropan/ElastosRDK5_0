@@ -1,9 +1,9 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/CAccountAuthenticatorTransport.h"
-#include "accounts/CAccountAuthenticatorResponse.h"
-#include "accounts/AbstractAccountAuthenticator.h"
-#include "os/CBundle.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/CAccountAuthenticatorTransport.h"
+#include "elastos/droid/accounts/CAccountAuthenticatorResponse.h"
+#include "elastos/droid/accounts/AbstractAccountAuthenticator.h"
+#include "elastos/droid/os/CBundle.h"
 
 using Elastos::Droid::Os::CBundle;
 

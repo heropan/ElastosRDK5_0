@@ -5,8 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include "os/Runnable.h"
-#include "R.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::Math;
 using Elastos::Droid::R;

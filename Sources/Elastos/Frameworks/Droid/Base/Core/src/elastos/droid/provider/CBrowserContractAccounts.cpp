@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractAccounts.cpp"
+#include "elastos/droid/provider/CBrowserContractAccounts.cpp"
 
 
 CARAPI CBrowserContractAccounts::GetCONTENT_URI(

@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__
 #define __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__
 
-#include "speech/tts/PlaybackQueueItem.h"
-#include "speech/tts/BlockingAudioTrack.h"
-#include "speech/tts/EventLogger.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/speech/tts/PlaybackQueueItem.h"
+#include "elastos/droid/speech/tts/BlockingAudioTrack.h"
+#include "elastos/droid/speech/tts/EventLogger.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

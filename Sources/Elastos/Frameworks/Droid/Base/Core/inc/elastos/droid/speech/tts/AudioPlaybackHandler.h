@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackHandler_H__
 #define __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackHandler_H__
 
-#include "speech/tts/PlaybackQueueItem.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/speech/tts/PlaybackQueueItem.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 //#include <elastos/Queue.h>//#include <elastos/BlockingQueue.h>
 

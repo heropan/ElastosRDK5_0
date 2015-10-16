@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CDOWNLOADMANAGER_H__
 
 #include "_Elastos_Droid_App_CDownloadManager.h"
-#include "database/CursorWrapper.h"
+#include "elastos/droid/database/CursorWrapper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::ICursor;

@@ -1,8 +1,8 @@
 
-#include "view/animation/CAnimationSet.h"
-#include "view/animation/CTransformation.h"
+#include "elastos/droid/view/animation/CAnimationSet.h"
+#include "elastos/droid/view/animation/CTransformation.h"
 #include <elastos/core/Math.h>
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Os::Build;
 using namespace Elastos::Core;

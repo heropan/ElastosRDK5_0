@@ -1,8 +1,8 @@
 
 #include "am/CBatteryStatsService.h"
-#include "os/ServiceManager.h"
-#include "os/Process.h"
-#include "os/Binder.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Binder.h"
 #include "R.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>

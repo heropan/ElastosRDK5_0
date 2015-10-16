@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHTETHERINGDATATRACLER_H__
 #define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHTETHERINGDATATRACLER_H__
 
-#include "net/NetworkStateTracker.h"
+#include "elastos/droid/net/NetworkStateTracker.h"
 #include "BluetoothPan.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;

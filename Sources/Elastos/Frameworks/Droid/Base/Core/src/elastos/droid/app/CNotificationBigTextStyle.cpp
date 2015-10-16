@@ -1,5 +1,5 @@
-#include "app/CNotificationBigTextStyle.h"
-#include "R.h"
+#include "elastos/droid/app/CNotificationBigTextStyle.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;

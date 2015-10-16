@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
 
 #include "_Elastos_Droid_View_CWindowInfo.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;

@@ -1,4 +1,4 @@
-#include "widget/CVolumePanelDialog.h"
+#include "elastos/droid/widget/CVolumePanelDialog.h"
 
 namespace Elastos {
 namespace Droid {

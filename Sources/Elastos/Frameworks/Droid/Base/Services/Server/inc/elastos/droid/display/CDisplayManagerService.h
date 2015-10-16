@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_CDISPLAYMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_CDISPLAYMANAGERSERVICE_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_Display_CDisplayManagerService.h"
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
@@ -10,7 +10,7 @@
 #include "display/WifiDisplayAdapter.h"
 #include "display/LogicalDisplay.h"
 #include "display/PersistentDataStore.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/Core/Object.h>
 

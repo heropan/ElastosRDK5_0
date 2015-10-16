@@ -1,8 +1,8 @@
 
-#include "webkit/native/content/browser/ChildProcessLauncher.h"
-#include "webkit/native/content/browser/BindingManagerImpl.h"
-#include "webkit/native/base/ThreadUtils.h"
-#include "webkit/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/native/content/browser/ChildProcessLauncher.h"
+#include "elastos/droid/webkit/native/content/browser/BindingManagerImpl.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/base/TraceEvent.h"
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Droid::Webkit::Base::TraceEvent;

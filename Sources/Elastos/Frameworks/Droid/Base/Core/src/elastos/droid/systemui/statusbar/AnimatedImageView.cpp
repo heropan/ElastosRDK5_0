@@ -1,4 +1,4 @@
-#include "systemui/statusbar/AnimatedImageView.h"
+#include "elastos/droid/systemui/statusbar/AnimatedImageView.h"
 
 using Elastos::Droid::Graphics::Drawable::IAnimatable;
 

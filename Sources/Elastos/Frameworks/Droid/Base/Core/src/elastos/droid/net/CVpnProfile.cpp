@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "text/TextUtils.h"
-#include "net/CVpnProfile.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/net/CVpnProfile.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

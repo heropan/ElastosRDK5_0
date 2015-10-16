@@ -3,12 +3,12 @@
 #define __ELASTOS_DROID_WEBKIT_BROWSERFRAME_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "os/Runnable.h"
-#include "webkit/HttpAuthHandler.h"
-#include "webkit/SslErrorHandler.h"
-#include "webkit/WebCoreElastosBridge.h"
-#include "webkit/KeyStoreHandler.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/webkit/HttpAuthHandler.h"
+#include "elastos/droid/webkit/SslErrorHandler.h"
+#include "elastos/droid/webkit/WebCoreElastosBridge.h"
+#include "elastos/droid/webkit/KeyStoreHandler.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>

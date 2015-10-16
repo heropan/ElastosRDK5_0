@@ -1,5 +1,5 @@
-#include "app/CSearchableInfoHelper.h"
-#include "app/CSearchableInfo.h"
+#include "elastos/droid/app/CSearchableInfoHelper.h"
+#include "elastos/droid/app/CSearchableInfo.h"
 
 namespace Elastos {
 namespace Droid {

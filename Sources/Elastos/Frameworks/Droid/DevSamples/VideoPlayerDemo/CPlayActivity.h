@@ -2,7 +2,7 @@
 #ifndef __CPLAYERACTIVITY_H__
 #define __CPLAYERACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CPlayActivity.h"
 #include <elautoptr.h>
 

@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_CWINDOWMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_WM_CWINDOWMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Wm_CWindowManagerService.h"
 #include "input/CInputManagerService.h"
 #include "display/CDisplayManagerService.h"
 #include "power/CPowerManagerService.h"
-#include "view/InputEventReceiver.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 #include "wm/WindowState.h"
 #include "wm/AppWindowToken.h"
 #include "wm/FakeWindowImpl.h"

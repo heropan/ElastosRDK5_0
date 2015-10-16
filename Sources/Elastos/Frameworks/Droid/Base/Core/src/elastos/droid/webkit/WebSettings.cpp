@@ -1,6 +1,6 @@
 
-#include "webkit/WebSettings.h"
-#include "webkit/WebViewFactory.h"
+#include "elastos/droid/webkit/WebSettings.h"
+#include "elastos/droid/webkit/WebViewFactory.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

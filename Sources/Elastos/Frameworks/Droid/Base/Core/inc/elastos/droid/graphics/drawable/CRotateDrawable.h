@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CROTATEDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CRotateDrawable.h"
-#include "graphics/drawable/RotateDrawable.h"
+#include "elastos/droid/graphics/drawable/RotateDrawable.h"
 
 namespace Elastos {
 namespace Droid {

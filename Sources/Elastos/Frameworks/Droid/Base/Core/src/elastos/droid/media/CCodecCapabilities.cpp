@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CCodecCapabilities.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CCodecCapabilities.h"
 
 namespace Elastos {
 namespace Droid {

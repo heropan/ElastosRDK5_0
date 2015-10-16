@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CSCROLLER_H__
 
 #include "_Elastos_Droid_Widget_CScroller.h"
-#include "widget/Scroller.h"
+#include "elastos/droid/widget/Scroller.h"
 
 namespace Elastos {
 namespace Droid {

@@ -31,7 +31,7 @@ public:
 #ifndef __ELASTOS_DROID_NET_CNETWORKINFO_H__
 #define __ELASTOS_DROID_NET_CNETWORKINFO_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Net_CNetworkInfo.h"
 #include <elastos/utility/etl/HashMap.h>
 

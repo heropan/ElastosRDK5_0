@@ -1,25 +1,25 @@
 
-#include "net/ethernet/EthernetDataTracker.h"
-#include "net/NetworkUtils.h"
+#include "elastos/droid/net/ethernet/EthernetDataTracker.h"
+#include "elastos/droid/net/NetworkUtils.h"
 #ifdef DROID_CORE
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
-#include "net/CInterfaceConfiguration.h"
-#include "net/CRouteInfo.h"
-#include "net/CLinkCapabilities.h"
-#include "net/CLinkProperties.h"
-#include "net/CNetworkInfo.h"
-#include "net/ethernet/CEthernetDevInfo.h"
-#include "net/ethernet/CEDTInterfaceObserver.h"
-#include "net/ethernet/CEthernetManager.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/net/CInterfaceConfiguration.h"
+#include "elastos/droid/net/CRouteInfo.h"
+#include "elastos/droid/net/CLinkCapabilities.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/ethernet/CEthernetDevInfo.h"
+#include "elastos/droid/net/ethernet/CEDTInterfaceObserver.h"
+#include "elastos/droid/net/ethernet/CEthernetManager.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #endif
-#include "os/Handler.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Thread.h>
 #include <cutils/properties.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;

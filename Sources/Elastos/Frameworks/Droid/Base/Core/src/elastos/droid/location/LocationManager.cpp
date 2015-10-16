@@ -1,11 +1,11 @@
 
-#include "location/LocationManager.h"
-#include "location/CLocationRequest.h"
-#include "location/CProviderProperties.h"
-#include "location/CLocationProvider.h"
-#include "location/CGeofence.h"
-#include "location/CGpsStatus.h"
-#include "os/Build.h"
+#include "elastos/droid/location/LocationManager.h"
+#include "elastos/droid/location/CLocationRequest.h"
+#include "elastos/droid/location/CProviderProperties.h"
+#include "elastos/droid/location/CLocationProvider.h"
+#include "elastos/droid/location/CGeofence.h"
+#include "elastos/droid/location/CGpsStatus.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 

@@ -1,6 +1,6 @@
 
 #include "CSettingsProvider.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "Manifest.h"
 #include <R.h>
 #include <elastos/utility/logging/Logger.h>

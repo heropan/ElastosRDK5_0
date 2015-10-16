@@ -2,7 +2,7 @@
 #define __CAboutACTIVITY_H__
 
 #include "_CAboutActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;

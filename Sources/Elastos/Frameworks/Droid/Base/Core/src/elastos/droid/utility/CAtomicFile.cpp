@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "utility/CAtomicFile.h"
-#include "os/FileUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/utility/CAtomicFile.h"
+#include "elastos/droid/os/FileUtils.h"
 
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;

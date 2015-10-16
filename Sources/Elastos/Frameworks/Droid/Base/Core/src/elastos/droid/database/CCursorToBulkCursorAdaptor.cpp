@@ -1,8 +1,8 @@
 
-#include "database/CCursorToBulkCursorAdaptor.h"
-#include "database/CCrossProcessCursorWrapper.h"
-#include "database/CCursorWindow.h"
-#include "os/Process.h"
+#include "elastos/droid/database/CCursorToBulkCursorAdaptor.h"
+#include "elastos/droid/database/CCrossProcessCursorWrapper.h"
+#include "elastos/droid/database/CCursorWindow.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 

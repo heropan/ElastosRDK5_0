@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CKeyButtonView.h"
 
-#include "systemui/statusbar/policy/KeyButtonView.h"
+#include "elastos/droid/systemui/statusbar/policy/KeyButtonView.h"
 
 using Elastos::Droid::Widget::ImageViewScaleType;
 

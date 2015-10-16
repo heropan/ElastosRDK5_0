@@ -1,8 +1,8 @@
 
 #include "location/ComprehensiveCountryDetector.h"
 #include "location/LocationBasedCountryDetector.h"
-#include "text/TextUtils.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/TimerTask.h>
 #include <elastos/core/StringBuilder.h>
 

@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 
-#include <ext/frameworkext.h>
-#include "content/BroadcastReceiver.h"
-#include "content/CIntentFilter.h"
-#include "view/View.h"
-#include "text/format/CTime.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;

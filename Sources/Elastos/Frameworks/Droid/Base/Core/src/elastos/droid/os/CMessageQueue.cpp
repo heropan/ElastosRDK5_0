@@ -1,10 +1,10 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CMessageQueue.h"
-#include "os/CMessageHelper.h"
-#include "os/NativeMessageQueue.h"
-#include "os/Binder.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CMessageQueue.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/NativeMessageQueue.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>

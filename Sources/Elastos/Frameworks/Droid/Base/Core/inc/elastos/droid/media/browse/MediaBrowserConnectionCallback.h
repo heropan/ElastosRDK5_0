@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_BROWSE_MEDIABROWSERCONNECTIONCALLBACK_H__
 #define __ELASTOS_DROID_MEDIA_BROWSE_MEDIABROWSERCONNECTIONCALLBACK_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

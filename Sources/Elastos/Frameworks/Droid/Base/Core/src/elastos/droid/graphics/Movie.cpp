@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/Movie.h"
-#include "graphics/Canvas.h"
-#include "graphics/Paint.h"
-#include "graphics/CreateOutputStreamAdaptor.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/Movie.h"
+#include "elastos/droid/graphics/Canvas.h"
+#include "elastos/droid/graphics/Paint.h"
+#include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
 #include <skia/images/SkMovie.h>
 
 using Elastos::IO::IFileInputStream;

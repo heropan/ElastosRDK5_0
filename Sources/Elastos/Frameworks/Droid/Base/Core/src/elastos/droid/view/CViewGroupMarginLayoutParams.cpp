@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/CViewGroupMarginLayoutParams.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CViewGroupMarginLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

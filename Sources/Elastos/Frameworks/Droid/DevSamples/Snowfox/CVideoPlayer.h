@@ -2,7 +2,7 @@
 #ifndef __CVIDEOPLAYER_H__
 #define __CVIDEOPLAYER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CVideoPlayer.h"
 
 using Elastos::Droid::App::Activity;

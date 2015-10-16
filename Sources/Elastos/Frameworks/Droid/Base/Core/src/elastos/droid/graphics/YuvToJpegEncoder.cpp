@@ -1,4 +1,4 @@
-#include "graphics/YuvToJpegEncoder.h"
+#include "elastos/droid/graphics/YuvToJpegEncoder.h"
 #include <skia/images/SkJpegUtility.h>
 #include <hardware/hardware.h>
 

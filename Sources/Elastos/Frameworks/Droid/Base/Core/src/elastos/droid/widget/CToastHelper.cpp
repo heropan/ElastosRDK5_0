@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "widget/CToastHelper.h"
-#include "widget/Toast.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/widget/CToastHelper.h"
+#include "elastos/droid/widget/Toast.h"
 
 namespace Elastos {
 namespace Droid {

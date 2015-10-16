@@ -1,9 +1,9 @@
 
-#include "impl/CPolicy.h"
-#include "impl/CPhoneWindow.h"
-#include "impl/CPhoneLayoutInflater.h"
-#include "impl/CPhoneWindowManager.h"
-#include "impl/CPhoneFallbackEventHandler.h"
+#include "elastos/droid/impl/CPolicy.h"
+#include "elastos/droid/impl/CPhoneWindow.h"
+#include "elastos/droid/impl/CPhoneLayoutInflater.h"
+#include "elastos/droid/impl/CPhoneWindowManager.h"
+#include "elastos/droid/impl/CPhoneFallbackEventHandler.h"
 
 namespace Elastos {
 namespace Droid {

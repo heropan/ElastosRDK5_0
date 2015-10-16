@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/LayerDrawable.h"
-#include "graphics/drawable/CLayerDrawable.h"
-#include "graphics/CRect.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/LayerDrawable.h"
+#include "elastos/droid/graphics/drawable/CLayerDrawable.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::R;

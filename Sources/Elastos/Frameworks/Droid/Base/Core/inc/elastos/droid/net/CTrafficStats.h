@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Net_CTrafficStats.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/Mutex.h"
-#include "content/Context.h"
+#include "elastos/droid/content/Context.h"
 
 
 using Elastos::Droid::Content::IContext;

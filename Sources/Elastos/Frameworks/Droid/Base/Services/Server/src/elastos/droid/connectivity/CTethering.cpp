@@ -1,6 +1,6 @@
 
 #include "connectivity/CTethering.h"
-#include "net/NetworkUtils.h"
+#include "elastos/droid/net/NetworkUtils.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>

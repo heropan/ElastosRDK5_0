@@ -1,6 +1,6 @@
 
-#include "view/menu/ExpandedMenuView.h"
-#include "view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/ExpandedMenuView.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
 
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 

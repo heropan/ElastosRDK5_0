@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENT_H__
 
 #include "_Elastos_Droid_Media_CMediaSyncEvent.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "media/CDecoderCapabilitiesHelper.h"
-#include "media/CDecoderCapabilities.h"
+#include "elastos/droid/media/CDecoderCapabilitiesHelper.h"
+#include "elastos/droid/media/CDecoderCapabilities.h"
 
 namespace Elastos {
 namespace Droid {

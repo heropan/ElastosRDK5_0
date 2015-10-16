@@ -3,8 +3,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Gesture_CGestureStore.h"
-#include "gesture/CGesture.h"
-#include "gesture/Learner.h"
+#include "elastos/droid/gesture/CGesture.h"
+#include "elastos/droid/gesture/Learner.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 

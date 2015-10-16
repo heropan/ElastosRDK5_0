@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_DATABASE_CDATASETOBSERVABLE_H__
 
 #include "_Elastos_Droid_Database_CDataSetObservable.h"
-#include "database/DataSetObservable.h"
+#include "elastos/droid/database/DataSetObservable.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "webkit/WebViewFragment.h"
-#include "webkit/CWebView.h"
+#include "elastos/droid/webkit/WebViewFragment.h"
+#include "elastos/droid/webkit/CWebView.h"
 
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::EIID_IFragment;

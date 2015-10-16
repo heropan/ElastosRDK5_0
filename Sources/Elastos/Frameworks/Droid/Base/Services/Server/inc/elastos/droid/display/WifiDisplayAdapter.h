@@ -4,9 +4,9 @@
 
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
-#include "content/BroadcastReceiver.h"
-#include "os/HandlerBase.h"
-#include "os/Runnable.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;

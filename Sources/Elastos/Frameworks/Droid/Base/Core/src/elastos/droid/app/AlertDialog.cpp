@@ -1,8 +1,8 @@
-#include "ext/frameworkext.h"
-#include "R.h"
-#include "app/AlertDialog.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/app/AlertDialog.h"
 #ifdef DROID_CORE
-#include "app/CAlertController.h"
+#include "elastos/droid/app/CAlertController.h"
 #endif
 #include <elastos/utility/logging/Slogger.h>
 

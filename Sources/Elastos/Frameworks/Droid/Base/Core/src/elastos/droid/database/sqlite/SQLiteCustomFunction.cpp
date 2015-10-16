@@ -1,5 +1,5 @@
 
-#include "database/sqlite/SQLiteCustomFunction.h"
+#include "elastos/droid/database/sqlite/SQLiteCustomFunction.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

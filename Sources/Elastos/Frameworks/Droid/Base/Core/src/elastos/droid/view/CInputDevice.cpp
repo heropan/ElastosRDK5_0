@@ -1,8 +1,8 @@
 
-#include "view/CInputDevice.h"
-#include "view/CKeyCharacterMap.h"
-#include "view/CMotionEvent.h"
-#include "hardware/input/CInputManager.h"
+#include "elastos/droid/view/CInputDevice.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/hardware/input/CInputManager.h"
 
 
 using Elastos::Droid::View::CMotionEvent;

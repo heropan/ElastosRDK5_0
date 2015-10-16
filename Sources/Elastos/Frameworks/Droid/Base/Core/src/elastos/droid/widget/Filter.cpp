@@ -1,8 +1,8 @@
 
-#include "widget/Filter.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/widget/Filter.h"
+#include "elastos/droid/os/SystemClock.h"
 #ifdef DROID_CORE
-#include "os/CHandlerThread.h"
+#include "elastos/droid/os/CHandlerThread.h"
 #endif
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::IHandlerThread;

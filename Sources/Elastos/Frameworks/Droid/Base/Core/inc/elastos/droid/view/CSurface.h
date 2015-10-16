@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CSURFACE_H__
 
 #include "_Elastos_Droid_View_CSurface.h"
-#include "graphics/Canvas.h"
+#include "elastos/droid/graphics/Canvas.h"
 
 #include <gui/Surface.h>
 

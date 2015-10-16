@@ -1,4 +1,4 @@
-#include "media/browse/CMediaBrowserMediaItem.h"
+#include "elastos/droid/media/browse/CMediaBrowserMediaItem.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

@@ -1,8 +1,8 @@
 
-#include "ext/frameworkdef.h"
-#include "internal/os/RuntimeInit.h"
-#include "internal/os/AndroidPrintStream.h"
-#include "internal/os/CZygoteInit.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/internal/os/RuntimeInit.h"
+#include "elastos/droid/internal/os/AndroidPrintStream.h"
+#include "elastos/droid/internal/os/CZygoteInit.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <DroidRuntime.h>

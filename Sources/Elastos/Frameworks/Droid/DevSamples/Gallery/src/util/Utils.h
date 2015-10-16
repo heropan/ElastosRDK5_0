@@ -2,7 +2,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::Widget::IToastHelper;
 

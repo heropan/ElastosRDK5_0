@@ -1,6 +1,6 @@
 
-#include "view/animation/CCycleInterpolator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/animation/CCycleInterpolator.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

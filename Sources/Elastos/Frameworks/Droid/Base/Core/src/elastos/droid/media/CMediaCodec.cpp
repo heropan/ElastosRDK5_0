@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaCodec.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaCodec.h"
 #include <media/stagefright/foundation/AMessage.h>
 #include <media/Media_Utils.h>
 #include <media/ICrypto.h>

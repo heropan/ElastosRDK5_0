@@ -1,11 +1,11 @@
 
-#include "database/sqlite/SQLiteGlobal.h"
-//#include "content/res/CResources.h"
-//#include "os/CStatFs.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/database/sqlite/SQLiteGlobal.h"
+//#include "elastos/droid/content/res/CResources.h"
+//#include "elastos/droid/os/CStatFs.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <sqlite3.h>
 
 using Elastos::Droid::R;

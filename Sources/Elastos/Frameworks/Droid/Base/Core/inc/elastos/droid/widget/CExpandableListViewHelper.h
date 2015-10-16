@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTVIEWHELPER_H__
 
 #include "_Elastos_Droid_Widget_CExpandableListViewHelper.h"
-#include "widget/ExpandableListView.h"
+#include "elastos/droid/widget/ExpandableListView.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,8 +1,8 @@
-#include "widget/SlidingDrawer.h"
-#include "view/SoundEffectConstants.h"
-#include "os/SystemClock.h"
-#include "graphics/CRect.h"
-#include "R.h"
+#include "elastos/droid/widget/SlidingDrawer.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 

@@ -4,8 +4,8 @@
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CSkbContainer.h"
 #include "SoftKey.h"
-#include "os/HandlerRunnable.h"
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/os/HandlerRunnable.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 using Elastos::Droid::InputMethodService::IInputMethodService;
 using Elastos::Droid::Os::HandlerRunnable;

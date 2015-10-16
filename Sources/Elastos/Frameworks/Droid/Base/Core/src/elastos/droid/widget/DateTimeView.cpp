@@ -1,12 +1,12 @@
-#include "ext/frameworkext.h"
-#include "widget/DateTimeView.h"
-#include "text/format/DateFormat.h"
-#include "text/format/CTime.h"
-#include "content/CIntentFilter.h"
-#include "content/CIntent.h"
-#include "provider/Settings.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/DateTimeView.h"
+#include "elastos/droid/text/format/DateFormat.h"
+#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/provider/Settings.h"
 #include <elastos/utility/logging/Slogger.h>
-#include <R.h>
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CStringWrapper;

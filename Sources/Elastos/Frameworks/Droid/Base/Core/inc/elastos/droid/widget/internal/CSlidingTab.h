@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_Internal_CSlidingTab.h"
 
-#include "widget/internal/SlidingTab.h"
+#include "elastos/droid/widget/internal/SlidingTab.h"
 
 namespace Elastos {
 namespace Droid {

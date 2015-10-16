@@ -2,7 +2,7 @@
 #ifndef __GECKOAPP_H__
 #define __GECKOAPP_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "CGeckoSurfaceView.h"
 #include <Elastos.CoreLibrary.h>
 #include <elautoptr.h>

@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
 
-#include "content/BroadcastReceiver.h"
-#include "app/AlertActivity.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/app/AlertActivity.h"
 #include "_Elastos_Droid_Internal_App_CExternalMediaFormatActivity.h"
 
 using Elastos::Droid::Content::IIntent;

@@ -8,8 +8,7 @@ include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/mtp
+
 INCLUDES += $(PREBUILD_INC)/MediaMtp
 INCLUDES += $(PREBUILD_INC)/libexif
 

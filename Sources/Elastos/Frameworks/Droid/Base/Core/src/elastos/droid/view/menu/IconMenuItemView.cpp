@@ -1,13 +1,13 @@
 
-#include "graphics/CRect.h"
-#include "view/menu/IconMenuItemView.h"
-#include "view/CGravity.h"
-#include "text/Layout.h"
-#include "view/SoundEffectConstants.h"
-#include "view/menu/CIconMenuView.h"
-#include "view/menu/CIconMenuViewLayoutParams.h"
-#include "R.h"
-#include "text/Layout.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/view/menu/IconMenuItemView.h"
+#include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/text/Layout.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/view/menu/CIconMenuView.h"
+#include "elastos/droid/view/menu/CIconMenuViewLayoutParams.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/Layout.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;

@@ -1,6 +1,6 @@
 
-#include "view/accessibility/CAccessibilityInteractionClientHelper.h"
-#include "view/accessibility/CAccessibilityInteractionClient.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
 
 namespace Elastos {
 namespace Droid {

@@ -7,7 +7,7 @@
 #elif defined(DROID_SERVER)
 #include "Elastos.Droid.Core.h"
 #endif
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Utility::IProperties;

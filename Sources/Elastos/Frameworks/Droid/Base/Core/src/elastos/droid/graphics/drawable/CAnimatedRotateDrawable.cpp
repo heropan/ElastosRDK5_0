@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/CAnimatedRotateDrawable.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/CAnimatedRotateDrawable.h"
 
 namespace Elastos {
 namespace Droid {

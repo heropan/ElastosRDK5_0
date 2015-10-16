@@ -1,6 +1,6 @@
 
-#include "database/sqlite/CSQLiteDatabaseHelper.h"
-#include "database/sqlite/SQLiteDatabase.h"
+#include "elastos/droid/database/sqlite/CSQLiteDatabaseHelper.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 
 namespace Elastos {
 namespace Droid {

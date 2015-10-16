@@ -1,9 +1,9 @@
 
 #include "accessibility/CAccessibilityManagerService.h"
 #include "accessibility/CAccessibilityServiceConnection.h"
-#include "os/Binder.h"
-#include "os/Process.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "R.h"
 #include "Manifest.h"
 #include <elastos/utility/etl/Algorithm.h>

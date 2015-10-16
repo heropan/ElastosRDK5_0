@@ -1,13 +1,13 @@
 
-#include "provider/CCalendarContractCalendarAlerts.h"
-#include "provider/CalendarContract.h"
-#include "content/CContentValues.h"
-#include "content/CContentUris.h"
-#include "content/CIntent.h"
-#include "text/format/DateUtils.h"
-#include "text/format/CTime.h"
-#include "app/CPendingIntentHelper.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractCalendarAlerts.h"
+#include "elastos/droid/provider/CalendarContract.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/text/format/DateUtils.h"
+#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 

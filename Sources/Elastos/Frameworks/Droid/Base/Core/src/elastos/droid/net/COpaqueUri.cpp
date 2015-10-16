@@ -1,5 +1,5 @@
 
-#include "net/COpaqueUri.h"
+#include "elastos/droid/net/COpaqueUri.h"
 
 namespace Elastos {
 namespace Droid {

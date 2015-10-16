@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_RADIOBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_RADIOBUTTON_H__
 
-#include "widget/CompoundButton.h"
+#include "elastos/droid/widget/CompoundButton.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;

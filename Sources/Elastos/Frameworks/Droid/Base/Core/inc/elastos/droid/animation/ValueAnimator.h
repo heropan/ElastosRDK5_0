@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_VALUEANIMATOR_H__
 #define  __ELASTOS_DROID_ANIMATION_VALUEANIMATOR_H__
 
-#include "animation/Animator.h"
+#include "elastos/droid/animation/Animator.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_MultiTapKeyListener_H__
 
 #include "elastos/droid/text/method/BaseKeyListener.h"
-#include "os/HandlerRunnable.h"
+#include "elastos/droid/os/HandlerRunnable.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/HashMap.h>
 

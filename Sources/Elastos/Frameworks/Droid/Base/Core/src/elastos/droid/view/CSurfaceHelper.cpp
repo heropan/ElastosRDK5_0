@@ -1,7 +1,7 @@
 
-#include "view/CSurfaceHelper.h"
-#include "view/CSurface.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/CSurfaceHelper.h"
+#include "elastos/droid/view/CSurface.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

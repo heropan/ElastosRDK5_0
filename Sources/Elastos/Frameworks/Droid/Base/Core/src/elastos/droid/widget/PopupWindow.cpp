@@ -1,10 +1,10 @@
-#include "widget/PopupWindow.h"
+#include "elastos/droid/widget/PopupWindow.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include <R.h>
-#include "os/Build.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;

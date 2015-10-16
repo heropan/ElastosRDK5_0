@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaCodecCryptoInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaCodecCryptoInfo.h"
 
 using Elastos::Droid::Media::IMediaCodecCryptoInfo;
 

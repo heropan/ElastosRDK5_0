@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARHOMEVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARHOMEVIEW_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::View::IMotionEvent;
 

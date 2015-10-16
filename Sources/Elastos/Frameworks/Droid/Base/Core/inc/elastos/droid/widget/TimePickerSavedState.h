@@ -2,7 +2,7 @@
 #ifndef __TIMEPICKERSAVEDSTATE_H__
 #define __TIMEPICKERSAVEDSTATE_H__
 
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 
 /**
  * Used to save / restore state of time picker
@@ -15,10 +15,10 @@ public:
     virtual CARAPI_(Int32) GetMinute();
 
     virtual CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest, 
+        /* [in] */ IParcel* dest,
         /* [in] */ Int32 flags);
 
-  
+
     /*public static final Parcelable.Creator<SavedState> CREATOR = new Creator<SavedState>() {
         public SavedState createFromParcel(Parcel in) {
             return new SavedState(in);
@@ -31,8 +31,8 @@ public:
 
 private:
     TimePickerSavedState(
-        /* [in] */ IParcelable* superState, 
-        /* [in] */ Int32 hour, 
+        /* [in] */ IParcelable* superState,
+        /* [in] */ Int32 hour,
         /* [in] */ Int32 minute);
 
     TimePickerSavedState(

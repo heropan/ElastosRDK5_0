@@ -1,5 +1,5 @@
-#include "view/CWindowManagerPolicyThread.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/CWindowManagerPolicyThread.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

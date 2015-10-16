@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DREAMS_DREAMCONTROLLER_H__
 #define __ELASTOS_DROID_SERVER_DREAMS_DREAMCONTROLLER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::Core::IRunnable;

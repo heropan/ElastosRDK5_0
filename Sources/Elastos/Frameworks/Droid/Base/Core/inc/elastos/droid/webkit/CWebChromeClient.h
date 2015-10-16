@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CWEBCHROMECLIENT_H__
 
 #include "_Elastos_Droid_Webkit_CWebChromeClient.h"
-#include "webkit/WebChromeClient.h"
+#include "elastos/droid/webkit/WebChromeClient.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::View::IView;

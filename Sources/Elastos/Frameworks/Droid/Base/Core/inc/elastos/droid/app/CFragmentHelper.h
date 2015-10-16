@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTHELPER_H__
 
 #include "_Elastos_Droid_App_CFragmentHelper.h"
-#include "app/Fragment.h"
+#include "elastos/droid/app/Fragment.h"
 
 namespace Elastos {
 namespace Droid {

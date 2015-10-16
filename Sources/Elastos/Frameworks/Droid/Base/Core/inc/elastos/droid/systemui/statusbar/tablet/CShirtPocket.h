@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CShirtPocket.h"
 
 
-#include "systemui/statusbar/tablet/ShirtPocket.h"
+#include "elastos/droid/systemui/statusbar/tablet/ShirtPocket.h"
 
 namespace Elastos {
 namespace Droid {

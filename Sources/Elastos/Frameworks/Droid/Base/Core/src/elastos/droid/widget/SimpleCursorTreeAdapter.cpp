@@ -1,6 +1,6 @@
 
-#include "widget/SimpleCursorTreeAdapter.h"
-#include "net/CUriHelper.h"
+#include "elastos/droid/widget/SimpleCursorTreeAdapter.h"
+#include "elastos/droid/net/CUriHelper.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 

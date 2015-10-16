@@ -7,7 +7,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
-#include "os/SomeArgs.h"
+#include "elastos/droid/os/SomeArgs.h"
 
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;

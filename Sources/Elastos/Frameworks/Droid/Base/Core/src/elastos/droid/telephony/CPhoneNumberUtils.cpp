@@ -1,10 +1,10 @@
 
 #include "CPhoneNumberUtils.h"
-#include "os/SystemProperties.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #include "CTelephonyManager.h"
-#include "R.h"
-#include "text/SpannableStringBuilder.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/SpannableStringBuilder.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>

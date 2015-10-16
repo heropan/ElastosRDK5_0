@@ -1,10 +1,10 @@
 
-#include "net/DummyDataStateTracker.h"
+#include "elastos/droid/net/DummyDataStateTracker.h"
 #ifdef DROID_CORE
-#include "net/CNetworkInfo.h"
-#include "net/CLinkProperties.h"
-#include "net/CLinkCapabilities.h"
-#include "os/CMessage.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CLinkCapabilities.h"
+#include "elastos/droid/os/CMessage.h"
 #endif
 #include <elastos/utility/logging/Slogger.h>
 

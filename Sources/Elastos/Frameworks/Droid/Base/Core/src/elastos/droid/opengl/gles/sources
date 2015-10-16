@@ -8,9 +8,8 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/opengl
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/opengl/gles
+INCLUDES += $(MAKEDIR)/../../../../../inc/
+
 INCLUDES += $(PREBUILD_INC)/GLES
 INCLUDES += $(PREBUILD_INC)/utils
 INCLUDES += $(PREBUILD_INC)/skia

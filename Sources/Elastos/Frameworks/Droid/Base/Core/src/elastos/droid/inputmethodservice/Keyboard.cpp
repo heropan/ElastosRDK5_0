@@ -1,14 +1,14 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #ifdef DROID_CORE
-#include "utility/CTypedValue.h"
-// #include "text/TextUtils.h"
+#include "elastos/droid/utility/CTypedValue.h"
+// #include "elastos/droid/text/TextUtils.h"
 #else
 // #include "TextUtils.h"
 #endif
-#include "inputmethodservice/Keyboard.h"
-#include "utility/Xml.h"
-#include "R.h"
+#include "elastos/droid/inputmethodservice/Keyboard.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>

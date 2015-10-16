@@ -1,5 +1,5 @@
-#include "media/audiofx/CEnvironmentalReverb.h"
-#include "media/audiofx/CEnvironmentalReverbSettings.h"
+#include "elastos/droid/media/audiofx/CEnvironmentalReverb.h"
+#include "elastos/droid/media/audiofx/CEnvironmentalReverbSettings.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IUUIDHelper;

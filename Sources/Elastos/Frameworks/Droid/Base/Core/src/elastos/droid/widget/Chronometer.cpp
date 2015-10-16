@@ -1,7 +1,7 @@
 
-#include "widget/Chronometer.h"
-#include "os/SystemClock.h"
-#include "text/format/DateUtils.h"
+#include "elastos/droid/widget/Chronometer.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/text/format/DateUtils.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::Format::DateUtils;

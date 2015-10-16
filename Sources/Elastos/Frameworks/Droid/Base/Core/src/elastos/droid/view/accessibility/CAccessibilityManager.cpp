@@ -1,10 +1,10 @@
 
-#include "view/accessibility/CAccessibilityManager.h"
-#include "view/accessibility/CAccessibilityManagerClient.h"
-#include "os/UserHandle.h"
-#include "os/SystemClock.h"
-#include "os/Binder.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerClient.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

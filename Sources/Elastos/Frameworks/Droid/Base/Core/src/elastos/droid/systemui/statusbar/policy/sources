@@ -7,11 +7,7 @@ C_DEFINES += -DDROID_CORE
 include $(MAKEDIR)/../../../../../../../../sources.inc
 
 INCLUDES += ../../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/systemui
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/systemui/statusbar
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/systemui/statusbar/policy
-
+INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 SOURCES = Clock.cpp
 SOURCES += CClock.cpp

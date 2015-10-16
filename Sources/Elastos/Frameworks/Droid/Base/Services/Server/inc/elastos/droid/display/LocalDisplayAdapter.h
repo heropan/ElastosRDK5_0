@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_LOCALDISPLAYADAPTER_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_LOCALDISPLAYADAPTER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
 #include "display/DisplayDeviceInfo.h"
-#include "view/DisplayEventReceiver.h"
+#include "elastos/droid/view/DisplayEventReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

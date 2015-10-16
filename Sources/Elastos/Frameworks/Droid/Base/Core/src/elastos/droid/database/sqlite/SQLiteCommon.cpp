@@ -1,5 +1,5 @@
 
-#include "database/sqlite/SQLiteCommon.h"
+#include "elastos/droid/database/sqlite/SQLiteCommon.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANELTITLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANELTITLE_H__
 
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 
 using Elastos::Droid::View::IMotionEvent;

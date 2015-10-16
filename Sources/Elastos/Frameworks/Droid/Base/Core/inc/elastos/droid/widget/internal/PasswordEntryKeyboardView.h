@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_PASSWORDENTRYKEYBOARDVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_PASSWORDENTRYKEYBOARDVIEW_H__
 
-#include "inputmethodservice/KeyboardView.h"
+#include "elastos/droid/inputmethodservice/KeyboardView.h"
 
 using Elastos::Droid::InputMethodService::KeyboardView;
 

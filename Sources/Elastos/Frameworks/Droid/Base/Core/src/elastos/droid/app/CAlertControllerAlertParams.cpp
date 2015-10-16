@@ -1,6 +1,6 @@
 
-#include "app/CAlertControllerAlertParams.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/app/CAlertControllerAlertParams.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::View::EIID_ILayoutInflater;
@@ -1381,8 +1381,8 @@ ECode CAlertControllerAlertParams::Apply(
             dialog->SetIcon(mIconId);
         }
         if (mIconAttrId > 0) {
-        	Int32 resId;
-        	dialog->GetIconAttributeResId(mIconAttrId, &resId);
+            Int32 resId;
+            dialog->GetIconAttributeResId(mIconAttrId, &resId);
             dialog->SetIcon(resId);
         }
     }

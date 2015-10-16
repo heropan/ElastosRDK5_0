@@ -1,7 +1,7 @@
 
-#include "webkit/native/content/browser/BindingManagerImpl.h"
-#include "webkit/native/base/ThreadUtils.h"
-#include "webkit/native/base/SysUtils.h"
+#include "elastos/droid/webkit/native/content/browser/BindingManagerImpl.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/base/SysUtils.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Webkit::Base::ThreadUtils;

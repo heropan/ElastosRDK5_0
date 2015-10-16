@@ -1,9 +1,9 @@
 
 #include "CVibratorService.h"
-#include "os/Binder.h"
-#include "os/Handler.h"
-#include "os/Process.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>

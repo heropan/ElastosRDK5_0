@@ -2,7 +2,7 @@
 #include "am/CContentProviderConnection.h"
 #include "am/ProcessRecord.h"
 #include "am/ContentProviderRecord.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::EIID_IBinder;

@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_DATABASE_CURSORTOBULKCURSORADAPTOR_H__
 #define __ELASTOS_DROID_DATABASE_CURSORTOBULKCURSORADAPTOR_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Database_CCursorToBulkCursorAdaptor.h"
-#include "database/ContentObserver.h"
-#include "database/CBulkCursorDescriptor.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/database/CBulkCursorDescriptor.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;

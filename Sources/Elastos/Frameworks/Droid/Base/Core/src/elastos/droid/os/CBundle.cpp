@@ -1,8 +1,8 @@
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
-#include "utility/CArrayMap.h"
+#include "elastos/droid/utility/CArrayMap.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CoreUtils;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_BACKUPAGENTHELPER_H__
 #define  __ELASTOS_DROID_APP_BACKUP_BACKUPAGENTHELPER_H__
 
-#include "app/backup/BackupAgent.h"
+#include "elastos/droid/app/backup/BackupAgent.h"
 
 namespace Elastos{
 namespace Droid{

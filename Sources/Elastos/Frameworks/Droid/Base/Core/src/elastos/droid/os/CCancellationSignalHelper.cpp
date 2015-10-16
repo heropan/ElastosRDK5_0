@@ -1,5 +1,5 @@
-#include "os/CCancellationSignalHelper.h"
-#include "os/CCancellationSignal.h"
+#include "elastos/droid/os/CCancellationSignalHelper.h"
+#include "elastos/droid/os/CCancellationSignal.h"
 
 namespace Elastos {
 namespace Droid {

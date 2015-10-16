@@ -1,8 +1,8 @@
 
-#include "graphics/CRegionIterator.h"
-#include "graphics/CRegion.h"
-#include "graphics/CRect.h"
-#include "graphics/GraphicsNative.h"
+#include "elastos/droid/graphics/CRegionIterator.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
 #include <skia/core/SkRegion.h>
 
 namespace Elastos {

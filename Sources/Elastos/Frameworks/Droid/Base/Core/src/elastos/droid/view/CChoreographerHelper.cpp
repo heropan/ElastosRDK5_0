@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "view/CChoreographerHelper.h"
-#include "view/Choreographer.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/CChoreographerHelper.h"
+#include "elastos/droid/view/Choreographer.h"
 
 namespace Elastos {
 namespace Droid {

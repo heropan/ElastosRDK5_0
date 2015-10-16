@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_LAUNCHWARNINTWINDOW_H__
 #define __ELASTOS_DROID_SERVER_AM_LAUNCHWARNINTWINDOW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "am/ActivityRecord.h"
-#include "app/Dialog.h"
+#include "elastos/droid/app/Dialog.h"
 
 
 

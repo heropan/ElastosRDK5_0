@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/CContentProviderResult.h"
 #include "elastos/droid/content/ContentProvider.h"
-//#include "net/Uri.h"
+//#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

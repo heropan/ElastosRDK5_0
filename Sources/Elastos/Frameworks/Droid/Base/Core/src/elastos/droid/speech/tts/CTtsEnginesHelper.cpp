@@ -1,7 +1,7 @@
 
-#include "speech/tts/CTtsEnginesHelper.h"
-#include "speech/tts/CTtsEngines.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/tts/CTtsEnginesHelper.h"
+#include "elastos/droid/speech/tts/CTtsEngines.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

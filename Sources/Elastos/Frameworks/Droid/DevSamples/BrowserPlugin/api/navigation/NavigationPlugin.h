@@ -30,7 +30,7 @@
 
 class NavigationPlugin : public SubPlugin {
 public:
-	NavigationPlugin(NPP inst);
+    NavigationPlugin(NPP inst);
     virtual ~NavigationPlugin();
     virtual bool supportsDrawingModel(ANPDrawingModel);
     virtual int16_t handleEvent(const ANPEvent* evt);
@@ -40,12 +40,12 @@ private:
 
     bool        m_hasFocus;
 
-    ANPRectF*	m_activeNav;
-    ANPRectF	m_navUp;
-    ANPRectF	m_navDown;
-    ANPRectF	m_navLeft;
-    ANPRectF	m_navRight;
-    ANPRectF	m_navCenter;
+    ANPRectF*    m_activeNav;
+    ANPRectF    m_navUp;
+    ANPRectF    m_navDown;
+    ANPRectF    m_navLeft;
+    ANPRectF    m_navRight;
+    ANPRectF    m_navCenter;
 
     ANPPaint*   m_paintDisabled;
     ANPPaint*   m_paintActive;

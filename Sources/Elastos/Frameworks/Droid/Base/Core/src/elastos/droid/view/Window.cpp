@@ -1,10 +1,10 @@
 
-#include "view/Window.h"
-#include "view/WindowManagerImpl.h"
-#include "view/CViewConfiguration.h"
-#include "os/SystemProperties.h"
-#include "ext/frameworkdef.h"
-#include "R.h"
+#include "elastos/droid/view/Window.h"
+#include "elastos/droid/view/WindowManagerImpl.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 

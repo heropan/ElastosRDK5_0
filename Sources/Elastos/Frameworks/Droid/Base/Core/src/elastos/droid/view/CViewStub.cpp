@@ -1,5 +1,5 @@
 
-#include "view/CViewStub.h"
+#include "elastos/droid/view/CViewStub.h"
 
 namespace Elastos {
 namespace Droid {

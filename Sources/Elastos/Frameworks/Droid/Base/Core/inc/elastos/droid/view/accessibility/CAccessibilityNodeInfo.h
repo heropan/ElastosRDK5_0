@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFO_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFO_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityNodeInfo.h"
 #include <elastos/utility/etl/HashMap.h>
 

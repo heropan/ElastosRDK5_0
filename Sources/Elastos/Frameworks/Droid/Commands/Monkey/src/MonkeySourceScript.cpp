@@ -1,6 +1,6 @@
 #include "MonkeySourceScript.h"
 #include <elastos/core/StringUtils.h>
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <unistd.h>
 
 using Elastos::Core::StringUtils;

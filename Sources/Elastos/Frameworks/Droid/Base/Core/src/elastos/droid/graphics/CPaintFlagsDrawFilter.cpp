@@ -1,5 +1,5 @@
 
-#include "graphics/CPaintFlagsDrawFilter.h"
+#include "elastos/droid/graphics/CPaintFlagsDrawFilter.h"
 #include <skia/effects/SkPaintFlagsDrawFilter.h>
 #include <skia/core/SkPaint.h>
 

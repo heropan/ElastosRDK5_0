@@ -1,5 +1,5 @@
-#include "systemui/statusbar/tablet/CompatModePanel.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/tablet/CompatModePanel.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
 
 #include "elastos/droid/text/method/BaseMovementMethod.h"
-//#include "os/ElObject.h"
+//#include "elastos/droid/os/ElObject.h"
 
 namespace Elastos {
 namespace Droid {

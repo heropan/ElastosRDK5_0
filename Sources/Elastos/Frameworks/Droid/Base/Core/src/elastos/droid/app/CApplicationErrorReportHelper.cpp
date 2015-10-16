@@ -1,6 +1,6 @@
 #include <ext/frameworkdef.h>
-#include "app/CApplicationErrorReportHelper.h"
-#include "app/CApplicationErrorReport.h"
+#include "elastos/droid/app/CApplicationErrorReportHelper.h"
+#include "elastos/droid/app/CApplicationErrorReport.h"
 
 namespace Elastos {
 namespace Droid {

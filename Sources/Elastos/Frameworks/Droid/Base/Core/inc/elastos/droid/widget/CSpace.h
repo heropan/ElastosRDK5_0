@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CSpace.h"
 
-#include "widget/Space.h"
+#include "elastos/droid/widget/Space.h"
 
 namespace Elastos {
 namespace Droid {

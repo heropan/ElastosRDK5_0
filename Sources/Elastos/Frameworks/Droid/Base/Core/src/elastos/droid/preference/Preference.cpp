@@ -1,8 +1,8 @@
 
 #include "elastos/droid/preference/Preference.h"
 #include "elastos/droid/os/CBundle.h"
-#include "text/TextUtils.h"
-//#include "view/CAbsSavedStateHelper.h"
+#include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/view/CAbsSavedStateHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>

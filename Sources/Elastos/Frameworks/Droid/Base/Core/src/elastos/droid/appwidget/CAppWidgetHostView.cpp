@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "appwidget/CAppWidgetHostView.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/appwidget/CAppWidgetHostView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

@@ -1,7 +1,7 @@
 
 #include "CGsmAlphabet.h"
-#include "content/res/CResourcesHelper.h"
-#include "R.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

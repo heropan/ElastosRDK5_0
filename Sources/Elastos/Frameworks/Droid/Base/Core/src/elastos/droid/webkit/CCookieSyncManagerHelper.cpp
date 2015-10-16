@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "webkit/CookieSyncManager.h"
-#include "webkit/CCookieSyncManagerHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/CookieSyncManager.h"
+#include "elastos/droid/webkit/CCookieSyncManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

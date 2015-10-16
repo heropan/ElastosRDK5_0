@@ -1,7 +1,7 @@
 
-#include "os/FileUtils.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
 #include "usb/UsbDebuggingManager.h"
 #include <elastos/utility/logging/Logger.h>
 #include <Elastos.CoreLibrary.h>

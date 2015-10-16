@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_REVEALANIMATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-// #include "view/RenderNodeAnimator.h"
+// #include "elastos/droid/view/RenderNodeAnimator.h"
 
 using Elastos::Droid::View::IView;
 

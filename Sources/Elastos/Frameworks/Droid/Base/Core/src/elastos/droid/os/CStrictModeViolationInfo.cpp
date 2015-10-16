@@ -1,9 +1,9 @@
-#include "os/CStrictModeViolationInfo.h"
-#include "os/SystemClock.h"
-#include "os/CStrictMode.h"
-#include "os/CStrictModeSpan.h"
-#include "app/CActivityThreadHelper.h"
-#include "animation/CValueAnimatorHelper.h"
+#include "elastos/droid/os/CStrictModeViolationInfo.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CStrictMode.h"
+#include "elastos/droid/os/CStrictModeSpan.h"
+#include "elastos/droid/app/CActivityThreadHelper.h"
+#include "elastos/droid/animation/CValueAnimatorHelper.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <pthread.h>

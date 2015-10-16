@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "location/CGeocoderParams.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/location/CGeocoderParams.h"
 
 using Libcore::ICU::CLocale;
 

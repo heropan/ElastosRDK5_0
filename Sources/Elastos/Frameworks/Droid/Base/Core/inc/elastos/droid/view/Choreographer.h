@@ -2,13 +2,11 @@
 #ifndef __ELASTOS_DROID_VIEW_CHOREOGRAPHER_H__
 #define __ELASTOS_DROID_VIEW_CHOREOGRAPHER_H__
 
-#include <ext/frameworkext.h>
-#include "view/DisplayEventReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/DisplayEventReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <pthread.h>
-#include "os/Handler.h"
-#include <elastos/core/Mutex.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessage;
@@ -466,7 +464,7 @@ private:
     static const Int32 CALLBACK_LAST;
 
 private:
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<ILooper> mLooper;
     AutoPtr<FrameHandler> mHandler;

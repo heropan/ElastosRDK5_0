@@ -1,5 +1,5 @@
-#include "webkit/DeviceMotionAndOrientationManager.h"
-#include "webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/DeviceMotionAndOrientationManager.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
 
 #include <elastos/core/Thread.h>
 

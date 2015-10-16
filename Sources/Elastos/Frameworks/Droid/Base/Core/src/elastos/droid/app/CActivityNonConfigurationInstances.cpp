@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "app/CActivityNonConfigurationInstances.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CActivityNonConfigurationInstances.h"
 
 
 namespace Elastos {

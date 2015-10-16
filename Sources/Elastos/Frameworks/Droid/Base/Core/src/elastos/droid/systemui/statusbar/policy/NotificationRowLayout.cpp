@@ -1,9 +1,9 @@
-#include "systemui/statusbar/policy/NotificationRowLayout.h"
-#include "systemui/statusbar/NotificationData.h"
-#include "view/CViewConfigurationHelper.h"
-#include "animation/CLayoutTransition.h"
-#include "systemui/CSwipeHelper.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/policy/NotificationRowLayout.h"
+#include "elastos/droid/systemui/statusbar/NotificationData.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/animation/CLayoutTransition.h"
+#include "elastos/droid/systemui/CSwipeHelper.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 using Elastos::Droid::View::IViewConfiguration;

@@ -1,5 +1,5 @@
 
-#include "widget/SimpleExpandableListAdapter.h"
+#include "elastos/droid/widget/SimpleExpandableListAdapter.h"
 
 using Elastos::Core::ICharSequence;
 

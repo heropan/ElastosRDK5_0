@@ -1,12 +1,12 @@
 
-#include "ext/frameworkdef.h"
-#include "view/CSurface.h"
-#include "view/CSurfaceSession.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CSurfaceTexture.h"
-#include "graphics/CRegion.h"
-#include "os/CSystemProperties.h"
-#include "os/NativeBinder.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/CSurface.h"
+#include "elastos/droid/view/CSurfaceSession.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/os/CSystemProperties.h"
+#include "elastos/droid/os/NativeBinder.h"
 #include <elastos/utility/logging/Logger.h>
 #include <gui/SurfaceComposerClient.h>
 #include <ui/PixelFormat.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CDIALOG_H__
 
 #include "_Elastos_Droid_App_CDialog.h"
-#include "app/Dialog.h"
+#include "elastos/droid/app/Dialog.h"
 
 
 

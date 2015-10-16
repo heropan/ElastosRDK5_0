@@ -1,7 +1,7 @@
 
-#include "webkit/OverScrollGlow.h"
-#include "webkit/CWebViewClassic.h"
-#include "widget/CEdgeEffect.h"
+#include "elastos/droid/webkit/OverScrollGlow.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/widget/CEdgeEffect.h"
 
 #include <elastos/core/Math.h>
 

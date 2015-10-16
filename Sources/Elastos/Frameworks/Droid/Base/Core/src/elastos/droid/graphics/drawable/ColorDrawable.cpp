@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/ColorDrawable.h"
-#include "graphics/drawable/CColorDrawable.h"
-// #include "graphics/CPaint.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/ColorDrawable.h"
+#include "elastos/droid/graphics/drawable/CColorDrawable.h"
+// #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 

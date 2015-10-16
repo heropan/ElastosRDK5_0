@@ -1,6 +1,6 @@
 
-#include "accounts/CAccountManagerHelper.h"
-#include "accounts/CAccountManager.h"
+#include "elastos/droid/accounts/CAccountManagerHelper.h"
+#include "elastos/droid/accounts/CAccountManager.h"
 
 namespace Elastos {
 namespace Droid {

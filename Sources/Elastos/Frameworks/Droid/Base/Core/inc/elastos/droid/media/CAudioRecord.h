@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__
 
 #include "_Elastos_Droid_Media_CAudioRecord.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::IO::IByteBuffer;

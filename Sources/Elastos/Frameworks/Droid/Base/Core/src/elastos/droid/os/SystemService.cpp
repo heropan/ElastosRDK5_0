@@ -1,7 +1,7 @@
 
-#include "os/SystemService.h"
-#include "os/SystemProperties.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemService.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>

@@ -3,7 +3,7 @@
 #define __CMANAGEACCOUNTSSETTINGS_H__
 
 #include "_CManageAccountsSettings.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <malloc.h>
 #include <pthread.h>
 #include <stdio.h>

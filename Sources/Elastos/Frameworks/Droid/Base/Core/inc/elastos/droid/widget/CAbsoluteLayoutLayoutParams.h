@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CABSOLUTELAYOUTLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CAbsoluteLayoutLayoutParams.h"
-#include "widget/AbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/widget/AbsoluteLayoutLayoutParams.h"
 
 
 namespace Elastos{

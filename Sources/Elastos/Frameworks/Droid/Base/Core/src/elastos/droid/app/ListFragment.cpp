@@ -1,8 +1,8 @@
 
-#include "app/ListFragment.h"
-#include "R.h"
+#include "elastos/droid/app/ListFragment.h"
+#include "elastos/droid/R.h"
 #ifdef DROID_CORE
-#include "view/animation/CAnimationUtils.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
 #endif
 
 #include <elastos/utility/logging/Slogger.h>

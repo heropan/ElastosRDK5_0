@@ -1,6 +1,6 @@
 
 #include "CBalloonHint.h"
-#include "graphics/drawable/CColorDrawable.h"
+#include "elastos/droid/graphics/drawable/CColorDrawable.h"
 #include "CBalloonView.h"
 
 using Elastos::Core::EIID_IRunnable;

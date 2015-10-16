@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_RATINGBAR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/AbsSeekBar.h"
+#include "elastos/droid/widget/AbsSeekBar.h"
 
 namespace Elastos {
 namespace Droid {

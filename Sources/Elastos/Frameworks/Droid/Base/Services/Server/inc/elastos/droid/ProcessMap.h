@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PROCESSMAP_H__
 #define __ELASTOS_DROID_SERVER_PROCESSMAP_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

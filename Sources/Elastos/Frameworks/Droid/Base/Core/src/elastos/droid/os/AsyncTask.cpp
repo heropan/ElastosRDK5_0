@@ -1,7 +1,7 @@
 
-#include "os/AsyncTask.h"
-#include "os/CLooperHelper.h"
-#include <os/Process.h>
+#include "elastos/droid/os/AsyncTask.h"
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/AutoLock.h>

@@ -1,15 +1,15 @@
 
-#include "view/Choreographer.h"
-#include "ext/frameworkext.h"
-#include "os/SystemClock.h"
-#include "os/SystemProperties.h"
-#include "os/Looper.h"
-#include "hardware/display/DisplayManagerGlobal.h"
+#include "elastos/droid/view/Choreographer.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/utility/TimeUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include "os/CMessageHelper.h"
-#include "os/Looper.h"
-#include "utility/TimeUtils.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

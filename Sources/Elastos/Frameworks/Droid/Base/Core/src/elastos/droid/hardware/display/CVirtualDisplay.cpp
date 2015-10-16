@@ -1,5 +1,5 @@
 
-#include "hardware/display/CVirtualDisplay.h"
+#include "elastos/droid/hardware/display/CVirtualDisplay.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

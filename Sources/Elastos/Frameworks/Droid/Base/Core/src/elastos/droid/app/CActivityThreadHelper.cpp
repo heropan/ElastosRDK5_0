@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "app/CActivityThreadHelper.h"
-#include "app/CActivityThread.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CActivityThreadHelper.h"
+#include "elastos/droid/app/CActivityThread.h"
 
 namespace Elastos {
 namespace Droid {

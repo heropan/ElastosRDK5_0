@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETSTATUSBAR_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETSTATUSBAR_H__
 
-#include "systemui/statusbar/BaseStatusBar.h"
-#include "systemui/statusbar/DoNotDisturb.h"
-#include "systemui/statusbar/tablet/TabletTicker.h"
-#include "systemui/statusbar/policy/NetworkController.h"
-#include "view/VelocityTracker.h"
+#include "elastos/droid/systemui/statusbar/BaseStatusBar.h"
+#include "elastos/droid/systemui/statusbar/DoNotDisturb.h"
+#include "elastos/droid/systemui/statusbar/tablet/TabletTicker.h"
+#include "elastos/droid/systemui/statusbar/policy/NetworkController.h"
+#include "elastos/droid/view/VelocityTracker.h"
 
 using Elastos::Droid::Os::Storage::IStorageManager;
 using Elastos::Droid::Animation::ILayoutTransition;

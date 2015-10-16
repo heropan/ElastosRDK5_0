@@ -1,9 +1,9 @@
 
-#include "media/CCameraProfileHelper.h"
-#include "utility/ArrayUtils.h"
-#include "media/MediaProfiles.h"
-#include "hardware/CHardwareCameraHelper.h"
-#include "hardware/CHardwareCamera.h"
+#include "elastos/droid/media/CCameraProfileHelper.h"
+#include "elastos/droid/utility/ArrayUtils.h"
+#include "elastos/droid/media/MediaProfiles.h"
+#include "elastos/droid/hardware/CHardwareCameraHelper.h"
+#include "elastos/droid/hardware/CHardwareCamera.h"
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Hardware::IHardwareCameraHelper;

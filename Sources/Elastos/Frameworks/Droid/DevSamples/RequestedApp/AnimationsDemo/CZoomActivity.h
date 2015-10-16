@@ -3,7 +3,7 @@
 #define  __CZOOMACTIVITY_H__
 
 #include "_CZoomActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Animation::IAnimator;

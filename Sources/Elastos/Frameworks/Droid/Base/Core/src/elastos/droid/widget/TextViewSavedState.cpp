@@ -1,6 +1,6 @@
 
-#include "widget/TextViewSavedState.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/widget/TextViewSavedState.h"
+#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Droid::Text::TextUtils;
 

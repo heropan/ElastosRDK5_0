@@ -3,7 +3,7 @@
 
 
 #include "Elastos.Droid.Core_server.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

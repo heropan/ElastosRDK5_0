@@ -1,15 +1,15 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CBitmap.h"
-#include "graphics/CPaint.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CRect.h"
-#include "graphics/CRectF.h"
-#include "graphics/GraphicsNative.h"
-#include "graphics/CreateOutputStreamAdaptor.h"
-#include "utility/CDisplayMetrics.h"
-// #include "utility/droid_nio_utils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+#include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+// #include "elastos/droid/utility/droid_nio_utils.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>

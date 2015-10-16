@@ -1,5 +1,5 @@
-#include "speech/tts/SilencePlaybackQueueItem.h"
-//#include "os/CConditionVariable.h"
+#include "elastos/droid/speech/tts/SilencePlaybackQueueItem.h"
+//#include "elastos/droid/os/CConditionVariable.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,5 +1,5 @@
 
-#include "graphics/CRadialGradient.h"
+#include "elastos/droid/graphics/CRadialGradient.h"
 #include <skia/effects/SkGradientShader.h>
 
 namespace Elastos {

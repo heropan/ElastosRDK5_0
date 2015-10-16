@@ -1,4 +1,4 @@
-#include "app/CApplicationErrorReportAnrInfo.h"
+#include "elastos/droid/app/CApplicationErrorReportAnrInfo.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

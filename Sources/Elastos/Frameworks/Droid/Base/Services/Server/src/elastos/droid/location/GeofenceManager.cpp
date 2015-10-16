@@ -1,7 +1,7 @@
 
 #include "location/GeofenceManager.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
 #include "Manifest.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>

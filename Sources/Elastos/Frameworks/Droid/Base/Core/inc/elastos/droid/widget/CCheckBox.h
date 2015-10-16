@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CCHECKBOX_H__
 
 #include "_Elastos_Droid_Widget_CCheckBox.h"
-#include "widget/CheckBox.h"
+#include "elastos/droid/widget/CheckBox.h"
 
 
 

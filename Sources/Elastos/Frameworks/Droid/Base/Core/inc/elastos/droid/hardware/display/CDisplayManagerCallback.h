@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGERCALLBACK_H__
 
 #include "_Elastos_Droid_Hardware_Display_CDisplayManagerCallback.h"
-#include "hardware/display/DisplayManagerGlobal.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

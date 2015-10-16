@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CEnvironment.h"
-#include "os/Environment.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CEnvironment.h"
+#include "elastos/droid/os/Environment.h"
 
 namespace Elastos {
 namespace Droid {

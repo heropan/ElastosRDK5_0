@@ -1,6 +1,6 @@
 
-#include "os/CBundleHelper.h"
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundleHelper.h"
+#include "elastos/droid/os/CBundle.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,9 +1,9 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/content/CClipDataItem.h"
-// #include "text/CSpannableStringBuilder.h"
-// #include "text/Html.h"
-// #include "text/style/CURLSpan.h"
+// #include "elastos/droid/text/CSpannableStringBuilder.h"
+// #include "elastos/droid/text/Html.h"
+// #include "elastos/droid/text/style/CURLSpan.h"
 #include <elastos/core/StringBuilder.h>
 
 

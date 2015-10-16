@@ -1,8 +1,8 @@
 
-#include "widget/AnalogClock.h"
+#include "elastos/droid/widget/AnalogClock.h"
 #include <elastos/core/Math.h>
-#include "content/CIntentFilter.h"
-#include "text/format/CDateUtils.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/text/format/CDateUtils.h"
 
 using namespace Elastos::Core;
 using Elastos::Utility::ITimeZone;

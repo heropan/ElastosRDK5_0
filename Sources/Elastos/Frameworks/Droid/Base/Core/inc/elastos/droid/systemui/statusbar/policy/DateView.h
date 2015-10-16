@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_COMPATMODEBUTTON_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-#include "widget/TextView.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/widget/TextView.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;

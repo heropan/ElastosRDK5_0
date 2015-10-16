@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_GRAPHICS_CPATHMEASURE_H__
 
 #include "_Elastos_Droid_Graphics_CPathMeasure.h"
-#include "graphics/CPath.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CMatrix.h"
 
 namespace Elastos {
 namespace Droid {

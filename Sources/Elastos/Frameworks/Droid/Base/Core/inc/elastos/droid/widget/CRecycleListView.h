@@ -1,5 +1,5 @@
 #include "_Elastos_Droid_Widget_CRecycleListView.h"
-#include "widget/RecycleListView.h"
+#include "elastos/droid/widget/RecycleListView.h"
 
 
 

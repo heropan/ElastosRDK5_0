@@ -12,8 +12,8 @@ namespace JavaProxy {
 CarClass(CInputDevicesChangedListenerNative)
 {
 public:
-	~CInputDevicesChangedListenerNative();
-	
+    ~CInputDevicesChangedListenerNative();
+
     CARAPI constructor(
         /* [in] */ Handle32 jVM,
         /* [in] */ Handle32 jInstance);

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ViewGroup_H__
 #define __ELASTOS_DROID_VIEW_ViewGroup_H__
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Core::IComparable;
 using Elastos::Droid::Animation::ITransitionListener;

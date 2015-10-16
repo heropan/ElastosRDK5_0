@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CSTRINGURI_H__
 
 #include "_Elastos_Droid_Net_CStringUri.h"
-#include "net/Uri.h"
+#include "elastos/droid/net/Uri.h"
 
 namespace Elastos {
 namespace Droid {

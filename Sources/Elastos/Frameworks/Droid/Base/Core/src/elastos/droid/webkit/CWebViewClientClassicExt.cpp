@@ -1,5 +1,5 @@
 
-#include "webkit/CWebViewClientClassicExt.h"
+#include "elastos/droid/webkit/CWebViewClientClassicExt.h"
 
 namespace Elastos {
 namespace Droid {
@@ -8,7 +8,7 @@ namespace Webkit {
 PInterface CWebViewClientClassicExt::Probe(
     /* [in] */ REIID riid)
 {
-	return _CWebViewClientClassicExt::Probe(riid);
+    return _CWebViewClientClassicExt::Probe(riid);
 }
 
 UInt32 CWebViewClientClassicExt::AddRef()
@@ -25,7 +25,7 @@ ECode CWebViewClientClassicExt::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
 {
-	return _CWebViewClientClassicExt::GetInterfaceID(object, iid);
+    return _CWebViewClientClassicExt::GetInterfaceID(object, iid);
 }
 
 /**
@@ -37,7 +37,7 @@ ECode CWebViewClientClassicExt::OnProceededAfterSslError(
     /* [in] */ IWebView* view,
     /* [in] */ ISslError* error)
 {
-	return WebViewClientClassicExt::OnProceededAfterSslError(view, error);
+    return WebViewClientClassicExt::OnProceededAfterSslError(view, error);
 }
 
 /**
@@ -68,9 +68,9 @@ ECode CWebViewClientClassicExt::ShouldOverrideUrlLoading(
     /* [in] */ const String& url,
     /* [out] */ Boolean* result)
 {
-	VALIDATE_NOT_NULL(result);
-	*result = WebViewClient::ShouldOverrideUrlLoading(view, url);
-	return NOERROR;
+    VALIDATE_NOT_NULL(result);
+    *result = WebViewClient::ShouldOverrideUrlLoading(view, url);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnPageStarted(
@@ -78,24 +78,24 @@ ECode CWebViewClientClassicExt::OnPageStarted(
     /* [in] */ const String& url,
     /* [in] */ IBitmap* favicon)
 {
-	WebViewClient::OnPageStarted(view, url, favicon);
-	return NOERROR;
+    WebViewClient::OnPageStarted(view, url, favicon);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnPageFinished(
     /* [in] */ IWebView* view,
     /* [in] */ const String& url)
 {
-	WebViewClient::OnPageFinished(view, url);
-	return NOERROR;
+    WebViewClient::OnPageFinished(view, url);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnLoadResource(
     /* [in] */ IWebView* view,
     /* [in] */ const String& url)
 {
-	WebViewClient::OnLoadResource(view, url);
-	return NOERROR;
+    WebViewClient::OnLoadResource(view, url);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::ShouldInterceptRequest(
@@ -103,9 +103,9 @@ ECode CWebViewClientClassicExt::ShouldInterceptRequest(
     /* [in] */ const String& url,
     /* [out] */ IWebResourceResponse** wrr)
 {
-	VALIDATE_NOT_NULL(wrr);
-	WebViewClient::ShouldInterceptRequest(view, url);
-	return NOERROR;
+    VALIDATE_NOT_NULL(wrr);
+    WebViewClient::ShouldInterceptRequest(view, url);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnTooManyRedirects(
@@ -122,8 +122,8 @@ ECode CWebViewClientClassicExt::OnReceivedError(
     /* [in] */ const String& description,
     /* [in] */ const String& failingUrl)
 {
-	WebViewClient::OnReceivedError(view, errorCode, description, failingUrl);
-	return NOERROR;
+    WebViewClient::OnReceivedError(view, errorCode, description, failingUrl);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnFormResubmission(
@@ -139,8 +139,8 @@ ECode CWebViewClientClassicExt::DoUpdateVisitedHistory(
     /* [in] */ const String& url,
     /* [in] */ Boolean isReload)
 {
-	WebViewClient::DoUpdateVisitedHistory(view, url, isReload);
-	return NOERROR;
+    WebViewClient::DoUpdateVisitedHistory(view, url, isReload);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnReceivedSslError(
@@ -157,8 +157,8 @@ ECode CWebViewClientClassicExt::OnReceivedHttpAuthRequest(
     /* [in] */ const String& host,
     /* [in] */ const String& realm)
 {
-	WebViewClient::OnReceivedHttpAuthRequest(view, handler, host, realm);
-	return NOERROR;
+    WebViewClient::OnReceivedHttpAuthRequest(view, handler, host, realm);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::ShouldOverrideKeyEvent(
@@ -166,17 +166,17 @@ ECode CWebViewClientClassicExt::ShouldOverrideKeyEvent(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean * result)
 {
-	VALIDATE_NOT_NULL(result);
-	*result = WebViewClient::ShouldOverrideKeyEvent(view, event);
-	return NOERROR;
+    VALIDATE_NOT_NULL(result);
+    *result = WebViewClient::ShouldOverrideKeyEvent(view, event);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnUnhandledKeyEvent(
     /* [in] */ IWebView* view,
     /* [in] */ IKeyEvent* event)
 {
-	WebViewClient::OnUnhandledKeyEvent(view, event);
-	return NOERROR;
+    WebViewClient::OnUnhandledKeyEvent(view, event);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnScaleChanged(
@@ -184,8 +184,8 @@ ECode CWebViewClientClassicExt::OnScaleChanged(
     /* [in] */ Float oldScale,
     /* [in] */ Float newScale)
 {
-	WebViewClient::OnScaleChanged(view, oldScale, newScale);
-	return NOERROR;
+    WebViewClient::OnScaleChanged(view, oldScale, newScale);
+    return NOERROR;
 }
 
 ECode CWebViewClientClassicExt::OnReceivedLoginRequest(
@@ -194,8 +194,8 @@ ECode CWebViewClientClassicExt::OnReceivedLoginRequest(
     /* [in] */ const String& account,
     /* [in] */ const String& args)
 {
-	WebViewClient::OnReceivedLoginRequest(view, realm, account, args);
-	return NOERROR;
+    WebViewClient::OnReceivedLoginRequest(view, realm, account, args);
+    return NOERROR;
 }
 
 } // namespace Webkit

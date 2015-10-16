@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/LevelListDrawable.h"
-#include "graphics/drawable/CLevelListDrawable.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/LevelListDrawable.h"
+#include "elastos/droid/graphics/drawable/CLevelListDrawable.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 

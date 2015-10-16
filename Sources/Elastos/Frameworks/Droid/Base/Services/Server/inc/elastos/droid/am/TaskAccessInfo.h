@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_TASKACCESSINFO_H__
 #define __ELASTOS_DROID_SERVER_AM_TASKACCESSINFO_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
 #include <elastos/utility/etl/List.h>
-#include "app/ActivityManagerTaskThumbnails.h"
+#include "elastos/droid/app/ActivityManagerTaskThumbnails.h"
 #include "am/ThumbnailHolder.h"
 #include "am/ActivityRecord.h"
 

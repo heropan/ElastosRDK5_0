@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONUTILS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/SystemClock.h"
-#include "utility/Xml.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/utility/Xml.h"
 
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Os::SystemClock;

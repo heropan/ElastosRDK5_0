@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "CAutomaticGainControlHelper.h"
-#include "CAutomaticGainControl.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/audiofx/CAutomaticGainControlHelper.h"
+#include "elastos/droid/media/audiofx/CAutomaticGainControl.h"
 
 namespace Elastos {
 namespace Droid {

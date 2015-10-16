@@ -1,7 +1,7 @@
 #ifndef __VISUALIZERVIEW_H__
 #define __VISUALIZERVIEW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::ICanvas;

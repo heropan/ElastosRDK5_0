@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CDIGITALCLOCK_H__
 
 #include "_Elastos_Droid_Widget_CDigitalClock.h"
-#include "widget/DigitalClock.h"
+#include "elastos/droid/widget/DigitalClock.h"
 
 
 

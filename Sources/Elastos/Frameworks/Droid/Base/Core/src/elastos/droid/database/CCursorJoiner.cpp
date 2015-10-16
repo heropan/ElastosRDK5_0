@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "database/CCursorJoiner.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/database/CCursorJoiner.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CInteger32;

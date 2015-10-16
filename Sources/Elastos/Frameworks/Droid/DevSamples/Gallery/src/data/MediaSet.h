@@ -4,7 +4,7 @@
 
 #include <elautoptr.h>
 #include <cmdef.h>
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "MediaObject.h"
 #include "MediaItem.h"
 #include "Path.h"

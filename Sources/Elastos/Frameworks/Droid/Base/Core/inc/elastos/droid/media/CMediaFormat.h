@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAFORMAT_H__
 
 #include "_Elastos_Droid_Media_CMediaFormat.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IByteBuffer;
 using Elastos::Utility::IObjectStringMap;

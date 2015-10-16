@@ -1,6 +1,6 @@
 #include "ShaderUtil.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::CByteArrayOutputStream;

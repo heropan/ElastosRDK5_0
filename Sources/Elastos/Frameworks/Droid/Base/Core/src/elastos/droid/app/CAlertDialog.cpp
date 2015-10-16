@@ -1,5 +1,5 @@
 
-#include "app/CAlertDialog.h"
+#include "elastos/droid/app/CAlertDialog.h"
 
 namespace Elastos {
 namespace Droid {

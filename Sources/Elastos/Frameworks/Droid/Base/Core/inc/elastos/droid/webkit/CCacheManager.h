@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Webkit_CCacheManager.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;

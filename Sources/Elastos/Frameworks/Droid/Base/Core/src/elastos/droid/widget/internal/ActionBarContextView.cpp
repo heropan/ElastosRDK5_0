@@ -1,14 +1,14 @@
 
-#include "widget/internal/ActionBarContextView.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/CViewGroupMarginLayoutParams.h"
-#include "view/animation/CDecelerateInterpolator.h"
-#include "view/LayoutInflater.h"
-#include "utility/CDisplayMetrics.h"
-#include "view/menu/CActionMenuPresenter.h"
-#include "animation/CAnimatorSet.h"
-#include "animation/CObjectAnimator.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/widget/internal/ActionBarContextView.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/view/menu/CActionMenuPresenter.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;

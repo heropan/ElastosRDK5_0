@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_PlaybackSynthesisCallback_H__
 #define __ELASTOS_DROID_SPEECH_TTS_PlaybackSynthesisCallback_H__
 
-#include "speech/tts/AbstractSynthesisCallback.h"
-#include "speech/tts/SynthesisPlaybackQueueItem.h"
-#include "speech/tts/EventLogger.h"
-#include "speech/tts/AudioPlaybackHandler.h"
+#include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
+#include "elastos/droid/speech/tts/SynthesisPlaybackQueueItem.h"
+#include "elastos/droid/speech/tts/EventLogger.h"
+#include "elastos/droid/speech/tts/AudioPlaybackHandler.h"
 
 namespace Elastos {
 namespace Droid {

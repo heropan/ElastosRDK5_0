@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
-#include "os/AsyncResult.h"
+#include "elastos/droid/os/AsyncResult.h"
 
 namespace Elastos {
 namespace Droid {

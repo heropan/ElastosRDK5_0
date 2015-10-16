@@ -5,9 +5,8 @@ C_DEFINES += -DDROID_CORE
 
 include $(MAKEDIR)/../../../../../../../sources.inc
 
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/inputmethods/pinyinIME
 INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES += CDecodingInfo.cpp
 SOURCES += CPinyinSettings.cpp

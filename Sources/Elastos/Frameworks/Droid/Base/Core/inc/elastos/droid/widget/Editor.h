@@ -3,17 +3,17 @@
 #define __ELASTOS_DROID_WIDGET_EDITOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ViewTreeObserver.h"
-#include "view/ViewGroup.h"
+#include "elastos/droid/view/ViewTreeObserver.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 
-#include "text/style/CSuggestionSpan.h"
+#include "elastos/droid/text/style/CSuggestionSpan.h"
 
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 
-#include "os/Runnable.h"
-#include "os/HandlerBase.h"
-#include "os/HandlerRunnable.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/HandlerRunnable.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;

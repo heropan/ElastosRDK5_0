@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/inputmethod/CExtractedTextRequest.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/inputmethod/CExtractedTextRequest.h"
 
 namespace Elastos {
 namespace Droid {

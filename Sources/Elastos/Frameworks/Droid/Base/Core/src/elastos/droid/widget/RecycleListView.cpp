@@ -1,4 +1,4 @@
-#include "widget/RecycleListView.h"
+#include "elastos/droid/widget/RecycleListView.h"
 
 namespace Elastos {
 namespace Droid {

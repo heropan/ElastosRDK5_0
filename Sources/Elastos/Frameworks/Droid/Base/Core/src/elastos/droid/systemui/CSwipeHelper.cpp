@@ -1,10 +1,10 @@
-#include "systemui/CSwipeHelper.h"
+#include "elastos/droid/systemui/CSwipeHelper.h"
 #include <elastos/core/Math.h>
-#include "graphics/CRectF.h"
-#include "view/animation/CLinearInterpolator.h"
-#include "view/CViewConfigurationHelper.h"
-#include "os/CHandler.h"
-#include "animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/animation/CObjectAnimatorHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

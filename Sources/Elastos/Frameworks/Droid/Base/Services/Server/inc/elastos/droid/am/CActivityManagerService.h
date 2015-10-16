@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CACTIVITYMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_AM_CACTIVITYMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Am_CActivityManagerService.h"
 #include "ProcessMap.h"
 #include "IntentResolver.h"
@@ -21,8 +21,8 @@
 #include "am/ProcessRecord.h"
 #include "am/ProcessList.h"
 #include "am/CompatModePackages.h"
-#include "os/FileObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/FileObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "pm/CUserManagerService.h"
 // #include <binder/IPermissionController.h>
 #include <Elastos.Droid.Core.h>

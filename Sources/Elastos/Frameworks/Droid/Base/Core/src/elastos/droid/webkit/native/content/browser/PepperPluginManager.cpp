@@ -1,8 +1,8 @@
 
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>
-//TODO #include "content/CIntent.h"
-#include "webkit/native/content/browser/PepperPluginManager.h"
+//TODO #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/webkit/native/content/browser/PepperPluginManager.h"
 
 using Elastos::Core::StringBuffer;
 //TODO using Elastos::Droid::Content::CIntent;

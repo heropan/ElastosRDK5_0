@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CTOAST_H__
 
 #include "_Elastos_Droid_Widget_CToast.h"
-#include "widget/Toast.h"
+#include "elastos/droid/widget/Toast.h"
 
 namespace Elastos{
 namespace Droid{

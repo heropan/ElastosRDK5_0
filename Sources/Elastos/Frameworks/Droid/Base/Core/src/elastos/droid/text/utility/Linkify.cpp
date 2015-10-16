@@ -2,16 +2,10 @@
 #include "elastos/droid/text/CSpannableStringHelper.h"
 #include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/text/style/CURLSpan.h"
-//#include "webkit/CWebView.h"
+//#include "elastos/droid/webkit/CWebView.h"
 #include "elastos/droid/utility/Patterns.h"
 #include <elastos/core/Character.h>
 
-using Elastos::Core::Character;
-using Elastos::Net::CURLEncoder;
-using Elastos::Net::CURLEncoder;
-using Elastos::Net::IURLEncoder;
-using Elastos::Core::EIID_IComparator;
-using Elastos::Utility::Regex::IPattern;
 using Elastos::Droid::Utility::Patterns;
 using Elastos::Droid::Text::ISpannableStringHelper;
 using Elastos::Droid::Text::CSpannableStringHelper;
@@ -22,6 +16,18 @@ using Elastos::Droid::Text::Method::CLinkMovementMethod;
 using Elastos::Droid::Text::Style::IURLSpan;
 using Elastos::Droid::Text::Style::EIID_IURLSpan;
 using Elastos::Droid::Text::Style::CURLSpan;
+
+// import com.android.i18n.phonenumbers.PhoneNumberMatch;
+// import com.android.i18n.phonenumbers.PhoneNumberUtil;
+// import com.android.i18n.phonenumbers.PhoneNumberUtil.Leniency;
+
+using Elastos::Core::Character;
+using Elastos::Core::EIID_IComparator;
+using Elastos::Net::CURLEncoder;
+using Elastos::Net::CURLEncoder;
+using Elastos::Net::IURLEncoder;
+using Elastos::Utility::Regex::IPattern;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -170,10 +176,7 @@ Boolean Linkify::AddLinks(
     }
 
     if ((mask & ILinkify::PHONE_NUMBERS) != 0) {
-        AutoPtr< ArrayOf<String> > ary = ArrayOf<String>::Alloc(1);
-        (*ary)[0] = String("tel:");
-        GatherLinks(&links, text, Patterns::PHONE, ary,
-            sPhoneNumberMatchFilter, sPhoneNumberTransformFilter);
+        GatherTelLinks(links, text);
     }
 
     if ((mask & ILinkify::MAP_ADDRESSES) != 0) {
@@ -297,7 +300,7 @@ Boolean Linkify::AddLinks(
     Boolean hasMatches = FALSE;
     String prefix("");
     if (!scheme.IsNull()) {
-        prefix = scheme.ToLowerCase();
+        prefix = scheme.ToLowerCase();//scheme.toLowerCase(Locale.ROOT);
     }
 
     AutoPtr<IMatcher> m;
@@ -404,6 +407,23 @@ void Linkify::GatherLinks(
             links->PushBack(spec);
         }
     }
+}
+
+void Linkify::GatherTelLinks(
+    /* [in] */ List< AutoPtr<LinkSpec> >* links,
+    /* [in] */ ISpannable* s)
+{
+    assert(0 && "TODO");
+    // PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+    // Iterable<PhoneNumberMatch> matches = phoneUtil.findNumbers(s.toString(),
+    //         Locale.getDefault().getCountry(), Leniency.POSSIBLE, Long.MAX_VALUE);
+    // for (PhoneNumberMatch match : matches) {
+    //     LinkSpec spec = new LinkSpec();
+    //     spec.url = "tel:" + PhoneNumberUtils.normalizeNumber(match.rawString());
+    //     spec.start = match.start();
+    //     spec.end = match.end();
+    //     links.add(spec);
+    // }
 }
 
 void Linkify::GatherMapLinks(

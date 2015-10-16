@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/phone/NavigationBarView.h"
+#include "elastos/droid/systemui/statusbar/phone/NavigationBarView.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/CAccountManagerAmsResponse.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/CAccountManagerAmsResponse.h"
 
 using Elastos::Droid::Content::IIntent;
 

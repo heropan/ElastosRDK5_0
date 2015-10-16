@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_POWER_MOBILEDIRECTCONTROLLER_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __CACTIVITYONE_H__
 #define __CACTIVITYONE_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "webkit/WebViewClient.h"
 #include "webkit/WebChromeClient.h"
 #include "_CActivityOne.h"

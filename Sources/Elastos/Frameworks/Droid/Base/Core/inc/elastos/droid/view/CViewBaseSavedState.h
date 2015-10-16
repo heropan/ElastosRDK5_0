@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CVIEWBASESAVEDSTATE_H__
 
 #include "_Elastos_Droid_View_CViewBaseSavedState.h"
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 
 namespace Elastos{
 namespace Droid{

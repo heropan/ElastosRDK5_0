@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/menu/CIconMenuItemView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/menu/CIconMenuItemView.h"
 
 using Elastos::Droid::Widget::EIID_TextView;
 

@@ -1,7 +1,7 @@
 
-#include "speech/CRecognizerIntent.h"
-#include "speech/RecognizerIntent.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/CRecognizerIntent.h"
+#include "elastos/droid/speech/RecognizerIntent.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

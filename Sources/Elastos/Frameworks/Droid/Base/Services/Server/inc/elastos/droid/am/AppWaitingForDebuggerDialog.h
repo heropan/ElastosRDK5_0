@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_APPWAITINGFORDEBUGGERDIALOG_H__
 #define __ELASTOS_DROID_SERVER_AM_APPWAITINGFORDEBUGGERDIALOG_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "am/BaseErrorDialog.h"
 #include "am/ProcessRecord.h"
 #include "am/CActivityManagerService.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
@@ -19,21 +19,21 @@ namespace Am {
 class AppWaitingForDebuggerDialog : public BaseErrorDialog
 {
 private:
-	class MyHandler
-	    : public HandlerBase
-	{
-	public:
-		MyHandler(
-			/* [in] */ AppWaitingForDebuggerDialog* host)
-			: mHost(host)
-		{}
+    class MyHandler
+        : public HandlerBase
+    {
+    public:
+        MyHandler(
+            /* [in] */ AppWaitingForDebuggerDialog* host)
+            : mHost(host)
+        {}
 
         CARAPI HandleMessage(
         /* [in] */ IMessage* msg);
 
     private:
-    	AppWaitingForDebuggerDialog* mHost;
-	};
+        AppWaitingForDebuggerDialog* mHost;
+    };
 
 public:
     AppWaitingForDebuggerDialog(

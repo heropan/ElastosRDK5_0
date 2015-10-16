@@ -3,7 +3,7 @@
 #define __CMAINACTIVITY_H__
 
 #include "_CMainActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::App::Activity;
@@ -75,8 +75,8 @@ protected:
 
 private:
     CARAPI GetVideoList(
-	    /* [in] */ const String& type,
-	    /* [out, callee] */ ArrayOf<IInterface*>** result);
+        /* [in] */ const String& type,
+        /* [out, callee] */ ArrayOf<IInterface*>** result);
 
 private:
     AutoPtr<ArrayOf<IInterface*> > mDataList;

@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CTextViewSavedState.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CTextViewSavedState.h"
 
 namespace Elastos{
 namespace Droid{

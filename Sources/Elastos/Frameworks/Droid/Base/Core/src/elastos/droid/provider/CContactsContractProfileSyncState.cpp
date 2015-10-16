@@ -1,8 +1,8 @@
 
-#include "provider/CContactsContractProfileSyncState.h"
-#include "provider/SyncStateContractHelpers.h"
-#include "provider/ContactsContractProfile.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CContactsContractProfileSyncState.h"
+#include "elastos/droid/provider/SyncStateContractHelpers.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Provider::ISyncStateContractHelpers;

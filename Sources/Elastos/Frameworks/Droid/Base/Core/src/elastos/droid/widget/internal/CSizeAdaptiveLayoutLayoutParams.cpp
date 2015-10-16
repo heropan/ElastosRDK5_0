@@ -1,4 +1,4 @@
-#include "widget/internal/CSizeAdaptiveLayoutLayoutParams.h"
+#include "elastos/droid/widget/internal/CSizeAdaptiveLayoutLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

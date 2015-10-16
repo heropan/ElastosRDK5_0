@@ -1,10 +1,10 @@
 
-#include "widget/GridView.h"
+#include "elastos/droid/widget/GridView.h"
 #include <elastos/core/Math.h>
-#include "widget/CAbsListViewLayoutParams.h"
-#include "view/SoundEffectConstants.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/animation/GridLayoutAnimationController.h"
+#include "elastos/droid/widget/CAbsListViewLayoutParams.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/animation/GridLayoutAnimationController.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::View::SoundEffectConstants;

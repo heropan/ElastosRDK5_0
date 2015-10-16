@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_WEBKIT_WEBSETTINGSCLASSIC_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "webkit/BrowserFrame.h"
-#include "webkit/WebSettings.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/webkit/BrowserFrame.h"
+#include "elastos/droid/webkit/WebSettings.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

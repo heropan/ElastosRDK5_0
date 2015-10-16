@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CINNERRECEIVER_H__
 
 #include "_Elastos_Droid_App_CInnerReceiver.h"
-#include "app/LoadedPkg.h"
+#include "elastos/droid/app/LoadedPkg.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBundle;

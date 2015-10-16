@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pDeviceList.h"
 #include "CWifiP2pDevice.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

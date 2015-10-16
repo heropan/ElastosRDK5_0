@@ -1,10 +1,10 @@
 
 #include "CAlarmManagerService.h"
-#include "app/ActivityManagerNative.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
-#include "os/UserHandle.h"
-//#include "content/BroadcastReceiver.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/UserHandle.h"
+//#include "elastos/droid/content/BroadcastReceiver.h"
 #include "Manifest.h"
 #include "R.h"
 #include <elastos/core/Math.h>

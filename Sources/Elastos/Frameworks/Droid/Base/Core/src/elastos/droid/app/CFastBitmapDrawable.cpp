@@ -1,4 +1,4 @@
-#include "app/CFastBitmapDrawable.h"
+#include "elastos/droid/app/CFastBitmapDrawable.h"
 
 namespace Elastos {
 namespace Droid {

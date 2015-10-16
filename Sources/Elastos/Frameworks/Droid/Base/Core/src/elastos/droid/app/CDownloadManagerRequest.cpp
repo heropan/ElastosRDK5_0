@@ -1,8 +1,8 @@
 
-#include "app/CDownloadManagerRequest.h"
-#include "content/CContentValues.h"
-#include "net/CUriHelper.h"
-#include "os/CEnvironment.h"
+#include "elastos/droid/app/CDownloadManagerRequest.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/os/CEnvironment.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CBoolean;

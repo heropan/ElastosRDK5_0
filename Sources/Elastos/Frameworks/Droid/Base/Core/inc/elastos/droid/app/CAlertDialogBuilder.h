@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CALERTDIALOGBUILDER_H__
 
 #include "_Elastos_Droid_App_CAlertDialogBuilder.h"
-//#include "app/AlertController.h"
+//#include "elastos/droid/app/AlertController.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IMessage;

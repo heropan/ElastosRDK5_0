@@ -1,9 +1,9 @@
 
-#include "animation/ObjectAnimator.h"
-#include "animation/CObjectAnimator.h"
-#include "animation/PropertyValuesHolder.h"
-#include "animation/PathKeyframes.h"
-#include "animation/CArgbEvaluator.h"
+#include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
+#include "elastos/droid/animation/PathKeyframes.h"
+#include "elastos/droid/animation/CArgbEvaluator.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

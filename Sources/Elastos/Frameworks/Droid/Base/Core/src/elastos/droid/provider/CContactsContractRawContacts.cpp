@@ -1,12 +1,12 @@
 
-#include "provider/CContactsContractRawContacts.h"
-#include "provider/ContactsContract.h"
-#include "provider/ContactsContractData.h"
-#include "provider/ContactsContractContacts.h"
-#include "database/DatabaseUtils.h"
-#include "net/Uri.h"
-#include "content/CContentValues.h"
-#include "content/CEntity.h"
+#include "elastos/droid/provider/CContactsContractRawContacts.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/ContactsContractData.h"
+#include "elastos/droid/provider/ContactsContractContacts.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CEntity.h"
 
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;

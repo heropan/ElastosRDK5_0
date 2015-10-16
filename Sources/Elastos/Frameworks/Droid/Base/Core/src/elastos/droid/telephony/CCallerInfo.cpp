@@ -1,7 +1,7 @@
 
 #include "CCallerInfo.h"
 #include "CTelephonyManager.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>

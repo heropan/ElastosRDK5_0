@@ -12,7 +12,7 @@ namespace JavaProxy {
 CarClass(CIAudioFocusDispatcher)
 {
 public:
-	~CIAudioFocusDispatcher();
+    ~CIAudioFocusDispatcher();
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

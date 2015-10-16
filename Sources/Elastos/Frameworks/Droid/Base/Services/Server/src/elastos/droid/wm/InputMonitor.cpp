@@ -2,7 +2,7 @@
 #include "wm/InputMonitor.h"
 #include "wm/DragState.h"
 #include "wm/CWindowManagerService.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 
 namespace Elastos {
 namespace Droid {

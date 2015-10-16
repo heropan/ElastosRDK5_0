@@ -1,7 +1,7 @@
 
-#include "MediaBrowserService.h"
-#include "CMediaBrowserServiceResult.h"
-#include "os/CBinderHelper.h"
+#include "elastos/droid/service/media/MediaBrowserService.h"
+#include "elastos/droid/service/media/CMediaBrowserServiceResult.h"
+#include "elastos/droid/os/CBinderHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;

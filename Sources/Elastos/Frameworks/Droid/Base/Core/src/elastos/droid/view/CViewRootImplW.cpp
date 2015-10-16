@@ -1,8 +1,8 @@
 
-#include "view/CViewRootImplW.h"
-#include "view/ViewRootImpl.h"
-#include "app/ActivityManagerNative.h"
-#include "os/Binder.h"
+#include "elastos/droid/view/CViewRootImplW.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/Binder.h"
 
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::App::ActivityManagerNative;

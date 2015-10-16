@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_THUMBNAILUTILS_H__
 #define __ELASTOS_DROID_MEDIA_THUMBNAILUTILS_H__
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Graphics::IBitmap;

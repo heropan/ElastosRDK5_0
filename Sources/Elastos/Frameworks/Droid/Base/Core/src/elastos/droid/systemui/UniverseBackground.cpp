@@ -1,11 +1,11 @@
-#include "systemui/UniverseBackground.h"
+#include "elastos/droid/systemui/UniverseBackground.h"
 #include <elastos/core/Math.h>
-#include "R.h"
-#include "systemui/SystemUIR.h"
-#include "app/CActivityManager.h"
-#include "view/CWindowManagerGlobal.h"
-#include "view/Choreographer.h"
-#include "view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/app/CActivityManager.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/view/Choreographer.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::R;

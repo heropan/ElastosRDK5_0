@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/ApiCompatibilityUtils.h"
-#include "os/Build.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::EIID_IView;

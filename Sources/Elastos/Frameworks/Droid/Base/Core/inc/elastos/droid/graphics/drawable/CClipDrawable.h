@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCLIPDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CClipDrawable.h"
-#include "graphics/drawable/ClipDrawable.h"
+#include "elastos/droid/graphics/drawable/ClipDrawable.h"
 
 
 namespace Elastos {

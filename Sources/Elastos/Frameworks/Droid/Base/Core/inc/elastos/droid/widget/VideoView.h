@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_VideoView_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/SurfaceView.h"
-#include "media/CMediaPlayer.h"
+#include "elastos/droid/view/SurfaceView.h"
+#include "elastos/droid/media/CMediaPlayer.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;

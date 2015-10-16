@@ -1,6 +1,6 @@
 
-#include "media/CEncoderCapabilitiesHelper.h"
-#include "media/CEncoderCapabilities.h"
+#include "elastos/droid/media/CEncoderCapabilitiesHelper.h"
+#include "elastos/droid/media/CEncoderCapabilities.h"
 
 namespace Elastos {
 namespace Droid {

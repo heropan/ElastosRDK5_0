@@ -1,9 +1,10 @@
 
-#include "ext/frameworkext.h"
-#include "CMtpServer.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/mtp/CMtpServer.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Thread.h>
 #include <elastos/core/AutoLock.h>
+
 #include "MediaMtp/MtpServer.h"
 #include "MediaMtp/MtpStorage.h"
 #include <fcntl.h>

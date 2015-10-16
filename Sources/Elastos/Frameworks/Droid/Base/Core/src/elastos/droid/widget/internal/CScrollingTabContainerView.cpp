@@ -1,4 +1,4 @@
-#include "widget/internal/CScrollingTabContainerView.h"
+#include "elastos/droid/widget/internal/CScrollingTabContainerView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

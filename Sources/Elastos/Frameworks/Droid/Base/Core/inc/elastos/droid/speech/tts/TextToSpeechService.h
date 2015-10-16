@@ -2,16 +2,16 @@
 #define __ELASTOS_DROID_SPEECH_TTS_TextToSpeechService_H__
 
 
-#include "app/Service.h"
-#include "speech/tts/AudioPlaybackHandler.h"
-//#include "os/HandlerThread.h"
-#include "os/Looper.h"
-#include "os/Runnable.h"
-#include "os/HandlerBase.h"
-#include "speech/tts/AbstractSynthesisCallback.h"
-#include "speech/tts/EventLogger.h"
-#include "speech/tts/AudioPlaybackQueueItem.h"
-//#include "os/RemoteCallbackList.h"
+#include "elastos/droid/app/Service.h"
+#include "elastos/droid/speech/tts/AudioPlaybackHandler.h"
+//#include "elastos/droid/os/HandlerThread.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
+#include "elastos/droid/speech/tts/EventLogger.h"
+#include "elastos/droid/speech/tts/AudioPlaybackQueueItem.h"
+//#include "elastos/droid/os/RemoteCallbackList.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/Set.h>
 

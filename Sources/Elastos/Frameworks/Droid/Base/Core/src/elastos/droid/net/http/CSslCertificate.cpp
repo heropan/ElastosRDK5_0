@@ -2,8 +2,8 @@
 #include "CSslCertificate.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "view/LayoutInflater.h"
-#include "R.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/R.h"
 
 using namespace Elastos::Core;
 using namespace Elastos::Droid::View;

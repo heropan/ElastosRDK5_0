@@ -1,8 +1,8 @@
-#include "app/backup/CWallpaperBackupHelper.h"
-#include "os/CEnvironment.h"
-#include "graphics/CPoint.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/app/backup/CWallpaperBackupHelper.h"
+#include "elastos/droid/os/CEnvironment.h"
+#include "elastos/droid/graphics/CPoint.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include <elastos/utility/logging/Slogger.h>
 
 

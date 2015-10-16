@@ -1,5 +1,5 @@
 
-#include "view/animation/CTranslateAnimation.h"
+#include "elastos/droid/view/animation/CTranslateAnimation.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 #include "AccessibilityService.h"
-#include "accessibilityservice/CAccessibilityServiceClientWrapper.h"
-#include "view/accessibility/CAccessibilityInteractionClientHelper.h"
+#include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
 
 using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;

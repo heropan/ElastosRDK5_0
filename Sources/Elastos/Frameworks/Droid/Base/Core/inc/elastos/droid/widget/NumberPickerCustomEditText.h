@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_NUMBERPICKERCUSTOMEDITTEXT_H__
 #define __ELASTOS_DROID_WIDGET_NUMBERPICKERCUSTOMEDITTEXT_H__
 
-#include "widget/EditText.h"
+#include "elastos/droid/widget/EditText.h"
 
 namespace Elastos {
 namespace Droid {

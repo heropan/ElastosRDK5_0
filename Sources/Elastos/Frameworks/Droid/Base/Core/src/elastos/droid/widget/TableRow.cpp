@@ -1,7 +1,7 @@
 
-#include "widget/TableRow.h"
-#include "widget/CTableRowLayoutParams.h"
-#include "view/CGravity.h"
+#include "elastos/droid/widget/TableRow.h"
+#include "elastos/droid/widget/CTableRowLayoutParams.h"
+#include "elastos/droid/view/CGravity.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Utility::Etl::HashMap;

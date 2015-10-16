@@ -1,6 +1,6 @@
 
-#include "os/CBundle.h"
-#include "webkit/SslCertLookupTable.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/webkit/SslCertLookupTable.h"
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Net::CURL;

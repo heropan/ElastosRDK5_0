@@ -1,4 +1,4 @@
-#include "systemui/statusbar/tablet/CPanelBackgroundView.h"
+#include "elastos/droid/systemui/statusbar/tablet/CPanelBackgroundView.h"
 
 using Elastos::Droid::View::EIID_View;
 

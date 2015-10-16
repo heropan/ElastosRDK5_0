@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CGALLERYLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CGalleryLayoutParams.h"
-#include "widget/GalleryLayoutParams.h"
+#include "elastos/droid/widget/GalleryLayoutParams.h"
 
 
 using Elastos::Droid::View::IView;

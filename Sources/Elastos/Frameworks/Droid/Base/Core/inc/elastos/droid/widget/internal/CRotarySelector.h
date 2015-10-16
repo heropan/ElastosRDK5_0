@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CROTARYSELECTOR_H__
 
 #include "_Elastos_Droid_Widget_Internal_CRotarySelector.h"
-#include "widget/internal/RotarySelector.h"
+#include "elastos/droid/widget/internal/RotarySelector.h"
 
 
 namespace Elastos {

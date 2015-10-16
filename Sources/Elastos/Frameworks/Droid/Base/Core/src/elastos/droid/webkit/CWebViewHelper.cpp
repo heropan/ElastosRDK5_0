@@ -1,6 +1,6 @@
 
-#include "webkit/CWebViewHelper.h"
-#include "webkit/WebView.h"
+#include "elastos/droid/webkit/CWebViewHelper.h"
+#include "elastos/droid/webkit/WebView.h"
 
 namespace Elastos {
 namespace Droid {

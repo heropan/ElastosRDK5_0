@@ -1,7 +1,7 @@
 
-#include "inputmethodservice/CCandidateView.h"
-// #include "graphics/CPaint.h"
-#include "R.h"
+#include "elastos/droid/inputmethodservice/CCandidateView.h"
+// #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 // using Elastos::Droid::View::EIID_View;

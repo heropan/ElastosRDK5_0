@@ -1,7 +1,7 @@
 
 #include "accounts/GrantCredentialsPermissionActivity.h"
 #include "R.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_SERVER_CTEXTSERVICESMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CTEXTSERVICESMANAGERSERVICE_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_CTextServicesManagerService.h"
-#include "content/PackageMonitor.h"
+#include "elastos/droid/content/PackageMonitor.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 

@@ -1,11 +1,11 @@
 
-#include "widget/internal/DigitalClock.h"
-#include "R.h"
-#include "content/CIntentFilter.h"
-#include "provider/Settings.h"
-#include "graphics/CTypefaceHelper.h"
+#include "elastos/droid/widget/internal/DigitalClock.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/graphics/CTypefaceHelper.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/CHandler.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Droid::Os::CHandler;
 using Elastos::Utility::Logging::Slogger;

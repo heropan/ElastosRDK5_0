@@ -1,4 +1,4 @@
-#include "widget/CStackViewLayoutParams.h"
+#include "elastos/droid/widget/CStackViewLayoutParams.h"
 
 namespace Elastos{
 namespace Droid{

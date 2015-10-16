@@ -1,4 +1,4 @@
-#include "systemui/statusbar/phone/PanelBar.h"
+#include "elastos/droid/systemui/statusbar/phone/PanelBar.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

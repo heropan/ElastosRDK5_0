@@ -1,6 +1,6 @@
 
 #include "am/StrictModeViolationDialog.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 #include "R.h"
 
 using Elastos::Droid::R;

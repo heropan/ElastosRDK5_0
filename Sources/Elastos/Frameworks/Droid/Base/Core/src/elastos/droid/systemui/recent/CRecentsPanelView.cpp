@@ -1,4 +1,4 @@
-#include "systemui/recent/CRecentsPanelView.h"
+#include "elastos/droid/systemui/recent/CRecentsPanelView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

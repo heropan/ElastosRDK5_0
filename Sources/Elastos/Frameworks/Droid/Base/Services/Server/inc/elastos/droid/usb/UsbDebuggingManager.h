@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_USB_USBDEBUGGINGMANAGER_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::IO::IOutputStream;
 using Elastos::Core::IRunnable;

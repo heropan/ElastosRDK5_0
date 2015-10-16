@@ -1,5 +1,5 @@
 
-#include "internal/LinearLayoutWithDefaultTouchRecepient.h"
+#include "elastos/droid/internal/LinearLayoutWithDefaultTouchRecepient.h"
 
 namespace Elastos {
 namespace Droid {
@@ -18,7 +18,7 @@ LinearLayoutWithDefaultTouchRecepient::LinearLayoutWithDefaultTouchRecepient(
 }
 
 LinearLayoutWithDefaultTouchRecepient::LinearLayoutWithDefaultTouchRecepient(
-    /* [in] */ IContext* context, 
+    /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs) : LinearLayout(context, attrs)
 {
     CRect::NewByFriend((CRect**)&mTempRect);

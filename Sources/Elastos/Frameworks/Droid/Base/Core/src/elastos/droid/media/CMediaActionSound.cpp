@@ -1,6 +1,6 @@
 
-#include "media/CMediaActionSound.h"
-#include "media/CSoundPool.h"
+#include "elastos/droid/media/CMediaActionSound.h"
+#include "elastos/droid/media/CSoundPool.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

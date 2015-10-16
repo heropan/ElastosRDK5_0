@@ -1,5 +1,5 @@
 
-#include "privacy/CPrivacySettings.h"
+#include "elastos/droid/privacy/CPrivacySettings.h"
 #include <stdlib.h>
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/Math.h>

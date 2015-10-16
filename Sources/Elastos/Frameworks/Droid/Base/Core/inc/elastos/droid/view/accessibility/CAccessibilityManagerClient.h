@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYMANAGERCLIENT_H__
 
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityManagerClient.h"
-#include "view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 
 namespace Elastos {
 namespace Droid {

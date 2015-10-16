@@ -1,6 +1,6 @@
 
-#include "internal/os/BackgroundThread.h"
-#include "os/CHandler.h"
+#include "elastos/droid/internal/os/BackgroundThread.h"
+#include "elastos/droid/os/CHandler.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::CHandler;

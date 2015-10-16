@@ -1,5 +1,5 @@
-#include "database/sqlite/CSQLiteCursor.h"
-#include "database/sqlite/CSQLiteQueryBuilder.h"
+#include "elastos/droid/database/sqlite/CSQLiteCursor.h"
+#include "elastos/droid/database/sqlite/CSQLiteQueryBuilder.h"
 
 namespace Elastos {
 namespace Droid {

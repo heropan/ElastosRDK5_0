@@ -1,5 +1,5 @@
 
-#include "graphics/CAvoidXfermode.h"
+#include "elastos/droid/graphics/CAvoidXfermode.h"
 #include <SkAvoidXfermode.h>
 #include <SkPixelXorXfermode.h>
 

@@ -1,4 +1,4 @@
-#include "utility/Base64InputStream.h"
+#include "elastos/droid/utility/Base64InputStream.h"
 #include <elastos/core/Math.h>
 
 using Elastos::IO::ICloseable;

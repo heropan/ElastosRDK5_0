@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CResampleInputStream.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CResampleInputStream.h"
 
 using namespace Elastos::Core;
 

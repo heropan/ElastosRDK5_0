@@ -1,7 +1,7 @@
 
-#include "appwidget/AppWidgetProvider.h"
+#include "elastos/droid/appwidget/AppWidgetProvider.h"
 #ifdef DROID_CORE
-#include "appwidget/CAppWidgetManagerHelper.h"
+#include "elastos/droid/appwidget/CAppWidgetManagerHelper.h"
 #else
 #include "Elastos.Droid.Core.h"
 #endif

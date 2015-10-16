@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CClock.h"
 
 
-#include "systemui/statusbar/policy/Clock.h"
+#include "elastos/droid/systemui/statusbar/policy/Clock.h"
 
 namespace Elastos {
 namespace Droid {

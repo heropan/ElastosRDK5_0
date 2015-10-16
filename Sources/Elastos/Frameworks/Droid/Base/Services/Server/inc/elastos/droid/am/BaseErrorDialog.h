@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_BASEERRORDIALOG_H__
 #define __ELASTOS_DROID_SERVER_AM_BASEERRORDIALOG_H__
 
-#include "app/AlertDialog.h"
+#include "elastos/droid/app/AlertDialog.h"
 
 
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 
 using Elastos::Droid::App::AlertDialog;

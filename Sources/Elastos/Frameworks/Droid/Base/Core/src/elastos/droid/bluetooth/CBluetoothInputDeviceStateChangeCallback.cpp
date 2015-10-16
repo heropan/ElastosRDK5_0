@@ -1,6 +1,6 @@
 
 #include "CBluetoothInputDeviceStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -14,7 +14,7 @@ namespace Bluetooth {
 ECode CBluetoothInputDeviceStateChangeCallback::OnBluetoothStateChange(
     /* [in] */ Boolean on)
 {
-	if (BluetoothInputDevice::DBG) Logger::D(BluetoothInputDevice::TAG, "onBluetoothStateChange: up=%d", on);
+    if (BluetoothInputDevice::DBG) Logger::D(BluetoothInputDevice::TAG, "onBluetoothStateChange: up=%d", on);
     if (!on) {
         if (BluetoothInputDevice::VDBG) Logger::D(BluetoothInputDevice::TAG,"Unbinding service...");
         AutoLock lock(mHost->mConnectionLock);
@@ -50,7 +50,7 @@ ECode CBluetoothInputDeviceStateChangeCallback::OnBluetoothStateChange(
 ECode CBluetoothInputDeviceStateChangeCallback::constructor(
     /* [in] */ IInterface* host)
 {
-	mHost = (BluetoothInputDevice*)host;
+    mHost = (BluetoothInputDevice*)host;
     return NOERROR;
 }
 

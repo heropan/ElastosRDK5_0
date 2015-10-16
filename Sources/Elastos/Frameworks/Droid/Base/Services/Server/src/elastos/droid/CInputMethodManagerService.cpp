@@ -3,14 +3,14 @@
 #include "CInputMethodManagerServiceMethodCallback.h"
 #include "CInputMethodManagerServiceUserSwitchObserver.h"
 #include "pm/CPackageManagerService.h"
-#include "app/AppGlobals.h"
-#include "app/ActivityManagerNative.h"
-#include "os/ServiceManager.h"
-#include "os/Binder.h"
-#include "os/HandlerBase.h"
-#include "os/SomeArgs.h"
-#include "os/SystemClock.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/SomeArgs.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "util/Xml.h"
 #include "R.h"
 #include "Manifest.h"
@@ -3075,7 +3075,7 @@ Boolean CInputMethodManagerService::NeedsToShowImeSwitchOngoingNotification()
                 return FALSE;
             }
         }
-		return TRUE;
+        return TRUE;
     }
     return FALSE;
 

@@ -1,7 +1,7 @@
-#include "widget/RatingBar.h"
+#include "elastos/droid/widget/RatingBar.h"
 #include <elastos/core/Math.h>
 #include "Elastos.Core.h"
-#include "graphics/drawable/shapes/CRectShape.h"
+#include "elastos/droid/graphics/drawable/shapes/CRectShape.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::Shapes::CRectShape;

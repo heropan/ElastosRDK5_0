@@ -2,7 +2,7 @@
 #ifndef __DATAMANAGER_H__
 #define __DATAMANAGER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "MediaSource.h"
 #include "MediaObject.h"

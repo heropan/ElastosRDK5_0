@@ -1,6 +1,6 @@
 
-#include <ext/frameworkext.h>
-#include "app/admin/CDeviceAdminReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/admin/CDeviceAdminReceiver.h"
 
 using Elastos::Droid::Os::IBundle;
 

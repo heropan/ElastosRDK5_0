@@ -1,6 +1,6 @@
 
-#include "media/CUserRouteInfo.h"
-#include "media/CRouteGroup.h"
+#include "elastos/droid/media/CUserRouteInfo.h"
+#include "elastos/droid/media/CRouteGroup.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

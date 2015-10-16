@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_CAnimatedImageView.h"
 
 
-#include "systemui/statusbar/AnimatedImageView.h"
+#include "elastos/droid/systemui/statusbar/AnimatedImageView.h"
 
 namespace Elastos {
 namespace Droid {

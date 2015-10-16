@@ -1,8 +1,8 @@
 
-#include "appwidget/CAppWidgetManager.h"
-#include "appwidget/CAppWidgetProviderInfo.h"
-#include "utility/CTypedValue.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/appwidget/CAppWidgetManager.h"
+#include "elastos/droid/appwidget/CAppWidgetProviderInfo.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Content::Res::IResources;

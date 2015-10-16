@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPathMeasure.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPathMeasure.h"
 #include <skia/core/SkPath.h>
 #include <skia/core/SkPathMeasure.h>
 

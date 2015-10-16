@@ -2,12 +2,12 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "database/ContentObserver.h"
-#include "os/HandlerBase.h"
-#include "content/BroadcastReceiver.h"
-#include "systemui/SystemUI.h"
-#include "systemui/statusbar/NotificationData.h"
-#include "widget/RemoteViews.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/systemui/SystemUI.h"
+#include "elastos/droid/systemui/statusbar/NotificationData.h"
+#include "elastos/droid/widget/RemoteViews.h"
 
 
 using Elastos::Droid::Database::ContentObserver;

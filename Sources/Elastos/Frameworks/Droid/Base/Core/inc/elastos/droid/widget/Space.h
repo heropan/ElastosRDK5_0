@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SPACE_H__
 #define __ELASTOS_DROID_WIDGET_SPACE_H__
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 namespace Elastos {
 namespace Droid {

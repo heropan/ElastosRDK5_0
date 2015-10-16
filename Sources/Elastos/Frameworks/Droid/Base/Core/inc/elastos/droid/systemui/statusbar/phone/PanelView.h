@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELVIEW_H__
 
-#include "widget/FrameLayout.h"
-#include "os/Runnable.h"
-#include "view/VelocityTracker.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/VelocityTracker.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Animation::ITimeAnimator;

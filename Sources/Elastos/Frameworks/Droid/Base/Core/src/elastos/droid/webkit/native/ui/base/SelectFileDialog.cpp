@@ -50,7 +50,7 @@ SelectFileDialog::GetDisplayNameTask::GetDisplayNameTask(
 }
 
 ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
-	/* [in] */ ArrayOf<IInterface*>* params,
+    /* [in] */ ArrayOf<IInterface*>* params,
     /* [out] */ IInterface** result)
 {
     // ==================before translated======================

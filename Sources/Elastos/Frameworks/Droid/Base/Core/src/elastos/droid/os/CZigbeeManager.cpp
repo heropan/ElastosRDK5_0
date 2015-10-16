@@ -1,6 +1,6 @@
 
-#include "os/CZigbeeManager.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/os/CZigbeeManager.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Slogger.h>
 
 namespace Elastos {

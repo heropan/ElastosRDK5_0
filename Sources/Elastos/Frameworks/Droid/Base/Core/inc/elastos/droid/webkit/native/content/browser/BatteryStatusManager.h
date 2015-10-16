@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BATTERYSTATUSMAMAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;

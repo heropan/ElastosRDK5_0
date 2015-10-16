@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Phone_CFastColorDrawable.h"
 
-#include "systemui/statusbar/phone/FastColorDrawable.h"
+#include "elastos/droid/systemui/statusbar/phone/FastColorDrawable.h"
 
 namespace Elastos {
 namespace Droid {

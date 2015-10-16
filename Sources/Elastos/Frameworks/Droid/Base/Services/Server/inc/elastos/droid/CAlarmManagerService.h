@@ -2,14 +2,14 @@
 #ifndef __ELASTOS_DROID_SERVER_CALARMMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CALARMMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_CAlarmManagerService.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/Pair.h>
 #include <elastos/core/StringBuffer.h>
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;

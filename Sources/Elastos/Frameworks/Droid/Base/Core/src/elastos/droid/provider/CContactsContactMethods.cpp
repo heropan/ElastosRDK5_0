@@ -1,10 +1,10 @@
 
-#include "provider/CContactsContactMethods.h"
-#include "net/Uri.h"
-#include "content/CContentValues.h"
-#include "content/CContentUris.h"
+#include "elastos/droid/provider/CContactsContactMethods.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CContentUris.h"
 #include <elastos/core/StringUtils.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::IDouble;
 using Elastos::Core::CDouble;

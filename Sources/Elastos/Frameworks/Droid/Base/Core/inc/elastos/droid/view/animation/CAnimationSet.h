@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANIMATIONSET_H__
 
 #include "_Elastos_Droid_View_Animation_CAnimationSet.h"
-#include "view/animation/AnimationSet.h"
+#include "elastos/droid/view/animation/AnimationSet.h"
 
 namespace Elastos {
 namespace Droid {

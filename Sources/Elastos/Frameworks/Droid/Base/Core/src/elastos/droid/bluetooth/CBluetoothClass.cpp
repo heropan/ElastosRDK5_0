@@ -1,6 +1,6 @@
 
 #include "CBluetoothClass.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

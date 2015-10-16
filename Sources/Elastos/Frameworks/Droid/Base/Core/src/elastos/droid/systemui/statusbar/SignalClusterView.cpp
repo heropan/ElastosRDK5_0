@@ -1,5 +1,5 @@
-#include "systemui/statusbar/SignalClusterView.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/SignalClusterView.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CString;

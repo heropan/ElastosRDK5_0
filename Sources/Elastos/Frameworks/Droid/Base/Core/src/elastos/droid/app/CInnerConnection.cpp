@@ -1,4 +1,4 @@
-#include "app/CInnerConnection.h"
+#include "elastos/droid/app/CInnerConnection.h"
 
 namespace Elastos{
 namespace Droid{

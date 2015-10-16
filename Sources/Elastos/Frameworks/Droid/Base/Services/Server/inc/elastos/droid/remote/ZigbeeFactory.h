@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_REMOTE_ZIGBEEFACTORY_H__
 
 #include "remote/AbstractDeviceFactory.h"
-#include "os/AsyncTask.h"
+#include "elastos/droid/os/AsyncTask.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

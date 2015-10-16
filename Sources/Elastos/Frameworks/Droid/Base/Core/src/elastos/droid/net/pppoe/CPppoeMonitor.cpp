@@ -1,7 +1,7 @@
 
 #include "CPppoeMonitor.h"
 #include "CPppoeNative.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

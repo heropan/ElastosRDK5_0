@@ -1,9 +1,9 @@
 
-#include "graphics/CSurfaceTexture.h"
-#include "webkit/HTML5VideoInline.h"
-#include "webkit/HTML5VideoViewProxy.h"
-#include "view/CSurface.h"
-#include "Manifest.h"
+#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/droid/webkit/HTML5VideoInline.h"
+#include "elastos/droid/webkit/HTML5VideoViewProxy.h"
+#include "elastos/droid/view/CSurface.h"
+#include "elastos/droid/Manifest.h"
 #include "opengl/CGLES20.h"
 
 #include <elastos/core/StringBuilder.h>

@@ -1,12 +1,12 @@
 
-#include "app/Fragment.h"
+#include "elastos/droid/app/Fragment.h"
 #ifdef DROID_CORE
-#include "app/CFragmentManagerImpl.h"
-#include "app/CFragmentManagerImplHelper.h"
+#include "elastos/droid/app/CFragmentManagerImpl.h"
+#include "elastos/droid/app/CFragmentManagerImplHelper.h"
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 

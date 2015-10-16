@@ -3,9 +3,9 @@
 #include "power/CMountShutdownObserver.h"
 #include "power/CPowerManagerService.h"
 #include "power/MobileDirectController.h"
-#include "os/SystemClock.h"
-#include "os/ServiceManager.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
 

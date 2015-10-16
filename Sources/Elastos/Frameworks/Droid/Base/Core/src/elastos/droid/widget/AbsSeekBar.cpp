@@ -1,6 +1,6 @@
 
-#include "widget/AbsSeekBar.h"
-#include "view/CViewConfiguration.h"
+#include "elastos/droid/widget/AbsSeekBar.h"
+#include "elastos/droid/view/CViewConfiguration.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;

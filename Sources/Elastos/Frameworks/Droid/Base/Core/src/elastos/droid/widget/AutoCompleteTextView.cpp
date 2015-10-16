@@ -1,11 +1,11 @@
 
-#include "widget/AutoCompleteTextView.h"
-#include "view/LayoutInflater.h"
-#include "view/inputmethod/CCompletionInfo.h"
-#include "view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/widget/AutoCompleteTextView.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/view/inputmethod/CCompletionInfo.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "CListPopupWindow.h"
-#include "text/TextUtils.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/Selection.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::View::InputMethod::ICompletionInfo;

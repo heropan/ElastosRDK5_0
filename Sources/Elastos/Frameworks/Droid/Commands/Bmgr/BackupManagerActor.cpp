@@ -1,5 +1,5 @@
 #include "BackupManagerActor.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::Droid::Os::ServiceManager;
 

@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__
 #define __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__
 
-#include "ext/frameworkdef.h"
-#include "app/ListFragment.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/ListFragment.h"
 
-#include "widget/ArrayAdapter.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Core::IComparable;

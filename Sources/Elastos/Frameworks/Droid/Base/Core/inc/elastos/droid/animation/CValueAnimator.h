@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_CVALUEANIMATOR_H__
 
 #include "_Elastos_Droid_Animation_CValueAnimator.h"
-#include "animation/ValueAnimator.h"
+#include "elastos/droid/animation/ValueAnimator.h"
 
 namespace Elastos {
 namespace Droid {

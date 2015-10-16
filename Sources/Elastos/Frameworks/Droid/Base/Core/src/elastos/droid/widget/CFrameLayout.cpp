@@ -1,5 +1,5 @@
 
-#include "widget/CFrameLayout.h"
+#include "elastos/droid/widget/CFrameLayout.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

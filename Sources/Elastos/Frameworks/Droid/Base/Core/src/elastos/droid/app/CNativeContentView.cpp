@@ -1,5 +1,5 @@
 
-#include "app/CNativeContentView.h"
+#include "elastos/droid/app/CNativeContentView.h"
 
 using Elastos::Droid::View::EIID_View;
 

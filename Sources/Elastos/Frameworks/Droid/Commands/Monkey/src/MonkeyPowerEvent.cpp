@@ -1,5 +1,5 @@
 #include "MonkeyPowerEvent.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <os/Build.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuffer.h>

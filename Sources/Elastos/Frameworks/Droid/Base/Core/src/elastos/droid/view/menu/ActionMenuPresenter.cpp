@@ -1,14 +1,14 @@
 
-#include "view/menu/ActionMenuPresenter.h"
-#include "view/menu/MenuItemImpl.h"
-#include "view/menu/ActionMenuView.h"
-#include "view/menu/CActionMenuView.h"
-#include "view/menu/SubMenuBuilderBase.h"
-#include "view/menu/CActionBarPolicy.h"
-#include "view/menu/CActionMenuPresenterSavedState.h"
-#include "view/ActionProvider.h"
-#include "view/SoundEffectConstants.h"
-#include "R.h"
+#include "elastos/droid/view/menu/ActionMenuPresenter.h"
+#include "elastos/droid/view/menu/MenuItemImpl.h"
+#include "elastos/droid/view/menu/ActionMenuView.h"
+#include "elastos/droid/view/menu/CActionMenuView.h"
+#include "elastos/droid/view/menu/SubMenuBuilderBase.h"
+#include "elastos/droid/view/menu/CActionBarPolicy.h"
+#include "elastos/droid/view/menu/CActionMenuPresenterSavedState.h"
+#include "elastos/droid/view/ActionProvider.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Core::EIID_IRunnable;

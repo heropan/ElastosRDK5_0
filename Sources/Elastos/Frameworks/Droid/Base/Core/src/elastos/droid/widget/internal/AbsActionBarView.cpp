@@ -1,9 +1,9 @@
 
-#include "widget/internal/AbsActionBarView.h"
-#include "animation/CObjectAnimator.h"
-#include "animation/CAnimatorSet.h"
-#include "view/animation/CDecelerateInterpolator.h"
-#include "view/menu/CActionMenuView.h"
+#include "elastos/droid/widget/internal/AbsActionBarView.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/menu/CActionMenuView.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Animation::CAnimatorSet;

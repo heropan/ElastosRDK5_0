@@ -1,11 +1,11 @@
 
-#include "ext/frameworkext.h"
-#include "gesture/CGestureStore.h"
-#include "gesture/GestureUtils.h"
-#include "gesture/GestureConstants.h"
-#include "gesture/InstanceLearner.h"
-#include "gesture/Instance.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/gesture/CGestureStore.h"
+#include "elastos/droid/gesture/GestureUtils.h"
+#include "elastos/droid/gesture/GestureConstants.h"
+#include "elastos/droid/gesture/InstanceLearner.h"
+#include "elastos/droid/gesture/Instance.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/logging/Logger.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_DEVICEORIENTATIONSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/DeviceMotionAndOrientationManager.h"
+#include "elastos/droid/webkit/DeviceMotionAndOrientationManager.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;

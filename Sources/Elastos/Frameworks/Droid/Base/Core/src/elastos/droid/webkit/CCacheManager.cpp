@@ -1,6 +1,6 @@
 
-#include "webkit/CCacheManager.h"
-#include "webkit/DebugFlags.h"
+#include "elastos/droid/webkit/CCacheManager.h"
+#include "elastos/droid/webkit/DebugFlags.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;

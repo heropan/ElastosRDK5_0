@@ -1,6 +1,6 @@
 
 #include "CActivityOne.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/System.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>

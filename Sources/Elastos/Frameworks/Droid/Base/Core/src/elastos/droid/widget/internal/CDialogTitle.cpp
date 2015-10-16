@@ -1,4 +1,4 @@
-#include "widget/internal/CDialogTitle.h"
+#include "elastos/droid/widget/internal/CDialogTitle.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::Widget::EIID_TextView;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CStateChangeResult.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CStateChangeResult.h"
 
 namespace Elastos {
 namespace Droid {

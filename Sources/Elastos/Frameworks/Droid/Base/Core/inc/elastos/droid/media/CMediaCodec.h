@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIACODEC_H__
 
 #include "_Elastos_Droid_Media_CMediaCodec.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <media/stagefright/MediaCodec.h>
 #include <media/stagefright/foundation/ALooper.h>
 #include <gui/SurfaceTextureClient.h>

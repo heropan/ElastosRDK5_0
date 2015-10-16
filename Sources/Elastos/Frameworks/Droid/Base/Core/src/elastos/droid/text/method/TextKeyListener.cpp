@@ -5,7 +5,7 @@
 #include "elastos/droid/text/SpannableStringInternal.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::EIID_IContentObserver;

@@ -1,4 +1,4 @@
-#include "os/PerformanceCollector.h"
+#include "elastos/droid/os/PerformanceCollector.h"
 
 namespace Elastos {
 namespace Droid {

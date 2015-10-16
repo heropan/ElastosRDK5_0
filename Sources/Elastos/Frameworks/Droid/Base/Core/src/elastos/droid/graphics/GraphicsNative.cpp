@@ -1,10 +1,10 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/GraphicsNative.h"
-#include "graphics/CRect.h"
-#include "graphics/CRectF.h"
-#include "graphics/CBitmap.h"
-#include "graphics/BitmapRegionDecoder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/BitmapRegionDecoder.h"
 #include <skia/core/SkDither.h>
 
 namespace Elastos {

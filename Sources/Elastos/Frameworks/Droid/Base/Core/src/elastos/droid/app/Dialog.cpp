@@ -1,20 +1,20 @@
 
-#include "ext/frameworkext.h"
-#include "app/Dialog.h"
-#include "os/Looper.h"
-#include "os/Handler.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 #ifdef DROID_CORE
-#include "impl/CPolicyManager.h"
-#include "utility/CTypedValue.h"
-#include "os/CBundle.h"
-#include "os/CHandler.h"
-#include "os/CMessageHelper.h"
-#include "app/CActionBarImpl.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/CContextThemeWrapper.h"
-#include "impl/CPolicyManager.h"
+#include "elastos/droid/impl/CPolicyManager.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/app/CActionBarImpl.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/impl/CPolicyManager.h"
 #endif
 
 using Elastos::Utility::Logging::Slogger;

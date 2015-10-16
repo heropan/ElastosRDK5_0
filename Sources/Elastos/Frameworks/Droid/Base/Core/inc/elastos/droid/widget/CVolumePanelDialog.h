@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CVOLUMEPANELDIALOG_H__
 
 #include "_Elastos_Droid_Widget_CVolumePanelDialog.h"
-#include "widget/VolumePanelDialog.h"
+#include "elastos/droid/widget/VolumePanelDialog.h"
 
 
 

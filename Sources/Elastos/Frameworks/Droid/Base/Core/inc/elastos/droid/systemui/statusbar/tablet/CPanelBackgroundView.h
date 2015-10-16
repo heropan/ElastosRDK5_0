@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CPanelBackgroundView.h"
 
-#include "systemui/statusbar/tablet/PanelBackgroundView.h"
+#include "elastos/droid/systemui/statusbar/tablet/PanelBackgroundView.h"
 
 namespace Elastos {
 namespace Droid {

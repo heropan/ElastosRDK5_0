@@ -1,8 +1,8 @@
-#include "widget/DigitalClock.h"
-#include "text/format/DateFormat.h"
-#include "os/CHandler.h"
-#include "net/CUriHelper.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/widget/DigitalClock.h"
+#include "elastos/droid/text/format/DateFormat.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

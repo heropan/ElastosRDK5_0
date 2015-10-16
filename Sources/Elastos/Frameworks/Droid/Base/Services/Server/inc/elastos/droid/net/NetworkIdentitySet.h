@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_NET_NETWORKIDENTITYSET_H__
 #define __ELASTOS_DROID_SERVER_NET_NETWORKIDENTITYSET_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

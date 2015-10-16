@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
 
 #include "_Elastos_Droid_SystemUI_Recent_CRecentTasksLoader.h"
-#include "app/Activity.h"
-#include "os/Runnable.h"
-#include "os/AsyncTask.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/AsyncTask.h"
 
 using Elastos::Utility::Concurrent::IBlockingQueue;
 using Elastos::Core::ICharSequence;

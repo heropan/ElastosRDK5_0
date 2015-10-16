@@ -1,7 +1,7 @@
 
-#include "speech/CSpeechRecognizerHelper.h"
+#include "elastos/droid/speech/CSpeechRecognizerHelper.h"
 
-#include "speech/CSpeechRecognizer.h"
+#include "elastos/droid/speech/CSpeechRecognizer.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,5 +1,5 @@
 #include "search/Searchables.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinderHelper;

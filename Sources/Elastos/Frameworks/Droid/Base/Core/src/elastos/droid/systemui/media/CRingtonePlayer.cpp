@@ -1,9 +1,9 @@
-#include "systemui/media/CRingtonePlayer.h"
+#include "elastos/droid/systemui/media/CRingtonePlayer.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/ServiceManager.h"
-#include "os/Binder.h"
-#include "os/CBinderHelper.h"
-#include "media/CRingtone.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/CBinderHelper.h"
+#include "elastos/droid/media/CRingtone.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::ServiceManager;

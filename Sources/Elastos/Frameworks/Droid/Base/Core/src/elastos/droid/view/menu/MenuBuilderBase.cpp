@@ -1,16 +1,16 @@
 
-#include "view/CContextThemeWrapper.h"
-#include "content/CIntent.h"
-#include "content/CComponentName.h"
-#include "content/res/CConfiguration.h"
-#include "view/CKeyCharacterMap.h"
-#include "view/ActionProvider.h"
-#include "view/menu/MenuBuilderBase.h"
-#include "view/menu/MenuItemImpl.h"
-#include "view/menu/CIconMenuView.h"
-#include "view/menu/CSubMenuBuilder.h"
-#include "view/menu/CMenuItemImpl.h"
-#include "R.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/ActionProvider.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/MenuItemImpl.h"
+#include "elastos/droid/view/menu/CIconMenuView.h"
+#include "elastos/droid/view/menu/CSubMenuBuilder.h"
+#include "elastos/droid/view/menu/CMenuItemImpl.h"
+#include "elastos/droid/R.h"
 
 extern "C" const InterfaceID EIID_MenuBuilderBase =
         { 0x2dbd4c5b, 0xd8cc, 0x489e, { 0xb3, 0xe3, 0xae, 0xeb, 0x1c, 0x5b, 0x99, 0x42 } };

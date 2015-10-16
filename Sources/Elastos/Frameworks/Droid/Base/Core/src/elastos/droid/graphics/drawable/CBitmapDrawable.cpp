@@ -1,5 +1,5 @@
 
-#include "graphics/drawable/CBitmapDrawable.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
 
 namespace Elastos {
 namespace Droid {

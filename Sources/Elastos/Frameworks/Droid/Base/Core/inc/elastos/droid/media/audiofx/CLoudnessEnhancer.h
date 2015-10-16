@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CLoudnessEnhancer.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "media/audiofx/AudioEffect.h"
+#include "elastos/droid/media/audiofx/AudioEffect.h"
 
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;

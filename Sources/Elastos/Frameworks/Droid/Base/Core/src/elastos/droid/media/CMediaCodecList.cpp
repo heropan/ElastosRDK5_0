@@ -1,10 +1,10 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaCodecList.h"
-#include "media/CCodecCapabilities.h"
-#include "media/CCodecProfileLevel.h"
-#include "media/CCodecProfileLevel.h"
-#include "media/CMediaCodecInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaCodecList.h"
+#include "elastos/droid/media/CCodecCapabilities.h"
+#include "elastos/droid/media/CCodecProfileLevel.h"
+#include "elastos/droid/media/CCodecProfileLevel.h"
+#include "elastos/droid/media/CMediaCodecInfo.h"
 #include <media/stagefright/MediaCodecList.h>
 #include <media/stagefright/foundation/AString.h>
 #include <utils/Vector.h>

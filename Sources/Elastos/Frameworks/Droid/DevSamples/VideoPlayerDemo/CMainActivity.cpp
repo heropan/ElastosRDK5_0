@@ -225,7 +225,7 @@ ECode CMainActivity::GetVideoList(
         }
     }
     else {
-    	*result = NULL;
+        *result = NULL;
         return NOERROR;
     }
     if (c != NULL) {

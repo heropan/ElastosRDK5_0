@@ -6,9 +6,9 @@ C_DEFINES += -DDROID_CORE -DMTP_DEVICE -DMTP_HOST
 
 include $(MAKEDIR)/../../../../../../../sources.inc
 
+
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/service/media
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES = CMediaBrowserServiceBrowserRoot.cpp
 SOURCES += MediaBrowserServiceResult.cpp

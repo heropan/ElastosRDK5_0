@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CBitmapRegionDecoderHelper.h"
-#include "graphics/BitmapRegionDecoder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CBitmapRegionDecoderHelper.h"
+#include "elastos/droid/graphics/BitmapRegionDecoder.h"
 
 namespace Elastos {
 namespace Droid {

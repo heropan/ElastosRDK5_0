@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_EXPANDABLELISTVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
 
 namespace Elastos {
 namespace Droid {

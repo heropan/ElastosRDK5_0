@@ -1,12 +1,12 @@
 
-#include "widget/AdapterView.h"
-#include "os/SystemClock.h"
-#include "view/accessibility/CAccessibilityEvent.h"
-#include "view/accessibility/CAccessibilityManager.h"
-#include "view/SoundEffectConstants.h"
+#include "elastos/droid/widget/AdapterView.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
-#include <R.h>
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::SoundEffectConstants;
 

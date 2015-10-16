@@ -1,5 +1,5 @@
 
-#include "widget/CheckedTextView.h"
+#include "elastos/droid/widget/CheckedTextView.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;

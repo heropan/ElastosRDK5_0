@@ -1,6 +1,6 @@
 
-#include "database/DatabaseUtils.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

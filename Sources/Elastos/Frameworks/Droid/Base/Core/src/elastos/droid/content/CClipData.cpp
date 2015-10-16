@@ -4,9 +4,9 @@
 // #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CClipDataItem.h"
 // #include "elastos/droid/content/ContentProvider.h"
-// #include "graphics/CBitmap.h"
-// #include "text/TextUtils.h"
-// #include "net/Uri.h"
+// #include "elastos/droid/graphics/CBitmap.h"
+// #include "elastos/droid/text/TextUtils.h"
+// #include "elastos/droid/net/Uri.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 

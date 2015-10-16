@@ -88,6 +88,7 @@ ECode CLinkify::AddLinks(
     /* [out] */ Boolean* ret)
 {
     VALIDATE_NOT_NULL(ret);
+    *ret = FALSE;
     VALIDATE_NOT_NULL(text);
     *ret = Linkify::AddLinks(text, pattern, scheme);
     return NOERROR;

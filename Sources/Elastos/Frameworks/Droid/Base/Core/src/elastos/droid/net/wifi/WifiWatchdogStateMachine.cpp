@@ -1,11 +1,11 @@
 
-#include "net/wifi/WifiWatchdogStateMachine.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/net/wifi/WifiWatchdogStateMachine.h"
+#include "elastos/droid/os/SystemClock.h"
 #ifdef DROID_CORE
-#include "provider/CSettingsGlobal.h"
-#include "content/CIntentFilter.h"
-#include "net/wifi/CWifiManagerHelper.h"
-#include "net/wifi/CSupplicantState.h"
+#include "elastos/droid/provider/CSettingsGlobal.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/net/wifi/CWifiManagerHelper.h"
+#include "elastos/droid/net/wifi/CSupplicantState.h"
 #endif
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

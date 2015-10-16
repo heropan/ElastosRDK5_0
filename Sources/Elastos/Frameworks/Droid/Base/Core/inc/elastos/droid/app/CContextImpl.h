@@ -3,11 +3,11 @@
 #define __ELASTOS_DROID_APP_CCONTEXTIMPL_H__
 
 #include "_Elastos_Droid_App_CContextImpl.h"
-#include "app/LoadedPkg.h"
-#include "app/CActivityThread.h"
-#include "app/CDownloadManager.h"
-#include "app/SharedPreferencesImpl.h"
-#include "content/ContentResolver.h"
+#include "elastos/droid/app/LoadedPkg.h"
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/app/CDownloadManager.h"
+#include "elastos/droid/app/SharedPreferencesImpl.h"
+#include "elastos/droid/content/ContentResolver.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::IClassLoader;

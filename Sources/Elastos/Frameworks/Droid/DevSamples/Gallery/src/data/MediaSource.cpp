@@ -9,10 +9,10 @@ namespace Gallery {
 const String MediaSource::TAG("MediaSource");
 
 MediaSource::PathId::PathId(
-	/* [in] */ Path* path,
-	/* [in] */ Int32 id)
-	: path(path)
-	, id(id)
+    /* [in] */ Path* path,
+    /* [in] */ Int32 id)
+    : path(path)
+    , id(id)
 {}
 
 CAR_INTERFACE_IMPL(MediaSource::PathId, IInterface)
@@ -26,14 +26,14 @@ CAR_INTERFACE_IMPL(MediaSource, IInterface)
 
 String MediaSource::GetPrefix()
 {
-	return mPrefix;
+    return mPrefix;
 }
 
 AutoPtr<Path> MediaSource::FindPathByUri(
-	/* [in] */ IUri* uri,
-	/* [in] */ const String& type)
+    /* [in] */ IUri* uri,
+    /* [in] */ const String& type)
 {
-	return NULL;
+    return NULL;
 }
 
 void MediaSource::Resume()
@@ -43,31 +43,31 @@ void MediaSource::Pause()
 {}
 
 AutoPtr<Path> MediaSource::GetDefaultSetOf(
-	/* [in] */ Path* item)
+    /* [in] */ Path* item)
 {
-	return NULL;
+    return NULL;
 }
 
 Int64 MediaSource::GetTotalUsedCacheSize()
 {
-	return 0;
+    return 0;
 }
 
 Int64 MediaSource::GetTotalTargetCacheSize()
 {
-	return 0;
+    return 0;
 }
 
 void MediaSource::MapMediaItems(
-	/* [in] */ ArrayOf<PathId*>* list,
-	/* [in] */ MediaSet::ItemConsumer* consumer)
+    /* [in] */ ArrayOf<PathId*>* list,
+    /* [in] */ MediaSet::ItemConsumer* consumer)
 {
-	Int32 n = list->GetLength();
+    Int32 n = list->GetLength();
     for (Int32 i = 0; i < n; i++) {
         AutoPtr<PathId> pid = (*list)[i];
         AutoPtr<MediaObject> obj;
         {
-        	AutoLock lock(DataManager::sLOCK);
+            AutoLock lock(DataManager::sLOCK);
             obj = pid->path->GetObject();
             if (obj == NULL) {
                 obj = CreateMediaObject(pid->path);

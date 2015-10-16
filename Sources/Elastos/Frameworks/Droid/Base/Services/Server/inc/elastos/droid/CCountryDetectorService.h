@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_CCOUNTRYDETECTORSERVICE_H__
 
 #include "_Elastos_Droid_Server_CCountryDetectorService.h"
-#include "ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

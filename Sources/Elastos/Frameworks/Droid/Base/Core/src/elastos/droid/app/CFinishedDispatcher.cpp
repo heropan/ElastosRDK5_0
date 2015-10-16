@@ -1,4 +1,4 @@
-#include "app/CFinishedDispatcher.h"
+#include "elastos/droid/app/CFinishedDispatcher.h"
 #include "unistd.h"
 
 namespace Elastos {

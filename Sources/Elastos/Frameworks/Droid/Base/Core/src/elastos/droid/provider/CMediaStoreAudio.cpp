@@ -1,7 +1,7 @@
 
-#include "provider/CMediaStoreAudio.h"
+#include "elastos/droid/provider/CMediaStoreAudio.h"
 #include <elastos/core/StringBuilder.h>
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Database::DatabaseUtils;

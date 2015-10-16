@@ -1,9 +1,10 @@
 
-#include "ext/frameworkext.h"
-#include "CMtpDevice.h"
-#include "CMtpDeviceInfo.h"
-#include "CMtpStorageInfo.h"
-#include "CMtpObjectInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/mtp/CMtpDevice.h"
+#include "elastos/droid/mtp/CMtpDeviceInfo.h"
+#include "elastos/droid/mtp/CMtpStorageInfo.h"
+#include "elastos/droid/mtp/CMtpObjectInfo.h"
+
 #include "MediaMtp/MtpTypes.h"
 #include "MediaMtp/MtpDevice.h"
 #include "MediaMtp/MtpDeviceInfo.h"

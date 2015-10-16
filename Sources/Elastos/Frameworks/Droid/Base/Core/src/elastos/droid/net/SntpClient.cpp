@@ -182,8 +182,8 @@ ECode SntpClient::WriteTimeStamp(
 } // namespace Elastos
 
 #if 0 // old CSntpClient.cpp
-#include "net/CSntpClient.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/net/CSntpClient.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <Elastos.CoreLibrary.h>

@@ -4,7 +4,7 @@
 
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

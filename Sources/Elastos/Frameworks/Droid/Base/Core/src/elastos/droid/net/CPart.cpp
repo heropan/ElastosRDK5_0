@@ -1,6 +1,6 @@
 
-#include "net/CPart.h"
-#include "net/CEmptyPart.h"
+#include "elastos/droid/net/CPart.h"
+#include "elastos/droid/net/CEmptyPart.h"
 
 class CStatic
 {

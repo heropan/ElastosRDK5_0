@@ -1,4 +1,4 @@
-#include "speech/srec/MicrophoneInputStream.h"
+#include "elastos/droid/speech/srec/MicrophoneInputStream.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

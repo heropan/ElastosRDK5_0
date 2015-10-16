@@ -1,5 +1,5 @@
-#include "speech/tts/FileSynthesisCallback.h"
-#include "os/FileUtils.h"
+#include "elastos/droid/speech/tts/FileSynthesisCallback.h"
+#include "elastos/droid/os/FileUtils.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>

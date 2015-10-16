@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_VIEWMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;

@@ -1,8 +1,8 @@
 
-#include "view/CMenuInflater.h"
-#include "view/StandaloneActionMode.h"
-#include "view/menu/CMenuBuilder.h"
-#include "view/menu/CMenuPopupHelper.h"
+#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/view/StandaloneActionMode.h"
+#include "elastos/droid/view/menu/CMenuBuilder.h"
+#include "elastos/droid/view/menu/CMenuPopupHelper.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;

@@ -1,7 +1,7 @@
 
-#include "app/backup/BackupAgentHelper.h"
+#include "elastos/droid/app/backup/BackupAgentHelper.h"
 #ifdef DROID_CORE
-#include "app/backup/CBackupHelperDispatcher.h"
+#include "elastos/droid/app/backup/CBackupHelperDispatcher.h"
 #endif
 #include <elastos/utility/logging/Logger.h>
 

@@ -1,5 +1,5 @@
-#include "utility/CXmlPullAttributes.h"
-//#include "internal/utility/XmlUtils.h"
+#include "elastos/droid/utility/CXmlPullAttributes.h"
+//#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

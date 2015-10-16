@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CCURSORWINDOW_H__
 
 #include "_Elastos_Droid_Database_CCursorWindow.h"
-#include "database/CursorWindow.h"
+#include "elastos/droid/database/CursorWindow.h"
 
 namespace Elastos {
 namespace Droid {

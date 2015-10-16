@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_CACCESSIBILITYINPUTFILTER_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CACCESSIBILITYINPUTFILTER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_Accessibility_CAccessibilityInputFilter.h"
-#include "view/InputFilter.h"
+#include "elastos/droid/view/InputFilter.h"
 #include "accessibility/CAccessibilityManagerService.h"
 #include "accessibility/TouchExplorer.h"
 #include "accessibility/ScreenMagnifier.h"

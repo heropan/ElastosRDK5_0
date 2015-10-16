@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "gesture/CGesturePoint.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/gesture/CGesturePoint.h"
 
 using Elastos::IO::IDataInput;
 

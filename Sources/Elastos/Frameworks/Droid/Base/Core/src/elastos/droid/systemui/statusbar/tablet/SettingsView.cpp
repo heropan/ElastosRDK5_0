@@ -1,8 +1,8 @@
-#include "systemui/statusbar/tablet/SettingsView.h"
-#include "os/SystemProperties.h"
-#include "os/CUserHandle.h"
-#include "content/CIntent.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/tablet/SettingsView.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Os::IUserHandle;

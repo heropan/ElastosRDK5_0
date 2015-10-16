@@ -1,5 +1,5 @@
 
-#include "media/CMetadata.h"
+#include "elastos/droid/media/CMetadata.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

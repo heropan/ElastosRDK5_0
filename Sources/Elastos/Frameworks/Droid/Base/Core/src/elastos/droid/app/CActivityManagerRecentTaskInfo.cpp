@@ -1,8 +1,8 @@
 
-#include "app/CActivityManagerRecentTaskInfo.h"
-#include <ext/frameworkext.h>
-#include "content/CComponentName.h"
-#include "content/CIntent.h"
+#include "elastos/droid/app/CActivityManagerRecentTaskInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

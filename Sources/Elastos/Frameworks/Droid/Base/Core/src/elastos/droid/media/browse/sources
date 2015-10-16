@@ -5,9 +5,8 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../../sources.inc
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/media/browse
+INCLUDES += $(MAKEDIR)/../../../../../inc/
+
 INCLUDES += $(PREBUILD_INC)/media
 INCLUDES += $(PREBUILD_INC)/system
 INCLUDES += $(PREBUILD_INC)/gui

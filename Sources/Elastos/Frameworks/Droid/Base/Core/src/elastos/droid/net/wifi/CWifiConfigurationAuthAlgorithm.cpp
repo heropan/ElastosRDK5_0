@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CWifiConfigurationAuthAlgorithm.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationAuthAlgorithm.h"
 
 namespace Elastos {
 namespace Droid {

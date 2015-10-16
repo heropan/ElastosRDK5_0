@@ -1,5 +1,5 @@
 
-#include "graphics/CCanvas.h"
+#include "elastos/droid/graphics/CCanvas.h"
 
 namespace Elastos {
 namespace Droid {

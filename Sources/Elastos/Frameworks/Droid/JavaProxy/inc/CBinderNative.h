@@ -12,8 +12,8 @@ namespace JavaProxy {
 CarClass(CBinderNative)
 {
 public:
-	~CBinderNative();
-	
+    ~CBinderNative();
+
     CARAPI ToString(
         /* [out] */ String* str);
 

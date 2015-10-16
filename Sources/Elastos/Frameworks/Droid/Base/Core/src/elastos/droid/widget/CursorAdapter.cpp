@@ -1,7 +1,7 @@
 
-#include "widget/CursorAdapter.h"
-#include "widget/CCursorFilter.h"
-#include "os/CHandler.h"
+#include "elastos/droid/widget/CursorAdapter.h"
+#include "elastos/droid/widget/CCursorFilter.h"
+#include "elastos/droid/os/CHandler.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

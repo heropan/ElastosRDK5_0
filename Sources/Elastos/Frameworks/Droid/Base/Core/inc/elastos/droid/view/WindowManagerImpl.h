@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
 #define __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {

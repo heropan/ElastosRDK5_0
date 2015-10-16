@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTCALLBACKS_H__
 
 #include "_Elastos_Droid_AppWidget_CAppWidgetHostCallbacks.h"
-#include "appwidget/CAppWidgetHost.h"
+#include "elastos/droid/appwidget/CAppWidgetHost.h"
 
 namespace Elastos {
 namespace Droid {

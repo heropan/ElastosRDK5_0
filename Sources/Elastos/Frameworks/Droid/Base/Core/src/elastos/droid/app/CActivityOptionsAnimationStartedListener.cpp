@@ -1,7 +1,7 @@
 
-#include "app/CActivityOptionsAnimationStartedListener.h"
-#include "app/CActivityOptions.h"
-#include "os/Handler.h"
+#include "elastos/droid/app/CActivityOptionsAnimationStartedListener.h"
+#include "elastos/droid/app/CActivityOptions.h"
+#include "elastos/droid/os/Handler.h"
 
 namespace Elastos {
 namespace Droid {

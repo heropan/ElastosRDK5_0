@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CHECKBOX_H__
 #define __ELASTOS_DROID_WIDGET_CHECKBOX_H__
 
-#include "widget/CompoundButton.h"
+#include "elastos/droid/widget/CompoundButton.h"
 
 namespace Elastos{
 namespace Droid{

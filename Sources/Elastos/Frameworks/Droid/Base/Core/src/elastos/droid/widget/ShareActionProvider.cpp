@@ -1,7 +1,7 @@
 
-#include "widget/ShareActionProvider.h"
-#include "utility/CTypedValue.h"
-#include <R.h>
+#include "elastos/droid/widget/ShareActionProvider.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::CStringWrapper;

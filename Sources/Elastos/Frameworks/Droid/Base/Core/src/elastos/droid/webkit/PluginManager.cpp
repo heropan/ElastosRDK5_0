@@ -1,12 +1,12 @@
 
-#include "content/CIntent.h"
-#include "content/pm/CSignature.h"
-#include "os/CMessageHelper.h"
-#include "os/SystemProperties.h"
-#include "webkit/BrowserFrame.h"
-#include "webkit/PluginManager.h"
-#include "webkit/WebCoreElastosBridge.h"
-#include "webkit/CPluginManager.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/pm/CSignature.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/webkit/BrowserFrame.h"
+#include "elastos/droid/webkit/PluginManager.h"
+#include "elastos/droid/webkit/WebCoreElastosBridge.h"
+#include "elastos/droid/webkit/CPluginManager.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CBoolean;

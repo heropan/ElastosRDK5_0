@@ -1,9 +1,9 @@
 
-#include "net/wifi/CWifiInfo.h"
-#include "net/wifi/CWifiSsidHelper.h"
-#include "net/wifi/CWifiSsid.h"
-#include "net/NetworkUtils.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/net/wifi/CWifiInfo.h"
+#include "elastos/droid/net/wifi/CWifiSsidHelper.h"
+#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

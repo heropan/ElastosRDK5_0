@@ -1,11 +1,11 @@
 
-#include "ext/frameworkdef.h"
-#include "app/CWallpaperInfo.h"
-#include "content/CComponentName.h"
-#include "content/pm/CResolveInfo.h"
-#include "utility/Xml.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CWallpaperInfo.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
+#include "elastos/droid/utility/Xml.h"
 #include "service/wallpaper/WallpaperService.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_MEDIAROUTEINFO_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "media/CMediaRouter.h"
+#include "elastos/droid/media/CMediaRouter.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 

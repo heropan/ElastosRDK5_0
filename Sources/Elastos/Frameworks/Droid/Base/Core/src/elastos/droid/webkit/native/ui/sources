@@ -5,8 +5,6 @@ include $(MAKEDIR)/../../../../../../../../sources.inc
 
 INCLUDES += ../../../
 INCLUDES += $(MAKEDIR)/../../../../../../inc/
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/webkit/native/ui/
 
 C_DEFINES += -DDROID_CORE
 
@@ -19,12 +17,12 @@ SOURCES += UiUtils.cpp
 SOURCES += ColorPickerAdvancedComponent.cpp
 #SOURCES += DropdownAdapter.cpp                     # cannot compile
 SOURCES += ColorSuggestionListAdapter.cpp
-#SOURCES += ColorPickerMoreButton.cpp               # cannot compile       
-#SOURCES += ColorPickerAdvanced.cpp                 # cannot compile    
-#SOURCES += ColorPickerDialog.cpp                   # cannot compile    
+#SOURCES += ColorPickerMoreButton.cpp               # cannot compile
+#SOURCES += ColorPickerAdvanced.cpp                 # cannot compile
+#SOURCES += ColorPickerDialog.cpp                   # cannot compile
 
 LIBRARIES += autofill/autofill.lib
 LIBRARIES += base/base.lib
 LIBRARIES += gfx/gfx.lib
 LIBRARIES += gl/gl.lib
-LIBRARIES += interpolators/interpolators.lib 
+LIBRARIES += interpolators/interpolators.lib

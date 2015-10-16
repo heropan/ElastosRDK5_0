@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_SERVER_CBRICKRECEIVER_H__
 
 #include "_Elastos_Droid_Server_CBrickReceiver.h"
-#include "ext/frameworkdef.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

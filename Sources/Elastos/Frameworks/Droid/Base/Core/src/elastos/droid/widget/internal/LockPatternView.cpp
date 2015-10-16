@@ -1,12 +1,12 @@
-#include <R.h>
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
-#include "widget/internal/LockPatternView.h"
-#include "graphics/CPaint.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CBitmapFactory.h"
-#include "os/SystemClock.h"
-#include "view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/widget/internal/LockPatternView.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 
 using Elastos::Core::Math;
 

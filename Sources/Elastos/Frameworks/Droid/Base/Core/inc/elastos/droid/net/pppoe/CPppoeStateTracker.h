@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Net_Pppoe_CPppoeStateTracker.h"
 #include "CPppoeMonitor.h"
-#include "net/DhcpInfoInternal.h"
+#include "elastos/droid/net/DhcpInfoInternal.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;

@@ -1,12 +1,12 @@
 
-#include "graphics/drawable/BitmapDrawable.h"
-#include "graphics/drawable/CBitmapDrawable.h"
-// #include "graphics/CPaint.h"
-// #include "graphics/CBitmapFactory.h"
-#include "graphics/CRect.h"
-// #include "graphics/CBitmapShader.h"
-// #include "view/CGravity.h"
-#include "R.h"
+#include "elastos/droid/graphics/drawable/BitmapDrawable.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+// #include "elastos/droid/graphics/CPaint.h"
+// #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CRect.h"
+// #include "elastos/droid/graphics/CBitmapShader.h"
+// #include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::View::IGravity;

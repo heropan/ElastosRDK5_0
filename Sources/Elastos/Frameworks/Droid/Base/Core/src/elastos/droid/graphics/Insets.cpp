@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/Insets.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/Insets.h"
+#include "elastos/droid/graphics/CRect.h"
 
 namespace Elastos {
 namespace Droid {

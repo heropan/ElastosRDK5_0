@@ -12,7 +12,7 @@
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkPixelRef.h>
 #include <ui/ANativeObjectBase.h>
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastosx::Microedition::Khronos::Egl::IEGL10;

@@ -3,8 +3,8 @@
 #define __CPHOTOACTIVITY_H__
 
 #include "_CPhotoActivity.h"
-#include "app/Activity.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "src/ui/DetailsHelper.h"
 #include "src/data/AsyncImageLoader.h"
 

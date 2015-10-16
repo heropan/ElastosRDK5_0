@@ -1,6 +1,6 @@
 
-#include "view/CInputDeviceHelper.h"
-#include "view/CInputDevice.h"
+#include "elastos/droid/view/CInputDeviceHelper.h"
+#include "elastos/droid/view/CInputDevice.h"
 
 using namespace Elastos::Droid::View;
 

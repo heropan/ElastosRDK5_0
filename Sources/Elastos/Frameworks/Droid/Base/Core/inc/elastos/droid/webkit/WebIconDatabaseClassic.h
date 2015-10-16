@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_WEBICONDATABASECLASSIC_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "webkit/WebIconDatabase.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/webkit/WebIconDatabase.h"
 #include <elastos/utility/etl/Vector.h>
 
 using Elastos::Utility::Etl::Vector;

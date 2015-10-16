@@ -1,10 +1,10 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPath.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CRectF.h"
-#include "graphics/CRegion.h"
-#include "graphics/GraphicsNative.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
 #include <skia/core/SkPath.h>
 #include <skia/core/SkMatrix.h>
 

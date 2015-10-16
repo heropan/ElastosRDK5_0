@@ -12,7 +12,7 @@ namespace JavaProxy {
 CarClass(CIPackageDeleteObserverNative)
 {
 public:
-	~CIPackageDeleteObserverNative();
+    ~CIPackageDeleteObserverNative();
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

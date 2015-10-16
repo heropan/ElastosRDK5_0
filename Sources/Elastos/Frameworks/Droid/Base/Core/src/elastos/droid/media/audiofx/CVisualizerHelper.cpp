@@ -1,5 +1,5 @@
-#include "media/audiofx/CVisualizerHelper.h"
-#include "media/audiofx/CVisualizer.h"
+#include "elastos/droid/media/audiofx/CVisualizerHelper.h"
+#include "elastos/droid/media/audiofx/CVisualizer.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
-#include "internal/os/CSomeArgsHelper.h"
-#include "internal/os/SomeArgs.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/internal/os/CSomeArgsHelper.h"
+#include "elastos/droid/internal/os/SomeArgs.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

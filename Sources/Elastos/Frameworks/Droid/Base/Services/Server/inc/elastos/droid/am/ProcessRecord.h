@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
-#include "os/BatteryStatsImpl.h"
+#include "elastos/droid/os/BatteryStatsImpl.h"
 #include "am/ReceiverList.h"
 #include "am/ConnectionRecord.h"
 #include "am/ContentProviderRecord.h"

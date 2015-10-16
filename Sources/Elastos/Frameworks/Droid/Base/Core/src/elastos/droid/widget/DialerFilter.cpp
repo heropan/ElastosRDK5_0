@@ -1,11 +1,11 @@
-#include <R.h>
-#include "widget/DialerFilter.h"
-#include "ext/frameworkext.h"
-#include "view/CKeyEventHelper.h"
-#include "text/CAllCaps.h"
-#include "text/Selection.h"
-#include "text/method/CTextKeyListenerHelper.h"
-#include "text/method/CDialerKeyListenerHelper.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/widget/DialerFilter.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CKeyEventHelper.h"
+#include "elastos/droid/text/CAllCaps.h"
+#include "elastos/droid/text/Selection.h"
+#include "elastos/droid/text/method/CTextKeyListenerHelper.h"
+#include "elastos/droid/text/method/CDialerKeyListenerHelper.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::CKeyEventHelper;

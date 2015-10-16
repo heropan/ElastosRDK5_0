@@ -1,19 +1,19 @@
 
-#include "widget/StackView.h"
+#include "elastos/droid/widget/StackView.h"
 #include <elastos/core/Math.h>
-#include "animation/CPropertyValuesHolderHelper.h"
-#include "animation/CObjectAnimatorHelper.h"
-#include "view/animation/CLinearInterpolator.h"
-#include "view/CViewConfigurationHelper.h"
-#include "widget/CImageView.h"
-#include "widget/CStackViewLayoutParams.h"
-#include "graphics/CPaint.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CTableMaskFilterHelper.h"
-#include "graphics/CPorterDuffXfermode.h"
-#include "graphics/CBlurMaskFilter.h"
-#include "graphics/CBitmapFactory.h"
+#include "elastos/droid/animation/CPropertyValuesHolderHelper.h"
+#include "elastos/droid/animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CStackViewLayoutParams.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CTableMaskFilterHelper.h"
+#include "elastos/droid/graphics/CPorterDuffXfermode.h"
+#include "elastos/droid/graphics/CBlurMaskFilter.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

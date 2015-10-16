@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_UTILITY_CMONTH_DISPLAY_HELPER_H__
 
 #include "_Elastos_Droid_Utility_CMonthDisplayHelper.h"
-#include "utility/MonthDisplayHelper.h"
+#include "elastos/droid/utility/MonthDisplayHelper.h"
 
 namespace Elastos {
 namespace Droid {

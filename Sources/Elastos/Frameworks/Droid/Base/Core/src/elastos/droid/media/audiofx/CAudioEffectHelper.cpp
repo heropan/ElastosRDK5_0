@@ -1,5 +1,5 @@
-#include "media/audiofx/CAudioEffectHelper.h"
-#include "media/audiofx/AudioEffect.h"
+#include "elastos/droid/media/audiofx/CAudioEffectHelper.h"
+#include "elastos/droid/media/audiofx/AudioEffect.h"
 
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 

@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CVideoView.h"
 
 
-#include "widget/VideoView.h"
+#include "elastos/droid/widget/VideoView.h"
 
 namespace Elastos{
 namespace Droid{

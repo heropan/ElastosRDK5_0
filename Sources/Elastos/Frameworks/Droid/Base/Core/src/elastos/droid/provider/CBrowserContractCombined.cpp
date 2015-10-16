@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractCombined.h"
+#include "elastos/droid/provider/CBrowserContractCombined.h"
 
 
 ECode CBrowserContractCombined::constructor()

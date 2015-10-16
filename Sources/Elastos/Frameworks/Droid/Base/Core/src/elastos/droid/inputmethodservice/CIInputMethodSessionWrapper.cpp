@@ -1,8 +1,8 @@
 
-#include "ext/frameworkdef.h"
-#include "inputmethodservice/CIInputMethodSessionWrapper.h"
-#include "internal/os/CHandlerCaller.h"
-#include "internal/os/SomeArgs.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/inputmethodservice/CIInputMethodSessionWrapper.h"
+#include "elastos/droid/internal/os/CHandlerCaller.h"
+#include "elastos/droid/internal/os/SomeArgs.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CString;

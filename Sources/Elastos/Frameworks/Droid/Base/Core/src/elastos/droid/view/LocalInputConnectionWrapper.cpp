@@ -1,7 +1,7 @@
 
-#include "view/LocalInputConnectionWrapper.h"
-#include "view/CInputContextCallback.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/view/LocalInputConnectionWrapper.h"
+#include "elastos/droid/view/CInputContextCallback.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::View::InputMethod::EIID_IInputConnection;
 

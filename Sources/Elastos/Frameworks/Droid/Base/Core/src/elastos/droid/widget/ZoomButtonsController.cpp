@@ -1,12 +1,12 @@
-#include "widget/ZoomButtonsController.h"
-#include "content/CIntentFilter.h"
-#include "view/View.h"
-#include "view/CViewConfiguration.h"
-#include "view/CMotionEventHelper.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/ViewRootImpl.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/widget/ZoomButtonsController.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
 

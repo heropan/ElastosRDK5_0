@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SIMPLECURSORTREEADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_SIMPLECURSORTREEADAPTER_H__
 
-#include "widget/ResourceCursorTreeAdapter.h"
+#include "elastos/droid/widget/ResourceCursorTreeAdapter.h"
 /**
  * An easy adapter to map columns from a cursor to TextViews or ImageViews
  * defined in an XML file. You can specify which columns you want, which views

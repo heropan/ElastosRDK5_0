@@ -1,5 +1,5 @@
-#include "animation/CValueAnimatorHelper.h"
-#include "animation/CValueAnimator.h"
+#include "elastos/droid/animation/CValueAnimatorHelper.h"
+#include "elastos/droid/animation/CValueAnimator.h"
 
 namespace Elastos {
 namespace Droid {

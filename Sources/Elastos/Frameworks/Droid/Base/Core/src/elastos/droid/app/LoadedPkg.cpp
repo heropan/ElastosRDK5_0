@@ -1,19 +1,19 @@
 
-#include "app/LoadedPkg.h"
+#include "elastos/droid/app/LoadedPkg.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuffer.h>
-#include "os/CUserHandle.h"
-#include "os/Process.h"
-#include "os/Handler.h"
-#include "app/CInnerReceiver.h"
-#include "app/CInstrumentationHelper.h"
-#include "content/pm/PackageManager.h"
-#include "content/pm/CApplicationInfo.h"
-#include "app/CActivityThread.h"
-#include "app/ActivityManagerNative.h"
-#include "app/CContextImpl.h"
-#include "app/CInnerConnection.h"
-#include "view/CCompatibilityInfoHolder.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/app/CInnerReceiver.h"
+#include "elastos/droid/app/CInstrumentationHelper.h"
+#include "elastos/droid/content/pm/PackageManager.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/app/CContextImpl.h"
+#include "elastos/droid/app/CInnerConnection.h"
+#include "elastos/droid/view/CCompatibilityInfoHolder.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 

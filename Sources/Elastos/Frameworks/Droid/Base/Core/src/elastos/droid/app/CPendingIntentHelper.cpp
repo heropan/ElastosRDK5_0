@@ -1,10 +1,10 @@
 
-#include "app/CPendingIntentHelper.h"
-#include "app/CPendingIntent.h"
-#include "app/ActivityManagerNative.h"
-#include "os/UserHandle.h"
-#include "os/CUserHandle.h"
-#include "os/CUserHandleHelper.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/app/CPendingIntent.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIIntentSender;

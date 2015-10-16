@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
 
-#include "os/Runnable.h"
-#include "widget/LinearLayout.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IView;

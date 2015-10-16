@@ -8,7 +8,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
-#include "os/SomeArgs.h"
+#include "elastos/droid/os/SomeArgs.h"
 
 using Elastos::Droid::Os::SomeArgs;
 using Elastos::Core::CStringWrapper;

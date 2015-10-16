@@ -1,19 +1,19 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_CPACKAGEMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_PM_CPACKAGEMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Pm_CPackageManagerService.h"
 #include "pm/PackageVerificationResponse.h"
 #include "pm/PackageVerificationState.h"
 #include "pm/Installer.h"
 #include "pm/Settings.h"
 #include "pm/CUserManagerService.h"
-#include "content/pm/PackageParser.h"
-#include "content/BroadcastReceiver.h"
-#include "os/Build.h"
-#include "os/FileObserver.h"
-#include "os/HandlerBase.h"
-#include "os/Runnable.h"
+#include "elastos/droid/content/pm/PackageParser.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/FileObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>

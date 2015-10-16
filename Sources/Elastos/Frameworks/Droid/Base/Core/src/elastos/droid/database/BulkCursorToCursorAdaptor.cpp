@@ -1,7 +1,7 @@
 
-#include "database/BulkCursorToCursorAdaptor.h"
-#include "database/DatabaseUtils.h"
-#include "os/CBundle.h"
+#include "elastos/droid/database/BulkCursorToCursorAdaptor.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::CBundle;

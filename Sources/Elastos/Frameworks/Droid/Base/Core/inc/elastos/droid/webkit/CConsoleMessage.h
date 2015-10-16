@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CCONSOLEMESSAGE_H__
 
 #include "_Elastos_Droid_Webkit_CConsoleMessage.h"
-#include "webkit/ConsoleMessage.h"
+#include "elastos/droid/webkit/ConsoleMessage.h"
 
 namespace Elastos {
 namespace Droid {

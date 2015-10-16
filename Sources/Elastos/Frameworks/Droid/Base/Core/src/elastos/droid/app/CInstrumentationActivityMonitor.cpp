@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "app/CInstrumentationActivityMonitor.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CInstrumentationActivityMonitor.h"
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IComponentName;

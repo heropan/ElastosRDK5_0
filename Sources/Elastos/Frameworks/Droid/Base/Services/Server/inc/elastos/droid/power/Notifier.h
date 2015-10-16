@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
 #define __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
-#include "content/BroadcastReceiver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::ILooper;

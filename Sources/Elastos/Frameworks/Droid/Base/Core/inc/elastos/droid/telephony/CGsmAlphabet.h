@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_TELEPHONY_CGSMALPHABET_H__
 
 #include "_Elastos_Droid_Internal_Telephony_CGsmAlphabet.h"
-#include "utility/SparseInt32Array.h"
+#include "elastos/droid/utility/SparseInt32Array.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Utility::SparseInt32Array;

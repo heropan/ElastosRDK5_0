@@ -1,8 +1,8 @@
 
-#include "database/sqlite/SQLiteQueryBuilder.h"
-#include "database/sqlite/SQLiteSession.h"
-#include "database/DatabaseUtils.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/database/sqlite/SQLiteQueryBuilder.h"
+#include "elastos/droid/database/sqlite/SQLiteSession.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Text::TextUtils;

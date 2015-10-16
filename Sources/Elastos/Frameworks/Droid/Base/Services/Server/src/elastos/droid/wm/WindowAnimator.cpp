@@ -1,7 +1,7 @@
 
 #include "wm/WindowAnimator.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

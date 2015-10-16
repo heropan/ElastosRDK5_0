@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "app/CActivityManagerProcessErrorStateInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CActivityManagerProcessErrorStateInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "view/CMotionEventHelper.h"
-#include "view/CMotionEvent.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/view/CMotionEvent.h"
 
 namespace Elastos {
 namespace Droid {

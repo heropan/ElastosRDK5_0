@@ -1,16 +1,16 @@
 
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CSurfaceTexture.h"
-#include "graphics/GraphicsNative.h"
-#include "os/CHandler.h"
-#include "os/CMessageHelper.h"
-#include "os/CLooperHelper.h"
-//#include "net/http/CRequestQueue.h"
-#include "webkit/HTML5VideoFullScreen.h"
-#include "webkit/HTML5VideoInline.h"
-#include "webkit/HTML5VideoViewProxy.h"
-#include "webkit/CWebViewCore.h"
-#include "webkit/CWebViewClassic.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/CLooperHelper.h"
+//#include "elastos/droid/net/http/CRequestQueue.h"
+#include "elastos/droid/webkit/HTML5VideoFullScreen.h"
+#include "elastos/droid/webkit/HTML5VideoInline.h"
+#include "elastos/droid/webkit/HTML5VideoViewProxy.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
 #include <elastos/utility/logging/Logger.h>
 
 #include <skia/core/SkBitmap.h>

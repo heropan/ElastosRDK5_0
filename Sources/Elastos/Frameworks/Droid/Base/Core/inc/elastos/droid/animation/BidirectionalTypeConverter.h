@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_BIDIRECTIONALTYPECONVERTER_H__
 #define  __ELASTOS_DROID_ANIMATION_BIDIRECTIONALTYPECONVERTER_H__
 
-#include "animation/TypeConverter.h"
+#include "elastos/droid/animation/TypeConverter.h"
 
 namespace Elastos {
 namespace Droid {

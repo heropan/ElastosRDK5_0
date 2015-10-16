@@ -1,8 +1,8 @@
 
 #include "WiredAccessoryManager.h"
 #include "R.h"
-#include "os/Looper.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

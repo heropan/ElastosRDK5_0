@@ -1,6 +1,6 @@
 
-#include "CNoiseSuppressorHelper.h"
-#include "CNoiseSuppressor.h"
+#include "elastos/droid/media/audiofx/CNoiseSuppressorHelper.h"
+#include "elastos/droid/media/audiofx/CNoiseSuppressor.h"
 
 namespace Elastos {
 namespace Droid {

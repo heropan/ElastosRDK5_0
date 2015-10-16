@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "os/SystemClock.h"
-//#include "webkit/native/content/browser/input/ImeAdapter.h"
-#include "webkit/native/content/browser/input/InputMethodManagerWrapper.h"
+#include "elastos/droid/os/SystemClock.h"
+//#include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
+#include "elastos/droid/webkit/native/content/browser/input/InputMethodManagerWrapper.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::SystemClock;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "app/CPermissionController.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CPermissionController.h"
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 

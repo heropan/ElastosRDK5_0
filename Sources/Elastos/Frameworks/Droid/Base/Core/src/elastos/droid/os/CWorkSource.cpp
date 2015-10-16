@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CWorkSource.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CWorkSource.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>

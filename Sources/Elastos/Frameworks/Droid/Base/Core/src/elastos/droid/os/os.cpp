@@ -1,10 +1,10 @@
-#include "os/CBinder.h"
-#include "os/CHandler.h"
-#include "os/CUserHandle.h"
-#include "os/CPatternMatcher.h"
-#include "os/CParcelFileDescriptor.h"
-#include "os/CParcelFileDescriptorAutoCloseInputStream.h"
-#include "os/CParcelFileDescriptorAutoCloseOutputStream.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CPatternMatcher.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
+#include "elastos/droid/os/CParcelFileDescriptorAutoCloseInputStream.h"
+#include "elastos/droid/os/CParcelFileDescriptorAutoCloseOutputStream.h"
 
 
 

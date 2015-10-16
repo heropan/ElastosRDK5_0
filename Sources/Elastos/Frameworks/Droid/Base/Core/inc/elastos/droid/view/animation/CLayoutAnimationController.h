@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CLAYOUTANIMATIONCONTROLLER_H__
 
 #include "_Elastos_Droid_View_Animation_CLayoutAnimationController.h"
-#include "view/animation/LayoutAnimationController.h"
+#include "elastos/droid/view/animation/LayoutAnimationController.h"
 
 namespace Elastos {
 namespace Droid {

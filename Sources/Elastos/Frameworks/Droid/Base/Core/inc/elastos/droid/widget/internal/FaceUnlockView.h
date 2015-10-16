@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_FACEUNLOCKVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_FACEUNLOCKVIEW_H__
 
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -19,7 +19,7 @@ public:
     FaceUnlockView();
 
     FaceUnlockView(
-        /* [in] */ IContext* context, 
+        /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL);
 
 protected:
@@ -29,12 +29,12 @@ protected:
         /* [in] */ IAttributeSet* attrs = NULL);
 
     virtual CARAPI_(void) OnMeasure(
-        /* [in] */ Int32 widthMeasureSpec, 
+        /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
 private:
     CARAPI_(Int32) ResolveMeasured(
-        /* [in] */ Int32 measureSpec, 
+        /* [in] */ Int32 measureSpec,
         /* [in] */ Int32 desired);
 
     static const String FaceUnlockView_TAG;

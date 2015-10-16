@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CLISTPOPUPWINDOW_H__
 
 #include "_Elastos_Droid_Widget_CListPopupWindow.h"
-#include "widget/ListPopupWindow.h"
+#include "elastos/droid/widget/ListPopupWindow.h"
 
 /*using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

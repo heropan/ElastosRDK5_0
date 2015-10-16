@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CSWITCH_H__
 
 #include "_Elastos_Droid_Widget_CSwitch.h"
-#include "widget/Switch.h"
+#include "elastos/droid/widget/Switch.h"
 
 
 

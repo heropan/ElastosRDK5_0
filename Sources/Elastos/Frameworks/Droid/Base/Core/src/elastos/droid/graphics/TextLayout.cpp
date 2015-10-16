@@ -1,7 +1,7 @@
 #define LOG_TAG "TextLayout"
 
-#include "graphics/TextLayout.h"
-#include "graphics/TextLayoutCache.h"
+#include "elastos/droid/graphics/TextLayout.h"
+#include "elastos/droid/graphics/TextLayoutCache.h"
 
 // #include <android_runtime/AndroidRuntime.h>
 

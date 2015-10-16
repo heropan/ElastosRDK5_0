@@ -1,12 +1,12 @@
 
-#include "media/CAudioRecord.h"
-#include "media/CMediaRecorder.h"
-#include "media/CMediaRecorderHelper.h"
+#include "elastos/droid/media/CAudioRecord.h"
+#include "elastos/droid/media/CMediaRecorder.h"
+#include "elastos/droid/media/CMediaRecorderHelper.h"
 #include <media/AudioRecord.h>
-#include "os/CLooperHelper.h"
-#include "os/Process.h"
-#include "os/ServiceManager.h"
-#include "privacy/CPrivacySettingsManager.h"
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/privacy/CPrivacySettingsManager.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>

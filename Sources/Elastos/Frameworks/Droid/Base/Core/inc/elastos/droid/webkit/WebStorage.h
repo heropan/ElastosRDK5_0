@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "webkit/WebViewFactory.h"
+#include "elastos/droid/webkit/WebViewFactory.h"
 
 namespace Elastos {
 namespace Droid {

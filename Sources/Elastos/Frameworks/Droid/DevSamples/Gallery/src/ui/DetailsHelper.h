@@ -2,7 +2,7 @@
 #ifndef __DETAILSHELPER_H__
 #define __DETAILSHELPER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "../data/MediaDetails.h"
 
 using Elastos::Droid::App::IActivity;

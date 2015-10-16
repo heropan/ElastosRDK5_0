@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLIPDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLIPDRAWABLE_H__
 
-#include "graphics/drawable/Drawable.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/CRect.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "_Elastos_Droid_Widget_Internal_CSizeAdaptiveLayout.h"
 
-#include "widget/internal/SizeAdaptiveLayout.h"
+#include "elastos/droid/widget/internal/SizeAdaptiveLayout.h"
 
 namespace Elastos {
 namespace Droid {

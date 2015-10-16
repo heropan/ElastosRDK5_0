@@ -1,4 +1,4 @@
-#include "widget/internal/CPointerLocationView.h"
+#include "elastos/droid/widget/internal/CPointerLocationView.h"
 
 using Elastos::Droid::View::EIID_View;
 

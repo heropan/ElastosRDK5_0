@@ -1,4 +1,4 @@
-#include "widget/CZoomButton.h"
+#include "elastos/droid/widget/CZoomButton.h"
 
 using Elastos::Droid::View::EIID_View;
 

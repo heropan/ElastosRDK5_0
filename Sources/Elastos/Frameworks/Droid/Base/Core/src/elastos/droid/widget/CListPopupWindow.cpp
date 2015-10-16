@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CListPopupWindow.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CListPopupWindow.h"
 
 namespace Elastos{
 namespace Droid{

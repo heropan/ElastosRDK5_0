@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_APP_CFASTBITMAPDRAWABLE_H__
 
 #include "_Elastos_Droid_App_CFastBitmapDrawable.h"
-#include "ext/frameworkdef.h"
-#include "app/FastBitmapDrawable.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/FastBitmapDrawable.h"
 
 
 using Elastos::Droid::Graphics::IRect;

@@ -1,8 +1,8 @@
 
-#include "inputmethodservice/CExtractEditLayout.h"
-// #include "view/menu/CMenuBuilder.h"
-//#include "view/CMenuInflater.h"
-#include "R.h"
+#include "elastos/droid/inputmethodservice/CExtractEditLayout.h"
+// #include "elastos/droid/view/menu/CMenuBuilder.h"
+//#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 //using Elastos::Droid::View::CMenuInflater;

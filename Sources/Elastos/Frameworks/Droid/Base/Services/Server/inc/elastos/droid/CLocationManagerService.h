@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_LOCATION_CLOCATIONMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_LOCATION_CLOCATIONMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Location_CLocationManagerService.h"
 #include "location/LocationFudger.h"
 #include "location/GeofenceManager.h"
@@ -11,8 +11,8 @@
 #include "location/LocationBlacklist.h"
 #include "location/MockProvider.h"
 #include "location/LocationProviderProxy.h"
-#include "os/HandlerBase.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>

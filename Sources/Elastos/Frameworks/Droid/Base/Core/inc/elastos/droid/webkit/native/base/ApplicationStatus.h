@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 
-#include "webkit/native/base/BaseChromiumApplication.h"
+#include "elastos/droid/webkit/native/base/BaseChromiumApplication.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;

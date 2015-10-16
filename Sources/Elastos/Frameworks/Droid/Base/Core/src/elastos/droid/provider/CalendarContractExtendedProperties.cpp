@@ -1,6 +1,6 @@
 
-#include "provider/CalendarContractExtendedProperties.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

@@ -1,4 +1,4 @@
-#include "widget/SeekBar.h"
+#include "elastos/droid/widget/SeekBar.h"
 
 using Elastos::Core::CStringWrapper;
 

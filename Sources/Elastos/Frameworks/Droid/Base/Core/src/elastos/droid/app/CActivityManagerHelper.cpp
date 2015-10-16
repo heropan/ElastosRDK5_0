@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "app/CActivityManagerHelper.h"
-#include "app/CActivityManager.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CActivityManagerHelper.h"
+#include "elastos/droid/app/CActivityManager.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "location/CLocationProvider.h"
-#include "location/CProviderProperties.h"
+#include "elastos/droid/location/CLocationProvider.h"
+#include "elastos/droid/location/CProviderProperties.h"
 
 namespace Elastos {
 namespace Droid {

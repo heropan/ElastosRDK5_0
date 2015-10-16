@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_App_CActionBarLayoutParams.h"
-#include "view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

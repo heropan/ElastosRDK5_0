@@ -4,7 +4,7 @@
 #include "CBalloonHint.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
-#include "graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 
 
 using Elastos::Core::StringUtils;

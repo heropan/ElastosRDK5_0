@@ -1,8 +1,8 @@
 
-#include "hardware/usb/UsbManager.h"
-#include "hardware/usb/CUsbDeviceConnection.h"
-#include "utility/CArrayMap.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/hardware/usb/UsbManager.h"
+#include "elastos/droid/hardware/usb/CUsbDeviceConnection.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Droid::Os::IBundle;

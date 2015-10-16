@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/View.h"
-#include "view/ViewGroup.h"
-#include "view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 
 #include <elastos/utility/etl/List.h>
 

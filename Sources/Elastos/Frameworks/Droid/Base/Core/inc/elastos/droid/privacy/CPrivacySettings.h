@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGS_H__
 
 #include "_Elastos_Droid_Privacy_CPrivacySettings.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

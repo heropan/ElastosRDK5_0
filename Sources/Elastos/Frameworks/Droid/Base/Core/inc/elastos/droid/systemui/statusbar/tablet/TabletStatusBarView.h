@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLESTATUSBARVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLESTATUSBARVIEW_H__
 
-#include "widget/FrameLayout.h"
-#include "systemui/statusbar/DelegateViewHelper.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/systemui/statusbar/DelegateViewHelper.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IMotionEvent;

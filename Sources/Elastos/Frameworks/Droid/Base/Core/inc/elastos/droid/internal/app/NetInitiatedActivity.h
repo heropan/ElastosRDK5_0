@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_NETINITIATEDACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_NETINITIATEDACTIVITY_H__
 
-#include "ext/frameworkdef.h"
-#include "app/AlertActivity.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/AlertActivity.h"
+#include "elastos/droid/os/HandlerBase.h"
 
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::App::IAlertDialog;

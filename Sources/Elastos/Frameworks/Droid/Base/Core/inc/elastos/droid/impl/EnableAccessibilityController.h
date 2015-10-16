@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_ENABLEACCESSIBILITYCONTROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

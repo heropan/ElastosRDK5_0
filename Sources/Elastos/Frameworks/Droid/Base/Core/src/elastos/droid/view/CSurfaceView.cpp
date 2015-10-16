@@ -1,5 +1,5 @@
 
-#include "view/CSurfaceView.h"
+#include "elastos/droid/view/CSurfaceView.h"
 
 namespace Elastos {
 namespace Droid {

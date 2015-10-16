@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/SyncActivityTooManyDeletes.h"
 #include "elastos/droid/content/ContentResolver.h"
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundle.h"
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Widget::IListAdapter;

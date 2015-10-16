@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Webkit_CHttpAuthHandler.h"
 
-#include "webkit/HttpAuthHandler.h"
+#include "elastos/droid/webkit/HttpAuthHandler.h"
 
 namespace Elastos {
 namespace Droid {

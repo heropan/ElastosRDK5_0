@@ -1,6 +1,6 @@
 
-#include "view/animation/CLinearInterpolator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

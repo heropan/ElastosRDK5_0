@@ -1,13 +1,13 @@
-#include "speech/tts/TtsEngines.h"
-#include "content/CIntent.h"
+#include "elastos/droid/speech/tts/TtsEngines.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
-#include "utility/Xml.h"
-#include "content/pm/CResolveInfo.h"
-#include "content/pm/CServiceInfo.h"
-#include "text/TextUtils.h"
-//#include "provider/Settings.h"
-#include "speech/tts/TextToSpeech.h"
-#include "R.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
+#include "elastos/droid/content/pm/CServiceInfo.h"
+#include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/speech/tts/TextToSpeech.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::IComparator;
 using Elastos::Core::EIID_IComparator;

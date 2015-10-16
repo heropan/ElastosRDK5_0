@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_APP_LISTGRAGMENT_H__
 #define __ELASTOS_DROID_APP_LISTGRAGMENT_H__
 
-#include "app/Fragment.h"
-#include "os/Runnable.h"
+#include "elastos/droid/app/Fragment.h"
+#include "elastos/droid/os/Runnable.h"
 #ifdef DROID_CORE
-#include "os/CHandler.h"
+#include "elastos/droid/os/CHandler.h"
 #endif
 
 using Elastos::Droid::Os::Runnable;

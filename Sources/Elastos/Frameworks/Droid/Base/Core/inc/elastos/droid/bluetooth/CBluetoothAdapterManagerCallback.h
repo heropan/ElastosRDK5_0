@@ -18,10 +18,10 @@ public:
     CARAPI OnBluetoothServiceDown();
 
     CARAPI constructor(
-    	/* [in] */ IBluetoothAdapter* host);
+        /* [in] */ IBluetoothAdapter* host);
 
 private:
-	CBluetoothAdapter* mHost;
+    CBluetoothAdapter* mHost;
 };
 
 } // namespace Bluetooth

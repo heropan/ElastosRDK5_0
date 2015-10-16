@@ -1,6 +1,6 @@
 
-#include "app/CDownloadManager.h"
-#include "app/CDownloadManagerQuery.h"
+#include "elastos/droid/app/CDownloadManager.h"
+#include "elastos/droid/app/CDownloadManagerQuery.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

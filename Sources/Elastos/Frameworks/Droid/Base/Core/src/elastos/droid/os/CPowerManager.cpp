@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "os/CPowerManager.h"
-#include "os/SystemProperties.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/CPowerManager.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

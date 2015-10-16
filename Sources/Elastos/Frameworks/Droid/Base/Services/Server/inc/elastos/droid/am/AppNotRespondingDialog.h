@@ -4,7 +4,7 @@
 
 #include "BaseErrorDialog.h"
 #include "ProcessRecord.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using namespace Elastos::Core;
 using Elastos::Droid::Os::HandlerBase;

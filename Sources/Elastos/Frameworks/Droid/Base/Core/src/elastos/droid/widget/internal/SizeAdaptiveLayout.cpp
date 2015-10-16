@@ -1,13 +1,13 @@
 
-#include "internal/SizeAdaptiveLayout.h"
+#include "elastos/droid/internal/SizeAdaptiveLayout.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "R.h"
-#include "utility/StateSet.h"
-#include "widget/CView.h"
-#include "widget/internal/CSizeAdaptiveLayoutLayoutParams.h"
-#include "animation/CAnimatorSet.h"
-#include "animation/CObjectAnimator.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/utility/StateSet.h"
+#include "elastos/droid/widget/CView.h"
+#include "elastos/droid/widget/internal/CSizeAdaptiveLayoutLayoutParams.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;

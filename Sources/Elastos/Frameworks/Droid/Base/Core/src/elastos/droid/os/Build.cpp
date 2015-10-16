@@ -1,7 +1,5 @@
-#include "os/Build.h"
-#ifdef DROID_CORE
-//#include "os/CSystemProperties.h"
-#endif
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
@@ -17,7 +15,7 @@ static String GetStringProperty(
     /* [in] */ const String& defaultValue)
 {
     AutoPtr<ISystemProperties> sysProp;
-    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
     sysProp->Get(property, defaultValue, &value);
     return value;
@@ -34,7 +32,7 @@ static AutoPtr<ArrayOf<String> > GetStringPropertyList(
     /* [in] */ const String& separator)
 {
     AutoPtr<ISystemProperties> sysProp;
-    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
     sysProp->Get(property, String("unknown")/*UNKNOWN*/, &value);
 
@@ -52,7 +50,7 @@ static Int32 GetInt32Property(
     /* [in] */ const String& property)
 {
     AutoPtr<ISystemProperties> sysProp;
-    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     Int32 value;
     sysProp->GetInt32(property, 0, &value);
     return value;
@@ -62,7 +60,7 @@ static Int64 GetInt64Property(
     /* [in] */ const String& property)
 {
     AutoPtr<ISystemProperties> sysProp;
-    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String retStr = GetStringProperty(property);
     sysProp->Get(property, String("unknown")/*UNKNOWN*/, &retStr);
     if (retStr.Equals("unknown"))
@@ -195,7 +193,7 @@ ECode Build::EnsureFingerprintProperty()
     if (value.IsNullOrEmpty()) {
         // try {
         AutoPtr<ISystemProperties> sysProp;
-        //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+        CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
         sysProp->Set(String("ro.build.fingerprint"), FINGERPRINT);
         // } catch (IllegalArgumentException e) {
         //     Slog.e(TAG, "Failed to set fingerprint property", e);
@@ -236,7 +234,7 @@ Int64 Build::GetInt64(
     /* [in] */ const String& property)
 {
     AutoPtr<ISystemProperties> sysProp;
-    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String retStr = GetStringProperty(property);
     sysProp->Get(property, UNKNOWN, &retStr);
     if (retStr.Equals(UNKNOWN))

@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__
 
 #include "_Elastos_Droid_Server_Am_CServiceRecord.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include "os/BatteryStatsImpl.h"
+#include "elastos/droid/os/BatteryStatsImpl.h"
 #include "am/ConnectionRecord.h"
 
 using Elastos::Utility::Etl::HashMap;

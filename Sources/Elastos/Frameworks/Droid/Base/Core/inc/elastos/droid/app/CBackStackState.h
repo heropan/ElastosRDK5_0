@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
 
 #include "_Elastos_Droid_App_CBackStackState.h"
-#include "ext/frameworkdef.h"
-#include "app/CFragmentManagerImpl.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CFragmentManagerImpl.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_ABSOLUTELAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_ABSOLUTELAYOUT_H__
 
-#include "view/ViewGroup.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewGroupLayoutParams;

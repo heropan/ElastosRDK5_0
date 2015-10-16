@@ -1,10 +1,10 @@
-#include "os/Process.h"
-#include "os/CProcessStartResult.h"
-#include "os/CUserHandleHelper.h"
-#include "os/CUserHandle.h"
-#include "os/CSystemProperties.h"
-//#include "net/CLocalSocket.h"
-//#include "net/CLocalSocketAddress.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/CProcessStartResult.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CSystemProperties.h"
+//#include "elastos/droid/net/CLocalSocket.h"
+//#include "elastos/droid/net/CLocalSocketAddress.h"
 //#include <elastos/droid/DroidRuntime.h>
 
 #include <elastos/droid/system/Os.h>

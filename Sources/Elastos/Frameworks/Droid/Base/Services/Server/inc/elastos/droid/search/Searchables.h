@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_SEARCH_SEARCHABLES_H__
 #define __ELASTOS_DROID_SERVER_SEARCH_SEARCHABLES_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core.h"
 #include "Elastos.Droid.Server_server.h"
 #include <elastos/utility/etl/HashMap.h>

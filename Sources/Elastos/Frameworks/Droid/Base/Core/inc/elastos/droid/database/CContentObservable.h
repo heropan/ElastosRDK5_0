@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CCONTENTOBSERVABLE_H__
 
 #include "_Elastos_Droid_Database_CContentObservable.h"
-#include "database/ContentObservable.h"
+#include "elastos/droid/database/ContentObservable.h"
 
 namespace Elastos {
 namespace Droid {

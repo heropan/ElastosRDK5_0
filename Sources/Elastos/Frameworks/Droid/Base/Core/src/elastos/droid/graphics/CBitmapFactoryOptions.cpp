@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CBitmapFactoryOptions.h"
-#include "graphics/AutoDecoderCancel.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/graphics/AutoDecoderCancel.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
-#include "systemui/statusbar/tablet/TabletStatusBarView.h"
+#include "elastos/droid/systemui/statusbar/tablet/TabletStatusBarView.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "systemui/SystemUIR.h"
-#include "systemui/statusbar/tablet/TabletStatusBar.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/tablet/TabletStatusBar.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::View::EIID_IView;

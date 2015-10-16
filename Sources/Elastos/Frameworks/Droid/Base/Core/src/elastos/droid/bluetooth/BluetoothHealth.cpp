@@ -4,7 +4,7 @@
 #include "CBluetoothHealthAppConfiguration.h"
 #include "CBluetoothHealthStateChangeCallback.h"
 #include "CBluetoothHealthCallbackWrapper.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

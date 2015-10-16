@@ -1,8 +1,8 @@
 
-#include "webkit/WebBackForwardListClassic.h"
-#include "webkit/CallbackProxy.h"
+#include "elastos/droid/webkit/WebBackForwardListClassic.h"
+#include "elastos/droid/webkit/CallbackProxy.h"
 #include <elastos/utility/logging/Logger.h>
-#include "webkit/DebugFlags.h"
+#include "elastos/droid/webkit/DebugFlags.h"
 
 using Elastos::Utility::Logging::Logger;
 namespace Elastos {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_USB_CUSBSERVICE_H__
 
 #include "_Elastos_Droid_Server_Usb_CUsbService.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "usb/UsbSettingsManager.h"
 #include "usb/UsbDeviceManager.h"
 #include "usb/UsbHostManager.h"

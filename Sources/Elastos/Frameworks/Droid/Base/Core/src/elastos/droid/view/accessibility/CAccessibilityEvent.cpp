@@ -1,6 +1,6 @@
 
-#include "view/accessibility/CAccessibilityEvent.h"
-#include "view/accessibility/CAccessibilityRecord.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/view/accessibility/CAccessibilityRecord.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

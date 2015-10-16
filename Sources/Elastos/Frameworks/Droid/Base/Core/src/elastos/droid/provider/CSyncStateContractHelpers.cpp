@@ -1,5 +1,5 @@
 
-#include "provider/CSyncStateContractHelpers.h"
+#include "elastos/droid/provider/CSyncStateContractHelpers.h"
 
 namespace Elastos {
 namespace Droid {

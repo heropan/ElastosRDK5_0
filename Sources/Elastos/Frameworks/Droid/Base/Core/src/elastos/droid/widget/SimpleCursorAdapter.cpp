@@ -1,7 +1,7 @@
 
-#include "widget/SimpleCursorAdapter.h"
+#include "elastos/droid/widget/SimpleCursorAdapter.h"
 #include <elastos/StringToIntegral.h>
-#include "net/CUriHelper.h"
+#include "elastos/droid/net/CUriHelper.h"
 
 using Elastos::Core::StringToIntegral;
 using Elastos::Core::CStringWrapper;

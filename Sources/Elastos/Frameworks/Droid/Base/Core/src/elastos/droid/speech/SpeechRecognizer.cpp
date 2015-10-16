@@ -1,11 +1,11 @@
-#include "speech/SpeechRecognizer.h"
+#include "elastos/droid/speech/SpeechRecognizer.h"
 #include <elastos/utility/logging/Logger.h>
-#include "content/CComponentName.h"
-#include "content/CIntent.h"
-//#include "provider/CSettings.h"
-#include "text/TextUtils.h"
-#include "ext/frameworkext.h"
-#include "os/CLooperHelper.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/CIntent.h"
+//#include "elastos/droid/provider/CSettings.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/CLooperHelper.h"
 
 
 using Elastos::Core::IFloat;

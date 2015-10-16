@@ -3,7 +3,7 @@
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;

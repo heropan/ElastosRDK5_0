@@ -1,6 +1,6 @@
 
-#include "speech/srec/CRecognizer.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/srec/CRecognizer.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

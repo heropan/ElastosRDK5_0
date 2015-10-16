@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Utility_CArrayMap.h"
 #include <elastos/core/Object.h>
-#include "utility/MapCollections.h"
+#include "elastos/droid/utility/MapCollections.h"
 
 using Elastos::Utility::IMap;
 

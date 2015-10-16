@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "inputmethodservice/CKeyboardView.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/inputmethodservice/CKeyboardView.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 

@@ -1,6 +1,6 @@
 
-#include "animation/CInt32Evaluator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/animation/CInt32Evaluator.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

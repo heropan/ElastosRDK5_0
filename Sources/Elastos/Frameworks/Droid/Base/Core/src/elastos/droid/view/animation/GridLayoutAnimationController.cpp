@@ -1,8 +1,8 @@
 
-#include "view/animation/GridLayoutAnimationController.h"
-#include "view/animation/Animation.h"
-#include "view/animation/CLinearInterpolator.h"
-#include "view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/animation/GridLayoutAnimationController.h"
+#include "elastos/droid/view/animation/Animation.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_RECTSHAPE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_RECTSHAPE_H__
 
-#include "graphics/drawable/shapes/Shape.h"
+#include "elastos/droid/graphics/drawable/shapes/Shape.h"
 
 namespace Elastos {
 namespace Droid {

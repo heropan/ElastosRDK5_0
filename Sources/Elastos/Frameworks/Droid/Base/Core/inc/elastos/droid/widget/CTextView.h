@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CTextView.h"
 
-#include "widget/TextView.h"
+#include "elastos/droid/widget/TextView.h"
 
 namespace Elastos{
 namespace Droid{

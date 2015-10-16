@@ -1,5 +1,5 @@
 
-#include "media/CEncoderCapabilities.h"
+#include "elastos/droid/media/CEncoderCapabilities.h"
 
 #include <media/MediaProfiles.h>
 #include <elastos/utility/etl/List.h>

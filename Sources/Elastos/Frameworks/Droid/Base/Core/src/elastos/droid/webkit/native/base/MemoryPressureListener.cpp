@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/MemoryPressureListener.h"
-#include "webkit/native/base/MemoryPressureLevelList.h"
+#include "elastos/droid/webkit/native/base/MemoryPressureListener.h"
+#include "elastos/droid/webkit/native/base/MemoryPressureLevelList.h"
 
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::Content::IComponentCallbacks;

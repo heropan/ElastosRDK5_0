@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "os/CParcel.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/CParcel.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <fcntl.h>
 #include <sys/stat.h>

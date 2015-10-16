@@ -1,5 +1,5 @@
 #include "CViewScaller.h"
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::View::IViewGroupLayoutParams;
 

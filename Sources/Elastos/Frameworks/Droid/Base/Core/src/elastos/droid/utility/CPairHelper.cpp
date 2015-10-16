@@ -1,6 +1,6 @@
 
-#include "utility/CPairHelper.h"
-#include "utility/CPair.h"
+#include "elastos/droid/utility/CPairHelper.h"
+#include "elastos/droid/utility/CPair.h"
 
 namespace Elastos {
 namespace Droid {

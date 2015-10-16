@@ -1,7 +1,7 @@
 
-#include "app/CKeyguardManager.h"
-#include "app/COnKeyguardExitResult.h"
-#include "view/CWindowManagerGlobal.h"
+#include "elastos/droid/app/CKeyguardManager.h"
+#include "elastos/droid/app/COnKeyguardExitResult.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
 
 using Elastos::Droid::View::IOnKeyguardExitResult;
 using Elastos::Droid::View::CWindowManagerGlobal;

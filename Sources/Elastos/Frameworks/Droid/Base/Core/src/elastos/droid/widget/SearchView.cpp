@@ -1,15 +1,15 @@
 
 #include <elastos/core/Math.h>
-#include "widget/SearchView.h"
-#include "text/TextUtils.h"
-#include "text/CSpannableStringBuilder.h"
-#include "text/style/CImageSpan.h"
-#include "content/CIntent.h"
-#include "utility/CTypedValue.h"
-#include "net/Uri.h"
-#include "os/CBundle.h"
-#include "app/CPendingIntentHelper.h"
-#include "widget/SuggestionsAdapter.h"
+#include "elastos/droid/widget/SearchView.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/style/CImageSpan.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/widget/SuggestionsAdapter.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::CStringWrapper;

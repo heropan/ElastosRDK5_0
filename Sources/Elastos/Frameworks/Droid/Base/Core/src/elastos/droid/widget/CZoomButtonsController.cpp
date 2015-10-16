@@ -1,4 +1,4 @@
-#include "widget/CZoomButtonsController.h"
+#include "elastos/droid/widget/CZoomButtonsController.h"
 
 namespace Elastos{
 namespace Droid{

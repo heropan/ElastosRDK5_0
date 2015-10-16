@@ -1,9 +1,9 @@
 
-#include "net/CProxyProperties.h"
-#include "net/CProxy.h"
-#include "net/NetworkUtils.h"
-#include "text/TextUtils.h"
-#include "net/Uri.h"
+#include "elastos/droid/net/CProxyProperties.h"
+#include "elastos/droid/net/CProxy.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Text::TextUtils;

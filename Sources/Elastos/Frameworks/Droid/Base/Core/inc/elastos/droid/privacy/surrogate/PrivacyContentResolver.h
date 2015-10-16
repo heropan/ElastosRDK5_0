@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PRIVACY_SURROGATE_PRIVACYCONTENTRESOLVER_H__
 #define __ELASTOS_DROID_PRIVACY_SURROGATE_PRIVACYCONTENTRESOLVER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Database::ICursor;

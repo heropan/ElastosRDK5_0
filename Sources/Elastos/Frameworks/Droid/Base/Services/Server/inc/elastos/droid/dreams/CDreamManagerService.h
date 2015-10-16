@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_SERVER_DREAMS_CDREAMMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_Dreams_CDreamManagerService.h"
-#include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "dreams/DreamController.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;

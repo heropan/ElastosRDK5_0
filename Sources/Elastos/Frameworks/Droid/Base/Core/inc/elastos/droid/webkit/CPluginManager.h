@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CPLUGINMANAGER_H__
 
 #include "_Elastos_Droid_Webkit_CPluginManager.h"
-#include "webkit/PluginManager.h"
+#include "elastos/droid/webkit/PluginManager.h"
 
 namespace Elastos {
 namespace Droid {

@@ -7,7 +7,7 @@
 #elif defined(DROID_SERVER)
 #include "Elastos.Droid.Core.h"
 #endif
-#include "database/ContentObserver.h"
+#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;

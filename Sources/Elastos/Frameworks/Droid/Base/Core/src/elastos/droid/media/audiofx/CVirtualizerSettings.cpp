@@ -1,4 +1,4 @@
-#include "media/audiofx/CVirtualizerSettings.h"
+#include "elastos/droid/media/audiofx/CVirtualizerSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

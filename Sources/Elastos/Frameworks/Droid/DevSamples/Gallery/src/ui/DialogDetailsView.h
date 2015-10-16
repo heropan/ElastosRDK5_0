@@ -2,7 +2,7 @@
 #ifndef __DIALOGDETAILSVIEW_H__
 #define __DIALOGDETAILSVIEW_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "DetailsHelper.h"
 
 using Elastos::Droid::App::IActivity;

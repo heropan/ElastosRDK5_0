@@ -1,10 +1,10 @@
 
-#include "provider/CCalendarContractCalendarEntity.h"
-#include "provider/ContactsContract.h"
-#include "database/DatabaseUtils.h"
-#include "content/CContentValues.h"
-#include "content/CEntity.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractCalendarEntity.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CEntity.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::CEntity;

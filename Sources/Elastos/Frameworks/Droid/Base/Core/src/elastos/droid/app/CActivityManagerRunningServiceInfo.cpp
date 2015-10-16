@@ -1,6 +1,6 @@
 
-#include <ext/frameworkext.h>
-#include "app/CActivityManagerRunningServiceInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CActivityManagerRunningServiceInfo.h"
 
 namespace Elastos {
 namespace Droid {

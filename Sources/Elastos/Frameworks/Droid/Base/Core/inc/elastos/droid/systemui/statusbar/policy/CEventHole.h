@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CEventHole.h"
 
-#include "systemui/statusbar/policy/EventHole.h"
+#include "elastos/droid/systemui/statusbar/policy/EventHole.h"
 
 namespace Elastos {
 namespace Droid {

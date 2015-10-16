@@ -1,13 +1,13 @@
-#include "systemui/statusbar/tablet/TabletTicker.h"
-#include "animation/CLayoutTransition.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "widget/CFrameLayout.h"
-#include "widget/CFrameLayoutLayoutParams.h"
-#include "statusbar/CStatusBarIcon.h"
-#include "systemui/statusbar/StatusBarIconView.h"
-#include "systemui/statusbar/tablet/TabletStatusBar.h"
-#include "systemui/SystemUIR.h"
-#include "R.h"
+#include "elastos/droid/systemui/statusbar/tablet/TabletTicker.h"
+#include "elastos/droid/animation/CLayoutTransition.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/widget/CFrameLayout.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/statusbar/CStatusBarIcon.h"
+#include "elastos/droid/systemui/statusbar/StatusBarIconView.h"
+#include "elastos/droid/systemui/statusbar/tablet/TabletStatusBar.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

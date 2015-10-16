@@ -1,7 +1,7 @@
 #include "gles/CEGLContextImpl.h"
 #include "gles/CGLImpl.h"
 #include "gles/CEGLImpl.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Opengl::Gles::CEGLImpl;
 using Elastosx::Microedition::Khronos::Opengles::IGL10;

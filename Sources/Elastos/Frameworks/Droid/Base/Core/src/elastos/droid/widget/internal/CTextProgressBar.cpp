@@ -1,4 +1,4 @@
-#include "widget/internal/CTextProgressBar.h"
+#include "elastos/droid/widget/internal/CTextProgressBar.h"
 
 using Elastos::Droid::View::EIID_View;
 

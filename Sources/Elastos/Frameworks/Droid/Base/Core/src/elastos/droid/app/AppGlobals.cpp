@@ -1,7 +1,7 @@
-#include "ext/frameworkdef.h"
-#include "app/AppGlobals.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/AppGlobals.h"
 #ifdef DROID_CORE
-#include "app/CActivityThreadHelper.h"
+#include "elastos/droid/app/CActivityThreadHelper.h"
 #endif
 
 namespace Elastos {

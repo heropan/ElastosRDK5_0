@@ -5,7 +5,7 @@
 #include "_CPart.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/AutoPtr.h>
-#include "net/Uri.h"
+#include "elastos/droid/net/Uri.h"
 
 /**
  * Immutable wrapper of encoded and decoded versions of a URI part. Lazily

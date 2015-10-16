@@ -1,9 +1,9 @@
 
-#include "graphics/drawable/ShapeDrawable.h"
-#include "graphics/drawable/CShapeDrawable.h"
-// #include "graphics/CPaint.h"
-#include "graphics/CRect.h"
-#include "R.h"
+#include "elastos/droid/graphics/drawable/ShapeDrawable.h"
+#include "elastos/droid/graphics/drawable/CShapeDrawable.h"
+// #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Core::ICloneable;

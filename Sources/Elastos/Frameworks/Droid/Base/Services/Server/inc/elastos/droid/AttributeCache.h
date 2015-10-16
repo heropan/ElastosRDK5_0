@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ATTRIBUTECACHE_H__
 #define __ELASTOS_DROID_SERVER_ATTRIBUTECACHE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "elastos/Mutex.h"
 

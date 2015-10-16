@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CRadioGroupLayoutParams.h"
 
-#include "widget/RadioGroupLayoutParams.h"
+#include "elastos/droid/widget/RadioGroupLayoutParams.h"
 
 
 namespace Elastos{

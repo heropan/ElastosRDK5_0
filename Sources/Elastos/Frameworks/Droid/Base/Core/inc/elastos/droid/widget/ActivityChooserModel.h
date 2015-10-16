@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_ACTIVITYCHOOSERMODEL_H__
 #define __ELASTOS_DROID_WIDGET_ACTIVITYCHOOSERMODEL_H__
 
-#include "database/DataSetObservable.h"
-#include "content/PackageMonitor.h"
-#include "os/AsyncTask.h"
+#include "elastos/droid/database/DataSetObservable.h"
+#include "elastos/droid/content/PackageMonitor.h"
+#include "elastos/droid/os/AsyncTask.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

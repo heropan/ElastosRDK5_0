@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_INPUTEVENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IInputFilterHost;

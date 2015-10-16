@@ -1,11 +1,11 @@
 
 #include <elastos/utility/logging/Slogger.h>
-#include "ext/frameworkdef.h"
-#include "content/CIntent.h"
-#include "impl/CPhoneFallbackEventHandler.h"
-#include "impl/CPhoneWindowManager.h"
-#include "os/CServiceManager.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/impl/CPhoneFallbackEventHandler.h"
+#include "elastos/droid/impl/CPhoneWindowManager.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/UserHandle.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::CIntent;

@@ -2,7 +2,7 @@
 #undef LOG_TAG
 #define LOG_TAG "NativeCursorWindow"
 
-#include "database/NativeCursorWindow.h"
+#include "elastos/droid/database/NativeCursorWindow.h"
 #include <cutils/ashmem.h>
 #include <sys/mman.h>
 

@@ -1,6 +1,6 @@
 
-#include "webkit/native/content/browser/ContentViewStatics.h"
-//TODO #include "webkit/native/net/ProxyChangeListener.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewStatics.h"
+//TODO #include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
 
 //TODO using Elastos::Droid::Webkit::Net::ProxyChangeListener;
 

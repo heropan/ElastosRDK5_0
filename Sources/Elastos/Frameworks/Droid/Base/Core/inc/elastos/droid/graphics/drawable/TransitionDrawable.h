@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_TRANSITIONDRAWABLE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/drawable/LayerDrawable.h"
+#include "elastos/droid/graphics/drawable/LayerDrawable.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,10 +1,10 @@
 
-#include "ext/frameworkext.h"
-#include "os/Looper.h"
-#include "os/Binder.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/SystemClock.h"
 #ifdef DROID_CORE
-#include "os/CMessageQueue.h"
+#include "elastos/droid/os/CMessageQueue.h"
 #endif
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>

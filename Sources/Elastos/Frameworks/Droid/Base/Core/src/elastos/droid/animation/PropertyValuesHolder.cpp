@@ -1,14 +1,14 @@
 
-#include "animation/PropertyValuesHolder.h"
-#include "animation/CInt32Evaluator.h"
-#include "animation/CFloatEvaluator.h"
-#include "animation/Int32PropertyValuesHolder.h"
-#include "animation/FloatPropertyValuesHolder.h"
-#include "animation/Int32ArrayEvaluator.h"
-#include "animation/MultiInt32ValuesHolder.h"
-#include "animation/FloatArrayEvaluator.h"
-#include "animation/MultiFloatValuesHolder.h"
-#include "animation/Keyframe.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
+#include "elastos/droid/animation/CInt32Evaluator.h"
+#include "elastos/droid/animation/CFloatEvaluator.h"
+#include "elastos/droid/animation/Int32PropertyValuesHolder.h"
+#include "elastos/droid/animation/FloatPropertyValuesHolder.h"
+#include "elastos/droid/animation/Int32ArrayEvaluator.h"
+#include "elastos/droid/animation/MultiInt32ValuesHolder.h"
+#include "elastos/droid/animation/FloatArrayEvaluator.h"
+#include "elastos/droid/animation/MultiFloatValuesHolder.h"
+#include "elastos/droid/animation/Keyframe.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>

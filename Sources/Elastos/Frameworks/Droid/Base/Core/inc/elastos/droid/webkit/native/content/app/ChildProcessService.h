@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_APP_CHILDPROCESSSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/app/ChromiumLinkerParams.h"
+#include "elastos/droid/webkit/native/content/app/ChromiumLinkerParams.h"
 
 using Elastos::Droid::App::IService;
 using Elastos::Droid::Content::IContext;

@@ -1,7 +1,7 @@
 #ifndef __MONKEYEVENTQUEUE_H_
 #define __MONKEYEVENTQUEUE_H_
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Commands.Monkey_server.h"
 #include <elastos/utility/etl/List.h>
 

@@ -1,6 +1,6 @@
 
-#include "webkit/CWebSettingsClassicHelper.h"
-#include "webkit/WebSettingsClassic.h"
+#include "elastos/droid/webkit/CWebSettingsClassicHelper.h"
+#include "elastos/droid/webkit/WebSettingsClassic.h"
 
 namespace Elastos {
 namespace Droid {

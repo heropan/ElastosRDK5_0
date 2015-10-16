@@ -1,6 +1,6 @@
-#include "impl/CPhoneWindowRotationWatcher.h"
-#include "impl/CPhoneWindow.h"
-#include "os/CHandler.h"
+#include "elastos/droid/impl/CPhoneWindowRotationWatcher.h"
+#include "elastos/droid/impl/CPhoneWindow.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Droid::Os::CHandler;
 

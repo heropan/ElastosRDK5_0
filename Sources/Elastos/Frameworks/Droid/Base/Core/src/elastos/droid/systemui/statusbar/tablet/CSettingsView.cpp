@@ -1,4 +1,4 @@
-#include "systemui/statusbar/tablet/CSettingsView.h"
+#include "elastos/droid/systemui/statusbar/tablet/CSettingsView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

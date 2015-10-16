@@ -1,14 +1,14 @@
-#include "systemui/statusbar/policy/NetworkController.h"
+#include "elastos/droid/systemui/statusbar/policy/NetworkController.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/SystemProperties.h"
-#include "content/CIntent.h"
-#include "net/wifi/CWifiManager.h"
-#include "content/CIntentFilter.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/net/wifi/CWifiManager.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 #include <elastos/core/StringBuilder.h>
-#include "provider/Settings.h"
-#include "systemui/statusbar/policy/WifiIcons.h"
-#include "systemui/statusbar/policy/AccessibilityContentDescriptions.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/systemui/statusbar/policy/WifiIcons.h"
+#include "elastos/droid/systemui/statusbar/policy/AccessibilityContentDescriptions.h"
 #include <cutils/properties.h>
 
 using Elastos::Droid::R;

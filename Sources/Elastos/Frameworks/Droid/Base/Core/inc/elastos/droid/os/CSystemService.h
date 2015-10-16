@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CSYSTEMSERVICE_H__
 #define __ELASTOS_DROID_OS_CSYSTEMSERVICE_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Os_CSystemService.h"
 #include <elastos/core/Singleton.h>
 

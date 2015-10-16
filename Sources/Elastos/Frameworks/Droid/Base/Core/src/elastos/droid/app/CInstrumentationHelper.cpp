@@ -1,6 +1,6 @@
 
-#include "app/CInstrumentationHelper.h"
-#include "app/CInstrumentation.h"
+#include "elastos/droid/app/CInstrumentationHelper.h"
+#include "elastos/droid/app/CInstrumentation.h"
 
 namespace Elastos {
 namespace Droid {

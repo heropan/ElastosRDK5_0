@@ -1,5 +1,5 @@
 
-#include "graphics/CSweepGradient.h"
+#include "elastos/droid/graphics/CSweepGradient.h"
 #include <skia/effects/SkGradientShader.h>
 #include <skia/core/SkTemplates.h>
 

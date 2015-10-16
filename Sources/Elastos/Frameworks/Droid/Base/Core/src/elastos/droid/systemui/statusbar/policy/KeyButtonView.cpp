@@ -1,14 +1,14 @@
 
-#include "systemui/statusbar/policy/KeyButtonView.h"
-#include "os/SystemClock.h"
-#include "hardware/input/CInputManager.h"
-#include "view/CViewConfigurationHelper.h"
-#include "view/CKeyEvent.h"
-#include "view/SoundEffectConstants.h"
-#include "systemui/SystemUIR.h"
-#include "systemui/CSwipeHelper.h"
-#include "animation/CAnimatorSet.h"
-#include "animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/systemui/statusbar/policy/KeyButtonView.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/hardware/input/CInputManager.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/systemui/CSwipeHelper.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/CObjectAnimatorHelper.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Hardware::Input::CInputManager;

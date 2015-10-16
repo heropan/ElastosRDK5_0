@@ -1,9 +1,9 @@
 
-#include "view/InputEventReceiver.h"
-#include "view/NativeInputChannel.h"
+#include "elastos/droid/view/InputEventReceiver.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 #ifdef DROID_CORE
-#include "view/CKeyEvent.h"
-#include "view/CMotionEvent.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CMotionEvent.h"
 #endif
 #include <elastos/utility/logging/Logger.h>
 

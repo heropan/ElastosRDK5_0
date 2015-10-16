@@ -1,10 +1,10 @@
 
 #include "CClipboardService.h"
-#include "app/ActivityManagerNative.h"
-#include "app/AppGlobals.h"
-#include "os/Process.h"
-#include "os/Binder.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;

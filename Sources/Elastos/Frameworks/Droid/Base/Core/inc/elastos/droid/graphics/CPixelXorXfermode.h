@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CPIXELXORXFERMODE_H__
 
 #include "_Elastos_Droid_Graphics_CPixelXorXfermode.h"
-#include "graphics/Xfermode.h"
+#include "elastos/droid/graphics/Xfermode.h"
 
 namespace Elastos {
 namespace Droid {

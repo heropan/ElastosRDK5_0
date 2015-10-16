@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CInputMethodButton.h"
 
 
-#include "systemui/statusbar/tablet/InputMethodButton.h"
+#include "elastos/droid/systemui/statusbar/tablet/InputMethodButton.h"
 
 namespace Elastos {
 namespace Droid {

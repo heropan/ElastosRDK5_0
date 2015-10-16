@@ -1,7 +1,7 @@
 
 #include "CContentService.h"
-#include "os/UserHandle.h"
-#include "os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/Binder.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>

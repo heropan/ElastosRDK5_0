@@ -2,8 +2,8 @@
 #ifndef __DATABASEHELPER_H__
 #define __DATABASEHELPER_H__
 
-#include "ext/frameworkext.h"
-#include "database/sqlite/SQLiteOpenHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/database/sqlite/SQLiteOpenHelper.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

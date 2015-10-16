@@ -1,7 +1,7 @@
 
 #include "CSamplingProfilerService.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "database/ContentObserver.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

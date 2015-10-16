@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "webkit/HTML5VideoView.h"
+#include "elastos/droid/webkit/HTML5VideoView.h"
 
 using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Graphics::IOnFrameAvailableListener;

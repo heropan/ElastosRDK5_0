@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_DEADZONE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "view/View.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::Runnable;

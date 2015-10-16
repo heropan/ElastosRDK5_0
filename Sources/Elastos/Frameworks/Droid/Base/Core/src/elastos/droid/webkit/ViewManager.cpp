@@ -1,7 +1,7 @@
 
-#include "webkit/ViewManager.h"
-#include "webkit/CWebViewClassic.h"
-#include "widget/CAbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/webkit/ViewManager.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::EIID_IRunnable;

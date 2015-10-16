@@ -1,6 +1,6 @@
 
-#include "graphics/drawable/PictureDrawable.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/drawable/PictureDrawable.h"
+#include "elastos/droid/graphics/CRect.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,5 +1,5 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "accessibility/CMagnificationSpec.h"
 #include "accessibility/ScreenMagnifier.h"
 #include <elastos/core/Math.h>

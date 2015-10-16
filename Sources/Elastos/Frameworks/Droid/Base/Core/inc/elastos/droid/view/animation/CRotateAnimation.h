@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CROTATEANIMATION_H__
 
 #include "_Elastos_Droid_View_Animation_CRotateAnimation.h"
-#include "view/animation/RotateAnimation.h"
+#include "elastos/droid/view/animation/RotateAnimation.h"
 
 
 namespace Elastos {

@@ -1,16 +1,16 @@
 
-#include "os/BatteryStatsImpl.h"
-#include "os/SystemClock.h"
-#include "os/Process.h"
-#include "os/FileUtils.h"
-#include "utility/TimeUtils.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/BatteryStatsImpl.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/utility/TimeUtils.h"
+#include "elastos/droid/os/Handler.h"
 #ifdef DROID_CORE
-#include "utility/CAtomicFile.h"
-#include "net/CNetworkStatsFactory.h"
-#include "net/CConnectivityManagerHelper.h"
-#include "net/CNetworkStats.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/utility/CAtomicFile.h"
+#include "elastos/droid/net/CNetworkStatsFactory.h"
+#include "elastos/droid/net/CConnectivityManagerHelper.h"
+#include "elastos/droid/net/CNetworkStats.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #endif
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

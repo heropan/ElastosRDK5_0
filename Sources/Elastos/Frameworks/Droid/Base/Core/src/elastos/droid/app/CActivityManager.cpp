@@ -1,13 +1,13 @@
 #include <ext/frameworkdef.h>
-#include "app/CActivityManager.h"
-#include "app/ActivityManagerNative.h"
-#include "os/UserHandle.h"
-#include "os/CUserHandleHelper.h"
-#include "os/Build.h"
-#include "os/ServiceManager.h"
-#include "os/SystemProperties.h"
-#include "app/AppGlobals.h"
-#include "R.h"
+#include "elastos/droid/app/CActivityManager.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

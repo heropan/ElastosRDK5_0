@@ -1,7 +1,7 @@
 #ifndef __CRESTARTER_H__
 #define __CRESTARTER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CRestarter.h"
 
 using Elastos::Droid::App::Activity;

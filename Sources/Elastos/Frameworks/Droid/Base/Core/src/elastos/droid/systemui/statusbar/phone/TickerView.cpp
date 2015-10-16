@@ -1,4 +1,4 @@
-#include "systemui/statusbar/phone/TickerView.h"
+#include "elastos/droid/systemui/statusbar/phone/TickerView.h"
 
 namespace Elastos {
 namespace Droid {

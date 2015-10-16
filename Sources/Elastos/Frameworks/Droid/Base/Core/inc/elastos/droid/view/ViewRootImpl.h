@@ -3,18 +3,18 @@
 #define __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/View.h"
-#include "view/CSurface.h"
-#include "view/BaseSurfaceHolder.h"
-#include "view/CInputQueue.h"
-#include "view/InputEventReceiver.h"
-#include "view/HardwareRenderer.h"
-#include "view/CViewConfiguration.h"
-#include "graphics/CRect.h"
-#include "graphics/CRegion.h"
-#include "os/HandlerBase.h"
-#include "widget/CScroller.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/CSurface.h"
+#include "elastos/droid/view/BaseSurfaceHolder.h"
+#include "elastos/droid/view/CInputQueue.h"
+#include "elastos/droid/view/InputEventReceiver.h"
+#include "elastos/droid/view/HardwareRenderer.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/widget/CScroller.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
 

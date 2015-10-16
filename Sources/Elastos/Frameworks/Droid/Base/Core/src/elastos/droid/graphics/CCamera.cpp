@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CCamera.h"
-#include "graphics/Matrix.h"
-#include "graphics/Canvas.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CCamera.h"
+#include "elastos/droid/graphics/Matrix.h"
+#include "elastos/droid/graphics/Canvas.h"
 #include <skia/utils/SkCamera.h>
 
 namespace Elastos {

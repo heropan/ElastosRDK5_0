@@ -1,5 +1,5 @@
 
-#include "graphics/drawable/shapes/Shape.h"
+#include "elastos/droid/graphics/drawable/shapes/Shape.h"
 
 using Elastos::Core::EIID_ICloneable;
 
@@ -9,7 +9,8 @@ namespace Graphics {
 namespace Drawable {
 namespace Shapes {
 
-CAR_INTERFACE_IMPL_2(Shape, Object, IShape, ICloneable);
+CAR_INTERFACE_IMPL_2(Shape, Object, IShape, ICloneable)
+
 Shape::Shape()
     : mWidth(0)
     , mHeight(0)

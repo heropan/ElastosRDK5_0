@@ -1,10 +1,10 @@
 
 #include "CTextServicesManagerService.h"
-#include "app/ActivityManagerNative.h"
-//#include "app/CActivityManagerHelper.h"
-#include "app/AppGlobals.h"
-#include "os/Binder.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+//#include "elastos/droid/app/CActivityManagerHelper.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "Manifest.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Slogger.h>

@@ -2,8 +2,8 @@
 #define __CSEARCHACTIVITY_H__
 
 #include "_CSearchActivity.h"
-#include "app/Activity.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Content::IIntent;

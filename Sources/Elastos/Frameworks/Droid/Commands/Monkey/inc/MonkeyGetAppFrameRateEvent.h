@@ -2,7 +2,7 @@
 #define __MONKEYGETAPPFRAMERATEEVENT_H__
 
 #include "MonkeyEvent.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 //#include "BufferedReader.h"
 
 using Elastos::Utility::Regex::IPattern;

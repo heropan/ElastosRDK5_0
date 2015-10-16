@@ -2,7 +2,7 @@
 #ifndef __IXBMCCALLBACKS_H__
 #define __IXBMCCALLBACKS_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/Vector.h>
 
 using Elastos::Utility::Etl::Vector;

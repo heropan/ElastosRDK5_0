@@ -2,8 +2,8 @@
 #include "CUiModeManagerService.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "os/Binder.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;

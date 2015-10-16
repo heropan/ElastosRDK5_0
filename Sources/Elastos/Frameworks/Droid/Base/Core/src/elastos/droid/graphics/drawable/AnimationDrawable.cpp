@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/AnimationDrawable.h"
-#include "graphics/drawable/CAnimationDrawable.h"
-#include "os/SystemClock.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/AnimationDrawable.h"
+#include "elastos/droid/graphics/drawable/CAnimationDrawable.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::EIID_IRunnable;
 

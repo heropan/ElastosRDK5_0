@@ -2,7 +2,7 @@
 #ifndef __CACTIVITYTWO_H__
 #define __CACTIVITYTWO_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CActivityTwo.h"
 
 using Elastos::ElRefBase;

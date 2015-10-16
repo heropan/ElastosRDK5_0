@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/tablet/CompatModePanel.h"
+#include "elastos/droid/systemui/statusbar/tablet/CompatModePanel.h"
 
 namespace Elastos {
 namespace Droid {

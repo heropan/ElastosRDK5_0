@@ -1,5 +1,5 @@
 
-#include "net/CPathSegments.h"
+#include "elastos/droid/net/CPathSegments.h"
 
 class CStatic
 {

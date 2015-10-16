@@ -475,9 +475,9 @@ ECode RouteInfo::WriteToParcel(
 } // namespace Elastos
 
 #if 0 // old CRouteInfo.cpp
-#include "net/CRouteInfo.h"
-#include "net/CLinkAddress.h"
-#include "net/NetworkUtils.h"
+#include "elastos/droid/net/CRouteInfo.h"
+#include "elastos/droid/net/CLinkAddress.h"
+#include "elastos/droid/net/NetworkUtils.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::Net::IInetAddressHelper;

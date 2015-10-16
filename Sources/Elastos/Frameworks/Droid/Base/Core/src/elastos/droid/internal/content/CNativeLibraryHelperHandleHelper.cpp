@@ -1,6 +1,6 @@
 
-#include "internal/content/CNativeLibraryHelperHandleHelper.h"
-#include "internal/content/CNativeLibraryHelperHandle.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelperHandleHelper.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelperHandle.h"
 
 namespace Elastos {
 namespace Droid {

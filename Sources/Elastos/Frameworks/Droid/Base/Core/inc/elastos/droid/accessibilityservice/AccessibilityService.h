@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 
-#include "content/Context.h"
+#include "elastos/droid/content/Context.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;

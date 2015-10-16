@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CPATHSHAPE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CPATHSHAPE_H__
 
-#include "graphics/drawable/shapes/PathShape.h"
+#include "elastos/droid/graphics/drawable/shapes/PathShape.h"
 #include "_Elastos_Droid_Graphics_Drawable_Shapes_CPathShape.h"
 
 namespace Elastos {

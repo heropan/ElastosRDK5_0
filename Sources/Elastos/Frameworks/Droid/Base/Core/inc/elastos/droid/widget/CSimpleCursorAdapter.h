@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CSimpleCursorAdapter.h"
 
-#include "widget/SimpleCursorAdapter.h"
+#include "elastos/droid/widget/SimpleCursorAdapter.h"
 
 namespace Elastos {
 namespace Droid {

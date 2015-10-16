@@ -1,15 +1,15 @@
 
-#include "widget/Toast.h"
-#include "widget/CToast.h"
-#include "R.h"
-#include "os/ServiceManager.h"
-#include "app/NotificationManager.h"
-#include "view/CGravity.h"
-#include "view/Gravity.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/accessibility/CAccessibilityManager.h"
-#include "view/accessibility/CAccessibilityEvent.h"
-#include "widget/CToastTransientNotification.h"
+#include "elastos/droid/widget/Toast.h"
+#include "elastos/droid/widget/CToast.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/app/NotificationManager.h"
+#include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/widget/CToastTransientNotification.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;

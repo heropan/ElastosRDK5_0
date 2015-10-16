@@ -1,5 +1,5 @@
 
-#include "accounts/CAccountAuthenticatorResponse.h"
+#include "elastos/droid/accounts/CAccountAuthenticatorResponse.h"
 
 namespace Elastos {
 namespace Droid {

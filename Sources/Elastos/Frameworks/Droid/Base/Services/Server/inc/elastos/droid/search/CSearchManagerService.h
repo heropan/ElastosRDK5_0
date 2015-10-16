@@ -2,11 +2,11 @@
 #define __ELASTOS_DROID_SERVER_SEARCH_CSEARCHMANAGERSERVICE_H__
 
 #include "Elastos.Droid.Core.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Search_CSearchManagerService.h"
-#include "content/BroadcastReceiver.h"
-#include "content/PackageMonitor.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/content/PackageMonitor.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include "search/Searchables.h"
 #include <elastos/utility/etl/HashMap.h>
 

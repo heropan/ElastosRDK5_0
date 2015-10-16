@@ -1,6 +1,6 @@
 
-#include "location/CLocation.h"
-#include "os/CBundle.h"
+#include "elastos/droid/location/CLocation.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>

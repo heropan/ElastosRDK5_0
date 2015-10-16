@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_LATESTITEMVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_LATESTITEMVIEW_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnClickListener;

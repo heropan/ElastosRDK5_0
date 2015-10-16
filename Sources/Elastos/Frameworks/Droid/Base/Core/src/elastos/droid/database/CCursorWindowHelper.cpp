@@ -1,6 +1,6 @@
 
-#include "database/CCursorWindowHelper.h"
-#include "database/CursorWindow.h"
+#include "elastos/droid/database/CCursorWindowHelper.h"
+#include "elastos/droid/database/CursorWindow.h"
 
 namespace Elastos {
 namespace Droid {

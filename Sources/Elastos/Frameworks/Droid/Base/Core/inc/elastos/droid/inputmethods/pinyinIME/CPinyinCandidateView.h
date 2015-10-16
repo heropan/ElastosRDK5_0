@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINCANDIDATEVIEW_H__
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinCandidateView.h"
-#include "os/HandlerRunnable.h"
+#include "elastos/droid/os/HandlerRunnable.h"
 
 using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::View::IGestureDetector;

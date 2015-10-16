@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CPATHDASHPATHEFFECT_H__
 
 #include "_Elastos_Droid_Graphics_CPathDashPathEffect.h"
-#include "graphics/PathEffect.h"
+#include "elastos/droid/graphics/PathEffect.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #include "BluetoothInputDevice.h"
 #include "CBluetoothAdapter.h"
 #include "CBluetoothInputDeviceStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 

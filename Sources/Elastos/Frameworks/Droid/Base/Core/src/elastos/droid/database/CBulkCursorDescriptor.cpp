@@ -1,6 +1,6 @@
 
-#include "database/CBulkCursorDescriptor.h"
-#include "database/CCursorWindow.h"
+#include "elastos/droid/database/CBulkCursorDescriptor.h"
+#include "elastos/droid/database/CCursorWindow.h"
 
 namespace Elastos {
 namespace Droid {

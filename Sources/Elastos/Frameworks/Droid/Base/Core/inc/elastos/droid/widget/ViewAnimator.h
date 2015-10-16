@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_VIEWANIMATOR_H__
 #define __ELASTOS_DROID_WIDGET_VIEWANIMATOR_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 /**
  * Base class for a {@link FrameLayout} container that will perform animations
  * when switching between its views.

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_GLSURFACEVIEW_H__
 #define __ELASTOS_DROID_OPENGL_GLSURFACEVIEW_H__
 
-#include "view/SurfaceView.h"
+#include "elastos/droid/view/SurfaceView.h"
 #include <elastos/Core/Object.h>
 #include "elastos/io/Writer.h"
 #include <elastos/core/StringBuilder.h>

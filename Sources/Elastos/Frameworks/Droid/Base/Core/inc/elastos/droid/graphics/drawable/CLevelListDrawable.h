@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLEVELLISTDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CLevelListDrawable.h"
-#include "graphics/drawable/LevelListDrawable.h"
+#include "elastos/droid/graphics/drawable/LevelListDrawable.h"
 
 
 namespace Elastos {

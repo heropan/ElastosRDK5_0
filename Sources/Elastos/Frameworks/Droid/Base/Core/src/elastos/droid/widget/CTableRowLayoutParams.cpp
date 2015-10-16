@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CTableRowLayoutParams.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CTableRowLayoutParams.h"
 
 namespace Elastos{
 namespace Droid{

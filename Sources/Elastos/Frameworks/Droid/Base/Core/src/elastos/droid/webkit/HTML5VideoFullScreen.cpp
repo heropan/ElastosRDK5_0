@@ -1,10 +1,10 @@
 
-#include "webkit/HTML5VideoFullScreen.h"
-#include "webkit/HTML5VideoViewProxy.h"
-#include "webkit/WebChromeClient.h"
-#include "webkit/CWebViewClassic.h"
-#include "widget/CFrameLayout.h"
-#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/webkit/HTML5VideoFullScreen.h"
+#include "elastos/droid/webkit/HTML5VideoViewProxy.h"
+#include "elastos/droid/webkit/WebChromeClient.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/widget/CFrameLayout.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 
 #include <elastos/core/StringBuilder.h>
 

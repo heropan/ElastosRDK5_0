@@ -1,11 +1,11 @@
 
-#include "widget/OverScroller.h"
+#include "elastos/droid/widget/OverScroller.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include "os/SystemClock.h"
-#include "view/animation/AnimationUtils.h"
-#include "view/CViewConfigurationHelper.h"
-#include "widget/Scroller.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/widget/Scroller.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Utility::IDisplayMetrics;

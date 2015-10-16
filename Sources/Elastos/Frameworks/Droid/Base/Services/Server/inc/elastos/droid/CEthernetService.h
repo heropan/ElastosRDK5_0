@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_CETHERNETSERVICE_H__
 
 #include "_Elastos_Droid_Server_CEthernetService.h"
-#include "content/BroadcastReceiver.h"
-#include "net/ethernet/EthernetDataTracker.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/net/ethernet/EthernetDataTracker.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEWSAVEDSTATE_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEWSAVEDSTATE_H__
 
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 
 namespace Elastos{
 namespace Droid{

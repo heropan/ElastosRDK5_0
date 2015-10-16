@@ -1,5 +1,5 @@
 
-#include "widget/CView.h"
+#include "elastos/droid/widget/CView.h"
 
 namespace Elastos {
 namespace Droid {

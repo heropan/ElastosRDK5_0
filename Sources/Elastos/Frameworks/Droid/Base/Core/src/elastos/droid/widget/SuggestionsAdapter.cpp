@@ -1,13 +1,13 @@
-#include "widget/SuggestionsAdapter.h"
-#include "widget/SearchView.h"
-#include "utility/CTypedValue.h"
-#include "text/TextUtils.h"
-#include "text/CSpannableString.h"
-#include "text/style/CTextAppearanceSpan.h"
-#include "net/Uri.h"
+#include "elastos/droid/widget/SuggestionsAdapter.h"
+#include "elastos/droid/widget/SearchView.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/CSpannableString.h"
+#include "elastos/droid/text/style/CTextAppearanceSpan.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
-#include "R.h"
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CStringWrapper;

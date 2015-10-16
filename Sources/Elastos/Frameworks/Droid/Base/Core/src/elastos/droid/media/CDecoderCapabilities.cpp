@@ -1,5 +1,5 @@
 
-#include "media/CDecoderCapabilities.h"
+#include "elastos/droid/media/CDecoderCapabilities.h"
 
 #include <media/MediaProfiles.h>
 #include <elastos/utility/etl/List.h>

@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CRegion.h"
-#include "graphics/CRect.h"
-#include "graphics/CPath.h"
-#include "graphics/GraphicsNative.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
 #include <binder/Parcel.h>
 #include <skia/core/SkRegion.h>
 #include <skia/core/SkPath.h>

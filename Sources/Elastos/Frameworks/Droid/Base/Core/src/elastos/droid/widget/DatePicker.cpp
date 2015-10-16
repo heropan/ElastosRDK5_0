@@ -1,12 +1,12 @@
-#include "ext/frameworkext.h"
-#include "widget/DatePicker.h"
-#include "text/format/DateUtils.h"
-#include "text/TextUtils.h"
-#include "widget/NumberPicker.h"
-#include "text/format/DateUtils.h"
-#include "text/format/DateFormat.h"
-#include "view/inputmethod/CInputMethodManager.h"
-#include <R.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/DatePicker.h"
+#include "elastos/droid/text/format/DateUtils.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/widget/NumberPicker.h"
+#include "elastos/droid/text/format/DateUtils.h"
+#include "elastos/droid/text/format/DateFormat.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

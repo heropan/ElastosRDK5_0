@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Widget_CViewFlipper.h"
 
 
-#include "widget/ViewFlipper.h"
+#include "elastos/droid/widget/ViewFlipper.h"
 
 using Elastos::Droid::Content::IIntent;
 

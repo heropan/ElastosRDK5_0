@@ -5,7 +5,7 @@
 #include "_CAppWidgetHostCallbacksNative.h"
 
 #include <jni.h>
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +16,7 @@ CarClass(CAppWidgetHostCallbacksNative)
 public:
     CAppWidgetHostCallbacksNative();
     ~CAppWidgetHostCallbacksNative();
-    
+
     CARAPI constructor(
         /* [in] */ Handle32 jVM,
         /* [in] */ Handle32 jInstance);

@@ -16,8 +16,8 @@
 
 #define LOG_TAG "TextLayoutCache"
 
-#include "graphics/TextLayoutCache.h"
-#include "graphics/TextLayout.h"
+#include "elastos/droid/graphics/TextLayoutCache.h"
+#include "elastos/droid/graphics/TextLayout.h"
 #include <utils/Mutex.h>
 #include <utils/String8.h>
 #include <skia/core/SkFontHost.h>

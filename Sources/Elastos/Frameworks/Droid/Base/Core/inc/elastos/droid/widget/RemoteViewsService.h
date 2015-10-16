@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_REMOTEVIEWSSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

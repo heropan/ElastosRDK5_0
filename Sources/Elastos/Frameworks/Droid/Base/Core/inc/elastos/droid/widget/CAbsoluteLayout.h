@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CAbsoluteLayout.h"
 
-#include "widget/AbsoluteLayout.h"
+#include "elastos/droid/widget/AbsoluteLayout.h"
 
 namespace Elastos{
 namespace Droid{

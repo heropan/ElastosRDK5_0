@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 
 #include "_Elastos_Droid_View_CWindowManagerGlobal.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::IContext;

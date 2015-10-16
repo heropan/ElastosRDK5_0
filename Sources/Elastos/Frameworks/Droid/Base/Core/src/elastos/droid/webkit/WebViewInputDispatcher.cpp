@@ -1,12 +1,12 @@
 
-#include "os/SystemClock.h"
-#include "view/CMotionEventHelper.h"
-#include "view/CViewConfiguration.h"
-#include "view/CViewConfigurationHelper.h"
-#include "webkit/WebViewInputDispatcher.h"
-#include "view/InputEvent.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/webkit/WebViewInputDispatcher.h"
+#include "elastos/droid/view/InputEvent.h"
 #include <elastos/utility/logging/Logger.h>
-#include "webkit/DebugFlags.h"
+#include "elastos/droid/webkit/DebugFlags.h"
 
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::SystemClock;

@@ -1,7 +1,7 @@
 
-#include "os/ParcelFileDescriptor.h"
-#include "os/CParcelFileDescriptor.h"
-#include "os/CParcel.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
+#include "elastos/droid/os/CParcel.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/droid/system/OsConstants.h>

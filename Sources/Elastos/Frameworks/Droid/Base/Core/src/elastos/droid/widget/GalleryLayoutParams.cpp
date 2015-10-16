@@ -1,5 +1,5 @@
 
-#include "widget/GalleryLayoutParams.h"
+#include "elastos/droid/widget/GalleryLayoutParams.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,6 +1,6 @@
 
-#include "provider/CalendarContractReminders.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CalendarContractReminders.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

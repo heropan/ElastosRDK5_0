@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/LatestItemView.h"
+#include "elastos/droid/systemui/statusbar/LatestItemView.h"
 
 namespace Elastos {
 namespace Droid {

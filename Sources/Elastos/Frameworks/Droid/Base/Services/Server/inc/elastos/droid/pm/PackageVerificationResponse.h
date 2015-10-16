@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_PACKAGEVERIFICATIONRESPONSE_H__
 #define __ELASTOS_DROID_SERVER_PM_PACKAGEVERIFICATIONRESPONSE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

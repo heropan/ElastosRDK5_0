@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CMEDIACONTROLLER_H__
 
 #include "_Elastos_Droid_Widget_CMediaController.h"
-#include "widget/MediaController.h"
+#include "elastos/droid/widget/MediaController.h"
 
 
 

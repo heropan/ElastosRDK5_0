@@ -1,4 +1,4 @@
-#include "database/CharArrayBuffer.h"
+#include "elastos/droid/database/CharArrayBuffer.h"
 
 namespace Elastos {
 namespace Droid {

@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "os/Runnable.h"
-#include "os/SystemClock.h"
-#include "webkit/native/content/browser/input/AdapterInputConnection.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/webkit/native/content/browser/input/AdapterInputConnection.h"
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IResultReceiver;

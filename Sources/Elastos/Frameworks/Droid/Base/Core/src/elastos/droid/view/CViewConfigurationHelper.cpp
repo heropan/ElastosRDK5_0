@@ -1,6 +1,6 @@
 
-#include "view/CViewConfigurationHelper.h"
-#include "view/CViewConfiguration.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/CViewConfiguration.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYVIEWPORT_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::IRect;
 

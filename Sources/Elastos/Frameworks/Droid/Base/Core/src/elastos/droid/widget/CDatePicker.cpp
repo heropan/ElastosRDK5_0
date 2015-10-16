@@ -1,4 +1,4 @@
-#include "widget/CDatePicker.h"
+#include "elastos/droid/widget/CDatePicker.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

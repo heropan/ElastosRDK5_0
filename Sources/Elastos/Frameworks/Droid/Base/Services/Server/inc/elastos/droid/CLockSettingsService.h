@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__
 
 #include "_Elastos_Droid_Widget_Internal_CLockSettingsService.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <database/sqlite/SQLiteOpenHelper.h>
 
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_APPERRORDIALOG_H__
 #define __ELASTOS_DROID_SERVER_AM_APPERRORDIALOG_H__
 
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "am/BaseErrorDialog.h"
 #include "am/AppErrorResult.h"
 #include "am/ProcessRecord.h"

@@ -1,5 +1,5 @@
 
-#include "view/inputmethod/CIInputMethodClient.h"
+#include "elastos/droid/view/inputmethod/CIInputMethodClient.h"
 
 namespace Elastos {
 namespace Droid {

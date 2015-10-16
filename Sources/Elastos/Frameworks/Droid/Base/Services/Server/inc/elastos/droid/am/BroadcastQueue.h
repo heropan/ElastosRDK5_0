@@ -4,7 +4,7 @@
 
 #include "am/CActivityManagerService.h"
 #include <elastos/utility/etl/List.h>
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Etl::List;

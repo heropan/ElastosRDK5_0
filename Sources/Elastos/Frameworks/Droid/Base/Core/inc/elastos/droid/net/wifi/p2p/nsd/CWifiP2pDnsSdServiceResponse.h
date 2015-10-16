@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICERESPONSE_H__
 
 #include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceResponse.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "WifiP2pServiceResponse.h"
 

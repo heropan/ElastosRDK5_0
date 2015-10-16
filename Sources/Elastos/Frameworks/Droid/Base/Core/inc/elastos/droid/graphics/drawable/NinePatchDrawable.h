@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_NINEPATCHDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_NINEPATCHDRAWABLE_H__
 
-#include "graphics/drawable/Drawable.h"
-#include "graphics/Insets.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/Insets.h"
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 

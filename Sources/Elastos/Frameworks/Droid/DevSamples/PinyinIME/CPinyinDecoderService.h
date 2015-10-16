@@ -3,7 +3,7 @@
 #define  __CPINYINDECODERSERVICE_H__
 
 #include "_CPinyinDecoderService.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 #include <sys/types.h>
 
 using Elastos::Droid::Inputmethods::PinyinIME::IPinyinDecoderService;

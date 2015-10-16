@@ -34,8 +34,8 @@ LocalSource::LocalSource(
     : MediaSource(String("local"))
     , mApplication(context)
 {
-	CUriMatcher::New(NO_MATCH, (IUriMatcher**)&mUriMatcher);
-	mMatcher = new PathMatcher();
+    CUriMatcher::New(NO_MATCH, (IUriMatcher**)&mUriMatcher);
+    mMatcher = new PathMatcher();
     mMatcher->Add(String("/local/image"), LOCAL_IMAGE_ALBUMSET);
     mMatcher->Add(String("/local/video"), LOCAL_VIDEO_ALBUMSET);
     mMatcher->Add(String("/local/all"), LOCAL_ALL_ALBUMSET);
@@ -53,10 +53,10 @@ LocalSource::LocalSource(
 }
 
 AutoPtr<MediaObject> LocalSource::CreateMediaObject(
-	/* [in] */ Path* path)
+    /* [in] */ Path* path)
 {
     Logger::D(TAG, "CreateMediaObject()-----");
-	switch (mMatcher->Match(path)) {
+    switch (mMatcher->Match(path)) {
         // case LOCAL_ALL_ALBUMSET:
         // case LOCAL_IMAGE_ALBUMSET:
         // case LOCAL_VIDEO_ALBUMSET:
@@ -82,8 +82,8 @@ AutoPtr<MediaObject> LocalSource::CreateMediaObject(
         //     return new LocalVideo(path, mApplication, mMatcher.getIntVar(0));
         default:
             // throw new RuntimeException("bad path: " + path);
-        	Logger::E(TAG, "bad path!");
-        	return NULL;
+            Logger::E(TAG, "bad path!");
+            return NULL;
     }
 }
 

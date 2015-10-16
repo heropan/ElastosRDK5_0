@@ -1,8 +1,8 @@
-#include "systemui/media/CNotificationPlayer.h"
+#include "elastos/droid/systemui/media/CNotificationPlayer.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/SystemClock.h"
-#include "os/Looper.h"
-#include "media/CMediaPlayer.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/media/CMediaPlayer.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SystemClock;

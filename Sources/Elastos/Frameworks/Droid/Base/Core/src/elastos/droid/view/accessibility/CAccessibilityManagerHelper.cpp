@@ -1,5 +1,5 @@
-#include "view/accessibility/CAccessibilityManagerHelper.h"
-#include "view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 
 namespace Elastos {
 namespace Droid {

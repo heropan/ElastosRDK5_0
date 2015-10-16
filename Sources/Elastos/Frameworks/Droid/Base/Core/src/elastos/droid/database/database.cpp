@@ -1,12 +1,12 @@
-#include "database/CCharArrayBuffer.h"
-#include "database/CCursorWindow.h"
-//#include "database/CDatabaseInsertHelper.h"
-#include "database/CDataSetObservable.h"
-#include "database/CContentObservable.h"
-#include "database/CCursorWrapper.h"
-#include "database/CMergeCursor.h"
-#include "database/CMatrixCursor.h"
-#include "database/CCrossProcessCursorWrapper.h"
+#include "elastos/droid/database/CCharArrayBuffer.h"
+#include "elastos/droid/database/CCursorWindow.h"
+//#include "elastos/droid/database/CDatabaseInsertHelper.h"
+#include "elastos/droid/database/CDataSetObservable.h"
+#include "elastos/droid/database/CContentObservable.h"
+#include "elastos/droid/database/CCursorWrapper.h"
+#include "elastos/droid/database/CMergeCursor.h"
+#include "elastos/droid/database/CMatrixCursor.h"
+#include "elastos/droid/database/CCrossProcessCursorWrapper.h"
 
 namespace Elastos {
 namespace Droid {

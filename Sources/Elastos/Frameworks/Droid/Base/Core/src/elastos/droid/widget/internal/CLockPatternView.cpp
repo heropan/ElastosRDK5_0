@@ -1,4 +1,4 @@
-#include "widget/internal/CLockPatternView.h"
+#include "elastos/droid/widget/internal/CLockPatternView.h"
 
 using Elastos::Droid::View::EIID_View;
 

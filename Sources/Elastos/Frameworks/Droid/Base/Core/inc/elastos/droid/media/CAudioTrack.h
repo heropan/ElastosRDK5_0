@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Media_CAudioTrack.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 

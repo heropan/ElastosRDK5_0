@@ -1,10 +1,10 @@
 
-#include "app/CApplicationThread.h"
-#include "os/Binder.h"
-#include "os/Process.h"
-#include "os/Handler.h"
-#include "os/CServiceManager.h"
-#include "os/CDebug.h"
+#include "elastos/droid/app/CApplicationThread.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/CDebug.h"
 #include <elastos/utility/logging/Slogger.h>
 
 

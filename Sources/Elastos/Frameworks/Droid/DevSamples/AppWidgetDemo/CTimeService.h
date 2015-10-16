@@ -3,7 +3,7 @@
 #define  __CTIMESERVICE_H__
 
 #include "_CTimeService.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Os::IBinder;

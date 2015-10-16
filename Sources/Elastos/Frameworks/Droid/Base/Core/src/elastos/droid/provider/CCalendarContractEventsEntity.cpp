@@ -1,13 +1,13 @@
 
-#include "provider/CCalendarContractEventsEntity.h"
-#include "provider/CalendarContractExtendedProperties.h"
-#include "provider/CalendarContractReminders.h"
-#include "provider/CalendarContractAttendees.h"
-#include "provider/ContactsContract.h"
-#include "database/DatabaseUtils.h"
-#include "content/CContentValues.h"
-#include "content/CEntity.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractEventsEntity.h"
+#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
+#include "elastos/droid/provider/CalendarContractReminders.h"
+#include "elastos/droid/provider/CalendarContractAttendees.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CEntity.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

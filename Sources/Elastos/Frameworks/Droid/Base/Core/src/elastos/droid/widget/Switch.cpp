@@ -1,16 +1,16 @@
 
 #include <elastos/core/Math.h>
-#include "graphics/Typeface.h"
-#include "text/CStaticLayout.h"
-#include "text/TextUtils.h"
-#include "text/CTextPaint.h"
-#include "text/CLayoutHelper.h"
-#include "text/method/CAllCapsTransformationMethod.h"
-#include "view/CViewConfiguration.h"
-#include "view/CMotionEvent.h"
-#include "widget/Switch.h"
-#include "content/res/CTypedArray.h"
-#include "content/res/CAssetManager.h"
+#include "elastos/droid/graphics/Typeface.h"
+#include "elastos/droid/text/CStaticLayout.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/CTextPaint.h"
+#include "elastos/droid/text/CLayoutHelper.h"
+#include "elastos/droid/text/method/CAllCapsTransformationMethod.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/widget/Switch.h"
+#include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CAssetManager.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;

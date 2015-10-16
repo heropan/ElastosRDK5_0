@@ -1,12 +1,12 @@
-#include "systemui/statusbar/policy/Clock.h"
+#include "elastos/droid/systemui/statusbar/policy/Clock.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/StringBuilder.h>
-#include "R.h"
-#include "content/CIntentFilter.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "text/CSpannableStringBuilder.h"
-#include "text/format/CDateFormat.h"
-#include "text/style/CRelativeSizeSpan.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/format/CDateFormat.h"
+#include "elastos/droid/text/style/CRelativeSizeSpan.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

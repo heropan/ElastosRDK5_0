@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_SCROLLBARDRAWABLE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::ICanvas;

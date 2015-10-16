@@ -1,4 +1,4 @@
-#include "media/audiofx/CAudioEffect.h"
+#include "elastos/droid/media/audiofx/CAudioEffect.h"
 
 namespace Elastos {
 namespace Droid {

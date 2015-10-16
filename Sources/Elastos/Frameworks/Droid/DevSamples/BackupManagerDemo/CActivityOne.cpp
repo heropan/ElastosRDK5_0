@@ -2,7 +2,7 @@
 #include "CActivityOne.h"
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::IO::CFile;
 using Elastos::IO::IDataInput;

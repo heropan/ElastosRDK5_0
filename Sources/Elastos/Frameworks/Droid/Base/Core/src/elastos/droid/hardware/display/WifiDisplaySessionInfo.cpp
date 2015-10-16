@@ -1,5 +1,5 @@
 
-#include "hardware/display/WifiDisplaySessionInfo.h"
+#include "elastos/droid/hardware/display/WifiDisplaySessionInfo.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

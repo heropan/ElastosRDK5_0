@@ -1,6 +1,6 @@
 
-#include "graphics/CLayerRasterizer.h"
-#include "graphics/Paint.h"
+#include "elastos/droid/graphics/CLayerRasterizer.h"
+#include "elastos/droid/graphics/Paint.h"
 #include <skia/effects/SkLayerRasterizer.h>
 
 namespace Elastos {

@@ -61,24 +61,24 @@ namespace Net {
 //              X509Util::TrustStorageListener
 //=====================================================================
 ECode X509Util::TrustStorageListener::OnReceive(
-	/* [in] */ IContext* context,
-	/* [in] */ IIntent* intent)
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
 {
-	// ==================before translated======================
-	// if (intent.getAction().equals(KeyChain.ACTION_STORAGE_CHANGED)) {
-	//     try {
-	//         reloadDefaultTrustManager();
-	//     }
-	//     catch (CertificateException e) {
-	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
-	//     }
-	//     catch (KeyStoreException e) {
-	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
-	//     }
-	//     catch (NoSuchAlgorithmException e) {
-	//         Log.e(TAG, "Unable to reload the default TrustManager", e);
-	//     }
-	// }
+    // ==================before translated======================
+    // if (intent.getAction().equals(KeyChain.ACTION_STORAGE_CHANGED)) {
+    //     try {
+    //         reloadDefaultTrustManager();
+    //     }
+    //     catch (CertificateException e) {
+    //         Log.e(TAG, "Unable to reload the default TrustManager", e);
+    //     }
+    //     catch (KeyStoreException e) {
+    //         Log.e(TAG, "Unable to reload the default TrustManager", e);
+    //     }
+    //     catch (NoSuchAlgorithmException e) {
+    //         Log.e(TAG, "Unable to reload the default TrustManager", e);
+    //     }
+    // }
 
     String action;
     intent->GetAction(&action);

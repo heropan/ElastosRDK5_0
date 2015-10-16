@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_ROUNDRECTSHAPE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_ROUNDRECTSHAPE_H__
 
-#include "graphics/drawable/shapes/RectShape.h"
+#include "elastos/droid/graphics/drawable/shapes/RectShape.h"
 
 namespace Elastos {
 namespace Droid {

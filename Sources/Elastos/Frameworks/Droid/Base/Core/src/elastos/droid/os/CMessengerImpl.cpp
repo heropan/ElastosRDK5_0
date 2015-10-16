@@ -1,6 +1,6 @@
 
-#include "os/CMessengerImpl.h"
-#include "os/Binder.h"
+#include "elastos/droid/os/CMessengerImpl.h"
+#include "elastos/droid/os/Binder.h"
 
 namespace Elastos {
 namespace Droid {

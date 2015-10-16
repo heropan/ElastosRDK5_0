@@ -1,6 +1,6 @@
 
-#include "hardware/display/CDisplayManager.h"
-#include "hardware/display/DisplayManagerGlobal.h"
+#include "elastos/droid/hardware/display/CDisplayManager.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include <elastos/core/AutoLock.h>
 
 namespace Elastos {

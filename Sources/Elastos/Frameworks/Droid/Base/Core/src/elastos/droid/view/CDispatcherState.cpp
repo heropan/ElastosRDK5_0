@@ -1,6 +1,6 @@
 
-#include "view/CDispatcherState.h"
-#include "view/CKeyEvent.h"
+#include "elastos/droid/view/CDispatcherState.h"
+#include "elastos/droid/view/CKeyEvent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

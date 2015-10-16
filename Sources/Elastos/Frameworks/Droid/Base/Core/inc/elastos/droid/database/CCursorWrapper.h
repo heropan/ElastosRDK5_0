@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CCURSORWRAPPER_H__
 
 #include "_Elastos_Droid_Database_CCursorWrapper.h"
-#include "database/CursorWrapper.h"
+#include "elastos/droid/database/CursorWrapper.h"
 
 namespace Elastos {
 namespace Droid {

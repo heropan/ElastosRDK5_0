@@ -3,9 +3,9 @@
 #define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENUVIEW_H__
 
 
-#include "widget/LinearLayoutLayoutParams.h"
-#include "widget/LinearLayout.h"
-#include "view/menu/ActionMenuPresenter.h"
+#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/view/menu/ActionMenuPresenter.h"
 
 using Elastos::Droid::View::Menu::IActionMenuViewLayoutParams;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;

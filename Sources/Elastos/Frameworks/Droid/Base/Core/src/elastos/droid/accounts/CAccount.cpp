@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/CAccount.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/CAccount.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

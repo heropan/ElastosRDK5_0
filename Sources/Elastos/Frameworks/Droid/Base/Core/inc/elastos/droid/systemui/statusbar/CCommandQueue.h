@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_CCommandQueue.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::HandlerBase;

@@ -1,4 +1,4 @@
-#include "speech/srec/Recognizer.h"
+#include "elastos/droid/speech/srec/Recognizer.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/logging/Logger.h>
 #include <Elastos.CoreLibrary.h>

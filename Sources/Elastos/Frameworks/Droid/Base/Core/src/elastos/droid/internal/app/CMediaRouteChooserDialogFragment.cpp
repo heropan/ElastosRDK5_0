@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "app/CMediaRouteChooserDialogFragment.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CMediaRouteChooserDialogFragment.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Text::TextUtils;

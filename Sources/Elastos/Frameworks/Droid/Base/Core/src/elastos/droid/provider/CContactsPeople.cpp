@@ -1,11 +1,11 @@
 
-#include "provider/CContactsPeople.h"
-#include "provider/CContactsGroups.h"
-#include "provider/CContactsGroupMembership.h"
-#include "net/Uri.h"
-#include "content/CContentUris.h"
-#include "content/CContentValues.h"
-#include "graphics/CBitmapFactory.h"
+#include "elastos/droid/provider/CContactsPeople.h"
+#include "elastos/droid/provider/CContactsGroups.h"
+#include "elastos/droid/provider/CContactsGroupMembership.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ISystem;

@@ -1,7 +1,7 @@
 
 #include "ConnectionThread.h"
-#include "ext/frameworkext.h"
-// #include "os/SystemClock.h"
+#include "elastos/droid/ext/frameworkext.h"
+// #include "elastos/droid/os/SystemClock.h"
 
 namespace Elastos {
 namespace Droid {

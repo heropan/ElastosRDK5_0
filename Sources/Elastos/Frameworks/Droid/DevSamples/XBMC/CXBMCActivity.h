@@ -2,7 +2,7 @@
 #ifndef __CXBMCACTIVITY_H__
 #define __CXBMCACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CXBMCActivity.h"
 #include <elautoptr.h>
 #include "android_native_app_glue.h"

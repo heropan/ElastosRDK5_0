@@ -1,5 +1,5 @@
 
-#include "internal/PasswordEntryKeyboard.h"
+#include "elastos/droid/internal/PasswordEntryKeyboard.h"
 
 using Elastos::Core::CStringWrapper;
 

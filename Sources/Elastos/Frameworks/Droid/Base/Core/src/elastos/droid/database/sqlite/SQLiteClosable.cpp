@@ -1,5 +1,5 @@
 
-#include "database/sqlite/SQLiteClosable.h"
+#include "elastos/droid/database/sqlite/SQLiteClosable.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 

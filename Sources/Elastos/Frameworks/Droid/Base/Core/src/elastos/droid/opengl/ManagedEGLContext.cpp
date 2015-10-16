@@ -1,5 +1,5 @@
 #include "ManagedEGLContext.h"
-#include "os/Looper.h"
+#include "elastos/droid/os/Looper.h"
 #include <elastos/utility/logging/Slogger.h>
 #include "gles/CEGL10Helper.h"
 #include "gles/CEGLImpl.h"

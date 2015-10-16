@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_OBJECTANIMATOR_H__
 #define  __ELASTOS_DROID_ANIMATION_OBJECTANIMATOR_H__
 
-#include "animation/ValueAnimator.h"
+#include "elastos/droid/animation/ValueAnimator.h"
 
 using Elastos::Droid::Utility::IProperty;
 using Elastos::Droid::Graphics::IPath;

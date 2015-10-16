@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_CUiModeManagerService.h"
-#include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "TwilightService.h"
 
 using Elastos::Droid::Content::IContext;

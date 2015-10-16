@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SEEKBAR_H__
 #define __ELASTOS_DROID_WIDGET_SEEKBAR_H__
 
-#include "widget/AbsSeekBar.h"
+#include "elastos/droid/widget/AbsSeekBar.h"
 
 namespace Elastos {
 namespace Droid {

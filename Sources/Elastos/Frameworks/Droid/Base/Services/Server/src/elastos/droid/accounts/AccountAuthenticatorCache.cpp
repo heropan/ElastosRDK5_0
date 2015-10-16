@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "accounts/AccountAuthenticatorCache.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "R.h"
 
 using Elastos::Core::ICharSequence;

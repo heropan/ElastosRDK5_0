@@ -1,9 +1,9 @@
 #include "CDropBoxManagerService.h"
 #include "Manifest.h"
-#include "os/Handler.h"
-#include "os/FileUtils.h"
-#include "os/SystemClock.h"
-#include "net/Uri.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>

@@ -1,6 +1,6 @@
 
-#include "net/CMailToHelper.h"
-#include "net/Uri.h"
+#include "elastos/droid/net/CMailToHelper.h"
+#include "elastos/droid/net/Uri.h"
 
 namespace Elastos {
 namespace Droid {

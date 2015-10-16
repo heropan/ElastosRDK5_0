@@ -19,7 +19,7 @@ public:
         /* [in] */ IInterface* host);
 
 private:
-	BluetoothPan* mHost;
+    BluetoothPan* mHost;
 };
 
 } // namespace Bluetooth

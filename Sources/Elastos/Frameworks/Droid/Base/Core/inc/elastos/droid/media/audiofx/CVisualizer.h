@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Media_Audiofx_CVisualizer.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::ILooper;

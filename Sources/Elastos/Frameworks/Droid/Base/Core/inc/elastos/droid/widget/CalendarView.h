@@ -4,8 +4,8 @@
 #include "FrameLayout.h"
 #include "BaseAdapter.h"
 
-#include "view/SimpleOnGestureListener.h"
-#include "os/Runnable.h"
+#include "elastos/droid/view/SimpleOnGestureListener.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Libcore::ICU::ILocale;
 using Libcore::ICU::ILocaleHelper;

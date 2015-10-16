@@ -1,6 +1,6 @@
 
-#include "view/animation/CBounceInterpolator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/animation/CBounceInterpolator.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

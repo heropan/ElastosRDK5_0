@@ -12,7 +12,7 @@ namespace JavaProxy {
 const String CLocalActivityRecordNative::TAG("CIntentReceiverNative");
 
 CLocalActivityRecordNative::~CLocalActivityRecordNative(){
-	JNIEnv* env;
+    JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
     env->DeleteGlobalRef(mJInstance);
 }

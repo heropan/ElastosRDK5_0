@@ -1,9 +1,9 @@
 
-#include "widget/TabWidget.h"
+#include "elastos/droid/widget/TabWidget.h"
 #include <elastos/core/Math.h>
-#include "os/Build.h"
-#include "widget/CLinearLayoutLayoutParams.h"
-#include "widget/CImageView.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/CImageView.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::Build;

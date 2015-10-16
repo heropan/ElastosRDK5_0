@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_GALLERYLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_GALLERYLAYOUTPARAMS_H__
 
-#include "view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
 
 using Elastos::Droid::View::IViewGroupLayoutParams;
 

@@ -1,11 +1,11 @@
 
-#include "widget/internal/WaveView.h"
+#include "elastos/droid/widget/internal/WaveView.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include "graphics/CBitmapFactory.h"
-#include "graphics/drawable/CBitmapDrawable.h"
-#include "view/accessibility/CAccessibilityManager.h"
-#include "R.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

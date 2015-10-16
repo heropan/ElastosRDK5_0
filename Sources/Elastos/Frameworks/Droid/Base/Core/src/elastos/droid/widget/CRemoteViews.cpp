@@ -1,4 +1,4 @@
-#include "widget/CRemoteViews.h"
+#include "elastos/droid/widget/CRemoteViews.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

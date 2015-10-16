@@ -3,7 +3,7 @@
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/text/CSpannedString.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
-#include "provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 #include <Elastos.CoreLibrary.h>

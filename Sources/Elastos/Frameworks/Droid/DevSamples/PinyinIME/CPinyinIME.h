@@ -6,8 +6,8 @@
 #include "_CPinyinIME.h"
 #include <inputmethodservice/InputMethodService.h>
 #include "EnglishInputProcessor.h"
-#include "os/HandlerRunnable.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerRunnable.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::IActivityThread;

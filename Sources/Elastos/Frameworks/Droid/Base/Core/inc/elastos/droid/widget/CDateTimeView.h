@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CDATETIMEVIEW_H__
 
 #include "_Elastos_Droid_Widget_CDateTimeView.h"
-#include "widget/DateTimeView.h"
+#include "elastos/droid/widget/DateTimeView.h"
 
 
 namespace Elastos{

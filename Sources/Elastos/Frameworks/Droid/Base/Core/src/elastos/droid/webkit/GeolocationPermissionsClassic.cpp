@@ -1,7 +1,7 @@
 
-#include "os/CMessageHelper.h"
-#include "webkit/CWebViewCore.h"
-#include "webkit/GeolocationPermissionsClassic.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/GeolocationPermissionsClassic.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Core::CStringWrapper;

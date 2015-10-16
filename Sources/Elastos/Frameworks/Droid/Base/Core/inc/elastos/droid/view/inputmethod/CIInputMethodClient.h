@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CIINPUTMETHODCLIENT_H__
 
 #include "_Elastos_Droid_View_InputMethod_CIInputMethodClient.h"
-#include "view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 
 
 

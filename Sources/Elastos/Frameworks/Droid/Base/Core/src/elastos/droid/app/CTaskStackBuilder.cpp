@@ -1,10 +1,10 @@
 #include "CTaskStackBuilder.h"
-#include "os/CUserHandle.h"
-#include "os/UserHandle.h"
-#include "content/CIntent.h"
-#include "content/CIntentHelper.h"
-#include "content/CComponentName.h"
-#include "app/CPendingIntentHelper.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentHelper.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

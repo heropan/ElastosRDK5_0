@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CDateView.h"
 
 
-#include "systemui/statusbar/policy/DateView.h"
+#include "elastos/droid/systemui/statusbar/policy/DateView.h"
 
 namespace Elastos {
 namespace Droid {

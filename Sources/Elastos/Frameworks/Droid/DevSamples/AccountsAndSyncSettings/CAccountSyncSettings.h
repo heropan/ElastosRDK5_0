@@ -3,7 +3,7 @@
 #define __CACCOUNTSYNCSETTINGS_H__
 
 #include "_CAccountSyncSettings.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IView;

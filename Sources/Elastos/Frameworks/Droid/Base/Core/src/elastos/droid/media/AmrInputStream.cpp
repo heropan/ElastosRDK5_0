@@ -1,5 +1,5 @@
-#include "media/AmrInputStream.h"
-#include "media/stagefright/codecs/amrnb/gsmamr_enc.h"
+#include "elastos/droid/media/AmrInputStream.h"
+#include "elastos/droid/media/stagefright/codecs/amrnb/gsmamr_enc.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTORAUTOCLOSEOUTPUTSTREAM_H__
 
 #include "_Elastos_Droid_Content_Res_CAssetFileDescriptorAutoCloseOutputStream.h"
-#include "os/ParcelFileDescriptor.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Os::ParcelFileDescriptor;

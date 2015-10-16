@@ -1,13 +1,13 @@
 
-#include "internal/os/CBatteryStatsHelper.h"
-#include "content/CIntentFilter.h"
-#include "os/CParcel.h"
-#include "os/CUserHandle.h"
-#include "os/ServiceManager.h"
-#include "os/SystemClock.h"
-#include "os/CMemoryFile.h"
-#include "os/CParcelFileDescriptorAutoCloseInputStream.h"
-#include "utility/CArrayMap.h"
+#include "elastos/droid/internal/os/CBatteryStatsHelper.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CMemoryFile.h"
+#include "elastos/droid/os/CParcelFileDescriptorAutoCloseInputStream.h"
+#include "elastos/droid/utility/CArrayMap.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

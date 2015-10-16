@@ -1,9 +1,9 @@
 
-#include "content/CContentValues.h"
-#include "privacy/CPrivacyPersistenceAdapter.h"
-#include "privacy/PrivacySettingsStub.h"
-#include "privacy/CPrivacySettings.h"
-#include "database/sqlite/SQLiteDatabase.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/privacy/CPrivacyPersistenceAdapter.h"
+#include "elastos/droid/privacy/PrivacySettingsStub.h"
+#include "elastos/droid/privacy/CPrivacySettings.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_WINDOW_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
 
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

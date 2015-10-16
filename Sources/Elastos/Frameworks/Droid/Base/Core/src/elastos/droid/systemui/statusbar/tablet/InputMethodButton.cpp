@@ -1,6 +1,6 @@
-#include "systemui/statusbar/tablet/InputMethodButton.h"
-#include "systemui/SystemUIR.h"
-#include "provider/CSettingsSecure.h"
+#include "elastos/droid/systemui/statusbar/tablet/InputMethodButton.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/provider/CSettingsSecure.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

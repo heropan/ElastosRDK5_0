@@ -51,7 +51,7 @@ LocalAlbum::LocalAlbum(
     , mCachedCount(INVALID_COUNT)
     , mIsImage(isImage)
 {
-	mApplication->GetContentResolver((IContentResolver**)&mResolver);
+    mApplication->GetContentResolver((IContentResolver**)&mResolver);
     Init(name);
 }
 

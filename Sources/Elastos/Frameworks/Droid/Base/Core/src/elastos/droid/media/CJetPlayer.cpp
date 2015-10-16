@@ -1,6 +1,6 @@
 
-#include "media/CJetPlayer.h"
-#include "os/Looper.h"
+#include "elastos/droid/media/CJetPlayer.h"
+#include "elastos/droid/os/Looper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::Looper;

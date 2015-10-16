@@ -1,4 +1,4 @@
-#include "widget/CStackView.h"
+#include "elastos/droid/widget/CStackView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

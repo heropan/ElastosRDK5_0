@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_CUPDATELOCKSERVICE_H__
 
 #include "_Elastos_Droid_Server_CUpdateLockService.h"
-#include "os/TokenWatcher.h"
+#include "elastos/droid/os/TokenWatcher.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;

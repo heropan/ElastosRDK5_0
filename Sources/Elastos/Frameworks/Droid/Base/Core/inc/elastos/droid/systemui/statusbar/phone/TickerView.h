@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_TICKERVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_TICKERVIEW_H__
 
-#include "widget/TextSwitcher.h"
+#include "elastos/droid/widget/TextSwitcher.h"
 
 using Elastos::Droid::Widget::TextSwitcher;
 

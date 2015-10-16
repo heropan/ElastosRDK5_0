@@ -1,6 +1,6 @@
 
-#include "app/CDownloadManagerHelper.h"
-#include "app/CDownloadManager.h"
+#include "elastos/droid/app/CDownloadManagerHelper.h"
+#include "elastos/droid/app/CDownloadManager.h"
 
 namespace Elastos {
 namespace Droid {

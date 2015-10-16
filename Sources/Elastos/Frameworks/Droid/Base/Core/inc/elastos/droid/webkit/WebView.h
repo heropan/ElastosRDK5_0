@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/WebViewFactoryProvider.h"
-#include "widget/AbsoluteLayout.h"
+#include "elastos/droid/webkit/WebViewFactoryProvider.h"
+#include "elastos/droid/widget/AbsoluteLayout.h"
 
 using Elastos::IO::IBufferedWriter;
 using Elastos::IO::IFile;

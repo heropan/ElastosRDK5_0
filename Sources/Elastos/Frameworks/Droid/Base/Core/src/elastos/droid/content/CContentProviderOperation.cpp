@@ -6,11 +6,11 @@
 #include "elastos/droid/content/CContentProviderOperationBuilder.h"
 // #include "elastos/droid/content/CContentUris.h"
 // #include "elastos/droid/content/CContentValues.h"
-//#include "net/Uri.h"
-// #include "net/CStringUri.h"
-// #include "net/COpaqueUri.h"
-// #include "net/CHierarchicalUri.h"
-// #include "text/TextUtils.h"
+//#include "elastos/droid/net/Uri.h"
+// #include "elastos/droid/net/CStringUri.h"
+// #include "elastos/droid/net/COpaqueUri.h"
+// #include "elastos/droid/net/CHierarchicalUri.h"
+// #include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/CoreUtils.h>

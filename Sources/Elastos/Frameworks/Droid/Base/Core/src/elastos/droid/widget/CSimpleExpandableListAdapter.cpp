@@ -1,4 +1,4 @@
-#include "widget/CSimpleExpandableListAdapter.h"
+#include "elastos/droid/widget/CSimpleExpandableListAdapter.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CSYSTEMBACKUPAGENT_H__
 #define __ELASTOS_DROID_SERVER_CSYSTEMBACKUPAGENT_H__
 
-#include "app/backup/BackupAgentHelper.h"
+#include "elastos/droid/app/backup/BackupAgentHelper.h"
 #include "_Elastos_Droid_Server_CSystemBackupAgent.h"
 
 using Elastos::Droid::App::Backup::BackupAgentHelper;

@@ -1,8 +1,8 @@
 #include "CGLImpl.h"
-#include "app/AppGlobals.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <cmdef.h>

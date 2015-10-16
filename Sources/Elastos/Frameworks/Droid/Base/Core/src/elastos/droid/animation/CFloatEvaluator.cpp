@@ -1,6 +1,6 @@
 
-#include "animation/CFloatEvaluator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/animation/CFloatEvaluator.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;

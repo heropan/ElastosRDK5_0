@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEWDATABASECLASSIC_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/WebViewDatabase.h"
+#include "elastos/droid/webkit/WebViewDatabase.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IMap;

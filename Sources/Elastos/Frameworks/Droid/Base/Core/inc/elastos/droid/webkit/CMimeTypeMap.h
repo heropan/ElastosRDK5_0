@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CMIMETYPEMAP_H__
 
 #include "_Elastos_Droid_Webkit_CMimeTypeMap.h"
-#include "webkit/MimeTypeMap.h"
+#include "elastos/droid/webkit/MimeTypeMap.h"
 
 namespace Elastos {
 namespace Droid {

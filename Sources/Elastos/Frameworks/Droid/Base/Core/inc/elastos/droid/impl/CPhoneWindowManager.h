@@ -3,20 +3,20 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWMANAGER_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CPhoneWindowManager.h"
-#include "app/CProgressDialog.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/app/CProgressDialog.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/CRect.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "impl/BootAnimationView.h"
 #include "impl/RecentApplicationsDialog.h"
 #include "impl/ShortcutManager.h"
-#include "os/HandlerBase.h"
-#include "os/Runnable.h"
-#include "os/UEventObserver.h"
-#include "utility/SparseArray.h"
-#include "view/InputEventReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/UEventObserver.h"
+#include "elastos/droid/utility/SparseArray.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <impl/GlobalActions.h>
 

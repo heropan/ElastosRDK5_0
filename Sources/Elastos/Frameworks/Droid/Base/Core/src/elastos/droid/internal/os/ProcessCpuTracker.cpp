@@ -1,9 +1,9 @@
 
-#include "internal/os/ProcessCpuTracker.h"
-#include "internal/os/CProcessCpuTracker.h"
-#include "os/Process.h"
-#include "os/FileUtils.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/internal/os/ProcessCpuTracker.h"
+#include "elastos/droid/internal/os/CProcessCpuTracker.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

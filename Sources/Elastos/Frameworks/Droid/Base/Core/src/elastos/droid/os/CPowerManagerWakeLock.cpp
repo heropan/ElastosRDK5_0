@@ -1,9 +1,9 @@
 
-#include "os/CPowerManagerWakeLock.h"
-#include "os/CPowerManager.h"
-#include "os/CBinder.h"
-#include "os/Handler.h"
-#include "os/CWorkSource.h"
+#include "elastos/droid/os/CPowerManagerWakeLock.h"
+#include "elastos/droid/os/CPowerManager.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/CWorkSource.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>

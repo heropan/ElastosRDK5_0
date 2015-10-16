@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_TABWIDGET_H__
 #define __ELASTOS_DROID_WIDGET_TABWIDGET_H__
 
-#include "widget/LinearLayout.h"
-#include "R.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::View::IViewOnClickListener;

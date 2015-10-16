@@ -1,15 +1,15 @@
 
-#include "view/animation/Animation.h"
+#include "elastos/droid/view/animation/Animation.h"
 #ifdef DROID_CORE
-#include "view/animation/CAnimationUtils.h"
-#include "view/animation/CTransformation.h"
-#include "view/animation/CAccelerateDecelerateInterpolator.h"
-#include "utility/CTypedValueHelper.h"
-#include "graphics/CRectF.h"
-#include "os/CSystemProperties.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/view/animation/CTransformation.h"
+#include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
+#include "elastos/droid/utility/CTypedValueHelper.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/os/CSystemProperties.h"
 #endif
-#include "os/Handler.h"
-#include "R.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

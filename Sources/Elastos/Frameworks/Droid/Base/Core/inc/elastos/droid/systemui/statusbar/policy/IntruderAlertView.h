@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_INTRUDERALERTVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_INTRUDERALERTVIEW_H__
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IViewOnClickListener;

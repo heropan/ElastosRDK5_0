@@ -1,7 +1,7 @@
 
-#include "graphics/drawable/TransitionDrawable.h"
-#include "graphics/drawable/CTransitionDrawable.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/graphics/drawable/TransitionDrawable.h"
+#include "elastos/droid/graphics/drawable/CTransitionDrawable.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::SystemClock;

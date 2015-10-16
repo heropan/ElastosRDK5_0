@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/tablet/SettingsView.h"
+#include "elastos/droid/systemui/statusbar/tablet/SettingsView.h"
 
 namespace Elastos {
 namespace Droid {

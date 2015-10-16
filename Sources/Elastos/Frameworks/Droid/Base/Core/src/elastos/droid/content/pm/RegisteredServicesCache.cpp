@@ -3,12 +3,12 @@
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentFilter.h"
-#include "os/UserHandle.h"
-#include "os/Handler.h"
-#include "os/CHandler.h"
-#include "os/CEnvironment.h"
-#include "utility/CAtomicFile.h"
-#include "utility/Xml.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CEnvironment.h"
+#include "elastos/droid/utility/CAtomicFile.h"
+#include "elastos/droid/utility/Xml.h"
 
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>

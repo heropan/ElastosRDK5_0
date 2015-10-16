@@ -1,4 +1,4 @@
-#include "systemui/CSearchPanelView.h"
+#include "elastos/droid/systemui/CSearchPanelView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

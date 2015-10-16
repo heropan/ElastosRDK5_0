@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_MediaController_H__
 #define __ELASTOS_DROID_WIDGET_MediaController_H__
 
-#include "widget/FrameLayout.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

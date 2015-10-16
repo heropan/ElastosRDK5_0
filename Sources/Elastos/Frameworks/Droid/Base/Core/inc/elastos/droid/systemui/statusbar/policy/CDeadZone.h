@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CDeadZone.h"
 
-#include "systemui/statusbar/policy/DeadZone.h"
+#include "elastos/droid/systemui/statusbar/policy/DeadZone.h"
 
 namespace Elastos {
 namespace Droid {

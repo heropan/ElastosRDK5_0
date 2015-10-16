@@ -1,6 +1,6 @@
 
-#include "net/CPathSegmentsBuilder.h"
-#include "net/CPathSegments.h"
+#include "elastos/droid/net/CPathSegmentsBuilder.h"
+#include "elastos/droid/net/CPathSegments.h"
 
 PathSegmentsBuilder::PathSegmentsBuilder()
     : mSize(0)

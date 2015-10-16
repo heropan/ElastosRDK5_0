@@ -1,6 +1,6 @@
 
-#include "view/NativeDisplayEventReceiver.h"
-#include "view/DisplayEventReceiver.h"
+#include "elastos/droid/view/NativeDisplayEventReceiver.h"
+#include "elastos/droid/view/DisplayEventReceiver.h"
 #include <utils/Log.h>
 
 #undef ALOGV

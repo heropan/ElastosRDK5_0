@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CBitmapShader.h"
-#include "graphics/CBitmap.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CBitmapShader.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include <skia/core/SkShader.h>
 #include <skia/core/SkBitmap.h>
 

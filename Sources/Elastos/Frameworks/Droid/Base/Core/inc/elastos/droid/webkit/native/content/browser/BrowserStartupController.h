@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BROWSERSTARTUPCONTROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/ChildProcessLauncher.h"
-#include "os/Runnable.h"
+#include "elastos/droid/webkit/native/content/browser/ChildProcessLauncher.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Utility::IList;
 using Elastos::Droid::Content::IContext;

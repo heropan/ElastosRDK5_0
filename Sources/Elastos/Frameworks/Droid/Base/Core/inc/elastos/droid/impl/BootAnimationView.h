@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_BOOTANIMATIONVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "view/View.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/view/View.h"
 
 
 using Elastos::Droid::Os::HandlerBase;

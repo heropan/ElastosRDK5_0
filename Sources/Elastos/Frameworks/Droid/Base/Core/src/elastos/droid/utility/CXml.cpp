@@ -1,6 +1,6 @@
-#include "utility/CXml.h"
-#include "utility/CXmlPullAttributes.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/utility/CXml.h"
+#include "elastos/droid/utility/CXmlPullAttributes.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Org::Xml::Sax::IXMLReader;
 using Org::Xml::Sax::IInputSource;

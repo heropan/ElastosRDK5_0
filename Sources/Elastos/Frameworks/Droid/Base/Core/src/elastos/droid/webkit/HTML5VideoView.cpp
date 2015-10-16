@@ -1,11 +1,11 @@
 
-#include "content/CIntent.h"
-#include "media/CMediaPlayer.h"
-#include "net/Uri.h"
-#include "webkit/HTML5VideoView.h"
-#include "webkit/HTML5VideoViewProxy.h"
-#include "webkit/CookieManager.h"
-#include "webkit/CWebViewClassic.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/media/CMediaPlayer.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/webkit/HTML5VideoView.h"
+#include "elastos/droid/webkit/HTML5VideoViewProxy.h"
+#include "elastos/droid/webkit/CookieManager.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::EIID_IRunnable;

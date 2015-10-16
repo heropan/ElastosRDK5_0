@@ -1,8 +1,8 @@
 
-#include "graphics/drawable/RotateDrawable.h"
-#include "graphics/drawable/CRotateDrawable.h"
-#include "graphics/CRect.h"
-#include "R.h"
+#include "elastos/droid/graphics/drawable/RotateDrawable.h"
+#include "elastos/droid/graphics/drawable/CRotateDrawable.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 

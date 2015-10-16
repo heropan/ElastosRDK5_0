@@ -1,4 +1,4 @@
-#include "systemui/statusbar/policy/CompatModeButton.h"
+#include "elastos/droid/systemui/statusbar/policy/CompatModeButton.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

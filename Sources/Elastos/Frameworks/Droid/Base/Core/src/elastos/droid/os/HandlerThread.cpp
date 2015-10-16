@@ -1,7 +1,7 @@
 
-#include "os/HandlerThread.h"
-#include "os/Process.h"
-#include "os/Looper.h"
+#include "elastos/droid/os/HandlerThread.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Looper.h"
 
 namespace Elastos {
 namespace Droid {

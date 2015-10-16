@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITESESSION_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITESESSION_H__
 
-#include "ext/frameworkdef.h"
-#include "database/sqlite/SQLiteConnectionPool.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/database/sqlite/SQLiteConnectionPool.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;

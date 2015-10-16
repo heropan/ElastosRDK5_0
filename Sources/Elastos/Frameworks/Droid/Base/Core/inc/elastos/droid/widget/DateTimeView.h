@@ -4,9 +4,9 @@
 
 #include <Elastos.CoreLibrary.h>
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/TextView.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

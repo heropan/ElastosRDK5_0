@@ -1,7 +1,7 @@
-#include "systemui/statusbar/policy/DeadZone.h"
-#include "os/SystemClock.h"
-#include "systemui/SystemUIR.h"
-#include "animation/CObjectAnimator.h"
+#include "elastos/droid/systemui/statusbar/policy/DeadZone.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 using Elastos::Droid::Os::SystemClock;

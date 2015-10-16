@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__
 
-#include "app/Service.h"
-#include "content/BroadcastReceiver.h"
-#include "view/BaseSurfaceHolder.h"
-#include "view/InputEventReceiver.h"
+#include "elastos/droid/app/Service.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/view/BaseSurfaceHolder.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::BroadcastReceiver;

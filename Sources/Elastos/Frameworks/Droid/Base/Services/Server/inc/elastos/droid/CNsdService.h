@@ -2,13 +2,13 @@
 #define __ELASTOS_DROID_SERVER_CNSDSERVICE_H__
 
 #include "_Elastos_Droid_Server_CNsdService.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "util/AsyncChannel.h"
 #include "NativeDaemonConnector.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "util/StateMachine.h"
 #include "util/State.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;

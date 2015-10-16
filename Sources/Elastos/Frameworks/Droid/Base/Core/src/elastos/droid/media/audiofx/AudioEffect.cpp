@@ -1,9 +1,11 @@
+
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/droid/media/audiofx/AudioEffect.h"
+#include "elastos/droid/media/audiofx/CAudioEffectDescriptor.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
-#include "os/CLooperHelper.h"
-#include "media/audiofx/AudioEffect.h"
-#include "media/audiofx/CAudioEffectDescriptor.h"
-#include "media/AudioEffect.h"
+
+#include <media/AudioEffect.h>
 
 #include <elastos.h>
 #include <cutils/log.h>

@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaCodecInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaCodecInfo.h"
 #include <elastos/utility/logging/Logger.h>
-#include "media/CMediaCodecList.h"
+#include "elastos/droid/media/CMediaCodecList.h"
 
 using namespace Elastos::Core;
 //using namespace Elastos::Utility::Logging;

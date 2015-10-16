@@ -1,6 +1,6 @@
-#include "speech/RecognitionService.h"
+#include "elastos/droid/speech/RecognitionService.h"
 #include <elastos/utility/logging/Logger.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
 

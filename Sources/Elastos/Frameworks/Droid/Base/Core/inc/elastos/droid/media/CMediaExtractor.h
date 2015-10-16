@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAEXTRACTOR_H__
 
 #include "_Elastos_Droid_Media_CMediaExtractor.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/Map.h>
 #include "CMediaCodec.h"
 #include <media/stagefright/MediaExtractor.h>

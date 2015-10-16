@@ -1,11 +1,11 @@
 
-#include "app/CPendingIntent.h"
-#include "app/CFinishedDispatcher.h"
-#include "app/ActivityManagerNative.h"
-#include "os/UserHandle.h"
-#include "os/CUserHandle.h"
-#include "os/CUserHandleHelper.h"
-#include "content/CIntentSender.h"
+#include "elastos/droid/app/CPendingIntent.h"
+#include "elastos/droid/app/CFinishedDispatcher.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/content/CIntentSender.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

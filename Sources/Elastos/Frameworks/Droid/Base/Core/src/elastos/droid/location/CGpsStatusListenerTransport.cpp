@@ -1,6 +1,6 @@
 
-#include "location/CGpsStatusListenerTransport.h"
-#include "location/LocationManager.h"
+#include "elastos/droid/location/CGpsStatusListenerTransport.h"
+#include "elastos/droid/location/LocationManager.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CShareActionProvider.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CShareActionProvider.h"
 
 namespace Elastos{
 namespace Droid{

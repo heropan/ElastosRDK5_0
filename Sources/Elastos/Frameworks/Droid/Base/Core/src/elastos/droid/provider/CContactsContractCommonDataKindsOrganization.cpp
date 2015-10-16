@@ -1,8 +1,8 @@
 
-#include "provider/CContactsContractCommonDataKindsOrganization.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsOrganization.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/coredef.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Text::TextUtils;
 

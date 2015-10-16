@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_POWER_WIRELESSCHARGERDETECTOR_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Hardware::ISensor;

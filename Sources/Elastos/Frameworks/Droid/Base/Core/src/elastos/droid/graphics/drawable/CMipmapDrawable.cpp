@@ -1,6 +1,6 @@
 
-#include "graphics/drawable/CMipmapDrawable.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/CMipmapDrawable.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 IDRAWABLE_METHODS_IMPL(
     CMipmapDrawable, MipmapDrawable);

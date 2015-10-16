@@ -1,5 +1,5 @@
 
-#include "app/CProgressDialog.h"
+#include "elastos/droid/app/CProgressDialog.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,8 +1,8 @@
 
-#include "os/Build.h"
-#include "os/SystemProperties.h"
-#include "webkit/WebViewFactory.h"
-#include "webkit/CWebViewClassic.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/webkit/WebViewFactory.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

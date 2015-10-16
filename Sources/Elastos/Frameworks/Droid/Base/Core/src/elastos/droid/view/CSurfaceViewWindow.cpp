@@ -1,8 +1,8 @@
 
-#include "view/CSurfaceViewWindow.h"
-#include "os/Handler.h"
-#include "view/CSurfaceView.h"
-#include "view/SurfaceView.h"
+#include "elastos/droid/view/CSurfaceViewWindow.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/view/CSurfaceView.h"
+#include "elastos/droid/view/SurfaceView.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;

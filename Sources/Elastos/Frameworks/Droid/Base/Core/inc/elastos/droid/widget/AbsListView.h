@@ -2,21 +2,21 @@
 #ifndef __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
 #define __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/IntegralToString.h>
-#include "widget/AdapterView.h"
-#include "widget/EdgeEffect.h"
-#include "view/VelocityTracker.h"
-#include "view/View.h"
-#include "view/CViewConfigurationHelper.h"
-#include "content/CIntentFilterComparison.h"
-#include "view/CKeyEventHelper.h"
-#include "view/IInputConnectionWrapper.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/widget/AdapterView.h"
+#include "elastos/droid/widget/EdgeEffect.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/content/CIntentFilterComparison.h"
+#include "elastos/droid/view/CKeyEventHelper.h"
+#include "elastos/droid/view/IInputConnectionWrapper.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <Elastos.CoreLibrary.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos{
 namespace Droid{

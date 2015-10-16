@@ -5,10 +5,10 @@
 #include "_Elastos_Droid_Server_Input_CInputManagerService.h"
 #include "NativeInputManager.h"
 #include "input/PersistentDataStore.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "display/DisplayViewport.h"
-#include "database/ContentObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

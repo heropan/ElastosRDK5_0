@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_TIMEPICKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 #include <R.h>
 
 using Libcore::ICU::ILocale;

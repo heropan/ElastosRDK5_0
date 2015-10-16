@@ -1,15 +1,15 @@
 
-#include "net/Uri.h"
-#include "os/CMessageHelper.h"
-#include "webkit/CertTool.h"
-#include "webkit/CookieManager.h"
-#include "webkit/DebugFlags.h"
-#include "webkit/PluginManager.h"
-#include "webkit/CPluginManager.h"
-#include "webkit/CPluginManagerHelper.h"
-#include "webkit/WebCoreElastosBridge.h"
-#include "webkit/CWebViewClassic.h"
-#include "webkit/CPluginManagerHelper.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/webkit/CertTool.h"
+#include "elastos/droid/webkit/CookieManager.h"
+#include "elastos/droid/webkit/DebugFlags.h"
+#include "elastos/droid/webkit/PluginManager.h"
+#include "elastos/droid/webkit/CPluginManager.h"
+#include "elastos/droid/webkit/CPluginManagerHelper.h"
+#include "elastos/droid/webkit/WebCoreElastosBridge.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/CPluginManagerHelper.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>

@@ -1,6 +1,6 @@
 
-#include "os/CMessageHelper.h"
-#include "webkit/WebIconDatabaseClassic.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/webkit/WebIconDatabaseClassic.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;

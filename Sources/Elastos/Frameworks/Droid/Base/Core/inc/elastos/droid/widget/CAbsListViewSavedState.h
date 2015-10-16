@@ -8,8 +8,8 @@
 #endif
 
 #include "_Elastos_Droid_Widget_CAbsListViewSavedState.h"
-#include "widget/AbsListViewSavedState.h"
-#include "widget/AbsListView.h"
+#include "elastos/droid/widget/AbsListViewSavedState.h"
+#include "elastos/droid/widget/AbsListView.h"
 
 using Elastos::Droid::Widget::AbsListViewSavedState;
 using Elastos::Droid::Widget::AbsListView;

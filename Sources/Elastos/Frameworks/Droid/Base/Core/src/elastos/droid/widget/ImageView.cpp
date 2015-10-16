@@ -1,17 +1,17 @@
-#include "ext/frameworkext.h"
-#include "widget/ImageView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/ImageView.h"
 #include <stdio.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/Math.h>
-#include <R.h>
-#include "text/TextUtils.h"
-#include "graphics/CPaint.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CPorterDuffColorFilter.h"
-#include "graphics/drawable/CBitmapDrawable.h"
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CPorterDuffColorFilter.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Core::StringBuffer;
 using Elastos::Utility::Logging::Logger;

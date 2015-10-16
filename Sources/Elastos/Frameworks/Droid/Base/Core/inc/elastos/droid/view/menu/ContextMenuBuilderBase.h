@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDERBASE_H__
 #define __ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDERBASE_H__
 
-#include "view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
 
-#include "view/menu/MenuDialogHelper.h"
+#include "elastos/droid/view/menu/MenuDialogHelper.h"
 
 
 namespace Elastos {

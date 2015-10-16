@@ -1,8 +1,8 @@
 
-#include "internal/content/PackageMonitor.h"
+#include "elastos/droid/internal/content/PackageMonitor.h"
 #ifdef DROID_CORE
-// #include "content/CIntentFilter.h"
-#include "os/CHandler.h"
+// #include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/CHandler.h"
 #endif
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>

@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/phone/PanelBar.h"
+#include "elastos/droid/systemui/statusbar/phone/PanelBar.h"
 
 namespace Elastos {
 namespace Droid {

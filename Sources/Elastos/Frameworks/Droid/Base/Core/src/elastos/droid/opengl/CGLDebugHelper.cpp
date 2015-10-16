@@ -2,7 +2,7 @@
 #include "CGLDebugHelper.h"
 #include "GLErrorWrapper.h"
 #include "GLLogWrapper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "EGLLogWrapper.h"
 
 using Elastosx::Microedition::Khronos::Opengles::EIID_IGL;

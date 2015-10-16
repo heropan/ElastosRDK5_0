@@ -1,7 +1,7 @@
 
-#include "view/ViewGroupLayoutParams.h"
-#include "ext/frameworkdef.h"
-#include "R.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

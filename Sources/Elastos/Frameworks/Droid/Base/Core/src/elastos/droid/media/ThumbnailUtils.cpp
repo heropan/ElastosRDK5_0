@@ -1,15 +1,15 @@
 
-#include "ext/frameworkext.h"
-#include "media/ThumbnailUtils.h"
-#include "media/CMediaFile.h"
-#include "media/CMediaMetadataRetriever.h"
-#include "media/CExifInterface.h"
-#include "graphics/CBitmap.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/CMatrix.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CRect.h"
-#include "graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/ThumbnailUtils.h"
+#include "elastos/droid/media/CMediaFile.h"
+#include "elastos/droid/media/CMediaMetadataRetriever.h"
+#include "elastos/droid/media/CExifInterface.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 

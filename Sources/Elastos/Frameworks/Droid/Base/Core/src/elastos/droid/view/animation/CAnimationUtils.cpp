@@ -1,6 +1,6 @@
 
-#include "view/animation/CAnimationUtils.h"
-#include "view/animation/AnimationUtils.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
 
 namespace Elastos {
 namespace Droid {

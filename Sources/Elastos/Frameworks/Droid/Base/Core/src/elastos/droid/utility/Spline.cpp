@@ -1,6 +1,6 @@
 
-#include "utility/Spline.h"
-#include "utility/FloatMath.h"
+#include "elastos/droid/utility/Spline.h"
+#include "elastos/droid/utility/FloatMath.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 

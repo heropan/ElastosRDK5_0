@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_GRANTCREDENTIALSPERMISSIONACTIVITY_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_GRANTCREDENTIALSPERMISSIONACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;

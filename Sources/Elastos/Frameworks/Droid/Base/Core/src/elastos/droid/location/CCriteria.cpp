@@ -1,5 +1,5 @@
 
-#include "location/CCriteria.h"
+#include "elastos/droid/location/CCriteria.h"
 
 namespace Elastos {
 namespace Droid {

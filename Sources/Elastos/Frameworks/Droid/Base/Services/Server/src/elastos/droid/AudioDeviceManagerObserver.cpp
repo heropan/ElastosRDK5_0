@@ -1,5 +1,5 @@
 #include "AudioDeviceManagerObserver.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>

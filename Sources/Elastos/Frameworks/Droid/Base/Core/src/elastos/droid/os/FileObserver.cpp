@@ -1,5 +1,5 @@
 
-#include "os/FileObserver.h"
+#include "elastos/droid/os/FileObserver.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

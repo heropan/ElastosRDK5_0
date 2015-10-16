@@ -1,6 +1,6 @@
 
-#include "webkit/CWebViewCore.h"
-#include "webkit/CMockGeolocation.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/CMockGeolocation.h"
 
 #ifdef __cplusplus
 extern "C"

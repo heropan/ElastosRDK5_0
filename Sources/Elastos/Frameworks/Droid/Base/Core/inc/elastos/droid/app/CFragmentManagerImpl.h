@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_App_CFragmentManagerImpl.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;

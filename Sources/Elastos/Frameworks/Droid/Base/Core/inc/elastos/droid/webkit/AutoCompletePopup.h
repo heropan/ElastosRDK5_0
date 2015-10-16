@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 
 using Elastos::Core::ICharSequence;

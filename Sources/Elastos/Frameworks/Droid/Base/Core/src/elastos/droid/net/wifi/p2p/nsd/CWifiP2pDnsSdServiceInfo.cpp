@@ -4,7 +4,7 @@
 #include <elastos/core/StringBuilder.h>
 #include "WifiP2pServiceInfo.h"
 #include "CWifiP2pServiceInfo.h"
-#include "net/nsd/CDnsSdTxtRecord.h"
+#include "elastos/droid/net/nsd/CDnsSdTxtRecord.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;

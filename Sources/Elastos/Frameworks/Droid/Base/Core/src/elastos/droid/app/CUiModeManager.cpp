@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "app/CUiModeManager.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CUiModeManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Logger.h>
 #include <Elastos.CoreLibrary.h>
 

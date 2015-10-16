@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CVIEWGROUPLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_View_CViewGroupLayoutParams.h"
-#include "view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
 
 
 namespace Elastos {

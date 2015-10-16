@@ -2,7 +2,7 @@
 #include "HttpConnection.h"
 #include "Request.h"
 #include "HttpLog.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Net::ISocket;
 using Org::Apache::Http::Params::IBasicHttpParams;

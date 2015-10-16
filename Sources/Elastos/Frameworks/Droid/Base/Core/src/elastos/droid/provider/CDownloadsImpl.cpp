@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "net/Uri.h"
-#include "provider/CDownloadsImpl.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CDownloadsImpl.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

@@ -1,10 +1,10 @@
 #include "CNotificationBuilder.h"
-#include "R.h"
-#include "os/CBundle.h"
-#include "os/SystemClock.h"
-#include "app/CNotificationAction.h"
-#include "app/CNotification.h"
-#include "widget/CRemoteViews.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/app/CNotificationAction.h"
+#include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/widget/CRemoteViews.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -691,15 +691,15 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
         showLine3 = TRUE;
     }
     else if (mNumber > 0) {
-    	AutoPtr<IResources> res;
+        AutoPtr<IResources> res;
         mContext->GetResources((IResources**)&res);
         Int32 tooBig;
         res->GetInteger(R::integer::status_bar_notification_info_maxnum, &tooBig);
 
         if (mNumber > tooBig) {
-        	AutoPtr<ICharSequence> cs;
+            AutoPtr<ICharSequence> cs;
             String str;
-        	res->GetString(R::string::status_bar_notification_info_overflow, &str);
+            res->GetString(R::string::status_bar_notification_info_overflow, &str);
             CString::New(str, (ICharSequence**)&cs);
             contentView->SetTextViewText(R::id::info, cs);
         }
@@ -709,7 +709,7 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
             AutoPtr<INumberFormat> f;
             helper->GetIntegerInstance((INumberFormat**)&f);
 
-			AutoPtr<ICharSequence> cs;
+            AutoPtr<ICharSequence> cs;
             String str;
             f->FormatInt64(mNumber, &str);
             CString::New(str, (ICharSequence**)&cs);

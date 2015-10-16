@@ -1,4 +1,4 @@
-#include "media/CFace.h"
+#include "elastos/droid/media/CFace.h"
 
 namespace Elastos {
 namespace Droid {

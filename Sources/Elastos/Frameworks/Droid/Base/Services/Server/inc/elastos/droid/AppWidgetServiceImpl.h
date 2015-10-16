@@ -2,13 +2,13 @@
 #ifndef __ELASTOS_DROID_SERVER_APPWIDGETSERVICEIMPL_H__
 #define __ELASTOS_DROID_SERVER_APPWIDGETSERVICEIMPL_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/Pair.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocale;

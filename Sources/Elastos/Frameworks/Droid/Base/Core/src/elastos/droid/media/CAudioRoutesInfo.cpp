@@ -1,6 +1,6 @@
 
-#include "media/CAudioRoutesInfo.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/media/CAudioRoutesInfo.h"
+#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Droid::Text::TextUtils;
 

@@ -1,14 +1,14 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CWifiConfigurationKeyMgmt.h"
-#include "net/wifi/CWifiConfigurationProtocol.h"
-#include "net/wifi/CWifiConfigurationPairwiseCipher.h"
-#include "net/wifi/CWifiConfigurationAuthAlgorithm.h"
-#include "net/wifi/CWifiConfigurationGroupCipher.h"
-#include "net/wifi/CWifiConfiguration.h"
-#include "net/wifi/CEnterpriseField.h"
-#include "net/wifi/CWifiSsid.h"
-#include "net/CLinkProperties.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationKeyMgmt.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationProtocol.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationPairwiseCipher.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationAuthAlgorithm.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationGroupCipher.h"
+#include "elastos/droid/net/wifi/CWifiConfiguration.h"
+#include "elastos/droid/net/wifi/CEnterpriseField.h"
+#include "elastos/droid/net/wifi/CWifiSsid.h"
+#include "elastos/droid/net/CLinkProperties.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

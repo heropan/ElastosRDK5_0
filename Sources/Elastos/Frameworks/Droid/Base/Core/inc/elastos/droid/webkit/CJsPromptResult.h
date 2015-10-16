@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CJSPROMPTRESULT_H__
 
 #include "_Elastos_Droid_Webkit_CJsPromptResult.h"
-#include "webkit/JsPromptResult.h"
+#include "elastos/droid/webkit/JsPromptResult.h"
 
 namespace Elastos {
 namespace Droid {

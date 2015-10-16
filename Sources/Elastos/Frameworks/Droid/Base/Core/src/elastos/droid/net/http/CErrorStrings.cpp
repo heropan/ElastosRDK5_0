@@ -1,7 +1,7 @@
 
 #include "CErrorStrings.h"
-#include "ext/frameworkext.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {

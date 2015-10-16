@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATEDROTATEDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CAnimatedRotateDrawable.h"
-#include "graphics/drawable/AnimatedRotateDrawable.h"
+#include "elastos/droid/graphics/drawable/AnimatedRotateDrawable.h"
 
 namespace Elastos {
 namespace Droid {

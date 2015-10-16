@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_JSPROMPTRESULT_H__
 #define __ELASTOS_DROID_WEBKIT_JSPROMPTRESULT_H__
 
-#include "webkit/JsResult.h"
+#include "elastos/droid/webkit/JsResult.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 #define __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 
-#include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "database/ContentObserver.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Utility::ITrustedTime;
 using Elastos::Droid::Os::HandlerBase;

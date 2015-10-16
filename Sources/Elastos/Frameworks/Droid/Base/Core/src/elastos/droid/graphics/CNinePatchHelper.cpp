@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CNinePatchHelper.h"
-#include "graphics/NinePatch.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CNinePatchHelper.h"
+#include "elastos/droid/graphics/NinePatch.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/menu/CSubMenuBuilder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/menu/CSubMenuBuilder.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

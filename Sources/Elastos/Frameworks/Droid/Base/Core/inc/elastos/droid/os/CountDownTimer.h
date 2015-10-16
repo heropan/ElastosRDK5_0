@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_COUNT_DOWN_TIMER_H__
 
 #include <elastos/core/Object.h>
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
 namespace Elastos {
 namespace Droid {

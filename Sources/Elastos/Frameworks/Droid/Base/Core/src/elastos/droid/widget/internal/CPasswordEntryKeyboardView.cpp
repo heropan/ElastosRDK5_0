@@ -1,4 +1,4 @@
-#include "widget/internal/CPasswordEntryKeyboardView.h"
+#include "elastos/droid/widget/internal/CPasswordEntryKeyboardView.h"
 
 using Elastos::Droid::View::EIID_View;
 

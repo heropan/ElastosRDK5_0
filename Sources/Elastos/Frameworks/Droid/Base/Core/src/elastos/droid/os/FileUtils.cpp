@@ -1,8 +1,8 @@
-#include "os/FileUtils.h"
+#include "elastos/droid/os/FileUtils.h"
 #include <elastos/droid/system/Os.h>
 #include <elastos/droid/system/OsConstants.h>
 #include <elastos/utility/Arrays.h>
-//#include "text/TextUtils.h"
+//#include "elastos/droid/text/TextUtils.h"
 
 // #include <sys/errno.h>
 // #include <sys/stat.h>

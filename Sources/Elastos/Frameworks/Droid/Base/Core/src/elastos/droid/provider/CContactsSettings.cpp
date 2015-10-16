@@ -1,7 +1,7 @@
 
-#include "provider/CContactsSettings.h"
-#include "net/Uri.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/provider/CContactsSettings.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentValues.h"
 #include <elastos/coredef.h>
 
 using Elastos::Core::CString;

@@ -1,7 +1,7 @@
 
-#include "app/CDisableCarModeActivity.h"
+#include "elastos/droid/app/CDisableCarModeActivity.h"
 
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::App::IUiModeManager;

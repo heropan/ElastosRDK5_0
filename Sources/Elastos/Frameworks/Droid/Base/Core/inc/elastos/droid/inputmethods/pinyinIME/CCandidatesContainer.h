@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CCANDIDATESCONTAINER_H__
 
 #include "_Elastos_Droid_Inputmethods_PinyinIME_CCandidatesContainer.h"
-#include "widget/RelativeLayout.h"
+#include "elastos/droid/widget/RelativeLayout.h"
 
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::Widget::IImageButton;

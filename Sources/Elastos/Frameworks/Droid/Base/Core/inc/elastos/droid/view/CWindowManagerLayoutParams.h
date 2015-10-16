@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_View_CWindowManagerLayoutParams.h"
-#include "view/ViewGroupLayoutParams.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
 
 
 using Elastos::Core::ICharSequence;

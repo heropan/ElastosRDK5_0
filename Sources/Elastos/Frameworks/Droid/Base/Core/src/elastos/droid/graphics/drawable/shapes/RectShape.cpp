@@ -1,6 +1,6 @@
 
-#include "graphics/drawable/shapes/RectShape.h"
-#include "graphics/CRectF.h"
+#include "elastos/droid/graphics/drawable/shapes/RectShape.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

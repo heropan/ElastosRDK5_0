@@ -1,12 +1,12 @@
 
-#include "media/CMediaRecorder.h"
-#include "media/CCamcorderProfile.h"
-#include "os/Looper.h"
-#include "os/Process.h"
-#include "os/Environment.h"
-#include "os/ServiceManager.h"
-#include "hardware/CHardwareCamera.h"
-#include "privacy/CPrivacySettingsManager.h"
+#include "elastos/droid/media/CMediaRecorder.h"
+#include "elastos/droid/media/CCamcorderProfile.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Environment.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/hardware/CHardwareCamera.h"
+#include "elastos/droid/privacy/CPrivacySettingsManager.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <gui/Surface.h>

@@ -1,5 +1,5 @@
-#include "systemui/statusbar/DoNotDisturb.h"
-#include "systemui/statusbar/policy/Prefs.h"
+#include "elastos/droid/systemui/statusbar/DoNotDisturb.h"
+#include "elastos/droid/systemui/statusbar/policy/Prefs.h"
 
 using Elastos::Droid::SystemUI::StatusBar::Policy::Prefs;
 using Elastos::Droid::Content::EIID_ISharedPreferencesOnSharedPreferenceChangeListener;

@@ -1,17 +1,17 @@
 
 #include <string>
-#include "app/CActivityManagerMemoryInfo.h"
-#include "provider/Settings.h"
-#include "provider/CSettingsGlobal.h"
-#include "net/Uri.h"
-#include "net/CUriHelper.h"
-#include "webkit/NativeUtil.h"
-#include "webkit/MimeTypeMap.h"
+#include "elastos/droid/app/CActivityManagerMemoryInfo.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/CSettingsGlobal.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/webkit/NativeUtil.h"
+#include "elastos/droid/webkit/MimeTypeMap.h"
 #include <elastos/utility/logging/Logger.h>
-#include "webkit/DebugFlags.h"
-#include "webkit/L10nUtils.h"
-#include "webkit/HTML5Audio.h"
-#include "webkit/HTML5VideoViewProxy.h"
+#include "elastos/droid/webkit/DebugFlags.h"
+#include "elastos/droid/webkit/L10nUtils.h"
+#include "elastos/droid/webkit/HTML5Audio.h"
+#include "elastos/droid/webkit/HTML5VideoViewProxy.h"
 
 using Elastos::IO::IFile;
 using Elastos::Droid::App::IActivityManager;

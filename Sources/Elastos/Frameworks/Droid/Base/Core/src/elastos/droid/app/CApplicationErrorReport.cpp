@@ -1,13 +1,13 @@
 
 #include <ext/frameworkdef.h>
-#include "app/CApplicationErrorReport.h"
-#include "app/CApplicationErrorReportCrashInfo.h"
-#include "app/CApplicationErrorReportAnrInfo.h"
-#include "app/CApplicationErrorReportBatteryInfo.h"
-#include "app/CApplicationErrorReportRunningServiceInfo.h"
+#include "elastos/droid/app/CApplicationErrorReport.h"
+#include "elastos/droid/app/CApplicationErrorReportCrashInfo.h"
+#include "elastos/droid/app/CApplicationErrorReportAnrInfo.h"
+#include "elastos/droid/app/CApplicationErrorReportBatteryInfo.h"
+#include "elastos/droid/app/CApplicationErrorReportRunningServiceInfo.h"
 #include <elastos/utility/logging/Logger.h>
-#include "content/CIntent.h"
-#include "content/CComponentName.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

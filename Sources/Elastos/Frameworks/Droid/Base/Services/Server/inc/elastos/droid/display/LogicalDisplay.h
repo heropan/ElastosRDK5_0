@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_LOGICALDISPLAY_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_LOGICALDISPLAY_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "display/DisplayDevice.h"
 #include "display/DisplayDeviceInfo.h"
 #include <elastos/utility/etl/List.h>

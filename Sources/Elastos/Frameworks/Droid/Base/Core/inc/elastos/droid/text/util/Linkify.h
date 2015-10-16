@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_Linkify_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_Linkify_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
@@ -19,7 +19,7 @@ namespace Text {
 namespace Utility {
 
 class LinkSpec
-    : public ElRefBase
+    : public Object
 {
 public:
     String url;
@@ -43,10 +43,12 @@ public:
  *  created.
  */
 class Linkify
+    : public Object
+    , public ILinkify
 {
 private:
     class MatchFilterUrl
-        : public ElRefBase
+        : public Object
         , public ILinkifyMatchFilter
     {
     public:
@@ -60,7 +62,7 @@ private:
     };
 
     class MatchFilterPhoneNumber
-        : public ElRefBase
+        : public Object
         , public ILinkifyMatchFilter
     {
     public:
@@ -74,7 +76,7 @@ private:
     };
 
     class TransformFilterPhoneNumber
-        : public ElRefBase
+        : public Object
         , public ILinkifyTransformFilter
     {
     public:
@@ -95,6 +97,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      *  Scans the text of the provided Spannable and turns all occurrences
      *  of the link types indicated in the mask into clickable links.
@@ -221,6 +225,10 @@ private:
         /* [in] */ ArrayOf<String>* schemes,
         /* [in] */ ILinkifyMatchFilter* matchFilter,
         /* [in] */ ILinkifyTransformFilter* transformFilter);
+
+    static CARAPI_(void) GatherTelLinks(
+        /* [in] */ List< AutoPtr<LinkSpec> >* links,
+        /* [in] */ ISpannable* s);
 
     static CARAPI_(void) GatherMapLinks(
         /* [in] */ List< AutoPtr<LinkSpec> >* links,

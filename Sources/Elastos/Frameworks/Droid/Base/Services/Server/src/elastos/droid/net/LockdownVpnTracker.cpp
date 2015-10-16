@@ -1,8 +1,8 @@
 
-#include "net/LockdownVpnTracker.h"
+#include "elastos/droid/net/LockdownVpnTracker.h"
 #include "connectivity/Vpn.h"
 #include "CConnectivityService.h"
-#include "app/NotificationManager.h"
+#include "elastos/droid/app/NotificationManager.h"
 #include "R.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>

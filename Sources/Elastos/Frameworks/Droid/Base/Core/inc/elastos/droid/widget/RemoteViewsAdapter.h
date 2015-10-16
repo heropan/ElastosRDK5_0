@@ -2,10 +2,10 @@
 #define __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/BaseAdapter.h"
-#include "widget/FrameLayout.h"
-#include "os/CHandlerThread.h"
-#include "os/Runnable.h"
+#include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/os/CHandlerThread.h"
+#include "elastos/droid/os/Runnable.h"
 
 
 #include <elastos/utility/etl/List.h>

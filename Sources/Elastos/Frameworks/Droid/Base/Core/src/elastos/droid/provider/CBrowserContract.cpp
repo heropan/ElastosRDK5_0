@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContract.h"
+#include "elastos/droid/provider/CBrowserContract.h"
 
 
 ECode CBrowserContract::GetAUTHORITY_URI(

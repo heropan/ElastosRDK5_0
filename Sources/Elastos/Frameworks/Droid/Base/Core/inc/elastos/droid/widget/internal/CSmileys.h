@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_SMILEYS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 #include "_Elastos_Droid_Widget_Internal_CSmileys.h"
 
 using Elastos::Droid::R;

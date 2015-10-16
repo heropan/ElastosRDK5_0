@@ -1,5 +1,5 @@
 
-#include "utility/CSize.h"
+#include "elastos/droid/utility/CSize.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

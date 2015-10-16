@@ -2,7 +2,7 @@
 #ifndef __CRESTOREOBSERVER_H__
 #define __CRESTOREOBSERVER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_CRestoreObserver.h"
 #include <elastos.h>
 #include <elastos/Core/Object.h>

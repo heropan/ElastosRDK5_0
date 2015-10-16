@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_Internal_CActionBarView.h"
 
 
-#include "widget/internal/ActionBarView.h"
+#include "elastos/droid/widget/internal/ActionBarView.h"
 
 namespace Elastos {
 namespace Droid {

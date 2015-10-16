@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYADAPTER_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYADAPTER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
-#include "os/Runnable.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/Core/Object.h>
 

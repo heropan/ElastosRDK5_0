@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_GRIDVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/AbsListView.h"
+#include "elastos/droid/widget/AbsListView.h"
 
 namespace Elastos {
 namespace Droid {

@@ -7,7 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_NAVIGATIONHISTORY_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/NavigationEntry.h"
+#include "elastos/droid/webkit/native/content/browser/NavigationEntry.h"
 
 using Elastos::Utility::IArrayList;
 

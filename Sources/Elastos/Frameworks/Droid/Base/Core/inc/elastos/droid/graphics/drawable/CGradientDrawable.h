@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CGRADIENTDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CGradientDrawable.h"
-#include "graphics/drawable/GradientDrawable.h"
+#include "elastos/droid/graphics/drawable/GradientDrawable.h"
 
 namespace Elastos {
 namespace Droid {

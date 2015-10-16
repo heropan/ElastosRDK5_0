@@ -5,21 +5,21 @@
 #include "elastos/droid/content/CContentProviderClient.h"
 #include "elastos/droid/content/ContentProvider.h"
 //#include "elastos/droid/content/res/CAssetFileDescriptor.h"
-//#include "accounts/CAccount.h"
-//#include "app/ActivityManagerNative.h"
-//#include "app/AppGlobals.h"
-#include "os/UserHandle.h"
-#include "os/ServiceManager.h"
-#include "os/SystemClock.h"
-//#include "privacy/surrogate/PrivacyContentResolver.h"
-//#include "text/TextUtils.h"
+//#include "elastos/droid/accounts/CAccount.h"
+//#include "elastos/droid/app/ActivityManagerNative.h"
+//#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
+//#include "elastos/droid/privacy/surrogate/PrivacyContentResolver.h"
+//#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
 
 // BEGIN privacy-added
-//#include "privacy/surrogate/PrivacyContentResolver.h"
+//#include "elastos/droid/privacy/surrogate/PrivacyContentResolver.h"
 // END privacy-added
 
 //using Elastos::Droid::Accounts::CAccount;

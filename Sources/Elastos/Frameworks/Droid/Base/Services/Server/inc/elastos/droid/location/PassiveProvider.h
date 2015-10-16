@@ -7,7 +7,7 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "location/LocationProviderInterface.h"
 
 using Elastos::IO::IPrintWriter;

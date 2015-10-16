@@ -1,4 +1,4 @@
-#include "view/SoundEffectConstants.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
 
 namespace Elastos {
 namespace Droid {

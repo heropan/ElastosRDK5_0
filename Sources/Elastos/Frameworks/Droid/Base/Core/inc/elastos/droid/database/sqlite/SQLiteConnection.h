@@ -4,10 +4,10 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
-#include "utility/LruCache.h"
-#include "database/sqlite/SQLiteDebug.h"
-#include "database/sqlite/SQLiteStatementInfo.h"
-#include "database/sqlite/SQLiteDatabaseConfiguration.h"
+#include "elastos/droid/utility/LruCache.h"
+#include "elastos/droid/database/sqlite/SQLiteDebug.h"
+#include "elastos/droid/database/sqlite/SQLiteStatementInfo.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabaseConfiguration.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 

@@ -6,7 +6,7 @@
 
 
 
-#include "systemui/recent/StatusBarTouchProxy.h"
+#include "elastos/droid/systemui/recent/StatusBarTouchProxy.h"
 
 namespace Elastos {
 namespace Droid {

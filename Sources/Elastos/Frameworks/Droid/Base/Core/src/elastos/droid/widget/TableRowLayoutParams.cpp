@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "widget/TableRowLayoutParams.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/TableRowLayoutParams.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 

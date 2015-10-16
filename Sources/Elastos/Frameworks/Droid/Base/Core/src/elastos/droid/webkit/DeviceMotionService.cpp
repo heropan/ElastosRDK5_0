@@ -1,7 +1,7 @@
 
-#include "os/CHandler.h"
-#include "webkit/DeviceMotionService.h"
-#include "webkit/DeviceMotionAndOrientationManager.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/webkit/DeviceMotionService.h"
+#include "elastos/droid/webkit/DeviceMotionAndOrientationManager.h"
 
 #include <elastos/core/Thread.h>
 

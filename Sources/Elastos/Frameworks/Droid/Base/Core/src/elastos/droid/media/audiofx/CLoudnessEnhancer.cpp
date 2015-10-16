@@ -1,5 +1,5 @@
-#include "media/audiofx/CLoudnessEnhancer.h"
-#include "media/audiofx/CLoudnessEnhancerSettings.h"
+#include "elastos/droid/media/audiofx/CLoudnessEnhancer.h"
+#include "elastos/droid/media/audiofx/CLoudnessEnhancerSettings.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

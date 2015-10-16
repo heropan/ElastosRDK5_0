@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__
 
 #include "_Elastos_Droid_App_CNativeContentView.h"
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 
 using Elastos::Droid::View::View;

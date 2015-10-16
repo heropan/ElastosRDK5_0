@@ -2,7 +2,7 @@
 #include "elastos/droid/content/CSyncRequestBuilder.h"
 #include "elastos/droid/content/ContentResolver.h"
 #include "elastos/droid/content/CSyncRequest.h"
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundle.h"
 
 using Elastos::Droid::Os::CBundle;
 

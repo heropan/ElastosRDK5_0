@@ -1,8 +1,8 @@
 
-#include "provider/CMediaStoreVideoThumbnails.h"
-#include "ext/frameworkext.h"
-#include "net/CUriHelper.h"
-#include "provider/CMediaStoreInternalThumbnails.h"
+#include "elastos/droid/provider/CMediaStoreVideoThumbnails.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStoreInternalThumbnails.h"
 
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;

@@ -1,5 +1,5 @@
 
-#include "graphics/drawable/CRotateDrawable.h"
+#include "elastos/droid/graphics/drawable/CRotateDrawable.h"
 
 namespace Elastos {
 namespace Droid {

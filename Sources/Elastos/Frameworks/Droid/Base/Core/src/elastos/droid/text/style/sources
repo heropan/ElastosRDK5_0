@@ -5,8 +5,7 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../../sources.inc
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/text
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 

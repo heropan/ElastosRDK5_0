@@ -1,5 +1,5 @@
 
-#include "view/inputmethod/CInputMethodSubtypeHelper.h"
+#include "elastos/droid/view/inputmethod/CInputMethodSubtypeHelper.h"
 #include <elastos/utility/etl/List.h>
 
 

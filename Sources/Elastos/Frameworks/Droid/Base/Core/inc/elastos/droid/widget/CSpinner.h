@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CSPINNER_H__
 
 #include "_Elastos_Droid_Widget_CSpinner.h"
-#include "widget/Spinner.h"
+#include "elastos/droid/widget/Spinner.h"
 
 
 namespace Elastos {

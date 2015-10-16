@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CADAPTERVIEWANIMATOR_H__
 
 #include "_Elastos_Droid_Widget_CAdapterViewAnimator.h"
-#include "widget/AdapterViewAnimator.h"
+#include "elastos/droid/widget/AdapterViewAnimator.h"
 
 
 

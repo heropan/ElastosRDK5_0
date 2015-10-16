@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaSyncEvent.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaSyncEvent.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using namespace Elastos::Core;

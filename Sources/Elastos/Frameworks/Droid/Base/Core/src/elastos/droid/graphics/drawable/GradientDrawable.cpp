@@ -1,15 +1,15 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/GradientDrawable.h"
-#include "graphics/drawable/CGradientDrawable.h"
-// #include "graphics/CPaint.h"
-// #include "graphics/CPath.h"
-#include "graphics/CRectF.h"
-// #include "graphics/CDashPathEffect.h"
-// #include "graphics/CLinearGradient.h"
-// #include "graphics/CRadialGradient.h"
-// #include "graphics/CSweepGradient.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/GradientDrawable.h"
+#include "elastos/droid/graphics/drawable/CGradientDrawable.h"
+// #include "elastos/droid/graphics/CPaint.h"
+// #include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CRectF.h"
+// #include "elastos/droid/graphics/CDashPathEffect.h"
+// #include "elastos/droid/graphics/CLinearGradient.h"
+// #include "elastos/droid/graphics/CRadialGradient.h"
+// #include "elastos/droid/graphics/CSweepGradient.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

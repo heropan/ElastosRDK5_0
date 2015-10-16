@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "systemui/statusbar/phone/CNavigationBarView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/systemui/statusbar/phone/CNavigationBarView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

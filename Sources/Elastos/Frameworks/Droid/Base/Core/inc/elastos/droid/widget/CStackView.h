@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CSTACKVIEW_H__
 
 #include "_Elastos_Droid_Widget_CStackView.h"
-#include "widget/StackView.h"
+#include "elastos/droid/widget/StackView.h"
 
 
 

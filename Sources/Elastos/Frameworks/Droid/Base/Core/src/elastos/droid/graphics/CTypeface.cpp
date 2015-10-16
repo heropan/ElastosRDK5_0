@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CTypeface.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CTypeface.h"
 
 namespace Elastos {
 namespace Droid {

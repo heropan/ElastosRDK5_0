@@ -1,8 +1,8 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/AbstractAccountAuthenticator.h"
-#include "os/Binder.h"
-#include "Manifest.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/AbstractAccountAuthenticator.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

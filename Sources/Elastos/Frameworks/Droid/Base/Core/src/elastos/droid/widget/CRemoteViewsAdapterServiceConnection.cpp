@@ -1,8 +1,8 @@
-#include "widget/CRemoteViewsAdapterServiceConnection.h"
-#include "widget/RemoteViewsAdapter.h"
-#include "appwidget/CAppWidgetManager.h"
-#include "os/CUserHandle.h"
-#include "os/Process.h"
+#include "elastos/droid/widget/CRemoteViewsAdapterServiceConnection.h"
+#include "elastos/droid/widget/RemoteViewsAdapter.h"
+#include "elastos/droid/appwidget/CAppWidgetManager.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::CUserHandle;

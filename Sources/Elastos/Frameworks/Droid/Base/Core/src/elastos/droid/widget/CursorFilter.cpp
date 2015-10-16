@@ -1,5 +1,5 @@
 
-#include "widget/CursorFilter.h"
+#include "elastos/droid/widget/CursorFilter.h"
 
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::EIID_ICursor;

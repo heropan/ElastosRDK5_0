@@ -1,5 +1,5 @@
 #include "CRatingBar.h"
-#include "view/ViewGroup.h"
+#include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

@@ -3,7 +3,7 @@
 #define __CSYSTEMUISERVICE_H__
 
 #include "_CSystemUIService.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::SystemUI::ISystemUI;
 

@@ -1,5 +1,5 @@
 
-#include "location/CGeofence.h"
+#include "elastos/droid/location/CGeofence.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 

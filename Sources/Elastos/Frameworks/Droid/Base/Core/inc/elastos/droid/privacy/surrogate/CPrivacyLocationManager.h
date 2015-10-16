@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PRIVACY_SURROGATE_CPRIVACYLOCATIONMANAGER_H__
 
 #include "_Elastos_Droid_Privacy_Surrogate_CPrivacyLocationManager.h"
-#include "location/LocationManager.h"
+#include "elastos/droid/location/LocationManager.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;

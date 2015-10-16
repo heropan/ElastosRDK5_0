@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "utility/CTypedValue.h"
-#include "utility/CDisplayMetrics.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

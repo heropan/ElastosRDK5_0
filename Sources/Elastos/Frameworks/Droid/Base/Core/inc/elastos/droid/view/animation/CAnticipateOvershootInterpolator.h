@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEOVERSHOOTINTERPOLATOR_H__
 
 #include "_Elastos_Droid_View_Animation_CAnticipateOvershootInterpolator.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;

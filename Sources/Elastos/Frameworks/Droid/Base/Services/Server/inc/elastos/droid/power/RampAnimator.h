@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_POWER_RAMPANIMATOR_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "R.h"
 #include <elastos/core/Math.h>
 

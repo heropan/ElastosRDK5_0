@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_ACCOUNTS_IACCOUNTAUTHENTICATORCACHE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/pm/RegisteredServicesCache.h"
+#include "elastos/droid/content/pm/RegisteredServicesCache.h"
 
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::Res::IResources;

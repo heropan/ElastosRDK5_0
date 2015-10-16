@@ -1,4 +1,4 @@
-#include "systemui/statusbar/RotationToggle.h"
+#include "elastos/droid/systemui/statusbar/RotationToggle.h"
 
 using Elastos::Droid::Widget::EIID_ICompoundButton;
 using Elastos::Droid::SystemUI::StatusBar::Policy::EIID_IRotationLockCallbacks;

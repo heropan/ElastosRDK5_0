@@ -1,6 +1,6 @@
 
-#include "hardware/usb/UsbRequest.h"
-#include "hardware/usb/CUsbDeviceConnection.h"
+#include "elastos/droid/hardware/usb/UsbRequest.h"
+#include "elastos/droid/hardware/usb/CUsbDeviceConnection.h"
 #include <elastos/core/Math.h>
 #include <usbhost/usbhost.h>
 

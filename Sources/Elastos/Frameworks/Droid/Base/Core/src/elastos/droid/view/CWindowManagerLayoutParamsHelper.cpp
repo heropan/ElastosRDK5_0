@@ -1,7 +1,7 @@
 
-#include "view/CWindowManagerLayoutParamsHelper.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/view/CWindowManagerLayoutParamsHelper.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

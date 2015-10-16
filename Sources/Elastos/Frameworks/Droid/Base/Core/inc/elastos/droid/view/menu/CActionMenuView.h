@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_MENU_CACTIONMENUVIEW_H__
 
 #include "_Elastos_Droid_View_Menu_CActionMenuView.h"
-#include "view/menu/ActionMenuView.h"
+#include "elastos/droid/view/menu/ActionMenuView.h"
 
 namespace Elastos {
 namespace Droid {

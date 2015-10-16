@@ -1,6 +1,6 @@
 
-#include "hardware/input/CInputManagerInputDevicesChangedListener.h"
-#include "hardware/input/CInputManager.h"
+#include "elastos/droid/hardware/input/CInputManagerInputDevicesChangedListener.h"
+#include "elastos/droid/hardware/input/CInputManager.h"
 
 namespace Elastos {
 namespace Droid {

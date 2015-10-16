@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_DROID_SERVER_CVIBRATORSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CVIBRATORSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_CVibratorService.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
-#include "os/Runnable.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
 

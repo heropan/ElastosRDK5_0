@@ -1,12 +1,12 @@
-#include "widget/CToastTransientNotification.h"
-#include "R.h"
-#include "os/CHandler.h"
-#include "view/CGravity.h"
-#include "view/Gravity.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/accessibility/CAccessibilityManager.h"
-#include "view/accessibility/CAccessibilityEvent.h"
-#include "widget/Toast.h"
+#include "elastos/droid/widget/CToastTransientNotification.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/widget/Toast.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

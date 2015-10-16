@@ -3,11 +3,11 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "view/GestureDetector.h"
-// #include "view/View.h"
-#include "os/Handler.h"
-#include "inputmethodservice/Keyboard.h"
-#include "R.h"
+//#include "elastos/droid/view/GestureDetector.h"
+// #include "elastos/droid/view/View.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/inputmethodservice/Keyboard.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>

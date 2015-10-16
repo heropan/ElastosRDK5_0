@@ -1,7 +1,7 @@
-#include "systemui/statusbar/DelegateViewHelper.h"
-#include "R.h"
-#include "graphics/CRectF.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/DelegateViewHelper.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::IContext;

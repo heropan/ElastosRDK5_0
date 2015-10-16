@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/AccountManagerResponse.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/AccountManagerResponse.h"
 
 namespace Elastos {
 namespace Droid {

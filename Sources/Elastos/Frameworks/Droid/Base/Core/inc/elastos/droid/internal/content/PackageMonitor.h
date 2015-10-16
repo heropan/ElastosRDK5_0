@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

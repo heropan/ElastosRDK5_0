@@ -1,5 +1,5 @@
 
-#include "widget/CSearchViewSearchAutoComplete.h"
+#include "elastos/droid/widget/CSearchViewSearchAutoComplete.h"
 
 
 using Elastos::Droid::View::EIID_View;

@@ -2,7 +2,7 @@
 #ifndef __PATHMATCHER_H__
 #define __PATHMATCHER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include "Path.h"

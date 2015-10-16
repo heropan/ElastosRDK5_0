@@ -1,6 +1,6 @@
 
 #include "CPhoneNumberUtilsHelper.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;

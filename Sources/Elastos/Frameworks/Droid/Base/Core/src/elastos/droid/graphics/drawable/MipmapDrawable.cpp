@@ -1,6 +1,6 @@
 
-#include "graphics/drawable/MipmapDrawable.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/drawable/MipmapDrawable.h"
+#include "elastos/droid/graphics/CRect.h"
 
 MipmapDrawable::MipmapDrawable()
     : mMutated(FALSE)

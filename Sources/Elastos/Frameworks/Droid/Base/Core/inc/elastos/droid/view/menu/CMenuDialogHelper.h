@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_CMENUDIALOGHELPER_H__
 
 #include "_Elastos_Droid_View_Menu_CMenuDialogHelper.h"
-#include "view/menu/MenuDialogHelper.h"
+#include "elastos/droid/view/menu/MenuDialogHelper.h"
 
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Os::IBinder;

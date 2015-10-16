@@ -1,9 +1,9 @@
 
-#include "provider/CContactsContractCommonDataKindsPhone.h"
-#include "provider/ContactsContractData.h"
-#include "net/Uri.h"
-#include "text/TextUtils.h"
-#include "R.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsPhone.h"
+#include "elastos/droid/provider/ContactsContractData.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::TextUtils;

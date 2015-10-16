@@ -2,14 +2,14 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_CACCESSIBILITYMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CACCESSIBILITYMANAGERSERVICE_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_Accessibility_CAccessibilityManagerService.h"
 #include "accessibility/CAccessibilityInputFilter.h"
-#include "text/TextUtils.h"
-#include "content/BroadcastReceiver.h"
-#include "content/PackageMonitor.h"
-#include "database/ContentObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/content/PackageMonitor.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>

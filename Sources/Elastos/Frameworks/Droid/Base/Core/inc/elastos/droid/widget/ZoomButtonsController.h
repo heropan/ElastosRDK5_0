@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_WIDGET_ZOOMBUTTONSCONTROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 
-#include "content/BroadcastReceiver.h"
-#include "os/Runnable.h"
-#include "os/HandlerBase.h"
-#include "R.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Runnable;

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CREMOTEVIEWS_H__
 
 #include "_Elastos_Droid_Widget_CRemoteViews.h"
-#include "widget/RemoteViews.h"
+#include "elastos/droid/widget/RemoteViews.h"
 
 namespace Elastos{
 namespace Droid{

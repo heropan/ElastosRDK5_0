@@ -1,7 +1,7 @@
 
-#include "net/CHierarchicalUri.h"
-#include "net/COpaqueUri.h"
-#include "net/CUriBuilder.h"
+#include "elastos/droid/net/CHierarchicalUri.h"
+#include "elastos/droid/net/COpaqueUri.h"
+#include "elastos/droid/net/CUriBuilder.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
-#include "media/audiopolicy/CAudioPolicyBuilder.h"
-#include "media/audiopolicy/CAudioPolicy.h"
-#include "media/audiopolicy/CAudioPolicyConfig.h"
+#include "elastos/droid/media/audiopolicy/CAudioPolicyBuilder.h"
+#include "elastos/droid/media/audiopolicy/CAudioPolicy.h"
+#include "elastos/droid/media/audiopolicy/CAudioPolicyConfig.h"
 
 using Elastos::Utility::CArrayList;
 using Elastos::Droid::Media::AudioPolicy::CAudioPolicy;

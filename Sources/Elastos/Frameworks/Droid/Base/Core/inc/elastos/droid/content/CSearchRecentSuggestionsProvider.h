@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Content_CSearchRecentSuggestionsProvider.h"
 #include "elastos/droid/content/ContentProvider.h"
-#include "database/sqlite/SQLiteOpenHelper.h"
+#include "elastos/droid/database/sqlite/SQLiteOpenHelper.h"
 
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::Sqlite::SQLiteOpenHelper;

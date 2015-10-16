@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     }
 
 #if 0
-	printf("####hello world!####\n");
+    printf("####hello world!####\n");
     AutoPtr<IMemoryDumper> dumper;
     CMemoryDumper::AcquireSingleton((IMemoryDumper**)&dumper);
     Slogger::V("fuck11", "begin to dump previous");

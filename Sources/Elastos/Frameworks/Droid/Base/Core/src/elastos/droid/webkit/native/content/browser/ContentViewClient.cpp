@@ -1,7 +1,7 @@
 
-#include "webkit/native/content/browser/ContentViewClient.h"
-#include "webkit/native/content/browser/SelectActionModeCallback.h"
-//#include "content/CIntentHelper.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
+#include "elastos/droid/webkit/native/content/browser/SelectActionModeCallback.h"
+//#include "elastos/droid/content/CIntentHelper.h"
 
 //using Elastos::Droid::Content::CIntentHelper;
 

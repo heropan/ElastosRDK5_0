@@ -1,9 +1,9 @@
 #ifndef __CACTIVITYONE_H__
 #define __CACTIVITYONE_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CActivityOne.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::App::IDownloadManager;
@@ -52,17 +52,17 @@ public:
         : public BroadcastReceiver
     {
     public:
-    	MyReceiver(
-    		/* [in] */ CActivityOne* host)
-    		: mHost(host)
-    	{}
+        MyReceiver(
+            /* [in] */ CActivityOne* host)
+            : mHost(host)
+        {}
 
-	    CARAPI OnReceive(
-	        /* [in] */ IContext* context,
-	        /* [in] */ IIntent* intent);
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
 
-	private:
-		CActivityOne* mHost;
+    private:
+        CActivityOne* mHost;
 
     };
 
@@ -71,17 +71,17 @@ public:
         , public IRunnable
     {
     public:
-    	CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL();
 
-    	MyRunnable(
-    		/* [in] */ CActivityOne* host)
-    		: mHost(host)
-    	{}
+        MyRunnable(
+            /* [in] */ CActivityOne* host)
+            : mHost(host)
+        {}
 
-    	CARAPI Run();
+        CARAPI Run();
 
     private:
-    	CActivityOne* mHost;
+        CActivityOne* mHost;
     };
 
 protected:
@@ -99,13 +99,13 @@ protected:
     CARAPI OnDestroy();
 
 public:
-	AutoPtr<IButton> mDBt;
-	AutoPtr<IButton> mRBt;
-	AutoPtr<IDownloadManager> mDownloadManager;
-	Int64 mDownloadId;
-	AutoPtr<IBroadcastReceiver> mReceiver;
-	AutoPtr<IHandler> mHandler;
-	AutoPtr<IRunnable> mRunnable;
+    AutoPtr<IButton> mDBt;
+    AutoPtr<IButton> mRBt;
+    AutoPtr<IDownloadManager> mDownloadManager;
+    Int64 mDownloadId;
+    AutoPtr<IBroadcastReceiver> mReceiver;
+    AutoPtr<IHandler> mHandler;
+    AutoPtr<IRunnable> mRunnable;
 
 };
 

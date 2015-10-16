@@ -1,5 +1,5 @@
 
-#include "app/ChooserActivity.h"
+#include "elastos/droid/app/ChooserActivity.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

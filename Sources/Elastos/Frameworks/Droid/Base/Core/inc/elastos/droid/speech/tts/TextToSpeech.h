@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__
 #define __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__
 
-#include "speech/tts/UtteranceProgressListener.h"
+#include "elastos/droid/speech/tts/UtteranceProgressListener.h"
 #include "Elastos.Droid.Core_server.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/Map.h>
 #include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>

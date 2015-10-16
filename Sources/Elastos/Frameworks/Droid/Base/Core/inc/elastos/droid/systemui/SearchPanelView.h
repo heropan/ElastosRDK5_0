@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::Widget::FrameLayout;

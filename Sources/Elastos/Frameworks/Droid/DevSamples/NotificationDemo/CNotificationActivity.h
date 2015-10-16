@@ -1,7 +1,7 @@
 #ifndef __CNOTIFICATIONACTIVITY_H__
 #define __CNOTIFICATIONACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CNotificationActivity.h"
 
 using Elastos::Droid::App::Activity;

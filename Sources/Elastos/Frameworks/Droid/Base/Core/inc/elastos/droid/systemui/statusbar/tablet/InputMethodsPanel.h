@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODPANEL_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODPANEL_H__
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "elastos/Pair.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::Pair;

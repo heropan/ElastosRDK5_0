@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "CMtpPropertyList.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/mtp/CMtpPropertyList.h"
 
 using Elastos::Droid::Mtp::IMtpConstants;
 

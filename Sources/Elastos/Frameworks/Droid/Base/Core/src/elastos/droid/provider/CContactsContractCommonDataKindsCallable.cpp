@@ -1,7 +1,7 @@
 
-#include "provider/CContactsContractCommonDataKindsCallable.h"
-#include "provider/ContactsContractData.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsCallable.h"
+#include "elastos/droid/provider/ContactsContractData.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

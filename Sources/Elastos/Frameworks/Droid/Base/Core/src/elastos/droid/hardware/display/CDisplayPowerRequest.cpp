@@ -1,8 +1,8 @@
 
-#include "hardware/display/CDisplayPowerRequest.h"
+#include "elastos/droid/hardware/display/CDisplayPowerRequest.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-//#include "view/Display.h"
+//#include "elastos/droid/view/Display.h"
 
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::View::IDisplay;

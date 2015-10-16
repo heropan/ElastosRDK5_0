@@ -1,6 +1,6 @@
 
-#include "media/CRingtoneManagerHelper.h"
-#include "media/CRingtoneManager.h"
+#include "elastos/droid/media/CRingtoneManagerHelper.h"
+#include "elastos/droid/media/CRingtoneManager.h"
 
 namespace Elastos {
 namespace Droid {

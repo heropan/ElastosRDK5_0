@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPixelFormat.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPixelFormat.h"
 
 namespace Elastos {
 namespace Droid {

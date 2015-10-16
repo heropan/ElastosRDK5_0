@@ -1,4 +1,4 @@
-#include "systemui/statusbar/policy/AutoRotateController.h"
+#include "elastos/droid/systemui/statusbar/policy/AutoRotateController.h"
 
 using Elastos::Droid::Widget::EIID_ICompoundButtonOnCheckedChangeListener;
 

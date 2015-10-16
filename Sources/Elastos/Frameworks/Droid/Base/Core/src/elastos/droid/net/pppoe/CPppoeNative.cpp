@@ -1,6 +1,6 @@
 
 #include "CPppoeNative.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "jni.h"
 #include <inttypes.h>
 #include <utils/misc.h>

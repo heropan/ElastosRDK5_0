@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SLIDINGTAB_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_SLIDINGTAB_H__
 
-#include "view/ViewGroup.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include <elastos/core/Math.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::Math;
 using Elastos::Droid::R;

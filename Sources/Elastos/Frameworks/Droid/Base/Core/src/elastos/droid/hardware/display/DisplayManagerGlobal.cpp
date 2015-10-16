@@ -1,11 +1,11 @@
 
-#include "hardware/display/DisplayManagerGlobal.h"
-#include "hardware/display/WifiDisplayStatus.h"
-#include "hardware/display/CDisplayManagerCallback.h"
-#include "os/ServiceManager.h"
-#include "os/Looper.h"
-#include "text/TextUtils.h"
-//#include "view/Display.h"
+#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
+#include "elastos/droid/hardware/display/WifiDisplayStatus.h"
+#include "elastos/droid/hardware/display/CDisplayManagerCallback.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/view/Display.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

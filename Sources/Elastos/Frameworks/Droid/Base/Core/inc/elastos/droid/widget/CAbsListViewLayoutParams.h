@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CABSLISTVIEWLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CAbsListViewLayoutParams.h"
-#include "widget/AbsListViewLayoutParams.h"
+#include "elastos/droid/widget/AbsListViewLayoutParams.h"
 
 using Elastos::Droid::View::IView;
 

@@ -1,12 +1,12 @@
 
-#include "database/CursorWindow.h"
-#include "database/CCursorWindow.h"
-#include "database/NativeCursorWindow.h"
-#include "database/sqlite/SQLiteCommon.h"
-//#include "content/res/CResources.h"
-#include "os/Process.h"
-#include "os/Binder.h"
-#include "R.h"
+#include "elastos/droid/database/CursorWindow.h"
+#include "elastos/droid/database/CCursorWindow.h"
+#include "elastos/droid/database/NativeCursorWindow.h"
+#include "elastos/droid/database/sqlite/SQLiteCommon.h"
+//#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CFRAMELAYOUTLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CFrameLayoutLayoutParams.h"
-#include "widget/FrameLayoutLayoutParams.h"
+#include "elastos/droid/widget/FrameLayoutLayoutParams.h"
 
 
 namespace Elastos{

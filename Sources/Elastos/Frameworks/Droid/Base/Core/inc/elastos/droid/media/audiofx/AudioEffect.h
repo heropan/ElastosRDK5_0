@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::ILooper;

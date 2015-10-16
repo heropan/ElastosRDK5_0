@@ -1,7 +1,7 @@
 
-#include "webkit/native/content/browser/ContentViewCore.h"
-#include "webkit/native/content/browser/DownloadController.h"
-#include "webkit/native/content/browser/DownloadInfo.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/browser/DownloadController.h"
+#include "elastos/droid/webkit/native/content/browser/DownloadInfo.h"
 
 namespace Elastos {
 namespace Droid {

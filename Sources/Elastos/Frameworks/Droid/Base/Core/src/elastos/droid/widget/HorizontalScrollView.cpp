@@ -1,15 +1,15 @@
 
-#include "widget/HorizontalScrollView.h"
-#include "widget/ScrollView.h"
-#include "view/CViewConfigurationHelper.h"
-#include "widget/CFrameLayoutLayoutParams.h"
-#include "view/FocusFinder.h"
-#include "view/CMotionEvent.h"
+#include "elastos/droid/widget/HorizontalScrollView.h"
+#include "elastos/droid/widget/ScrollView.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/view/FocusFinder.h"
+#include "elastos/droid/view/CMotionEvent.h"
 #include <elastos/core/Math.h>
-#include "view/accessibility/CAccessibilityEvent.h"
-#include "view/animation/AnimationUtils.h"
-#include "view/CViewGroupMarginLayoutParams.h"
-#include "widget/CEdgeEffect.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/view/CViewGroupMarginLayoutParams.h"
+#include "elastos/droid/widget/CEdgeEffect.h"
 
 using Elastos::Droid::Widget::ScrollView;
 using Elastos::Droid::View::IViewConfiguration;

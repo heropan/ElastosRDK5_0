@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_SERVER_CPPPOESERVICE_H__
 #define __ELASTOS_DROID_SERVER_CPPPOESERVICE_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_CPppoeService.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;

@@ -1,7 +1,7 @@
 
 #include "input/NativeInputManager.h"
 #include "input/CInputManagerService.h"
-#include "view/NativeInputChannel.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 #include "power/CPowerManagerService.h"
 #include <input/InputManager.h>
 #include <elastos/utility/logging/Slogger.h>

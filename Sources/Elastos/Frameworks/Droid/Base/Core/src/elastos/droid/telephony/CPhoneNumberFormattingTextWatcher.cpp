@@ -1,6 +1,6 @@
 
 #include "CPhoneNumberFormattingTextWatcher.h"
-#include "text/Selection.h"
+#include "elastos/droid/text/Selection.h"
 #include "CPhoneNumberUtils.h"
 //#include "CString.h"
 

@@ -1,5 +1,5 @@
 
-#include "os/CMemoryFile.h"
+#include "elastos/droid/os/CMemoryFile.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

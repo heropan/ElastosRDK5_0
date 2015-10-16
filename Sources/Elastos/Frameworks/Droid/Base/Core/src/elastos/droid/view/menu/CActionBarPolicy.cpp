@@ -1,6 +1,6 @@
-#include "view/menu/CActionBarPolicy.h"
-#include "view/CViewConfigurationHelper.h"
-#include "R.h"
+#include "elastos/droid/view/menu/CActionBarPolicy.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::View::IViewConfiguration;

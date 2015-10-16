@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "app/CContextImpl.h"
-#include "content/pm/PackageManager.h"
+#include "elastos/droid/app/CContextImpl.h"
+#include "elastos/droid/content/pm/PackageManager.h"
 
 using Elastos::Core::ICharSequence;
 

@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CTableLayoutLayoutParams.h"
 
-#include "widget/TableLayoutLayoutParams.h"
+#include "elastos/droid/widget/TableLayoutLayoutParams.h"
 
 
 namespace Elastos{

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELBAR_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELBAR_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::Widget::FrameLayout;

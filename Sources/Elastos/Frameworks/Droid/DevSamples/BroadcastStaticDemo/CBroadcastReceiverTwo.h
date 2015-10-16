@@ -3,7 +3,7 @@
 #define __CBROADCASTRECEIVERTWO_H__
 
 #include "_CBroadcastReceiverTwo.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;

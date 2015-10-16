@@ -5,9 +5,9 @@
 #include "_Elastos_Droid_Widget_CVolumePanel.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "os/Handler.h"
-#include "database/ContentObserver.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IHandler;

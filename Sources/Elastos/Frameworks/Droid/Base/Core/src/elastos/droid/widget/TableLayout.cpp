@@ -1,11 +1,11 @@
 
-#include "widget/TableLayout.h"
-#include "widget/TableLayoutLayoutParams.h"
-#include "widget/CTableLayoutLayoutParams.h"
-#include "widget/TableRow.h"
+#include "elastos/droid/widget/TableLayout.h"
+#include "elastos/droid/widget/TableLayoutLayoutParams.h"
+#include "elastos/droid/widget/CTableLayoutLayoutParams.h"
+#include "elastos/droid/widget/TableRow.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
-#include <R.h>
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Regex::IPattern;
 using Elastos::Utility::Regex::IPatternHelper;

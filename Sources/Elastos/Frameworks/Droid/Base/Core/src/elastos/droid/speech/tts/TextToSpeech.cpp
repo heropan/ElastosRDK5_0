@@ -1,11 +1,11 @@
-#include "speech/tts/TextToSpeech.h"
-#include "speech/tts/CTtsEngines.h"
-#include "speech/tts/UtteranceProgressListener.h"
-#include "os/CBundle.h"
-#include "content/CIntent.h"
-#include "text/TextUtils.h"
-//#include "net/Uri.h"
-//#include "net/CUriBuilder.h"
+#include "elastos/droid/speech/tts/TextToSpeech.h"
+#include "elastos/droid/speech/tts/CTtsEngines.h"
+#include "elastos/droid/speech/tts/UtteranceProgressListener.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/net/Uri.h"
+//#include "elastos/droid/net/CUriBuilder.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

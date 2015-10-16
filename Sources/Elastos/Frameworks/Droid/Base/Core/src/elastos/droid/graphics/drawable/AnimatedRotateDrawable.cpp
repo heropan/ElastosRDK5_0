@@ -1,11 +1,11 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/AnimatedRotateDrawable.h"
-#include "graphics/drawable/CAnimatedRotateDrawable.h"
-#include "graphics/CRect.h"
-#include "os/SystemClock.h"
-// #include "utility/CTypedValue.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/AnimatedRotateDrawable.h"
+#include "elastos/droid/graphics/drawable/CAnimatedRotateDrawable.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/os/SystemClock.h"
+// #include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_IRunnable;

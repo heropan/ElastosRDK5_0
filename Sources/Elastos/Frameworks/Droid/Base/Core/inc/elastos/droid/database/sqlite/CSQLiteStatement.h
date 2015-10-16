@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITESTATEMENT_H__
 
 #include "_Elastos_Droid_Database_Sqlite_CSQLiteStatement.h"
-#include "database/sqlite/SQLiteProgram.h"
+#include "elastos/droid/database/sqlite/SQLiteProgram.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_FRAMELAYOUT_H__
 
 
-#include "view/ViewGroup.h"
-#include "widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 
 using Elastos::Droid::View::ViewGroup;
 

@@ -3,8 +3,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
-#include "database/sqlite/SQLiteConnection.h"
-#include "database/sqlite/SQLiteDatabaseConfiguration.h"
+#include "elastos/droid/database/sqlite/SQLiteConnection.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabaseConfiguration.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "app/CPendingIntentHelper.h"
-#include "content/CIntent.h"
-#include "net/CVpnConfig.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/net/CVpnConfig.h"
 
 using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;

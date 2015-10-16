@@ -1,7 +1,7 @@
 
-#include "provider/CCalendarContractInstances.h"
-#include "content/CContentUris.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractInstances.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::IContentUris;

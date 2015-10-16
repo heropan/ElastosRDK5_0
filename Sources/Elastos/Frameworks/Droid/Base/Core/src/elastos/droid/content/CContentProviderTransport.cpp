@@ -1,10 +1,10 @@
 
 #include "elastos/droid/content/CContentProviderTransport.h"
 #include "elastos/droid/content/ContentProvider.h"
-#include "os/Binder.h"
-#include "os/UserHandle.h"
-#include "os/CCancellationSignalHelper.h"
-//#include "app/AppOpsManager.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CCancellationSignalHelper.h"
+//#include "elastos/droid/app/AppOpsManager.h"
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Os::Binder;

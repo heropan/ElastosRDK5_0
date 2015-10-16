@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGERCHANNEL_H__
 
 #include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pManagerChannel.h"
-#include "ext/frameworkdef.h"
-#include "utility/AsyncChannel.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/utility/AsyncChannel.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/Pair.h>
 #include <elastos/utility/etl/HashMap.h>
 

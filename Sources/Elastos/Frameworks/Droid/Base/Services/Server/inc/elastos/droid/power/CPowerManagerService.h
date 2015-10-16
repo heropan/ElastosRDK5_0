@@ -10,10 +10,10 @@
 #include "power/DisplayPowerController.h"
 #include "power/WirelessChargerDetector.h"
 // #include "dreams/CDreamManagerService.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
-#include "os/Runnable.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/Core/Object.h>
 
 

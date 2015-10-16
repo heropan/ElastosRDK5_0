@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_STRICTMODEVIOLATIONDIALOG_H__
 #define __ELASTOS_DROID_SERVER_AM_STRICTMODEVIOLATIONDIALOG_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "am/BaseErrorDialog.h"
 #include "am/AppErrorResult.h"
 #include "am/ProcessRecord.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using namespace Elastos::Core;
 

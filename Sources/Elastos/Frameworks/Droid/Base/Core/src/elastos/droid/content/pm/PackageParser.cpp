@@ -31,8 +31,8 @@
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/utility/CBase64.h"
 //#include "elastos/droid/internal/utility/XmlUtils.h"
-#include "R.h"
-#include "Manifest.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/Manifest.h"
 
 #include <elastos/core/CoreUtils.h>
 #include <elastos/utility/Arrays.h>

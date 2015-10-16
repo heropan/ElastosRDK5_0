@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSCALEDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CScaleDrawable.h"
-#include "graphics/drawable/ScaleDrawable.h"
+#include "elastos/droid/graphics/drawable/ScaleDrawable.h"
 
 
 namespace Elastos {

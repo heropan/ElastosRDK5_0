@@ -1,9 +1,9 @@
 
-#include "media/CRingtone.h"
-#include "media/CMediaPlayer.h"
-#include "media/CRingtoneManagerHelper.h"
-#include "os/CBinder.h"
-#include "R.h"
+#include "elastos/droid/media/CRingtone.h"
+#include "elastos/droid/media/CMediaPlayer.h"
+#include "elastos/droid/media/CRingtoneManagerHelper.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using namespace Elastos::Core;

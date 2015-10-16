@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_COVALSHAPE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_COVALSHAPE_H__
 
-#include "graphics/drawable/shapes/OvalShape.h"
+#include "elastos/droid/graphics/drawable/shapes/OvalShape.h"
 #include "_Elastos_Droid_Graphics_Drawable_Shapes_COvalShape.h"
 
 namespace Elastos {

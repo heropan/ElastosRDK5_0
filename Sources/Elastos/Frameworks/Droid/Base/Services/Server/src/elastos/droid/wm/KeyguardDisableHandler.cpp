@@ -1,7 +1,7 @@
 
 #include "wm/KeyguardDisableHandler.h"
-#include "app/ActivityManagerNative.h"
-#include "os/SomeArgs.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/SomeArgs.h"
 #include <elastos/utility/logging/Logger.h>
 
 

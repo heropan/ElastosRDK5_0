@@ -1,6 +1,6 @@
-#include "view/CDispListHelper.h"
-#include "view/CDispListDispFormat.h"
-#include "R.h"
+#include "elastos/droid/view/CDispListHelper.h"
+#include "elastos/droid/view/CDispListDispFormat.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 

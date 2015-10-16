@@ -2,8 +2,8 @@
 #ifndef __CCRASHREPORTER_H__
 #define __CCRASHREPORTER_H__
 
-#include "ext/frameworkext.h"
-#include "app/Activity.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CCrashReporter.h"
 #include <elastos/utility/etl/HashMap.h>
 

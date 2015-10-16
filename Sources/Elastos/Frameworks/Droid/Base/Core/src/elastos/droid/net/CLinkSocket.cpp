@@ -1,7 +1,7 @@
 
-#include "net/CLinkSocket.h"
-#include "net/CLinkProperties.h"
-#include "net/CLinkCapabilities.h"
+#include "elastos/droid/net/CLinkSocket.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CLinkCapabilities.h"
 
 using Elastos::Droid::Net::CLinkProperties;
 using Elastos::Droid::Net::CLinkCapabilities;

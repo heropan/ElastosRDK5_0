@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITION_H__
 
 #include "_Elastos_Droid_Widget_CExpandableListPosition.h"
-#include "widget/ExpandableListPosition.h"
+#include "elastos/droid/widget/ExpandableListPosition.h"
 
 namespace Elastos{
 namespace Droid{

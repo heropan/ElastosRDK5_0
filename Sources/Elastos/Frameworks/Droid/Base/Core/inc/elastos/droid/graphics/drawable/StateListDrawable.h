@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_STATELISTDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_STATELISTDRAWABLE_H__
 
-#include "graphics/drawable/DrawableContainer.h"
-#include "utility/StateSet.h"
+#include "elastos/droid/graphics/drawable/DrawableContainer.h"
+#include "elastos/droid/utility/StateSet.h"
 
 namespace Elastos {
 namespace Droid {

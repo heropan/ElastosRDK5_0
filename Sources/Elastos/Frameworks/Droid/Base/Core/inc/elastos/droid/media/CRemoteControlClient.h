@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CREMOTECONTROLCLIENT_H__
 
 #include "_Elastos_Droid_Media_CRemoteControlClient.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::IBundle;

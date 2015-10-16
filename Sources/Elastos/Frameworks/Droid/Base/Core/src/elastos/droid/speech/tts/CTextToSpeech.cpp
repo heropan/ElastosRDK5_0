@@ -1,6 +1,6 @@
 
-#include "speech/tts/CTextToSpeech.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/tts/CTextToSpeech.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

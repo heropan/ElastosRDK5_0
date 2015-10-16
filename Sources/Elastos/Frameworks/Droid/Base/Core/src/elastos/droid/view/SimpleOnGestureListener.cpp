@@ -1,5 +1,5 @@
 
-#include "view/SimpleOnGestureListener.h"
+#include "elastos/droid/view/SimpleOnGestureListener.h"
 
 namespace Elastos {
 namespace Droid {

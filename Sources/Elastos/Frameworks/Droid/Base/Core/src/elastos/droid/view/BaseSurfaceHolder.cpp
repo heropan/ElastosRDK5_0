@@ -1,10 +1,10 @@
 
-#include "view/BaseSurfaceHolder.h"
+#include "elastos/droid/view/BaseSurfaceHolder.h"
 #ifdef DROID_CORE
-#include "view/CSurface.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/view/CSurface.h"
+#include "elastos/droid/graphics/CRect.h"
 #endif
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Logger.h>
 #include <unistd.h>

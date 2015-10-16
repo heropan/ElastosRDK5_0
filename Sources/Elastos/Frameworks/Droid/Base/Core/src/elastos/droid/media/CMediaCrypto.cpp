@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaCrypto.h"
-#include "media/Media_Utils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaCrypto.h"
+#include "elastos/droid/media/Media_Utils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <media/stagefright/MediaCodecList.h>

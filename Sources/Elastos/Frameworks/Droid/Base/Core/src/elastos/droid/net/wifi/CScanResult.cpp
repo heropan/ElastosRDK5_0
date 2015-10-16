@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CScanResult.h"
-#include "net/wifi/CWifiSsid.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CScanResult.h"
+#include "elastos/droid/net/wifi/CWifiSsid.h"
 #include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;

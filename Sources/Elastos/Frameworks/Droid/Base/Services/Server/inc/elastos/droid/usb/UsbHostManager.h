@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_USB_USBHOSTMANAGER_H__
 #define __ELASTOS_DROID_SERVER_USB_USBHOSTMANAGER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "usb/UsbSettingsManager.h"
 #include <elastos/utility/etl/HashMap.h>
 

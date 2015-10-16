@@ -1,6 +1,6 @@
 #include "CWifiP2pProvDiscEvent.h"
 #include "CWifiP2pDevice.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

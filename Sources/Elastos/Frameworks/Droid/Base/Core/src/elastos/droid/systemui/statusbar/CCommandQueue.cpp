@@ -1,6 +1,6 @@
-#include "systemui/statusbar/CCommandQueue.h"
+#include "elastos/droid/systemui/statusbar/CCommandQueue.h"
 #include <elastos/core/StringBuilder.h>
-#include "statusbar/CStatusBarIcon.h"
+#include "elastos/droid/statusbar/CStatusBarIcon.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;

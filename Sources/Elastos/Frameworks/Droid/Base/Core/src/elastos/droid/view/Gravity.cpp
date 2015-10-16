@@ -1,6 +1,6 @@
 
-#include "view/Gravity.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::Graphics::CRect;
 

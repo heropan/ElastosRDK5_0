@@ -1,5 +1,5 @@
-#include "widget/GridLayoutLayoutParams.h"
-#include "widget/CGridLayoutLayoutParams.h"
+#include "elastos/droid/widget/GridLayoutLayoutParams.h"
+#include "elastos/droid/widget/CGridLayoutLayoutParams.h"
 
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::Widget::CGridLayoutLayoutParams;

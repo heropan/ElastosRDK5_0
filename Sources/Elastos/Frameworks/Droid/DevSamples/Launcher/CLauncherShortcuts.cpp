@@ -1,7 +1,7 @@
 
 #include "CLauncherShortcuts.h"
 #include "jansson.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::CFile;
 using Elastos::IO::IFileReader;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CCANVAS_H__
 
 #include "_Elastos_Droid_Graphics_CCanvas.h"
-#include "graphics/Canvas.h"
+#include "elastos/droid/graphics/Canvas.h"
 
 namespace Elastos {
 namespace Droid {

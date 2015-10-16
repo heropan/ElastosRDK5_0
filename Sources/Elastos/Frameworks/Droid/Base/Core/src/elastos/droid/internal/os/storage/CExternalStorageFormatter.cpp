@@ -1,9 +1,9 @@
 
-#include "internal/os/storage/CExternalStorageFormatter.h"
-// #include "app/CProgressDialog.h"
-#include "content/CComponentName.h"
-#include "os/ServiceManager.h"
-#include "R.h"
+#include "elastos/droid/internal/os/storage/CExternalStorageFormatter.h"
+// #include "elastos/droid/app/CProgressDialog.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 // using Elastos::Droid::App::CProgressDialog;

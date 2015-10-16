@@ -1,6 +1,6 @@
 
-#include "webkit/native/content/browser/LoadUrlParams.h"
-#include "webkit/native/content/browser/PageTransitionTypes.h"
+#include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
+#include "elastos/droid/webkit/native/content/browser/PageTransitionTypes.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

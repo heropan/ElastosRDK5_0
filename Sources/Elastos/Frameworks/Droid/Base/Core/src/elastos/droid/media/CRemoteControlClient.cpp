@@ -1,16 +1,16 @@
 
-#include "media/CRemoteControlClient.h"
+#include "elastos/droid/media/CRemoteControlClient.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/CBundle.h"
-#include "os/CLooperHelper.h"
-#include "os/SystemClock.h"
-#include "media/CAudioSystemHelper.h"
-#include "os/CServiceManager.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/media/CAudioSystemHelper.h"
+#include "elastos/droid/os/CServiceManager.h"
 #include <elastos/core/Math.h>
-#include "graphics/CBitmap.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CPaint.h"
-#include "graphics/CRectF.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

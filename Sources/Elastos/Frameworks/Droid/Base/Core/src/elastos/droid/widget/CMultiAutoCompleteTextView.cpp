@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CMultiAutoCompleteTextView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CMultiAutoCompleteTextView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::Widget::EIID_TextView;

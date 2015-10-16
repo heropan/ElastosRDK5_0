@@ -1,9 +1,9 @@
 
-#include "view/CKeyCharacterMap.h"
-#include "view/CKeyEvent.h"
-#include "view/CInputDevice.h"
-#include "os/SystemClock.h"
-#include "hardware/input/CInputManager.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CInputDevice.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/hardware/input/CInputManager.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Character.h>

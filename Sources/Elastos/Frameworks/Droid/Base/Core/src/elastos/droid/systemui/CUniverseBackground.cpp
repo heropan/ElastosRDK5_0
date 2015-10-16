@@ -1,4 +1,4 @@
-#include "systemui/CUniverseBackground.h"
+#include "elastos/droid/systemui/CUniverseBackground.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

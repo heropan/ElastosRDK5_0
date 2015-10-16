@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_ZOOMBUTTON_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ImageButton.h"
+#include "elastos/droid/widget/ImageButton.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

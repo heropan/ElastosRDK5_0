@@ -1,9 +1,9 @@
 
-#include "webkit/WebSyncManager.h"
-#include "webkit/WebViewDatabase.h"
-#include "os/CMessageHelper.h"
-#include "os/Looper.h"
-#include "os/Process.h"
+#include "elastos/droid/webkit/WebSyncManager.h"
+#include "elastos/droid/webkit/WebViewDatabase.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Process.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::EIID_IHandler;

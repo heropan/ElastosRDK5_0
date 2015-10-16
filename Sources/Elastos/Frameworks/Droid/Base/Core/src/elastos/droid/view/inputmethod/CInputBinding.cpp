@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/inputmethod/CInputBinding.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/inputmethod/CInputBinding.h"
 
 namespace Elastos {
 namespace Droid {

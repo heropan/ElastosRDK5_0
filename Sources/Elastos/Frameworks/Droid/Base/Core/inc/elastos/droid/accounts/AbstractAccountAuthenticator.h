@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_ACCOUNTS_ABSTRACTACCOUNTAUTHENTICATOR_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "accounts/CAccountAuthenticatorTransport.h"
+#include "elastos/droid/accounts/CAccountAuthenticatorTransport.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;

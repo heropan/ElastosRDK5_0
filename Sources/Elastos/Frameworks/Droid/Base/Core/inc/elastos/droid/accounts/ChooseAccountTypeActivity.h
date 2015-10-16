@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_ACCOUNTS_CHOOSEACCOUNTTYPEACTIVITY_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "app/Activity.h"
-#include "widget/ArrayAdapter.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 

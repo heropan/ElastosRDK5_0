@@ -4,7 +4,7 @@
 #include "wm/CWindowManagerService.h"
 #include "wm/WindowStateAnimator.h"
 #include "wm/WindowAnimator.h"
-#include "view/animation/Animation.h"
+#include "elastos/droid/view/animation/Animation.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

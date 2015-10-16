@@ -1,7 +1,7 @@
 #include "elastos/droid/content/CSyncRequest.h"
 #include "elastos/droid/content/CSyncRequestBuilder.h"
-//#include "accounts/CAccount.h"
-#include "os/CBundle.h"
+//#include "elastos/droid/accounts/CAccount.h"
+#include "elastos/droid/os/CBundle.h"
 
 //using Elastos::Droid::Accounts::CAccount;
 using Elastos::Droid::Os::CBundle;

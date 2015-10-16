@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_LEARNER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "gesture/Instance.h"
+#include "elastos/droid/gesture/Instance.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

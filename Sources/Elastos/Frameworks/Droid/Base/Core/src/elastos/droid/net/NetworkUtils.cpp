@@ -357,9 +357,9 @@ ECode NetworkUtils::TrimV4AddrZeros(
 } // namespace Elastos
 
 #if 0 // old NetworkUtils.cpp
-#include "net/NetworkUtils.h"
+#include "elastos/droid/net/NetworkUtils.h"
 #ifdef DROID_CORE
-#include "net/CRouteInfo.h"
+#include "elastos/droid/net/CRouteInfo.h"
 #else
 #include "Elastos.Droid.Core.h"
 #endif

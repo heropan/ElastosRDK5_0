@@ -1,14 +1,14 @@
 
-#include "ext/frameworkdef.h"
-#include "app/ApplicationPackageManager.h"
-#include "os/Process.h"
-#include "content/CIntent.h"
-#include "content/res/CResourcesHelper.h"
-#include "utility/CParcelableObjectContainer.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/ApplicationPackageManager.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/utility/CParcelableObjectContainer.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 
 using Elastos::Core::EIID_ICharSequence;

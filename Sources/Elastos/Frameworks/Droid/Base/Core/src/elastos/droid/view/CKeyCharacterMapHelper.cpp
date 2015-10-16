@@ -1,6 +1,6 @@
 
-#include "view/CKeyCharacterMapHelper.h"
-#include "view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyCharacterMapHelper.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
 
 using namespace Elastos::Droid::View;
 

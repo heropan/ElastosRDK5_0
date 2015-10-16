@@ -1,5 +1,5 @@
 
-#include "graphics/Xfermode.h"
+#include "elastos/droid/graphics/Xfermode.h"
 #include <SkXfermode.h>
 
 namespace Elastos {

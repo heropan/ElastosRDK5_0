@@ -1,12 +1,12 @@
 
-#include "widget/CLinearLayoutLayoutParams.h"
-#include "R.h"
-#include "os/CMessageHelper.h"
-#include "app/CAlertController.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "utility/CTypedValue.h"
-#include "text/TextUtils.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/app/CAlertController.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

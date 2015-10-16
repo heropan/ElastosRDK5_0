@@ -1,4 +1,4 @@
-#include "widget/CAdapterViewAnimator.h"
+#include "elastos/droid/widget/CAdapterViewAnimator.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

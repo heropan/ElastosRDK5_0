@@ -1,4 +1,4 @@
-#include "utility/PathParser.h"
+#include "elastos/droid/utility/PathParser.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>

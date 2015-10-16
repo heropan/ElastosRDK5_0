@@ -1,6 +1,6 @@
 
-#include "animation/TimeAnimator.h"
-#include "animation/CTimeAnimator.h"
+#include "elastos/droid/animation/TimeAnimator.h"
+#include "elastos/droid/animation/CTimeAnimator.h"
 
 namespace Elastos {
 namespace Droid {

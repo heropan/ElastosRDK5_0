@@ -1,4 +1,4 @@
-#include "systemui/statusbar/CLatestItemView.h"
+#include "elastos/droid/systemui/statusbar/CLatestItemView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

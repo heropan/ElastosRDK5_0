@@ -1,6 +1,6 @@
 
 #include "CBluetoothHealthStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -54,7 +54,7 @@ ECode CBluetoothHealthStateChangeCallback::OnBluetoothStateChange(
 ECode CBluetoothHealthStateChangeCallback::constructor(
     /* [in] */ IInterface* host)
 {
-	mHost = (BluetoothHealth*)host;
+    mHost = (BluetoothHealth*)host;
     return NOERROR;
 }
 

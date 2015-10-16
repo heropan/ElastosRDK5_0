@@ -3,7 +3,7 @@
 #define __CBASEEXPANDABLELISTADAPTER_H__
 
 #include "_CBaseExpandableListAdapter.h"
-#include "widget/BaseExpandableListAdapter.h"
+#include "elastos/droid/widget/BaseExpandableListAdapter.h"
 
 CarClass(CBaseExpandableListAdapter), public BaseExpandableListAdapter
 {

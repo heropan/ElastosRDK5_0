@@ -1,6 +1,6 @@
 
-#include "net/wifi/CWpsResult.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/net/wifi/CWpsResult.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

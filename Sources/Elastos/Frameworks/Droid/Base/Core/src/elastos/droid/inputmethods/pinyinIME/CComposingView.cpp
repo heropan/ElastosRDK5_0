@@ -1,6 +1,6 @@
 
 #include "CComposingView.h"
-#include "graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 
 using Elastos::Core::IStringBuffer;
 using Elastos::Droid::Graphics::CPaint;

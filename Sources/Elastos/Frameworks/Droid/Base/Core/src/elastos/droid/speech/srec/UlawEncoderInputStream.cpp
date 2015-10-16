@@ -1,7 +1,7 @@
-#include "speech/srec/UlawEncoderInputStream.h"
+#include "elastos/droid/speech/srec/UlawEncoderInputStream.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
-//#include "ext/frameworkext.h"
+//#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
 

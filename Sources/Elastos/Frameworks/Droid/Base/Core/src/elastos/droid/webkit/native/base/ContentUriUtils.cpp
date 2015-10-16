@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/ContentUriUtils.h"
-//#include "net/CUriHelper.h"
+#include "elastos/droid/webkit/native/base/ContentUriUtils.h"
+//#include "elastos/droid/net/CUriHelper.h"
 
 //using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriHelper;

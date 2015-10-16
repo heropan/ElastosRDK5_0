@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ImageView.h"
+#include "elastos/droid/widget/ImageView.h"
 
 namespace Elastos {
 namespace Droid {

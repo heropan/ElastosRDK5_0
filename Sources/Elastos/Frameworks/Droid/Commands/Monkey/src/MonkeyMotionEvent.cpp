@@ -1,6 +1,6 @@
 #include "MonkeyMotionEvent.h"
 #include <elastos/core/StringBuilder.h>
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "Elastos.Core.h"
 #include <elastos/core/StringUtils.h>
 

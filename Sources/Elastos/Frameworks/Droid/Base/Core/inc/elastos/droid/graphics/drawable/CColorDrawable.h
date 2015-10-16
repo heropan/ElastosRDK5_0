@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCOLORDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CColorDrawable.h"
-#include "graphics/drawable/ColorDrawable.h"
+#include "elastos/droid/graphics/drawable/ColorDrawable.h"
 
 namespace Elastos {
 namespace Droid {

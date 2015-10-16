@@ -1,6 +1,6 @@
 
-#include "utility/Xml.h"
-#include "utility/CXmlPullAttributes.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/utility/CXmlPullAttributes.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>

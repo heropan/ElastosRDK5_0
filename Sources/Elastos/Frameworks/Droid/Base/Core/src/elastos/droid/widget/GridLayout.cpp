@@ -1,11 +1,11 @@
-#include "widget/GridLayout.h"
+#include "elastos/droid/widget/GridLayout.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
-#include "graphics/Insets.h"
-#include "graphics/CPaint.h"
-#include "graphics/CColor.h"
-#include "widget/CGridLayoutLayoutParams.h"
-#include "view/ViewGroupLayoutParams.h"
+#include "elastos/droid/graphics/Insets.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/widget/CGridLayoutLayoutParams.h"
+#include "elastos/droid/view/ViewGroupLayoutParams.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

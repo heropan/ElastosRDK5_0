@@ -1,8 +1,8 @@
 
 #include "R.h"
-#include "os/FileUtils.h"
-#include "os/SystemClock.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "usb/UsbDeviceManager.h"
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>

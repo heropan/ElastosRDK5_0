@@ -1,4 +1,4 @@
-#include "os/NullVibrator.h"
+#include "elastos/droid/os/NullVibrator.h"
 
 namespace Elastos {
 namespace Droid {

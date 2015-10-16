@@ -1,16 +1,16 @@
 
-#include "app/ResolverActivity.h"
-#include "app/CActivityManagerHelper.h"
-#include "app/ActivityManagerNative.h"
-#include "content/pm/CResolveInfo.h"
-#include "content/CIntentFilter.h"
-#include "content/CIntent.h"
-#include "content/CComponentName.h"
-#include "os/UserHandle.h"
-#include "net/Uri.h"
+#include "elastos/droid/app/ResolverActivity.h"
+#include "elastos/droid/app/CActivityManagerHelper.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__
 
-#include "widget/FrameLayout.h"
-#include "view/VelocityTracker.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/view/VelocityTracker.h"
 
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::View::IView;

@@ -1,10 +1,10 @@
 
-#include "view/menu/MenuDialogHelper.h"
-#include "view/menu/MenuBuilderBase.h"
-#include "view/menu/CListMenuPresenter.h"
-#include "app/CAlertDialogBuilder.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "R.h"
+#include "elastos/droid/view/menu/MenuDialogHelper.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/CListMenuPresenter.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::App::IAlertDialogBuilder;

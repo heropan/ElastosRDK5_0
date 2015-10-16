@@ -1,12 +1,12 @@
 #include <elastos/core/Math.h>
 //#include <elastos/utility/logging/Logger.h>
-#include "os/CHandler.h"
-#include "text/TextUtils.h"
-#include "utility/CDisplayMetrics.h"
-#include "widget/ListPopupWindow.h"
-#include "widget/CPopupWindow.h"
-#include "widget/CLinearLayout.h"
-#include "widget/ListView.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/widget/ListPopupWindow.h"
+#include "elastos/droid/widget/CPopupWindow.h"
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/ListView.h"
 
 //using Elastos::Utility::Logging::Logger;
 using Libcore::ICU::ILocale;

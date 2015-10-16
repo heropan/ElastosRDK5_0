@@ -1,5 +1,5 @@
-#include "view/CWindowInfoHelper.h"
-#include "view/CWindowInfo.h"
+#include "elastos/droid/view/CWindowInfoHelper.h"
+#include "elastos/droid/view/CWindowInfo.h"
 
 namespace Elastos {
 namespace Droid {

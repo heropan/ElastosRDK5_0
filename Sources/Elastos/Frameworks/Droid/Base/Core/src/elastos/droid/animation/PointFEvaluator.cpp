@@ -1,6 +1,6 @@
 
-#include "animation/PointFEvaluator.h"
-// #include "graphics/CPointF.h"
+#include "elastos/droid/animation/PointFEvaluator.h"
+// #include "elastos/droid/graphics/CPointF.h"
 
 // using Elastos::Droid::Graphics::CPointF;
 

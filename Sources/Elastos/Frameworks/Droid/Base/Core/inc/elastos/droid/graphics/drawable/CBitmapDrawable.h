@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CBITMAPDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CBitmapDrawable.h"
-#include "graphics/drawable/BitmapDrawable.h"
+#include "elastos/droid/graphics/drawable/BitmapDrawable.h"
 
 namespace Elastos {
 namespace Droid {

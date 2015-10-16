@@ -1,6 +1,6 @@
 #include "CThrottleService.h"
-#include "text/TextUtils.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

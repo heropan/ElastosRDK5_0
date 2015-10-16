@@ -1,11 +1,11 @@
 
-#include "widget/Spinner.h"
+#include "elastos/droid/widget/Spinner.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "view/Gravity.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "app/CAlertDialogBuilder.h"
-#include "widget/TextView.h"
+#include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/widget/TextView.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::CAlertDialogBuilder;

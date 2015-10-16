@@ -1,6 +1,6 @@
 
 #include "elastos/droid/content/AsyncQueryHandler.h"
-#include "os/CHandlerThread.h"
+#include "elastos/droid/os/CHandlerThread.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>

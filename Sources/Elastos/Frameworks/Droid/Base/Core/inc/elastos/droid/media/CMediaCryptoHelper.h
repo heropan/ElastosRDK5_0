@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIACRYPTOHELPER_H__
 
 #include "_Elastos_Droid_Media_CMediaCryptoHelper.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::IUUID;
 

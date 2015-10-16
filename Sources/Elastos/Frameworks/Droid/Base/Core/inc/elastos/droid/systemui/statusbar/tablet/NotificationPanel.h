@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANEL_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANEL_H__
 
-#include "widget/RelativeLayout.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/widget/RelativeLayout.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 
 using Elastos::Droid::Os::Runnable;

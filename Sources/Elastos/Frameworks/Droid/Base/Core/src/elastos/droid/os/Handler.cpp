@@ -1,10 +1,10 @@
 
-#include "os/Handler.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
 #ifdef DROID_CORE
-#include "os/CMessengerImpl.h"
-#include "os/CMessageHelper.h"
-#include "os/CLooperHelper.h"
+#include "elastos/droid/os/CMessengerImpl.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/CLooperHelper.h"
 #endif
 
 #include <elastos/utility/logging/Logger.h>

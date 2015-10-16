@@ -3,7 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityInteractionClient.h"
-#include "view/accessibility/AccessibilityNodeInfoCache.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCache.h"
 #include <elastos/Core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>

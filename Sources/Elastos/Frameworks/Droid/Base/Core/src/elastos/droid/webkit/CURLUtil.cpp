@@ -1,6 +1,6 @@
 
-#include "webkit/CURLUtil.h"
-#include "webkit/URLUtil.h"
+#include "elastos/droid/webkit/CURLUtil.h"
+#include "elastos/droid/webkit/URLUtil.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "GeckoApp.h"
 #include "GeckoAppShell.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "CGeckoInputConnection.h"
 #include "GeckoEvent.h"
 #include <elastos/core/Math.h>

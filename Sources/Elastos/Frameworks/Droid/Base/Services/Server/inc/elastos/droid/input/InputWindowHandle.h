@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
 #define __ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "InputApplicationHandle.h"
 #include "NativeInputWindowHandle.h"
 #include <input/InputWindow.h>

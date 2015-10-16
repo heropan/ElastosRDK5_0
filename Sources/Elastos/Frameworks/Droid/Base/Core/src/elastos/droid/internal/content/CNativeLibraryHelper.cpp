@@ -1,12 +1,12 @@
 
-#include "internal/content/CNativeLibraryHelper.h"
-#include "internal/content/CNativeLibraryHelperHandle.h"
-#include "os/Build.h"
-#include "os/SELinux.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelper.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelperHandle.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/SELinux.h"
 #include <elastos/droid/system/Os.h>
 #include <elastos/droid/system/OsConstants.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 #include <androidfw/ZipFileRO.h>
 #include <androidfw/ZipUtils.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROFILE_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractProfile.h"
-#include "provider/ContactsContractProfile.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
 
 namespace Elastos {
 namespace Droid {

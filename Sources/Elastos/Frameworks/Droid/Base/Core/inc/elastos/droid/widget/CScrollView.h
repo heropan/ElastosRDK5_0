@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CScrollView.h"
 
 
-#include "widget/ScrollView.h"
+#include "elastos/droid/widget/ScrollView.h"
 
 
 namespace Elastos{

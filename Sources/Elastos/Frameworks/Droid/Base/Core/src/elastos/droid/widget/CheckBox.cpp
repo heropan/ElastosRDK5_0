@@ -1,5 +1,5 @@
 
-#include "widget/CheckBox.h"
+#include "elastos/droid/widget/CheckBox.h"
 
 using Elastos::Core::CStringWrapper;
 

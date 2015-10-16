@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYCONTROLLER_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

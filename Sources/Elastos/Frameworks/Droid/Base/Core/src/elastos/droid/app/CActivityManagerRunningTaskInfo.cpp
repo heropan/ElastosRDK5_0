@@ -1,8 +1,8 @@
 
-#include "app/CActivityManagerRunningTaskInfo.h"
-#include "content/CComponentNameHelper.h"
-#include "graphics/CBitmap.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/app/CActivityManagerRunningTaskInfo.h"
+#include "elastos/droid/content/CComponentNameHelper.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::CComponentNameHelper;
 using Elastos::Droid::Content::IComponentNameHelper;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CALPHAANIMATION_H__
 
 #include "_Elastos_Droid_View_Animation_CAlphaAnimation.h"
-#include "view/animation/AlphaAnimation.h"
+#include "elastos/droid/view/animation/AlphaAnimation.h"
 
 namespace Elastos {
 namespace Droid {

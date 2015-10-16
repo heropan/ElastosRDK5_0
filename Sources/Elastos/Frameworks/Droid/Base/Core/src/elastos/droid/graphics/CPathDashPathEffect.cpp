@@ -1,5 +1,5 @@
-#include "graphics/CPathDashPathEffect.h"
-#include "graphics/CPath.h"
+#include "elastos/droid/graphics/CPathDashPathEffect.h"
+#include "elastos/droid/graphics/CPath.h"
 #include <skia/effects/Sk1DPathEffect.h>
 #include <skia/core/SkPath.h>
 

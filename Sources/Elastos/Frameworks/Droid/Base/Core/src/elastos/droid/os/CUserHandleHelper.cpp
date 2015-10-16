@@ -1,5 +1,5 @@
-#include "os/CUserHandleHelper.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/os/UserHandle.h"
 
 namespace Elastos {
 namespace Droid {

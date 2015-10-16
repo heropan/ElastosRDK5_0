@@ -1,7 +1,7 @@
 
-#include "internal/ActionBarContainer.h"
-#include <R.h>
-#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/internal/ActionBarContainer.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::Math;

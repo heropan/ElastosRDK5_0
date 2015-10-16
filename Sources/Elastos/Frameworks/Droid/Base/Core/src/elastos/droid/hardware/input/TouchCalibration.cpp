@@ -1,6 +1,6 @@
 
-#include "hardware/input/TouchCalibration.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/hardware/input/TouchCalibration.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

@@ -1,7 +1,7 @@
 
-#include "view/IInputConnectionWrapper.h"
+#include "elastos/droid/view/IInputConnectionWrapper.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/Looper.h"
+#include "elastos/droid/os/Looper.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CString;

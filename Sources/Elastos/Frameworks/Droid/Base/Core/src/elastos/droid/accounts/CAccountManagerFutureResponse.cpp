@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/CAccountManagerFutureResponse.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/CAccountManagerFutureResponse.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

@@ -12,8 +12,8 @@ namespace JavaProxy {
 CarClass(CIOnPrimaryClipChangedListenerNative)
 {
 public:
-	~CIOnPrimaryClipChangedListenerNative();
-	
+    ~CIOnPrimaryClipChangedListenerNative();
+
     CARAPI constructor(
         /* [in] */ Handle32 jVM,
         /* [in] */ Handle32 jInstance);

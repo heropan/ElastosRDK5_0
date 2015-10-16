@@ -1,6 +1,6 @@
 
 #include "CRequestHandleHelper.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "CRequestHandle.h"
 
 namespace Elastos {

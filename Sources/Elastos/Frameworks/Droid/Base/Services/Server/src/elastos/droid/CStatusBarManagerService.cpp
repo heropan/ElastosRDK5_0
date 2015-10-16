@@ -1,9 +1,9 @@
 #include "CStatusBarManagerService.h"
 #include "R.h"
 #include "Manifest.h"
-#include "os/Runnable.h"
-#include "os/Handler.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

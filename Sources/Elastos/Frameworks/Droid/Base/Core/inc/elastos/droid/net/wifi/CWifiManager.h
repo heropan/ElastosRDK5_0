@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Net_Wifi_CWifiManager.h"
-#include "os/HandlerBase.h"
-#include "utility/AsyncChannel.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/utility/AsyncChannel.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

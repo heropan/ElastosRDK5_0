@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "view/inputmethod/CControlledInputConnectionWrapper.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/inputmethod/CControlledInputConnectionWrapper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

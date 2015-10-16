@@ -1,11 +1,11 @@
 #include "CUiTestAutomationBridge.h"
-#include "os/SystemClock.h"
-#include "os/CHandlerThread.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CHandlerThread.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include "CAccessibilityServiceInfo.h"
-#include "accessibilityservice/CAccessibilityServiceClientWrapper.h"
-#include "view/accessibility/CAccessibilityEventHelper.h"
-#include "view/accessibility/CAccessibilityInteractionClientHelper.h"
+#include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::ServiceManager;

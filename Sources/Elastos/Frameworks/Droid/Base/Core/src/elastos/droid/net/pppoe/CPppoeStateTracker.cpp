@@ -2,13 +2,13 @@
 #include "CPppoeStateTracker.h"
 #include "CPppoeNative.h"
 #include "CPppoeDevInfo.h"
-#include "net/NetworkUtils.h"
-#include "net/CNetworkInfo.h"
-#include "net/CLinkCapabilities.h"
-#include "net/CLinkProperties.h"
-#include "os/ServiceManager.h"
-#include "content/CIntent.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CLinkCapabilities.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IBinder;

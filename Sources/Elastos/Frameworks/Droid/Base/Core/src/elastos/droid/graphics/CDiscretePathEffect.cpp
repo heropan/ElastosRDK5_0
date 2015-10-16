@@ -1,5 +1,5 @@
 
-#include "graphics/CDiscretePathEffect.h"
+#include "elastos/droid/graphics/CDiscretePathEffect.h"
 #include <skia/effects/SkDiscretePathEffect.h>
 
 namespace Elastos {

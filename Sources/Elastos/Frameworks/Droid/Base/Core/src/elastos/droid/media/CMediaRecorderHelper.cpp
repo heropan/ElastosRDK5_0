@@ -1,6 +1,6 @@
 
-#include "media/CMediaRecorderHelper.h"
-#include "media/CMediaRecorder.h"
+#include "elastos/droid/media/CMediaRecorderHelper.h"
+#include "elastos/droid/media/CMediaRecorder.h"
 
 namespace Elastos {
 namespace Droid {

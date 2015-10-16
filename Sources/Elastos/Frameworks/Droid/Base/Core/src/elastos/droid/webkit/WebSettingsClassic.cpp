@@ -1,21 +1,21 @@
 
-#include "os/Build.h"
-#include "os/Process.h"
-#include "os/CMessageHelper.h"
-#include "provider/CSettingsSystem.h"
-#include "webkit/CWebViewClassic.h"
-#include "webkit/DebugFlags.h"
-#include "webkit/WebSettingsClassic.h"
-#include "webkit/CAutoFillProfile.h"
-#include "R.h"
-#include "Manifest.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/provider/CSettingsSystem.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/DebugFlags.h"
+#include "elastos/droid/webkit/WebSettingsClassic.h"
+#include "elastos/droid/webkit/CAutoFillProfile.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/Character.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <elastos/utility/logging/Logger.h>
-#include "webkit/DebugFlags.h"
+#include "elastos/droid/webkit/DebugFlags.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;

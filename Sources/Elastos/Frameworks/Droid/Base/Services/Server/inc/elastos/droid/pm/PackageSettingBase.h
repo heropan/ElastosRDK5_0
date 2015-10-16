@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_PACKAGESETTINGBASE_H__
 #define __ELASTOS_DROID_SERVER_PM_PACKAGESETTINGBASE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "pm/GrantedPermissions.h"
 #include "pm/PackageSignatures.h"
-#include "content/pm/PackageUserState.h"
+#include "elastos/droid/content/pm/PackageUserState.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

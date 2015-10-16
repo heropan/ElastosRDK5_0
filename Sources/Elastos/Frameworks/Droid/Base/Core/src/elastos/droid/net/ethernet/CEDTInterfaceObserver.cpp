@@ -1,6 +1,6 @@
 
-#include "net/ethernet/CEDTInterfaceObserver.h"
-#include "net/ethernet/EthernetDataTracker.h"
+#include "elastos/droid/net/ethernet/CEDTInterfaceObserver.h"
+#include "elastos/droid/net/ethernet/EthernetDataTracker.h"
 
 namespace Elastos {
 namespace Droid {

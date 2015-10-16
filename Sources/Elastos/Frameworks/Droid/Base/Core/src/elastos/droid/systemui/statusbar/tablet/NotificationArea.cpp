@@ -1,5 +1,5 @@
-#include "systemui/statusbar/tablet/NotificationArea.h"
-#include "view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/systemui/statusbar/tablet/NotificationArea.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;

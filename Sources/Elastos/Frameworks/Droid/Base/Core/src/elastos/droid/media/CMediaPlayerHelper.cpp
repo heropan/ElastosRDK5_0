@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaPlayerHelper.h"
-#include "media/CMediaPlayer.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaPlayerHelper.h"
+#include "elastos/droid/media/CMediaPlayer.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_DEVICEMONITOR_H__
 #define __ELASTOS_DROID_SERVER_AM_DEVICEMONITOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/Core/Object.h>
 
 using Elastos::IO::IFile;

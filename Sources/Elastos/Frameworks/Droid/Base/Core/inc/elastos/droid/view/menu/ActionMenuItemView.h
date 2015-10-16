@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_ACTIONMENUITEMVIEW_H__
 #define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENUITEMVIEW_H__
 
-#include "widget/TextView.h"
+#include "elastos/droid/widget/TextView.h"
 
 using Elastos::Droid::View::IViewOnLongClickListener;
 using Elastos::Droid::View::Menu::IActionMenuChildView;

@@ -5,7 +5,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <utils/Looper.h>
 #include <androidfw/InputTransport.h>
-#include "os/NativeMessageQueue.h"
+#include "elastos/droid/os/NativeMessageQueue.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

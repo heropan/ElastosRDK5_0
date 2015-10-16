@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEWFRAGMENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/Fragment.h"
+#include "elastos/droid/app/Fragment.h"
 
 
 using Elastos::Droid::App::Fragment;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_DIALOGTITLE_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_DIALOGTITLE_H__
 
-#include "widget/TextView.h"
+#include "elastos/droid/widget/TextView.h"
 
 using Elastos::Droid::Widget::TextView;
 
@@ -15,21 +15,21 @@ namespace Internal {
  * Used by dialogs to change the font size and number of lines to try to fit
  * the text to the available space.
  */
-class DialogTitle : public TextView 
+class DialogTitle : public TextView
 {
-public: 
+public:
     DialogTitle(
-        /* [in] */ IContext* context, 
+        /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
 
     DialogTitle(
-        /* [in] */ IContext* context, 
+        /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
     DialogTitle(
         /* [in] */ IContext* context);
-    
+
 protected:
     DialogTitle();
 
@@ -47,7 +47,7 @@ protected:
 
     //@Override
     virtual CARAPI_(void) OnMeasure(
-        /* [in] */ Int32 widthMeasureSpec, 
+        /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 };
 

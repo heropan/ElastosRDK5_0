@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_PAINTDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_PAINTDRAWABLE_H__
 
-#include "graphics/drawable/ShapeDrawable.h"
+#include "elastos/droid/graphics/drawable/ShapeDrawable.h"
 
 namespace Elastos {
 namespace Droid {

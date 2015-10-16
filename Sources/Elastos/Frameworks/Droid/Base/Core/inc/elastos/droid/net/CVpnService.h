@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CVPNSERVICE_H__
 
 #include "_Elastos_Droid_Net_CVpnService.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 
 namespace Elastos {
 namespace Droid {

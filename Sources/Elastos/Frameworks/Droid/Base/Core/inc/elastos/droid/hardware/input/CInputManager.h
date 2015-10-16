@@ -4,8 +4,8 @@
 
 #include "_Elastos_Droid_Hardware_Input_CInputManager.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Handler.h"
-#include "os/Vibrator.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Vibrator.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>

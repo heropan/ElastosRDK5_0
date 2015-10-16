@@ -1,5 +1,5 @@
-#include "database/AbstractWindowedCursor.h"
-#include "database/CCursorWindow.h"
+#include "elastos/droid/database/AbstractWindowedCursor.h"
+#include "elastos/droid/database/CCursorWindow.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

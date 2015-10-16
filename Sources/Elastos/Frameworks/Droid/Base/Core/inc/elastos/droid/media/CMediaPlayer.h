@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAPLAYER_H__
 
 #include "_Elastos_Droid_Media_CMediaPlayer.h"
-#include <ext/frameworkext.h>
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceHolder;

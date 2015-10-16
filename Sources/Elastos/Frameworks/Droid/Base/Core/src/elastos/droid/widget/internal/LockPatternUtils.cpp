@@ -1,19 +1,19 @@
 
-#include "internal/LockPatternUtils.h"
+#include "elastos/droid/internal/LockPatternUtils.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
-#include "os/UserHandle.h"
-#include "os/ServiceManager.h"
-#include "os/SystemClock.h"
-#include "os/ServiceManager.h"
-#include "os/CServiceManager.h"
-#include "os/Binder.h"
-#include "os/UserHandle.h"
-#include "content/CIntent.h"
-#include "provider/Settings.h"
-#include "app/ActivityManagerNative.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CStringWrapper;

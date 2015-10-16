@@ -1,4 +1,4 @@
-#include "os/CStrictModeSpan.h"
+#include "elastos/droid/os/CStrictModeSpan.h"
 
 namespace Elastos {
 namespace Droid {

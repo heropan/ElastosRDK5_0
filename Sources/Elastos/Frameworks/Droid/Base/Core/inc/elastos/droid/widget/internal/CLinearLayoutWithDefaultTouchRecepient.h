@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CLINEARLAYOUTWITHDEFAULTTOUCHRECEPIENT_H__
 
 #include "_Elastos_Droid_Widget_Internal_CLinearLayoutWithDefaultTouchRecepient.h"
-#include "internal/LinearLayoutWithDefaultTouchRecepient.h"
+#include "elastos/droid/internal/LinearLayoutWithDefaultTouchRecepient.h"
 
 
 

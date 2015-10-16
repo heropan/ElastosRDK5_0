@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_VOLUMEPANELDIALOG_H__
 #define __ELASTOS_DROID_WIDGET_VOLUMEPANELDIALOG_H__
 
-#include "app/Dialog.h"
+#include "elastos/droid/app/Dialog.h"
 
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;

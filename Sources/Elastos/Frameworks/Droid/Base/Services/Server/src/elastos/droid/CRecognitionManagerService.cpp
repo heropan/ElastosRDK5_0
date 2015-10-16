@@ -1,8 +1,8 @@
 
 #include "CRecognitionManagerService.h"
-#include "os/UserHandle.h"
-#include "app/AppGlobals.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::CIntent;

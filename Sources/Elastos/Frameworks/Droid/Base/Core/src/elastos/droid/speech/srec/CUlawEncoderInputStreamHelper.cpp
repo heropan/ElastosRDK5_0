@@ -1,7 +1,7 @@
 
-#include "speech/srec/CUlawEncoderInputStreamHelper.h"
-#include "speech/srec/CUlawEncoderInputStream.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/srec/CUlawEncoderInputStreamHelper.h"
+#include "elastos/droid/speech/srec/CUlawEncoderInputStream.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,8 +1,8 @@
 
-#include "provider/CContactsContractRawContactsEntity.h"
-#include "provider/ContactsContract.h"
-#include "provider/ContactsContractProfile.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CContactsContractRawContactsEntity.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

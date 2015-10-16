@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CNINEPATCHDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CNinePatchDrawable.h"
-#include "graphics/drawable/NinePatchDrawable.h"
+#include "elastos/droid/graphics/drawable/NinePatchDrawable.h"
 
 namespace Elastos {
 namespace Droid {

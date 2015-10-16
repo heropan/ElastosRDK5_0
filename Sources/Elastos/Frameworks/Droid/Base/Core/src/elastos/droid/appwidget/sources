@@ -6,7 +6,7 @@ include $(MAKEDIR)/../../../../../../sources.inc
 C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../inc/
 
 SOURCES = CAppWidgetHostCallbacks.cpp
 SOURCES += AppWidgetProvider.cpp

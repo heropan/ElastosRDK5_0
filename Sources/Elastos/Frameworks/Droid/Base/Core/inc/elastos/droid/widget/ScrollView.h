@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_WIDGET_SCROLLVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/FrameLayout.h"
-#include "view/VelocityTracker.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::View::VelocityTracker;
 using Elastos::Droid::View::IKeyEvent;

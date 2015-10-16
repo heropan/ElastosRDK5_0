@@ -1,6 +1,6 @@
 
 #include "CKortideRemoteService.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Net::CServerSocket;

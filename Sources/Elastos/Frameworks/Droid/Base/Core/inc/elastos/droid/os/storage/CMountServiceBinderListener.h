@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_STORAGE_CMOUNTSERVICEBINDERLISTENER_H__
 
 #include "_Elastos_Droid_Os_Storage_CMountServiceBinderListener.h"
-#include "os/storage/CStorageManager.h"
+#include "elastos/droid/os/storage/CStorageManager.h"
 
 namespace Elastos {
 namespace Droid {

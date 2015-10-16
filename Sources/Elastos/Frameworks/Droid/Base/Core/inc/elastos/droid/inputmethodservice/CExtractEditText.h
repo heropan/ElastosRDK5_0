@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_InputMethodService_CExtractEditText.h"
 #include <elastos/core/Object.h>
-// #include "widget/EditText.h"
+// #include "elastos/droid/widget/EditText.h"
 
 // using Elastos::Droid::Widget::EditText;
 using Elastos::Core::Object;

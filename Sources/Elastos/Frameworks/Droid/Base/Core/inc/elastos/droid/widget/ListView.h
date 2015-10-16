@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/Vector.h>
-#include "widget/AbsListView.h"
+#include "elastos/droid/widget/AbsListView.h"
 
 namespace Elastos {
 namespace Droid {

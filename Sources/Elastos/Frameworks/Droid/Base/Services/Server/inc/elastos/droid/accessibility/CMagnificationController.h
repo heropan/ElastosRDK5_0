@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_CMAGNIFICATIONCONTROLLER_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CMAGNIFICATIONCONTROLLER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Accessibility_CMagnificationController.h"
 
 using Elastos::Droid::Graphics::IRect;

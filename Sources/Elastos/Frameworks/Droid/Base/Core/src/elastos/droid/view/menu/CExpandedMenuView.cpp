@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/menu/CExpandedMenuView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/menu/CExpandedMenuView.h"
 
 using Elastos::Droid::Widget::IListAdapter;
 

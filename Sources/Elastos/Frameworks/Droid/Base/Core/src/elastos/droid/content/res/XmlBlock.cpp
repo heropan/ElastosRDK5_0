@@ -1,8 +1,8 @@
 
 #include "elastos/droid/content/res/XmlBlock.h"
 #include "elastos/droid/content/res/CAssetManager.h"
-#include "utility/CTypedValue.h"
-//#include "internal/util/XmlUtils.h"
+#include "elastos/droid/utility/CTypedValue.h"
+//#include "elastos/droid/internal/util/XmlUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>

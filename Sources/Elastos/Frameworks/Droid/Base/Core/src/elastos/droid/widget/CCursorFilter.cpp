@@ -1,5 +1,5 @@
 
-#include "widget/CCursorFilter.h"
+#include "elastos/droid/widget/CCursorFilter.h"
 
 namespace Elastos {
 namespace Droid {

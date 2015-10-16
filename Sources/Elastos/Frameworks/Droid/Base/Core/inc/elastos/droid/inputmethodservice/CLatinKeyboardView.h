@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_InputMethodService_CLatinKeyboardView.h"
 
-#include "inputmethodservice/KeyboardView.h"
+#include "elastos/droid/inputmethodservice/KeyboardView.h"
 
 namespace Elastos {
 namespace Droid {

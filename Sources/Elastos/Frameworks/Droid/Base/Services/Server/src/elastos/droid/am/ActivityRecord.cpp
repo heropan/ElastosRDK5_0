@@ -5,9 +5,9 @@
 #include "am/CActivityRecordToken.h"
 #include "util/TimeUtils.h"
 #include "AttributeCache.h"
-#include "os/Process.h"
-// #include "os/SystemClock.h"
-#include "os/Build.h"
+#include "elastos/droid/os/Process.h"
+// #include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

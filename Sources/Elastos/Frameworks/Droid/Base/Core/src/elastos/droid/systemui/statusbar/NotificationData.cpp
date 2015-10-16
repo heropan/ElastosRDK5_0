@@ -1,5 +1,5 @@
-#include "systemui/statusbar/NotificationData.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/NotificationData.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;

@@ -1,4 +1,4 @@
-#include "widget/CZoomControls.h"
+#include "elastos/droid/widget/CZoomControls.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

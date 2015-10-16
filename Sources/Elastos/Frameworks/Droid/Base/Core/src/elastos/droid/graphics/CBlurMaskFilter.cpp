@@ -1,5 +1,5 @@
 
-#include "graphics/CBlurMaskFilter.h"
+#include "elastos/droid/graphics/CBlurMaskFilter.h"
 #include <skia/effects/SkBlurMask.h>
 #include <skia/effects/SkBlurMaskFilter.h>
 

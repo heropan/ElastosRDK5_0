@@ -1,5 +1,5 @@
-#include "location/CLocationProviderHelper.h"
-#include "location/CLocationProvider.h"
+#include "elastos/droid/location/CLocationProviderHelper.h"
+#include "elastos/droid/location/CLocationProvider.h"
 
 namespace Elastos {
 namespace Droid {

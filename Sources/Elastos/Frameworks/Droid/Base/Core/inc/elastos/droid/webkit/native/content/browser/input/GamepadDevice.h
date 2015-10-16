@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IInputDevice;

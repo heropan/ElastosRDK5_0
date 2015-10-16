@@ -1,10 +1,10 @@
 
 #include "am/CUsageStatsService.h"
-#include "os/ServiceManager.h"
-#include "os/SystemClock.h"
-#include "os/FileUtils.h"
-#include "os/Process.h"
-#include "os/Binder.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Binder.h"
 #include "util/Xml.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Slogger.h>

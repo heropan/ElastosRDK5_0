@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CPAINT_H__
 
 #include "_Elastos_Droid_Graphics_CPaint.h"
-#include "graphics/Paint.h"
+#include "elastos/droid/graphics/Paint.h"
 
 namespace Elastos {
 namespace Droid {

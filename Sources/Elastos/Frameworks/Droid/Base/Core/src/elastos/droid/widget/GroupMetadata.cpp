@@ -1,4 +1,4 @@
-#include "widget/GroupMetadata.h"
+#include "elastos/droid/widget/GroupMetadata.h"
 
 namespace Elastos {
 namespace Droid {

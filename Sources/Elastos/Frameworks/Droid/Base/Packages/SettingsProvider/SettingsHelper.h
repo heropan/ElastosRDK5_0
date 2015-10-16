@@ -1,7 +1,7 @@
 #ifndef _SETTINGSHELPER_H__
 #define _SETTINGSHELPER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IAudioManager;

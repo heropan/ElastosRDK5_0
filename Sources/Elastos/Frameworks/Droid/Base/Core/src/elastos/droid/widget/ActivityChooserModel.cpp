@@ -1,8 +1,8 @@
-#include "widget/ActivityChooserModel.h"
-#include "content/CComponentName.h"
-#include "content/CIntent.h"
-#include "text/TextUtils.h"
-#include "utility/Xml.h"
+#include "elastos/droid/widget/ActivityChooserModel.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/Xml.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_NOTIFICATIONROWLAYOUT_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_NOTIFICATIONROWLAYOUT_H__
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

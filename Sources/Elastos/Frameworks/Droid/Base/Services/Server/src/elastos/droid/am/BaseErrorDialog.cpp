@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "am/BaseErrorDialog.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 #include "R.h"
 
 using Elastos::Core::ICharSequence;

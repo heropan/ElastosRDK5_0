@@ -1,6 +1,6 @@
-#include "app/NotificationStyle.h"
-#include "ext/frameworkext.h"
-#include <R.h>
+#include "elastos/droid/app/NotificationStyle.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::R;

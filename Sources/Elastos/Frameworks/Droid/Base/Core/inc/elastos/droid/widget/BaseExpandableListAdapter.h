@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_BASEEXPANDABLELISTADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "database/CDataSetObservable.h"
+#include "elastos/droid/database/CDataSetObservable.h"
 
 using Elastos::Droid::Database::IDataSetObserver;
 using Elastos::Droid::Database::IDataSetObservable;

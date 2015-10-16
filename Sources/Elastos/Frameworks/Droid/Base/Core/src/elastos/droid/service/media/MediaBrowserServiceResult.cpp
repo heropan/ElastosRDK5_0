@@ -1,5 +1,5 @@
 
-#include "MediaBrowserServiceResult.h"
+#include "elastos/droid/service/media/MediaBrowserServiceResult.h"
 
 namespace Elastos {
 namespace Droid {
@@ -7,16 +7,16 @@ namespace Service {
 namespace Media {
 
 MediaBrowserServiceResult::MediaBrowserServiceResult()
-	: mDetachCalled(FALSE)
-	, mSendResultCalled(FALSE)
+    : mDetachCalled(FALSE)
+    , mSendResultCalled(FALSE)
 {
 }
 
 ECode MediaBrowserServiceResult::constructor(
     /* [in] */ IInterface * debug)
 {
-	mDebug = debug;
-	return NOERROR;
+    mDebug = debug;
+    return NOERROR;
 }
 
 /**
@@ -66,7 +66,7 @@ Boolean MediaBrowserServiceResult::IsDone()
 ECode MediaBrowserServiceResult::OnResultSent(
     /* [in] */ IInterface * result)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 } // namespace Media

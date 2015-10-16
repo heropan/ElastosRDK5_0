@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_SPINNER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/AbsSpinner.h"
-#include "widget/ListPopupWindow.h"
+#include "elastos/droid/widget/AbsSpinner.h"
+#include "elastos/droid/widget/ListPopupWindow.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::IAlertDialog;

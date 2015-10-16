@@ -1,4 +1,4 @@
-#include "widget/CHeaderViewListAdapter.h"
+#include "elastos/droid/widget/CHeaderViewListAdapter.h"
 
 namespace Elastos{
 namespace Droid{

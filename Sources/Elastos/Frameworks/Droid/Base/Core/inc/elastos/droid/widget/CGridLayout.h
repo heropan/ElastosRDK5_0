@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CGridLayout.h"
 
 
-#include "widget/GridLayout.h"
+#include "elastos/droid/widget/GridLayout.h"
 
 namespace Elastos{
 namespace Droid{

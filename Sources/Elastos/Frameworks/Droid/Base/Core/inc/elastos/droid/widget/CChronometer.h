@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CCHRONOMETER_H__
 
 #include "_Elastos_Droid_Widget_CChronometer.h"
-#include "widget/Chronometer.h"
+#include "elastos/droid/widget/Chronometer.h"
 
 
 

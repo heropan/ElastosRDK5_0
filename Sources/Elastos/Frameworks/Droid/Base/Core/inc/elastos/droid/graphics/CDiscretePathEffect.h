@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CDISCRETEPATHEFFECT_H__
 
 #include "_Elastos_Droid_Graphics_CDiscretePathEffect.h"
-#include "graphics/PathEffect.h"
+#include "elastos/droid/graphics/PathEffect.h"
 
 namespace Elastos {
 namespace Droid {

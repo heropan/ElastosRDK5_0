@@ -4,8 +4,8 @@
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CVIEWPORTWINDOW_H__
 
 #include "_Elastos_Droid_Server_Accessibility_CViewportWindow.h"
-#include "ext/frameworkext.h"
-// #include "view/View.h"
+#include "elastos/droid/ext/frameworkext.h"
+// #include "elastos/droid/view/View.h"
 //
 
 using Elastos::Droid::Content::IContext;

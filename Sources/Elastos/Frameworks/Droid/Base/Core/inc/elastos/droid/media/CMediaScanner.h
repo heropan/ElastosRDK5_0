@@ -6,7 +6,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
-#include "media/mediascanner.h"
+#include "elastos/droid/media/mediascanner.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Database::ICursor;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_RESOURCECURSORADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_RESOURCECURSORADAPTER_H__
 
-#include "widget/CursorAdapter.h"
+#include "elastos/droid/widget/CursorAdapter.h"
 
 using Elastos::Droid::View::ILayoutInflater;
 

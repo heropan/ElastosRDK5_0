@@ -1,5 +1,5 @@
 
-#include "emoji/CEmojiFactory.h"
+#include "elastos/droid/emoji/CEmojiFactory.h"
 
 #include <dlfcn.h>
 #include "EmojiFactory.h"

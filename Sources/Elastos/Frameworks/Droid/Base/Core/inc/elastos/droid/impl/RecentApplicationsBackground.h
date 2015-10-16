@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSBACKGROUND_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSBACKGROUND_H__
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Droid::Widget::LinearLayout;
 

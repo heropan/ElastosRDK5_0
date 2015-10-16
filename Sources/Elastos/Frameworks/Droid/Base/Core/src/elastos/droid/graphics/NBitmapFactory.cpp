@@ -1,5 +1,5 @@
 
-#include "graphics/NBitmapFactory.h"
+#include "elastos/droid/graphics/NBitmapFactory.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,9 +1,9 @@
 
-#include "internal/RotarySelector.h"
-#include "view/animation/CDecelerateInterpolator.h"
-#include "view/CViewConfiguration.h"
-#include "graphics/CBitmapFactory.h"
-#include "provider/Settings.h"
+#include "elastos/droid/internal/RotarySelector.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/provider/Settings.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

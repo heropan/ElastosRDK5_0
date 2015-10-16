@@ -1,6 +1,6 @@
 
-#include "view/inputmethod/CInputMethodManagerInputMethodCallback.h"
-#include "view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManagerInputMethodCallback.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 
 namespace Elastos {
 namespace Droid {

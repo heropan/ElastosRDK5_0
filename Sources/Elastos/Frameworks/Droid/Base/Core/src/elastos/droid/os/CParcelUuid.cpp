@@ -1,4 +1,4 @@
-#include "os/CParcelUuid.h"
+#include "elastos/droid/os/CParcelUuid.h"
 
 using Elastos::Utility::CUUID;
 using Elastos::Utility::IUUIDHelper;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CSEEKBAR_H__
 
 #include "_Elastos_Droid_Widget_CSeekBar.h"
-#include "widget/SeekBar.h"
+#include "elastos/droid/widget/SeekBar.h"
 
 
 

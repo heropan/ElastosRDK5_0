@@ -479,8 +479,8 @@ ECode SSLCertificateSocketFactory::GetSupportedCipherSuites(
 } // namespace Elastos
 
 #if 0 // old CCSSLCertificateSocketFactory.cpp
-#include "net/CSSLCertificateSocketFactory.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/net/CSSLCertificateSocketFactory.h"
+#include "elastos/droid/os/SystemProperties.h"
 
 using namespace Org::Apache::Http::Conn::Ssl;
 using namespace Org::Apache::Harmony::Xnet::Provider::Jsse;

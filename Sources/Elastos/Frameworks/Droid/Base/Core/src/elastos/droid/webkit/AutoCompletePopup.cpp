@@ -1,8 +1,8 @@
 
-#include "webkit/AutoCompletePopup.h"
-#include "webkit/CWebViewClassic.h"
-#include "widget/CAbsoluteLayoutLayoutParams.h"
-#include "widget/CListPopupWindow.h"
+#include "elastos/droid/webkit/AutoCompletePopup.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
+#include "elastos/droid/widget/CListPopupWindow.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

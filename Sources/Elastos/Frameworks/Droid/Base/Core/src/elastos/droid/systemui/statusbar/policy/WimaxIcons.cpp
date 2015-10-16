@@ -1,5 +1,5 @@
-#include "systemui/statusbar/policy/WimaxIcons.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/policy/WimaxIcons.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 

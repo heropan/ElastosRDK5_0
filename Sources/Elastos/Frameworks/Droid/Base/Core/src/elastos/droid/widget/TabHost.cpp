@@ -1,11 +1,11 @@
 
-#include "widget/TabHost.h"
-#include "os/Build.h"
-#include "text/TextUtils.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/SoundEffectConstants.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "widget/CTabWidget.h"
+#include "elastos/droid/widget/TabHost.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/widget/CTabWidget.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

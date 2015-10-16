@@ -1,8 +1,8 @@
 
-#include "database/sqlite/SQLiteDebug.h"
-#include "database/sqlite/SQLiteDatabase.h"
-#include "os/Build.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/database/sqlite/SQLiteDebug.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabase.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

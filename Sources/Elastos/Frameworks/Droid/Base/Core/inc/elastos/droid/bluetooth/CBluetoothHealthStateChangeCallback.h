@@ -19,7 +19,7 @@ public:
         /* [in] */ IInterface* host);
 
 private:
-	BluetoothHealth* mHost;
+    BluetoothHealth* mHost;
 };
 
 } // namespace Bluetooth

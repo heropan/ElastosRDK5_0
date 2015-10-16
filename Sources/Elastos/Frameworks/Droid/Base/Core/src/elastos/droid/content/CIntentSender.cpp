@@ -1,9 +1,9 @@
 
 #include "elastos/droid/content/CIntentSender.h"
-#include "app/ActivityManagerNative.h"
-#include "os/UserHandle.h"
-#include "os/CUserHandle.h"
-#include "os/CUserHandleHelper.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

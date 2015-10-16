@@ -1,8 +1,8 @@
 
-#include "location/CListenerTransport.h"
-#include "location/LocationManager.h"
-#include "location/CLocation.h"
-#include "os/CBundle.h"
+#include "elastos/droid/location/CListenerTransport.h"
+#include "elastos/droid/location/LocationManager.h"
+#include "elastos/droid/location/CLocation.h"
+#include "elastos/droid/os/CBundle.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

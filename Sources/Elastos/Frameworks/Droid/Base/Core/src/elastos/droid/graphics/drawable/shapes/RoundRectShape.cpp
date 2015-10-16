@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/shapes/RoundRectShape.h"
-// #include "graphics/CPath.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/shapes/RoundRectShape.h"
+// #include "elastos/droid/graphics/CPath.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {

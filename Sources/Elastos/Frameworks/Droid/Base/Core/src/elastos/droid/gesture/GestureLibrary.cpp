@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "gesture/GestureLibrary.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/gesture/GestureLibrary.h"
 
 namespace Elastos {
 namespace Droid {

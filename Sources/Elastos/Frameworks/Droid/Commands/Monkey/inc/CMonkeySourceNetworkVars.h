@@ -17,7 +17,7 @@
 #ifndef __CMONKEYSOURCENETWORKVARS_H__
 #define __CMONKEYSOURCENETWORKVARS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_CMonkeySourceNetworkVars.h"
 #include <elautoptr.h>
 #include <elastos/utility/etl/HashMap.h>

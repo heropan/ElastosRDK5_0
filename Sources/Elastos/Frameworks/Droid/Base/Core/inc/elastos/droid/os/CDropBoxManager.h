@@ -2,12 +2,12 @@
 #define __ELASTOS_DROID_OS_CDROPBOXMANAGER_H__
 
 #include "_Elastos_Droid_Os_CDropBoxManager.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/ParcelFileDescriptor.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
-#include "os/CDropBoxManagerEntry.h"
+#include "elastos/droid/os/CDropBoxManagerEntry.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;

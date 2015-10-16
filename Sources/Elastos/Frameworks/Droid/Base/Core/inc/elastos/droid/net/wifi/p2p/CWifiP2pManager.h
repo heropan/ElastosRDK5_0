@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PMANAGER_H__
 
 #include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pManager.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using namespace Elastos::Droid::Net::Wifi::P2p::Nsd;
 using Elastos::Droid::Content::IContext;

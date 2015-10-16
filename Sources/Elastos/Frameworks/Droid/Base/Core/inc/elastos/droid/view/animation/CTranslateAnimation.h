@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CTRANSLATEANIMATION_H__
 
 #include "_Elastos_Droid_View_Animation_CTranslateAnimation.h"
-#include "view/animation/TranslateAnimation.h"
+#include "elastos/droid/view/animation/TranslateAnimation.h"
 
 namespace Elastos {
 namespace Droid {

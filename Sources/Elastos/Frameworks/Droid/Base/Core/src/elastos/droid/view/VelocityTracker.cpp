@@ -1,8 +1,8 @@
 
-#include "view/VelocityTracker.h"
-#include "view/VelocityTrackerState.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/VelocityTrackerState.h"
 #include <elastos/core/Math.h>
-#include "utility/Pools.h"
+#include "elastos/droid/utility/Pools.h"
 #include <elastos/core/StringBuffer.h>
 #include <stdio.h>
 

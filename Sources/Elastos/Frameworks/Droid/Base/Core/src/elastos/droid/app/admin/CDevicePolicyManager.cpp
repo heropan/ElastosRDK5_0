@@ -1,10 +1,10 @@
 
-#include "app/admin/CDevicePolicyManager.h"
-#include "app/admin/CDeviceAdminInfo.h"
-#include "os/CServiceManager.h"
-#include "os/CUserHandleHelper.h"
-#include "net/CProxy.h"
-#include "content/pm/CResolveInfo.h"
+#include "elastos/droid/app/admin/CDevicePolicyManager.h"
+#include "elastos/droid/app/admin/CDeviceAdminInfo.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/net/CProxy.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

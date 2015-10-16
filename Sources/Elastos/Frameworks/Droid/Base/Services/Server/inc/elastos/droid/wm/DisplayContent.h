@@ -3,7 +3,7 @@
 
 #include "wm/MagnificationSpec.h"
 #include "wm/WindowState.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

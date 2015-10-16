@@ -1,8 +1,8 @@
 
-#include "ext/frameworkdef.h"
-#include "database/sqlite/SQLiteOpenHelper.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/database/sqlite/SQLiteOpenHelper.h"
 #ifdef DROID_CORE
-#include "database/sqlite/CSQLiteDatabaseHelper.h"
+#include "elastos/droid/database/sqlite/CSQLiteDatabaseHelper.h"
 #endif
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>

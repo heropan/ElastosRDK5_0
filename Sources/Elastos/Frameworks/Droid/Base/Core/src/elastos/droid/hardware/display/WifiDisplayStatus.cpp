@@ -1,8 +1,8 @@
 
-#include "hardware/display/WifiDisplayStatus.h"
-#include "hardware/display/WifiDisplay.h"
-#include "hardware/display/WifiDisplaySessionInfo.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/hardware/display/WifiDisplayStatus.h"
+#include "elastos/droid/hardware/display/WifiDisplay.h"
+#include "elastos/droid/hardware/display/WifiDisplaySessionInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 

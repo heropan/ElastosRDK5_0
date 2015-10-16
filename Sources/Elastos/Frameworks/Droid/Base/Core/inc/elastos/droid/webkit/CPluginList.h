@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_CPLUGINLIST_H__
 
 #include "_Elastos_Droid_Webkit_CPluginList.h"
-#include "ext/frameworkdef.h"
-#include "webkit/CPlugin.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/webkit/CPlugin.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -19,9 +19,9 @@ class CPlugin;
 CarClass(CPluginList)
 {
 public:
-	CARAPI constructor();
+    CARAPI constructor();
 
-	/**
+    /**
     * Returns the list of plugins as a java.util.List.
     *
     * @hide
@@ -30,9 +30,9 @@ public:
     */
     //synchronized
     CARAPI GetList(
-    	/* [out] */ IObjectContainer** plugins);
+        /* [out] */ IObjectContainer** plugins);
 
-	/**
+    /**
     * Adds a plugin to the list.
     *
     * @hide

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/ChildProcessConnection.h"
+#include "elastos/droid/webkit/native/content/browser/ChildProcessConnection.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "gesture/COrientedBoundingBox.h"
-#include "graphics/CPath.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/gesture/COrientedBoundingBox.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CMatrix.h"
 
 using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::IMatrix;

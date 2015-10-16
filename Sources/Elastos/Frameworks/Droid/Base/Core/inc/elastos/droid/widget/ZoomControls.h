@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_ZOOMCONTROLS_H__
 #define __ELASTOS_DROID_WIDGET_ZOOMCONTROLS_H__
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 /**
  * The {@code ZoomControls} class displays a simple set of controls used for zooming and

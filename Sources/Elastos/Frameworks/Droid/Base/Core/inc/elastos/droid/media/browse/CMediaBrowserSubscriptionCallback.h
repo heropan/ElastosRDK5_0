@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_BROWSE_CMEDIABROWSERSUBSCRIPTIONCALLBACK_H__
 
 #include "_Elastos_Droid_Media_Browse_CMediaBrowserSubscriptionCallback.h"
-#include "media/browse/MediaBrowserSubscriptionCallback.h"
+#include "elastos/droid/media/browse/MediaBrowserSubscriptionCallback.h"
 
 namespace Elastos {
 namespace Droid {

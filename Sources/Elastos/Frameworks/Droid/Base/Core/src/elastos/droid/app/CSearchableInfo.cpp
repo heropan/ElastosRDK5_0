@@ -1,11 +1,11 @@
-#include "app/CSearchableInfo.h"
-#include "utility/Xml.h"
-#include "content/CComponentNameHelper.h"
-#include "content/CComponentName.h"
-#include "os/CUserHandle.h"
-#include "app/CActionKeyInfo.h"
-#include "content/pm/CActivityInfo.h"
-#include "R.h"
+#include "elastos/droid/app/CSearchableInfo.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/content/CComponentNameHelper.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/app/CActionKeyInfo.h"
+#include "elastos/droid/content/pm/CActivityInfo.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::Xml;

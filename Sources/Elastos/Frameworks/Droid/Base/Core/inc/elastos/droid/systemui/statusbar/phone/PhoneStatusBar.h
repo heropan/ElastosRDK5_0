@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONESTATUSBAR_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONESTATUSBAR_H__
 
-#include "systemui/statusbar/BaseStatusBar.h"
+#include "elastos/droid/systemui/statusbar/BaseStatusBar.h"
 
 using Elastos::Droid::SystemUI::StatusBar::BaseStatusBar;
 

@@ -1,6 +1,6 @@
 
-#include "view/menu/CActionMenuPresenter.h"
-#include "R.h"
+#include "elastos/droid/view/menu/CActionMenuPresenter.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 

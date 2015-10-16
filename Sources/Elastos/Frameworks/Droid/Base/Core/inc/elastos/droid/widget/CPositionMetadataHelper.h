@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CPOSITIONMETADATAHELPER_H__
 
 #include "_Elastos_Droid_Widget_CPositionMetadataHelper.h"
-#include "widget/PositionMetadata.h"
+#include "elastos/droid/widget/PositionMetadata.h"
 
 namespace Elastos{
 namespace Droid{

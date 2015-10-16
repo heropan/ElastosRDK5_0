@@ -1,7 +1,7 @@
 
-#include "database/sqlite/SQLiteDirectCursorDriver.h"
-#include "database/sqlite/CSQLiteQuery.h"
-#include "database/sqlite/CSQLiteCursor.h"
+#include "elastos/droid/database/sqlite/SQLiteDirectCursorDriver.h"
+#include "elastos/droid/database/sqlite/CSQLiteQuery.h"
+#include "elastos/droid/database/sqlite/CSQLiteCursor.h"
 
 namespace Elastos {
 namespace Droid {

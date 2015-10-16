@@ -1,10 +1,10 @@
 #include "TransportControlView.h"
-#include "os/SystemClock.h"
-#include "os/Handler.h"
-#include "content/CIntent.h"
-#include "text/style/CForegroundColorSpan.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/text/style/CForegroundColorSpan.h"
 #include "CTransportControlViewSavedState.h"
-#include "view/CKeyEvent.h"
+#include "elastos/droid/view/CKeyEvent.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

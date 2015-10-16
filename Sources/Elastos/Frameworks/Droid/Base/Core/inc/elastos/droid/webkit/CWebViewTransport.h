@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWTRANSPORT_H__
 
 #include "_Elastos_Droid_Webkit_CWebViewTransport.h"
-#include "webkit/WebView.h"
+#include "elastos/droid/webkit/WebView.h"
 
 namespace Elastos {
 namespace Droid {

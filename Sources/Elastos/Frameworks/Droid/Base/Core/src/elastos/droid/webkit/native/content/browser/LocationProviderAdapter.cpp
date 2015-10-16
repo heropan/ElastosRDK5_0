@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/ThreadUtils.h"
-#include "webkit/native/content/browser/LocationProviderAdapter.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content/browser/LocationProviderAdapter.h"
 #include <elastos/utility/concurrent/FutureTask.h>
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;

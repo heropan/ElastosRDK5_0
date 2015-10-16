@@ -1,9 +1,9 @@
-#include "view/CScaleGestureDetector.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/CScaleGestureDetector.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
-#include "R.h"
-#include "os/SystemClock.h"
-#include "view/CViewConfigurationHelper.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
 
 using Elastos::Core::Math;
 using Elastos::Droid::R;

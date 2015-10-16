@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CTableRowLayoutParams.h"
 
 
-#include "widget/TableRowLayoutParams.h"
+#include "elastos/droid/widget/TableRowLayoutParams.h"
 
 
 namespace Elastos{

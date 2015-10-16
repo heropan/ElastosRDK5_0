@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "widget/ProgressBarSavedState.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/ProgressBarSavedState.h"
 
 namespace Elastos {
 namespace Droid {

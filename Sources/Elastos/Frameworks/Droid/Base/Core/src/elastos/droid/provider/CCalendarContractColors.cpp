@@ -1,6 +1,6 @@
 
-#include "provider/CCalendarContractColors.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractColors.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

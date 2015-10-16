@@ -1,5 +1,5 @@
-#include "media/audiopolicy/CAudioMixingRuleBuilder.h"
-#include "media/audiopolicy/CAudioMixingRule.h"
+#include "elastos/droid/media/audiopolicy/CAudioMixingRuleBuilder.h"
+#include "elastos/droid/media/audiopolicy/CAudioMixingRule.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Core::AutoLock;

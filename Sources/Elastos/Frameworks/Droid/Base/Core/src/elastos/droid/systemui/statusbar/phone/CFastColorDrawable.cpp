@@ -1,5 +1,5 @@
-#include "systemui/statusbar/phone/CFastColorDrawable.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/systemui/statusbar/phone/CFastColorDrawable.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

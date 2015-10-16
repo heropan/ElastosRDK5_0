@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CLooperHelper.h"
-#include "os/Looper.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/droid/os/Looper.h"
 
 namespace Elastos {
 namespace Droid {

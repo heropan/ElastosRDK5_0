@@ -1,15 +1,15 @@
 
-#include "view/SurfaceView.h"
-#include "view/ViewRootImpl.h"
-#include "view/CSurfaceView.h"
-#include "view/CSurfaceViewWindow.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "content/res/CConfiguration.h"
-#include "graphics/PixelFormat.h"
-#include "os/SystemClock.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/view/SurfaceView.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/view/CSurfaceView.h"
+#include "elastos/droid/view/CSurfaceViewWindow.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/graphics/PixelFormat.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include <elastos/utility/logging/Logger.h>
-#include "provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;

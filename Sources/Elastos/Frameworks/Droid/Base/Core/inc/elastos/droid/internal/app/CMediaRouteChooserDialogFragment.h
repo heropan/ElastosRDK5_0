@@ -4,11 +4,11 @@
 
 #include "_Elastos_Droid_Internal_App_CMediaRouteChooserDialogFragment.h"
 
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 
-#include "app/DialogFragment.h"
+#include "elastos/droid/app/DialogFragment.h"
 
-#include "app/Dialog.h"
+#include "elastos/droid/app/Dialog.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

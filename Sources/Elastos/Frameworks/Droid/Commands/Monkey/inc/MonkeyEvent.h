@@ -1,7 +1,7 @@
 #ifndef __MONKEYEVENT_H__
 #define __MONKEYEVENT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Commands.Monkey_server.h"
 
 using Elastos::Droid::App::IIActivityManager;

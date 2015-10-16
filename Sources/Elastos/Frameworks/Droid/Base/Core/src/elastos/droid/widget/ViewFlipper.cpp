@@ -1,7 +1,7 @@
 
-#include "widget/ViewFlipper.h"
-#include "content/CIntentFilter.h"
-#include "R.h"
+#include "elastos/droid/widget/ViewFlipper.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Content::IIntentFilter;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CWifiConfigurationPairwiseCipher.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationPairwiseCipher.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "hardware/display/WifiDisplay.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/hardware/display/WifiDisplay.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>

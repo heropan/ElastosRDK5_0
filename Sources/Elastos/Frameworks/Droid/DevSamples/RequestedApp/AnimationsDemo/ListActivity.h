@@ -2,7 +2,7 @@
 #ifndef  __LISTACTIVITY_H__
 #define  __LISTACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;

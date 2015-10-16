@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_View_CScaleGestureDetector.h"
 #include "Elastos.Droid.Core_server.h"
-#include "view/InputEventConsistencyVerifier.h"
+#include "elastos/droid/view/InputEventConsistencyVerifier.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;

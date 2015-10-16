@@ -2,7 +2,7 @@
 #ifndef __CWEBVIEWACTIVITY_H__
 #define __CWEBVIEWACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CActivityOne.h"
 
 using Elastos::Droid::App::Activity;

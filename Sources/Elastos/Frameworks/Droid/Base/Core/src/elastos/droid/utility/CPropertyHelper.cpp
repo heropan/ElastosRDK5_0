@@ -1,6 +1,6 @@
-#include "utility/CPropertyHelper.h"
-#include "utility/ReflectiveProperty.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/utility/CPropertyHelper.h"
+#include "elastos/droid/utility/ReflectiveProperty.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

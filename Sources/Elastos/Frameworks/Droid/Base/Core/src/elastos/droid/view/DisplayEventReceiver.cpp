@@ -1,6 +1,6 @@
 
-#include "view/DisplayEventReceiver.h"
-#include "os/Looper.h"
+#include "elastos/droid/view/DisplayEventReceiver.h"
+#include "elastos/droid/os/Looper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

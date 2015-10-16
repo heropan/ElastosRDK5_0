@@ -1,7 +1,7 @@
 #ifndef __MONKEYUTILS_H__
 #define __MONKEYUTILS_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::IDate;
 using Elastos::Text::ISimpleDateFormat;

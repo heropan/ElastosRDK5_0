@@ -1,5 +1,5 @@
-#include "systemui/recent/CRecentsHorizontalScrollView.h"
-#include "systemui/recent/RecentsHorizontalScrollView.h"
+#include "elastos/droid/systemui/recent/CRecentsHorizontalScrollView.h"
+#include "elastos/droid/systemui/recent/RecentsHorizontalScrollView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

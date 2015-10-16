@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_POINTERLOCATIONVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_POINTERLOCATIONVIEW_H__
 
-#include "view/View.h"
-#include "view/VelocityTracker.h"
-#include "view/CMotionEvent.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/CMotionEvent.h"
 
 using Elastos::Droid::View::View;
 using Elastos::Droid::View::IKeyEvent;

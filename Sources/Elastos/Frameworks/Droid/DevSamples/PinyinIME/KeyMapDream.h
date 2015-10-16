@@ -2,7 +2,7 @@
 #ifndef  __KEYMAPDREAM_H__
 #define  __KEYMAPDREAM_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

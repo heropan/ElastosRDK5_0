@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CBLURMASKFILTER_H__
 
 #include "_Elastos_Droid_Graphics_CBlurMaskFilter.h"
-#include "graphics/MaskFilter.h"
+#include "elastos/droid/graphics/MaskFilter.h"
 
 namespace Elastos {
 namespace Droid {

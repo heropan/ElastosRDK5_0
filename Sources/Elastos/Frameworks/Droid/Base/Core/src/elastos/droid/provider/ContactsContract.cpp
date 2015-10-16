@@ -1,8 +1,8 @@
 
-#include "provider/ContactsContract.h"
-#include "provider/ContactsContractProfile.h"
-#include "net/Uri.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/text/TextUtils.h"
 #ifdef ELASTOS_CORE
 #include "Elastos.Core_server.h"
 #include "Pattern.h"

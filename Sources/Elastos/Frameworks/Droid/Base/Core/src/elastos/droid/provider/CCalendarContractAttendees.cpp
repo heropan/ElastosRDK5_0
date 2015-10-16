@@ -1,5 +1,5 @@
 
-#include "provider/CCalendarContractAttendees.h"
+#include "elastos/droid/provider/CCalendarContractAttendees.h"
 
 namespace Elastos {
 namespace Droid {

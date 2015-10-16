@@ -1,14 +1,14 @@
 
-#include "accounts/ChooseTypeAndAccountActivity.h"
-#include "accounts/CAccountManager.h"
-#include "accounts/CAuthenticatorDescription.h"
-#include "accounts/CAccount.h"
-#include "os/Binder.h"
-#include "os/CBundle.h"
-#include "content/CIntent.h"
-#include "text/TextUtils.h"
-#include "widget/CArrayAdapter.h"
-#include "R.h"
+#include "elastos/droid/accounts/ChooseTypeAndAccountActivity.h"
+#include "elastos/droid/accounts/CAccountManager.h"
+#include "elastos/droid/accounts/CAuthenticatorDescription.h"
+#include "elastos/droid/accounts/CAccount.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/widget/CArrayAdapter.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

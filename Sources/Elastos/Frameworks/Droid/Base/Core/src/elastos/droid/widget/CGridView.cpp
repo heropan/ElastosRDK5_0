@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CGridView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CGridView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

@@ -1,7 +1,7 @@
 #ifndef __MONKEY_H__
 #define __MONKEY_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Commands.Monkey.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>

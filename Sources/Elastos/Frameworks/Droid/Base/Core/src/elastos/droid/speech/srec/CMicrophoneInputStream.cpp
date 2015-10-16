@@ -1,6 +1,6 @@
 
-#include "speech/srec/CMicrophoneInputStream.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/srec/CMicrophoneInputStream.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "internal/os/Zygote.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/internal/os/Zygote.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Thread.h>
 #include <elastos/droid/system/Os.h>

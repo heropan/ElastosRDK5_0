@@ -2,11 +2,11 @@
 #define __ELASTOS_DROID_NET_NSD_CNSDMANAGER_H__
 
 #include "_Elastos_Droid_Net_Nsd_CNsdManager.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
-#include "text/TextUtils.h"
-#include "os/HandlerBase.h"
-#include "utility/AsyncChannel.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/utility/AsyncChannel.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Concurrent::ICountDownLatch;

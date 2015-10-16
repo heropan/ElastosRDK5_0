@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "view/CDragShadowBuilder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CDragShadowBuilder.h"
 
 namespace Elastos {
 namespace Droid {

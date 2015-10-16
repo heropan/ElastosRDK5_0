@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_CCURSORFILTER_H__
 
 #include "_Elastos_Droid_Widget_CCursorFilter.h"
-#include "widget/CursorFilter.h"
+#include "elastos/droid/widget/CursorFilter.h"
 
 namespace Elastos {
 namespace Droid {

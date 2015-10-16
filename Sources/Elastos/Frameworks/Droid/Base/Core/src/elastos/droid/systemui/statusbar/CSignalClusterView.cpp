@@ -1,4 +1,4 @@
-#include "systemui/statusbar/CSignalClusterView.h"
+#include "elastos/droid/systemui/statusbar/CSignalClusterView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

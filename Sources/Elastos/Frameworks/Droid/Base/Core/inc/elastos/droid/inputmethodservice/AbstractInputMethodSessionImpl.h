@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSESSIONIMPL_H__
 
 #ifdef DROID_CORE
-#include "inputmethodservice/AbstractInputMethodService.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
 #else
 #include "AbstractInputMethodService.h"
 #endif

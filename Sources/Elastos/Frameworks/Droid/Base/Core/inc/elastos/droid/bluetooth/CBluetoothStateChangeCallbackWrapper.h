@@ -19,7 +19,7 @@ public:
         /* [in] */ IInterface* callback);
 
 private:
-	AutoPtr<CBluetoothAdapter::IBluetoothStateChangeCallback> mCallback;
+    AutoPtr<CBluetoothAdapter::IBluetoothStateChangeCallback> mCallback;
 };
 
 } // namespace Bluetooth

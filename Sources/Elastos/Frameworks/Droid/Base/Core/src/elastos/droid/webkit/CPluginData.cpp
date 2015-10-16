@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "webkit/CPluginData.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/CPluginData.h"
 
 namespace Elastos {
 namespace Droid {

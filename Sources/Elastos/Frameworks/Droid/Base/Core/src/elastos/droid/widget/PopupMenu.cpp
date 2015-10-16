@@ -1,7 +1,7 @@
 
-#include "widget/PopupMenu.h"
-#include "view/menu/CMenuBuilder.h"
-#include "view/CMenuInflater.h"
+#include "elastos/droid/widget/PopupMenu.h"
+#include "elastos/droid/view/menu/CMenuBuilder.h"
+#include "elastos/droid/view/CMenuInflater.h"
 
 using Elastos::Droid::View::CMenuInflater;
 using Elastos::Droid::View::Menu::CMenuBuilder;

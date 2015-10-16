@@ -1,5 +1,5 @@
 
-#include "widget/CChronometer.h"
+#include "elastos/droid/widget/CChronometer.h"
 
 using Elastos::Droid::View::EIID_View;
 

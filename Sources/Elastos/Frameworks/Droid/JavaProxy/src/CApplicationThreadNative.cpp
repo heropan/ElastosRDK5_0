@@ -1,7 +1,7 @@
 
 #include "CApplicationThreadNative.h"
 #include "Util.h"
-#include "ext/frameworkhash.h"
+#include "elastos/droid/ext/frameworkhash.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

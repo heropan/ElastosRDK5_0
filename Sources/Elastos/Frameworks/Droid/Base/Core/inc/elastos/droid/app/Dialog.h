@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_DIALOG_H__
 #define __ELASTOS_DROID_APP_DIALOG_H__
 
-#include "os/Runnable.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::IActionBar;

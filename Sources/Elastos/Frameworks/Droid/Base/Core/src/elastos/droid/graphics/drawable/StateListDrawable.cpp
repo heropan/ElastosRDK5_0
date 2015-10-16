@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/StateListDrawable.h"
-#include "graphics/drawable/CStateListDrawable.h"
-#include "utility/StateSet.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/StateListDrawable.h"
+#include "elastos/droid/graphics/drawable/CStateListDrawable.h"
+#include "elastos/droid/utility/StateSet.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::R;

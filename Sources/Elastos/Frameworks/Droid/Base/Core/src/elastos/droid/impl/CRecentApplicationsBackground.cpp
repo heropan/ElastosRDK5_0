@@ -1,4 +1,4 @@
-#include "impl/CRecentApplicationsBackground.h"
+#include "elastos/droid/impl/CRecentApplicationsBackground.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

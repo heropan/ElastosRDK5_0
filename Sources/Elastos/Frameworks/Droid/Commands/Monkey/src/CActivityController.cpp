@@ -1,6 +1,6 @@
 
 #include "CActivityController.h"
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

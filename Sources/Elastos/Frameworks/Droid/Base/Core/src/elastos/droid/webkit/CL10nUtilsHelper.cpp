@@ -1,6 +1,6 @@
 
-#include "webkit/CL10nUtilsHelper.h"
-#include "webkit/L10nUtils.h"
+#include "elastos/droid/webkit/CL10nUtilsHelper.h"
+#include "elastos/droid/webkit/L10nUtils.h"
 
 namespace Elastos {
 namespace Droid {

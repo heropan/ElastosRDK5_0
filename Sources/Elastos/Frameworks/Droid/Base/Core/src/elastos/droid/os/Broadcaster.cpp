@@ -1,5 +1,5 @@
-#include "os/Broadcaster.h"
-#include "os/CMessage.h"
+#include "elastos/droid/os/Broadcaster.h"
+#include "elastos/droid/os/CMessage.h"
 #include <elastos/core/AutoLock.h>
 
 namespace Elastos {

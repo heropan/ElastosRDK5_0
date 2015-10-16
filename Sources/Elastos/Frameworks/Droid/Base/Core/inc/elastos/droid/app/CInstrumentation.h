@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CINSTRUMENTATION_H__
 
 #include "_Elastos_Droid_App_CInstrumentation.h"
-#include "app/Instrumentation.h"
+#include "elastos/droid/app/Instrumentation.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CDRAWABLEHELPER_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CDrawableHelper.h"
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;

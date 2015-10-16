@@ -1,20 +1,20 @@
 
-#include "widget/RemoteViews.h"
+#include "elastos/droid/widget/RemoteViews.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
-#include "text/TextUtils.h"
-#include "graphics/CRect.h"
-#include "graphics/CBitmap.h"
-#include "content/CIntent.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/etl/HashMap.h>
-#include "os/Build.h"
-#include "os/Process.h"
-#include "os/CBundle.h"
-#include "app/CActivityOptionsHelper.h"
-#include "widget/CRemoteViews.h"
-#include "widget/CRemoteViewsBitmapCache.h"
-#include <R.h>
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/app/CActivityOptionsHelper.h"
+#include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/widget/CRemoteViewsBitmapCache.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

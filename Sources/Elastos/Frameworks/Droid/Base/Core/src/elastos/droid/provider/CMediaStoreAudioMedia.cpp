@@ -1,8 +1,8 @@
 
-#include "provider/CMediaStoreAudioMedia.h"
-#include "ext/frameworkext.h"
-#include "net/CUriHelper.h"
-#include "os/Environment.h"
+#include "elastos/droid/provider/CMediaStoreAudioMedia.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/os/Environment.h"
 
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::Environment;

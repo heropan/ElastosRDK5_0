@@ -1,6 +1,6 @@
 
-#include "webkit/native/base/PowerMonitor.h"
-#include "webkit/native/base/PowerStatusReceiver.h"
+#include "elastos/droid/webkit/native/base/PowerMonitor.h"
+#include "elastos/droid/webkit/native/base/PowerStatusReceiver.h"
 
 namespace Elastos {
 namespace Droid {

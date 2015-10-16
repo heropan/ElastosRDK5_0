@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_Internal_CLockPatternView.h"
 
-#include "widget/internal/LockPatternView.h"
+#include "elastos/droid/widget/internal/LockPatternView.h"
 
 namespace Elastos{
 namespace Droid{

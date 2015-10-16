@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWLEGACY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/ContentVideoView.h"
+#include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IColor;

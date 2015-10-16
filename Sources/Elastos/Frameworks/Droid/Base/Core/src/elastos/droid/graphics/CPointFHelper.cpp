@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPointFHelper.h"
-#include "graphics/CPointF.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPointFHelper.h"
+#include "elastos/droid/graphics/CPointF.h"
 
 namespace Elastos {
 namespace Droid {

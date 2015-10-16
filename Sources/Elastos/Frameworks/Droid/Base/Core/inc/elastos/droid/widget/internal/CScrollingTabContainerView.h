@@ -5,7 +5,7 @@
 
 
 
-#include "widget/internal/ScrollingTabContainerView.h"
+#include "elastos/droid/widget/internal/ScrollingTabContainerView.h"
 
 namespace Elastos {
 namespace Droid {

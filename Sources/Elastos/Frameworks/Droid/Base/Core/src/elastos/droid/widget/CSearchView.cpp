@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CSearchView.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CSearchView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

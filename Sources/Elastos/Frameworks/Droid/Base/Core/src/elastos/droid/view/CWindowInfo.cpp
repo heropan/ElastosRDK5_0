@@ -1,4 +1,4 @@
-#include "view/CWindowInfo.h"
+#include "elastos/droid/view/CWindowInfo.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

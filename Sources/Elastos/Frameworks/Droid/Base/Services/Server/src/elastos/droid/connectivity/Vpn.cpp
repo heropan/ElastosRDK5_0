@@ -1,7 +1,7 @@
 
-#include "os/SystemClock.h"
-#include "os/FileUtils.h"
-#include "os/Binder.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/Binder.h"
 #include "connectivity/Vpn.h"
 #include "connectivity/CVpnObserver.h"
 #include "R.h"
@@ -443,7 +443,7 @@ RETURN:
  */
 void Vpn::LegacyVpnRunner::MonitorDaemons()
 {
-	Boolean result;
+    Boolean result;
     if (mOwner->mNetworkInfo->IsConnected(&result), !result) {
         return;
     }

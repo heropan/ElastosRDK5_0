@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEW_H__
 
-#include "view/View.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::ICanvas;

@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CFixedSizeDrawable.h"
 
-#include "systemui/statusbar/policy/FixedSizeDrawable.h"
+#include "elastos/droid/systemui/statusbar/policy/FixedSizeDrawable.h"
 
 namespace Elastos {
 namespace Droid {

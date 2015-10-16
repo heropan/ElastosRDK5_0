@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_View_Animation_CTransformation.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/graphics/CMatrix.h"
 
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Graphics::CMatrix;

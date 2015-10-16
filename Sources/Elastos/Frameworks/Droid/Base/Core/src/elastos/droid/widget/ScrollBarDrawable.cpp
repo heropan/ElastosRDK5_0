@@ -1,7 +1,7 @@
 
-#include "widget/ScrollBarDrawable.h"
+#include "elastos/droid/widget/ScrollBarDrawable.h"
 #include <elastos/core/Math.h>
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CRect;

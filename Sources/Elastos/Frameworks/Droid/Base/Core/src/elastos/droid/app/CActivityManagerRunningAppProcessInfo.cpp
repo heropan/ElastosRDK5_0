@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "app/CActivityManagerRunningAppProcessInfo.h"
-#include "content/CComponentName.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CActivityManagerRunningAppProcessInfo.h"
+#include "elastos/droid/content/CComponentName.h"
 
 using Elastos::Droid::Content::CComponentName;
 

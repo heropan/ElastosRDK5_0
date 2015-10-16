@@ -1,5 +1,5 @@
 
-#include "swextend/gpio/CGpio.h"
+#include "elastos/droid/swextend/gpio/CGpio.h"
 #include "IGpioService.h"
 #include <binder/IPCThreadState.h>
 #include <binder/IServiceManager.h>

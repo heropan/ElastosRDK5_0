@@ -1,7 +1,7 @@
 #include "SettingsHelper.h"
-#include "text/TextUtils.h"
-#include "app/ActivityManagerNative.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/StringUtils.h>
 
 using Libcore::ICU::ILocale;

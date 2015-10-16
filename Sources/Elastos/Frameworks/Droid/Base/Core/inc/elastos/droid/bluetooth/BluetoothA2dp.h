@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHA2DP_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;

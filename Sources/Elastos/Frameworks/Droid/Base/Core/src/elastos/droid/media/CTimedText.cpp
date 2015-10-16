@@ -1,7 +1,7 @@
 
-#include "media/CTimedText.h"
+#include "elastos/droid/media/CTimedText.h"
 #include <elastos/utility/logging/Logger.h>
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSSECURE_H__
 
 #include "_Elastos_Droid_Provider_CSettingsSecure.h"
-#include "provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;

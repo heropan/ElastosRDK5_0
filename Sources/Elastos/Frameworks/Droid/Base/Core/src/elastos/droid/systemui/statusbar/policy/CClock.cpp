@@ -1,4 +1,4 @@
-#include "systemui/statusbar/policy/CClock.h"
+#include "elastos/droid/systemui/statusbar/policy/CClock.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::Widget::EIID_TextView;

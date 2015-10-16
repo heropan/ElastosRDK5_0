@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 #define __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 
-#include "utility/Pools.h"
-#include "utility/Config.h"
+#include "elastos/droid/utility/Pools.h"
+#include "elastos/droid/utility/Config.h"
 
 using Elastos::Droid::Utility::IPool;
 using Elastos::Droid::Utility::IPoolable;

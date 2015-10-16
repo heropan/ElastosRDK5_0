@@ -14,7 +14,7 @@ const String CIAudioFocusDispatcher::TAG("CIAudioFocusDispatcher");
 
 CIAudioFocusDispatcher::~CIAudioFocusDispatcher()
 {
-	JNIEnv* env;
+    JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
     env->DeleteGlobalRef(mJInstance);
 }

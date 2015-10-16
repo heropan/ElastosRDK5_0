@@ -1,7 +1,7 @@
 #ifndef __MONKEYSOURCERANDOM_H__
 #define __MONKEYSOURCERANDOM_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "CMonkeyEventQueue.h"
 #include "CMonkeyKeyEvent.h"
 #include "CMonkeyTouchEvent.h"

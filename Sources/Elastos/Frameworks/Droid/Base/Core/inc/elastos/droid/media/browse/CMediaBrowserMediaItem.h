@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_BROWSE_CMEDIABROWSERMEDIAITEM_H__
 
 #include "_Elastos_Droid_Media_Browse_CMediaBrowserMediaItem.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

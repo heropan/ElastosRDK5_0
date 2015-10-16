@@ -1,13 +1,13 @@
 
-#include "database/sqlite/SQLiteConnection.h"
-#include "database/sqlite/SQLiteConnectionPool.h"
-#include "database/sqlite/SQLiteGlobal.h"
-#include "database/sqlite/SQLiteCustomFunction.h"
-#include "database/sqlite/SQLiteCommon.h"
-#include "database/NativeCursorWindow.h"
-#include "database/DatabaseUtils.h"
-#include "database/CCursorWindow.h"
-#include "os/CParcelFileDescriptor.h"
+#include "elastos/droid/database/sqlite/SQLiteConnection.h"
+#include "elastos/droid/database/sqlite/SQLiteConnectionPool.h"
+#include "elastos/droid/database/sqlite/SQLiteGlobal.h"
+#include "elastos/droid/database/sqlite/SQLiteCustomFunction.h"
+#include "elastos/droid/database/sqlite/SQLiteCommon.h"
+#include "elastos/droid/database/NativeCursorWindow.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/database/CCursorWindow.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

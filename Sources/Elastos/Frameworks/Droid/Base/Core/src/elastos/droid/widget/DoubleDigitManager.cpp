@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "widget/DoubleDigitManager.h"
-#include "os/CHandler.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/DoubleDigitManager.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Core::CInteger32;
 using Elastos::Droid::Os::CHandler;

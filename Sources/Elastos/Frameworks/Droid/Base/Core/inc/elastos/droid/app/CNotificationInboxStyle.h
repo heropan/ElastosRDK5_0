@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CNOTIFICATIONINBOXSTYLE_H__
 
 #include "_Elastos_Droid_App_CNotificationInboxStyle.h"
-#include "app/NotificationStyle.h"
+#include "elastos/droid/app/NotificationStyle.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

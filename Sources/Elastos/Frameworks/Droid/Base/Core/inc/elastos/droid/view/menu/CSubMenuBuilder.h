@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CSUBMENUBUILDER_H__
 #define __ELASTOS_DROID_VIEW_MENU_CSUBMENUBUILDER_H__
 
-#include "view/menu/SubMenuBuilderBase.h"
+#include "elastos/droid/view/menu/SubMenuBuilderBase.h"
 #include "_Elastos_Droid_View_Menu_CSubMenuBuilder.h"
 
 

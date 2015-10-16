@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
-#include "content/BroadcastReceiver.h"
-#include "utility/State.h"
-#include "utility/StateMachine.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/utility/State.h"
+#include "elastos/droid/utility/StateMachine.h"
 #endif
 
 using Elastos::Droid::App::IAlarmManager;

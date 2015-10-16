@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Net_CTrafficStats.h"
 #include "elautptr.h"
-#include "net/CTrafficStats.h"
+#include "elastos/droid/net/CTrafficStats.h"
 
 namespace Elastos {
 namespace Droid {

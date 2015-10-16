@@ -2,8 +2,8 @@
 #include "BluetoothHeadset.h"
 #include "CBluetoothHeadsetStateChangeCallback.h"
 #include "CBluetoothAdapter.h"
-#include "content/CIntent.h"
-#include "R.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

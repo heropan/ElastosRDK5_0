@@ -1,5 +1,5 @@
-#include "systemui/statusbar/policy/CFixedSizeDrawable.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/systemui/statusbar/policy/CFixedSizeDrawable.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

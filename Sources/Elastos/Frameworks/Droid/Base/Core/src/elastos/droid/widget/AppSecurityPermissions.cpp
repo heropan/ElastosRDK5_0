@@ -1,5 +1,5 @@
 
-#include "widget/AppSecurityPermissions.h"
+#include "elastos/droid/widget/AppSecurityPermissions.h"
 
 
 AppSecurityPermissions::MyPermissionGroupInfo::MyPermissionGroupInfo(
@@ -252,7 +252,7 @@ private void getAllUsedPermissions(Int32 sharedUid, Set<MyPermissionInfo> permSe
     }
 }
 
-private void getPermissionsForPackage(String packageName, 
+private void getPermissionsForPackage(String packageName,
         Set<MyPermissionInfo> permSet) {
     PackageInfo pkgInfo;
     try {

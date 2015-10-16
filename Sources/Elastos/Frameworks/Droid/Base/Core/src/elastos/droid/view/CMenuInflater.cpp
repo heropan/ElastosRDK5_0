@@ -1,7 +1,7 @@
 
-#include "view/CMenuInflater.h"
-#include "utility/Xml.h"
-#include "R.h"
+#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::IClassLoader;

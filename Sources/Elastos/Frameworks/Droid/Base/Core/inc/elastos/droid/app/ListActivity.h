@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_LISTACTIVITY_H__
 #define  __ELASTOS_DROID_APP_LISTACTIVITY_H__
 
-#include "app/Activity.h"
-#include "os/Runnable.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;

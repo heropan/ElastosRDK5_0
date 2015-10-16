@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WIDGET_POPUPWINDOW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 
-#include "widget/FrameLayout.h"
-#include "R.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;

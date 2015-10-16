@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_TELEPHONY_CCELLINFO_H__
 
 #include "_Elastos_Droid_Telephony_CCellInfo.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;

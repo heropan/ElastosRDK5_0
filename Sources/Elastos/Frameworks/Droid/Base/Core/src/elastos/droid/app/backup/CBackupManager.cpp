@@ -1,7 +1,7 @@
-#include "app/backup/CBackupManager.h"
+#include "elastos/droid/app/backup/CBackupManager.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/ServiceManager.h"
-#include "app/backup/CRestoreSession.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/app/backup/CRestoreSession.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::ServiceManager;

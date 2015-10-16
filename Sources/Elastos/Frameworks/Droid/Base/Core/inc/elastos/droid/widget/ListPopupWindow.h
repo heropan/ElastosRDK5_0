@@ -2,12 +2,12 @@
 #define __ELASTOS_DROID_WIDGET_LISTPOPUPWINDOW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
 
 
 
 
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Widget::IListView;

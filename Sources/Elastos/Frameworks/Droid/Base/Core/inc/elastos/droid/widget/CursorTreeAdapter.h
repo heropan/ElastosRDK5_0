@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
 
-#include "widget/BaseExpandableListAdapter.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/widget/BaseExpandableListAdapter.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include <elastos/utility/etl/HashMap.h>
 /**
  * An adapter that exposes data from a series of {@link Cursor}s to an

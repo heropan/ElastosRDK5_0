@@ -1,6 +1,6 @@
 
-#include "media/CRemoteDisplayHelper.h"
-#include "media/CRemoteDisplay.h"
+#include "elastos/droid/media/CRemoteDisplayHelper.h"
+#include "elastos/droid/media/CRemoteDisplay.h"
 
 namespace Elastos {
 namespace Droid {

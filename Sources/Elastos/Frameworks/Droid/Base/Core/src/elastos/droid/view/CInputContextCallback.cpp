@@ -1,7 +1,7 @@
 
-#include "view/CInputContextCallback.h"
-#include "view/LocalInputConnectionWrapper.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/view/CInputContextCallback.h"
+#include "elastos/droid/view/LocalInputConnectionWrapper.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::Os::SystemClock;
 

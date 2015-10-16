@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONELAYOUTINFLATER_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CPhoneLayoutInflater.h"
-#include "view/LayoutInflater.h"
+#include "elastos/droid/view/LayoutInflater.h"
 
 using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::View::ILayoutInflaterFactory;

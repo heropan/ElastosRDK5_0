@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "systemui/statusbar/policy/CDeadZone.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/systemui/statusbar/policy/CDeadZone.h"
 
 using Elastos::Droid::View::EIID_View;
 

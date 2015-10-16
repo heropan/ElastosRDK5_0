@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CPowerManagerHelper.h"
-#include "os/CPowerManager.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CPowerManagerHelper.h"
+#include "elastos/droid/os/CPowerManager.h"
 
 namespace Elastos {
 namespace Droid {

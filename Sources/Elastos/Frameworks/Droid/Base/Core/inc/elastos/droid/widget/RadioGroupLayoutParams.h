@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__
 
-#include "widget/LinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {

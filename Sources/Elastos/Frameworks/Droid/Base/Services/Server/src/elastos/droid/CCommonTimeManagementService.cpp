@@ -1,10 +1,10 @@
 #include "CCommonTimeManagementService.h"
-#include "os/Handler.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include "Manifest.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
-#include "os/Binder.h"
+#include "elastos/droid/os/Binder.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;

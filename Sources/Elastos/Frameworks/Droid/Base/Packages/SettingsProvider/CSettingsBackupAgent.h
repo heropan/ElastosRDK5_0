@@ -1,10 +1,10 @@
 #ifndef __CSETTINGSBACKUPAGENT_H__
 #define __CSETTINGSBACKUPAGENT_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_CSettingsBackupAgent.h"
-#include "app/backup/BackupAgentHelper.h"
-#include "os/Runnable.h"
+#include "elastos/droid/app/backup/BackupAgentHelper.h"
+#include "elastos/droid/os/Runnable.h"
 #include "SettingsHelper.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>

@@ -1,10 +1,10 @@
 
-#include "webkit/ZoomControlEmbedded.h"
-#include "webkit/CWebViewClassic.h"
-#include "webkit/WebSettingsClassic.h"
-#include "widget/CZoomButtonsController.h"
-#include "widget/CToast.h"
-#include "R.h"
+#include "elastos/droid/webkit/ZoomControlEmbedded.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/WebSettingsClassic.h"
+#include "elastos/droid/widget/CZoomButtonsController.h"
+#include "elastos/droid/widget/CToast.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IGravity;

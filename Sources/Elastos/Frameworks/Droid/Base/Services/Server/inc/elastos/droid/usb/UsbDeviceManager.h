@@ -2,13 +2,13 @@
 #ifndef __ELASTOS_DROID_SERVER_USB_USBDEVICEMANAGER_H__
 #define __ELASTOS_DROID_SERVER_USB_USBDEVICEMANAGER_H__
 
-#include "ext/frameworkext.h"
-#include "os/UEventObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/UEventObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "usb/UsbSettingsManager.h"
 #include "usb/UsbDebuggingManager.h"
-#include "database/ContentObserver.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

@@ -1,6 +1,6 @@
 // wuweizuo automatic build .cpp file from .java file.
 
-#include "webkit/native/content/browser/InterstitialPageDelegateAndroid.h"
+#include "elastos/droid/webkit/native/content/browser/InterstitialPageDelegateAndroid.h"
 
 namespace Elastos {
 namespace Droid {

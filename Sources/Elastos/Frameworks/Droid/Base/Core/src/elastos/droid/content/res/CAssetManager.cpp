@@ -3,8 +3,8 @@
 #include "elastos/droid/content/res/CAssetManager.h"
 #include "elastos/droid/content/res/XmlBlock.h"
 #include "elastos/droid/content/res/CAssetFileDescriptor.h"
-#include "utility/CTypedValue.h"
-#include "os/CParcelFileDescriptor.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>

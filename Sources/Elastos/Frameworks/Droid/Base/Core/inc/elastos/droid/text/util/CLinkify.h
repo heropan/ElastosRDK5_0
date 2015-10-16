@@ -3,19 +3,21 @@
 #define __ELASTOS_DROID_TEXT_UTILITY_CLINKIFY_H__
 
 #include "_Elastos_Droid_Text_Utility_CLinkify.h"
-#include "elastos/droid/text/utility/Linkify.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Widget::ITextView;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Regex::IPattern;
 using Elastos::Utility::Regex::IMatcher;
-using Elastos::Droid::Widget::ITextView;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Utility {
 
-CarClass(CLinkify), public Linkify
+CarClass(CLinkify)
+    , public Singleton
+    , public ILinkify
 {
 public:
     CARAPI GetStaticUrlMatchFilter(

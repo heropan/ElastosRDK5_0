@@ -1,7 +1,7 @@
 
-#include "gesture/CPrediction.h"
-#include "gesture/GestureUtils.h"
-#include "gesture/InstanceLearner.h"
+#include "elastos/droid/gesture/CPrediction.h"
+#include "elastos/droid/gesture/GestureUtils.h"
+#include "elastos/droid/gesture/InstanceLearner.h"
 #include <elastos/Map.h>
 #include <elastos/core/Math.h>
 

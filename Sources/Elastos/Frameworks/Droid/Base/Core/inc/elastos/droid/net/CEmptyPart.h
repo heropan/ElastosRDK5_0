@@ -4,8 +4,8 @@
 
 #include "_CEmptyPart.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "net/Uri.h"
-#include "net/CPart.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/net/CPart.h"
 
 class EmptyPart : public Part
 {

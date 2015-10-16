@@ -1,10 +1,10 @@
 
-#include "accounts/ChooseAccountActivity.h"
-#include "accounts/CAccount.h"
-#include "accounts/CAccountManager.h"
-#include "accounts/CAuthenticatorDescription.h"
-#include "os/CBundle.h"
-#include "R.h"
+#include "elastos/droid/accounts/ChooseAccountActivity.h"
+#include "elastos/droid/accounts/CAccount.h"
+#include "elastos/droid/accounts/CAccountManager.h"
+#include "elastos/droid/accounts/CAuthenticatorDescription.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 

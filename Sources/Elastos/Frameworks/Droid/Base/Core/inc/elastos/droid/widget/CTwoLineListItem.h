@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CTWOLINELISTITEM_H__
 
 #include "_Elastos_Droid_Widget_CTwoLineListItem.h"
-#include "widget/TwoLineListItem.h"
+#include "elastos/droid/widget/TwoLineListItem.h"
 
 
 

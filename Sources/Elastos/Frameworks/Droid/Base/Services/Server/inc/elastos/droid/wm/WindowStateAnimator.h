@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 #define __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "wm/CWindowManagerService.h"
 #include "wm/AppWindowAnimator.h"
 #include "wm/CSession.h"

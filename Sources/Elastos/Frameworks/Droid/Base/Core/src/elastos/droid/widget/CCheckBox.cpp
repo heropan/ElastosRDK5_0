@@ -1,5 +1,5 @@
 
-#include "widget/CCheckBox.h"
+#include "elastos/droid/widget/CCheckBox.h"
 
 using Elastos::Droid::View::EIID_View;
 

@@ -1,5 +1,5 @@
-#include "os/FactoryTest.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/os/FactoryTest.h"
+#include "elastos/droid/os/SystemProperties.h"
 
 namespace Elastos {
 namespace Droid {

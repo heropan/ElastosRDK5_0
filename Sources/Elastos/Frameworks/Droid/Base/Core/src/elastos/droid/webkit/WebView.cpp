@@ -1,9 +1,9 @@
 
-#include "os/Looper.h"
-#include "webkit/WebView.h"
-#include "webkit/WebViewFactory.h"
-#include "webkit/CPluginList.h"
-#include "R.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/webkit/WebView.h"
+#include "elastos/droid/webkit/WebViewFactory.h"
+#include "elastos/droid/webkit/CPluginList.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;

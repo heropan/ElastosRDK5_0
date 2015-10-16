@@ -1,8 +1,8 @@
 
-#include "app/LocalePicker.h"
-#include "app/ActivityManagerNative.h"
-//#include "app/backup/CBackupManagerHelper.h"
-#include "content/res/CResources.h"
+#include "elastos/droid/app/LocalePicker.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+//#include "elastos/droid/app/backup/CBackupManagerHelper.h"
+#include "elastos/droid/content/res/CResources.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Character.h>
 

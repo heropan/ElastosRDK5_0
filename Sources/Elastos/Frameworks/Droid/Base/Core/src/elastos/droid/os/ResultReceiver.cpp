@@ -1,4 +1,4 @@
-#include "os/ResultReceiver.h"
+#include "elastos/droid/os/ResultReceiver.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Internal::Os::EIID_IIResultReceiver;

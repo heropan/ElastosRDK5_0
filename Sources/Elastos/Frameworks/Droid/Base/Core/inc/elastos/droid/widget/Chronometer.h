@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
 #define __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
 
-#include "widget/TextView.h"
-#include "R.h"
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::IHandler;

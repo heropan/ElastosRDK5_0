@@ -7,8 +7,8 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include "os/CBundle.h"
-#include "R.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::IBundle;

@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-//TODO #include "widget/FrameLayout.h"
-#include "os/Runnable.h"
-#include "webkit/native/content/browser/ContentReadbackHandler.h"
+//TODO #include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/webkit/native/content/browser/ContentReadbackHandler.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IColor;

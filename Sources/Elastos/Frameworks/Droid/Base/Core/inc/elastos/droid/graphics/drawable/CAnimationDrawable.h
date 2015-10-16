@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATIONDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CAnimationDrawable.h"
-#include "graphics/drawable/AnimationDrawable.h"
+#include "elastos/droid/graphics/drawable/AnimationDrawable.h"
 
 
 namespace Elastos {

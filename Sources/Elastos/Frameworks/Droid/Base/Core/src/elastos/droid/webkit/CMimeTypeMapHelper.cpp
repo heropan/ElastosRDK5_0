@@ -1,6 +1,6 @@
 
-#include "webkit/CMimeTypeMapHelper.h"
-#include "webkit/MimeTypeMap.h"
+#include "elastos/droid/webkit/CMimeTypeMapHelper.h"
+#include "elastos/droid/webkit/MimeTypeMap.h"
 
 namespace Elastos {
 namespace Droid {
@@ -18,10 +18,10 @@ ECode CMimeTypeMapHelper::GetFileExtensionFromUrl(
 ECode CMimeTypeMapHelper::GetSingleton(
     /* [out] */ IMimeTypeMap** mimeTypeMap)
 {
-	VALIDATE_NOT_NULL(mimeTypeMap);
-	*mimeTypeMap = MimeTypeMap::sMimeTypeMap;
-	REFCOUNT_ADD(*mimeTypeMap);
-	return NOERROR;
+    VALIDATE_NOT_NULL(mimeTypeMap);
+    *mimeTypeMap = MimeTypeMap::sMimeTypeMap;
+    REFCOUNT_ADD(*mimeTypeMap);
+    return NOERROR;
 }
 
 } // namespace Webkit

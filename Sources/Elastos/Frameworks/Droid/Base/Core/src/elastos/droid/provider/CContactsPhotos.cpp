@@ -1,6 +1,6 @@
 
-#include "provider/CContactsPhotos.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CContactsPhotos.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

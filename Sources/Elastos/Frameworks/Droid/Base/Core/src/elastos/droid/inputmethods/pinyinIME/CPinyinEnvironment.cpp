@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "CPinyinEnvironment.h"
-#include "content/res/CConfiguration.h"
+#include "elastos/droid/content/res/CConfiguration.h"
 
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::View::IDisplay;

@@ -1,6 +1,6 @@
 #include "CAccessibilityServiceClientWrapper.h"
-#include "internal/os/CHandlerCaller.h"
-#include "view/accessibility/CAccessibilityInteractionClientHelper.h"
+#include "elastos/droid/internal/os/CHandlerCaller.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
 
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::Os::CHandlerCaller;

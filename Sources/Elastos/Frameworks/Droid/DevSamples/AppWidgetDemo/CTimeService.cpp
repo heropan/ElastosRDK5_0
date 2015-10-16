@@ -34,7 +34,7 @@ const Int32 CTimeService::mDigitViews[] = { R::id::img01, R::id::img02, R::id::i
 
 CTimeService::CTimeService()
 {
-	mTimerTask = new MyTimerTask(this);
+    mTimerTask = new MyTimerTask(this);
 }
 
 ECode CTimeService::OnCreate()

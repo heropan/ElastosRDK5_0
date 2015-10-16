@@ -3,9 +3,9 @@
 
 #include "_Elastos_Droid_SystemUI_CSwipeHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "view/VelocityTracker.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;

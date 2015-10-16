@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_DATASETOBSERVABLE_H__
 #define __ELASTOS_DROID_DATABASE_DATASETOBSERVABLE_H__
 
-#include "database/Observable.h"
+#include "elastos/droid/database/Observable.h"
 
 namespace Elastos {
 namespace Droid {

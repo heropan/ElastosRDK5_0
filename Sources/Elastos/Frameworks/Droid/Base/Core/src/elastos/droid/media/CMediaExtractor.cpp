@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "media/CMediaExtractor.h"
-#include "media/CMediaFormat.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CMediaExtractor.h"
+#include "elastos/droid/media/CMediaFormat.h"
 #include <media/Media_Utils.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>

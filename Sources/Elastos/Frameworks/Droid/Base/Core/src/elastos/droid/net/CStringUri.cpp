@@ -1,5 +1,5 @@
 
-#include "net/CStringUri.h"
+#include "elastos/droid/net/CStringUri.h"
 
 namespace Elastos {
 namespace Droid {

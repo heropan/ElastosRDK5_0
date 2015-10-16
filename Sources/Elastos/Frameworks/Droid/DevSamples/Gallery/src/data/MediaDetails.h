@@ -2,7 +2,7 @@
 #ifndef __MEDIADETAILS_H__
 #define __MEDIADETAILS_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Media::IExifInterface;

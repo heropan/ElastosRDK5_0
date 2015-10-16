@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_GRADIENTDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_GRADIENTDRAWABLE_H__
 
-#include "graphics/drawable/Drawable.h"
-#include "graphics/CRect.h"
-#include "graphics/CRectF.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
 
 namespace Elastos {
 namespace Droid {

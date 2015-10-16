@@ -1,6 +1,6 @@
 
-#include "provider/CContactsGroups.h"
-#include "net/Uri.h"
+#include "elastos/droid/provider/CContactsGroups.h"
+#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 

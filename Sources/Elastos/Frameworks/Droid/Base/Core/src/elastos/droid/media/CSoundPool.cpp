@@ -1,7 +1,7 @@
 
-#include "media/CSoundPool.h"
-#include "os/CParcelFileDescriptorHelper.h"
-#include "os/CLooperHelper.h"
+#include "elastos/droid/media/CSoundPool.h"
+#include "elastos/droid/os/CParcelFileDescriptorHelper.h"
+#include "elastos/droid/os/CLooperHelper.h"
 #include <media/SoundPool.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

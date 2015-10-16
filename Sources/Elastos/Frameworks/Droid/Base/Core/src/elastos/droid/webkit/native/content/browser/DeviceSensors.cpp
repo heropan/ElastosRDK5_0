@@ -1,12 +1,12 @@
 
-#include "webkit/native/content/browser/DeviceSensors.h"
-#include "webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content/browser/DeviceSensors.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
-//TODO #include "hardware/CSensorManagerHelper.h"
-//TODO #include "os/CHandlerThread.h"
-//TODO #include "os/CHandler.h"
-//TODO #include "utility/CHashSet.h"
+//TODO #include "elastos/droid/hardware/CSensorManagerHelper.h"
+//TODO #include "elastos/droid/os/CHandlerThread.h"
+//TODO #include "elastos/droid/os/CHandler.h"
+//TODO #include "elastos/droid/utility/CHashSet.h"
 
 using Elastos::Core::AutoLock;
 using Elastos::Core::EIID_IThread;

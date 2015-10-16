@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPaintFontMetricsInt.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 
 namespace Elastos {
 namespace Droid {

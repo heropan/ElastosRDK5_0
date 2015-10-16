@@ -1,5 +1,5 @@
 
-#include "app/Application.h"
+#include "elastos/droid/app/Application.h"
 #ifdef DROID_CORE
 #else
 #include "Elastos.Droid.Core.h"

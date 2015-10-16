@@ -1,15 +1,15 @@
 
-#include "widget/FastScroller.h"
+#include "elastos/droid/widget/FastScroller.h"
 #include <elastos/core/Math.h>
-#include "os/SystemClock.h"
-#include "os/Build.h"
-#include "os/CHandler.h"
-#include "graphics/CRectF.h"
-#include "graphics/CPaint.h"
-#include "view/CMotionEvent.h"
-#include "view/CViewConfiguration.h"
-#include "widget/AbsListView.h"
-#include "widget/CExpandableListConnector.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/widget/AbsListView.h"
+#include "elastos/droid/widget/CExpandableListConnector.h"
 
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::ICharSequence;

@@ -1,6 +1,6 @@
-#include "ext/frameworkdef.h"
-#include "impl/CPolicyManager.h"
-#include "impl/CPolicy.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/impl/CPolicyManager.h"
+#include "elastos/droid/impl/CPolicy.h"
 
 using Elastos::Droid::Internal::Policy::Impl::CPolicy;
 

@@ -1,4 +1,4 @@
-#include "systemui/statusbar/phone/CTickerView.h"
+#include "elastos/droid/systemui/statusbar/phone/CTickerView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

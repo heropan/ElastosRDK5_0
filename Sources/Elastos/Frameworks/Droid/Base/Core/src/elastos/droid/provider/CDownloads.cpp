@@ -1,6 +1,6 @@
 
-#include "provider/CDownloads.h"
-#include "provider/CDownloadsImpl.h"
+#include "elastos/droid/provider/CDownloads.h"
+#include "elastos/droid/provider/CDownloadsImpl.h"
 
 using Elastos::Droid::Content::IContentResolver;
 

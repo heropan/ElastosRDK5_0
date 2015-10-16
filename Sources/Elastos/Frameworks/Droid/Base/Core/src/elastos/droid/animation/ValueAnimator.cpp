@@ -1,15 +1,15 @@
 
 #include "Elastos.Droid.Core_server.h"
-#include "animation/ValueAnimator.h"
-#include "animation/CValueAnimator.h"
-#include "animation/PropertyValuesHolder.h"
-#include "animation/CArgbEvaluator.h"
-#include "os/Looper.h"
-#include "os/SystemProperties.h"
-// #include "view/animation/AnimationUtils.h"
-// #include "view/animation/CAccelerateDecelerateInterpolator.h"
-// #include "view/CChoreographerHelper.h"
-// #include "view/animation/CLinearInterpolator.h"
+#include "elastos/droid/animation/ValueAnimator.h"
+#include "elastos/droid/animation/CValueAnimator.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
+#include "elastos/droid/animation/CArgbEvaluator.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/SystemProperties.h"
+// #include "elastos/droid/view/animation/AnimationUtils.h"
+// #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
+// #include "elastos/droid/view/CChoreographerHelper.h"
+// #include "elastos/droid/view/animation/CLinearInterpolator.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/etl/Algorithm.h>
 #include <unistd.h>

@@ -1,8 +1,8 @@
 
-#include "content/CContentValues.h"
-#include "webkit/NativeUtil.h"
-#include "webkit/WebTextView.h"
-#include "webkit/WebViewDatabaseClassic.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/webkit/NativeUtil.h"
+#include "elastos/droid/webkit/WebTextView.h"
+#include "elastos/droid/webkit/WebViewDatabaseClassic.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

@@ -1,6 +1,6 @@
 
-#include "graphics/CComposeShader.h"
-#include "graphics/Xfermode.h"
+#include "elastos/droid/graphics/CComposeShader.h"
+#include "elastos/droid/graphics/Xfermode.h"
 #include <skia/core/SkComposeShader.h>
 #include <skia/effects/SkPorterDuff.h>
 

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "widget/CSeekBar.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CSeekBar.h"
 
 using Elastos::Droid::View::EIID_View;
 

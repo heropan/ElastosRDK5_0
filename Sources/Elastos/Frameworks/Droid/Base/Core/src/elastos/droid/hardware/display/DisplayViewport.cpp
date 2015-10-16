@@ -1,8 +1,8 @@
 
-#include "hardware/display/DisplayViewport.h"
+#include "elastos/droid/hardware/display/DisplayViewport.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-//#include "graphics/CRect.h"
+//#include "elastos/droid/graphics/CRect.h"
 
 //using Elastos::Droid::Graphics::CRect;
 using Elastos::Core::StringUtils;

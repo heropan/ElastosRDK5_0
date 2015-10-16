@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_ELECTRONBEAM_H__
 #define __ELASTOS_DROID_SERVER_POWER_ELECTRONBEAM_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
 #include "display/CDisplayManagerService.h"
 

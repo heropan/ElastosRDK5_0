@@ -1,14 +1,14 @@
 
-#include "provider/CMediaStoreInternalThumbnails.h"
-#include "ext/frameworkext.h"
-#include "net/CUriHelper.h"
-#include "content/CContentUris.h"
-#include "graphics/CBitmapFactory.h"
+#include "elastos/droid/provider/CMediaStoreInternalThumbnails.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
-#include "provider/CMediaStoreVideoMedia.h"
-#include "provider/CMediaStoreImagesMedia.h"
-#include "media/CMiniThumbFile.h"
+#include "elastos/droid/provider/CMediaStoreVideoMedia.h"
+#include "elastos/droid/provider/CMediaStoreImagesMedia.h"
+#include "elastos/droid/media/CMiniThumbFile.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

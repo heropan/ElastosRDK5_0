@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "os/HandlerBase.h"
-#include "webkit/HTML5VideoView.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/webkit/HTML5VideoView.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IBitmap;

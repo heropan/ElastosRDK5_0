@@ -1,14 +1,14 @@
 
-#include "ext/frameworkext.h"
-#include "app/CDownloadManagerRequest.h"
-#include "app/CDownloadManagerQuery.h"
-#include "app/CDownloadManager.h"
-#include "content/CContentUris.h"
-#include "content/CContentValues.h"
-#include "net/Uri.h"
-#include "provider/CDownloadsImpl.h"
-#include "provider/CSettingsGlobal.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CDownloadManagerRequest.h"
+#include "elastos/droid/app/CDownloadManagerQuery.h"
+#include "elastos/droid/app/CDownloadManager.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CDownloadsImpl.h"
+#include "elastos/droid/provider/CSettingsGlobal.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

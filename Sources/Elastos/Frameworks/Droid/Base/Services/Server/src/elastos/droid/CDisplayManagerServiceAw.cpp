@@ -1,6 +1,6 @@
 #include "CDisplayManagerServiceAw.h"
-#include "os/Process.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 #include <gui/SurfaceComposerClient.h>
 #include <ui/DisplayCommand.h>
 #include <hardware/display.h>

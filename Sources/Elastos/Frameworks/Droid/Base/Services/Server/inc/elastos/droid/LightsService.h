@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_LIGHTSSERVICE_H__
 #define __ELASTOS_DROID_SERVER_LIGHTSSERVICE_H__
 
-#include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;

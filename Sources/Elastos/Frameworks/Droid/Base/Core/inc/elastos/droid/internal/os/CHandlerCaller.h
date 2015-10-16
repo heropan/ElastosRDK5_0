@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_OS_CHANDLERCALLER_H__
 
 #include "_Elastos_Droid_Internal_Os_CHandlerCaller.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Handler;

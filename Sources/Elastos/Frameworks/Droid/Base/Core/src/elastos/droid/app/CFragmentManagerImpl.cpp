@@ -1,18 +1,18 @@
 
-#include "ext/frameworkdef.h"
-#include "app/Fragment.h"
-#include "app/CFragmentSavedState.h"
-#include "app/CFragmentManagerState.h"
-#include "app/CFragmentManagerImpl.h"
-#include "app/Activity.h"
-#include "app/CBackStackState.h"
-#include "os/CBundle.h"
-#include "os/Looper.h"
-#include "animation/AnimatorInflater.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/Fragment.h"
+#include "elastos/droid/app/CFragmentSavedState.h"
+#include "elastos/droid/app/CFragmentManagerState.h"
+#include "elastos/droid/app/CFragmentManagerImpl.h"
+#include "elastos/droid/app/Activity.h"
+#include "elastos/droid/app/CBackStackState.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/animation/AnimatorInflater.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
-#include "R.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Core::CInteger32;

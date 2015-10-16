@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_SERVER_CBATTERYSERVICE_H__
 
 #include "_Elastos_Droid_Server_CBatteryService.h"
-#include "ext/frameworkext.h"
-#include "os/UEventObserver.h"
-#include "os/Runnable.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/UEventObserver.h"
+#include "elastos/droid/os/Runnable.h"
 #include "LightsService.h"
 
 using Elastos::Droid::Os::IHandler;

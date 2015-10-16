@@ -1,7 +1,7 @@
 
-#include "provider/SyncStateContractHelpers.h"
-#include "content/CContentValues.h"
-#include "content/CContentProviderOperationHelper.h"
+#include "elastos/droid/provider/SyncStateContractHelpers.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CContentProviderOperationHelper.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;

@@ -1,7 +1,7 @@
 
 #include "CSystemBackupAgent.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include "CWallpaperManagerService.h"
 
 using Elastos::IO::CFile;

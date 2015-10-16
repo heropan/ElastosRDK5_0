@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_OS_STORAGE_CEXTERNALSTORAGEFORMATTER_H__
 
 #include "_Elastos_Droid_Internal_Os_Storage_CExternalStorageFormatter.h"
-#include "app/Service.h"
-#include "os/storage/StorageEventListener.h"
+#include "elastos/droid/app/Service.h"
+#include "elastos/droid/os/storage/StorageEventListener.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Droid::App::Service;

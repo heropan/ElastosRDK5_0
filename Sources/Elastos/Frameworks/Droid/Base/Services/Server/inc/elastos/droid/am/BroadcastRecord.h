@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_BROADCASTRECORD_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "am/BroadcastFilter.h"
 #include "am/BroadcastQueue.h"
 #include <Elastos.Droid.Core.h>

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "app/CResultInfo.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CResultInfo.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

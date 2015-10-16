@@ -1,6 +1,6 @@
 
-#include "view/animation/CScaleAnimation.h"
-#include "utility/CTypedValue.h"
+#include "elastos/droid/view/animation/CScaleAnimation.h"
+#include "elastos/droid/utility/CTypedValue.h"
 
 using Elastos::Droid::Utility::CTypedValue;
 

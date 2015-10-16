@@ -1,10 +1,10 @@
 
 #ifdef DROID_CORE
-#include "inputmethodservice/AbstractInputMethodImpl.h"
-#include "inputmethodservice/AbstractInputMethodSessionImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h"
 #else
-#include "inputmethodservice/AbstractInputMethodImpl.h"
-#include "inputmethodservice/AbstractInputMethodSessionImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h"
 #endif
 
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;

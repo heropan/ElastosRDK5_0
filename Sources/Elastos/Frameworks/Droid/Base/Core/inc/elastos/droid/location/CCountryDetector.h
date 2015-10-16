@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Location_CCountryDetector.h"
-#include "location/CountryDetector.h"
+#include "elastos/droid/location/CountryDetector.h"
 
 namespace Elastos {
 namespace Droid {

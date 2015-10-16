@@ -2,8 +2,8 @@
 #include "elastos/droid/content/CContentProviderClient.h"
 #include "elastos/droid/content/CContentProviderHelper.h"
 //#include "elastos/droid/content/ContentResolver.h"
-#include "os/CHandler.h"
-#include "os/Looper.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/Looper.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

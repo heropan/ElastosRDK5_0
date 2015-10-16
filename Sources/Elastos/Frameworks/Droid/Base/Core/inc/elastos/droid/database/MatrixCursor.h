@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_MATRIXCURSOR_H__
 #define __ELASTOS_DROID_DATABASE_MATRIXCURSOR_H__
 
-#include "database/AbstractCursor.h"
+#include "elastos/droid/database/AbstractCursor.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

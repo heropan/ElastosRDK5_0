@@ -5,7 +5,7 @@
 
 
 
-#include "systemui/statusbar/policy/IntruderAlertView.h"
+#include "elastos/droid/systemui/statusbar/policy/IntruderAlertView.h"
 
 namespace Elastos {
 namespace Droid {

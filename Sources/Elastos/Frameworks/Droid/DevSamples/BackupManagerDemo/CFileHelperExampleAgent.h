@@ -1,7 +1,7 @@
 #ifndef __CFILEHELPEREXAMPLEAGENT_H__
 #define __CFILEHELPEREXAMPLEAGENT_H__
 
-#include "app/backup/BackupAgentHelper.h"
+#include "elastos/droid/app/backup/BackupAgentHelper.h"
 #include "_CFileHelperExampleAgent.h"
 
 using Elastos::Droid::App::Backup::BackupAgentHelper;

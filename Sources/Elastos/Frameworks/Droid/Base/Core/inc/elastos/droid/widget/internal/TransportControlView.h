@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_TRANSPORTCONTROLVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_TRANSPORTCONTROLVIEW_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 #include <elastos/core/Math.h>
-#include "media/CAudioManager.h"
-#include "R.h"
+#include "elastos/droid/media/CAudioManager.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::IContext;

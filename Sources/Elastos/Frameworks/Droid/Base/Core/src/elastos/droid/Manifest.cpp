@@ -1,4 +1,4 @@
-#include "Manifest.h"
+#include "elastos/droid/Manifest.h"
 
 namespace Elastos {
 namespace Droid {

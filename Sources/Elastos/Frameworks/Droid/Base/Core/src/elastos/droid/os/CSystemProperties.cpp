@@ -1,6 +1,6 @@
 
-#include "os/CSystemProperties.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/os/CSystemProperties.h"
+#include "elastos/droid/os/SystemProperties.h"
 
 namespace Elastos {
 namespace Droid {

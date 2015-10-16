@@ -2,8 +2,8 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 
-// #include "app/Service.h"
-#include "ext/frameworkdef.h"
+// #include "elastos/droid/app/Service.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

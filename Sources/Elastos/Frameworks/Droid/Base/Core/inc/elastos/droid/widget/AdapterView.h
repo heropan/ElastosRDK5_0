@@ -8,9 +8,9 @@
 #include "Elastos.Droid.Core.h"
 #endif
 
-#include "os/Runnable.h"
-#include "view/ViewGroup.h"
-#include "R.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Database::IDataSetObserver;

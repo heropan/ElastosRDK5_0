@@ -1,10 +1,10 @@
 
-#include "view/CMotionEvent.h"
-#include "view/CInputDevice.h"
-#include "view/CKeyEvent.h"
-#include "view/CPointerCoords.h"
-#include "view/CPointerProperties.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CInputDevice.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CPointerCoords.h"
+#include "elastos/droid/view/CPointerProperties.h"
+#include "elastos/droid/graphics/CMatrix.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>

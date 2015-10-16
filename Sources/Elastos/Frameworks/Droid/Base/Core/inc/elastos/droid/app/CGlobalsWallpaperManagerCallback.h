@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CGLOBALSWALLPAPERMANAGERCALLBACK_H__
 
 #include "_Elastos_Droid_App_CGlobalsWallpaperManagerCallback.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::ILooper;

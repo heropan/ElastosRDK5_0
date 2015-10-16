@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CSURFACEVIEW_H__
 
 #include "_Elastos_Droid_View_CSurfaceView.h"
-#include "view/SurfaceView.h"
+#include "elastos/droid/view/SurfaceView.h"
 
 
 namespace Elastos {

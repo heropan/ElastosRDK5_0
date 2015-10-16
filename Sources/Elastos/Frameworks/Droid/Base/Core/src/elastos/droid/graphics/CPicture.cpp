@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CPicture.h"
-#include "graphics/SkiaIOStreamAdaptor.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CPicture.h"
+#include "elastos/droid/graphics/SkiaIOStreamAdaptor.h"
 #include <skia/core/SkPicture.h>
 #include <skia/core/SkCanvas.h>
 

@@ -1,4 +1,4 @@
-#include "systemui/statusbar/policy/CIntruderAlertView.h"
+#include "elastos/droid/systemui/statusbar/policy/CIntruderAlertView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

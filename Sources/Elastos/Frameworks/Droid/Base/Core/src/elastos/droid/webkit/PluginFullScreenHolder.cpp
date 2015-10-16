@@ -1,7 +1,7 @@
 
-#include "webkit/PluginFullScreenHolder.h"
-#include "webkit/CWebViewClassic.h"
-#include "widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/webkit/PluginFullScreenHolder.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Elastos::Droid::Widget::CFrameLayoutLayoutParams;

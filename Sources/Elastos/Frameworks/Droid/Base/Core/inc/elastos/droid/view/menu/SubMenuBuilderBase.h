@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_SUBMENUBUILDERBASE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/menu/MenuBuilderBase.h"
+#include "elastos/droid/view/menu/MenuBuilderBase.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,4 +1,4 @@
-#include "widget/CRemoteViewsAdapter.h"
+#include "elastos/droid/widget/CRemoteViewsAdapter.h"
 
 namespace Elastos {
 namespace Droid {

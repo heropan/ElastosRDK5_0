@@ -1,8 +1,8 @@
 
-#include "os/CSystemVibrator.h"
+#include "elastos/droid/os/CSystemVibrator.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/ServiceManager.h"
-#include "os/CBinder.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CBinder.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::CBinder;

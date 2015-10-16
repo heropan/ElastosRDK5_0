@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTSTREAM_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/io/InputStream.h>
 
 using Elastos::IO::IInputStream;

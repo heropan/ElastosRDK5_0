@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_SERVER_POWER_SHUTDOWNTHREAD_H__
 
 #include "Elastos.Droid.Server_server.h"
-#include "ext/frameworkdef.h"
-#include "content/BroadcastReceiver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/Core/Object.h>
 
 

@@ -1,19 +1,19 @@
 
-#include "media/CMediaRouter.h"
+#include "elastos/droid/media/CMediaRouter.h"
 
-#include "content/res/CResourcesHelper.h"
-#include "os/CHandler.h"
-#include "os/CServiceManager.h"
-#include "R.h"
-#include "media/CRouteCategory.h"
-#include "media/CAudioRoutesInfo.h"
-#include "media/CMediaRouteInfo.h"
-#include "content/CIntentFilter.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/media/CRouteCategory.h"
+#include "elastos/droid/media/CAudioRoutesInfo.h"
+#include "elastos/droid/media/CMediaRouteInfo.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #include <elastos/utility/logging/Logger.h>
-#include "text/TextUtils.h"
-#include "media/CUserRouteInfo.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/media/CUserRouteInfo.h"
 #include <elastos/core/StringBuilder.h>
-#include "media/CRouteGroup.h"
+#include "elastos/droid/media/CRouteGroup.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;

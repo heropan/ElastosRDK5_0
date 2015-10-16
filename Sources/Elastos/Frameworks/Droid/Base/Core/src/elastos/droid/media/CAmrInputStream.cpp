@@ -1,4 +1,4 @@
-#include "media/CAmrInputStream.h"
+#include "elastos/droid/media/CAmrInputStream.h"
 
 namespace Elastos {
 namespace Droid {

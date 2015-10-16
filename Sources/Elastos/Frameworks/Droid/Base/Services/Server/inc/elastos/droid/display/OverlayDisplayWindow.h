@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYWINDOW_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYWINDOW_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
-#include "view/SimpleOnGestureListener.h"
-#include "view/SimpleOnScaleGestureListener.h"
+#include "elastos/droid/view/SimpleOnGestureListener.h"
+#include "elastos/droid/view/SimpleOnScaleGestureListener.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Content::IContext;

@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_WIDGET_GRIDLAYOUTLAYOUTPARAMS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/GridLayout.h"
-#include "view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/widget/GridLayout.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 #include <R.h>
 
 using Elastos::Droid::Content::IContext;

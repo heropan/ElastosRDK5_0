@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_GRIDLAYOUTANIMATIONCONTROLLER_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_GRIDLAYOUTANIMATIONCONTROLLER_H__
 
-#include "view/animation/LayoutAnimationController.h"
+#include "elastos/droid/view/animation/LayoutAnimationController.h"
 
 namespace Elastos {
 namespace Droid {

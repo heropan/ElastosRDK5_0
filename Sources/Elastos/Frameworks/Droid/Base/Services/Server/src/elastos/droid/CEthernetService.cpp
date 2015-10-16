@@ -1,6 +1,6 @@
 
 #include "CEthernetService.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::ICloseable;

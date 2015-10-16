@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "CMtpDeviceInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/mtp/CMtpDeviceInfo.h"
 
 using namespace Elastos::Core;
 using namespace Elastos::Utility::Logging;

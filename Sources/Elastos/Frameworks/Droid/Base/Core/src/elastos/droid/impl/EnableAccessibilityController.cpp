@@ -1,15 +1,15 @@
 
-#include "impl/EnableAccessibilityController.h"
-#include "R.h"
-#include "app/CActivityManager.h"
-#include "content/CComponentName.h"
-#include "media/CRingtoneManager.h"
-#include "os/CServiceManager.h"
-#include "provider/CSettingsGlobal.h"
-#include "provider/CSettingsSecure.h"
-#include "provider/CSettingsSystem.h"
-#include "speech/tts/CTextToSpeech.h"
-#include "view/accessibility/CAccessibilityManagerHelper.h"
+#include "elastos/droid/impl/EnableAccessibilityController.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/app/CActivityManager.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/media/CRingtoneManager.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/provider/CSettingsGlobal.h"
+#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/provider/CSettingsSystem.h"
+#include "elastos/droid/speech/tts/CTextToSpeech.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
 
 using Elastos::Droid::App::CActivityManager;
 using Elastos::Droid::Content::CComponentName;

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_CEMPTYABSSAVEDSTATE_H__
 
 #include "_Elastos_Droid_View_CEmptyAbsSavedState.h"
-#include "view/AbsSavedState.h"
+#include "elastos/droid/view/AbsSavedState.h"
 
 namespace Elastos {
 namespace Droid {

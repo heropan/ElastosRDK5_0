@@ -1,5 +1,5 @@
 
-#include "view/inputmethod/CBaseInputConnection.h"
+#include "elastos/droid/view/inputmethod/CBaseInputConnection.h"
 
 namespace Elastos {
 namespace Droid {

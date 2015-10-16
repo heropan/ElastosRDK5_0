@@ -1,5 +1,5 @@
-#include "statusbar/CStatusBarIcon.h"
-#include "os/CUserHandle.h"
+#include "elastos/droid/statusbar/CStatusBarIcon.h"
+#include "elastos/droid/os/CUserHandle.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

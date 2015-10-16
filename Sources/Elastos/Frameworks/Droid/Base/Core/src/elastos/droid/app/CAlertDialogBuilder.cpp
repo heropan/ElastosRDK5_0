@@ -1,8 +1,8 @@
 
-#include "app/CAlertDialogBuilder.h"
-#include "app/CAlertDialog.h"
-#include "app/CAlertControllerAlertParams.h"
-#include "view/CContextThemeWrapper.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/app/CAlertDialog.h"
+#include "elastos/droid/app/CAlertControllerAlertParams.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
 
 using Elastos::Droid::View::IContextThemeWrapper;
 using Elastos::Droid::View::CContextThemeWrapper;

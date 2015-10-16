@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_AbstractSynthesisCallback_H__
 #define __ELASTOS_DROID_SPEECH_TTS_AbstractSynthesisCallback_H__
 
-#include "speech/tts/SynthesisCallback.h"
+#include "elastos/droid/speech/tts/SynthesisCallback.h"
 
 namespace Elastos {
 namespace Droid {

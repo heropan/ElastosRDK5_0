@@ -3,17 +3,17 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_INPUTMETHODSERVICE_H__
 
 #ifdef DROID_CORE
-#include "inputmethodservice/CSoftInputWindow.h"
-#include "inputmethodservice/AbstractInputMethodImpl.h"
+#include "elastos/droid/inputmethodservice/CSoftInputWindow.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodImpl.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "inputmethodservice/AbstractInputMethodService.h"
-#include "inputmethodservice/AbstractInputMethodSessionImpl.h"
-#include "view/ViewTreeObserver.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h"
+#include "elastos/droid/view/ViewTreeObserver.h"
 #else
 #include "Elastos.Droid.Core.h"
-#include "inputmethodservice/AbstractInputMethodService.h"
-#include "inputmethodservice/AbstractInputMethodImpl.h"
-#include "inputmethodservice/AbstractInputMethodSessionImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h"
 #endif
 
 using Elastos::Core::ICharSequence;

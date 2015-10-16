@@ -1,11 +1,11 @@
 
-#include "media/CRemoteDisplay.h"
+#include "elastos/droid/media/CRemoteDisplay.h"
 #include <binder/IServiceManager.h>
 #include <media/IRemoteDisplay.h>
 #include <media/IMediaPlayerService.h>
 #include <media/IRemoteDisplayClient.h>
 #include <elastos/utility/logging/Logger.h>
-#include "view/CSurface.h"
+#include "elastos/droid/view/CSurface.h"
 
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;

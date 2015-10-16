@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSHAPEDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CShapeDrawable.h"
-#include "graphics/drawable/CShapeDrawable.h"
-#include "graphics/drawable/ShapeDrawable.h"
+#include "elastos/droid/graphics/drawable/CShapeDrawable.h"
+#include "elastos/droid/graphics/drawable/ShapeDrawable.h"
 
 
 namespace Elastos {

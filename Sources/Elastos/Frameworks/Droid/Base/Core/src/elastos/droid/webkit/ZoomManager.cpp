@@ -1,12 +1,12 @@
 
-#include "os/SystemClock.h"
-#include "utility/FloatMath.h"
-#include "view/CScaleGestureDetector.h"
-#include "webkit/ZoomManager.h"
-#include "webkit/CallbackProxy.h"
-#include "webkit/CWebViewCore.h"
-#include "webkit/CWebViewClassic.h"
-#include "webkit/WebSettingsClassic.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/utility/FloatMath.h"
+#include "elastos/droid/view/CScaleGestureDetector.h"
+#include "elastos/droid/webkit/ZoomManager.h"
+#include "elastos/droid/webkit/CallbackProxy.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/WebSettingsClassic.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

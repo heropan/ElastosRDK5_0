@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_WAVEVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_WAVEVIEW_H__
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;
@@ -23,7 +23,7 @@ using Elastos::Droid::View::View;
  * A special widget containing a center and outer ring. Moving the center ring to the outer ring
  * causes an event that can be caught by implementing OnTriggerListener.
  */
-class WaveView : public View 
+class WaveView : public View
 {
 private:
 
@@ -63,7 +63,7 @@ public:
     WaveView();
 
     WaveView(
-        /* [in] */ IContext* context, 
+        /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL);
 
     virtual CARAPI_(Boolean) OnHoverEvent(
@@ -86,25 +86,25 @@ public:
     virtual CARAPI Reset();
 
 protected:
-    
+
     CARAPI_(void) OnSizeChanged(
-        /* [in] */ Int32 w, 
-        /* [in] */ Int32 h, 
-        /* [in] */ Int32 oldw, 
+        /* [in] */ Int32 w,
+        /* [in] */ Int32 h,
+        /* [in] */ Int32 oldw,
         /* [in] */ Int32 oldh);
 
-    
+
     CARAPI_(Int32) GetSuggestedMinimumWidth();
 
-    
+
     CARAPI_(Int32) GetSuggestedMinimumHeight();
 
-    
+
     CARAPI_(void) OnMeasure(
-        /* [in] */ Int32 widthMeasureSpec, 
+        /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    
+
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
@@ -119,8 +119,8 @@ private:
     CARAPI_(void) InitDrawables();
 
     CARAPI_(void) WaveUpdateFrame(
-        /* [in] */ Float mouseX, 
-        /* [in] */ Float mouseY, 
+        /* [in] */ Float mouseX,
+        /* [in] */ Float mouseY,
         /* [in] */ Boolean fingerDown);
 
     CARAPI_(AutoPtr<IBitmapDrawable>) CreateDrawable(
@@ -153,7 +153,7 @@ private:
     CARAPI_(void) Vibrate(
         /* [in] */ Int64 duration);
 
-    
+
 
     /**
      * Dispatches a trigger event to listener. Ignored if a listener is not set.

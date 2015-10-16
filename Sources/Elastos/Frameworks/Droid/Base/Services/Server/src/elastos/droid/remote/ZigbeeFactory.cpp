@@ -1,6 +1,6 @@
 
 #include "remote/ZigbeeFactory.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 

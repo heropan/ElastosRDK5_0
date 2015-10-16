@@ -1,6 +1,6 @@
 
-#include "graphics/Shader.h"
-#include "graphics/CMatrix.h"
+#include "elastos/droid/graphics/Shader.h"
+#include "elastos/droid/graphics/CMatrix.h"
 #include <skia/core/SkShader.h>
 
 namespace Elastos {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPITEM_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/ui/DropdownItem.h"
+#include "elastos/droid/webkit/native/ui/DropdownItem.h"
 
 using Elastos::Droid::Webkit::Ui::DropdownItem;
 

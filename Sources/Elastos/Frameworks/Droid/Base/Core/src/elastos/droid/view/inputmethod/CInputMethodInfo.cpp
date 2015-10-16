@@ -1,11 +1,11 @@
 
-#include "content/CComponentName.h"
-#include "content/pm/CServiceInfo.h"
-#include "content/pm/CApplicationInfo.h"
-#include "view/inputmethod/CInputMethodInfo.h"
-#include "view/inputmethod/CInputMethodSubtype.h"
-#include "utility/Xml.h"
-#include "R.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/pm/CServiceInfo.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/view/inputmethod/CInputMethodInfo.h"
+#include "elastos/droid/view/inputmethod/CInputMethodSubtype.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::CComponentName;

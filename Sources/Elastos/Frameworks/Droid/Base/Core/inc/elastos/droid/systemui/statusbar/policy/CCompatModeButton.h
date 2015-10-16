@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_Policy_CCompatModeButton.h"
 
 
-#include "systemui/statusbar/policy/CompatModeButton.h"
+#include "elastos/droid/systemui/statusbar/policy/CompatModeButton.h"
 
 using Elastos::Droid::Widget::ImageViewScaleType;
 

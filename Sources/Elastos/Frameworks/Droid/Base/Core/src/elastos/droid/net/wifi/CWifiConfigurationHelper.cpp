@@ -1,6 +1,6 @@
 
-#include "net/wifi/CWifiConfigurationHelper.h"
-#include "net/wifi/CWifiConfiguration.h"
+#include "elastos/droid/net/wifi/CWifiConfigurationHelper.h"
+#include "elastos/droid/net/wifi/CWifiConfiguration.h"
 
 namespace Elastos {
 namespace Droid {

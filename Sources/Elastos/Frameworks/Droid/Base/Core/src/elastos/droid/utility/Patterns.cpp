@@ -1,4 +1,4 @@
-#include "utility/Patterns.h"
+#include "elastos/droid/utility/Patterns.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Character.h>
 

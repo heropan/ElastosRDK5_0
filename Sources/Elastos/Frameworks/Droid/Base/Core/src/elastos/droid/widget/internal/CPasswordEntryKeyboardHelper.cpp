@@ -1,4 +1,4 @@
-#include "widget/internal/CPasswordEntryKeyboardHelper.h"
+#include "elastos/droid/widget/internal/CPasswordEntryKeyboardHelper.h"
 
 namespace Elastos {
 namespace Droid {

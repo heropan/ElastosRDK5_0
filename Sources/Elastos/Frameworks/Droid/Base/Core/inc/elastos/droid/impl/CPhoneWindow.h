@@ -3,15 +3,15 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOW_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CPhoneWindow.h"
-#include "view/Window.h"
-#include "view/BaseSurfaceHolder.h"
+#include "elastos/droid/view/Window.h"
+#include "elastos/droid/view/BaseSurfaceHolder.h"
 
-#include "view/menu/CIconMenuPresenter.h"
-#include "view/menu/CListMenuPresenter.h"
-#include "os/CBundle.h"
-#include "os/Runnable.h"
-#include "widget/FrameLayout.h"
-#include "view/menu/CMenuDialogHelper.h"
+#include "elastos/droid/view/menu/CIconMenuPresenter.h"
+#include "elastos/droid/view/menu/CListMenuPresenter.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/view/menu/CMenuDialogHelper.h"
 
 class ViewRootImpl;
 class CPhoneWindowRotationWatcher;

@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_WIDGET_STACKVIEW_H__
 
 #include <R.h>
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <widget/AdapterViewAnimator.h>
 
 
 
-#include "view/VelocityTracker.h"
-#include "widget/FrameLayout.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Widget::IFrameLayout;
 using Elastos::Droid::View::IViewParent;

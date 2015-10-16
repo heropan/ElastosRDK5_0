@@ -2,7 +2,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuffer.h>
-#include "os/SystemClock.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "CMonkeySourceNetworkVars.h"
 #include "CMonkeyCommandReturn.h"
 #include "CMonkeySourceNetworkViews.h"

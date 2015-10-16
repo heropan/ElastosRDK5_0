@@ -3,15 +3,15 @@
 #ifdef DROID_CORE
 
 #if 0 // TODO: Waiting for CPendingIntentHelper, CIntent, CIntentFilter
-#include "app/CPendingIntentHelper.h"
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #endif
 
 #endif
 
 #if 0 // TODO: Waiting for NetworkUtils
-#include "net/NetworkUtils.h"
+#include "elastos/droid/net/NetworkUtils.h"
 #endif
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>

@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 namespace Elastos {
 namespace Droid {

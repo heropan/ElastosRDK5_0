@@ -2,7 +2,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/pm/CResolveInfoDisplayNameComparator.h"
 #include "elastos/droid/content/pm/ResolveInfo.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/os/UserHandle.h"
 
 using Elastos::Droid::Os::UserHandle;
 

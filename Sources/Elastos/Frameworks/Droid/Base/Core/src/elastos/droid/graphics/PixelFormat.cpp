@@ -1,6 +1,6 @@
 
-#include "graphics/PixelFormat.h"
-#include "graphics/CPixelFormat.h"
+#include "elastos/droid/graphics/PixelFormat.h"
+#include "elastos/droid/graphics/CPixelFormat.h"
 #include <ui/PixelFormat.h>
 
 namespace Elastos {

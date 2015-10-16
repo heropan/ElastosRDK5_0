@@ -1,7 +1,7 @@
 
-#include "view/CInputChannelHelper.h"
-#include "view/CInputChannel.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/CInputChannelHelper.h"
+#include "elastos/droid/view/CInputChannel.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,6 @@
 
-#include "location/CAddress.h"
-#include "os/CBundle.h"
+#include "elastos/droid/location/CAddress.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/core/Math.h>
 
 using Libcore::ICU::CLocale;

@@ -1,11 +1,11 @@
 
-#include "webkit/CookieManager.h"
-#include "webkit/HTML5Audio.h"
-#include "webkit/CWebViewCore.h"
-#include "webkit/CWebViewClassic.h"
-#include "media/CMediaPlayer.h"
-#include "os/CHandler.h"
-#include "os/CMessageHelper.h"
+#include "elastos/droid/webkit/CookieManager.h"
+#include "elastos/droid/webkit/HTML5Audio.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/media/CMediaPlayer.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CMessageHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CStringWrapper;

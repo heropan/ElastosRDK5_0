@@ -4,7 +4,7 @@
 #include "src/data/AsyncImageLoader.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
-#include "os/SomeArgs.h"
+#include "elastos/droid/os/SomeArgs.h"
 
 using Elastos::Droid::Os::SomeArgs;
 using Elastos::Droid::Content::CIntent;

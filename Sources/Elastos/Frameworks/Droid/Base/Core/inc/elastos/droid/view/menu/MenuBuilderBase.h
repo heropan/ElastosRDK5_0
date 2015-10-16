@@ -4,7 +4,7 @@
 
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

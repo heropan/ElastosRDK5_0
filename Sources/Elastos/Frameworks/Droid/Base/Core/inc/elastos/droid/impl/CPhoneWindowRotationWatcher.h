@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWROTATIONWATCHER_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CPhoneWindowRotationWatcher.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>

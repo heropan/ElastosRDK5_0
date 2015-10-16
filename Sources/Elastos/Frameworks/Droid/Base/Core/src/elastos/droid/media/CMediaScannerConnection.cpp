@@ -1,8 +1,8 @@
 
-#include "media/CMediaScannerConnection.h"
+#include "elastos/droid/media/CMediaScannerConnection.h"
 
 #include <elastos/utility/logging/Logger.h>
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;

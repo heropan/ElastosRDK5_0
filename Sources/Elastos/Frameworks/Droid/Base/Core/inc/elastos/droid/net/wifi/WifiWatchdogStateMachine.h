@@ -3,12 +3,12 @@
 #define  __ELASTOS_DROID_NET_WIFI_WIFIWATCHDOGSTATEMACHINE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "utility/AsyncChannel.h"
-#include "utility/State.h"
-#include "utility/StateMachine.h"
+#include "elastos/droid/utility/AsyncChannel.h"
+#include "elastos/droid/utility/State.h"
+#include "elastos/droid/utility/StateMachine.h"
 #include <elastos/utility/etl/HashMap.h>
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IPrintWriter;

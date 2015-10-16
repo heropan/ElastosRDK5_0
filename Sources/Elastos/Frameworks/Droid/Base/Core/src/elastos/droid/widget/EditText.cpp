@@ -1,7 +1,7 @@
 
-#include "widget/EditText.h"
-#include "text/Selection.h"
-#include "text/method/CArrowKeyMovementMethod.h"
+#include "elastos/droid/widget/EditText.h"
+#include "elastos/droid/text/Selection.h"
+#include "elastos/droid/text/method/CArrowKeyMovementMethod.h"
 
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Method::CArrowKeyMovementMethod;

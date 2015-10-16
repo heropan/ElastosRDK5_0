@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CACCOUNTMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CACCOUNTMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Accounts_CAccountManagerService.h"
 #include "accounts/IAccountAuthenticatorCache.h"
-#include "content/BroadcastReceiver.h"
-#include "database/sqlite/SQLiteOpenHelper.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/sqlite/SQLiteOpenHelper.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/Pair.h>
 

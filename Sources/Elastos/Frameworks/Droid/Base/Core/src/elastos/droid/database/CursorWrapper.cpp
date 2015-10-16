@@ -1,5 +1,5 @@
 
-#include "database/CursorWrapper.h"
+#include "elastos/droid/database/CursorWrapper.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::EIID_ICloseable;

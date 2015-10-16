@@ -1,8 +1,8 @@
 
 #include "LightsService.h"
 #include "CLegacyFlashlightHack.h"
-#include "os/ServiceManager.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <utils/misc.h>
 #include <utils/Log.h>

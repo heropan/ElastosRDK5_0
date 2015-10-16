@@ -1,7 +1,7 @@
 
-#include "provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
-#include "provider/ContactsContractContacts.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
+#include "elastos/droid/provider/ContactsContractContacts.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/coredef.h>
 

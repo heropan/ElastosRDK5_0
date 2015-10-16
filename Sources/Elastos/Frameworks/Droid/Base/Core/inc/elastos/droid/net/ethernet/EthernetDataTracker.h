@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_NET_ETHERNET_ETHERNETDATATRACKER_H__
 #define __ELASTOS_DROID_NET_ETHERNET_ETHERNETDATATRACKER_H__
 
-#include "net/NetworkStateTracker.h"
-#include "net/DhcpInfoInternal.h"
-#include "content/BroadcastReceiver.h"
-#include "os/Runnable.h"
+#include "elastos/droid/net/NetworkStateTracker.h"
+#include "elastos/droid/net/DhcpInfoInternal.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;

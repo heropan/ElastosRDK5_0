@@ -1,5 +1,5 @@
-#include "os/Registrant.h"
-#include "os/CMessage.h"
+#include "elastos/droid/os/Registrant.h"
+#include "elastos/droid/os/CMessage.h"
 
 namespace Elastos {
 namespace Droid {

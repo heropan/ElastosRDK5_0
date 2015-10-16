@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/ClipDrawable.h"
-#include "graphics/drawable/CClipDrawable.h"
-// #include "view/CGravity.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/ClipDrawable.h"
+#include "elastos/droid/graphics/drawable/CClipDrawable.h"
+// #include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IGravity;
 // using Elastos::Droid::View::CGravity;

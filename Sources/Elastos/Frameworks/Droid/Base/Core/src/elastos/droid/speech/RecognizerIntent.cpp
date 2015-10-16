@@ -1,10 +1,10 @@
-#include "speech/RecognizerIntent.h"
-#include "content/CIntent.h"
-#include "content/CComponentName.h"
-#include "content/pm/CResolveInfo.h"
-#include "content/pm/CActivityInfo.h"
-#include "content/CComponentName.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/speech/RecognizerIntent.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
+#include "elastos/droid/content/pm/CActivityInfo.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::IResolveInfo;

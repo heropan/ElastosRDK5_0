@@ -1,5 +1,5 @@
 
-#include "app/CReceiverRestrictedContext.h"
+#include "elastos/droid/app/CReceiverRestrictedContext.h"
 
 namespace Elastos {
 namespace Droid {

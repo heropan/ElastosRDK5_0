@@ -1,5 +1,5 @@
-#include "view/DisplayAdjustments.h"
-#include "content/res/CCompatibilityInfoHelper.h"
+#include "elastos/droid/view/DisplayAdjustments.h"
+#include "elastos/droid/content/res/CCompatibilityInfoHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::Res::ICompatibilityInfoHelper;

@@ -3,11 +3,11 @@
 
 #include <elastos/core/Math.h>
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/VelocityTracker.h"
-#include "view/accessibility/AccessibilityNodeProvider.h"
-#include "text/method/NumberKeyListener.h"
-#include "widget/EditText.h"
-#include "widget/LinearLayout.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeProvider.h"
+#include "elastos/droid/text/method/NumberKeyListener.h"
+#include "elastos/droid/widget/EditText.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Math;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_VELOCITYTRACKERSTATE_H__
 #define __ELASTOS_DROID_VIEW_VELOCITYTRACKERSTATE_H__
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include "androidfw/VelocityTracker.h"
 #include "androidfw/Input.h"
 #include "utils/BitSet.h"

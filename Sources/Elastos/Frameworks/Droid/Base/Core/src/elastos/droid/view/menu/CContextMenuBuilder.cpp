@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/menu/CContextMenuBuilder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/menu/CContextMenuBuilder.h"
 
 namespace Elastos {
 namespace Droid {

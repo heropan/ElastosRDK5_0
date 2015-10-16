@@ -1,7 +1,7 @@
 
 #include <elastos/coredef.h>
-#include "provider/CCallLog.h"
-#include "net/CUriHelper.h"
+#include "elastos/droid/provider/CCallLog.h"
+#include "elastos/droid/net/CUriHelper.h"
 
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;

@@ -1,20 +1,20 @@
 
-#include "media/CAudioManager.h"
-#include "R.h"
+#include "elastos/droid/media/CAudioManager.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
-#include "os/CBinder.h"
-#include "os/SystemClock.h"
-#include "os/CLooperHelper.h"
-#include "os/CServiceManager.h"
-#include "os/SystemProperties.h"
-#include "content/CIntent.h"
-#include "provider/Settings.h"
-#include "media/CAudioSystemHelper.h"
-#include "media/CMediaRecorder.h"
-#include "media/CMediaPlayer.h"
-#include "media/CAudioManagerAudioFocusDispatcher.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/CLooperHelper.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/media/CAudioSystemHelper.h"
+#include "elastos/droid/media/CMediaRecorder.h"
+#include "elastos/droid/media/CMediaPlayer.h"
+#include "elastos/droid/media/CAudioManagerAudioFocusDispatcher.h"
 
 using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::ILooper;

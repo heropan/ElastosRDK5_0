@@ -1,4 +1,4 @@
-#include "systemui/statusbar/CRotationToggle.h"
+#include "elastos/droid/systemui/statusbar/CRotationToggle.h"
 
 using Elastos::Droid::View::EIID_View;
 

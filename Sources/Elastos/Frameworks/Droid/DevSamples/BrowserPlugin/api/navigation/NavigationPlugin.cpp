@@ -197,9 +197,9 @@ int16_t NavigationPlugin::handleEvent(const ANPEvent* evt) {
 
         case kKey_ANPEventType:
             if (evt->data.key.action == kDown_ANPKeyAction) {
-            	bool result = handleNavigation(evt->data.key.nativeCode);
-            	inval(instance);
-            	return result;
+                bool result = handleNavigation(evt->data.key.nativeCode);
+                inval(instance);
+                return result;
             }
             return 1;
 
@@ -215,28 +215,28 @@ bool NavigationPlugin::handleNavigation(ANPKeyCode keyCode) {
     gLogI.log(kDebug_ANPLogType, "----%p Received Key %d", instance, keyCode);
 
     switch (keyCode) {
-		case kDpadUp_ANPKeyCode:
-			m_activeNav = &m_navUp;
-			break;
-		case kDpadDown_ANPKeyCode:
-			m_activeNav = &m_navDown;
-			break;
-		case kDpadLeft_ANPKeyCode:
-			m_activeNav = &m_navLeft;
-			break;
-		case kDpadRight_ANPKeyCode:
-			m_activeNav = &m_navRight;
-			break;
-		case kDpadCenter_ANPKeyCode:
-			m_activeNav = &m_navCenter;
-			break;
-		case kQ_ANPKeyCode:
-		case kDel_ANPKeyCode:
-			m_activeNav = NULL;
-			return false;
-		default:
-			m_activeNav = NULL;
-			break;
+        case kDpadUp_ANPKeyCode:
+            m_activeNav = &m_navUp;
+            break;
+        case kDpadDown_ANPKeyCode:
+            m_activeNav = &m_navDown;
+            break;
+        case kDpadLeft_ANPKeyCode:
+            m_activeNav = &m_navLeft;
+            break;
+        case kDpadRight_ANPKeyCode:
+            m_activeNav = &m_navRight;
+            break;
+        case kDpadCenter_ANPKeyCode:
+            m_activeNav = &m_navCenter;
+            break;
+        case kQ_ANPKeyCode:
+        case kDel_ANPKeyCode:
+            m_activeNav = NULL;
+            return false;
+        default:
+            m_activeNav = NULL;
+            break;
     }
     return true;
 }

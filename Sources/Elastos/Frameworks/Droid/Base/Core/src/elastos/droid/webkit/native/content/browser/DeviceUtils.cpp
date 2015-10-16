@@ -1,8 +1,8 @@
 
-#include "webkit/native/content/browser/DeviceUtils.h"
-#include "webkit/native/content/common/ContentSwitches.h"
-#include "webkit/native/base/CommandLine.h"
-//TODO #include "webkit/native/ui/base/DeviceFormFactor.h"
+#include "elastos/droid/webkit/native/content/browser/DeviceUtils.h"
+#include "elastos/droid/webkit/native/content/common/ContentSwitches.h"
+#include "elastos/droid/webkit/native/base/CommandLine.h"
+//TODO #include "elastos/droid/webkit/native/ui/base/DeviceFormFactor.h"
 
 using Elastos::Droid::Webkit::Base::CommandLine;
 using Elastos::Droid::Webkit::Content::Common::ContentSwitches;

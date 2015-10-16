@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "widget/FrameLayoutLayoutParams.h"
-#include <R.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/FrameLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos{
 namespace Droid{

@@ -1,7 +1,7 @@
 
-#include "impl/ShortcutManager.h"
-#include "content/CIntentHelper.h"
-#include "provider/CSettingsBookmarks.h"
+#include "elastos/droid/impl/ShortcutManager.h"
+#include "elastos/droid/content/CIntentHelper.h"
+#include "elastos/droid/provider/CSettingsBookmarks.h"
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
 

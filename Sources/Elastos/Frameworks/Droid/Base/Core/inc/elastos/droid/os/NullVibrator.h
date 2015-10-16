@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_NULLVIBRATOR_H__
 #define __ELASTOS_DROID_OS_NULLVIBRATOR_H__
 
-#include "os/Vibrator.h"
+#include "elastos/droid/os/Vibrator.h"
 
 namespace Elastos {
 namespace Droid {

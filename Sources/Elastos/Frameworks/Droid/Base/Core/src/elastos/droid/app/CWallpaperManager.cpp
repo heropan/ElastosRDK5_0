@@ -1,15 +1,15 @@
 
-#include "app/CWallpaperManager.h"
-#include "app/CFastBitmapDrawable.h"
-#include "graphics/CPaint.h"
-#include "graphics/CPorterDuffXfermode.h"
-#include "graphics/CRect.h"
-#include "graphics/CCanvas.h"
-#include "graphics/CBitmapFactory.h"
-#include "graphics/drawable/CBitmapDrawable.h"
-#include "view/CWindowManagerGlobal.h"
-#include "utility/CDisplayMetrics.h"
-#include "R.h"
+#include "elastos/droid/app/CWallpaperManager.h"
+#include "elastos/droid/app/CFastBitmapDrawable.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPorterDuffXfermode.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

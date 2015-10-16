@@ -1,5 +1,5 @@
 
-#include "net/CHierarchicalUri.h"
+#include "elastos/droid/net/CHierarchicalUri.h"
 
 namespace Elastos {
 namespace Droid {

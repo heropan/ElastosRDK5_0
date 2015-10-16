@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CNINEPATCH_H__
 
 #include "_Elastos_Droid_Graphics_CNinePatch.h"
-#include "graphics/NinePatch.h"
+#include "elastos/droid/graphics/NinePatch.h"
 
 namespace Elastos {
 namespace Droid {

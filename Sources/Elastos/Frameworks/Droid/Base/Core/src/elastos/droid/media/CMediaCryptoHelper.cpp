@@ -1,6 +1,6 @@
 
-#include "media/CMediaCryptoHelper.h"
-#include "media/CMediaCrypto.h"
+#include "elastos/droid/media/CMediaCryptoHelper.h"
+#include "elastos/droid/media/CMediaCrypto.h"
 
 using namespace Elastos::Core;
 

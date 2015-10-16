@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "net/CThrottleManager.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CThrottleManager.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

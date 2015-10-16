@@ -1,4 +1,4 @@
-#include "speech/tts/SynthesisPlaybackQueueItem.h"
+#include "elastos/droid/speech/tts/SynthesisPlaybackQueueItem.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

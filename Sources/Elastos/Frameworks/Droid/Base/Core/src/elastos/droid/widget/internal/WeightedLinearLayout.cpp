@@ -1,6 +1,6 @@
 
-#include "widget/internal/WeightedLinearLayout.h"
-#include "R.h"
+#include "elastos/droid/widget/internal/WeightedLinearLayout.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::IDisplayMetrics;

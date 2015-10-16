@@ -1,5 +1,5 @@
 
-#include "internal/os/LoggingPrintStream.h"
+#include "elastos/droid/internal/os/LoggingPrintStream.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>

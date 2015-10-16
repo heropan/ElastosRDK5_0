@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_NET_CNETWORKSTATSSERVICEALERTOBSERBER_H__
 
 #include "_Elastos_Droid_Server_Net_CNetworkStatsServiceAlertObserber.h"
-#include "net/CNetworkStatsService.h"
-#include "net/BaseNetworkObserver.h"
+#include "elastos/droid/net/CNetworkStatsService.h"
+#include "elastos/droid/net/BaseNetworkObserver.h"
 
 namespace Elastos {
 namespace Droid {

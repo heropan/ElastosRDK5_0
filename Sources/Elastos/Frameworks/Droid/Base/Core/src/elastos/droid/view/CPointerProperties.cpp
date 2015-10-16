@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "view/CPointerProperties.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CPointerProperties.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

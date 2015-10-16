@@ -1,8 +1,8 @@
 
-#include "widget/RelativeLayout.h"
-#include <R.h>
-#include "view/Gravity.h"
-#include "view/ViewGroup.h"
+#include "elastos/droid/widget/RelativeLayout.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/view/ViewGroup.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>

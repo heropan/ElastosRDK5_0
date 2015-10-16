@@ -1,4 +1,4 @@
-#include "media/audiopolicy/CAudioMixingRule.h"
+#include "elastos/droid/media/audiopolicy/CAudioMixingRule.h"
 
 namespace Elastos {
 namespace Droid {

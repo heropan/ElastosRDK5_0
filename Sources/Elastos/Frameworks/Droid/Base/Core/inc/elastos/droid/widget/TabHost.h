@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_TABHOST_H__
 #define __ELASTOS_DROID_WIDGET_TABHOST_H__
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::App::ILocalActivityManager;

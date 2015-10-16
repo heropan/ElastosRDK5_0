@@ -1,5 +1,5 @@
 #include "_Elastos_Droid_Widget_Internal_CWaveView.h"
-#include "internal/WaveView.h"
+#include "elastos/droid/internal/WaveView.h"
 
 
 using Elastos::Droid::Animation::IValueAnimator;

@@ -1,4 +1,4 @@
-#include "widget/internal/CRotarySelector.h"
+#include "elastos/droid/widget/internal/CRotarySelector.h"
 
 using Elastos::Droid::View::EIID_View;
 

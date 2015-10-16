@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_KEHSTOREHANDLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "webkit/ByteArrayBuilder.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/webkit/ByteArrayBuilder.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::HandlerBase;

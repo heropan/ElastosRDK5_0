@@ -3,9 +3,8 @@ TARGET_NAME= bluetooth
 TARGET_TYPE= lib
 
 
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/bluetooth
 INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 

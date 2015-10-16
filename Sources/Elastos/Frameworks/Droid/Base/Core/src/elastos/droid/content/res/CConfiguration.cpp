@@ -1,8 +1,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/res/CConfiguration.h"
-//#include "text/TextUtils.h"
-#include "os/Build.h"
+//#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/etl/List.h>

@@ -1,6 +1,6 @@
 
-#include "appwidget/CAppWidgetManagerHelper.h"
-#include "appwidget/CAppWidgetManager.h"
+#include "elastos/droid/appwidget/CAppWidgetManagerHelper.h"
+#include "elastos/droid/appwidget/CAppWidgetManager.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,8 +1,8 @@
-#include "ext/frameworkext.h"
-#include "widget/LinearLayout.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/LinearLayout.h"
 #include <elastos/core/Math.h>
-#include <R.h>
-#include "view/Gravity.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/view/Gravity.h"
 
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::IGravity;

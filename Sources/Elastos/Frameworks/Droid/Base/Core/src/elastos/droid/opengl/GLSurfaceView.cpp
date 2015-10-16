@@ -1,7 +1,7 @@
 #include "GLSurfaceView.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
-#include "os/SystemProperties.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include "gles/CEGL10Helper.h"
 #include "CGLDebugHelper.h"
 #include "gles/CEGLContextImpl.h"

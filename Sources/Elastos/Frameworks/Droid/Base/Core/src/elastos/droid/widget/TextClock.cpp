@@ -1,5 +1,5 @@
 
-#include "widget/TextClock.h"
+#include "elastos/droid/widget/TextClock.h"
 
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;

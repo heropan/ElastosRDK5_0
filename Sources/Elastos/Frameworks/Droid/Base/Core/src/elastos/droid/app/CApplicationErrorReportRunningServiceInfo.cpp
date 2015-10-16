@@ -1,4 +1,4 @@
-#include "app/CApplicationErrorReportRunningServiceInfo.h"
+#include "elastos/droid/app/CApplicationErrorReportRunningServiceInfo.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

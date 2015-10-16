@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/ArrayAdapter.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 

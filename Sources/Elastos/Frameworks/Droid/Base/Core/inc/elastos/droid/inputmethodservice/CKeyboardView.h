@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__
 
 #include "_Elastos_Droid_InputMethodService_CKeyboardView.h"
-#include "inputmethodservice/KeyboardView.h"
+#include "elastos/droid/inputmethodservice/KeyboardView.h"
 
 namespace Elastos {
 namespace Droid {

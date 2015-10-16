@@ -1,6 +1,6 @@
 
-#include "hardware/usb/CUsbDeviceHelper.h"
-#include "hardware/usb/UsbDevice.h"
+#include "elastos/droid/hardware/usb/CUsbDeviceHelper.h"
+#include "elastos/droid/hardware/usb/UsbDevice.h"
 
 namespace Elastos {
 namespace Droid {

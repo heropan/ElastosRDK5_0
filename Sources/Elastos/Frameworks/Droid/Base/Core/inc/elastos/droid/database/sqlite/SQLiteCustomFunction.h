@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECUSTOMFUNCTION_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECUSTOMFUNCTION_H__
 
-#include "ext/frameworkdef.h"
-#include "database/sqlite/SQLiteDatabase.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

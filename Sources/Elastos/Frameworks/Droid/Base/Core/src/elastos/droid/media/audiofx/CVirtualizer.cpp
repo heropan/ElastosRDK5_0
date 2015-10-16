@@ -1,5 +1,5 @@
-#include "media/audiofx/CVirtualizer.h"
-#include "media/audiofx/CVirtualizerSettings.h"
+#include "elastos/droid/media/audiofx/CVirtualizer.h"
+#include "elastos/droid/media/audiofx/CVirtualizerSettings.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_BROADCASTFILTER_H__
 
 #include <Elastos.Droid.Core.h>
-#include "content/IntentFilter.h"
+#include "elastos/droid/content/IntentFilter.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;

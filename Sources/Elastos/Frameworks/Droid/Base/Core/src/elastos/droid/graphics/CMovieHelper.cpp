@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CMovieHelper.h"
-#include "graphics/Movie.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CMovieHelper.h"
+#include "elastos/droid/graphics/Movie.h"
 
 namespace Elastos {
 namespace Droid {

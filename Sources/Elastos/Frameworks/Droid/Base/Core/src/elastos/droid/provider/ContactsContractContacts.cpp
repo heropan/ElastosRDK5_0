@@ -1,9 +1,9 @@
 
-#include "provider/ContactsContractContacts.h"
-#include "provider/ContactsContract.h"
-#include "net/Uri.h"
-#include "content/CContentUris.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/provider/ContactsContractContacts.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/content/CContentValues.h"
 #include <elastos/coredef.h>
 
 using Elastos::Core::ISystem;

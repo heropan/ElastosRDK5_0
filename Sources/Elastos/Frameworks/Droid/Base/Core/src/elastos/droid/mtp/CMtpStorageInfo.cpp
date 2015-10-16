@@ -1,5 +1,5 @@
 
-#include "CMtpStorageInfo.h"
+#include "elastos/droid/mtp/CMtpStorageInfo.h"
 
 namespace Elastos {
 namespace Droid {

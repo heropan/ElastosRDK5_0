@@ -2,7 +2,7 @@
 #ifndef __CWIFISETTING_H__
 #define __CWIFISETTING_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CWifiSetting.h"
 // #include "ConnectTimerTask.h"
 #include "WifiFun.h"

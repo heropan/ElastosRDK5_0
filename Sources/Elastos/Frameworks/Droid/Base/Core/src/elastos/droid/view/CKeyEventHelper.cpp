@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "view/CKeyEventHelper.h"
-#include "view/CKeyEvent.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CKeyEventHelper.h"
+#include "elastos/droid/view/CKeyEvent.h"
 
 namespace Elastos {
 namespace Droid {

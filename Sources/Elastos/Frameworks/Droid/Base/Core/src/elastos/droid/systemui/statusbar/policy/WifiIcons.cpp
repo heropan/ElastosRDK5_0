@@ -1,5 +1,5 @@
-#include "systemui/statusbar/policy/WifiIcons.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/systemui/statusbar/policy/WifiIcons.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 

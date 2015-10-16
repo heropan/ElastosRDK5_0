@@ -1,6 +1,6 @@
 
-#include "os/CSystemService.h"
-#include "os/SystemService.h"
+#include "elastos/droid/os/CSystemService.h"
+#include "elastos/droid/os/SystemService.h"
 
 namespace Elastos {
 namespace Droid {

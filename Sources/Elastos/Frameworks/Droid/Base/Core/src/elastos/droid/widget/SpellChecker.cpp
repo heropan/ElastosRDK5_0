@@ -1,5 +1,5 @@
 
-#include "widget/SpellChecker.h"
+#include "elastos/droid/widget/SpellChecker.h"
 
 namespace Elastos {
 namespace Droid {

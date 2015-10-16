@@ -12,7 +12,7 @@ namespace JavaProxy {
 CarClass(CLocalActivityRecordNative)
 {
 public:
-	~CLocalActivityRecordNative();
+    ~CLocalActivityRecordNative();
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

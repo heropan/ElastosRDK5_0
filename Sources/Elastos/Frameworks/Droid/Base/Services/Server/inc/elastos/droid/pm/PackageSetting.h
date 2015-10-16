@@ -3,7 +3,7 @@
 
 #include "pm/PackageSettingBase.h"
 #include "pm/SharedUserSetting.h"
-#include "content/pm/PackageParser.h"
+#include "elastos/droid/content/pm/PackageParser.h"
 
 using Elastos::Droid::Content::Pm::PackageParser;
 

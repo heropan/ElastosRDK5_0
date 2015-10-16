@@ -1,9 +1,9 @@
 
-#include "view/animation/LayoutAnimationController.h"
-#include "view/animation/AnimationUtils.h"
-#include "view/animation/Animation.h"
-#include "view/animation/CLinearInterpolator.h"
-#include "view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/animation/LayoutAnimationController.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/view/animation/Animation.h"
+#include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include <elastos/core/Math.h>
 #include <stdlib.h>
 

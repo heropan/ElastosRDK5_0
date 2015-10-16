@@ -1,5 +1,5 @@
 
-#include "widget/CScrollView.h"
+#include "elastos/droid/widget/CScrollView.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

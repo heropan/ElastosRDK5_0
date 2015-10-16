@@ -1,12 +1,12 @@
 
-#include "systemui/statusbar/phone/NavigationBarView.h"
-#include "os/ServiceManager.h"
-#include "os/SystemProperties.h"
-#include "content/CIntent.h"
-#include "content/CComponentName.h"
-#include "widget/CLinearLayoutLayoutParams.h"
-#include "systemui/SystemUIR.h"
-#include "view/animation/CAccelerateInterpolator.h"
+#include "elastos/droid/systemui/statusbar/phone/NavigationBarView.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/view/animation/CAccelerateInterpolator.h"
 
 using Elastos::Droid::SystemUI::SystemUIR;
 using Elastos::Droid::Os::SystemProperties;

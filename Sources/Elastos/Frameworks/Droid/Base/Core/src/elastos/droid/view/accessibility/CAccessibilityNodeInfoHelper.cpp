@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "view/accessibility/CAccessibilityNodeInfoHelper.h"
-#include "view/accessibility/CAccessibilityNodeInfo.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfoHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 
 namespace Elastos {
 namespace Droid {

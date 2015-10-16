@@ -3,7 +3,7 @@
 #include "display/OverlayDisplayWindow.h"
 #include "display/DisplayDeviceInfo.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 #include "R.h"
 #include <elastos/core/StringUtils.h>
 

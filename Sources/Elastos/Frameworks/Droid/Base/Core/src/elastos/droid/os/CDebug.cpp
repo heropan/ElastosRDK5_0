@@ -1,6 +1,6 @@
 
-#include "os/CDebug.h"
-#include "os/CDebugMemoryInfo.h"
+#include "elastos/droid/os/CDebug.h"
+#include "elastos/droid/os/CDebugMemoryInfo.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <cutils/debugger.h>
 #include <stdio.h>

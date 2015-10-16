@@ -2,8 +2,8 @@
 #include "wm/DragState.h"
 #include "wm/InputMonitor.h"
 #include "wm/CWindowManagerService.h"
-#include "os/Process.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

@@ -2,11 +2,11 @@
 #ifndef __CSETTINGSPROVIDER_H__
 #define __CSETTINGSPROVIDER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_CSettingsProvider.h"
-#include "content/ContentProvider.h"
-#include "content/BroadcastReceiver.h"
-#include "os/FileObserver.h"
+#include "elastos/droid/content/ContentProvider.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/FileObserver.h"
 #include "DatabaseHelper.h"
 #include "util/LruCache.h"
 #include <elastos/utility/etl/HashMap.h>

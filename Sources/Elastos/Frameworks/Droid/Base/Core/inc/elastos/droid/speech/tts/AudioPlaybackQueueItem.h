@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackQueueItem_H__
 #define __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackQueueItem_H__
 
-#include "speech/tts/PlaybackQueueItem.h"
+#include "elastos/droid/speech/tts/PlaybackQueueItem.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::IRunnable;

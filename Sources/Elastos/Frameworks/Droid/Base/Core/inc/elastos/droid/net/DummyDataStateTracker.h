@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_DUMMYDATASTATETRACKER_H__
 #define __ELASTOS_DROID_NET_DUMMYDATASTATETRACKER_H__
 
-#include "ext/frameworkdef.h"
-#include "net/NetworkStateTracker.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/NetworkStateTracker.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::INetworkInfo;

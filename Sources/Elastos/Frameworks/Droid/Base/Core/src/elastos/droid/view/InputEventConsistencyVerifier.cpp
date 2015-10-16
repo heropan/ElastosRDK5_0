@@ -1,9 +1,9 @@
 
-#include "view/InputEventConsistencyVerifier.h"
-#include "ext/frameworkext.h"
-#include "view/CKeyEvent.h"
-#include "view/CMotionEvent.h"
-#include "os/Build.h"
+#include "elastos/droid/view/InputEventConsistencyVerifier.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>

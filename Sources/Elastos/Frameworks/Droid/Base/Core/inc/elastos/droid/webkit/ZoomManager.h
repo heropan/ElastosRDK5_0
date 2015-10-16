@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-#include "webkit/ZoomControlBase.h"
-#include "webkit/ZoomControlEmbedded.h"
-#include "webkit/ZoomControlExternal.h"
+#include "elastos/droid/webkit/ZoomControlBase.h"
+#include "elastos/droid/webkit/ZoomControlEmbedded.h"
+#include "elastos/droid/webkit/ZoomControlExternal.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::ICanvas;

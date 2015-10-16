@@ -3,7 +3,7 @@
 #define __CCRASHREPORTER_H__
 
 #include <cmdef.h>
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CCrashReporter.h"
 #include <elautoptr.h>
 #include <elastos/utility/etl/HashMap.h>

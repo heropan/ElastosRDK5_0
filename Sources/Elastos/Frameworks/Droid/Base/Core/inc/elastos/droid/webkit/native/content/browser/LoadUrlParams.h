@@ -7,7 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOADURLPARAMS_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content_public/Referrer.h"
+#include "elastos/droid/webkit/native/content_public/Referrer.h"
 
 using Elastos::Utility::IMap;
 using Elastos::Droid::Webkit::Content_Public::Referrer;

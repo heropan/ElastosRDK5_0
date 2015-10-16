@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/CClipboardManager.h"
 #include "elastos/droid/content/CClipDataHelper.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::ServiceManager;

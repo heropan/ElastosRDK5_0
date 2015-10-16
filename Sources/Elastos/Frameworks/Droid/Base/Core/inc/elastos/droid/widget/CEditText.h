@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CEDITTEXT_H__
 
 #include "_Elastos_Droid_Widget_CEditText.h"
-#include "widget/EditText.h"
+#include "elastos/droid/widget/EditText.h"
 
 
 namespace Elastos {

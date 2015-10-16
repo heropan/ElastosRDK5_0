@@ -1,4 +1,4 @@
-#include "widget/CScroller.h"
+#include "elastos/droid/widget/CScroller.h"
 
 namespace Elastos{
 namespace Droid{

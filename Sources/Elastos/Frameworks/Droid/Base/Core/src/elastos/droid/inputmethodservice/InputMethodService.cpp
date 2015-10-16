@@ -1,19 +1,19 @@
 
 #ifdef DROID_CORE
-#include "inputmethodservice/InputMethodService.h"
-#include "view/ViewTreeObserver.h"
-// #include "view/CViewGroupLayoutParams.h"
-// #include "view/inputmethod/CExtractedTextRequest.h"
-// #include "view/CKeyEvent.h"
-// #include "view/animation/AnimationUtils.h"
-// #include "content/res/CResourcesHelper.h"
-// #include "graphics/CRegion.h"
-// #include "app/CActivityManagerHelper.h"
-// #include "provider/CSettingsGlobal.h"
+#include "elastos/droid/inputmethodservice/InputMethodService.h"
+#include "elastos/droid/view/ViewTreeObserver.h"
+// #include "elastos/droid/view/CViewGroupLayoutParams.h"
+// #include "elastos/droid/view/inputmethod/CExtractedTextRequest.h"
+// #include "elastos/droid/view/CKeyEvent.h"
+// #include "elastos/droid/view/animation/AnimationUtils.h"
+// #include "elastos/droid/content/res/CResourcesHelper.h"
+// #include "elastos/droid/graphics/CRegion.h"
+// #include "elastos/droid/app/CActivityManagerHelper.h"
+// #include "elastos/droid/provider/CSettingsGlobal.h"
 // using Elastos::Droid::View::Animation::AnimationUtils;
 
 #else
-#include "inputmethodservice/InputMethodService.h"
+#include "elastos/droid/inputmethodservice/InputMethodService.h"
 
 #define VALIDATE_NOT_NULL(x) if (!(x)) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
 using Elastos::Droid::View::Animation::CAnimationUtils;
@@ -22,8 +22,8 @@ using Elastos::Droid::View::Animation::CAnimationUtils;
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
-#include "R.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/SystemClock.h"
 
 
 using namespace Elastos::Core;

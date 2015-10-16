@@ -1,6 +1,6 @@
 
-#include "webkit/native/content/browser/ContentReadbackHandler.h"
-#include "webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content/browser/ContentReadbackHandler.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 

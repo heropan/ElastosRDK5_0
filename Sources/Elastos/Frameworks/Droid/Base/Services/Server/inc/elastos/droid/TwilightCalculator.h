@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_TWILIGHTCALCULATOR_H__
 #define __ELASTOS_DROID_SERVER_TWILIGHTCALCULATOR_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::Math;

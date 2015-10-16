@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_EVENTHOLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_EVENTHOLE_H__
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::View::IInternalInsetsInfo;
 

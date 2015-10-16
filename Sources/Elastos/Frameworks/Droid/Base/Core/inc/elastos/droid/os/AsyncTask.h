@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_OS_ASYNCTASK_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Handler.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/concurrent/FutureTask.h>
 
 using Elastos::Core::IRunnable;

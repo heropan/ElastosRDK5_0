@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CTableMaskFilterHelper.h"
-#include "graphics/CTableMaskFilter.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CTableMaskFilterHelper.h"
+#include "elastos/droid/graphics/CTableMaskFilter.h"
 
 namespace Elastos {
 namespace Droid {

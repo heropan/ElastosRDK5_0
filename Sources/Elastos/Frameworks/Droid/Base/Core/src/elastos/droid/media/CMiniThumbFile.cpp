@@ -1,9 +1,9 @@
 
-#include "media/CMiniThumbFile.h"
+#include "elastos/droid/media/CMiniThumbFile.h"
 
 #include <elastos/utility/logging/Logger.h>
-#include "net/CUriHelper.h"
-#include "os/Environment.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/os/Environment.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

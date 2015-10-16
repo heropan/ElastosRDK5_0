@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractHistory.h"
+#include "elastos/droid/provider/CBrowserContractHistory.h"
 
 
 ECode CBrowserContractHistory::constructor()

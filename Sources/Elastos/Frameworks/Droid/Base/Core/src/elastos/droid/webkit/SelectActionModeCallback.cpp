@@ -1,9 +1,9 @@
 
-#include "webkit/SelectActionModeCallback.h"
-#include "webkit/CWebViewClassic.h"
-//#include "provider/CBrowser.h"
-#include "content/CIntent.h"
-#include "R.h"
+#include "elastos/droid/webkit/SelectActionModeCallback.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+//#include "elastos/droid/provider/CBrowser.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::App::EIID_IActivity;

@@ -1,18 +1,18 @@
 
 #include "service/wallpaper/WallpaperService.h"
 #ifdef DROID_CORE
-#include "content/CIntentFilter.h"
-#include "content/res/CConfiguration.h"
-#include "view/CMotionEventHelper.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/CInputChannel.h"
-#include "view/CWindowManagerGlobal.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/CInputChannel.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "service/wallpaper/CWallpaperServiceEngineWindow.h"
 #include "service/wallpaper/CWallpaperServiceWrapper.h"
-#include "os/CLooperHelper.h"
+#include "elastos/droid/os/CLooperHelper.h"
 #endif
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;

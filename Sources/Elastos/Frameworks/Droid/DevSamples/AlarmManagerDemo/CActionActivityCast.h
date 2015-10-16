@@ -2,7 +2,7 @@
 #ifndef __CACTIONACTIVITYCAST_H__
 #define __CACTIONACTIVITYCAST_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CActionActivityCast.h"
 
 using Elastos::Droid::App::Activity;

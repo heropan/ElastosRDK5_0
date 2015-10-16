@@ -1,5 +1,5 @@
 
-#include "internal/os/CBatterySipper.h"
+#include "elastos/droid/internal/os/CBatterySipper.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Core::EIID_IComparable;

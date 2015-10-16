@@ -3,7 +3,7 @@
 #include "src/data/DataSourceHelper.h"
 #include "src/data/AsyncImageLoader.h"
 #include "src/util/Utils.h"
-#include "os/SomeArgs.h"
+#include "elastos/droid/os/SomeArgs.h"
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 

@@ -3,7 +3,7 @@
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CIntentFilterAuthorityEntry.h"
 #include "elastos/droid/os/CPatternMatcher.h"
-//#include "internal/utility/XmlUtils.h"
+//#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>

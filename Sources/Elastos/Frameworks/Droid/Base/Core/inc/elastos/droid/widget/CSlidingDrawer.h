@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CSlidingDrawer.h"
 
-#include "widget/SlidingDrawer.h"
+#include "elastos/droid/widget/SlidingDrawer.h"
 
 namespace Elastos {
 namespace Droid {

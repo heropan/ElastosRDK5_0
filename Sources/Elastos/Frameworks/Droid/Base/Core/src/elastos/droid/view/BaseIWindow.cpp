@@ -1,5 +1,5 @@
 
-#include "view/BaseIWindow.h"
+#include "elastos/droid/view/BaseIWindow.h"
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::EIID_IBinder;

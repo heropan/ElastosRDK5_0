@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "view/inputmethod/CEditorInfo.h"
-#include "os/Build.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/inputmethod/CEditorInfo.h"
+#include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Text::IInputType;

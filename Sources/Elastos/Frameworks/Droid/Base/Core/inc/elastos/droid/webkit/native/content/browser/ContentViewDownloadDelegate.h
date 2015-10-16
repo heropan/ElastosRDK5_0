@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWDOWNLOADDELEGATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "webkit/native/content/browser/DownloadInfo.h"
+#include "elastos/droid/webkit/native/content/browser/DownloadInfo.h"
 
 namespace Elastos {
 namespace Droid {

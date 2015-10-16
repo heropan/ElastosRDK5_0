@@ -1,6 +1,6 @@
 
 #include "SoftKeyboard.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "CPinyinEnvironmentHelper.h"
 #include "SoftKeyToggle.h"
 #include <elastos/core/Math.h>

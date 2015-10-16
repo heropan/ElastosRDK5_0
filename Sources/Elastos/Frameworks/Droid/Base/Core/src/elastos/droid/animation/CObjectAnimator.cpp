@@ -1,5 +1,5 @@
 
-#include "animation/CObjectAnimator.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,14 +1,14 @@
-#include "systemui/statusbar/phone/Ticker.h"
+#include "elastos/droid/systemui/statusbar/phone/Ticker.h"
 #include <elastos/core/Character.h>
-#include "R.h"
-#include "utility/CharSequences.h"
-#include "os/CHandler.h"
-#include "os/Handler.h"
-#include "text/CStaticLayout.h"
-#include "view/animation/CAnimationUtils.h"
-#include "statusbar/CStatusBarIcon.h"
-#include "systemui/statusbar/StatusBarIconView.h"
-#include "systemui/SystemUIR.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/utility/CharSequences.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/text/CStaticLayout.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/statusbar/CStatusBarIcon.h"
+#include "elastos/droid/systemui/statusbar/StatusBarIconView.h"
+#include "elastos/droid/systemui/SystemUIR.h"
 
 using Elastos::Core::Character;
 using Elastos::Droid::R;

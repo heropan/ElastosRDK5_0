@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_CSPELLCHECKERSERVICE_H__
 
 #include "_Elastos_Droid_service_CSpellCheckerService.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 
 
 namespace Elastos {

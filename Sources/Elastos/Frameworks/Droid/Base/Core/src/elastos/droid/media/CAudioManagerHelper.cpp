@@ -1,6 +1,6 @@
 
-#include "media/CAudioManagerHelper.h"
-#include "media/CAudioManager.h"
+#include "elastos/droid/media/CAudioManagerHelper.h"
+#include "elastos/droid/media/CAudioManager.h"
 
 namespace Elastos {
 namespace Droid {
@@ -16,25 +16,25 @@ ECode CAudioManagerHelper::IsValidRingerMode(
 ECode CAudioManagerHelper::SetHdmiAvailable(
     /* [in] */ Boolean val)
 {
-	return CAudioManager::SetHdmiAvailable(val) ;
+    return CAudioManager::SetHdmiAvailable(val) ;
 }
 
 ECode CAudioManagerHelper::GetHdmiAvailable(
     /* [out] */ Boolean* result)
 {
-	return CAudioManager::GetHdmiAvailable(result) ;
+    return CAudioManager::GetHdmiAvailable(result) ;
 }
 
 ECode CAudioManagerHelper::GetHdmiExpected(
     /* [out] */ Boolean* result)
 {
-	return CAudioManager::GetHdmiExpected(result);
+    return CAudioManager::GetHdmiExpected(result);
 }
 
 ECode CAudioManagerHelper::SetHdmiExpected(
     /* [in] */ Boolean val)
 {
-	return CAudioManager::SetHdmiExpected(val);
+    return CAudioManager::SetHdmiExpected(val);
 }
 
 ECode CAudioManagerHelper::GetDefaultStreamVolume(

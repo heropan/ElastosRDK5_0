@@ -1,8 +1,8 @@
 
-#include "ext/frameworkext.h"
-#include "app/CAlertDialogBuilder.h"
-#include "webkit/CPlugin.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/webkit/CPlugin.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;

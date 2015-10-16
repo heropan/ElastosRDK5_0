@@ -26,7 +26,7 @@
 
 #define LOG_TAG "HarfbuzzSkia"
 
-#include "graphics/HarfbuzzSkia.h"
+#include "elastos/droid/graphics/HarfbuzzSkia.h"
 
 #include <skia/core/SkFontHost.h>
 

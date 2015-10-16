@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEWRAPPER_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEWRAPPER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Net::IUri;

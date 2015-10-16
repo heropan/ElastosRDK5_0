@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CORESETTINGSOBSERVER_H__
 #define __ELASTOS_DROID_SERVER_AM_CORESETTINGSOBSERVER_H__
 
-#include "ext/frameworkext.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include "am/CActivityManagerService.h"
 
 using Elastos::Droid::Os::IBundle;

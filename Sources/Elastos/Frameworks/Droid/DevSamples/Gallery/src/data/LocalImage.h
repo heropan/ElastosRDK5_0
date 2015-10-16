@@ -2,7 +2,7 @@
 #ifndef __LOCALIMAGE_H__
 #define __LOCALIMAGE_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "Path.h"
 #include "LocalMediaItem.h"
 

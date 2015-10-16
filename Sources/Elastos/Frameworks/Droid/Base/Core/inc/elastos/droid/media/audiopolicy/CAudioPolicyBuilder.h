@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOPOLICY_CAUDIOPOLICYBUILDER_H__
 
 #include "_Elastos_Droid_Media_AudioPolicy_CAudioPolicyBuilder.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::IArrayList;

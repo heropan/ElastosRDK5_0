@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Widget_CBlinkLayout.h"
 
 
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 
 using Elastos::Droid::Os::IHandlerCallback;

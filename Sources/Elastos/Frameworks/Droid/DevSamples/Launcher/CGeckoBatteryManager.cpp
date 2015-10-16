@@ -1,6 +1,6 @@
 
 #include "CGeckoBatteryManager.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "stdio.h"
 #include "GeckoAppShell.h"
 #include <elastos/core/Math.h>

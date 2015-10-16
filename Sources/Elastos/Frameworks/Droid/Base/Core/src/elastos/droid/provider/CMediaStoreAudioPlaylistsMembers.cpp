@@ -1,9 +1,9 @@
 
-#include "provider/CMediaStoreAudioPlaylistsMembers.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/provider/CMediaStoreAudioPlaylistsMembers.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
-#include "net/CUriHelper.h"
-#include "content/CContentValues.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/content/CContentValues.h"
 
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;

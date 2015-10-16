@@ -1,12 +1,12 @@
-#include "systemui/CExpandHelper.h"
+#include "elastos/droid/systemui/CExpandHelper.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "systemui/SystemUIR.h"
-#include "view/CScaleGestureDetector.h"
-#include "view/CViewConfigurationHelper.h"
-#include "view/CMotionEventHelper.h"
-#include "animation/CAnimatorSet.h"
-#include "animation/CObjectAnimator.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/view/CScaleGestureDetector.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/CMotionEventHelper.h"
+#include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::Math;

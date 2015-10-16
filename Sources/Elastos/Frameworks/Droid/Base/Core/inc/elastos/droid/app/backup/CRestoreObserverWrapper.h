@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_App_Backup_CRestoreObserverWrapper.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::App::Backup::IRestoreObserver;

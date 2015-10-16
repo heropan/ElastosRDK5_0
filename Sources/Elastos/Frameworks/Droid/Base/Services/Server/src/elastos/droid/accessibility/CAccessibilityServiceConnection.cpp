@@ -1,10 +1,10 @@
 
 #include "accessibility/CAccessibilityServiceConnection.h"
 #include "accessibility/CAccessibilityManagerService.h"
-#include "os/Build.h"
-#include "os/Binder.h"
-#include "os/SystemClock.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
 

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "net/wifi/CWifiSsid.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/wifi/CWifiSsid.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>
 

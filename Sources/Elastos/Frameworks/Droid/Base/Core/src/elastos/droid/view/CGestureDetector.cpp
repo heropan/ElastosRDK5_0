@@ -1,8 +1,8 @@
 
 #include <elastos/core/Math.h>
-#include "view/CGestureDetector.h"
-#include "view/CViewConfigurationHelper.h"
-#include "view/CMotionEvent.h"
+#include "elastos/droid/view/CGestureDetector.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/CMotionEvent.h"
 
 using Elastos::Droid::Os::ILooper;
 

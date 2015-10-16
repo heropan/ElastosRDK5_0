@@ -1,8 +1,8 @@
 
 #ifdef DROID_CORE
-#include "inputmethodservice/AbstractInputMethodSessionImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h"
 #else
-#include "inputmethodservice/AbstractInputMethodSessionImpl.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h"
 #endif
 
 using Elastos::Droid::View::EIID_IKeyEventCallback;

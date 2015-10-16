@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__
 
 #include "_Elastos_Droid_Server_Pm_CResourcesChangedReceiver.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "pm/CPackageManagerService.h"
 
 using Elastos::Droid::Os::IBundle;

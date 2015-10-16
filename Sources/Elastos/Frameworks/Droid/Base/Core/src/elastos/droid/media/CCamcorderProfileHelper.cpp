@@ -1,6 +1,6 @@
 
-#include "media/CCamcorderProfileHelper.h"
-#include "media/CCamcorderProfile.h"
+#include "elastos/droid/media/CCamcorderProfileHelper.h"
+#include "elastos/droid/media/CCamcorderProfile.h"
 
 namespace Elastos {
 namespace Droid {

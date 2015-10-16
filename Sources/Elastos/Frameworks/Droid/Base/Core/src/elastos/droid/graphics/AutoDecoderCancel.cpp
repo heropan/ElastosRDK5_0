@@ -1,5 +1,5 @@
 
-#include "graphics/AutoDecoderCancel.h"
+#include "elastos/droid/graphics/AutoDecoderCancel.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/AutoLock.h>
 

@@ -1,6 +1,6 @@
 
-#include "net/CNetworkStatsFactory.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/net/CNetworkStatsFactory.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::CFile;
 

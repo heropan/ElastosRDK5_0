@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_SYNCADAPTERSCACHE_H__
 #define __ELASTOS_DROID_CONTENT_SYNCADAPTERSCACHE_H__
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/pm/RegisteredServicesCache.h"
 
 using namespace Elastos::Droid::Content::Pm;

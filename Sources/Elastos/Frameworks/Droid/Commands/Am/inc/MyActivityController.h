@@ -5,7 +5,7 @@
 #include <ext/frameworkext.h>
 #include <elastos/Core/Object.h>
 #include "CAm.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IProcess;

@@ -1,6 +1,6 @@
-#include "ext/frameworkext.h"
-#include "view/CDragEventHelper.h"
-#include "view/CDragEvent.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CDragEventHelper.h"
+#include "elastos/droid/view/CDragEvent.h"
 
 namespace Elastos {
 namespace Droid {

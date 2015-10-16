@@ -6,7 +6,7 @@
 #include "_Elastos_Droid_SystemUI_StatusBar_CStatusBarIconView.h"
 
 
-#include "systemui/statusbar/StatusBarIconView.h"
+#include "elastos/droid/systemui/statusbar/StatusBarIconView.h"
 
 namespace Elastos {
 namespace Droid {

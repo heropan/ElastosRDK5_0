@@ -1,6 +1,6 @@
 
-#include "os/CStrictModeVmPolicyBuilder.h"
-#include "os/CStrictMode.h"
+#include "elastos/droid/os/CStrictModeVmPolicyBuilder.h"
+#include "elastos/droid/os/CStrictMode.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_RELATIVELAYOUTLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_RELATIVELAYOUTLAYOUTPARAMS_H__
 
-#include "view/ViewGroupMarginLayoutParams.h"
+#include "elastos/droid/view/ViewGroupMarginLayoutParams.h"
 
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;

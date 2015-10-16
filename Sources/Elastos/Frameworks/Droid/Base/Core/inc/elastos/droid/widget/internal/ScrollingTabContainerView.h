@@ -2,12 +2,12 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SCROLLINGTABCONTAINERVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_SCROLLINGTABCONTAINERVIEW_H__
 
-#include "widget/HorizontalScrollView.h"
+#include "elastos/droid/widget/HorizontalScrollView.h"
 
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 
-#include "widget/LinearLayout.h"
-#include "os/Runnable.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/os/Runnable.h"
 
 
 using Elastos::Droid::View::EIID_View;

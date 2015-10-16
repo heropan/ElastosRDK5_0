@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__
 
 #include "_Elastos_Droid_Server_CBootReceiver.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/CToneGenerator.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/CToneGenerator.h"
 #include <media/AudioSystem.h>
 #include <media/ToneGenerator.h>
 #include <elastos/utility/logging/Slogger.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CINPUTCHANNEL_H__
 
 #include "_Elastos_Droid_View_CInputChannel.h"
-#include "view/NativeInputChannel.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 
 namespace Elastos {
 namespace Droid {

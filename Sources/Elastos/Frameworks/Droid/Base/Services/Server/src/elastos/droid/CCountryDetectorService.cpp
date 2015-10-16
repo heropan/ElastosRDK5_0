@@ -1,8 +1,8 @@
 
 #include "CCountryDetectorService.h"
-#include "os/Process.h"
-#include "os/Looper.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CThread;

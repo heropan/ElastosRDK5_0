@@ -1,7 +1,7 @@
 
-#include "internal/content/CNativeLibraryHelperHandle.h"
-#include "internal/content/CNativeLibraryHelper.h"
-// #include "content/pm/PackageParser.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelperHandle.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelper.h"
+// #include "elastos/droid/content/pm/PackageParser.h"
 
 // using Elastos::Droid::Content::Pm::PackageParser;
 using Elastos::Core::ICloseGuardHelper;

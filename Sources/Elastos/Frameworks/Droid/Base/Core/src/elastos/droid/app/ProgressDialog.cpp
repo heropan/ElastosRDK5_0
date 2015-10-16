@@ -1,6 +1,6 @@
 
-#include "app/ProgressDialog.h"
-#include "view/LayoutInflater.h"
+#include "elastos/droid/app/ProgressDialog.h"
+#include "elastos/droid/view/LayoutInflater.h"
 
 using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Widget::EIID_IProgressBar;

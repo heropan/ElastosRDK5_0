@@ -1,9 +1,9 @@
 
-#include "widget/ExpandableListConnector.h"
-#include "widget/CExpandableListPosition.h"
-#include "os/SystemClock.h"
-#include "widget/AdapterView.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/widget/ExpandableListConnector.h"
+#include "elastos/droid/widget/CExpandableListPosition.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/widget/AdapterView.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using namespace Elastos::Core;
 using Elastos::Droid::Os::SystemClock;

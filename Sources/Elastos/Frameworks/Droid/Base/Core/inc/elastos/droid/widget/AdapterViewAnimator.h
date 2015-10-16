@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
 #define __ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
 
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <widget/AdapterView.h>

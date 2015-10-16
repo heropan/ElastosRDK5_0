@@ -1,13 +1,13 @@
-#include "utility/NtpTrustedTime.h"
+#include "elastos/droid/utility/NtpTrustedTime.h"
 
-//#include "provider/Settings.h"
-//#include "os/SystemClock.h"
-//#include "net/CSntpClient.h"
+//#include "elastos/droid/provider/Settings.h"
+//#include "elastos/droid/os/SystemClock.h"
+//#include "elastos/droid/net/CSntpClient.h"
 
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-//#include "R.h"
+//#include "elastos/droid/R.h"
 
 using Elastos::Utility::Logging::Logger;
 //using Elastos::Droid::R;

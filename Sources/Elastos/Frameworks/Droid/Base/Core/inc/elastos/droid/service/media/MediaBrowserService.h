@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVICE_MEDIA_MEDIABROWSERSERVICE_H__
 
 // TODO: Need app/Service
-// #include "app/Service.h"
+// #include "elastos/droid/app/Service.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 #include "MediaBrowserServiceResult.h"

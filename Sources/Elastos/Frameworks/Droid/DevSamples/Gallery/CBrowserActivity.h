@@ -3,9 +3,9 @@
 #define __CBROWSERACTIVITY_H__
 
 #include "_CBrowserActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "src/data/AsyncImageLoader.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::App::Activity;

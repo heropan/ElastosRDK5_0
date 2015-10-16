@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CLOADERFORCELOADCONTENTOBSERVER_H__
 
 #include "_Elastos_Droid_Content_CLoaderForceLoadContentObserver.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Droid::Database::ContentObserver;
 

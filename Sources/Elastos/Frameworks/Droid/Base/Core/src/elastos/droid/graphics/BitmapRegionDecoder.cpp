@@ -1,13 +1,13 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/BitmapRegionDecoder.h"
-// #include "content/res/CAssetManager.h"
-#include "graphics/CRect.h"
-#include "graphics/AutoDecoderCancel.h"
-#include "graphics/Utils.h"
-#include "graphics/CreateOutputStreamAdaptor.h"
-#include "graphics/GraphicsNative.h"
-#include "graphics/NBitmapFactory.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/BitmapRegionDecoder.h"
+// #include "elastos/droid/content/res/CAssetManager.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/AutoDecoderCancel.h"
+#include "elastos/droid/graphics/Utils.h"
+#include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+#include "elastos/droid/graphics/NBitmapFactory.h"
 #include <elastos/core/AutoLock.h>
 #include <skia/core/SkData.h>
 #include <skia/core/SkTemplates.h>

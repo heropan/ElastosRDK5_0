@@ -2,17 +2,17 @@
 #ifndef __ELASTOS_DROID_SERVER_CINPUTMETHODMANAGERSERVICE_H__
 #define  __ELASTOS_DROID_SERVER_CINPUTMETHODMANAGERSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_CInputMethodManagerService.h"
 #include "wm/CWindowManagerService.h"
 #include "CStatusBarManagerService.h"
-#include "os/HandlerCaller.h"
-#include "content/BroadcastReceiver.h"
-// #include "content/ContentResolver.h"
-#include "content/PackageMonitor.h"
+#include "elastos/droid/os/HandlerCaller.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+// #include "elastos/droid/content/ContentResolver.h"
+#include "elastos/droid/content/PackageMonitor.h"
 
-#include "text/TextUtils.h"
-#include "widget/ArrayAdapter.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>

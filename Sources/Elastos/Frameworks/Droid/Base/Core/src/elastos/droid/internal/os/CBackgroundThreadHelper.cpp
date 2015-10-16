@@ -1,6 +1,6 @@
 
-#include "internal/os/CBackgroundThreadHelper.h"
-#include "internal/os/BackgroundThread.h"
+#include "elastos/droid/internal/os/CBackgroundThreadHelper.h"
+#include "elastos/droid/internal/os/BackgroundThread.h"
 
 namespace Elastos {
 namespace Droid {

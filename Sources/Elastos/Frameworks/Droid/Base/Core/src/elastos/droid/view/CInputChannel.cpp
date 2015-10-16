@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "view/CInputChannel.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/CInputChannel.h"
 #include <elastos/utility/logging/Slogger.h>
 
 //using Elastos::Core;

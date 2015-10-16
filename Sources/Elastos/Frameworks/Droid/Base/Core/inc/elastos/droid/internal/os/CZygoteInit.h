@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_OS_CZYGOTEINIT_H__
 
 #include "_Elastos_Droid_Internal_Os_CZygoteInit.h"
-#include "os/Runnable.h"
-#include "internal/os/ZygoteConnection.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/internal/os/ZygoteConnection.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::Res::IResources;

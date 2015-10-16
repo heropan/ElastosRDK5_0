@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_NET_CNETWORKSTATSSESSION_H__
 
 #include "_Elastos_Droid_Server_Net_CNetworkStatsSession.h"
-#include "net/CNetworkStatsService.h"
+#include "elastos/droid/net/CNetworkStatsService.h"
 
 namespace Elastos {
 namespace Droid {

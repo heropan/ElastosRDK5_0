@@ -2,7 +2,7 @@
 #include "BluetoothPan.h"
 #include "CBluetoothAdapter.h"
 #include "CBluetoothPanStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_DropZone_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_DropZone_H__
 
-#include "view/View.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Droid::Animation::AnimatorListenerAdapter;
 using Elastos::Droid::View::IDragEvent;

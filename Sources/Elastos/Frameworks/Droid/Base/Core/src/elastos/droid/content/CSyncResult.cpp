@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/CSyncResult.h"
 #include "elastos/droid/content/CSyncStats.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringBuffer.h>
 

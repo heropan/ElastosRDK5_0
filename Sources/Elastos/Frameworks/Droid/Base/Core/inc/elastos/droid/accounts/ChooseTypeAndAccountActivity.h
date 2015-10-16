@@ -3,7 +3,7 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
 

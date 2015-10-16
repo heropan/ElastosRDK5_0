@@ -1,8 +1,8 @@
 
-#include "widget/SimpleAdapter.h"
+#include "elastos/droid/widget/SimpleAdapter.h"
 #include <Elastos.CoreLibrary.h>
-#include "os/ElDataInterface.h"
-#include "net/Uri.h"
+#include "elastos/droid/os/ElDataInterface.h"
+#include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 

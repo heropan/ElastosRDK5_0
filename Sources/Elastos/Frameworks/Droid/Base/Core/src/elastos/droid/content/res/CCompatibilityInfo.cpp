@@ -2,12 +2,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 //#include "elastos/droid/content/pm/CApplicationInfo.h"
-//#include "graphics/CPoint.h"
-//#include "graphics/CPointF.h"
-//#include "graphics/CRect.h"
-//#include "graphics/CRegion.h"
-#include "utility/CDisplayMetrics.h"
-//#include "hardware/display/DisplayManagerGlobal.h"
+//#include "elastos/droid/graphics/CPoint.h"
+//#include "elastos/droid/graphics/CPointF.h"
+//#include "elastos/droid/graphics/CRect.h"
+//#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+//#include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 
 //using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::View::IDisplay;

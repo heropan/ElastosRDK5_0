@@ -2,7 +2,7 @@
 #include "BluetoothPbap.h"
 #include "CBluetoothAdapter.h"
 #include "CBluetoothPbapStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

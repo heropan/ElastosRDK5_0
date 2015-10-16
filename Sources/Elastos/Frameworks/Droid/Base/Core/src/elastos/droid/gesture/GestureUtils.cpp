@@ -1,6 +1,6 @@
 
-#include "gesture/GestureUtils.h"
-#include "gesture/COrientedBoundingBox.h"
+#include "elastos/droid/gesture/GestureUtils.h"
+#include "elastos/droid/gesture/COrientedBoundingBox.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::IRectF;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_TEXTVIEWSAVEDSTATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::ViewBaseSavedState;

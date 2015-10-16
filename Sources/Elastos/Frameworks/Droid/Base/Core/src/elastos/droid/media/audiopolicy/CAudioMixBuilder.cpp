@@ -1,9 +1,9 @@
-#include "media/audiopolicy/CAudioMixBuilder.h"
-#include "media/audiopolicy/CAudioMix.h"
+#include "elastos/droid/media/audiopolicy/CAudioMixBuilder.h"
+#include "elastos/droid/media/audiopolicy/CAudioMix.h"
 //TODO: Need CAudioSystemHelper
-//#include "media/CAudioSystemHelper.h"
+//#include "elastos/droid/media/CAudioSystemHelper.h"
 //TODO: Need CAudioFormatBuilder
-//#include "media/CAudioFormatBuilder.h"
+//#include "elastos/droid/media/CAudioFormatBuilder.h"
 
 //using Elastos::Droid::Media::CAudioSystemHelper;
 //using Elastos::Droid::Media::CAudioFormatBuilder;

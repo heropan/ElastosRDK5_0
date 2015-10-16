@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDER_H__
 #define __ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDER_H__
 
-#include "view/menu/ContextMenuBuilderBase.h"
+#include "elastos/droid/view/menu/ContextMenuBuilderBase.h"
 #include "_Elastos_Droid_View_Menu_CContextMenuBuilder.h"
 
 
-#include "view/menu/MenuDialogHelper.h"
+#include "elastos/droid/view/menu/MenuDialogHelper.h"
 
 using Elastos::Droid::Os::IBinder;
 

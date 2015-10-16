@@ -1,9 +1,9 @@
 
-#include "gesture/CGestureStroke.h"
-#include "gesture/GestureUtils.h"
-#include "gesture/CGesturePoint.h"
-#include "graphics/CRectF.h"
-#include "graphics/CPath.h"
+#include "elastos/droid/gesture/CGestureStroke.h"
+#include "elastos/droid/gesture/GestureUtils.h"
+#include "elastos/droid/gesture/CGesturePoint.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CPath.h"
 #include <elastos/core/Math.h>
 
 using Elastos::IO::IDataInput;

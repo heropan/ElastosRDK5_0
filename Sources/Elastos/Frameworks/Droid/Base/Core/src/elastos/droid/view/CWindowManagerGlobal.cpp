@@ -1,14 +1,14 @@
 
-#include "view/CWindowManagerGlobal.h"
-#include "view/CWindowManagerLayoutParams.h"
-#include "view/ViewRootImpl.h"
-#include "view/inputmethod/CInputMethodManager.h"
-#include "content/res/CConfiguration.h"
-#include "os/CServiceManager.h"
-#include "os/SystemProperties.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
-#include "animation/CValueAnimator.h"
+#include "elastos/droid/animation/CValueAnimator.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

@@ -3,12 +3,12 @@
 #define __ELASTOS_DROID_VIEW_View_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/CRect.h"
-#include "graphics/CRectF.h"
-// #include "view/CSurface.h"
-// #include "view/InputEventConsistencyVerifier.h"
-// #include "view/HardwareRenderer.h"
-// #include "os/Runnable.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
+// #include "elastos/droid/view/CSurface.h"
+// #include "elastos/droid/view/InputEventConsistencyVerifier.h"
+// #include "elastos/droid/view/HardwareRenderer.h"
+// #include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

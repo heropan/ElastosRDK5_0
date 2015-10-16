@@ -1,5 +1,5 @@
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "XBMCCallbacks.h"
 #include "ElAudioTrack.h"
 #include "WifiNative.h"

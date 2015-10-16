@@ -1,6 +1,6 @@
-#include "speech/tts/EventLogger.h"
-#include "text/TextUtils.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/speech/tts/EventLogger.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 

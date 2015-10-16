@@ -6,7 +6,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;

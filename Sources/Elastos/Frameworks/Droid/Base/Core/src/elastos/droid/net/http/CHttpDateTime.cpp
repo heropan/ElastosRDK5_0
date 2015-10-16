@@ -3,7 +3,7 @@
 // #include "Pattern.h"
 // #include "Matcher.h"
 #include <elastos/core/Character.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using namespace Elastos::Core;
 

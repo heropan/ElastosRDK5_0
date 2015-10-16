@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CSCALEANIMATION_H__
 
 #include "_Elastos_Droid_View_Animation_Elastos_Droid_View_CScaleAnimation.h"
-#include "view/animation/ScaleAnimation.h"
+#include "elastos/droid/view/animation/ScaleAnimation.h"
 
 namespace Elastos {
 namespace Droid {

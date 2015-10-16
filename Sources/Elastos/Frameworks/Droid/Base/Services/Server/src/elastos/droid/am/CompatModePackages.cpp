@@ -1,7 +1,7 @@
 
 #include "am/CompatModePackages.h"
-#include "app/AppGlobals.h"
-#include "os/Handler.h"
+#include "elastos/droid/app/AppGlobals.h"
+#include "elastos/droid/os/Handler.h"
 #include "util/Xml.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

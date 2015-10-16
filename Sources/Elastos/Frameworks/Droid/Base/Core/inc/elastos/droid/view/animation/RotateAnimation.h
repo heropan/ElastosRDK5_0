@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_ROTATEANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_ROTATEANIMATION_H__
 
-#include "view/animation/Animation.h"
+#include "elastos/droid/view/animation/Animation.h"
 
 namespace Elastos {
 namespace Droid {

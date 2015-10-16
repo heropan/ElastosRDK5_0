@@ -1,12 +1,12 @@
 
-#include "animation/CLayoutTransition.h"
-#include "animation/CObjectAnimatorHelper.h"
-#include "animation/CValueAnimatorHelper.h"
-#include "animation/PropertyValuesHolder.h"
-#include "animation/CObjectAnimator.h"
-#include "animation/AnimatorListenerAdapter.h"
-// #include "view/animation/CAccelerateDecelerateInterpolator.h"
-// #include "view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/animation/CLayoutTransition.h"
+#include "elastos/droid/animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/animation/CValueAnimatorHelper.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
+// #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
+// #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 #include <elastos/utility/logging/Slogger.h>
 
 // using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;

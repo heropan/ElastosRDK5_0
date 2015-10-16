@@ -1,7 +1,7 @@
 
-#include "provider/CMediaStoreAudioArtistsAlbums.h"
-#include "ext/frameworkext.h"
-#include "net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStoreAudioArtistsAlbums.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CUriHelper.h"
 
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;

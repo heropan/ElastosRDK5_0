@@ -1,6 +1,6 @@
 
 #include "elastos/droid/content/CPeriodicSync.h"
-#include "os/CBundle.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Os::CBundle;

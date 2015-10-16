@@ -1,4 +1,4 @@
-#include "app/CApplicationErrorReportBatteryInfo.h"
+#include "elastos/droid/app/CApplicationErrorReportBatteryInfo.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

@@ -1,6 +1,6 @@
 
 #include "CWifiDisplayManagerService.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

@@ -1,6 +1,6 @@
 
-#include "provider/CContactsContractCommonDataKindsEvent.h"
-#include "R.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsEvent.h"
+#include "elastos/droid/R.h"
 #include <elastos/coredef.h>
 
 namespace Elastos {

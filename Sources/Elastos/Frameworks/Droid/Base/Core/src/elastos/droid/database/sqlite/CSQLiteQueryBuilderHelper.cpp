@@ -1,6 +1,6 @@
 
-#include "database/sqlite/CSQLiteQueryBuilderHelper.h"
-#include "database/sqlite/SQLiteQueryBuilder.h"
+#include "elastos/droid/database/sqlite/CSQLiteQueryBuilderHelper.h"
+#include "elastos/droid/database/sqlite/SQLiteQueryBuilder.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,5 +1,5 @@
 
-#include "provider/CBrowserContractBookmarks.h"
+#include "elastos/droid/provider/CBrowserContractBookmarks.h"
 
 
 ECode CBrowserContractBookmarks::GetCONTENT_URI(

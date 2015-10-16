@@ -1,4 +1,4 @@
-#include "impl/CRecentApplicationsDialog.h"
+#include "elastos/droid/impl/CRecentApplicationsDialog.h"
 
 namespace Elastos {
 namespace Droid {

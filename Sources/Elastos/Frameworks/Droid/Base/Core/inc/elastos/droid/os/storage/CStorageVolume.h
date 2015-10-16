@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_STORAGE_CSTORAGEVOLUME_H__
 
 #include "_Elastos_Droid_Os_Storage_CStorageVolume.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "widget/ImageButton.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/ImageButton.h"
 
 using Elastos::Droid::Widget::ImageView;
 using Elastos::Core::ICharSequence;

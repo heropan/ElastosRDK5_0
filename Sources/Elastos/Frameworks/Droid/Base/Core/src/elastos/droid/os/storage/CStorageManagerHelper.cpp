@@ -1,6 +1,6 @@
 
-#include "os/storage/CStorageManagerHelper.h"
-#include "os/storage/CStorageManager.h"
+#include "elastos/droid/os/storage/CStorageManagerHelper.h"
+#include "elastos/droid/os/storage/CStorageManager.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

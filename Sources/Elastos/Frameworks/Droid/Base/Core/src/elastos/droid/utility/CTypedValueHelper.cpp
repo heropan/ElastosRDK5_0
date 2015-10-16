@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "utility/CTypedValueHelper.h"
-#include "utility/CTypedValue.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/utility/CTypedValueHelper.h"
+#include "elastos/droid/utility/CTypedValue.h"
 
 namespace Elastos {
 namespace Droid {

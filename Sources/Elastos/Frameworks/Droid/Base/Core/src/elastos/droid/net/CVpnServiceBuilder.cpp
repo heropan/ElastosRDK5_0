@@ -1,6 +1,6 @@
 
-#include "net/CVpnServiceBuilder.h"
-#include "net/CVpnService.h"
+#include "elastos/droid/net/CVpnServiceBuilder.h"
+#include "elastos/droid/net/CVpnService.h"
 
 namespace Elastos {
 namespace Droid {

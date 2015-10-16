@@ -1,4 +1,4 @@
-#include "widget/CTableRow.h"
+#include "elastos/droid/widget/CTableRow.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

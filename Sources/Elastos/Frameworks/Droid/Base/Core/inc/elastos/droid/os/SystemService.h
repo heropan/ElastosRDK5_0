@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_OS_SYSTEMSERVICE_H__
 #define __ELASTOS_DROID_OS_SYSTEMSERVICE_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Object;

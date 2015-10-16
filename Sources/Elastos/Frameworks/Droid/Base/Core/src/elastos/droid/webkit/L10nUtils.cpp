@@ -1,6 +1,6 @@
 
-#include "webkit/L10nUtils.h"
-#include "R.h"
+#include "elastos/droid/webkit/L10nUtils.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Res::IResources;
 

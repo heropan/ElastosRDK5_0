@@ -1,7 +1,7 @@
 
-#include "widget/RemoteViewsService.h"
-#include "widget/CRemoteViewsFactoryAdapter.h"
-#include "content/CIntentFilterComparison.h"
+#include "elastos/droid/widget/RemoteViewsService.h"
+#include "elastos/droid/widget/CRemoteViewsFactoryAdapter.h"
+#include "elastos/droid/content/CIntentFilterComparison.h"
 
 using Elastos::Utility::Etl::Pair;
 using Elastos::Droid::Content::CIntentFilterComparison;

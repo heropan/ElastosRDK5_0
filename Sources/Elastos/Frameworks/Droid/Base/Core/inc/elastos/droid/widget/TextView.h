@@ -2,12 +2,12 @@
 #define __ELASTOS_DROID_WIDGET_TEXTVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "os/Runnable.h"
-#include "view/View.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/View.h"
 
-#include "widget/Scroller.h"
-#include "widget/Editor.h"
+#include "elastos/droid/widget/Scroller.h"
+#include "elastos/droid/widget/Editor.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;

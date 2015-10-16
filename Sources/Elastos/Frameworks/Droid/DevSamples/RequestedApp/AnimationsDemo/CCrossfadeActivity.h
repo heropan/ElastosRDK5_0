@@ -3,7 +3,7 @@
 #define  __CCROSSFADEACTIVITY_H__
 
 #include "_CCrossfadeActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Animation::IAnimatorListener;

@@ -1,6 +1,6 @@
 
-#include "graphics/CColorMatrixColorFilter.h"
-#include "graphics/CColorMatrix.h"
+#include "elastos/droid/graphics/CColorMatrixColorFilter.h"
+#include "elastos/droid/graphics/CColorMatrix.h"
 #include <skia/effects/SkColorMatrixFilter.h>
 #include <skia/core/SkColorFilter.h>
 

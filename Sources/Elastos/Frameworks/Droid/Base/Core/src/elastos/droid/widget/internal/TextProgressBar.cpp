@@ -1,6 +1,6 @@
 
-#include "internal/TextProgressBar.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/internal/TextProgressBar.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IViewGroupLayoutParams;

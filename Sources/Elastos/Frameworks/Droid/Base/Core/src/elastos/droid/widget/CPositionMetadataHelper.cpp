@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CPositionMetadataHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CPositionMetadataHelper.h"
 
 using Elastos::Droid::Widget::IPositionMetadata;
 using Elastos::Droid::Widget::IGroupMetadata;

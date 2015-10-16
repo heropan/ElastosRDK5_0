@@ -5,7 +5,7 @@
 #include "SoftKey.h"
 #include "CPinyinEnvironmentHelper.h"
 #include "CSoundManagerHelper.h"
-#include "graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include "CBalloonHint.h"
 
 using Elastos::Droid::Graphics::CPaint;

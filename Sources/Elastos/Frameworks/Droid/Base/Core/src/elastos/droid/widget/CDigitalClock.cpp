@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CDigitalClock.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CDigitalClock.h"
 
 using Elastos::Droid::View::EIID_View;
 

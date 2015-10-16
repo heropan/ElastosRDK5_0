@@ -1,6 +1,6 @@
 
-#include "database/CDefaultDatabaseErrorHandler.h"
-#include "database/sqlite/SQLiteDatabase.h"
+#include "elastos/droid/database/CDefaultDatabaseErrorHandler.h"
+#include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 

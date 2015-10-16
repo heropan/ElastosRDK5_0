@@ -1,6 +1,6 @@
 
-#include "database/CrossProcessCursorWrapper.h"
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/CrossProcessCursorWrapper.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,11 +1,11 @@
 
 #include "input/CInputManagerService.h"
-#include "os/Binder.h"
-#include "os/Process.h"
-#include "os/UserHandle.h"
-#include "os/Handler.h"
-#include "os/NativeMessageQueue.h"
-#include "view/NativeInputChannel.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/NativeMessageQueue.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 #include "util/Xml.h"
 #include "util/XmlUtils.h"
 #include <elastos/core/Math.h>

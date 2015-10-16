@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <Elastos.Droid.Core_server.h>
-#include "utility/PathParser.h"
+#include "elastos/droid/utility/PathParser.h"
 
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Utility::IAttributeSet;

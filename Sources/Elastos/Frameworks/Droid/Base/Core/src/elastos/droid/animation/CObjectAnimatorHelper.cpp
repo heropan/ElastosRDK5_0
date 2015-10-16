@@ -1,6 +1,6 @@
 
-#include "animation/CObjectAnimatorHelper.h"
-#include "animation/ObjectAnimator.h"
+#include "elastos/droid/animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/animation/ObjectAnimator.h"
 
 namespace Elastos {
 namespace Droid {

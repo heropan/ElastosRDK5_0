@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WEBKIT_ZOOMCONTROLEXTERNAL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
-#include "webkit/ZoomControlBase.h"
-#include "widget/FrameLayout.h"
+#include "elastos/droid/webkit/ZoomControlBase.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 
 using Elastos::Core::IRunnable;

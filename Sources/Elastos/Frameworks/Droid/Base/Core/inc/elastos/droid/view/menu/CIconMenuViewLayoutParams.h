@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_CICONMENUVIEWLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_View_Menu_CIconMenuViewLayoutParams.h"
-#include "view/menu/IconMenuViewLayoutParams.h"
+#include "elastos/droid/view/menu/IconMenuViewLayoutParams.h"
 
 
 namespace Elastos {

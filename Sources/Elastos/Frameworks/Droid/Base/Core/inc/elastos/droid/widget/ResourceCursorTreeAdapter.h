@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_RESOURCECURSORTREEADAPTER_H__
-#include "widget/CursorTreeAdapter.h"
+#include "elastos/droid/widget/CursorTreeAdapter.h"
 /**
  * A fairly simple ExpandableListAdapter that creates views defined in an XML
  * file. You can specify the XML file that defines the appearance of the views.

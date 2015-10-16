@@ -1,7 +1,7 @@
-#include "view/DragEvent.h"
-#include <elastos/utility/logging/Logger.h>
+#include "elastos/droid/view/DragEvent.h"
 #include "elastos/droid/content/CClipData.h"
-#include "elastos/droid/content/CClipDescription.h"
+#include "elastos/droid/content/CClipDescription"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::CClipData;

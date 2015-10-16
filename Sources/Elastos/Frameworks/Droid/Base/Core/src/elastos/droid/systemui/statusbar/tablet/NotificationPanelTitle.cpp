@@ -1,7 +1,7 @@
-#include "systemui/statusbar/tablet/NotificationPanelTitle.h"
-#include "systemui/SystemUIR.h"
-#include "view/accessibility/CAccessibilityEventHelper.h"
-#include "view/SoundEffectConstants.h"
+#include "elastos/droid/systemui/statusbar/tablet/NotificationPanelTitle.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
 
 using Elastos::Droid::View::SoundEffectConstants;
 using Elastos::Droid::View::IViewOnClickListener;

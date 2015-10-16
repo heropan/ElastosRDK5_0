@@ -7,7 +7,6 @@ C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
 
 SOURCES = CAssetFileDescriptor.cpp
 SOURCES += CAssetFileDescriptorAutoCloseInputStream.cpp

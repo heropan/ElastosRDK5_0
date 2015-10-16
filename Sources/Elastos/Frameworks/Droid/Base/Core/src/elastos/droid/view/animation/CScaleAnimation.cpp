@@ -1,5 +1,5 @@
 
-#include "view/animation/CScaleAnimation.h"
+#include "elastos/droid/view/animation/CScaleAnimation.h"
 
 namespace Elastos {
 namespace Droid {

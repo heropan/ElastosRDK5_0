@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "inputmethodservice/CLatinKeyboardView.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/inputmethodservice/CLatinKeyboardView.h"
 
 using Elastos::Droid::InputMethodService::ISoftKeyboard;
 

@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__
 #define __ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__
 
-#include "gesture/CGestureStore.h"
-#include "gesture/Learner.h"
+#include "elastos/droid/gesture/CGestureStore.h"
+#include "elastos/droid/gesture/Learner.h"
 
 namespace Elastos {
 namespace Droid {

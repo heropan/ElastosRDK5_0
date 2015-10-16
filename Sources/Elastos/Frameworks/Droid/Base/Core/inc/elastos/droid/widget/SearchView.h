@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_SEARCHVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/LinearLayout.h"
-#include "widget/AutoCompleteTextView.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/widget/AutoCompleteTextView.h"
 
 
 

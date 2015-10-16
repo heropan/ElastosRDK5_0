@@ -1,7 +1,7 @@
 
 #include "CAlertNotification.h"
 #include "GeckoApp.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <Elastos.CoreLibrary.h>
 

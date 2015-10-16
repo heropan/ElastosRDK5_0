@@ -1,7 +1,7 @@
 
-#include "net/CProcessObserver.h"
-#include "net/CNetworkPolicyManagerService.h"
-#include "os/Handler.h"
+#include "elastos/droid/net/CProcessObserver.h"
+#include "elastos/droid/net/CNetworkPolicyManagerService.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;

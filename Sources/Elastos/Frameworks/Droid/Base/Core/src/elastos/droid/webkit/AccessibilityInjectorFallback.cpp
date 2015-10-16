@@ -1,14 +1,14 @@
 
 #include <elastos/core/StringUtils.h>
-#include "os/CMessage.h"
-#include "provider/CSettingsSecure.h"
-#include "text/CSimpleStringSplitter.h"
-#include "text/TextUtils.h"
-#include "view/accessibility/CAccessibilityEventHelper.h"
-#include "view/accessibility/CAccessibilityManagerHelper.h"
-#include "webkit/AccessibilityInjectorFallback.h"
-#include "webkit/CWebViewCore.h"
-#include "webkit/CWebViewClassic.h"
+#include "elastos/droid/os/CMessage.h"
+#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/text/CSimpleStringSplitter.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
+#include "elastos/droid/webkit/AccessibilityInjectorFallback.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CStringWrapper;

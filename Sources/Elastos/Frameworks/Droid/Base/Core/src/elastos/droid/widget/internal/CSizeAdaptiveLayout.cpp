@@ -1,4 +1,4 @@
-#include "widget/internal/CSizeAdaptiveLayout.h"
+#include "elastos/droid/widget/internal/CSizeAdaptiveLayout.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

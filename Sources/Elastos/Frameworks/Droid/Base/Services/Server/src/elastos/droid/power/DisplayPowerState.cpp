@@ -1,7 +1,7 @@
 
 #include "power/DisplayPowerState.h"
-#include "os/Handler.h"
-#include "os/AsyncTask.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/AsyncTask.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::EIID_IRunnable;

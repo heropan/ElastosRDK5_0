@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CURSORFILTER_H__
 #define __ELASTOS_DROID_WIDGET_CURSORFILTER_H__
 
-#include "widget/Filter.h"
+#include "elastos/droid/widget/Filter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -21,7 +21,7 @@ public:
 
     CursorFilter(
         /* [in] */ ICursorFilterClient* client);
-    
+
     virtual CARAPI ConvertResultToString(
         /* [in] */ IInterface* resultValue,
         /* [out] */ ICharSequence** cs);

@@ -1,6 +1,6 @@
 
-#include "app/ActivityManagerNative.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::ServiceManager;

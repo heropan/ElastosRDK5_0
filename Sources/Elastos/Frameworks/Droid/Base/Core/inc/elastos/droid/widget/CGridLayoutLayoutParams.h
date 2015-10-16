@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CGRIDLAYOUTLAYOUTPARAMS_H__
 
 #include "_Elastos_Droid_Widget_CGridLayoutLayoutParams.h"
-#include "widget/GridLayoutLayoutParams.h"
+#include "elastos/droid/widget/GridLayoutLayoutParams.h"
 
 
 namespace Elastos{

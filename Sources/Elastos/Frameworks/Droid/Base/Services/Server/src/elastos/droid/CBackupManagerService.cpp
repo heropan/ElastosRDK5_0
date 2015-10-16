@@ -1,13 +1,13 @@
 
 #include "CBackupManagerService.h"
-#include "app/ActivityManagerNative.h"
-#include "app/AppGlobals.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/app/AppGlobals.h"
 #include "Manifest.h"
-#include "os/SystemClock.h"
-#include "os/Binder.h"
-#include "os/Build.h"
-#include "os/ServiceManager.h"
-#include "os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>

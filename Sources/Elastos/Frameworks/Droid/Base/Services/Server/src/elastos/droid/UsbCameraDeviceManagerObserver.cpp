@@ -1,6 +1,6 @@
 
 #include "UsbCameraDeviceManagerObserver.h"
-#include "app/ActivityManagerNative.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::Content::CIntent;

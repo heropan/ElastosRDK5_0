@@ -1,7 +1,7 @@
 
 #include "service/wallpaper/CWallpaperEngineWrapper.h"
 #include <elastos/utility/logging/Logger.h>
-#include "internal/os/CHandlerCaller.h"
+#include "elastos/droid/internal/os/CHandlerCaller.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::CHandlerCaller;

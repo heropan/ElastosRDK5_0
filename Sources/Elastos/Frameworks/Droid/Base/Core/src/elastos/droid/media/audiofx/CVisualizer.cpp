@@ -1,9 +1,10 @@
-#include "media/audiofx/CVisualizer.h"
-#include "media/audiofx/CVisualizerMeasurementPeakRms.h"
+#include "elastos/droid/media/audiofx/CVisualizer.h"
+#include "elastos/droid/media/audiofx/CVisualizerMeasurementPeakRms.h"
+#include "elastos/droid/os/CLooperHelper.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
-#include "os/CLooperHelper.h"
-#include "media/Visualizer.h"
+
+#include <media/Visualizer.h>
 
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;

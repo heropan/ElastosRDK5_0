@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_CTIMEANIMATOR_H__
 
 #include "_Elastos_Droid_Animation_CTimeAnimator.h"
-#include "animation/TimeAnimator.h"
+#include "elastos/droid/animation/TimeAnimator.h"
 
 namespace Elastos {
 namespace Droid {

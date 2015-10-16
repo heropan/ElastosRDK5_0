@@ -1,9 +1,9 @@
 
-#include "media/CMediaMetadataRetriever.h"
+#include "elastos/droid/media/CMediaMetadataRetriever.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "media/Media_Utils.h"
-#include "graphics/CBitmap.h"
-#include "graphics/CBitmapFactory.h"
+#include "elastos/droid/media/Media_Utils.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
 
 #include <assert.h>
 #include <utils/Log.h>

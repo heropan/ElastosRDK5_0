@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WEBKIT_PLUGINFULLSCREENHOLDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/FrameLayout.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 
-#include "webkit/WebChromeClient.h"
+#include "elastos/droid/webkit/WebChromeClient.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IMotionEvent;

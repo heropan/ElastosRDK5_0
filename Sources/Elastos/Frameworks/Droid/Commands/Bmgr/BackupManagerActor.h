@@ -1,7 +1,7 @@
 #ifndef __BACKUPMANAGERDEMO_H__
 #define __BACKUPMANAGERDEMO_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos.h>
 #include <elautoptr.h>
 #include <elastos/utility/etl/List.h>

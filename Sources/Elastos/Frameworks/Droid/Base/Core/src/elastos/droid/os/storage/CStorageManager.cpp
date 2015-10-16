@@ -1,10 +1,10 @@
 
-#include "os/storage/CStorageManager.h"
-#include "os/storage/CStorageManagerHelper.h"
-#include "os/storage/CObbActionListener.h"
-#include "os/storage/CMountServiceBinderListener.h"
-#include "os/CServiceManager.h"
-#include "os/CMessageHelper.h"
+#include "elastos/droid/os/storage/CStorageManager.h"
+#include "elastos/droid/os/storage/CStorageManagerHelper.h"
+#include "elastos/droid/os/storage/CObbActionListener.h"
+#include "elastos/droid/os/storage/CMountServiceBinderListener.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/CMessageHelper.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuffer.h>
 

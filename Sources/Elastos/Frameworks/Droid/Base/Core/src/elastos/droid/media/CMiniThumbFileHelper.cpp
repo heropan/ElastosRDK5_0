@@ -1,6 +1,6 @@
 
-#include "media/CMiniThumbFileHelper.h"
-#include "media/CMiniThumbFile.h"
+#include "elastos/droid/media/CMiniThumbFileHelper.h"
+#include "elastos/droid/media/CMiniThumbFile.h"
 
 namespace Elastos {
 namespace Droid {

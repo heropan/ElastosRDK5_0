@@ -1,8 +1,8 @@
 
-#include "graphics/CPoint.h"
-#include "graphics/CreateOutputStreamAdaptor.h"
-#include "webkit/ViewStateSerializer.h"
-#include "webkit/CWebViewCore.h"
+#include "elastos/droid/graphics/CPoint.h"
+#include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
+#include "elastos/droid/webkit/ViewStateSerializer.h"
+#include "elastos/droid/webkit/CWebViewCore.h"
 
 using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::IPoint;

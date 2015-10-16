@@ -1,6 +1,6 @@
 
-#include "internal/os/BaseCommand.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/internal/os/BaseCommand.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CSystem;

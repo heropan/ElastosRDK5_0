@@ -1,13 +1,13 @@
 
-#include "app/admin/CDeviceAdminInfo.h"
-#include "app/admin/CDeviceAdminInfoPolicyInfo.h"
-#include "utility/Xml.h"
-#include "content/CComponentName.h"
-#include "content/pm/CResolveInfo.h"
+#include "elastos/droid/app/admin/CDeviceAdminInfo.h"
+#include "elastos/droid/app/admin/CDeviceAdminInfoPolicyInfo.h"
+#include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/pm/CResolveInfo.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "R.h"
 
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;

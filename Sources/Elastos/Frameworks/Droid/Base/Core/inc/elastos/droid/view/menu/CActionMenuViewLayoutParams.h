@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_View_Menu_CActionMenuViewLayoutParams.h"
 
-#include "widget/LinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/LinearLayoutLayoutParams.h"
 
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
 using Elastos::Droid::Widget::LinearLayoutLayoutParams;

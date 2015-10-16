@@ -1,6 +1,6 @@
 
-#include "view/CGravity.h"
-#include "view/Gravity.h"
+#include "elastos/droid/view/CGravity.h"
+#include "elastos/droid/view/Gravity.h"
 
 namespace Elastos {
 namespace Droid {

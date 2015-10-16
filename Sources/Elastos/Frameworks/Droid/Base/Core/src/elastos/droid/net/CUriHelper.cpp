@@ -1,6 +1,6 @@
 
-#include "net/CUriHelper.h"
-#include "net/Uri.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/net/Uri.h"
 
 namespace Elastos {
 namespace Droid {

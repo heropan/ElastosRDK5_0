@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_ANIMATION_STATELISTANIMATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_GEOLOCATIONPERMISSIONSCLASSIC_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
-#include "webkit/GeolocationPermissions.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/webkit/GeolocationPermissions.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/Vector.h>
 

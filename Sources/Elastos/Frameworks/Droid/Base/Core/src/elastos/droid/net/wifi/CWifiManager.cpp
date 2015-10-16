@@ -1,9 +1,9 @@
 
-#include "net/wifi/CWifiManager.h"
-// #include "net/wifi/CWifiConfiguration.h"
-#include "os/CBinder.h"
-#include "os/CWorkSource.h"
-#include "os/CHandlerThread.h"
+#include "elastos/droid/net/wifi/CWifiManager.h"
+// #include "elastos/droid/net/wifi/CWifiConfiguration.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/CWorkSource.h"
+#include "elastos/droid/os/CHandlerThread.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

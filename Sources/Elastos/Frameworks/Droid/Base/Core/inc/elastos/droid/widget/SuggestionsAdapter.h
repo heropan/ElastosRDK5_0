@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SUGGESTIONSADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_SUGGESTIONSADAPTER_H__
 
-#include "widget/ResourceCursorAdapter.h"
+#include "elastos/droid/widget/ResourceCursorAdapter.h"
 
 
 using Elastos::Droid::Net::IUri;

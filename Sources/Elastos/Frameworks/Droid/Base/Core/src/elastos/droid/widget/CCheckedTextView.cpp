@@ -1,5 +1,5 @@
 
-#include "widget/CCheckedTextView.h"
+#include "elastos/droid/widget/CCheckedTextView.h"
 
 namespace Elastos {
 namespace Droid {

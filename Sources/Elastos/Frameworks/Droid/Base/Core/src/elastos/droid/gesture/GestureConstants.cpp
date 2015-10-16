@@ -1,5 +1,5 @@
 
-#include "gesture/GestureConstants.h"
+#include "elastos/droid/gesture/GestureConstants.h"
 
 namespace Elastos {
 namespace Droid {

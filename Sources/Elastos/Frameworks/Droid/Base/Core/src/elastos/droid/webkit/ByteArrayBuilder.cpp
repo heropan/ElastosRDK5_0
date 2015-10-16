@@ -1,5 +1,5 @@
 
-#include "webkit/ByteArrayBuilder.h"
+#include "elastos/droid/webkit/ByteArrayBuilder.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Utility::CLinkedList;

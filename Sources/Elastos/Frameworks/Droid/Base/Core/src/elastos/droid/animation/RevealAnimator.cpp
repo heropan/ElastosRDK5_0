@@ -1,5 +1,5 @@
 
-#include "animation/RevealAnimator.h"
+#include "elastos/droid/animation/RevealAnimator.h"
 
 namespace Elastos {
 namespace Droid {

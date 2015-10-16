@@ -1,7 +1,7 @@
 
-#include "view/menu/ListMenuItemView.h"
-#include "view/LayoutInflater.h"
-#include "R.h"
+#include "elastos/droid/view/menu/ListMenuItemView.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;

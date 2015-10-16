@@ -1,9 +1,9 @@
-#include "systemui/statusbar/tablet/InputMethodsPanel.h"
-#include "systemui/SystemUIR.h"
-#include "provider/CSettingsSecure.h"
-#include "content/CIntent.h"
-#include "content/CIntentFilter.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/systemui/statusbar/tablet/InputMethodsPanel.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CString;

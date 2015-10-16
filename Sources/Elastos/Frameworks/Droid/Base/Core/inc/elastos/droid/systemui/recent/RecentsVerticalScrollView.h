@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSVERTICALSCROLLVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSVERTICALSCROLLVIEW_H__
 
-#include "widget/ScrollView.h"
-#include "systemui/recent/RecentsScrollViewPerformanceHelper.h"
+#include "elastos/droid/widget/ScrollView.h"
+#include "elastos/droid/systemui/recent/RecentsScrollViewPerformanceHelper.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Core::IRunnable;

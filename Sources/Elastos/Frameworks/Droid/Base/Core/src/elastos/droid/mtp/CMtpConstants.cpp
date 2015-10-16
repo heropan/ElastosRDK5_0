@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "CMtpConstants.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/mtp/CMtpConstants.h"
 
 namespace Elastos {
 namespace Droid {

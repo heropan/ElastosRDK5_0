@@ -2,11 +2,11 @@
 #define __ELASTOS_DROID_VIEW_CDISPLIST_H__
 
 #include "_Elastos_Droid_View_CDispList.h"
-#include "os/Handler.h"
+#include "elastos/droid/os/Handler.h"
 
-#include "widget/Toast.h"
-#include "view/CDispListDispFormat.h"
-#include "view/CDispListHelper.h"
+#include "elastos/droid/widget/Toast.h"
+#include "elastos/droid/view/CDispListDispFormat.h"
+#include "elastos/droid/view/CDispListHelper.h"
 
 using Elastos::Droid::Widget::Toast;
 using Elastos::Droid::Widget::IToast;

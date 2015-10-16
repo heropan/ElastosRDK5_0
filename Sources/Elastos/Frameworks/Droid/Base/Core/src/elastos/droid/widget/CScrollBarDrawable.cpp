@@ -1,5 +1,5 @@
-#include "widget/CScrollBarDrawable.h"
-#include "graphics/drawable/CAnimatedRotateDrawable.h"
+#include "elastos/droid/widget/CScrollBarDrawable.h"
+#include "elastos/droid/graphics/drawable/CAnimatedRotateDrawable.h"
 
 using Elastos::Droid::Graphics::Drawable::CAnimatedRotateDrawable;
 

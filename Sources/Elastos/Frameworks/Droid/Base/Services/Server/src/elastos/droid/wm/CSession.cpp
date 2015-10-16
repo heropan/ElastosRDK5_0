@@ -2,8 +2,8 @@
 #include "wm/CSession.h"
 #include "wm/DragState.h"
 #include "wm/InputMonitor.h"
-#include "os/Binder.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>

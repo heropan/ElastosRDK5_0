@@ -1,6 +1,6 @@
 
-#include "inputmethodservice/CExtractEditText.h"
-#include "R.h"
+#include "elastos/droid/inputmethodservice/CExtractEditText.h"
+#include "elastos/droid/R.h"
 
 namespace Elastos {
 namespace Droid {

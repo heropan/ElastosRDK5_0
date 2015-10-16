@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_GLOBALACTIONS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "app/Dialog.h"
-#include "os/HandlerBase.h"
-#include "content/BroadcastReceiver.h"
-#include "database/ContentObserver.h"
+#include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/database/ContentObserver.h"
 #include "impl/EnableAccessibilityController.h"
 
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::Dialog;

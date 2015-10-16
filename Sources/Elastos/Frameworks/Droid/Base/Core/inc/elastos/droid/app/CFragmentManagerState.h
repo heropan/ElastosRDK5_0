@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTMANAGERSTATE_H__
 
 #include "_Elastos_Droid_App_CFragmentManagerState.h"
-#include "app/Fragment.h"
+#include "elastos/droid/app/Fragment.h"
 
 using Elastos::Droid::App::IBackStackState;
 using Elastos::Droid::App::FragmentState;

@@ -4,8 +4,8 @@
 #include "CBluetoothAdapter.h"
 #include "BluetoothInputStream.h"
 #include "BluetoothOutputStream.h"
-#include "net/CLocalSocket.h"
-#include "os/CParcelFileDescriptor.h"
+#include "elastos/droid/net/CLocalSocket.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

@@ -2,7 +2,7 @@
 #ifndef __BUCKETHELPER_H__
 #define __BUCKETHELPER_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContentResolver;

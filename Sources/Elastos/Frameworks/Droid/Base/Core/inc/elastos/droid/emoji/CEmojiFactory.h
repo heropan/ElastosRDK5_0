@@ -5,7 +5,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/Map.h>
-#include "graphics/CBitmap.h"
+#include "elastos/droid/graphics/CBitmap.h"
 
 
 namespace Elastos {

@@ -1,5 +1,5 @@
 
-#include "widget/CRelativeLayout.h"
+#include "elastos/droid/widget/CRelativeLayout.h"
 
 using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_ViewGroup;

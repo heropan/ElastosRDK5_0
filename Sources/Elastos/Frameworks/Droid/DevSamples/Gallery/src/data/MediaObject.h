@@ -2,7 +2,7 @@
 #ifndef __MEDIAOBJECT_H__
 #define __MEDIAOBJECT_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "Path.h"
 #include "MediaDetails.h"
 

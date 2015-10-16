@@ -4,7 +4,7 @@
 #include "CTelephonyManagerHelper.h"
 #include "CCdmaCellLocation.h"
 #include "CGsmCellLocation.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 
 using Elastos::Droid::Internal::Telephony::IITelephony;
 using Elastos::Droid::Internal::Telephony::IPhoneConstants;

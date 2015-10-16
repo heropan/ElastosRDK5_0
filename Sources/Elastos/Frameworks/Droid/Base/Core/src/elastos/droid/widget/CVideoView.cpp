@@ -1,5 +1,5 @@
 
-#include "widget/CVideoView.h"
+#include "elastos/droid/widget/CVideoView.h"
 
 using Elastos::Droid::View::EIID_View;
 

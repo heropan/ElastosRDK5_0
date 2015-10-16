@@ -1,5 +1,5 @@
 
-#include "widget/BaseExpandableListAdapter.h"
+#include "elastos/droid/widget/BaseExpandableListAdapter.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ BaseExpandableListAdapter::BaseExpandableListAdapter()
 }
 
 ECode BaseExpandableListAdapter::RegisterDataSetObserver(
-    /* [in] */ IDataSetObserver* observer) 
+    /* [in] */ IDataSetObserver* observer)
 {
     mDataSetObservable->RegisterObserver(observer);
     return NOERROR;
@@ -34,7 +34,7 @@ ECode BaseExpandableListAdapter::NotifyDataSetInvalidated()
 /**
  * @see DataSetObservable#notifyChanged()
  */
-ECode BaseExpandableListAdapter::NotifyDataSetChanged() 
+ECode BaseExpandableListAdapter::NotifyDataSetChanged()
 {
     return mDataSetObservable->NotifyChanged();
 }
@@ -64,12 +64,12 @@ ECode BaseExpandableListAdapter::OnGroupExpanded(
  *             this bit will be 1.
  * <li> bit 1-31: Lower 31 bits of the groupId
  * <li> bit 32-63: Lower 32 bits of the childId.
- * <p> 
+ * <p>
  * {@inheritDoc}
  */
 Int64 BaseExpandableListAdapter::GetCombinedChildId(
-    /* [in] */ Int64 groupId, 
-    /* [in] */ Int64 childId) 
+    /* [in] */ Int64 groupId,
+    /* [in] */ Int64 childId)
 {
     return 0x8000000000000000L | ((groupId & 0x7FFFFFFF) << 32) | (childId & 0xFFFFFFFF);
 }
@@ -82,11 +82,11 @@ Int64 BaseExpandableListAdapter::GetCombinedChildId(
  *             this bit will be 0.
  * <li> bit 1-31: Lower 31 bits of the groupId
  * <li> bit 32-63: Lower 32 bits of the childId.
- * <p> 
+ * <p>
  * {@inheritDoc}
  */
 Int64 BaseExpandableListAdapter::GetCombinedGroupId(
-    /* [in] */ Int64 groupId) 
+    /* [in] */ Int64 groupId)
 {
     return (groupId & 0x7FFFFFFF) << 32;
 }
@@ -105,7 +105,7 @@ Boolean BaseExpandableListAdapter::IsEmpty()
  * @return 0 for any group or child position, since only one child type count is declared.
  */
 Int32 BaseExpandableListAdapter::GetChildType(
-    /* [in] */ Int32 groupPosition, 
+    /* [in] */ Int32 groupPosition,
     /* [in] */ Int32 childPosition)
 {
     return 0;

@@ -1,8 +1,8 @@
 
-#include "app/NotificationManager.h"
-#include "os/ServiceManager.h"
+#include "elastos/droid/app/NotificationManager.h"
+#include "elastos/droid/os/ServiceManager.h"
 #ifdef DROID_CORE
-#include "os/CUserHandleHelper.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
 #endif
 #include <elastos/utility/logging/Slogger.h>
 

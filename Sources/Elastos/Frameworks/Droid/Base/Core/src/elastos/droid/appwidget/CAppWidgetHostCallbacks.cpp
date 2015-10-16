@@ -1,6 +1,6 @@
 
-#include "appwidget/CAppWidgetHostCallbacks.h"
-#include "os/Handler.h"
+#include "elastos/droid/appwidget/CAppWidgetHostCallbacks.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Os::Handler;
 

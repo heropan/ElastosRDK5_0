@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_WIFISTATETRACKER_H__
 #define  __ELASTOS_DROID_NET_WIFI_WIFISTATETRACKER_H__
 
-#include "net/NetworkStateTracker.h"
-#include "ext/frameworkdef.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/net/NetworkStateTracker.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::Content::BroadcastReceiver;

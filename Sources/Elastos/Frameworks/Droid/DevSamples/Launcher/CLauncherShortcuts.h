@@ -2,7 +2,7 @@
 #ifndef __CLAUNCHERSHORTCUTS_H__
 #define __CLAUNCHERSHORTCUTS_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "_CLauncherShortcuts.h"
 #include <elastos/utility/etl/List.h>
 

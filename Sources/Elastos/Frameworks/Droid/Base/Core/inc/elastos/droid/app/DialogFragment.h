@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_DIALOGFRAGMENT_H__
 #define __ELASTOS_DROID_APP_DIALOGFRAGMENT_H__
 
-#include "app/Fragment.h"
+#include "elastos/droid/app/Fragment.h"
 
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;

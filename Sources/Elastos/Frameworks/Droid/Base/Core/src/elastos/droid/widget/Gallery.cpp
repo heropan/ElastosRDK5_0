@@ -1,12 +1,12 @@
 
-#include "widget/Gallery.h"
+#include "elastos/droid/widget/Gallery.h"
 #include <elastos/core/Math.h>
-#include "view/CViewConfiguration.h"
-#include "view/SoundEffectConstants.h"
-#include "view/CGestureDetector.h"
-#include "widget/GalleryLayoutParams.h"
-#include "widget/CGalleryLayoutParams.h"
-#include "widget/CScroller.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/SoundEffectConstants.h"
+#include "elastos/droid/view/CGestureDetector.h"
+#include "elastos/droid/widget/GalleryLayoutParams.h"
+#include "elastos/droid/widget/CGalleryLayoutParams.h"
+#include "elastos/droid/widget/CScroller.h"
 
 
 using Elastos::Core::EIID_IRunnable;

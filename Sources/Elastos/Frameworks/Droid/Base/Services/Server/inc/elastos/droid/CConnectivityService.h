@@ -2,15 +2,15 @@
 #ifndef __ELASTOS_DROID_SERVER_CCONNECTIVITYSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CCONNECTIVITYSERVICE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_CConnectivityService.h"
-#include "database/ContentObserver.h"
-#include "net/CaptivePortalTracker.h"
-#include "net/LockdownVpnTracker.h"
-#include "net/NetworkStateTracker.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/net/CaptivePortalTracker.h"
+#include "elastos/droid/net/LockdownVpnTracker.h"
+#include "elastos/droid/net/NetworkStateTracker.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;

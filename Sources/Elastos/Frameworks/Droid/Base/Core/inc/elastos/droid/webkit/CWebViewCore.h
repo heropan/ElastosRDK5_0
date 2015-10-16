@@ -3,17 +3,17 @@
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWCORE_H__
 
 #include "_Elastos_Droid_Webkit_CWebViewCore.h"
-#include "graphics/CPoint.h"
-#include "webkit/WebViewInputDispatcher.h"
-#include "webkit/ViewManager.h"
-#include "webkit/CallbackProxy.h"
-#include "webkit/CMockGeolocation.h"
-#include "webkit/CWebViewClassic.h"
-#include "webkit/DeviceMotionService.h"
-#include "webkit/DeviceOrientationService.h"
-#include "webkit/DeviceMotionAndOrientationManager.h"
-#include "webkit/WebSettingsClassic.h"
-#include "webkit/WebTextView.h"
+#include "elastos/droid/graphics/CPoint.h"
+#include "elastos/droid/webkit/WebViewInputDispatcher.h"
+#include "elastos/droid/webkit/ViewManager.h"
+#include "elastos/droid/webkit/CallbackProxy.h"
+#include "elastos/droid/webkit/CMockGeolocation.h"
+#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/DeviceMotionService.h"
+#include "elastos/droid/webkit/DeviceOrientationService.h"
+#include "elastos/droid/webkit/DeviceMotionAndOrientationManager.h"
+#include "elastos/droid/webkit/WebSettingsClassic.h"
+#include "elastos/droid/webkit/WebTextView.h"
 
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::IMap;

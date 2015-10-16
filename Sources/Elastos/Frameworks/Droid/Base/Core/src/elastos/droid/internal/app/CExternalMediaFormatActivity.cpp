@@ -1,7 +1,7 @@
 
-#include "app/CExternalMediaFormatActivity.h"
-#include "content/CIntentFilter.h"
-#include "content/CIntent.h"
+#include "elastos/droid/app/CExternalMediaFormatActivity.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

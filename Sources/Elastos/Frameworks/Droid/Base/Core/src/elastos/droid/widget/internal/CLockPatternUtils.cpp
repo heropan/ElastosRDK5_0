@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/internal/CLockPatternUtils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/internal/CLockPatternUtils.h"
 
 namespace Elastos {
 namespace Droid {

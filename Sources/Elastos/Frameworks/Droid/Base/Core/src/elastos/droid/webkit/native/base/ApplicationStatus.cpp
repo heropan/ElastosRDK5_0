@@ -1,8 +1,8 @@
 
-#include "webkit/native/base/ApplicationStatus.h"
-#include "webkit/native/base/ApplicationState.h"
-#include "webkit/native/base/ActivityState.h"
-#include "webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
+#include "elastos/droid/webkit/native/base/ApplicationState.h"
+#include "elastos/droid/webkit/native/base/ActivityState.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
 
 namespace Elastos {
 namespace Droid {

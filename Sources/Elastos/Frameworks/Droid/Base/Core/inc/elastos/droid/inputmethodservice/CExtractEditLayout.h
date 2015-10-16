@@ -3,8 +3,8 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITLAYOUT_H__
 
 #include "_Elastos_Droid_InputMethodService_CExtractEditLayout.h"
-// #include "widget/LinearLayout.h"
-#include "view/ActionMode.h"
+// #include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/view/ActionMode.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

@@ -1,8 +1,8 @@
 
-#include "webkit/native/content/browser/ChildProcessConnectionImpl.h"
-#include "webkit/native/base/TraceEvent.h"
-#include "webkit/native/base/ThreadUtils.h"
-//#include "content/CIntent.h"
+#include "elastos/droid/webkit/native/content/browser/ChildProcessConnectionImpl.h"
+#include "elastos/droid/webkit/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+//#include "elastos/droid/content/CIntent.h"
 
 //using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::EIID_IServiceConnection;

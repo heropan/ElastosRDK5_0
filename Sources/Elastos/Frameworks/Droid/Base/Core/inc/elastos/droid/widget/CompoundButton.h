@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
 
-#include "widget/Button.h"
-#include "view/ViewBaseSavedState.h"
+#include "elastos/droid/widget/Button.h"
+#include "elastos/droid/view/ViewBaseSavedState.h"
 
 using Elastos::Droid::View::ViewBaseSavedState;
 

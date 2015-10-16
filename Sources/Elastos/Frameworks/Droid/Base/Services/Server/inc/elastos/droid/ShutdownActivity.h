@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_SHUTDOWNACTIVITY_H__
 #define __ELASTOS_DROID_SERVER_SHUTDOWNACTIVITY_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Core::Thread;

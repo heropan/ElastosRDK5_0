@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CLOCK_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/TextView.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Utility::ICalendar;
@@ -79,7 +79,7 @@ protected:
         /* [in] */ Int32 defStyle = 0);
 
 private:
-	AutoPtr<ICharSequence> GetSmallTime();
+    AutoPtr<ICharSequence> GetSmallTime();
 
 private:
     friend class ClockBroadcastReceiver;

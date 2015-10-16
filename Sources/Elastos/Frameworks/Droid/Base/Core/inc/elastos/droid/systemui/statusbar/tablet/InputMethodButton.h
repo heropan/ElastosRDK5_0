@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODBUTTON_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODBUTTON_H__
 
-#include "widget/ImageView.h"
+#include "elastos/droid/widget/ImageView.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;

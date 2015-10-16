@@ -1,9 +1,9 @@
 
-#include "view/CViewConfiguration.h"
-#include "view/CWindowManagerGlobal.h"
-#include "utility/CDisplayMetrics.h"
-#include "graphics/CPoint.h"
-#include "R.h"
+#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+#include "elastos/droid/graphics/CPoint.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::Res::IResources;

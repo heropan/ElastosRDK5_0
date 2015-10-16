@@ -1,6 +1,6 @@
 
-#include "accounts/CChooseResponse.h"
-#include "accounts/CAccount.h"
+#include "elastos/droid/accounts/CChooseResponse.h"
+#include "elastos/droid/accounts/CAccount.h"
 
 namespace Elastos {
 namespace Droid {

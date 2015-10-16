@@ -1,5 +1,5 @@
 
-#include "provider/CContactsContractData.h"
+#include "elastos/droid/provider/CContactsContractData.h"
 
 namespace Elastos {
 namespace Droid {

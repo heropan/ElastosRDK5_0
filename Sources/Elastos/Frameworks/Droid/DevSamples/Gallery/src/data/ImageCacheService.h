@@ -2,7 +2,7 @@
 #ifndef __IMAGECACHESERVICE_H__
 #define __IMAGECACHESERVICE_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Graphics::IBitmap;

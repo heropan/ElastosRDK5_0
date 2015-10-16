@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_USERSTARTEDSTATE_H__
 #define __ELASTOS_DROID_SERVER_AM_USERSTARTEDSTATE_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::IO::IPrintWriter;

@@ -1,8 +1,8 @@
 
-#include "widget/BaseAdapter.h"
+#include "elastos/droid/widget/BaseAdapter.h"
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
-#include "database/CDataSetObservable.h"
+#include "elastos/droid/database/CDataSetObservable.h"
 #else
 #include "Elastos.Droid.Core.h"
 #endif

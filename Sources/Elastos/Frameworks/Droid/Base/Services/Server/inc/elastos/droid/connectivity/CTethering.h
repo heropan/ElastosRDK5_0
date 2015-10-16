@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CONNECTIVITY_CTETHERING_H__
 
 #include "_Elastos_Droid_Server_Connectivity_CTethering.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "util/State.h"
 #include "util/StateMachine.h"
 #include <elastos/Core/Object.h>

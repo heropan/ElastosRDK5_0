@@ -12,7 +12,7 @@ namespace JavaProxy {
 CarClass(CISyncStatusObserver)
 {
 public:
-	~CISyncStatusObserver();
+    ~CISyncStatusObserver();
 
     CARAPI OnStatusChanged(
         /* [in] */ Int32 which);
@@ -22,7 +22,7 @@ public:
         /* [in] */ Handle32 jInstance);
 
 private:
-	static const String TAG;
+    static const String TAG;
 
     JavaVM* mJVM;
     jobject mJInstance;

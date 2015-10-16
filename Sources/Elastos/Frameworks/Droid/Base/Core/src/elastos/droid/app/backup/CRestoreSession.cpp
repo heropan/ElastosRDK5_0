@@ -1,6 +1,6 @@
-#include "app/backup/CRestoreSession.h"
+#include "elastos/droid/app/backup/CRestoreSession.h"
 #include <elastos/utility/logging/Logger.h>
-#include "app/backup/CRestoreObserverWrapper.h"
+#include "elastos/droid/app/backup/CRestoreObserverWrapper.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::Backup::CRestoreObserverWrapper;

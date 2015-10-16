@@ -1,6 +1,6 @@
 
-#include "ext/frameworkext.h"
-#include "media/Media_Utils.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/Media_Utils.h"
 #include <media/stagefright/MediaErrors.h>
 #include <elastos/utility/logging/Slogger.h>
 

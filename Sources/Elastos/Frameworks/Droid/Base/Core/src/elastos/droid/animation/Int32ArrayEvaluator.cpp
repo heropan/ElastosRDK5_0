@@ -1,5 +1,5 @@
 
-#include "animation/Int32ArrayEvaluator.h"
+#include "elastos/droid/animation/Int32ArrayEvaluator.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;

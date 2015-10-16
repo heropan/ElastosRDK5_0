@@ -1,7 +1,7 @@
 
-#include "database/sqlite/SQLiteCursor.h"
-#include "database/sqlite/CSQLiteQuery.h"
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/sqlite/SQLiteCursor.h"
+#include "elastos/droid/database/sqlite/CSQLiteQuery.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 

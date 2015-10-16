@@ -3,7 +3,7 @@
 #define __CMAINACTIVITY_H__
 
 #include "_CMainActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::App::Activity;
@@ -28,7 +28,7 @@ private:
     public:
         PlayClickListener(
             /* [in] */  CMainActivity* host)
-        	 : mHost(host)
+             : mHost(host)
         {}
 
         CAR_INTERFACE_DECL()
@@ -47,11 +47,11 @@ private:
     public:
         StopClickListener(
             /* [in] */  CMainActivity* host,
-        	/* [in] */  ISoundPool* sp,
-        	/* [in] */  HashMap<Int32, Int32>* spMap)
-        	 : mHost(host)
-        	 , mSoundPool(sp)
-        	 , mSpMap(spMap)
+            /* [in] */  ISoundPool* sp,
+            /* [in] */  HashMap<Int32, Int32>* spMap)
+             : mHost(host)
+             , mSoundPool(sp)
+             , mSpMap(spMap)
         {}
 
         CAR_INTERFACE_DECL()
@@ -61,14 +61,14 @@ private:
 
     private:
         CMainActivity* mHost;
-	    HashMap<Int32, Int32>* mSpMap;
-	    ISoundPool* mSoundPool;
+        HashMap<Int32, Int32>* mSpMap;
+        ISoundPool* mSoundPool;
     };
 
 public:
-	CARAPI PlaySounds(
-		/* [in] */ Int32 sound,
-		/* [in] */ Int32 number);
+    CARAPI PlaySounds(
+        /* [in] */ Int32 sound,
+        /* [in] */ Int32 number);
 
 protected:
     CARAPI OnCreate(

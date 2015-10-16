@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CLAYERRASTERIZER_H__
 
 #include "_Elastos_Droid_Graphics_CLayerRasterizer.h"
-#include "graphics/Rasterizer.h"
+#include "elastos/droid/graphics/Rasterizer.h"
 
 namespace Elastos {
 namespace Droid {

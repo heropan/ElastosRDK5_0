@@ -1,11 +1,8 @@
 TARGET_NAME= surrogate
 TARGET_TYPE= lib
 
-#INCLUDES += ../;
-INCLUDES += ../../;
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/privacy
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/privacy/surrogate
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES += CPrivacyLocationManager.cpp
 SOURCES += PrivacyContentResolver.cpp

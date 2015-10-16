@@ -1,6 +1,6 @@
 
-#include "database/sqlite/SQLiteSession.h"
-#include "database/DatabaseUtils.h"
+#include "elastos/droid/database/sqlite/SQLiteSession.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 #include <elastos/core/Thread.h>
 #include <elastos/utility/logging/Slogger.h>
 

@@ -1,12 +1,12 @@
 
-#include "media/CRingtoneManager.h"
+#include "elastos/droid/media/CRingtoneManager.h"
 
-#include "net/CUriHelper.h"
-#include "provider/Settings.h"
-#include "provider/CMediaStoreAudioMedia.h"
-#include "os/Environment.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/CMediaStoreAudioMedia.h"
+#include "elastos/droid/os/Environment.h"
 #include <elastos/core/StringBuilder.h>
-#include "media/CRingtone.h"
+#include "elastos/droid/media/CRingtone.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Provider::IMediaStoreAudioAudioColumns;

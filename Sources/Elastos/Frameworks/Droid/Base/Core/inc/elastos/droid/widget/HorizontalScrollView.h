@@ -3,12 +3,12 @@
 #define __ELASTOS_DROID_WIDGET_HORIZONTALSCROLLVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/FrameLayout.h"
-#include "widget/OverScroller.h"
-#include "widget/EdgeEffect.h"
-#include "view/VelocityTracker.h"
-//#include "graphics/CRect.h"
-#include "R.h"
+#include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/widget/OverScroller.h"
+#include "elastos/droid/widget/EdgeEffect.h"
+#include "elastos/droid/view/VelocityTracker.h"
+//#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;

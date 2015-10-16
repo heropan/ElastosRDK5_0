@@ -1,7 +1,7 @@
 
-#include "graphics/CColorMatrix.h"
+#include "elastos/droid/graphics/CColorMatrix.h"
 #include <elastos/core/Math.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using namespace Elastos::Core;
 

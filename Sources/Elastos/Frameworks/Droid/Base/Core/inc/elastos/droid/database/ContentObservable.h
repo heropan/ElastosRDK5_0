@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CONTENTOBSERVABLE_H__
 #define __ELASTOS_DROID_DATABASE_CONTENTOBSERVABLE_H__
 
-#include "database/Observable.h"
+#include "elastos/droid/database/Observable.h"
 
 using Elastos::Droid::Net::IUri;
 

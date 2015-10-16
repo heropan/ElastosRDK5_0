@@ -1,12 +1,12 @@
 
 #include "CBatteryService.h"
 #include "am/CBatteryStatsService.h"
-#include "app/ActivityManagerNative.h"
-#include "os/UserHandle.h"
-#include "os/SystemClock.h"
-#include "os/ServiceManager.h"
-#include "os/FileUtils.h"
-#include "os/Handler.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/Handler.h"
 #include "R.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>

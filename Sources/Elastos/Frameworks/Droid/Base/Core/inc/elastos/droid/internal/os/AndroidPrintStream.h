@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_ANDROIDPRINTSTREAM_H__
 #define __ELASTOS_DROID_INTERNAL_OS_ANDROIDPRINTSTREAM_H__
 
-#include "internal/os/LoggingPrintStream.h"
+#include "elastos/droid/internal/os/LoggingPrintStream.h"
 
 namespace Elastos {
 namespace Droid {

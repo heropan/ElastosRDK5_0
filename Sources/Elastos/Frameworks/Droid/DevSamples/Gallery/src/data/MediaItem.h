@@ -2,7 +2,7 @@
 #ifndef __MEDIAITEM_H__
 #define __MEDIAITEM_H__
 
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 #include "Path.h"
 
 namespace Gallery {

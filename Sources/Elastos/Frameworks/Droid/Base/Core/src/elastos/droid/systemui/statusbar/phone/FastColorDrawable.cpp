@@ -1,4 +1,4 @@
-#include "systemui/statusbar/phone/FastColorDrawable.h"
+#include "elastos/droid/systemui/statusbar/phone/FastColorDrawable.h"
 
 namespace Elastos {
 namespace Droid {

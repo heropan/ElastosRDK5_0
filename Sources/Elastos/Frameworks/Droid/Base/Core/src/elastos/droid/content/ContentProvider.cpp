@@ -4,11 +4,11 @@
 //#include "elastos/droid/content/CClipDescriptionHelper.h"
 //#include "elastos/droid/content/CContentResolverHelper.h"
 //#include "elastos/droid/content/res/CAssetFileDescriptor.h"
-#include "os/CParcelFileDescriptorHelper.h"
-#include "os/Process.h"
-#include "os/Binder.h"
-#include "os/UserHandle.h"
-#include "os/ParcelFileDescriptor.h"
+#include "elastos/droid/os/CParcelFileDescriptorHelper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

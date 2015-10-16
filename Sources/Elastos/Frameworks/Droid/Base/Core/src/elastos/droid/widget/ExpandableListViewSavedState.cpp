@@ -1,6 +1,6 @@
 
-#include "widget/ExpandableListViewSavedState.h"
-    
+#include "elastos/droid/widget/ExpandableListViewSavedState.h"
+
 /**
  * Constructor called from {@link ExpandableListView#onSaveInstanceState()}
  */
@@ -22,7 +22,7 @@ ExpandableListViewSavedState::ExpandableListViewSavedState(
 }
 
 ECode ExpandableListViewSavedState::WriteToParcel(
-    /* [in] */ IParcel* out, 
+    /* [in] */ IParcel* out,
     /* [in] */ Int32 flags)
 {
     //ViewBaseSavedState::WriteToParcel(out, flags);

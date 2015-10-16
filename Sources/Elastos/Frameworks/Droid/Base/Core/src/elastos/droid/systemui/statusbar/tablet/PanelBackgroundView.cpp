@@ -1,4 +1,4 @@
-#include "systemui/statusbar/tablet/PanelBackgroundView.h"
+#include "elastos/droid/systemui/statusbar/tablet/PanelBackgroundView.h"
 
 namespace Elastos {
 namespace Droid {

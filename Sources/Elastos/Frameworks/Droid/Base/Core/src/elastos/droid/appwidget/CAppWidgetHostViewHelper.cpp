@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "appwidget/CAppWidgetHostViewHelper.h"
-#include "appwidget/CAppWidgetHostView.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/appwidget/CAppWidgetHostViewHelper.h"
+#include "elastos/droid/appwidget/CAppWidgetHostView.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_WEBSYNCMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/os/HandlerBase.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;

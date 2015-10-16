@@ -1,5 +1,5 @@
 
-#include "CMediaBrowserServiceResult.h"
+#include "elastos/droid/service/media/CMediaBrowserServiceResult.h"
 
 namespace Elastos {
 namespace Droid {

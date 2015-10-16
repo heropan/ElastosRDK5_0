@@ -1,6 +1,6 @@
 
-#include "os/ServiceManager.h"
-#include "os/CServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CServiceManager.h"
 
 namespace Elastos {
 namespace Droid {

@@ -4,8 +4,8 @@
 
 #include "_Elastos_Droid_Animation_CAnimatorSet.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "animation/Animator.h"
-#include "animation/AnimatorSet.h"
+#include "elastos/droid/animation/Animator.h"
+#include "elastos/droid/animation/AnimatorSet.h"
 
 namespace Elastos {
 namespace Droid {

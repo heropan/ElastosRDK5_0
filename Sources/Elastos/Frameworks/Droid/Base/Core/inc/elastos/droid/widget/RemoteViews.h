@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWS_H__
 #define __ELASTOS_DROID_WIDGET_REMOTEVIEWS_H__
 
-#include "widget/Filter.h"
+#include "elastos/droid/widget/Filter.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

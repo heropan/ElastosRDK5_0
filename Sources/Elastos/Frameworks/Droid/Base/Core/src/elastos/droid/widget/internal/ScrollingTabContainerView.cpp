@@ -1,18 +1,18 @@
 
-#include "internal/ScrollingTabContainerView.h"
+#include "elastos/droid/internal/ScrollingTabContainerView.h"
 #include <elastos/core/Math.h>
-#include "view/menu/CActionBarPolicy.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "widget/CAbsListViewLayoutParams.h"
-#include "text/TextUtils.h"
-#include "view/animation/CDecelerateInterpolator.h"
-#include "widget/CLinearLayout.h"
-#include "widget/CSpinner.h"
-#include "animation/CObjectAnimator.h"
-#include "widget/Spinner.h"
-#include "widget/CImageView.h"
-#include "widget/CTextView.h"
-#include "widget/Toast.h"
+#include "elastos/droid/view/menu/CActionBarPolicy.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/widget/CAbsListViewLayoutParams.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/CSpinner.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/widget/Spinner.h"
+#include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/widget/Toast.h"
 
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::TextUtilsTruncateAt;

@@ -3,7 +3,7 @@
 #define __CSERVICEONE_H__
 
 #include "_CServiceOne.h"
-#include "app/Service.h"
+#include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Os::IBinder;

@@ -1,5 +1,5 @@
 
-#include "graphics/CPixelXorXfermode.h"
+#include "elastos/droid/graphics/CPixelXorXfermode.h"
 #include <skia/effects/SkPixelXorXfermode.h>
 
 namespace Elastos {

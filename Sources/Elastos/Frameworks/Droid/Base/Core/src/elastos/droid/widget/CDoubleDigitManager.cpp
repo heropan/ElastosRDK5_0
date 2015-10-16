@@ -1,5 +1,5 @@
-#include "ext/frameworkext.h"
-#include "widget/CDoubleDigitManager.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/CDoubleDigitManager.h"
 
 namespace Elastos{
 namespace Droid{

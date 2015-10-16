@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_UTILITY_STATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "utility/IState.h"
+#include "elastos/droid/utility/IState.h"
 
 namespace Elastos {
 namespace Droid {

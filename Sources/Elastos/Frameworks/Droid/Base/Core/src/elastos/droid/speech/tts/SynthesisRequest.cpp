@@ -1,5 +1,5 @@
-#include "speech/tts/SynthesisRequest.h"
-#include "os/CBundle.h"
+#include "elastos/droid/speech/tts/SynthesisRequest.h"
+#include "elastos/droid/os/CBundle.h"
 
 using Elastos::Droid::Os::CBundle;
 

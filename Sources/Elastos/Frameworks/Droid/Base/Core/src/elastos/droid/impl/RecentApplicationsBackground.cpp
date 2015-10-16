@@ -1,6 +1,6 @@
 
-#include "impl/RecentApplicationsBackground.h"
-#include "graphics/CPaint.h"
+#include "elastos/droid/impl/RecentApplicationsBackground.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::CPaint;

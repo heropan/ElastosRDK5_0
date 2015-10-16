@@ -2,13 +2,13 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_SUPPLICANTSTATETRACKER_H__
 #define  __ELASTOS_DROID_NET_WIFI_SUPPLICANTSTATETRACKER_H__
 
-#include "ext/frameworkdef.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #ifdef DROID_CORE
-#include "net/wifi/CStateChangeResult.h"
+#include "elastos/droid/net/wifi/CStateChangeResult.h"
 #endif
-#include "net/wifi/WifiConfigStore.h"
-#include "utility/State.h"
-#include "utility/StateMachine.h"
+#include "elastos/droid/net/wifi/WifiConfigStore.h"
+#include "elastos/droid/utility/State.h"
+#include "elastos/droid/utility/StateMachine.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::ILooper;

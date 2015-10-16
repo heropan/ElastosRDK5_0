@@ -1,4 +1,4 @@
-#include "utility/Base64OutputStream.h"
+#include "elastos/droid/utility/Base64OutputStream.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFlushable;

@@ -6,10 +6,8 @@ C_DEFINES += -DDROID_CORE
 include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/widget
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/content
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid/media
+INCLUDES += $(MAKEDIR)/../../../../inc/
+
 #INCLUDES += $(PREBUILD_INC)/binder
 #INCLUDES += $(PREBUILD_INC)/skia/utils
 #INCLUDES += $(PREBUILD_INC)/skia/core

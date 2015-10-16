@@ -1,8 +1,8 @@
 
 #include "elastos/droid/content/AsyncTaskLoader.h"
-#include "os/CHandler.h"
-#include "utility/TimeUtils.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/utility/TimeUtils.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

@@ -1,17 +1,17 @@
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "os/UserHandle.h"
-#include "os/CBundle.h"
-#include "text/TextUtils.h"
-#include "graphics/CBitmap.h"
-#include "app/CNotification.h"
-#include "app/CPendingIntentHelper.h"
-#include "app/CPendingIntent.h"
-#include "app/CNotificationAction.h"
-#include "widget/CRemoteViews.h"
-#include "R.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/app/CPendingIntent.h"
+#include "elastos/droid/app/CNotificationAction.h"
+#include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;

@@ -1,7 +1,7 @@
 #ifndef __MONKEYNETWORKMONITOR_H__
 #define __MONKEYNETWORKMONITOR_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::IIntent;

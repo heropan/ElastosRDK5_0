@@ -2,10 +2,10 @@
 #define __ELASTOS_DROID_SERVER_CCOMMONTIMEMANAGEMENTSERVICE_H__
 
 #include "_Elastos_Droid_Server_CCommonTimeManagementService.h"
-#include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
-//#include "os/CommonTimeConfig.h"
-#include "os/Runnable.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+//#include "elastos/droid/os/CommonTimeConfig.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;

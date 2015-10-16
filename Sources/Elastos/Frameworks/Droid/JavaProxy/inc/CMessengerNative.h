@@ -14,7 +14,7 @@ namespace JavaProxy {
 CarClass(CMessengerNative)
 {
 public:
-	~CMessengerNative();
+    ~CMessengerNative();
 
     CARAPI constructor(
         /* [in] */ Handle32 jVM,

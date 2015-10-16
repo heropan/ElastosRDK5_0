@@ -1,5 +1,5 @@
 
-#include "app/CDialog.h"
+#include "elastos/droid/app/CDialog.h"
 
 namespace Elastos {
 namespace Droid {

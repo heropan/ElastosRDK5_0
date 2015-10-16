@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_SERVER_CDEVICESTORAGEMONITORSERVICE_H__
 
 #include "_Elastos_Droid_Server_CDeviceStorageMonitorService.h"
-#include "ext/frameworkext.h"
-#include "os/FileObserver.h"
-#include "os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/FileObserver.h"
+#include "elastos/droid/os/HandlerBase.h"
 #include "Elastos.Core.h"
 
 using Elastos::Droid::Content::IContext;

@@ -1,12 +1,12 @@
 
-#include "location/CGpsNetInitiatedHandler.h"
-#include "R.h"
-#include "app/CNotification.h"
-#include "app/CPendingIntent.h"
-#include "app/CPendingIntentHelper.h"
-#include "content/CIntent.h"
-#include "os/CUserHandle.h"
-#include "os/CUserHandleHelper.h"
+#include "elastos/droid/location/CGpsNetInitiatedHandler.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/app/CPendingIntent.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>
 

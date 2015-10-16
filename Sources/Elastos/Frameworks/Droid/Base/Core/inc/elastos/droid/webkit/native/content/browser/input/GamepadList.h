@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADLIST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Build.h"
-#include "webkit/native/content/browser/input/GamepadDevice.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/webkit/native/content/browser/input/GamepadDevice.h"
 
 // import android.annotation.SuppressLint;
 // import android.annotation.TargetApi;

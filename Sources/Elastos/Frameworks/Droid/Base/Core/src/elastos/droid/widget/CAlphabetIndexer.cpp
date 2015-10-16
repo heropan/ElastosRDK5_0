@@ -1,5 +1,5 @@
 
-#include "widget/CAlphabetIndexer.h"
+#include "elastos/droid/widget/CAlphabetIndexer.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,4 +1,4 @@
-#include "media/audiofx/CBassBoostSettings.h"
+#include "elastos/droid/media/audiofx/CBassBoostSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 

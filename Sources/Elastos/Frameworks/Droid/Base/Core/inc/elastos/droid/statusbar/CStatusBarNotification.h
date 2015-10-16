@@ -2,10 +2,10 @@
 #define __ELASTOS_DROID_STATUSBAR_CSTATUSBARNOTIFICATION_H__
 
 #include "_Elastos_Droid_StatusBar_CStatusBarNotification.h"
-#include "ext/frameworkdef.h"
-#include "os/UserHandle.h"
-#include "os/CUserHandle.h"
-#include "app/CNotification.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/app/CNotification.h"
 
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::CNotification;

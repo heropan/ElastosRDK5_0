@@ -1,6 +1,6 @@
 
 #include "CBluetoothPanStateChangeCallback.h"
-#include "content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -14,7 +14,7 @@ namespace Bluetooth {
 ECode CBluetoothPanStateChangeCallback::OnBluetoothStateChange(
     /* [in] */ Boolean on)
 {
-	//Handle enable request to bind again.
+    //Handle enable request to bind again.
     if (on) {
         Logger::D(BluetoothPan::TAG, "onBluetoothStateChange(on) call bindService");
         AutoPtr<IIntent> intent;
@@ -44,7 +44,7 @@ ECode CBluetoothPanStateChangeCallback::OnBluetoothStateChange(
 ECode CBluetoothPanStateChangeCallback::constructor(
     /* [in] */ IInterface* host)
 {
-	mHost = (BluetoothPan*)host;
+    mHost = (BluetoothPan*)host;
     return NOERROR;
 }
 

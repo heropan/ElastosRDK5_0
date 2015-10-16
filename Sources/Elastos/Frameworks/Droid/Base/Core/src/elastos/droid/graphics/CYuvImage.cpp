@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/CRect.h"
-#include "graphics/CYuvImage.h"
-#include "graphics/CreateOutputStreamAdaptor.h"
-// #include "graphics/YuvToJpegEncoder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CYuvImage.h"
+#include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
+// #include "elastos/droid/graphics/YuvToJpegEncoder.h"
 #include <skia/core/SkStream.h>
 
 namespace Elastos {

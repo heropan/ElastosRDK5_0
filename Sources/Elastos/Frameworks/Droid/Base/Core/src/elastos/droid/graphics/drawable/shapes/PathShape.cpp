@@ -1,6 +1,6 @@
 
-#include "graphics/drawable/shapes/PathShape.h"
-// #include "graphics/CPath.h"
+#include "elastos/droid/graphics/drawable/shapes/PathShape.h"
+// #include "elastos/droid/graphics/CPath.h"
 
 namespace Elastos {
 namespace Droid {

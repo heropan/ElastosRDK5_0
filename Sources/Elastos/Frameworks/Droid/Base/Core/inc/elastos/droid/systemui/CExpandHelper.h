@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
 
 #include "_Elastos_Droid_SystemUI_CExpandHelper.h"
-#include "systemui/CViewScaller.h"
-#include "view/SimpleOnScaleGestureListener.h"
-#include "animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/systemui/CViewScaller.h"
+#include "elastos/droid/view/SimpleOnScaleGestureListener.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Droid::Os::IVibrator;
 using Elastos::Droid::Animation::IAnimatorSet;

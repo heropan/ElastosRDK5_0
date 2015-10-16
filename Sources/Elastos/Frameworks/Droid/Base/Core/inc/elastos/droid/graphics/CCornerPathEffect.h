@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CCORNERPATHEFFECT_H__
 
 #include "_Elastos_Droid_Graphics_CCornerPathEffect.h"
-#include "graphics/PathEffect.h"
+#include "elastos/droid/graphics/PathEffect.h"
 
 namespace Elastos {
 namespace Droid {

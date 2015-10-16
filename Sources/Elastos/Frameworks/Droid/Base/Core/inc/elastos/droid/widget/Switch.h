@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_SWITCH_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/CompoundButton.h"
-#include "view/VelocityTracker.h"
+#include "elastos/droid/widget/CompoundButton.h"
+#include "elastos/droid/view/VelocityTracker.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Utility::IAttributeSet;

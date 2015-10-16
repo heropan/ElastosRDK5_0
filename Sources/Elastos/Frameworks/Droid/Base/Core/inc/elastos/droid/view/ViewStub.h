@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWSTUB_H__
 #define  __ELASTOS_DROID_VIEW_VIEWSTUB_H__
 
-#include "view/View.h"
+#include "elastos/droid/view/View.h"
 
 namespace Elastos {
 namespace Droid {

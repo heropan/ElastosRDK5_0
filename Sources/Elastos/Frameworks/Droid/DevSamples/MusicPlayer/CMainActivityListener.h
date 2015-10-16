@@ -2,7 +2,7 @@
 #define __CMAINACTIVITYLISTENER_H__
 
 #include "_CMainActivityListener.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::App::IActivity;
 

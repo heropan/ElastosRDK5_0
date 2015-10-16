@@ -1,6 +1,6 @@
-#include "widget/CRemoteViewsBitmapCache.h"
-#include "widget/RemoteViews.h"
-#include "graphics/CBitmap.h"
+#include "elastos/droid/widget/CRemoteViewsBitmapCache.h"
+#include "elastos/droid/widget/RemoteViews.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Slogger.h>
 

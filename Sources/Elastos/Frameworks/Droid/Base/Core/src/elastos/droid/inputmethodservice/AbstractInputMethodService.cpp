@@ -1,11 +1,11 @@
 
 #ifdef DROID_CORE
-#include "ext/frameworkdef.h"
-#include "inputmethodservice/AbstractInputMethodService.h"
-#include "inputmethodservice/CIInputMethodWrapper.h"
-// #include "view/CDispatcherState.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
+#include "elastos/droid/inputmethodservice/CIInputMethodWrapper.h"
+// #include "elastos/droid/view/CDispatcherState.h"
 #else
-#include "inputmethodservice/AbstractInputMethodService.h"
+#include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
 #endif
 
 // using Elastos::Droid::View::CDispatcherState;

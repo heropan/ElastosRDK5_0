@@ -1,5 +1,5 @@
 
-#include "location/CProviderProperties.h"
+#include "elastos/droid/location/CProviderProperties.h"
 
 namespace Elastos {
 namespace Droid {

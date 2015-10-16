@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONAREA_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONAREA_H__
 
-#include "widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Widget::LinearLayout;

@@ -1,6 +1,6 @@
 
-#include "ext/frameworkdef.h"
-#include "view/CInputBindResult.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/view/CInputBindResult.h"
 
 namespace Elastos {
 namespace Droid {

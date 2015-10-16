@@ -1,6 +1,6 @@
 
-#include "media/CMetadataHelper.h"
-#include "media/CMetadata.h"
+#include "elastos/droid/media/CMetadataHelper.h"
+#include "elastos/droid/media/CMetadata.h"
 
 namespace Elastos {
 namespace Droid {

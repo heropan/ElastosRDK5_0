@@ -1,9 +1,9 @@
 
-#include "os/Binder.h"
-#include "os/Process.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
 //#include "utils/Xml.h"
 //#include "utils/XmlUtils.h"
-//#include "text/TextUtils.h"
+//#include "elastos/droid/text/TextUtils.h"
 #include <eltypes.h>
 #include <elstring.h>
 #include <elastos/utility/logging/Logger.h>
@@ -21,7 +21,7 @@
 #include <elastos/core/StringBuilder.h>
 
 #include "service/wallpaper/CWallpaperSettingsActivity.h"
-#include "content/CResourcesTheme.h"
+#include "elastos/droid/content/CResourcesTheme.h"
 
 
 /*

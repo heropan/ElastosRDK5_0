@@ -1,6 +1,6 @@
 
-#include "widget/ZoomButton.h"
-#include "os/CHandler.h"
+#include "elastos/droid/widget/ZoomButton.h"
+#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::CHandler;

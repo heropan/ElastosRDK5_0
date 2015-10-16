@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Widget_CImageView.h"
 
-#include "widget/ImageView.h"
+#include "elastos/droid/widget/ImageView.h"
 
 
 namespace Elastos{

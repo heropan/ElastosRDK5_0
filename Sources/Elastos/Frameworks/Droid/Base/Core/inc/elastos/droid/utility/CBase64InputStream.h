@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_UTILITY_CBASE64INPUTSTREAM_H__
 
 #include "_Elastos_Droid_Utility_CBase64InputStream.h"
-#include "utility/Base64InputStream.h"
+#include "elastos/droid/utility/Base64InputStream.h"
 
 namespace Elastos {
 namespace Droid {

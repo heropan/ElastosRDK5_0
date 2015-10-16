@@ -4,8 +4,8 @@
 #include "wm/CWindowManagerService.h"
 // #include "input/InputApplicationHandle.h"
 // #include "input/InputWindowHandle.h"
-#include "os/HandlerBase.h"
-#include "os/TokenWatcher.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/TokenWatcher.h"
 
 using Elastos::Droid::Os::TokenWatcher;
 using Elastos::Droid::Content::IContext;

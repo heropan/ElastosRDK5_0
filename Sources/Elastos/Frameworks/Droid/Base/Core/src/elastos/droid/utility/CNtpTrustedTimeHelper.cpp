@@ -1,5 +1,5 @@
-#include "utility/CNtpTrustedTimeHelper.h"
-#include "utility/NtpTrustedTime.h"
+#include "elastos/droid/utility/CNtpTrustedTimeHelper.h"
+#include "elastos/droid/utility/NtpTrustedTime.h"
 
 namespace Elastos {
 namespace Droid {

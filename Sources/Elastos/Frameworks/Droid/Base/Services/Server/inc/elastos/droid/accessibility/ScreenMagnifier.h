@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_SCREENMAGNIFIER_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_SCREENMAGNIFIER_H__
 
-#include "ext/frameworkdef.h"
-#include "content/BroadcastReceiver.h"
-#include "os/HandlerBase.h"
-#include "os/AsyncTask.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/AsyncTask.h"
 #include "accessibility/CMagnificationSpec.h"
 #include <elastos/utility/etl/List.h>
 

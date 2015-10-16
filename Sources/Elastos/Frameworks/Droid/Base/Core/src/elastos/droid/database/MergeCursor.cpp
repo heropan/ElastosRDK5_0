@@ -1,5 +1,5 @@
 
-#include "database/MergeCursor.h"
+#include "elastos/droid/database/MergeCursor.h"
 
 namespace Elastos {
 namespace Droid {

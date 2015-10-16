@@ -1,6 +1,6 @@
 
-#include "app/CActivityManagerTaskThumbnails.h"
-#include <ext/frameworkext.h>
+#include "elastos/droid/app/CActivityManagerTaskThumbnails.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {

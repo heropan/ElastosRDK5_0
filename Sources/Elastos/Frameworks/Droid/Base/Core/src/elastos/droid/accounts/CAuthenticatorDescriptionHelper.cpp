@@ -1,7 +1,7 @@
 
-#include "ext/frameworkdef.h"
-#include "accounts/CAuthenticatorDescriptionHelper.h"
-#include "accounts/CAuthenticatorDescription.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/accounts/CAuthenticatorDescriptionHelper.h"
+#include "elastos/droid/accounts/CAuthenticatorDescription.h"
 
 namespace Elastos {
 namespace Droid {

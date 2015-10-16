@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_EXPANDEDMENUVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
 
 using Elastos::Droid::Widget::ListView;
 using Elastos::Droid::Widget::IAdapterView;

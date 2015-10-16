@@ -3,7 +3,7 @@
 
 #include "Elastos.Droid.Server_server.h"
 #include "pm/PackageSettingBase.h"
-#include "content/pm/PackageParser.h"
+#include "elastos/droid/content/pm/PackageParser.h"
 
 using Elastos::Droid::Content::Pm::PackageParser;
 using Elastos::Droid::Content::Pm::IPermissionInfo;

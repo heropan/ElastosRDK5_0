@@ -1,7 +1,7 @@
 
-#include "view/ViewStub.h"
-#include "view/LayoutInflater.h"
-#include "R.h"
+#include "elastos/droid/view/ViewStub.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

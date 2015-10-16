@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 
 #include "_Elastos_Droid_InputMethodService_CSoftInputWindow.h"
-// #include "app/Dialog.h"
+// #include "elastos/droid/app/Dialog.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

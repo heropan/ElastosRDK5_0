@@ -1,6 +1,6 @@
-#include "app/backup/CSharedPreferencesBackupHelper.h"
+#include "elastos/droid/app/backup/CSharedPreferencesBackupHelper.h"
 #include <elastos/utility/logging/Logger.h>
-#include "app/QueuedWork.h"
+#include "elastos/droid/app/QueuedWork.h"
 
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Logger;

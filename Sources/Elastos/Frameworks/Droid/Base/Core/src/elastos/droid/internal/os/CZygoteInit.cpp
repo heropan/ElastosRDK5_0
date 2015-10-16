@@ -1,11 +1,11 @@
 
-#include "ext/frameworkdef.h"
-#include "internal/os/CZygoteInit.h"
-#include "internal/os/RuntimeInit.h"
-#include "internal/os/Zygote.h"
-#include "os/Process.h"
-#include "os/SystemProperties.h"
-#include "net/CLocalServerSocket.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/internal/os/CZygoteInit.h"
+#include "elastos/droid/internal/os/RuntimeInit.h"
+#include "elastos/droid/internal/os/Zygote.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/net/CLocalServerSocket.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/etl/Vector.h>

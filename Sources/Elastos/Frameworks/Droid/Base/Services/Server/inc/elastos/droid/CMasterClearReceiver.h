@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_CMASTERCLEARRECEIVER_H__
 
 #include "_Elastos_Droid_Server_CMasterClearReceiver.h"
-#include "ext/frameworkext.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Core::IThread;
 using Elastos::Droid::Content::BroadcastReceiver;

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGERIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
-#include "webkit/native/content/browser/BindingManager.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/webkit/native/content/browser/BindingManager.h"
 
 using Elastos::Droid::Os::Runnable;
 

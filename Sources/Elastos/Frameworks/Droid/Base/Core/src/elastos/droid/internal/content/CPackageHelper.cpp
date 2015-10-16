@@ -1,13 +1,13 @@
 
-#include "ext/frameworkdef.h"
-#include "internal/content/CPackageHelper.h"
-#include "internal/content/CNativeLibraryHelper.h"
-#include "internal/content/CNativeLibraryHelperHandle.h"
-#include "os/FileUtils.h"
-#include "os/ServiceManager.h"
-#include "os/storage/StorageResultCode.h"
-// #include "os/storage/CStorageManagerHelper.h"
-#include "os/Environment.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/internal/content/CPackageHelper.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelper.h"
+#include "elastos/droid/internal/content/CNativeLibraryHelperHandle.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/storage/StorageResultCode.h"
+// #include "elastos/droid/os/storage/CStorageManagerHelper.h"
+#include "elastos/droid/os/Environment.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 

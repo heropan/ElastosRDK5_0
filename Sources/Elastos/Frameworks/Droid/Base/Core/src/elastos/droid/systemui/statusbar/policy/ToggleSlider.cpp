@@ -1,6 +1,6 @@
-#include "systemui/statusbar/policy/ToggleSlider.h"
-#include "systemui/SystemUIR.h"
-#include "R.h"
+#include "elastos/droid/systemui/statusbar/policy/ToggleSlider.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Core::CString;

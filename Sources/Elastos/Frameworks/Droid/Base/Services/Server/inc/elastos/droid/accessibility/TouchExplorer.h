@@ -1,9 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_TOUCHEXPLORER_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_TOUCHEXPLORER_H__
 
-#include "ext/frameworkdef.h"
-#include "os/Runnable.h"
-#include "view/VelocityTracker.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/view/VelocityTracker.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

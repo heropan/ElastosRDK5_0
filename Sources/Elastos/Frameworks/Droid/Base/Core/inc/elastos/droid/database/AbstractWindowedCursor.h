@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_ABSTRACTWINDOWEDCURSOR_H__
 #define __ELASTOS_DROID_DATABASE_ABSTRACTWINDOWEDCURSOR_H__
 
-#include "database/AbstractCursor.h"
+#include "elastos/droid/database/AbstractCursor.h"
 
 namespace Elastos {
 namespace Droid {

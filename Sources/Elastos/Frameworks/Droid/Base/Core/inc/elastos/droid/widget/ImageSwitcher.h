@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
 
-#include "widget/ViewSwitcher.h"
+#include "elastos/droid/widget/ViewSwitcher.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

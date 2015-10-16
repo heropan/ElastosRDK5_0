@@ -3,7 +3,7 @@
 #include "GeckoAppShell.h"
 #include "GeckoApp.h"
 #include "GeckoRunnable.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "stdio.h"
 #include <elastos/core/Math.h>
 #include <elastos/System.h>

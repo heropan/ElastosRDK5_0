@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTORAUTOCLOSEINPUTSTREAM_H__
 
 #include "_Elastos_Droid_Os_CParcelFileDescriptorAutoCloseInputStream.h"
-#include "os/ParcelFileDescriptor.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
 
 namespace Elastos {
 namespace Droid {

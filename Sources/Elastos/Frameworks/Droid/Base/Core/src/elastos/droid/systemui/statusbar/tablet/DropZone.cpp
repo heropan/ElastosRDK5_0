@@ -1,5 +1,5 @@
-#include "systemui/statusbar/tablet/DropZone.h"
-#include "animation/CObjectAnimator.h"
+#include "elastos/droid/systemui/statusbar/tablet/DropZone.h"
+#include "elastos/droid/animation/CObjectAnimator.h"
 
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::CObjectAnimator;

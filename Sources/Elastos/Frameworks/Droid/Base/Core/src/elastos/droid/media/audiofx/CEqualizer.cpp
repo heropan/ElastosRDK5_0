@@ -1,5 +1,5 @@
-#include "media/audiofx/CEqualizer.h"
-#include "media/audiofx/CEqualizerSettings.h"
+#include "elastos/droid/media/audiofx/CEqualizer.h"
+#include "elastos/droid/media/audiofx/CEqualizerSettings.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IUUIDHelper;

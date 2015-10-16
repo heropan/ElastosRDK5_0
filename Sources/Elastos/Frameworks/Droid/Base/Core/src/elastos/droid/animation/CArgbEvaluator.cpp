@@ -1,6 +1,6 @@
 
-#include "animation/CArgbEvaluator.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/animation/CArgbEvaluator.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

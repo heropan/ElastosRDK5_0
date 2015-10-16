@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CPOWERMANAGER_H__
 
 #include "_Elastos_Droid_Os_CPowerManager.h"
-#include "os/CPowerManagerWakeLock.h"
+#include "elastos/droid/os/CPowerManagerWakeLock.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

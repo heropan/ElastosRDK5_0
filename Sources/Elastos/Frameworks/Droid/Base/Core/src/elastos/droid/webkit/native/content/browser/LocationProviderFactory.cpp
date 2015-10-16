@@ -1,9 +1,9 @@
 
 #include <elastos/utility/logging/Slogger.h>
-#include "webkit/native/base/ThreadUtils.h"
-#include "webkit/native/content/browser/LocationProviderFactory.h"
-#include "webkit/native/content/browser/LocationProviderAdapter.h"
-//TODO #include "location/CCriteria.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content/browser/LocationProviderFactory.h"
+#include "elastos/droid/webkit/native/content/browser/LocationProviderAdapter.h"
+//TODO #include "elastos/droid/location/CCriteria.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Webkit::Base::ThreadUtils;

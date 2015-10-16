@@ -1,9 +1,9 @@
 
-#include "ext/frameworkext.h"
-#include "graphics/drawable/DrawableContainer.h"
-#include "graphics/CRect.h"
-#include "graphics/Insets.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/drawable/DrawableContainer.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/Insets.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Utility::ILayoutDirection;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_TOAST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "os/Runnable.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IHandler;

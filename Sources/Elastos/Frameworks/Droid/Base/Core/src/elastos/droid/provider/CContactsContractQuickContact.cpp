@@ -1,7 +1,7 @@
 
-#include "provider/CContactsContractQuickContact.h"
-#include "graphics/CRect.h"
-#include "content/CIntent.h"
+#include "elastos/droid/provider/CContactsContractQuickContact.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/content/CIntent.h"
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Content::Res::IResources;

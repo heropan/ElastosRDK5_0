@@ -3,8 +3,8 @@
 #include <binder/IServiceManager.h>
 #include <binder/Binder.h>
 #include <utils/Log.h>
-#include "os/CServiceManager.h"
-#include <os/Process.h>
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 

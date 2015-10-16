@@ -1,6 +1,6 @@
 
 #include <elastos/coredef.h>
-#include "provider/CContactsContactMethodsHelper.h"
+#include "elastos/droid/provider/CContactsContactMethodsHelper.h"
 
 namespace Elastos {
 namespace Droid {

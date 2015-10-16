@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CSEARCHVIEW_H__
 
 #include "_Elastos_Droid_Widget_CSearchView.h"
-#include "widget/SearchView.h"
+#include "elastos/droid/widget/SearchView.h"
 
 
 

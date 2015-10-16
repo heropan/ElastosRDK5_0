@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__
 
 #include "_Elastos_Droid_App_CWallpaperManager.h"
-#include "ext/frameworkdef.h"
-#include "app/CGlobalsWallpaperManagerCallback.h"
-#include "graphics/drawable/Drawable.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CGlobalsWallpaperManagerCallback.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
 
 
 using Elastos::IO::IInputStream;

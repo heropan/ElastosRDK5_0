@@ -3,8 +3,8 @@
 #include "am/ContentProviderRecord.h"
 #include "am/ProcessRecord.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/Binder.h"
-#include "os/UserHandle.h"
+#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::Binder;

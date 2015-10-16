@@ -1,5 +1,5 @@
 
-#include "view/NativeInputChannel.h"
+#include "elastos/droid/view/NativeInputChannel.h"
 
 namespace Elastos {
 namespace Droid {

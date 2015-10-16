@@ -1,7 +1,7 @@
 
-#include "view/InputEvent.h"
-#include "view/CInputDevice.h"
-#include "ext/frameworkext.h"
+#include "elastos/droid/view/InputEvent.h"
+#include "elastos/droid/view/CInputDevice.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Logger.h>
 
 using namespace Elastos::Utility::Logging;

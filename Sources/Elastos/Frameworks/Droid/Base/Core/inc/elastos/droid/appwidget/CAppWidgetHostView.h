@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTVIEW_H__
 
 #include "_Elastos_Droid_AppWidget_CAppWidgetHostView.h"
-#include "appwidget/AppWidgetHostView.h"
+#include "elastos/droid/appwidget/AppWidgetHostView.h"
 
 
 namespace Elastos {

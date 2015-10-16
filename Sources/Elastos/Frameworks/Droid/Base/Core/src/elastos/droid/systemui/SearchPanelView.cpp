@@ -1,7 +1,7 @@
-#include "systemui/SearchPanelView.h"
-#include "os/ServiceManager.h"
-#include "systemui/SystemUIR.h"
-#include "animation/CLayoutTransition.h"
+#include "elastos/droid/systemui/SearchPanelView.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/systemui/SystemUIR.h"
+#include "elastos/droid/animation/CLayoutTransition.h"
 
 using Elastos::Droid::Animation::CLayoutTransition;
 using Elastos::Droid::Animation::ILayoutTransition;

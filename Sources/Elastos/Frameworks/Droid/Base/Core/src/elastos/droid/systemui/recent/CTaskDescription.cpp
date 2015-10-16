@@ -1,5 +1,5 @@
-#include "systemui/recent/CTaskDescription.h"
-#include "ext/frameworkdef.h"
+#include "elastos/droid/systemui/recent/CTaskDescription.h"
+#include "elastos/droid/ext/frameworkdef.h"
 
 namespace Elastos {
 namespace Droid {

@@ -4,8 +4,8 @@
 
 #include "_Elastos_Droid_InputMethodService_CCandidateView.h"
 #include <elastos/core/Object.h>
-// #include "view/View.h"
-//#include "view/GestureDetector.h"
+// #include "elastos/droid/view/View.h"
+//#include "elastos/droid/view/GestureDetector.h"
 
 using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;

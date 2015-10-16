@@ -1,7 +1,7 @@
-#include "speech/tts/AudioPlaybackHandler.h"
+#include "elastos/droid/speech/tts/AudioPlaybackHandler.h"
 #include <elastos/utility/logging/Logger.h>
 #include <Elastos.CoreLibrary.h>
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::CThread;

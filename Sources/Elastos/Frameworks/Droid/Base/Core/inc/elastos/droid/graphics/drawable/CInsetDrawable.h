@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CINSETDRAWABLE_H__
 
 #include "_Elastos_Droid_Graphics_Drawable_CInsetDrawable.h"
-#include "graphics/drawable/InsetDrawable.h"
+#include "elastos/droid/graphics/drawable/InsetDrawable.h"
 
 namespace Elastos {
 namespace Droid {

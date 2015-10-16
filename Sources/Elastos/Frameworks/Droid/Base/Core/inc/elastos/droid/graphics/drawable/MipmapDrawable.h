@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_MIPMAPDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_MIPMAPDRAWABLE_H__
 
-#include "graphics/drawable/DrawableContainer.h"
+#include "elastos/droid/graphics/drawable/DrawableContainer.h"
 #include "utils/StateSet.h"
 
 namespace Elastos {

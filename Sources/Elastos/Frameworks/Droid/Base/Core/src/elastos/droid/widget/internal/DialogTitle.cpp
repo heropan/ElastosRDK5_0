@@ -1,6 +1,6 @@
 
-#include "widget/internal/DialogTitle.h"
-#include "R.h"
+#include "elastos/droid/widget/internal/DialogTitle.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::ITypedValue;

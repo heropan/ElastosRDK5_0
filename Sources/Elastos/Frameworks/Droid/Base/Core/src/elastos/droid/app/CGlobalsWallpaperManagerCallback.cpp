@@ -1,12 +1,12 @@
 
-#include "ext/frameworkdef.h"
-#include "app/CGlobalsWallpaperManagerCallback.h"
-#include "app/CWallpaperManager.h"
-#include "os/CBundle.h"
-#include "os/ServiceManager.h"
-#include "graphics/CBitmapFactoryOptions.h"
-#include "graphics/CBitmapFactory.h"
-#include "R.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/app/CGlobalsWallpaperManagerCallback.h"
+#include "elastos/droid/app/CWallpaperManager.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

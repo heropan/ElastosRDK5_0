@@ -3,7 +3,7 @@
 #define __CMAINACTIVITY_H__
 
 #include "_CMainActivity.h"
-#include "app/Activity.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;
@@ -26,11 +26,11 @@ private:
     public:
         RecorderClickListener(
             /* [in] */  CMainActivity* host,
-        	/* [in] */  IMediaRecorder* mr,
-        	/* [in] */  IButton* btn)
-        	 : mHost(host)
-        	 , mRecordButton(btn)
-        	 , mMediaRecorder(mr)
+            /* [in] */  IMediaRecorder* mr,
+            /* [in] */  IButton* btn)
+             : mHost(host)
+             , mRecordButton(btn)
+             , mMediaRecorder(mr)
         {}
 
         CAR_INTERFACE_DECL()
@@ -40,8 +40,8 @@ private:
 
     private:
         CMainActivity* mHost;
-	    IButton* mRecordButton;
-	    IMediaRecorder* mMediaRecorder;
+        IButton* mRecordButton;
+        IMediaRecorder* mMediaRecorder;
     };
 
     class StopClickListener
@@ -51,11 +51,11 @@ private:
     public:
         StopClickListener(
             /* [in] */  CMainActivity* host,
-        	/* [in] */  IMediaRecorder* mr,
-        	/* [in] */  IButton* btn)
-        	 : mHost(host)
-        	 , mRecordButton(btn)
-        	 , mMediaRecorder(mr)
+            /* [in] */  IMediaRecorder* mr,
+            /* [in] */  IButton* btn)
+             : mHost(host)
+             , mRecordButton(btn)
+             , mMediaRecorder(mr)
         {}
 
         CAR_INTERFACE_DECL()
@@ -65,8 +65,8 @@ private:
 
     private:
         CMainActivity* mHost;
-	    IButton* mRecordButton;
-	    IMediaRecorder* mMediaRecorder;
+        IButton* mRecordButton;
+        IMediaRecorder* mMediaRecorder;
     };
 
 protected:

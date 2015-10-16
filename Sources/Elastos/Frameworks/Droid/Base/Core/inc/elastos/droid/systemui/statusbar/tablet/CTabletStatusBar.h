@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CTABLETSTATUSBAR_H__
 
 #include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CTabletStatusBar.h"
-#include "systemui/statusbar/tablet/TabletStatusBar.h"
+#include "elastos/droid/systemui/statusbar/tablet/TabletStatusBar.h"
 
 
 namespace Elastos {

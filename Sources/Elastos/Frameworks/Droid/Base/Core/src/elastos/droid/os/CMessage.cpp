@@ -1,8 +1,8 @@
 
-#include "ext/frameworkdef.h"
-#include "os/CMessage.h"
-#include "os/Build.h"
-//#include "os/CBundle.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/CMessage.h"
+#include "elastos/droid/os/Build.h"
+//#include "elastos/droid/os/CBundle.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
 

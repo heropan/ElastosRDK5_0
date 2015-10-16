@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTOR_H__
 
 #include "_Elastos_Droid_Os_CParcelFileDescriptor.h"
-#include "os/ParcelFileDescriptor.h"
+#include "elastos/droid/os/ParcelFileDescriptor.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;

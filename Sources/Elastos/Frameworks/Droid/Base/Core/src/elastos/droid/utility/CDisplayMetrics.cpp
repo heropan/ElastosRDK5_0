@@ -1,7 +1,7 @@
 
-#include "ext/frameworkext.h"
-#include "utility/CDisplayMetrics.h"
-// #include "os/SystemProperties.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/utility/CDisplayMetrics.h"
+// #include "elastos/droid/os/SystemProperties.h"
 
 // using Elastos::Droid::Os::SystemProperties;
 

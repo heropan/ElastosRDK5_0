@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_CMULTIAUTOCOMPLETETEXTVIEW_H__
 
 #include "_Elastos_Droid_Widget_CMultiAutoCompleteTextView.h"
-#include "widget/MultiAutoCompleteTextView.h"
+#include "elastos/droid/widget/MultiAutoCompleteTextView.h"
 
 
 

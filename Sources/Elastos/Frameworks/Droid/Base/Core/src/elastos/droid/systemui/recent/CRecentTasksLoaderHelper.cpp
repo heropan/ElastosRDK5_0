@@ -1,5 +1,5 @@
-#include "systemui/recent/CRecentTasksLoaderHelper.h"
-#include "systemui/recent/CRecentTasksLoader.h"
+#include "elastos/droid/systemui/recent/CRecentTasksLoaderHelper.h"
+#include "elastos/droid/systemui/recent/CRecentTasksLoader.h"
 
 using Elastos::Droid::SystemUI::Recent::CRecentTasksLoader;
 

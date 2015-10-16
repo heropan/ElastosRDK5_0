@@ -1,5 +1,5 @@
 
-#include "internal/EditableInputConnection.h"
+#include "elastos/droid/internal/EditableInputConnection.h"
 
 using Elastos::Droid::Text::Method::IKeyListener;
 

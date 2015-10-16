@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_DEFAULTVIDEOPOSTERREQUESTHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_DEFAULTVIDEOPOSTERREQUESTHANDLER_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 //TODO #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 #include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
 #include "elastos/droid/os/AsyncTask.h"
