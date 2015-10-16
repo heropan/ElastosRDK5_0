@@ -1,4 +1,22 @@
 
+#include "webkit/native/content/browser/input/AdapterInputConnection.h"
+#include "webkit/native/content/browser/input/ImeAdapter.h"
+// TODO #include "text/CSelection.h"
+#include "text/TextUtils.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Core::IString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::EIID_ICharSequence;
+using Elastos::Core::StringUtils;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::EIID_ISpannable;
+using Elastos::Droid::Text::TextUtils;
+// TODO using Elastos::Droid::Webkit::Text::CSelection;
+using Elastos::Utility::Logging::Slogger;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -28,19 +46,14 @@ AdapterInputConnection::ImeState::ImeState(
 //                      AdapterInputConnection
 //==================================================================
 
-/**
- * InputConnection is created by ContentView.onCreateInputConnection.
- * It then adapts android's IME to chrome's RenderWidgetHostView using the
- * native ImeAdapterAndroid via the class ImeAdapter.
- */
-public class AdapterInputConnection extends BaseInputConnection {
-private static final String TAG = "AdapterInputConnection";
-private static final boolean DEBUG = false;
+const String AdapterInputConnection::TAG("AdapterInputConnection");
+const Boolean AdapterInputConnection::DEBUG = FALSE;
+
 /**
  * Selection value should be -1 if not known. See EditorInfo.java for details.
  */
-public static final int INVALID_SELECTION = -1;
-public static final int INVALID_COMPOSITION = -1;
+const Int32 AdapterInputConnection::INVALID_SELECTION;
+const Int32 AdapterInputConnection::INVALID_COMPOSITION;
 
 //@VisibleForTesting
 AdapterInputConnection::AdapterInputConnection(
@@ -48,8 +61,8 @@ AdapterInputConnection::AdapterInputConnection(
     /* [in] */ ImeAdapter* imeAdapter,
     /* [in] */ IEditable* editable,
     /* [in] */ IEditorInfo* outAttrs)
-    : BaseInputConnection(view, TRUE)
-    , mNumNestedBatchEdits(0)
+    // TODO : BaseInputConnection(view, TRUE)
+    : mNumNestedBatchEdits(0)
     , mLastUpdateSelectionStart(INVALID_SELECTION)
     , mLastUpdateSelectionEnd(INVALID_SELECTION)
     , mLastUpdateCompositionStart(INVALID_COMPOSITION)
@@ -62,18 +75,24 @@ AdapterInputConnection::AdapterInputConnection(
     // The editable passed in might have been in use by a prior keyboard and could have had
     // prior composition spans set.  To avoid keyboard conflicts, remove all composing spans
     // when taking ownership of an existing Editable.
-    RemoveComposingSpans(mEditable);
+    assert(0);
+    // TODO
+    // RemoveComposingSpans(mEditable);
     mSingleLine = TRUE;
     outAttrs->SetImeOptions(IEditorInfo::IME_FLAG_NO_FULLSCREEN
             | IEditorInfo::IME_FLAG_NO_EXTRACT_UI);
-    outAttrs->SetInputType(IEditorInfo::TYPE_CLASS_TEXT
-            | IEditorInfo::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
+    assert(0);
+    // TODO
+    // outAttrs->SetInputType(IEditorInfo::TYPE_CLASS_TEXT
+    //         | IEditorInfo::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);
 
     if (imeAdapter->GetTextInputType() == ImeAdapter::sTextInputTypeText) {
         // Normal text field
         Int32 inputType;
         outAttrs->GetInputType(&inputType);
-        inputType |= IEditorInfo::TYPE_TEXT_FLAG_AUTO_CORRECT;
+        assert(0);
+        // TODO
+        // inputType |= IEditorInfo::TYPE_TEXT_FLAG_AUTO_CORRECT;
         outAttrs->SetInputType(inputType);
         Int32 imeOptions;
         outAttrs->GetImeOptions(&imeOptions);
@@ -85,9 +104,11 @@ AdapterInputConnection::AdapterInputConnection(
         // TextArea or contenteditable.
         Int32 inputType;
         outAttrs->GetInputType(&inputType);
-        inputType |= IEditorInfo::TYPE_TEXT_FLAG_MULTI_LINE
-                | IEditorInfo::TYPE_TEXT_FLAG_CAP_SENTENCES
-                | IEditorInfo::TYPE_TEXT_FLAG_AUTO_CORRECT;
+        assert(0);
+        // TODO
+        // inputType |= IEditorInfo::TYPE_TEXT_FLAG_MULTI_LINE
+        //         | IEditorInfo::TYPE_TEXT_FLAG_CAP_SENTENCES
+        //         | IEditorInfo::TYPE_TEXT_FLAG_AUTO_CORRECT;
         outAttrs->SetInputType(inputType);
         Int32 imeOptions;
         outAttrs->GetImeOptions(&imeOptions);
@@ -125,7 +146,6 @@ AdapterInputConnection::AdapterInputConnection(
         outAttrs->GetImeOptions(&imeOptions);
         imeOptions |= IEditorInfo::IME_ACTION_GO;
         outAttrs->SetImeOptions(imeOptions);
-        return imeOptions;
     }
     else if (imeAdapter->GetTextInputType() == ImeAdapter::sTextInputTypeEmail) {
         // Email
@@ -167,19 +187,25 @@ AdapterInputConnection::AdapterInputConnection(
     }
 
     AutoPtr<ISelection> selection;
-    CSelection::AcquireSingleton((ISelection**)&selection);
+    assert(0);
+    // TODO
+    // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 start, end;
-    selection->GetSelectionStart(mEditable, &start);
-    selection->GetSelectionEnd(mEditable, &end);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    selection->GetSelectionStart(editableCS, &start);
+    selection->GetSelectionEnd(editableCS, &end);
     outAttrs->SetInitialSelStart(start);
     outAttrs->SetInitialSelEnd(end);
     mLastUpdateSelectionStart = start;
     mLastUpdateSelectionEnd = end;
 
     Int32 initialSelStart, initialSelEnd;
-    selection->GetinitialSelStart(&initialSelStart);
-    selection->GetinitialSelEnd(&initialSelEnd)
-    selection->SetSelection(mEditable, initialSelStart, initialSelEnd);
+    assert(0);
+    // TODO
+    // selection->GetinitialSelStart(&initialSelStart);
+    // selection->GetinitialSelEnd(&initialSelEnd)
+    AutoPtr<ISpannable> spannable = (ISpannable*)mEditable->Probe(EIID_ISpannable);
+    selection->SetSelection(spannable, initialSelStart, initialSelEnd);
     UpdateSelectionIfRequired();
 }
 
@@ -202,7 +228,7 @@ AdapterInputConnection::AdapterInputConnection(
  */
 //@VisibleForTesting
 void AdapterInputConnection::UpdateState(
-    /* [in] */ const String& text,
+    /* [in] */ String text,
     /* [in] */ Int32 selectionStart,
     /* [in] */ Int32 selectionEnd,
     /* [in] */ Int32 compositionStart,
@@ -210,8 +236,20 @@ void AdapterInputConnection::UpdateState(
     /* [in] */ Boolean isNonImeChange)
 {
     if (DEBUG) {
-        // Log.w(TAG, "updateState [" + text + "] [" + selectionStart + " " + selectionEnd + "] ["
-        //         + compositionStart + " " + compositionEnd + "] [" + isNonImeChange + "]");
+        String log("updateState [");
+        log += text;
+        log += "] [";
+        log += StringUtils::ToString(selectionStart);
+        log += " ";
+        log += StringUtils::ToString(selectionEnd);
+        log += "] [";
+        log += StringUtils::ToString(compositionStart);
+        log += " ";
+        log += StringUtils::ToString(compositionEnd);
+        log += "] [";
+        log += StringUtils::BooleanToString(isNonImeChange);
+        log += "]";
+        Slogger::W(TAG, log);
     }
     // If this update is from the IME, no further state modification is necessary because the
     // state should have been updated already by the IM framework directly.
@@ -220,28 +258,39 @@ void AdapterInputConnection::UpdateState(
     // Non-breaking spaces can cause the IME to get confused. Replace with normal spaces.
     text = text.Replace('\u00A0', ' ');
 
-    selectionStart = Math::Min(selectionStart, text.GetLength());
-    selectionEnd = Math::Min(selectionEnd, text.GetLength());
-    compositionStart = Math::Min(compositionStart, text.GetLength());
-    compositionEnd = Math::Min(compositionEnd, text.GetLength());
+    selectionStart = Elastos::Core::Math::Min(selectionStart, text.GetLength());
+    selectionEnd = Elastos::Core::Math::Min(selectionEnd, text.GetLength());
+    compositionStart = Elastos::Core::Math::Min(compositionStart, text.GetLength());
+    compositionEnd = Elastos::Core::Math::Min(compositionEnd, text.GetLength());
 
     String prevText;
-    mEditable->ToString(&prevText);
+    assert(0);
+    // TODO
+    // mEditable->ToString(&prevText);
     Boolean textUnchanged = prevText.Equals(text);
 
     if (!textUnchanged) {
-        mEditable->Replace(0, mEditable.GetLength(), text);
+        assert(0);
+        // TODO
+        // mEditable->Replace(0, mEditable.GetLength(), text);
     }
 
     AutoPtr<ISelection> selection;
-    CSelection::AcquireSingleton((ISelection**)&selection);
-    selection->SetSelection(mEditable, selectionStart, selectionEnd);
+    assert(0);
+    // TODO
+    // CSelection::AcquireSingleton((ISelection**)&selection);
+    AutoPtr<ISpannable> spannable = (ISpannable*)mEditable->Probe(EIID_ISpannable);
+    selection->SetSelection(spannable, selectionStart, selectionEnd);
 
     if (compositionStart == compositionEnd) {
-        RemoveComposingSpans(mEditable);
+        assert(0);
+        // TODO
+        // RemoveComposingSpans(mEditable);
     }
     else {
-        BaseInputConnection::SetComposingRegion(compositionStart, compositionEnd);
+        assert(0);
+        // TODO
+        // BaseInputConnection::SetComposingRegion(compositionStart, compositionEnd);
     }
 
     UpdateSelectionIfRequired();
@@ -251,9 +300,12 @@ void AdapterInputConnection::UpdateState(
  * @return Editable object which contains the state of current focused editable element.
  */
 //@Override
-AutoPtr<IEditable> AdapterInputConnection::GetEditable()
+ECode AdapterInputConnection::GetEditable(
+    /* [out] */ IEditable** editable)
 {
-    return mEditable;
+    VALIDATE_NOT_NULL(editable);
+    *editable = mEditable;
+    return NOERROR;
 }
 
 /**
@@ -265,13 +317,18 @@ void AdapterInputConnection::UpdateSelectionIfRequired()
     if (mNumNestedBatchEdits != 0) return;
 
     AutoPtr<ISelection> selection;
-    CSelection::AcquireSingleton((ISelection**)&selection);
+    assert(0);
+    // TODO
+    // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 selectionStart;
-    selection->GetSelectionStart(mEditable, &selectionStart);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    selection->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
-    selection->GetSelectionEnd(mEditable, &selectionEnd);
-    Int32 compositionStart = GetComposingSpanStart(mEditable);
-    Int32 compositionEnd = GetComposingSpanEnd(mEditable);
+    selection->GetSelectionEnd(editableCS, &selectionEnd);
+    assert(0);
+    // TODO
+    Int32 compositionStart;// TODO = GetComposingSpanStart(mEditable);
+    Int32 compositionEnd;// TODO = GetComposingSpanEnd(mEditable);
     // Avoid sending update if we sent an exact update already previously.
     if (mLastUpdateSelectionStart == selectionStart &&
             mLastUpdateSelectionEnd == selectionEnd &&
@@ -281,8 +338,16 @@ void AdapterInputConnection::UpdateSelectionIfRequired()
     }
 
     if (DEBUG) {
-        // Log.w(TAG, "updateSelectionIfRequired [" + selectionStart + " " + selectionEnd + "] ["
-        //         + compositionStart + " " + compositionEnd + "]");
+        String log("updateSelectionIfRequired [");
+        log += StringUtils::ToString(selectionStart);
+        log += " ";
+        log += StringUtils::ToString(selectionEnd);
+        log += "] [";
+        log += StringUtils::ToString(compositionStart);
+        log += " ";
+        log += StringUtils::ToString(compositionEnd);
+        log += "]";
+        Slogger::W(TAG, log);
     }
 
     // updateSelection should be called every time the selection or composition changes
@@ -299,45 +364,92 @@ void AdapterInputConnection::UpdateSelectionIfRequired()
  * @see BaseInputConnection#setComposingText(java.lang.CharSequence, int)
  */
 //@Override
-Boolean AdapterInputConnection::SetComposingText(
+ECode AdapterInputConnection::SetComposingText(
     /* [in] */ ICharSequence* text,
-    /* [in] */ Int32 newCursorPosition)
+    /* [in] */ Int32 newCursorPosition,
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "setComposingText [" + text + "] [" + newCursorPosition + "]");
-    if (MaybePerformEmptyCompositionWorkaround(text)) return TRUE;
-    BaseInputConnection::SetComposingText(text, newCursorPosition);
+    VALIDATE_NOT_NULL(result)
+    if (DEBUG) {
+        String log("setComposingText [");
+        String textStr;
+        text->ToString(&textStr);
+        log += textStr;
+        log += "] [";
+        log += StringUtils::ToString(newCursorPosition);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
+
+    if (MaybePerformEmptyCompositionWorkaround(text)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    assert(0);
+    // TODO
+    // BaseInputConnection::SetComposingText(text, newCursorPosition);
     UpdateSelectionIfRequired();
-    return mImeAdapter->CheckCompositionQueueAndCallNative(text, newCursorPosition, false);
+    *result = mImeAdapter->CheckCompositionQueueAndCallNative(text, newCursorPosition, false);
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#commitText(java.lang.CharSequence, int)
  */
 //@Override
-Boolean AdapterInputConnection::CommitText(
+ECode AdapterInputConnection::CommitText(
     /* [in] */ ICharSequence* text,
-    /* [in] */ Int32 newCursorPosition)
+    /* [in] */ Int32 newCursorPosition,
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "commitText [" + text + "] [" + newCursorPosition + "]");
-    if (MaybePerformEmptyCompositionWorkaround(text)) return TRUE;
-    BaseInputConnection::CommitText(text, newCursorPosition);
+    VALIDATE_NOT_NULL(result);
+    if (DEBUG) {
+        String log("commitText [");
+        String textStr;
+        text->ToString(&textStr);
+        log += textStr;
+        log += "] [";
+        log += StringUtils::ToString(newCursorPosition);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
+
+    if (MaybePerformEmptyCompositionWorkaround(text)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    assert(0);
+    // TODO
+    // BaseInputConnection::CommitText(text, newCursorPosition);
     UpdateSelectionIfRequired();
-    return mImeAdapter->CheckCompositionQueueAndCallNative(text, newCursorPosition,
-            text.GetLength() > 0);
+    Int32 length;
+    text->GetLength(&length);
+    *result = mImeAdapter->CheckCompositionQueueAndCallNative(text, newCursorPosition,
+            length > 0);
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#performEditorAction(int)
  */
 //@Override
-Boolean AdapterInputConnection::PerformEditorAction(
-    /* [in] */ Int32 actionCode)
+ECode AdapterInputConnection::PerformEditorAction(
+    /* [in] */ Int32 actionCode,
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "performEditorAction [" + actionCode + "]");
+    VALIDATE_NOT_NULL(result);
+
+    if (DEBUG) {
+        String log("performEditorAction [");
+        log += StringUtils::ToString(actionCode);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
+
     if (actionCode == IEditorInfo::IME_ACTION_NEXT) {
         RestartInput();
         // Send TAB key event
-        Int64 timeStampMs = SystemClock::UptimeMillis();
+        Int64 timeStampMs = SystemClock::GetUptimeMillis();
         mImeAdapter->SendSyntheticKeyEvent(
                 ImeAdapter::sEventTypeRawKeyDown, timeStampMs, IKeyEvent::KEYCODE_TAB, 0);
     }
@@ -347,29 +459,45 @@ Boolean AdapterInputConnection::PerformEditorAction(
                 | IKeyEvent::FLAG_EDITOR_ACTION);
     }
 
-    return TRUE;
+    *result = TRUE;
+
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#performContextMenuAction(int)
  */
 //@Override
-Boolean AdapterInputConnection::PerformContextMenuAction(
-    /* [in] */ Int32 id)
+ECode AdapterInputConnection::PerformContextMenuAction(
+    /* [in] */ Int32 id,
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "performContextMenuAction [" + id + "]");
-    switch (id) {
-        case android::R::id::selectAll:
-            return mImeAdapter->SelectAll();
-        case android::R::id::cut:
-            return mImeAdapter->Cut();
-        case android::R::id::copy:
-            return mImeAdapter->Copy();
-        case android::R::id::paste:
-            return mImeAdapter->Paste();
-        default:
-            return FALSE;
+    VALIDATE_NOT_NULL(result);
+
+    if (DEBUG) {
+        String log("performContextMenuAction [");
+        log += StringUtils::ToString(id);
+        log += "]";
+        Slogger::W(TAG, log);
     }
+
+    assert(0);
+    // TODO
+    // switch (id) {
+    //     case android::R::id::selectAll:
+    //         return mImeAdapter->SelectAll();
+    //     case android::R::id::cut:
+    //         return mImeAdapter->Cut();
+    //     case android::R::id::copy:
+    //         return mImeAdapter->Copy();
+    //     case android::R::id::paste:
+    //         return mImeAdapter->Paste();
+    //     default:
+    //         *result = FALSE;
+    //         return NOERROR;
+    // }
+
+    return E_NOT_IMPLEMENTED;
 }
 
 /**
@@ -377,97 +505,160 @@ Boolean AdapterInputConnection::PerformContextMenuAction(
  *                                           int)
  */
 //@Override
-AutoPtr<IExtractedText> AdapterInputConnection::GetExtractedText(
+ECode AdapterInputConnection::GetExtractedText(
     /* [in] */ IExtractedTextRequest* request,
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flags,
+    /* [out] */ IExtractedText** text)
 {
-//    if (DEBUG) Log.w(TAG, "getExtractedText");
+    VALIDATE_NOT_NULL(text);
+
+    if (DEBUG) {
+        Slogger::W(TAG, "getExtractedText");
+    }
+
     AutoPtr<IExtractedText> et;
-    CExtractedText::New((IExtractedText**)&et);
-    String str;
-    mEditable->ToString(&str);
-    et->SetText(str);
+    assert(0);
+    // TODO
+    // CExtractedText::New((IExtractedText**)&et);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    et->SetText(editableCS);
     Int32 length;
-    mEditable->GetLength(&length);
+    editableCS->GetLength(&length);
     et->SetPartialEndOffset(length);
     AutoPtr<ISelection> selection;
-    CSelection::AcquireSingleton((ISelection**)&selection);
+    assert(0);
+    // TODO
+    // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 start;
-    selection->GetSelectionStart(mEditable, &start);
-    et->SetSelectionStart(start)
+    selection->GetSelectionStart(editableCS, &start);
+    et->SetSelectionStart(start);
     Int32 end;
-    selection->GetSelectionEnd(mEditable, &end);
+    selection->GetSelectionEnd(editableCS, &end);
     et->SetSelectionEnd(end);
     et->SetFlags(mSingleLine ? IExtractedText::FLAG_SINGLE_LINE : 0);
 
-    return et;
+    *text = et;
+
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#beginBatchEdit()
  */
 //@Override
-Boolean AdapterInputConnection::BeginBatchEdit()
+ECode AdapterInputConnection::BeginBatchEdit(
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "beginBatchEdit [" + (mNumNestedBatchEdits == 0) + "]");
+    VALIDATE_NOT_NULL(result);
+
+    if (DEBUG) {
+        String log("beginBatchEdit [");
+        log += StringUtils::BooleanToString(mNumNestedBatchEdits == 0);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
+
     mNumNestedBatchEdits++;
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#endBatchEdit()
  */
 //@Override
-Boolean AdapterInputConnection::EndBatchEdit()
+ECode AdapterInputConnection::EndBatchEdit(
+    /* [out] */ Boolean* result)
 {
-    if (mNumNestedBatchEdits == 0) return FALSE;
+    VALIDATE_NOT_NULL(result);
+
+    if (mNumNestedBatchEdits == 0) {
+        *result = FALSE;
+        return NOERROR;
+    }
     --mNumNestedBatchEdits;
 
-//    if (DEBUG) Log.w(TAG, "endBatchEdit [" + (mNumNestedBatchEdits == 0) + "]");
+    if (DEBUG) {
+        String log("endBatchEdit [");
+        log += StringUtils::ToString(mNumNestedBatchEdits == 0);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
 
     if (mNumNestedBatchEdits == 0) UpdateSelectionIfRequired();
 
-    return (mNumNestedBatchEdits != 0);
+    *result = (mNumNestedBatchEdits != 0);
+
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#deleteSurroundingText(int, int)
  */
 //@Override
-Boolean AdapterInputConnection::DeleteSurroundingText(
+ECode AdapterInputConnection::DeleteSurroundingText(
     /* [in] */ Int32 beforeLength,
-    /* [in] */ Int32 afterLength)
+    /* [in] */ Int32 afterLength,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     if (DEBUG) {
-//        Log.w(TAG, "deleteSurroundingText [" + beforeLength + " " + afterLength + "]");
+        String log("deleteSurroundingText [");
+        log += StringUtils::ToString(beforeLength);
+        log += " ";
+        log += StringUtils::ToString(afterLength);
+        log += "]";
+        Slogger::W(TAG, log);
     }
 
     AutoPtr<ISelection> selection;
-    CSelection::AcquireSingleton((ISelection**)&selection);
+    assert(0);
+    // TODO
+    // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 availableBefore;
-    selection->GetSelectionStart(mEditable, &availableBefore);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    selection->GetSelectionStart(editableCS, &availableBefore);
     Int32 end;
-    selection->GetSelectionEnd(mEditable, &end);
+    selection->GetSelectionEnd(editableCS, &end);
     Int32 length;
-    mEditable->GetLength(&length);
+    editableCS->GetLength(&length);
     Int32 availableAfter = length - end;
-    beforeLength = Math::Min(beforeLength, availableBefore);
-    afterLength = Math::Min(afterLength, availableAfter);
-    BaseInputConnection::DeleteSurroundingText(beforeLength, afterLength);
-    UpdateSelectionIfRequired();
-    return mImeAdapter->DeleteSurroundingText(beforeLength, afterLength);
+    beforeLength = Elastos::Core::Math::Min(beforeLength, availableBefore);
+    afterLength = Elastos::Core::Math::Min(afterLength, availableAfter);
+    assert(0);
+    // TODO
+    // BaseInputConnection::DeleteSurroundingText(beforeLength, afterLength);
+    // UpdateSelectionIfRequired();
+
+    *result = mImeAdapter->DeleteSurroundingText(beforeLength, afterLength);
+
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#sendKeyEvent(android.view.KeyEvent)
  */
 //@Override
-Boolean AdapterInputConnection::SendKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode AdapterInputConnection::SendKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     if (DEBUG) {
-//        Log.w(TAG, "sendKeyEvent [" + event.getAction() + "] [" + event.getKeyCode() + "]");
+        String log("sendKeyEvent [");
+        Int32 action;
+        event->GetAction(&action);
+        log += StringUtils::ToString(action);
+        log += "] [";
+        Int32 keyCode;
+        event->GetKeyCode(&keyCode);
+        log += StringUtils::ToString(keyCode);
+        log += "]";
+        Slogger::W(TAG, log);
     }
+
     // If this is a key-up, and backspace/del or if the key has a character representation,
     // need to update the underlying Editable (i.e. the local representation of the text
     // being edited).
@@ -477,33 +668,42 @@ Boolean AdapterInputConnection::SendKeyEvent(
         Int32 code;
         event->GetKeyCode(&code);
         if (code == IKeyEvent::KEYCODE_DEL) {
-            DeleteSurroundingText(1, 0);
-            return TRUE;
+            Boolean bFlag = FALSE;
+            DeleteSurroundingText(1, 0, &bFlag);
+            *result = TRUE;
+            return NOERROR;
         }
         else if (code == IKeyEvent::KEYCODE_FORWARD_DEL) {
-            DeleteSurroundingText(0, 1);
-            return TRUE;
+            Boolean bFlag = FALSE;
+            DeleteSurroundingText(0, 1, &bFlag);
+            *result = TRUE;
+            return NOERROR;
         }
         else {
             Int32 unicodeChar;
             event->GetUnicodeChar(&unicodeChar);
             if (unicodeChar != 0) {
                 AutoPtr<ISelection> selection;
-                CSelection::AcquireSingleton((ISelection**)&selection);
+                assert(0);
+                // TODO
+                // CSelection::AcquireSingleton((ISelection**)&selection);
                 Int32 selectionStart;
-                selection->GetSelectionStart(mEditable, &selectionStart);
+                AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+                selection->GetSelectionStart(editableCS, &selectionStart);
                 Int32 selectionEnd;
-                selection->GetSelectionEnd(mEditable, &selectionEnd);
+                selection->GetSelectionEnd(editableCS, &selectionEnd);
                 if (selectionStart > selectionEnd) {
                     Int32 temp = selectionStart;
                     selectionStart = selectionEnd;
                     selectionEnd = temp;
                 }
 
-                String unicodeCharStr;
-                unicodeChar->ToString(&unicodeCharStr);
-                mEditable->Replace(selectionStart, selectionEnd,
-                        unicodeCharStr);
+                AutoPtr<IString> iString;
+                assert(0);
+                // TODO
+                // CString::New(StringUtils::ToString(unicodeChar), (IString**)&iString);
+                AutoPtr<ICharSequence> strCS = (ICharSequence*)iString->Probe(EIID_ICharSequence);
+                mEditable->Replace(selectionStart, selectionEnd, strCS);
             }
         }
     }
@@ -512,58 +712,96 @@ Boolean AdapterInputConnection::SendKeyEvent(
         Int32 code;
         event->GetKeyCode(&code);
         if (code == IKeyEvent::KEYCODE_ENTER) {
-            BeginBatchEdit();
-            FinishComposingText();
+            Boolean bFlag1;
+            BeginBatchEdit(&bFlag1);
+            Boolean bFlag2;
+            FinishComposingText(&bFlag2);
             mImeAdapter->TranslateAndSendNativeEvents(event);
-            EndBatchEdit();
-            return TRUE;
+            Boolean bFlag3;
+            EndBatchEdit(&bFlag3);
+            *result = TRUE;
+            return NOERROR;
         }
         else if (code == IKeyEvent::KEYCODE_DEL) {
-            return TRUE;
+            *result = TRUE;
+            return NOERROR;
         }
         else if (code == IKeyEvent::KEYCODE_FORWARD_DEL) {
-            return TRUE;
+            *result = TRUE;
+            return NOERROR;
         }
     }
 
     mImeAdapter->TranslateAndSendNativeEvents(event);
 
-    return TRUE;
+    *result = TRUE;
+
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#finishComposingText()
  */
 //@Override
-Boolean AdapterInputConnection::FinishComposingText()
+ECode AdapterInputConnection::FinishComposingText(
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "finishComposingText");
-    if (GetComposingSpanStart(mEditable) == GetComposingSpanEnd(mEditable)) {
-        return TRUE;
+    VALIDATE_NOT_NULL(result);
+
+    if (DEBUG) {
+        Slogger::W(TAG, "finishComposingText");
     }
 
-    BaseInputConnection::FinishComposingText();
-    UpdateSelectionIfRequired();
+    assert(0);
+    // TODO
+    // if (GetComposingSpanStart(mEditable) == GetComposingSpanEnd(mEditable)) {
+    //     return TRUE;
+    // }
+
+    assert(0);
+    // TODO
+    // BaseInputConnection::FinishComposingText();
+    // UpdateSelectionIfRequired();
     mImeAdapter->FinishComposingText();
 
-    return TRUE;
+    *result = TRUE;
+
+    return NOERROR;
 }
 
 /**
  * @see BaseInputConnection#setSelection(int, int)
  */
 //@Override
-Boolean AdapterInputConnection::SetSelection(
+ECode AdapterInputConnection::SetSelection(
     /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
+    /* [in] */ Int32 end,
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "setSelection [" + start + " " + end + "]");
+    VALIDATE_NOT_NULL(result);
+
+    if (DEBUG) {
+        String log("setSelection [");
+        log += StringUtils::ToString(start);
+        log += " ";
+        log += StringUtils::ToString(end);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
+
     Int32 textLength;
-    mEditable->GetLength(&textLength);
-    if (start < 0 || end < 0 || start > textLength || end > textLength) return TRUE;
-    BaseInputConnection::SetSelection(start, end);
-    UpdateSelectionIfRequired();
-    return mImeAdapter->SetEditableSelectionOffsets(start, end);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    editableCS->GetLength(&textLength);
+    if (start < 0 || end < 0 || start > textLength || end > textLength) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    assert(0);
+    // TODO
+    // BaseInputConnection::SetSelection(start, end);
+    // UpdateSelectionIfRequired();
+    *result = mImeAdapter->SetEditableSelectionOffsets(start, end);
+    return NOERROR;
 }
 
 /**
@@ -572,7 +810,10 @@ Boolean AdapterInputConnection::SetSelection(
  */
 void AdapterInputConnection::RestartInput()
 {
-//    if (DEBUG) Log.w(TAG, "restartInput");
+    if (DEBUG) {
+        Slogger::W(TAG, "restartInput");
+    }
+
     GetInputMethodManagerWrapper()->RestartInput(mInternalView);
     mNumNestedBatchEdits = 0;
 }
@@ -581,37 +822,56 @@ void AdapterInputConnection::RestartInput()
  * @see BaseInputConnection#setComposingRegion(int, int)
  */
 //@Override
-Boolean AdapterInputConnection::SetComposingRegion(
+ECode AdapterInputConnection::SetComposingRegion(
     /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
+    /* [in] */ Int32 end,
+    /* [out] */ Boolean* result)
 {
-//    if (DEBUG) Log.w(TAG, "setComposingRegion [" + start + " " + end + "]");
+    VALIDATE_NOT_NULL(result);
+
+    if (DEBUG) {
+        String log("setComposingRegion [");
+        log += StringUtils::ToString(start);
+        log += " ";
+        log += StringUtils::ToString(end);
+        log += "]";
+        Slogger::W(TAG, log);
+    }
+
     Int32 textLength;
-    mEditable->GetLength(&textLength);
-    Int32 a = Math::Min(start, end);
-    Int32 b = Math::Max(start, end);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    editableCS->GetLength(&textLength);
+    Int32 a = Elastos::Core::Math::Min(start, end);
+    Int32 b = Elastos::Core::Math::Max(start, end);
     if (a < 0) a = 0;
     if (b < 0) b = 0;
     if (a > textLength) a = textLength;
     if (b > textLength) b = textLength;
 
     if (a == b) {
-        RemoveComposingSpans(mEditable);
+        assert(0);
+        // TODO
+        // RemoveComposingSpans(mEditable);
     }
     else {
-        BaseInputConnection::SetComposingRegion(a, b);
+        assert(0);
+        // TODO
+        // BaseInputConnection::SetComposingRegion(a, b);
     }
 
     UpdateSelectionIfRequired();
 
-    return mImeAdapter->SetComposingRegion(a, b);
+    *result = mImeAdapter->SetComposingRegion(a, b);
+
+    return NOERROR;
 }
 
-Boolean AdapterInputConnection::IsActive() {
+Boolean AdapterInputConnection::IsActive()
+{
     return GetInputMethodManagerWrapper()->IsActive(mInternalView);
 }
 
-InputMethodManagerWrapper AdapterInputConnection::GetInputMethodManagerWrapper()
+AutoPtr<InputMethodManagerWrapper> AdapterInputConnection::GetInputMethodManagerWrapper()
 {
     return mImeAdapter->GetInputMethodManagerWrapper();
 }
@@ -629,39 +889,50 @@ Boolean AdapterInputConnection::MaybePerformEmptyCompositionWorkaround(
     /* [in] */ ICharSequence* text)
 {
     AutoPtr<ISelection> sel;
-    CSelection::AcquireSingleton((ISelection**)&sel);
+    assert(0);
+    // TODO
+    // CSelection::AcquireSingleton((ISelection**)&sel);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
     Int32 selectionStart;
-    sel->GetSelectionStart(mEditable, &selectionStart);
+    sel->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
-    sel->GetSelectionEnd(mEditable, &selectionEnd);
-    Int32 compositionStart = GetComposingSpanStart(mEditable);
-    Int32 compositionEnd = GetComposingSpanEnd(mEditable);
+    sel->GetSelectionEnd(editableCS, &selectionEnd);
+    assert(0);
+    Int32 compositionStart;// TODO = GetComposingSpanStart(mEditable);
+    Int32 compositionEnd;// TODO = GetComposingSpanEnd(mEditable);
     if (TextUtils::IsEmpty(text) && (selectionStart == selectionEnd)
             && compositionStart != INVALID_COMPOSITION
             && compositionEnd != INVALID_COMPOSITION) {
-        BeginBatchEdit();
-        FinishComposingText();
+        Boolean bFlag1;
+        BeginBatchEdit(&bFlag1);
+        Boolean bFlag2;
+        FinishComposingText(&bFlag2);
         Int32 selection;
-        sel->GetSelectionStart(mEditable);
-        DeleteSurroundingText(selection - compositionStart, selection - compositionEnd);
-        EndBatchEdit();
+        sel->GetSelectionStart(editableCS, &selection);
+        Boolean result;
+        DeleteSurroundingText(selection - compositionStart, selection - compositionEnd, &result);
+        Boolean bFlag3;
+        EndBatchEdit(&bFlag3);
         return TRUE;
     }
-    return false;
+
+    return FALSE;
 }
 
 //@VisibleForTesting
-AutoPtr<ImeState> AdapterInputConnection::GetImeStateForTesting()
+AutoPtr<AdapterInputConnection::ImeState> AdapterInputConnection::GetImeStateForTesting()
 {
     String text;
-    mEditable->ToString(&text);
+    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    editableCS->ToString(&text);
     AutoPtr<ISelection> selection;
     Int32 selectionStart;
-    selection->GetSelectionStart(mEditable, &selectionStart);
+    selection->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
-    selection->GetSelectionEnd(mEditable, &selectionEnd);
-    Int32 compositionStart = GetComposingSpanStart(mEditable);
-    Int32 compositionEnd = GetComposingSpanEnd(mEditable);
+    selection->GetSelectionEnd(editableCS, &selectionEnd);
+    assert(0);
+    Int32 compositionStart;// TODO = GetComposingSpanStart(mEditable);
+    Int32 compositionEnd;// TODO = GetComposingSpanEnd(mEditable);
     AutoPtr<ImeState> imeState = new ImeState(text, selectionStart, selectionEnd, compositionStart, compositionEnd);
     return imeState;
 }

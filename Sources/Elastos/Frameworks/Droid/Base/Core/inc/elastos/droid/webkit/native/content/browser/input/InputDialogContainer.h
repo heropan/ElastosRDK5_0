@@ -2,29 +2,35 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__
 
-// import android.app.AlertDialog;
-// import android.app.DatePickerDialog.OnDateSetListener;
-// import android.content.Context;
-// import android.content.DialogInterface;
-// import android.content.DialogInterface.OnDismissListener;
-// import android.text.format.DateFormat;
-// import android.view.View;
-// import android.widget.AdapterView;
-// import android.widget.DatePicker;
-// import android.widget.ListView;
-// import android.widget.TimePicker;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/input/DateTimePickerDialog.h"
+#include "webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
+#include "webkit/native/content/browser/input/MultiFieldTimePickerDialog.h"
+
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::App::IDatePickerDialogOnDateSetListener;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
+using Elastos::Droid::Content::IDialogInterfaceOnDismissListener;
+using Elastos::Droid::Text::Format::IDateFormat;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Droid::Widget::IDatePicker;
+using Elastos::Droid::Widget::IListView;
+using Elastos::Droid::Widget::ITimePicker;
 
 // import org.chromium.base.ApiCompatibilityUtils;
 // import org.chromium.content.R;
 // import org.chromium.content.browser.input.DateTimePickerDialog.OnDateTimeSetListener;
-// import org.chromium.content.browser.input.MultiFieldTimePickerDialog.OnMultiFieldTimeSetListener;
 
 // import java.util.Arrays;
-// import java.util.Calendar;
-// import java.util.Date;
-// import java.util.GregorianCalendar;
-// import java.util.TimeZone;
-// import java.util.concurrent.TimeUnit;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::IDate;
+using Elastos::Utility::IGregorianCalendar;
+using Elastos::Utility::ITimeZone;
+using Elastos::Utility::Concurrent::ITimeUnit;
 
 namespace Elastos {
 namespace Droid {
@@ -33,18 +39,21 @@ namespace Content {
 namespace Browser {
 namespace Input {
 
+class DateTimeSuggestion;
+class DateTimeSuggestionListAdapter;
+
 /**
  * Opens the approprate date/time picker dialog for the given dialog type.
  */
-class InputDialogContainer
+class InputDialogContainer : public Object
 {
 public:
-    class InputActionDelegate
+    class InputActionDelegate : public Object
     {
     public:
-        CARAPI_(void) CancelDateTimeDialog() = 0;
+        virtual CARAPI_(void) CancelDateTimeDialog() = 0;
 
-        CARAPI_(void) ReplaceDateTime(
+        virtual CARAPI_(void) ReplaceDateTime(
             /* [in] */ Double value) = 0;
     };
 
@@ -54,6 +63,8 @@ private:
         , public IAdapterViewOnItemClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerAdapterViewOnItemClickListener(
             /* [in] */ InputDialogContainer* owner,
             /* [in] */ Int32 dialogType,
@@ -84,6 +95,8 @@ private:
         , public IDialogInterfaceOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerDialogInterfaceOnClickListener(
             /* [in] */ InputDialogContainer* owner);
 
@@ -100,6 +113,8 @@ private:
         , public IDialogInterfaceOnDismissListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerDialogInterfaceOnDismissListener(
             /* [in] */ InputDialogContainer* owner);
 
@@ -115,6 +130,8 @@ private:
         , public IDialogInterfaceOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         SetButtonDialogInterfaceOnClickListener(
             /* [in] */ InputDialogContainer* owner);
 
@@ -131,6 +148,8 @@ private:
         , public IDialogInterfaceOnDismissListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         SetOnDismissListenerDialogInterfaceOnDismissListener(
             /* [in] */ InputDialogContainer* owner);
 
@@ -143,9 +162,11 @@ private:
 
     class DateListener
         : public Object
-        , public IOnDateSetListener
+        , public IDatePickerDialogOnDateSetListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         DateListener(
             /* [in] */ InputDialogContainer* owner,
             /* [in] */ Int32 dialogType);
@@ -163,8 +184,7 @@ private:
     };
 
     class FullTimeListener
-        : public Object
-        , public IOnMultiFieldTimeSetListener
+        : public MultiFieldTimePickerDialog::OnMultiFieldTimeSetListener
     {
     public:
         FullTimeListener(
@@ -184,8 +204,7 @@ private:
     };
 
     class DateTimeListener
-        : public Object
-        , public IOnDateTimeSetListener
+        : public DateTimePickerDialog::OnDateTimeSetListener
     {
     public:
         DateTimeListener(
@@ -209,8 +228,7 @@ private:
     };
 
     class MonthOrWeekListener
-        : public Object,
-        , public TwoFieldDatePickerDialog::OnValueSetListener
+        : public TwoFieldDatePickerDialog::OnValueSetListener
     {
     public:
         MonthOrWeekListener(
@@ -304,13 +322,13 @@ private:
     static Int32 sTextInputTypeTime;
     static Int32 sTextInputTypeWeek;
 
-    const AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<IContext> mContext;
 
     // Prevents sending two notifications (from onClick and from onDismiss)
     Boolean mDialogAlreadyDismissed;
 
     AutoPtr<IAlertDialog> mDialog;
-    const AutoPtr<InputActionDelegate> mInputActionDelegate;
+    /*const*/ AutoPtr<InputActionDelegate> mInputActionDelegate;
 };
 
 } // namespace Input

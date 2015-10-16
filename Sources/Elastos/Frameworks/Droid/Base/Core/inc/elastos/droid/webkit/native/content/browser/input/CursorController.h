@@ -19,8 +19,7 @@ class HandleView;
  * A CursorController instance can be used to control a cursor in the text.
  */
 class CursorController
-    : public Object
-    , public IOnTouchModeChangeListener
+    : public IOnTouchModeChangeListener
 {
 public:
     /**

@@ -51,7 +51,9 @@ public:
     {
     public:
         InnerFilenameFilter(
-            /* [in] */ ResourceExtractor* owner);
+            /* [in] */ const String& timestamp);
+
+        CAR_INTERFACE_DECL()
 
         // @Override
         CARAPI Accept(
@@ -60,7 +62,7 @@ public:
             /* [out] */ Boolean* result);
 
     private:
-        ResourceExtractor* mOwner;
+        const String& TIMESTAMP_PREFIX;
     };
 
 private:
@@ -68,7 +70,8 @@ private:
         : public AsyncTask/*<Void, Void, Void>*/
     {
     public:
-        ExtractTask();
+        ExtractTask(
+          /* [in] */ ResourceExtractor* owner);
 
     protected:
         // @Override
@@ -88,6 +91,7 @@ private:
             /* [in] */ IFile* outputDir);
 
     private:
+        ResourceExtractor* mOwner;
         static const Int32 BUFFER_SIZE = 16 * 1024;
     };
 
@@ -102,7 +106,7 @@ public:
       *     required, pass a single empty string.
       */
     static CARAPI SetMandatoryPaksToExtract(
-        /* [in] */  String);
+        /* [in] */ ArrayOf<String>* mandatoryPaks);
 
     /**
       * By default the ResourceExtractor will attempt to extract a pak resource for the users

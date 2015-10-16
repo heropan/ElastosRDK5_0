@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMECHOOSERANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMECHOOSERANDROID_H__
 
-// import android.content.Context;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/input/InputDialogContainer.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -13,17 +16,19 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+
 namespace Input {
 
 /**
  * Plumbing for the different date/time dialog adapters.
  */
 //@JNINamespace("content")
-class DateTimeChooserAndroid
+class DateTimeChooserAndroid : public Object
 {
 private:
     class InnerInputActionDelegate
-        : public Object
         : public InputDialogContainer::InputActionDelegate
     {
     public:
@@ -78,7 +83,7 @@ private:
      */
     //@CalledByNative
     static CARAPI_(void) SetDateTimeSuggestionAt(
-        /* [in] */ ArrayOf<DateTimeSuggestion>* array,
+        /* [in] */ ArrayOf<DateTimeSuggestion*>* array,
         /* [in] */ Int32 index,
         /* [in] */ Double value,
         /* [in] */ const String& localizedValue,
@@ -102,7 +107,7 @@ private:
 
 private:
     const Int64 mNativeDateTimeChooserAndroid;
-    const AutoPtr<InputDialogContainer> mInputDialogContainer;
+    /*const*/ AutoPtr<InputDialogContainer> mInputDialogContainer;
 };
 
 } // namespace Input

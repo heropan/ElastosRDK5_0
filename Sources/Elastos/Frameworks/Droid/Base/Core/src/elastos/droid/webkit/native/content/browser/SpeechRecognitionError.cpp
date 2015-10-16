@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/SpeechRecognitionError.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

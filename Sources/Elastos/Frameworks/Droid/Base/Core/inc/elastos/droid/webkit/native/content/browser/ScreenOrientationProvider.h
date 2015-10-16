@@ -20,8 +20,6 @@
 
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Util::ILog;
-using Elastos::Droid::Webkit::Base::ApplicationStatus;
 
 namespace Elastos {
 namespace Droid {

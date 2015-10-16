@@ -1,6 +1,19 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "TracingControllerAndroid.h"
+#include "webkit/native/content/browser/TracingControllerAndroid.h"
+#include "text/TextUtils.h"
+// TODO #include "os/CEnvironment.h"
+// TODO #include "widget/CToastHelper.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::Content::EIID_IBroadcastReceiver;
+// TODO using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Text::TextUtils;
+// TODO using Elastos::Droid::Widget::CToastHelper;
+using Elastos::Droid::Widget::IToastHelper;
+// TODO using Elastos::IO::CFile;
+// TODO using Elastos::Text::CSimpleDateFormat
+using Elastos::Text::ISimpleDateFormat;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,50 +24,81 @@ namespace Browser {
 //=====================================================================
 //          TracingControllerAndroid::TracingBroadcastReceiver
 //=====================================================================
+
+TracingControllerAndroid::TracingBroadcastReceiver::TracingBroadcastReceiver(
+    /* [in] */ TracingControllerAndroid* owner)
+    : mOwner(owner)
+{
+}
+
 ECode TracingControllerAndroid::TracingBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(intent);
-    // ==================before translated======================
-    // if (intent.getAction().endsWith(ACTION_START)) {
-    //     String categories = intent.getStringExtra(CATEGORIES_EXTRA);
-    //     if (TextUtils.isEmpty(categories)) {
-    //         categories = nativeGetDefaultCategories();
-    //     } else {
-    //         categories = categories.replaceFirst(
-    //                 DEFAULT_CHROME_CATEGORIES_PLACE_HOLDER, nativeGetDefaultCategories());
-    //     }
-    //     boolean recordContinuously =
-    //             intent.getStringExtra(RECORD_CONTINUOUSLY_EXTRA) != null;
-    //     String filename = intent.getStringExtra(FILE_EXTRA);
-    //     if (filename != null) {
-    //         startTracing(filename, true, categories, recordContinuously);
-    //     } else {
-    //         startTracing(true, categories, recordContinuously);
-    //     }
-    // } else if (intent.getAction().endsWith(ACTION_STOP)) {
-    //     stopTracing();
-    // } else if (intent.getAction().endsWith(ACTION_LIST_CATEGORIES)) {
-    //     getCategoryGroups();
-    // } else {
-    //     Log.e(TAG, "Unexpected intent: " + intent);
-    // }
-    assert(0);
+    String action;
+    intent->GetAction(&action);
+    if (action.EndWith(ACTION_START)) {
+        String categories;
+        intent->GetStringExtra(CATEGORIES_EXTRA, &categories);
+        if (TextUtils::IsEmpty(categories)) {
+            categories = mOwner->NativeGetDefaultCategories();
+        }
+        else {
+            assert(0);
+            // TODO
+            // categories = categories.ReplaceFirst(
+            //         DEFAULT_CHROME_CATEGORIES_PLACE_HOLDER, mOwner->NativeGetDefaultCategories());
+        }
+        String strExtra;
+        intent->GetStringExtra(RECORD_CONTINUOUSLY_EXTRA, &strExtra);
+        Boolean recordContinuously = strExtra != NULL;
+        String filename;
+        intent->GetStringExtra(FILE_EXTRA, &filename);
+        if (filename != NULL) {
+            mOwner->StartTracing(filename, TRUE, categories, recordContinuously);
+        }
+        else {
+            mOwner->StartTracing(TRUE, categories, recordContinuously);
+        }
+    }
+    else if (action.EndWith(ACTION_STOP)) {
+        mOwner->StopTracing();
+    }
+    else if (action.EndWith(ACTION_LIST_CATEGORIES)) {
+        mOwner->GetCategoryGroups();
+    }
+    else {
+        String log("Unexpected intent: ");
+        String str;
+        intent->ToString(&str);
+        log += str;
+        Slogger::E(TAG, str);
+    }
+
     return NOERROR;
 }
 
 //=====================================================================
 //            TracingControllerAndroid::TracingIntentFilter
 //=====================================================================
+
 TracingControllerAndroid::TracingIntentFilter::TracingIntentFilter(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // addAction(context.getPackageName() + "." + ACTION_START);
-    // addAction(context.getPackageName() + "." + ACTION_STOP);
-    // addAction(context.getPackageName() + "." + ACTION_LIST_CATEGORIES);
+    String packageName;
+    context->GetPackageName(&packageName);
+    String start(packageName);
+    start += ".";
+    start += ACTION_START;
+    AddAction(start);
+    String stop(packageName);
+    stop += ".";
+    stop += ACTION_STOP;
+    AddAction(stop);
+    String categories(packageName);
+    categories += ".";
+    categories += ACTION_LIST_CATEGORIES;
+    AddAction(categories);
 }
 
 //=====================================================================
@@ -73,65 +117,43 @@ const String TracingControllerAndroid::PROFILER_FINISHED_FMT("Profiler finished.
 
 TracingControllerAndroid::TracingControllerAndroid(
     /* [in] */ IContext* context)
+    : mContext(context)
 {
-    // ==================before translated======================
-    // mContext = context;
-    // mBroadcastReceiver = new TracingBroadcastReceiver();
-    // mIntentFilter = new TracingIntentFilter(context);
+    mBroadcastReceiver = new TracingBroadcastReceiver(this);
+    mIntentFilter = new TracingIntentFilter(context);
 }
 
 AutoPtr<IBroadcastReceiver> TracingControllerAndroid::GetBroadcastReceiver()
 {
-    // ==================before translated======================
-    // return mBroadcastReceiver;
-    assert(0);
-    AutoPtr<IBroadcastReceiver> empty;
-    return empty;
+    return mBroadcastReceiver;
 }
 
 AutoPtr<IIntentFilter> TracingControllerAndroid::GetIntentFilter()
 {
-    // ==================before translated======================
-    // return mIntentFilter;
-    assert(0);
-    AutoPtr<IIntentFilter> empty;
-    return empty;
+    return mIntentFilter;
 }
 
 ECode TracingControllerAndroid::RegisterReceiver(
     /* [in] */ IContext* context)
 {
-    VALIDATE_NOT_NULL(context);
-    // ==================before translated======================
-    // context.registerReceiver(getBroadcastReceiver(), getIntentFilter());
-    assert(0);
-    return NOERROR;
+    AutoPtr<IIntent> intent;
+    return context->RegisterReceiver(GetBroadcastReceiver(), GetIntentFilter(), (IIntent**)&intent);
 }
 
 ECode TracingControllerAndroid::UnregisterReceiver(
     /* [in] */ IContext* context)
 {
-    VALIDATE_NOT_NULL(context);
-    // ==================before translated======================
-    // context.unregisterReceiver(getBroadcastReceiver());
-    assert(0);
-    return NOERROR;
+    return context->UnregisterReceiver(GetBroadcastReceiver());
 }
 
 Boolean TracingControllerAndroid::IsTracing()
 {
-    // ==================before translated======================
-    // return mIsTracing;
-    assert(0);
-    return FALSE;
+    return mIsTracing;
 }
 
 String TracingControllerAndroid::GetOutputPath()
 {
-    // ==================before translated======================
-    // return mFilename;
-    assert(0);
-    return String("");
+    return mFilename;
 }
 
 Boolean TracingControllerAndroid::StartTracing(
@@ -139,17 +161,18 @@ Boolean TracingControllerAndroid::StartTracing(
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
-    // ==================before translated======================
-    // mShowToasts = showToasts;
-    //
-    // String filePath = generateTracingFilePath();
-    // if (filePath == null) {
-    //   logAndToastError(
-    //       mContext.getString(R.string.profiler_no_storage_toast));
-    // }
-    // return startTracing(filePath, showToasts, categories, recordContinuously);
-    assert(0);
-    return FALSE;
+    mShowToasts = showToasts;
+
+    String filePath = GenerateTracingFilePath();
+    if (filePath == NULL) {
+        String str;
+        assert(0);
+        // TODO
+        // mContext->GetString(R::string::profiler_no_storage_toast, &str);
+        LogAndToastError(str);
+    }
+
+    return StartTracing(filePath, showToasts, categories, recordContinuously);
 }
 
 Boolean TracingControllerAndroid::StartTracing(
@@ -158,150 +181,197 @@ Boolean TracingControllerAndroid::StartTracing(
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
-    // ==================before translated======================
-    // mShowToasts = showToasts;
-    // if (isTracing()) {
-    //     // Don't need a toast because this shouldn't happen via the UI.
-    //     Log.e(TAG, "Received startTracing, but we're already tracing");
-    //     return false;
-    // }
-    // // Lazy initialize the native side, to allow construction before the library is loaded.
-    // initializeNativeControllerIfNeeded();
-    // if (!nativeStartTracing(mNativeTracingControllerAndroid, categories,
-    //         recordContinuously)) {
-    //     logAndToastError(mContext.getString(R.string.profiler_error_toast));
-    //     return false;
-    // }
-    //
-    // logForProfiler(String.format(PROFILER_STARTED_FMT, categories));
-    // showToast(mContext.getString(R.string.profiler_started_toast) + ": " + categories);
-    // mFilename = filename;
-    // mIsTracing = true;
-    // return true;
+    mShowToasts = showToasts;
+    if (IsTracing()) {
+        // Don't need a toast because this shouldn't happen via the UI.
+        Slogger::E(TAG, "Received startTracing, but we're already tracing");
+        return FALSE;
+    }
+    // Lazy initialize the native side, to allow construction before the library is loaded.
+    InitializeNativeControllerIfNeeded();
+    if (!NativeStartTracing(mNativeTracingControllerAndroid, categories,
+            recordContinuously)) {
+        String str;
+        assert(0);
+        // TODO
+        // mContext->GetString(R::string::profiler_error_toast, &str);
+        LogAndToastError(str);
+        return FALSE;
+    }
+
     assert(0);
-    return FALSE;
+    // TODO
+    // LogForProfiler(String.format(PROFILER_STARTED_FMT, categories));
+    String toast;
+    assert(0);
+    // TODO
+    // mContext->GetString(R::string::profiler_started_toast, &toast);
+    toast += ": ";
+    toast += categories;
+    ShowToast(toast);
+    mFilename = filename;
+    mIsTracing = TRUE;
+
+    return TRUE;
 }
 
 ECode TracingControllerAndroid::StopTracing()
 {
-    // ==================before translated======================
-    // if (isTracing()) {
-    //     nativeStopTracing(mNativeTracingControllerAndroid, mFilename);
-    // }
-    assert(0);
+    if (IsTracing()) {
+        NativeStopTracing(mNativeTracingControllerAndroid, mFilename);
+    }
+
     return NOERROR;
 }
 
 ECode TracingControllerAndroid::GetCategoryGroups()
 {
-    // ==================before translated======================
-    // // Lazy initialize the native side, to allow construction before the library is loaded.
-    // initializeNativeControllerIfNeeded();
-    // if (!nativeGetKnownCategoryGroupsAsync(mNativeTracingControllerAndroid)) {
-    //     Log.e(TAG, "Unable to fetch tracing record groups list.");
-    // }
-    assert(0);
+    // Lazy initialize the native side, to allow construction before the library is loaded.
+    InitializeNativeControllerIfNeeded();
+    if (!NativeGetKnownCategoryGroupsAsync(mNativeTracingControllerAndroid)) {
+        Slogger::E(TAG, "Unable to fetch tracing record groups list.");
+    }
+
     return NOERROR;
 }
 
 ECode TracingControllerAndroid::OnTracingStopped()
 {
-    // ==================before translated======================
-    // if (!isTracing()) {
-    //     // Don't need a toast because this shouldn't happen via the UI.
-    //     Log.e(TAG, "Received onTracingStopped, but we aren't tracing");
-    //     return;
-    // }
-    //
-    // logForProfiler(String.format(PROFILER_FINISHED_FMT, mFilename));
-    // showToast(mContext.getString(R.string.profiler_stopped_toast, mFilename));
-    // mIsTracing = false;
-    // mFilename = null;
+    if (!IsTracing()) {
+        // Don't need a toast because this shouldn't happen via the UI.
+        Slogger::E(TAG, "Received onTracingStopped, but we aren't tracing");
+        return NOERROR;
+    }
+
     assert(0);
+    // TODO
+    // LogForProfiler(String.format(PROFILER_FINISHED_FMT, mFilename));
+    String str;
+    assert(0);
+    // TODO
+    // mContext->GetString(R::string::profiler_stopped_toast, mFilename, &str);
+    ShowToast(str);
+    mIsTracing = FALSE;
+    mFilename = NULL;
+
     return NOERROR;
 }
 
 ECode TracingControllerAndroid::Finalize()
 {
-    // ==================before translated======================
-    // if (mNativeTracingControllerAndroid != 0) {
-    //     nativeDestroy(mNativeTracingControllerAndroid);
-    //     mNativeTracingControllerAndroid = 0;
-    // }
-    assert(0);
+    if (mNativeTracingControllerAndroid != 0) {
+        NativeDestroy(mNativeTracingControllerAndroid);
+        mNativeTracingControllerAndroid = 0;
+    }
+
     return NOERROR;
 }
 
 String TracingControllerAndroid::GenerateTracingFilePath()
 {
-    // ==================before translated======================
-    // String state = Environment.getExternalStorageState();
-    // if (!Environment.MEDIA_MOUNTED.equals(state)) {
-    //     return null;
-    // }
-    //
-    // // Generate a hopefully-unique filename using the UTC timestamp.
-    // // (Not a huge problem if it isn't unique, we'll just append more data.)
-    // SimpleDateFormat formatter = new SimpleDateFormat(
-    //         "yyyy-MM-dd-HHmmss", Locale.US);
-    // formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-    // File dir = Environment.getExternalStoragePublicDirectory(
-    //         Environment.DIRECTORY_DOWNLOADS);
-    // File file = new File(
-    //         dir, "chrome-profile-results-" + formatter.format(new Date()));
-    // return file.getPath();
+    AutoPtr<IEnvironment> env;
     assert(0);
-    return String("");
+    // TODO
+    // CEnvironment::AcquireSingleton((IEnvironment**)&env);
+    String state;
+    env->GetExternalStorageState(&state);
+    if (!IEnvironment::MEDIA_MOUNTED.Equals(state)) {
+        return String(NULL);
+    }
+
+    // Generate a hopefully-unique filename using the UTC timestamp.
+    // (Not a huge problem if it isn't unique, we'll just append more data.)
+    AutoPtr<ISimpleDateFormat> formatter;
+    assert(0);
+    // TODO
+    // CSimpleDateFormat::New(
+    //         String("yyyy-MM-dd-HHmmss"), ILocale::US,
+    //         (ISimpleDateFormat**)&formatter);
+    // formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+    AutoPtr<IFile> dir;
+    env->GetExternalStoragePublicDirectory(
+            IEnvironment::DIRECTORY_DOWNLOADS, (IFile**)&dir);
+    AutoPtr<IFile> file;
+    AutoPtr<IDate> date;
+    assert(0);
+    // TODO
+    // CDate::New((IDate**)&date);
+    String formatStr;
+    assert(0);
+    // TODO
+    // formatter->Format(date, &formatStr);
+    String str("chrome-profile-results-");
+    str += formatStr;
+    assert(0);
+    // TODO
+    // CFile::New(
+    //         dir,  str, (IFile**)&file);
+    String path;
+    file->GetPath(&path);
+    return path;
 }
 
 ECode TracingControllerAndroid::InitializeNativeControllerIfNeeded()
 {
-    // ==================before translated======================
-    // if (mNativeTracingControllerAndroid == 0) {
-    //     mNativeTracingControllerAndroid = nativeInit();
-    // }
-    assert(0);
+    if (mNativeTracingControllerAndroid == 0) {
+        mNativeTracingControllerAndroid = NativeInit();
+    }
+
     return NOERROR;
 }
 
 ECode TracingControllerAndroid::LogAndToastError(
     /* [in] */ const String& str)
 {
-    // ==================before translated======================
-    // Log.e(TAG, str);
-    // if (mShowToasts) Toast.makeText(mContext, str, Toast.LENGTH_SHORT).show();
-    assert(0);
+    Slogger::E(TAG, str);
+    if (mShowToasts) {
+        AutoPtr<IToastHelper> helper;
+        assert(0);
+        // TODO
+        // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
+        AutoPtr<IToast> toast;
+        assert(0);
+        // TODO
+        // helper->MakeText(mContext, str, IToast::LENGTH_SHORT, (IToast**)&toast);
+        toast->Show();
+    }
+
     return NOERROR;
 }
 
 ECode TracingControllerAndroid::LogForProfiler(
     /* [in] */ const String& str)
 {
-    // ==================before translated======================
-    // Log.i(TAG, str);
-    assert(0);
+    Slogger::I(TAG, str);
     return NOERROR;
 }
 
 ECode TracingControllerAndroid::ShowToast(
     /* [in] */ const String& str)
 {
-    // ==================before translated======================
-    // if (mShowToasts) Toast.makeText(mContext, str, Toast.LENGTH_SHORT).show();
-    assert(0);
+    if (mShowToasts) {
+        AutoPtr<IToastHelper> helper;
+        assert(0);
+        // TODO
+        // CToastHelper::AcquireSingleton((IToastHelper**)&helper);
+        AutoPtr<IToast> toast;
+        assert(0);
+        // TODO
+        // helper->MakeText(mContext, str, IToast::LENGTH_SHORT, (IToast**)&toast)
+        toast->Show();
+    }
+
     return NOERROR;
 }
 
 Int64 TracingControllerAndroid::NativeInit()
 {
-    assert(0);
     return 0;
 }
 
 ECode TracingControllerAndroid::NativeDestroy(
     /* [in] */ Int64 nativeTracingControllerAndroid)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -310,7 +380,6 @@ Boolean TracingControllerAndroid::NativeStartTracing(
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
-    assert(0);
     return FALSE;
 }
 
@@ -318,20 +387,17 @@ ECode TracingControllerAndroid::NativeStopTracing(
     /* [in] */ Int64 nativeTracingControllerAndroid,
     /* [in] */ const String& filename)
 {
-    assert(0);
     return NOERROR;
 }
 
 Boolean TracingControllerAndroid::NativeGetKnownCategoryGroupsAsync(
     /* [in] */ Int64 nativeTracingControllerAndroid)
 {
-    assert(0);
     return FALSE;
 }
 
 String TracingControllerAndroid::NativeGetDefaultCategories()
 {
-    assert(0);
     return String("");
 }
 
@@ -340,5 +406,3 @@ String TracingControllerAndroid::NativeGetDefaultCategories()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

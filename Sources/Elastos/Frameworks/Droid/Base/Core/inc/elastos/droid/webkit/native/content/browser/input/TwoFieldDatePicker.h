@@ -2,18 +2,20 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKER_H__
 
-// import android.content.Context;
-// import android.text.format.DateUtils;
-// import android.view.LayoutInflater;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.widget.FrameLayout;
-// import android.widget.NumberPicker;
-// import android.widget.NumberPicker.OnValueChangeListener;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Text::Format::IDateUtils;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::Widget::IFrameLayout;
+using Elastos::Droid::Widget::INumberPicker;
+using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
 
 // import org.chromium.content.R;
 
-// import java.util.Calendar;
-// import java.util.TimeZone;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::ITimeZone;
 
 namespace Elastos {
 namespace Droid {
@@ -33,7 +35,7 @@ public:
     /**
      * The callback used to indicate the user changes\d the date.
      */
-    class OnMonthOrWeekChangedListener
+    class OnMonthOrWeekChangedListener : public Object
     {
     public:
         /**
@@ -43,8 +45,8 @@ public:
          * @param year The year that was set.
          * @param positionInYear The month or week in year.
          */
-        virtual CARAPI_(void) OnMonthOrWeekChanged(
-            /* [in] */ TwoFieldDatePicker view,
+        virtual CARAPI OnMonthOrWeekChanged(
+            /* [in] */ TwoFieldDatePicker* view,
             /* [in] */ Int32 year,
             /* [in] */ Int32 positionInYear) = 0;
     };
@@ -68,6 +70,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     TwoFieldDatePicker(
         /* [in] */ IContext* context,
         /* [in] */ Double minValue,
@@ -132,11 +136,11 @@ protected:
      * Subclasses know the semantics of @positionInYear, and need to update @mCurrentDate to the
      * appropriate date.
      */
-    virtual CARAPI_(void) SetCurrentDate(
+    virtual CARAPI SetCurrentDate(
         /* [in] */ Int32 year,
         /* [in] */ Int32 positionInYear) = 0;
 
-    virtual CARAPI_(void) SetCurrentDate(
+    virtual CARAPI SetCurrentDate(
         /* [in] */ ICalendar* date);
 
     virtual CARAPI_(Int32) GetMaxYear() = 0;

@@ -7,6 +7,7 @@
 #include "elastos/droid/os/SystemClock.h"
 //#include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
 #include "elastos/droid/webkit/native/content/browser/input/InputMethodManagerWrapper.h"
+// TODO #include "elastos/droid/view/inputmethod/BaseInputConnection.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::SystemClock;
@@ -17,6 +18,7 @@ using Elastos::Droid::Text::ITextUtils;
 // import android.util.Log;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
+// TODO using Elastos::Droid::View::InputMethod::BaseInputConnection;
 using Elastos::Droid::View::InputMethod::IBaseInputConnection;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IExtractedText;
@@ -38,11 +40,11 @@ class ImeAdapter;
  * It then adapts android's IME to chrome's RenderWidgetHostView using the
  * native ImeAdapterAndroid via the class ImeAdapter.
  */
-class AdapterInputConnection : public IBaseInputConnection
+class AdapterInputConnection : public Object// TODO : public BaseInputConnection
 {
 public:
     //@VisibleForTesting
-    class ImeState
+    class ImeState : public Object
     {
     public:
         ImeState(
@@ -94,7 +96,7 @@ public:
      */
     //@VisibleForTesting
     CARAPI_(void) UpdateState(
-        /* [in] */ const String& text,
+        /* [in] */ String text,
         /* [in] */ Int32 selectionStart,
         /* [in] */ Int32 selectionEnd,
         /* [in] */ Int32 compositionStart,
@@ -244,9 +246,9 @@ private:
     static const String TAG;
     static const Boolean DEBUG;
 
-    const AutoPtr<IView> mInternalView;
-    const AutoPtr<ImeAdapter> mImeAdapter;
-    const AutoPtr<IEditable> mEditable;
+    /*const*/ AutoPtr<IView> mInternalView;
+    /*const*/ AutoPtr<ImeAdapter> mImeAdapter;
+    /*const*/ AutoPtr<IEditable> mEditable;
 
     Boolean mSingleLine;
     Int32 mNumNestedBatchEdits;

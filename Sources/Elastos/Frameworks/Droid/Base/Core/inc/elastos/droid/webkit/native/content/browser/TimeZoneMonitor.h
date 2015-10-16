@@ -21,7 +21,6 @@ using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {
@@ -38,11 +37,13 @@ class TimeZoneMonitor : public Object
 public:
     class InnerBroadcastReceiver
         : public Object
-        , public BroadcastReceiver
+        , public IBroadcastReceiver
     {
     public:
         InnerBroadcastReceiver(
             /* [in] */ TimeZoneMonitor* owner);
+
+        CAR_INTERFACE_DECL();
 
         // @Override
         CARAPI OnReceive(

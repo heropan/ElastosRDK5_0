@@ -1,6 +1,9 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "WebContentsObserverAndroid.h"
+#include "webkit/native/content/browser/WebContentsObserverAndroid.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/base/ThreadUtils.h"
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -11,39 +14,36 @@ namespace Browser {
 //=====================================================================
 //                      WebContentsObserverAndroid
 //=====================================================================
+
 WebContentsObserverAndroid::WebContentsObserverAndroid(
     /* [in] */ ContentViewCore* contentViewCore)
 {
-    // ==================before translated======================
-    // this(contentViewCore.getWebContents());
+    ThreadUtils::AssertOnUiThread();
+    mNativeWebContentsObserverAndroid = NativeInit(contentViewCore->GetWebContents());
 }
 
 WebContentsObserverAndroid::WebContentsObserverAndroid(
     /* [in] */ WebContents* webContents)
 {
-    // ==================before translated======================
-    // ThreadUtils.assertOnUiThread();
-    // mNativeWebContentsObserverAndroid = nativeInit(webContents);
+    ThreadUtils::AssertOnUiThread();
+    mNativeWebContentsObserverAndroid = NativeInit(webContents);
 }
 
 ECode WebContentsObserverAndroid::RenderProcessGone(
     /* [in] */ Boolean wasOomProtected)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidStartLoading(
     /* [in] */ const String& url)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidStopLoading(
     /* [in] */ const String& url)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -54,7 +54,6 @@ ECode WebContentsObserverAndroid::DidFailLoad(
     /* [in] */ const String& description,
     /* [in] */ const String& failingUrl)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -64,13 +63,11 @@ ECode WebContentsObserverAndroid::DidNavigateMainFrame(
     /* [in] */ Boolean isNavigationToDifferentPage,
     /* [in] */ Boolean isFragmentNavigation)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidFirstVisuallyNonEmptyPaint()
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -79,7 +76,6 @@ ECode WebContentsObserverAndroid::DidNavigateAnyFrame(
     /* [in] */ const String& baseUrl,
     /* [in] */ Boolean isReload)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -91,7 +87,6 @@ ECode WebContentsObserverAndroid::DidStartProvisionalLoadForFrame(
     /* [in] */ Boolean isErrorPage,
     /* [in] */ Boolean isIframeSrcdoc)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -101,7 +96,6 @@ ECode WebContentsObserverAndroid::DidCommitProvisionalLoadForFrame(
     /* [in] */ const String& url,
     /* [in] */ Int32 transitionType)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -110,64 +104,55 @@ ECode WebContentsObserverAndroid::DidFinishLoad(
     /* [in] */ const String& validatedUrl,
     /* [in] */ Boolean isMainFrame)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DocumentLoadedInFrame(
     /* [in] */ Int64 frameId)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::NavigationEntryCommitted()
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidAttachInterstitialPage()
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidDetachInterstitialPage()
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DidChangeThemeColor(
     /* [in] */ Int32 color)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode WebContentsObserverAndroid::DetachFromWebContents()
 {
-    // ==================before translated======================
-    // if (mNativeWebContentsObserverAndroid != 0) {
-    //     nativeDestroy(mNativeWebContentsObserverAndroid);
-    //     mNativeWebContentsObserverAndroid = 0;
-    // }
-    assert(0);
+    if (mNativeWebContentsObserverAndroid != 0) {
+        NativeDestroy(mNativeWebContentsObserverAndroid);
+        mNativeWebContentsObserverAndroid = 0;
+    }
+
     return NOERROR;
 }
 
 Int64 WebContentsObserverAndroid::NativeInit(
     /* [in] */ WebContents* webContents)
 {
-    assert(0);
     return 0;
 }
 
 ECode WebContentsObserverAndroid::NativeDestroy(
     /* [in] */ Int64 nativeWebContentsObserverAndroid)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -176,5 +161,3 @@ ECode WebContentsObserverAndroid::NativeDestroy(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

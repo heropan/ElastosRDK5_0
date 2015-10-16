@@ -1,4 +1,21 @@
 
+#include "webkit/native/content/browser/input/GamepadList.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include "os/Build.h"
+// TODO #include "view/CInputDeviceHelper.h"
+// TODO #include "view/CKeyEventHelper.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
+using Elastos::Droid::Hardware::Input::EIID_IInputDeviceListener;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::IInputDeviceHelper;
+// TODO using Elastos::Droid::View::CInputDeviceHelper;
+using Elastos::Droid::View::IKeyEventHelper;
+// TODO using Elastos::Droid::View::CKeyEventHelper;
+using Elastos::Droid::View::EIID_IInputEvent;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -10,6 +27,8 @@ namespace Input {
 //              GamepadList::InnerInputDeviceListener
 //==================================================================
 
+CAR_INTERFACE_IMPL(GamepadList::InnerInputDeviceListener, Object, IInputDeviceListener);
+
 GamepadList::InnerInputDeviceListener::InnerInputDeviceListener(
     /* [in] */ GamepadList* owner)
     : mOwner(owner)
@@ -17,7 +36,7 @@ GamepadList::InnerInputDeviceListener::InnerInputDeviceListener(
 }
 
 //@Override
-ECode GamepadList::InnerInputDeviceListener:OnInputDeviceChanged(
+ECode GamepadList::InnerInputDeviceListener::OnInputDeviceChanged(
     /* [in] */ Int32 deviceId)
 {
     mOwner->OnInputDeviceChangedImpl(deviceId);
@@ -57,7 +76,7 @@ GamepadList::GamepadList()
     : mAttachedToWindowCounter(0)
     , mIsGamepadAccessed(FALSE)
 {
-    mGamepadDevices = ArrayOf<GamepadDevice>::Alloc(MAX_GAMEPADS);
+    mGamepadDevices = ArrayOf<GamepadDevice*>::Alloc(MAX_GAMEPADS);
     mInputDeviceListener = new InnerInputDeviceListener(this);
 }
 
@@ -68,7 +87,9 @@ void GamepadList::InitializeDevices()
     AutoPtr< ArrayOf<Int32> > deviceIds;
     mInputManager->GetInputDeviceIds((ArrayOf<Int32>**)&deviceIds);
     AutoPtr<IInputDeviceHelper> helper;
-    CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
+    assert(0);
+    // TODO
+    // CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
     for (Int32 i = 0; i < deviceIds->GetLength(); i++) {
         AutoPtr<IInputDevice> inputDevice;
         helper->GetDevice((*deviceIds)[i], (IInputDevice**)&inputDevice);
@@ -153,7 +174,9 @@ void GamepadList::OnInputDeviceAddedImpl(
     /* [in] */ Int32 deviceId)
 {
     AutoPtr<IInputDeviceHelper> helper;
-    CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
+    assert(0);
+    // TODO
+    // CInputDeviceHelper::AcquireSingleton((IInputDeviceHelper**)&helper);
     AutoPtr<IInputDevice> inputDevice;
     helper->GetDevice(deviceId, (IInputDevice**)&helper);
     if (!IsGamepadDevice(inputDevice)) return;
@@ -233,7 +256,7 @@ Boolean GamepadList::HandleKeyEvent(
     AutoLock lock(mLock);
 
     if (!mIsGamepadAccessed) return FALSE;
-    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent(event);
+    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent((IInputEvent*)event->Probe(EIID_IInputEvent));
     if (gamepad == NULL) return FALSE;
     return gamepad->HandleKeyEvent(event);
 }
@@ -256,7 +279,7 @@ Boolean GamepadList::HandleMotionEvent(
     AutoLock lock(mLock);
 
     if (!mIsGamepadAccessed) return FALSE;
-    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent(event);
+    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent((IInputEvent*)event->Probe(EIID_IInputEvent));
     if (gamepad == NULL) return FALSE;
     return gamepad->HandleMotionEvent(event);
 }
@@ -297,7 +320,7 @@ void GamepadList::UnregisterGamepad(
     AutoPtr<GamepadDevice> gamepadDevice = GetDeviceById(deviceId);
     if (gamepadDevice == NULL) return; // Not a registered device.
     Int32 index = gamepadDevice->GetIndex();
-    mGamepadDevices[index] = NULL;
+    (*mGamepadDevices)[index] = NULL;
 }
 
 Boolean GamepadList::IsGamepadDevice(
@@ -323,8 +346,9 @@ AutoPtr<GamepadDevice> GamepadList::GetGamepadForEvent(
 Boolean GamepadList::IsGamepadEvent(
     /* [in] */ IMotionEvent* event)
 {
+    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
     Int32 source;
-    event->GetSource(&source);
+    inputEvent->GetSource(&source);
     return ((source & IInputDevice::SOURCE_JOYSTICK) == IInputDevice::SOURCE_JOYSTICK);
 }
 
@@ -346,7 +370,9 @@ Boolean GamepadList::IsGamepadEvent(
             return TRUE;
         default: {
             AutoPtr<IKeyEventHelper> helper;
-            CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
+            assert(0);
+            // TODO
+            // CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
             Boolean bFlag;
             helper->IsGamepadButton(keyCode, &bFlag);
             return bFlag;
@@ -356,7 +382,7 @@ Boolean GamepadList::IsGamepadEvent(
 
 Boolean GamepadList::IsGamepadSupported()
 {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN;
 }
 
 //@CalledByNative
@@ -381,7 +407,7 @@ void GamepadList::GrabGamepadData(
                     device->GetButtons());
         }
         else {
-            NativeSetGamepadData(webGamepadsPtr, i, FALSE, FALSE, NULL, 0, NULL, NULL);
+            NativeSetGamepadData(webGamepadsPtr, i, FALSE, FALSE, String(NULL), 0, NULL, NULL);
         }
     }
 }
@@ -390,8 +416,8 @@ void GamepadList::GrabGamepadData(
 void GamepadList::NotifyForGamepadsAccess(
     /* [in] */ Boolean isAccessPaused)
 {
-    if (!isGamepadSupported()) return;
-    getInstance().setIsGamepadAccessed(!isAccessPaused);
+    if (!IsGamepadSupported()) return;
+    GetInstance()->SetIsGamepadAccessed(!isAccessPaused);
 }
 
 void GamepadList::SetIsGamepadAccessed(

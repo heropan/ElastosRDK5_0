@@ -21,7 +21,6 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Os::IVibrator;
-using Elastos::Droid::Util::ILog;
 
 namespace Elastos {
 namespace Droid {

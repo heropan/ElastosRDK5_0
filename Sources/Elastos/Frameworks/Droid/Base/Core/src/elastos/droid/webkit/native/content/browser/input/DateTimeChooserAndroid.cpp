@@ -1,4 +1,8 @@
 
+#include "webkit/native/content/browser/input/DateTimeChooserAndroid.h"
+#include "webkit/native/content/browser/input/DateTimeSuggestion.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -26,7 +30,7 @@ void DateTimeChooserAndroid::InnerInputActionDelegate::ReplaceDateTime(
 //@Override
 void DateTimeChooserAndroid::InnerInputActionDelegate::CancelDateTimeDialog()
 {
-    mOwner->nativeCancelDialog(mOwner->mNativeDateTimeChooserAndroid);
+    mOwner->NativeCancelDialog(mOwner->mNativeDateTimeChooserAndroid);
 }
 
 //==================================================================
@@ -36,8 +40,8 @@ void DateTimeChooserAndroid::InnerInputActionDelegate::CancelDateTimeDialog()
 DateTimeChooserAndroid::DateTimeChooserAndroid(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeDateTimeChooserAndroid)
+    : mNativeDateTimeChooserAndroid(nativeDateTimeChooserAndroid)
 {
-    mNativeDateTimeChooserAndroid = nativeDateTimeChooserAndroid;
     AutoPtr<InputDialogContainer::InputActionDelegate> delegate = new InnerInputActionDelegate(this);
     mInputDialogContainer = new InputDialogContainer(context, delegate);
 }
@@ -64,7 +68,7 @@ AutoPtr<DateTimeChooserAndroid> DateTimeChooserAndroid::CreateDateTimeChooser(
     /* [in] */ Double step,
     /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions)
 {
-    DateTimeChooserAndroid chooser =
+    AutoPtr<DateTimeChooserAndroid> chooser =
             new DateTimeChooserAndroid(
                     contentViewCore->GetContext(),
                     nativeDateTimeChooserAndroid);
@@ -90,7 +94,7 @@ AutoPtr< ArrayOf<DateTimeSuggestion> > DateTimeChooserAndroid::CreateSuggestions
  */
 //@CalledByNative
 void DateTimeChooserAndroid::SetDateTimeSuggestionAt(
-    /* [in] */ ArrayOf<DateTimeSuggestion>* array,
+    /* [in] */ ArrayOf<DateTimeSuggestion*>* array,
     /* [in] */ Int32 index,
     /* [in] */ Double value,
     /* [in] */ const String& localizedValue,

@@ -1,4 +1,15 @@
 
+#include "webkit/native/content/browser/input/InsertionHandleController.h"
+#include "webkit/native/content/browser/input/HandleView.h"
+#include <elastos/core/Math.h>
+// TODO #include "view/View.h"
+// TODO #include "view/CView.h"
+
+using Elastos::Droid::Content::Res::IResources;
+// TODO using Elastos::Droid::View::View;
+// TODO using Elastos::Droid::View::CView;
+using Elastos::Droid::Utility::IDisplayMetrics;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -10,13 +21,17 @@ namespace Input {
 //            InsertionHandleController::PastePopupMenu
 //==================================================================
 
-InsertionHandleController::PastePopupMenu::PastePopupMenu()
-    : mPositionX(0)
+InsertionHandleController::PastePopupMenu::PastePopupMenu(
+    /* [in] */ InsertionHandleController* owner)
+    : mOwner(owner)
+    , mPositionX(0)
     , mPositionY(0)
 {
-    CPopupWindow::New(mContext, NULL,
-            android::R::attr::textSelectHandleWindowStyle,
-            (IPopupWindow**)&mContainer);
+    assert(0);
+    // TODO
+    // CPopupWindow::New(mContext, NULL,
+    //         android::R::attr::textSelectHandleWindowStyle,
+    //         (IPopupWindow**)&mContainer);
     mContainer->SetSplitTouchEnabled(TRUE);
     mContainer->SetClippingEnabled(FALSE);
 
@@ -24,23 +39,27 @@ InsertionHandleController::PastePopupMenu::PastePopupMenu()
     mContainer->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
 
     AutoPtr< ArrayOf<Int32> > POPUP_LAYOUT_ATTRS = ArrayOf<Int32>::Alloc(4);
-    (*POPUP_LAYOUT_ATTRS)[0] = android::R::attr::textEditPasteWindowLayout;
-    (*POPUP_LAYOUT_ATTRS)[1] = android::R::attr::textEditNoPasteWindowLayout;
-    (*POPUP_LAYOUT_ATTRS)[2] = android::R::attr::textEditSidePasteWindowLayout;
-    (*POPUP_LAYOUT_ATTRS)[3] = android::R::attr::textEditSideNoPasteWindowLayout;
+    assert(0);
+    // TODO
+    // (*POPUP_LAYOUT_ATTRS)[0] = android::R::attr::textEditPasteWindowLayout;
+    // (*POPUP_LAYOUT_ATTRS)[1] = android::R::attr::textEditNoPasteWindowLayout;
+    // (*POPUP_LAYOUT_ATTRS)[2] = android::R::attr::textEditSidePasteWindowLayout;
+    // (*POPUP_LAYOUT_ATTRS)[3] = android::R::attr::textEditSideNoPasteWindowLayout;
 
     Int32 length = POPUP_LAYOUT_ATTRS->GetLength();
-    mPasteViews = ArrayOf<IView>::Alloc(length);
+    mPasteViews = ArrayOf<IView*>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
         AutoPtr<IView> view;
-        CView::New((IView**)&view);
+        assert(0);
+        // TODO
+        // CView::New((IView**)&view);
         (*mPasteViews)[i] = view;
     }
 
     mPasteViewLayouts = ArrayOf<Int32>::Alloc(length);
 
     AutoPtr<ITypedArray> attrs;
-    mContext->ObtainStyledAttributes(POPUP_LAYOUT_ATTRS, (ITypedArray**)&attrs);
+    mOwner->mContext->ObtainStyledAttributes(POPUP_LAYOUT_ATTRS, (ITypedArray**)&attrs);
     Int32 attrsLength;
     attrs->GetLength(&attrsLength);
     for (Int32 i = 0; i < attrsLength; ++i) {
@@ -54,7 +73,7 @@ InsertionHandleController::PastePopupMenu::PastePopupMenu()
 Int32 InsertionHandleController::PastePopupMenu::ViewIndex(
     /* [in] */ Boolean onTop)
 {
-    return (onTop ? 0 : 1 << 1) + (CanPaste() ? 0 : 1 << 0);
+    return (onTop ? 0 : 1 << 1) + (mOwner->CanPaste() ? 0 : 1 << 0);
 }
 
 void InsertionHandleController::PastePopupMenu::UpdateContent(
@@ -66,7 +85,7 @@ void InsertionHandleController::PastePopupMenu::UpdateContent(
     if (view == NULL) {
         const Int32 layout = (*mPasteViewLayouts)[viewIndex];
         AutoPtr<ILayoutInflater> inflater;
-        mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+        mOwner->mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
         if (inflater != NULL) {
             inflater->Inflate(layout, NULL, (IView**)&view);
         }
@@ -76,11 +95,13 @@ void InsertionHandleController::PastePopupMenu::UpdateContent(
             assert(0);
         }
 
-        const Int32 size = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+        const Int32 size = -1;// TODO = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
         AutoPtr<IViewGroupLayoutParams> params;
-        CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
-                IViewGroupLayoutParams::WRAP_CONTENT,
-                (IViewGroupLayoutParams**)&params);
+        assert(0);
+        // TODO
+        // CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
+        //         IViewGroupLayoutParams::WRAP_CONTENT,
+        //         (IViewGroupLayoutParams**)&params);
         view->SetLayoutParams(params);
         view->Measure(size, size);
 
@@ -114,8 +135,8 @@ Boolean InsertionHandleController::PastePopupMenu::IsShowing()
 ECode InsertionHandleController::PastePopupMenu::OnClick(
     /* [in] */ IView* v)
 {
-    if (CanPaste()) {
-        Paste();
+    if (mOwner->CanPaste()) {
+        mOwner->Paste();
     }
     Hide();
 
@@ -131,23 +152,23 @@ void InsertionHandleController::PastePopupMenu::PositionAtCursor()
     Int32 height;
     contentView->GetMeasuredHeight(&height);
 
-    Int32 lineHeight = GetLineHeight();
+    Int32 lineHeight = mOwner->GetLineHeight();
 
-    Int32 x;
-    mHandle->GetAdjustedPositionX(&x);
+    Int32 x = mOwner->mHandle->GetAdjustedPositionX();
     mPositionX = (Int32) (x - width / 2.0f);
-    Int32 y;
-    mHandle->GetAdjustedPositionY(&y);
+    Int32 y = mOwner->mHandle->GetAdjustedPositionY();
     mPositionY = y - height - lineHeight;
 
     const AutoPtr< ArrayOf<Int32> > coords = ArrayOf<Int32>::Alloc(2);
-    mParent->GetLocationInWindow(coords);
+    assert(0);
+    // TODO
+    // mOwner->mParent->GetLocationInWindow(coords);
     (*coords)[0] += mPositionX;
     (*coords)[1] += mPositionY;
 
     Int32 screenWidth;
     AutoPtr<IResources> res;
-    mContext->GetResources((IResources**)&res);
+    mOwner->mContext->GetResources((IResources**)&res);
     AutoPtr<IDisplayMetrics> metrics;
     res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     metrics->GetWidthPixels(&screenWidth);
@@ -164,14 +185,12 @@ void InsertionHandleController::PastePopupMenu::PositionAtCursor()
         (*coords)[1] += lineHeight;
 
         // Move to right hand side of insertion cursor by default. TODO RTL text.
-        AutoPtr<IDrawable> handle;
-        mHandle->GetDrawable((IDrawable**)&handle);
+        AutoPtr<IDrawable> handle = mOwner->mHandle->GetDrawable();
         Int32 intrinsicWidth;
         handle->GetIntrinsicWidth(&intrinsicWidth);
         const Int32 handleHalfWidth = intrinsicWidth / 2;
 
-        Int32 positionX;
-        mHandle->GetAdjustedPositionX(&positionX);
+        Int32 positionX = mOwner->mHandle->GetAdjustedPositionX();
         if (positionX + width < screenWidth) {
             (*coords)[0] += handleHalfWidth + width / 2;
         }
@@ -181,11 +200,11 @@ void InsertionHandleController::PastePopupMenu::PositionAtCursor()
     }
     else {
         // Horizontal clipping
-        (*coords)[0] = Math::Max(0, (*coords)[0]);
-        (*coords)[0] = Math::Min(screenWidth - width, (*coords)[0]);
+        (*coords)[0] = Elastos::Core::Math::Max(0, (*coords)[0]);
+        (*coords)[0] = Elastos::Core::Math::Min(screenWidth - width, (*coords)[0]);
     }
 
-    mContainer->ShowAtLocation(mParent, IGravity::NO_GRAVITY, (*coords)[0], (*coords)[1]);
+    mContainer->ShowAtLocation(mOwner->mParent, IGravity::NO_GRAVITY, (*coords)[0], (*coords)[1]);
 }
 
 //==================================================================
@@ -244,7 +263,7 @@ void InsertionHandleController::ShowHandleWithPastePopup()
 Boolean InsertionHandleController::IsDragging()
 {
     Boolean bFlag = FALSE;
-    return mHandle != NULL && (mHandle->IsDragging(&bFlag), bFlag);
+    return mHandle != NULL && (mHandle->IsDragging());
 }
 
 /** Shows the handle at the given coordinates, as long as automatic showing is allowed */
@@ -281,21 +300,19 @@ void InsertionHandleController::BeginHandleFadeIn()
 void InsertionHandleController::SetHandleVisibility(
     /* [in] */ Int32 visibility)
 {
-    mHandle->SetVisibility(visibility);
+    assert(0);
+    // TODO
+    // mHandle->SetVisibility(visibility);
 }
 
 Int32 InsertionHandleController::GetHandleX()
 {
-    Int32 x;
-    mHandle->GetAdjustedPositionX(&x);
-    return x;
+    return mHandle->GetAdjustedPositionX();
 }
 
 Int32 InsertionHandleController::GetHandleY()
 {
-    Int32 y;
-    mHandle->GetAdjustedPositionY(&y);
-    return y;
+    return mHandle->GetAdjustedPositionY();
 }
 
 //@VisibleForTesting
@@ -305,16 +322,18 @@ AutoPtr<HandleView> InsertionHandleController::GetHandleViewForTest()
 }
 
 //@Override
-void InsertionHandleController::OnTouchModeChanged(
+ECode InsertionHandleController::OnTouchModeChanged(
     /* [in] */ Boolean isInTouchMode)
 {
     if (!isInTouchMode) {
         Hide();
     }
+
+    return NOERROR;
 }
 
 //@Override
-void InsertionHandleController::Hide()
+ECode InsertionHandleController::Hide()
 {
     if (mIsShowing) {
         if (mHandle != NULL) {
@@ -322,32 +341,40 @@ void InsertionHandleController::Hide()
         }
         mIsShowing = FALSE;
     }
+
+    return NOERROR;
 }
 
 //@Override
-Boolean InsertionHandleController::IsShowing()
+ECode InsertionHandleController::IsShowing(
+    /* [out] */ Boolean* result)
 {
-    return mIsShowing;
+    VALIDATE_NOT_NULL(result);
+    *result = mIsShowing;
+    return NOERROR;
 }
 
 //@Override
-void InsertionHandleController::BeforeStartUpdatingPosition(
+ECode InsertionHandleController::BeforeStartUpdatingPosition(
     /* [in] */ HandleView* handle)
 {
+    return NOERROR;
 }
 
 //@Override
-void InsertionHandleController::UpdatePosition(
+ECode InsertionHandleController::UpdatePosition(
     /* [in] */ HandleView* handle,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
     SetCursorPosition(x, y);
+    return NOERROR;
 }
 
 //@Override
-void InsertionHandleController::OnDetached()
+ECode InsertionHandleController::OnDetached()
 {
+    return NOERROR;
 }
 
 Boolean InsertionHandleController::CanPaste()
@@ -355,7 +382,7 @@ Boolean InsertionHandleController::CanPaste()
     AutoPtr<IClipboardManager> cm;
     mContext->GetSystemService(
             IContext::CLIPBOARD_SERVICE,
-            (IClipboardManager**)&cm);
+            (IInterface**)&cm);
     Boolean bFlag = FALSE;
     cm->HasPrimaryClip(&bFlag);
 
@@ -374,7 +401,7 @@ void InsertionHandleController::ShowHandleIfNeeded()
     if (!mIsShowing) {
         mIsShowing = TRUE;
         mHandle->Show();
-        SetHandleVisibility(HandleView::VISIBLE);
+        SetHandleVisibility(IView::VISIBLE);
     }
 }
 

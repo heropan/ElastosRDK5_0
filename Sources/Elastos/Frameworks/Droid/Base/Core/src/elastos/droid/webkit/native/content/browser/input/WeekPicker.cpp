@@ -98,7 +98,7 @@ Int32 WeekPicker::GetWeekForDate(
 }
 
 //@Override
-void WeekPicker::SetCurrentDate(
+ECode WeekPicker::SetCurrentDate(
     /* [in] */ Int32 year,
     /* [in] */ Int32 week)
 {
@@ -114,6 +114,8 @@ void WeekPicker::SetCurrentDate(
     else {
         SetCurrentDate(date);
     }
+
+    return NOERROR;
 }
 
 Int32 WeekPicker::GetNumberOfWeeks(

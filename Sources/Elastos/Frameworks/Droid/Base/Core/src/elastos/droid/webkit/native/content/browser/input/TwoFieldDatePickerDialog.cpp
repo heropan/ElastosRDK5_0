@@ -9,6 +9,8 @@ namespace Input {
 const String TwoFieldDatePickerDialog::YEAR("year");
 const String TwoFieldDatePickerDialog::POSITION_IN_YEAR("position_in_year");
 
+CAR_INTERFACE_IMPL_2(TwoFieldDatePickerDialog, Object, IAlertDialog, IDialogInterfaceOnClickListener);
+
 /**
  * @param context The context the dialog is to run in.
  * @param callBack How the parent is notified that the date is set.

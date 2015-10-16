@@ -19,8 +19,7 @@ namespace Input {
  * of an item belonging to a select popup dialog.
  */
 class SelectPopupItem
-    : public Object
-    , public DropdownItem
+    : public DropdownItem
 {
 public:
     SelectPopupItem(

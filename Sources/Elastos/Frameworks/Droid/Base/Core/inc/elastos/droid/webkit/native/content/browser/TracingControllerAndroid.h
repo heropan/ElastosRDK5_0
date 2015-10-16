@@ -7,6 +7,8 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "content/IntentFilter.h"
+#include "content/BroadcastReceiver.h"
 
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;
@@ -27,14 +29,15 @@
 // import java.util.TimeZone;
 
 using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IntentFilter;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Text::ITextUtils;
-using Elastos::Droid::Util::ILog;
 using Elastos::Droid::Widget::IToast;
-using Elastos::Io::IFile;
+using Elastos::IO::IFile;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Utility::IDate;
 using Elastos::Utility::ILocale;
@@ -67,20 +70,24 @@ class TracingControllerAndroid : public Object
 {
 public:
     class TracingBroadcastReceiver
-        : public Object
-        , public BroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
+        TracingBroadcastReceiver(
+          /* [in] */ TracingControllerAndroid* owner);
+
         // @Override
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
+
+    private:
+        TracingControllerAndroid* mOwner;
     };
 
 private:
     class TracingIntentFilter
-        : public Object
-        , public IntentFilter
+        : public IntentFilter
     {
     public:
         TracingIntentFilter(

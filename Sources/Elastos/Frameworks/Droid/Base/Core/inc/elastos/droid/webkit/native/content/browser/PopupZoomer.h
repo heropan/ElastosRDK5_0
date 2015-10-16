@@ -280,6 +280,7 @@ private:
     // How far to shift the canvas after all zooming is done, to keep it inside the bounds of the
     // view (including margin).
     Float mShiftX;
+    Float mShiftY;
     // The magnification factor of the popup. It is recomputed once we have mTargetBounds and
     // mZoomedBitmap.
     Float mScale;

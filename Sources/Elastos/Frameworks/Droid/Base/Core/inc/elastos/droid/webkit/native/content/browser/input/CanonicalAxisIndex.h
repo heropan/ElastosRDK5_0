@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CANONICALAXISINDEX_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CANONICALAXISINDEX_H__
 
+#include "ext/frameworkext.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

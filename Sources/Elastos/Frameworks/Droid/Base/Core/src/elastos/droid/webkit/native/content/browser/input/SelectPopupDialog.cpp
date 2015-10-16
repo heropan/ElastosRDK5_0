@@ -1,4 +1,23 @@
 
+#include "webkit/native/content/browser/input/SelectPopupDialog.h"
+#include "webkit/native/content/browser/input/SelectPopupAdapter.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+
+using Elastos::Droid::App::IAlertDialogBuilder;
+using Elastos::Droid::App::IDialog;
+using Elastos::Droid::App::EIID_IDialog;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::EIID_IDialogInterface;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+using Elastos::Droid::Widget::IAbsListView;
+using Elastos::Droid::Widget::EIID_IAbsListView;
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::Utility::ISparseBooleanArray;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,6 +28,8 @@ namespace Input {
 //==================================================================
 //      SelectPopupDialog::OkDialogInterfaceOnClickListener
 //==================================================================
+
+CAR_INTERFACE_IMPL(SelectPopupDialog::OkDialogInterfaceOnClickListener, Object, IDialogInterfaceOnClickListener);
 
 SelectPopupDialog::OkDialogInterfaceOnClickListener::OkDialogInterfaceOnClickListener(
     /* [in] */ SelectPopupDialog* owner,
@@ -30,6 +51,8 @@ ECode SelectPopupDialog::OkDialogInterfaceOnClickListener::OnClick(
 //     SelectPopupDialog::CancelDialogInterfaceOnClickListener
 //==================================================================
 
+CAR_INTERFACE_IMPL(SelectPopupDialog::CancelDialogInterfaceOnClickListener, Object, IDialogInterfaceOnClickListener);
+
 SelectPopupDialog::CancelDialogInterfaceOnClickListener::CancelDialogInterfaceOnClickListener(
     /* [in] */ SelectPopupDialog* owner)
     : mOwner(owner)
@@ -48,6 +71,8 @@ ECode SelectPopupDialog::CancelDialogInterfaceOnClickListener::OnClick(
 //     SelectPopupDialog::InnerAdapterViewOnItemClickListener
 //==================================================================
 
+CAR_INTERFACE_IMPL(SelectPopupDialog::InnerAdapterViewOnItemClickListener, Object, IAdapterViewOnItemClickListener);
+
 SelectPopupDialog::InnerAdapterViewOnItemClickListener::InnerAdapterViewOnItemClickListener(
     /* [in] */ SelectPopupDialog* owner,
     /* [in] */ IListView* listView)
@@ -63,13 +88,16 @@ ECode SelectPopupDialog::InnerAdapterViewOnItemClickListener::OnItemClick(
     /* [in] */ Int64 id)
 {
     mOwner->mContentViewCore->SelectPopupMenuItems(mOwner->GetSelectedIndices(mListView));
-    mOwner->mListBoxPopup->Dismiss();
+    AutoPtr<IDialogInterface> dialog = (IDialogInterface*)mOwner->mListBoxPopup->Probe(EIID_IDialogInterface);
+    dialog->Dismiss();
     return NOERROR;
 }
 
 //==================================================================
 //     SelectPopupDialog::InnerDialogInterfaceOnCancelListener
 //==================================================================
+
+CAR_INTERFACE_IMPL(SelectPopupDialog::InnerDialogInterfaceOnCancelListener, Object, IDialogInterfaceOnCancelListener);
 
 SelectPopupDialog::InnerDialogInterfaceOnCancelListener::InnerDialogInterfaceOnCancelListener(
     /* [in] */ SelectPopupDialog* owner)
@@ -91,8 +119,10 @@ ECode SelectPopupDialog::InnerDialogInterfaceOnCancelListener::OnCancel(
 static AutoPtr< ArrayOf<Int32> > SELECT_DIALOG_ATTRS_Init()
 {
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(2);
-    (*array)[0] = R::attr::select_dialog_multichoice;
-    (*array)[1] = R::attr::select_dialog_singlechoice;
+    assert(0);
+    // TODO
+    // (*array)[0] = R::attr::select_dialog_multichoice;
+    // (*array)[1] = R::attr::select_dialog_singlechoice;
     return array;
 }
 
@@ -100,52 +130,71 @@ const AutoPtr< ArrayOf<Int32> > SelectPopupDialog::SELECT_DIALOG_ATTRS = SELECT_
 
 SelectPopupDialog::SelectPopupDialog(
     /* [in] */ ContentViewCore* contentViewCore,
-    /* [in] */ List<SelectPopupItem> items,
+    /* [in] */ IList* items,
     /* [in] */ Boolean multiple,
     /* [in] */ ArrayOf<Int32>* selected)
     : mContentViewCore(contentViewCore)
     , mContext(mContentViewCore->GetContext())
 {
     AutoPtr<IListView> listView;
-    CListView::New(mContext, (IListView**)&listView);
-    listView->SetCacheColorHint(0);
+    assert(0);
+    // TODO
+    // CListView::New(mContext, (IListView**)&listView);
+    AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+    absListView->SetCacheColorHint(0);
     AutoPtr<IAlertDialogBuilder> b;
-    CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&b);
-    b->SetView(listView);
+    assert(0);
+    // TODO
+    // CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&b);
+    AutoPtr<IView> _view = (IView*)listView->Probe(EIID_IView);
+    b->SetView(_view);
     b->SetCancelable(TRUE);
     b->SetInverseBackgroundForced(TRUE);
 
     if (multiple) {
         AutoPtr<IDialogInterfaceOnClickListener> okListener =  new OkDialogInterfaceOnClickListener(this, listView);
-        b->SetPositiveButton(android::R::string::ok, okListener);
+        assert(0);
+        // TODO
+        // b->SetPositiveButton(android::R::string::ok, okListener);
         AutoPtr<IDialogInterfaceOnClickListener> cancelListener = new CancelDialogInterfaceOnClickListener(this);
-        b->SetNegativeButton(android::R::string::cancel, cancelListener);
+        assert(0);
+        // TODO
+        // b->SetNegativeButton(android::R::string::cancel, cancelListener);
     }
 
     b->Create((IAlertDialog**)&mListBoxPopup);
-    const AutoPtr<SelectPopupAdapter> adapter = new SelectPopupAdapter(
-            mContext, GetSelectDialogLayout(multiple), items);
-    listView->SetAdapter(adapter);
-    listView->SetFocusableInTouchMode(TRUE);
+    const AutoPtr<SelectPopupAdapter> adapter;// TODO = new SelectPopupAdapter(
+            // mContext, GetSelectDialogLayout(multiple), items);
+    assert(0);
+    // TODO
+    // listView->SetAdapter(adapter);
+    // listView->SetFocusableInTouchMode(TRUE);
 
     if (multiple) {
-        listView->SetChoiceMode(IListView::CHOICE_MODE_MULTIPLE);
+        AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+        absListView->SetChoiceMode(IAbsListView::CHOICE_MODE_MULTIPLE);
         for (Int32 i = 0; i < selected->GetLength(); ++i) {
-            listView->SetItemChecked((*selected)[i], TRUE);
+            absListView->SetItemChecked((*selected)[i], TRUE);
         }
     }
     else {
-        listView->SetChoiceMode(IListView::CHOICE_MODE_SINGLE);
+        AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+        absListView->SetChoiceMode(IAbsListView::CHOICE_MODE_SINGLE);
         AutoPtr<IAdapterViewOnItemClickListener> listener = new InnerAdapterViewOnItemClickListener(this, listView);
-        listView->SetOnItemClickListener(listener);
+        assert(0);
+        // TODO
+        // listView->SetOnItemClickListener(listener);
         if (selected->GetLength() > 0) {
-            listView->SetSelection((*selected)[0]);
-            listView->SetItemChecked((*selected)[0], TRUE);
+            assert(0);
+            // TODO
+            // listView->SetSelection((*selected)[0]);
+            // listView->SetItemChecked((*selected)[0], TRUE);
         }
     }
 
     AutoPtr<IDialogInterfaceOnCancelListener> listener = new InnerDialogInterfaceOnCancelListener(this);
-    mListBoxPopup->SetOnCancelListener(this);
+    AutoPtr<IDialog> _dialog = (IDialog*)mListBoxPopup->Probe(EIID_IDialog);
+    _dialog->SetOnCancelListener((IDialogInterfaceOnCancelListener*)this->Probe(EIID_IDialogInterfaceOnCancelListener));
 }
 
 Int32 SelectPopupDialog::GetSelectDialogLayout(
@@ -153,9 +202,11 @@ Int32 SelectPopupDialog::GetSelectDialogLayout(
 {
     Int32 resourceId;
     AutoPtr<ITypedArray> styledAttributes;
-    mContext->ObtainStyledAttributes(
-            R::style::SelectPopupDialog, SELECT_DIALOG_ATTRS,
-            (ITypedArray**)&styledAttributes);
+    assert(0);
+    // TODO
+    // mContext->ObtainStyledAttributes(
+    //         R::style::SelectPopupDialog, SELECT_DIALOG_ATTRS,
+    //         (ITypedArray**)&styledAttributes);
     styledAttributes->GetResourceId(isMultiChoice ? 0 : 1, 0, &resourceId);
     styledAttributes->Recycle();
 
@@ -166,23 +217,26 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
     /* [in] */ IListView* listView)
 {
     AutoPtr<ISparseBooleanArray> sparseArray;
-    listView->GetCheckedItemPositions((ISparseBooleanArray**)&sparseArray);
+    AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+    assert(0);
+    // TODO
+    // absListView->GetCheckedItemPositions((ISparseBooleanArray**)&sparseArray);
     Int32 selectedCount = 0;
     Int32 size;
-    sparseArray->Size(&size);
+    sparseArray->GetSize(&size);
     for (Int32 i = 0; i < size; ++i) {
         Boolean bFlag;
-        sparseArray->ValueAt(i, &bFlag);
+        sparseArray->ValueAt(&i, &bFlag);
         if (bFlag) {
             selectedCount++;
         }
     }
 
     AutoPtr< ArrayOf<Int32> > indices = ArrayOf<Int32>::Alloc(selectedCount);
-    sparseArray->Size(&size);
+    sparseArray->GetSize(&size);
     for (Int32 i = 0, j = 0; i < size; ++i) {
         Boolean bFlag;
-        sparseArray->ValueAt(i, &bFlag);
+        sparseArray->ValueAt(&i, &bFlag);
         if (bFlag) {
             Int32 value;
             sparseArray->KeyAt(i, &value);
@@ -196,13 +250,15 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
 //@Override
 void SelectPopupDialog::Show()
 {
-    mListBoxPopup->Show();
+    AutoPtr<IDialog> dialog = (IDialog*)mListBoxPopup->Probe(EIID_IDialog);
+    dialog->Show();
 }
 
 //@Override
 void SelectPopupDialog::Hide()
 {
-    mListBoxPopup->Cancel();
+    AutoPtr<IDialog> dialog = (IDialog*)mListBoxPopup->Probe(EIID_IDialog);
+    dialog->Cancel();
 }
 
 } // namespace Input

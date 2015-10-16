@@ -1,6 +1,17 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ResourceExtractor.h"
+#include "webkit/native/content/browser/ResourceExtractor.h"
+#include "webkit/native/ui/base/LocalizationUtils.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+//TODO #include "preference/CPreferenceManagerHelper.h"
+
+using Elastos::Core::StringUtils;
+using Elastos::IO::EIID_IFilenameFilter;
+//TODO using Elastos::Droid::Preference::CPreferenceManagerHelper;
+using Elastos::Droid::Preference::IPreferenceManagerHelper;
+using Elastos::Droid::Content::ISharedPreferences;
+using Elastos::Droid::Webkit::Ui::Base::LocalizationUtils;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,22 +22,23 @@ namespace Browser {
 //=====================================================================
 //                ResourceExtractor::InnerFilenameFilter
 //=====================================================================
+
 ResourceExtractor::InnerFilenameFilter::InnerFilenameFilter(
-    /* [in] */ ResourceExtractor* owner)
-    : mOwner(owner)
+    /* [in] */ const String& timestamp)
+    : TIMESTAMP_PREFIX(timestamp)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-Boolean ResourceExtractor::InnerFilenameFilter::Accept(
+CAR_INTERFACE_IMPL(ResourceExtractor::InnerFilenameFilter, Object, IFilenameFilter);
+
+ECode ResourceExtractor::InnerFilenameFilter::Accept(
     /* [in] */ IFile* dir,
-    /* [in] */ const String& name)
+    /* [in] */ const String& name,
+    /* [out] */ Boolean* result)
 {
-    // ==================before translated======================
-    // return name.startsWith(TIMESTAMP_PREFIX);
-    assert(0);
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = name.StartWith(TIMESTAMP_PREFIX);
+    return NOERROR;
 }
 
 //=====================================================================
@@ -34,32 +46,49 @@ Boolean ResourceExtractor::InnerFilenameFilter::Accept(
 //=====================================================================
 const Int32 ResourceExtractor::ExtractTask::BUFFER_SIZE;
 
-ResourceExtractor::ExtractTask::ExtractTask()
+ResourceExtractor::ExtractTask::ExtractTask(
+    /* [in] */ ResourceExtractor* owner)
+    : mOwner(owner)
 {
 }
 
-AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
-    /* [in] */  Void)
+ECode ResourceExtractor::ExtractTask::DoInBackground(
+    /* [in] */ ArrayOf<IInterface*>* params,
+    /* [out] */ IInterface** result)
 {
-    // ==================before translated======================
-    // final File outputDir = getOutputDir();
-    // if (!outputDir.exists() && !outputDir.mkdirs()) {
-    //     Log.e(LOGTAG, "Unable to create pak resources directory!");
-    //     return null;
-    // }
-    //
-    // String timestampFile = checkPakTimestamp(outputDir);
-    // if (timestampFile != null) {
-    //     deleteFiles();
-    // }
-    //
-    // SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IFile> outputDir = mOwner->GetOutputDir();
+    Boolean bExists, bMkdirs;
+    if (!(outputDir->Exists(&bExists), bExists) && !(outputDir->Mkdirs(&bMkdirs), bMkdirs)) {
+        Slogger::E(LOGTAG, "Unable to create pak resources directory!");
+        *result = NULL;
+        return NOERROR;
+    }
+
+    String timestampFile = CheckPakTimestamp(outputDir);
+    if (timestampFile != NULL) {
+        mOwner->DeleteFiles();
+    }
+
+    AutoPtr<IPreferenceManagerHelper> helper;
+    assert(0);
+    // TODO
+    // CPreferenceManagerHelper::AcquireSingleton((IPreferenceManagerHelper**)&helper);
+    AutoPtr<ISharedPreferences> prefs;
+    helper->GetDefaultSharedPreferences(mOwner->mContext, (ISharedPreferences**)&prefs);
+    assert(0);
+    // TODO
     // HashSet<String> filenames = (HashSet<String>) prefs.getStringSet(
     //         PAK_FILENAMES, new HashSet<String>());
-    // String currentLocale = LocalizationUtils.getDefaultLocale();
-    // String currentLanguage = currentLocale.split("-", 2)[0];
-    //
-    // if (prefs.getString(LAST_LANGUAGE, "").equals(currentLanguage)
+    String currentLocale = LocalizationUtils::GetDefaultLocale();
+    String currentLanguage;// TODO = currentLocale.Split("-", 2)[0];
+
+    assert(0);
+    // TODO
+    // String value;
+    // prefs->GetString(LAST_LANGUAGE, String(""), &value);
+    // if (value.Equals(currentLanguage)
     //         &&  filenames.size() >= sMandatoryPaks.length) {
     //     boolean filesPresent = true;
     //     for (String file : filenames) {
@@ -72,24 +101,24 @@ AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
     // } else {
     //     prefs.edit().putString(LAST_LANGUAGE, currentLanguage).apply();
     // }
-    //
+
     // StringBuilder p = new StringBuilder();
     // for (String mandatoryPak : sMandatoryPaks) {
     //     if (p.length() > 0) p.append('|');
     //     p.append("\\Q" + mandatoryPak + "\\E");
     // }
-    //
+
     // if (sExtractImplicitLocalePak) {
     //     if (p.length() > 0) p.append('|');
     //     // As well as the minimum required set of .paks above, we'll also add all .paks that
     //     // we have for the user's currently selected language.
-    //
+
     //     p.append(currentLanguage);
     //     p.append("(-\\w+)?\\.pak");
     // }
-    //
+
     // Pattern paksToInstall = Pattern.compile(p.toString());
-    //
+
     // AssetManager manager = mContext.getResources().getAssets();
     // try {
     //     // Loop through every asset file that we have in the APK, and look for the
@@ -106,7 +135,7 @@ AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
     //         if (output.exists()) {
     //             continue;
     //         }
-    //
+
     //         InputStream is = null;
     //         OutputStream os = null;
     //         try {
@@ -116,18 +145,18 @@ AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
     //             if (buffer == null) {
     //                 buffer = new byte[BUFFER_SIZE];
     //             }
-    //
+
     //             int count = 0;
     //             while ((count = is.read(buffer, 0, BUFFER_SIZE)) != -1) {
     //                 os.write(buffer, 0, count);
     //             }
     //             os.flush();
-    //
+
     //             // Ensure something reasonable was written.
     //             if (output.length() == 0) {
     //                 throw new IOException(file + " extracted with 0 length!");
     //             }
-    //
+
     //             if (!isICUData) {
     //                 filenames.add(file);
     //             } else {
@@ -155,9 +184,9 @@ AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
     //     deleteFiles();
     //     return null;
     // }
-    //
+
     // // Finished, write out a timestamp file if we need to.
-    //
+
     // if (timestampFile != null) {
     //     try {
     //         new File(outputDir, timestampFile).createNewFile();
@@ -170,112 +199,113 @@ AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
     // // TODO(yusufo): Figure out why remove is required here.
     // prefs.edit().remove(PAK_FILENAMES).apply();
     // prefs.edit().putStringSet(PAK_FILENAMES, filenames).apply();
-    // return null;
-    assert(0);
-    AutoPtr<Void> empty;
-    return empty;
+
+    *result = NULL;
+
+    return NOERROR;
 }
 
 String ResourceExtractor::ExtractTask::CheckPakTimestamp(
     /* [in] */ IFile* outputDir)
 {
-    // ==================before translated======================
-    // final String TIMESTAMP_PREFIX = "pak_timestamp-";
-    // PackageManager pm = mContext.getPackageManager();
-    // PackageInfo pi = null;
-    //
+    const String TIMESTAMP_PREFIX("pak_timestamp-");
+    AutoPtr<IPackageManager> pm;
+    mOwner->mContext->GetPackageManager((IPackageManager**)&pm);
+    AutoPtr<IPackageInfo> pi;
+
     // try {
-    //     pi = pm.getPackageInfo(mContext.getPackageName(), 0);
+        String packageName;
+        mOwner->mContext->GetPackageName(&packageName);
+        pm->GetPackageInfo(packageName, 0, (IPackageInfo**)&pi);
     // } catch (PackageManager.NameNotFoundException e) {
     //     return TIMESTAMP_PREFIX;
     // }
-    //
-    // if (pi == null) {
-    //     return TIMESTAMP_PREFIX;
-    // }
-    //
-    // String expectedTimestamp = TIMESTAMP_PREFIX + pi.versionCode + "-" + pi.lastUpdateTime;
-    //
-    // String[] timestamps = outputDir.list(new FilenameFilter() {
-    //     @Override
-    //     public boolean accept(File dir, String name) {
-    //         return name.startsWith(TIMESTAMP_PREFIX);
-    //     }
-    // });
-    //
-    // if (timestamps.length != 1) {
-    //     // If there's no timestamp, nuke to be safe as we can't tell the age of the files.
-    //     // If there's multiple timestamps, something's gone wrong so nuke.
-    //     return expectedTimestamp;
-    // }
-    //
-    // if (!expectedTimestamp.equals(timestamps[0])) {
-    //     return expectedTimestamp;
-    // }
-    //
-    // // timestamp file is already up-to date.
-    // return null;
-    assert(0);
-    return String("");
+
+    if (pi == NULL) {
+        return TIMESTAMP_PREFIX;
+    }
+
+    String expectedTimestamp(TIMESTAMP_PREFIX);
+    Int32 versionCode;
+    pi->GetVersionCode(&versionCode);
+    String versionCodeStr = StringUtils::ToString(versionCode);
+    Int64 lastUpdateTime;
+    pi->GetLastUpdateTime(&lastUpdateTime);
+    expectedTimestamp += StringUtils::ToString(versionCode);
+    expectedTimestamp += "-";
+    expectedTimestamp += StringUtils::ToString(lastUpdateTime);
+
+    AutoPtr<IFilenameFilter> filenameFilter = new InnerFilenameFilter(TIMESTAMP_PREFIX);
+    AutoPtr< ArrayOf<String> > timestamps;
+    outputDir->List(filenameFilter, (ArrayOf<String>**)&timestamps);
+
+    if (timestamps->GetLength() != 1) {
+        // If there's no timestamp, nuke to be safe as we can't tell the age of the files.
+        // If there's multiple timestamps, something's gone wrong so nuke.
+        return expectedTimestamp;
+    }
+
+    if (!expectedTimestamp.Equals((*timestamps)[0])) {
+        return expectedTimestamp;
+    }
+
+    // timestamp file is already up-to date.
+    return String(NULL);
 }
 
 //=====================================================================
 //                          ResourceExtractor
 //=====================================================================
+
 const String ResourceExtractor::LOGTAG("ResourceExtractor");
 const String ResourceExtractor::LAST_LANGUAGE("Last language");
 const String ResourceExtractor::PAK_FILENAMES("Pak filenames");
 const String ResourceExtractor::ICU_DATA_FILENAME("icudtl.dat");
 AutoPtr< ArrayOf<String> > ResourceExtractor::sMandatoryPaks = NULL;
-Boolean ResourceExtractor::sExtractImplicitLocalePak = true;
+Boolean ResourceExtractor::sExtractImplicitLocalePak = TRUE;
 AutoPtr<ResourceExtractor> ResourceExtractor::sInstance;
 
 AutoPtr<ResourceExtractor> ResourceExtractor::Get(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // if (sInstance == null) {
-    //     sInstance = new ResourceExtractor(context);
-    // }
-    // return sInstance;
-    assert(0);
-    AutoPtr<ResourceExtractor> empty;
-    return empty;
+    if (sInstance == NULL) {
+        sInstance = new ResourceExtractor(context);
+    }
+    return sInstance;
 }
 
 ECode ResourceExtractor::SetMandatoryPaksToExtract(
-    /* [in] */  String)
+    /* [in] */ ArrayOf<String>* mandatoryPaks)
 {
-    // ==================before translated======================
-    // assert (sInstance == null || sInstance.mExtractTask == null)
-    //         : "Must be called before startExtractingResources is called";
-    // sMandatoryPaks = mandatoryPaks;
-    assert(0);
+    assert (sInstance == NULL || sInstance->mExtractTask == NULL);
+    //        : "Must be called before startExtractingResources is called";
+    sMandatoryPaks = mandatoryPaks;
+
     return NOERROR;
 }
 
 ECode ResourceExtractor::SetExtractImplicitLocaleForTesting(
     /* [in] */ Boolean extract)
 {
-    // ==================before translated======================
-    // assert (sInstance == null || sInstance.mExtractTask == null)
-    //         : "Must be called before startExtractingResources is called";
-    // sExtractImplicitLocalePak = extract;
-    assert(0);
+    assert (sInstance == NULL || sInstance->mExtractTask == NULL);
+    //        : "Must be called before startExtractingResources is called";
+    sExtractImplicitLocalePak = extract;
+
     return NOERROR;
 }
 
 ECode ResourceExtractor::WaitForCompletion()
 {
-    // ==================before translated======================
-    // if (shouldSkipPakExtraction()) {
-    //     return;
-    // }
-    //
-    // assert mExtractTask != null;
-    //
+    if (ShouldSkipPakExtraction()) {
+        return NOERROR;
+    }
+
+    assert(mExtractTask != NULL);
+
     // try {
-    //     mExtractTask.get();
+        assert(0);
+        // TODO
+        // mExtractTask->Get();
     // } catch (CancellationException e) {
     //     // Don't leave the files in an inconsistent state.
     //     deleteFiles();
@@ -284,80 +314,97 @@ ECode ResourceExtractor::WaitForCompletion()
     // } catch (InterruptedException e3) {
     //     deleteFiles();
     // }
-    assert(0);
+
     return NOERROR;
 }
 
 ECode ResourceExtractor::StartExtractingResources()
 {
-    // ==================before translated======================
-    // if (mExtractTask != null) {
-    //     return;
-    // }
-    //
-    // if (shouldSkipPakExtraction()) {
-    //     return;
-    // }
-    //
-    // mExtractTask = new ExtractTask();
-    // mExtractTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    if (mExtractTask != NULL) {
+        return NOERROR;
+    }
+
+    if (ShouldSkipPakExtraction()) {
+        return NOERROR;
+    }
+
+    mExtractTask = new ExtractTask(this);
     assert(0);
+    // TODO
+    // mExtractTask->ExecuteOnExecutor(AsyncTask::THREAD_POOL_EXECUTOR);
+
     return NOERROR;
 }
 
 ResourceExtractor::ResourceExtractor(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // mContext = context.getApplicationContext();
+    context->GetApplicationContext((IContext**)&mContext);
 }
 
 AutoPtr<IFile> ResourceExtractor::GetAppDataDir()
 {
-    // ==================before translated======================
-    // return new File(PathUtils.getDataDirectory(mContext));
+    AutoPtr<IFile> file;
     assert(0);
-    AutoPtr<IFile> empty;
-    return empty;
+    // TODO
+    // CFile::New(PathUtils::GetDataDirectory(mContext), (IFile**)&file);
+    return file;
 }
 
 AutoPtr<IFile> ResourceExtractor::GetOutputDir()
 {
-    // ==================before translated======================
-    // return new File(getAppDataDir(), "paks");
+    AutoPtr<IFile> file;
     assert(0);
-    AutoPtr<IFile> empty;
-    return empty;
+    // TODO
+    // CFile::New(GetAppDataDir(), String("paks"), (IFile**)&file);
+    return file;
 }
 
 ECode ResourceExtractor::DeleteFiles()
 {
-    // ==================before translated======================
-    // File icudata = new File(getAppDataDir(), ICU_DATA_FILENAME);
-    // if (icudata.exists() && !icudata.delete()) {
-    //     Log.e(LOGTAG, "Unable to remove the icudata " + icudata.getName());
-    // }
-    // File dir = getOutputDir();
-    // if (dir.exists()) {
-    //     File[] files = dir.listFiles();
-    //     for (File file : files) {
-    //         if (!file.delete()) {
-    //             Log.e(LOGTAG, "Unable to remove existing resource " + file.getName());
-    //         }
-    //     }
-    // }
+    AutoPtr<IFile> icudata;
     assert(0);
+    // TODO
+    // CFile(GetAppDataDir(), ICU_DATA_FILENAME, (IFile**)&icudata);
+    Boolean bExists, bDelete;
+    if ((icudata->Exists(&bExists), bExists) && !(icudata->Delete(&bDelete), bDelete)) {
+        String log("Unable to remove the icudata ");
+        String name;
+        icudata->GetName(&name);
+        log += name;
+        Slogger::E(LOGTAG, name);
+    }
+
+    AutoPtr<IFile> dir = GetOutputDir();
+    Boolean dirExists;
+    dir->Exists(&dirExists);
+    if (dirExists) {
+        AutoPtr< ArrayOf<IFile*> > files;
+        dir->ListFiles((ArrayOf<IFile*>**)&files);
+
+        Int32 length = files->GetLength();
+        for (Int32 i = 0; i < length; i++) {
+            AutoPtr<IFile> file = (*files)[i];
+            Boolean bFlag;
+            file->Delete(&bFlag);
+            if (!bFlag) {
+                String log("Unable to remove existing resource ");
+                String name;
+                file->GetName(&name);
+                log += name;
+                Slogger::E(LOGTAG, log);
+            }
+        }
+    }
+
     return NOERROR;
 }
 
 Boolean ResourceExtractor::ShouldSkipPakExtraction()
 {
-    // ==================before translated======================
-    // // Must call setMandatoryPaksToExtract before beginning resource extraction.
-    // assert sMandatoryPaks != null;
-    // return sMandatoryPaks.length == 1 && "".equals(sMandatoryPaks[0]);
-    assert(0);
-    return FALSE;
+    // Must call setMandatoryPaksToExtract before beginning resource extraction.
+    assert(sMandatoryPaks != NULL);
+    return sMandatoryPaks->GetLength() == 1 && String("").Equals((*sMandatoryPaks)[0]);
 }
 
 } // namespace Browser
@@ -365,5 +412,3 @@ Boolean ResourceExtractor::ShouldSkipPakExtraction()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

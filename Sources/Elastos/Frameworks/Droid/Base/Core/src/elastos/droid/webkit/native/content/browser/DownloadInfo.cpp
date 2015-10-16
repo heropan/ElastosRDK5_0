@@ -12,56 +12,56 @@ namespace Browser {
 //                        DownloadInfo::Builder
 //=====================================================================
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetUrl(
-    /* [in] */ String url)
+    /* [in] */ const String& url)
 {
     mUrl = url;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetUserAgent(
-    /* [in] */ String userAgent)
+    /* [in] */ const String& userAgent)
 {
     mUserAgent = userAgent;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetMimeType(
-    /* [in] */ String mimeType)
+    /* [in] */ const String& mimeType)
 {
     mMimeType = mimeType;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetCookie(
-    /* [in] */ String cookie)
+    /* [in] */ const String& cookie)
 {
     mCookie = cookie;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetFileName(
-    /* [in] */ String fileName)
+    /* [in] */ const String& fileName)
 {
     mFileName = fileName;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetDescription(
-    /* [in] */ String description)
+    /* [in] */ const String& description)
 {
     mDescription = description;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetFilePath(
-    /* [in] */ String filePath)
+    /* [in] */ const String& filePath)
 {
     mFilePath = filePath;
     return this;
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetReferer(
-    /* [in] */ String referer)
+    /* [in] */ const String& referer)
 {
     mReferer = referer;
     return this;
@@ -103,7 +103,7 @@ AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetIsSuccessful(
 }
 
 AutoPtr<DownloadInfo::Builder> DownloadInfo::Builder::SetContentDisposition(
-    /* [in] */ String contentDisposition)
+    /* [in] */ const String& contentDisposition)
 {
     mContentDisposition = contentDisposition;
     return this;

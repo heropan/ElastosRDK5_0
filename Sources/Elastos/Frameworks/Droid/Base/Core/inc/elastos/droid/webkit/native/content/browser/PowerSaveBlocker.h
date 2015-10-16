@@ -8,6 +8,22 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Ui {
+namespace Base {
+
+class ViewAndroid;
+
+} // namespace Base
+} // namespace Ui
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+using Elastos::Droid::Webkit::Ui::Base::ViewAndroid;
+
 // package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.ui.base.ViewAndroid;

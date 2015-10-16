@@ -4,12 +4,14 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
+#include <elrefbase.h>
 
-using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IMotionRange;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
+
+using Elastos::ElRefBase;
 
 // import java.util.Arrays;
 // import java.util.List;
@@ -24,7 +26,7 @@ namespace Input {
 /**
  * Manages information related to each connected gamepad device.
  */
-class GamepadDevice
+class GamepadDevice : public ElRefBase
 {
 public:
     GamepadDevice(

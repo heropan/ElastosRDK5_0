@@ -1,4 +1,8 @@
 
+#include "webkit/native/content/browser/input/GamepadMappings.h"
+#include "webkit/native/content/browser/input/CanonicalAxisIndex.h"
+#include "webkit/native/content/browser/input/CanonicalButtonIndex.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -18,7 +22,7 @@ Boolean GamepadMappings::MapToStandardGamepad(
     /* [in] */ ArrayOf<Float>*rawButtons,
     /* [in] */ const String& deviceName)
 {
-    if (deviceName.StartsWith(NVIDIA_SHIELD_DEVICE_NAME_PREFIX)) {
+    if (deviceName.StartWith(NVIDIA_SHIELD_DEVICE_NAME_PREFIX)) {
         MapShieldGamepad(mappedButtons, rawButtons, mappedAxes, rawAxes);
         return TRUE;
     }

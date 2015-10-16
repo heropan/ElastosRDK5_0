@@ -2,12 +2,14 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKER_H__
 
-// import android.content.Context;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.content.R;
 
-// import java.util.Calendar;
-// import java.util.TimeZone;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::ITimeZone;
 
 namespace Elastos {
 namespace Droid {
@@ -64,7 +66,7 @@ protected:
         /* [in] */ Double value);
 
     //@Override
-    CARAPI_(void) SetCurrentDate(
+    CARAPI SetCurrentDate(
         /* [in] */ Int32 year,
         /* [in] */ Int32 week);
 

@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADMAPPINGS_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADMAPPINGS_H__
 
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
 
 // import org.chromium.base.JNINamespace;
 

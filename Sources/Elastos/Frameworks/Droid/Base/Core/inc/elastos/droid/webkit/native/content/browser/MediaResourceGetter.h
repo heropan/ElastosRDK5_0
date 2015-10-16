@@ -169,7 +169,7 @@ public:
 
     // @VisibleForTesting
     virtual CARAPI Configure(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ IMap* headers);
 
     // @VisibleForTesting

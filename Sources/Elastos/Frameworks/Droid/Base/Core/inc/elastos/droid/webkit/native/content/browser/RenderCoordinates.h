@@ -31,6 +31,7 @@ public:
       */
     class NormalizedPoint : public Object
     {
+        friend class RenderCoordinates;
     public:
         /**
           * @return Absolute CSS (document) X coordinate of the point.
@@ -84,9 +85,11 @@ public:
             /* [in] */ Float yPix);
 
     private:
-        NormalizedPoint();
+        NormalizedPoint(
+          /* [in] */ RenderCoordinates* owner);
 
     private:
+        RenderCoordinates* mOwner;
         Float mXAbsoluteCss;
         Float mYAbsoluteCss;
     };

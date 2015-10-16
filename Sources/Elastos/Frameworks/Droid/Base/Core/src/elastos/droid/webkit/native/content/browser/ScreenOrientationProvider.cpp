@@ -1,6 +1,11 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ScreenOrientationProvider.h"
+#include "webkit/native/content/browser/ScreenOrientationProvider.h"
+#include "webkit/native/base/ApplicationStatus.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::Webkit::Base::ApplicationStatus;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -13,77 +18,68 @@ namespace Browser {
 //=====================================================================
 const String ScreenOrientationProvider::TAG("ScreenOrientationProvider");
 
+ScreenOrientationProvider::ScreenOrientationProvider()
+{
+}
+
 AutoPtr<ScreenOrientationProvider> ScreenOrientationProvider::Create()
 {
-    // ==================before translated======================
-    // return new ScreenOrientationProvider();
-    assert(0);
-    AutoPtr<ScreenOrientationProvider> empty;
-    return empty;
+    return new ScreenOrientationProvider();
 }
 
 ECode ScreenOrientationProvider::LockOrientation(
     /* [in] */ Byte orientations)
 {
-    // ==================before translated======================
-    // Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-    // if (activity == null) {
-    //     return;
-    // }
-    //
-    // int orientation = getOrientationFromWebScreenOrientations(orientations);
-    // if (orientation == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
-    //     return;
-    // }
-    //
-    // activity.setRequestedOrientation(orientation);
-    assert(0);
-    return NOERROR;
+    AutoPtr<IActivity> activity = ApplicationStatus::GetLastTrackedFocusedActivity();
+    if (activity == NULL) {
+        return NOERROR;
+    }
+
+    Int32 orientation = GetOrientationFromWebScreenOrientations(orientations);
+    if (orientation == IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED) {
+        return NOERROR;
+    }
+
+    return activity->SetRequestedOrientation(orientation);
 }
 
 ECode ScreenOrientationProvider::UnlockOrientation()
 {
-    // ==================before translated======================
-    // Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-    // if (activity == null) {
-    //     return;
-    // }
-    //
-    // activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    assert(0);
-    return NOERROR;
-}
+    AutoPtr<IActivity> activity = ApplicationStatus::GetLastTrackedFocusedActivity();
+    if (activity == NULL) {
+        return NOERROR;
+    }
 
-ScreenOrientationProvider::ScreenOrientationProvider()
-{
+    return activity->SetRequestedOrientation(IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED);
 }
 
 Int32 ScreenOrientationProvider::GetOrientationFromWebScreenOrientations(
     /* [in] */ Byte orientations)
 {
-    // ==================before translated======================
-    // switch (orientations) {
-    //     case ScreenOrientationValues.DEFAULT:
-    //         return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-    //     case ScreenOrientationValues.PORTRAIT_PRIMARY:
-    //         return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    //     case ScreenOrientationValues.PORTRAIT_SECONDARY:
-    //         return ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-    //     case ScreenOrientationValues.LANDSCAPE_PRIMARY:
-    //         return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-    //     case ScreenOrientationValues.LANDSCAPE_SECONDARY:
-    //         return ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-    //     case ScreenOrientationValues.PORTRAIT:
-    //         return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-    //     case ScreenOrientationValues.LANDSCAPE:
-    //         return ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-    //     case ScreenOrientationValues.ANY:
-    //         return ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
-    //     default:
-    //         Log.w(TAG, "Trying to lock to unsupported orientation!");
-    //         return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-    // }
-    assert(0);
+    switch (orientations) {
+        assert(0);
+        // TODO
+        // case ScreenOrientationValues::DEFAULT:
+        //     return IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED;
+        // case ScreenOrientationValues::PORTRAIT_PRIMARY:
+        //     return IActivityInfo::SCREEN_ORIENTATION_PORTRAIT;
+        // case ScreenOrientationValues::PORTRAIT_SECONDARY:
+        //     return IActivityInfo::SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        // case ScreenOrientationValues::LANDSCAPE_PRIMARY:
+        //     return IActivityInfo::SCREEN_ORIENTATION_LANDSCAPE;
+        // case ScreenOrientationValues::LANDSCAPE_SECONDARY:
+        //     return IActivityInfo::SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        // case ScreenOrientationValues::PORTRAIT:
+        //     return IActivityInfo::SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+        // case ScreenOrientationValues::LANDSCAPE:
+        //     return IActivityInfo::SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+        // case ScreenOrientationValues::ANY:
+        //     return IActivityInfo::SCREEN_ORIENTATION_FULL_SENSOR;
+        // default:
+        //     Slogger::W(TAG, "Trying to lock to unsupported orientation!");
+        //     return IActivityInfo::SCREEN_ORIENTATION_UNSPECIFIED;
+    }
+
     return 0;
 }
 
@@ -92,5 +88,3 @@ Int32 ScreenOrientationProvider::GetOrientationFromWebScreenOrientations(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

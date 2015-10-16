@@ -1,4 +1,11 @@
 
+#include "webkit/native/content/browser/input/DateDialogNormalizer.h"
+// TODO #include <elastos/utility/TimeZone.h>
+
+// TODO using Elastos::Utility::CCalendarHelper;
+using Elastos::Utility::ICalendarHelper;
+// TODO using Elastos::Utility::TimeZone;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -37,9 +44,9 @@ void DateDialogNormalizer::SetLimits(
     minCal->GetTimeInMillis(&timeInMillis);
     picker->SetMinDate(timeInMillis);
     Int32 _year, _month, _dayOfMonth;
-    minCal->Get(ICalendar::YEAR, _year);
+    minCal->Get(ICalendar::YEAR, &_year);
     minCal->Get(ICalendar::MONTH, &_month);
-    minCal->Get(ICalendar::DAY_OF_MONTH, _dayOfMonth);
+    minCal->Get(ICalendar::DAY_OF_MONTH, &_dayOfMonth);
     picker->UpdateDate(_year,
             _month,
             _dayOfMonth);
@@ -56,13 +63,19 @@ AutoPtr<ICalendar> DateDialogNormalizer::TrimToDate(
     /* [in] */ Int64 time)
 {
     AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> cal;
-    helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&cal);
+    assert(0);
+    // TODO
+    // helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&cal);
     cal->Clear();
     cal->SetTimeInMillis(time);
     AutoPtr<ICalendar> result;
-    helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&result);
+    assert(0);
+    // TODO
+    // helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&result);
     result->Clear();
     Int32 year, month, dayOfMonth;
     cal->Get(ICalendar::YEAR, &year);
@@ -79,7 +92,7 @@ AutoPtr<ICalendar> DateDialogNormalizer::TrimToDate(
  */
 void DateDialogNormalizer::Normalize(
     /* [in] */ IDatePicker* picker,
-    /* [in] */ IOnDateChangedListener* listener,
+    /* [in] */ IDatePickerOnDateChangedListener* listener,
     /* [in] */ Int32 year,
     /* [in] */ Int32 month,
     /* [in] */ Int32 day,
@@ -89,9 +102,13 @@ void DateDialogNormalizer::Normalize(
     /* [in] */ Int64 maxMillis)
 {
     AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> calendar;
-    helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&calendar);
+    assert(0);
+    // TODO
+    // helper->GetInstance(TimeZone::GetTimeZone(String("GMT")), (ICalendar**)&calendar);
     calendar->Clear();
     calendar->Set(year, month, day, hour, minute, 0);
     Int64 timeInMillis;
@@ -105,13 +122,13 @@ void DateDialogNormalizer::Normalize(
         calendar->SetTimeInMillis(maxMillis);
     }
 
-    Int32 year, month, dayOfMonth;
-    calendar->Get(ICalendar::YEAR, &year);
-    calendar->Get(ICalendar::MONTH, &month);
-    calendar->Get(ICalendar::DAY_OF_MONTH, &dayOfMonth);
+    Int32 _year, _month, _dayOfMonth;
+    calendar->Get(ICalendar::YEAR, &_year);
+    calendar->Get(ICalendar::MONTH, &_month);
+    calendar->Get(ICalendar::DAY_OF_MONTH, &_dayOfMonth);
     picker->Init(
-            year, month,
-            dayOfMonth, listener);
+            _year, _month,
+            _dayOfMonth, listener);
 
     SetLimits(picker, minMillis, maxMillis);
 }

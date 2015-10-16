@@ -1,4 +1,16 @@
 
+#include "webkit/native/content/browser/input/MonthPicker.h"
+#include <elastos/core/Math.h>
+
+using Elastos::Text::IDateFormatSymbols;
+using Elastos::Text::IDateFormatSymbolsHelper;
+using Elastos::Utility::ITimeZoneHelper;
+// TODO using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,27 +24,41 @@ MonthPicker::MonthPicker(
     /* [in] */ IContext* context,
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
-    : TwoFieldDatePicker(context, minValue, maxValue);
+    : TwoFieldDatePicker(context, minValue, maxValue)
 {
-    GetPositionInYearSpinner()->SetContentDescription(
-            GetResources()->GetString(R::string::accessibility_date_picker_month));
+    assert(0);
+    // TODO
+    // GetPositionInYearSpinner()->SetContentDescription(
+    //         GetResources()->GetString(R::string::accessibility_date_picker_month));
 
     // initialization based on locale
     AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+    assert(0);
+    // TODO
+    // CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> locale;
     localeHelper->GetDefault((ILocale**)&locale);
     AutoPtr<IDateFormatSymbolsHelper> dfsHelper;
-    CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsHelper);
+    assert(0);
+    // TODO
+    // CDateFormatSymbolsHelper::AcquireSingleton((IDateFormatSymbolsHelper**)&dfsHelper);
     AutoPtr<IDateFormatSymbols> symbols;
     dfsHelper->GetInstance(locale, (IDateFormatSymbols**)&symbols);
     symbols->GetShortMonths((ArrayOf<String>**)&mShortMonths);
 
     // initialize to current date
     AutoPtr<ICalendarHelper> calendarHelper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> cal;
-    calendarHelper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&cal);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZone;
+    timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZone);
+    calendarHelper->GetInstance(timeZone, (ICalendar**)&cal);
     Int32 year, month;
     cal->Get(ICalendar::YEAR, &year);
     cal->Get(ICalendar::MONTH, &month);
@@ -45,12 +71,20 @@ MonthPicker::MonthPicker(
 AutoPtr<ICalendar> MonthPicker::CreateDateFromValue(
     /* [in] */ Double value)
 {
-    Int32 year = (Int32) Math::Min(value / 12 + 1970, Integer.MAX_VALUE);
-    Int32 month = (Int32) (value % 12);
+    Int32 year = (Int32) Elastos::Core::Math::Min((Int32)(value / 12 + 1970), Elastos::Core::Math::INT32_MIN_VALUE);
+    Int32 month = (Int32) ((Int32)value % 12);
     AutoPtr<ICalendarHelper> calendarHelper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> cal;
-    calendarHelper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&cal);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZone;
+    timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZone);
+    calendarHelper->GetInstance(timeZone, (ICalendar**)&cal);
     cal->Clear();
     cal->Set(year, month, 1);
     return cal;
@@ -64,25 +98,40 @@ AutoPtr<ICalendar> MonthPicker::GetDateForValue(
 }
 
 //@Override
-void MonthPicker::SetCurrentDate(
+ECode MonthPicker::SetCurrentDate(
     /* [in] */ Int32 year,
     /* [in] */ Int32 month)
 {
     AutoPtr<ICalendarHelper> calendarHelper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&calendarHelper);
     AutoPtr<ICalendar> date;
-    calendarHelper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&date);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZone;
+    calendarHelper->GetInstance(timeZone, (ICalendar**)&date);
     date->Set(year, month, 1);
     Boolean bFlag;
-    if (date->Before(GetMinDate(), &bFlag), bFlag) {
-        SetCurrentDate(GetMinDate());
+    if (date->IsBefore(GetMinDate(), &bFlag), bFlag) {
+        assert(0);
+        // TODO
+        // SetCurrentDate(GetMinDate());
     }
-    else if (date->After(GetMaxDate(), &bFlag), bFlag) {
-        SetCurrentDate(GetMaxDate());
+    else if (date->IsAfter(GetMaxDate(), &bFlag), bFlag) {
+        assert(0);
+        // TODO
+        // SetCurrentDate(GetMaxDate());
     }
     else {
-        SetCurrentDate(date);
+        assert(0);
+        // TODO
+        // SetCurrentDate(date);
     }
+
+    return NOERROR;
 }
 
 //@Override
@@ -93,10 +142,12 @@ void MonthPicker::UpdateSpinners()
     // make sure the month names are a zero based array
     // with the months in the month spinner
     AutoPtr< ArrayOf<String> > displayedValues;
-    Arrays<String>::CopyOfRange(mShortMonths,
-            GetPositionInYearSpinner()->GetMinValue(),
-            GetPositionInYearSpinner()->GetMaxValue() + 1,
-            (ArrayOf<String>**)&displayedValues);
+    assert(0);
+    // TODO
+    // Arrays<String>::CopyOfRange(mShortMonths,
+    //         GetPositionInYearSpinner()->GetMinValue(),
+    //         GetPositionInYearSpinner()->GetMaxValue() + 1,
+    //         (ArrayOf<String>**)&displayedValues);
     GetPositionInYearSpinner()->SetDisplayedValues(displayedValues);
 }
 
@@ -136,7 +187,7 @@ Int32 MonthPicker::GetMaxPositionInYear(
     /* [in] */ Int32 year)
 {
     Int32 cYear;
-    GetMaxDate()->Get(ICalendar::YEAR, cYear);
+    GetMaxDate()->Get(ICalendar::YEAR, &cYear);
     if (year == cYear) {
         Int32 month;
         GetMaxDate()->Get(ICalendar::MONTH, &month);

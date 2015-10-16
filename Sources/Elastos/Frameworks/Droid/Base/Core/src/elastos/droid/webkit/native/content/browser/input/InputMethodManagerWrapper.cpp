@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/input/InputMethodManagerWrapper.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -36,7 +38,8 @@ void InputMethodManagerWrapper::ShowSoftInput(
     /* [in] */ Int32 flags,
     /* [in] */ IResultReceiver* resultReceiver)
 {
-    GetInputMethodManager()->ShowSoftInput(view, flags, resultReceiver);
+    Boolean result = FALSE;
+    GetInputMethodManager()->ShowSoftInput(view, flags, resultReceiver, &result);
 }
 
 /**

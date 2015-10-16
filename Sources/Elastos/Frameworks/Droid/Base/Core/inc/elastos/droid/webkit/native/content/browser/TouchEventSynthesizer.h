@@ -53,8 +53,8 @@ private:
     static const Int32 ACTION_CANCEL = 2;
     static const Int32 ACTION_END = 3;
     /*const*/ AutoPtr<ContentViewCore> mContentViewCore;
-    /*const*/ AutoPtr< ArrayOf<IPointerProperties> > mPointerProperties;
-    /*const*/ AutoPtr< ArrayOf<IPointerCoords> > mPointerCoords;
+    /*const*/ AutoPtr< ArrayOf<IPointerProperties*> > mPointerProperties;
+    /*const*/ AutoPtr< ArrayOf<IPointerCoords*> > mPointerCoords;
     Int64 mDownTimeInMs;
 };
 

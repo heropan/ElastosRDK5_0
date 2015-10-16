@@ -1,6 +1,8 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "VibrationProvider.h"
+#include "webkit/native/content/browser/VibrationProvider.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -16,43 +18,39 @@ const String VibrationProvider::TAG("VibrationProvider");
 VibrationProvider::VibrationProvider(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-    // mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+    context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&mAudioManager);
+    context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&mVibrator);
+    assert(0);
+    // TODO
     // mHasVibratePermission = context.checkCallingOrSelfPermission(
     //         android.Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED;
-    // if (!mHasVibratePermission) {
-    //     Log.w(TAG, "Failed to use vibrate API, requires VIBRATE permission.");
-    // }
+    if (!mHasVibratePermission) {
+        Slogger::W(TAG, "Failed to use vibrate API, requires VIBRATE permission.");
+    }
 }
 
 AutoPtr<VibrationProvider> VibrationProvider::Create(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // return new VibrationProvider(context);
-    assert(0);
-    AutoPtr<VibrationProvider> empty;
-    return empty;
+    return new VibrationProvider(context);
 }
 
 ECode VibrationProvider::Vibrate(
     /* [in] */ Int64 milliseconds)
 {
-    // ==================before translated======================
-    // if (mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_SILENT &&
-    //         mHasVibratePermission) {
-    //     mVibrator.vibrate(milliseconds);
-    // }
-    assert(0);
+    Int32 mode;
+    mAudioManager->GetRingerMode(&mode);
+    if (mode != IAudioManager::RINGER_MODE_SILENT &&
+            mHasVibratePermission) {
+        mVibrator->Vibrate(milliseconds);
+    }
+
     return NOERROR;
 }
 
 ECode VibrationProvider::CancelVibration()
 {
-    // ==================before translated======================
-    // if (mHasVibratePermission) mVibrator.cancel();
-    assert(0);
+    if (mHasVibratePermission) mVibrator->Cancel();
     return NOERROR;
 }
 
@@ -61,5 +59,3 @@ ECode VibrationProvider::CancelVibration()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

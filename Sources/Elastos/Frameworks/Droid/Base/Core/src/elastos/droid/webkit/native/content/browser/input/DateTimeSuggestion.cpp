@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/input/DateTimeSuggestion.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -44,16 +46,21 @@ ECode DateTimeSuggestion::Equals(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (object.Probe(EIID_DateTimeSuggestion) == NULL) {
-        return FALSE;
-    }
+    assert(0);
+    // TODO
+    // if (object.Probe(EIID_DateTimeSuggestion) == NULL) {
+    //     *result = FALSE;
+    //     return NOERROR;
+    // }
 
-    const AutoPtr<DateTimeSuggestion> other = (DateTimeSuggestion*)object.Probe(EIID_DateTimeSuggestion);
-    *result = mValue == other->mValue &&
-           mLocalizedValue == other->mLocalizedValue &&
-           mLabel == other->mLabel;
+    assert(0);
+    // TODO
+    // const AutoPtr<DateTimeSuggestion> other = (DateTimeSuggestion*)object.Probe(EIID_DateTimeSuggestion);
+    // *result = mValue == other->mValue &&
+    //        mLocalizedValue == other->mLocalizedValue &&
+    //        mLabel == other->mLabel;
 
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 //@Override
@@ -61,13 +68,11 @@ ECode DateTimeSuggestion::HashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode);
-    int hash = 31;
+    Int32 hash = 31;
     hash = 37 * hash + (Int32) mValue;
-    Int32 hash1;
-    mLocalizedValue.HashCode(&hash1);
+    Int32 hash1 = mLocalizedValue.GetHashCode();
     hash = 37 * hash + hash1;
-    Int32 hash2;
-    mLabel.HashCode(&hash2);
+    Int32 hash2 = mLabel.GetHashCode();
     hash = 37 * hash + hash2;
     *hashCode = hash;
 

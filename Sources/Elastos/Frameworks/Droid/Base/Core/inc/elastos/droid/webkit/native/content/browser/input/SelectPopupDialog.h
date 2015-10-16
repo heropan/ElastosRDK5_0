@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDIALOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/input/SelectPopup.h"
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;
@@ -28,6 +29,9 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+
 namespace Input {
 
 /**
@@ -42,6 +46,8 @@ private:
         , public IDialogInterfaceOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         OkDialogInterfaceOnClickListener(
             /* [in] */ SelectPopupDialog* owner,
             /* [in] */ IListView* listView);
@@ -60,6 +66,8 @@ private:
         , public IDialogInterfaceOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         CancelDialogInterfaceOnClickListener(
             /* [in] */ SelectPopupDialog* owner);
 
@@ -76,6 +84,8 @@ private:
         , public IAdapterViewOnItemClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerAdapterViewOnItemClickListener(
             /* [in] */ SelectPopupDialog* owner,
             /* [in] */ IListView* listView);
@@ -96,6 +106,8 @@ private:
         , public IDialogInterfaceOnCancelListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerDialogInterfaceOnCancelListener(
             /* [in] */ SelectPopupDialog* owner);
 
@@ -132,8 +144,8 @@ private:
     // The dialog hosting the popup list view.
     AutoPtr<IAlertDialog> mListBoxPopup;
 
-    const AutoPtr<ContentViewCore> mContentViewCore;
-    const AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<ContentViewCore> mContentViewCore;
+    /*const*/ AutoPtr<IContext> mContext;
 };
 
 } // namespace Input

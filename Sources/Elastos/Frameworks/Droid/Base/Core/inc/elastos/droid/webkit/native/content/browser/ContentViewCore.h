@@ -638,6 +638,8 @@ public:
     ContentViewCore(
         /* [in] */ IContext* context);
 
+    CAR_INTERFACE_DECL()
+
     /**
      * @return The context used for creating this ContentViewCore.
      */

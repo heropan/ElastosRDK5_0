@@ -187,12 +187,12 @@ private:
     Float mHotspotX;
     Float mHotspotY;
 
-    const AutoPtr<CursorController> mController;
+    /*const*/ AutoPtr<CursorController> mController;
     Boolean mIsDragging;
     Float mTouchToWindowOffsetX;
     Float mTouchToWindowOffsetY;
 
-    const Int32 mLineOffsetY;
+    /*const*/ Int32 mLineOffsetY;
     Float mDownPositionX, mDownPositionY;
     Int64 mTouchTimer;
     Boolean mIsInsertionHandle;
@@ -204,8 +204,8 @@ private:
 
     const AutoPtr<IRect> mTempRect;
 
-    const AutoPtr<PositionObserver> mParentPositionObserver;
-    const AutoPtr<PositionObserver::Listener> mParentPositionListener;
+    /*const*/ AutoPtr<PositionObserver> mParentPositionObserver;
+    /*const*/ AutoPtr<PositionObserver::Listener> mParentPositionListener;
 
     // Number of dips to subtract from the handle's y position to give a suitable
     // y coordinate for the corresponding text position. This is to compensate for the fact

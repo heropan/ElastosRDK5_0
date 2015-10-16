@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMESUGGESTION_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMESUGGESTION_H__
 
+#include "ext/frameworkext.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,7 +15,7 @@ namespace Input {
  * Date/time suggestion container used to store information for each suggestion that will be shown
  * in the suggestion list dialog. Keep in sync with date_time_suggestion.h.
  */
-class DateTimeSuggestion
+class DateTimeSuggestion : public Object
 {
 public:
     /**
@@ -43,7 +45,7 @@ public:
         /* [out] */ Int32* code);
 
 private:
-    const Double mValue;
+    /*const*/ Double mValue;
     const String mLocalizedValue;
     const String mLabel;
 };
