@@ -116,9 +116,10 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/drm/mobile1
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/audiofx
-> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/videoeditor
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/audiopolicy
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media/browse
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/media
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/mtp
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/mtp
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable
@@ -143,7 +144,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/impl
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/animation
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/bluetooth
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/preference
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/preference
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/location
 #< Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech/srec
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech/tts
@@ -165,6 +166,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accounts
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/telephony
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/statusbar
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service/media
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service/wallpaper
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/service
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/systemui/statusbar/policy
