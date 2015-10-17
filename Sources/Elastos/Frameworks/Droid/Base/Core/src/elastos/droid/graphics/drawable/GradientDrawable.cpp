@@ -5,6 +5,7 @@
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CDashPathEffect.h"
 #include "elastos/droid/graphics/CLinearGradient.h"
 #include "elastos/droid/graphics/CRadialGradient.h"
