@@ -1,13 +1,15 @@
 
 #include "elastos/droid/view/FocusFinder.h"
-#include "elastos/droid/view/View.h"
-#include "elastos/droid/view/ViewGroup.h"
-#include "elastos/droid/view/CViewConfiguration.h"
+// #include "elastos/droid/view/View.h"
+// #include "elastos/droid/view/ViewGroup.h"
+// #include "elastos/droid/view/CViewConfiguration.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
-
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
 namespace Droid {
@@ -30,6 +32,8 @@ static Boolean InitsKeyInstance()
 pthread_key_t FocusFinder::sKeyFocusFinder;
 Boolean FocusFinder::sKeyFocusFinderInitialized = InitsKeyInstance();
 
+CAR_INTERFACE_IMPL(FocusFinder::SequentialFocusComparator, Object, IComparator)
+
 FocusFinder::SequentialFocusComparator::SequentialFocusComparator()
 {
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mFirstRect));
@@ -47,47 +51,62 @@ void FocusFinder::SequentialFocusComparator::SetRoot(
     mRoot = root;
 }
 
-Int32 FocusFinder::SequentialFocusComparator::Compare(
-    /* [in] */ IView* first,
-    /* [in] */ IView* second)
+ECode FocusFinder::SequentialFocusComparator::SetIsLayoutRtl(
+    /* [in] */ Boolean b)
 {
-    if (first == second) {
+    mIsLayoutRtl = b;
+    return NOERROR;
+}
+
+ECode FocusFinder::SequentialFocusComparator::Compare(
+    /* [in] */ IInterface* fir,
+    /* [in] */ IInterface* sec,
+    /* [out] */ Int32* rst)
+{
+    if (fir == sec) {
         return 0;
     }
+    AutoPtr<IView> first = IView::Probe(fir);
+    AutoPtr<IView> second = IView::Probe(sec);
 
+    if(first == NULL || second == NULL) {
+        *rst = -1;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     GetRect(first, mFirstRect.Get());
     GetRect(second, mSecondRect.Get());
 
     if (mFirstRect->mTop < mSecondRect->mTop) {
-        return -1;
+        *rst = -1;
     }
     else if (mFirstRect->mTop > mSecondRect->mTop) {
-        return 1;
+        *rst = 1;
     }
     else if (mFirstRect->mLeft < mSecondRect->mLeft) {
-        return -1;
+        *rst = mIsLayoutRtl ? 1 : -1;
     }
     else if (mFirstRect->mLeft > mSecondRect->mLeft) {
-        return 1;
+        *rst = mIsLayoutRtl ? -1 : 1;
     }
     else if (mFirstRect->mBottom < mSecondRect->mBottom) {
-        return -1;
+        *rst = -1;
     }
     else if (mFirstRect->mBottom > mSecondRect->mBottom) {
-        return 1;
+        *rst = 1;
     }
     else if (mFirstRect->mRight < mSecondRect->mRight) {
-        return -1;
+        *rst = mIsLayoutRtl ? 1 : -1;
     }
     else if (mFirstRect->mRight > mSecondRect->mRight) {
-        return 1;
+        *rst = mIsLayoutRtl ? -1 : 1;
     }
     else {
         // The view are distinct but completely coincident so we consider
         // them equal for our purposes.  Since the sort is stable, this
         // means that the views will retain their layout order relative to one another.
-        return 0;
+        *rst = 0;
     }
+    return NOERROR;
 }
 
 void FocusFinder::SequentialFocusComparator::GetRect(
@@ -98,7 +117,7 @@ void FocusFinder::SequentialFocusComparator::GetRect(
     mRoot->OffsetDescendantRectToMyCoords(view, rect);
 }
 
-CAR_INTERFACE_IMPL(FocusFinder, IFocusFinder);
+CAR_INTERFACE_IMPL(FocusFinder, Object, IFocusFinder)
 
 AutoPtr<FocusFinder> FocusFinder::GetInstance()
 {
@@ -165,26 +184,16 @@ AutoPtr<IView> FocusFinder::FindNextFocus(
         return next;
     }
 
-    List<AutoPtr<IView> >& focusables = mTempList;
-    focusables.Clear();
+    AutoPtr<IArrayList> focusables = mTempList;
+    focusables->Clear();
 
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
-    root->AddFocusables(container, direction);
-    AutoPtr<IObjectEnumerator> focusedIt;
-    container->GetObjectEnumerator((IObjectEnumerator**)&focusedIt);
-    Boolean hasNext;
-    while (focusedIt->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> p;
-        focusedIt->Current((IInterface**)&p);
-        focusables.PushBack(IView::Probe(p));
-    }
-
-    if (!focusables.IsEmpty()) {
+    IView::Probe(root)->AddFocusables(focusables, direction);
+    Boolean empty;
+    if (focusables->IsEmpty(&empty), !empty) {
         next = FindNextFocus(root, focused, focusedRect, direction, focusables);
     }
 
-    focusables.Clear();
+    focusables->Clear();
 
     return next;
 }
@@ -195,8 +204,9 @@ AutoPtr<IView> FocusFinder::FindNextUserSpecifiedFocus(
     /* [in] */ Int32 direction)
 {
     // check for user specified next focus
-    AutoPtr<IView> userSetNextFocus =
-        reinterpret_cast<View*>(focused->Probe(EIID_View))->FindUserSetNextFocus(root, direction);
+    //zhangjingcheng wait...
+    AutoPtr<IView> userSetNextFocus;// =
+        // reinterpret_cast<View*>(focused->Probe(EIID_View))->FindUserSetNextFocus(root, direction);
     Boolean isFocusable, isInTouchMode, isFocusableInTouchMode;
     if (userSetNextFocus != NULL
         && (userSetNextFocus->IsFocusable(&isFocusable), isFocusable)
@@ -212,7 +222,7 @@ AutoPtr<IView> FocusFinder::FindNextFocus(
     /* [in] */ IView* focused,
     /* [in] */ IRect* focusedRect,
     /* [in] */ Int32 direction,
-    /* [in] */ List<AutoPtr<IView> >& focusables)
+    /* [in] */ IArrayList* focusables)
 {
     if (focused != NULL) {
         if (focusedRect == NULL) {
@@ -233,7 +243,7 @@ AutoPtr<IView> FocusFinder::FindNextFocus(
                     SetFocusTopLeft(root, focusedRect);
                     break;
                 case IView::FOCUS_FORWARD:
-                    if (root->IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
+                    if (IView::Probe(root)->IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
                         SetFocusBottomRight(root, focusedRect);
                     }
                     else {
@@ -246,7 +256,7 @@ AutoPtr<IView> FocusFinder::FindNextFocus(
                     SetFocusBottomRight(root, focusedRect);
                     break;
                 case IView::FOCUS_BACKWARD:
-                    if (root->IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
+                    if (IView::Probe(root)->IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
                         SetFocusTopLeft(root, focusedRect);
                     }
                     else {
@@ -276,24 +286,33 @@ AutoPtr<IView> FocusFinder::FindNextFocus(
 }
 
 AutoPtr<IView> FocusFinder::FindNextFocusInRelativeDirection(
-    /* [in] */ List<AutoPtr<IView> >& focusables,
+    /* [in] */ IArrayList* focusables,
     /* [in] */ IViewGroup* root,
     /* [in] */ IView* focused,
     /* [in] */ IRect* focusedRect,
     /* [in] */ Int32 direction)
 {
     mSequentialFocusComparator->SetRoot(root);
-    SortList(focusables, mSequentialFocusComparator);
+    Boolean isLayoutRtl;
+    IView::Probe(root)->IsLayoutRtl(&isLayoutRtl);
+    mSequentialFocusComparator->SetIsLayoutRtl(isLayoutRtl);
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    collections->Sort(IList::Probe(focusables), mSequentialFocusComparator);
     mSequentialFocusComparator->Recycle();
 
-    const Int32 count = focusables.GetSize();
+    Int32 count;
+    focusables->GetSize(&count);
     switch (direction) {
         case IView::FOCUS_FORWARD:
-            return GetForwardFocusable(root, focused, focusables, count);
+            return GetNextFocusable(focused, focusables, count);
         case IView::FOCUS_BACKWARD:
-            return GetBackwardFocusable(root, focused, focusables, count);
+            return GetPreviousFocusable(focused, focusables, count);
     }
-    return focusables[count - 1];
+    AutoPtr<IInterface> tmp;
+    focusables->Get(count - 1, (IInterface**)&tmp);
+    AutoPtr<IView> result = IView::Probe(tmp);
+    return result;
 }
 
 void FocusFinder::SetFocusBottomRight(
@@ -301,11 +320,10 @@ void FocusFinder::SetFocusBottomRight(
     /* [in] */ IRect* focusedRect)
 {
     Int32 scrollX, scrollY, width, height;
-    root->GetScrollX(&scrollX);
-    root->GetScrollY(&scrollY);
-    root->GetWidth(&width);
-    root->GetHeight(&height);
-
+    IView::Probe(root)->GetScrollX(&scrollX);
+    IView::Probe(root)->GetScrollY(&scrollY);
+    IView::Probe(root)->GetWidth(&width);
+    IView::Probe(root)->GetHeight(&height);
     Int32 rootBottom = scrollY + height;
     Int32 rootRight = scrollX + width;
 
@@ -317,13 +335,13 @@ void FocusFinder::SetFocusTopLeft(
     /* [in] */ IRect* focusedRect)
 {
     Int32 rootTop, rootLeft;
-    root->GetScrollY(&rootTop);
-    root->GetScrollX(&rootLeft);
+    IView::Probe(root)->GetScrollY(&rootTop);
+    IView::Probe(root)->GetScrollX(&rootLeft);
     focusedRect->Set(rootLeft, rootTop, rootLeft, rootTop);
 }
 
 AutoPtr<IView> FocusFinder::FindNextFocusInAbsoluteDirection(
-    /* [in] */ List<AutoPtr<IView> >& focusables,
+    /* [in] */ IArrayList* focusables,
     /* [in] */ IViewGroup* root,
     /* [in] */ IView* focused,
     /* [in] */ IRect* focusedRect,
@@ -354,10 +372,12 @@ AutoPtr<IView> FocusFinder::FindNextFocusInAbsoluteDirection(
     }
 
     AutoPtr<IView> closest;
-
-    List<AutoPtr<IView> >::Iterator iter = focusables.Begin();
-    for (; iter != focusables.End(); ++iter) {
-        IView* focusable = iter->Get();
+    Int32 size;
+    focusables->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> tmp;
+        focusables->Get(i, (IInterface**)&tmp);
+        IView* focusable = IView::Probe(tmp);
 
         // only interested in other non-root views
         if (focusable == focused || focusable == IView::Probe(root))
@@ -376,70 +396,59 @@ AutoPtr<IView> FocusFinder::FindNextFocusInAbsoluteDirection(
     return closest;
 }
 
-AutoPtr<IView> FocusFinder::GetForwardFocusable(
-    /* [in] */ IViewGroup* root,
-    /* [in] */ IView* focused,
-    /* [in] */ List<AutoPtr<IView> >& focusables,
-    /* [in] */ Int32 count)
-{
-    Boolean isLayoutRtl;
-    root->IsLayoutRtl(&isLayoutRtl);
-    return isLayoutRtl ?
-        GetPreviousFocusable(focused, focusables, count) :
-        GetNextFocusable(focused, focusables, count);
-}
-
 AutoPtr<IView> FocusFinder::GetNextFocusable(
     /* [in] */ IView* focused,
-    /* [in] */ List<AutoPtr<IView> >& focusables,
+    /* [in] */ IArrayList* focusables,
     /* [in] */ Int32 count)
 {
     if (focused != NULL) {
         AutoPtr<IView> target = focused;
-        List<AutoPtr<IView> >::ReverseIterator rit =
-            Find(focusables.RBegin(), focusables.REnd(), target);
-        if (rit != focusables.REnd() && rit.GetBase() != focusables.End()) {
-            return *(rit.GetBase());
+        Int32 position;
+        focusables->LastIndexOf(target.Get(), &position);
+        if (position >= 0 && position + 1 < count) {
+            AutoPtr<IInterface> tmp;
+            focusables->Get(position + 1, (IInterface**)&tmp);
+            AutoPtr<IView> result = IView::Probe(tmp);
+            return result;
         }
     }
 
-    if (!focusables.IsEmpty()) {
-        return focusables.GetFront();
+    Boolean empty;
+    if (focusables->IsEmpty(&empty), !empty) {
+        AutoPtr<IInterface> tmp;
+        focusables->Get(0, (IInterface**)&tmp);
+        AutoPtr<IView> result = IView::Probe(tmp);
+        return result;
     }
 
     return NULL;
 }
 
-AutoPtr<IView> FocusFinder::GetBackwardFocusable(
-    /* [in] */ IViewGroup* root,
-    /* [in] */ IView* focused,
-    /* [in] */ List<AutoPtr<IView> >& focusables,
-    /* [in] */ Int32 count)
-{
-    Boolean isLayoutRtl;
-    root->IsLayoutRtl(&isLayoutRtl);
-    return isLayoutRtl ?
-        GetNextFocusable(focused, focusables, count) :
-        GetPreviousFocusable(focused, focusables, count);
-}
-
 AutoPtr<IView> FocusFinder::GetPreviousFocusable(
     /* [in] */ IView* focused,
-    /* [in] */ List<AutoPtr<IView> >& focusables,
+    /* [in] */ IArrayList* focusables,
     /* [in] */ Int32 count)
 {
     if (focused != NULL) {
-        AutoPtr<IView> temp(focused);
-        List<AutoPtr<IView> >::Iterator it =
-            Find(focusables.Begin(), focusables.End(), temp);
-        if (it != focusables.End() && it != focusables.Begin()) {
-            return *(--it);
+        AutoPtr<IView> target = focused;
+        Int32 position;
+        focusables->IndexOf(target.Get(), &position);
+        if (position > 0) {
+            AutoPtr<IInterface> tmp;
+            focusables->Get(position - 1, (IInterface**)&tmp);
+            AutoPtr<IView> result = IView::Probe(tmp);
+            return result;
         }
     }
 
-    if (!focusables.IsEmpty()) {
-        return focusables.GetFront();
+    Boolean empty;
+    if (focusables->IsEmpty(&empty), !empty) {
+        AutoPtr<IInterface> tmp;
+        focusables->Get(count - 1, (IInterface**)&tmp);
+        AutoPtr<IView> result = IView::Probe(tmp);
+        return result;
     }
+
     return NULL;
 }
 
@@ -781,16 +790,17 @@ ECode FocusFinder::FindNearestTouchable(
     /* [in] */ ArrayOf<Int32>* deltas,
     /* [out] */ IView** touchable)
 {
-    AutoPtr<IObjectContainer> touchables;
-    root->GetTouchables((IObjectContainer**)&touchables);
+    AutoPtr<IArrayList> touchables;
+    IView::Probe(root)->GetTouchables((IArrayList**)&touchables);
 
     Int32 minDistance = Elastos::Core::Math::INT32_MAX_VALUE;
 
     AutoPtr<IContext> context;
-    root->GetContext((IContext**)&context);
+    IView::Probe(root)->GetContext((IContext**)&context);
     assert(context.Get());
     Int32 edgeSlop;
-    CViewConfiguration::Get(context)->GetScaledEdgeSlop(&edgeSlop);
+    //zhangjingcheng wait...
+    // CViewConfiguration::Get(context)->GetScaledEdgeSlop(&edgeSlop);
 
     AutoPtr<CRect> closestBounds;
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&closestBounds));
@@ -798,21 +808,20 @@ ECode FocusFinder::FindNearestTouchable(
     CRect* touchableBounds = (CRect*)mOtherRect.Get();
 
     AutoPtr<IView> closest;
+    Int32 numTouchables;
+    touchables->GetSize(&numTouchables);
 
-    AutoPtr<IObjectEnumerator> objEmu;
-    touchables->GetObjectEnumerator((IObjectEnumerator**)&objEmu);
-
-    Boolean isSucceeded = FALSE;
-    while (objEmu->MoveNext(&isSucceeded), isSucceeded) {
+    for (Int32 i = 0; i < numTouchables; i++) {
         AutoPtr<IInterface> obj;
-        objEmu->Current((IInterface**)&obj);
+        touchables->Get(i, (IInterface**)&obj);
         IView* item = (IView*)obj->Probe(EIID_IView);
 
         // get visible bounds of other view in same coordinate system
         item->GetDrawingRect((IRect*)touchableBounds);
 
-        reinterpret_cast<ViewGroup*>(root->Probe(EIID_ViewGroup))
-            ->OffsetRectBetweenParentAndChild(item, touchableBounds, TRUE, TRUE);
+        //zhangjingcheng wait...
+        // reinterpret_cast<ViewGroup*>(root->Probe(EIID_ViewGroup))
+        //     ->OffsetRectBetweenParentAndChild(item, touchableBounds, TRUE, TRUE);
 
         if (!IsTouchCandidate(x, y, touchableBounds, direction)) {
             continue;
@@ -897,57 +906,6 @@ Boolean FocusFinder::IsTouchCandidate(
     }
 
     return FALSE;
-}
-
-void FocusFinder::Merge(
-    /* [in] */ List<AutoPtr<IView> >& list1,
-    /* [in] */ List<AutoPtr<IView> >& list2,
-    /* [in] */ SequentialFocusComparator* comparator)
-{
-    List<AutoPtr<IView> >::Iterator first1 = list1.Begin();
-    List<AutoPtr<IView> >::Iterator last1 = list1.End();
-    List<AutoPtr<IView> >::Iterator first2 = list2.Begin();
-    List<AutoPtr<IView> >::Iterator last2 = list2.End();
-    while (first1 != last1 && first2 != last2) {
-        if (comparator->Compare(first1->Get(), first2->Get()) < 0) {
-            List<AutoPtr<IView> >::Iterator next = first2;
-            ++next;
-            list1.Splice(first1, list2, first2);
-            first2 = next;
-        }
-        else {
-            ++first1;
-        }
-    }
-    if (first2 != last2)
-        list1.Splice(last1, list2, first2, last2);
-}
-
-void FocusFinder::SortList(
-    /* [in] */ List<AutoPtr<IView> >& list,
-    /* [in] */ SequentialFocusComparator* comparator)
-{
-    // Do nothing if the list has length 0 or 1.
-    if (list.GetSize() > 1) {
-        List<AutoPtr<IView> > carry;
-        List<AutoPtr<IView> > counter[64];
-        Int32 fill = 0;
-        while (!list.IsEmpty()) {
-            carry.Splice(carry.Begin(), list, list.Begin());
-            Int32 i = 0;
-            while(i < fill && !counter[i].IsEmpty()) {
-                Merge(counter[i], carry, comparator);
-                carry.Swap(counter[i++]);
-            }
-            carry.Swap(counter[i]);
-            if (i == fill) ++fill;
-        }
-
-        for (Int32 i = 1; i < fill; ++i) {
-            Merge(counter[i], counter[i-1], comparator);
-        }
-        list.Swap(counter[fill-1]);
-    }
 }
 
 } // namespace View

@@ -3,11 +3,16 @@
 #define __ELASTOS_DROID_VIEW_FOCUSFINDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/graphics/CRect.h"
+#include "graphics/CRect.h"
 #include <pthread.h>
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::List;
+using Elastos::Core::Object;
+using Elastos::Core::IComparator;
+using Elastos::Core::EIID_IComparator;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::IView;
@@ -20,18 +25,22 @@ namespace View {
  * The algorithm used for finding the next focusable view in a given direction
  * from a view that currently has focus.
  */
-class FocusFinder :
-    public ElRefBase,
-    public IFocusFinder
+class FocusFinder
+    : public Object
+    , public IFocusFinder
 {
 private:
     /**
      * Sorts views according to their visual layout and geometry for default tab order.
      * This is used for sequential focus traversal.
      */
-    class SequentialFocusComparator : public ElRefBase
+    class SequentialFocusComparator
+        : public Object
+        , public IComparator
     {
     public:
+        CAR_INTERFACE_DECL()
+
         SequentialFocusComparator();
 
         void Recycle();
@@ -39,9 +48,13 @@ private:
         void SetRoot(
             /* [in] */ IViewGroup* root);
 
-        Int32 Compare(
-            /* [in] */ IView* first,
-            /* [in] */ IView* second);
+        CARAPI Compare(
+            /* [in] */ IInterface* first,
+            /* [in] */ IInterface* second,
+            /* [out] */ Int32* result);
+
+        CARAPI SetIsLayoutRtl(
+            /* [in] */ Boolean b);
 
     private:
         void GetRect(
@@ -52,6 +65,7 @@ private:
         AutoPtr<CRect> mFirstRect;
         AutoPtr<CRect> mSecondRect;
         AutoPtr<IViewGroup> mRoot;
+        Boolean mIsLayoutRtl;
     };
 
 public:
@@ -87,37 +101,15 @@ protected:
         /* [in] */ IRect* dest);
 
 private:
-    static CARAPI_(AutoPtr<IView>) GetForwardFocusable(
-        /* [in] */ IViewGroup* root,
-        /* [in] */ IView* focused,
-        /* [in] */ List<AutoPtr<IView> >& focusables,
-        /* [in] */ Int32 count);
-
     static CARAPI_(AutoPtr<IView>) GetNextFocusable(
         /* [in] */ IView* focused,
-        /* [in] */ List<AutoPtr<IView> >& focusables,
-        /* [in] */ Int32 count);
-
-    static CARAPI_(AutoPtr<IView>) GetBackwardFocusable(
-        /* [in] */ IViewGroup* root,
-        /* [in] */ IView* focused,
-        /* [in] */ List<AutoPtr<IView> >& focusables,
+        /* [in] */ IArrayList* focusables,
         /* [in] */ Int32 count);
 
     static CARAPI_(AutoPtr<IView>) GetPreviousFocusable(
         /* [in] */ IView* focused,
-        /* [in] */ List<AutoPtr<IView> >& focusables,
+        /* [in] */ IArrayList* focusables,
         /* [in] */ Int32 count);
-
-    // add by Elastos
-    static CARAPI_(void) Merge(
-        /* [in] */ List<AutoPtr<IView> >& list1,
-        /* [in] */ List<AutoPtr<IView> >& list2,
-        /* [in] */ SequentialFocusComparator* comparator);
-
-    static CARAPI_(void) SortList(
-        /* [in] */ List<AutoPtr<IView> >& list,
-        /* [in] */ SequentialFocusComparator* comparator);
 
 private:
     FocusFinder();
@@ -174,7 +166,7 @@ public:
 
 protected:
     CARAPI_(AutoPtr<IView>) FindNextFocusInAbsoluteDirection(
-        /* [in] */ List<AutoPtr<IView> >& focusables,
+        /* [in] */ IArrayList* focusables,
         /* [in] */ IViewGroup* root,
         /* [in] */ IView* focused,
         /* [in] */ IRect* focusedRect,
@@ -228,10 +220,10 @@ private:
         /* [in] */ IView* focused,
         /* [in] */ IRect* focusedRect,
         /* [in] */ Int32 direction,
-        /* [in] */ List<AutoPtr<IView> >& focusables);
+        /* [in] */ IArrayList* focusables);
 
     CARAPI_(AutoPtr<IView>) FindNextFocusInRelativeDirection(
-        /* [in] */ List<AutoPtr<IView> >& focusables,
+        /* [in] */ IArrayList* focusables,
         /* [in] */ IViewGroup* root,
         /* [in] */ IView* focused,
         /* [in] */ IRect* focusedRect,
@@ -263,7 +255,7 @@ protected:
 
 private:
     static Boolean sKeyFocusFinderInitialized;
-    List<AutoPtr<IView> > mTempList;
+    AutoPtr<IArrayList> mTempList;
 };
 
 } // namespace View

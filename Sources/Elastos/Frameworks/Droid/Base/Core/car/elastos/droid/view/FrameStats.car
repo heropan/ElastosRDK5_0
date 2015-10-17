@@ -61,6 +61,7 @@ module
          *         if the frame is not presented yet.
          */
         GetFramePresentedTimeNano(
+            [in] Int32 index,
             [out] Int64* nano);
     }
 

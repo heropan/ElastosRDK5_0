@@ -1,45 +1,52 @@
 
-#ifndef __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
-#define __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
+#ifndef __ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
+#define __ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
 
-#include "_Elastos_Droid_View_CGestureDetector.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "elastos/droid/view/VelocityTracker.h"
+#include <elastos/core/Object.h>
+#include "elastos/droid/os/Handler.h"
+// #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/InputEventConsistencyVerifier.h"
 
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CGestureDetector)
+class GestureDetector
+    : public Object
+    , public IGestureDetector
 {
 private:
-    class GestureHandler : public HandlerBase
+    class GestureHandler : public Handler
     {
     public:
+        CAR_INTERFACE_DECL()
+
         GestureHandler(
-            /* [in] */ CGestureDetector* host)
+            /* [in] */ GestureDetector* host)
             : mHost(host)
         {}
 
         GestureHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ CGestureDetector* host)
-            : HandlerBase(looper)
+            /* [in] */ GestureDetector* host)
+            : Handler(looper)
             , mHost(host)
         {}
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
     private:
-        CGestureDetector* mHost;
+        GestureDetector* mHost;
     };
 
 public:
-    CGestureDetector();
+    CAR_INTERFACE_DECL()
+
+    GestureDetector();
 
     /**
      * Creates a GestureDetector with the supplied listener.
@@ -169,11 +176,6 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    CARAPI Init(
-        /* [in] */ IContext* context = NULL,
-        /* [in] */ IOnGestureListener* listener = NULL,
-        /* [in] */ IHandler* handler = NULL);
-
     CARAPI_(void) Cancel();
 
     CARAPI_(void) CancelTaps();
@@ -195,6 +197,7 @@ private:
     static Int32 LONGPRESS_TIMEOUT;// = ViewConfiguration.getLongPressTimeout();
     static Int32 TAP_TIMEOUT;// = ViewConfiguration.getTapTimeout();
     static Int32 DOUBLE_TAP_TIMEOUT;// = ViewConfiguration.getDoubleTapTimeout();
+    static Int32 DOUBLE_TAP_MIN_TIME;// = ViewConfiguration.getDoubleTapMinTime();
 
     // constants for Message.what used by GestureHandler below
     static const Int32 SHOW_PRESS = 1;
@@ -206,6 +209,7 @@ private:
     AutoPtr<IOnDoubleTapListener> mDoubleTapListener;
 
     Boolean mStillDown;
+    Boolean mDeferConfirmSingleTap;
     Boolean mInLongPress;
     Boolean mAlwaysInTapRegion;
     Boolean mAlwaysInBiggerTapRegion;
@@ -229,7 +233,7 @@ private:
     /**
      * Determines speed during touch scrolling
      */
-    AutoPtr<VelocityTracker> mVelocityTracker;
+    AutoPtr<IVelocityTracker> mVelocityTracker; // zhangjingcheng.wait...
 
     /**
      * Consistency verifier for debugging purposes.
@@ -241,4 +245,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
+#endif //__ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
