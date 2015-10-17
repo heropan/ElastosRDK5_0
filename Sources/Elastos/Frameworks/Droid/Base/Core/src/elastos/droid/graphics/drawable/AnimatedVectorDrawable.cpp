@@ -2,7 +2,7 @@
 #include "elastos/droid/graphics/drawable/AnimatedVectorDrawable.h"
 #include "elastos/droid/graphics/drawable/CAnimatedVectorDrawable.h"
 #include "elastos/droid/utility/CArrayMap.h"
-#include "R.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::R;
