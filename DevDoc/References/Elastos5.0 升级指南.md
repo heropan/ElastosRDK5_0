@@ -323,7 +323,32 @@ HelloCar 包括两个模块：生成 Elastos.HelloCar.eco 的模块和使用这�
     #endif //__HELLOCAR_ANIMAL_H__
     ```
 
-* 只继承基类接口的子类：HelloCar/eco/CCat.h
+* 只实现基类接口的子类：HelloCar/eco/Cat.h
+
+    ``` cpp
+    #ifndef __HELLOCAR_CAT_H__
+    #define __HELLOCAR_CAT_H__
+
+    #include "Animal.h"                     // include 基类
+
+    namespace Elastos {
+    namespace HelloCar {
+
+    class Cat
+        : public Animal
+    {
+    public:
+        CARAPI CanFly(                      // 覆写基类方法
+            /* [out] */ Boolean* canFly);
+    };
+
+    } // HelloCar
+    } // Elastos
+
+    #endif //__HELLOCAR_CAT_H__
+    ```
+
+* 继承 C++ 类 的Car类：HelloCar/eco/CCat.h
 
     ``` cpp
     #ifndef __HELLOCAR_CCAT_H__
