@@ -8,7 +8,9 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::ITypeface;
 using Elastos::Droid::Content::Res::IResources;
@@ -139,9 +141,8 @@ AutoPtr<IView> DropdownAdapter::GetView(
     AutoPtr<ITextView> labelView = ITextView::Probe(viewTmp);
 
     String label = item->GetLabel();
-    //CString labelTmp(label);
     AutoPtr<ICharSequence> charSequence;
-    //labelTmp.SubSequence(0, label.GetLength()-1, (ICharSequence**)&charSequence);
+    CString::New(label, (ICharSequence**)&charSequence);
     labelView->SetText(charSequence);
     viewTmp->SetEnabled(item->IsEnabled());
     if (item->IsGroupHeader()) {
@@ -154,8 +155,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     AutoPtr<IDrawable> drawableTmp;
     layout->GetBackground((IDrawable**)&drawableTmp);
     IObject* objectTmp = IObject::Probe(drawableTmp);
-    Object* objectTmp1 = (Object*)objectTmp;
-    AutoPtr<DropdownDividerDrawable> divider = (DropdownDividerDrawable*)objectTmp1;
+    AutoPtr<DropdownDividerDrawable> divider = (DropdownDividerDrawable*)objectTmp;
     Int32 height = 0;
     AutoPtr<IResources> resources;
     mContext->GetResources((IResources**)&resources);
@@ -193,17 +193,16 @@ AutoPtr<IView> DropdownAdapter::GetView(
 
     //AutoPtr<ILayoutParams> params;
     //CLayoutParams::New(ILayoutParams::MATCH_PARENT, height, (ILayoutParams**)&params);
-    //AutoPtr<IViewGroupLayoutParams> layoutParamsTmp = IViewGroupLayoutParams::Probe(params);
-    //layout->SetLayoutParams(layoutParamsTmp);
+    AutoPtr<IViewGroupLayoutParams> layoutParamsTmp;// = IViewGroupLayoutParams::Probe(params);
+    layout->SetLayoutParams(layoutParamsTmp);
 
     AutoPtr<IView> viewTmp1;
     layout->FindViewById(-1/*R::id::dropdown_sublabel*/, (IView**)&viewTmp1);
     AutoPtr<ITextView> sublabelView = ITextView::Probe(viewTmp1);
 
     String subLabelTmp = item->GetSublabel();
-    //CString subLabelTmp1(subLabelTmp);
     AutoPtr<ICharSequence> sublabel;
-    //subLabelTmp1.SubSequence(0, subLabelTmp.GetLength()-1, (ICharSequence**)&sublabel);
+    CString::New(subLabelTmp, (ICharSequence**)&sublabel);
     if (TextUtils::IsEmpty(sublabel)) {
         viewTmp1->SetVisibility(IView::GONE);
     }

@@ -139,7 +139,9 @@ ECode SurfaceTexturePlatformWrapper::AttachToGLContext(
     // ==================before translated======================
     // assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     // surfaceTexture.attachToGLContext(texName);
-    assert(0);
+
+    assert (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN);
+    surfaceTexture->AttachToGLContext(texName);
     return NOERROR;
 }
 
@@ -150,7 +152,9 @@ ECode SurfaceTexturePlatformWrapper::DetachFromGLContext(
     // ==================before translated======================
     // assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     // surfaceTexture.detachFromGLContext();
-    assert(0);
+
+    assert (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN);
+    surfaceTexture->DetachFromGLContext();
     return NOERROR;
 }
 

@@ -89,7 +89,8 @@ ECode AutofillPopup::Dismiss()
 {
     // ==================before translated======================
     // mAutofillCallback.requestHide();
-    assert(0);
+
+    mAutofillCallback->RequestHide();
     return NOERROR;
 }
 
@@ -97,7 +98,8 @@ ECode AutofillPopup::Hide()
 {
     // ==================before translated======================
     // super.dismiss();
-    assert(0);
+
+    Dismiss();
     return NOERROR;
 }
 
@@ -114,7 +116,12 @@ ECode AutofillPopup::OnItemClick(
     // int listIndex = mSuggestions.indexOf(adapter.getItem(position));
     // assert listIndex > -1;
     // mAutofillCallback.suggestionSelected(listIndex);
+
     assert(0);
+    //AutoPtr<DropdownAdapter> adapter = GetAdapter();
+    //int listIndex = mSuggestions->IndexOf(adapter.getItem(position));
+    //assert listIndex > -1;
+    //mAutofillCallback->SuggestionSelected(listIndex);
     return NOERROR;
 }
 

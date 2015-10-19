@@ -6,7 +6,6 @@
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-//using Elastos::Net::IProxy;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Net::IProxyProperties;
@@ -20,6 +19,8 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
+
+using Elastos::Droid::Net::IProxy;
 
 //=====================================================================
 //                   ProxyChangeListener::ProxyConfig
@@ -59,7 +60,7 @@ ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     assert(0);
     String action;
     intent->GetAction(&action);
-    if (action.Equals(String("")/*IProxy::PROXY_CHANGE_ACTION*/)) {
+    if (action.Equals(IProxy::PROXY_CHANGE_ACTION)) {
         AutoPtr<ProxyChangeListener::ProxyConfig> config = ExtractNewProxy(intent);
         mOwner->ProxySettingsChanged(config);
     }
@@ -322,7 +323,7 @@ ECode ProxyChangeListener::RegisterReceiver()
     }
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New((IIntentFilter**)&filter);
-    //--filter->AddAction(IProxy::PROXY_CHANGE_ACTION);
+    filter->AddAction(IProxy::PROXY_CHANGE_ACTION);
     mProxyReceiver = new ProxyReceiver(this);
     AutoPtr<IContext> context;
     mContext->GetApplicationContext((IContext**)&context);

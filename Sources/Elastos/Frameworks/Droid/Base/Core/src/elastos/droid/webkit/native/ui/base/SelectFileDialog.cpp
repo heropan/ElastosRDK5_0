@@ -12,6 +12,7 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::IntegralToString;
+using Elastos::Core::CString;
 using Elastos::Utility::Arrays;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
@@ -76,7 +77,7 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
         (*mFilePaths)[i] = sTmp;
 
         uriTmp = IUri::Probe((*params)[i]);
-        assert(0); // java source will return a array
+        assert(0); // java source will return a array but here out param is only one
         (*dispalyNames)[i] = ContentUriUtils::GetDisplayName(uriTmp, mContentResolver, IMediaStoreMediaColumns::DISPLAY_NAME);
     }
     return NOERROR;
@@ -429,8 +430,7 @@ Boolean SelectFileDialog::NoSpecificType()
     Int32 size = 0;
     mFileTypes->GetSize(&size);
     AutoPtr<ICharSequence> charSequence;
-    //CString strTmp(ANY_TYPES);
-    //strTmp->SubSequence(0, ANY_TYPES->GetLength(), (ICharSequence**)&charSequence);
+    CString::New(ANY_TYPES, (ICharSequence**)&charSequence);
     Boolean isContain = FALSE;
     mFileTypes->Contains(charSequence, &isContain);
     return (size != 1 || isContain);
@@ -445,8 +445,7 @@ Boolean SelectFileDialog::ShouldShowTypes(
     // return acceptSpecificType(specificType);
 
     AutoPtr<ICharSequence> charSequence;
-    //CString strTmp(allTypes);
-    //strTmp->SubSequence(0, allTypes->GetLength(), (ICharSequence**)&charSequence);
+    CString::New(allTypes, (ICharSequence**)&charSequence);
     Boolean isContain = FALSE;
     mFileTypes->Contains(charSequence, &isContain);
     if (NoSpecificType() || isContain)

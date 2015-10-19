@@ -4,13 +4,11 @@
 //#include "elastos/core/AutoLock.h"
 //#include "elastos/security/cert/CCertificateFactoryHelper.h"
 //#include "elastos/security/CKeyStoreHelper.h"
-//#include "elastos/security/CMessageDigestHelper.h"
-//#include "elastosx/net/ssl/CTrustManagerFactoryHelper.h"
 //#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CPairHelper.h"
-//#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/webkit/native/net/CertVerifyStatusAndroid.h"
 
 using Elastos::Core::IntegralToString;
@@ -40,9 +38,9 @@ using Elastos::Droid::Utility::IPairHelper;
 using Elastos::Droid::Utility::CPairHelper;
 using Elastos::Droid::Keystore::Security::IKeyChain;
 using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IBroadcastReceiver;
-//using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Os::Build;
 //using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
 using Elastos::Droid::Webkit::Net::CertVerifyStatusAndroid;
@@ -581,7 +579,7 @@ ECode X509Util::EnsureInitialized()
         sTrustStorageListener = new TrustStorageListener();
 
         AutoPtr<IIntentFilter> intentFilter;
-        //--CIntentFilter::New(IKeyChain::ACTION_STORAGE_CHANGED, (IIntentFilter**)&intentFilter);
+        CIntentFilter::New(IKeyChain::ACTION_STORAGE_CHANGED, (IIntentFilter**)&intentFilter);
 
         AutoPtr<IIntent> intent;
         CIntent::New((IIntent**)&intent);

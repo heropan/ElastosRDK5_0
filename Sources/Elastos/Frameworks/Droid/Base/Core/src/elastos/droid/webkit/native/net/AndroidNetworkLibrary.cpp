@@ -8,7 +8,6 @@
 
 using Elastos::Utility::IEnumeration;
 using Elastos::Core::IntegralToString;
-using Elastos::Net::IURLConnectionHelper;
 using Elastos::Net::INetworkInterfaceHelper;
 using Elastos::Net::CNetworkInterfaceHelper;
 using Elastos::Net::INetworkInterface;
@@ -16,6 +15,7 @@ using Elastos::Net::IInetAddress;
 using Elastos::Net::IInet6Address;
 using Elastos::Net::EIID_IInet6Address;
 using Elastos::Net::IInterfaceAddress;
+//using Elastos::Net::URLConnection;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Keystore::Security::IKeyChain;
@@ -143,10 +143,7 @@ String AndroidNetworkLibrary::GetMimeTypeFromExtension(
     // return URLConnection.guessContentTypeFromName("foo." + extension);
 
     assert(0);
-    AutoPtr<IURLConnectionHelper> helper;
-    // CURLConnectionHelper::AcquireSingleton((IURLConnectionHelper**)&helper);
-    String result;
-    helper->GuessContentTypeFromName(String("foo.") + extension, &result);
+    String result("");// = URLConnection::GuessContentTypeFromName(String("foo.") + extension, &result);
     return result;
 }
 

@@ -2,10 +2,11 @@
 #include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
 //#include "elastos/droid/view/View.h"
 #include "elastos/droid/text/TextUtils.h"
-//#include "elastos/droid/graphics/CPoint.h"
+#include "elastos/droid/graphics/CPoint.h"
+#include "elastos/droid/graphics/CRectF.h"
 //#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
+//#include "elastos/droid/widget/PopupWindow.h"
 #include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
-//#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
 using Elastos::Core::CString;
@@ -24,8 +25,9 @@ using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IRelativeLayoutLayoutParams;
 //using Elastos::Droid::Widget::CRelativeLayoutLayoutParams;
 using Elastos::Droid::Text::TextUtils;
-//using Elastos::Droid::Graphics::CPoint;
-//using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Graphics::CPoint;
+using Elastos::Droid::Graphics::CRectF;
+//using Elastos::Droid::Widget::PopupWindow;
 using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 
@@ -55,14 +57,14 @@ ValidationMessageBubble::ValidationMessageBubble(
     //         contentViewCore.getContainerView(), Gravity.NO_GRAVITY, origin.x, origin.y);
 
     assert(0);
-/*
+
     AutoPtr<IView> view;
-    View::Inflate(contentViewCore->GetContext(), R::layout::validation_message_bubble, NULL, (IView**)&view);
-    AutoPtr<IViewGroup> root;
-    view->Probe(EIID_IViewGroup, (IViewGroup**)&root);
-    mPopup = new PopupWindow(root);
+    //View::Inflate(contentViewCore->GetContext(), -1/*R::layout::validation_message_bubble*/, NULL, (IView**)&view);
+    AutoPtr<IViewGroup> root = IViewGroup::Probe(view);
+
+    //mPopup = new PopupWindow(root);
     UpdateTextViews(root, mainText, subText);
-    Measure(contentViewCore->GetRenderCoordinates());
+    //Measure(contentViewCore->GetRenderCoordinates());
 
     Float centerX = 0.0f;
     Float bottom = 0.0f;
@@ -71,13 +73,12 @@ ValidationMessageBubble::ValidationMessageBubble(
     AutoPtr<IPoint> origin = AdjustWindowPosition(contentViewCore, (Int32)(centerX - GetAnchorOffset()), (Int32)bottom);
 
     AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
-    AutoPtr<IView> viewTmp;
-    viewGroup->Probe(EIID_IView, (IView**)&viewTmp);
+    AutoPtr<IView> viewTmp = IView::Probe(viewGroup);
     Int32 originX = 0;
     Int32 originY = 0;
     origin->GetX(&originX);
     origin->GetY(&originY);
-    mPopup->ShowAtLocation(viewTmp, IGravity::NO_GRAVITY, originX, originY);*/
+    mPopup->ShowAtLocation(viewTmp, IGravity::NO_GRAVITY, originX, originY);
 }
 
 AutoPtr<ValidationMessageBubble> ValidationMessageBubble::CreateAndShow(
@@ -160,13 +161,12 @@ AutoPtr<IRectF> ValidationMessageBubble::MakePixRectInScreen(
     //         coordinates.fromLocalCssToPix(anchorX + anchorWidth),
     //         coordinates.fromLocalCssToPix(anchorY + anchorHeight) + yOffset);
 
-    /*
     AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
     Float yOffset = GetWebViewOffsetYPixInScreen(contentViewCore);
 
     AutoPtr<IRectF> result;
     CRectF::New((IRectF**)&result);
-    IRectF->Set(
+    result->Set(
         coordinates->FromLocalCssToPix(anchorX),
         coordinates->FromLocalCssToPix(anchorY) + yOffset,
         coordinates->FromLocalCssToPix(anchorX + anchorWidth),
@@ -174,10 +174,6 @@ AutoPtr<IRectF> ValidationMessageBubble::MakePixRectInScreen(
     );
 
     return result;
-    */
-
-    AutoPtr<IRectF> empty;
-    return empty;
 }
 
 Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
@@ -188,22 +184,16 @@ Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
     // contentViewCore.getContainerView().getLocationOnScreen(location);
     // return location[1] + contentViewCore.getRenderCoordinates().getContentOffsetYPix();
 
-    /*
     Int32 screenX = 0;
     Int32 screenY = 0;
     AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
-    AutoPtr<IView> view;
-    viewGroup->Probe(EIID_View, (IView**)&view);
+    AutoPtr<IView> view = IView::Probe(viewGroup);
     view->GetLocationOnScreen(&screenX, &screenY);
 
     AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
     Float offsetYPix = coordinates->GetContentOffsetYPix();
     Float result = screenY + offsetYPix;
     return result;
-    */
-
-    assert(0);
-    return 0.0f;
 }
 
 ECode ValidationMessageBubble::UpdateTextViews(
@@ -334,10 +324,10 @@ AutoPtr<IPoint> ValidationMessageBubble::AdjustWindowPosition(
     // }
     // return new Point(x, y);
 
-    //AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
-    Int32 viewWidth = 0;//coordinates->GetLastFrameViewportWidthPixInt();
-    Int32 viewBottom = 0;//(Int32)GetWebViewOffsetYPixInScreen(contentViewCore) +
-    //     coordinates->GetLastFrameViewportHeightPixInt();
+    AutoPtr<RenderCoordinates> coordinates = contentViewCore->GetRenderCoordinates();
+    Int32 viewWidth = coordinates->GetLastFrameViewportWidthPixInt();
+    Int32 viewBottom = (Int32)GetWebViewOffsetYPixInScreen(contentViewCore) +
+        coordinates->GetLastFrameViewportHeightPixInt();
 
     AutoPtr<IView> contentView;
     mPopup->GetContentView((IView**)&contentView);
@@ -357,7 +347,7 @@ AutoPtr<IPoint> ValidationMessageBubble::AdjustWindowPosition(
     }
 
     AutoPtr<IPoint> result;
-    //CPoint::New(x, y, (IPoint**)&result);
+    CPoint::New(x, y, (IPoint**)&result);
     return result;
 }
 

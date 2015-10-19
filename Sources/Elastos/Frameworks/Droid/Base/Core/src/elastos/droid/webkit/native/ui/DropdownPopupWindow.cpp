@@ -136,10 +136,8 @@ DropdownPopupWindow::DropdownPopupWindow(
 
     mAnchorView->SetId(-1/*R::id::dropdown_popup_window*/);
 
-    Object* objectTmp = (Object*)this;
-    IObject* objectTmp1 = (IObject*)objectTmp;
-    IInterface* interfaceTmp = (IInterface*)objectTmp1;
-    mAnchorView->SetTag(interfaceTmp);
+    //IInterface* interfaceTmp = this->Probe(EIID_IInterface);
+    //mAnchorView->SetTag(interfaceTmp);
 
     mLayoutChangeListener = new InnerOnLayoutChangeListener(this);
     mAnchorView->AddOnLayoutChangeListener(mLayoutChangeListener);

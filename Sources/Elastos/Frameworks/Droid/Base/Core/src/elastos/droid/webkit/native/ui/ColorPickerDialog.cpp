@@ -1,10 +1,9 @@
 
 #include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
-//#include "elastos/core/CString.h"
 //#include "elastos/droid/view/CLayoutInflater.h"
 
 using Elastos::Core::ICharSequence;
-//using Elastos::Core::CString;
+using Elastos::Core::CString;
 using Elastos::Droid::View::ILayoutInflater;
 //using Elastos::Droid::View::CLayoutInflater;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
@@ -225,11 +224,8 @@ ColorPickerDialog::ColorPickerDialog(
     AutoPtr<ITextView> titleText = ITextView::Probe(titleTextTmp);
 
     AutoPtr<ICharSequence> charSequence;
-    //CString sTmp(""/*R::string::color_picker_dialog_title*/);
-    //Int32 length = 0;
-    //sTmp->GetLength(&length);
-    //sTmp->SubSequence(0, length-1, (ICharSequence**)&charSequence);
-    titleText->SetText(charSequence/*R::string::color_picker_dialog_title*/);
+    CString::New(String("")/*R::string::color_picker_dialog_title*/, (ICharSequence**)&charSequence);
+    titleText->SetText(charSequence);
 
     // Initialize Set/Cancel buttons
     String positiveButtonText;

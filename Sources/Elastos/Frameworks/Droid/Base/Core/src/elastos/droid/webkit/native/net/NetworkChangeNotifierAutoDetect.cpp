@@ -297,8 +297,8 @@ Int32 NetworkChangeNotifierAutoDetect::GetCurrentConnectionType()
             }
         default:
             return NetworkChangeNotifier::CONNECTION_UNKNOWN;
-    }
-    */
+    }*/
+
     return /* temp */0;
 }
 

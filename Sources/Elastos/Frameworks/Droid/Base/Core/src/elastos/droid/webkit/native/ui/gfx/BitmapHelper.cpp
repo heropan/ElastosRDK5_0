@@ -45,7 +45,7 @@ AutoPtr<IBitmap> BitmapHelper::CreateBitmap(
     BitmapConfig bitmapConfig = GetBitmapConfigForFormat(bitmapFormatValue);
 
     AutoPtr<IBitmapHelper> helper;
-    //CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+    // CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
     AutoPtr<IBitmap> bitmap;
     helper->CreateBitmap(width, height, bitmapConfig, (IBitmap**)&bitmap);
     return bitmap;

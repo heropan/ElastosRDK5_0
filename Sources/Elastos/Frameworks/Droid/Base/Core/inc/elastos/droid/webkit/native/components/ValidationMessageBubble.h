@@ -6,6 +6,8 @@
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_VALIDATIONMESSAGEBUBBLE_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
 
 // package org.chromium.components.web_contents_delegate_android;
 // import android.graphics.Point;
@@ -27,14 +29,13 @@ using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Widget::IPopupWindow;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Components {
-
-class ContentViewCore;
-class RenderCoordinates;
 
 /**
   * This class is an implementation of validation message bubble UI.

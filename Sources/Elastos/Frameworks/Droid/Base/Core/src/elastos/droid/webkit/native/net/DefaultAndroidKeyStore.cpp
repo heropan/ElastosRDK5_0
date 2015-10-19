@@ -1,7 +1,7 @@
 
 #include "elastos/droid/webkit/native/net/DefaultAndroidKeyStore.h"
 #include "elastos/droid/webkit/native/net/PrivateKeyType.h"
-//#include "elastos/droid/content/pm/CSignature.h"
+#include "elastos/droid/content/pm/CSignature.h"
 
 using Elastos::Security::IPrivateKey;
 using Elastos::Security::ISignature;
@@ -21,7 +21,7 @@ using Elastos::Security::Interfaces::EIID_IECPrivateKey;
 using Elastos::Security::Spec::IECParameterSpec;
 using Elastos::Math::IBigInteger;
 using Elastos::Math::CBigInteger;
-//using Elastos::Droid::Content::Pm::CSignature;
+using Elastos::Droid::Content::Pm::CSignature;
 using Elastos::Droid::Webkit::Net::PrivateKeyType;
 
 namespace Elastos {

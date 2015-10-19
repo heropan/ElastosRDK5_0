@@ -1,7 +1,9 @@
 
 #include "elastos/droid/webkit/native/components/PersonalAutofillPopulator.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
+#include "elastos/droid/net/Uri.h"
 
+using Elastos::IO::ICloseable;
 using Elastos::Droid::Provider::ContactsContractProfile;
 using Elastos::Droid::Provider::IContactsContractContactsData;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsEmail;
@@ -9,6 +11,7 @@ using Elastos::Droid::Provider::IContactsContractCommonDataKindsPhone;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredPostal;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredName;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
@@ -29,8 +32,10 @@ AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri(
     // ->WWZ_SIGN: FUNC_CALL_END }
 
     assert(0);
+    AutoPtr<IUri> contentUri;
+    ContactsContractProfile::GetCONTENT_URI((IUri**)&contentUri);
     AutoPtr<IUri> uri;
-    //Uri::WithAppendedPath(ContactsContract.Profile.CONTENT_URI, ContactsContract.Contacts.Data.CONTENT_DIRECTORY, (IUri**)&uri);
+    Uri::WithAppendedPath(contentUri, IContactsContractContactsData::CONTENT_DIRECTORY, (IUri**)&uri);
     return uri;
 }
 
@@ -223,7 +228,7 @@ AutoPtr<ICursor> PersonalAutofillPopulator::CursorFromProfileQuery(
     contentResolver->Query(
         query->mProfileDataUri,
         query->Projection(),
-        /* wwz: mIMETYPE isnot exist; IContactsContractContactsData::MIMETYPE + */ String(" = ?"),
+        /* wwz: MIMETYPE isnot exist; IContactsContractContactsData::MIMETYPE + */ String(" = ?"),
         mimeType,
         sortDescriptor,
         (ICursor**)&result
@@ -287,7 +292,9 @@ ECode PersonalAutofillPopulator::PopulateName(
         nameCursor->GetString(nameProfileQuery->FAMILY_NAME, &mFamilyName);
         nameCursor->GetString(nameProfileQuery->SUFFIX, &mSuffix);
     }
-    //wwz: func Close isnot exist; nameCursor->Close();
+
+    AutoPtr<ICloseable> closeable = ICloseable::Probe(nameCursor);
+    closeable->Close();
 
     return NOERROR;
 }
@@ -316,7 +323,9 @@ ECode PersonalAutofillPopulator::PopulateEmail(
         emailCursor->GetString(emailProfileQuery->EMAIL_ADDRESS, &item);
         (*mEmailAddresses)[i] = item;
     }
-    //wwz: func Close isnot exist; emailCursor->Close();
+
+    AutoPtr<ICloseable> closeable = ICloseable::Probe(emailCursor);
+    closeable->Close();
 
     return NOERROR;
 }
@@ -352,7 +361,9 @@ ECode PersonalAutofillPopulator::PopulateAddress(
         addressCursor->GetString(addressProfileQuery->POSTALCODE, &mPostalCode);
         addressCursor->GetString(addressProfileQuery->COUNTRY, &mCountry);
     }
-    //wwz: func Close isnot exist; addressCursor->Close();
+
+    AutoPtr<ICloseable> closeable = ICloseable::Probe(addressCursor);
+    closeable->Close();
 
     return NOERROR;
 }
@@ -381,7 +392,9 @@ ECode PersonalAutofillPopulator::PopulatePhone(
         phoneCursor->GetString(phoneProfileQuery->NUMBER, &item);
         (*mPhoneNumbers)[i] = item;
     }
-    //wwz: func Close isnot exist; phoneCursor->Close();
+
+    AutoPtr<ICloseable> closeable = ICloseable::Probe(phoneCursor);
+    closeable->Close();
 
     return NOERROR;
 }

@@ -30,7 +30,7 @@ Clipboard::Clipboard(
 
     assert(0);
     AutoPtr<IInterface> tmp;
-    //context->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&tmp);
+    context->GetSystemService(IContext::CLIPBOARD_SERVICE, (IInterface**)&tmp);
     mClipboardManager = IClipboardManager::Probe(tmp);
 }
 
@@ -45,16 +45,10 @@ ECode Clipboard::SetText(
     AutoPtr<IClipDataHelper> helper;
     CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
 
-    //CString labelTmp(label);
-    //CString textTmp(text);
     AutoPtr<ICharSequence> labelCharSequence;
+    CString::New(label, (ICharSequence**)&labelCharSequence);
     AutoPtr<ICharSequence> textCharSequence;
-    //Int32 labelTmpLength = 0;
-    //Int32 textTmpLength = 0;
-    //labelTmp.GetLength(&labelTmpLength);
-    //textTmp.GetLength(&textTmpLength);
-    //labelTmp.SubSequence(0, labelTmpLength-1, (ICharSequence**)&labelCharSequence);
-    //textTmp.SubSequence(0, textTmpLength-1, (ICharSequence**)&textCharSequence);
+    CString::New(text, (ICharSequence**)&textCharSequence);
 
     AutoPtr<IClipData> clipData;
     helper->NewPlainText(labelCharSequence, textCharSequence, (IClipData**)&clipData);
@@ -87,16 +81,10 @@ ECode Clipboard::SetHTMLText(
         AutoPtr<IClipDataHelper> helper;
         CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
 
-        //CString labelTmp(label);
-        //CString textTmp(text);
         AutoPtr<ICharSequence> labelCharSequence;
+        CString::New(label, (ICharSequence**)&labelCharSequence);
         AutoPtr<ICharSequence> textCharSequence;
-        //Int32 labelTmpLength = 0;
-        //Int32 textTmpLength = 0;
-        //labelTmp.GetLength(&labelTmpLength);
-        //textTmp.GetLength(&textTmpLength);
-        //labelTmp.SubSequence(0, labelTmpLength-1, (ICharSequence**)&labelCharSequence);
-        //textTmp.SubSequence(0, textTmpLength-1, (ICharSequence**)&textCharSequence);
+        CString::New(text, (ICharSequence**)&textCharSequence);
 
         AutoPtr<IClipData> clipData;
         helper->NewHtmlText(labelCharSequence, textCharSequence, html, (IClipData**)&clipData);
@@ -146,7 +134,6 @@ String Clipboard::GetCoercedText()
     clip->GetItemCount(&itemCount);
     if (clip != NULL && itemCount > 0) {
         AutoPtr<IClipDataItem> clipDataItem;
-        //CClipDataItem::New((IClipDataItem**)&clipDataItem);
         clip->GetItemAt(0, (IClipDataItem**)&clipDataItem);
 
         AutoPtr<ICharSequence> sequence;

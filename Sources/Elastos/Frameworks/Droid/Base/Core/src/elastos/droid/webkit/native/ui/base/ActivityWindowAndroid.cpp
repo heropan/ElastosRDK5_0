@@ -4,6 +4,7 @@
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
 using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IContentResolver;
@@ -33,7 +34,7 @@ ActivityWindowAndroid::ActivityWindowAndroid(
     AutoPtr<IContext> context;
     tmp->GetApplicationContext((IContext**)&context);
 
-    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe((IWeakReferenceSource*)activity);
+    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe(activity);
     source->GetWeakReference((IWeakReference**)&mActivityRef);
 }
 
@@ -59,7 +60,7 @@ Int32 ActivityWindowAndroid::ShowCancelableIntent(
     // return requestCode;
 
     assert(0);
-    AutoPtr<IActivity> activityTmp;
+    AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
     AutoPtr<IActivity> activity = IActivity::Probe(activityTmp);
     if (NULL == activity)
@@ -102,7 +103,7 @@ Int32 ActivityWindowAndroid::ShowCancelableIntent(
     // return requestCode;
 
     assert(0);
-    AutoPtr<IActivity> activityTmp;
+    AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
     AutoPtr<IActivity> activity = IActivity::Probe(activityTmp);
     if (NULL == activity)
@@ -131,7 +132,7 @@ ECode ActivityWindowAndroid::CancelIntent(
     // if (activity == null) return;
     // activity.finishActivity(requestCode);
 
-    AutoPtr<IActivity> activityTmp;
+    AutoPtr<IInterface> activityTmp;
     mActivityRef->Resolve(EIID_IInterface, (IInterface**)&activityTmp);
     AutoPtr<IActivity> activity = IActivity::Probe(activityTmp);
     if (NULL == activity)
@@ -204,7 +205,7 @@ AutoPtr<IWeakReference> ActivityWindowAndroid::GetActivity()
     if (NULL == activity)
         return NULL;
 
-    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe((IWeakReferenceSource*)activity);
+    AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe(activity);
     AutoPtr<IWeakReference> result;
     source->GetWeakReference((IWeakReference**)&result);
     return result;
@@ -233,11 +234,8 @@ ECode ActivityWindowAndroid::StoreCallbackData(
     // mIntentErrors.put(requestCode, mApplicationContext.getString(errorId));
 
     assert(0);
-    Object* callbackTmp = (Object*)callback;
-    IObject* callbackTmp1 = (IObject*)callbackTmp;
-    //IInterface* callbackTmp2 = IInterface::Probe((IObject*)callbackTmp1);
-    IInterface* callbackTmp2 = callbackTmp1->Probe(EIID_IInterface);
-    mOutstandingIntents->Put(requestCode, callbackTmp2);
+    IInterface* callbackTmp = callback->Probe(EIID_IInterface);
+    mOutstandingIntents->Put(requestCode, callbackTmp);
 
     AutoPtr<IInteger32> requestCodeTmp;
     CInteger32::New(requestCode, (IInteger32**)&requestCodeTmp);
@@ -245,8 +243,7 @@ ECode ActivityWindowAndroid::StoreCallbackData(
     String errorStr;
     mApplicationContext->GetString(errorId, &errorStr);
     AutoPtr<ICharSequence> charSequenceError;
-    //CString errorStrTmp(errorStr);
-    //errorStrTmp.SubSequence(0, errorStr.GetLength()-1, (ICharSequence**)&charSequenceError);
+    CString::New(errorStr, (ICharSequence**)&charSequenceError);
     mIntentErrors->Put(requestCodeTmp, charSequenceError);
     return NOERROR;
 }

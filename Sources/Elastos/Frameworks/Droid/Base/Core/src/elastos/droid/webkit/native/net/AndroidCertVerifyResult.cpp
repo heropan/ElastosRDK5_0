@@ -1,6 +1,5 @@
 
 #include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
-//#include "elastos/utility/CArrayList.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

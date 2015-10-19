@@ -1,6 +1,5 @@
 
 #include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
-//#include "elastos/core/CString.h"
 //#include "elastos/droid/widget/CToastHelper.h"
 
 using Elastos::Utility::CHashMap;
@@ -8,7 +7,7 @@ using Elastos::IO::ISerializable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-//using Elastos::Core::CStriing;
+using Elastos::Core::CString;
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -145,9 +144,7 @@ Boolean WindowAndroid::RemoveIntentCallback(
     // return true;
 
     assert(0);
-    Object* objTmp = (Object*)callback;
-    IObject* objTmp1 = (IObject*)objTmp;
-    IInterface* interfaceTmp = (IInterface*)objTmp1;
+    IInterface* interfaceTmp = callback->Probe(EIID_IInterface);
     Int32 requestCode = 0;
     mOutstandingIntents->IndexOfValue(interfaceTmp, &requestCode);
     if (requestCode < 0) return FALSE;
@@ -172,8 +169,7 @@ ECode WindowAndroid::ShowError(
         //CToastHelper::AcquierSingleton((IToastHelper**)&helper);
 
         AutoPtr<ICharSequence> charSequence;
-        //CString sTmp(error);
-        //sTmp.SubSequence(0, error.GetLength(), (ICharSequence**)&charSequence);
+        CString::New(error, (ICharSequence**)&charSequence);
 
         AutoPtr<IToast> toast;
         helper->MakeText(mApplicationContext, charSequence, IToast::LENGTH_SHORT, (IToast**)&toast);
@@ -210,7 +206,7 @@ AutoPtr<IWeakReference> WindowAndroid::GetActivity()
     // ==================before translated======================
     // return new WeakReference<Activity>(null);
 
-    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)NULL);
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe(NULL);
     AutoPtr<IWeakReference> wr;
     source->GetWeakReference((IWeakReference**)&wr);
     return wr;

@@ -7,12 +7,14 @@
 #include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
+using Elastos::Core::CString;
 using Elastos::Droid::Widget::ILinearLayout;
 //using Elastos::Droid::Widget::CLinearLayout;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 //using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
@@ -154,9 +156,10 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
             AutoPtr<ILinearLayoutLayoutParams> layoutParams;
             //CLinearLayoutLayoutParams::New(0, buttonHeight, 1f, (ILinearLayoutLayoutParams**)&layoutParams);
 
-            //ApiCompatibilityUtils::SetMarginStart(layoutParams, -1);
+            AutoPtr<IViewGroupMarginLayoutParams> viewGroupParams = IViewGroupMarginLayoutParams::Probe(layoutParams);
+            ApiCompatibilityUtils::SetMarginStart(viewGroupParams, -1);
             if (i == COLORS_PER_ROW - 1) {
-                //ApiCompatibilityUtils::SetMarginEnd(layoutParams, -1);
+                ApiCompatibilityUtils::SetMarginEnd(viewGroupParams, -1);
             }
             AutoPtr<IViewGroupLayoutParams> viewGroupLayoutParams = IViewGroupLayoutParams::Probe(layoutParams);
             button->SetLayoutParams(viewGroupLayoutParams);
@@ -236,8 +239,7 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
         return NOERROR;
     }
 
-    AutoPtr<IObject> objectTmp = (IObject*)(*mSuggestions)[index];
-    AutoPtr<IInterface> interfaceTmp = (IInterface*)objectTmp;
+    AutoPtr<IInterface> interfaceTmp = (*mSuggestions)[index]->Probe(EIID_IInterface);
     viewTmp->SetTag(interfaceTmp);
     viewTmp->SetVisibility(IView::VISIBLE);
 
@@ -256,9 +258,8 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
         description.AppendFormat("#%06X", (0xFFFFFF & suggestion->mColor));
     }
 
-    //CString strTmp(description);
     AutoPtr<ICharSequence> charSequence;
-    //strTmp.SubSequence(0, description.GetLength()-1, (ICharSequence**)&charSequence);
+    CString::New(description, (ICharSequence**)&charSequence);
     viewTmp->SetContentDescription(charSequence);
     viewTmp->SetOnClickListener(this);
     return NOERROR;
