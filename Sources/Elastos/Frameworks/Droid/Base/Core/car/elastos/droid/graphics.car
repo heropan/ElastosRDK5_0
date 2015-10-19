@@ -1533,6 +1533,18 @@ module
         interface IDrawable;
     }
 
+    class CVectorDrawable {
+        constructor();
+
+        constructor(
+            [in] IDrawableConstantState* state,
+            [in] IResources* res,
+            [in] IResourcesTheme* theme);
+
+        interface IVectorDrawable;
+        interface IDrawable;
+    }
+
     namespace Shapes {
 
     class CArcShape {

@@ -162,6 +162,22 @@ module
             [out] IVectorDrawable** drawable);
     }
 
+    interface IVGroup {}
+
+    interface IVPath {}
+
+    /**
+    * @Involve
+    * interface IVPath
+    */
+    interface IVFullPath {}
+
+    /**
+    * @Involve
+    * interface IVPath
+    */
+    interface IVClipPath {}
+
     } // namespace Drawable
     } // namespace Graphics
     } // namespace Droid

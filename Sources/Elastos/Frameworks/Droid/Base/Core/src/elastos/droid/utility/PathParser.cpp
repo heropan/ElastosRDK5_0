@@ -485,7 +485,7 @@ AutoPtr<ArrayOf<PathDataNode*> > PathParser::CreateNodesFromPathData(
     return result;
 }
 
-AutoPtr<ArrayOf<PathDataNode*> > DeepCopyNodes(
+AutoPtr<ArrayOf<PathDataNode*> > PathParser::DeepCopyNodes(
     /* [in] */ ArrayOf<PathDataNode*>* source)
 {
     if (source == NULL) {
