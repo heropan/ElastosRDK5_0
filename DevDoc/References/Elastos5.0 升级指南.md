@@ -10,7 +10,7 @@ Object类实现了IObject、ISynchronize和IWeakReferenceSource接口，原则�
 
 为当前的类实现好IObject接口中的ToString和GetClassID方法对程序调试非常有用。一般的，ToString方法可以返回当前类的类名，而GetClassID可以返回当前类的ClassID。对于CAR类，Object基类的ToString方法可以通过反射获取具体的类名，因此，如无特定的实现，CAR类可以直接继承使用Object基类的ToString方法。对于C++类，请**一定重载**ToString方法，若无有特定的实现，须在其中返回该类的类名。另外，对于C++类，编译器并不会自动生成其ClassID，所以，请**一定使用UUID生成器**（如visual studio的guid生成器或Ubuntu下的<code>uuidgen</code> 命令）生成一个128位的UUID给该C++类，并在其重载的GetClassID方法中返回。
 
-Object是所有C++类或者CAR类的子类，所以，所有CAR类都隐含实现了IObject、ISynchronize和IWeakReferenceSource接口。但是，在car文件中声明CAR类时，不用显式的声明实现这些接口，它们将由CAR编译器自动的加入到CAR类实现的接口中。
+Object是所有C++类或者CAR类的父类，所以，所有CAR类都隐含实现了IObject、ISynchronize和IWeakReferenceSource接口。但是，在car文件中声明CAR类时，不用显式的声明实现这些接口，它们将由CAR编译器自动的加入到CAR类实现的接口中。
 
 相应的示例可以参考Thread的实现（位于Thread.h和Thread.cpp中）。
 
@@ -330,50 +330,68 @@ HelloCar 包括两个模块：生成 Elastos.HelloCar.eco 的模块和使用这�
     #define __HELLOCAR_CCAT_H__
 
     #include "_Elastos_HelloCar_CCat.h"     // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
-    #include "Animal.h"                     // include 基类
+    #include "Cat.h"                     // include 基类
 
     namespace Elastos {
     namespace HelloCar {
 
     CarClass(CCat)
-        , public Animal
+        , public Cat
     {
     public:
         CAR_OBJECT_DECL()   // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
-
-        CARAPI CanFly(
-            /* [out] */ Boolean* canFly);
-
     };
 
     } // HelloCar
     } // Elastos
 
-    #endif //__HELLOCAR_CCAT_H__
+    #endif //__HELLOCAR_CAT_H__
     ```
 
-* 还实现了其它接口的子类：HelloCar/eco/CDog.h
+* 还实现了其它接口的子类：HelloCar/eco/Dog.h
+
+    ``` cpp
+    #ifndef __HELLOCAR_DOG_H__
+    #define __HELLOCAR_DOG_H__
+
+    #include "Animal.h"                     // include 基类
+
+    namespace Elastos {
+    namespace HelloCar {
+
+    class Dog
+        : public Animal
+        , public IDog           // 实现　CAR 类　IDog
+    {
+    public:
+        CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
+
+        CARAPI Bark();
+    };
+
+    } // HelloCar
+    } // Elastos
+
+    #endif //__HELLOCAR_DOG_H__
+    ```
+
+* 继承 C++ 类的Car类：HelloCar/eco/CDog.h
 
     ``` cpp
     #ifndef __HELLOCAR_CDOG_H__
     #define __HELLOCAR_CDOG_H__
 
     #include "_Elastos_HelloCar_CDog.h"     // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
-    #include "Animal.h"                     // include 基类
+    #include "Dog.h"                     // include 基类
 
     namespace Elastos {
     namespace HelloCar {
 
     CarClass(CDog)
-        , public Animal
-        , public IDog           // 实现　CAR 类　IDog
+        , public Dog
     {
     public:
-        CAR_INTERFACE_DECL()    // 实现某个 CAR 接口的类都需要使用 CAR_INTERFACE_DECL/CAR_INTERFACE_IMPL
-
         CAR_OBJECT_DECL()       // 非单例 CAR 类需要使用宏 CAR_OBJECT_DECL/CAR_OBJECT_IMPL
-
-        CARAPI Bark();
     };
 
     } // HelloCar
@@ -438,7 +456,7 @@ LibCore 模块将编译成 <code>Elastos.CoreLibrary.eco</code>，并将所有�
     #DIRS += math
     ```
 
-2.  在子目录中添加<code>sources</code>文件，以设置编译参数与编译文件．如：<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/core/soruces</code>
+2. 在子目录中添加<code>sources</code>文件，以设置编译参数与编译文件．如：<code>ElastosRDK5_0/Sources/Elastos/LibCore/src/elastos/core/soruces</code>
 
     ```
     TARGET_NAME= core
