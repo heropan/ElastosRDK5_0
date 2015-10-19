@@ -216,6 +216,70 @@ ECode StaticIpConfiguration::ReadFromParcel(
 #endif
 }
 
+ECode StaticIpConfiguration::GetIpAddress(
+    /* [out] */ ILinkAddress** result)
+{
+    VALIDATE_NOT_NULL(*result)
+
+    *result = mIpAddress;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode StaticIpConfiguration::SetIpAddress(
+    /* [in] */ ILinkAddress* ipAddress)
+{
+    VALIDATE_NOT_NULL(ipAddress)
+
+    mIpAddress = ipAddress;
+    return NOERROR;
+}
+
+ECode StaticIpConfiguration::GetGateway(
+    /* [out] */ IInetAddress** result)
+{
+    VALIDATE_NOT_NULL(*result)
+
+    *result = mGateway;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode StaticIpConfiguration::SetGateway(
+    /* [in] */ IInetAddress* gateway)
+{
+    VALIDATE_NOT_NULL(gateway)
+
+    mGateway = gateway;
+    return NOERROR;
+}
+
+ECode StaticIpConfiguration::GetDnsServers(
+    /* [out] */ IArrayList** result)
+{
+    VALIDATE_NOT_NULL(*result)
+
+    *result = mDnsServers;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode StaticIpConfiguration::GetDomains(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    *result = mDomains;
+    return NOERROR;
+}
+
+ECode StaticIpConfiguration::SetDomains(
+    /* [in] */ const String& domains)
+{
+    mDomains = domains;
+    return NOERROR;
+}
+
 
 } // namespace Net
 } // namespace Droid

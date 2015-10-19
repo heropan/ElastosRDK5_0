@@ -1,101 +1,90 @@
 
-#ifndef __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
-#define __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
+#ifndef __ELASTOS_DROID_NET_CURLQUERYSANITIZERHELPER_H__
+#define __ELASTOS_DROID_NET_CURLQUERYSANITIZERHELPER_H__
 
-#include "_Elastos_Droid_Net_CUrlQuerySanitizer.h"
-
-using Elastos::Droid::Net::IValueSanitizer;
+#include "_Elastos_Droid_Net_CUrlQuerySanitizerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+/**
+ *
+ * Sanitizes the Query portion of a URL. Simple example:
+ * <code>
+ * UrlQuerySanitizer sanitizer = new UrlQuerySanitizer();
+ * sanitizer.setAllowUnregisteredParamaters(true);
+ * sanitizer.parseUrl("http://example.com/?name=Joe+User");
+ * String name = sanitizer.getValue("name"));
+ * // name now contains "Joe_User"
+ * </code>
+ *
+ * Register ValueSanitizers to customize the way individual
+ * parameters are sanitized:
+ * <code>
+ * UrlQuerySanitizer sanitizer = new UrlQuerySanitizer();
+ * sanitizer.registerParamater("name", UrlQuerySanitizer.createSpaceLegal());
+ * sanitizer.parseUrl("http://example.com/?name=Joe+User");
+ * String name = sanitizer.getValue("name"));
+ * // name now contains "Joe User". (The string is first decoded, which
+ * // converts the '+' to a ' '. Then the string is sanitized, which
+ * // converts the ' ' to an '_'. (The ' ' is converted because the default
+ * unregistered parameter sanitizer does not allow any special characters,
+ * and ' ' is a special character.)
+ * </code>
+ *
+ * There are several ways to create ValueSanitizers. In order of increasing
+ * sophistication:
+ * <ol>
+ * <li>Call one of the UrlQuerySanitizer.createXXX() methods.
+ * <li>Construct your own instance of
+ * UrlQuerySanitizer.IllegalCharacterValueSanitizer.
+ * <li>Subclass UrlQuerySanitizer.ValueSanitizer to define your own value
+ * sanitizer.
+ * </ol>
+ *
+ */
 CarClass(CUrlQuerySanitizerHelper)
+    , public Singleton
+    , public IUrlQuerySanitizerHelper
 {
 public:
-    /**
-     * Return a value sanitizer that does not allow any special characters,
-     * and also does not allow script URLs.
-     * @return a value sanitizer
-     */
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetAllIllegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that allows everything except Nul ('\0')
-     * characters. Script URLs are allowed.
-     * @return a value sanitizer
-     */
     CARAPI GetAllButNulLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that allows everything except Nul ('\0')
-     * characters, space (' '), and other whitespace characters.
-     * Script URLs are allowed.
-     * @return a value sanitizer
-     */
     CARAPI GetAllButWhitespaceLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that allows all the characters used by
-     * encoded URLs. Does not allow script URLs.
-     * @return a value sanitizer
-     */
     CARAPI GetUrlLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that allows all the characters used by
-     * encoded URLs and allows spaces, which are not technically legal
-     * in encoded URLs, but commonly appear anyway.
-     * Does not allow script URLs.
-     * @return a value sanitizer
-     */
     CARAPI GetUrlAndSpaceLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that does not allow any special characters
-     * except ampersand ('&'). Does not allow script URLs.
-     * @return a value sanitizer
-     */
     CARAPI GetAmpLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that does not allow any special characters
-     * except ampersand ('&') and space (' '). Does not allow script URLs.
-     * @return a value sanitizer
-     */
     CARAPI GetAmpAndSpaceLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that does not allow any special characters
-     * except space (' '). Does not allow script URLs.
-     * @return a value sanitizer
-     */
     CARAPI GetSpaceLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-    /**
-     * Return a value sanitizer that allows any special characters
-     * except angle brackets ('<' and '>') and Nul ('\0').
-     * Allows script URLs.
-     * @return a value sanitizer
-     */
     CARAPI GetAllButNulAndAngleBracketsLegal(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
 };
 
-
-
-
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
+#endif //  __ELASTOS_DROID_NET_CURLQUERYSANITIZERHELPER_H__

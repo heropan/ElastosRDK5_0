@@ -74,9 +74,6 @@ module
          */
         const Int32 TAG_SYSTEM_BACKUP = 0xFFFFFF03;
 
-    }
-
-    interface ITrafficStatsHelper {
         /**
          * Set active tag to use when accounting {@link Socket} traffic originating
          * from the current thread. Only one active tag per thread is supported.

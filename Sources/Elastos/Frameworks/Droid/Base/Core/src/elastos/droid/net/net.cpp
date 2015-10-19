@@ -44,8 +44,17 @@
 #include "elastos/droid/net/CSamplingDataTracker.h"
 #include "elastos/droid/net/CSamplingDataTrackerSamplingSnapshot.h"
 #include "elastos/droid/net/CScoredNetwork.h"
-// #include "elastos/droid/net/CSntpClient.h"
-// #include "elastos/droid/net/CStaticIpConfiguration.h"
+#include "elastos/droid/net/CSntpClient.h"
+#include "elastos/droid/net/CStaticIpConfiguration.h"
+#include "elastos/droid/net/CUidRange.h"
+#include "elastos/droid/net/CUrlQuerySanitizer.h"
+#include "elastos/droid/net/CUrlQuerySanitizerParameterValuePair.h"
+#include "elastos/droid/net/CUrlQuerySanitizerIllegalCharacterValueSanitizer.h"
+#include "elastos/droid/net/CVpnService.h"
+#include "elastos/droid/net/CVpnServiceBuilder.h"
+#include "elastos/droid/net/CWebAddress.h"
+#include "elastos/droid/net/CWifiKey.h"
+// #include "elastos/droid/net/CWifiLinkQualityInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -141,9 +150,27 @@ CAR_OBJECT_IMPL(CSamplingDataTrackerSamplingSnapshot)
 
 CAR_OBJECT_IMPL(CScoredNetwork)
 
-// CAR_OBJECT_IMPL(CSntpClient)
+CAR_OBJECT_IMPL(CSntpClient)
 
-// CAR_OBJECT_IMPL(CStaticIpConfiguration)
+CAR_OBJECT_IMPL(CStaticIpConfiguration)
+
+CAR_OBJECT_IMPL(CUidRange)
+
+CAR_OBJECT_IMPL(CUrlQuerySanitizer)
+
+CAR_OBJECT_IMPL(CUrlQuerySanitizerParameterValuePair)
+
+CAR_OBJECT_IMPL(CUrlQuerySanitizerIllegalCharacterValueSanitizer)
+
+CAR_OBJECT_IMPL(CVpnService)
+
+CAR_OBJECT_IMPL(CVpnServiceBuilder)
+
+CAR_OBJECT_IMPL(CWebAddress)
+
+CAR_OBJECT_IMPL(CWifiKey)
+
+// CAR_OBJECT_IMPL(CWifiLinkQualityInfo)
 
 } // namespace Net
 } // namespace Droid

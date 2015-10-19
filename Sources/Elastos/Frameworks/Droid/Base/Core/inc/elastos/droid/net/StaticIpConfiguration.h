@@ -4,6 +4,10 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -29,7 +33,7 @@ namespace Net {
  * @hide
  */
 class StaticIpConfiguration
-    : public object
+    : public Object
     , public IParcelable
     , public IStaticIpConfiguration
 {
@@ -88,37 +92,38 @@ public:
         /* [in] */ IParcel* dest,
         /* [in] */ Int32 flags);
 
+    // protected
     static CARAPI ReadFromParcel(
         /* [in] */ IStaticIpConfiguration* s,
         /* [in] */ IParcel* in);
 
     CARAPI GetIpAddress(
-        [out] ILinkAddress** result);
+        /* [out] */ ILinkAddress** result);
 
     CARAPI SetIpAddress(
-        [in] ILinkAddress* ipAddress);
+        /* [in] */ ILinkAddress* ipAddress);
 
     CARAPI GetGateway(
-        [out] IInetAddress** result);
+        /* [out] */ IInetAddress** result);
 
     CARAPI SetGateway(
-        [in] IInetAddress* gateway);
+        /* [in] */ IInetAddress* gateway);
 
     CARAPI GetDnsServers(
-        [out] IArrayList<InetAddress>** result);
+        /* [out] */ IArrayList** result);
 
     CARAPI GetDomains(
-        [out] String* result);
+        /* [out] */ String* result);
 
     CARAPI SetDomains(
-        [in] String domains);
+        /* [in] */ const String& domains);
 
 private:
-    ILinkAddress* mIpAddress;
+    AutoPtr<ILinkAddress> mIpAddress;
 
-    IInetAddress* mGateway;
+    AutoPtr<IInetAddress> mGateway;
 
-    const IArrayList* dnsServers;
+    AutoPtr<IArrayList> mDnsServers;
 
     String mDomains;
 

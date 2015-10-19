@@ -102,7 +102,10 @@ module
     merge("net/nsd/INsdManager.car");
     merge("net/nsd/DnsSdTxtRecord.car");
 
+    interface Elastos.Droid.App.IService;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IComponentCallbacks2;
+    interface Elastos.Droid.Content.IContextWrapper;
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandler;
 
@@ -800,6 +803,107 @@ module
 
         interface IParcelable;
         interface IScoredNetwork;
+    }
+
+    class CSntpClient {
+        constructor();
+
+        interface ISntpClient;
+    }
+
+    class CStaticIpConfiguration {
+        constructor();
+
+        constructor(
+            [in] IStaticIpConfiguration* source);
+
+        interface IParcelable;
+        interface IStaticIpConfiguration;
+    }
+
+    singleton class CTrafficStats {
+        interface ITrafficStats;
+    }
+
+    class CUidRange {
+        constructor(
+            [in] Int32 startUid,
+            [in] Int32 stopUid);
+
+        interface IParcelable;
+        interface IUidRange;
+    }
+
+    singleton class CUidRangeHelper {
+        interface IUidRangeHelper;
+    }
+
+    singleton class CUriHelper {
+        interface IUriHelper;
+    }
+
+    class CUrlQuerySanitizer {
+        constructor();
+
+        constructor(
+            [in] String url);
+
+        interface IUrlQuerySanitizer;
+    }
+
+    singleton class CUrlQuerySanitizerHelper {
+        interface IUrlQuerySanitizerHelper;
+    }
+
+    class CUrlQuerySanitizerParameterValuePair {
+        constructor(
+            [in] String parameter,
+            [in] String value);
+
+        interface IUrlQuerySanitizerParameterValuePair;
+    }
+
+    class CUrlQuerySanitizerIllegalCharacterValueSanitizer {
+        constructor(
+            [in] Int32 flags);
+
+        interface IUrlQuerySanitizerIllegalCharacterValueSanitizer;
+    }
+
+    class CVpnService {
+        constructor();
+
+        interface IService;
+        interface IComponentCallbacks2;
+        interface IContextWrapper;
+        interface IContext;
+        interface IVpnService;
+    }
+
+    singleton class CVpnServiceHelper {
+        interface IVpnServiceHelper;
+    }
+
+    class CVpnServiceBuilder {
+        constructor();
+
+        interface IVpnServiceBuilder;
+    }
+
+    class CWebAddress {
+        constructor(
+            [in] String address);
+
+        interface IWebAddress;
+    }
+
+    class CWifiKey {
+        constructor(
+            [in] String ssid,
+            [in] String bssid);
+
+        interface IParcelable;
+        interface IWifiKey;
     }
 
     } // namespace Net
