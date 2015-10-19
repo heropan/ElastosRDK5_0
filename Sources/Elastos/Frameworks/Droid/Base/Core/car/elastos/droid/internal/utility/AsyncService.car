@@ -8,17 +8,6 @@ module
     namespace Utility {
 
     interface IAsyncServiceInfo {
-        SetHandler(
-            [in] IHandler* handler);
-
-        GetHandler(
-            [out] IHandler** handler);
-
-        SetRestartFlags(
-            [in] Int32 restartFlags);
-
-        GetRestartFlags(
-            [out] Int32* restartFlags);
     }
 
     /**

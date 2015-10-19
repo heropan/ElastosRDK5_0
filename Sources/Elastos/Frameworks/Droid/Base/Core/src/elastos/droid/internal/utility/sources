@@ -9,4 +9,6 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 SOURCES = ArrayUtils.cpp
+#SOURCES += AsyncService.cpp
+SOURCES += CAsyncChannel.cpp
 SOURCES += GrowingArrayUtils.cpp

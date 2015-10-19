@@ -35,8 +35,6 @@ module
 
         interface IState {}
 
-        interface IAsyncChannel {}
-
     }}}} // Elastos.Droid.Internal.Utility
 
     //

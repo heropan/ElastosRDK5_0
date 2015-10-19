@@ -1,94 +1,75 @@
-
 #ifndef __ELASTOS_DROID_INTERNAL_UTILITY_ARRAYUTILS_H__
 #define __ELASTOS_DROID_INTERNAL_UTILITY_ARRAYUTILS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Droid::Utility::IArraySet;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Utility {
 
-/**
- * ArrayUtils contains some methods that you can call to find out
- * the most efficient increments by which to grow arrays.
- */
 class ArrayUtils
 {
 public:
-    static AutoPtr<ArrayOf<Byte> > NewUnpaddedByteArray(
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) NewUnpaddedByteArray(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<Char32> > NewUnpaddedChar32Array(
+    static CARAPI_(AutoPtr<ArrayOf<Char32> >) NewUnpaddedChar32Array(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<Int32> > NewUnpaddedInt32Array(
+    static CARAPI_(AutoPtr<ArrayOf<Int32> >) NewUnpaddedInt32Array(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<Int64> > NewUnpaddedInt64Array(
+    static CARAPI_(AutoPtr<ArrayOf<Int64> >) NewUnpaddedInt64Array(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<Boolean> > NewUnpaddedBooleanArray(
+    static CARAPI_(AutoPtr<ArrayOf<Boolean> >) NewUnpaddedBooleanArray(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<Float> > NewUnpaddedFloatArray(
+    static CARAPI_(AutoPtr<ArrayOf<Float> >) NewUnpaddedFloatArray(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<Double> > NewUnpaddedDoubleArray(
+    static CARAPI_(AutoPtr<ArrayOf<Double> >) NewUnpaddedDoubleArray(
         /* [in] */ Int32 minLen);
 
-    static AutoPtr<ArrayOf<IInterface*> > NewUnpaddedObjectArray(
+    static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) NewUnpaddedObjectArray(
         /* [in] */ Int32 minLen);
 
     template<typename T>
-    static AutoPtr<ArrayOf<T> > NewUnpaddedArray(
+    static CARAPI_(AutoPtr<ArrayOf<T> >) NewUnpaddedArray(
         /* [in] */ Int32 minLen,
         /* [in] */ T typeDeduceObj);
 
-    // TODO
+    /**
+     * Checks if the beginnings of two byte arrays are equal.
+     *
+     * @param array1 the first byte array
+     * @param array2 the second byte array
+     * @param length the number of bytes to check
+     * @return TRUE if they're equal, FALSE otherwise
+     */
+    static CARAPI_(Boolean) Equals(
+        /* [in] */ ArrayOf<Byte>* array1,
+        /* [in] */ ArrayOf<Byte>* array2,
+        /* [in] */ Int32 length);
 
-    // /**
-    //  * Checks if the beginnings of two byte arrays are equal.
-    //  *
-    //  * @param array1 the first byte array
-    //  * @param array2 the second byte array
-    //  * @param length the number of bytes to check
-    //  * @return true if they're equal, false otherwise
-    //  */
-    // public static boolean equals(byte[] array1, byte[] array2, int length) {
-    //     if (length < 0) {
-    //         throw new IllegalArgumentException();
-    //     }
-
-    //     if (array1 == array2) {
-    //         return true;
-    //     }
-    //     if (array1 == null || array2 == null || array1.length < length || array2.length < length) {
-    //         return false;
-    //     }
-    //     for (int i = 0; i < length; i++) {
-    //         if (array1[i] != array2[i]) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-
-    // /**
-    //  * Returns an empty array of the specified type.  The intent is that
-    //  * it will return the same empty array every time to avoid reallocation,
-    //  * although this is not guaranteed.
-    //  */
-    // @SuppressWarnings("unchecked")
+    /**
+     * Returns an empty array of the specified type.  The intent is that
+     * it will return the same empty array every time to avoid reallocation,
+     * although this is not guaranteed.
+     */
     // public static <T> T[] emptyArray(Class<T> kind) {
     //     if (kind == Object.class) {
     //         return (T[]) EmptyArray.OBJECT;
     //     }
 
-    //     int bucket = (kind.hashCode() & 0x7FFFFFFF) % CACHE_SIZE;
+    //     Int32 bucket = (kind.hashCode() & 0x7FFFFFFF) % CACHE_SIZE;
     //     Object cache = sCache[bucket];
 
-    //     if (cache == null || cache.getClass().getComponentType() != kind) {
+    //     if (cache == NULL || cache.getClass().getComponentType() != kind) {
     //         cache = Array.newInstance(kind, 0);
     //         sCache[bucket] = cache;
 
@@ -98,279 +79,146 @@ public:
     //     return (T[]) cache;
     // }
 
-    // /**
-    //  * Checks if given array is null or has zero elements.
-    //  */
-    // public static <T> boolean isEmpty(T[] array) {
-    //     return array == null || array.length == 0;
-    // }
+    /**
+     * Checks if given array is NULL or has zero elements.
+     */
+    template<typename T>
+    static CARAPI_(Boolean) IsEmpty(
+        /* [in] */ ArrayOf<T>* array);
 
-    // /**
-    //  * Checks that value is present as at least one of the elements of the array.
-    //  * @param array the array to check in
-    //  * @param value the value to check for
-    //  * @return true if the value is present in the array
-    //  */
-    // public static <T> boolean contains(T[] array, T value) {
-    //     return indexOf(array, value) != -1;
-    // }
+    /**
+     * Checks that value is present as at least one of the elements of the array.
+     * @param array the array to check in
+     * @param value the value to check for
+     * @return TRUE if the value is present in the array
+     */
+    template<typename T>
+    static CARAPI_(Boolean) Contains(
+        /* [in] */ ArrayOf<T>* array,
+        /* [in] */ T value);
 
-    // /**
-    //  * Return first index of {@code value} in {@code array}, or {@code -1} if
-    //  * not found.
-    //  */
-    // public static <T> int indexOf(T[] array, T value) {
-    //     if (array == null) return -1;
-    //     for (int i = 0; i < array.length; i++) {
-    //         if (array[i] == null) {
-    //             if (value == null) return i;
-    //         } else {
-    //             if (value != null && array[i].equals(value)) return i;
-    //         }
-    //     }
-    //     return -1;
-    // }
+    /**
+     * Return first index of {@code value} in {@code array}, or {@code -1} if
+     * not found.
+     */
+    template<typename T>
+    static CARAPI_(Int32) IndexOf(
+        /* [in] */ ArrayOf<T>* array,
+        /* [in] */ T value);
 
-    // /**
-    //  * Test if all {@code check} items are contained in {@code array}.
-    //  */
-    // public static <T> boolean containsAll(T[] array, T[] check) {
-    //     for (T checkItem : check) {
-    //         if (!contains(array, checkItem)) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
+    /**
+     * Test if all {@code check} items are contained in {@code array}.
+     */
+    template<typename T>
+    static CARAPI_(Boolean) ContainsAll(
+        /* [in] */ ArrayOf<T>* array,
+        /* [in] */ ArrayOf<T>* check);
 
-    // public static boolean contains(int[] array, int value) {
-    //     if (array == null) return false;
-    //     for (int element : array) {
-    //         if (element == value) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    static CARAPI_(Boolean) Contains(
+        /* [in] */ ArrayOf<Int32>* array,
+        /* [in] */ Int32 value);
 
-    // public static boolean contains(long[] array, long value) {
-    //     if (array == null) return false;
-    //     for (long element : array) {
-    //         if (element == value) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    static CARAPI_(Boolean) Contains(
+        /* [in] */ ArrayOf<Int64>* array,
+        /* [in] */ Int64 value);
 
-    // public static long total(long[] array) {
-    //     long total = 0;
-    //     for (long value : array) {
-    //         total += value;
-    //     }
-    //     return total;
-    // }
+    static CARAPI_(Int64) Total(
+        /* [in] */ ArrayOf<Int64> *array);
 
-    // /**
-    //  * Appends an element to a copy of the array and returns the copy.
-    //  * @param array The original array, or null to represent an empty array.
-    //  * @param element The element to add.
-    //  * @return A new array that contains all of the elements of the original array
-    //  * with the specified element added at the end.
-    //  */
-    // @SuppressWarnings("unchecked")
-    // public static <T> T[] appendElement(Class<T> kind, T[] array, T element) {
-    //     final T[] result;
-    //     final int end;
-    //     if (array != null) {
-    //         end = array.length;
-    //         result = (T[])Array.newInstance(kind, end + 1);
-    //         System.arraycopy(array, 0, result, 0, end);
-    //     } else {
-    //         end = 0;
-    //         result = (T[])Array.newInstance(kind, 1);
-    //     }
-    //     result[end] = element;
-    //     return result;
-    // }
 
-    // *
-    //  * Removes an element from a copy of the array and returns the copy.
-    //  * If the element is not present, then the original array is returned unmodified.
-    //  * @param array The original array, or null to represent an empty array.
-    //  * @param element The element to remove.
-    //  * @return A new array that contains all of the elements of the original array
-    //  * except the first copy of the specified element removed.  If the specified element
-    //  * was not present, then returns the original array.  Returns null if the result
-    //  * would be an empty array.
+    /**
+     * Appends an element to a copy of the array and returns the copy.
+     * @param array The original array, or NULL to represent an empty array.
+     * @param element The element to add.
+     * @return A new array that contains all of the elements of the original array
+     * with the specified element added at the end.
+     */
+    template<typename T>
+    static CARAPI_(AutoPtr<ArrayOf<T> >) AppendElement(
+        /* [in] */ ArrayOf<T>* array,
+        /* [in] */ T element);
 
-    // @SuppressWarnings("unchecked")
-    // public static <T> T[] removeElement(Class<T> kind, T[] array, T element) {
-    //     if (array != null) {
-    //         final int length = array.length;
-    //         for (int i = 0; i < length; i++) {
-    //             if (array[i] == element) {
-    //                 if (length == 1) {
-    //                     return null;
-    //                 }
-    //                 T[] result = (T[])Array.newInstance(kind, length - 1);
-    //                 System.arraycopy(array, 0, result, 0, i);
-    //                 System.arraycopy(array, i + 1, result, i, length - i - 1);
-    //                 return result;
-    //             }
-    //         }
-    //     }
-    //     return array;
-    // }
+    /**
+     * Removes an element from a copy of the array and returns the copy.
+     * If the element is not present, then the original array is returned unmodified.
+     * @param array The original array, or NULL to represent an empty array.
+     * @param element The element to remove.
+     * @return A new array that contains all of the elements of the original array
+     * except the first copy of the specified element removed.  If the specified element
+     * was not present, then returns the original array.  Returns NULL if the result
+     * would be an empty array.
+     */
+    template<typename T>
+    static CARAPI_(AutoPtr<ArrayOf<T> >) RemoveElement(
+        /* [in] */ ArrayOf<T>* array,
+        /* [in] */ T element);
 
-    // /**
-    //  * Appends a new value to a copy of the array and returns the copy.  If
-    //  * the value is already present, the original array is returned
-    //  * @param cur The original array, or null to represent an empty array.
-    //  * @param val The value to add.
-    //  * @return A new array that contains all of the values of the original array
-    //  * with the new value added, or the original array.
-    //  */
-    // public static int[] appendInt(int[] cur, int val) {
-    //     if (cur == null) {
-    //         return new int[] { val };
-    //     }
-    //     final int N = cur.length;
-    //     for (int i = 0; i < N; i++) {
-    //         if (cur[i] == val) {
-    //             return cur;
-    //         }
-    //     }
-    //     int[] ret = new int[N + 1];
-    //     System.arraycopy(cur, 0, ret, 0, N);
-    //     ret[N] = val;
-    //     return ret;
-    // }
+    static CARAPI_(AutoPtr< ArrayOf<Int32> >) AppendInt32(
+        /* [in] */ ArrayOf<Int32>* cur,
+        /* [in] */ Int32 val);
 
-    // public static int[] removeInt(int[] cur, int val) {
-    //     if (cur == null) {
-    //         return null;
-    //     }
-    //     final int N = cur.length;
-    //     for (int i = 0; i < N; i++) {
-    //         if (cur[i] == val) {
-    //             int[] ret = new int[N - 1];
-    //             if (i > 0) {
-    //                 System.arraycopy(cur, 0, ret, 0, i);
-    //             }
-    //             if (i < (N - 1)) {
-    //                 System.arraycopy(cur, i + 1, ret, i, N - i - 1);
-    //             }
-    //             return ret;
-    //         }
-    //     }
-    //     return cur;
-    // }
+    static CARAPI_(AutoPtr< ArrayOf<Int32> >) RemoveInt32(
+        /* [in] */ ArrayOf<Int32>* cur,
+        /* [in] */ Int32 val);
 
-    // /**
-    //  * Appends a new value to a copy of the array and returns the copy.  If
-    //  * the value is already present, the original array is returned
-    //  * @param cur The original array, or null to represent an empty array.
-    //  * @param val The value to add.
-    //  * @return A new array that contains all of the values of the original array
-    //  * with the new value added, or the original array.
-    //  */
-    // public static long[] appendLong(long[] cur, long val) {
-    //     if (cur == null) {
-    //         return new long[] { val };
-    //     }
-    //     final int N = cur.length;
-    //     for (int i = 0; i < N; i++) {
-    //         if (cur[i] == val) {
-    //             return cur;
-    //         }
-    //     }
-    //     long[] ret = new long[N + 1];
-    //     System.arraycopy(cur, 0, ret, 0, N);
-    //     ret[N] = val;
-    //     return ret;
-    // }
+    /**
+     * Appends a new value to a copy of the array and returns the copy.  If
+     * the value is already present, the original array is returned
+     * @param cur The original array, or NULL to represent an empty array.
+     * @param val The value to add.
+     * @return A new array that contains all of the values of the original array
+     * with the new value added, or the original array.
+     */
+    static CARAPI_(AutoPtr< ArrayOf<Int64> >) AppendInt64(
+        /* [in] */ ArrayOf<Int64>* cur,
+        /* [in] */ Int64 val);
 
-    // public static long[] removeLong(long[] cur, long val) {
-    //     if (cur == null) {
-    //         return null;
-    //     }
-    //     final int N = cur.length;
-    //     for (int i = 0; i < N; i++) {
-    //         if (cur[i] == val) {
-    //             long[] ret = new long[N - 1];
-    //             if (i > 0) {
-    //                 System.arraycopy(cur, 0, ret, 0, i);
-    //             }
-    //             if (i < (N - 1)) {
-    //                 System.arraycopy(cur, i + 1, ret, i, N - i - 1);
-    //             }
-    //             return ret;
-    //         }
-    //     }
-    //     return cur;
-    // }
+    static CARAPI_(AutoPtr< ArrayOf<Int64> >) RemoveInt64(
+        /* [in] */ ArrayOf<Int64>* cur,
+        /* [in] */ Int64 val);
 
-    // public static long[] cloneOrNull(long[] array) {
-    //     return (array != null) ? array.clone() : null;
-    // }
+    static CARAPI_(AutoPtr< ArrayOf<Int64> >) CloneOrNull(
+        /* [in] */ ArrayOf<Int64>* array);
 
-    // public static <T> ArraySet<T> add(ArraySet<T> cur, T val) {
-    //     if (cur == null) {
-    //         cur = new ArraySet<>();
-    //     }
-    //     cur.add(val);
-    //     return cur;
-    // }
+    static CARAPI_(AutoPtr<IArraySet>) Add(
+        /* [in] */ IArraySet* _cur,
+        /* [in] */ IInterface* val);
 
-    // public static <T> ArraySet<T> remove(ArraySet<T> cur, T val) {
-    //     if (cur == null) {
-    //         return null;
-    //     }
-    //     cur.remove(val);
-    //     if (cur.isEmpty()) {
-    //         return null;
-    //     } else {
-    //         return cur;
-    //     }
-    // }
+    static CARAPI_(AutoPtr<IArraySet>) Remove(
+        /* [in] */ IArraySet* cur,
+        /* [in] */ IInterface* val);
 
-    // public static <T> boolean contains(ArraySet<T> cur, T val) {
-    //     return (cur != null) ? cur.contains(val) : false;
-    // }
+    static CARAPI_(Boolean) Contains(
+        /* [in] */ IArraySet* cur,
+        /* [in] */ IInterface* val);
 
-    // public static <T> ArrayList<T> add(ArrayList<T> cur, T val) {
-    //     if (cur == null) {
-    //         cur = new ArrayList<>();
-    //     }
-    //     cur.add(val);
-    //     return cur;
-    // }
+    static CARAPI_(AutoPtr<IArrayList>) Add(
+        /* [in] */ IArrayList* _cur,
+        /* [in] */ IInterface* val);
 
-    // public static <T> ArrayList<T> remove(ArrayList<T> cur, T val) {
-    //     if (cur == null) {
-    //         return null;
-    //     }
-    //     cur.remove(val);
-    //     if (cur.isEmpty()) {
-    //         return null;
-    //     } else {
-    //         return cur;
-    //     }
-    // }
+    static CARAPI_(AutoPtr<IArrayList>) Remove(
+        /* [in] */ IArrayList* cur,
+        /* [in] */ IInterface* val);
 
-    // public static <T> boolean contains(ArrayList<T> cur, T val) {
-    //     return (cur != null) ? cur.contains(val) : false;
-    // }
+    static CARAPI_(Boolean) Contains(
+        /* [in] */ IArrayList* cur,
+        /* [in] */ IInterface* val);
+
+    static CARAPI_(void) Sort(
+        /* [in] */ ArrayOf<Int32> *array);
+
+    static CARAPI_(void) Sort(
+        /* [in] */ ArrayOf<Int32> *array,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 length);
+
+    static CARAPI_(void) QuickSort(
+        /* [in] */ ArrayOf<Int32> *array,
+        /* [in] */ Int32 low,
+        /* [in] */ Int32 high);
 
 private:
-    static const Int32 CACHE_SIZE;// = 73;
-    static AutoPtr<ArrayOf<IInterface*> > sCache; //= new Object[CACHE_SIZE];
-
-private:
-    /* cannot be instantiated */
-    ArrayUtils();
-    ArrayUtils(const ArrayUtils&);
+    ArrayUtils() {}
 };
 
 template<typename T>
@@ -379,6 +227,102 @@ AutoPtr<ArrayOf<T> > ArrayUtils::NewUnpaddedArray(
     /* [in] */ T typeDeduceObj)
 {
     AutoPtr<ArrayOf<T> > array = ArrayOf<T>::Alloc(minLen);
+    return array;
+}
+
+template<typename T>
+Boolean ArrayUtils::IsEmpty(
+    /* [in] */ ArrayOf<T>* array)
+{
+    return array == NULL || array->GetLength() == 0;
+}
+
+template<typename T>
+Boolean ArrayUtils::Contains(
+    /* [in] */ ArrayOf<T>* array,
+    /* [in] */ T value)
+{
+    return IndexOf(array, value) != -1;
+}
+
+template<typename T>
+Int32 ArrayUtils::IndexOf(
+    /* [in] */ ArrayOf<T>* array,
+    /* [in] */ T value)
+{
+    if (array == NULL)
+        return -1;
+    for (Int32 i = 0; i < array->GetLength(); i++) {
+        if ((*array)[i] == NULL) {
+            if (value == NULL)
+                return i;
+        }
+        else {
+            Boolean res;
+            if (value != NULL && (IObject::Probe((*array)[i]).Equals(value, &res), res))
+                return i;
+        }
+    }
+    return -1;
+}
+
+template<typename T>
+Boolean ArrayUtils::ContainsAll(
+    /* [in] */ ArrayOf<T>* array,
+    /* [in] */ ArrayOf<T>* check)
+{
+    Int32 length = check != NULL ? check->GetLength() : 0;
+    for (Int32 i = 0; i < length; i++) {
+        if (!Contains(array, (*check)[i])) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+template<typename T>
+AutoPtr<ArrayOf<T> > ArrayUtils::AppendElement(
+    /* [in] */ ArrayOf<T>* array,
+    /* [in] */ T element)
+{
+    AutoPtr<ArrayOf<T> > result;
+    Int32 end;
+    if (array != NULL) {
+        end = array->GetLength();
+        result = ArrayOf<T>::Alloc(end + 1);
+        result->Copy(array, end);
+    }
+    else {
+        end = 0;
+        result = ArrayOf<T>::Alloc(1);
+    }
+    (*result)[end] = element;
+    return result;
+}
+
+template<typename T>
+AutoPtr<ArrayOf<T> > ArrayUtils::RemoveElement(
+    /* [in] */ ArrayOf<T>* array,
+    /* [in] */ T element)
+{
+    if (array != NULL) {
+        Int32 length = array->GetLength();
+        for (Int32 i = 0; i < length; i++) {
+            if ((*array)[i] == element) {
+                if (length == 1) {
+                    return NULL;
+                }
+                AutoPtr<ArrayOf<T> > result = ArrayOf<T>::Alloc(length - 1);
+                if (i > 0) {
+                    result->Copy(array, i);
+                }
+                if (i < (length - 1)) {
+                    result->Copy(i, array, i + 1, length - i -1);
+                }
+                return result;
+            }
+        }
+    }
     return array;
 }
 
