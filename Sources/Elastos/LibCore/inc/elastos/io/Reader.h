@@ -11,6 +11,7 @@ class Reader
     : public Object
     , public IReadable
     , public IReader
+    , public ICloseable
 {
 public:
     CAR_INTERFACE_DECL()
