@@ -22,15 +22,6 @@ public:
         /* [in] */ ISynchronize* lock);
 
     /**
-     * Closes this reader. Implementations of this method should free any
-     * resources associated with the reader.
-     *
-     * @throws IOException
-     *             if an error occurs while closing this reader.
-     */
-    virtual CARAPI Close() = 0;
-
-    /**
      * Sets a mark position in this reader. The parameter {@code readLimit}
      * indicates how many characters can be read before the mark is invalidated.
      * Calling {@code reset()} will reposition the reader back to the marked
