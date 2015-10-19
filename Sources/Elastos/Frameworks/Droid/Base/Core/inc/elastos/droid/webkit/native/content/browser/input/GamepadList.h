@@ -35,11 +35,12 @@ namespace Input {
  * data.
  */
 //@JNINamespace("content")
-class GamepadList
+class GamepadList : public Object
 {
 private:
     class LazyHolder
     {
+        friend class GamepadList;
     private:
         static const AutoPtr<GamepadList> INSTANCE;
     };
@@ -51,6 +52,8 @@ private:
     public:
         InnerInputDeviceListener(
             /* [in] */ GamepadList* owner);
+
+        CAR_INTERFACE_DECL()
 
         //@Override
         CARAPI OnInputDeviceChanged(
@@ -198,9 +201,9 @@ private:
 private:
     static const Int32 MAX_GAMEPADS = 4;
 
-    const Object mLock;
+    /*const*/ Object mLock;
 
-    AutoPtr< ArrayOf<GamepadDevice> > mGamepadDevices;
+    AutoPtr< ArrayOf<GamepadDevice*> > mGamepadDevices;
     AutoPtr<IInputManager> mInputManager;
     Int32 mAttachedToWindowCounter;
     Boolean mIsGamepadAccessed;

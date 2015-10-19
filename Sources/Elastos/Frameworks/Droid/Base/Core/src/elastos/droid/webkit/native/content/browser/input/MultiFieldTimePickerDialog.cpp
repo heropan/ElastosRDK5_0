@@ -1,4 +1,12 @@
 
+#include "webkit/native/content/browser/input/MultiFieldTimePickerDialog.h"
+
+using Elastos::Droid::App::EIID_IAlertDialog;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::Widget::EIID_INumberPickerFormatter;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -10,6 +18,8 @@ namespace Input {
 //            MultiFieldTimePickerDialog::NumberFormatter
 //==================================================================
 
+CAR_INTERFACE_IMPL(MultiFieldTimePickerDialog::NumberFormatter, Object, INumberPickerFormatter);
+
 MultiFieldTimePickerDialog::NumberFormatter::NumberFormatter(
     /* [in] */ const String& format)
     : mFormat(format)
@@ -17,13 +27,15 @@ MultiFieldTimePickerDialog::NumberFormatter::NumberFormatter(
 }
 
 //@Override
-MultiFieldTimePickerDialog::NumberFormatter::Format(
+ECode MultiFieldTimePickerDialog::NumberFormatter::Format(
     /* [in] */ Int32 value,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    *str = String::Format(mFormat, value);
-    return NOERROR;
+    assert(0);
+    // TODO
+    // *str = String::Format(mFormat, value);
+    return E_NOT_IMPLEMENTED;
 }
 
 //==================================================================
@@ -33,6 +45,8 @@ MultiFieldTimePickerDialog::NumberFormatter::Format(
 const Int32 MultiFieldTimePickerDialog::SECOND_IN_MILLIS;
 const Int32 MultiFieldTimePickerDialog::MINUTE_IN_MILLIS;
 const Int32 MultiFieldTimePickerDialog::HOUR_IN_MILLIS;
+
+CAR_INTERFACE_IMPL_2(MultiFieldTimePickerDialog, Object, IAlertDialog, IDialogInterfaceOnClickListener);
 
 MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     /* [in] */ IContext* context,
@@ -46,11 +60,13 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     /* [in] */ Int32 step,
     /* [in] */ Boolean is24hourFormat,
     /* [in] */ OnMultiFieldTimeSetListener* listener)
+    : mStep(step)
+    , mIs24hourFormat(is24hourFormat)
 {
-    super(context, theme);
+    assert(0);
+    // TODO
+    // super(context, theme);
     mListener = listener;
-    mStep = step;
-    mIs24hourFormat = is24hourFormat;
 
     if (min >= max) {
         min = 0;
@@ -64,17 +80,21 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(
                     IContext::LAYOUT_INFLATER_SERVICE,
-                    (ILayoutInflater**)&inflater);
+                    (IInterface**)&inflater);
     AutoPtr<IView> view;
-    inflater->Inflate(R::layout::multi_field_time_picker_dialog, NULL,
-            (IView**)&view);
+    assert(0);
+    // TODO
+    // inflater->Inflate(R::layout::multi_field_time_picker_dialog, NULL,
+    //         (IView**)&view);
     SetView(view);
 
-    view->FindViewById(R::id::hour, (IView**)&mHourSpinner);
-    view->FindViewById(R::id::minute, (IView**)&mMinuteSpinner);
-    view->FindViewById(R::id::second, (IView**)&mSecSpinner);
-    view->FindViewById(R::id::milli, (IView**)&mMilliSpinner);
-    view->FindViewById(R::id::ampm, (IView**)&mAmPmSpinner);
+    assert(0);
+    // TODO
+    // view->FindViewById(R::id::hour, (IView**)&mHourSpinner);
+    // view->FindViewById(R::id::minute, (IView**)&mMinuteSpinner);
+    // view->FindViewById(R::id::second, (IView**)&mSecSpinner);
+    // view->FindViewById(R::id::milli, (IView**)&mMilliSpinner);
+    // view->FindViewById(R::id::ampm, (IView**)&mAmPmSpinner);
 
     Int32 minHour = min / HOUR_IN_MILLIS;
     Int32 maxHour = max / HOUR_IN_MILLIS;
@@ -82,12 +102,14 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     max -= maxHour * HOUR_IN_MILLIS;
 
     if (minHour == maxHour) {
-        mHourSpinner->SetEnabled(FALSE);
+        AutoPtr<IView> view = (IView*)mHourSpinner->Probe(EIID_IView);
+        view->SetEnabled(FALSE);
         hour = minHour;
     }
 
     if (is24hourFormat) {
-        mAmPmSpinner->SetVisibility(IView::GONE);
+        AutoPtr<IView> view = (IView*)mAmPmSpinner->Probe(EIID_IView);
+        view->SetVisibility(IView::GONE);
     }
     else {
         Int32 minAmPm = minHour / 12;
@@ -96,8 +118,10 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
         mAmPmSpinner->SetMinValue(minAmPm);
         mAmPmSpinner->SetMaxValue(maxAmPm);
         String am, pm;
-        context->GetString(R::string::time_picker_dialog_am, &am);
-        context->GetString(R::string::time_picker_dialog_pm, &pm);
+        assert(0);
+        // TODO
+        // context->GetString(R::string::time_picker_dialog_am, &am);
+        // context->GetString(R::string::time_picker_dialog_pm, &pm);
         AutoPtr< ArrayOf<String> > strs = ArrayOf<String>::Alloc(2);
         (*strs)[0] = am;
         (*strs)[1] = pm;
@@ -109,7 +133,8 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
         }
 
         if (minAmPm == maxAmPm) {
-            mAmPmSpinner->SetEnabled(FALSE);
+            AutoPtr<IView> view = (IView*)mAmPmSpinner->Probe(EIID_IView);
+            view->SetEnabled(FALSE);
             amPm = minAmPm;
 
             minHour %= 12;
@@ -132,14 +157,15 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     }
 
     if (minHour == maxHour) {
-        mHourSpinner->SetEnabled(FALSE);
+        AutoPtr<IView> view = (IView*)mHourSpinner->Probe(EIID_IView);
+        view->SetEnabled(FALSE);
     }
 
     mHourSpinner->SetMinValue(minHour);
     mHourSpinner->SetMaxValue(maxHour);
     mHourSpinner->SetValue(hour);
 
-    AutoPtr<NumberFormatter> twoDigitPaddingFormatter = new NumberFormatter("%02d");
+    AutoPtr<NumberFormatter> twoDigitPaddingFormatter = new NumberFormatter(String("%02d"));
 
     Int32 minMinute = min / MINUTE_IN_MILLIS;
     Int32 maxMinute = max / MINUTE_IN_MILLIS;
@@ -152,12 +178,15 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
         if (minMinute == maxMinute) {
             // Set this otherwise the box is empty until you stroke it.
             String format;
-            TwoDigitPaddingFormatter::Format(minMinute, &format);
+            assert(0);
+            // TODO
+            // TwoDigitPaddingFormatter::Format(minMinute, &format);
             AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
             (*array)[0] = format;
 
             mMinuteSpinner->SetDisplayedValues(array);
-            mMinuteSpinner->SetEnabled(FALSE);
+            AutoPtr<IView> view = (IView*)mMinuteSpinner->Probe(EIID_IView);
+            view->SetEnabled(FALSE);
             minute = minMinute;
         }
     }
@@ -167,7 +196,8 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     }
 
     if (step >= HOUR_IN_MILLIS) {
-        mMinuteSpinner->SetEnabled(FALSE);
+        AutoPtr<IView> view = (IView*)mMinuteSpinner->Probe(EIID_IView);
+        view->SetEnabled(FALSE);
     }
 
     mMinuteSpinner->SetValue(minute);
@@ -176,9 +206,12 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     if (step >= MINUTE_IN_MILLIS) {
         // Remove the ':' in front of the second spinner as well.
         AutoPtr<IView> secondColon;
-        view->FindViewById(R::id::second_colon, (IView**)&secondColon);
+        assert(0);
+        // TODO
+        // view->FindViewById(R::id::second_colon, (IView**)&secondColon);
         secondColon->SetVisibility(IView::GONE);
-        mSecSpinner->SetVisibility(IView::GONE);
+        AutoPtr<IView> secSpinnerView = (IView*)mSecSpinner->Probe(EIID_IView);
+        secSpinnerView->SetVisibility(IView::GONE);
     }
 
     Int32 minSecond = min / SECOND_IN_MILLIS;
@@ -187,29 +220,37 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     max -= maxSecond * SECOND_IN_MILLIS;
 
     if (minHour == maxHour && minMinute == maxMinute) {
-        mSecSpinner.setMinValue(minSecond);
-        mSecSpinner.setMaxValue(maxSecond);
+        mSecSpinner->SetMinValue(minSecond);
+        mSecSpinner->SetMaxValue(maxSecond);
         if (minSecond == maxSecond) {
             // Set this otherwise the box is empty until you stroke it.
-            mSecSpinner.setDisplayedValues(
-                new String[] { twoDigitPaddingFormatter.format(minSecond) });
-            mSecSpinner.setEnabled(false);
+            AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
+            String str;
+            twoDigitPaddingFormatter->Format(minSecond, &str);
+            (*array)[0] = str;
+            mSecSpinner->SetDisplayedValues(array);
+            AutoPtr<IView> view = (IView*)mSecSpinner->Probe(EIID_IView);
+            view->SetEnabled(FALSE);
             second = minSecond;
         }
-    } else {
-        mSecSpinner.setMinValue(0);
-        mSecSpinner.setMaxValue(59);
+    }
+    else {
+        mSecSpinner->SetMinValue(0);
+        mSecSpinner->SetMaxValue(59);
     }
 
-    mSecSpinner.setValue(second);
-    mSecSpinner.setFormatter(twoDigitPaddingFormatter);
+    mSecSpinner->SetValue(second);
+    mSecSpinner->SetFormatter(twoDigitPaddingFormatter);
 
     if (step >= SECOND_IN_MILLIS) {
         // Remove the '.' in front of the milli spinner as well.
         AutoPtr<IView> secondDot;
-        view->FindViewById(R::id::second_dot);
+        assert(0);
+        // TODO
+        // view->FindViewById(R::id::second_dot);
         secondDot->SetVisibility(IView::GONE);
-        mMilliSpinner->SetVisibility(IView::GONE);
+        AutoPtr<IView> milliSpinnerView = (IView*)mMilliSpinner->Probe(EIID_IView);
+        milliSpinnerView->SetVisibility(IView::GONE);
     }
 
     // Round to the nearest step.
@@ -221,7 +262,8 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
             mMilliSpinner->SetMaxValue(max / step);
 
             if (min == max) {
-                mMilliSpinner->SetEnabled(FALSE);
+                AutoPtr<IView> view = (IView*)mMilliSpinner->Probe(EIID_IView);
+                view->SetEnabled(FALSE);
                 milli = min;
             }
         }
@@ -235,11 +277,11 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
             mMilliSpinner->SetFormatter(format);
         }
         else if (step == 10) {
-            AutoPtr<NumberFormatter> format = new NumberFormatter("%02d");
+            AutoPtr<NumberFormatter> format = new NumberFormatter(String("%02d"));
             mMilliSpinner->SetFormatter(format);
         }
         else if (step == 100) {
-            AutoPtr<NumberFormatter> format = new NumberFormatter("%d");
+            AutoPtr<NumberFormatter> format = new NumberFormatter(String("%d"));
             mMilliSpinner->SetFormatter(format);
         }
         mMilliSpinner->SetValue(milli / step);
@@ -247,16 +289,18 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     }
     else if (step < SECOND_IN_MILLIS) {
         // Non-decimal step value.
-        ArrayList<String> strValue = new ArrayList<String>();
-        for (Int32 i = min; i < max; i += step) {
-            strValue->Add(String::Format(String("%03d"), i));
-        }
-        mMilliSpinner->SetMinValue(0);
-        mMilliSpinner->SetMaxValue(strValue.size() - 1);
-        mMilliSpinner->SetValue((milli - min) / step);
-        mMilliSpinner->SetDisplayedValues(
-            strValue.toArray(new String[strValue.size()]));
-        mBaseMilli = min;
+        assert(0);
+        // TODO
+        // ArrayList<String> strValue = new ArrayList<String>();
+        // for (Int32 i = min; i < max; i += step) {
+        //     strValue->Add(String::Format(String("%03d"), i));
+        // }
+        // mMilliSpinner->SetMinValue(0);
+        // mMilliSpinner->SetMaxValue(strValue.size() - 1);
+        // mMilliSpinner->SetValue((milli - min) / step);
+        // mMilliSpinner->SetDisplayedValues(
+        //     strValue.toArray(new String[strValue.size()]));
+        // mBaseMilli = min;
     }
     else {
         mBaseMilli = 0;

@@ -1,4 +1,18 @@
 
+#include "webkit/native/content/browser/input/GamepadDevice.h"
+#include "webkit/native/content/browser/input/GamepadList.h"
+#include "webkit/native/content/browser/input/GamepadMappings.h"
+#include "webkit/native/content/browser/input/CanonicalAxisIndex.h"
+#include "webkit/native/content/browser/input/CanonicalButtonIndex.h"
+#include "os/SystemClock.h"
+
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::EIID_IInputEvent;
+using Elastos::Utility::IList;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::EIID_IIterator;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -18,16 +32,27 @@ GamepadDevice::GamepadDevice(
     mDeviceIndex = index;
     inputDevice->GetId(&mDeviceId);
     inputDevice->GetName(&mDeviceName);
-    mTimestamp = SystemClock::UptimeMillis();
+    mTimestamp = SystemClock::GetUptimeMillis();
     // Get axis ids and initialize axes values.
-    final List<MotionRange> ranges = inputDevice.getMotionRanges();
-    mAxes = ArrayOf<Int32>::Alloc(ranges.size());
+    AutoPtr<IList> ranges;
+    inputDevice->GetMotionRanges((IList**)&ranges);
+    Int32 size;
+    ranges->GetSize(&size);
+    mAxes = ArrayOf<Int32>::Alloc(size);
     Int32 i = 0;
-    for (MotionRange range : ranges) {
-        if ((range.getSource() & InputDevice.SOURCE_CLASS_JOYSTICK) != 0) {
-            int axis = range.getAxis();
+    AutoPtr<IIterator> iter = (IIterator*)ranges->Probe(EIID_IIterator);
+    Boolean bNext = FALSE;
+    iter->HasNext(&bNext);
+    for (; bNext; iter->HasNext(&bNext)) {
+        AutoPtr<IMotionRange> range;
+        iter->GetNext((IInterface**)&range);
+        Int32 source;
+        range->GetSource(&source);
+        if ((source & IInputDevice::SOURCE_CLASS_JOYSTICK) != 0) {
+            Int32 axis;
+            range->GetAxis(&axis);
             assert(axis < 256);
-            mAxes[i++] = axis;
+            (*mAxes)[i++] = axis;
         }
     }
 }
@@ -35,7 +60,7 @@ GamepadDevice::GamepadDevice(
 /**
  * Updates the axes and buttons maping of a gamepad device to a standard gamepad format.
  */
-void GamepadDevice::updateButtonsAndAxesMapping()
+void GamepadDevice::UpdateButtonsAndAxesMapping()
 {
     mIsStandardGamepad = GamepadMappings::MapToStandardGamepad(
             mAxisValues, mButtonsValues, mRawAxes, mRawButtons, mDeviceName);
@@ -103,10 +128,12 @@ AutoPtr< ArrayOf<Float> > GamepadDevice::GetButtons()
  */
 void GamepadDevice::ClearData()
 {
-    Arrays::Fill(mAxisValues, 0);
-    Arrays::Fill(mRawAxes, 0);
-    Arrays::Fill(mButtonsValues, 0);
-    Arrays::Fill(mRawButtons, 0);
+    assert(0);
+    // TODO
+    // Arrays::Fill(mAxisValues, 0);
+    // Arrays::Fill(mRawAxes, 0);
+    // Arrays::Fill(mButtonsValues, 0);
+    // Arrays::Fill(mRawButtons, 0);
 }
 
 /**
@@ -123,7 +150,7 @@ Boolean GamepadDevice::HandleKeyEvent(
     assert(keyCode < 256);
     // Button value 0.0 must mean fully unpressed, and 1.0 must mean fully pressed.
     Int32 action;
-    event->GetAction(&action)
+    event->GetAction(&action);
     if (action == IKeyEvent::ACTION_DOWN) {
         (*mRawButtons)[keyCode] = 1.0f;
     }
@@ -131,7 +158,8 @@ Boolean GamepadDevice::HandleKeyEvent(
         (*mRawButtons)[keyCode] = 0.0f;
     }
 
-    event->GetEventTime(&mTimestamp);
+    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    inputEvent->GetEventTime(&mTimestamp);
 
     return TRUE;
 }
@@ -151,7 +179,8 @@ Boolean GamepadDevice::HandleMotionEvent(
         event->GetAxisValue(axis, &((*mRawAxes)[axis]));
     }
 
-    event->GetEventTime(&mTimestamp);
+    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    inputEvent->GetEventTime(&mTimestamp);
 
     return TRUE;
 }

@@ -1,6 +1,9 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "TimeZoneMonitor.h"
+#include "webkit/native/content/browser/TimeZoneMonitor.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::Content::EIID_IBroadcastReceiver;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -15,25 +18,22 @@ TimeZoneMonitor::InnerBroadcastReceiver::InnerBroadcastReceiver(
     /* [in] */ TimeZoneMonitor* owner)
     : mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
+
+CAR_INTERFACE_IMPL(TimeZoneMonitor::InnerBroadcastReceiver, Object, IBroadcastReceiver);
 
 ECode TimeZoneMonitor::InnerBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(intent);
-    // ==================before translated======================
-    // if (!intent.getAction().equals(Intent.ACTION_TIMEZONE_CHANGED)) {
-    //     Log.e(TAG, "unexpected intent");
-    //     return;
-    // }
-    //
-    // nativeTimeZoneChangedFromJava(mNativePtr);
-    assert(0);
-    return NOERROR;
+    String action;
+    intent->GetAction(&action);
+    if (!action.Equals(IIntent::ACTION_TIMEZONE_CHANGED)) {
+        Slogger::E(TAG, "unexpected intent");
+        return NOERROR;
+    }
+
+    return mOwner->NativeTimeZoneChangedFromJava(mOwner->mNativePtr);
 }
 
 //=====================================================================
@@ -41,40 +41,34 @@ ECode TimeZoneMonitor::InnerBroadcastReceiver::OnReceive(
 //=====================================================================
 const String TimeZoneMonitor::TAG("TimeZoneMonitor");
 
+TimeZoneMonitor::TimeZoneMonitor(
+    /* [in] */ IContext* context,
+    /* [in] */ Int64 nativePtr)
+    : mNativePtr(nativePtr)
+{
+    context->GetApplicationContext((IContext**)&mAppContext);
+    AutoPtr<IIntent> stickyIntent;
+    mAppContext->RegisterReceiver(mBroadcastReceiver, mFilter, (IIntent**)&stickyIntent);
+}
+
 AutoPtr<TimeZoneMonitor> TimeZoneMonitor::GetInstance(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativePtr)
 {
-    // ==================before translated======================
-    // return new TimeZoneMonitor(context, nativePtr);
-    assert(0);
-    AutoPtr<TimeZoneMonitor> empty;
-    return empty;
+    return new TimeZoneMonitor(context, nativePtr);
 }
 
 ECode TimeZoneMonitor::Stop()
 {
-    // ==================before translated======================
-    // mAppContext.unregisterReceiver(mBroadcastReceiver);
-    // mNativePtr = 0;
-    assert(0);
-    return NOERROR;
-}
+    mAppContext->UnregisterReceiver(mBroadcastReceiver);
+    mNativePtr = 0;
 
-TimeZoneMonitor::TimeZoneMonitor(
-    /* [in] */ IContext* context,
-    /* [in] */ Int64 nativePtr)
-{
-    // ==================before translated======================
-    // mAppContext = context.getApplicationContext();
-    // mNativePtr = nativePtr;
-    // mAppContext.registerReceiver(mBroadcastReceiver, mFilter);
+    return NOERROR;
 }
 
 ECode TimeZoneMonitor::NativeTimeZoneChangedFromJava(
     /* [in] */ Int64 nativeTimeZoneMonitorAndroid)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -83,5 +77,3 @@ ECode TimeZoneMonitor::NativeTimeZoneChangedFromJava(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

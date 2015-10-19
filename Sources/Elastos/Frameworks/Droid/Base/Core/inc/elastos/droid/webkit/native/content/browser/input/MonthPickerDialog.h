@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_MONTHPICKERDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_MONTHPICKERDIALOG_H__
 
-// import android.content.Context;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.content.R;
 
@@ -12,6 +15,8 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 namespace Input {
+
+class MonthPicker;
 
 class MonthPickerDialog : public TwoFieldDatePickerDialog
 {
@@ -35,7 +40,7 @@ public:
      *
      * @return The calendar view.
      */
-    CARAPI_(AutoPtr<IMonthPicker>) GetMonthPicker();
+    CARAPI_(AutoPtr<MonthPicker>) GetMonthPicker();
 
 protected:
     //@Override

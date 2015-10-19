@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_MONTHPICKER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_MONTHPICKER_H__
 
-// import android.content.Context;
+#include "ext/frameworkext.h"
+#include "webkit/native/content/browser/input/TwoFieldDatePicker.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.content.R;
 
@@ -11,6 +14,8 @@
 // import java.util.Calendar;
 // import java.util.Locale;
 // import java.util.TimeZone;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::ITimeZone;
 
 namespace Elastos {
 namespace Droid {
@@ -47,7 +52,7 @@ protected:
         /* [in] */ Double value);
 
     //@Override
-    CARAPI_(void) SetCurrentDate(
+    CARAPI SetCurrentDate(
         /* [in] */ Int32 year,
         /* [in] */ Int32 month);
 
@@ -72,7 +77,7 @@ protected:
 private:
     static const Int32 MONTHS_NUMBER = 12;
 
-    const AutoPtr< ArrayOf<String> > mShortMonths;
+    /*const*/ AutoPtr< ArrayOf<String> > mShortMonths;
 };
 
 } // namespace Input

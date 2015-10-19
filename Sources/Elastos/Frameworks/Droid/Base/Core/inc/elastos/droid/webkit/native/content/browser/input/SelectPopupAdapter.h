@@ -2,15 +2,17 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPADAPTER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPADAPTER_H__
 
-// import android.content.Context;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.widget.ArrayAdapter;
-// import android.widget.CheckedTextView;
-// import android.widget.TextView;
+#include "ext/frameworkext.h"
 
-// import java.util.ArrayList;
-// import java.util.List;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::Widget::IArrayAdapter;
+using Elastos::Droid::Widget::ICheckedTextView;
+using Elastos::Droid::Widget::ITextView;
+
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -28,6 +30,8 @@ class SelectPopupAdapter
     , public IArrayAdapter
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a new SelectPopupItem adapter for the select popup alert dialog list.
      * @param context        Application context.
@@ -37,7 +41,7 @@ public:
     SelectPopupAdapter(
         /* [in] */ IContext* context,
         /* [in] */ Int32 layoutResource,
-        /* [in] */ List<SelectPopupItem> items);
+        /* [in] */ IList* items);
 
     //@Override
     CARAPI GetView(
@@ -57,7 +61,7 @@ public:
 
 private:
     // Holds the items of the select popup alert dialog list.
-    List<SelectPopupItem> mItems;
+    AutoPtr<IList> mItems;
 
     // True if all items have type PopupItemType.ENABLED.
     Boolean mAreAllItemsEnabled;

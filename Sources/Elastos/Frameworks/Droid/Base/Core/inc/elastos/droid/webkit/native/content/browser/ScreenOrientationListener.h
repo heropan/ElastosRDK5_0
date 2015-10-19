@@ -19,6 +19,7 @@ using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IWindowManager;
 //using Elastos::Droid::Webkit::Base::ObserverList;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -36,7 +37,7 @@ public:
     /**
       * Observes changes in screen orientation.
       */
-    class ScreenOrientationObserver
+    class ScreenOrientationObserver : public Object
     {
     public:
         /**
@@ -53,13 +54,15 @@ public:
     {
     public:
         InnerRunnable(
-            /* [in] */ ScreenOrientationListener* owner);
+            /* [in] */ ScreenOrientationListener* owner,
+            /* [in] */ ScreenOrientationObserver* obs);
 
         // @Override
         CARAPI Run();
 
     private:
         ScreenOrientationListener* mOwner;
+        ScreenOrientationObserver* mObs;
     };
 
 private:
@@ -70,7 +73,7 @@ private:
       * that, an unreliable solution based on onConfigurationChanged has to be
       * used.
       */
-    class ScreenOrientationListenerBackend
+    class ScreenOrientationListenerBackend : public Object
     {
     public:
         /**
@@ -99,6 +102,11 @@ private:
         , public IComponentCallbacks
     {
     public:
+        ScreenOrientationConfigurationListener(
+          /* [in] */ ScreenOrientationListener* owner);
+
+        CAR_INTERFACE_DECL()
+
         // ScreenOrientationListenerBackend implementation:
         // @Override
         CARAPI StartListening();
@@ -113,6 +121,9 @@ private:
 
         // @Override
         CARAPI OnLowMemory();
+
+    private:
+      ScreenOrientationListener* mOwner;
     };
 
     /**
@@ -127,6 +138,11 @@ private:
         , public IDisplayListener
     {
     public:
+        ScreenOrientationDisplayListener(
+          /* [in] */ ScreenOrientationListener* owner);
+
+        CAR_INTERFACE_DECL();
+
         // ScreenOrientationListenerBackend implementation:
         // @Override
         CARAPI StartListening();
@@ -146,6 +162,9 @@ private:
         // @Override
         CARAPI OnDisplayChanged(
             /* [in] */ Int32 displayId);
+
+    private:
+        ScreenOrientationListener* mOwner;
     };
 
 public:

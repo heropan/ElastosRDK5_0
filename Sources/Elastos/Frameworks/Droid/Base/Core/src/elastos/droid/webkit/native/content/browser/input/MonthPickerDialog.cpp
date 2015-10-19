@@ -1,4 +1,7 @@
 
+#include "webkit/native/content/browser/input/MonthPickerDialog.h"
+#include "webkit/native/content/browser/input/MonthPicker.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -21,7 +24,9 @@ MonthPickerDialog::MonthPickerDialog(
     /* [in] */ Double maxMonth)
     : TwoFieldDatePickerDialog(context, callBack, year, monthOfYear, minMonth, maxMonth)
 {
-    SetTitle(R::string::month_picker_dialog_title);
+    assert(0);
+    // TODO
+    // SetTitle(R::string::month_picker_dialog_title);
 }
 
 //@Override
@@ -30,7 +35,7 @@ AutoPtr<TwoFieldDatePicker> MonthPickerDialog::CreatePicker(
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
 {
-    AutoPtr<TwoFieldDatePicker> picker = new MonthPicker(context, minValue, maxValue);
+    AutoPtr<TwoFieldDatePicker> picker;// TODO = new MonthPicker(context, minValue, maxValue);
     return picker;
 }
 
@@ -41,7 +46,10 @@ AutoPtr<TwoFieldDatePicker> MonthPickerDialog::CreatePicker(
  */
 AutoPtr<MonthPicker> MonthPickerDialog::GetMonthPicker()
 {
-    return (MonthPicker*) mPicker;
+    assert(0);
+    // TODO
+    // return (MonthPicker*) mPicker;
+    return NULL;
 }
 
 } // namespace Input

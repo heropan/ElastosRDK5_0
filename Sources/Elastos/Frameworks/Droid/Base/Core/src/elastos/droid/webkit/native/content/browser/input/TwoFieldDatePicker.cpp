@@ -60,12 +60,16 @@ ECode TwoFieldDatePicker::InnerNumberPickerOnValueChangeListener::OnValueChange(
 //                       TwoFieldDatePicker
 //==================================================================
 
+CAR_INTERFACE_IMPL(TwoFieldDatePicker, Object, IFrameLayout);
+
 TwoFieldDatePicker::TwoFieldDatePicker(
     /* [in] */ IContext* context,
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
 {
-    super(context, NULL, android::R::attr::datePickerStyle);
+    assert(0);
+    // TODO
+    // super(context, NULL, android::R::attr::datePickerStyle);
 
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICEj, (IInterface**)&inflater);
@@ -145,10 +149,11 @@ void TwoFieldDatePicker::UpdateDate(
     NotifyDateChanged();
 }
 
-void TwoFieldDatePicker::SetCurrentDate(
+ECode TwoFieldDatePicker::SetCurrentDate(
     /* [in] */ ICalendar* date)
 {
     mCurrentDate = date;
+    return NOERROR;
 }
 
 //@Override

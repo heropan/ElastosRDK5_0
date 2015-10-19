@@ -1,4 +1,37 @@
 
+#include "webkit/native/content/browser/input/InputDialogContainer.h"
+#include "webkit/native/content/browser/input/ChromeDatePickerDialog.h"
+#include "webkit/native/content/browser/input/DateDialogNormalizer.h"
+#include "webkit/native/content/browser/input/DateTimeSuggestionListAdapter.h"
+#include "webkit/native/content/browser/input/MonthPicker.h"
+#include "webkit/native/content/browser/input/MonthPickerDialog.h"
+#include "webkit/native/content/browser/input/WeekPicker.h"
+#include "webkit/native/content/browser/input/WeekPickerDialog.h"
+#include "webkit/native/base/ApiCompatibilityUtils.h"
+// TODO #include "text/format/CDateFormat.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::App::IAlertDialogBuilder;
+using Elastos::Droid::App::IDialog;
+using Elastos::Droid::App::EIID_IDialog;
+using Elastos::Droid::App::EIID_IAlertDialog;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::EIID_IDialogInterface;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+// TODO using Elastos::Droid::Text::Format::CDateFormat;
+using Elastos::Droid::Text::Format::IDateFormat;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
+using Elastos::Utility::ITimeZoneHelper;
+// TODO using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::EIID_ICalendar;
+using Elastos::Utility::Concurrent::ITimeUnit;
+using Elastos::Utility::Concurrent::ITimeUnitHelper;
+// TODO using Elastos::Utility::Concurrent::CTimeUnitHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,6 +42,8 @@ namespace Input {
 //==================================================================
 //    InputDialogContainer::InnerAdapterViewOnItemClickListener
 //==================================================================
+
+CAR_INTERFACE_IMPL(InputDialogContainer::InnerAdapterViewOnItemClickListener, Object, IAdapterViewOnItemClickListener);
 
 InputDialogContainer::InnerAdapterViewOnItemClickListener::InnerAdapterViewOnItemClickListener(
     /* [in] */ InputDialogContainer* owner,
@@ -34,13 +69,17 @@ ECode InputDialogContainer::InnerAdapterViewOnItemClickListener::OnItemClick(
     /* [in] */ Int32 position,
     /* [in] */ Int64 id)
 {
-    if (position == mAdapter->GetCount() - 1) {
+    Int32 count;
+    mAdapter->GetCount(&count);
+    if (position == count - 1) {
         mOwner->DismissDialog();
-        mOwner->ShowPickerDialog(mMdialogType, mDialogValue, mMin, mMax, mStep);
+        mOwner->ShowPickerDialog(mDialogType, mDialogValue, mMin, mMax, mStep);
     }
     else {
-        Double suggestionValue = mAdapter->GetItem(mPosition).value();
-        mOwner->mInputActionDelegate->ReplaceDateTime(suggestionValue);
+        assert(0);
+        // TODO
+        // Double suggestionValue = mAdapter->GetItem(mPosition).value();
+        // mOwner->mInputActionDelegate->ReplaceDateTime(suggestionValue);
         mOwner->DismissDialog();
         mOwner->mDialogAlreadyDismissed = TRUE;
     }
@@ -51,6 +90,8 @@ ECode InputDialogContainer::InnerAdapterViewOnItemClickListener::OnItemClick(
 //=========================================================================
 //        InputDialogContainer::InnerDialogInterfaceOnClickListener
 //=========================================================================
+
+CAR_INTERFACE_IMPL(InputDialogContainer::InnerDialogInterfaceOnClickListener, Object, IDialogInterfaceOnClickListener);
 
 InputDialogContainer::InnerDialogInterfaceOnClickListener::InnerDialogInterfaceOnClickListener(
     /* [in] */ InputDialogContainer* owner)
@@ -79,7 +120,8 @@ InputDialogContainer::InnerDialogInterfaceOnDismissListener::InnerDialogInterfac
 ECode InputDialogContainer::InnerDialogInterfaceOnDismissListener::OnDismiss(
     /* [in] */ IDialogInterface* dialog)
 {
-    if (mOwner->mDialog == dialog && !mOwner->mDialogAlreadyDismissed) {
+    AutoPtr<IDialogInterface> dialogInterface = (IDialogInterface*)mOwner->mDialog->Probe(EIID_IDialogInterface);
+    if (dialogInterface == dialog && !mOwner->mDialogAlreadyDismissed) {
         mOwner->mDialogAlreadyDismissed = TRUE;
         mOwner->mInputActionDelegate->CancelDateTimeDialog();
     }
@@ -91,7 +133,7 @@ ECode InputDialogContainer::InnerDialogInterfaceOnDismissListener::OnDismiss(
 //       InputDialogContainer::SetButtonDialogInterfaceOnClickListener
 //=============================================================================
 
-InputDialogContainer::SetButtonDialogInterfaceOnClickListener::ISetButtonDialogInterfaceOnClickListener(
+InputDialogContainer::SetButtonDialogInterfaceOnClickListener::SetButtonDialogInterfaceOnClickListener(
     /* [in] */ InputDialogContainer* owner)
     : mOwner(owner)
 {
@@ -102,7 +144,9 @@ ECode InputDialogContainer::SetButtonDialogInterfaceOnClickListener::OnClick(
     /* [in] */ Int32 which)
 {
     mOwner->mDialogAlreadyDismissed = TRUE;
-    mOwner->mInputActionDelegate->ReplaceDateTime(Double.NaN);
+    assert(0);
+    // TODO
+    // mOwner->mInputActionDelegate->ReplaceDateTime(Double.NaN);
     return NOERROR;
 }
 
@@ -177,10 +221,6 @@ ECode InputDialogContainer::FullTimeListener::OnTimeSet(
 //             InputDialogContainer::DateTimeListener
 //==================================================================
 
-private class DateTimeListener implements OnDateTimeSetListener {
-private final boolean mLocal;
-private final int mDialogType;
-
 InputDialogContainer::DateTimeListener::DateTimeListener(
     /* [in] */ InputDialogContainer* owner,
     /* [in] */ Int32 dialogType)
@@ -200,7 +240,7 @@ ECode InputDialogContainer::DateTimeListener::OnDateTimeSet(
     /* [in] */ Int32 hourOfDay,
     /* [in] */ Int32 minute)
 {
-    SetFieldDateTimeValue(mDialogType, year, month, monthDay, hourOfDay, minute, 0, 0, 0);
+    mOwner->SetFieldDateTimeValue(mDialogType, year, month, monthDay, hourOfDay, minute, 0, 0, 0);
     return NOERROR;
 }
 
@@ -222,10 +262,10 @@ void InputDialogContainer::MonthOrWeekListener::OnValueSet(
     /* [in] */ Int32 positionInYear)
 {
     if (mDialogType == sTextInputTypeMonth) {
-        SetFieldDateTimeValue(mDialogType, year, positionInYear, 0, 0, 0, 0, 0, 0);
+        mOwner->SetFieldDateTimeValue(mDialogType, year, positionInYear, 0, 0, 0, 0, 0, 0);
     }
     else {
-        SetFieldDateTimeValue(mDialogType, year, 0, 0, 0, 0, 0, 0, positionInYear);
+        mOwner->SetFieldDateTimeValue(mDialogType, year, 0, 0, 0, 0, 0, 0, positionInYear);
     }
 }
 
@@ -242,7 +282,7 @@ Int32 InputDialogContainer::sTextInputTypeWeek = 0;
 
 InputDialogContainer::InputDialogContainer(
     /* [in] */ IContext* context,
-    /* [in] */ InputActionDelegate inputActionDelegate)
+    /* [in] */ InputActionDelegate* inputActionDelegate)
     : mDialogAlreadyDismissed(FALSE)
     , mContext(context)
     , mInputActionDelegate(inputActionDelegate)
@@ -286,9 +326,15 @@ void InputDialogContainer::ShowPickerDialog(
     // For input type=time it is milliseconds since midnight.
     // For other types they are just milliseconds since 1970.
     // If |dialogValue| is NaN it means an empty value. We will show the current time.
-    if (Double.isNaN(dialogValue)) {
+    Boolean bIsNaN;
+    assert(0);
+    // TODO
+    // Double.isNaN(dialogValue);
+    if (bIsNaN) {
         AutoPtr<ICalendarHelper> helper;
-        CCalendarHelper::Acq((ICalendarHelper**)&helper);
+        assert(0);
+        // TODO
+        // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
         helper->GetInstance((ICalendar**)&cal);
         cal->Set(ICalendar::MILLISECOND, 0);
     }
@@ -297,18 +343,24 @@ void InputDialogContainer::ShowPickerDialog(
             cal = MonthPicker::CreateDateFromValue(dialogValue);
         }
         else if (dialogType == sTextInputTypeWeek) {
-            cal = WeekPicker.createDateFromValue(dialogValue);
+            cal = WeekPicker::CreateDateFromValue(dialogValue);
         }
         else {
             AutoPtr<IGregorianCalendar> gregorianCalendar;
-            CGregorianCalendar::New(TimeZone::GetTimeZone(String("UTC")), (IGregorianCalendar**)&gregorianCalendar);
+            assert(0);
+            // TODO
+            // CGregorianCalendar::New(TimeZone::GetTimeZone(String("UTC")), (IGregorianCalendar**)&gregorianCalendar);
             // According to the HTML spec we only use the Gregorian calendar
             // so we ignore the Julian/Gregorian transition.
             AutoPtr<IDate> date;
-            CDate::New(Long.MIN_VALUE, (IDate**)&date);
+            assert(0);
+            // TODO
+            // CDate::New(Long.MIN_VALUE, (IDate**)&date);
             gregorianCalendar->SetGregorianChange(date);
-            gregorianCalendar->SetTimeInMillis((Int64) dialogValue);
-            cal =  gregorianCalendar;
+            assert(0);
+            // TODO
+            // gregorianCalendar->SetTimeInMillis((Int64) dialogValue);
+            cal =  (ICalendar*)gregorianCalendar->Probe(EIID_ICalendar);
         }
     }
     if (dialogType == sTextInputTypeDate) {
@@ -333,7 +385,7 @@ void InputDialogContainer::ShowPickerDialog(
     }
     else if (dialogType == sTextInputTypeDateTime ||
             dialogType == sTextInputTypeDateTimeLocal) {
-        Int32 year, month, dayOfMonth, hourOfDay, second;
+        Int32 year, month, dayOfMonth, hourOfDay, minute, second;
         cal->Get(ICalendar::YEAR, &year);
         cal->Get(ICalendar::MONTH, &month);
         cal->Get(ICalendar::DAY_OF_MONTH, &dayOfMonth);
@@ -341,7 +393,9 @@ void InputDialogContainer::ShowPickerDialog(
         cal->Get(ICalendar::MINUTE, &minute);
         cal->Get(ICalendar::SECOND, &second);
         Int64 millisecond;
-        cal->Get(ICalendar::MILLISECOND, &millisecond);
+        assert(0);
+        // TODO
+        // cal->Get(ICalendar::MILLISECOND, &millisecond);
         ShowPickerDialog(dialogType,
                 year,
                 month,
@@ -375,45 +429,67 @@ void InputDialogContainer::ShowSuggestionDialog(
     /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions)
 {
     AutoPtr<IListView> suggestionListView;
-    CListView::New(mContext, (IListView**)&suggestionListView);
+    assert(0);
+    // TODO
+    // CListView::New(mContext, (IListView**)&suggestionListView);
     AutoPtr<IList> list;
-    Arrays::AsList(suggestions, (IList**)&list);
+    assert(0);
+    // TODO
+    // Arrays::AsList(suggestions, (IList**)&list);
     const AutoPtr<DateTimeSuggestionListAdapter> adapter =
         new DateTimeSuggestionListAdapter(mContext, list);
-    suggestionListView->SetAdapter(adapter);
-    AutoPtr<AdapterViewOnItemClickListener> listener = new InnerAdapterViewOnItemClickListener(
+    assert(0);
+    // TODO
+    // suggestionListView->SetAdapter(adapter);
+    AutoPtr<IAdapterViewOnItemClickListener> listener = new InnerAdapterViewOnItemClickListener(
            this, dialogType, dialogValue, min, max, step, adapter);
-    suggestionListView->SetOnItemClickListener(listener);
+    assert(0);
+    // TODO
+    // suggestionListView->SetOnItemClickListener(listener);
 
-    Int32 dialogTitleId = R::string::date_picker_dialog_title;
+    Int32 dialogTitleId;// TODO = R::string::date_picker_dialog_title;
     if (dialogType == sTextInputTypeTime) {
-        dialogTitleId = R::string::time_picker_dialog_title;
+        assert(0);
+        // TODO
+        // dialogTitleId = R::string::time_picker_dialog_title;
     }
     else if (dialogType == sTextInputTypeDateTime ||
             dialogType == sTextInputTypeDateTimeLocal) {
-        dialogTitleId = R::string::date_time_picker_dialog_title;
+        assert(0);
+        // TODO
+        // dialogTitleId = R::string::date_time_picker_dialog_title;
     }
     else if (dialogType == sTextInputTypeMonth) {
-        dialogTitleId = R::string::month_picker_dialog_title;
+        assert(0);
+        // TODO
+        // dialogTitleId = R::string::month_picker_dialog_title;
     }
     else if (dialogType == sTextInputTypeWeek) {
-        dialogTitleId = R::string::week_picker_dialog_title;
+        assert(0);
+        // TODO
+        // dialogTitleId = R::string::week_picker_dialog_title;
     }
 
     AutoPtr<IAlertDialogBuilder> dialogBuilder;
-    CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&dialogBuilder);
+    assert(0);
+    // TODO
+    // CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&dialogBuilder);
     dialogBuilder->SetTitle(dialogTitleId);
-    dialogBuilder->SetView(suggestionListView);
+    dialogBuilder->SetView((IView*)suggestionListView->Probe(EIID_IView));
     AutoPtr<ICharSequence> text;
-    mContext->GetText(android::R::string::cancel, (ICharSequence**)&text);
+    assert(0);
+    // TODO
+    // mContext->GetText(android::R::string::cancel, (ICharSequence**)&text);
     AutoPtr<IDialogInterfaceOnClickListener> clickListener =  new InnerDialogInterfaceOnClickListener(this);
     dialogBuilder->SetNegativeButton(text, clickListener);
     dialogBuilder->Create((IAlertDialog**)&mDialog);
 
     AutoPtr<InnerDialogInterfaceOnDismissListener> dismissListener = new InnerDialogInterfaceOnDismissListener(this);
-    mDialog->SetOnDismissListener(dismissListener);
+    assert(0);
+    // TODO
+    // mDialog->SetOnDismissListener(dismissListener);
     mDialogAlreadyDismissed = FALSE;
-    mDialog->Show();
+    ((IDialog*)mDialog->Probe(EIID_IDialog))->Show();
 }
 
 void InputDialogContainer::ShowDialog(
@@ -449,70 +525,103 @@ void InputDialogContainer::ShowPickerDialog(
     /* [in] */ Double max,
     /* [in] */ Double step)
 {
-    if (IsDialogShowing()) mDialog->Dismiss();
+    if (IsDialogShowing()) {
+        AutoPtr<IDialogInterface> dialog = (IDialogInterface*)mDialog->Probe(EIID_IDialogInterface);
+        dialog->Dismiss();
+    }
 
     Int32 stepTime = (Int32) step;
 
     if (dialogType == sTextInputTypeDate) {
-        AutoPtr<DateListener> dateListener = new DateListener(dialogType);
+        AutoPtr<DateListener> dateListener = new DateListener(this, dialogType);
         AutoPtr<ChromeDatePickerDialog> dialog = new ChromeDatePickerDialog(mContext,
                 dateListener,
                 year, month, monthDay);
-        DateDialogNormalizer::normalize(dialog->GetDatePicker(), dialog,
-                year, month, monthDay,
-                0, 0,
-                (Int64) min, (Int64) max);
+        assert(0);
+        // TODO
+        // DateDialogNormalizer::Normalize(dialog->GetDatePicker(), dialog,
+        //         year, month, monthDay,
+        //         0, 0,
+        //         (Int64) min, (Int64) max);
 
         AutoPtr<ICharSequence> text;
-        mContext->GetText(R::string::date_picker_dialog_title, (ICharSequence**)&text);
-        dialog->SetTitle(text);
-        mDialog = dialog;
+        assert(0);
+        // TODO
+        // mContext->GetText(R::string::date_picker_dialog_title, (ICharSequence**)&text);
+        // dialog->SetTitle(text);
+        mDialog = (IAlertDialog*)dialog->Probe(EIID_IAlertDialog);
     }
     else if (dialogType == sTextInputTypeTime) {
-        AutoPtr<FullTimeListener> listener = FullTimeListener(dialogType);
-        mDialog = new MultiFieldTimePickerDialog(
-            mContext, 0 /* theme */ ,
-            hourOfDay, minute, second, millis,
-            (Int32) min, (Int32) max, stepTime,
-            DateFormat::Is24HourFormat(mContext),
-            listener);
+        AutoPtr<FullTimeListener> listener = new FullTimeListener(this, dialogType);
+        AutoPtr<IDateFormat> dateFormat;
+        assert(0);
+        // TODO
+        // CDateFormat::AcquireSingleton((IDateFormat**)&dateFormat);
+        Boolean bFlag = FALSE;
+        dateFormat->Is24HourFormat(mContext, &bFlag);
+        assert(0);
+        // TODO
+        // mDialog = new MultiFieldTimePickerDialog(
+        //     mContext, 0 /* theme */ ,
+        //     hourOfDay, minute, second, millis,
+        //     (Int32) min, (Int32) max, stepTime,
+        //     bFlag,
+        //     listener);
     }
     else if (dialogType == sTextInputTypeDateTime ||
             dialogType == sTextInputTypeDateTimeLocal) {
-        AutoPtr<DateTimeListener> listener = new DateTimeListener(dialogType);
-        mDialog = new DateTimePickerDialog(mContext,
-                listener,
-                year, month, monthDay,
-                hourOfDay, minute,
-                DateFormat::Is24HourFormat(mContext), min, max);
+        AutoPtr<DateTimeListener> listener = new DateTimeListener(this, dialogType);
+        AutoPtr<IDateFormat> dateFormat;
+        assert(0);
+        // TODO
+        // CDateFormat::AcquireSingleton((IDateFormat**)&dateFormat);
+        Boolean bFlag = FALSE;
+        dateFormat->Is24HourFormat(mContext, &bFlag);
+        assert(0);
+        // TODO
+        // mDialog = new DateTimePickerDialog(mContext,
+        //         listener,
+        //         year, month, monthDay,
+        //         hourOfDay, minute,
+        //         bFlag, min, max);
     }
     else if (dialogType == sTextInputTypeMonth) {
         AutoPtr<MonthOrWeekListener> listener = new MonthOrWeekListener(this, dialogType);
-        mDialog = new MonthPickerDialog(mContext, listener,
-                year, month, min, max);
+        assert(0);
+        // TODO
+        // mDialog = new MonthPickerDialog(mContext, listener,
+        //         year, month, min, max);
     }
     else if (dialogType == sTextInputTypeWeek) {
-        AutoPtr<MonthOrWeekListener> listener = new MonthOrWeekListener(dialogType);
-        mDialog = new WeekPickerDialog(mContext, listener,
-                year, week, min, max);
+        AutoPtr<MonthOrWeekListener> listener = new MonthOrWeekListener(this, dialogType);
+        assert(0);
+        // TODO
+        // mDialog = new WeekPickerDialog(mContext, listener,
+        //         year, week, min, max);
     }
 
     if (ApiCompatibilityUtils::DatePickerRequiresAccept()) {
         AutoPtr<ICharSequence> text;
-        mContext->GetText(R::string::date_picker_dialog_set, (ICharSequence**)&text);
-        mDialog->SetButton(IDialogInterface::BUTTON_POSITIVE,
-                text,
-                (IDialogInterfaceOnClickListener*) mDialog);
+        assert(0);
+        // TODO
+        // mContext->GetText(R::string::date_picker_dialog_set, (ICharSequence**)&text);
+        // mDialog->SetButton(IDialogInterface::BUTTON_POSITIVE,
+        //         text,
+        //         (IDialogInterfaceOnClickListener*) mDialog);
     }
 
     AutoPtr<ICharSequence> text1;
-    mContext->GetText(android::R::string::cancel, (ICharSequence**)&text1);
-    mDialog->SetButton(IDialogInterface::BUTTON_NEGATIVE,
-            text1,
-            (IDialogInterfaceOnClickListener*) NULL);
+    assert(0);
+    // TODO
+    // mContext->GetText(android::R::string::cancel, (ICharSequence**)&text1);
+    // mDialog->SetButton(IDialogInterface::BUTTON_NEGATIVE,
+    //         text1,
+    //         (IDialogInterfaceOnClickListener*) NULL);
 
     AutoPtr<ICharSequence> text2;
-    mContext->GetText(R::string::date_picker_dialog_clear, (ICharSequence**)&text2);
+    assert(0);
+    // TODO
+    // mContext->GetText(R::string::date_picker_dialog_clear, (ICharSequence**)&text2);
     AutoPtr<IDialogInterfaceOnClickListener> clickListener = new SetButtonDialogInterfaceOnClickListener(this);
     mDialog->SetButton(IDialogInterface::BUTTON_NEUTRAL,
             text2,
@@ -520,22 +629,25 @@ void InputDialogContainer::ShowPickerDialog(
 
     AutoPtr<SetOnDismissListenerDialogInterfaceOnDismissListener> onDismissListener =
             new SetOnDismissListenerDialogInterfaceOnDismissListener(this);
-    mDialog->SetOnDismissListener(onDismissListener);
+    AutoPtr<IDialog> _dialog = (IDialog*)mDialog->Probe(EIID_IDialog);
+    _dialog->SetOnDismissListener(onDismissListener);
 
     mDialogAlreadyDismissed = FALSE;
-    mDialog->Show();
+    _dialog->Show();
 }
 
 Boolean InputDialogContainer::IsDialogShowing()
 {
     Boolean bFlag = FALSE;
-    return mDialog != NULL && (mDialog->IsShowing(&bFlag), bFlag);
+    AutoPtr<IDialog> dialog = (IDialog*)mDialog->Probe(EIID_IDialog);
+    return mDialog != NULL && (dialog->IsShowing(&bFlag), bFlag);
 }
 
 void InputDialogContainer::DismissDialog()
 {
     if (IsDialogShowing()) {
-        mDialog->Dismiss();
+        AutoPtr<IDialogInterface> dialog = (IDialogInterface*)mDialog->Probe(EIID_IDialogInterface);
+        dialog->Dismiss();
     }
 }
 
@@ -561,20 +673,42 @@ void InputDialogContainer::SetFieldDateTimeValue(
         mInputActionDelegate->ReplaceDateTime((year - 1970) * 12 + month);
     }
     else if (dialogType == sTextInputTypeWeek) {
-        mInputActionDelegate->ReplaceDateTime(
-              WeekPicker::CreateDateFromWeek(year, week)->GetTimeInMillis());
+        Int64 timeMillis;
+        WeekPicker::CreateDateFromWeek(year, week)->GetTimeInMillis(&timeMillis);
+        mInputActionDelegate->ReplaceDateTime(timeMillis);
     }
     else if (dialogType == sTextInputTypeTime) {
-        mInputActionDelegate->ReplaceDateTime(TimeUnit.HOURS.toMillis(hourOfDay) +
-                                             TimeUnit.MINUTES.toMillis(minute) +
-                                             TimeUnit.SECONDS.toMillis(second) +
-                                             millis);
+        AutoPtr<ITimeUnitHelper> helper;
+        assert(0);
+        // TODO
+        // CTimeUnitHelper::AcquireSingleton((ITimeUnitHelper**)&helper);
+        AutoPtr<ITimeUnit> iHourOfDay;
+        helper->GetHOURS((ITimeUnit**)&iHourOfDay);
+        Int64 _hourOfDay;
+        iHourOfDay->ToMillis(hourOfDay, &_hourOfDay);
+        AutoPtr<ITimeUnit> iMinute;
+        helper->GetMINUTES((ITimeUnit**)&iMinute);
+        Int64 _minute;
+        iMinute->ToMillis(minute, &_minute);
+        AutoPtr<ITimeUnit> iSecond;
+        helper->GetSECONDS((ITimeUnit**)&iSecond);
+        Int64 _second;
+        iSecond->ToMillis(second, &_second);
+        mInputActionDelegate->ReplaceDateTime(_hourOfDay + _minute + _second + millis);
     }
     else {
         AutoPtr<ICalendarHelper> helper;
-        CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+        assert(0);
+        // TODO
+        // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
         AutoPtr<ICalendar> cal;
-        helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&cal);
+        AutoPtr<ITimeZoneHelper> timeZoneHelper;
+        assert(0);
+        // TODO
+        // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+        AutoPtr<ITimeZone> timeZone;
+        timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZone);
+        helper->GetInstance(timeZone, (ICalendar**)&cal);
         cal->Clear();
         cal->Set(ICalendar::YEAR, year);
         cal->Set(ICalendar::MONTH, month);

@@ -7,6 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "webkit/native/content/browser/PositionObserver.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IOnPreDrawListener;
@@ -30,6 +31,8 @@ public:
         , public IOnPreDrawListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerViewTreeObserverOnPreDrawListener(
             /* [in] */ ViewPositionObserver* owner);
 

@@ -2,9 +2,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CHROMEDATEPICKERDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CHROMEDATEPICKERDIALOG_H__
 
-// import android.content.Context;
-// import android.content.DialogInterface;
-// import android.widget.DatePicker;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::App::IDatePickerDialog;
+using Elastos::Droid::App::IDatePickerDialogOnDateSetListener;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Widget::IDatePicker;
 
 namespace Elastos {
 namespace Droid {
@@ -19,12 +23,14 @@ namespace Input {
  * outside). This class will call the listener instead of the DatePickerDialog only when the
  * BUTTON_POSITIVE has been clicked.
  */
-class ChromeDatePickerDialog : public android.app.DatePickerDialog
+class ChromeDatePickerDialog
+    : public Object
+    // TODO , public IDatePickerDialog;
 {
 public:
     ChromeDatePickerDialog(
         /* [in] */ IContext* context,
-        /* [in] */ OnDateSetListener* callBack,
+        /* [in] */ IDatePickerDialogOnDateSetListener* callBack,
         /* [in] */ Int32 year,
         /* [in] */ Int32 monthOfYear,
         /* [in] */ Int32 dayOfMonth);
@@ -39,7 +45,7 @@ public:
         /* [in] */ Int32 which);
 
 private:
-    const AutoPtr<OnDateSetListener> mCallBack;
+    const AutoPtr<IDatePickerDialogOnDateSetListener> mCallBack;
 };
 
 } // namespace Input

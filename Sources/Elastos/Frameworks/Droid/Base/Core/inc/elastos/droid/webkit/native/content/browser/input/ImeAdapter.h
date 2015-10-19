@@ -10,6 +10,7 @@
 
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::ISpannableString;
@@ -206,7 +207,7 @@ public:
         /* [in] */ Int32 newCursorPosition,
         /* [in] */ Boolean isCommit);
 
-    CARAPI_(Boolean) FinishComposingText();
+    CARAPI_(void) FinishComposingText();
 
     CARAPI_(Boolean) TranslateAndSendNativeEvents(
         /* [in] */ IKeyEvent* event);

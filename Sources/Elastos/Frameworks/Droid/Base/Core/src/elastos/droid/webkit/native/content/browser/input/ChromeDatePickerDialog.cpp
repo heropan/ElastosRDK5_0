@@ -1,4 +1,6 @@
 
+#include "webkit/native/content/browser/input/ChromeDatePickerDialog.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -8,12 +10,12 @@ namespace Input {
 
 ChromeDatePickerDialog::ChromeDatePickerDialog(
     /* [in] */ IContext* context,
-    /* [in] */ OnDateSetListener* callBack,
+    /* [in] */ IDatePickerDialogOnDateSetListener* callBack,
     /* [in] */ Int32 year,
     /* [in] */ Int32 monthOfYear,
     /* [in] */ Int32 dayOfMonth)
-    : DatePickerDialog(context, 0, callBack, year, monthOfYear, dayOfMonth)
-    , mCallBack(callBack)
+    // TODO : DatePickerDialog(context, 0, callBack, year, monthOfYear, dayOfMonth)
+    : mCallBack(callBack)
 {
 }
 
@@ -26,18 +28,20 @@ ECode ChromeDatePickerDialog::OnClick(
     /* [in] */ IDialogInterface* dialog,
     /* [in] */ Int32 which)
 {
-    if (which == BUTTON_POSITIVE && mCallBack != NULL) {
-        AutoPtr<IDatePicker> datePicker = GetDatePicker();
-        datePicker->ClearFocus();
-        Int32 year, month, dayOfMonth;
-        datePicker->GetYear(&year);
-        datePicker->GetMonth(&month);
-        datePicker->GetDayOfMonth(&dayOfMonth);
-        mCallBack->OnDateSet(datePicker, year,
-                month, dayOfMonth);
-    }
+    assert(0);
+    // TODO
+    // if (which == BUTTON_POSITIVE && mCallBack != NULL) {
+    //     AutoPtr<IDatePicker> datePicker = GetDatePicker();
+    //     datePicker->ClearFocus();
+    //     Int32 year, month, dayOfMonth;
+    //     datePicker->GetYear(&year);
+    //     datePicker->GetMonth(&month);
+    //     datePicker->GetDayOfMonth(&dayOfMonth);
+    //     mCallBack->OnDateSet(datePicker, year,
+    //             month, dayOfMonth);
+    // }
 
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 } // namespace Input

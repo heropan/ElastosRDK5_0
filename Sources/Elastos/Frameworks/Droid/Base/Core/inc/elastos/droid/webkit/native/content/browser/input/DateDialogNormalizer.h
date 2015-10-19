@@ -2,11 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATEDIALOGNORMALIZER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATEDIALOGNORMALIZER_H__
 
-// import android.widget.DatePicker;
-// import android.widget.DatePicker.OnDateChangedListener;
+#include "ext/frameworkext.h"
 
-// import java.util.Calendar;
-// import java.util.TimeZone;
+using Elastos::Droid::Widget::IDatePicker;
+using Elastos::Droid::Widget::IDatePickerOnDateChangedListener;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::ITimeZone;
 
 namespace Elastos {
 namespace Droid {
@@ -27,7 +28,7 @@ public:
      */
     static CARAPI_(void) Normalize(
         /* [in] */ IDatePicker* picker,
-        /* [in] */ OnDateChangedListener* listener,
+        /* [in] */ IDatePickerOnDateChangedListener* listener,
         /* [in] */ Int32 year,
         /* [in] */ Int32 month,
         /* [in] */ Int32 day,

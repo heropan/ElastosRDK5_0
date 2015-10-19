@@ -1,4 +1,14 @@
 
+#include "webkit/native/content/browser/input/ImeAdapter.h"
+#include "webkit/native/content/browser/input/InputDialogContainer.h"
+// TODO #include "os/CHandler.h"
+
+// TODO using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Text::EIID_ISpannableString;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::EIID_IInputEvent;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -21,8 +31,8 @@ ImeAdapter::DelayedDismissInput::DelayedDismissInput(
 //@Override
 ECode ImeAdapter::DelayedDismissInput::Run()
 {
-    Attach(mNativeImeAdapter, sTextInputTypeNone);
-    DismissInput(TRUE);
+    mOwner->Attach(mNativeImeAdapter, sTextInputTypeNone);
+    mOwner->DismissInput(TRUE);
     return NOERROR;
 }
 
@@ -88,7 +98,9 @@ ImeAdapter::ImeAdapter(
     , mInputMethodManagerWrapper(wrapper)
     , mViewEmbedder(embedder)
 {
-    CHandler::New((IHandler**)&mHandler);
+    assert(0);
+    // TODO
+    // CHandler::New((IHandler**)&mHandler);
 }
 
 /**
@@ -190,8 +202,9 @@ void ImeAdapter::UpdateKeyboardVisibility(
         // Set a delayed task to perform unfocus. This avoids hiding the keyboard when tabbing
         // through text inputs or when JS rapidly changes focus to another text element.
         if (textInputType == sTextInputTypeNone) {
-            mDismissInput = new DelayedDismissInput(nativeImeAdapter);
-            mHandler->PostDelayed(mDismissInput, INPUT_DISMISS_DELAY);
+            mDismissInput = new DelayedDismissInput(this, nativeImeAdapter);
+            Boolean result = FALSE;
+            mHandler->PostDelayed(mDismissInput, INPUT_DISMISS_DELAY, &result);
             return;
         }
 
@@ -250,8 +263,10 @@ void ImeAdapter::DismissInput(
     mIsShowWithoutHideOutstanding  = FALSE;
     AutoPtr<IView> view = mViewEmbedder->GetAttachedView();
     if (mInputMethodManagerWrapper->IsActive(view)) {
-        mInputMethodManagerWrapper->HideSoftInputFromWindow(view->GetWindowToken(), 0,
-                unzoomIfNeeded ? mViewEmbedder->GetNewShowKeyboardReceiver() : null);
+        AutoPtr<IBinder> binder;
+        view->GetWindowToken((IBinder**)&binder);
+        mInputMethodManagerWrapper->HideSoftInputFromWindow(binder, 0,
+                unzoomIfNeeded ? mViewEmbedder->GetNewShowKeyboardReceiver() : NULL);
     }
 
     mViewEmbedder->OnDismissInput();
@@ -265,7 +280,7 @@ Boolean ImeAdapter::HasInputType()
 Boolean ImeAdapter::IsTextInputType(
     /* [in] */ Int32 type)
 {
-    return type != sTextInputTypeNone && !InputDialogContainer->IsDialogInputType(type);
+    return type != sTextInputTypeNone && !InputDialogContainer::IsDialogInputType(type);
 }
 
 Boolean ImeAdapter::HasTextInputType()
@@ -307,19 +322,23 @@ void ImeAdapter::SendKeyEventWithKeyCode(
     /* [in] */ Int32 keyCode,
     /* [in] */ Int32 flags)
 {
-    Int64 eventTime = SystemClock::UptimeMillis();
+    Int64 eventTime = SystemClock::GetUptimeMillis();
     AutoPtr<IKeyEvent> event1;
-    CKeyEvent::New(eventTime, eventTime,
-            IKeyEvent::ACTION_DOWN, keyCode, 0, 0,
-            IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-            flags, (IKeyEvent**)&event1);
+    assert(0);
+    // TODO
+    // CKeyEvent::New(eventTime, eventTime,
+    //         IKeyEvent::ACTION_DOWN, keyCode, 0, 0,
+    //         IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+    //         flags, (IKeyEvent**)&event1);
     TranslateAndSendNativeEvents(event1);
 
     AutoPtr<IKeyEvent> event2;
-    CKeyEvent::New(SystemClock::UptimeMillis(), eventTime,
-            IKeyEvent::ACTION_UP, keyCode, 0, 0,
-            IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-            flags, (IKeyEvent**)&event2);
+    assert(0);
+    // TODO
+    // CKeyEvent::New(SystemClock::UptimeMillis(), eventTime,
+    //         IKeyEvent::ACTION_UP, keyCode, 0, 0,
+    //         IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+    //         flags, (IKeyEvent**)&event2);
     TranslateAndSendNativeEvents(event2);
 }
 
@@ -331,16 +350,17 @@ Boolean ImeAdapter::CheckCompositionQueueAndCallNative(
     /* [in] */ Boolean isCommit)
 {
     if (mNativeImeAdapterAndroid == 0) return false;
-    String textStr = text.toString();
+    String textStr;
+    text->ToString(&textStr);
 
     // Committing an empty string finishes the current composition.
     Boolean isFinish = textStr.IsEmpty();
     mViewEmbedder->OnImeEvent(isFinish);
     Int32 keyCode = ShouldSendKeyEventWithKeyCode(textStr);
-    Int64 timeStampMs = SystemClock::uptimeMillis();
+    Int64 timeStampMs = SystemClock::GetUptimeMillis();
 
     if (keyCode != COMPOSITION_KEY_CODE) {
-        sendKeyEventWithKeyCode(keyCode,
+        SendKeyEventWithKeyCode(keyCode,
                 IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE);
     }
     else {
@@ -392,10 +412,11 @@ Boolean ImeAdapter::TranslateAndSendNativeEvents(
 
     Int32 metaState;
     event->GetMetaState(&metaState);
-    Int32 action;
-    event->GetAction(&action);
+    Int32 _action;
+    event->GetAction(&_action);
+    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
     Int64 eventTime;
-    event->GetEventTime(&eventTime);
+    inputEvent->GetEventTime(&eventTime);
     Int32 keyCode;
     event->GetKeyCode(&keyCode);
     Int32 unicodeChar;
@@ -585,19 +606,21 @@ void ImeAdapter::PopulateUnderlinesFromSpans(
 {
     if (text->Probe(EIID_ISpannableString) == NULL) return;
 
-    AutoPtr<ISpannableString> spannableString = (SpannableString*)text->Probe(EIID_ISpannableString);
-    CharacterStyle spans[] =
-            spannableString.getSpans(0, text.length(), CharacterStyle.class);
-    for (CharacterStyle span : spans) {
-        if (span instanceof BackgroundColorSpan) {
-            nativeAppendBackgroundColorSpan(underlines, spannableString.getSpanStart(span),
-                    spannableString.getSpanEnd(span),
-                    ((BackgroundColorSpan) span).getBackgroundColor());
-        } else if (span instanceof UnderlineSpan) {
-            nativeAppendUnderlineSpan(underlines, spannableString.getSpanStart(span),
-                    spannableString.getSpanEnd(span));
-        }
-    }
+    assert(0);
+    // TODO
+    // AutoPtr<ISpannableString> spannableString = (ISpannableString*)text->Probe(EIID_ISpannableString);
+    // CharacterStyle spans[] =
+    //         spannableString.getSpans(0, text.length(), CharacterStyle.class);
+    // for (CharacterStyle span : spans) {
+    //     if (span instanceof BackgroundColorSpan) {
+    //         NativeAppendBackgroundColorSpan(underlines, spannableString.getSpanStart(span),
+    //                 spannableString.getSpanEnd(span),
+    //                 ((BackgroundColorSpan) span).getBackgroundColor());
+    //     } else if (span instanceof UnderlineSpan) {
+    //         nativeAppendUnderlineSpan(underlines, spannableString.getSpanStart(span),
+    //                 spannableString.getSpanEnd(span));
+    //     }
+    // }
 }
 
 //@CalledByNative

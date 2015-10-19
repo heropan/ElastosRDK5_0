@@ -1,4 +1,15 @@
 
+#include "webkit/native/content/browser/input/HandleView.h"
+#include <elastos/core/Math.h>
+
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::ITypedValueHelper;
+// TODO using Elastos::Droid::Utility::CTypedValueHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -17,11 +28,12 @@ HandleView::InnerListener::InnerListener(
 }
 
 //@Override
-void HandleView::InnerListener::OnPositionChanged(
+ECode HandleView::InnerListener::OnPositionChanged(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
     mOwner->UpdateParentPosition(x, y);
+    return NOERROR;
 }
 
 //==================================================================
@@ -42,9 +54,11 @@ const Float HandleView::LINE_OFFSET_Y_DIP = 5.0f;
 static AutoPtr< ArrayOf<Int32> > TEXT_VIEW_HANDLE_ATTRS_Init()
 {
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(3);
-    (*array)[0] = android::R::attr::textSelectHandleLeft;
-    (*array)[1] = android::R::attr::textSelectHandle;
-    (*array)[2] = android::R::attr::textSelectHandleRight;
+    assert(0);
+    // TODO
+    // (*array)[0] = android::R::attr::textSelectHandleLeft;
+    // (*array)[1] = android::R::attr::textSelectHandle;
+    // (*array)[2] = android::R::attr::textSelectHandleRight;
     return array;
 }
 
@@ -57,6 +71,7 @@ HandleView::HandleView(
     /* [in] */ PositionObserver* parentPositionObserver)
     : mPositionX(0)
     , mPositionY(0)
+    , mParent(parent)
     , mParentPositionX(0)
     , mParentPositionY(0)
     , mHotspotX(0.0f)
@@ -69,14 +84,17 @@ HandleView::HandleView(
     , mTouchTimer(0)
     , mIsInsertionHandle(FALSE)
     , mFadeStartTime(0)
+    , mController(controller)
 {
-    super(parent.getContext());
-    mParent = parent;
+    assert(0);
+    // TODO
+    // super(parent.getContext());
     AutoPtr<IContext> context;
     mParent->GetContext((IContext**)&context);
-    mController = controller;
-    CPopupWindow::New(context, NULL, android::R::attr::textSelectHandleWindowStyle,
-        (IPopupWindow**)&mContainer);
+    assert(0);
+    // TODO
+    // CPopupWindow::New(context, NULL, android::R::attr::textSelectHandleWindowStyle,
+    //     (IPopupWindow**)&mContainer);
     mContainer->SetSplitTouchEnabled(TRUE);
     mContainer->SetClippingEnabled(FALSE);
     mContainer->SetAnimationStyle(0);
@@ -85,13 +103,15 @@ HandleView::HandleView(
 
     // Convert line offset dips to pixels.
     AutoPtr<ITypedValueHelper> helper;
-    CTypedValueHelper::AcquireSingleton((ITypedValueHelper**)&helper);
+    assert(0);
+    // TODO
+    // CTypedValueHelper::AcquireSingleton((ITypedValueHelper**)&helper);
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     AutoPtr<IDisplayMetrics> metrics;
     res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     helper->ApplyDimension(ITypedValue::COMPLEX_UNIT_DIP,
-            LINE_OFFSET_Y_DIP, metrics, &mLineOffsetY);
+            LINE_OFFSET_Y_DIP, metrics, (Float*)&mLineOffsetY);
 
     mAlpha = 1.f;
 
@@ -117,24 +137,26 @@ void HandleView::SetOrientation(
     mDrawable->GetIntrinsicWidth(&handleWidth);
     switch (pos) {
         case LEFT: {
-            mHotspotX = (handleWidth * 3) / 4f;
+            mHotspotX = (handleWidth * 3) / 4.0f;
             break;
         }
 
         case RIGHT: {
-            mHotspotX = handleWidth / 4f;
+            mHotspotX = handleWidth / 4.0f;
             break;
         }
 
         case CENTER:
         default: {
-            mHotspotX = handleWidth / 2f;
+            mHotspotX = handleWidth / 2.0f;
             break;
         }
     }
     mHotspotY = 0;
 
-    Invalidate();
+    assert(0);
+    // TODO
+    // Invalidate();
 }
 
 //@Override
@@ -145,8 +167,10 @@ ECode HandleView::OnMeasure(
     Int32 width, height;
     mDrawable->GetIntrinsicWidth(&width);
     mDrawable->GetIntrinsicHeight(&height);
-    SetMeasuredDimension(width,
-            height);
+    assert(0);
+    // TODO
+    // SetMeasuredDimension(width,
+    //         height);
 
     return NOERROR;
 }
@@ -179,9 +203,11 @@ void HandleView::OnPositionChanged()
 {
     // Deferring View invalidation while the handles are hidden prevents
     // scheduling conflicts with the compositor.
-    if (GetVisibility() != VISIBLE) return;
-    mContainer->Update(GetContainerPositionX(), GetContainerPositionY(),
-            GetRight() - GetLeft(), GetBottom() - GetTop());
+    assert(0);
+    // TODO
+    // if (GetVisibility() != VISIBLE) return;
+    // mContainer->Update(GetContainerPositionX(), GetContainerPositionY(),
+    //         GetRight() - GetLeft(), GetBottom() - GetTop());
 }
 
 void HandleView::ShowContainer()
@@ -200,7 +226,7 @@ void HandleView::Show()
         return;
     }
     mParentPositionObserver->AddListener(mParentPositionListener);
-    mContainer->SetContentView(this);
+    mContainer->SetContentView((IView*)this);
     ShowContainer();
 
     // Hide paste view when handle is moved on screen.
@@ -303,7 +329,9 @@ ECode HandleView::OnDraw(
     /* [in] */ ICanvas* c)
 {
     UpdateAlpha();
-    mDrawable->SetBounds(0, 0, GetRight() - GetLeft(), GetBottom() - GetTop());
+    assert(0);
+    // TODO
+    // mDrawable->SetBounds(0, 0, GetRight() - GetLeft(), GetBottom() - GetTop());
     mDrawable->Draw(c);
 
     return NOERROR;
@@ -327,12 +355,12 @@ ECode HandleView::OnTouchEvent(
             mTouchToWindowOffsetY = mDownPositionY - mPositionY;
             mIsDragging = TRUE;
             mController->BeforeStartUpdatingPosition(this);
-            mTouchTimer = SystemClock::UptimeMillis();
+            mTouchTimer = SystemClock::GetUptimeMillis();
             break;
         }
 
         case IMotionEvent::ACTION_MOVE: {
-            Int32 rawX, rawY;
+            Float rawX, rawY;
             ev->GetRawY(&rawY);
             ev->GetRawX(&rawX);
             UpdatePosition(rawX, rawY);
@@ -341,9 +369,11 @@ ECode HandleView::OnTouchEvent(
 
         case IMotionEvent::ACTION_UP:
             if (mIsInsertionHandle) {
-                Int64 delay = SystemClock::UptimeMillis() - mTouchTimer;
+                Int64 delay = SystemClock::GetUptimeMillis() - mTouchTimer;
                 AutoPtr<IViewConfigurationHelper> helper;
-                CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+                assert(0);
+                // TODO
+                // CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
                 Int32 tapTimeout;
                 helper->GetTapTimeout(&tapTimeout);
                 if (delay < tapTimeout) {
@@ -401,7 +431,7 @@ void HandleView::UpdatePosition(
     const Float newPosX = rawX - mTouchToWindowOffsetX + mHotspotX;
     const Float newPosY = rawY - mTouchToWindowOffsetY + mHotspotY - mLineOffsetY;
 
-    mController->UpdatePosition(this, Math::Round(newPosX), Math::Round(newPosY));
+    mController->UpdatePosition(this, Elastos::Core::Math::Round(newPosX), Elastos::Core::Math::Round(newPosY));
 }
 
 // x and y are in physical pixels.
@@ -409,35 +439,35 @@ void HandleView::PositionAt(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    MoveTo(x - Math::Round(mHotspotX), y - Math::Round(mHotspotY));
+    MoveTo(x - Elastos::Core::Math::Round(mHotspotX), y - Elastos::Core::Math::Round(mHotspotY));
 }
 
 // Returns the x coordinate of the position that the handle appears to be pointing to relative
 // to the handles "parent" view.
 Int32 HandleView::GetAdjustedPositionX()
 {
-    return mPositionX + Math::Round(mHotspotX);
+    return mPositionX + Elastos::Core::Math::Round(mHotspotX);
 }
 
 // Returns the y coordinate of the position that the handle appears to be pointing to relative
 // to the handles "parent" view.
 Int32 HandleView::GetAdjustedPositionY()
 {
-    return mPositionY + Math::Round(mHotspotY);
+    return mPositionY + Elastos::Core::Math::Round(mHotspotY);
 }
 
 // Returns the x coordinate of the postion that the handle appears to be pointing to relative to
 // the root view of the application.
 Int32 HandleView::GetRootViewRelativePositionX()
 {
-    return GetContainerPositionX() + Math::Round(mHotspotX);
+    return GetContainerPositionX() + Elastos::Core::Math::Round(mHotspotX);
 }
 
 // Returns the y coordinate of the postion that the handle appears to be pointing to relative to
 // the root view of the application.
 Int32 HandleView::GetRootViewRelativePositionY()
 {
-    return GetContainerPositionY() + Math::Round(mHotspotY);
+    return GetContainerPositionY() + Elastos::Core::Math::Round(mHotspotY);
 }
 
 // Returns a suitable y coordinate for the text position corresponding to the handle.
@@ -459,13 +489,17 @@ void HandleView::UpdateAlpha()
     if (mAlpha == 1.f) return;
 
     AutoPtr<IAnimationUtils> utils;
-    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&utils);
+    assert(0);
+    // TODO
+    // CAnimationUtils::AcquireSingleton((IAnimationUtils**)&utils);
     Int64 timeMillis;
     utils->CurrentAnimationTimeMillis(&timeMillis);
-    mAlpha = Math::Min(1.f,
+    mAlpha = Elastos::Core::Math::Min(1.f,
             (timeMillis - mFadeStartTime) / FADE_DURATION);
     mDrawable->SetAlpha((Int32) (255 * mAlpha));
-    Invalidate();
+    assert(0);
+    // TODO
+    // Invalidate();
 }
 
 /**
@@ -473,26 +507,34 @@ void HandleView::UpdateAlpha()
  */
 void HandleView::BeginFadeIn()
 {
-    if (getVisibility() == VISIBLE) return;
+    assert(0);
+    // TODO
+    // if (GetVisibility() == VISIBLE) return;
     mAlpha = 0.f;
     AutoPtr<IAnimationUtils> utils;
-    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&utils);
+    assert(0);
+    // TODO
+    // CAnimationUtils::AcquireSingleton((IAnimationUtils**)&utils);
     utils->CurrentAnimationTimeMillis(&mFadeStartTime);
-    SetVisibility(VISIBLE);
+    assert(0);
+    // TODO
+    // SetVisibility(VISIBLE);
     // Position updates may have been deferred while the handle was hidden.
     OnPositionChanged();
 }
 
 void HandleView::ShowPastePopupWindow()
 {
-    AutoPtr<InsertionHandleController> ihc = (InsertionHandleController*) mController;
-    if (mIsInsertionHandle && ihc->CanPaste()) {
-        if (mPastePopupWindow == NULL) {
-            // Lazy initialization: create when actually shown only.
-            mPastePopupWindow = ihc.new PastePopupMenu();
-        }
-        mPastePopupWindow->Show();
-    }
+    assert(0);
+    // TODO
+    // AutoPtr<InsertionHandleController> ihc = (InsertionHandleController*) mController;
+    // if (mIsInsertionHandle && ihc->CanPaste()) {
+    //     if (mPastePopupWindow == NULL) {
+    //         // Lazy initialization: create when actually shown only.
+    //         // mPastePopupWindow = ihc.new PastePopupMenu();
+    //     }
+    //     mPastePopupWindow->Show();
+    // }
 }
 
 } // namespace Input

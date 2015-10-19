@@ -1,6 +1,11 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ViewPositionObserver.h"
+#include "webkit/native/content/browser/ViewPositionObserver.h"
+
+using Elastos::Droid::View::EIID_IOnPreDrawListener;
+using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Utility::EIID_IIterable;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -11,21 +16,22 @@ namespace Browser {
 //=====================================================================
 //     ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener
 //=====================================================================
+
+CAR_INTERFACE_IMPL(ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener, Object, IOnPreDrawListener);
+
 ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener::InnerViewTreeObserverOnPreDrawListener(
     /* [in] */ ViewPositionObserver* owner)
     : mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-Boolean ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener::OnPreDraw()
+ECode ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener::OnPreDraw(
+    /* [out] */ Boolean* result)
 {
-    // ==================before translated======================
-    // updatePosition();
-    // return true;
-    assert(0);
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    mOwner->UpdatePosition();
+    *result = TRUE;
+    return NOERROR;
 }
 
 //=====================================================================
@@ -33,102 +39,101 @@ Boolean ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener::OnPreDraw(
 //=====================================================================
 ViewPositionObserver::ViewPositionObserver(
     /* [in] */ IView* view)
+    : mView(view)
 {
-    // ==================before translated======================
-    // mView = view;
-    // mListeners = new ArrayList<Listener>();
-    // updatePosition();
-    // mPreDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-    //     @Override
-    //     public boolean onPreDraw() {
-    //         updatePosition();
-    //         return true;
-    //     }
-    // };
+    assert(0);
+    // TODO
+    // CArrayList::New((IArrayList**)&mListeners);
+    UpdatePosition();
+    mPreDrawListener = new InnerViewTreeObserverOnPreDrawListener(this);
 }
 
 Int32 ViewPositionObserver::GetPositionX()
 {
-    // ==================before translated======================
-    // // The stored position may be out-of-date. Get the real current position.
-    // updatePosition();
-    // return mPosition[0];
-    assert(0);
-    return 0;
+    // The stored position may be out-of-date. Get the real current position.
+    UpdatePosition();
+    return (*mPosition)[0];
 }
 
 Int32 ViewPositionObserver::GetPositionY()
 {
-    // ==================before translated======================
-    // // The stored position may be out-of-date. Get the real current position.
-    // updatePosition();
-    // return mPosition[1];
-    assert(0);
-    return 0;
+    // The stored position may be out-of-date. Get the real current position.
+    UpdatePosition();
+    return (*mPosition)[1];
 }
 
 ECode ViewPositionObserver::AddListener(
     /* [in] */ Listener* listener)
 {
-    VALIDATE_NOT_NULL(listener);
-    // ==================before translated======================
-    // if (mListeners.contains(listener)) return;
-    //
-    // if (mListeners.isEmpty()) {
-    //     mView.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
-    //     updatePosition();
-    // }
-    //
-    // mListeners.add(listener);
-    assert(0);
-    return NOERROR;
+    Boolean bContains;
+    mListeners->Contains((IObject*)listener, &bContains);
+    if (bContains) return NOERROR;
+
+    Boolean bIsEmpty;
+    mListeners->IsEmpty(&bIsEmpty);
+    if (bIsEmpty) {
+        AutoPtr<IViewTreeObserver> observer;
+        mView->GetViewTreeObserver((IViewTreeObserver**)&observer);
+        observer->AddOnPreDrawListener(mPreDrawListener);
+        UpdatePosition();
+    }
+
+    Boolean result;
+    return mListeners->Add((IObject*)listener, &result);
 }
 
 ECode ViewPositionObserver::RemoveListener(
     /* [in] */ Listener* listener)
 {
-    VALIDATE_NOT_NULL(listener);
-    // ==================before translated======================
-    // if (!mListeners.contains(listener)) return;
-    //
-    // mListeners.remove(listener);
-    //
-    // if (mListeners.isEmpty()) {
-    //     mView.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
-    // }
-    assert(0);
+    Boolean bContains;
+    mListeners->Contains((IObject*)listener, &bContains);
+    if (!bContains) return NOERROR;
+
+    Boolean modified;
+    mListeners->Remove((IObject*)listener, &modified);
+
+    Boolean bIsEmpty;
+    mListeners->IsEmpty(&bIsEmpty);
+    if (bIsEmpty) {
+        AutoPtr<IViewTreeObserver> observer;
+        mView->GetViewTreeObserver((IViewTreeObserver**)&observer);
+        observer->RemoveOnPreDrawListener(mPreDrawListener);
+    }
+
     return NOERROR;
 }
 
 AutoPtr< ArrayOf<Int32> > ViewPositionObserver::MiddleInitMposition()
 {
-    // ==================before translated======================
-    // int[] result = new int[2];
-    assert(0);
-    AutoPtr< ArrayOf<Int32> > empty;
-    return empty;
+    return ArrayOf<Int32>::Alloc(2);
 }
 
 ECode ViewPositionObserver::NotifyListeners()
 {
-    // ==================before translated======================
-    // for (int i = 0; i < mListeners.size(); i++) {
-    //     mListeners.get(i).onPositionChanged(mPosition[0], mPosition[1]);
-    // }
-    assert(0);
+    AutoPtr<IIterable> iterable = (IIterable*)mListeners->Probe(EIID_IIterable);
+    AutoPtr<IIterator> iterator;
+    iterable->GetIterator((IIterator**)&iterator);
+    Boolean bNext = FALSE;
+    for (iterator->HasNext(&bNext); bNext; iterator->HasNext(&bNext)) {
+        AutoPtr<Listener> listener;
+        iterator->GetNext((IInterface**)&listener);
+        listener->OnPositionChanged((*mPosition)[0], (*mPosition)[1]);
+    }
+
     return NOERROR;
 }
 
 ECode ViewPositionObserver::UpdatePosition()
 {
-    // ==================before translated======================
-    // int previousPositionX = mPosition[0];
-    // int previousPositionY = mPosition[1];
-    // mView.getLocationInWindow(mPosition);
-    // if (mPosition[0] != previousPositionX || mPosition[1] != previousPositionY) {
-    //     notifyListeners();
-    // }
+    Int32 previousPositionX = (*mPosition)[0];
+    Int32 previousPositionY = (*mPosition)[1];
     assert(0);
+    // TODO
+    // mView->GetLocationInWindow(mPosition);
+    if ((*mPosition)[0] != previousPositionX || (*mPosition)[1] != previousPositionY) {
+        NotifyListeners();
+    }
+
     return NOERROR;
 }
 
@@ -137,5 +142,3 @@ ECode ViewPositionObserver::UpdatePosition()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

@@ -1,6 +1,17 @@
-// wuweizuo automatic build .cpp file from .java file.
 
-#include "ScreenOrientationListener.h"
+#include "webkit/native/content/browser/ScreenOrientationListener.h"
+#include "webkit/native/ui/gfx/DeviceDisplayInfo.h"
+#include "webkit/native/base/ThreadUtils.h"
+#include <elastos/utility/logging/Slogger.h>
+#include "os/Build.h"
+
+using Elastos::Droid::Content::EIID_IComponentCallbacks;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Ui::Gfx::DeviceDisplayInfo;
+using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -12,37 +23,40 @@ namespace Browser {
 //               ScreenOrientationListener::InnerRunnable
 //=====================================================================
 ScreenOrientationListener::InnerRunnable::InnerRunnable(
-    /* [in] */ ScreenOrientationListener* owner)
+    /* [in] */ ScreenOrientationListener* owner,
+    /* [in] */ ScreenOrientationObserver* obs)
     : mOwner(owner)
+    , mObs(obs)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode ScreenOrientationListener::InnerRunnable::Run()
 {
-    // ==================before translated======================
-    // obs.onScreenOrientationChanged(mOrientation);
-    assert(0);
+    mObs->OnScreenOrientationChanged(mOwner->mOrientation);
     return NOERROR;
 }
 
 //=====================================================================
 //  ScreenOrientationListener::ScreenOrientationConfigurationListener
 //=====================================================================
+
+ScreenOrientationListener::ScreenOrientationConfigurationListener::ScreenOrientationConfigurationListener(
+    /* [in] */ ScreenOrientationListener* owner)
+    : mOwner(owner)
+{
+}
+
+CAR_INTERFACE_IMPL(ScreenOrientationListener::ScreenOrientationConfigurationListener, ScreenOrientationListenerBackend, IComponentCallbacks);
+
 ECode ScreenOrientationListener::ScreenOrientationConfigurationListener::StartListening()
 {
-    // ==================before translated======================
-    // mAppContext.registerComponentCallbacks(this);
-    assert(0);
+    mOwner->mAppContext->RegisterComponentCallbacks(this);
     return NOERROR;
 }
 
 ECode ScreenOrientationListener::ScreenOrientationConfigurationListener::StopListening()
 {
-    // ==================before translated======================
-    // mAppContext.unregisterComponentCallbacks(this);
-    assert(0);
+    mOwner->mAppContext->UnregisterComponentCallbacks(this);
     return NOERROR;
 }
 
@@ -50,90 +64,88 @@ ECode ScreenOrientationListener::ScreenOrientationConfigurationListener::OnConfi
     /* [in] */ IConfiguration* newConfig)
 {
     VALIDATE_NOT_NULL(newConfig);
-    // ==================before translated======================
-    // notifyObservers();
-    assert(0);
+    mOwner->NotifyObservers();
     return NOERROR;
 }
 
 ECode ScreenOrientationListener::ScreenOrientationConfigurationListener::OnLowMemory()
 {
-    assert(0);
     return NOERROR;
 }
 
 //=====================================================================
 //     ScreenOrientationListener::ScreenOrientationDisplayListener
 //=====================================================================
+
+ScreenOrientationListener::ScreenOrientationDisplayListener::ScreenOrientationDisplayListener(
+    /* [in] */ ScreenOrientationListener* owner)
+    : mOwner(owner)
+{
+}
+
+CAR_INTERFACE_IMPL(ScreenOrientationListener::ScreenOrientationDisplayListener, ScreenOrientationListenerBackend, IDisplayListener);
+
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::StartListening()
 {
-    // ==================before translated======================
-    // DisplayManager displayManager =
-    //         (DisplayManager) mAppContext.getSystemService(Context.DISPLAY_SERVICE);
-    // displayManager.registerDisplayListener(this, null);
-    assert(0);
-    return NOERROR;
+    AutoPtr<IDisplayManager> displayManager;
+    mOwner->mAppContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&displayManager);
+    return displayManager->RegisterDisplayListener(this, NULL);
 }
 
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::StopListening()
 {
-    // ==================before translated======================
-    // DisplayManager displayManager =
-    //         (DisplayManager) mAppContext.getSystemService(Context.DISPLAY_SERVICE);
-    // displayManager.unregisterDisplayListener(this);
-    assert(0);
-    return NOERROR;
+    AutoPtr<IDisplayManager> displayManager;
+    mOwner->mAppContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&displayManager);
+    return displayManager->UnregisterDisplayListener(this);
 }
 
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::OnDisplayAdded(
     /* [in] */ Int32 displayId)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::OnDisplayRemoved(
     /* [in] */ Int32 displayId)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode ScreenOrientationListener::ScreenOrientationDisplayListener::OnDisplayChanged(
     /* [in] */ Int32 displayId)
 {
-    // ==================before translated======================
-    // notifyObservers();
-    assert(0);
+    mOwner->NotifyObservers();
     return NOERROR;
 }
 
 //=====================================================================
 //                      ScreenOrientationListener
 //=====================================================================
+
 const String ScreenOrientationListener::TAG("ScreenOrientationListener");
 AutoPtr<ScreenOrientationListener> ScreenOrientationListener::sInstance;
 
+ScreenOrientationListener::ScreenOrientationListener()
+{
+    mBackend = Build::VERSION::SDK_INT >= 17 ?
+            (ScreenOrientationListenerBackend*)(new ScreenOrientationDisplayListener(this)) :
+            (ScreenOrientationListenerBackend*)(new ScreenOrientationConfigurationListener(this));
+}
+
 AutoPtr<ScreenOrientationListener> ScreenOrientationListener::GetInstance()
 {
-    // ==================before translated======================
-    // ThreadUtils.assertOnUiThread();
-    //
-    // if (sInstance == null) {
-    //     sInstance = new ScreenOrientationListener();
-    // }
-    //
-    // return sInstance;
-    assert(0);
-    AutoPtr<ScreenOrientationListener> empty;
-    return empty;
+    ThreadUtils::AssertOnUiThread();
+
+    if (sInstance == NULL) {
+        sInstance = new ScreenOrientationListener();
+    }
+
+    return sInstance;
 }
 
 ECode ScreenOrientationListener::InjectConfigurationListenerBackendForTest()
 {
-    // ==================before translated======================
-    // mBackend = new ScreenOrientationConfigurationListener();
-    assert(0);
+    mBackend = (ScreenOrientationListenerBackend*)(new ScreenOrientationConfigurationListener(this));
     return NOERROR;
 }
 
@@ -143,36 +155,38 @@ ECode ScreenOrientationListener::AddObserver(
 {
     VALIDATE_NOT_NULL(observer);
     VALIDATE_NOT_NULL(context);
-    // ==================before translated======================
-    // if (mAppContext == null) {
-    //     mAppContext = context.getApplicationContext();
-    // }
-    //
-    // assert mAppContext == context.getApplicationContext();
-    // assert mAppContext != null;
-    //
+
+    if (mAppContext == NULL) {
+        context->GetApplicationContext((IContext**)&mAppContext);
+    }
+
+    AutoPtr<IContext> con;
+    context->GetApplicationContext((IContext**)&con);
+    assert(mAppContext == con);
+    assert(mAppContext != NULL);
+
+    assert(0);
+    // TODO
     // if (!mObservers.addObserver(observer)) {
-    //     Log.w(TAG, "Adding an observer that is already present!");
-    //     return;
+    //     Slogger::W(TAG, "Adding an observer that is already present!");
+    //     return NOERROR;
     // }
-    //
+
+    assert(0);
+    // TODO
     // // If we got our first observer, we should start listening.
     // if (mObservers.size() == 1) {
-    //     updateOrientation();
-    //     mBackend.startListening();
+    //     UpdateOrientation();
+    //     mBackend->StartListening();
     // }
-    //
-    // // We need to send the current value to the added observer as soon as
-    // // possible but outside of the current stack.
-    // final ScreenOrientationObserver obs = observer;
-    // ThreadUtils.assertOnUiThread();
-    // ThreadUtils.postOnUiThread(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         obs.onScreenOrientationChanged(mOrientation);
-    //     }
-    // });
-    assert(0);
+
+    // We need to send the current value to the added observer as soon as
+    // possible but outside of the current stack.
+    AutoPtr<ScreenOrientationObserver> obs = observer;
+    ThreadUtils::AssertOnUiThread();
+    AutoPtr<IRunnable> runnable = new InnerRunnable(this, obs);
+    ThreadUtils::PostOnUiThread(runnable);
+
     return NOERROR;
 }
 
@@ -180,73 +194,72 @@ ECode ScreenOrientationListener::RemoveObserver(
     /* [in] */ ScreenOrientationObserver* observer)
 {
     VALIDATE_NOT_NULL(observer);
-    // ==================before translated======================
+
+    assert(0);
+    // TODO
     // if (!mObservers.removeObserver(observer)) {
-    //     Log.w(TAG, "Removing an inexistent observer!");
+    //     Slogger::W(TAG, "Removing an inexistent observer!");
     //     return;
     // }
-    //
+
+    assert(0);
+    // TODO
     // if (mObservers.isEmpty()) {
     //     // The last observer was removed, we should just stop listening.
-    //     mBackend.stopListening();
+    //     mBackend->StopListening();
     // }
-    assert(0);
-    return NOERROR;
-}
 
-ScreenOrientationListener::ScreenOrientationListener()
-    : new ScreenOrientationConfigurationListener();
-     }
-{
-    // ==================before translated======================
-    // mBackend = Build.VERSION.SDK_INT >= 17 ?
-    //         new ScreenOrientationDisplayListener() :
-    //         new ScreenOrientationConfigurationListener();
+    return NOERROR;
 }
 
 ECode ScreenOrientationListener::NotifyObservers()
 {
-    // ==================before translated======================
-    // int previousOrientation = mOrientation;
-    // updateOrientation();
-    //
-    // DeviceDisplayInfo.create(mAppContext).updateNativeSharedDisplayInfo();
-    //
-    // if (mOrientation == previousOrientation) {
-    //     return;
-    // }
-    //
+    Int32 previousOrientation = mOrientation;
+    UpdateOrientation();
+
+    DeviceDisplayInfo::Create(mAppContext)->UpdateNativeSharedDisplayInfo();
+
+    if (mOrientation == previousOrientation) {
+        return NOERROR;
+    }
+
+    assert(0);
+    // TODO
     // for (ScreenOrientationObserver observer : mObservers) {
     //     observer.onScreenOrientationChanged(mOrientation);
     // }
-    assert(0);
+
     return NOERROR;
 }
 
 ECode ScreenOrientationListener::UpdateOrientation()
 {
-    // ==================before translated======================
-    // WindowManager windowManager =
-    //         (WindowManager) mAppContext.getSystemService(Context.WINDOW_SERVICE);
-    //
-    // switch (windowManager.getDefaultDisplay().getRotation()) {
-    //     case Surface.ROTATION_0:
-    //         mOrientation = 0;
-    //         break;
-    //     case Surface.ROTATION_90:
-    //         mOrientation = 90;
-    //         break;
-    //     case Surface.ROTATION_180:
-    //         mOrientation = 180;
-    //         break;
-    //     case Surface.ROTATION_270:
-    //         mOrientation = -90;
-    //         break;
-    //     default:
-    //         throw new IllegalStateException(
-    //                 "Display.getRotation() shouldn't return that value");
-    // }
-    assert(0);
+    AutoPtr<IWindowManager> windowManager;
+    mAppContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&windowManager);
+
+    AutoPtr<IDisplay> display;
+    windowManager->GetDefaultDisplay((IDisplay**)&display);
+    Int32 rotation;
+    display->GetRotation(&rotation);
+    switch (rotation) {
+        case ISurface::ROTATION_0:
+            mOrientation = 0;
+            break;
+        case ISurface::ROTATION_90:
+            mOrientation = 90;
+            break;
+        case ISurface::ROTATION_180:
+            mOrientation = 180;
+            break;
+        case ISurface::ROTATION_270:
+            mOrientation = -90;
+            break;
+        default:
+            assert(0);
+            // throw new IllegalStateException(
+            //         "Display.getRotation() shouldn't return that value");
+    }
+
     return NOERROR;
 }
 
@@ -255,5 +268,3 @@ ECode ScreenOrientationListener::UpdateOrientation()
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-

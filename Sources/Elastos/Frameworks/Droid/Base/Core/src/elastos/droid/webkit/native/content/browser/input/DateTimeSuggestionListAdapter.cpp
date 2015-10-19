@@ -1,4 +1,11 @@
 
+#include "webkit/native/content/browser/input/DateTimeSuggestionListAdapter.h"
+// TODO #include "view/CLayoutInflaterHelper.h"
+
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::ILayoutInflaterHelper;
+// TODO using Elastos::Droid::View::CLayoutInflaterHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -8,10 +15,12 @@ namespace Input {
 
 DateTimeSuggestionListAdapter::DateTimeSuggestionListAdapter(
     /* [in] */ IContext* context,
-    /* [in] */ List<DateTimeSuggestion> objects)
+    /* [in] */ IList* objects)
     : mContext(context)
 {
-    super(context, R::layout::date_time_suggestion, objects);
+    assert(0);
+    // TODO
+    // super(context, R::layout::date_time_suggestion, objects);
 }
 
 //@Override
@@ -23,23 +32,45 @@ ECode DateTimeSuggestionListAdapter::GetView(
 {
     VALIDATE_NOT_NULL(outView);
 
-    View layout = convertView;
-    if (convertView == null) {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        layout = inflater.inflate(R.layout.date_time_suggestion, parent, false);
-    }
-    TextView labelView = (TextView) layout.findViewById(R.id.date_time_suggestion_value);
-    TextView sublabelView = (TextView) layout.findViewById(R.id.date_time_suggestion_label);
-
-    if (position == getCount() - 1) {
-        labelView.setText(mContext.getText(R.string.date_picker_dialog_other_button_label));
-        sublabelView.setText("");
-    } else {
-        labelView.setText(getItem(position).localizedValue());
-        sublabelView.setText(getItem(position).label());
+    AutoPtr<IView> layout = convertView;
+    if (convertView == NULL) {
+        AutoPtr<ILayoutInflaterHelper> helper;
+        assert(0);
+        // TODO
+        // CLayoutInflaterHelper::AcquireSingleton((ILayoutInflaterHelper**)&helper);
+        AutoPtr<ILayoutInflater> inflater;
+        helper->From(mContext, (ILayoutInflater**)&inflater);
+        assert(0);
+        // TODO
+        // inflater->Inflate(R::layout::date_time_suggestion, parent, false,
+        //     (ILayoutInflater**)&layout);
     }
 
-    return layout;
+    AutoPtr<ITextView> labelView;
+    assert(0);
+    // TODO
+    // layout->FindViewById(R::id::date_time_suggestion_value, (IView**)&labelView);
+    AutoPtr<ITextView> sublabelView;
+    assert(0);
+    // TODO
+    // layout->FindViewById(R::id::date_time_suggestion_label, (IView**)&sublabelView);
+
+    assert(0);
+    // TODO
+    // if (position == GetCount() - 1) {
+    //     AutoPtr<ICharSequence> text;
+    //     mContext->GetText(R::string::date_picker_dialog_other_button_label, (ICharSequence**)&text);
+    //     labelView->SetText(text);
+    //     sublabelView->SetText(String(""));
+    // }
+    // else {
+    //     labelView->SetText(GetItem(position)->LocalizedValue());
+    //     sublabelView->SetText(GetItem(position)->Label());
+    // }
+
+    *outView = layout;
+
+    return E_NOT_IMPLEMENTED;
 }
 
 //@Override
@@ -47,8 +78,10 @@ ECode DateTimeSuggestionListAdapter::GetCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    *count = super.getCount() + 1;
-    return NOERROR;
+    assert(0);
+    // TODO
+    // *count = super.getCount() + 1;
+    return E_NOT_IMPLEMENTED;
 }
 
 } // namespace Input

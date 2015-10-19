@@ -1,5 +1,23 @@
 
-#include "elastos/droid/webkit/native/content/browser/PopupZoomer.h"
+#include ""elastos/droid/webkit/native/content/browser/PopupZoomer.h"
+//TODO #include ""elastos/droid/graphics/CCanvas.h"
+//TODO #include ""elastos/droid/graphics/CPaint.h"
+//TODO #include ""elastos/droid/graphics/CPath.h"
+//TODO #include ""elastos/droid/graphics/CRectF.h"
+//TODO #include ""elastos/droid/graphics/CPorterDuffXfermode.h"
+//TODO #include ""elastos/droid/view/CMotionEventHelper.h"
+//TODO #include ""elastos/droid/view/CGestureDetector.h"
+
+//TODO using Elastos::Droid::Graphics::CCanvas;
+//TODO using Elastos::Droid::Graphics::CPaint;
+//TODO using Elastos::Droid::Graphics::CPath;
+//TODO using Elastos::Droid::Graphics::CRectF;
+//TODO using Elastos::Droid::Graphics::CPorterDuffXfermode;
+using Elastos::Droid::Graphics::IXfermode;
+using Elastos::Droid::Graphics::EIID_IXfermode;
+//TODO using Elastos::Droid::View::CMotionEventHelper;
+//TODO using Elastos::Droid::View::CGestureDetector;
+using Elastos::Droid::View::IMotionEventHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -16,31 +34,42 @@ PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::InnerGestureDetectorSi
 {
 }
 
-Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnScroll(
+ECode PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnScroll(
     /* [in] */ IMotionEvent* e1,
     /* [in] */ IMotionEvent* e2,
     /* [in] */ Float distanceX,
-    /* [in] */ Float distanceY)
+    /* [in] */ Float distanceY,
+    /* [out] */ Boolean* result)
 {
-    if (mOwner->mAnimating) return TRUE;
+    VALIDATE_NOT_NULL(result);
 
-    Int32 x, y;
+    if (mOwner->mAnimating) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    Float x, y;
     e1->GetX(&x);
     e1->GetY(&y);
-    if (IsTouchOutsideArea(x, y)) {
-        Hide(TRUE);
+    if (mOwner->IsTouchOutsideArea(x, y)) {
+        mOwner->Hide(TRUE);
     }
     else {
-        Scroll(distanceX, distanceY);
+        mOwner->Scroll(distanceX, distanceY);
     }
 
-    return TRUE;
+    *result = TRUE;
+
+    return NOERROR;
 }
 
-Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnSingleTapUp(
-    /* [in] */ IMotionEvent* e)
+ECode PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnSingleTapUp(
+    /* [in] */ IMotionEvent* e,
+    /* [out] */ Boolean* result)
 {
-    return HandleTapOrPress(e, FALSE);
+    VALIDATE_NOT_NULL(result);
+    *result = HandleTapOrPress(e, FALSE);
+    return NOERROR;
 }
 
 ECode PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnLongPress(
@@ -54,20 +83,22 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
     /* [in] */ IMotionEvent* e,
     /* [in] */ Boolean isLongPress)
 {
-    if (mAnimating) return TRUE;
+    if (mOwner->mAnimating) return TRUE;
 
     Float x;
     e->GetX(&x);
     Float y;
     e->GetY(&y);
-    if (IsTouchOutsideArea(x, y)) {
+    if (mOwner->IsTouchOutsideArea(x, y)) {
         // User clicked on area outside the popup.
-        Hide(TRUE);
+        mOwner->Hide(TRUE);
     }
-    else if (mOnTapListener != NULL) {
-        AutoPtr<IPointF> converted = ConvertTouchPoint(x, y);
+    else if (mOwner->mOnTapListener != NULL) {
+        AutoPtr<IPointF> converted = mOwner->ConvertTouchPoint(x, y);
         AutoPtr<IMotionEventHelper> motionEventHelper;
-        CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
+        assert(0);
+        // TODO
+        //CMotionEventHelper::AcquireSingleton((IMotionEventHelper**)&motionEventHelper);
         AutoPtr<IMotionEvent> event;
         motionEventHelper->ObtainNoHistory(e, (IMotionEvent**)&event);
         Float x, y;
@@ -75,13 +106,17 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
         converted->GetY(&y);
         event->SetLocation(x, y);
         if (isLongPress) {
-            mOnTapListener->OnLongPress(mOwner, event);
+            assert(0);
+            // TODO
+            // mOwner->mOnTapListener->OnLongPress(mOwner, event);
         }
         else {
-            mOnTapListener->OnSingleTap(mOwner, event);
+            assert(0);
+            // TODO
+            // mOwner->mOnTapListener->OnSingleTap(mOwner, event);
         }
 
-        Hide(TRUE);
+        mOwner->Hide(TRUE);
     }
 
     return TRUE;
@@ -96,19 +131,28 @@ PopupZoomer::ReverseInterpolator::ReverseInterpolator(
 {
 }
 
-Float PopupZoomer::ReverseInterpolator::GetInterpolation(
-    /* [in] */ Float input)
+ECode PopupZoomer::ReverseInterpolator::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* interpolation)
 {
+    VALIDATE_NOT_NULL(interpolation);
+
     input = 1.0f - input;
-    if (mInterpolator == NULL) return input;
-    Float interpolation;
-    mInterpolator->GetInterpolation(input, &interpolation);
-    return interpolation;
+    if (mInterpolator == NULL) {
+        *interpolation = input;
+        return NOERROR;
+    }
+
+    assert(0);
+    // TODO
+    // return mInterpolator->GetInterpolation(input, &interpolation);
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //                             PopupZoomer
 //=====================================================================
+
 const String PopupZoomer::LOGTAG("PopupZoomer");
 const Int32 PopupZoomer::ZOOM_BOUNDS_MARGIN;
 const Int64 PopupZoomer::ANIMATION_DURATION;
@@ -118,297 +162,289 @@ Float PopupZoomer::sOverlayCornerRadius;
 
 PopupZoomer::PopupZoomer(
     /* [in] */ IContext* context)
+    //TODO : View(context)
 {
-    // ==================before translated======================
-    // super(context);
-    //
-    // setVisibility(INVISIBLE);
-    // setFocusable(true);
-    // setFocusableInTouchMode(true);
-    //
-    // GestureDetector.SimpleOnGestureListener listener =
-    //         new GestureDetector.SimpleOnGestureListener() {
-    //             @Override
-    //             public boolean onScroll(MotionEvent e1, MotionEvent e2,
-    //                     float distanceX, float distanceY) {
-    //                 if (mAnimating) return true;
-    //
-    //                 if (isTouchOutsideArea(e1.getX(), e1.getY())) {
-    //                     hide(true);
-    //                 } else {
-    //                     scroll(distanceX, distanceY);
-    //                 }
-    //                 return true;
-    //             }
-    //
-    //             @Override
-    //             public boolean onSingleTapUp(MotionEvent e) {
-    //                 return handleTapOrPress(e, false);
-    //             }
-    //
-    //             @Override
-    //             public void onLongPress(MotionEvent e) {
-    //                 handleTapOrPress(e, true);
-    //             }
-    //
-    //             private boolean handleTapOrPress(MotionEvent e, boolean isLongPress) {
-    //                 if (mAnimating) return true;
-    //
-    //                 float x = e.getX();
-    //                 float y = e.getY();
-    //                 if (isTouchOutsideArea(x, y)) {
-    //                     // User clicked on area outside the popup.
-    //                     hide(true);
-    //                 } else if (mOnTapListener != null) {
-    //                     PointF converted = convertTouchPoint(x, y);
-    //                     MotionEvent event = MotionEvent.obtainNoHistory(e);
-    //                     event.setLocation(converted.x, converted.y);
-    //                     if (isLongPress) {
-    //                         mOnTapListener.onLongPress(PopupZoomer.this, event);
-    //                     } else {
-    //                         mOnTapListener.onSingleTap(PopupZoomer.this, event);
-    //                     }
-    //                     hide(true);
-    //                 }
-    //                 return true;
-    //             }
-    //         };
-    // mGestureDetector = new GestureDetector(context, listener);
+    assert(0);
+    // TODO
+    // SetVisibility(IView::INVISIBLE);
+    // SetFocusable(TRUE);
+    // SetFocusableInTouchMode(TRUE);
+
+    AutoPtr<SimpleOnGestureListener> listener = new InnerGestureDetectorSimpleOnGestureListener(this);
+
+    // TODO
+    // CGestureDetector::New(context, listener, (IGestureDetector**)&mGestureDetector);
 }
 
 ECode PopupZoomer::SetOnTapListener(
     /* [in] */ OnTapListener* listener)
 {
-    VALIDATE_NOT_NULL(listener);
-    // ==================before translated======================
-    // mOnTapListener = listener;
-    assert(0);
+    mOnTapListener = listener;
     return NOERROR;
 }
 
 ECode PopupZoomer::SetOnVisibilityChangedListener(
     /* [in] */ OnVisibilityChangedListener* listener)
 {
-    VALIDATE_NOT_NULL(listener);
-    // ==================before translated======================
-    // mOnVisibilityChangedListener = listener;
-    assert(0);
+    mOnVisibilityChangedListener = listener;
     return NOERROR;
 }
 
 ECode PopupZoomer::SetBitmap(
     /* [in] */ IBitmap* bitmap)
 {
-    VALIDATE_NOT_NULL(bitmap);
-    // ==================before translated======================
-    // if (mZoomedBitmap != null) {
-    //     mZoomedBitmap.recycle();
-    //     mZoomedBitmap = null;
-    // }
-    // mZoomedBitmap = bitmap;
-    //
-    // // Round the corners of the bitmap so it doesn't stick out around the overlay.
-    // Canvas canvas = new Canvas(mZoomedBitmap);
-    // Path path = new Path();
-    // RectF canvasRect = new RectF(0, 0, canvas.getWidth(), canvas.getHeight());
-    // float overlayCornerRadius = getOverlayCornerRadius(getContext());
-    // path.addRoundRect(canvasRect, overlayCornerRadius, overlayCornerRadius, Direction.CCW);
-    // canvas.clipPath(path, Op.XOR);
-    // Paint clearPaint = new Paint();
-    // clearPaint.setXfermode(new PorterDuffXfermode(Mode.SRC));
-    // clearPaint.setColor(Color.TRANSPARENT);
-    // canvas.drawPaint(clearPaint);
+    if (mZoomedBitmap != NULL) {
+        mZoomedBitmap->Recycle();
+        mZoomedBitmap = NULL;
+    }
+
+    mZoomedBitmap = bitmap;
+
+    // Round the corners of the bitmap so it doesn't stick out around the overlay.
+    AutoPtr<ICanvas> canvas;
     assert(0);
+    // TODO
+    // CCanvas::New(mZoomedBitmap, (ICanvas**)&canvas);
+    AutoPtr<IPath> path;
+    assert(0);
+    // TODO
+    // CPath::New((IPath**)&path);
+    AutoPtr<IRectF> canvasRect;
+    Int32 width, height;
+    canvas->GetWidth(&width);
+    canvas->GetHeight(&height);
+    assert(0);
+    // TODO
+    // CRectF::New(0, 0, width, height, (IRectF**)&canvasRect);
+    // Float overlayCornerRadius = GetOverlayCornerRadius(GetContext());
+    // path->AddRoundRect(canvasRect, overlayCornerRadius, overlayCornerRadius, Direction.CCW);
+    // canvas->ClipPath(path, RegionOp_XOR);
+    AutoPtr<IPaint> clearPaint;
+    assert(0);
+    // TODO
+    // CPaint::New((IPaint**)&clearPaint);
+    AutoPtr<IPorterDuffXfermode> porterDuffXfermode;
+    assert(0);
+    // TODO
+    // CPorterDuffXfermode::New(IMode::SRC, (IPorterDuffXfermode**)&porterDuffXfermode);
+    AutoPtr<IXfermode> xfermode = (IXfermode*)porterDuffXfermode->Probe(EIID_IXfermode);
+    clearPaint->SetXfermode(xfermode);
+    clearPaint->SetColor(IColor::TRANSPARENT);
+    canvas->DrawPaint(clearPaint);
+
     return NOERROR;
 }
 
 Boolean PopupZoomer::IsShowing()
 {
-    // ==================before translated======================
-    // return mShowing || mAnimating;
-    assert(0);
-    return FALSE;
+    return mShowing || mAnimating;
 }
 
 ECode PopupZoomer::SetLastTouch(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    // ==================before translated======================
-    // mTouch.x = x;
-    // mTouch.y = y;
-    assert(0);
+    mTouch->Set(x, y);
     return NOERROR;
 }
 
 ECode PopupZoomer::Show(
     /* [in] */ IRect* rect)
 {
-    VALIDATE_NOT_NULL(rect);
-    // ==================before translated======================
-    // if (mShowing || mZoomedBitmap == null) return;
-    //
-    // setTargetBounds(rect);
-    // startAnimation(true);
-    assert(0);
+    if (mShowing || mZoomedBitmap == NULL) return NOERROR;
+
+    SetTargetBounds(rect);
+    StartAnimation(TRUE);
+
     return NOERROR;
 }
 
 ECode PopupZoomer::Hide(
     /* [in] */ Boolean animation)
 {
-    // ==================before translated======================
-    // if (!mShowing) return;
-    //
-    // if (animation) {
-    //     startAnimation(false);
-    // } else {
-    //     hideImmediately();
-    // }
-    assert(0);
+    if (!mShowing) return NOERROR;
+
+    if (animation) {
+       StartAnimation(FALSE);
+    }
+    else {
+       HideImmediately();
+    }
+
     return NOERROR;
 }
 
 Boolean PopupZoomer::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
-    // ==================before translated======================
-    // mGestureDetector.onTouchEvent(event);
-    // return true;
-    assert(0);
-    return FALSE;
+    Boolean result;
+    mGestureDetector->OnTouchEvent(event, &result);
+    return result;
 }
 
 Boolean PopupZoomer::AcceptZeroSizeView()
 {
-    // ==================before translated======================
-    // return false;
-    assert(0);
     return FALSE;
 }
 
 ECode PopupZoomer::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    VALIDATE_NOT_NULL(canvas);
-    // ==================before translated======================
-    // if (!isShowing() || mZoomedBitmap == null) return;
-    // if (!acceptZeroSizeView() && (getWidth() == 0 || getHeight() == 0)) return;
-    //
-    // if (mNeedsToInitDimensions) {
-    //     mNeedsToInitDimensions = false;
-    //     initDimensions();
-    // }
-    //
-    // canvas.save();
-    // // Calculate the elapsed fraction of animation.
-    // float time = (SystemClock.uptimeMillis() - mAnimationStartTime + mTimeLeft) /
-    //         ((float) ANIMATION_DURATION);
-    // time = constrain(time, 0, 1);
-    // if (time >= 1) {
-    //     mAnimating = false;
-    //     if (!isShowing()) {
-    //         hideImmediately();
-    //         return;
-    //     }
-    // } else {
-    //     invalidate();
-    // }
-    //
-    // // Fraction of the animation to actally show.
-    // float fractionAnimation;
-    // if (mShowing) {
-    //     fractionAnimation = mShowInterpolator.getInterpolation(time);
-    // } else {
-    //     fractionAnimation = mHideInterpolator.getInterpolation(time);
-    // }
-    //
-    // // Draw a faded color over the entire view to fade out the original content, increasing
-    // // the alpha value as fractionAnimation increases.
-    // // TODO(nileshagrawal): We should use time here instead of fractionAnimation
-    // // as fractionAnimaton is interpolated and can go over 1.
-    // canvas.drawARGB((int) (80 * fractionAnimation), 0, 0, 0);
-    // canvas.save();
-    //
-    // // Since we want the content to appear directly above its counterpart we need to make
-    // // sure that it starts out at exactly the same size as it appears in the page,
-    // // i.e. scale grows from 1/mScale to 1. Note that extrusion values are already zoomed
-    // // with mScale.
-    // float scale = fractionAnimation * (mScale - 1.0f) / mScale + 1.0f / mScale;
-    //
-    // // Since we want the content to appear directly above its counterpart on the
-    // // page, we need to remove the mShiftX/Y effect at the beginning of the animation.
-    // // The unshifting decreases with the animation.
-    // float unshiftX = -mShiftX * (1.0f - fractionAnimation) / mScale;
-    // float unshiftY = -mShiftY * (1.0f - fractionAnimation) / mScale;
-    //
-    // // Compute the rect to show.
-    // RectF rect = new RectF();
-    // rect.left = mTouch.x - mLeftExtrusion * scale + unshiftX;
-    // rect.top = mTouch.y - mTopExtrusion * scale + unshiftY;
-    // rect.right = mTouch.x + mRightExtrusion * scale + unshiftX;
-    // rect.bottom = mTouch.y + mBottomExtrusion * scale + unshiftY;
-    // canvas.clipRect(rect);
-    //
-    // // Since the canvas transform APIs all pre-concat the transformations, this is done in
-    // // reverse order. The canvas is first scaled up, then shifted the appropriate amount of
-    // // pixels.
-    // canvas.scale(scale, scale, rect.left, rect.top);
-    // canvas.translate(mPopupScrollX, mPopupScrollY);
-    // canvas.drawBitmap(mZoomedBitmap, rect.left, rect.top, null);
-    // canvas.restore();
-    // Drawable overlayNineTile = getOverlayDrawable(getContext());
-    // overlayNineTile.setBounds((int) rect.left - sOverlayPadding.left,
-    //         (int) rect.top - sOverlayPadding.top,
-    //         (int) rect.right + sOverlayPadding.right,
-    //         (int) rect.bottom + sOverlayPadding.bottom);
-    // // TODO(nileshagrawal): We should use time here instead of fractionAnimation
-    // // as fractionAnimaton is interpolated and can go over 1.
-    // int alpha = constrain((int) (fractionAnimation * 255), 0, 255);
-    // overlayNineTile.setAlpha(alpha);
-    // overlayNineTile.draw(canvas);
-    // canvas.restore();
+    if (!IsShowing() || mZoomedBitmap == NULL) return NOERROR;
+
     assert(0);
+    // TODO
+    // if (!AcceptZeroSizeView() && (GetWidth() == 0 || GetHeight() == 0)) return NOERROR;
+
+    if (mNeedsToInitDimensions) {
+        mNeedsToInitDimensions = FALSE;
+        InitDimensions();
+    }
+
+    Int32 result;
+    canvas->Save(&result);
+    // Calculate the elapsed fraction of animation.
+    Float time = (SystemClock::GetUptimeMillis() - mAnimationStartTime + mTimeLeft) /
+            ((Float) ANIMATION_DURATION);
+    time = Constrain((Int32)time, 0, 1);
+    if (time >= 1) {
+        mAnimating = FALSE;
+        if (!IsShowing()) {
+            HideImmediately();
+            return NOERROR;
+        }
+    }
+    else {
+        assert(0);
+        // TODO
+        // Invalidate();
+    }
+
+    // Fraction of the animation to actally show.
+    Float fractionAnimation;
+    if (mShowing) {
+        assert(0);
+        // TODO
+        // mShowInterpolator->GetInterpolation(time, &fractionAnimation);
+    }
+    else {
+        assert(0);
+        // TODO
+        // mHideInterpolator->GetInterpolation(time, &fractionAnimation);
+    }
+
+    // Draw a faded color over the entire view to fade out the original content, increasing
+    // the alpha value as fractionAnimation increases.
+    // TODO(nileshagrawal): We should use time here instead of fractionAnimation
+    // as fractionAnimaton is interpolated and can go over 1.
+    canvas->DrawARGB((Int32) (80 * fractionAnimation), 0, 0, 0);
+    Int32 saveResult;
+    canvas->Save(&saveResult);
+
+    // Since we want the content to appear directly above its counterpart we need to make
+    // sure that it starts out at exactly the same size as it appears in the page,
+    // i.e. scale grows from 1/mScale to 1. Note that extrusion values are already zoomed
+    // with mScale.
+    Float scale = fractionAnimation * (mScale - 1.0f) / mScale + 1.0f / mScale;
+
+    // Since we want the content to appear directly above its counterpart on the
+    // page, we need to remove the mShiftX/Y effect at the beginning of the animation.
+    // The unshifting decreases with the animation.
+    Float unshiftX = -mShiftX * (1.0f - fractionAnimation) / mScale;
+    Float unshiftY = -mShiftY * (1.0f - fractionAnimation) / mScale;
+
+    // Compute the rect to show.
+    AutoPtr<IRectF> rect;
+    assert(0);
+    // TODO
+    // CRectF::New((IRectF**)&rect);
+    Float touchX, touchY;
+    mTouch->GetX(&touchX);
+    mTouch->GetY(&touchY);
+    rect->SetLeft(touchX - mLeftExtrusion * scale + unshiftX);
+    rect->SetTop(touchY - mTopExtrusion * scale + unshiftY);
+    rect->SetRight(touchX + mRightExtrusion * scale + unshiftX);
+    rect->SetBottom(touchY + mBottomExtrusion * scale + unshiftY);
+    Boolean clipRectResult;
+    canvas->ClipRect(rect, &clipRectResult);
+
+    // Since the canvas transform APIs all pre-concat the transformations, this is done in
+    // reverse order. The canvas is first scaled up, then shifted the appropriate amount of
+    // pixels.
+    Float left, top;
+    rect->GetLeft(&left);
+    rect->GetTop(&top);
+    canvas->Scale(scale, scale, left, top);
+    canvas->Translate(mPopupScrollX, mPopupScrollY);
+    canvas->DrawBitmap(mZoomedBitmap, left, top, NULL);
+    canvas->Restore();
+    AutoPtr<IDrawable> overlayNineTile;//TODO = GetOverlayDrawable(GetContext());
+    Float right, bottom;
+    rect->GetRight(&right);
+    rect->GetBottom(&bottom);
+    Int32 sOverlayPaddingLeft, sOverlayPaddingTop, sOverlayPaddingRight, sOverlayPaddingBottom;
+    sOverlayPadding->GetLeft(&sOverlayPaddingLeft);
+    sOverlayPadding->GetRight(&sOverlayPaddingRight);
+    sOverlayPadding->GetTop(&sOverlayPaddingTop);
+    sOverlayPadding->GetBottom(&sOverlayPaddingBottom);
+    overlayNineTile->SetBounds(left - sOverlayPaddingLeft,
+            top - sOverlayPaddingTop,
+            right + sOverlayPaddingRight,
+            bottom + sOverlayPaddingBottom);
+    // TODO(nileshagrawal): We should use time here instead of fractionAnimation
+    // as fractionAnimaton is interpolated and can go over 1.
+    Int32 alpha = Constrain((Int32) (fractionAnimation * 255), 0, 255);
+    overlayNineTile->SetAlpha(alpha);
+    overlayNineTile->Draw(canvas);
+    canvas->Restore();
+
     return NOERROR;
 }
 
 Float PopupZoomer::GetOverlayCornerRadius(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // if (sOverlayCornerRadius == 0) {
+    if (sOverlayCornerRadius == 0) {
     //     try {
-    //         sOverlayCornerRadius = context.getResources().getDimension(
-    //                 R.dimen.link_preview_overlay_radius);
+            AutoPtr<IResources> res;
+            context->GetResources((IResources**)&res);
+            assert(0);
+            // TODO
+            // res->GetDimension(
+            //         R::dimen::link_preview_overlay_radius, &sOverlayCornerRadius);
     //     } catch (Resources.NotFoundException e) {
     //         Log.w(LOGTAG, "No corner radius resource for PopupZoomer overlay found.");
     //         sOverlayCornerRadius = 1.0f;
     //     }
-    // }
-    // return sOverlayCornerRadius;
-    assert(0);
-    return 0.0f;
+    }
+
+    return sOverlayCornerRadius;
 }
 
 AutoPtr<IDrawable> PopupZoomer::GetOverlayDrawable(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // if (sOverlayDrawable == null) {
+    if (sOverlayDrawable == NULL) {
     //     try {
-    //         sOverlayDrawable = context.getResources().getDrawable(
-    //                 R.drawable.ondemand_overlay);
+            AutoPtr<IResources> res;
+            context->GetResources((IResources**)&res);
+            assert(0);
+            // TODO
+            // res->GetDrawable(
+            //         R::drawable::ondemand_overlay,
+            //         &sOverlayDrawable);
     //     } catch (Resources.NotFoundException e) {
     //         Log.w(LOGTAG, "No drawable resource for PopupZoomer overlay found.");
     //         sOverlayDrawable = new ColorDrawable();
     //     }
-    //     sOverlayPadding = new Rect();
-    //     sOverlayDrawable.getPadding(sOverlayPadding);
-    // }
-    // return sOverlayDrawable;
-    assert(0);
-    AutoPtr<IDrawable> empty;
-    return empty;
+        assert(0);
+        // TODO
+        // CRect::New((IRect**)&sOverlayPadding);
+        Boolean result;
+        sOverlayDrawable->GetPadding(sOverlayPadding, &result);
+    }
+
+    return sOverlayDrawable;
 }
 
 Float PopupZoomer::Constrain(
@@ -416,10 +452,7 @@ Float PopupZoomer::Constrain(
     /* [in] */ Float low,
     /* [in] */ Float high)
 {
-    // ==================before translated======================
-    // return amount < low ? low : (amount > high ? high : amount);
-    assert(0);
-    return 0.0f;
+    return amount < low ? low : (amount > high ? high : amount);
 }
 
 Int32 PopupZoomer::Constrain(
@@ -427,161 +460,209 @@ Int32 PopupZoomer::Constrain(
     /* [in] */ Int32 low,
     /* [in] */ Int32 high)
 {
-    // ==================before translated======================
-    // return amount < low ? low : (amount > high ? high : amount);
-    assert(0);
-    return 0;
+    return amount < low ? low : (amount > high ? high : amount);
 }
 
 ECode PopupZoomer::Scroll(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    // ==================before translated======================
-    // mPopupScrollX = constrain(mPopupScrollX - x, mMinScrollX, mMaxScrollX);
-    // mPopupScrollY = constrain(mPopupScrollY - y, mMinScrollY, mMaxScrollY);
-    // invalidate();
+    mPopupScrollX = Constrain(mPopupScrollX - x, mMinScrollX, mMaxScrollX);
+    mPopupScrollY = Constrain(mPopupScrollY - y, mMinScrollY, mMaxScrollY);
     assert(0);
+    // TODO
+    // Invalidate();
+
     return NOERROR;
 }
 
 ECode PopupZoomer::StartAnimation(
     /* [in] */ Boolean show)
 {
-    // ==================before translated======================
-    // mAnimating = true;
-    // mShowing = show;
-    // mTimeLeft = 0;
-    // if (show) {
-    //     setVisibility(VISIBLE);
-    //     mNeedsToInitDimensions = true;
-    //     if (mOnVisibilityChangedListener != null) {
-    //         mOnVisibilityChangedListener.onPopupZoomerShown(this);
-    //     }
-    // } else {
-    //     long endTime = mAnimationStartTime + ANIMATION_DURATION;
-    //     mTimeLeft = endTime - SystemClock.uptimeMillis();
-    //     if (mTimeLeft < 0) mTimeLeft = 0;
-    // }
-    // mAnimationStartTime = SystemClock.uptimeMillis();
-    // invalidate();
+    mAnimating = TRUE;
+    mShowing = show;
+    mTimeLeft = 0;
+    if (show) {
+        assert(0);
+        // TODO
+        // SetVisibility(IView::VISIBLE);
+        mNeedsToInitDimensions = TRUE;
+        if (mOnVisibilityChangedListener != NULL) {
+            mOnVisibilityChangedListener->OnPopupZoomerShown(this);
+        }
+    }
+    else {
+        Int64 endTime = mAnimationStartTime + ANIMATION_DURATION;
+        mTimeLeft = endTime - SystemClock::GetUptimeMillis();
+        if (mTimeLeft < 0) mTimeLeft = 0;
+    }
+
+    mAnimationStartTime = SystemClock::GetUptimeMillis();
     assert(0);
+    // TODO
+    // Invalidate();
+
     return NOERROR;
 }
 
 ECode PopupZoomer::HideImmediately()
 {
-    // ==================before translated======================
-    // mAnimating = false;
-    // mShowing = false;
-    // mTimeLeft = 0;
-    // if (mOnVisibilityChangedListener != null) {
-    //     mOnVisibilityChangedListener.onPopupZoomerHidden(this);
-    // }
-    // setVisibility(INVISIBLE);
-    // mZoomedBitmap.recycle();
-    // mZoomedBitmap = null;
+    mAnimating = FALSE;
+    mShowing = FALSE;
+    mTimeLeft = 0;
+    if (mOnVisibilityChangedListener != NULL) {
+        mOnVisibilityChangedListener->OnPopupZoomerHidden(this);
+    }
+
     assert(0);
+    // TODO
+    // SetVisibility(IView::INVISIBLE);
+    mZoomedBitmap->Recycle();
+    mZoomedBitmap = NULL;
+
     return NOERROR;
 }
 
 ECode PopupZoomer::SetTargetBounds(
     /* [in] */ IRect* rect)
 {
-    VALIDATE_NOT_NULL(rect);
-    // ==================before translated======================
-    // mTargetBounds = rect;
-    assert(0);
+    mTargetBounds = rect;
     return NOERROR;
 }
 
 ECode PopupZoomer::InitDimensions()
 {
-    // ==================before translated======================
-    // if (mTargetBounds == null || mTouch == null) return;
-    //
-    // // Compute the final zoom scale.
-    // mScale = (float) mZoomedBitmap.getWidth() / mTargetBounds.width();
-    //
-    // float l = mTouch.x - mScale * (mTouch.x - mTargetBounds.left);
-    // float t = mTouch.y - mScale * (mTouch.y - mTargetBounds.top);
-    // float r = l + mZoomedBitmap.getWidth();
-    // float b = t + mZoomedBitmap.getHeight();
-    // mClipRect = new RectF(l, t, r, b);
-    // int width = getWidth();
-    // int height = getHeight();
-    //
-    // mViewClipRect = new RectF(ZOOM_BOUNDS_MARGIN,
-    //         ZOOM_BOUNDS_MARGIN,
-    //         width - ZOOM_BOUNDS_MARGIN,
-    //         height - ZOOM_BOUNDS_MARGIN);
-    //
-    // // Ensure it stays inside the bounds of the view.  First shift it around to see if it
-    // // can fully fit in the view, then clip it to the padding section of the view to
-    // // ensure no overflow.
-    // mShiftX = 0;
-    // mShiftY = 0;
-    //
-    // // Right now this has the happy coincidence of showing the leftmost portion
-    // // of a scaled up bitmap, which usually has the text in it.  When we want to support
-    // // RTL languages, we can conditionally switch the order of this check to push it
-    // // to the left instead of right.
-    // if (mClipRect.left < ZOOM_BOUNDS_MARGIN) {
-    //     mShiftX = ZOOM_BOUNDS_MARGIN - mClipRect.left;
-    //     mClipRect.left += mShiftX;
-    //     mClipRect.right += mShiftX;
-    // } else if (mClipRect.right > width - ZOOM_BOUNDS_MARGIN) {
-    //     mShiftX = (width - ZOOM_BOUNDS_MARGIN - mClipRect.right);
-    //     mClipRect.right += mShiftX;
-    //     mClipRect.left += mShiftX;
-    // }
-    // if (mClipRect.top < ZOOM_BOUNDS_MARGIN) {
-    //     mShiftY = ZOOM_BOUNDS_MARGIN - mClipRect.top;
-    //     mClipRect.top += mShiftY;
-    //     mClipRect.bottom += mShiftY;
-    // } else if (mClipRect.bottom > height - ZOOM_BOUNDS_MARGIN) {
-    //     mShiftY = height - ZOOM_BOUNDS_MARGIN - mClipRect.bottom;
-    //     mClipRect.bottom += mShiftY;
-    //     mClipRect.top += mShiftY;
-    // }
-    //
-    // // Allow enough scrolling to get to the entire bitmap that may be clipped inside the
-    // // bounds of the view.
-    // mMinScrollX = mMaxScrollX = mMinScrollY = mMaxScrollY = 0;
-    // if (mViewClipRect.right + mShiftX < mClipRect.right) {
-    //     mMinScrollX = mViewClipRect.right - mClipRect.right;
-    // }
-    // if (mViewClipRect.left + mShiftX > mClipRect.left) {
-    //     mMaxScrollX = mViewClipRect.left - mClipRect.left;
-    // }
-    // if (mViewClipRect.top + mShiftY > mClipRect.top) {
-    //     mMaxScrollY = mViewClipRect.top - mClipRect.top;
-    // }
-    // if (mViewClipRect.bottom + mShiftY < mClipRect.bottom) {
-    //     mMinScrollY = mViewClipRect.bottom - mClipRect.bottom;
-    // }
-    // // Now that we know how much we need to scroll, we can intersect with mViewClipRect.
-    // mClipRect.intersect(mViewClipRect);
-    //
-    // mLeftExtrusion = mTouch.x - mClipRect.left;
-    // mRightExtrusion = mClipRect.right - mTouch.x;
-    // mTopExtrusion = mTouch.y - mClipRect.top;
-    // mBottomExtrusion = mClipRect.bottom - mTouch.y;
-    //
-    // // Set an initial scroll position to take touch point into account.
-    // float percentX =
-    //         (mTouch.x - mTargetBounds.centerX()) / (mTargetBounds.width() / 2.f) + .5f;
-    // float percentY =
-    //         (mTouch.y - mTargetBounds.centerY()) / (mTargetBounds.height() / 2.f) + .5f;
-    //
-    // float scrollWidth = mMaxScrollX - mMinScrollX;
-    // float scrollHeight = mMaxScrollY - mMinScrollY;
-    // mPopupScrollX = scrollWidth * percentX * -1f;
-    // mPopupScrollY = scrollHeight * percentY * -1f;
-    // // Constrain initial scroll position within allowed bounds.
-    // mPopupScrollX = constrain(mPopupScrollX, mMinScrollX, mMaxScrollX);
-    // mPopupScrollY = constrain(mPopupScrollY, mMinScrollY, mMaxScrollY);
+    if (mTargetBounds == NULL || mTouch == NULL) return NOERROR;
+
+    // Compute the final zoom scale.
+    Int32 zoomedBitmapWidth;
+    Int32 zoomedBitmapHeight;
+    mZoomedBitmap->GetWidth(&zoomedBitmapWidth);
+    mZoomedBitmap->GetHeight(&zoomedBitmapHeight);
+    Int32 targetBoundsWidth;
+    mTargetBounds->GetWidth(&targetBoundsWidth);
+    mScale = (Float) zoomedBitmapWidth / targetBoundsWidth;
+
+    Float touchX, touchY;
+    mTouch->GetX(&touchX);
+    mTouch->GetY(&touchY);
+    Int32 targetBoundsLeft, targetBoundsTop;
+    mTargetBounds->GetLeft(&targetBoundsLeft);
+    mTargetBounds->GetTop(&targetBoundsTop);
+    Float l = touchX - mScale * (touchX - targetBoundsLeft);
+    Float t = touchY - mScale * (touchY - targetBoundsTop);
+    Float r = l + zoomedBitmapWidth;
+    Float b = t + zoomedBitmapHeight;
     assert(0);
+    // TODO
+    // CRectF::New(l, t, r, b, (IRectF**)&mClipRect);
+    Int32 width;//TODO = GetWidth();
+    Int32 height;//TODO = GetHeight();
+
+    assert(0);
+    // TODO
+    // CRectF::New(ZOOM_BOUNDS_MARGIN,
+    //        ZOOM_BOUNDS_MARGIN,
+    //        width - ZOOM_BOUNDS_MARGIN,
+    //        height - ZOOM_BOUNDS_MARGIN, (IRectF**)&mViewClipRect);
+
+    // Ensure it stays inside the bounds of the view.  First shift it around to see if it
+    // can fully fit in the view, then clip it to the padding section of the view to
+    // ensure no overflow.
+    mShiftX = 0;
+    mShiftY = 0;
+
+    // Right now this has the happy coincidence of showing the leftmost portion
+    // of a scaled up bitmap, which usually has the text in it.  When we want to support
+    // RTL languages, we can conditionally switch the order of this check to push it
+    // to the left instead of right.
+    Float clipRectLeft, clipRectRight, clipRectTop, clipRectBottom;
+    mClipRect->GetLeft(&clipRectLeft);
+    mClipRect->GetRight(&clipRectRight);
+    if (clipRectLeft < ZOOM_BOUNDS_MARGIN) {
+        mShiftX = ZOOM_BOUNDS_MARGIN - clipRectLeft;
+        clipRectLeft += mShiftX;
+        mClipRect->SetLeft(clipRectLeft);
+        clipRectRight += mShiftX;
+        mClipRect->SetRight(clipRectRight);
+    }
+    else if (mClipRect->GetRight(&clipRectRight), clipRectRight > width - ZOOM_BOUNDS_MARGIN) {
+        mShiftX = (width - ZOOM_BOUNDS_MARGIN - clipRectRight);
+        clipRectRight += mShiftX;
+        mClipRect->SetRight(clipRectRight);
+        clipRectLeft += mShiftX;
+        mClipRect->SetLeft(clipRectLeft);
+    }
+
+    mClipRect->GetTop(&clipRectTop);
+    mClipRect->GetBottom(&clipRectBottom);
+    if (clipRectTop < ZOOM_BOUNDS_MARGIN) {
+        mShiftY = ZOOM_BOUNDS_MARGIN - clipRectTop;
+        clipRectTop += mShiftY;
+        mClipRect->SetTop(clipRectTop);
+        clipRectBottom += mShiftY;
+        mClipRect->SetBottom(clipRectBottom);
+    }
+    else if (mClipRect->GetBottom(&clipRectBottom), clipRectBottom > height - ZOOM_BOUNDS_MARGIN) {
+        mShiftY = height - ZOOM_BOUNDS_MARGIN - clipRectBottom;
+        clipRectBottom += mShiftY;
+        mClipRect->SetBottom(clipRectBottom);
+        clipRectTop += mShiftY;
+        mClipRect->SetTop(clipRectTop);
+    }
+
+    // Allow enough scrolling to get to the entire bitmap that may be clipped inside the
+    // bounds of the view.
+    mMinScrollX = mMaxScrollX = mMinScrollY = mMaxScrollY = 0;
+    Float viewClipRectRight, viewClipRectLeft, viewClipRectTop, viewClipRectBottom;
+    mViewClipRect->GetRight(&viewClipRectRight);
+    mViewClipRect->GetLeft(&viewClipRectLeft);
+    mViewClipRect->GetTop(&viewClipRectTop);
+    mViewClipRect->GetBottom(&viewClipRectBottom);
+    if (viewClipRectRight + mShiftX < clipRectRight) {
+        mMinScrollX = viewClipRectRight - clipRectRight;
+    }
+
+    if (viewClipRectLeft + mShiftX > clipRectLeft) {
+        mMaxScrollX = viewClipRectLeft - clipRectLeft;
+    }
+
+    if (viewClipRectTop + mShiftY > clipRectTop) {
+        mMaxScrollY = viewClipRectTop - clipRectTop;
+    }
+
+    if (viewClipRectBottom + mShiftY < clipRectBottom) {
+        mMinScrollY = viewClipRectBottom - clipRectBottom;
+    }
+    // Now that we know how much we need to scroll, we can intersect with mViewClipRect.
+    Boolean result;
+    mClipRect->Intersect(mViewClipRect, &result);
+
+    mLeftExtrusion = touchX - clipRectLeft;
+    mRightExtrusion = clipRectRight - touchX;
+    mTopExtrusion = touchY - clipRectTop;
+    mBottomExtrusion = clipRectBottom - touchY;
+
+    // Set an initial scroll position to take touch point into account.
+    Int32 centerX, centerY;
+    mTargetBounds->GetCenterX(&centerX);
+    mTargetBounds->GetCenterY(&centerY);
+    mTargetBounds->GetWidth(&targetBoundsWidth);
+    Int32 targetBoundsHeight;
+    mTargetBounds->GetHeight(&targetBoundsHeight);
+    Float percentX =
+            (touchX - centerX) / (targetBoundsWidth / 2.0f) + .5f;
+    Float percentY =
+            (touchY - centerY) / (targetBoundsHeight / 2.0f) + .5f;
+
+    Float scrollWidth = mMaxScrollX - mMinScrollX;
+    Float scrollHeight = mMaxScrollY - mMinScrollY;
+    mPopupScrollX = scrollWidth * percentX * -1.0f;
+    mPopupScrollY = scrollHeight * percentY * -1.0f;
+    // Constrain initial scroll position within allowed bounds.
+    mPopupScrollX = Constrain(mPopupScrollX, mMinScrollX, mMaxScrollX);
+    mPopupScrollY = Constrain(mPopupScrollY, mMinScrollY, mMaxScrollY);
+
     return NOERROR;
 }
 
@@ -589,25 +670,27 @@ AutoPtr<IPointF> PopupZoomer::ConvertTouchPoint(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    // ==================before translated======================
-    // x -= mShiftX;
-    // y -= mShiftY;
-    // x = mTouch.x + (x - mTouch.x - mPopupScrollX) / mScale;
-    // y = mTouch.y + (y - mTouch.y - mPopupScrollY) / mScale;
-    // return new PointF(x, y);
+    x -= mShiftX;
+    y -= mShiftY;
+    Float touchX, touchY;
+    mTouch->GetX(&touchX);
+    mTouch->GetY(&touchY);
+    x = touchX + (x - touchX - mPopupScrollX) / mScale;
+    y = touchY + (y - touchY - mPopupScrollY) / mScale;
+    AutoPtr<IPointF> point;
     assert(0);
-    AutoPtr<IPointF> empty;
-    return empty;
+    // TODO
+    // CPointF::New(x, y, (IPointF**)&point);
+    return NOERROR;
 }
 
 Boolean PopupZoomer::IsTouchOutsideArea(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    // ==================before translated======================
-    // return !mClipRect.contains(x, y);
-    assert(0);
-    return FALSE;
+    Boolean result;
+    mClipRect->Contains(x, y, &result);
+    return !result;
 }
 
 } // namespace Browser

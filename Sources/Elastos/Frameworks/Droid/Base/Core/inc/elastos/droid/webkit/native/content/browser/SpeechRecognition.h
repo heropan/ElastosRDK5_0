@@ -57,9 +57,14 @@ public:
     // Internal class to handle events from Android's SpeechRecognizer and route them to native.
     class Listener
         : public Object
-        , public RecognitionListener
+        , public IRecognitionListener
     {
     public:
+        Listener(
+            /* [in] */ SpeechRecognition* owner);
+
+        CAR_INTERFACE_DECL();
+
         // @Override
         CARAPI OnBeginningOfSpeech();
 
@@ -99,6 +104,9 @@ public:
         CARAPI HandleResults(
             /* [in] */ IBundle* bundle,
             /* [in] */ Boolean provisional);
+
+    private:
+        SpeechRecognition* mOwner;
     };
 
 public:
@@ -112,7 +120,7 @@ public:
 
 private:
     SpeechRecognition(
-        /* [in] */ const IContext* context,
+        /* [in] */ IContext* context,
         /* [in] */ Int64 nativeSpeechRecognizerImplAndroid);
 
     // This function destroys everything when recognition is done, taking care to properly tear

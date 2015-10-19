@@ -26,6 +26,9 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class PositionObserver;
+
 namespace Input {
 
 /**
@@ -38,11 +41,14 @@ public:
      * This class is based on TextView.PastePopupMenu.
      */
     class PastePopupMenu
-        //: public Object
-        : public IViewOnClickListener
+        : public Object
+        , public IViewOnClickListener
     {
     public:
-        PastePopupMenu();
+        CAR_INTERFACE_DECL();
+
+        PastePopupMenu(
+            /* [in] */ InsertionHandleController* owner);
 
         CARAPI_(void) Show();
 
@@ -64,11 +70,12 @@ public:
             /* [in] */ Boolean onTop);
 
     private:
-        const AutoPtr<IPopupWindow> mContainer;
+        InsertionHandleController* mOwner;
+        /*const*/ AutoPtr<IPopupWindow> mContainer;
         Int32 mPositionX;
         Int32 mPositionY;
-        const AutoPtr< ArrayOf<IView> > mPasteViews;
-        const AutoPtr< ArrayOf<Int32> > mPasteViewLayouts;
+        /*const*/ AutoPtr< ArrayOf<IView*> > mPasteViews;
+        /*const*/ AutoPtr< ArrayOf<Int32> > mPasteViewLayouts;
     };
 
 public:
@@ -182,7 +189,7 @@ private:
     AutoPtr<HandleView> mHandle;
 
     /** The view over which the insertion handle should be shown */
-    const AutoPtr<IView> mParent;
+    /*const*/ AutoPtr<IView> mParent;
 
     /** True iff the insertion handle is currently showing */
     Boolean mIsShowing;
@@ -190,9 +197,9 @@ private:
     /** True iff the insertion handle can be shown automatically when selection changes */
     Boolean mAllowAutomaticShowing;
 
-    const AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<IContext> mContext;
 
-    const AutoPtr<PositionObserver> mPositionObserver;
+    /*const*/ AutoPtr<PositionObserver> mPositionObserver;
 };
 
 } // namespace Input

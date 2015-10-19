@@ -2,17 +2,19 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMEPICKERDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMEPICKERDIALOG_H__
 
-// import android.app.AlertDialog;
-// import android.content.Context;
-// import android.content.DialogInterface;
-// import android.content.DialogInterface.OnClickListener;
-// import android.text.format.Time;
-// import android.view.LayoutInflater;
-// import android.view.View;
-// import android.widget.DatePicker;
-// import android.widget.DatePicker.OnDateChangedListener;
-// import android.widget.TimePicker;
-// import android.widget.TimePicker.OnTimeChangedListener;
+#include "ext/frameworkext.h"
+
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IDialogInterface;
+using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
+using Elastos::Droid::Text::Format::ITime;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::Widget::IDatePicker;
+using Elastos::Droid::Widget::IDatePickerOnDateChangedListener;
+using Elastos::Droid::Widget::ITimePicker;
+using Elastos::Droid::Widget::IOnTimeChangedListener;
 
 // import org.chromium.content.R;
 
@@ -24,16 +26,17 @@ namespace Browser {
 namespace Input {
 
 class DateTimePickerDialog
-    : public IAlertDialog
-    , public IOnClickListener
-    , public IOnDateChangedListener
+    : public Object
+    , public IAlertDialog
+    , public IDialogInterfaceOnClickListener
+    , public IDatePickerOnDateChangedListener
     , public IOnTimeChangedListener
 {
 public:
     /**
      * The callback used to indicate the user is done filling in the date.
      */
-    class OnDateTimeSetListener
+    class OnDateTimeSetListener : public Object
     {
     public:
         /**
@@ -46,7 +49,7 @@ public:
          * @param hourOfDay The hour that was set.
          * @param minute The minute that was set.
          */
-        virtual CARAPI_(void) OnDateTimeSet(
+        virtual CARAPI OnDateTimeSet(
             /* [in] */ IDatePicker* dateView,
             /* [in] */ ITimePicker* timeView,
             /* [in] */ Int32 year,
@@ -57,6 +60,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * @param context The context the dialog is to run in.
      * @param callBack How the parent is notified that the date is set.
@@ -66,7 +71,7 @@ public:
      */
     DateTimePickerDialog(
         /* [in] */ IContext* context,
-        /* [in] */ IOnDateTimeSetListener* callBack,
+        /* [in] */ OnDateTimeSetListener* callBack,
         /* [in] */ Int32 year,
         /* [in] */ Int32 monthOfYear,
         /* [in] */ Int32 dayOfMonth,
@@ -109,16 +114,16 @@ public:
         /* [in] */ Int32 minutOfHour);
 
 private:
-    CARAPI_(void) TryNotifyDateTimeSet();
+    CARAPI TryNotifyDateTimeSet();
 
 private:
-    const AutoPtr<DatePicker> mDatePicker;
-    const AutoPtr<TimePicker> mTimePicker;
-    const AutoPtr<IOnDateTimeSetListener> mCallBack;
+    /*const*/ AutoPtr<IDatePicker> mDatePicker;
+    /*const*/ AutoPtr<ITimePicker> mTimePicker;
+    /*const*/ AutoPtr<OnDateTimeSetListener> mCallBack;
 
     const Int64 mMinTimeMillis;
     const Int64 mMaxTimeMillis;
-}
+};
 
 } // namespace Input
 } // namespace Browser
