@@ -21,6 +21,8 @@ module
      /**
      * @Involve
      * interface Elastos.Core.IAppendable;
+     * interface ICloseable;
+     * interface IFlushable;
      */
     [deprecated]
     interface IWriter {

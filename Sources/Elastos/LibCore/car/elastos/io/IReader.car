@@ -21,6 +21,7 @@ module
      /**
      * @Involve
      * interface IReadable;
+     * interface ICloseable;
      */
     [deprecated]
     interface IReader {

@@ -229,6 +229,7 @@ module
 
         interface IBufferedOutputStream;
         interface ICloseable;
+        interface IFlushable;
         interface IOutputStream;
         interface IFilterOutputStream;
     }
@@ -239,6 +240,7 @@ module
 
         interface IFilterOutputStream;
         interface ICloseable;
+        interface IFlushable;
         interface IOutputStream;
     }
 
@@ -266,6 +268,8 @@ module
 
         interface IBufferedWriter;
         interface IAppendable;
+        interface ICloseable;
+        interface IFlushable;
         interface IWriter;
     }
 
@@ -297,6 +301,7 @@ module
         interface ICharArrayReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
     }
 
     class CCharArrayWriter {
@@ -307,6 +312,8 @@ module
 
         interface ICharArrayWriter;
         interface IAppendable;
+        interface ICloseable;
+        interface IFlushable;
         interface IWriter;
     }
 
@@ -341,6 +348,7 @@ module
 
         interface IDataOutputStream;
         interface ICloseable;
+        interface IFlushable;
         interface IOutputStream;
         interface IFilterOutputStream;
         interface IDataOutput;
@@ -414,6 +422,7 @@ module
         interface IInputStreamReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
     }
 
     class CPrintWriter {
@@ -473,6 +482,7 @@ module
         interface ILineNumberReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
         interface IBufferedReader;
     }
 
@@ -490,6 +500,8 @@ module
 
         interface IOutputStreamWriter;
         interface IAppendable;
+        interface ICloseable;
+        interface IFlushable;
         interface IWriter;
     }
 
@@ -539,6 +551,7 @@ module
         interface IPushbackReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
     }
 
     class CRandomAccessFile {
@@ -585,6 +598,7 @@ module
         interface IStringReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
     }
 
     class CFileInputStream {
@@ -622,6 +636,7 @@ module
 
         interface IFileOutputStream;
         interface ICloseable;
+        interface IFlushable;
         interface IOutputStream;
     }
 
@@ -674,6 +689,7 @@ module
         interface IFileWriter;
         interface IAppendable;
         interface ICloseable;
+        interface IFlushable;
         interface IWriter;
         interface IOutputStreamWriter;
     }
@@ -707,6 +723,9 @@ module
             [in] IPipedInputStream* target);
 
         interface IPipedOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
+        interface IFlushable;
     }
 
     class CPipedReader {
@@ -725,6 +744,7 @@ module
         interface IPipedReader;
         interface IReadable;
         interface IReader;
+        interface ICloseable;
     }
 
     class CPipedWriter {

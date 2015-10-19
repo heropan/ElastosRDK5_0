@@ -11,6 +11,7 @@ using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHeaderElement;
@@ -139,8 +140,8 @@ ECode EntityUtils::ToString(
     // } finally {
     //     reader.close();
     // }
-    reader->Close();
-    return buffer->ToString(str);
+    ICloseable::Probe(reader)->Close();
+    return IObject::Probe(buffer)->ToString(str);
 }
 
 ECode EntityUtils::ToString(
