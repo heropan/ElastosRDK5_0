@@ -137,7 +137,7 @@ private:
 
     CARAPI EvalRequests();
 
-    static AutoPtr<ISparseArray> CreateSparseArray();
+    static CARAPI_(AutoPtr<ISparseArray>) CreateSparseArray();
 
     static const Boolean DBG;
 

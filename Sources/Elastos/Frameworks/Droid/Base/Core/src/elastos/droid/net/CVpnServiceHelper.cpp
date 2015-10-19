@@ -1,20 +1,23 @@
 
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/net/CVpnServiceHelper.h"
+#include "elastos/droid/net/CVpnService.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CVpnServiceHelper, Singleton, IVpnServiceHelper)
+
+CAR_SINGLETON_IMPL(CVpnServiceHelper)
+
 ECode CVpnServiceHelper::Prepare(
     /* [in] */ IContext* context,
-    /* [out] */ IIntent** intent)
+    /* [out] */ IIntent** result)
 {
-    VALIDATE_NOT_NULL(intent);
-    AutoPtr<IIntent> temp = CVpnService::PrepareImpl(context);
-    *intent = temp;
-    return NOERROR;
+    return VpnService::Prepare(context, result);
 }
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos

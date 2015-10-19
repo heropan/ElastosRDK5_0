@@ -1,4 +1,5 @@
 
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/net/Uri.h"
 
@@ -6,58 +7,45 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-ECode CUriHelper::GetEMPTY(
-    /* [out] */ IUri** uri)
-{
-    VALIDATE_NOT_NULL(uri);
-    AutoPtr<IUri> empty = Uri::GetEMPTY();
-    *uri = empty;
-    REFCOUNT_ADD(*uri);
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CUriHelper, Singleton, IUriHelper)
+
+CAR_SINGLETON_IMPL(CUriHelper)
 
 ECode CUriHelper::Parse(
-    /* [in] */ const String& str,
-    /* [out] */ IUri** uri)
+    /* [in] */ const String& uriString,
+    /* [out] */ IUri** result)
 {
-    return Uri::Parse(str, uri);
+    return Uri::Parse(uriString, result);
 }
 
 ECode CUriHelper::FromFile(
     /* [in] */ IFile* file,
-    /* [out] */ IUri** uri)
+    /* [out] */ IUri** result)
 {
-    return Uri::FromFile(file, uri);
+    return Uri::FromFile(file, result);
 }
 
 ECode CUriHelper::FromParts(
     /* [in] */ const String& scheme,
     /* [in] */ const String& ssp,
     /* [in] */ const String& fragment,
+    /* [out] */ IUri** result)
+{
+    return Uri::FromParts(scheme, ssp, fragment, result);
+}
+
+ECode CUriHelper::ReadFromParcel(
+    /* [in] */ IParcel* parcel,
     /* [out] */ IUri** uri)
 {
-    return Uri::FromParts(scheme, ssp, fragment, uri);
-}
-
-ECode CUriHelper::WriteToParcel(
-    /* [in] */ IParcel* p,
-    /* [in] */ IUri* uri)
-{
-    return Uri::WriteToParcel(p, uri);
-}
-
-ECode CUriHelper::Decode(
-    /* [in] */ const String& s,
-    /* [out] */ String* result)
-{
-    return Uri::Decode(s, result);
+    return Uri::ReadFromParcel(parcel, uri);
 }
 
 ECode CUriHelper::Encode(
     /* [in] */ const String& s,
-    /* [out] */ String* encoded)
+    /* [out] */ String* result)
 {
-    return Uri::Encode(s, encoded);
+    return Uri::Encode(s, result);
 }
 
 ECode CUriHelper::Encode(
@@ -68,6 +56,13 @@ ECode CUriHelper::Encode(
     return Uri::Encode(s, allow, result);
 }
 
+ECode CUriHelper::Decode(
+    /* [in] */ const String& s,
+    /* [out] */ String* result)
+{
+    return Uri::Decode(s, result);
+}
+
 ECode CUriHelper::WithAppendedPath(
     /* [in] */ IUri* baseUri,
     /* [in] */ const String& pathSegment,
@@ -76,7 +71,13 @@ ECode CUriHelper::WithAppendedPath(
     return Uri::WithAppendedPath(baseUri, pathSegment, result);
 }
 
+ECode CUriHelper::GetEmpty(
+    /* [out] */ IUri** result)
+{
+    return Uri::GetEmpty(result);
+}
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
+

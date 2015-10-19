@@ -79,7 +79,7 @@ public:
         /* [out] */ INetworkScorerAppData** result);
 
 private:
-    static AutoPtr<IIntent> CreateScoreIntent();
+    static CARAPI_(AutoPtr<IIntent>) CreateScoreIntent();
 
     static const AutoPtr<IIntent> SCORE_INTENT;
 

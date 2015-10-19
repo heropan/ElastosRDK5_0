@@ -1,9 +1,13 @@
 
-#ifndef __ELASTOS_DROID_NET_CURLQUERYSANITIZER_H__
-#define __ELASTOS_DROID_NET_CURLQUERYSANITIZER_H__
+#ifndef __ELASTOS_DROID_NET_URLQUERYSANITIZER_H__
+#define __ELASTOS_DROID_NET_URLQUERYSANITIZER_H__
 
-#include "_Elastos_Droid_Net_CUrlQuerySanitizer.h"
-#include "elastos/droid/net/UrlQuerySanitizer.h"
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Utility::ISet;
+using Elastos::Utility::IList;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -45,70 +49,15 @@ namespace Net {
  * </ol>
  *
  */
-CarClass(CUrlQuerySanitizer)
-    , public UrlQuerySanitizer
+class UrlQuerySanitizer
+    : public Object
+    , public IUrlQuerySanitizer
 {
 public:
-    CAR_OBJECT_DECL()
+    CAR_INTERFACE_DECL()
 
-};
+    UrlQuerySanitizer();
 
-} // namespace Net
-} // namespace Droid
-} // namespace Elastos
-
-#endif // __ELASTOS_DROID_NET_CURLQUERYSANITIZER_H__
-
-#if 0 // old CUrlQuerySanitizer.h
-#ifndef __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
-#define __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
-
-#include "_Elastos_Droid_Net_CUrlQuerySanitizer.h"
-#include <Elastos/HashMap.h>
-#include <Elastos/List.h>
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-class ParameterValuePair : public ElRefBase {
-public:
-    /**
-     * The unencoded parameter
-     */
-    String mParameter;
-
-    /**
-     * The unencoded value
-     */
-    public String mValue;
-
-    /**
-     * Construct a parameter-value tuple.
-     * @param parameter an unencoded parameter
-     * @param value an unencoded value
-     */
-    ParameterValuePair(
-        /* [in] */ const String& parameter,
-        /* [in] */ const String& value);
-};
-
-class ValueSanitizer : public ElRefBase {
-public:
-    /**
-     * Sanitize an unencoded value.
-     * @param value
-     * @return the sanitized unencoded value
-     */
-    virtual Sanitize(
-        /* [in] */ const String& value,
-        /* [out] */ String* result);
-};
-
-
-CarClass(CUrlQuerySanitizer)
-{
-public:
     /**
      * Get the current value sanitizer used when processing
      * unregistered parameter values.
@@ -121,7 +70,7 @@ public:
      * parameter values.
      */
     CARAPI GetUnregisteredParameterValueSanitizer(
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Set the value sanitizer used when processing unregistered
@@ -130,23 +79,23 @@ public:
      * parameter values.
      */
     CARAPI SetUnregisteredParameterValueSanitizer(
-        /* [in] */ IValueSanitizer* sanitizer);
+        /* [in] */ IUrlQuerySanitizerValueSanitizer* sanitizer);
 
     /**
      * Return a value sanitizer that does not allow any special characters,
      * and also does not allow script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetAllIllegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetAllIllegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that allows everything except Nul ('\0')
      * characters. Script URLs are allowed.
      * @return a value sanitizer
      */
-    CARAPI GetAllButNulLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetAllButNulLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that allows everything except Nul ('\0')
@@ -154,16 +103,16 @@ public:
      * Script URLs are allowed.
      * @return a value sanitizer
      */
-    CARAPI GetAllButWhitespaceLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetAllButWhitespaceLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that allows all the characters used by
      * encoded URLs. Does not allow script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetUrlLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetUrlLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that allows all the characters used by
@@ -172,32 +121,32 @@ public:
      * Does not allow script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetUrlAndSpaceLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetUrlAndSpaceLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that does not allow any special characters
      * except ampersand ('&'). Does not allow script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetAmpLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetAmpLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that does not allow any special characters
      * except ampersand ('&') and space (' '). Does not allow script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetAmpAndSpaceLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetAmpAndSpaceLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that does not allow any special characters
      * except space (' '). Does not allow script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetSpaceLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetSpaceLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Return a value sanitizer that allows any special characters
@@ -205,10 +154,45 @@ public:
      * Allows script URLs.
      * @return a value sanitizer
      */
-    CARAPI GetAllButNulAndAngleBracketsLegal(
-        /* [out] */ IValueSanitizer** result);
+    static CARAPI GetAllButNulAndAngleBracketsLegal(
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
-   /**
+    /**
+     * Constructs a UrlQuerySanitizer.
+     * <p>
+     * Defaults:
+     * <ul>
+     * <li>unregistered parameters are not allowed.
+     * <li>the last instance of a repeated parameter is preferred.
+     * <li>The default value sanitizer is an AllIllegal value sanitizer.
+     * <ul>
+     */
+    CARAPI constructor();
+
+    /**
+     * Constructs a UrlQuerySanitizer and parse a URL.
+     * This constructor is provided for convenience when the
+     * default parsing behavior is acceptable.
+     * <p>
+     * Because the URL is parsed before the constructor returns, there isn't
+     * a chance to configure the sanitizer to change the parsing behavior.
+     * <p>
+     * <code>
+     * UrlQuerySanitizer sanitizer = new UrlQuerySanitizer(myUrl);
+     * String name = sanitizer.getValue("name");
+     * </code>
+     * <p>
+     * Defaults:
+     * <ul>
+     * <li>unregistered parameters <em>are</em> allowed.
+     * <li>the last instance of a repeated parameter is preferred.
+     * <li>The default value sanitizer is an AllIllegal value sanitizer.
+     * <ul>
+     */
+    CARAPI constructor(
+        /* [in] */ const String& url);
+
+    /**
      * Parse the query parameters out of an encoded URL.
      * Works by extracting the query portion from the URL and then
      * calling parseQuery(). If there is no query portion it is
@@ -234,9 +218,8 @@ public:
      * Note: Do not modify this set. Treat it as a read-only set.
      * @return all the parameters found in the current query.
      */
-    //anthony
     CARAPI GetParameterSet(
-        /* [out] */ IObjectContainer** result);
+        /* [out] */ ISet** result);
 
     /**
      * An array list of all of the parameter value pairs in the sanitized
@@ -244,9 +227,8 @@ public:
      * parameters.
      * <p class="note"><b>Note:</b> Do not modify this list. Treat it as a read-only list.</p>
      */
-     //anthony
     CARAPI GetParameterList(
-        /* [out] */ IObjectContainer** result);
+        /* [out] */ IList** result);
 
     /**
      * Check if a parameter exists in the current sanitized query.
@@ -282,7 +264,7 @@ public:
      */
     CARAPI RegisterParameter(
         /* [in] */ const String& parameter,
-        /* [in] */ IValueSanitizer* valueSanitizer);
+        /* [in] */ IUrlQuerySanitizerValueSanitizer* valueSanitizer);
 
     /**
      * Register a value sanitizer for an array of parameters.
@@ -292,7 +274,7 @@ public:
      */
     CARAPI RegisterParameters(
         /* [in] */ ArrayOf<String>* parameters,
-        /* [in] */ IValueSanitizer* valueSanitizer);
+        /* [in] */ IUrlQuerySanitizerValueSanitizer* valueSanitizer);
 
     /**
      * Set whether or not unregistered parameters are allowed. If they
@@ -330,7 +312,7 @@ public:
     CARAPI SetPreferFirstRepeatedParameter(
         /* [in] */ Boolean preferFirstRepeatedParameter);
 
-     /**
+    /**
      * Get whether or not the first occurrence of a repeated parameter is
      * preferred.
      * @return true if the first occurrence of a repeated parameter is
@@ -340,7 +322,30 @@ public:
     CARAPI GetPreferFirstRepeatedParameter(
         /* [out] */ Boolean* result);
 
-   /**
+    /**
+     * Parse an escaped parameter-value pair. The default implementation
+     * unescapes both the parameter and the value, then looks up the
+     * effective value sanitizer for the parameter and uses it to sanitize
+     * the value. If all goes well then addSanitizedValue is called with
+     * the unescaped parameter and the sanitized unescaped value.
+     * @param parameter an escaped parameter
+     * @param value an unsanitzied escaped value
+     */
+    CARAPI ParseEntry(
+        /* [in] */ const String& parameter,
+        /* [in] */ const String& value);
+
+    /**
+     * Record a sanitized parameter-value pair. Override if you want to
+     * do additional filtering or validation.
+     * @param parameter an unescaped parameter
+     * @param value a sanitized unescaped value
+     */
+    CARAPI AddSanitizedEntry(
+        /* [in] */ const String& parameter,
+        /* [in] */ const String& value);
+
+    /**
      * Get the value sanitizer for a parameter. Returns null if there
      * is no value sanitizer registered for the parameter.
      * @param parameter the unescaped parameter
@@ -349,7 +354,7 @@ public:
      */
     CARAPI GetValueSanitizer(
         /* [in] */ const String& parameter,
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Get the effective value sanitizer for a parameter. Like getValueSanitizer,
@@ -361,7 +366,7 @@ public:
      */
     CARAPI GetEffectiveValueSanitizer(
         /* [in] */ const String& parameter,
-        /* [out] */ IValueSanitizer** result);
+        /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
 
     /**
      * Unescape an escaped string.
@@ -379,66 +384,15 @@ public:
         /* [in] */ const String& string,
         /* [out] */ String* result);
 
-
-private:
-
-    //anthony check
-    HashMap<String, AutoPtr<IValueSanitizer> > mSanitizers;
-    HashMap<String, String> mEntries;
-    List<AutoPtr<ParameterValuePair> >  mEntriesList;
-    Boolean mAllowUnregisteredParamaters;
-    Boolean mPreferFirstRepeatedParameter;
-    ValueSanitizer mUnregisteredParameterValueSanitizer = GetAllIllegal();
-
-    static ValueSanitizer sAllIllegal;
-    static ValueSanitizer sAllButNulLegal;
-
-    static ValueSanitizer sAllButWhitespaceLegal;
-
-    static ValueSanitizer sURLLegal;
-
-    static ValueSanitizer sUrlAndSpaceLegal;
-
-    static ValueSanitizer sAmpLegal;
-
-    static ValueSanitizer sAmpAndSpaceLegal;
-
-    static ValueSanitizer sSpaceLegal;
-
-    static ValueSanitizer sAllButNulAndAngleBracketsLegal;
-
-protected:
-    /**
-     * Parse an escaped parameter-value pair. The default implementation
-     * unescapes both the parameter and the value, then looks up the
-     * effective value sanitizer for the parameter and uses it to sanitize
-     * the value. If all goes well then addSanitizedValue is called with
-     * the unescaped parameter and the sanitized unescaped value.
-     * @param parameter an escaped parameter
-     * @param value an unsanitzied escaped value
-     */
-    CARAPI_(void) ParseEntry(
-        /* [in] */ const String& parameter,
-        /* [in] */ const String& value);
-
-    /**
-     * Record a sanitized parameter-value pair. Override if you want to
-     * do additional filtering or validation.
-     * @param parameter an unescaped parameter
-     * @param value a sanitized unescaped value
-     */
-    CARAPI_(void) AddSanitizedEntry(
-        /* [in] */ const String& parameter,
-        /* [in] */ const String& value);
-
     /**
      * Test if a character is a hexidecimal digit. Both upper case and lower
      * case hex digits are allowed.
      * @param c the character to test
      * @return true if c is a hex digit.
      */
-    CARAPI_(Boolean) IsHexDigit(
-        /* [in] */ Char16 c);
+    CARAPI IsHexDigit(
+        /* [in] */ Char32 c,
+        /* [out] */ Boolean* result);
 
     /**
      * Convert a character that represents a hexidecimal digit into an integer.
@@ -447,36 +401,121 @@ protected:
      * @param c the hexidecimal digit.
      * @return the integer value of the hexidecimal digit.
      */
-
-    CARAPI_(Int32) DecodeHexDigit(
-        /* [in] */ Char16 c);
+    CARAPI DecodeHexDigit(
+        /* [in] */ Char32 c,
+        /* [out] */ Int32* result);
 
     /**
      * Clear the existing entries. Called to get ready to parse a new
      * query string.
      */
-    CARAPI_(void) Clear();
+    CARAPI Clear();
 
-    //constructor
-    CUrlQuerySanitizer();
+private:
+    CARAPI_(AutoPtr<IHashMap>) CreateHashMap();
 
-    //destructor
-    ~CUrlQuerySanitizer();
+    CARAPI_(AutoPtr<IArrayList>) CreateArrayList();
+
+    // Private fields for singleton sanitizers:
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllIllegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllButNulLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllButWhitespaceLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sURLLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sUrlAndSpaceLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAmpLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAmpAndSpaceLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sSpaceLegal;
+    static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllButNulAndAngleBracketsLegal;
+
+    static AutoPtr<IUrlQuerySanitizerValueSanitizer> CreateValueSanitizer(
+        /* [in] */ Int32 value);
+
+    const AutoPtr<IHashMap> mSanitizers;
+    const AutoPtr<IHashMap> mEntries;
+    const AutoPtr<IArrayList> mEntriesList;
+    Boolean mAllowUnregisteredParamaters;
+    Boolean mPreferFirstRepeatedParameter;
+    AutoPtr<IUrlQuerySanitizerValueSanitizer> mUnregisteredParameterValueSanitizer;
+
 };
 
-
-CarClass(CIllegalCharacterValueSanitizer)
+/**
+ * A simple tuple that holds parameter-value pairs.
+ *
+ */
+class UrlQuerySanitizerParameterValuePair
+    : public Object
+    , public IUrlQuerySanitizerParameterValuePair
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    /**
+     * Construct a parameter-value tuple.
+     * @param parameter an unencoded parameter
+     * @param value an unencoded value
+     */
+    CARAPI constructor(
+        /* [in] */ const String& parameter,
+        /* [in] */ const String& value);
+
+    /**
+     * The unencoded parameter
+     */
+    CARAPI GetParameter(
+        /* [out] */ String* result);
+
+    /**
+     * The unencoded parameter
+     */
+    CARAPI SetParameter(
+        /* [in] */ const String& mParameter);
+
+    /**
+     * The unencoded value
+     */
+    CARAPI GetValue(
+        /* [out] */ String* result);
+
+    /**
+     * The unencoded value
+     */
+    CARAPI SetValue(
+        /* [in] */ const String& mValue);
+
+private:
+    /**
+     * The unencoded parameter
+     */
+    String mParameter;
+
+    /**
+     * The unencoded value
+     */
+    String mValue;
+
+};
+
+/**
+ * Sanitize values based on which characters they contain. Illegal
+ * characters are replaced with either space or '_', depending upon
+ * whether space is a legal character or not.
+ */
+class UrlQuerySanitizerIllegalCharacterValueSanitizer
+    : public Object
+    , public IUrlQuerySanitizerValueSanitizer
+    , public IUrlQuerySanitizerIllegalCharacterValueSanitizer
+{
+public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Construct a sanitizer. The parameters set the behavior of the
      * sanitizer.
      * @param flags some combination of the XXX_OK flags.
      */
-    CIllegalCharacterValueSanitizer(
-    /* [in] */ Int32 flags);
-
+    CARAPI constructor(
+        /* [in] */ Int32 flags);
 
     /**
      * Sanitize a value.
@@ -493,15 +532,11 @@ public:
      * @param value
      * @return the sanitized value
      */
-     CARAPI Sanitize(
-       /* [in] */ const String& value,
-       /* [out] */ String* result);
+    CARAPI Sanitize(
+        /* [in] */ const String& value,
+        /* [out] */ String* result);
 
 private:
-    const static String JAVASCRIPT_PREFIX = "javascript:";
-    const static String VBSCRIPT_PREFIX = "vbscript:";
-    const static int MIN_SCRIPT_PREFIX_LENGTH;
-
     /**
      * Trim whitespace from the beginning and end of a string.
      * <p>
@@ -510,16 +545,18 @@ private:
      * @param value the string to trim
      * @return the trimmed string
      */
-    CARAPI_(String) TrimWhitespace(
-        /* [in] */ const String& value);
+    CARAPI TrimWhitespace(
+        /* [in] */ const String& value,
+        /* [out] */ String* result);
 
     /**
      * Check if c is whitespace.
      * @param c character to test
      * @return true if c is a whitespace character
      */
-    CARAPI_(Boolean) IsWhitespace(
-        /* [in] */ Char16 c);
+    CARAPI IsWhitespace(
+        /* [in] */ Char32 c,
+        /* [out] */ Boolean* result);
 
     /**
      * Check whether an individual character is legal. Uses the
@@ -527,16 +564,25 @@ private:
      * @param c
      * @return true if c is a legal character
      */
-    CARAPI_(Boolean) CharacterIsLegal(
-        /* [in] */ Char16 c);
+    CARAPI CharacterIsLegal(
+        /* [in] */ Char32 c,
+        /* [out] */ Boolean* result);
 
+    Int32 mFlags;
 
+    /**
+     *  Script URL definitions
+     */
+    static const String JAVASCRIPT_PREFIX;
+
+    static const String VBSCRIPT_PREFIX;
+
+    static const Int32 MIN_SCRIPT_PREFIX_LENGTH;
 
 };
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
-#endif
+#endif // __ELASTOS_DROID_NET_URLQUERYSANITIZER_H__

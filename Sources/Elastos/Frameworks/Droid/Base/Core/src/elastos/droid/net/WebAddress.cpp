@@ -5,6 +5,225 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_INTERFACE_IMPL(WebAddress, Object, IWebAddress)
+
+AutoPtr<IPattern> WebAddress::sAddressPattern = CreateAddressPattern();
+
+AutoPtr<IPattern> WebAddress::CreateAddressPattern()
+{
+    AutoPtr<IPattern> rev;
+#if 0 // TODO: Translate codes below
+    sAddressPattern = Pattern.compile(
+            /* scheme    */ "(?:(http|https|file)\\:\\/\\/)?" +
+            /* authority */ "(?:([-A-Za-z0-9$_.+!*'(),;?&=]+(?:\\:[-A-Za-z0-9$_.+!*'(),;?&=]+)?)@)?" +
+            /* host      */ "([" + GOOD_IRI_CHAR + "%_-][" + GOOD_IRI_CHAR + "%_\\.-]*|\\[[0-9a-fA-F:\\.]+\\])?" +
+            /* port      */ "(?:\\:([0-9]*))?" +
+            /* path      */ "(\\/?[^#]*)?" +
+            /* anchor    */ ".*", Pattern.CASE_INSENSITIVE);;
+#else
+        assert(0);
+#endif
+    return rev;
+}
+
+const Int32 WebAddress::MATCH_GROUP_SCHEME = 1;
+const Int32 WebAddress::MATCH_GROUP_AUTHORITY = 2;
+const Int32 WebAddress::MATCH_GROUP_HOST = 3;
+const Int32 WebAddress::MATCH_GROUP_PORT = 4;
+const Int32 WebAddress::MATCH_GROUP_PATH = 5;
+
+ECode WebAddress::constructor(
+    /* [in] */ const String& address)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (address == null) {
+            throw new NullPointerException();
+        }
+        // android.util.Log.d(LOGTAG, "WebAddress: " + address);
+        mScheme = "";
+        mHost = "";
+        mPort = -1;
+        mPath = "/";
+        mAuthInfo = "";
+        Matcher m = sAddressPattern.matcher(address);
+        String t;
+        if (m.matches()) {
+            t = m.group(MATCH_GROUP_SCHEME);
+            if (t != null) mScheme = t.toLowerCase(Locale.ROOT);
+            t = m.group(MATCH_GROUP_AUTHORITY);
+            if (t != null) mAuthInfo = t;
+            t = m.group(MATCH_GROUP_HOST);
+            if (t != null) mHost = t;
+            t = m.group(MATCH_GROUP_PORT);
+            if (t != null && t.length() > 0) {
+                // The ':' character is not returned by the regex.
+                try {
+                    mPort = Integer.parseInt(t);
+                } catch (NumberFormatException ex) {
+                    throw new ParseException("Bad port");
+                }
+            }
+            t = m.group(MATCH_GROUP_PATH);
+            if (t != null && t.length() > 0) {
+                /* handle busted myspace frontpage redirect with
+                   missing initial "/" */
+                if (t.charAt(0) == '/') {
+                    mPath = t;
+                } else {
+                    mPath = "/" + t;
+                }
+            }
+        } else {
+            // nothing found... outa here
+            throw new ParseException("Bad address");
+        }
+        /* Get port from scheme or scheme from port, if necessary and
+           possible */
+        if (mPort == 443 && mScheme.equals("")) {
+            mScheme = "https";
+        } else if (mPort == -1) {
+            if (mScheme.equals("https"))
+                mPort = 443;
+            else
+                mPort = 80; // default
+        }
+        if (mScheme.equals("")) mScheme = "http";
+
+#endif
+}
+
+ECode WebAddress::ToString(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        String port = "";
+        if ((mPort != 443 && mScheme.equals("https")) ||
+            (mPort != 80 && mScheme.equals("http"))) {
+            port = ":" + Integer.toString(mPort);
+        }
+        String authInfo = "";
+        if (mAuthInfo.length() > 0) {
+            authInfo = mAuthInfo + "@";
+        }
+        return mScheme + "://" + authInfo + mHost + port + mPath;
+
+#endif
+}
+
+ECode WebAddress::SetScheme(
+    /* [in] */ const String& scheme)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      mScheme = scheme;
+
+#endif
+}
+
+ECode WebAddress::GetScheme(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      return mScheme;
+
+#endif
+}
+
+ECode WebAddress::SetHost(
+    /* [in] */ const String& host)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      mHost = host;
+
+#endif
+}
+
+ECode WebAddress::GetHost(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      return mHost;
+
+#endif
+}
+
+ECode WebAddress::SetPort(
+    /* [in] */ Int32 port)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      mPort = port;
+
+#endif
+}
+
+ECode WebAddress::GetPort(
+    /* [out] */ Int32* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      return mPort;
+
+#endif
+}
+
+ECode WebAddress::SetPath(
+    /* [in] */ const String& path)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      mPath = path;
+
+#endif
+}
+
+ECode WebAddress::GetPath(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      return mPath;
+
+#endif
+}
+
+ECode WebAddress::SetAuthInfo(
+    /* [in] */ const String& authInfo)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      mAuthInfo = authInfo;
+
+#endif
+}
+
+ECode WebAddress::GetAuthInfo(
+    /* [out] */ String* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+      return mAuthInfo;
+
+#endif
+}
+
+
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+#if 0 // old WebAddress.cpp
+#include "elastos/droid/net/WebAddress.h"
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+
 const Int32 WebAddress::MATCH_GROUP_SCHEME = 1;
 const Int32 WebAddress::MATCH_GROUP_AUTHORITY = 2;
 const Int32 WebAddress::MATCH_GROUP_HOST = 3;
@@ -216,3 +435,4 @@ ECode CVpnServiceHelper::Prepare(
 } // namespace Net
 } // namepsace Droid
 } // namespace Elastos
+#endif

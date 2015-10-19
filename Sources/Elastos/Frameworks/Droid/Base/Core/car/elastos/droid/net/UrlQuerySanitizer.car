@@ -335,19 +335,19 @@ module
         /**
          * The unencoded parameter
          */
-        GetMParameter(
+        GetParameter(
             [out] String* result);
 
-        SetMParameter(
+        SetParameter(
             [in] String mParameter);
 
         /**
          * The unencoded value
          */
-        GetMValue(
+        GetValue(
             [out] String* result);
 
-        SetMValue(
+        SetValue(
             [in] String mValue);
 
     }
@@ -375,7 +375,7 @@ module
      */
     /**
      * @Involved
-     * interface IValueSanitizer;
+     * interface IUrlQuerySanitizerValueSanitizer;
      */
     interface IUrlQuerySanitizerIllegalCharacterValueSanitizer {
         /**

@@ -417,12 +417,6 @@ module
             [out] IUri** result);
 
         /**
-         * The empty URI, equivalent to "".
-         */
-        GetUri(
-            [out] IUri** result);
-
-        /**
          * Creates a Uri which parses the given encoded URI string.
          *
          * @param uriString an RFC 2396-compliant, encoded URI
