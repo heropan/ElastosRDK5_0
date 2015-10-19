@@ -53,5 +53,7 @@ SOURCES += PictureDrawable.cpp
 SOURCES += CPictureDrawable.cpp
 SOURCES += AnimatedVectorDrawable.cpp
 SOURCES += CAnimatedVectorDrawable.cpp
+SOURCES += VectorDrawable.cpp
+SOURCES += CVectorDrawable.cpp
 
 LIBRARIES += shapes/shapes.lib
