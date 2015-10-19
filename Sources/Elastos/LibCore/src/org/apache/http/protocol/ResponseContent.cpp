@@ -1,8 +1,8 @@
 
 #include "ResponseContent.h"
 #include "CHttpVersion.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -29,12 +29,13 @@ ECode ResponseContent::Process(
         Logger::E("ResponseContent", "HTTP response may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(response);
     Boolean contains;
-    if (response->ContainsHeader(IHTTP::TRANSFER_ENCODING, &contains), contains) {
+    if (message->ContainsHeader(IHTTP::TRANSFER_ENCODING, &contains), contains) {
         Logger::E("ResponseContent", "Transfer-encoding header already present");
         return E_PROTOCOL_EXCEPTION;
     }
-    if (response->ContainsHeader(IHTTP::CONTENT_LEN, &contains), contains) {
+    if (message->ContainsHeader(IHTTP::CONTENT_LEN, &contains), contains) {
         Logger::E("ResponseContent", "Content-Length header already present");
         return E_PROTOCOL_EXCEPTION;
     }
@@ -44,27 +45,27 @@ ECode ResponseContent::Process(
     sl->GetProtocolVersion((IProtocolVersion**)&ver);
     AutoPtr<IHttpEntity> entity;
     response->GetEntity((IHttpEntity**)&entity);
-    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(response);
     if (entity != NULL) {
-        Int32 len;
-        entity->GetContentLength(&len)
+        Int64 len;
+        entity->GetContentLength(&len);
         Boolean isChunked, lessEquals;
-        if ((entity->IsChunked(&isChunked), isChunked) || (ver->LessEquals(CHttpVersion::HTTP_1_0, &lessEquals), !lessEquals)) {
+        if ((entity->IsChunked(&isChunked), isChunked) ||
+                (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals), !lessEquals)) {
             message->AddHeader(IHTTP::TRANSFER_ENCODING, IHTTP::CHUNK_CODING);
         }
         else if (len >= 0) {
             message->AddHeader(IHTTP::CONTENT_LEN, StringUtils::ToString(len));
         }
         // Specify a content type if known
-        String type;
-        if ((entity->GetContentType(&type), !type.IsNull())
-                && (request->ContainsHeader(IHTTP::CONTENT_TYPE, &contains), !contains)) {
+        AutoPtr<IHeader> type;
+        if ((entity->GetContentType((IHeader**)&type), type != NULL)
+                && (message->ContainsHeader(IHTTP::CONTENT_TYPE, &contains), !contains)) {
             message->AddHeader(type);
         }
         // Specify a content encoding if known
-        String encoding;
-        if ((entity->GetContentEncoding(&encoding), !encoding.IsNull())
-                && (request->ContainsHeader(IHTTP::CONTENT_ENCODING, &contains), !contains)) {
+        AutoPtr<IHeader> encoding;
+        if ((entity->GetContentEncoding((IHeader**)&encoding), encoding != NULL)
+                && (message->ContainsHeader(IHTTP::CONTENT_ENCODING, &contains), !contains)) {
             message->AddHeader(encoding);
         }
     }

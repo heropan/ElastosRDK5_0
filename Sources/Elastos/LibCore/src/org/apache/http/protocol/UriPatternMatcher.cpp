@@ -1,9 +1,11 @@
 
 #include "UriPatternMatcher.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::IIterator;
@@ -38,7 +40,7 @@ ECode UriPatternMatcher::Register(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(pattern, (ICharSequence**)&cs);
+    CString::New(pattern, (ICharSequence**)&cs);
     mHandlerMap->Put(cs, handler);
     return NOERROR;
 }
@@ -50,7 +52,7 @@ ECode UriPatternMatcher::Unregister(
         return NOERROR;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(pattern, (ICharSequence**)&cs);
+    CString::New(pattern, (ICharSequence**)&cs);
     mHandlerMap->Remove(cs);
     return NOERROR;
 }
@@ -71,7 +73,7 @@ ECode UriPatternMatcher::Lookup(
     /* [in] */ String requestURI,
     /* [out] */ IInterface** value)
 {
-    VALIDATE_NOT_NULL(name)
+    VALIDATE_NOT_NULL(value)
     *value = NULL;
 
     if (requestURI == NULL) {
@@ -86,7 +88,7 @@ ECode UriPatternMatcher::Lookup(
 
     // direct match?
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(requestURI, (ICharSequence**)&cs);
+    CString::New(requestURI, (ICharSequence**)&cs);
     AutoPtr<IInterface> handler;
     mHandlerMap->Get(cs, (IInterface**)&handler);
     if (handler == NULL) {
@@ -135,7 +137,7 @@ ECode UriPatternMatcher::MatchUriRequestPattern(
                 (pattern.EndWith("*") && requestUri.StartWith(pattern.Substring(0, pattern.GetLength() - 1))) ||
                 (pattern.StartWith("*") && requestUri.EndWith(pattern.Substring(1, pattern.GetLength())));
     }
-    return NOERROR
+    return NOERROR;
 }
 
 } // namespace Protocol

@@ -1,6 +1,7 @@
 
 #include "BasicHttpEntityEnclosingRequest.h"
-#include <elastos/Logger.h>
+#include "CBasicRequestLine.h"
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
@@ -14,15 +15,15 @@ namespace Message {
 CAR_INTERFACE_IMPL(BasicHttpEntityEnclosingRequest, BasicHttpRequest, IHttpEntityEnclosingRequest)
 
 ECode BasicHttpEntityEnclosingRequest::Init(
-    /* [in] */ String method,
-    /* [in] */ String uri)
+    /* [in] */ const String& method,
+    /* [in] */ const String& uri)
 {
     return BasicHttpRequest::Init(method, uri);
 }
 
 ECode BasicHttpEntityEnclosingRequest::Init(
-    /* [in] */ String method,
-    /* [in] */ String uri
+    /* [in] */ const String& method,
+    /* [in] */ const String& uri,
     /* [in] */ IProtocolVersion* ver)
 {
     AutoPtr<IRequestLine> line;
@@ -59,16 +60,9 @@ ECode BasicHttpEntityEnclosingRequest::ExpectContinue(
     AutoPtr<IHeader> expect;
     GetFirstHeader(IHTTP::EXPECT_DIRECTIVE, (IHeader**)&expect);
     String value;
-    *result expect != NULL
+    *result = expect != NULL
             && (expect->GetValue(&value), IHTTP::EXPECT_CONTINUE.EqualsIgnoreCase(value));
     return NOERROR;
-}
-
-void BasicHttpEntityEnclosingRequest::CloneImpl(
-    /* [in] */ BasicHttpEntityEnclosingRequest* obj)
-{
-    CloneImpl((BasicHttpRequest*)obj);
-    obj->mEntity = mEntity;
 }
 
 } // namespace Message

@@ -1,9 +1,10 @@
 
 #include "BufferedHeader.h"
-#include "CParsorCursor.h"
+#include "CParserCursor.h"
 #include "BasicHeaderValueParser.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 
@@ -71,9 +72,10 @@ ECode BufferedHeader::GetElements(
     AutoPtr<IParserCursor> cursor;
     Int32 len;
     mBuffer->GetLength(&len);
-    CParsorCursor::New(0, len, (IParserCursor**)&cursor);
+    CParserCursor::New(0, len, (IParserCursor**)&cursor);
     cursor->UpdatePos(mValuePos);
-    return BasicHeaderValueParser::DEFAULT->ParseElements(mBuffer, cursor, elements);
+    return IHeaderValueParser::Probe(BasicHeaderValueParser::DEFAULT)->ParseElements(
+            mBuffer, cursor, elements);
 }
 
 ECode BufferedHeader::GetValuePos(

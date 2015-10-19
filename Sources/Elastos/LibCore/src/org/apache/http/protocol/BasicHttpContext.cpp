@@ -1,9 +1,11 @@
 
 #include "BasicHttpContext.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
@@ -29,7 +31,7 @@ ECode BasicHttpContext::Init(
 
 ECode BasicHttpContext::GetAttribute(
     /* [in] */ const String& id,
-    /* [out] */ Interface** attr)
+    /* [out] */ IInterface** attr)
 {
     VALIDATE_NOT_NULL(attr)
     if (id.IsNull()) {
@@ -39,7 +41,7 @@ ECode BasicHttpContext::GetAttribute(
     AutoPtr<IInterface> obj;
     if (mMap != NULL) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(id, (ICharSequence**)&cs);
+        CString::New(id, (ICharSequence**)&cs);
         mMap->Get(cs, (IInterface**)&obj);
     }
     if (obj == NULL && mParentContext != NULL) {
@@ -64,7 +66,7 @@ ECode BasicHttpContext::SetAttribute(
         mMap = IMap::Probe(hm);
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(id, (ICharSequence**)&cs);
+    CString::New(id, (ICharSequence**)&cs);
     mMap->Put(cs, obj);
     return NOERROR;
 }
@@ -82,7 +84,7 @@ ECode BasicHttpContext::RemoveAttribute(
     }
     if (mMap != NULL) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(id, (ICharSequence**)&cs);
+        CString::New(id, (ICharSequence**)&cs);
         return mMap->Remove(cs, attrs);
     }
     else {

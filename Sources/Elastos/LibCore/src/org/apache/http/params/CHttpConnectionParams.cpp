@@ -9,96 +9,96 @@ namespace Params {
 
 CAR_INTERFACE_IMPL_2(CHttpConnectionParams, Object, IHttpConnectionParams, ICoreConnectionPNames)
 
-CAR_OBJECT_IMPL(CHttpConnectionParams)
+CAR_SINGLETON_IMPL(CHttpConnectionParams)
 
-ECode CHttpProtocolParams::GetSoTimeout(
+ECode CHttpConnectionParams::GetSoTimeout(
     /* [in] */ IHttpParams* params,
     /* [out] */ Int32* timeout)
 {
     VALIDATE_NOT_NULL(timeout)
-    return HttpProtocolParams::GetSoTimeout(params, timeout);
+    return HttpConnectionParams::GetSoTimeout(params, timeout);
 }
 
-ECode CHttpProtocolParams::SetSoTimeout(
+ECode CHttpConnectionParams::SetSoTimeout(
     /* [in] */ IHttpParams* params,
     /* [in] */ Int32 timeout)
 {
-    return HttpProtocolParams::SetSoTimeout(params, timeout);
+    return HttpConnectionParams::SetSoTimeout(params, timeout);
 }
 
-ECode CHttpProtocolParams::GetTcpNoDelay(
+ECode CHttpConnectionParams::GetTcpNoDelay(
     /* [in] */ IHttpParams* params,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return HttpProtocolParams::GetTcpNoDelay(params, result);
+    return HttpConnectionParams::GetTcpNoDelay(params, result);
 }
 
-ECode CHttpProtocolParams::SetTcpNoDelay(
+ECode CHttpConnectionParams::SetTcpNoDelay(
     /* [in] */ IHttpParams* params,
     /* [in] */ Boolean value)
 {
-    return HttpProtocolParams::SetSoTimeout(params, value);
+    return HttpConnectionParams::SetSoTimeout(params, value);
 }
 
-ECode CHttpProtocolParams::GetSocketBufferSize(
+ECode CHttpConnectionParams::GetSocketBufferSize(
     /* [in] */ IHttpParams* params,
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
-    return HttpProtocolParams::GetSocketBufferSize(params, size);
+    return HttpConnectionParams::GetSocketBufferSize(params, size);
 }
 
-ECode CHttpProtocolParams::SetSocketBufferSize(
+ECode CHttpConnectionParams::SetSocketBufferSize(
     /* [in] */ IHttpParams* params,
     /* [in] */ Int32 size)
 {
-    return HttpProtocolParams::SetSoTimeout(params, size);
+    return HttpConnectionParams::SetSoTimeout(params, size);
 }
 
-ECode CHttpProtocolParams::GetLinger(
+ECode CHttpConnectionParams::GetLinger(
     /* [in] */ IHttpParams* params,
     /* [out] */ Int32* linger)
 {
     VALIDATE_NOT_NULL(linger)
-    return HttpProtocolParams::GetLinger(params, linger);
+    return HttpConnectionParams::GetLinger(params, linger);
 }
 
-ECode CHttpProtocolParams::SetLinger(
+ECode CHttpConnectionParams::SetLinger(
     /* [in] */ IHttpParams* params,
     /* [in] */ Int32 value)
 {
-    return HttpProtocolParams::SetLinger(params, value);
+    return HttpConnectionParams::SetLinger(params, value);
 }
 
-ECode CHttpProtocolParams::GetConnectionTimeout(
+ECode CHttpConnectionParams::GetConnectionTimeout(
     /* [in] */ IHttpParams* params,
     /* [out] */ Int32* timeout)
 {
     VALIDATE_NOT_NULL(timeout)
-    return HttpProtocolParams::GetConnectionTimeout(params, timeout);
+    return HttpConnectionParams::GetConnectionTimeout(params, timeout);
 }
 
-ECode CHttpProtocolParams::SetConnectionTimeout(
+ECode CHttpConnectionParams::SetConnectionTimeout(
     /* [in] */ IHttpParams* params,
     /* [in] */ Int32 timeout)
 {
-    return HttpProtocolParams::SetConnectionTimeout(params, timeout);
+    return HttpConnectionParams::SetConnectionTimeout(params, timeout);
 }
 
-ECode CHttpProtocolParams::IsStaleCheckingEnabled(
+ECode CHttpConnectionParams::IsStaleCheckingEnabled(
     /* [in] */ IHttpParams* params,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return HttpProtocolParams::IsStaleCheckingEnabled(params, result);
+    return HttpConnectionParams::IsStaleCheckingEnabled(params, result);
 }
 
-ECode CHttpProtocolParams::SetStaleCheckingEnabled(
+ECode CHttpConnectionParams::SetStaleCheckingEnabled(
     /* [in] */ IHttpParams* params,
     /* [in] */ Boolean value)
 {
-    return HttpProtocolParams::SetStaleCheckingEnabled(params, value);
+    return HttpConnectionParams::SetStaleCheckingEnabled(params, value);
 }
 
 } // namespace Params

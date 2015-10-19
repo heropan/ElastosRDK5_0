@@ -1,7 +1,9 @@
 
 #include "CBasicHttpProcessor.h"
-#include <elastos/Logger.h>
+#include "CArrayList.h"
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
@@ -92,7 +94,7 @@ ECode CBasicHttpProcessor::RemoveRequestInterceptorByClass(
         it->GetNext((IInterface**)&value);
         Boolean equals;
         if (IObject::Probe(value)->Equals(clazz, &equals), equals) {
-            it->Remove()
+            it->Remove();
         }
     }
     return NOERROR;
@@ -112,7 +114,7 @@ ECode CBasicHttpProcessor::RemoveResponseInterceptorByClass(
         it->GetNext((IInterface**)&value);
         Boolean equals;
         if (IObject::Probe(value)->Equals(clazz, &equals), equals) {
-            it->Remove()
+            it->Remove();
         }
     }
     return NOERROR;
@@ -234,7 +236,7 @@ ECode CBasicHttpProcessor::ClearResponseInterceptors()
 ECode CBasicHttpProcessor::SetInterceptors(
     /* [in] */ IList* itcps)
 {
-    if (list == NULL) {
+    if (itcps == NULL) {
         Logger::E("CBasicHttpProcessor", "List must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -247,7 +249,7 @@ ECode CBasicHttpProcessor::SetInterceptors(
     AutoPtr<IIterator> it;
     itcps->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    While(it->HasNext(&hasNext), hasNext) {
+    while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
         AutoPtr<IHttpRequestInterceptor> request = IHttpRequestInterceptor::Probe(value);
@@ -275,9 +277,9 @@ ECode CBasicHttpProcessor::Process(
 {
     if (mRequestInterceptors != NULL) {
         AutoPtr<IIterator> it;
-        itcps->GetIterator((IIterator**)&it);
+        mRequestInterceptors->GetIterator((IIterator**)&it);
         Boolean hasNext;
-        While(it->HasNext(&hasNext), hasNext) {
+        while(it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> value;
             it->GetNext((IInterface**)&value);
             AutoPtr<IHttpRequestInterceptor> interceptor = IHttpRequestInterceptor::Probe(value);
@@ -293,9 +295,9 @@ ECode CBasicHttpProcessor::Process(
 {
     if (mResponseInterceptors != NULL) {
         AutoPtr<IIterator> it;
-        itcps->GetIterator((IIterator**)&it);
+        mResponseInterceptors->GetIterator((IIterator**)&it);
         Boolean hasNext;
-        While(it->HasNext(&hasNext), hasNext) {
+        while(it->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> value;
             it->GetNext((IInterface**)&value);
             AutoPtr<IHttpResponseInterceptor> interceptor = IHttpResponseInterceptor::Probe(value);
@@ -328,7 +330,7 @@ ECode CBasicHttpProcessor::Copy(
 {
     VALIDATE_NOT_NULL(processor)
     CBasicHttpProcessor::New(processor);
-    CopyInterceptors(*processor)
+    CopyInterceptors(*processor);
     return NOERROR;
 }
 
@@ -337,8 +339,8 @@ ECode CBasicHttpProcessor::Clone(
 {
     VALIDATE_NOT_NULL(obj)
     AutoPtr<IBasicHttpProcessor> processor;
-    Copy((IBasicHttpProcessor**)&processor)
-    *obj = processor->Probe(EIID_IINTERFACE);
+    Copy((IBasicHttpProcessor**)&processor);
+    *obj = processor->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }

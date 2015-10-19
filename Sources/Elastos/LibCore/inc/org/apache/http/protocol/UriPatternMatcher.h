@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_URIPATTERNMATCHER_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_URIPATTERNMATCHER_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Elastos::Utility::IMap;
 

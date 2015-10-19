@@ -1,7 +1,7 @@
 
 #include "ResponseConnControl.h"
 #include "CHttpVersion.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IStatusLine;
@@ -53,10 +53,11 @@ ECode ResponseConnControl::Process(
     if (entity != NULL) {
         AutoPtr<IProtocolVersion> ver;
         sl->GetProtocolVersion((IProtocolVersion**)&ver);
-        Int32 len;
+        Int64 len;
         Boolean isChunked, lessEquals;
         if ((entity->GetContentLength(&len), len < 0) &&
-                ((entity->IsChunked(&isChunked), !isChunked) || (ver->LessEquals(CHttpVersion::HTTP_1_0, &lessEquals), lessEquals))) {
+                ((entity->IsChunked(&isChunked), !isChunked)
+                        || (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals), lessEquals))) {
             IHttpMessage::Probe(response)->SetHeader(IHTTP::CONN_DIRECTIVE, IHTTP::CONN_CLOSE);
             return NOERROR;
         }
@@ -67,11 +68,11 @@ ECode ResponseConnControl::Process(
     AutoPtr<IHttpRequest> request = IHttpRequest::Probe(attr);
     if (request != NULL) {
         AutoPtr<IHeader> header;
-        request->GetFirstHeader(IHTTP::CONN_DIRECTIVE, (IHeader**)&header);
+        IHttpMessage::Probe(request)->GetFirstHeader(IHTTP::CONN_DIRECTIVE, (IHeader**)&header);
         if (header != NULL) {
             String value;
             header->GetValue(&value);
-            response->SetHeader(IHTTP::CONN_DIRECTIVE, value);
+            IHttpMessage::Probe(response)->SetHeader(IHTTP::CONN_DIRECTIVE, value);
         }
     }
     return NOERROR;

@@ -3,7 +3,7 @@
 #include "CDefaultedHttpParams.h"
 #include "CHttpVersion.h"
 #include "EncodingUtils.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpVersion;
@@ -31,9 +31,11 @@ ECode HttpService::Init(
     /* [in] */ IConnectionReuseStrategy* connStrategy,
     /* [in] */ IHttpResponseFactory* responseFactory)
 {
-    FAIL_RETURN(SetHttpProcessor(proc))
-    FAIL_RETURN(SetConnReuseStrategy(connStrategy))
-    FAIL_RETURN(SetResponseFactory(responseFactory))
+    ECode ec;
+    FAIL_RETURN(ec = SetHttpProcessor(processor))
+    FAIL_RETURN(ec = SetConnReuseStrategy(connStrategy))
+    FAIL_RETURN(ec = SetResponseFactory(responseFactory))
+    return NOERROR;
 }
 
 ECode HttpService::SetHttpProcessor(
@@ -115,16 +117,16 @@ ECode HttpService::HandleRequest(
     AutoPtr<IDefaultedHttpParams> defaultParams;
     CDefaultedHttpParams::New(requestP, mParams, (IDefaultedHttpParams**)&defaultParams);
     AutoPtr<IHttpParams> hp = IHttpParams::Probe(defaultParams);
-    request->SetParams(hp);
+    IHttpMessage::Probe(request)->SetParams(hp);
 
     AutoPtr<IRequestLine> rl;
     request->GetRequestLine((IRequestLine**)&rl);
     AutoPtr<IProtocolVersion> ver;
     rl->GetProtocolVersion((IProtocolVersion**)&ver);
     Boolean lessEquals;
-    if (ver->LessEquals(CHttpVersion::HTTP_1_1, &lessEquals), !lessEquals) {
+    if (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_1), &lessEquals), !lessEquals) {
         // Downgrade protocol version if greater than HTTP/1.1
-        ver = CHttpVersion::HTTP_1_1;
+        ver = IProtocolVersion::Probe(CHttpVersion::HTTP_1_1);
     }
 
     AutoPtr<IHttpEntityEnclosingRequest> enclosingRequest = IHttpEntityEnclosingRequest::Probe(request);
@@ -138,21 +140,22 @@ ECode HttpService::HandleRequest(
             IHttpMessage::Probe(response)->GetParams((IHttpParams**)&responseP);
             CDefaultedHttpParams::New(responseP, mParams, (IDefaultedHttpParams**)&dhp);
             AutoPtr<IHttpParams> responsehp = IHttpParams::Probe(dhp);
-            response->SetParams(responsehp);
+            IHttpMessage::Probe(response)->SetParams(responsehp);
 
             if (mExpectationVerifier != NULL) {
                 // try {
                 ECode ec = mExpectationVerifier->Verify(request, response, context);
                 if (ec == (ECode)E_HTTP_EXCEPTION) {
                     response = NULL;
-                    mResponseFactory->NewHttpResponse(CHttpVersion::HTTP_1_0, IHttpStatus::SC_INTERNAL_SERVER_ERROR
+                    mResponseFactory->NewHttpResponse(
+                            IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), IHttpStatus::SC_INTERNAL_SERVER_ERROR
                             ,context, (IHttpResponse**)&response);
                     AutoPtr<IDefaultedHttpParams> exceptionD;
                     AutoPtr<IHttpParams> exceptionP;
                     IHttpMessage::Probe(response)->GetParams((IHttpParams**)&exceptionP);
                     CDefaultedHttpParams::New(exceptionP, mParams, (IDefaultedHttpParams**)&exceptionD);
                     AutoPtr<IHttpParams> exceptionDp = IHttpParams::Probe(exceptionD);
-                    response->SetParams(exceptionDp);
+                    IHttpMessage::Probe(response)->SetParams(exceptionDp);
                     HandleException(ec, response);
                 }
                 // } catch (HttpException ex) {
@@ -187,12 +190,12 @@ ECode HttpService::HandleRequest(
         IHttpMessage::Probe(response)->GetParams((IHttpParams**)&responseP);
         CDefaultedHttpParams::New(responseP, mParams, (IDefaultedHttpParams**)&dhp);
         AutoPtr<IHttpParams> responsehp = IHttpParams::Probe(dhp);
-        response->SetParams(responsehp);
+        IHttpMessage::Probe(response)->SetParams(responsehp);
 
         context->SetAttribute(IExecutionContext::HTTP_REQUEST, request);
         context->SetAttribute(IExecutionContext::HTTP_RESPONSE, response);
 
-        mProcessor->Process(request, context);
+        IHttpRequestInterceptor::Probe(mProcessor)->Process(request, context);
         DoService(request, response, context);
     }
 
@@ -214,14 +217,14 @@ ECode HttpService::HandleRequest(
     //     handleException(ex, response);
     // }
 
-    mProcessor->Process(response, context);
+    IHttpResponseInterceptor::Probe(mProcessor)->Process(response, context);
     conn->SendResponseHeader(response);
     conn->SendResponseEntity(response);
     conn->Flush();
 
     Boolean keepAlive;
     if (mConnStrategy->KeepAlive(response, context, &keepAlive), !keepAlive) {
-        conn->Close();
+        IHttpConnection::Probe(conn)->Close();
     }
     return NOERROR;
 }
@@ -254,7 +257,7 @@ ECode HttpService::HandleException(
 ECode HttpService::DoService(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpResponse* response,
-    /* [in] */ IHttpContext* context);
+    /* [in] */ IHttpContext* context)
 {
     AutoPtr<IHttpRequestHandler> handler;
     if (mHandlerResolver != NULL) {

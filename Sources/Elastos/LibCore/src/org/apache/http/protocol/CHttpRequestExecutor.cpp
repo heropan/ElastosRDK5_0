@@ -1,6 +1,8 @@
 
 #include "CHttpRequestExecutor.h"
-#include <elastos/Logger.h>
+#include "CHttpVersion.h"
+#include "CBoolean.h"
+#include "Logger.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -8,9 +10,10 @@ using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IRequestLine;
 using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::IHttpStatus;
+using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;
 using Org::Apache::Http::IProtocolVersion;
-using Org::Apache::Http::IHttpVersion;
+using Org::Apache::Http::CHttpVersion;
 using Org::Apache::Http::Params::IHttpParams;
 using Org::Apache::Http::Params::ICoreProtocolPNames;
 
@@ -71,21 +74,23 @@ ECode CHttpRequestExecutor::Execute(
     }
 
     // try {
-    AutoPtr<IHttpResponse> response;
-    ECode ec = DoSendRequest(request, conn, context, response);
+    AutoPtr<IHttpResponse> resp;
+    ECode ec = DoSendRequest(request, conn, context, (IHttpResponse**)&resp);
     if (FAILED(ec)) {
         *response = NULL;
-        conn->Close();
+        IHttpConnection::Probe(conn)->Close();
         return ec;
     }
     if (response == NULL) {
-        ec = DoReceiveResponse(request, conn, context, response);
+        ec = DoReceiveResponse(request, conn, context, (IHttpResponse**)&resp);
         if (FAILED(ec)) {
             *response = NULL;
-            conn->Close();
+            IHttpConnection::Probe(conn)->Close();
             return ec;
         }
     }
+    *response = resp;
+    REFCOUNT_ADD(*response)
     return NOERROR;
 }
 
@@ -106,7 +111,7 @@ ECode CHttpRequestExecutor::PreProcess(
         Logger::E("CHttpRequestExecutor", "HTTP context may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return processor->Process(request, context);
+    return IHttpRequestInterceptor::Probe(processor)->Process(request, context);
 }
 
 ECode CHttpRequestExecutor::DoSendRequest(
@@ -149,12 +154,12 @@ ECode CHttpRequestExecutor::DoSendRequest(
         rl->GetProtocolVersion((IProtocolVersion**)&ver);
         Boolean result, lessEquals;
         if ((enclosingRequest->ExpectContinue(&result), result) &&
-                (ver->LessEquals(IHttpVersion::HTTP_1_0, &lessEquals), !lessEquals)) {
+                (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals), !lessEquals)) {
             conn->Flush();
             // As suggested by RFC 2616 section 8.2.3, we don't wait for a
             // 100-continue response forever. On timeout, send the entity.
             AutoPtr<IHttpParams> params;
-            request->GetParams((IHttpParams**)&params);
+            IHttpMessage::Probe(request)->GetParams((IHttpParams**)&params);
             Int32 tms;
             params->GetInt32Parameter(ICoreProtocolPNames::WAIT_FOR_CONTINUE, 2000, &tms);
             Boolean isAvailable;
@@ -183,7 +188,7 @@ ECode CHttpRequestExecutor::DoSendRequest(
             }
         }
         if (sendentity) {
-            conn->sendRequestEntity(enclosingRequest);
+            conn->SendRequestEntity(enclosingRequest);
         }
     }
     conn->Flush();
@@ -255,7 +260,7 @@ ECode CHttpRequestExecutor::PostProcess(
         Logger::E("CHttpRequestExecutor", "HTTP context may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return processor->Process(response, context);
+    return IHttpResponseInterceptor::Probe(processor)->Process(response, context);
 }
 
 ECode CHttpRequestExecutor::constructor()

@@ -57,9 +57,6 @@ protected:
     CARAPI Init(
         /* [in] */ IRequestLine* requestline);
 
-    CARAPI_(void) CloneImpl(
-        /* [in] */ BasicHttpRequest* obj);
-
 protected:
     AutoPtr<IRequestLine> mRequestLine;
     String mMethod;

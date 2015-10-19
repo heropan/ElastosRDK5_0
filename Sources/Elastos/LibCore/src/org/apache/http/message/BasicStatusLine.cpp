@@ -1,8 +1,9 @@
 
 #include "BasicStatusLine.h"
 #include "BasicLineFormatter.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 
@@ -67,7 +68,8 @@ ECode BasicStatusLine::ToString(
     VALIDATE_NOT_NULL(str)
     // no need for non-default formatting in toString()
     AutoPtr<ICharArrayBuffer> buf;
-    BasicLineFormatter::DEFAULT->FormatStatusLine(NULL, (IStatusLine*)this, (ICharArrayBuffer**)&buf);
+    ILineFormatter::Probe(BasicLineFormatter::DEFAULT)->FormatStatusLine(
+            NULL, (IStatusLine*)this, (ICharArrayBuffer**)&buf);
     return IObject::Probe(buf)->ToString(str);
 }
 

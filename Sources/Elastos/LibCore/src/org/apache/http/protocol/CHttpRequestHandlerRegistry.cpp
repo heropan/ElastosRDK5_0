@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CHttpRequestHandlerRegistry)
 
-ECode CHttpRequestHandlerRegistry::constructor();
+ECode CHttpRequestHandlerRegistry::constructor()
 {
     return Init();
 }

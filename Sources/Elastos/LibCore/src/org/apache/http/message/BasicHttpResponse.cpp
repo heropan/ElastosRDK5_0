@@ -1,10 +1,10 @@
 
 #include "BasicHttpResponse.h"
 #include "CBasicStatusLine.h"
-#include <elastos/Logger.h>
+#include "elastos/utility/CLocale.h"
+#include "Logger.h"
 
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::CLocale;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -31,10 +31,7 @@ ECode BasicHttpResponse::Init(
         mLocale = locale;
     }
     else {
-        mLocale = NULL;
-        AutoPtr<ILocaleHelper> helper;
-        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
-        helper->GetDefault((ILocale**)&mLocale);
+        mLocale = CLocale::GetDefault();
     }
     return NOERROR;
 }
@@ -51,15 +48,15 @@ ECode BasicHttpResponse::Init(
     /* [in] */ const String& reason)
 {
     AutoPtr<IStatusLine> line;
-    CBasicStatusLine(ver, code, reason, (IStatusLine**)&line);
+    CBasicStatusLine::New(ver, code, reason, (IStatusLine**)&line);
     return Init(line, NULL, NULL);
 }
 
 ECode BasicHttpResponse::GetProtocolVersion(
     /* [out] */ IProtocolVersion** protocolVersion)
 {
-    VALIDATE_NOT_NULL(ProtocolVersion)
-    return mStatusline->GetProtocolVersion(ProtocolVersion);
+    VALIDATE_NOT_NULL(protocolVersion)
+    return mStatusline->GetProtocolVersion(protocolVersion);
 }
 
 ECode BasicHttpResponse::GetStatusLine(
@@ -92,11 +89,11 @@ ECode BasicHttpResponse::GetLocale(
 ECode BasicHttpResponse::SetStatusLine(
     /* [in] */ IStatusLine* statusLine)
 {
-    if (statusline == NULL) {
+    if (statusLine == NULL) {
         Logger::E("BasicHttpResponse", "Status line may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mStatusline = statusline;
+    mStatusline = statusLine;
     return NOERROR;
 }
 
@@ -118,7 +115,7 @@ ECode BasicHttpResponse::SetStatusLine(
 {
     // arguments checked in BasicStatusLine constructor
     mStatusline = NULL;
-    return CBasicStatusLine::New(ver, code, reason, (IStatusLine**)&,mStatusline);
+    return CBasicStatusLine::New(ver, code, reason, (IStatusLine**)&mStatusline);
 }
 
 ECode BasicHttpResponse::SetStatusCode(
@@ -186,16 +183,6 @@ ECode BasicHttpResponse::GetReason(
         *reason = String(NULL);
         return NOERROR;
     }
-}
-
-void BasicHttpResponse::CloneImpl(
-    /* [in] */ BasicHttpResponse* obj)
-{
-    CloneImpl((AbstractHttpMessage*)obj);
-    obj->mStatusline = mStatusline;
-    obj->mEntity = mEntity;
-    obj->mReasonCatalog = mReasonCatalog;
-    obj->mLocale = mLocale;
 }
 
 } // namespace Message

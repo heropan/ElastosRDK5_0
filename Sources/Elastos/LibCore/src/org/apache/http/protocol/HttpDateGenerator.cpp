@@ -1,6 +1,11 @@
 
 #include "HttpDateGenerator.h"
-#include <elastos/Logger.h>
+#include "CSystem.h"
+#include "elastos/text/CSimpleDateFormat.h"
+#include "CDate.h"
+#include "CTimeZoneHelper.h"
+#include "AutoLock.h"
+#include "Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -37,7 +42,8 @@ HttpDateGenerator::HttpDateGenerator()
 ECode HttpDateGenerator::Init()
 {
     AutoPtr<ISimpleDateFormat> sdf;
-    CSimpleDateFormat::New(PATTERN_RFC1123, ILocale::US, (ISimpleDateFormat**)&sdf);
+    AutoPtr<ILocale> l/*ILocale::US*/;
+    CSimpleDateFormat::New(PATTERN_RFC1123, l, (ISimpleDateFormat**)&sdf);
     mDateformat = IDateFormat::Probe(sdf);
     mDateformat->SetTimeZone(GMT);
     return NOERROR;
@@ -52,7 +58,6 @@ ECode HttpDateGenerator::GetCurrentDate(
         Int64 now;
         AutoPtr<ISystem> system;
         CSystem::AcquireSingleton((ISystem**)&system);
-        Int64 now;
         system->GetCurrentTimeMillis(&now);
         if (now - mDateAsLong > 1000) {
             // Generate new date string

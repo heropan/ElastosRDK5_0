@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CBasicHttpContext)
 
-ECode CBasicHttpContext::constructor();
+ECode CBasicHttpContext::constructor()
 {
     return Init();
 }

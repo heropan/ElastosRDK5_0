@@ -220,9 +220,6 @@ protected:
         /* [in] */ Int32 code,
         /* [in] */ const String& reason);
 
-    CARAPI_(void) CloneImpl(
-        /* [in] */ BasicHttpResponse* obj);
-
 protected:
     AutoPtr<IStatusLine>          mStatusline;
     AutoPtr<IHttpEntity>          mEntity;

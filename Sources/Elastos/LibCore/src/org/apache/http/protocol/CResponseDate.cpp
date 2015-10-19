@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CResponseDate)
 
-ECode CResponseDate::constructor();
+ECode CResponseDate::constructor()
 {
     return NOERROR;
 }

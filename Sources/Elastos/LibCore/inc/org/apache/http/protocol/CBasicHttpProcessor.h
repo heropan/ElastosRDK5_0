@@ -3,8 +3,9 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CBasicHttpProcessor_H_
 
 #include "_Org_Apache_Http_Protocol_CBasicHttpProcessor.h"
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
+using Elastos::Core::ICloneable;
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHttpRequestInterceptor;
 using Org::Apache::Http::IHttpResponseInterceptor;

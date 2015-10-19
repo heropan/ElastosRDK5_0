@@ -24,9 +24,6 @@ CarClass(CBasicHttpResponse) , public BasicHttpResponse
 public:
     CAR_OBJECT_DECL()
 
-    CARAPI Clone(
-        /* [out] */ IInterface** obj);
-
     /**
      * Creates a new response.
      * This is the constructor to which all others map.

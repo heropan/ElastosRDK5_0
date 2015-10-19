@@ -1,11 +1,10 @@
 
 #include "CDefaultedHttpContext.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
-using Elastos::Utility::IHashMap;
-using Elastos::Utility::CHashMap;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -19,7 +18,7 @@ CAR_OBJECT_IMPL(CDefaultedHttpContext)
 
 ECode CDefaultedHttpContext::GetAttribute(
     /* [in] */ const String& id,
-    /* [out] */ Interface** attr)
+    /* [out] */ IInterface** attr)
 {
     VALIDATE_NOT_NULL(attr)
     AutoPtr<IInterface> obj;
@@ -53,7 +52,7 @@ ECode CDefaultedHttpContext::GetDefaults(
     /* [out] */ IHttpContext** defaults)
 {
     VALIDATE_NOT_NULL(defaults)
-    defaults = mDefaults;
+    *defaults = mDefaults;
     REFCOUNT_ADD(*defaults)
     return NOERROR;
 }

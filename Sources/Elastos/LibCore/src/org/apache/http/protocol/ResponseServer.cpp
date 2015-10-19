@@ -1,6 +1,6 @@
 
 #include "ResponseServer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
@@ -23,17 +23,18 @@ ECode ResponseServer::Process(
         Logger::E("ResponseServer", "HTTP response may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(response);
     Boolean contains;
-    if (response->ContainsHeader(IHTTP::SERVER_HEADER, &contains), !contains) {
+    if (message->ContainsHeader(IHTTP::SERVER_HEADER, &contains), !contains) {
         AutoPtr<IHttpParams> params;
-        response->GetParams((IHttpParams**)&params);
+        message->GetParams((IHttpParams**)&params);
         AutoPtr<IInterface> param;
         params->GetParameter(ICoreProtocolPNames::ORIGIN_SERVER, (IInterface**)&param);
         AutoPtr<ICharSequence> cs = ICharSequence::Probe(param);
         String s;
         cs->ToString(&s);
         if (!s.IsNull()) {
-            response->AddHeader(IHTTP::SERVER_HEADER, s);
+            message->AddHeader(IHTTP::SERVER_HEADER, s);
         }
     }
     return NOERROR;

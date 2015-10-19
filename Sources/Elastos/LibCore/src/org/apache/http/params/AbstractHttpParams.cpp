@@ -1,10 +1,10 @@
 
 #include "AbstractHttpParams.h"
-#include <elastos/core/CInteger64.h>
-#include <elastos/core/CInteger32.h>
-#include <elastos/core/CDouble.h>
-#include <elastos/core/CBoolean.h>
-#include <elastos/Logger.h>
+#include "elastos/core/CInteger64.h"
+#include "elastos/core/CInteger32.h"
+#include "elastos/core/CDouble.h"
+#include "elastos/core/CBoolean.h"
+#include "Logger.h"
 
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
@@ -46,7 +46,8 @@ ECode AbstractHttpParams::SetInt64Parameter(
     VALIDATE_NOT_NULL(httpParams)
     AutoPtr<IInteger64> i;
     CInteger64::New(value, (IInteger64**)&i);
-    SetParameter(name, i);
+    AutoPtr<IHttpParams> p;
+    SetParameter(name, i, (IHttpParams**)&p);
     *httpParams = (IHttpParams*)this;
     REFCOUNT_ADD(*httpParams)
     return NOERROR;
@@ -75,7 +76,8 @@ ECode AbstractHttpParams::SetInt32Parameter(
     VALIDATE_NOT_NULL(httpParams)
     AutoPtr<IInteger32> i;
     CInteger32::New(value, (IInteger32**)&i);
-    SetParameter(name, i);
+    AutoPtr<IHttpParams> p;
+    SetParameter(name, i, (IHttpParams**)&p);
     *httpParams = (IHttpParams*)this;
     REFCOUNT_ADD(*httpParams)
     return NOERROR;
@@ -104,7 +106,8 @@ ECode AbstractHttpParams::SetDoubleParameter(
     VALIDATE_NOT_NULL(httpParams)
     AutoPtr<IDouble> i;
     CDouble::New(value, (IDouble**)&i);
-    SetParameter(name, i);
+    AutoPtr<IHttpParams> p;
+    SetParameter(name, i, (IHttpParams**)&p);
     *httpParams = (IHttpParams*)this;
     REFCOUNT_ADD(*httpParams)
     return NOERROR;
@@ -133,7 +136,8 @@ ECode AbstractHttpParams::SetBooleanParameter(
     VALIDATE_NOT_NULL(httpParams)
     AutoPtr<IBoolean> i;
     CBoolean::New(value, (IBoolean**)&i);
-    SetParameter(name, i);
+    AutoPtr<IHttpParams> p;
+    SetParameter(name, i, (IHttpParams**)&p);
     *httpParams = (IHttpParams*)this;
     REFCOUNT_ADD(*httpParams)
     return NOERROR;

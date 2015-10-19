@@ -1,7 +1,7 @@
 
 #include "RequestUserAgent.h"
 #include "HttpProtocolParams.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;
@@ -17,18 +17,19 @@ ECode RequestUserAgent::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)
 {
-    if (Request == NULL) {
+    if (request == NULL) {
         Logger::E("RequestUserAgent", "HTTP request may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(request);
     Boolean contains;
-    if (request->ContainsHeader(IHTTP::USER_AGENT, &contains), !contains) {
+    if (message->ContainsHeader(IHTTP::USER_AGENT, &contains), !contains) {
         AutoPtr<IHttpParams> params;
-        request->GetParams((IHttpParams**)&params);
+        message->GetParams((IHttpParams**)&params);
         String useragent;
         HttpProtocolParams::GetUserAgent(params, &useragent);
         if (!useragent.IsNull()) {
-            request->AddHeader(IHTTP::USER_AGENT, useragent);
+            message->AddHeader(IHTTP::USER_AGENT, useragent);
         }
     }
     return NOERROR;

@@ -1,8 +1,10 @@
 
 #include "CParserCursor.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "StringUtils.h"
+#include "Logger.h"
 
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;

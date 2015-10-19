@@ -3,6 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CDEFAULTEDHTTPCONTEXT_H_
 
 #include "_Org_Apache_Http_Protocol_CDefaultedHttpContext.h"
+#include "Object.h"
 
 namespace Org {
 namespace Apache {

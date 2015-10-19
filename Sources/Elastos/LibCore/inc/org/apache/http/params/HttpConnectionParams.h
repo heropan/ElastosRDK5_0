@@ -7,6 +7,7 @@
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
+#include <elastos/coredef.h>
 
 namespace Org {
 namespace Apache {

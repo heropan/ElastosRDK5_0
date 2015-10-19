@@ -2,8 +2,8 @@
 #include "RequestTargetHost.h"
 #include "CHttpVersion.h"
 #include "CHttpHost.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "Logger.h"
+#include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Net::IInetAddress;
@@ -37,8 +37,9 @@ ECode RequestTargetHost::Process(
         Logger::E("RequestTargetHost", "HTTP context may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(request);
     Boolean contains;
-    if (!request->ContainsHeader(IHTTP::TARGET_HOST, &contains), !contains) {
+    if (message->ContainsHeader(IHTTP::TARGET_HOST, &contains), !contains) {
         AutoPtr<IInterface> attr;
         context->GetAttribute(IExecutionContext::HTTP_TARGET_HOST, (IInterface**)&attr);
         AutoPtr<IHttpHost> targethost = IHttpHost::Probe(attr);
@@ -67,7 +68,7 @@ ECode RequestTargetHost::Process(
                 AutoPtr<IProtocolVersion> ver;
                 rl->GetProtocolVersion((IProtocolVersion**)&ver);
                 Boolean lessEquals;
-                if (ver->LessEquals(CHttpVersion::HTTP_1_0, &lessEquals), lessEquals) {
+                if (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals), lessEquals) {
                     return NOERROR;
                 }
                 else {
@@ -78,7 +79,7 @@ ECode RequestTargetHost::Process(
         }
         String str;
         targethost->ToHostString(&str);
-        IHttpMessage::Probe(request)->AddHeader(IHTTP::TARGET_HOST, str);
+        message->AddHeader(IHTTP::TARGET_HOST, str);
     }
     return NOERROR;
 }
