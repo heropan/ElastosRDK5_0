@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwZoomControls.h"
+#include "elastos/droid/webkit/native/android_webview/AwContents.h"
 //TODO #include "elastos/droid/widget/CZoomButtonsController.h"
 
 using Elastos::Droid::View::IGravity;
@@ -47,10 +48,10 @@ ECode AwZoomControls::ZoomListener::OnZoom(
     /* [in] */ Boolean zoomIn)
 {
     if (zoomIn) {
-        //TODO mAwContents->ZoomIn();
+        mOwner->mAwContents->ZoomIn();
     }
     else {
-        //TODO mAwContents->ZoomOut();
+        mOwner->mAwContents->ZoomOut();
     }
     // ContentView will call updateZoomControls after its current page scale
     // is got updated from the native code.
@@ -63,7 +64,7 @@ ECode AwZoomControls::ZoomListener::OnZoom(
 //===============================================================
 
 AwZoomControls::AwZoomControls(
-    /* [in] */ /*TODO AwContents*/IInterface* awContents)
+    /* [in] */ AwContents* awContents)
     : mAwContents(awContents)
 {
 }
@@ -95,9 +96,9 @@ void AwZoomControls::UpdateZoomControls()
     }
 
     Boolean canZoomIn = FALSE;
-    //TODO canZoomIn = mAwContents->CanZoomIn();
+    canZoomIn = mAwContents->CanZoomIn();
     Boolean canZoomOut = FALSE;
-    //TODO canZoomOut = mAwContents->CanZoomOut();
+    canZoomOut = mAwContents->CanZoomOut();
     if (!canZoomIn && !canZoomOut) {
         // Hide the zoom in and out buttons if the page cannot zoom
         AutoPtr<IView> controls;
@@ -121,11 +122,11 @@ AutoPtr<IView> AwZoomControls::GetZoomControlsViewForTest()
 AutoPtr<IZoomButtonsController> AwZoomControls::GetZoomController()
 {
     Boolean shouldDZC = FALSE;
-    //TODO shouldDZC = mAwContents->GetSettings()->ShouldDisplayZoomControls();
+    shouldDZC = mAwContents->GetSettings()->ShouldDisplayZoomControls();
     if (mZoomButtonsController == NULL && shouldDZC) {
         AutoPtr<IView> containerView;
         AutoPtr<IViewGroup> viewGroup;
-        //TODO viewGroup = mAwContents->GetContentViewCore()->GetContainerView();
+        viewGroup = mAwContents->GetContentViewCore()->GetContainerView();
         containerView = IView::Probe(viewGroup);
         //TODO CZoomButtonsController::New( containerView,(IZoomButtonsController**)&mZoomButtonsController);
         AutoPtr<ZoomListener> listener = new ZoomListener(this);

@@ -3,6 +3,8 @@
 //TODO using Elastos::Droid::Print::IPrintDocumentInfo;
 //TODO using Elastos::Droid::Print::IPrintDocumentInfoBuilder;
 //TODO using Elastos::Droid::Print::CPrintDocumentInfoBuilder;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
 
 namespace Elastos {
 namespace Droid {
@@ -23,8 +25,12 @@ AwPrintDocumentAdapter::InnerValueCallback::InnerValueCallback(
 }
 
 ECode AwPrintDocumentAdapter::InnerValueCallback::OnReceiveValue(
-    /* [in] */ Boolean value)
+    /* [in] */ IInterface* iValue)
 {
+    AutoPtr<IBoolean> bValue = IBoolean::Probe(iValue);
+    Boolean value = FALSE;
+    if (bValue)
+        bValue->GetValue(&value);
     if (value) {
         //TODO AutoPtr<ArrayOf<IPageRange*> > pageRange = ArrayOf<IPageRange*>::Alloc(1);
         //TODO (*pageRange)[0] = IPageRange::ALL_PAGES;

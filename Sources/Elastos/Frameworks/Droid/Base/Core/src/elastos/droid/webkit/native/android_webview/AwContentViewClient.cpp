@@ -2,6 +2,7 @@
 #include "elastos/droid/webkit/native/base/CommandLine.h"
 #include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
 #include "elastos/droid/webkit/native/content/common/ContentSwitches.h"
+#include "elastos/droid/webkit/native/android_webview/AwContents.h"
 //TODO #include "elastos/droid/widget/CFrameLayout.h"
 #include "elastos/droid/webkit/URLUtil.h"
 
@@ -64,14 +65,13 @@ ECode AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChang
 ECode AwContentViewClient::AwContentVideoViewClient::InnerViewOnAttachStateChangeListener::OnViewAttachedToWindow(
     /* [in] */ IView* v)
 {
-    //TODO if (mAwContents->IsFullScreen())
-    if (FALSE)
+    if (mOwner->mOwner->mAwContents->IsFullScreen())
     {
         return NOERROR;
     }
 
     AutoPtr<IViewGroup> viewGroup = IViewGroup::Probe(mViewGroup);
-    viewGroup->AddView((IView*)0/*TODO mAwContents->EnterFullScreen()*/);
+    viewGroup->AddView((IView*)mOwner->mOwner->mAwContents->EnterFullScreen());
 
     return NOERROR;
 }
@@ -126,7 +126,7 @@ void AwContentViewClient::AwContentVideoViewClient::OnShowCustomView(
 void AwContentViewClient::AwContentVideoViewClient::OnDestroyContentVideoView()
 {
     if (AreHtmlControlsEnabled()) {
-        //TODO mAwContents->ExitFullScreen();
+        mOwner->mAwContents->ExitFullScreen();
     }
     mOwner->mAwContentsClient->OnHideCustomView();
 }
@@ -143,8 +143,8 @@ AutoPtr<IView> AwContentViewClient::AwContentVideoViewClient::GetVideoLoadingPro
 
 AwContentViewClient::AwContentViewClient(
     /* [in] */ AwContentsClient* awContentsClient,
-    /* [in] */ /*TODO AwSettings*/IInterface* awSettings,
-    /* [in] */ /*TODO AwContents*/IInterface* awContents,
+    /* [in] */ AwSettings* awSettings,
+    /* [in] */ AwContents* awContents,
     /* [in] */ IContext* context)
     : mAwContentsClient(awContentsClient)
     , mAwSettings(awSettings)
@@ -194,8 +194,7 @@ AutoPtr<ContentVideoViewClient> AwContentViewClient::GetContentVideoViewClient()
 Boolean AwContentViewClient::ShouldBlockMediaRequest(
     /* [in] */ const String& url)
 {
-    //TODO return mAwSettings != NULL ?  mAwSettings->GetBlockNetworkLoads() && URLUtil::IsNetworkUrl(url) : TRUE;
-    return FALSE;
+    return mAwSettings != NULL ?  mAwSettings->GetBlockNetworkLoads() && URLUtil::IsNetworkUrl(url) : TRUE;
 }
 
 Boolean AwContentViewClient::AreHtmlControlsEnabled()

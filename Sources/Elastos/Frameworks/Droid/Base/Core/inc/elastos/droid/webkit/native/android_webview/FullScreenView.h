@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_FULLSCREENVIEW_H__
 #include "elastos/droid/ext/frameworkext.h"
 //TODO #include "elastos/droid/widget/AbsoluteLayout.h"
-//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/native/android_webview/AwViewMethods.h"
 
 using Elastos::Droid::Content::IContext;
@@ -27,13 +27,13 @@ namespace AndroidWebview {
  * html controls and subtitles, over the {@link ContentVideoView}.
  */
 class FullScreenView
+    :public Object//TODO remove this
 //TODO : public AbsoluteLayout
 {
 private:
     // AwContents.InternalAccessDelegate implementation --------------------------------------
     class InternalAccessAdapter
-    :public Object //TODO remove this line when below line is ok
-    //TODO : public AwContents::InternalAccessDelegate
+    : public AwContents::InternalAccessDelegate
     {
     public:
         InternalAccessAdapter(

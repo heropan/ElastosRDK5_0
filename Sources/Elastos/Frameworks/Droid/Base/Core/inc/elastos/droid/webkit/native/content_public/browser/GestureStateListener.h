@@ -15,6 +15,7 @@ namespace Browser {
  * the ContentViewCore.
  */
 class GestureStateListener
+    :public Object
 {
 public:
     /**

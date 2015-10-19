@@ -39,7 +39,7 @@ public:
             /* [in] */ /*TODO IWriteResultCallback*/IInterface* callback);
 
         CARAPI OnReceiveValue(
-            /* [in] */ Boolean value);
+            /* [in] */ IInterface* value);
 
     private:
         AwPrintDocumentAdapter* mOwner;

@@ -1,3 +1,5 @@
+#include "elastos/droid/webkit/native/android_webview/AwScrollOffsetManager.h"
+#include "elastos/core/Math.h"
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +12,9 @@ const Int32 AwScrollOffsetManager::MAX_SCROLL_ANIMATION_DURATION_MILLISEC;
 
 AwScrollOffsetManager::AwScrollOffsetManager(
     /* [in] */ Delegate* delegate,
-    /* [in] */ IOverScroller* overScroller)
-    : mNativeScrollX(0)
+    /* [in] */ /*TODO IOverScroller*/IInterface* overScroller)
+    : mDelegate(delegate)
+    , mNativeScrollX(0)
     , mNativeScrollY(0)
     , mMaxHorizontalScrollOffset(0)
     , mMaxVerticalScrollOffset(0)
@@ -22,7 +25,6 @@ AwScrollOffsetManager::AwScrollOffsetManager(
     , mApplyDeferredNativeScroll(FALSE)
     , mDeferredNativeScrollX(0)
     , mDeferredNativeScrollY(0)
-    , mDelegate(delegate)
     , mScroller(overScroller)
 {
 }
@@ -115,12 +117,12 @@ void AwScrollOffsetManager::ScrollContainerViewTo(
     mNativeScrollX = x;
     mNativeScrollY = y;
 
-    const Int32 scrollX = mDelegate->GetContainerViewScrollX();
-    const Int32 scrollY = mDelegate->GetContainerViewScrollY();
-    const Int32 deltaX = x - scrollX;
-    const Int32 deltaY = y - scrollY;
-    const Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
-    const Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
+    Int32 scrollX = mDelegate->GetContainerViewScrollX();
+    Int32 scrollY = mDelegate->GetContainerViewScrollY();
+    Int32 deltaX = x - scrollX;
+    Int32 deltaY = y - scrollY;
+    Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
+    Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
 
     // We use overScrollContainerViewBy to be compatible with WebViewClassic which used this
     // method for handling both over-scroll as well as in-bounds scroll.
@@ -130,7 +132,7 @@ void AwScrollOffsetManager::ScrollContainerViewTo(
 
 Boolean AwScrollOffsetManager::IsFlingActive()
 {
-    Boolean flinging = mScroller->ComputeScrollOffset();
+    Boolean flinging = FALSE;//TODO = mScroller->ComputeScrollOffset();
     mWasFlinging |= flinging;
     return flinging;
 }
@@ -154,10 +156,10 @@ void AwScrollOffsetManager::ScrollBy(
 {
     if (deltaX == 0 && deltaY == 0) return;
 
-    const Int32 scrollX = mDelegate->GetContainerViewScrollX();
-    const Int32 scrollY = mDelegate->GetContainerViewScrollY();
-    const Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
-    const Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
+    Int32 scrollX = mDelegate->GetContainerViewScrollX();
+    Int32 scrollY = mDelegate->GetContainerViewScrollY();
+    Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
+    Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
 
     // The android.view.View.overScrollBy method is used for both scrolling and over-scrolling
     // which is why we use it here.
@@ -168,16 +170,16 @@ void AwScrollOffsetManager::ScrollBy(
 Int32 AwScrollOffsetManager::ClampHorizontalScroll(
     /* [in] */ Int32 scrollX)
 {
-    scrollX = Math::Max(0, scrollX);
-    scrollX = Math::Min(ComputeMaximumHorizontalScrollOffset(), scrollX);
+    scrollX = Elastos::Core::Math::Max(0, scrollX);
+    scrollX = Elastos::Core::Math::Min(ComputeMaximumHorizontalScrollOffset(), scrollX);
     return scrollX;
 }
 
 Int32 AwScrollOffsetManager::ClampVerticalScroll(
     /* [in] */ Int32 scrollY)
 {
-    scrollY = Math::Max(0, scrollY);
-    scrollY = Math::Min(ComputeMaximumVerticalScrollOffset(), scrollY);
+    scrollY = Elastos::Core::Math::Max(0, scrollY);
+    scrollY = Elastos::Core::Math::Min(ComputeMaximumVerticalScrollOffset(), scrollY);
     return scrollY;
 }
 
@@ -243,7 +245,7 @@ void AwScrollOffsetManager::OnFlingCancelGesture()
 {
     // TODO(mkosiba): Support speeding up a fling by flinging again.
     // http://crbug.com/265841
-    mScroller->ForceFinished(TRUE);
+    //TODO mScroller->ForceFinished(TRUE);
 }
 
 // Called when a fling gesture is not handled by the renderer.
@@ -262,39 +264,42 @@ void AwScrollOffsetManager::FlingScroll(
     /* [in] */ Int32 velocityX,
     /* [in] */ Int32 velocityY)
 {
-    const Int32 scrollX = mDelegate->GetContainerViewScrollX();
-    const Int32 scrollY = mDelegate->GetContainerViewScrollY();
-    const Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
-    const Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
+    /*TODO
+    Int32 scrollX = mDelegate->GetContainerViewScrollX();
+    Int32 scrollY = mDelegate->GetContainerViewScrollY();
+    Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
+    Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
+    */
 
-    mScroller->Fling(scrollX, scrollY, velocityX, velocityY,
-            0, scrollRangeX, 0, scrollRangeY);
+    //TODO mScroller->Fling (scrollX, scrollY, velocityX, velocityY, 0, scrollRangeX, 0, scrollRangeY);
     mDelegate->Invalidate();
 }
 
 // Called immediately before the draw to update the scroll offset.
 void AwScrollOffsetManager::ComputeScrollAndAbsorbGlow(
-    /* [in] */ IOverScrollGlow* overScrollGlow)
+    /* [in] */ /*TODO IOverScrollGlow*/IInterface* overScrollGlow)
 {
     Boolean bOffset = FALSE;
-    mScroller->ComputeScrollOffset(&bOffset);
+    //TODO mScroller->ComputeScrollOffset(&bOffset);
     if (!bOffset && !mWasFlinging) {
         return;
     }
     mWasFlinging = FALSE;
 
-    const Int32 oldX = mDelegate->GetContainerViewScrollX();
-    const Int32 oldY = mDelegate->GetContainerViewScrollY();
-    Int32 x = mScroller->GetCurrX();
-    Int32 y = mScroller->GetCurrY();
+    Int32 oldX = mDelegate->GetContainerViewScrollX();
+    Int32 oldY = mDelegate->GetContainerViewScrollY();
+    Int32 x = 0;//TODO = mScroller->GetCurrX();
+    Int32 y = 0;//TODO = mScroller->GetCurrY();
 
-    const Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
-    const Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
+    /*TODO
+    Int32 scrollRangeX = ComputeMaximumHorizontalScrollOffset();
+    Int32 scrollRangeY = ComputeMaximumVerticalScrollOffset();
+    */
 
     if (overScrollGlow != NULL) {
-        Int32 velocity;
-        mScroller->GetCurrVelocity(&velocity);
-        overScrollGlow->AbsorbGlow(x, y, oldX, oldY, scrollRangeX, scrollRangeY, velocity);
+        //TODO Int32 velocity;
+        //TODO mScroller->GetCurrVelocity(&velocity);
+        //TODO overScrollGlow->AbsorbGlow(x, y, oldX, oldY, scrollRangeX, scrollRangeY, velocity);
     }
 
     // The mScroller is configured not to go outside of the scrollable range, so this call
@@ -308,17 +313,17 @@ Int32 AwScrollOffsetManager::ComputeDurationInMilliSec(
     /* [in] */ Int32 dx,
     /* [in] */ Int32 dy)
 {
-    Int32 distance = Math::Max(Math::Abs(dx), Math::Abs(dy));
+    Int32 distance = Elastos::Core::Math::Max(Elastos::Core::Math::Abs(dx), Elastos::Core::Math::Abs(dy));
     Int32 duration = distance * 1000 / STD_SCROLL_ANIMATION_SPEED_PIX_PER_SEC;
-    return Math::Min(duration, MAX_SCROLL_ANIMATION_DURATION_MILLISEC);
+    return Elastos::Core::Math::Min(duration, MAX_SCROLL_ANIMATION_DURATION_MILLISEC);
 }
 
 Boolean AwScrollOffsetManager::AnimateScrollTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    const Int32 scrollX = mDelegate->GetContainerViewScrollX();
-    const Int32 scrollY = mDelegate->GetContainerViewScrollY();
+    Int32 scrollX = mDelegate->GetContainerViewScrollX();
+    Int32 scrollY = mDelegate->GetContainerViewScrollY();
 
     x = ClampHorizontalScroll(x);
     y = ClampVerticalScroll(y);
@@ -329,7 +334,7 @@ Boolean AwScrollOffsetManager::AnimateScrollTo(
     if (dx == 0 && dy == 0)
         return FALSE;
 
-    mScroller->StartScroll(scrollX, scrollY, dx, dy, ComputeDurationInMilliSec(dx, dy));
+    //TODO mScroller->StartScroll(scrollX, scrollY, dx, dy, ComputeDurationInMilliSec(dx, dy));
     mDelegate->Invalidate();
 
     return TRUE;
@@ -400,7 +405,7 @@ Boolean AwScrollOffsetManager::RequestChildRectangleOnScreen(
     rect->Offset(childOffsetX, childOffsetY);
 
     Int32 screenTop = scrollY;
-    Isnt32 screenBottom = scrollY + mContainerViewHeight;
+    Int32 screenBottom = scrollY + mContainerViewHeight;
     Int32 scrollYDelta = 0;
 
     Int32 top, bottom, width, left, right;

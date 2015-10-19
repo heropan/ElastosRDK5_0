@@ -13,6 +13,7 @@ namespace AndroidWebview {
  * Helper methods used to manage the layout of the View that contains AwContents.
  */
 class AwLayoutSizer
+    :public Object
 {
 public:
     /**

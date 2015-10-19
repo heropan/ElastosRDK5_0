@@ -30,6 +30,7 @@ namespace AndroidWebview {
  * instance, so at this point the class mostly exists for conceptual clarity.
  */
 class AwBrowserContext
+:public Object
 {
 public:
     AwBrowserContext(

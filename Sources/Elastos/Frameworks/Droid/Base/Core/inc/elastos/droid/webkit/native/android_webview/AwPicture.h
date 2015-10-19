@@ -24,6 +24,8 @@ class AwPicture
     : public Object
     , public IPicture
 {
+public:
+    CAR_INTERFACE_DECL();
 private:
     // There is no explicit destroy method on Picture base-class, so cleanup is always
     // handled via the CleanupReference.
@@ -52,23 +54,29 @@ public:
         /* [in] */ Int64 nativeAwPicture);
 
     //@Override
-    CARAPI_(AutoPtr<ICanvas>) BeginRecording(
+    CARAPI BeginRecording(
         /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
+        /* [in] */ Int32 height,
+        /* [out] */ ICanvas** canvas);
 
     //@Override
     CARAPI EndRecording();
 
     //@Override
-    CARAPI_(Int32) GetWidth();
+    CARAPI GetWidth(
+        /* [out] */ Int32* width);
 
     //@Override
-    CARAPI_(Int32) GetHeight();
+    CARAPI GetHeight(
+        /* [out] */ Int32* height);
 
     //@Override
     CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
+    //override
+    CARAPI GetNativePicture(
+        /* [out] */ Handle32* handle);
     //@Override
     //@SuppressWarnings("deprecation")
     CARAPI WriteToStream(

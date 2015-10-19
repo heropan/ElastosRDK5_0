@@ -1,8 +1,40 @@
+#include "elastos/droid/webkit/native/android_webview/AwWebContentsDelegateAdapter.h"
+#include "elastos/droid/webkit/native/base/ContentUriUtils.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
+//TODO #include "elastos/droid/net/CUriHelper.h"
+//TODO #include "elastos/droid/webkit/CConsoleMessage.h"
+//TODO #include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::Webkit::Base::ContentUriUtils;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Content::Browser::ContentVideoView;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::IUriHelper;
+//TODO using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Provider::IMediaStore;
+using Elastos::Droid::Provider::IMediaStoreMediaColumns;
+//TODO using Elastos::Droid::Webkit::IConsoleMessage;
+//TODO using Elastos::Droid::Webkit::CConsoleMessage;
+using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IArrayList;
+//TODO using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+
+const String AwWebContentsDelegateAdapter::TAG("AwWebContentsDelegateAdapter");
+const Int32 AwWebContentsDelegateAdapter::MSG_CONTINUE_PENDING_RELOAD = 1;
+const Int32 AwWebContentsDelegateAdapter::MSG_CANCEL_PENDING_RELOAD = 2;
 
 //===============================================================
 //       AwWebContentsDelegateAdapter::GetDisplayNameTask
@@ -23,20 +55,48 @@ AwWebContentsDelegateAdapter::GetDisplayNameTask::GetDisplayNameTask(
 }
 
 //@Override
-AutoPtr< ArrayOf<String> > AwWebContentsDelegateAdapter::GetDisplayNameTask::DoInBackground(/*Void...voids*/)
+ECode AwWebContentsDelegateAdapter::GetDisplayNameTask::DoInBackground(
+    /* [in] */ ArrayOf<IInterface*>* params,
+    /* [in] */ IInterface** result)
 {
-    AutoPtr< ArrayOf<String> > displayNames = ArrayOf<String>::Alloc(mFilePaths->GetLength());
-    for (Int32 i = 0; i < mFilePaths.length; i++) {
-        (*displayNames)[i] = ResolveFileName(mFilePaths[i]);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    AutoPtr<IArrayList> displayNamesList;
+    //TODO CArrayList::New((IArrayList**)&displayNamesList);
+    //AutoPtr<ArrayOf<String> > displayNames = ArrayOf<String>::Alloc(mFilePaths->GetLength());
+    for (Int32 i = 0; i < mFilePaths->GetLength(); ++i) {
+        //(*displayNames)[i] = ResolveFileName(mFilePaths[i]);
+        String fileName = ResolveFileName((*mFilePaths)[i]);
+        AutoPtr<ICharSequence> ics;
+        CString::New(fileName, (ICharSequence**)&ics);
+        displayNamesList->Add(ics);
     }
-    return displayNames;
+
+    *result = displayNamesList.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::GetDisplayNameTask::OnPostExecute(
-    /* [in] */ ArrayOf<String>* result)
+ECode AwWebContentsDelegateAdapter::GetDisplayNameTask::OnPostExecute(
+    /* [in] */ IInterface* result)
 {
-    NativeFilesSelectedInChooser(mProcessId, mRenderId, mModeFlags, mFilePaths, result);
+    //TODO check the correction of the below code
+    AutoPtr<ArrayOf<IInterface*> > displayNames;
+    AutoPtr<IArrayList> al = IArrayList::Probe(result);
+    al->ToArray((ArrayOf<IInterface*>**)&displayNames);
+    Int32 length = displayNames->GetLength();
+    AutoPtr<ArrayOf<String> > sDN = ArrayOf<String>::Alloc(length);
+    for(Int32 i = 0; i < length; ++i)
+    {
+        String element;
+        AutoPtr<ICharSequence> ics = ICharSequence::Probe((*displayNames)[i]);
+        ics->ToString(&element);
+        (*sDN)[i] = element;
+    }
+    NativeFilesSelectedInChooser(mProcessId, mRenderId, mModeFlags, mFilePaths, sDN);
+    return NOERROR;
 }
 
 /**
@@ -46,13 +106,13 @@ void AwWebContentsDelegateAdapter::GetDisplayNameTask::OnPostExecute(
 String AwWebContentsDelegateAdapter::GetDisplayNameTask::ResolveFileName(
     /* [in] */ const String& filePath)
 {
-    if (mContentResolver == NULL || filePath == NULL)
+    if (mContentResolver == NULL || filePath.IsNullOrEmpty())
     {
         return String("");
     }
 
     AutoPtr<IUriHelper> helper;
-    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    //TODO CUriHelper::AcquireSingleton((IUriHelper**)&helper);
     AutoPtr<IUri> uri;
     helper->Parse(filePath, (IUri**)&helper);
     return ContentUriUtils::GetDisplayName(
@@ -65,8 +125,11 @@ String AwWebContentsDelegateAdapter::GetDisplayNameTask::ResolveFileName(
 
 AwWebContentsDelegateAdapter::InnerHandler::InnerHandler(
     /* [in] */ AwWebContentsDelegateAdapter* owner,
+    /* [in] */ ILooper* looper,
     /* [in] */ ContentViewCore* contentViewCore)
-    : mOwner(owner)
+    : Handler(looper)
+    , mOwner(owner)
+    , mContentViewCore(contentViewCore)
 {
 }
 
@@ -78,16 +141,17 @@ ECode AwWebContentsDelegateAdapter::InnerHandler::HandleMessage(
     msg->GetWhat(&what);
     switch(what) {
         case MSG_CONTINUE_PENDING_RELOAD: {
-            contentViewCore->ContinuePendingReload();
+            mContentViewCore->ContinuePendingReload();
             break;
         }
         case MSG_CANCEL_PENDING_RELOAD: {
-            contentViewCore->CancelPendingReload();
+            mContentViewCore->CancelPendingReload();
             break;
         }
-//        default:
-//            throw new IllegalStateException(
-//                    "WebContentsDelegateAdapter: unhandled message " + msg.what);
+        default:
+            //throw new IllegalStateException("WebContentsDelegateAdapter: unhandled message " + msg.what);
+            Logger::E(TAG, "WebContentsDelegateAdapter: unhandled message, msg:0x%x", what);
+            assert(0);
     }
     return NOERROR;
 }
@@ -95,6 +159,7 @@ ECode AwWebContentsDelegateAdapter::InnerHandler::HandleMessage(
 //===============================================================
 //       AwWebContentsDelegateAdapter::InnerValueCallback
 //===============================================================
+//TODO CAR_INTERFACE_IMPL(AwWebContentsDelegateAdapter::InnerValueCallback, Object, IValueCallback);
 
 AwWebContentsDelegateAdapter::InnerValueCallback::InnerValueCallback(
     /* [in] */ AwWebContentsDelegateAdapter* owner,
@@ -115,6 +180,7 @@ ECode AwWebContentsDelegateAdapter::InnerValueCallback::OnReceiveValue(
 {
     if (mCompleted) {
         //throw new IllegalStateException("Duplicate showFileChooser result");
+        Logger::E(TAG, "InnerValueCallback::OnReceiveValue: Duplicate showFileChooser result");
         assert(0);
     }
 
@@ -123,14 +189,35 @@ ECode AwWebContentsDelegateAdapter::InnerValueCallback::OnReceiveValue(
     if (results == NULL) {
         NativeFilesSelectedInChooser(
                 mProcessId, mRenderId, mModeFlags, NULL, NULL);
-        return;
+        return NOERROR;
+    }
+    AutoPtr<IArrayList> al = IArrayList::Probe(results);
+    if (al == NULL)
+    {
+        Logger::E(TAG, "InnerValueCallback::OnReceiveValue: can not get the arraylist");
+        NativeFilesSelectedInChooser(
+                mProcessId, mRenderId, mModeFlags, NULL, NULL);
+        return NOERROR;
     }
 
     AutoPtr<IContentResolver> contentResolver;
-    mContext->GetContentResolver((IContentResolver**)&contentResolver);
+    mOwner->mContext->GetContentResolver((IContentResolver**)&contentResolver);
+
+    AutoPtr<ArrayOf<IInterface*> > getFromArrayList;
+    al->ToArray((ArrayOf<IInterface*>**)&getFromArrayList);
+    Int32 length = getFromArrayList->GetLength();
+    AutoPtr<ArrayOf<String> > filePaths = ArrayOf<String>::Alloc(length);
+    for(Int32 i = 0; i < length; ++i)
+    {
+        String element;
+        AutoPtr<ICharSequence> ics = ICharSequence::Probe((*getFromArrayList)[i]);
+        ics->ToString(&element);
+        (*filePaths)[i] = element;
+    }
+
     AutoPtr<GetDisplayNameTask> task = new GetDisplayNameTask(
-            contentResolver, mProcessId, mRenderId, mModeFlags, results);
-    task->Execute();
+            contentResolver, mProcessId, mRenderId, mModeFlags, filePaths);
+    task->Execute(getFromArrayList);
 
     return NOERROR;
 }
@@ -156,14 +243,15 @@ void AwWebContentsDelegateAdapter::SetContainerView(
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::OnLoadProgressChanged(
+ECode AwWebContentsDelegateAdapter::OnLoadProgressChanged(
     /* [in] */ Int32 progress)
 {
     mContentsClient->OnProgressChanged(progress);
+    return NOERROR;
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::handleKeyboardEvent(
+ECode AwWebContentsDelegateAdapter::HandleKeyboardEvent(
     /* [in] */ IKeyEvent* event)
 {
     Int32 action;
@@ -189,9 +277,10 @@ void AwWebContentsDelegateAdapter::handleKeyboardEvent(
                 direction = 0;
                 break;
         }
-        if (direction != 0 && TryToMoveFocus(direction)) return;
+        if (direction != 0 && TryToMoveFocus(direction)) return NOERROR;
     }
     mContentsClient->OnUnhandledKeyEvent(event);
+    return NOERROR;
 }
 
 //@Override
@@ -225,39 +314,41 @@ Boolean AwWebContentsDelegateAdapter::AddMessageToConsole(
     /* [in] */ Int32 lineNumber,
     /* [in] */ const String& sourceId)
 {
-    ConsoleMessage.MessageLevel messageLevel = ConsoleMessage.MessageLevel.DEBUG;
+    //TODO Elastos::Droid::Webkit::MessageLevel messageLevel = Elastos::Droid::Webkit::DEBUG;
     switch(level) {
         case LOG_LEVEL_TIP:
-            messageLevel = ConsoleMessage.MessageLevel.TIP;
+            //TODO messageLevel = Elastos::Droid::Webkit::TIP;
             break;
         case LOG_LEVEL_LOG:
-            messageLevel = ConsoleMessage.MessageLevel.LOG;
+            //TODO messageLevel = Elastos::Droid::Webkit::LOG;
             break;
         case LOG_LEVEL_WARNING:
-            messageLevel = ConsoleMessage.MessageLevel.WARNING;
+            //TODO messageLevel = Elastos::Droid::Webkit::WARNING;
             break;
         case LOG_LEVEL_ERROR:
-            messageLevel = ConsoleMessage.MessageLevel.ERROR;
+            //TODO messageLevel = Elastos::Droid::Webkit::ERROR;
             break;
         default:
-//            Log.w(TAG, "Unknown message level, defaulting to DEBUG");
+            Logger::W(TAG, "Unknown message level, defaulting to DEBUG");
             break;
     }
 
-    AutoPtr<IConsoleMessage> cm;
-    CConsoleMessage::New(message, sourceId, lineNumber, messageLevel, (IConsoleMessage**)&cm);
+    AutoPtr</*TODO IConsoleMessage*/IInterface> cm;
+    //TODO CConsoleMessage::New(message, sourceId, lineNumber, messageLevel, (IConsoleMessage**)&cm);
     return mContentsClient->OnConsoleMessage(cm);
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::OnUpdateUrl(
+ECode AwWebContentsDelegateAdapter::OnUpdateUrl(
     /* [in] */ const String& url)
 {
     // TODO: implement
+    Logger::W(TAG, "not implement");
+    return NOERROR;
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::OpenNewTab(
+ECode AwWebContentsDelegateAdapter::OpenNewTab(
     /* [in] */ const String& url,
     /* [in] */ const String& extraHeaders,
     /* [in] */ ArrayOf<Byte>* postData,
@@ -265,13 +356,16 @@ void AwWebContentsDelegateAdapter::OpenNewTab(
     /* [in] */ Boolean isRendererInitiated)
 {
     // This is only called in chrome layers.
+    Logger::W(TAG, "This is only called in chrome layers");
     assert(FALSE);
+    return NOERROR;
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::CloseContents()
+ECode AwWebContentsDelegateAdapter::CloseContents()
 {
     mContentsClient->OnCloseWindow();
+    return NOERROR;
 }
 
 //@Override
@@ -281,8 +375,8 @@ void AwWebContentsDelegateAdapter::ShowRepostFormWarningDialog(
     // TODO(mkosiba) We should be using something akin to the JsResultReceiver as the
     // callback parameter (instead of ContentViewCore) and implement a way of converting
     // that to a pair of messages.
-    const Int32 MSG_CONTINUE_PENDING_RELOAD = 1;
-    const Int32 MSG_CANCEL_PENDING_RELOAD = 2;
+    //const Int32 MSG_CONTINUE_PENDING_RELOAD = 1;
+    //const Int32 MSG_CANCEL_PENDING_RELOAD = 2;
 
     // TODO(sgurun) Remember the URL to cancel the reload behavior
     // if it is different than the most recent NavigationController entry.
@@ -312,8 +406,7 @@ void AwWebContentsDelegateAdapter::RunFileChooser(
     params->defaultFilename = defaultFilename;
     params->capture = capture;
 
-    Boolean completed = FALSE;
-    AutoPtr<IValueCallback> callback = new InnerValueCallback(this, processId, renderId, modeFlags);
+    AutoPtr</*TODO IValueCallback*/IInterface> callback ;//TODO = new InnerValueCallback(this, processId, renderId, modeFlags, FALSE);
     mContentsClient->ShowFileChooser(callback, params);
 }
 
@@ -326,19 +419,21 @@ Boolean AwWebContentsDelegateAdapter::AddNewContents(
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::ActivateContents()
+ECode AwWebContentsDelegateAdapter::ActivateContents()
 {
     mContentsClient->OnRequestFocus();
+    return NOERROR;
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::ToggleFullscreenModeForTab(
+ECode AwWebContentsDelegateAdapter::ToggleFullscreenModeForTab(
     /* [in] */ Boolean enterFullscreen)
 {
     if (!enterFullscreen) {
         AutoPtr<ContentVideoView> videoView = ContentVideoView::GetContentVideoView();
         if (videoView != NULL) videoView->ExitFullscreen(FALSE);
     }
+    return NOERROR;
 }
 
 } // namespace AndroidWebview

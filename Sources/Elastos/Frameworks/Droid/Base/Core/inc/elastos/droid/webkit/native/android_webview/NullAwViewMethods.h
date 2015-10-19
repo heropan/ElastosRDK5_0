@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__
 #include "elastos/droid/ext/frameworkext.h"
-//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/native/android_webview/AwViewMethods.h"
 
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -29,8 +29,8 @@ class NullAwViewMethods : public AwViewMethods
 {
 public:
     NullAwViewMethods(
-        /* [in] */ /*TODO AwContents*/IInterface* awContents,
-        /* [in] */ /*TODO AwContents::InternalAccessDelegate*/IInterface* internalAccessAdapter,
+        /* [in] */ AwContents* awContents,
+        /* [in] */ AwContents::InternalAccessDelegate* internalAccessAdapter,
         /* [in] */ IView* containerView);
 
     //@Override
@@ -114,8 +114,8 @@ public:
 private:
     NullAwViewMethods(const NullAwViewMethods&);
     NullAwViewMethods& operator=(const NullAwViewMethods&);
-    /*TODO AwContents*/IInterface* mAwContents;
-    AutoPtr</*TODO InternalAccessDelegate*/IInterface> mInternalAccessAdapter;
+    AwContents* mAwContents;
+    AutoPtr<AwContents::InternalAccessDelegate> mInternalAccessAdapter;
     AutoPtr<IView> mContainerView;
 };
 
