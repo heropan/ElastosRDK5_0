@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CHttpDateGenerator)
 
-ECode CHttpDateGenerator::constructor();
+ECode CHttpDateGenerator::constructor()
 {
     return Init();
 }

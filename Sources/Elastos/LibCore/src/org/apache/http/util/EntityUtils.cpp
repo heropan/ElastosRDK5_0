@@ -2,8 +2,9 @@
 #include "EntityUtils.h"
 #include "CByteArrayBuffer.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/core/Math.h>
-#include <elastos/Logger.h>
+#include "elastos/core/Math.h"
+#include "elastos/io/CInputStreamReader.h"
+#include "Logger.h"
 
 using Elastos::Core::Math;
 using Elastos::IO::IInputStream;
@@ -40,7 +41,7 @@ ECode EntityUtils::ToByteArray(
         return NOERROR;
     }
     Int64 len;
-    if (entity->GetContentLength(&len), (Int32)len > Math::INT32_MAX_VALUE) {
+    if (entity->GetContentLength(&len), (Int32)len > Elastos::Core::Math::INT32_MAX_VALUE) {
         Logger::E("EntityUtils", "HTTP entity too large to be buffered in memory");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -108,7 +109,7 @@ ECode EntityUtils::ToString(
         return NOERROR;
     }
     Int64 len;
-    if (entity->GetContentLength(&len), (Int32)len > Math::INT32_MAX_VALUE) {
+    if (entity->GetContentLength(&len), (Int32)len > Elastos::Core::Math::INT32_MAX_VALUE) {
         Logger::E("EntityUtils", "HTTP entity too large to be buffered in memory");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -125,7 +126,7 @@ ECode EntityUtils::ToString(
         charset = IHTTP::DEFAULT_CONTENT_CHARSET;
     }
     AutoPtr<IInputStreamReader> inputReader;
-    CInputStreamReader::New(instream, charset, (InputStreamReader**)&inputReader);
+    CInputStreamReader::New(instream, charset, (IInputStreamReader**)&inputReader);
     AutoPtr<IReader> reader = IReader::Probe(inputReader);
     AutoPtr<ICharArrayBuffer> buffer;
     CCharArrayBuffer::New(i, (ICharArrayBuffer**)&buffer);

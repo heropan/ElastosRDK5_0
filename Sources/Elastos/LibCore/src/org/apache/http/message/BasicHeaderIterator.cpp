@@ -1,7 +1,8 @@
 
 #include "BasicHeaderIterator.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -27,6 +28,7 @@ ECode BasicHeaderIterator::Init(
     mAllHeaders = headers;
     mHeaderName = name;
     FindNext(-1, &mCurrentIndex);
+    return NOERROR;
 }
 
 ECode BasicHeaderIterator::FindNext(
@@ -36,7 +38,7 @@ ECode BasicHeaderIterator::FindNext(
     VALIDATE_NOT_NULL(index)
     if (from < -1) {
         *index = -1;
-        return NOERROR
+        return NOERROR;
     }
 
     Int32 to = mAllHeaders->GetLength() - 1;

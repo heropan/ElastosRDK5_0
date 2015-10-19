@@ -11,7 +11,7 @@ CAR_OBJECT_IMPL(CHttpService)
 ECode CHttpService::constructor(
     /* [in] */ IHttpProcessor* processor,
     /* [in] */ IConnectionReuseStrategy* connStrategy,
-    /* [in] */ IHttpResponseFactory* responseFactory);
+    /* [in] */ IHttpResponseFactory* responseFactory)
 {
     return Init(processor, connStrategy, responseFactory);
 }

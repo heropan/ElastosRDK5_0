@@ -1,9 +1,13 @@
 
 #include "CBasicHttpParams.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "CHashMap.h"
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::Logging::Logger;
@@ -28,7 +32,7 @@ ECode CBasicHttpParams::GetParameter(
     AutoPtr<IInterface> param;
     if (mParameters != NULL) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         mParameters->Get(cs, (IInterface**)&param);
     }
     *parameter = param;
@@ -46,7 +50,7 @@ ECode CBasicHttpParams::SetParameter(
         CHashMap::New((IHashMap**)&mParameters);
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     mParameters->Put(cs, value);
     *httpParams = (IHttpParams*)this;
     REFCOUNT_ADD(*httpParams)
@@ -64,7 +68,7 @@ ECode CBasicHttpParams::RemoveParameter(
     }
     //this is to avoid the case in which the key has a null value
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     Boolean contains;
     if (mParameters->ContainsKey(cs, &contains), contains) {
         mParameters->Remove(cs);
@@ -82,7 +86,8 @@ ECode CBasicHttpParams::SetParameters(
     /* [in] */ IInterface* value)
 {
     for (Int32 i = 0; i < names->GetLength(); i++) {
-        SetParameter((*names)[i], value);
+        AutoPtr<IHttpParams> p;
+        SetParameter((*names)[i], value, (IHttpParams**)&p);
     }
     return NOERROR;
 }
@@ -108,7 +113,7 @@ ECode CBasicHttpParams::IsParameterSetLocally(
     }
     else {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         AutoPtr<IInterface> value;
         mParameters->Get(cs, (IInterface**)&value);
         *result = value != NULL;
@@ -143,7 +148,7 @@ ECode CBasicHttpParams::Clone(
     CBasicHttpParams::New((IBasicHttpParams**)&clone);
     AutoPtr<IHttpParams> hp = IHttpParams::Probe(clone);
     CopyParams(hp);
-    *obj = clone->Probe(EIID_IINTERFACE);
+    *obj = clone->Probe(EIID_IInterface);
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
@@ -161,7 +166,7 @@ ECode CBasicHttpParams::CopyParams(
     Boolean hasNext;
     while (iter->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
-        it->GetNext((IInterface**)&value);
+        iter->GetNext((IInterface**)&value);
         AutoPtr<IMapEntry> me = IMapEntry::Probe(value);
         AutoPtr<IInterface> key;
         me->GetKey((IInterface**)&key);
@@ -171,7 +176,8 @@ ECode CBasicHttpParams::CopyParams(
             cs->ToString(&str);
             AutoPtr<IInterface> v;
             me->GetValue((IInterface**)&v);
-            target->SetParameter(str, v);
+            AutoPtr<IHttpParams> p;
+            target->SetParameter(str, v, (IHttpParams**)&p);
         }
     }
     return NOERROR;

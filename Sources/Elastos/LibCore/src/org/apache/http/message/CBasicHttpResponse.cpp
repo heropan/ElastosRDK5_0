@@ -8,16 +8,6 @@ namespace Message {
 
 CAR_OBJECT_IMPL(CBasicHttpResponse)
 
-ECode CBasicHttpResponse::Clone(
-    /* [out] */ IInterface** obj)
-{
-    VALIDATE_NOT_NULL(obj)
-    AutoPtr<CBasicHttpResponse> response;
-    CBasicHttpResponse::NewByFriend((CBasicHttpResponse**)&response);
-    CloneImpl((BasicHttpResponse*)response.Get());
-    return NOERROR;
-}
-
 ECode CBasicHttpResponse::constructor(
     /* [in] */ IStatusLine* statusline,
     /* [in] */ IReasonPhraseCatalog* catalog,
@@ -33,7 +23,7 @@ ECode CBasicHttpResponse::constructor(
 }
 
 ECode CBasicHttpResponse::constructor(
-    /* [in] */ IProtocolVersion ver,
+    /* [in] */ IProtocolVersion* ver,
     /* [in] */ Int32 code,
     /* [in] */ const String& reason)
 {

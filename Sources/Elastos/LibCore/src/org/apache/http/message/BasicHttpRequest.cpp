@@ -2,7 +2,7 @@
 #include "BasicHttpRequest.h"
 #include "CBasicRequestLine.h"
 #include "HttpProtocolParams.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Params::HttpProtocolParams;
@@ -18,9 +18,9 @@ CAR_INTERFACE_IMPL(BasicHttpRequest, AbstractHttpMessage, IHttpRequest)
 ECode BasicHttpRequest::GetProtocolVersion(
     /* [out] */ IProtocolVersion** protocolVersion)
 {
-    VALIDATE_NOT_NULL(obj)
-    if (mRequestline != NULL) {
-        return mRequestline->GetProtocolVersion(protocolVersion);
+    VALIDATE_NOT_NULL(protocolVersion)
+    if (mRequestLine != NULL) {
+        return mRequestLine->GetProtocolVersion(protocolVersion);
     }
     else {
         AutoPtr<IHttpParams> params;
@@ -33,8 +33,8 @@ ECode BasicHttpRequest::GetRequestLine(
     /* [out] */ IRequestLine** requestLine)
 {
     VALIDATE_NOT_NULL(requestLine)
-    if (mRequestline != NULL) {
-        *requestLine = mRequestline;
+    if (mRequestLine != NULL) {
+        *requestLine = mRequestLine;
         REFCOUNT_ADD(*requestLine)
         return NOERROR;
     }
@@ -48,8 +48,8 @@ ECode BasicHttpRequest::GetRequestLine(
 }
 
 ECode BasicHttpRequest::Init(
-    /* [in] */ String method,
-    /* [in] */ String uri)
+    /* [in] */ const String& method,
+    /* [in] */ const String& uri)
 {
     AbstractHttpMessage::Init();
     if (method.IsNull()) {
@@ -62,13 +62,13 @@ ECode BasicHttpRequest::Init(
     }
     mMethod = method;
     mUri = uri;
-    mRequestline = NULL;
+    mRequestLine = NULL;
     return NOERROR;
 }
 
 ECode BasicHttpRequest::Init(
-    /* [in] */ String method,
-    /* [in] */ String uri
+    /* [in] */ const String& method,
+    /* [in] */ const String& uri,
     /* [in] */ IProtocolVersion* ver)
 {
     AutoPtr<IRequestLine> line;
@@ -84,19 +84,10 @@ ECode BasicHttpRequest::Init(
         Logger::E("BasicHttpRequest", "Request line may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mRequestline = requestline;
+    mRequestLine = requestline;
     requestline->GetMethod(&mMethod);
     requestline->GetUri(&mUri);
     return NOERROR;
-}
-
-void BasicHttpRequest::CloneImpl(
-    /* [in] */ BasicHttpRequest* obj)
-{
-    CloneImpl((AbstractHttpMessage*)obj);
-    obj->mMethod = mMethod;
-    obj->mUri = mUri;
-    obj->mRequestline = mRequestline;
 }
 
 } // namespace Message

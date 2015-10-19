@@ -2,8 +2,9 @@
 #include "BasicHeader.h"
 #include "BasicLineFormatter.h"
 #include "BasicHeaderValueParser.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 
@@ -49,7 +50,8 @@ ECode BasicHeader::ToString(
     VALIDATE_NOT_NULL(str)
     // no need for non-default formatting in toString()
     AutoPtr<ICharArrayBuffer> buf;
-    BasicLineFormatter::DEFAULT->FormatHeader(NULL, (IHeader*)this, (ICharArrayBuffer**)&buf);
+    ILineFormatter::Probe(BasicLineFormatter::DEFAULT)->FormatHeader(
+            NULL, (IHeader*)this, (ICharArrayBuffer**)&buf);
     return IObject::Probe(buf)->ToString(str);
 }
 

@@ -9,7 +9,7 @@ namespace Params {
 
 CAR_INTERFACE_IMPL_2(CHttpProtocolParams, Object, IHttpProtocolParams, ICoreProtocolPNames)
 
-CAR_OBJECT_IMPL(CHttpProtocolParams)
+CAR_SINGLETON_IMPL(CHttpProtocolParams)
 
 ECode CHttpProtocolParams::GetHttpElementCharset(
     /* [in] */ IHttpParams* params,
@@ -46,21 +46,21 @@ ECode CHttpProtocolParams::GetVersion(
     /* [out] */ IProtocolVersion** ver)
 {
     VALIDATE_NOT_NULL(ver)
-    return HttpProtocolParams::GetVersion(Params, ver);
+    return HttpProtocolParams::GetVersion(params, ver);
 }
 
 ECode CHttpProtocolParams::SetVersion(
     /* [in] */ IHttpParams* params,
     /* [in] */ IProtocolVersion* version)
 {
-    return HttpProtocolParams::SetVersion(Params, version);
+    return HttpProtocolParams::SetVersion(params, version);
 }
 
 ECode CHttpProtocolParams::GetUserAgent(
     /* [in] */ IHttpParams* params,
     /* [out] */ String* agent)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(agent)
     return HttpProtocolParams::GetUserAgent(params, agent);
 }
 

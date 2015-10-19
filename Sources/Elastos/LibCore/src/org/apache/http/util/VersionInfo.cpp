@@ -1,25 +1,41 @@
 
 #include "VersionInfo.h"
-#include <elastos/Logger.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/Thread.h>
+#include "Logger.h"
+#include "CString.h"
+#include "elastos/utility/CProperties.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/Thread.h"
 
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IList;
 using Elastos::Utility::IProperties;
+using Elastos::Utility::CProperties;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
 namespace Apache {
 namespace Http {
 namespace Utility {
+
+CAR_INTERFACE_IMPL(VersionInfo, Object, IVersionInfo)
+
+VersionInfo::VersionInfo(
+    /* [in] */ const String& pckg,
+    /* [in] */ const String& module,
+    /* [in] */ const String& release,
+    /* [in] */ const String& time,
+    /* [in] */ const String& clsldr)
+{
+    Init(pckg, module, release, time, clsldr);
+}
 
 ECode VersionInfo::Init(
     /* [in] */ const String& pckg,
@@ -88,23 +104,28 @@ ECode VersionInfo::ToString(
     StringBuilder sb(20 + mInfoPackage.GetLength() + mInfoModule.GetLength() +
             mInfoRelease.GetLength() + mInfoTimestamp.GetLength() + mInfoClassloader.GetLength());
 
-    sb.Append("VersionInfo(")
-        .Append(mInfoPackage).AppendChar(':').Append(mInfoModule);
+    sb.Append("VersionInfo(");
+    sb.Append(mInfoPackage);
+    sb.AppendChar(':');
+    sb.Append(mInfoModule);
 
     // If version info is missing, a single "UNAVAILABLE" for the module
     // is sufficient. Everything else just clutters the output.
     if (!UNAVAILABLE.Equals(mInfoRelease)) {
-        sb.AppendChar(':').Append(mInfoRelease);
+        sb.AppendChar(':');
+        sb.Append(mInfoRelease);
     }
 
     if (!UNAVAILABLE.Equals(mInfoTimestamp)) {
-        sb.AppendChar(':').Append(mInfoTimestamp);
+        sb.AppendChar(':');
+        sb.Append(mInfoTimestamp);
     }
 
     sb.AppendChar(')');
 
     if (!UNAVAILABLE.Equals(mInfoClassloader)) {
-        sb.AppendChar('@').Append(mInfoClassloader);
+        sb.AppendChar('@');
+        sb.Append(mInfoClassloader);
     }
 
     *str = sb.ToString();
@@ -124,7 +145,7 @@ ECode VersionInfo::LoadVersionInfo(
     }
 
     AutoPtr<IArrayList> vil;
-    CArrayList(pckgs->GetLength(), (IArrayList**)&vil);
+    CArrayList::New(pckgs->GetLength(), (IArrayList**)&vil);
     for (Int32 i = 0; i < pckgs->GetLength(); i++) {
         AutoPtr<IVersionInfo> vi;
         LoadVersionInfo((*pckgs)[i], clsldr, (IVersionInfo**)&vi);
@@ -156,7 +177,7 @@ ECode VersionInfo::LoadVersionInfo(
 {
     VALIDATE_NOT_NULL(info)
     *info = NULL;
-    if (pckgs == NULL) {
+    if (pckg.IsNull()) {
         Logger::E("VersionInfo", "Package identifier list must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -171,7 +192,8 @@ ECode VersionInfo::LoadVersionInfo(
     // org.apache.http      becomes
     // org/apache/http/version.properties
     AutoPtr<IInputStream> is;
-    clsldr->GetResourceAsStream(pckg.Replace('.', '/') + String("/") + VERSION_PROPERTY_FILE, (IInputStream**)&is);
+    assert(0);
+    // clsldr->GetResourceAsStream(pckg.Replace('.', '/') + String("/") + VERSION_PROPERTY_FILE, (IInputStream**)&is);
     if (is != NULL) {
         // try {
         AutoPtr<IProperties> props;
@@ -187,7 +209,7 @@ ECode VersionInfo::LoadVersionInfo(
     // }
 
     if (vip != NULL) {
-        return FromMap(pckg, vip, clsldr, info);
+        return FromMap(pckg, IMap::Probe(vip), clsldr, info);
     }
 
     return NOERROR;
@@ -201,7 +223,7 @@ ECode VersionInfo::FromMap(
 {
     VALIDATE_NOT_NULL(versionInfo)
     *versionInfo = NULL;
-    if (pckgs == NULL) {
+    if (pckg.IsNull()) {
         Logger::E("VersionInfo", "Package identifier list must not be null.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -212,7 +234,7 @@ ECode VersionInfo::FromMap(
 
     if (info != NULL) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(PROPERTY_MODULE, (ICharSequence**)&cs);
+        CString::New(PROPERTY_MODULE, (ICharSequence**)&cs);
         AutoPtr<IInterface> value;
         info->Get(cs, (IInterface**)&value);
         AutoPtr<ICharSequence> v = ICharSequence::Probe(value);
@@ -221,7 +243,7 @@ ECode VersionInfo::FromMap(
             module = String(NULL);
         }
         cs = NULL;
-        CStringWrapper::New(PROPERTY_RELEASE, (ICharSequence**)&cs);
+        CString::New(PROPERTY_RELEASE, (ICharSequence**)&cs);
         value = NULL;
         info->Get(cs, (IInterface**)&value);
         v = ICharSequence::Probe(value);
@@ -232,7 +254,7 @@ ECode VersionInfo::FromMap(
         }
 
         cs = NULL;
-        CStringWrapper::New(PROPERTY_TIMESTAMP, (ICharSequence**)&cs);
+        CString::New(PROPERTY_TIMESTAMP, (ICharSequence**)&cs);
         value = NULL;
         info->Get(cs, (IInterface**)&value);
         v = ICharSequence::Probe(value);
@@ -248,8 +270,8 @@ ECode VersionInfo::FromMap(
         IObject::Probe(clsldr)->ToString(&clsldrstr);
     }
 
-    *info = (IVersionInfo*)new VersionInfo(pckg, module, release, timestamp, clsldrstr);
-    REFCOUNT_ADD(*info)
+    *versionInfo = (IVersionInfo*)new VersionInfo(pckg, module, release, timestamp, clsldrstr);
+    REFCOUNT_ADD(*versionInfo)
     return NOERROR;
 }
 

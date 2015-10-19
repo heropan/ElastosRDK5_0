@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CResponseConnControl)
 
-ECode CResponseConnControl::constructor();
+ECode CResponseConnControl::constructor()
 {
     return NOERROR;
 }

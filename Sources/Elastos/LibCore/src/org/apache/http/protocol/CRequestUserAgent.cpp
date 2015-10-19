@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CRequestUserAgent)
 
-ECode CRequestUserAgent::constructor();
+ECode CRequestUserAgent::constructor()
 {
     return NOERROR;
 }

@@ -1,10 +1,11 @@
 
 #include "HttpProtocolParams.h"
 #include "CHttpVersion.h"
-#include <elastos/Logger.h>
+#include "CString.h"
+#include "Logger.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpVersion;
 using Org::Apache::Http::Protocol::IHTTP;
@@ -43,8 +44,9 @@ ECode HttpProtocolParams::SetHttpElementCharset(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(charset, (ICharSequence**)&cs);
-    return params->SetParameter(ICoreProtocolPNames::HTTP_ELEMENT_CHARSET, cs);
+    CString::New(charset, (ICharSequence**)&cs);
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(ICoreProtocolPNames::HTTP_ELEMENT_CHARSET, cs, (IHttpParams**)&p);
 }
 
 ECode HttpProtocolParams::GetContentCharset(
@@ -76,8 +78,9 @@ ECode HttpProtocolParams::SetContentCharset(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(charset, (ICharSequence**)&cs);
-    params->SetParameter(ICoreProtocolPNames::HTTP_CONTENT_CHARSET, cs);
+    CString::New(charset, (ICharSequence**)&cs);
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(ICoreProtocolPNames::HTTP_CONTENT_CHARSET, cs, (IHttpParams**)&p);
 }
 
 ECode HttpProtocolParams::GetVersion(
@@ -94,7 +97,7 @@ ECode HttpProtocolParams::GetVersion(
     params->GetParameter(ICoreProtocolPNames::PROTOCOL_VERSION, (IInterface**)&param);
     *ver = IProtocolVersion::Probe(param);
     if (*ver == NULL) {
-        *ver = CHttpVersion::HTTP_1_1;
+        *ver = IProtocolVersion::Probe(CHttpVersion::HTTP_1_1);
     }
     REFCOUNT_ADD(*ver)
     return NOERROR;
@@ -108,7 +111,8 @@ ECode HttpProtocolParams::SetVersion(
         Logger::E("HttpProtocolParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetParameter(ICoreProtocolPNames::PROTOCOL_VERSION, version);
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(ICoreProtocolPNames::PROTOCOL_VERSION, version, (IHttpParams**)&p);
 }
 
 ECode HttpProtocolParams::GetUserAgent(
@@ -127,7 +131,7 @@ ECode HttpProtocolParams::GetUserAgent(
     if (cs == NULL) {
         return NOERROR;
     }
-    return cs->ToString(charset);
+    return cs->ToString(agent);
 }
 
 ECode HttpProtocolParams::SetUserAgent(
@@ -139,8 +143,9 @@ ECode HttpProtocolParams::SetUserAgent(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(useragent, (ICharSequence**)&cs);
-    return params->SetParameter(ICoreProtocolPNames::PROTOCOL_VERSION, cs);
+    CString::New(useragent, (ICharSequence**)&cs);
+    AutoPtr<IHttpParams> p;
+    return params->SetParameter(ICoreProtocolPNames::PROTOCOL_VERSION, cs, (IHttpParams**)&p);
 }
 
 ECode HttpProtocolParams::UseExpectContinue(
@@ -164,7 +169,8 @@ ECode HttpProtocolParams::SetUseExpectContinue(
         Logger::E("HttpProtocolParams", "HTTP parameters may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return params->SetBooleanParameter(ICoreProtocolPNames::USE_EXPECT_CONTINUE, b);
+    AutoPtr<IHttpParams> p;
+    return params->SetBooleanParameter(ICoreProtocolPNames::USE_EXPECT_CONTINUE, b, (IHttpParams**)&p);
 }
 
 } // namespace Params

@@ -2,7 +2,7 @@
 #include "RequestExpectContinue.h"
 #include "CHttpVersion.h"
 #include "HttpProtocolParams.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;
@@ -35,17 +35,17 @@ ECode RequestExpectContinue::Process(
         AutoPtr<IHttpEntity> entity;
         enclosingRequest->GetEntity((IHttpEntity**)&entity);
         // Do not send the expect header if request body is known to be empty
-        Int32 len;
+        Int64 len;
         if (entity != NULL && (entity->GetContentLength(&len), len != 0)) {
             AutoPtr<IRequestLine> rl;
             request->GetRequestLine((IRequestLine**)&rl);
             AutoPtr<IProtocolVersion> ver;
             rl->GetProtocolVersion((IProtocolVersion**)&ver);
             AutoPtr<IHttpParams> params;
-            request->GetParams((IHttpParams**)&params);
-            Boolean lessEquals;
-            if (HttpProtocolParams::UseExpectContinue(params)
-                    && (ver->LessEquals(CHttpVersion::HTTP_1_0, &lessEquals), !lessEquals) {
+            IHttpMessage::Probe(request)->GetParams((IHttpParams**)&params);
+            Boolean lessEquals, result;
+            if ((HttpProtocolParams::UseExpectContinue(params, &result), result)
+                    && (ver->LessEquals(IProtocolVersion::Probe(CHttpVersion::HTTP_1_0), &lessEquals), !lessEquals)) {
                 IHttpMessage::Probe(request)->AddHeader(IHTTP::EXPECT_DIRECTIVE, IHTTP::EXPECT_CONTINUE);
             }
         }

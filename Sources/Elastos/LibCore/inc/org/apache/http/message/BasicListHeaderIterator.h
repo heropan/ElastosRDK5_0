@@ -4,6 +4,7 @@
 
 #include "Object.h"
 
+using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Org::Apache::Http::IHeaderIterator;
 

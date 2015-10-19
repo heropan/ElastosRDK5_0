@@ -1,7 +1,7 @@
 
 #include "RequestDate.h"
 #include "CHttpDateGenerator.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpStatus;
@@ -18,7 +18,7 @@ static AutoPtr<IHttpDateGenerator> InitDateGenerator()
 {
     AutoPtr<IHttpDateGenerator> generator;
     CHttpDateGenerator::NewByFriend((CHttpDateGenerator**)&generator);
-    return (IHttpDateGenerator)generator.Get();
+    return (IHttpDateGenerator*)generator.Get();
 }
 const AutoPtr<IHttpDateGenerator> RequestDate::DATE_GENERATOR = InitDateGenerator();
 
@@ -28,16 +28,17 @@ ECode RequestDate::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)
 {
-    if (Request == NULL) {
+    if (request == NULL) {
         Logger::E("RequestDate", "HTTP request may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<IHttpEntityEnclosingRequest> enclosingRequest = IHttpEntityEnclosingRequest::Probe(request);
     Boolean contains;
-    if (enclosingRequest != NULL && (request->ContainsHeader(IHTTP::DATE_HEADER, &contains), !contains)) {
+    if (enclosingRequest != NULL &&
+            (IHttpMessage::Probe(request)->ContainsHeader(IHTTP::DATE_HEADER, &contains), !contains)) {
         String httpdate;
         DATE_GENERATOR->GetCurrentDate(&httpdate);
-        request->SetHeader(IHTTP::DATE_HEADER, httpdate);
+        IHttpMessage::Probe(request)->SetHeader(IHTTP::DATE_HEADER, httpdate);
     }
     return NOERROR;
 }

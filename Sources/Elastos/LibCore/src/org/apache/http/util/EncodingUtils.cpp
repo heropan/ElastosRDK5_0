@@ -29,7 +29,7 @@ ECode EncodingUtils::GetString(
     }
 
     // try {
-    *str = String((Char32*)data->GetPayload(), offset, length);// new String(data, offset, length, charset);
+    *str = String(*data, offset, length);// new String(data, offset, length, charset);
     return NOERROR;
     // } catch (UnsupportedEncodingException e) {
     //     return new String(data, offset, length);
@@ -47,7 +47,7 @@ ECode EncodingUtils::GetString(
         Logger::E("EncodingUtils", "Parameter may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return GetString(data, 0, data->GetLength(), charset);
+    return GetString(data, 0, data->GetLength(), charset, str);
 }
 
 ECode EncodingUtils::GetBytes(
@@ -103,17 +103,18 @@ ECode EncodingUtils::GetAsciiString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    *str = String(NULL)
+    *str = String(NULL);
     if (data == NULL) {
         Logger::E("EncodingUtils", "Parameter may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     // try {
-    *str = String((Char32*)data->GetPayload(), offset, length); // return new String(data, offset, length, HTTP.US_ASCII);
+    *str = String(*data, offset, length); // return new String(data, offset, length, HTTP.US_ASCII);
     // } catch (UnsupportedEncodingException e) {
     //     throw new Error("HttpClient requires ASCII support");
     // }
+    return NOERROR;
 }
 
 ECode EncodingUtils::GetAsciiString(

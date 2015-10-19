@@ -3,6 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CHTTPPROTOCOLPARAMS_H_
 
 #include "_Org_Apache_Http_Params_CHttpProtocolParams.h"
+#include "Singleton.h"
 
 using Org::Apache::Http::IProtocolVersion;
 
@@ -28,14 +29,14 @@ namespace Params {
  * @see CoreProtocolPNames
  */
 CarClass(CHttpProtocolParams)
-    , public Object
+    , public Singleton
     , public IHttpProtocolParams
     , public ICoreProtocolPNames
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Returns the charset to be used for writing HTTP headers.

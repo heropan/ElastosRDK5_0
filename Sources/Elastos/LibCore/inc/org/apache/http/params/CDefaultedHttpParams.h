@@ -21,7 +21,7 @@ namespace Params {
  * @version $Revision: 610763 $
  */
 CarClass(CDefaultedHttpParams)
-    : AbstractHttpParams
+    , public AbstractHttpParams
     , public IDefaultedHttpParams
 {
 public:

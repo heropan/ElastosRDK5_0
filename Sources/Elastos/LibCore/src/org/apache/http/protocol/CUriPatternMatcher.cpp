@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CUriPatternMatcher)
 
-ECode CUriPatternMatcher::constructor();
+ECode CUriPatternMatcher::constructor()
 {
     return Init();
 }

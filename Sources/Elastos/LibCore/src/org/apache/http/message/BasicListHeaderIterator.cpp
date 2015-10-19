@@ -1,7 +1,8 @@
 
 #include "BasicListHeaderIterator.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::Logging::Logger;
 
 namespace Org {
@@ -39,7 +40,7 @@ ECode BasicListHeaderIterator::FindNext(
     VALIDATE_NOT_NULL(index)
     if (from < -1) {
         *index = -1;
-        return NOERROR
+        return NOERROR;
     }
 
     Int32 size;

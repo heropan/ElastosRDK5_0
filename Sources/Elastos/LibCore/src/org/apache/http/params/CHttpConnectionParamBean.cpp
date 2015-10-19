@@ -1,6 +1,6 @@
 
 #include "CHttpConnectionParamBean.h"
-#include "HttpConnectionParams"
+#include "HttpConnectionParams.h"
 
 namespace Org {
 namespace Apache {

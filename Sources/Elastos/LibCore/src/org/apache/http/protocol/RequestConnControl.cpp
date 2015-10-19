@@ -1,11 +1,9 @@
 
 #include "RequestConnControl.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;
-using Org::Apache::Http::Params::IHttpParams;
-using Org::Apache::Http::Params::HttpProtocolParams;
 
 namespace Org {
 namespace Apache {
@@ -16,15 +14,16 @@ ECode RequestConnControl::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)
 {
-    if (Request == NULL) {
+    if (request == NULL) {
         Logger::E("RequestConnControl", "HTTP request may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    AutoPtr<IHttpMessage> message = IHttpMessage::Probe(request);
     Boolean contains;
-    if (request->ContainsHeader(IHTTP::CONN_DIRECTIVE, &contains), !contains) {
+    if (message->ContainsHeader(IHTTP::CONN_DIRECTIVE, &contains), !contains) {
         // Default policy is to keep connection alive
         // whenever possible
-        request->AddHeader(IHTTP::CONN_DIRECTIVE, IHTTP::CONN_KEEP_ALIVE);
+        message->AddHeader(IHTTP::CONN_DIRECTIVE, IHTTP::CONN_KEEP_ALIVE);
     }
     return NOERROR;
 }

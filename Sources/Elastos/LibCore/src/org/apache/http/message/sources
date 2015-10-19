@@ -50,7 +50,6 @@ SOURCES += BufferedHeader.cpp
 SOURCES += CBufferedHeader.cpp
 SOURCES += BasicStatusLine.cpp
 SOURCES += CBasicStatusLine.cpp
-SOURCES += ParserCursor.cpp
 SOURCES += CParserCursor.cpp
 SOURCES += CBasicRequestLine.cpp
 SOURCES += BasicHttpEntityEnclosingRequest.cpp

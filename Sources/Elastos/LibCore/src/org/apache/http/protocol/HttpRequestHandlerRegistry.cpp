@@ -1,7 +1,7 @@
 
 #include "HttpRequestHandlerRegistry.h"
 #include "CUriPatternMatcher.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 
@@ -14,7 +14,7 @@ CAR_INTERFACE_IMPL_2(HttpRequestHandlerRegistry, Object, IHttpRequestHandlerRegi
 
 ECode HttpRequestHandlerRegistry::Init()
 {
-    CUriPatternMatcher::New((IUriPatternMatcher**)&mMatcher);
+    return CUriPatternMatcher::New((IUriPatternMatcher**)&mMatcher);
 }
 
 ECode HttpRequestHandlerRegistry::Register(

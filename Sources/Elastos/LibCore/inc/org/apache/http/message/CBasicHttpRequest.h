@@ -24,9 +24,6 @@ CarClass(CBasicHttpRequest) , public BasicHttpRequest
 public:
     CAR_OBJECT_DECL()
 
-    CARAPI Clone(
-        /* [out] */ IInterface** obj);
-
     CARAPI constructor(
         /* [in] */ const String& method,
         /* [in] */ const String& uri);

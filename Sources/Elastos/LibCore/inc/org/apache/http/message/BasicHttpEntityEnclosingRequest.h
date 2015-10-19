@@ -52,9 +52,6 @@ protected:
     CARAPI Init(
         /* [in] */ IRequestLine* requestline);
 
-    CARAPI_(void) CloneImpl(
-        /* [in] */ BasicHttpEntityEnclosingRequest* obj);
-
 private:
     AutoPtr<IHttpEntity> mEntity;
 };

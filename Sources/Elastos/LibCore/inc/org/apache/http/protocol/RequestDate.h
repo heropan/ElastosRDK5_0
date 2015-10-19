@@ -2,8 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_REQUESTDATE_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_REQUESTDATE_H_
 
-#include <Org.Apache.Http_server.h>
-#include <elastos/core/Object.h>
+#include "Object.h"
 
 using Org::Apache::Http::IHttpRequestInterceptor;
 using Org::Apache::Http::IHttpRequest;

@@ -5,6 +5,7 @@
 #include "Object.h"
 
 using Elastos::Core::IClassLoader;
+using Elastos::Utility::IMap;
 
 namespace Org {
 namespace Apache {
@@ -117,6 +118,13 @@ public:
         /* [out] */ IVersionInfo** info);
 
 protected:
+    VersionInfo(
+        /* [in] */ const String& pckg,
+        /* [in] */ const String& module,
+        /* [in] */ const String& release,
+        /* [in] */ const String& time,
+        /* [in] */ const String& clsldr);
+
     /**
      * Instantiates version information.
      *

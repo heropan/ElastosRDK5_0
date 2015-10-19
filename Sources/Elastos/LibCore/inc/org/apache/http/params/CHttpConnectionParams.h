@@ -3,6 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CHTTPCONNECTIONPARAMS_H_
 
 #include "_Org_Apache_Http_Params_CHttpConnectionParams.h"
+#include "Singleton.h"
 
 namespace Org {
 namespace Apache {
@@ -23,14 +24,14 @@ namespace Params {
  * @since 4.0
  */
 CarClass(CHttpConnectionParams)
-    , public Object
+    , public Singleton
     , public IHttpConnectionParams
     , public ICoreConnectionPNames
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     /**
      * Returns the default socket timeout (<tt>SO_TIMEOUT</tt>) in milliseconds which is the

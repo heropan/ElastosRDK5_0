@@ -1,8 +1,9 @@
 
 #include "BasicNameValuePair.h"
 #include "CCharArrayBuffer.h"
-#include <elastos/Logger.h>
+#include "Logger.h"
 
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::ICharArrayBuffer;
 using Org::Apache::Http::Utility::CCharArrayBuffer;
@@ -17,7 +18,7 @@ CAR_INTERFACE_IMPL_2(BasicNameValuePair, Object, INameValuePair, ICloneable)
 ECode BasicNameValuePair::GetName(
     /* [out] */ String* name)
 {
-    VALIDATE_NOT_NULL(obj)
+    VALIDATE_NOT_NULL(name)
     *name = mName;
     return NOERROR;
 }
@@ -60,13 +61,13 @@ ECode BasicNameValuePair::Equals(
         *equals = FALSE;
         return NOERROR;
     }
-    if (this == obj) {
+    if (this->Probe(EIID_IInterface) == obj) {
         *equals = TRUE;
         return NOERROR;
     }
     AutoPtr<INameValuePair> pair = INameValuePair::Probe(obj);
     if (pair != NULL) {
-        AutoPtr<BasicNameValuePair> that = (BasicNameValuePair*)obj;
+        AutoPtr<BasicNameValuePair> that = (BasicNameValuePair*)(IBasicNameValuePair*)obj;
         *equals = mName.Equals(that->mName) && mValue.Equals(that->mValue);
         return NOERROR;
     }
@@ -104,7 +105,7 @@ void BasicNameValuePair::CloneImpl(
     /* [in] */ BasicNameValuePair* obj)
 {
     obj->mName = mName;
-    obj->mValue = value;
+    obj->mValue = mValue;
 }
 
 } // namespace Message

@@ -5,9 +5,11 @@
 #include "CCharArrayBuffer.h"
 #include "Logger.h"
 
+using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IFormattedHeader;
+using Org::Apache::Http::Utility::CCharArrayBuffer;
 
 namespace Org {
 namespace Apache {
@@ -36,7 +38,8 @@ ECode BasicHeaderElementIterator::Init(
 ECode BasicHeaderElementIterator::Init(
     /* [in] */ IHeaderIterator* headerIterator)
 {
-    return Init(headerIterator, (IHeaderValueParser*)BasicHeaderValueParser::DEFAULT);
+    return Init(headerIterator,
+            (IHeaderValueParser*)BasicHeaderValueParser::DEFAULT->Probe(EIID_IHeaderValueParser));
 }
 
 void BasicHeaderElementIterator::BufferHeaderValue()
@@ -122,8 +125,8 @@ ECode BasicHeaderElementIterator::HasNext(
 ECode BasicHeaderElementIterator::NextElement(
     /* [out] */ IHeaderElement** element)
 {
-    VALIDATE_NOT_NULL(nextHeader)
-    *nextHeader = NULL;
+    VALIDATE_NOT_NULL(element)
+    *element = NULL;
 
     if (mCurrentElement == NULL) {
         ParseNextElement();

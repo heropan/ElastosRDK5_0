@@ -8,7 +8,7 @@ namespace Protocol {
 
 CAR_OBJECT_IMPL(CRequestContent)
 
-ECode CRequestContent::constructor();
+ECode CRequestContent::constructor()
 {
     return NOERROR;
 }
