@@ -45,7 +45,7 @@ ECode CPlainSocketFactory::CreateSocket(
 
 ECode CPlainSocketFactory::ConnectSocket(
     /* [in] */ ISocket* sock,
-    /* [in] */ String host,
+    /* [in] */ const String& host,
     /* [in] */ Int32 port,
     /* [in] */ IInetAddress* localAddress,
     /* [in] */ Int32 localPort,

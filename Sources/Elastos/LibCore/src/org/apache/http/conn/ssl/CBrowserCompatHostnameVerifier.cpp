@@ -12,8 +12,7 @@ CAR_OBJECT_IMPL(CBrowserCompatHostnameVerifier)
 ECode CBrowserCompatHostnameVerifier::Verify(
     /* [in] */ const String& host,
     /* [in] */ ArrayOf<String>* cns,
-    /* [in] */ ArrayOf<String>* subjectAlts,
-    /* [in] */ Boolean strictWithSubDomains)
+    /* [in] */ ArrayOf<String>* subjectAlts)
 {
     return Verify(host, cns, subjectAlts, FALSE);
 }

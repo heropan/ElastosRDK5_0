@@ -35,23 +35,23 @@ public:
     virtual ~UriPatternMatcher() {}
 
     CARAPI Register(
-        /* [in] */ String pattern,
+        /* [in] */ const String& pattern,
         /* [in] */ IInterface* handler);
 
     CARAPI Unregister(
-        /* [in] */ String pattern);
+        /* [in] */ const String& pattern);
 
     CARAPI SetHandlers(
         /* [in] */ IMap* map);
 
     CARAPI Lookup(
-        /* [in] */ String requestURI,
+        /* [in] */ const String& requestURI,
         /* [out] */ IInterface** value);
 
 protected:
     CARAPI MatchUriRequestPattern(
-        /* [in] */ String pattern,
-        /* [in] */ String requestUri,
+        /* [in] */ const String& pattern,
+        /* [in] */ const String& requestUri,
         /* [out] */ Boolean* isMatch);
 
     CARAPI Init();

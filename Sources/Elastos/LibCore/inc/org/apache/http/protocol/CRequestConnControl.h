@@ -19,7 +19,8 @@ namespace Protocol {
  *
  * @since 4.0
  */
-CarClass(CRequestConnControl) , public RequestConnControl {
+CarClass(CRequestConnControl) , public RequestConnControl
+{
 public:
     CAR_OBJECT_DECL()
 

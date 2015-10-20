@@ -27,7 +27,7 @@ class AbstractHttpParams
 public:
     CAR_INTERFACE_DECL()
 
-    virtual ~AbstractHttpParams() = 0;
+    virtual ~AbstractHttpParams() {}
 
     CARAPI GetInt64Parameter(
         /* [in] */ const String& name,

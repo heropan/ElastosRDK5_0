@@ -28,7 +28,7 @@ ECode UriPatternMatcher::Init()
 }
 
 ECode UriPatternMatcher::Register(
-    /* [in] */ String pattern,
+    /* [in] */ const String& pattern,
     /* [in] */ IInterface* handler)
 {
     if (pattern.IsNull()) {
@@ -46,7 +46,7 @@ ECode UriPatternMatcher::Register(
 }
 
 ECode UriPatternMatcher::Unregister(
-    /* [in] */ String pattern)
+    /* [in] */ const String& pattern)
 {
     if (pattern.IsNull()) {
         return NOERROR;
@@ -70,12 +70,13 @@ ECode UriPatternMatcher::SetHandlers(
 }
 
 ECode UriPatternMatcher::Lookup(
-    /* [in] */ String requestURI,
+    /* [in] */ const String& _requestURI,
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value)
     *value = NULL;
 
+    String requestURI = _requestURI;
     if (requestURI == NULL) {
         Logger::E("UriPatternMatcher", "Request URI may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -124,8 +125,8 @@ ECode UriPatternMatcher::Lookup(
 }
 
 ECode UriPatternMatcher::MatchUriRequestPattern(
-    /* [in] */ String pattern,
-    /* [in] */ String requestUri,
+    /* [in] */ const String& pattern,
+    /* [in] */ const String& requestUri,
     /* [out] */ Boolean* isMatch)
 {
     VALIDATE_NOT_NULL(isMatch)

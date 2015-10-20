@@ -31,7 +31,7 @@ class AbstractVerifier
 public:
     AbstractVerifier() {}
 
-    virtual ~AbstractVerifier() = 0;
+    virtual ~AbstractVerifier() {}
 
     CAR_INTERFACE_DECL()
 
@@ -48,16 +48,13 @@ public:
         /* [in] */ const String& host,
         /* [in] */ IX509Certificate* cert);
 
-    virtual CARAPI Verify(
-        /* [in] */ const String& host,
-        /* [in] */ ArrayOf<String>* cns,
-        /* [in] */ ArrayOf<String>* subjectAlts) = 0;
-
     CARAPI Verify(
         /* [in] */ const String& host,
         /* [in] */ ArrayOf<String>* cns,
         /* [in] */ ArrayOf<String>* subjectAlts,
         /* [in] */ Boolean strictWithSubDomains);
+
+    using IX509HostnameVerifier::Verify;
 
     static CARAPI_(Boolean) AcceptableCountryWildcard(
         /* [in] */ const String& cn);

@@ -13,6 +13,8 @@ namespace Apache {
 namespace Http {
 namespace Protocol {
 
+CAR_INTERFACE_IMPL(RequestUserAgent, Object, IHttpRequestInterceptor)
+
 ECode RequestUserAgent::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)

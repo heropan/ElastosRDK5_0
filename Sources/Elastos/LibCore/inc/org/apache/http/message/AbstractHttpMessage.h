@@ -31,7 +31,7 @@ class AbstractHttpMessage
 public:
     CAR_INTERFACE_DECL()
 
-    virtual ~AbstractHttpMessage() = 0;
+    virtual ~AbstractHttpMessage() {}
 
     /**
      * Checks if a certain header is present in this message. Header values are
