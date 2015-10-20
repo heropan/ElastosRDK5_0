@@ -1,29 +1,97 @@
+
 module
 {
-    using interface Elastos.IO.IInputStream;
 
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
-    interface Elastos.Droid.Net.Http.IHeaders;
-    using interface Org.Apache.Http.IHttpRequest;
-    using interface Org.Apache.Http.IHttpEntity;
+
+    using interface Elastos.IO.IInputStream;
+    using interface Org.Apache.Http.Client.IResponseHandler;
+    using interface Org.Apache.Http.Client.Methods.IHttpUriRequest;
+    using interface Org.Apache.Http.Conn.IClientConnectionManager;
     using interface Org.Apache.Http.Entity.IAbstractHttpEntity;
-    using interface Org.Apache.Http.IHttpEntityEnclosingRequest;
-    using interface Org.Apache.Http.IStatusLine;
+    using interface Org.Apache.Http.IHttpEntity;
+    using interface Org.Apache.Http.IHttpHost;
+    using interface Org.Apache.Http.IHttpRequest;
+    using interface Org.Apache.Http.IHttpResponse;
     using interface Org.Apache.Http.Params.IHttpParams;
-    using interface Elastos.Net.ISocket;
+    using interface Org.Apache.Http.Protocol.IHttpContext;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    /**
+     * Implementation of the Apache {@link DefaultHttpClient} that is configured with
+     * reasonable default settings and registered schemes for Android.
+     * Don't create this directly, use the {@link #newInstance} factory method.
+     *
+     * <p>This client processes cookies but does not retain them by default.
+     * To retain cookies, simply add a cookie store to the HttpContext:</p>
+     *
+     * <pre>context.setAttribute(ClientContext.COOKIE_STORE, cookieStore);</pre>
+     */
+    /**
+     * @Involved
+     * interface IHttpClient;
+     */
     interface IAndroidHttpClient {
         /**
          * Release resources associated with this client.  You must call this,
          * or significant resources (sockets and memory) may be leaked.
          */
         Close();
+
+        GetParams(
+            [out] IHttpParams** result);
+
+        GetConnectionManager(
+            [out] IClientConnectionManager** result);
+
+        Execute(
+            [in] IHttpUriRequest* request,
+            [out] IHttpResponse** result);
+
+        Execute(
+            [in] IHttpUriRequest* request,
+            [in] IHttpContext* context,
+            [out] IHttpResponse** result);
+
+        Execute(
+            [in] IHttpHost* target,
+            [in] IHttpRequest* request,
+            [out] IHttpResponse** result);
+
+        Execute(
+            [in] IHttpHost* target,
+            [in] IHttpRequest* request,
+            [in] IHttpContext* context,
+            [out] IHttpResponse** result);
+
+        Execute(
+            [in] IHttpUriRequest* request,
+            [in] IResponseHandler* responseHandler,
+            [out] IInterface** result);
+
+        Execute(
+            [in] IHttpUriRequest* request,
+            [in] IResponseHandler* responseHandler,
+            [in] IHttpContext* context,
+            [out] IInterface** result);
+
+        Execute(
+            [in] IHttpHost* target,
+            [in] IHttpRequest* request,
+            [in] IResponseHandler* responseHandler,
+            [out] IInterface** result);
+
+        Execute(
+            [in] IHttpHost* target,
+            [in] IHttpRequest* request,
+            [in] IResponseHandler* responseHandler,
+            [in] IHttpContext* context,
+            [out] IInterface** result);
 
         /**
          * Enables cURL request logging for this client.
@@ -39,10 +107,18 @@ module
          * Disables cURL logging for this client.
          */
         DisableCurlLogging();
+
     }
 
-    [deprecated, local]
+    [deprecated]
     interface IAndroidHttpClientHelper {
+        // Gzip of data shorter than this probably won't be worthwhile
+        GetDEFAULT_SYNC_MIN_GZIP_BYTES(
+            [out] Int64* result);
+
+        SetDEFAULT_SYNC_MIN_GZIP_BYTES(
+            [in] Int64 DEFAULT_SYNC_MIN_GZIP_BYTES);
+
         /**
          * Create a new HttpClient with reasonable defaults (which you can update).
          *
@@ -52,8 +128,8 @@ module
          */
         NewInstance(
             [in] String userAgent,
-            [in] IContext* ctx,
-            [out] IAndroidHttpClient** client);
+            [in] IContext* context,
+            [out] IAndroidHttpClient** result);
 
         /**
          * Create a new HttpClient with reasonable defaults (which you can update).
@@ -62,7 +138,7 @@ module
          */
         NewInstance(
             [in] String userAgent,
-            [out] IAndroidHttpClient** client);
+            [out] IAndroidHttpClient** result);
 
         /**
          * Modifies a request to indicate to the server that we would like a
@@ -83,7 +159,7 @@ module
          */
         GetUngzippedContent(
             [in] IHttpEntity* entity,
-            [out] IInputStream** stream);
+            [out] IInputStream** result);
 
         /**
          * Compress data to send to server.
@@ -95,7 +171,7 @@ module
         GetCompressedEntity(
             [in] ArrayOf<Byte>* data,
             [in] IContentResolver* resolver,
-            [out] IAbstractHttpEntity** entity);
+            [out] IAbstractHttpEntity** result);
 
         /**
          * Retrieves the minimum size for compressing data.
@@ -103,7 +179,7 @@ module
          */
         GetMinGzipSize(
             [in] IContentResolver* resolver,
-            [out] Int64* size);
+            [out] Int64* result);
 
         /**
          * Returns the date of the given HTTP date string. This method can identify
@@ -121,63 +197,8 @@ module
          */
         ParseDate(
             [in] String dateString,
-            [out] Int64* date);
-    }
+            [out] Int64* result);
 
-    interface IAndroidHttpClientConnection {
-        /**
-         * Bind socket and set HttpParams to AndroidHttpClientConnection
-         * @param socket outgoing socket
-         * @param params HttpParams
-         * @throws IOException
-          */
-        Bind(
-            [in] ISocket* socket,
-            [in] IHttpParams* params);
-
-        ToString(
-            [out] String* str);
-
-        /**
-         * Sends the request line and all headers over the connection.
-         * @param request the request whose headers to send.
-         * @throws HttpException
-         * @throws IOException
-         */
-        SendRequestHeader(
-            [in] IHttpRequest* request);
-
-        /**
-         * Sends the request entity over the connection.
-         * @param request the request whose entity to send.
-         * @throws HttpException
-         * @throws IOException
-         */
-        SendRequestEntity(
-            [in] IHttpEntityEnclosingRequest* request);
-
-        Flush();
-
-        /**
-         * Parses the response headers and adds them to the
-         * given {@code headers} object, and returns the response StatusLine
-         * @param headers store parsed header to headers.
-         * @throws IOException
-         * @return StatusLine
-         * @see HttpClientConnection#receiveResponseHeader()
-          */
-        ParseResponseHeader(
-            [in] IHeaders* headers,
-            [out] IStatusLine** statusLine);
-
-        /**
-         * Return the next response entity.
-         * @param headers contains values for parsing entity
-         * @see HttpClientConnection#receiveResponseEntity(HttpResponse response)
-         */
-        ReceiveResponseEntity(
-            [in] IHeaders* headers,
-            [out] IHttpEntity** entity);
     }
 
     } // namespace Http

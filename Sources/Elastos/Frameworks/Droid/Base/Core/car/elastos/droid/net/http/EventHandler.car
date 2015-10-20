@@ -1,8 +1,8 @@
+
 module
 {
-    interface Elastos.Droid.Net.Http.IHeaders;
+
     interface Elastos.Droid.Net.Http.ISslCertificate;
-    interface Elastos.Droid.Net.Http.ISslError;
 
     namespace Elastos {
     namespace Droid {
@@ -18,14 +18,12 @@ module
      *
      * {@hide}
      */
-    [local]
+    /**
+     * @Involved
+     * no super interface ;
+     */
+    [deprecated]
     interface IEventHandler {
-        /**
-         * Error codes used in the error() callback.  Positive error codes
-         * are reserved for codes sent by http servers.  Negative error
-         * codes are connection/parsing failures, etc.
-         */
-
         /** Success */
         const Int32 OK = 0;
 
@@ -106,7 +104,7 @@ module
          * interface.
          */
         Data(
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [in] Int32 len);
 
         /**
@@ -142,6 +140,7 @@ module
         HandleSslErrorRequest(
             [in] ISslError* error,
             [out] Boolean* result);
+
     }
 
     } // namespace Http

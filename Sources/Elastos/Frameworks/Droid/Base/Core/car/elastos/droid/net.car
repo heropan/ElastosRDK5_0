@@ -79,9 +79,9 @@ module
     merge("net/WifiLinkQualityInfo.car");
 
     merge("net/http/AndroidHttpClient.car");
+    merge("net/http/AndroidHttpClientConnection.car");
     merge("net/http/CertificateChainValidator.car");
-    merge("net/http/CharArrayBuffers.car");
-    merge("net/http/Connection.car");
+    merge("net/http/DelegatingSSLSession.car");
     merge("net/http/ErrorStrings.car");
     merge("net/http/EventHandler.car");
     merge("net/http/Headers.car");
