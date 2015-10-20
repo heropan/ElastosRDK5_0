@@ -12,8 +12,7 @@ CAR_OBJECT_IMPL(CAllowAllHostnameVerifier)
 ECode CAllowAllHostnameVerifier::Verify(
     /* [in] */ const String& host,
     /* [in] */ ArrayOf<String>* cns,
-    /* [in] */ ArrayOf<String>* subjectAlts,
-    /* [in] */ Boolean strictWithSubDomains)
+    /* [in] */ ArrayOf<String>* subjectAlts)
 {
     // Allow everything - so never blowup.
     return NOERROR;

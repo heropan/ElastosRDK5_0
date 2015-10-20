@@ -18,8 +18,6 @@ CarClass(CUrlEncodedFormEntity)
     , public StringEntity
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_OBJECT_DECL()
 
     CARAPI Clone(
@@ -33,7 +31,6 @@ public:
         /* [in] */ IList* parameters);
 
     CARAPI constructor();
-
 };
 
 } // namespace Entity

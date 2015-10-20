@@ -18,7 +18,7 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/auth;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/auth/params;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/message;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/protocol;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/util;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/utility;
 
 SOURCES = AuthSchemeBase.cpp
 SOURCES += RFC2617Scheme.cpp

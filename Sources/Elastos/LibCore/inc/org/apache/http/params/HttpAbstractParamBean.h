@@ -12,7 +12,7 @@ namespace Params {
 class HttpAbstractParamBean : public Object
 {
 public:
-    virtual ~HttpAbstractParamBean() = 0;
+    virtual ~HttpAbstractParamBean() {}
 
 protected:
     CARAPI Init(

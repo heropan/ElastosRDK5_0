@@ -12,7 +12,7 @@ INCLUDES += $(MAKEDIR)/../../../../../inc;
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility/logging;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http;
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/util;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/utility;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/protocol;
 
 SOURCES = VersionInfo.cpp

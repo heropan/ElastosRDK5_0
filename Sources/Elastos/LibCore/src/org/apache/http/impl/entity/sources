@@ -18,7 +18,7 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/impl;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/impl/entity;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/entity;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/logging;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/util;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/utility;
 
 SOURCES = EntityDeserializer.cpp
 SOURCES += EntitySerializer.cpp

@@ -42,6 +42,21 @@ class BasicLineParser
     , public ILineParser
 {
 public:
+    /**
+     * Creates a new line parser for the given HTTP-like protocol.
+     *
+     * @param proto     a version of the protocol to parse, or
+     *                  <code>null</code> for HTTP. The actual version
+     *                  is not relevant, only the protocol name.
+     */
+    CARAPI constructor(
+        /* [in] */ IProtocolVersion* proto);
+
+    /**
+     * Creates a new line parser for HTTP.
+     */
+    CARAPI constructor();
+
     CAR_INTERFACE_DECL()
 
     virtual ~BasicLineParser() {}
@@ -160,21 +175,6 @@ public:
         /* [out] */ IHeader** header);
 
 protected:
-    /**
-     * Creates a new line parser for the given HTTP-like protocol.
-     *
-     * @param proto     a version of the protocol to parse, or
-     *                  <code>null</code> for HTTP. The actual version
-     *                  is not relevant, only the protocol name.
-     */
-    CARAPI constructor(
-        /* [in] */ IProtocolVersion* proto);
-
-    /**
-     * Creates a new line parser for HTTP.
-     */
-    CARAPI constructor();
-
     /**
      * Creates a protocol version.
      * Called from {@link #parseProtocolVersion}.

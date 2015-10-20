@@ -12,7 +12,7 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility/logging;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/auth;
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/util;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/utility;
 
 SOURCES = CAuthSchemeRegistry.cpp
 SOURCES += CAuthScope.cpp

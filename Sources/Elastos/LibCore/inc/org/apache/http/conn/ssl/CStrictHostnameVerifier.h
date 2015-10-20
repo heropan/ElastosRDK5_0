@@ -36,11 +36,12 @@ CarClass(CStrictHostnameVerifier)
 public:
     CAR_OBJECT_DECL()
 
+    using AbstractVerifier::Verify;
+
     CARAPI Verify(
         /* [in] */ const String& host,
         /* [in] */ ArrayOf<String>* cns,
-        /* [in] */ ArrayOf<String>* subjectAlts,
-        /* [in] */ Boolean strictWithSubDomains);
+        /* [in] */ ArrayOf<String>* subjectAlts);
 
     CARAPI ToString(
         /* [out] */ String* str);

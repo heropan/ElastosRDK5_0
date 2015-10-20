@@ -13,7 +13,7 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/io;
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/utility/logging;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/entity;
 INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/message;
-INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/util;
+INCLUDES += $(MAKEDIR)/../../../../../inc/org/apache/http/utility;
 
 SOURCES = AbstractHttpEntity.cpp
 SOURCES += HttpEntityWrapper.cpp

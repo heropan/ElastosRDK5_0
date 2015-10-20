@@ -29,8 +29,6 @@ class BasicHeaderElementIterator
     , public IIterator
 {
 public:
-    BasicHeaderElementIterator();
-
     CAR_INTERFACE_DECL()
 
     virtual ~BasicHeaderElementIterator() {}

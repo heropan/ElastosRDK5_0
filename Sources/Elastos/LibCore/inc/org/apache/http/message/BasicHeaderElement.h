@@ -64,6 +64,17 @@ class BasicHeaderElement
     , public ICloneable
 {
 public:
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& value,
+        /* [in] */ IArrayOf* parameters);/*INameValuePair*/
+
+    CARAPI constructor(
+        /* [in] */ const String& name,
+        /* [in] */ const String& value);
+
+    CARAPI constructor();
+
     CAR_INTERFACE_DECL()
 
     virtual ~BasicHeaderElement() {}
@@ -135,17 +146,6 @@ public:
         /* [out] */ Int32* hashCode);
 
 protected:
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ const String& value,
-        /* [in] */ IArrayOf* parameters);/*INameValuePair*/
-
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ const String& value);
-
-    CARAPI constructor();
-
     CARAPI_(void) CloneImpl(
         /* [in] */ BasicHeaderElement* obj);
 

@@ -16,7 +16,7 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/libcore/net;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/utils;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/params;
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/message;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/util;
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/utility;
 
 SOURCES = CloneUtils.cpp
 SOURCES += URIUtils.cpp
