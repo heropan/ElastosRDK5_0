@@ -13,70 +13,48 @@ namespace Text {
 namespace Style {
 
 const Int32 BulletSpan::BULLET_RADIUS = 3;
-AutoPtr<IPath> BulletSpan::sBulletPath = NULL;
+AutoPtr<IPath> BulletSpan::sBulletPath;
+
+CAR_INTERFACE_IMPL_5(BulletSpan, Object, IBulletSpan, ILeadingMarginSpan, IParagraphStyle, IParcelableSpan, IParcelable)
 
 BulletSpan::BulletSpan()
+    : mGapWidth(IBulletSpan::STANDARD_GAP_WIDTH)
+    , mWantColor(FALSE)
+    , mColor(0)
 {
-    Init();
+}
+BulletSpan::~BulletSpan()
+{
 }
 
-BulletSpan::BulletSpan(
-    /* [in] */ Int32 gapWidth)
+ECode BulletSpan::constructor()
 {
-    Init(gapWidth);
+    return NOERROR;
 }
 
-BulletSpan::BulletSpan(
-    /* [in] */ Int32 gapWidth,
-    /* [in] */ Int32 color)
-{
-    Init(gapWidth, color);
-}
-
-BulletSpan::BulletSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void BulletSpan::Init()
-{
-    mGapWidth = IBulletSpan::STANDARD_GAP_WIDTH;
-    mWantColor = FALSE;
-    mColor = 0;
-}
-
-void BulletSpan::Init(
+ECode BulletSpan::constructor(
         /* [in] */ Int32 gapWidth)
 {
     mGapWidth = gapWidth;
-    mWantColor = FALSE;
-    mColor = 0;
+    return NOERROR;
 }
 
-void BulletSpan::Init(
-        /* [in] */ Int32 gapWidth,
-        /* [in] */ Int32 color)
+ECode BulletSpan::constructor(
+    /* [in] */ Int32 gapWidth,
+    /* [in] */ Int32 color)
 {
     mGapWidth = gapWidth;
     mWantColor = TRUE;
     mColor = color;
+    return NOERROR;
 }
 
-void BulletSpan::Init(
-        /* [in] */ IParcel* src)
+ECode BulletSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    ReadFromParcel(src);
-}
-
-Int32 BulletSpan::GetSpanTypeId()
-{
-    return ITextUtils::BULLET_SPAN;
-}
-
-Int32 BulletSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::BULLET_SPAN;
+    return NOERROR;
 }
 
 ECode BulletSpan::ReadFromParcel(
@@ -97,13 +75,16 @@ ECode BulletSpan::WriteToParcel(
     return NOERROR;
 }
 
-Int32 BulletSpan::GetLeadingMargin(
-    /* [in] */ Boolean first)
+ECode BulletSpan::GetLeadingMargin(
+    /* [in] */ Boolean first,
+    /* [out] */ Int32* margin)
 {
-    return 2 * BULLET_RADIUS + mGapWidth;
+    VALIDATE_NOT_NULL(margin)
+    *margin = 2 * BULLET_RADIUS + mGapWidth;
+    return NOERROR;
 }
 
-void BulletSpan::DrawLeadingMargin(
+ECode BulletSpan::DrawLeadingMargin(
     /* [in] */ ICanvas* c,
     /* [in] */ IPaint* p,
     /* [in] */ Int32 x,
@@ -117,8 +98,14 @@ void BulletSpan::DrawLeadingMargin(
     /* [in] */ Boolean first,
     /* [in] */ ILayout* l)
 {
+    ISpanned* spanned = ISpanned::Probe(text);
+    if (spanned == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
     Int32 spanStart;
-    if ((((ISpanned*) text)->GetSpanStart((IInterface*)this, &spanStart), spanStart) == start) {
+    spanned->GetSpanStart(TO_IINTERFACE(this), &spanStart);
+    if (spanStart == start) {
         PaintStyle style;
         p->GetStyle(&style);
         Int32 oldcolor = 0;
@@ -155,6 +142,7 @@ void BulletSpan::DrawLeadingMargin(
 
         p->SetStyle(style);
     }
+    return NOERROR;
 }
 
 } // namespace Style

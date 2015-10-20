@@ -6,41 +6,28 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(RelativeSizeSpan, MetricAffectingSpan, IRelativeSizeSpan, IParcelableSpan, IParcelable)
+
 RelativeSizeSpan::RelativeSizeSpan()
+    : mProportion(0)
 {}
 
-RelativeSizeSpan::RelativeSizeSpan(
-    /* [in] */ Float proportion)
-{
-    Init(proportion);
-}
+RelativeSizeSpan::~RelativeSizeSpan()
+{}
 
-RelativeSizeSpan::RelativeSizeSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void RelativeSizeSpan::Init(
+ECode RelativeSizeSpan::constructor(
     /* [in] */ Float proportion)
 {
     mProportion = proportion;
+    return NOERROR;
 }
 
-void RelativeSizeSpan::Init(
-    /* [in] */ IParcel* src)
+ECode RelativeSizeSpan::GetSpanTypeId(
+    /* [in] */ Int32* id);
 {
-    ReadFromParcel(src);
-}
-
-Int32 RelativeSizeSpan::GetSpanTypeId()
-{
-    return ITextUtils::RELATIVE_SIZE_SPAN;
-}
-
-Int32 RelativeSizeSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::RELATIVE_SIZE_SPAN;
+    return NOERROR;
 }
 
 ECode RelativeSizeSpan::ReadFromParcel(
@@ -55,9 +42,12 @@ ECode RelativeSizeSpan::WriteToParcel(
     return dest->WriteFloat(mProportion);
 }
 
-Float RelativeSizeSpan::GetSizeChange()
+ECode RelativeSizeSpan::GetSizeChange(
+    /* [out] */ Float* change)
 {
-    return mProportion;
+    VALIDATE_NOT_NULL(change)
+    *change = mProportion;
+    return NOERROR;
 }
 
 ECode RelativeSizeSpan::UpdateDrawState(
@@ -65,7 +55,8 @@ ECode RelativeSizeSpan::UpdateDrawState(
 {
     VALIDATE_NOT_NULL(ds);
     Float textSize;
-    ds->SetTextSize((ds->GetTextSize(&textSize), textSize) * mProportion);
+    ds->GetTextSize(&textSize);
+    ds->SetTextSize(textSize * mProportion);
     return NOERROR;
 }
 
@@ -73,7 +64,8 @@ ECode RelativeSizeSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* ds)
 {
     Float textSize;
-    ds->SetTextSize((ds->GetTextSize(&textSize), textSize) * mProportion);
+    ds->GetTextSize(&textSize);
+    ds->SetTextSize(textSize * mProportion);
     return NOERROR;
 }
 

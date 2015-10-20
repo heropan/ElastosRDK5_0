@@ -1,46 +1,40 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/ForegroundColorSpan.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_4(ForegroundColorSpan, CharacterStyle, IForegroundColorSpan, IUpdateAppearance, IParcelableSpan, IParcelable)
+
 ForegroundColorSpan::ForegroundColorSpan()
+    : mColor(0)
 {}
 
-ForegroundColorSpan::ForegroundColorSpan(
-    /* [in] */ Int32 color)
+ForegroundColorSpan::~ForegroundColorSpan()
+{}
+
+ECode ForegroundColorSpan::constructor()
 {
-    Init(color);
+    return NOERROR;
 }
 
-ForegroundColorSpan::ForegroundColorSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void ForegroundColorSpan::Init(
+ECode ForegroundColorSpan::constructor(
     /* [in] */ Int32 color)
 {
     mColor = color;
+    return NOERROR;
 }
 
-void ForegroundColorSpan::Init(
-    /* [in] */ IParcel* src)
+ECode ForegroundColorSpan::GetSpanTypeId(
+    /* [in] */ Int32* id)
 {
-    ReadFromParcel(src);
-}
-
-Int32 ForegroundColorSpan::GetSpanTypeId()
-{
-    return ITextUtils::FOREGROUND_COLOR_SPAN;
-}
-
-Int32 ForegroundColorSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::FOREGROUND_COLOR_SPAN;
+    return NOERROR;
 }
 
 ECode ForegroundColorSpan::ReadFromParcel(
@@ -55,16 +49,19 @@ ECode ForegroundColorSpan::WriteToParcel(
     return dest->WriteInt32(mColor);;
 }
 
-Int32 ForegroundColorSpan::GetForegroundColor()
+ECode ForegroundColorSpan::GetForegroundColor(
+    /* [out] */ Int32* color)
 {
-    return mColor;
+    VALIDATE_NOT_NULL(color)
+    *color = mColor;
+    return NOERROR;
 }
 
 ECode ForegroundColorSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
-    ds->SetColor(mColor);
+    IPaint::Probe(ds)->SetColor(mColor);
     return NOERROR;
 }
 

@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
-#define __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_IMAGESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_IMAGESPAN_H__
 
 #include "elastos/droid/text/style/DynamicDrawableSpan.h"
 
@@ -17,147 +17,76 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class ImageSpan : public DynamicDrawableSpan
+class ImageSpan
+    : public DynamicDrawableSpan
+    , public IImageSpan
 {
 public:
-    /**
-     * @deprecated Use {@link #ImageSpan(Context, Bitmap)} instead.
-     */
-    //@Deprecated
-    ImageSpan(
+    CAR_INTERFACE_DECL()
+
+    ImageSpan();
+
+    virtual ~ImageSpan();
+
+   CARAPI constructor(
         /* [in] */ IBitmap* b);
 
-    /**
-     * @deprecated Use {@link #ImageSpan(Context, Bitmap, int) instead.
-     */
-    //@Deprecated
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IBitmap* b,
         /* [in] */ Int32 verticalAlignment);
 
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IBitmap* b);
 
-    /**
-     * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IBitmap* b,
         /* [in] */ Int32 verticalAlignment);
 
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IDrawable* d);
 
-    /**
-     * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IDrawable* d,
         /* [in] */ Int32 verticalAlignment);
 
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IDrawable* d,
         /* [in] */ const String& source);
 
-    /**
-     * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IDrawable* d,
         /* [in] */ const String& source,
         /* [in] */ Int32 verticalAlignment);
 
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri);
 
-    /**
-     * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
         /* [in] */ Int32 verticalAlignment);
 
-    ImageSpan(
+   CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceId);
 
-    /**
-     * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-     * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-     */
-    ImageSpan(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 resourceId,
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ IBitmap* b);
-
-    CARAPI_(void) Init(
-        /* [in] */ IBitmap* b,
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IBitmap* b);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IBitmap* b,
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ IDrawable* d);
-
-    CARAPI_(void) Init(
-        /* [in] */ IDrawable* d,
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ IDrawable* d,
-        /* [in] */ const String& source);
-
-    CARAPI_(void) Init(
-        /* [in] */ IDrawable* d,
-        /* [in] */ const String& source,
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IUri* uri);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 resourceId);
-
-    CARAPI_(void) Init(
+   CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resourceId,
         /* [in] */ Int32 verticalAlignment);
 
     //@Override
-    CARAPI_(AutoPtr<IDrawable>) GetDrawable();
+    CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable);
 
     /**
      * Returns the source string that was saved during construction.
      */
-    CARAPI_(String) GetSource();
-
-protected:
-    ImageSpan();
+    CARAPI GetSource(
+        /* [out] */ String* source);
 
 private:
     AutoPtr<IDrawable> mDrawable;
@@ -172,4 +101,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_IMAGESPAN_H__

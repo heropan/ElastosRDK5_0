@@ -8,44 +8,43 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_5(DrawableMarginSpan, Object, IDrawableMarginSpan, ILineHeightSpan, IParagraphStyle, IWrapTogetherSpan, ILeadingMarginSpan)
+
 DrawableMarginSpan::DrawableMarginSpan()
+    : mPad(0)
 {}
 
-DrawableMarginSpan::DrawableMarginSpan(
-    /* [in] */ IDrawable* b)
-{
-    Init(b);
-}
+DrawableMarginSpan::~DrawableMarginSpan()
+{}
 
-DrawableMarginSpan::DrawableMarginSpan(
-    /* [in] */ IDrawable* b,
-    /* [in] */ Int32 pad)
-{
-    Init(b, pad);
-}
-
-void DrawableMarginSpan::Init(
+ECode DrawableMarginSpan::constructor(
     /* [in] */ IDrawable* b)
 {
     mDrawable = b;
+    return NOERROR;
 }
 
-void DrawableMarginSpan::Init(
+ECode DrawableMarginSpan::constructor(
     /* [in] */ IDrawable* b,
     /* [in] */ Int32 pad)
 {
     mDrawable = b;
     mPad = pad;
+    return NOERROR;
 }
 
-Int32 DrawableMarginSpan::GetLeadingMargin(
-    /* [in] */ Boolean first)
+ECode DrawableMarginSpan::GetLeadingMargin(
+    /* [in] */ Boolean first,
+    /* [out] */ Int32* margin)
 {
+    VALIDATE_NOT_NULL(margin)
     Int32 intrinsicWidth;
-    return (mDrawable->GetIntrinsicWidth(&intrinsicWidth), intrinsicWidth) + mPad;
+    mDrawable->GetIntrinsicWidth(&intrinsicWidth);
+    *margin = intrinsicWidth + mPad;
+    return NOERROR;
 }
 
-void DrawableMarginSpan::DrawLeadingMargin(
+ECode DrawableMarginSpan::DrawLeadingMargin(
     /* [in] */ ICanvas* c,
     /* [in] */ IPaint* p,
     /* [in] */ Int32 x,
@@ -59,12 +58,14 @@ void DrawableMarginSpan::DrawLeadingMargin(
     /* [in] */ Boolean first,
     /* [in] */ ILayout* layout)
 {
+    ISpanned* spanned = ISpanned::Probe(text);
     Int32 st;
-    ((ISpanned*) text)->GetSpanStart((IInterface*)this, &st);
+    spanned->GetSpanStart(TO_IINTERFACE(this), &st);
     Int32 ix = (Int32)x;
     Int32 lineForOffset;
     Int32 itop;
-    layout->GetLineTop((layout->GetLineForOffset(st, &lineForOffset), lineForOffset), &itop);
+    layout->GetLineForOffset(st, &lineForOffset);
+    layout->GetLineTop(lineForOffset, &itop);
 
     Int32 dw;
     mDrawable->GetIntrinsicWidth(&dw);
@@ -74,9 +75,10 @@ void DrawableMarginSpan::DrawLeadingMargin(
     // XXX What to do about Paint?
     mDrawable->SetBounds(ix, itop, ix+dw, itop+dh);
     mDrawable->Draw(c);
+    return NOERROR;
 }
 
-void DrawableMarginSpan::ChooseHeight(
+ECode DrawableMarginSpan::ChooseHeight(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -85,23 +87,30 @@ void DrawableMarginSpan::ChooseHeight(
     /* [in] */ IPaintFontMetricsInt* fm)
 {
     Int32 se;
-    if (end == (((ISpanned*) text)->GetSpanEnd((IInterface*)this, &se), se)) {
+    ISpanned* spanned = ISpanned::Probe(text);
+    spanned->GetSpanEnd(TO_IINTERFACE(this), &se);
+    if (end == se) {
         Int32 ht;
         mDrawable->GetIntrinsicHeight(&ht);
 
         CPaintFontMetricsInt* pfm = (CPaintFontMetricsInt*)fm;
         Int32 descent, ascent;
-        Int32 need = ht - (v + (pfm->GetDescent(&descent), descent) - (pfm->GetAscent(&ascent), ascent) - istartv);
+        pfm->GetDescent(&descent);
+        pfm->GetAscent(&ascent);
+        Int32 need = ht - (v + descent - ascent - istartv);
         if (need > 0) {
-            pfm->SetDescent((pfm->GetDescent(&descent), descent) + need);
+            pfm->SetDescent(descent + need);
         }
 
         Int32 bottom, top;
-        need = ht - (v + (pfm->GetBottom(&bottom), bottom) - (pfm->GetTop(&top), top) - istartv);
+        pfm->GetBottom(&bottom);
+        pfm->GetTop(&top);
+        need = ht - (v + bottom - top - istartv);
         if (need > 0) {
-            pfm->SetBottom((pfm->GetBottom(&bottom), bottom) + need);
+            pfm->SetBottom(bottom + need);
         }
     }
+    return NOERROR;
 }
 
 } // namespace Style

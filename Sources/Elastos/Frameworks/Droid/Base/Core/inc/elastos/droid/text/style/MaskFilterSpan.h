@@ -17,20 +17,21 @@ class MaskFilterSpan
     , public IUpdateAppearance
 {
 public:
-    MaskFilterSpan(
+    CAR_INTERFACE_DECL()
+
+    MaskFilterSpan();
+
+    virtual ~MaskFilterSpan();
+
+    CARAPI constructor(
         /* [in] */ IMaskFilter* filter);
 
-    CARAPI_(void) Init(
-        /* [in] */ IMaskFilter* filter);
-
-    CARAPI_(AutoPtr<IMaskFilter>) GetMaskFilter();
+    CARAPI GetMaskFilter(
+        /* [out] */ IMaskFilter** filter);
 
     //@Override
     CARAPI UpdateDrawState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    MaskFilterSpan();
 
 private:
     AutoPtr<IMaskFilter> mFilter;

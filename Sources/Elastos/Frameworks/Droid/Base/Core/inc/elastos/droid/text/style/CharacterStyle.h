@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CHARACTERSTYLE_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CHARACTERSTYLE_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {
@@ -20,9 +20,11 @@ class CharacterStyle
     , public ICharacterStyle
 {
 public:
-    CharacterStyle() {}
+    CAR_INTERFACE_DECL()
 
-    virtual ~CharacterStyle() {}
+    CharacterStyle();
+
+    virtual ~CharacterStyle();
 
     virtual CARAPI UpdateDrawState(
         /* [in] */ ITextPaint* tp) = 0;
@@ -54,14 +56,14 @@ public:
  * to which the specified CharacterStyle is already attached.
  */
 //static
-class Passthrough
-    :  CharacterStyle
+class CharacterStylePassthrough
+    : CharacterStyle
 {
 public:
     /**
      * Creates a new Passthrough of the specfied CharacterStyle.
      */
-    Passthrough(
+    CharacterStylePassthrough(
         /* [in] */ ICharacterStyle* cs);
 
     /**
@@ -81,7 +83,6 @@ public:
 
 private:
     AutoPtr<ICharacterStyle> mStyle;
-
 };
 
 

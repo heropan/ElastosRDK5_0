@@ -8,41 +8,32 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+
+CAR_INTERFACE_IMPL_3(LocaleSpan, MetricAffectingSpan, ILocaleSpan, IParcelableSpan, IParcelable)
+
 LocaleSpan::LocaleSpan()
 {}
 
-LocaleSpan::LocaleSpan(
-    /* [in] */ ILocale* locale)
+LocaleSpan::~LocaleSpan()
+{}
+
+ECode LocaleSpan::constructor()
 {
-    Init(locale);
+    return NOERROR;
 }
 
-LocaleSpan::LocaleSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void LocaleSpan::Init(
+ECode LocaleSpan::constructor(
     /* [in] */ ILocale* locale)
 {
     mLocale = locale;
 }
 
-void LocaleSpan::Init(
-    /* [in] */ IParcel* src)
+ECode LocaleSpan::GetSpanTypeId(
+    /* [in] */ Int32* id);
 {
-    ReadFromParcel(src);
-}
-
-Int32 LocaleSpan::GetSpanTypeId()
-{
-    return ITextUtils::LOCALE_SPAN;
-}
-
-Int32 LocaleSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::LOCALE_SPAN;
+    return NOERROR;
 }
 
 ECode LocaleSpan::ReadFromParcel(
@@ -60,37 +51,42 @@ ECode LocaleSpan::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     String strLanguage, strCountry, strVariant;
-    FAIL_RETURN(dest->WriteString((mLocale->GetLanguage(&strLanguage), strLanguage)));
-    FAIL_RETURN(dest->WriteString((mLocale->GetCountry(&strCountry), strCountry)));
-    FAIL_RETURN(dest->WriteString((mLocale->GetVariant(&strVariant), strVariant)));
+    mLocale->GetLanguage(&strLanguage);
+    mLocale->GetCountry(&strCountry);
+    mLocale->GetVariant(&strVariant);
+    FAIL_RETURN(dest->WriteString(strLanguage));
+    FAIL_RETURN(dest->WriteString(strCountry));
+    FAIL_RETURN(dest->WriteString(strVariant));
     return NOERROR;
 }
 
-AutoPtr<ILocale> LocaleSpan::GetLocale()
+ECode LocaleSpan::GetLocale(
+    /* [out] */ ILocale** locale)
 {
-    return mLocale;
+    VALIDATE_NOT_NULL(locale)
+    *locale = mLocale;
+    REFCOUNT_ADD(*locale)
+    return NOERROR;
 }
 
 ECode LocaleSpan::UpdateDrawState(
-    /* [in] */ ITextPaint* ds)
+    /* [in] */ ITextPaint* paint)
 {
-    Apply(ds, mLocale);
-    return NOERROR;
+    return Apply(IPaint::Probe(paint), mLocale);
 }
 
 ECode LocaleSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* paint)
 {
-    Apply(paint, mLocale);
-    return NOERROR;
+    return Apply(IPaint::Probe(paint), mLocale);
 }
 
-void LocaleSpan::Apply(
+ECode LocaleSpan::Apply(
     /* [in] */ IPaint* paint,
     /* [in] */ ILocale* locale)
 {
-    assert(paint != NULL);
-    paint->SetTextLocale(locale);
+    VALIDATE_NOT_NULL(paint)
+    return paint->SetTextLocale(locale);
 }
 
 } // namespace Style

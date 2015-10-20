@@ -7,7 +7,7 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
 
-#C_DEFINES += -D_FRAMEWORK_CORE
+C_DEFINES += -DDROID_CORE
 
 SOURCES = CMicrophoneInputStream.cpp
 SOURCES += CRecognizer.cpp

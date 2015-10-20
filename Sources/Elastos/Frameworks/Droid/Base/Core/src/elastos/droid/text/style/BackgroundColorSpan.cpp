@@ -7,43 +7,34 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_4(BackgroundColorSpan, CharacterStyle, IBackgroundColorSpan, IUpdateAppearance, IParcelableSpan, IParcelable)
+
 BackgroundColorSpan::BackgroundColorSpan()
+    : mColor(0)
 {}
 
-BackgroundColorSpan::BackgroundColorSpan(
+BackgroundColorSpan::~BackgroundColorSpan()
+{}
+
+ECode BackgroundColorSpan::constructor()
+{
+    return NOERROR;
+}
+
+ECode BackgroundColorSpan::constructor(
     /* [in] */ Int32 color)
 {
-    Init(color);
+   mColor = color;
+   return NOERROR;
 }
 
-BackgroundColorSpan::BackgroundColorSpan(
-    /* [in] */ IParcel* src)
+ECode BackgroundColorSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    Init(src);
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::BACKGROUND_COLOR_SPAN;
+    return NOERROR;
 }
-
-void BackgroundColorSpan::Init(
-    /* [in] */ Int32 color)
-{
-    mColor = color;
-}
-
-void BackgroundColorSpan::Init(
-    /* [in] */ IParcel* src)
-{
-    ReadFromParcel(src);
-}
-
-Int32 BackgroundColorSpan::GetSpanTypeId()
-{
-    return ITextUtils::BACKGROUND_COLOR_SPAN;
-}
-
-Int32 BackgroundColorSpan::DescribeContents()
-{
-    return 0;
-}
-
 
 ECode BackgroundColorSpan::ReadFromParcel(
     /* [in] */ IParcel* source)
@@ -57,9 +48,12 @@ ECode BackgroundColorSpan::WriteToParcel(
     return dest->WriteInt32(mColor);
 }
 
-Int32 BackgroundColorSpan::GetBackgroundColor()
+ECode BackgroundColorSpan::GetBackgroundColor(
+    /* [out] */ Int32* color)
 {
-    return mColor;
+    VALIDATE_NOT_NULL(color)
+    *color = mColor;
+    return NOERROR;
 }
 
 ECode BackgroundColorSpan::UpdateDrawState(

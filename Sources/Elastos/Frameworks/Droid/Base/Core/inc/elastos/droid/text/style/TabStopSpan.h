@@ -17,6 +17,8 @@ class TabStopSpan
     , public ITabStopSpan
 {
 public:
+    CAR_INTERFACE_DECL()
+
 };
 
 /**
@@ -28,6 +30,8 @@ class Standard
     , public ITabStopSpanStandard
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructor.
      *

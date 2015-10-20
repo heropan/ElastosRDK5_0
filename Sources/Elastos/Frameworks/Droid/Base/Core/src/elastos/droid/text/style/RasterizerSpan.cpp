@@ -6,24 +6,28 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_2(RasterizerSpan, CharacterStyle, IRasterizerSpan, IUpdateAppearance)
+
 RasterizerSpan::RasterizerSpan()
 {}
 
-RasterizerSpan::RasterizerSpan(
-    /* [in] */ IRasterizer* r)
-{
-    Init(r);
-}
+RasterizerSpan::~RasterizerSpan()
+{}
 
-void RasterizerSpan::Init(
+ECode RasterizerSpan::constructor(
     /* [in] */ IRasterizer* r)
 {
     mRasterizer = r;
+    return NOERROR;
 }
 
-AutoPtr<IRasterizer> RasterizerSpan::GetRasterizer()
+ECode RasterizerSpan::GetRasterizer(
+    /* [out] */ IRasterizer** rastersizer)
 {
-    return mRasterizer;
+    VALIDATE_NOT_NULL(rastersizer)
+    *rastersizer = mRasterizer;
+    REFCOUNT_ADD(rastersizer)
+    return NOERROR;
 }
 
 ECode RasterizerSpan::UpdateDrawState(

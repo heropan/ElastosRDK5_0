@@ -1,7 +1,7 @@
 TARGET_NAME= storage
 TARGET_TYPE= lib
 
-C_DEFINES += -D_FRAMEWORK_CORE
+C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../inc

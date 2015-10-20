@@ -28,7 +28,8 @@ void SubscriptSpan::Init(
 
 }
 
-Int32 SubscriptSpan::GetSpanTypeId()
+Int32 SubscriptSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::SUBSCRIPT_SPAN;
 }

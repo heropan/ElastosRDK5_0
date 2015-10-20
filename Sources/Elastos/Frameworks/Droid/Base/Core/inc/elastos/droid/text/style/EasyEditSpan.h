@@ -1,8 +1,10 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+
+using Elastos::Droid::App::IPendingIntent;
 
 namespace Elastos {
 namespace Droid {
@@ -13,12 +15,23 @@ namespace Style {
  * Provides an easy way to edit a portion of text.
  * <p>
  * The {@link TextView} uses this span to allow the user to delete a chuck of text in one click.
- * the text. {@link TextView} removes this span as soon as the text is edited, or the cursor moves.
+ * <p>
+ * {@link TextView} removes the span when the user deletes the whole text or modifies it.
+ * <p>
+ * This span can be also used to receive notification when the user deletes or modifies the text;
  */
 class EasyEditSpan
+    : public Object
+    , public IEasyEditSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     EasyEditSpan();
+
+    virtual ~EasyEditSpan();
 
     CARAPI constructor();
 
@@ -41,27 +54,24 @@ public:
      *
      * @hide
      */
-    public boolean isDeleteEnabled() {
-        return mDeleteEnabled;
-    }
+    CARAPI IsDeleteEnabled(
+        /* [out] */ Boolean* enabled);
 
     /**
      * Enables or disables the deletion of the text.
      *
      * @hide
      */
-    public void setDeleteEnabled(boolean value) {
-        mDeleteEnabled = value;
-    }
+    CARAPI SetDeleteEnabled(
+        /* [in] */ Boolean value);
 
     /**
      * @return the pending intent to send when the wrapped text is deleted or modified.
      *
      * @hide
      */
-    public PendingIntent getPendingIntent() {
-        return mPendingIntent;
-    }
+    CARAPI GetPendingIntent(
+        /* [out] */ IPendingIntent** intent);
 
 private:
     AutoPtr<IPendingIntent> mPendingIntent;

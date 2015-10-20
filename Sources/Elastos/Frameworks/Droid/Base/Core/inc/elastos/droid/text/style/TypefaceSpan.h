@@ -23,6 +23,8 @@ class TypefaceSpan
     , public IUpdateAppearance
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * @param family The font family for this typeface.  Examples include
      * "monospace", "serif", and "sans-serif".
@@ -39,9 +41,9 @@ public:
     CARAPI_(void) Init(
         /* [in] */ IParcel* src);
 
-    CARAPI_(Int32) GetSpanTypeId();
+        CARAPI GetSpanTypeId(
+            /* [in] */ Int32* id);
 
-    CARAPI_(Int32) DescribeContents();
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

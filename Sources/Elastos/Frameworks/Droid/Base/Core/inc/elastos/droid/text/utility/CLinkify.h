@@ -20,6 +20,10 @@ CarClass(CLinkify)
     , public ILinkify
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetStaticUrlMatchFilter(
         /* [out] */ ILinkifyMatchFilter** ret);
 

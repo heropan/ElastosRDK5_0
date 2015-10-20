@@ -19,6 +19,7 @@ module
     merge("../../../car/elastos/droid/net.car");
     merge("../../../car/elastos/droid/nfc.car");
     merge("../../../car/elastos/droid/widget.car");
+    merge("../../../car/elastos/droid/text2.car");
     merge("../../../car/elastos/droid/gesture.car");
     merge("../../../car/elastos/droid/preference.car");
     merge("../../../car/elastos/droid/accounts.car");

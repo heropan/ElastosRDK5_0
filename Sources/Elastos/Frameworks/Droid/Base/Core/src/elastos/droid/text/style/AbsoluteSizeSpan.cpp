@@ -1,61 +1,51 @@
 #include "elastos/droid/text/style/AbsoluteSizeSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(AbsoluteSizeSpan, MetricAffectingSpan, IAbsoluteSizeSpan, IParcelableSpan, IParcelable)
+
 AbsoluteSizeSpan::AbsoluteSizeSpan()
+    : mSize(0)
+    , mDip(0)
 {}
 
-AbsoluteSizeSpan::AbsoluteSizeSpan(
-    /* [in] */ Int32 size)
+AbsoluteSizeSpan::~AbsoluteSizeSpan()
+{}
+
+ECode AbsoluteSizeSpan::cosntructor()
 {
-    Init(size);
+    return NOERROR;
 }
 
-AbsoluteSizeSpan::AbsoluteSizeSpan(
-    /* [in] */ Int32 size,
-    /* [in] */ Boolean dip)
-{
-    Init(size, dip);
-}
-
-AbsoluteSizeSpan::AbsoluteSizeSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void AbsoluteSizeSpan::Init(
+ECode AbsoluteSizeSpan::cosntructor(
     /* [in] */ Int32 size)
 {
     mSize = size;
+    return NOERROR;
 }
 
-void AbsoluteSizeSpan::Init(
+ECode AbsoluteSizeSpan::cosntructor(
     /* [in] */ Int32 size,
     /* [in] */ Boolean dip)
 {
     mSize = size;
     mDip = dip;
+    return NOERROR;
 }
 
-void AbsoluteSizeSpan::Init(
-    /* [in] */ IParcel* src)
-{
-    ReadFromParcel(src);
-}
 
-Int32 AbsoluteSizeSpan::GetSpanTypeId()
+ECode AbsoluteSizeSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    return ITextUtils::ABSOLUTE_SIZE_SPAN;
-}
-
-Int32 AbsoluteSizeSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::ABSOLUTE_SIZE_SPAN;
+    return NOERROR;
 }
 
 ECode AbsoluteSizeSpan::ReadFromParcel(
@@ -74,25 +64,32 @@ ECode AbsoluteSizeSpan::WriteToParcel(
     return NOERROR;
 }
 
-Int32 AbsoluteSizeSpan::GetSize()
+ECode AbsoluteSizeSpan::GetSize(
+    /* [out] */ Int32* size)
 {
-    return mSize;
+    VALIDATE_NOT_NULL(size)
+    *size = mSize;
+    return NOERROR;
 }
 
-Boolean AbsoluteSizeSpan::GetDip()
+ECode AbsoluteSizeSpan::GetDip(
+    /* [out] */ Boolean* dip)
 {
-    return mDip;
+    VALIDATE_NOT_NULL(dip)
+    *dip = mDip;
+    return NOERROR;
 }
 
 ECode AbsoluteSizeSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
+    IPaint* p = IPaint::Probe(ds);
     if (mDip) {
         Float density;
-        ds->SetTextSize(mSize * (ds->GetDensity(&density), density));
+        p->SetTextSize(mSize * (ds->GetDensity(&density), density));
     } else {
-        ds->SetTextSize(mSize);
+        p->SetTextSize(mSize);
     }
     return NOERROR;
 }
@@ -101,11 +98,12 @@ ECode AbsoluteSizeSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
+    IPaint* p = IPaint::Probe(ds);
     if (mDip) {
         Float density;
-        ds->SetTextSize(mSize * (ds->GetDensity(&density), density));
+        p->SetTextSize(mSize * (ds->GetDensity(&density), density));
     } else {
-        ds->SetTextSize(mSize);
+        p->SetTextSize(mSize);
     }
     return NOERROR;
 }

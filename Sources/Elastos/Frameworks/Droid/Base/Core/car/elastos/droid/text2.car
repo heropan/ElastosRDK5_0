@@ -3,32 +3,35 @@ module
     merge("text/utility/Rfc822Token.car");
     merge("text/utility/Rfc822Tokenizer.car");
 
+    interface Elastos.Droid.Widget.ITokenizer;
+
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Utility {
 
-    class CRfc822Token{
-        interface IRfc822Token;
-
-        //public
+    class CRfc822Token {
         constructor(
             [in] String name,
             [in] String address,
             [in] String comment);
+
+        interface IRfc822Token;
     }
 
     singleton class CRfc822TokenHelper{
         interface IRfc822TokenHelper;
     }
 
-    class CRfc822Tokenizer{
+    class CRfc822Tokenizer {
         interface IRfc822Tokenizer;
+        interface ITokenizer;
     }
 
     singleton class CRfc822TokenizerHelper{
         interface IRfc822TokenizerHelper;
     }
+
 
     } // Utility
     } // Text

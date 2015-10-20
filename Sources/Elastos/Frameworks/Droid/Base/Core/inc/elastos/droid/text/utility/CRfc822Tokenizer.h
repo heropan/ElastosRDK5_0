@@ -5,8 +5,10 @@
 #include "_Elastos_Droid_Text_Utility_CRfc822Tokenizer.h"
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Widget::ITokenizer;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::ICollection;
 
 namespace Elastos {
 namespace Droid {
@@ -14,8 +16,15 @@ namespace Text {
 namespace Utility {
 
 CarClass(CRfc822Tokenizer)
+    , public Object
+    , public IRfc822Tokenizer
+    , public ITokenizer
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * This constructor will try to take a string like
      * "Foo Bar (something) &lt;foo\@google.com&gt;,
@@ -31,7 +40,7 @@ public:
      */
     static CARAPI Tokenize(
         /* [in] */ ICharSequence* text,
-        /* [in, out] */ IObjectContainer* out);
+        /* [in, out] */ ICollection* out);
 
     /**
      * This method will try to take a string like
@@ -68,9 +77,8 @@ public:
         /* [out] */ ICharSequence** ret);
 
 private:
-    static CARAPI_(void) Crunch(
+    static CARAPI Crunch(
         /* [in] */ StringBuilder& sb);
-
 };
 
 } //namespace Utility

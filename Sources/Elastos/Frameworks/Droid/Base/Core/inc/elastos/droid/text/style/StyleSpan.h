@@ -25,27 +25,23 @@ class StyleSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    StyleSpan();
+
+    virtual ~StyleSpan();
+
     /**
      *
      * @param style An integer constant describing the style for this span. Examples
      * include bold, italic, and normal. Values are constants defined
      * in {@link android.graphics.Typeface}.
      */
-    StyleSpan(
+    CARAPI constructor(
         /* [in] */ Int32 style);
 
-    StyleSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 style);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -56,7 +52,8 @@ public:
     /**
      * Returns the style constant defined in {@link android.graphics.Typeface}.
      */
-    CARAPI_(Int32) GetStyle();
+    CARAPI GetStyle(
+        /* [out] */ Int32* style);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -66,11 +63,8 @@ public:
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* paint);
 
-protected:
-    StyleSpan();
-
 private:
-    static CARAPI_(void) Apply(
+    static CARAPI Apply(
         /* [in] */ IPaint* paint,
         /* [in] */ Int32 style);
 

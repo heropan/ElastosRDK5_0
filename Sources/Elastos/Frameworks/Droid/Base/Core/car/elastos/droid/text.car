@@ -109,8 +109,6 @@ module
     merge("text/style/WrapTogetherSpan.car");
 
     merge("text/utility/Linkify.car");
-    merge("text/utility/Rfc822Token.car");
-    merge("text/utility/Rfc822Tokenizer.car");
 
     using interface Elastos.Core.IAppendable;
     using interface Elastos.Utility.IIterator;
@@ -150,29 +148,29 @@ module
          * @param timezone string containing the timezone to use.
          * @see TimeZone
          */
-         constructor(
+        constructor(
             [in] String timezone);
 
         /**
          * Construct a Time object in the default timezone. The time is initialized to
          * Jan 1, 1970.
          */
-         constructor();
+        constructor();
 
-         /**
-          * A copy constructor.  Construct a Time object by copying the given
-          * Time object.  No normalization occurs.
-          *
-          * @param other
-          */
-          constructor(
+        /**
+         * A copy constructor.  Construct a Time object by copying the given
+         * Time object.  No normalization occurs.
+         *
+         * @param other
+         */
+         constructor(
             [in]ITime* other);
 
         interface ITime;
     }
 
     singleton class CTimeHelper{
-         interface ITimeHelper;
+        interface ITimeHelper;
     }
 
     class CTimeFormatter {
@@ -1078,19 +1076,19 @@ module
     // } // namepsace Droid
     // } // namespace Elastos
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Text {
-    // namespace Utility {
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Utility {
 
-    // singleton class CLinkify{
-    //     interface ILinkify;
-    // }
+    singleton class CLinkify{
+        interface ILinkify;
+    }
 
-    // } // namespace Utility
-    // } // namespace Text
-    // } // namepsace Droid
-    // } // namespace Elastos
+    } // namespace Utility
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

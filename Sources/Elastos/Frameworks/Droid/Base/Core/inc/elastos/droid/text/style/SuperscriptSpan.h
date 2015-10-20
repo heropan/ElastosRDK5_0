@@ -15,6 +15,8 @@ class SuperscriptSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SuperscriptSpan();
 
     SuperscriptSpan(
@@ -25,9 +27,9 @@ public:
     CARAPI_(void) Init(
         /* [in] */ IParcel* src);
 
-    CARAPI_(Int32) GetSpanTypeId();
+        CARAPI GetSpanTypeId(
+            /* [in] */ Int32* id);
 
-    CARAPI_(Int32) DescribeContents();
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

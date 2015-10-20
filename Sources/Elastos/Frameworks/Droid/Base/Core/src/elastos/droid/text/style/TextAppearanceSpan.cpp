@@ -137,7 +137,8 @@ void TextAppearanceSpan::Init(
     ReadFromParcel(src);
 }
 
-Int32 TextAppearanceSpan::GetSpanTypeId()
+Int32 TextAppearanceSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::TEXT_APPEARANCE_SPAN;
 }

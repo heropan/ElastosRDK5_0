@@ -14,6 +14,8 @@ class URLSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     URLSpan();
 
     CARAPI constructor(

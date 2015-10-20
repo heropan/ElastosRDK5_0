@@ -13,122 +13,41 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL(ImageSpan, DynamicDrawableSpan, IImageSpan)
+
 ImageSpan::ImageSpan()
 {}
 
-ImageSpan::ImageSpan(
+ImageSpan::~ImageSpan()
+{}
+
+
+ECode ImageSpan::constructor(
     /* [in] */ IBitmap* b)
 {
-    Init(NULL, b, IDynamicDrawableSpan::ALIGN_BOTTOM);
+    return constructor(NULL, b, IDynamicDrawableSpan::ALIGN_BOTTOM);
 }
 
-ImageSpan::ImageSpan(
+ECode ImageSpan::constructor(
     /* [in] */ IBitmap* b,
     /* [in] */ Int32 verticalAlignment)
 {
-    Init(NULL, b, verticalAlignment);
+    return constructor(NULL, b, verticalAlignment);
 }
 
-ImageSpan::ImageSpan(
+ECode ImageSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IBitmap* b)
 {
-    Init(context, b, IDynamicDrawableSpan::ALIGN_BOTTOM);
+    return constructor(context, b, IDynamicDrawableSpan::ALIGN_BOTTOM);
 }
 
-ImageSpan::ImageSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ IBitmap* b,
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(context, b, verticalAlignment);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IDrawable* d)
-{
-    Init(d, IDynamicDrawableSpan::ALIGN_BOTTOM);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IDrawable* d,
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(d, verticalAlignment);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IDrawable* d,
-    /* [in] */ const String& source)
-{
-    Init(d, source, IDynamicDrawableSpan::ALIGN_BOTTOM);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IDrawable* d,
-    /* [in] */ const String& source,
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(d, source, verticalAlignment);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ IUri* uri)
-{
-    Init(context, uri, IDynamicDrawableSpan::ALIGN_BOTTOM);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(context, uri, verticalAlignment);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 resourceId)
-{
-    Init(context, resourceId, IDynamicDrawableSpan::ALIGN_BOTTOM);
-}
-
-ImageSpan::ImageSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 resourceId,
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(context, resourceId, verticalAlignment);
-}
-
-
-void ImageSpan::Init(
-    /* [in] */ IBitmap* b)
-{
-    Init(NULL, b, IDynamicDrawableSpan::ALIGN_BOTTOM);
-}
-
-void ImageSpan::Init(
-    /* [in] */ IBitmap* b,
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(NULL, b, verticalAlignment);
-}
-
-void ImageSpan::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IBitmap* b)
-{
-    Init(context, b, IDynamicDrawableSpan::ALIGN_BOTTOM);
-}
-
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IBitmap* b,
     /* [in] */ Int32 verticalAlignment)
 {
-    DynamicDrawableSpan::Init(verticalAlignment);
+    DynamicDrawableSpan::constructor(verticalAlignment);
     mContext = context;
     if(context != NULL) {
         AutoPtr<IResources> rs;
@@ -143,80 +62,85 @@ void ImageSpan::Init(
     Int32 height;
     mDrawable->GetIntrinsicHeight(&height);
     mDrawable->SetBounds(0, 0, width > 0 ? width : 0, height > 0 ? height : 0);
+    return NOERROR;
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IDrawable* d)
 {
-    Init(d, IDynamicDrawableSpan::ALIGN_BOTTOM);
+    return constructor(d, IDynamicDrawableSpan::ALIGN_BOTTOM);
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IDrawable* d,
     /* [in] */ Int32 verticalAlignment)
 {
-
-    DynamicDrawableSpan::Init(verticalAlignment);
+    DynamicDrawableSpan::constructor(verticalAlignment);
     mDrawable = d;
+    return NOERROR;
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IDrawable* d,
     /* [in] */ const String& source)
 {
-    Init(d, source, IDynamicDrawableSpan::ALIGN_BOTTOM);
+    return constructor(d, source, IDynamicDrawableSpan::ALIGN_BOTTOM);
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IDrawable* d,
     /* [in] */ const String& source,
     /* [in] */ Int32 verticalAlignment)
 {
-    DynamicDrawableSpan::Init(verticalAlignment);
+    DynamicDrawableSpan::constructor(verticalAlignment);
     mDrawable = d;
     mSource = source;
+    return NOERROR;
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri)
 {
-    Init(context, uri, IDynamicDrawableSpan::ALIGN_BOTTOM);
+    return constructor(context, uri, IDynamicDrawableSpan::ALIGN_BOTTOM);
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
     /* [in] */ Int32 verticalAlignment)
 {
-
-    DynamicDrawableSpan::Init(verticalAlignment);
+    DynamicDrawableSpan::constructor(verticalAlignment);
     mContext = context;
     mContentUri = uri;
     uri->ToString(&mSource);
+    return NOERROR;
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceId)
 {
-    Init(context, resourceId, IDynamicDrawableSpan::ALIGN_BOTTOM);
+    return constructor(context, resourceId, IDynamicDrawableSpan::ALIGN_BOTTOM);
 }
 
-void ImageSpan::Init(
+ECode ImageSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resourceId,
     /* [in] */ Int32 verticalAlignment)
 {
-
-    DynamicDrawableSpan::Init(verticalAlignment);
+    DynamicDrawableSpan::constructor(verticalAlignment);
     mContext = context;
     mResourceId = resourceId;
+    return NOERROR;
 }
 
 
-AutoPtr<IDrawable> ImageSpan::GetDrawable()
+ECode ImageSpan::GetDrawable(
+    /* [out] */ IDrawable** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<IDrawable> drawable;
 
     if (mDrawable != NULL) {
@@ -256,12 +180,17 @@ AutoPtr<IDrawable> ImageSpan::GetDrawable()
         //}
     }
 
-    return drawable;
+    *result = drawable;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-String ImageSpan::GetSource()
+ECode ImageSpan::GetSource(
+    /* [out] */ String* result)
 {
-    return mSource;
+    VALIDATE_NOT_NULL(result)
+    *result = mSource;
+    return NOERROR;
 }
 
 

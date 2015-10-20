@@ -5,42 +5,35 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL(SpellCheckSpan, Object, ISpellCheckSpan, IParcelableSpan, IParcelable)
+
 SpellCheckSpan::SpellCheckSpan()
+    : mSpellCheckInProgress(FALSE)
 {
-    Init();
 }
 
-SpellCheckSpan::SpellCheckSpan(
-    /* [in] */ IParcel* src)
+SpellCheckSpan::~SpellCheckSpan()
 {
-    Init(src);
 }
 
-void SpellCheckSpan::Init()
+ECode SpellCheckSpan::constructor()
 {
-    mSpellCheckInProgress = FALSE;
+    return NOERROR;
 }
 
-void SpellCheckSpan::Init(
-    /* [in] */ IParcel* src)
-{
-    ReadFromParcel(src);
-}
-
-void SpellCheckSpan::SetSpellCheckInProgress(
+ECode SpellCheckSpan::SetSpellCheckInProgress(
     /* [in] */ Boolean inProgress)
 {
     mSpellCheckInProgress = inProgress;
+    return NOERROR;
 }
 
-Boolean SpellCheckSpan::IsSpellCheckInProgress()
+ECode SpellCheckSpan::IsSpellCheckInProgress(
+    /* [out] */ Boolean* result)
 {
-    return mSpellCheckInProgress;
-}
-
-Int32 SpellCheckSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(result)
+    *result = mSpellCheckInProgress;
+    return NOERROR;
 }
 
 ECode SpellCheckSpan::ReadFromParcel(
@@ -55,9 +48,12 @@ ECode SpellCheckSpan::WriteToParcel(
     return dest->WriteBoolean(mSpellCheckInProgress);
 }
 
-Int32 SpellCheckSpan::GetSpanTypeId()
+ECode SpellCheckSpan::GetSpanTypeId(
+    /* [in] */ Int32* id);
 {
-    return ITextUtils::SPELL_CHECK_SPAN;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::SPELL_CHECK_SPAN;
+    return NOERROR;
 }
 
 

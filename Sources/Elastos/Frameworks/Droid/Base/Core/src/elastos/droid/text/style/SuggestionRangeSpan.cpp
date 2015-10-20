@@ -46,7 +46,8 @@ ECode SuggestionRangeSpan::WriteToParcel(
     return dest->WriteInt32(mBackgroundColor);
 }
 
-Int32 SuggestionRangeSpan::GetSpanTypeId()
+Int32 SuggestionRangeSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::SUGGESTION_RANGE_SPAN;
 }

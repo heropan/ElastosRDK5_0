@@ -30,6 +30,8 @@ class SuggestionSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * @param context Context for the application
      * @param suggestions Suggestions for the string under the span
@@ -116,7 +118,6 @@ public:
         /* [in] */ Int32 flags);
 
     //@Override
-    CARAPI_(Int32) DescribeContents();
 
     //@Override
     CARAPI ReadFromParcel(
@@ -126,7 +127,8 @@ public:
         /* [in] */ IParcel* dest);
 
     //@Override
-    CARAPI_(Int32) GetSpanTypeId();
+        CARAPI GetSpanTypeId(
+            /* [in] */ Int32* id);
 
     //@Override
     CARAPI_(Boolean) Equals(

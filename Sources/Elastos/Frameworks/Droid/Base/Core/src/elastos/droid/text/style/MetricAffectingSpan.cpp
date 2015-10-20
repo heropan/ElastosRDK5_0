@@ -6,83 +6,46 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-/*****************************MetricAffectingSpan::Passthrough*****************************/
-PInterface MetricAffectingSpan::Passthrough::Probe(
-    /* [in] */ REIID riid)
+//==================================================================
+// MetricAffectingSpan
+//==================================================================
+ECode MetricAffectingSpan::GetUnderlying(
+    /* [out] */ ICharacterStyle** style)
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IMetricAffectingSpan*)this;
-    }
-    else if (riid == EIID_ICharacterStyle) {
-        return (ICharacterStyle*)this;
-    }
-    else if (riid == EIID_IMetricAffectingSpan) {
-        return (IMetricAffectingSpan*)this;
-    }
-    return NULL;
-}
-
-UInt32 MetricAffectingSpan::Passthrough::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 MetricAffectingSpan::Passthrough::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode MetricAffectingSpan::Passthrough::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (object == (IInterface*)(IMetricAffectingSpan*)this) {
-        *iID = EIID_IMetricAffectingSpan;
-    }
-    else if (object == (IInterface*)(ICharacterStyle*)this) {
-        *iID = EIID_ICharacterStyle;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+    VALIDATE_NOT_NULL(style)
+    *style = THIS_PROBE(ICharacterStyle);
+    REFCOUNT_ADD(*style);
     return NOERROR;
 }
 
-MetricAffectingSpan::Passthrough::Passthrough(
+//==================================================================
+// MetricAffectingSpanPassthrough
+//==================================================================
+
+MetricAffectingSpanPassthrough::MetricAffectingSpanPassthrough(
     /* [in] */ IMetricAffectingSpan* cs)
 {
     mStyle = cs;
 }
 
-ECode MetricAffectingSpan::Passthrough::UpdateDrawState(
+ECode MetricAffectingSpanPassthrough::UpdateDrawState(
     /* [in] */ ITextPaint* tp)
 {
-    return mStyle->UpdateDrawState(tp);
+    return ICharacterStyle::Probe(mStyle)->UpdateDrawState(tp);
 }
 
-ECode MetricAffectingSpan::Passthrough::UpdateMeasureState(
+ECode MetricAffectingSpanPassthrough::UpdateMeasureState(
     /* [in] */ ITextPaint* tp)
 {
     return mStyle->UpdateMeasureState(tp);
 }
 
-ECode MetricAffectingSpan::Passthrough::GetUnderlying(
-    /* [in] */ /*IMetricAffectingSpan*/ICharacterStyle** result)
+ECode MetricAffectingSpanPassthrough::GetUnderlying(
+    /* [in] */ ICharacterStyle** result)
 {
-    return mStyle->GetUnderlying(result);
+    return ICharacterStyle::Probe(mStyle)->GetUnderlying(result);
 }
 
-/*****************************MetricAffectingSpan*****************************/
-AutoPtr<IMetricAffectingSpan> MetricAffectingSpan::GetUnderlying()
-{
-    AutoPtr<IMetricAffectingSpan> mas = (IMetricAffectingSpan*)this;
-    return mas;
-}
 
 } // namespace Style
 } // namespace Text

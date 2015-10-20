@@ -1,11 +1,10 @@
-#ifndef __ELASTOS_DROID_TEXT_STYLE_LocaleSpan_H__
-#define __ELASTOS_DROID_TEXT_STYLE_LocaleSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_LOCALESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_LOCALESPAN_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Droid::Graphics::IPaint;
-//using IParcel;
 
 namespace Elastos {
 namespace Droid {
@@ -17,30 +16,32 @@ namespace Style {
  */
 class LocaleSpan
     : public MetricAffectingSpan
+    , public ILocaleSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    LocaleSpan();
+
+    virtual ~LocaleSpan();
+
+    CARAPI constructor();
+
     /**
      * Creates a LocaleSpan.
      * @param locale The {@link Locale} of the text to which the span is
      * attached.
      */
-    LocaleSpan(
+    CARAPI constructor(
         /* [in] */ ILocale* locale);
 
-    LocaleSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ ILocale* locale);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
+    //@Override
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     //@Override
-    CARAPI_(Int32) GetSpanTypeId();
-
-    //@Override
-    CARAPI_(Int32) DescribeContents();
 
     //@Override
     CARAPI ReadFromParcel(
@@ -54,7 +55,8 @@ public:
      *
      * @return The {@link Locale} for this span.
      */
-    CARAPI_(AutoPtr<ILocale>) GetLocale();
+    CARAPI GetLocale(
+        /* [out] */ ILocale** locale);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -64,11 +66,8 @@ public:
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* paint);
 
-protected:
-    LocaleSpan();
-
 private:
-    static CARAPI_(void) Apply(
+    static CARAPI Apply(
         /* [in] */ IPaint* paint,
         /* [in] */ ILocale* locale);
 
@@ -81,4 +80,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_STYLE_LocaleSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_LOCALESPAN_H__

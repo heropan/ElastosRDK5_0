@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_BulletSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_BulletSpan_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -15,35 +15,31 @@ namespace Text {
 namespace Style {
 
 class BulletSpan
+    : public Object
+    , public IBulletSpan
+    , public ILeadingMarginSpan
+    , public IParagraphStyle
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     BulletSpan();
 
-    BulletSpan(
+    virtual ~BulletSpan();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Int32 gapWidth);
 
-    BulletSpan(
+    CARAPI constructor(
         /* [in] */ Int32 gapWidth,
         /* [in] */ Int32 color);
 
-    BulletSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init();
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 gapWidth);
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 gapWidth,
-        /* [in] */ Int32 color);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -51,10 +47,11 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Int32) GetLeadingMargin(
-        /* [in] */ Boolean first);
+    CARAPI GetLeadingMargin(
+        /* [in] */ Boolean first,
+        /* [in] */ Int32* id);
 
-    CARAPI_(void) DrawLeadingMargin(
+    CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,
         /* [in] */ IPaint* p,
         /* [in] */ Int32 x,

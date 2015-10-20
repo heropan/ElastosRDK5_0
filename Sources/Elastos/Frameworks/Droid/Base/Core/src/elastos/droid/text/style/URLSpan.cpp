@@ -41,7 +41,8 @@ void URLSpan::Init(
     ReadFromParcel(src);
 }
 
-Int32 URLSpan::GetSpanTypeId()
+Int32 URLSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::URL_SPAN;
 }

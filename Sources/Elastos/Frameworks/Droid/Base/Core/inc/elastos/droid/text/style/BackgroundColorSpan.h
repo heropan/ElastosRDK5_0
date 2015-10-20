@@ -10,23 +10,25 @@ namespace Style {
 
 class BackgroundColorSpan
     : public CharacterStyle
+    , public IBackgroundColorSpan
+    , public IUpdateAppearance
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
-    BackgroundColorSpan(
+    CAR_INTERFACE_DECL()
+
+    BackgroundColorSpan();
+
+    virtual ~BackgroundColorSpan();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Int32 color);
 
-    BackgroundColorSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 color);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -34,14 +36,12 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Int32) GetBackgroundColor();
+    CARAPI GetBackgroundColor(
+        /* [out] */ Int32* color);
 
     //@Override
     CARAPI UpdateDrawState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    BackgroundColorSpan();
 
 private:
     /*const*/ Int32 mColor;

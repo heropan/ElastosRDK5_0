@@ -16,20 +16,21 @@ class RasterizerSpan
     , public IUpdateAppearance
 {
 public:
-    RasterizerSpan(
+    CAR_INTERFACE_DECL()
+
+    RasterizerSpan();
+
+    virtual ~RasterizerSpan();
+
+    CARAPI constructor(
         /* [in] */ IRasterizer* r);
 
-    CARAPI_(void) Init(
-        /* [in] */ IRasterizer* r);
-
-    CARAPI_(AutoPtr<IRasterizer>) GetRasterizer();
+    CARAPI GetRasterizer(
+        /* [out] */ IRasterizer** rastersizer);
 
     //@Override
     CARAPI UpdateDrawState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    RasterizerSpan();
 
 private:
     AutoPtr<IRasterizer> mRasterizer;

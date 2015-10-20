@@ -29,7 +29,8 @@ void UnderlineSpan::Init(
     return;
 }
 
-Int32 UnderlineSpan::GetSpanTypeId()
+Int32 UnderlineSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::UNDERLINE_SPAN;
 }

@@ -7,10 +7,10 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
 
-C_DEFINES += -D_FRAMEWORK_CORE
+C_DEFINES += -DDROID_CORE
 
-SOURCES = CLinkify.cpp
 SOURCES += Linkify.cpp
+SOURCES += CLinkify.cpp
 SOURCES += CRfc822Token.cpp
 SOURCES += CRfc822TokenHelper.cpp
 SOURCES += Rfc822Token.cpp

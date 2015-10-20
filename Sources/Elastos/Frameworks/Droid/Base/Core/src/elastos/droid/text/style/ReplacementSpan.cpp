@@ -5,6 +5,8 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL(ReplacementSpan, MetricAffectingSpan, IReplacementSpan)
+
 ECode ReplacementSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* p)
 {

@@ -7,9 +7,13 @@ namespace Droid {
 namespace Text {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CRfc822TokenizerHelper, Singleton, IRfc822TokenizerHelper)
+
+CAR_SINGLETON_IMPL(CRfc822TokenizerHelper)
+
 ECode CRfc822TokenizerHelper::Tokenize(
     /* [in] */ ICharSequence* text,
-    /* [in, out] */ IObjectContainer* ret)
+    /* [in] */ ICollection* ret)
 {
     return CRfc822Tokenizer::Tokenize(text, ret);
 }

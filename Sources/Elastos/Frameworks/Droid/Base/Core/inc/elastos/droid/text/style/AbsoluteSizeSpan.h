@@ -10,13 +10,25 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class AbsoluteSizeSpan : public MetricAffectingSpan
+class AbsoluteSizeSpan
+    : public MetricAffectingSpan
+    , public IAbsoluteSizeSpan
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    AbsoluteSizeSpan();
+
+    virtual ~AbsoluteSizeSpan();
+
+    CARAPI cosntructor();
+
     /**
      * Set the text size to <code>size</code> physical pixels.
      */
-    AbsoluteSizeSpan(
+    CARAPI cosntructor(
         /* [in] */ Int32 size);
 
     /**
@@ -24,26 +36,13 @@ public:
      * or to <code>size</code> device-independent pixels if
      * <code>dip</code> is true.
      */
-    AbsoluteSizeSpan(
+    CARAPI cosntructor(
         /* [in] */ Int32 size,
         /* [in] */ Boolean dip);
 
-    AbsoluteSizeSpan(
-        /* [in] */ IParcel* src);
 
-    CARAPI_(void) Init(
-        /* [in] */ Int32 size);
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 size,
-        /* [in] */ Boolean dip);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -51,9 +50,11 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Int32) GetSize();
+    CARAPI GetSize(
+        /* [out] */ Int32* size);
 
-    CARAPI_(Boolean) GetDip();
+    CARAPI GetDip(
+        /* [out] */ Boolean* dip);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -62,9 +63,6 @@ public:
     //@Override
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    AbsoluteSizeSpan();
 
 private:
     /*const*/ Int32 mSize;

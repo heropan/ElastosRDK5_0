@@ -21,6 +21,8 @@ class SuggestionRangeSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SuggestionRangeSpan();
 
     SuggestionRangeSpan(
@@ -32,7 +34,6 @@ public:
     /* [in] */ IParcel* src);
 
     //@Override
-    CARAPI_(Int32) DescribeContents();
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -41,7 +42,8 @@ public:
         /* [in] */ IParcel* dest);
 
     //@Override
-    CARAPI_(Int32) GetSpanTypeId();
+        CARAPI GetSpanTypeId(
+            /* [in] */ Int32* id);
 
     CARAPI_(void) SetBackgroundColor(
     /* [in] */ Int32 backgroundColor);

@@ -37,7 +37,8 @@ void TypefaceSpan::Init(
     ReadFromParcel(src);
 }
 
-Int32 TypefaceSpan::GetSpanTypeId()
+Int32 TypefaceSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::TYPEFACE_SPAN;
 }

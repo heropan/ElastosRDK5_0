@@ -15,21 +15,17 @@ class RelativeSizeSpan
     , public IParcelable
 {
 public:
-    RelativeSizeSpan(
+    CAR_INTERFACE_DECL()
+
+    RelativeSizeSpan();
+
+    virtual ~RelativeSizeSpan();
+
+    CARAPI constructor(
         /* [in] */ Float proportion);
 
-    RelativeSizeSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ Float proportion);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -37,7 +33,8 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Float) GetSizeChange();
+    CARAPI GetSizeChange(
+        /* [out] */ Float* change);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -46,9 +43,6 @@ public:
     //@Override
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    RelativeSizeSpan();
 
 private:
     /*const*/ Float mProportion;

@@ -9,42 +9,47 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-const CString DynamicDrawableSpan::TAG = "DynamicDrawableSpan";
+const String DynamicDrawableSpan::TAG("DynamicDrawableSpan");
+
+CAR_INTERFACE_IMPL(DynamicDrawableSpan, ReplacementSpan, IDynamicDrawableSpan)
 
 DynamicDrawableSpan::DynamicDrawableSpan()
+    : mVerticalAlignment(IDynamicDrawableSpan::ALIGN_BOTTOM)
 {
-    Init();
 }
 
-void DynamicDrawableSpan::Init()
+DynamicDrawableSpan::~DynamicDrawableSpan()
+{}
+
+ECode DynamicDrawableSpan::constructor()
 {
-    mVerticalAlignment = IDynamicDrawableSpan::ALIGN_BOTTOM;
+    return NOERROR;
 }
 
-DynamicDrawableSpan::DynamicDrawableSpan(
-    /* [in] */ Int32 verticalAlignment)
-{
-    Init(verticalAlignment);
-}
-
-void DynamicDrawableSpan::Init(
+ECode DynamicDrawableSpan::constructor(
     /* [in] */ Int32 verticalAlignment)
 {
     mVerticalAlignment = verticalAlignment;
+    return NOERROR;
 }
 
-Int32 DynamicDrawableSpan::GetVerticalAlignment()
+ECode DynamicDrawableSpan::GetVerticalAlignment(
+    /* [out] */ Int32* align)
 {
-    return mVerticalAlignment;
+    VALIDATE_NOT_NULL(align)
+    *align = mVerticalAlignment;
+    return NOERROR;
 }
 
-Int32 DynamicDrawableSpan::GetSize(
+ECode DynamicDrawableSpan::GetSize(
     /* [in] */ IPaint* paint,
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [in] */ IPaintFontMetricsInt* fm)
+    /* [in] */ IPaintFontMetricsInt* fm,
+    /* [out] */ Int32* size)
 {
+    VALIDATE_NOT_NULL(size)
     AutoPtr<IDrawable> d = GetCachedDrawable();
     AutoPtr<IRect> rect;
     d->GetBounds( (IRect**)&rect );
@@ -59,7 +64,8 @@ Int32 DynamicDrawableSpan::GetSize(
         fm->SetBottom(0);
     }
     Int32 right;
-    return (rect->GetRight(&right), right);
+    *size = (rect->GetRight(&right), right);
+    return NOERROR;
 }
 
 ECode DynamicDrawableSpan::Draw(
@@ -78,8 +84,10 @@ ECode DynamicDrawableSpan::Draw(
     canvas->Save(&saveRet);
 
     AutoPtr<IRect> rect;
+    b->GetBounds( (IRect**)&rect );
     Int32 rbottom;
-    Int32 transY = bottom - ((b->GetBounds( (IRect**)&rect ), rect)->GetBottom(&rbottom), rbottom);
+    rect->GetBottom(&rbottom);
+    Int32 transY = bottom - rbottom;
     if (mVerticalAlignment == IDynamicDrawableSpan::ALIGN_BASELINE) {
         AutoPtr<IPaintFontMetricsInt> fm;
         paint->GetFontMetricsInt((IPaintFontMetricsInt**)&fm);
@@ -97,14 +105,14 @@ ECode DynamicDrawableSpan::Draw(
 AutoPtr<IDrawable> DynamicDrawableSpan::GetCachedDrawable()
 {
     AutoPtr<IDrawable> wr = mDrawableRef;
-    AutoPtr<IDrawable> d = NULL;
+    AutoPtr<IDrawable> d;
 
     if (wr != NULL) {
         d = wr.Get();
     }
 
     if (d == NULL) {
-        d = GetDrawable();
+        GetDrawable((IDrawable**)&d);
         mDrawableRef = d;
     }
 

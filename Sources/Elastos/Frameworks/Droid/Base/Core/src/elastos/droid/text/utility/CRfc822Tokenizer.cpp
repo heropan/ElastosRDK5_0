@@ -1,22 +1,29 @@
-#include "Elastos.Core.h"
-#include "elastos/droid/text/util/CRfc822Tokenizer.h"
-#include "elastos/droid/text/util/CRfc822Token.h"
+#include "elastos/droid/text/utility/CRfc822Tokenizer.h"
+#include "elastos/droid/text/utility/CRfc822Token.h"
 
-using Elastos::Core::CString;
 
 using Elastos::Droid::Text::Utility::CRfc822Token;
+using Elastos::Core::CString;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CRfc822Tokenizer, Object, IRfc822Tokenizer)
+
+CAR_OBJECT_IMPL(CRfc822Tokenizer)
+
 ECode CRfc822Tokenizer::Tokenize(
     /* [in] */ ICharSequence* text,
-    /* [in, out] */ IObjectContainer* out)
+    /* [in] */ ICollection* out)
 {
     VALIDATE_NOT_NULL(text);
     VALIDATE_NOT_NULL(out);
+
     StringBuilder name;
     StringBuilder address;
     StringBuilder comment;
@@ -135,7 +142,7 @@ ECode CRfc822Tokenizer::Tokenize(
     }
 
     Crunch(name);
-    Int32 count = 0;
+
     if (address.GetLength() > 0) {
         AutoPtr<IRfc822Token> rfc822Token;
         CRfc822Token::New(name.ToString(), address.ToString(), comment.ToString(), (IRfc822Token**)&rfc822Token);
@@ -154,33 +161,33 @@ ECode CRfc822Tokenizer::Tokenize(
     /* [out, callee] */ ArrayOf<IRfc822Token*>** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<IObjectContainer> objContainer;
-    CObjectContainer::New((IObjectContainer**)&objContainer);
 
-    FAIL_RETURN(Tokenize(text, objContainer));
-    Int32 objCount;
-    objContainer->GetObjectCount(&objCount);
-    AutoPtr< ArrayOf<IRfc822Token*> > ret_ = ArrayOf<IRfc822Token*>::Alloc(objCount);
+    AutoPtr<ICollection> list;
+    CArrayList::New((ICollection**)&list);
 
-    if (objContainer != NULL) {
-        AutoPtr<IObjectEnumerator> it;
-        objContainer->GetObjectEnumerator((IObjectEnumerator**)&it);
-        Boolean succeeded;
-        Int32 i = 0;
-        while (it->MoveNext(&succeeded), succeeded) {
-            AutoPtr<IRfc822Token> lm;
-            it->Current((IInterface**)&lm);
-            ret_->Set(i, lm.Get());
-            i++;
-        }
+    FAIL_RETURN(Tokenize(text, list))
+
+    Int32 size;
+    list->GetSize(&size);
+
+    AutoPtr<ArrayOf<IRfc822Token*> > array = ArrayOf<IRfc822Token*>::Alloc(size);
+
+    AutoPtr<IIterator> it;
+    list->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    Int32 i = 0;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        array->Set(i++, IRfc822Token::Probe(obj));
     }
 
-    *ret = ret_.Get();
+    *ret = array.Get();
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-void CRfc822Tokenizer::Crunch(
+ECode CRfc822Tokenizer::Crunch(
     /* [in] */ StringBuilder& sb)
 {
     Int32 i = 0;
@@ -191,11 +198,11 @@ void CRfc822Tokenizer::Crunch(
 
         if (c == '\0') {
             if (i == 0 || i == len - 1 ||
-                    (sb.GetChar(i-1)) == ' ' ||
-                    (sb.GetChar(i-1)) == '\0' ||
-                    (sb.GetChar(i+1)) == ' ' ||
-                    (sb.GetChar(i+1)) == '\0') {
-                sb.DeleteChar(i);
+                    (sb.GetCharAt(i-1)) == ' ' ||
+                    (sb.GetCharAt(i-1)) == '\0' ||
+                    (sb.GetCharAt(i+1)) == ' ' ||
+                    (sb.GetCharAt(i+1)) == '\0') {
+                sb.DeleteCharAt(i);
                 len--;
             }
             else {
@@ -208,10 +215,11 @@ void CRfc822Tokenizer::Crunch(
     }
 
     for (i = 0; i < len; i++) {
-        if ((sb.GetChar(i)) == '\0') {
-            sb.SetChar(i, ' ');
+        if ((sb.GetCharAt(i)) == '\0') {
+            sb.SetCharAt(i, ' ');
         }
     }
+    return NOERROR;
 }
 
 ECode CRfc822Tokenizer::FindTokenStart(
@@ -224,6 +232,7 @@ ECode CRfc822Tokenizer::FindTokenStart(
      * we reach the cursor.
      */
     VALIDATE_NOT_NULL(ret);
+    *ret = 0;
     VALIDATE_NOT_NULL(text);
     Int32 best = 0;
     Int32 i = 0;
@@ -255,6 +264,7 @@ ECode CRfc822Tokenizer::FindTokenEnd(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
+    *ret = 0;
     VALIDATE_NOT_NULL(text);
     Int32 len;
     text->GetLength(&len);

@@ -8,18 +8,12 @@ namespace Droid {
 namespace Text {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(Rfc822Token, Object, IRfc822Token)
+
 Rfc822Token::Rfc822Token()
 {}
 
-Rfc822Token::Rfc822Token(
-    /* [in] */ const String& name,
-    /* [in] */ const String& address,
-    /* [in] */ const String& comment)
-{
-    Init(name, address, comment);
-}
-
-void Rfc822Token::Init(
+ECode Rfc822Token::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& address,
     /* [in] */ const String& comment)
@@ -27,21 +21,31 @@ void Rfc822Token::Init(
     mName = name;
     mAddress = address;
     mComment = comment;
+    return NOERROR;
 }
 
-String Rfc822Token::GetName()
+ECode Rfc822Token::GetName(
+    /* [out] */ String* str)
 {
-    return mName;
+    VALIDATE_NOT_NULL(str)
+    *str = mName;
+    return NOERROR;
 }
 
-String Rfc822Token::GetAddress()
+ECode Rfc822Token::GetAddress(
+    /* [out] */ String* str)
 {
-    return mAddress;
+    VALIDATE_NOT_NULL(str)
+    *str = mAddress;
+    return NOERROR;
 }
 
-String Rfc822Token::GetComment()
+ECode Rfc822Token::GetComment(
+    /* [out] */ String* str)
 {
-    return mComment;
+    VALIDATE_NOT_NULL(str)
+    *str = mComment;
+    return NOERROR;
 }
 
 ECode Rfc822Token::SetName(
@@ -65,18 +69,24 @@ ECode Rfc822Token::SetComment(
     return NOERROR;
 }
 
-String Rfc822Token::ToString()
+ECode Rfc822Token::ToString(
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     StringBuilder sb;
 
     if (!mName.IsNullOrEmpty()) {
-        sb.Append(QuoteNameIfNecessary(mName));
+        String qn;
+        QuoteNameIfNecessary(mName, &qn);
+        sb.Append(qn);
         sb.AppendChar(' ');
     }
 
     if (!mComment.IsNullOrEmpty()) {
             sb.AppendChar('(');
-            sb.Append(QuoteComment(mComment));
+            String qn;
+            QuoteComment(mComment, &qn);
+            sb.Append(qn);
             sb.Append(") ");
     }
 
@@ -86,15 +96,15 @@ String Rfc822Token::ToString()
         sb.AppendChar('>');
     }
 
-    String strRet;
-    sb.ToString(&strRet);
-
-    return strRet;
+    *str = sb.ToString();
+    return NOERROR;
 }
 
-String Rfc822Token::QuoteNameIfNecessary(
-    /* [in] */ const String& name)
+ECode Rfc822Token::QuoteNameIfNecessary(
+    /* [in] */ const String& name,
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     AutoPtr<ArrayOf<Char32> > chars = name.GetChars();
     Int32 len = chars->GetLength();
     Char32 c;
@@ -104,16 +114,26 @@ String Rfc822Token::QuoteNameIfNecessary(
                (c >= 'a' && c <= 'z') ||
                (c == ' ') ||
                (c >= '0' && c <= '9'))) {
-            return String("\"") + QuoteName(name) + String("\"");
+            StringBuilder sb;
+            sb += "\"";
+            String qn;
+            QuoteName(name, &qn);
+            sb += qn;
+            sb += "\"";
+            *str = sb.ToString();
+            return NOERROR;
         }
     }
 
-    return name;
+    *str = name;
+    return NOERROR;
 }
 
-String Rfc822Token::QuoteName(
-    /* [in] */ const String& name)
+ECode Rfc822Token::QuoteName(
+    /* [in] */ const String& name,
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     StringBuilder sb;
 
     AutoPtr<ArrayOf<Char32> > chars = name.GetChars();
@@ -128,14 +148,15 @@ String Rfc822Token::QuoteName(
         sb.AppendChar(c);
     }
 
-    String strRet;
-    sb.ToString(&strRet);
-    return strRet;
+    *str = sb.ToString();
+    return NOERROR;
 }
 
-String Rfc822Token::QuoteComment(
-    /* [in] */ const String& comment)
+ECode Rfc822Token::QuoteComment(
+    /* [in] */ const String& comment,
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     StringBuilder sb;
 
     AutoPtr<ArrayOf<Char32> > chars = comment.GetChars();
@@ -150,13 +171,15 @@ String Rfc822Token::QuoteComment(
         sb.AppendChar(c);
     }
 
-    String strRet;
-    sb.ToString(&strRet);
-    return strRet;
+    *str = sb.ToString();
+    return NOERROR;
 }
 
-Int32 Rfc822Token::GetHashCode()
+ECode Rfc822Token::GetHashCode(
+    /* [out] */ Int32* hash)
 {
+    VALIDATE_NOT_NULL(hash)
+
     Int32 result = 17;
     if (mName.IsNullOrEmpty()) {
         result = 31 * result + mName.GetHashCode();
@@ -167,7 +190,8 @@ Int32 Rfc822Token::GetHashCode()
     if (mComment.IsNullOrEmpty()) {
         result = 31 * result + mComment.GetHashCode();
     }
-    return result;
+    *hash = result;
+    return NOERROR;
 }
 
 Boolean Rfc822Token::StringEquals(
@@ -181,19 +205,24 @@ Boolean Rfc822Token::StringEquals(
     }
 }
 
-Boolean Rfc822Token::Equals(
-    /* [in] */ IInterface* o)
+ECode Rfc822Token::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     IRfc822Token* rfc822Token = IRfc822Token::Probe(o);
     if(rfc822Token == NULL) {
-        return FALSE;
+        return NOERROR;
     }
     IRfc822Token* other = rfc822Token;
     String name, address, comment;
 
-    return (StringEquals(mName, (other->GetName(&name), name)) &&
+    *result = (StringEquals(mName, (other->GetName(&name), name)) &&
             StringEquals(mAddress, (other->GetAddress(&address), address)) &&
             StringEquals(mComment, (other->GetComment(&comment), comment)));
+    return NOERROR;
 }
 
 } // namespace Utility

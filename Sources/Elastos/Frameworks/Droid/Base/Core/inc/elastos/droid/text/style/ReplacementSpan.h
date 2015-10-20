@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__
-#define __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_REPLACEMENTSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_REPLACEMENTSPAN_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
 
@@ -19,6 +19,8 @@ class ReplacementSpan
     , public IReplacementSpan
 {
 public:
+    CAR_INTERFACE_DECL()
+
     virtual CARAPI_(Int32) GetSize(
         /* [in] */ IPaint* paint,
         /* [in] */ ICharSequence* text,
@@ -57,4 +59,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_REPLACEMENTSPAN_H__

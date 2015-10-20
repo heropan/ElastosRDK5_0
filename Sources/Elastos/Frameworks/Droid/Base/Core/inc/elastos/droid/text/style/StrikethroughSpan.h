@@ -16,19 +16,16 @@ class StrikethroughSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     StrikethroughSpan();
 
-    StrikethroughSpan(
-        /* [in] */ IParcel* src);
+    virtual ~StrikethroughSpan();
 
-    CARAPI_(void) Init();
+    CARAPI constructor();
 
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

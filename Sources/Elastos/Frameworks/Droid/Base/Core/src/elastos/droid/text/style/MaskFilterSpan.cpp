@@ -6,24 +6,28 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_2(MaskFilterSpan, CharacterStyle, IMaskFilterSpan, IUpdateAppearance)
+
 MaskFilterSpan::MaskFilterSpan()
 {}
 
-MaskFilterSpan::MaskFilterSpan(
-    /* [in] */ IMaskFilter* filter)
-{
-    Init(filter);
-}
+MaskFilterSpan::~MaskFilterSpan()
+{}
 
-void MaskFilterSpan::Init(
+ECode MaskFilterSpan::constructor(
     /* [in] */ IMaskFilter* filter)
 {
     mFilter = filter;
+    return NOERROR;
 }
 
-AutoPtr<IMaskFilter> MaskFilterSpan::GetMaskFilter()
+ECode MaskFilterSpan::GetMaskFilter(
+    /* [out] */ IMaskFilter** filter)
 {
-    return mFilter;
+    VALIDATE_NOT_NULL(filter)
+    *filter = mFilter;
+    REFCOUNT_ADD(filter)
+    return NOERROR;
 }
 
 ECode MaskFilterSpan::UpdateDrawState(

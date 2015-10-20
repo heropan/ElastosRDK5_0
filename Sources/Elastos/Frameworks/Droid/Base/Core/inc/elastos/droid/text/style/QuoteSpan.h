@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -22,25 +22,19 @@ class QuoteSpan
     , public IParagraphStyle
 {
 public:
+    CAR_INTERFACE_DECL()
+
     QuoteSpan();
 
-    QuoteSpan(
+    virtual ~QuoteSpan();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Int32 color);
 
-    QuoteSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init();
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 color);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -48,12 +42,14 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Int32) GetColor();
+    CARAPI GetColor(
+        /* [out] */ Int32* color);
 
-    CARAPI_(Int32) GetLeadingMargin(
-        /* [in] */ Boolean first);
+    CARAPI GetLeadingMargin(
+        /* [in] */ Boolean first,
+        /* [in] */ Int32* margin);
 
-    CARAPI_(void) DrawLeadingMargin(
+    CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,
         /* [in] */ IPaint* p,
         /* [in] */ Int32 x,
@@ -70,6 +66,7 @@ public:
 private:
     static const Int32 STRIPE_WIDTH;// = 2;
     static const Int32 GAP_WIDTH;// = 2;
+
     /*const*/ Int32 mColor;
 };
 

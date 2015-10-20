@@ -11,50 +11,34 @@ namespace Style {
 const Int32 QuoteSpan::STRIPE_WIDTH = 2;
 const Int32 QuoteSpan::GAP_WIDTH = 2;
 
+CAR_INTERFACE_IMPL_5(QuoteSpan, Object, IQuoteSpan, ILeadingMarginSpan, IParcelableSpan, IParcelable, IParagraphStyle)
+
 QuoteSpan::QuoteSpan()
+    : mColor(0xff0000ff)
+{}
+
+QuoteSpan::~QuoteSpan()
+{}
+
+ECode QuoteSpan::constructor()
 {
-    Init();
+    return NOERROR;
 }
 
-QuoteSpan::QuoteSpan(
-    /* [in] */ Int32 color)
-{
-    Init(color);
-}
-
-QuoteSpan::QuoteSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void QuoteSpan::Init()
-{
-    mColor = 0xff0000ff;
-}
-
-void QuoteSpan::Init(
+ECode QuoteSpan::constructor(
     /* [in] */ Int32 color)
 {
     mColor = color;
+    return NOERROR;
 }
 
-void QuoteSpan::Init(
-    /* [in] */ IParcel* src)
+ECode QuoteSpan::GetSpanTypeId(
+    /* [in] */ Int32* id);
 {
-    ReadFromParcel(src);
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::QUOTE_SPAN;
+    return NOERROR;
 }
-
-Int32 QuoteSpan::GetSpanTypeId()
-{
-    return ITextUtils::QUOTE_SPAN;
-}
-
-Int32 QuoteSpan::DescribeContents()
-{
-    return 0;
-}
-
 ECode QuoteSpan::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
@@ -67,18 +51,24 @@ ECode QuoteSpan::WriteToParcel(
     return dest->WriteInt32(mColor);
 }
 
-Int32 QuoteSpan::GetColor()
+ECode QuoteSpan::GetColor(
+    /* [out] */ Int32* color)
 {
-    return mColor;
+    VALIDATE_NOT_NULL(color)
+    *color = mColor;
+    return NOERROR;
 }
 
-Int32 QuoteSpan::GetLeadingMargin(
-    /* [in] */ Boolean first)
+ECode QuoteSpan::GetLeadingMargin(
+    /* [in] */ Boolean first,
+    /* [out] */ Int32* margin)
 {
-    return STRIPE_WIDTH + GAP_WIDTH;
+    VALIDATE_NOT_NULL(margin)
+    *margin = STRIPE_WIDTH + GAP_WIDTH;
+    return NOERROR;
 }
 
-void QuoteSpan::DrawLeadingMargin(
+ECode QuoteSpan::DrawLeadingMargin(
     /* [in] */ ICanvas* c,
     /* [in] */ IPaint* p,
     /* [in] */ Int32 x,
@@ -104,6 +94,7 @@ void QuoteSpan::DrawLeadingMargin(
 
     p->SetStyle(style);
     p->SetColor(color);
+    return NOERROR;
 }
 
 } // namespace Style

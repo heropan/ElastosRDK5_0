@@ -1,4 +1,4 @@
 DIRS += format
 #DIRS += method
-#DIRS += style
-#DIRS += utility
+DIRS += style
+DIRS += utility

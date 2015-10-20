@@ -13,32 +13,43 @@ namespace Style {
 //public abstract
 class DynamicDrawableSpan
     : public ReplacementSpan
+    , public IDynamicDrawableSpan
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DynamicDrawableSpan();
 
-    CARAPI_(void) Init();
+    virtual ~DynamicDrawableSpan();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 verticalAlignment);
 
     /**
      * Returns the vertical alignment of this span, one of {@link #ALIGN_BOTTOM} or
      * {@link #ALIGN_BASELINE}.
      */
-    CARAPI_(Int32) GetVerticalAlignment();
+    CARAPI GetVerticalAlignment(
+        /* [in] */ Int32* align);
 
     /**
      * Your subclass must implement this method to provide the bitmap
      * to be drawn.  The dimensions of the bitmap must be the same
      * from each call to the next.
      */
-    virtual CARAPI_(AutoPtr<IDrawable>) GetDrawable() = 0;
+    virtual CARAPI GetDrawable(
+        /* [out] */ IDrawable** drawable) = 0;
 
     //@Override
-    CARAPI_(Int32) GetSize(
+    CARAPI GetSize(
         /* [in] */ IPaint* paint,
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
-        /* [in] */ IPaintFontMetricsInt* fm);
+        /* [in] */ IPaintFontMetricsInt* fm,
+        /* [out] */ Int32* size);
 
     //@Override
     CARAPI Draw(
@@ -52,16 +63,6 @@ public:
         /* [in] */ Int32 bottom,
         /* [in] */ IPaint* paint);
 
-protected:
-    /**
-     * @param verticalAlignment one of {@link #ALIGN_BOTTOM} or {@link #ALIGN_BASELINE}.
-     */
-    DynamicDrawableSpan(
-        /* [in] */ Int32 verticalAlignment);
-
-    CARAPI_(void) Init(
-        /* [in] */ Int32 verticalAlignment);
-
 private:
     CARAPI_(AutoPtr<IDrawable>) GetCachedDrawable();
 
@@ -69,7 +70,7 @@ protected:
     /*const*/ Int32 mVerticalAlignment;
 
 private:
-    static const CString TAG;// = "DynamicDrawableSpan";
+    static const String TAG;// = "DynamicDrawableSpan";
     AutoPtr<IDrawable> mDrawableRef;
 };
 

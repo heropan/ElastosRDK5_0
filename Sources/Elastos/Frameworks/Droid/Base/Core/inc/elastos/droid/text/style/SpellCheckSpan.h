@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_SpellCheckSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_SpellCheckSpan_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {
@@ -18,28 +18,26 @@ namespace Style {
  */
 class SpellCheckSpan
     : public Object
-    , public IsSpellCheckSpan
+    , public ISpellCheckSpan
     , public IParcelableSpan
     , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SpellCheckSpan();
 
-    SpellCheckSpan(
-        /* [in] */ IParcel* src);
+    virtual ~SpellCheckSpan();
 
-    CARAPI_(void) Init();
+    CARAPI cosntructor();
 
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) SetSpellCheckInProgress(
+    CARAPI SetSpellCheckInProgress(
         /* [in] */ Boolean inProgress);
 
-    CARAPI_(Boolean) IsSpellCheckInProgress();
+    CARAPI IsSpellCheckInProgress(
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Int32) DescribeContents();
 
     //@Override
     CARAPI ReadFromParcel(
@@ -49,7 +47,8 @@ public:
         /* [in] */ IParcel* dest);
 
     //@Override
-    CARAPI_(Int32) GetSpanTypeId();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
 private:
     Boolean mSpellCheckInProgress;

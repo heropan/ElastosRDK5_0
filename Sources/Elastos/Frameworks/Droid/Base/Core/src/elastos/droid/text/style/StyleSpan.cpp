@@ -1,8 +1,8 @@
 #include "elastos/droid/text/style/StyleSpan.h"
-#include "elastos/droid/graphics/CTypeface.h"
+// #include "elastos/droid/graphics/CTypeface.h"
 
 using Elastos::Droid::Graphics::ITypeface;
-using Elastos::Droid::Graphics::CTypeface;
+// using Elastos::Droid::Graphics::CTypeface;
 
 namespace Elastos {
 namespace Droid {
@@ -10,40 +10,30 @@ namespace Text {
 namespace Style {
 
 StyleSpan::StyleSpan()
+    : mStyle(0)
 {}
 
-StyleSpan::StyleSpan(
-    /* [in] */ Int32 style)
+StyleSpan::~StyleSpan()
+{}
+
+ECode StyleSpan::cosntructor()
 {
-    Init(style);
+    return NOERROR;
 }
 
-StyleSpan::StyleSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void StyleSpan::Init(
+ECode StyleSpan::cosntructor(
     /* [in] */ Int32 style)
 {
     mStyle = style;
+    return NOERROR;
 }
 
-void StyleSpan::Init(
-    /* [in] */ IParcel* src)
+ECode StyleSpan::GetSpanTypeId(
+    /* [out] */ Int32* id);
 {
-    ReadFromParcel(src);
-}
-
-Int32 StyleSpan::GetSpanTypeId()
-{
-    return ITextUtils::STYLE_SPAN;
-}
-
-Int32 StyleSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::STYLE_SPAN;
+    return NOERROR;
 }
 
 ECode StyleSpan::ReadFromParcel(
@@ -58,26 +48,27 @@ ECode StyleSpan::WriteToParcel(
     return dest->WriteInt32(mStyle);
 }
 
-Int32 StyleSpan::GetStyle()
+ECode StyleSpan::GetStyle(
+    /* [out] */ Int32* style)
 {
-    return mStyle;
+    VALIDATE_NOT_NULL(style)
+    *style = mStyle;
+    return NOERROR;
 }
 
 ECode StyleSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
-    Apply(ds, mStyle);
-    return NOERROR;
+    return Apply(ds, mStyle);
 }
 
 ECode StyleSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* paint)
 {
-    Apply(paint, mStyle);
-    return NOERROR;
+    return Apply(paint, mStyle);
 }
 
-void StyleSpan::Apply(
+ECode StyleSpan::Apply(
     /* [in] */ IPaint* paint,
     /* [in] */ Int32 style)
 {
@@ -95,11 +86,12 @@ void StyleSpan::Apply(
     Int32 want = oldStyle | style;
 
     AutoPtr<ITypeface> tf;
-    if (old == NULL) {
-        CTypeface::DefaultFromStyle(want, (ITypeface**)&tf);
-    } else {
-        CTypeface::Create(old, want, (ITypeface**)&tf);
-    }
+    assert(0 && "TODO");
+    // if (old == NULL) {
+    //     CTypeface::DefaultFromStyle(want, (ITypeface**)&tf);
+    // } else {
+    //     CTypeface::Create(old, want, (ITypeface**)&tf);
+    // }
 
     Int32 s;
     tf->GetStyle(&s);
@@ -115,6 +107,7 @@ void StyleSpan::Apply(
     }
 
     paint->SetTypeface(tf);
+    return NOERROR;
 }
 
 

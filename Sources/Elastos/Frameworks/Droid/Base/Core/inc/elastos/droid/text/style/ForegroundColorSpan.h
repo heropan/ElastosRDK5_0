@@ -8,24 +8,30 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-class ForegroundColorSpan : public CharacterStyle
+class ForegroundColorSpan
+    : public CharacterStyle
+    , public IForegroundColorSpan
+    , public IUpdateAppearance
+    , public IParcelableSpan
+    , public IParcelable
 {
 public:
-    ForegroundColorSpan(
+    CAR_INTERFACE_DECL()
+
+    ForegroundColorSpan();
+
+    virtual ~ForegroundColorSpan();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Int32 color);
 
     ForegroundColorSpan(
         /* [in] */ IParcel* src);
 
-    CARAPI_(void) Init(
-        /* [in] */ Int32 color);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -33,14 +39,12 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Int32) GetForegroundColor();
+    CARAPI GetForegroundColor(
+        /* [out] */ Int32* color);
 
     //@Override
     CARAPI UpdateDrawState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    ForegroundColorSpan();
 
 private:
     /*const*/ Int32 mColor;

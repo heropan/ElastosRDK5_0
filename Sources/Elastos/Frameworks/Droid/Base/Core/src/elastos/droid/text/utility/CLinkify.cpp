@@ -7,6 +7,10 @@ namespace Droid {
 namespace Text {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CLinkify, Singleton, ILinkify)
+
+CAR_SINGLETON_IMPL(CLinkify)
+
 ECode CLinkify::GetStaticUrlMatchFilter(
     /* [out] */ ILinkifyMatchFilter** ret)
 {

@@ -11,7 +11,7 @@ INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/skia/effects
 
-#C_DEFINES += -D_FRAMEWORK_CORE
+C_DEFINES += -DDROID_CORE
 
 SOURCES = CRecognizerIntent.cpp
 SOURCES += CSpeechRecognizer.cpp

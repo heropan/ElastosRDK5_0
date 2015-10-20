@@ -13,24 +13,21 @@ class ScaleXSpan
     , public IScaleXSpan
     , public IParcelableSpan
     , public IParcelable
-
 {
 public:
-    ScaleXSpan(
+    CAR_INTERFACE_DECL()
+
+    ScaleXSpan();
+
+    virtual ~ScaleXSpan();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
         /* [in] */ Float proportion);
 
-    ScaleXSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ Float proportion);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(Int32) GetSpanTypeId();
-
-    CARAPI_(Int32) DescribeContents();
+    CARAPI GetSpanTypeId(
+        /* [in] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -38,7 +35,8 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(Float) GetScaleX();
+    CARAPI GetScaleX(
+        /* [out] */ Float* x);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -47,9 +45,6 @@ public:
     //@Override
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* ds);
-
-protected:
-    ScaleXSpan();
 
 private:
     Float mProportion;

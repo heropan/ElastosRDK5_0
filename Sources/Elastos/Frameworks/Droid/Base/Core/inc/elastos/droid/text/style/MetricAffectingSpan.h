@@ -22,66 +22,12 @@ class MetricAffectingSpan
     , public IUpdateAppearance
 {
 public:
-    /**
-     * A Passthrough MetricAffectingSpan is one that
-     * passes {@link #updateDrawState} and {@link #updateMeasureState}
-     * calls through to the specified MetricAffectingSpan
-     * while still being a distinct object,
-     * and is therefore able to be attached to the same Spannable
-     * to which the specified MetricAffectingSpan is already attached.
-     */
-    /* package */
-    //static
-    class Passthrough
-        : public IMetricAffectingSpan
-        , public ElRefBase
-    {
-    public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL()
 
-        CARAPI_(UInt32) AddRef();
+    MetricAffectingSpan();
 
-        CARAPI_(UInt32) Release();
+    virtual ~MetricAffectingSpan();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [in] */ InterfaceID* iid);
-
-    public:
-        /**
-         * Creates a new Passthrough of the specfied MetricAffectingSpan.
-         */
-        Passthrough(
-            /* [in] */ IMetricAffectingSpan* cs);
-
-        /**
-         * Passes updateDrawState through to the underlying MetricAffectingSpan.
-         */
-        //@Override
-        CARAPI UpdateDrawState(
-            /* [in] */ ITextPaint* tp);
-
-        /**
-         * Passes updateMeasureState through to the underlying MetricAffectingSpan.
-         */
-        //@Override
-        CARAPI UpdateMeasureState(
-            /* [in] */ ITextPaint* tp);
-
-        /**
-         * Returns the MetricAffectingSpan underlying this one, or the one
-         * underlying it if it too is a Passthrough.
-         */
-        //@Override
-        CARAPI GetUnderlying(
-            /* [out] */ /*IMetricAffectingSpan*/ICharacterStyle** result);
-
-    private:
-        AutoPtr<IMetricAffectingSpan> mStyle;
-    };
-
-public:
     virtual CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* p) = 0;
 
@@ -91,7 +37,54 @@ public:
      * returns the underlying MetricAffectingSpan.
      */
     //@Override
-    CARAPI_(AutoPtr<IMetricAffectingSpan>) GetUnderlying();
+    CARAPI GetUnderlying(
+        /* [out] */ ICharacterStyle** style);
+};
+
+/**
+ * A Passthrough MetricAffectingSpan is one that
+ * passes {@link #updateDrawState} and {@link #updateMeasureState}
+ * calls through to the specified MetricAffectingSpan
+ * while still being a distinct object,
+ * and is therefore able to be attached to the same Spannable
+ * to which the specified MetricAffectingSpan is already attached.
+ */
+/* package */
+//static
+class MetricAffectingSpanPassthrough
+    : public MetricAffectingSpan
+{
+public:
+    /**
+     * Creates a new Passthrough of the specfied MetricAffectingSpan.
+     */
+    MetricAffectingSpanPassthrough(
+        /* [in] */ IMetricAffectingSpan* cs);
+
+    /**
+     * Passes updateDrawState through to the underlying MetricAffectingSpan.
+     */
+    //@Override
+    CARAPI UpdateDrawState(
+        /* [in] */ ITextPaint* tp);
+
+    /**
+     * Passes updateMeasureState through to the underlying MetricAffectingSpan.
+     */
+    //@Override
+    CARAPI UpdateMeasureState(
+        /* [in] */ ITextPaint* tp);
+
+    /**
+     * Returns the MetricAffectingSpan underlying this one, or the one
+     * underlying it if it too is a Passthrough.
+     */
+    //@Override
+    CARAPI GetUnderlying(
+        /* [out] */ ICharacterStyle** result);
+
+private:
+    AutoPtr<IMetricAffectingSpan> mStyle;
 };
 
 } // namespace Style

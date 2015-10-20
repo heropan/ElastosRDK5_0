@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_Rfc822Token_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_Rfc822Token_H__
 
-//#include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -14,13 +14,19 @@ namespace Utility {
  * and provides methods to convert them to quoted strings.
  */
 class Rfc822Token
+    : public Object
+    , public IRfc822Token
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    Rfc822Token();
+
     /**
      * Creates a new Rfc822Token with the specified name, address,
      * and comment.
      */
-    Rfc822Token(
+    CARAPI constructor(
         /* [in] */ const String& name,
         /* [in] */ const String& address,
         /* [in] */ const String& comment);
@@ -28,17 +34,20 @@ public:
     /**
      * Returns the name part.
      */
-    CARAPI_(String) GetName();
+    CARAPI GetName(
+        /* [out] */ String* str);
 
     /**
      * Returns the address part.
      */
-    CARAPI_(String) GetAddress();
+    CARAPI GetAddress(
+        /* [out] */ String* str);
 
     /**
      * Returns the comment part.
      */
-    CARAPI_(String) GetComment();
+    CARAPI GetComment(
+        /* [out] */ String* str);
 
     /**
      * Changes the name to the specified name.
@@ -63,44 +72,42 @@ public:
      * the comment (in parentheses), and the address (in angle brackets).
      * This should be suitable for inclusion in an RFC 822 address list.
      */
-    CARAPI_(String) ToString();
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     /**
      * Returns the name, conservatively quoting it if there are any
      * characters that are likely to cause trouble outside of a
      * quoted string, or returning it literally if it seems safe.
      */
-    static CARAPI_(String) QuoteNameIfNecessary(
-        /* [in] */ const String& name);
+    static CARAPI QuoteNameIfNecessary(
+        /* [in] */ const String& name,
+        /* [out] */ String* str);
 
     /**
      * Returns the name, with internal backslashes and quotation marks
      * preceded by backslashes.  The outer quote marks themselves are not
      * added by this method.
      */
-    static CARAPI_(String) QuoteName(
-        /* [in] */ const String& name);
+    static CARAPI QuoteName(
+        /* [in] */ const String& name,
+        /* [out] */ String* str);
 
     /**
      * Returns the comment, with internal backslashes and parentheses
      * preceded by backslashes.  The outer parentheses themselves are
      * not added by this method.
      */
-    static CARAPI_(String) QuoteComment(
-        /* [in] */ const String& comment);
+    static CARAPI QuoteComment(
+        /* [in] */ const String& comment,
+        /* [out] */ String* str);
 
-    CARAPI_(Int32) GetHashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
-    CARAPI_(Boolean) Equals(
-        /* [in] */ IInterface* o);
-
-protected:
-    Rfc822Token();
-
-    CARAPI_(void) Init(
-        /* [in] */ const String& name,
-        /* [in] */ const String& address,
-        /* [in] */ const String& comment);
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* equals);
 
 private:
     static CARAPI_(Boolean) StringEquals(
@@ -108,7 +115,9 @@ private:
         /* [in] */ const String& b);
 
 protected:
-    String mName, mAddress, mComment;
+    String mName;
+    String mAddress;
+    String mComment;
 };
 
 } // namespace Utility

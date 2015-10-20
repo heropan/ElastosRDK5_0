@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_IconMarginSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_IconMarginSpan_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -16,26 +16,32 @@ namespace Text {
 namespace Style {
 
 class IconMarginSpan
+    : public Object
+    , public IIconMarginSpan
+    , public ILeadingMarginSpan
+    , public IParagraphStyle
+    , public ILineHeightSpan
+    , public IWrapTogetherSpan
 {
 public:
-    IconMarginSpan(
+    CAR_INTERFACE_DECL()
+
+    IconMarginSpan();
+
+    virtual ~IconMarginSpan();
+
+    CARAPI cosntructor(
         /* [in] */ IBitmap* b);
 
-    IconMarginSpan(
+    CARAPI cosntructor(
         /* [in] */ IBitmap* b,
         /* [in] */ Int32 pad);
 
-    CARAPI_(void) Init(
-        /* [in] */ IBitmap* b);
+    CARAPI GetLeadingMargin(
+        /* [in] */ Boolean first,
+        /* [in] */ Int32* id);
 
-    CARAPI_(void) Init(
-        /* [in] */ IBitmap* b,
-        /* [in] */ Int32 pad);
-
-    CARAPI_(Int32) GetLeadingMargin(
-        /* [in] */ Boolean first);
-
-    CARAPI_(void) DrawLeadingMargin(
+    CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,
         /* [in] */ IPaint* p,
         /* [in] */ Int32 x,
@@ -49,16 +55,13 @@ public:
         /* [in] */ Boolean first,
         /* [in] */ ILayout* layout);
 
-    CARAPI_(void) ChooseHeight(
+    CARAPI ChooseHeight(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 istartv,
         /* [in] */ Int32 v,
         /* [in] */ IPaintFontMetricsInt* fm);
-
-protected:
-    IconMarginSpan();
 
 private:
     AutoPtr<IBitmap> mBitmap;

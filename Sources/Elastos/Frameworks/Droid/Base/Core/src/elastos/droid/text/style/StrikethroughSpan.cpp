@@ -10,28 +10,22 @@ StrikethroughSpan::StrikethroughSpan()
 {
 }
 
-StrikethroughSpan::StrikethroughSpan(
-    /* [in] */ IParcel* src)
+StrikethroughSpan::~StrikethroughSpan()
 {
 }
 
-void StrikethroughSpan::Init()
+ECode StrikethroughSpan::constructor()
 {
+    return NOERROR;
 }
 
-void StrikethroughSpan::Init(
-    /* [in] */ IParcel* src)
-{
-}
 
-Int32 StrikethroughSpan::GetSpanTypeId()
+ECode StrikethroughSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    return ITextUtils::STRIKETHROUGH_SPAN;
-}
-
-Int32 StrikethroughSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::STRIKETHROUGH_SPAN;
+    return NOERROR;
 }
 
 ECode StrikethroughSpan::ReadFromParcel(

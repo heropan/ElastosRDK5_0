@@ -1,21 +1,21 @@
 #include "elastos/droid/text/utility/Linkify.h"
-#include "elastos/droid/text/CSpannableStringHelper.h"
-#include "elastos/droid/text/method/CLinkMovementMethod.h"
-#include "elastos/droid/text/style/CURLSpan.h"
+#include "elastos/droid/text/CSpannableString.h"
+//#include "elastos/droid/text/method/CLinkMovementMethod.h"
+//#include "elastos/droid/text/style/CURLSpan.h"
 //#include "elastos/droid/webkit/CWebView.h"
 #include "elastos/droid/utility/Patterns.h"
 #include <elastos/core/Character.h>
 
 using Elastos::Droid::Utility::Patterns;
-using Elastos::Droid::Text::ISpannableStringHelper;
-using Elastos::Droid::Text::CSpannableStringHelper;
+using Elastos::Droid::Text::ISpannableString;
+using Elastos::Droid::Text::CSpannableString;
 using Elastos::Droid::Text::Method::IMovementMethod;
 using Elastos::Droid::Text::Method::ILinkMovementMethod;
 using Elastos::Droid::Text::Method::EIID_ILinkMovementMethod;
-using Elastos::Droid::Text::Method::CLinkMovementMethod;
+// using Elastos::Droid::Text::Method::CLinkMovementMethod;
 using Elastos::Droid::Text::Style::IURLSpan;
 using Elastos::Droid::Text::Style::EIID_IURLSpan;
-using Elastos::Droid::Text::Style::CURLSpan;
+//using Elastos::Droid::Text::Style::CURLSpan;
 
 // import com.android.i18n.phonenumbers.PhoneNumberMatch;
 // import com.android.i18n.phonenumbers.PhoneNumberUtil;
@@ -26,8 +26,8 @@ using Elastos::Core::EIID_IComparator;
 using Elastos::Net::CURLEncoder;
 using Elastos::Net::CURLEncoder;
 using Elastos::Net::IURLEncoder;
-using Elastos::Utility::Regex::IPattern;
 using Elastos::Utility::ILocale;
+using Elastos::Utility::Regex::IMatchResult;
 
 namespace Elastos {
 namespace Droid {
@@ -40,10 +40,8 @@ const AutoPtr<ILinkifyTransformFilter> Linkify::sPhoneNumberTransformFilter = ne
 
 const Int32 Linkify::PHONE_NUMBER_MINIMUM_DIGITS = 5;
 
-
-
 /*****************************Linkify::MatchFilterUrl*****************************/
-CAR_INTERFACE_IMPL(Linkify::MatchFilterUrl, ILinkifyMatchFilter)
+CAR_INTERFACE_IMPL(Linkify::MatchFilterUrl, Object, ILinkifyMatchFilter)
 
 ECode Linkify::MatchFilterUrl::AcceptMatch(
     /* [in] */ ICharSequence* s,
@@ -70,7 +68,7 @@ ECode Linkify::MatchFilterUrl::AcceptMatch(
 }
 
 /*****************************Linkify::MatchFilterPhoneNumber*****************************/
-CAR_INTERFACE_IMPL(Linkify::MatchFilterPhoneNumber, ILinkifyMatchFilter)
+CAR_INTERFACE_IMPL(Linkify::MatchFilterPhoneNumber, Object, ILinkifyMatchFilter)
 
 ECode Linkify::MatchFilterPhoneNumber::AcceptMatch(
     /* [in] */ ICharSequence* s,
@@ -99,7 +97,7 @@ ECode Linkify::MatchFilterPhoneNumber::AcceptMatch(
 }
 
 /*****************************Linkify::TransformFilterPhoneNumber*****************************/
-CAR_INTERFACE_IMPL(Linkify::TransformFilterPhoneNumber, ILinkifyTransformFilter)
+CAR_INTERFACE_IMPL(Linkify::TransformFilterPhoneNumber, Object, ILinkifyTransformFilter)
 
 ECode Linkify::TransformFilterPhoneNumber::TransformUrl(
     /* [in] */ IMatcher* match,
@@ -140,6 +138,7 @@ Int32 Linkify::ComparatorLinkSpec::ComparatorLinkSpecFunc(
 }
 
 /*****************************Linkify*****************************/
+
 Boolean Linkify::AddLinks(
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 mask)
@@ -148,10 +147,12 @@ Boolean Linkify::AddLinks(
         return FALSE;
     }
 
+    ICharSequence* csq = ICharSequence::Probe(text);
+    ISpanned* spanned = ISpanned::Probe(text);
     Int32 textLen;
-    text->GetLength(&textLen);
+    csq->GetLength(&textLen);
     AutoPtr< ArrayOf<IURLSpan*> > old;
-    text->GetSpans(0, textLen, EIID_IURLSpan, (ArrayOf<IInterface*>**)&old);
+    spanned->GetSpans(0, textLen, EIID_IURLSpan, (ArrayOf<IInterface*>**)&old);
 
     if (old != NULL) {
         for (Int32 i = old->GetLength() - 1; i >= 0; i--) {
@@ -176,7 +177,7 @@ Boolean Linkify::AddLinks(
     }
 
     if ((mask & ILinkify::PHONE_NUMBERS) != 0) {
-        GatherTelLinks(links, text);
+        GatherTelLinks(&links, text);
     }
 
     if ((mask & ILinkify::MAP_ADDRESSES) != 0) {
@@ -221,10 +222,7 @@ Boolean Linkify::AddLinks(
         return FALSE;
     }
     else {
-        AutoPtr<ISpannableStringHelper> helper;
-        CSpannableStringHelper::AcquireSingleton((ISpannableStringHelper**)&helper);
-        AutoPtr<ISpannableString> s;
-        helper->ValueOf(t, (ISpannableString**)&s);
+        AutoPtr<ISpannableString> s = CSpannableString::ValueOf(t);
 
         if (AddLinks(ISpannable::Probe(s), mask)) {
             AddLinkMovementMethod(text);
@@ -237,7 +235,7 @@ Boolean Linkify::AddLinks(
     }
 }
 
-void Linkify::AddLinkMovementMethod(
+ECode Linkify::AddLinkMovementMethod(
     /* [in] */ ITextView* t)
 {
     AutoPtr<IMovementMethod> m;
@@ -247,21 +245,24 @@ void Linkify::AddLinkMovementMethod(
         Boolean bLinksClickable;
         t->GetLinksClickable(&bLinksClickable);
         if (bLinksClickable) {
-            m = CLinkMovementMethod::GetInstance();
+            assert(0 && "TODO");
+            // m = CLinkMovementMethod::GetInstance();
             t->SetMovementMethod(m);
         }
     }
+
+    return NOERROR;
 }
 
-void Linkify::AddLinks(
+ECode Linkify::AddLinks(
     /* [in] */ ITextView* text,
     /* [in] */ IPattern* pattern,
     /* [in] */ const String& scheme)
 {
-    AddLinks(text, pattern, scheme, NULL, NULL);
+    return AddLinks(text, pattern, scheme, NULL, NULL);
 }
 
-void Linkify::AddLinks(
+ECode Linkify::AddLinks(
     /* [in] */ ITextView* text,
     /* [in] */ IPattern* p,
     /* [in] */ const String& scheme,
@@ -271,15 +272,14 @@ void Linkify::AddLinks(
     AutoPtr<ICharSequence> cs;
     text->GetText((ICharSequence**)&cs);
 
-    AutoPtr<ISpannableStringHelper> helper;
-    CSpannableStringHelper::AcquireSingleton((ISpannableStringHelper**)&helper);
-    AutoPtr<ISpannableString> s;
-    helper->ValueOf(cs, (ISpannableString**)&s);
+    AutoPtr<ISpannableString> s = CSpannableString::ValueOf(cs);
 
-    if (AddLinks(s, p, scheme, matchFilter, transformFilter)) {
-        text->SetText(s);
-        AddLinkMovementMethod(text);
+    if (AddLinks(ISpannable::Probe(s), p, scheme, matchFilter, transformFilter)) {
+        text->SetText(ICharSequence::Probe(s));
+        return AddLinkMovementMethod(text);
     }
+
+    return NOERROR;
 }
 
 Boolean Linkify::AddLinks(
@@ -297,6 +297,7 @@ Boolean Linkify::AddLinks(
     /* [in] */ ILinkifyMatchFilter* matchFilter,
     /* [in] */ ILinkifyTransformFilter* transformFilter)
 {
+    ICharSequence* csq = ICharSequence::Probe(s);
     Boolean hasMatches = FALSE;
     String prefix("");
     if (!scheme.IsNull()) {
@@ -304,24 +305,25 @@ Boolean Linkify::AddLinks(
     }
 
     AutoPtr<IMatcher> m;
-    p->Matcher(s, (IMatcher**)&m);
+    p->Matcher(csq, (IMatcher**)&m);
+    IMatchResult* mr = IMatchResult::Probe(m);
     Boolean bFind, allowed;
     Int32 start, end;
     String group, url;
 
     while ((m->Find(&bFind), bFind)) {
-        m->Start(&start);
-        m->End(&end);
+        mr->Start(&start);
+        mr->End(&end);
         allowed = TRUE;
         if (matchFilter != NULL) {
-            matchFilter->AcceptMatch(s, start, end, &allowed);
+            matchFilter->AcceptMatch(csq, start, end, &allowed);
         }
 
         if (allowed) {
             AutoPtr< ArrayOf<String> > ary = ArrayOf<String>::Alloc(1);
             (*ary)[0] = prefix;
 
-            m->Group(0, &group);
+            mr->Group(0, &group);
             url = MakeUrl(group, ary, m, transformFilter);
 
             ApplyLink(url, start, end, s);
@@ -338,8 +340,9 @@ void Linkify::ApplyLink(
     /* [in] */ Int32 end,
     /* [in] */ ISpannable* text)
 {
+    assert(0 && "TODO");
     AutoPtr<IURLSpan> span;
-    CURLSpan::New(url, (IURLSpan**)&span);
+    // CURLSpan::New(url, (IURLSpan**)&span);
 
     text->SetSpan(span, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
 }
@@ -385,18 +388,20 @@ void Linkify::GatherLinks(
     /* [in] */ ILinkifyMatchFilter* matchFilter,
     /* [in] */ ILinkifyTransformFilter* transformFilter)
 {
+    ICharSequence* csq = ICharSequence::Probe(s);
     AutoPtr<IMatcher> m;
-    pattern->Matcher(s, (IMatcher**)&m);
+    pattern->Matcher(csq, (IMatcher**)&m);
+    IMatchResult* mr = IMatchResult::Probe(m);
 
     Boolean mFind, bAcceptMatch;
     Int32 start, end;
     String group, url;
     while ((m->Find(&mFind), mFind)) {
-        m->Start(&start);
-        m->End(&end);
+        mr->Start(&start);
+        mr->End(&end);
 
-        if (matchFilter == NULL || (matchFilter->AcceptMatch(s, start, end, &bAcceptMatch), bAcceptMatch)) {
-            m->Group(0, &group);
+        if (matchFilter == NULL || (matchFilter->AcceptMatch(csq, start, end, &bAcceptMatch), bAcceptMatch)) {
+            mr->Group(0, &group);
             url = MakeUrl(group, schemes, m, transformFilter);
 
             AutoPtr<LinkSpec> spec = new LinkSpec();
@@ -430,8 +435,7 @@ void Linkify::GatherMapLinks(
     /* [in] */ List< AutoPtr<LinkSpec> >* links,
     /* [in] */ ISpannable* s)
 {
-    String string;
-    s->ToString(&string);
+    String string = Object::ToString(s);
     String address;
     Int32 base = 0;
     Int32 length, end;

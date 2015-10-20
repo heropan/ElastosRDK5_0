@@ -6,41 +6,30 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+: public MetricAffectingSpan
+, public IScaleXSpan
+, public IParcelableSpan
+, public IParcelable
+
+CAR_INTERFACE_IMPL_3(ScaleXSpan, MetricAffectingSpan, IScaleXSpan, IParcelableSpan, IParcelable)
+
 ScaleXSpan::ScaleXSpan()
+    : mProportion(0)
 {}
 
-ScaleXSpan::ScaleXSpan(
-    /* [in] */ Float proportion)
-{
-    Init(proportion);
-}
-
-ScaleXSpan::ScaleXSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void ScaleXSpan::Init(
+ECode ScaleXSpan::constructor(
     /* [in] */ Float proportion)
 {
     mProportion = proportion;
+    return NOERROR;
 }
 
-void ScaleXSpan::Init(
-    /* [in] */ IParcel* src)
+ECode ScaleXSpan::GetSpanTypeId(
+    /* [in] */ Int32* id);
 {
-    ReadFromParcel(src);
-}
-
-Int32 ScaleXSpan::GetSpanTypeId()
-{
-    return ITextUtils::SCALE_X_SPAN;
-}
-
-Int32 ScaleXSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::SCALE_X_SPAN;
+    return NOERROR;
 }
 
 ECode ScaleXSpan::ReadFromParcel(
@@ -65,15 +54,18 @@ ECode ScaleXSpan::UpdateDrawState(
 {
     VALIDATE_NOT_NULL(ds);
     Float textScaleX;
-    ds->SetTextScaleX((ds->GetTextScaleX(&textScaleX), textScaleX) * mProportion);
+    ds->GetTextScaleX(&textScaleX);
+    ds->SetTextScaleX(textScaleX * mProportion);
     return NOERROR;
 }
 
 ECode ScaleXSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* ds)
 {
+    VALIDATE_NOT_NULL(ds);
     Float textScaleX;
-    ds->SetTextScaleX((ds->GetTextScaleX(&textScaleX), textScaleX) * mProportion);
+    ds->GetTextScaleX(&textScaleX);
+    ds->SetTextScaleX(textScaleX * mProportion);
     return NOERROR;
 }
 

@@ -27,7 +27,8 @@ void SuperscriptSpan::Init(
 {
 }
 
-Int32 SuperscriptSpan::GetSpanTypeId()
+Int32 SuperscriptSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::SUPERSCRIPT_SPAN;
 }

@@ -5,13 +5,13 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::Etl::List;
-using Elastos::Core::IComparator;
-using Elastos::Utility::Regex::IMatcher;
-using Elastos::Utility::Regex::IPattern;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IComparator;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
 namespace Droid {
@@ -43,8 +43,6 @@ public:
  *  created.
  */
 class Linkify
-    : public Object
-    , public ILinkify
 {
 private:
     class MatchFilterUrl
@@ -97,8 +95,6 @@ private:
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
     /**
      *  Scans the text of the provided Spannable and turns all occurrences
      *  of the link types indicated in the mask into clickable links.
@@ -132,7 +128,7 @@ public:
      *                      prepended to the url of links that do not have
      *                      a scheme specified in the link text
      */
-    static CARAPI_(void) AddLinks(
+    static CARAPI AddLinks(
         /* [in] */ ITextView* text,
         /* [in] */ IPattern* pattern,
         /* [in] */ const String& scheme);
@@ -152,7 +148,7 @@ public:
      *                      additional control over which pattern matches are
      *                      to be converted into links.
      */
-    static CARAPI_(void) AddLinks(
+    static CARAPI AddLinks(
         /* [in] */ ITextView* text,
         /* [in] */ IPattern* p,
         /* [in] */ const String& scheme,
@@ -203,7 +199,7 @@ public:
     static CARAPI_(AutoPtr<ILinkifyTransformFilter>) GetStaticPhoneNumberTransformFilter();
 
 private:
-    static CARAPI_(void) AddLinkMovementMethod(
+    static CARAPI AddLinkMovementMethod(
         /* [in] */ ITextView* t);
 
     static CARAPI_(void) ApplyLink(
@@ -266,6 +262,9 @@ private:
      */
     static const Int32 PHONE_NUMBER_MINIMUM_DIGITS;// = 5;
 
+private:
+    Linkify();
+    Linkify(const Linkify&);
 };
 
 } // namespace Utility

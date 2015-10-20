@@ -227,7 +227,8 @@ ECode SuggestionSpan::WriteToParcel(
     return NOERROR;
 }
 
-Int32 SuggestionSpan::GetSpanTypeId()
+Int32 SuggestionSpan::GetSpanTypeId(
+            /* [in] */ Int32* id);
 {
     return ITextUtils::SUGGESTION_SPAN;
 }

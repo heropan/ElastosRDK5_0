@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_DrawableMarginSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_DrawableMarginSpan_H__
 
-#include "Elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -26,24 +26,22 @@ class DrawableMarginSpan
 public:
     CAR_INTERFACE_DECL()
 
-    DrawableMarginSpan(
+    DrawableMarginSpan();
+
+    virtual ~DrawableMarginSpan();
+
+    CARAPI constructor(
         /* [in] */ IDrawable* b);
 
-    DrawableMarginSpan(
+    CARAPI constructor(
         /* [in] */ IDrawable* b,
         /* [in] */ Int32 pad);
 
-    CARAPI_(void) Init(
-        /* [in] */ IDrawable* b);
+    CARAPI GetLeadingMargin(
+        /* [in] */ Boolean first,
+        /* [in] */ Int32* id);
 
-    CARAPI_(void) Init(
-        /* [in] */ IDrawable* b,
-        /* [in] */ Int32 pad);
-
-    CARAPI_(Int32) GetLeadingMargin(
-        /* [in] */ Boolean first);
-
-    CARAPI_(void) DrawLeadingMargin(
+    CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,
         /* [in] */ IPaint* p,
         /* [in] */ Int32 x,
@@ -57,16 +55,13 @@ public:
         /* [in] */ Boolean first,
         /* [in] */ ILayout* layout);
 
-    CARAPI_(void) ChooseHeight(
+    CARAPI ChooseHeight(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ Int32 istartv,
         /* [in] */ Int32 v,
         /* [in] */ IPaintFontMetricsInt* fm);
-
-protected:
-    DrawableMarginSpan();
 
 private:
     AutoPtr<IDrawable> mDrawable;// = NULL;
