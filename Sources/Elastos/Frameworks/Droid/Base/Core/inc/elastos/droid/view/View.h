@@ -1600,7 +1600,8 @@ public:
             /* [out] */ String* description);
     };
 
-    class CheckForLongPress : public Runnable
+    class CheckForLongPress
+        : public Runnable
     {
     public:
         CheckForLongPress(
@@ -2074,9 +2075,9 @@ public:
      * accessibility related methods of the host view.
      * </p>
      */
-    class AccessibilityDelegate :
-        public Object,
-        public IAccessibilityDelegate
+    class AccessibilityDelegate
+        : public Object
+        , public IAccessibilityDelegate
     {
     public:
         CAR_INTERFACE_DECL();
@@ -2306,7 +2307,8 @@ private:
         Boolean mHasTintList;
     };
 
-    class CheckForTap : public Runnable
+    class CheckForTap
+        : public Runnable
     {
     public:
         CheckForTap(
@@ -2322,7 +2324,8 @@ private:
         View* mView;
     };
 
-    class ViewPerformClick : public Runnable
+    class ViewPerformClick
+        : public Runnable
     {
     public:
         ViewPerformClick(
@@ -2336,7 +2339,8 @@ private:
         View* mView;
     };
 
-    class UnsetPressedState : public Runnable
+    class UnsetPressedState
+        : public Runnable
     {
     public:
         UnsetPressedState(
@@ -2355,7 +2359,8 @@ private:
      * is supported. This avoids keeping too many unused fields in most
      * instances of View.</p>
      */
-    class ScrollabilityCache : public Runnable
+    class ScrollabilityCache
+        : public Runnable
     {
     public:
         /**
@@ -2457,7 +2462,7 @@ private:
     };
 
     class MatchIdPredicate
-        : public ElRefBase
+        : public Object
         , public IPredicate
      {
     public:
@@ -2475,7 +2480,7 @@ private:
     };
 
     class MatchLabelForPredicate
-        : public ElRefBase
+        : public Object
         , public IPredicate
     {
     public:
@@ -2538,21 +2543,23 @@ public:
     virtual CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid) = 0;
 
-    virtual CARAPI_(Int32) GetVerticalFadingEdgeLength();
+    virtual CARAPI GetVerticalFadingEdgeLength(
+         /* [out] */ Int32* length);
 
     virtual CARAPI SetFadingEdgeLength(
         /* [in] */ Int32 length);
 
-    virtual CARAPI_(Int32) GetHorizontalFadingEdgeLength();
+    virtual CARAPI GetHorizontalFadingEdgeLength(
+         /* [out] */ Int32* length);
 
-    virtual CARAPI_(Int32) GetVerticalScrollbarWidth();
+    virtual CARAPI GetVerticalScrollbarWidth(
+         /* [out] */ Int32* width);
 
     virtual CARAPI SetVerticalScrollbarPosition(
         /* [in] */ Int32 position);
 
-    virtual CARAPI_(Int32) GetVerticalScrollbarPosition();
-
-    //virtual CARAPI_(Int32) GetHorizontalScrollbarHeight();
+    virtual CARAPI GetVerticalScrollbarPosition(
+        /* [out] */ Int32* pisition);
 
     virtual CARAPI SetOnFocusChangeListener(
         /* [in] */ IViewOnFocusChangeListener* l);
@@ -2575,7 +2582,8 @@ public:
     virtual CARAPI SetOnClickListener(
         /* [in] */ IViewOnClickListener* l);
 
-    virtual CARAPI_(Boolean) HasOnClickListeners();
+    virtual CARAPI HasOnClickListeners(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetOnLongClickListener(
         /* [in] */ IViewOnLongClickListener* l);
@@ -2583,7 +2591,8 @@ public:
     virtual CARAPI SetOnCreateContextMenuListener(
         /* [in] */ IViewOnCreateContextMenuListener* l);
 
-    virtual CARAPI_(Boolean) PerformClick();
+    virtual CARAPI PerformClick(
+        /* [out] */ Boolean* res);
 
     /**
      * Directly call any attached OnClickListener.  Unlike {@link #performClick()},
@@ -2593,19 +2602,24 @@ public:
      * @return True there was an assigned OnClickListener that was called, false
      *         otherwise is returned.
      */
-    virtual CARAPI_(Boolean) CallOnClick();
+    virtual CARAPI CallOnClick(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) PerformLongClick();
+    virtual CARAPI PerformLongClick(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) ShowContextMenu();
+    virtual CARAPI ShowContextMenu(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) ShowContextMenu(
+    virtual CARAPI ShowContextMenu(
         /* [in] */ Float x,
         /* [in] */ Float y,
-        /* [in] */ Int32 metaState);
+        /* [in] */ Int32 metaState,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IActionMode>) StartActionMode(
-        /* [in] */ IActionModeCallback* callback);
+    virtual CARAPI StartActionMode(
+        /* [in] */ IActionModeCallback* callback,
+        /* [out] */ IActionMode** mode);
 
     virtual CARAPI SetOnKeyListener(
         /* [in] */ IViewOnKeyListener* l);
@@ -2641,12 +2655,14 @@ public:
         /* [in] */ Int32 direction,
         /* [in] */ IRect* previouslyFocusedRect);
 
-    virtual CARAPI_(Boolean) RequestRectangleOnScreen(
-        /* [in] */ IRect* rectangle);
-
-    virtual CARAPI_(Boolean) RequestRectangleOnScreen(
+    virtual CARAPI RequestRectangleOnScreen(
         /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI RequestRectangleOnScreen(
+        /* [in] */ IRect* rectangle,
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ClearFocus();
 
@@ -2663,7 +2679,8 @@ public:
     virtual CARAPI NotifyGlobalFocusCleared(
         /* [in] */ IView* oldFocus);
 
-    virtual CARAPI_(Boolean) RootViewRequestFocus();
+    virtual CARAPI RootViewRequestFocus(
+        /* [out] */ Boolean* res);
 
     /**
      * Called internally by the view system when a new view is getting focus.
@@ -2672,9 +2689,11 @@ public:
     virtual CARAPI UnFocus(
         /* [in] */ IView* focused);
 
-    virtual CARAPI_(Boolean) HasFocus();
+    virtual CARAPI HasFocus(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) HasFocusable();
+    virtual CARAPI HasFocusable(
+        /* [out] */ Boolean* res);
 
     /**
      * Convenience method for sending a {@link AccessibilityEvent#TYPE_ANNOUNCEMENT}
@@ -2761,8 +2780,9 @@ public:
      *
      * @return True if the event population was completed.
      */
-    virtual CARAPI_(Boolean) DispatchPopulateAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
+    virtual CARAPI DispatchPopulateAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ Boolean* res);
 
     /**
      * Called from {@link #dispatchPopulateAccessibilityEvent(AccessibilityEvent)}
@@ -2843,7 +2863,8 @@ public:
      *
      * @see AccessibilityNodeInfo
      */
-    virtual CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibilityNodeInfo();
+    virtual CARAPI CreateAccessibilityNodeInfo(
+        /* [out] */ IAccessibilityNodeInfo** res);
 
     /**
      * Returns an {@link AccessibilityNodeInfo} representing this view from the
@@ -2861,7 +2882,8 @@ public:
      *
      * @see AccessibilityNodeInfo
      */
-    virtual CARAPI_(AutoPtr<IAccessibilityNodeInfo>) CreateAccessibilityNodeInfoInternal();
+    virtual CARAPI CreateAccessibilityNodeInfoInternal(
+        /* [out] */ IAccessibilityNodeInfo** res);
 
     /**
      * Initializes an {@link AccessibilityNodeInfo} with information about this view.
@@ -2904,7 +2926,8 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(AutoPtr<IAccessibilityDelegate>) GetAccessibilityDelegate();
+    virtual CARAPI GetAccessibilityDelegate(
+        /* [out] */ IAccessibilityDelegate** res);
 
     /**
      * Sets a delegate for implementing accessibility support via composition as
@@ -2940,7 +2963,8 @@ public:
      *
      * @see AccessibilityNodeProvider
      */
-    virtual CARAPI_(AutoPtr<IAccessibilityNodeProvider>) GetAccessibilityNodeProvider();
+    virtual CARAPI GetAccessibilityNodeProvider(
+        /* [out] */ IAccessibilityNodeProvider** res);
 
     /**
      * Gets the unique identifier of this view on the screen for accessibility purposes.
@@ -2950,7 +2974,7 @@ public:
      *
      * @hide
      */
-    Int32 GetAccessibilityViewId();
+    virtual Int32 GetAccessibilityViewId();
 
     /**
      * Gets the unique identifier of the window in which this View reseides.
@@ -2959,7 +2983,7 @@ public:
      *
      * @hide
      */
-    Int32 GetAccessibilityWindowId();
+    virtual Int32 GetAccessibilityWindowId();
 
     /**
      * Gets the id of a view for which this view serves as a label for
@@ -2968,7 +2992,8 @@ public:
      * @return The labeled view id.
      */
     //@ViewDebug.ExportedProperty(category = "accessibility")
-    virtual CARAPI_(Int32) GetLabelFor();
+    virtual CARAPI GetLabelFor(
+        /* [out] */ Int32* res);
 
     /**
      * Sets the id of a view for which this view serves as a label for
@@ -2980,14 +3005,17 @@ public:
     virtual CARAPI SetLabelFor(
         /* [in] */ Int32 id);
 
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetContentDescription();
+    virtual CARAPI GetContentDescription(
+        /* [out] */ ICharSequence** res);
 
     virtual CARAPI SetContentDescription(
         /* [in] */ ICharSequence* contentDescription);
 
-    virtual CARAPI_(Boolean) IsFocused();
+    virtual CARAPI IsFocused(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IView>) FindFocus();
+    virtual CARAPI FindFocus(
+        /* [out] */ IView** res);
 
     /**
      * Indicates whether this view is one of the set of scrollable containers in
@@ -2998,37 +3026,44 @@ public:
      *
      * @attr ref android.R.styleable#View_isScrollContainer
      */
-    virtual CARAPI_(Boolean) IsScrollContainer();
+    virtual CARAPI IsScrollContainer(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetScrollContainer(
         /* [in] */ Boolean isScrollContainer);
 
-    virtual CARAPI_(Int32) GetDrawingCacheQuality();
+    virtual CARAPI GetDrawingCacheQuality(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetDrawingCacheQuality(
         /* [in] */ Int32 quality);
 
-    virtual CARAPI_(Boolean) GetKeepScreenOn();
+    virtual CARAPI GetKeepScreenOn(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetKeepScreenOn(
         /* [in] */ Boolean keepScreenOn);
 
-    virtual CARAPI_(Int32) GetNextFocusLeftId();
+    virtual CARAPI GetNextFocusLeftId(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetNextFocusLeftId(
         /* [in] */ Int32 nextFocusLeftId);
 
-    virtual CARAPI_(Int32) GetNextFocusRightId();
+    virtual CARAPI GetNextFocusRightId(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetNextFocusRightId(
         /* [in] */ Int32 nextFocusRightId);
 
-    virtual CARAPI_(Int32) GetNextFocusUpId();
+    virtual CARAPI GetNextFocusUpId(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetNextFocusUpId(
         /* [in] */ Int32 nextFocusUpId);
 
-    virtual CARAPI_(Int32) GetNextFocusDownId();
+    virtual CARAPI GetNextFocusDownId(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetNextFocusDownId(
         /* [in] */ Int32 nextFocusDownId);
@@ -3039,7 +3074,8 @@ public:
      *
      * @attr ref android.R.styleable#View_nextFocusForward
      */
-    virtual CARAPI_(Int32) GetNextFocusForwardId();
+    virtual CARAPI GetNextFocusForwardId(
+        /* [out] */ Int32* res);
 
     /**
      * Sets the id of the view to use when the next focus is {@link #FOCUS_FORWARD}.
@@ -3051,7 +3087,8 @@ public:
     virtual CARAPI SetNextFocusForwardId(
         /* [in] */ Int32 nextFocusForwardId);
 
-    virtual CARAPI_(Boolean) IsShown();
+    virtual CARAPI IsShown(
+        /* [out] */ Boolean* res);
 
     /**
      * Sets whether or not this view should account for system screen decorations
@@ -3088,10 +3125,12 @@ public:
      * @see #fitSystemWindows(Rect)
      * @see #setSystemUiVisibility(int)
      */
-    virtual CARAPI_(Boolean) GetFitsSystemWindows();
+    virtual CARAPI GetFitsSystemWindows(
+        /* [out] */ Boolean* res);
 
     /** @hide */
-    virtual CARAPI_(Boolean) FitsSystemWindows();
+    virtual CARAPI FitsSystemWindows(
+        /* [out] */ Boolean* res);
 
     /**
      * Ask that a new dispatch of {@link #fitSystemWindows(Rect)} be performed.
@@ -3104,12 +3143,14 @@ public:
      */
     virtual CARAPI MakeOptionalFitsSystemWindows();
 
-    virtual CARAPI_(Int32) GetVisibility();
+    virtual CARAPI GetVisibility(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetVisibility(
         /* [in] */ Int32 visibility);
 
-    virtual CARAPI_(Boolean) IsEnabled();
+    virtual CARAPI IsEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
@@ -3123,23 +3164,29 @@ public:
     virtual CARAPI SetSoundEffectsEnabled(
         /* [in] */ Boolean soundEffectsEnabled);
 
-    virtual CARAPI_(Boolean) IsSoundEffectsEnabled();
+    virtual CARAPI IsSoundEffectsEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetHapticFeedbackEnabled(
         /* [in] */ Boolean hapticFeedbackEnabled);
 
-    virtual CARAPI_(Boolean) IsHapticFeedbackEnabled();
+    virtual CARAPI IsHapticFeedbackEnabled(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Int32) GetRawLayoutDirection();
+    virtual CARAPI GetRawLayoutDirection(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetLayoutDirection(
         /* [in] */ Int32 layoutDirection);
 
-    virtual CARAPI_(Int32) GetLayoutDirection();
+    virtual CARAPI GetLayoutDirection(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Boolean) IsLayoutRtl();
+    virtual CARAPI IsLayoutRtl(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) HasTransientState();
+    virtual CARAPI HasTransientState(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetHasTransientState(
         /* [in] */ Boolean hasTransientState);
@@ -3147,19 +3194,23 @@ public:
     virtual CARAPI SetWillNotDraw(
         /* [in] */ Boolean willNotDraw);
 
-    virtual CARAPI_(Boolean) WillNotDraw();
+    virtual CARAPI WillNotDraw(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetWillNotCacheDrawing(
         /* [in] */ Boolean willNotCacheDrawing);
 
-    virtual CARAPI_(Boolean) WillNotCacheDrawing();
+    virtual CARAPI WillNotCacheDrawing(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsClickable();
+    virtual CARAPI IsClickable(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetClickable(
         /* [in] */ Boolean clickable);
 
-    virtual CARAPI_(Boolean) IsLongClickable();
+    virtual CARAPI IsLongClickable(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetLongClickable(
         /* [in] */ Boolean longClickable);
@@ -3167,33 +3218,41 @@ public:
     virtual CARAPI SetPressed(
         /* [in] */ Boolean pressed);
 
-    virtual CARAPI_(Boolean) IsPressed();
+    virtual CARAPI IsPressed(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsSaveEnabled();
+    virtual CARAPI IsSaveEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetSaveEnabled(
         /* [in] */ Boolean enabled);
 
-    virtual CARAPI_(Boolean) GetFilterTouchesWhenObscured();
+    virtual CARAPI GetFilterTouchesWhenObscured(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetFilterTouchesWhenObscured(
         /* [in] */ Boolean enabled);
 
-    virtual CARAPI_(Boolean) IsSaveFromParentEnabled();
+    virtual CARAPI IsSaveFromParentEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetSaveFromParentEnabled(
         /* [in] */ Boolean enabled);
 
-    virtual CARAPI_(Boolean) IsFocusable();
+    virtual CARAPI IsFocusable(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsFocusableInTouchMode();
+    virtual CARAPI IsFocusableInTouchMode(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IView>) FocusSearch(
-        /* [in] */ Int32 direction);
+    virtual CARAPI FocusSearch(
+        /* [in] */ Int32 direction,
+        /* [out] */ IView** res);
 
-    virtual CARAPI_(Boolean) DispatchUnhandledMove(
+    virtual CARAPI DispatchUnhandledMove(
         /* [in] */ IView* focused,
-        /* [in] */ Int32 direction);
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* res);
 
     /**
      * If a user manually specified the next view id for a particular direction,
@@ -3203,9 +3262,10 @@ public:
      * @param direction One of FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, and FOCUS_RIGHT
      * @return The user specified next view, or NULL if there is none.
      */
-    virtual CARAPI_(AutoPtr<IView>) FindUserSetNextFocus(
+    virtual CARAPI FindUserSetNextFocus(
         /* [in] */ IView* root,
-        /* [in] */ Int32 direction);
+        /* [in] */ Int32 direction,
+        /* [out] */ IView** res);
 
     virtual CARAPI GetFocusables(
         /* [in] */ Int32 direction,
@@ -3231,22 +3291,28 @@ public:
     virtual CARAPI AddTouchables(
         /* [in] */ IObjectContainer* views);
 
-    virtual CARAPI_(Boolean) RequestAccessibilityFocus();
+    virtual CARAPI RequestAccessibilityFocus(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ClearAccessibilityFocus();
 
-    virtual CARAPI_(Boolean) RequestFocus();
+    virtual CARAPI RequestFocus(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) RequestFocus(
-        /* [in] */ Int32 direction);
-
-    virtual CARAPI_(Boolean) RequestFocus(
+    virtual CARAPI RequestFocus(
         /* [in] */ Int32 direction,
-        /* [in] */ IRect* previouslyFocusedRect);
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) RequestFocusFromTouch();
+    virtual CARAPI RequestFocus(
+        /* [in] */ Int32 direction,
+        /* [in] */ IRect* previouslyFocusedRect,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Int32) GetImportantForAccessibility();
+    virtual CARAPI RequestFocusFromTouch(
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI GetImportantForAccessibility(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetImportantForAccessibility(
         /* [in] */ Int32 mode);
@@ -3254,34 +3320,40 @@ public:
     virtual CARAPI IsImportantForAccessibility(
         /* [out] */ Boolean* isImportant);
 
-    virtual CARAPI_(AutoPtr<IViewParent>) GetParentForAccessibility();
+    virtual CARAPI GetParentForAccessibility(
+        /* [out] */ IViewParent** res);
 
     virtual CARAPI AddChildrenForAccessibility(
-        /* [in] */ IObjectContainer* children);
+        /* [in] */ IList* children);
 
     virtual CARAPI IncludeForAccessibility(
         /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsActionableForAccessibility();
+    virtual CARAPI IsActionableForAccessibility(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI NotifySubtreeAccessibilityStateChangedIfNeeded();
 
     virtual CARAPI ResetSubtreeAccessibilityStateChanged();
 
-    virtual CARAPI_(Boolean) PerformAccessibilityAction(
+    virtual CARAPI PerformAccessibilityAction(
         /* [in] */ Int32 action,
-        /* [in] */ IBundle* arguments);
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetIterableTextForAccessibility();
+    virtual CARAPI GetIterableTextForAccessibility(
+        /* [out] */ ICharSequence** res);
 
-    virtual CARAPI_(Int32) GetAccessibilitySelectionStart();
+    virtual CARAPI GetAccessibilitySelectionStart(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetAccessibilitySelection(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
-    virtual CARAPI_(AutoPtr<ITextSegmentIterator>) GetIteratorForGranularity(
-        /* [in] */ Int32 granularity);
+    virtual CARAPI GetIteratorForGranularity(
+        /* [in] */ Int32 granularity,
+        /* [out] */ ITextSegmentIterator** result);
 
     virtual CARAPI DispatchStartTemporaryDetach();
 
@@ -3294,29 +3366,37 @@ public:
     virtual CARAPI GetKeyDispatcherState(
         /* [out] */ IDispatcherState** state);
 
-    virtual CARAPI_(Boolean) DispatchKeyEventPreIme(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI DispatchKeyEventPreIme(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchKeyShortcutEvent(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI DispatchKeyShortcutEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI DispatchTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnFilterTouchEventForSecurity(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnFilterTouchEventForSecurity(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI DispatchTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI DispatchGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchPointerEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI DispatchPointerEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI DispatchWindowFocusChanged(
         /* [in] */ Boolean hasFocus);
@@ -3324,7 +3404,8 @@ public:
     virtual CARAPI OnWindowFocusChanged(
         /* [in] */ Boolean hasWindowFocus);
 
-    virtual CARAPI_(Boolean) HasWindowFocus();
+    virtual CARAPI HasWindowFocus(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI DispatchDisplayHint(
         /* [in] */ Int32 hint);
@@ -3332,7 +3413,8 @@ public:
     virtual CARAPI DispatchWindowVisibilityChanged(
         /* [in] */ Int32 visibility);
 
-    virtual CARAPI_(Int32) GetWindowVisibility();
+    virtual CARAPI GetWindowVisibility(
+        /* [out] */ Int32* res);
 
     virtual CARAPI GetWindowVisibleDisplayFrame(
         /* [in, out] */ IRect* outRect);
@@ -3355,56 +3437,71 @@ public:
     virtual CARAPI NeedGlobalAttributesUpdate(
         /* [in] */ Boolean force);
 
-    virtual CARAPI_(Boolean) IsInTouchMode();
+    virtual CARAPI IsInTouchMode(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IContext>) GetContext();
+    virtual CARAPI GetContext(
+        /* [out] */ IContext** res);
 
-    virtual CARAPI_(Boolean) OnKeyPreIme(
+    virtual CARAPI OnKeyPreIme(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyDown(
+    virtual CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyLongPress(
+    virtual CARAPI OnKeyLongPress(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyUp(
+    virtual CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyMultiple(
+    virtual CARAPI OnKeyMultiple(
         /* [in] */ Int32 keyCode,
         /* [in] */ Int32 repeatCount,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyShortcut(
+    virtual CARAPI OnKeyShortcut(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnCheckIsTextEditor();
+    virtual CARAPI OnCheckIsTextEditor(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
-        /* [in] */ IEditorInfo* outAttrs);
+    virtual CARAPI OnCreateInputConnection(
+        /* [in] */ IEditorInfo* outAttrs,
+        /* [out] */ IInputConnection** res);
 
-    virtual CARAPI_(Boolean) CheckInputConnectionProxy(
-        /* [in] */ IView* view);
+    virtual CARAPI CheckInputConnectionProxy(
+        /* [in] */ IView* view,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI CreateContextMenu(
         /* [in] */ IContextMenu* menu);
 
-    virtual CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnHoverEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnHoverEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsHovered();
+    virtual CARAPI IsHovered(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetHovered(
         /* [in] */ Boolean hovered);
@@ -3412,10 +3509,12 @@ public:
     virtual CARAPI OnHoverChanged(
         /* [in] */ Boolean hovered);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsInScrollingContainer();
+    virtual CARAPI IsInScrollingContainer(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI CancelLongPress();
 
@@ -3427,7 +3526,8 @@ public:
 
     virtual CARAPI BringToFront();
 
-    virtual CARAPI_(AutoPtr<IViewParent>) GetParent();
+    virtual CARAPI GetParent(
+        /* [out] */ IViewParent** res);
 
     virtual CARAPI SetScrollX(
         /* [in] */ Int32 value);
@@ -3435,94 +3535,119 @@ public:
     virtual CARAPI SetScrollY(
         /* [in] */ Int32 value);
 
-    virtual CARAPI_(Int32) GetScrollX();
+    virtual CARAPI GetScrollX(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetScrollY();
+    virtual CARAPI GetScrollY(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetWidth();
+    virtual CARAPI GetWidth(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetHeight();
+    virtual CARAPI GetHeight(
+        /* [out] */ Int32* res);
 
     virtual CARAPI GetDrawingRect(
         /* [out] */ IRect* outRect);
 
-    virtual CARAPI_(Int32) GetMeasuredWidth();
+    virtual CARAPI GetMeasuredWidth(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetMeasuredWidthAndState();
+    virtual CARAPI GetMeasuredWidthAndState(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetMeasuredHeight();
+    virtual CARAPI GetMeasuredHeight(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetMeasuredHeightAndState();
+    virtual CARAPI GetMeasuredHeightAndState(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetMeasuredState();
+    virtual CARAPI GetMeasuredState(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(AutoPtr<IMatrix>) GetMatrix();
+    virtual CARAPI GetMatrix(
+        /* [out] */ IMatrix** res);
 
-    virtual CARAPI_(Float) GetCameraDistance();
+    virtual CARAPI GetCameraDistance(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetCameraDistance(
         /* [in] */ Float distance);
 
-    virtual CARAPI_(Float) GetRotation();
+    virtual CARAPI GetRotation(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetRotation(
         /* [in] */ Float rotation);
 
-    virtual CARAPI_(Float) GetRotationY();
+    virtual CARAPI GetRotationY(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetRotationY(
         /* [in] */ Float rotationY);
 
-    virtual CARAPI_(Float) GetRotationX();
+    virtual CARAPI GetRotationX(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetRotationX(
         /* [in] */ Float rotationX);
 
-    virtual CARAPI_(Float) GetScaleX();
+    virtual CARAPI GetScaleX(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetScaleX(
         /* [in] */ Float scaleX);
 
-    virtual CARAPI_(Float) GetScaleY();
+    virtual CARAPI GetScaleY(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetScaleY(
         /* [in] */ Float scaleY);
 
-    virtual CARAPI_(Float) GetPivotX();
+    virtual CARAPI GetPivotX(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetPivotX(
         /* [in] */ Float pivotX);
 
-    virtual CARAPI_(Float) GetPivotY();
+    virtual CARAPI GetPivotY(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetPivotY(
         /* [in] */ Float pivotY);
 
-    virtual CARAPI_(Float) GetAlpha();
+    virtual CARAPI GetAlpha(
+        /* [out] */ Float* res);
 
-    virtual CARAPI_(Boolean) HasOverlappingRendering();
+    virtual CARAPI HasOverlappingRendering(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetAlpha(
         /* [in] */ Float alpha);
 
-    virtual CARAPI_(Int32) GetTop();
+    virtual CARAPI GetTop(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetTop(
         /* [in] */ Int32 top);
 
-    virtual CARAPI_(Int32) GetBottom();
+    virtual CARAPI GetBottom(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Boolean) IsDirty();
+    virtual CARAPI IsDirty(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetBottom(
         /* [in] */ Int32 bottom);
 
-    virtual CARAPI_(Int32) GetLeft();
+    virtual CARAPI GetLeft(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetLeft(
         /* [in] */ Int32 left);
 
-    virtual CARAPI_(Int32) GetRight();
+    virtual CARAPI GetRight(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetRight(
         /* [in] */ Int32 right);
@@ -3539,7 +3664,8 @@ public:
     virtual CARAPI SetY(
         /* [in] */ Float y);
 
-    virtual CARAPI_(Float) GetTranslationX();
+    virtual CARAPI GetTranslationX(
+        /* [out] */ Float* res);
 
     virtual CARAPI SetTranslationX(
         /* [in] */ Float translationX);
@@ -3556,15 +3682,18 @@ public:
     virtual CARAPI GetFocusedRect(
         /* [in, out] */ IRect* outRect);
 
-    virtual CARAPI_(Boolean) GetGlobalVisibleRect(
+    virtual CARAPI GetGlobalVisibleRect(
         /* [in, out] */ IRect* outRect,
-        /* [in, out] */ IPoint* outGlobalOffset);
+        /* [in, out] */ IPoint* outGlobalOffset,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) GetGlobalVisibleRect(
-        /* [in, out] */ IRect* outRect);
+    virtual CARAPI GetGlobalVisibleRect(
+        /* [in, out] */ IRect* outRect,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) GetLocalVisibleRect(
-        /* [in, out] */ IRect* outRect);
+    virtual CARAPI GetLocalVisibleRect(
+        /* [in, out] */ IRect* outRect,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI OffsetTopAndBottom(
         /* [in] */ Int32 offset);
@@ -3572,7 +3701,8 @@ public:
     virtual CARAPI OffsetLeftAndRight(
         /* [in] */ Int32 offset);
 
-    virtual CARAPI_(AutoPtr<IViewGroupLayoutParams>) GetLayoutParams();
+    virtual CARAPI GetLayoutParams(
+        /* [out] */ IViewGroupLayoutParams** res);
 
     virtual CARAPI SetLayoutParams(
         /* [in] */ IViewGroupLayoutParams* params);
@@ -3598,9 +3728,11 @@ public:
 
     virtual CARAPI Invalidate();
 
-    virtual CARAPI_(Boolean) IsOpaque();
+    virtual CARAPI IsOpaque(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IHandler>) GetHandler();
+    virtual CARAPI GetHandler(
+        /* [out] */ IHandler** res);
 
     /**
      * Causes the Runnable to be added to the message queue.
@@ -3612,8 +3744,9 @@ public:
      *         message queue.  Returns false on failure, usually because the
      *         looper processing the message queue is exiting.
      */
-    virtual CARAPI_(Boolean) Post(
-        /* [in] */ IRunnable* action);
+    virtual CARAPI Post(
+        /* [in] */ IRunnable* action,
+        /* [out] */ Boolean* res);
 
     /**
      * Causes the Runnable to be added to the message queue, to be run
@@ -3631,9 +3764,10 @@ public:
      *         if the looper is quit before the delivery time of the message
      *         occurs then the message will be dropped.
      */
-    virtual CARAPI_(Boolean) PostDelayed(
+    virtual CARAPI PostDelayed(
         /* [in] */ IRunnable* action,
-        /* [in] */ Int64 delayMillis);
+        /* [in] */ Int64 delayMillis,
+        /* [out] */ Boolean* res);
 
     /**
      * <p>Causes the Runnable to execute on the next animation time step.
@@ -3644,7 +3778,7 @@ public:
      * @see #postOnAnimationDelayed
      * @see #removeCallbacks
      */
-    virtual CARAPI_(void) PostOnAnimation(
+    virtual CARAPI PostOnAnimation(
         /* [in] */ IRunnable* action);
 
     /**
@@ -3659,7 +3793,7 @@ public:
      * @see #postOnAnimation
      * @see #removeCallbacks
      */
-    virtual CARAPI_(void) PostOnAnimationDelayed(
+    virtual CARAPI PostOnAnimationDelayed(
         /* [in] */ IRunnable* action,
         /* [in] */ Int64 delayMillis);
 
@@ -3678,8 +3812,9 @@ public:
      * @see #postOnAnimation
      * @see #postOnAnimationDelayed
      */
-    virtual CARAPI_(Boolean) RemoveCallbacks(
-        /* [in] */ IRunnable* action);
+    virtual CARAPI RemoveCallbacks(
+        /* [in] */ IRunnable* action,
+        /* [out] */ Boolean* res);
 
     /**
      * <p>Cause an invalidate to happen on a subsequent cycle through the event loop.
@@ -3790,22 +3925,26 @@ public:
 
     virtual CARAPI ComputeScroll();
 
-    virtual CARAPI_(Boolean) IsHorizontalFadingEdgeEnabled();
+    virtual CARAPI IsHorizontalFadingEdgeEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetHorizontalFadingEdgeEnabled(
         /* [in] */ Boolean horizontalFadingEdgeEnabled);
 
-    virtual CARAPI_(Boolean) IsVerticalFadingEdgeEnabled();
+    virtual CARAPI IsVerticalFadingEdgeEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetVerticalFadingEdgeEnabled(
         /* [in] */ Boolean verticalFadingEdgeEnabled);
 
-    virtual CARAPI_(Boolean) IsHorizontalScrollBarEnabled();
+    virtual CARAPI IsHorizontalScrollBarEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetHorizontalScrollBarEnabled(
         /* [in] */ Boolean horizontalScrollBarEnabled);
 
-    virtual CARAPI_(Boolean) IsVerticalScrollBarEnabled();
+    virtual CARAPI IsVerticalScrollBarEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetVerticalScrollBarEnabled(
         /* [in] */ Boolean verticalScrollBarEnabled);
@@ -3813,19 +3952,23 @@ public:
     virtual CARAPI SetScrollbarFadingEnabled(
         /* [in] */ Boolean fadeScrollbars);
 
-    virtual CARAPI_(Boolean) IsScrollbarFadingEnabled();
+    virtual CARAPI IsScrollbarFadingEnabled(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Int32) GetScrollBarDefaultDelayBeforeFade();
+    virtual CARAPI GetScrollBarDefaultDelayBeforeFade(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetScrollBarDefaultDelayBeforeFade(
         /* [in] */ Int32 scrollBarDefaultDelayBeforeFade);
 
-    virtual CARAPI_(Int32) GetScrollBarFadeDuration();
+    virtual CARAPI GetScrollBarFadeDuration(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetScrollBarFadeDuration(
         /* [in] */ Int32 scrollBarFadeDuration);
 
-    virtual CARAPI_(Int32) GetScrollBarSize();
+    virtual CARAPI GetScrollBarSize(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetScrollBarSize(
         /* [in] */ Int32 scrollBarSize);
@@ -3833,13 +3976,16 @@ public:
     virtual CARAPI SetScrollBarStyle(
         /* [in] */ Int32 style);
 
-    virtual CARAPI_(Int32) GetScrollBarStyle();
+    virtual CARAPI GetScrollBarStyle(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Boolean) CanScrollHorizontally(
-        /* [in] */ Int32 direction);
+    virtual CARAPI CanScrollHorizontally(
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) CanScrollVertically(
-        /* [in] */ Int32 direction);
+    virtual CARAPI CanScrollVertically(
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResolveRtlPropertiesIfNeeded(
         /* [out] */ Boolean* res);
@@ -3860,7 +4006,8 @@ public:
 
     virtual CARAPI ResetResolvedLayoutDirection();
 
-    virtual CARAPI_(Boolean) IsLayoutDirectionInherited();
+    virtual CARAPI IsLayoutDirectionInherited(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResolvePadding();
 
@@ -3869,32 +4016,38 @@ public:
     virtual CARAPI AssignParent(
         /* [in] */ IViewParent* parent);
 
-    virtual CARAPI_(AutoPtr<IBinder>) GetWindowToken();
+    virtual CARAPI GetWindowToken(
+        /* [out] */ IBinder** res);
 
-    virtual CARAPI_(AutoPtr<IBinder>) GetApplicationWindowToken();
+    virtual CARAPI GetApplicationWindowToken(
+        /* [out] */ IBinder** res);
 
-    virtual CARAPI_(AutoPtr<IDisplay>) GetDisplay();
+    virtual CARAPI GetDisplay(
+        /* [out] */ IDisplay** res);
 
-    virtual CARAPI_(AutoPtr<IWindowSession>) GetWindowSession();
+    virtual CARAPI GetWindowSession(
+        /* [out] */ IWindowSession** res);
 
-    virtual CARAPI_(void) DispatchAttachedToWindow(
+    virtual CARAPI DispatchAttachedToWindow(
         /* [in] */ AttachInfo* info,
         /* [in] */ Int32 visibility);
 
     virtual CARAPI DispatchDetachedFromWindow();
 
     virtual CARAPI SaveHierarchyState(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     virtual CARAPI RestoreHierarchyState(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
-    virtual CARAPI_(Int64) GetDrawingTime();
+    virtual CARAPI GetDrawingTime(
+        /* [out] */ Int64* res);
 
     virtual CARAPI SetDuplicateParentStateEnabled(
         /* [in] */ Boolean enabled);
 
-    virtual CARAPI_(Boolean) IsDuplicateParentStateEnabled();
+    virtual CARAPI IsDuplicateParentStateEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetLayerType(
         /* [in] */ Int32 layerType,
@@ -3903,16 +4056,19 @@ public:
     virtual CARAPI SetLayerPaint(
         /* [in] */ IPaint* paint);
 
-    virtual CARAPI_(Int32) GetLayerType();
+    virtual CARAPI GetLayerType(
+        /* [out] */ Int32* res);
 
     virtual CARAPI BuildLayer();
 
     virtual CARAPI SetDrawingCacheEnabled(
         /* [in] */ Boolean enabled);
 
-    virtual CARAPI_(Boolean) IsDrawingCacheEnabled();
+    virtual CARAPI IsDrawingCacheEnabled(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) CanHaveDisplayList();
+    virtual CARAPI CanHaveDisplayList(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI GetHardwareRenderer(
         /* [out] */ HardwareRenderer** res);
@@ -3920,21 +4076,24 @@ public:
     virtual CARAPI GetDisplayList(
         /* [out] */ IRenderNode** node);
 
-    virtual CARAPI_(AutoPtr<IBitmap>) GetDrawingCache();
+    virtual CARAPI GetDrawingCache(
+        /* [out] */ IBitmap** res);
 
-    virtual CARAPI_(AutoPtr<IBitmap>) GetDrawingCache(
-        /* [in] */ Boolean autoScale);
+    virtual CARAPI GetDrawingCache(
+        /* [in] */ Boolean autoScale,
+        /* [out] */ IBitmap** res);
 
     virtual CARAPI DestroyDrawingCache();
 
     virtual CARAPI SetDrawingCacheBackgroundColor(
         /* [in] */ Int32 color);
 
-    virtual CARAPI_(Int32) GetDrawingCacheBackgroundColor();
+    virtual CARAPI GetDrawingCacheBackgroundColor(
+        /* [out] */ Int32* res);
 
     virtual CARAPI BuildDrawingCache();
 
-    virtual CARAPI_(void) BuildDrawingCache(
+    virtual CARAPI BuildDrawingCache(
         /* [in] */ Boolean autoScale);
 
     virtual CARAPI CreateSnapshot(
@@ -3943,16 +4102,20 @@ public:
         /* [in] */ Boolean skipChildren,
         /* [out] */ IBitmap** bitmap);
 
-    virtual CARAPI_(Boolean) IsInEditMode();
+    virtual CARAPI IsInEditMode(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) IsHardwareAccelerated();
+    virtual CARAPI IsHardwareAccelerated(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI Draw(
         /* [in] */ ICanvas* canvas);
 
-    virtual CARAPI_(Int32) GetSolidColor();
+    virtual CARAPI GetSolidColor(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Boolean) IsLayoutRequested();
+    virtual CARAPI IsLayoutRequested(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI Layout(
         /* [in] */ Int32 l,
@@ -3960,7 +4123,8 @@ public:
         /* [in] */ Int32 r,
         /* [in] */ Int32 b);
 
-    virtual CARAPI_(AutoPtr<IResources>) GetResources();
+    virtual CARAPI GetResources(
+        /* [out] */ IResources** res);
 
     virtual CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* drawable);
@@ -3999,7 +4163,8 @@ public:
     virtual CARAPI SetBackgroundDrawable(
         /* [in] */ IDrawable* d);
 
-    virtual CARAPI_(AutoPtr<IDrawable>) GetBackground();
+    virtual CARAPI GetBackground(
+        /* [out] */ IDrawable** res);
 
     virtual CARAPI SetPadding(
         /* [in] */ Int32 left,
@@ -4013,23 +4178,31 @@ public:
         /* [in] */ Int32 end,
         /* [in] */ Int32 bottom);
 
-    virtual CARAPI_(Int32) GetPaddingTop();
+    virtual CARAPI GetPaddingTop(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetPaddingBottom();
+    virtual CARAPI GetPaddingBottom(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetPaddingLeft();
+    virtual CARAPI GetPaddingLeft(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetPaddingStart();
+    virtual CARAPI GetPaddingStart(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetPaddingRight();
+    virtual CARAPI GetPaddingRight(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetPaddingEnd();
+    virtual CARAPI GetPaddingEnd(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Boolean) IsPaddingRelative();
+    virtual CARAPI IsPaddingRelative(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResetPaddingToInitialValues();
 
-    virtual CARAPI_(AutoPtr<IInsets>) GetOpticalInsets();
+    virtual CARAPI GetOpticalInsets(
+        /* [out] */ IInsets** res);
 
     virtual CARAPI SetOpticalInsets(
         /* [in] */ IInsets* insets);
@@ -4037,16 +4210,20 @@ public:
     virtual CARAPI SetSelected(
         /* [in] */ Boolean selected);
 
-    virtual CARAPI_(Boolean) IsSelected();
+    virtual CARAPI IsSelected(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetActivated(
         /* [in] */ Boolean activated);
 
-    virtual CARAPI_(Boolean) IsActivated();
+    virtual CARAPI IsActivated(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IViewTreeObserver>) GetViewTreeObserver();
+    virtual CARAPI GetViewTreeObserver(
+        /* [out] */ IViewTreeObserver** res);
 
-    virtual CARAPI_(AutoPtr<IView>) GetRootView();
+    virtual CARAPI GetRootView(
+        /* [out] */ IView** res);
 
     virtual CARAPI GetLocationOnScreen(
         /* [in] */ ArrayOf<Int32>* location);
@@ -4054,18 +4231,22 @@ public:
     virtual CARAPI GetLocationInWindow(
         /* [in] */ ArrayOf<Int32>* location);
 
-    CARAPI_(AutoPtr<IView>) FindViewById(
-        /* [in] */ Int32 id);
+    CARAPI FindViewById(
+        /* [in] */ Int32 id,
+        /* [out] */ IView** res);
 
-    CARAPI_(AutoPtr<IView>) FindViewWithTag(
-        /* [in] */ IInterface* tag);
+    CARAPI FindViewWithTag(
+        /* [in] */ IInterface* tag,
+        /* [out] */ IView** res);
 
-    CARAPI_(AutoPtr<IView>) FindViewByPredicate(
-        /* [in] */ IPredicate* predicate);
+    CARAPI FindViewByPredicate(
+        /* [in] */ IPredicate* predicate,
+        /* [out] */ IView** res);
 
-    CARAPI_(AutoPtr<IView>) FindViewByPredicateInsideOut(
+    CARAPI FindViewByPredicateInsideOut(
         /* [in] */ IView* start,
-        /* [in] */ IPredicate* predicate);
+        /* [in] */ IPredicate* predicate,
+        /* [out] */ IView** res);
 
     virtual CARAPI SetId(
         /* [in] */ Int32 id);
@@ -4073,17 +4254,21 @@ public:
     virtual CARAPI SetIsRootNamespace(
         /* [in] */ Boolean isRoot);
 
-    virtual CARAPI_(Boolean) IsRootNamespace();
+    virtual CARAPI IsRootNamespace(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Int32) GetId();
+    virtual CARAPI GetId(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetTag();
+    virtual CARAPI GetTag(
+        /* [out] */ IInterface** res);
 
     virtual CARAPI SetTag(
         /* [in] */ IInterface* tag);
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetTag(
-       /* [in] */ Int32 key);
+    virtual CARAPI GetTag(
+        /* [in] */ Int32 key,
+        /* [out] */ IInterface** res);
 
     virtual CARAPI SetTag(
        /* [in] */ Int32 key,
@@ -4096,9 +4281,10 @@ public:
     virtual CARAPI HackTurnOffWindowResizeAnim(
         /* [in] */ Boolean off);
 
-    virtual CARAPI_(AutoPtr<IViewPropertyAnimator>) Animate();
+    virtual CARAPI Animate(
+        /* [out] */ IViewPropertyAnimator** res);
 
-    virtual CARAPI_(void) Debug();
+    virtual CARAPI Debug();
 
     virtual CARAPI GetBaseline(
         /* [out] */ Int32* baseline);
@@ -4115,6 +4301,7 @@ public:
      * Version of {@link #resolveSizeAndState(int, int, int)}
      * returning only the {@link #MEASURED_SIZE_MASK} bits of the result.
      */
+    ///////////////jiazhenjiang
     static CARAPI_(Int32) ResolveSize(
         /* [in] */ Int32 size,
         /* [in] */ Int32 measureSpec);
@@ -4150,17 +4337,20 @@ public:
         /* [in] */ Int32 size,
         /* [in] */ Int32 measureSpec);
 
-    virtual CARAPI_(Int32) GetMinimumHeight();
+    virtual CARAPI GetMinimumHeight(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetMinimumHeight(
         /* [in] */ Int32 minHeight);
 
-    virtual CARAPI_(Int32) GetMinimumWidth();
+    virtual CARAPI GetMinimumWidth(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetMinimumWidth(
         /* [in] */ Int32 minWidth);
 
-    virtual CARAPI_(AutoPtr<IAnimation>) GetAnimation();
+    virtual CARAPI GetAnimation(
+        /* [out] */ IAnimation** res);
 
     virtual CARAPI StartAnimation(
         /* [in] */ IAnimation* animation);
@@ -4170,25 +4360,30 @@ public:
     virtual CARAPI SetAnimation(
         /* [in] */ IAnimation* animation);
 
-    virtual CARAPI_(Boolean) GatherTransparentRegion(
-        /* [in] */ IRegion* region);
+    virtual CARAPI GatherTransparentRegion(
+        /* [in] */ IRegion* region,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI PlaySoundEffect(
         /* [in] */ Int32 soundConstant);
 
-    virtual CARAPI_(Boolean) PerformHapticFeedback(
-        /* [in] */ Int32 feedbackConstant);
-
-    virtual CARAPI_(Boolean) PerformHapticFeedback(
+    virtual CARAPI PerformHapticFeedback(
         /* [in] */ Int32 feedbackConstant,
-        /* [in] */ Int32 flags);
+        /* [out] */ Boolean* res);
+
+    virtual CARAPI PerformHapticFeedback(
+        /* [in] */ Int32 feedbackConstant,
+        /* [in] */ Int32 flags,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetSystemUiVisibility(
         /* [in] */ Int32 visibility);
 
-    virtual CARAPI_(Int32) GetSystemUiVisibility();
+    virtual CARAPI GetSystemUiVisibility(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetWindowSystemUiVisibility();
+    virtual CARAPI GetWindowSystemUiVisibility(
+        /* [out] */ Int32* res);
 
     virtual CARAPI OnWindowSystemUiVisibilityChanged(
         /* [in] */ Int32 visible);
@@ -4205,17 +4400,20 @@ public:
     virtual CARAPI SetDisabledSystemUiVisibility(
         /* [in] */ Int32 flags);
 
-    virtual CARAPI_(Boolean) StartDrag(
+    virtual CARAPI StartDrag(
         /* [in] */ IClipData* data,
         /* [in] */ IDragShadowBuilder* shadowBuilder,
         /* [in] */ IInterface* myLocalState,
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnDragEvent(
-        /* [in] */ IDragEvent* event);
+    virtual CARAPI OnDragEvent(
+        /* [in] */ IDragEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchDragEvent(
-        /* [in] */ IDragEvent* event);
+    virtual CARAPI DispatchDragEvent(
+        /* [in] */ IDragEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI OnCloseSystemDialogs(
         /* [in] */ const String& reason);
@@ -4230,38 +4428,45 @@ public:
         /* [in] */ IViewGroup* root,
         /* [out] */ IView** view);
 
-    virtual CARAPI_(Int32) GetOverScrollMode();
+    virtual CARAPI GetOverScrollMode(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetOverScrollMode(
         /* [in] */ Int32 overScrollMode);
 
-    virtual CARAPI_(Int32) GetRawTextDirection();
+    virtual CARAPI GetRawTextDirection(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetTextDirection(
         /* [in] */ Int32 textDirection);
 
-    virtual CARAPI_(Int32) GetTextDirection();
+    virtual CARAPI GetTextDirection(
+        /* [out] */ Int32* res);
 
     virtual CARAPI ResolveTextDirection(
         /* [out] */ Boolean* res);
 
     virtual CARAPI ResetResolvedTextDirection();
 
-    virtual CARAPI_(Boolean) IsTextDirectionInherited();
+    virtual CARAPI IsTextDirectionInherited(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Int32) GetRawTextAlignment();
+    virtual CARAPI GetRawTextAlignment(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetTextAlignment(
         /* [in] */ Int32 textAlignment);
 
-    virtual CARAPI_(Int32) GetTextAlignment();
+    virtual CARAPI GetTextAlignment(
+        /* [out] */ Int32* res);
 
     virtual CARAPI ResolveTextAlignment(
         /* [out] */ Boolean* res);
 
     virtual CARAPI ResetResolvedTextAlignment();
 
-    virtual CARAPI_(Boolean) IsTextAlignmentInherited();
+    virtual CARAPI IsTextAlignmentInherited(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI GetViewRootImpl(
         /* [out] */ ViewRootImpl** impl);
@@ -4287,7 +4492,7 @@ public:
     static CARAPI_(Int32) GenerateViewId();
 
     // For debug print out.
-    CARAPI_(void) Log();
+    CARAPI Log();
 
     CARAPI GetInflaterContext(
         /* [out] */ IContext** context);
@@ -4301,22 +4506,24 @@ public:
     CARAPI SetXmlPath(
         /* [in] */ const String& path);
 
-    CARAPI_(void) GetHotspotBounds(
+    CARAPI GetHotspotBounds(
         /* [in] */ IRect* outRect);
 
-    CARAPI_(Boolean) ComputeClickPointInScreenForAccessibility(
+    CARAPI ComputeClickPointInScreenForAccessibility(
         /* [in] */ IRegion* interactiveRegion,
-        /* [in] */ IPoint* outPoint);
+        /* [in] */ IPoint* outPoint,
+        /* [out] */ Boolean* res);
 
     static CARAPI_(void) OffsetRects(
         /* [in] */ IArrayList* rects,
         /* [in] */ Float offsetX,
         /* [in] */ Float offsetY);
 
-    CARAPI_(AutoPtr<IWindowInsets>) OnApplyWindowInsets(
-        /* [in] */ IWindowInsets* insets);
+    CARAPI OnApplyWindowInsets(
+        /* [in] */ IWindowInsets* insets,
+        /* [out] */ IWindowInsets** res);
 
-    CARAPI_(void) SetOnApplyWindowInsetsListener(
+    CARAPI SetOnApplyWindowInsetsListener(
         /* [in] */ IViewOnApplyWindowInsetsListener listener);
 
     CARAPI DispatchApplyWindowInsets(
