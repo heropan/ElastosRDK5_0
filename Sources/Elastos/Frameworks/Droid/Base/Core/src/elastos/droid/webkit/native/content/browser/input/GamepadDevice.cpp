@@ -1,10 +1,10 @@
 
-#include "webkit/native/content/browser/input/GamepadDevice.h"
-#include "webkit/native/content/browser/input/GamepadList.h"
-#include "webkit/native/content/browser/input/GamepadMappings.h"
-#include "webkit/native/content/browser/input/CanonicalAxisIndex.h"
-#include "webkit/native/content/browser/input/CanonicalButtonIndex.h"
-#include "os/SystemClock.h"
+#include "elastos/droid/webkit/native/content/browser/input/GamepadDevice.h"
+#include "elastos/droid/webkit/native/content/browser/input/GamepadList.h"
+#include "elastos/droid/webkit/native/content/browser/input/GamepadMappings.h"
+#include "elastos/droid/webkit/native/content/browser/input/CanonicalAxisIndex.h"
+#include "elastos/droid/webkit/native/content/browser/input/CanonicalButtonIndex.h"
+#include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::View::IInputEvent;

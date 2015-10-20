@@ -1,4 +1,11 @@
 
+#include "elastos/droid/webkit/native/content/browser/input/WeekPicker.h"
+
+using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::IDate;
+using Elastos::Utility::EIID_IDate;
+using Elastos::Utility::ITimeZoneHelper;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,17 +19,29 @@ WeekPicker::WeekPicker(
     /* [in] */ Double maxValue)
     : TwoFieldDatePicker(context, minValue, maxValue)
 {
-    GetPositionInYearSpinner()->SetContentDescription(
-            GetResources()->GetString(R::string::accessibility_date_picker_week));
+    assert(0);
+    // TODO
+    // GetPositionInYearSpinner()->SetContentDescription(
+    //         GetResources()->GetString(R::string::accessibility_date_picker_week));
 
     // initialize to current date
     AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> cal;
-    helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&cal);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZome;
+    timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
+    helper->GetInstance(timeZome, (ICalendar**)&cal);
     cal->SetFirstDayOfWeek(ICalendar::MONDAY);
     cal->SetMinimalDaysInFirstWeek(4);
-    cal->SetTimeInMillis(System::CurrentTimeMillis());
+    assert(0);
+    // TODO
+    // cal->SetTimeInMillis(System::CurrentTimeMillis());
     Init(GetISOWeekYearForDate(cal), GetWeekForDate(cal), NULL);
 }
 
@@ -34,9 +53,17 @@ AutoPtr<ICalendar> WeekPicker::CreateDateFromWeek(
     /* [in] */ Int32 week)
 {
     AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> date;
-    helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&date);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZome;
+    timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
+    helper->GetInstance(timeZome, (ICalendar**)&date);
     date->Clear();
     date->SetFirstDayOfWeek(ICalendar::MONDAY);
     date->SetMinimalDaysInFirstWeek(4);
@@ -53,13 +80,21 @@ AutoPtr<ICalendar> WeekPicker::CreateDateFromValue(
     /* [in] */ Double value)
 {
     AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
     AutoPtr<ICalendar> date;
-    helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&date);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZome;
+    timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
+    helper->GetInstance(timeZome, (ICalendar**)&date);
     date->Clear();
-    date->SetFirstDayOfWeek(Calendar.MONDAY);
+    date->SetFirstDayOfWeek(ICalendar::MONDAY);
     date->SetMinimalDaysInFirstWeek(4);
-    date->SetTimeInMillis((long) value);
+    date->SetTimeInMillis((Int64) value);
     return date;
 }
 
@@ -104,15 +139,22 @@ ECode WeekPicker::SetCurrentDate(
 {
     AutoPtr<ICalendar> date = CreateDateFromWeek(year, week);
     Boolean bBefore, bAfter;
-    date->Before(GetMinDate(), &bBefore);
+    AutoPtr<IDate> _date = (IDate*)date->Probe(EIID_IDate);
+    _date->IsBefore((IDate*)GetMinDate()->Probe(EIID_IDate), &bBefore);
     if (bBefore) {
-        SetCurrentDate(GetMinDate());
+        assert(0);
+        // TODO
+        // SetCurrentDate(GetMinDate());
     }
-    else if (date->After(GetMaxDate(), &bAfter), bAfter) {
-        SetCurrentDate(GetMaxDate());
+    else if (_date->IsAfter((IDate*)GetMaxDate()->Probe(EIID_IDate), &bAfter), bAfter) {
+        assert(0);
+        // TODO
+        // SetCurrentDate(GetMaxDate());
     }
     else {
-        SetCurrentDate(date);
+        assert(0);
+        // TODO
+        // SetCurrentDate(date);
     }
 
     return NOERROR;

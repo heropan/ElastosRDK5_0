@@ -1,4 +1,19 @@
 
+#include "elastos/droid/webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
+#include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanBrowserAccessibilityManager.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/os/Build.h"
+
+using Elastos::Core::EIID_ICharSequence;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::EIID_ISpannable;
+using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
+using Elastos::Droid::View::EIID_IView;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -44,7 +59,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
 //@CalledByNative
 AutoPtr<BrowserAccessibilityManager> BrowserAccessibilityManager::Create(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
-    /* [in] */ ContentViewCore contentViewCore)
+    /* [in] */ ContentViewCore* contentViewCore)
 {
     // A bug in the KitKat framework prevents us from using these new APIs.
     // http://crbug.com/348088/
@@ -52,7 +67,7 @@ AutoPtr<BrowserAccessibilityManager> BrowserAccessibilityManager::Create(
     //     return new KitKatBrowserAccessibilityManager(
     //             nativeBrowserAccessibilityManagerAndroid, contentViewCore);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         AutoPtr<BrowserAccessibilityManager> ret = new JellyBeanBrowserAccessibilityManager(
                 nativeBrowserAccessibilityManagerAndroid, contentViewCore);
         return ret;
@@ -108,16 +123,23 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateAccessibility
     }
 
     AutoPtr<IAccessibilityNodeInfoHelper> helper;
-    CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
+    assert(0);
+    // TODO
+    // CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
     AutoPtr<IAccessibilityNodeInfo> info;
-    helper->Obtain(mView, (IAccessibilityNodeInfo**)&info);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    helper->Obtain(view, (IAccessibilityNodeInfo**)&info);
     String pkName;
     mContentViewCore->GetContext()->GetPackageName(&pkName);
-    info->SetPackageName(pkName);
-    info->SetSource(mView, virtualViewId);
+    AutoPtr<ICharSequence> pkNameCS;
+    assert(0);
+    // TODO
+    // CString::New(pkName, (ICharSequence**)&pkNameCS);
+    info->SetPackageName(pkNameCS);
+    info->SetSource(view, virtualViewId);
 
     if (virtualViewId == rootId) {
-        info->SetParent(mView);
+        info->SetParent(view);
     }
 
     if (NativePopulateAccessibilityNodeInfo(mNativeObj, info, virtualViewId)) {
@@ -132,11 +154,15 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateAccessibility
 /**
  * @see AccessibilityNodeProvider#findAccessibilityNodeInfosByText(String, int)
  */
-List<AccessibilityNodeInfo> BrowserAccessibilityManager::FindAccessibilityNodeInfosByText(
+AutoPtr<IList> BrowserAccessibilityManager::FindAccessibilityNodeInfosByText(
     /* [in] */ const String& text,
     /* [in] */ Int32 virtualViewId)
 {
-    return new ArrayList<AccessibilityNodeInfo>();
+    AutoPtr<IList> list;
+    assert(0);
+    // TODO
+    // CArrayList::New((IList**)&list);
+    return list;
 }
 
 /**
@@ -173,7 +199,7 @@ Boolean BrowserAccessibilityManager::PerformAction(
                 mPendingScrollToMakeNodeVisible = TRUE;
             }
             return TRUE;
-        case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS:
+        case IAccessibilityNodeInfo::ACTION_CLEAR_ACCESSIBILITY_FOCUS:
             if (mAccessibilityFocusId == virtualViewId) {
                 SendAccessibilityEvent(mAccessibilityFocusId,
                         IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
@@ -200,7 +226,10 @@ Boolean BrowserAccessibilityManager::PerformAction(
                 IAccessibilityNodeInfo::ACTION_ARGUMENT_HTML_ELEMENT_STRING, &elementType);
             if (elementType == NULL)
                 return FALSE;
-            elementType = elementType.ToUpperCase(ILocale::US);
+
+            assert(0);
+            // TODO
+            // elementType = elementType.ToUpperCase(ILocale::US);
             return JumpToElementType(elementType, TRUE);
         }
         case IAccessibilityNodeInfo::ACTION_PREVIOUS_HTML_ELEMENT: {
@@ -212,7 +241,10 @@ Boolean BrowserAccessibilityManager::PerformAction(
                 &elementType);
             if (elementType == NULL)
                 return FALSE;
-            elementType = elementType.ToUpperCase(ILocale::US);
+
+            assert(0);
+            // TODO
+            // elementType = elementType.ToUpperCase(ILocale::US);
             return JumpToElementType(elementType, FALSE);
         }
 
@@ -274,7 +306,8 @@ void BrowserAccessibilityManager::NotifyFrameInfoInitialized()
 {
     // Invalidate the container view, since the chrome accessibility tree is now
     // ready and listed as the child of the container view.
-    mView->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    view->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
 
     // (Re-) focus focused element, since we weren't able to create an
     // AccessibilityNodeInfo for this element before.
@@ -293,7 +326,7 @@ Boolean BrowserAccessibilityManager::JumpToElementType(
         return FALSE;
 
     mAccessibilityFocusId = id;
-    SendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+    SendAccessibilityEvent(id, IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUSED);
 
     return TRUE;
 }
@@ -316,34 +349,56 @@ void BrowserAccessibilityManager::SendAccessibilityEvent(
     // the item that has accessibility focus. In practice, this doesn't seem to slow
     // things down, because it's only called when the accessibility focus moves.
     // TODO(dmazzoni): remove this if/when Android framework fixes bug.
-    mView->PostInvalidate();
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    view->PostInvalidate();
 
     // The container view is indicated by a virtualViewId of NO_ID; post these events directly
     // since there's no web-specific information to attach.
     if (virtualViewId == IView::NO_ID) {
-        mView->SendAccessibilityEvent(eventType);
+        view->SendAccessibilityEvent(eventType);
         return;
     }
 
-    final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
-    event.setPackageName(mContentViewCore.getContext().getPackageName());
-    event.setSource(mView, virtualViewId);
-    if (!nativePopulateAccessibilityEvent(mNativeObj, event, virtualViewId, eventType)) {
-        event.recycle();
+    AutoPtr<IAccessibilityEventHelper> accessibilityEventHelper;
+    assert(0);
+    // TODO
+    // CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&accessibilityEventHelper);
+    AutoPtr<IAccessibilityEvent> event;
+    accessibilityEventHelper->Obtain(eventType, (IAccessibilityEvent**)&event);
+    String packeName;
+    mContentViewCore->GetContext()->GetPackageName(&packeName);
+    AutoPtr<ICharSequence> packeNameCS;
+    assert(0);
+    // TODO
+    // CString::New(packeName, (ICharSequence**)&packeNameCS);
+    event->SetPackageName(packeNameCS);
+    assert(0);
+    // TODO
+    // event->SetSource(mView, virtualViewId);
+    if (!NativePopulateAccessibilityEvent(mNativeObj, event, virtualViewId, eventType)) {
+        assert(0);
+        // TODO
+        // event->Recycle();
         return;
     }
 
-    mView->RequestSendAccessibilityEvent(mView, event);
+    assert(0);
+    // TODO
+    // mView->RequestSendAccessibilityEvent(mView, event);
 }
 
 AutoPtr<IBundle> BrowserAccessibilityManager::GetOrCreateBundleForAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     AutoPtr<IBundle> bundle;
-    event->GetParcelableData((IInterface**)&bundle);
+    assert(0);
+    // TODO
+    // event->GetParcelableData((IInterface**)&bundle);
     if (bundle == NULL) {
-        CBundle((IBundle**)&bundle);
-        event->SetParcelableData(bundle);
+        assert(0);
+        // TODO
+        // CBundle((IBundle**)&bundle);
+        // event->SetParcelableData(bundle);
     }
 
     return bundle;
@@ -355,17 +410,22 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateNodeForHost(
     // Since we don't want the parent to be focusable, but we can't remove
     // actions from a node, copy over the necessary fields.
     AutoPtr<IAccessibilityNodeInfoHelper> helper;
-    CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
+    assert(0);
+    // TODO
+    // CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
 
     AutoPtr<IAccessibilityNodeInfo> result;
-    helper->Obtain(mView, (IAccessibilityNodeInfo**)&result);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    helper->Obtain(view, (IAccessibilityNodeInfo**)&result);
     AutoPtr<IAccessibilityNodeInfo> source;
-    helper->Obtain(mView, (IAccessibilityNodeInfo**)&source);
-    mView->OnInitializeAccessibilityNodeInfo(source);
+    helper->Obtain(view, (IAccessibilityNodeInfo**)&source);
+    view->OnInitializeAccessibilityNodeInfo(source);
 
     // Copy over parent and screen bounds.
     AutoPtr<IRect> rect;
-    CRect((IRect**)&rect);
+    assert(0);
+    // TODO
+    // CRect::New((IRect**)&rect);
     source->GetBoundsInParent(rect);
     result->SetBoundsInParent(rect);
     source->GetBoundsInScreen(rect);
@@ -373,9 +433,9 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateNodeForHost(
 
     // Set up the parent view, if applicable.
     AutoPtr<IViewParent> parent;
-    mView->GetParentForAccessibility((IViewParent**)&parent);
+    view->GetParentForAccessibility((IViewParent**)&parent);
     if (parent->Probe(EIID_IView)) {
-        result->SetParent((View) parent);
+        result->SetParent((IView*) parent->Probe(EIID_IView));
     }
 
     // Populate the minimum required fields.
@@ -385,16 +445,16 @@ AutoPtr<IAccessibilityNodeInfo> BrowserAccessibilityManager::CreateNodeForHost(
     Boolean isEnabled;
     source->IsEnabled(&isEnabled);
     result->SetEnabled(isEnabled);
-    String pkName;
-    source->GetPackageName(&pkName);
+    AutoPtr<ICharSequence> pkName;
+    source->GetPackageName((ICharSequence**)&pkName);
     result->SetPackageName(pkName);
-    String className;
-    source->GetClassName(&className);
+    AutoPtr<ICharSequence> className;
+    source->GetClassName((ICharSequence**)&className);
     result->SetClassName(className);
 
     // Add the Chrome root node.
     if (IsFrameInfoInitialized()) {
-        result->AddChild(mView, rootId);
+        result->AddChild(view, rootId);
     }
 
     return result;
@@ -422,7 +482,7 @@ void BrowserAccessibilityManager::HandlePageLoaded(
 void BrowserAccessibilityManager::HandleFocusChanged(
     /* [in] */ Int32 id)
 {
-    sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    SendAccessibilityEvent(id, IAccessibilityEvent::TYPE_VIEW_FOCUSED);
 
     // Update accessibility focus if not already set to this node.
     if (mAccessibilityFocusId != id) {
@@ -459,7 +519,8 @@ void BrowserAccessibilityManager::HandleContentChanged(
     Int32 rootId = NativeGetRootId(mNativeObj);
     if (rootId != mCurrentRootId) {
         mCurrentRootId = rootId;
-        mView->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
+        AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+        view->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
     }
     else {
         SendAccessibilityEvent(id, IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
@@ -472,7 +533,8 @@ void BrowserAccessibilityManager::HandleNavigate()
     mAccessibilityFocusId = IView::NO_ID;
     mUserHasTouchExplored = FALSE;
     // Invalidate the host, since its child is now gone.
-    mView->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    view->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED);
 }
 
 //@CalledByNative
@@ -510,7 +572,12 @@ void BrowserAccessibilityManager::HandleHover(
 void BrowserAccessibilityManager::AnnounceLiveRegionText(
     /* [in] */ const String& text)
 {
-    mView->AnnounceForAccessibility(text);
+    AutoPtr<ICharSequence> textCS;
+    assert(0);
+    // TODO
+    // CString::New(text, (ICharSequence**)&textCS);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    view->AnnounceForAccessibility(textCS);
 }
 
 //@CalledByNative
@@ -518,7 +585,8 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoParent(
     /* [in] */ IAccessibilityNodeInfo* node,
     /* [in] */ Int32 parentId)
 {
-    node->SetParent(mView, parentId);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    node->SetParent(view, parentId);
 }
 
 //@CalledByNative
@@ -526,7 +594,8 @@ void BrowserAccessibilityManager::AddAccessibilityNodeInfoChild(
     /* [in] */ IAccessibilityNodeInfo* node,
     /* [in] */ Int32 childId)
 {
-    node->AddChild(mView, childId);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    node->AddChild(view, childId);
 }
 
 //@CalledByNative
@@ -586,7 +655,11 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoClassName(
     /* [in] */ IAccessibilityNodeInfo* node,
     /* [in] */ const String& className)
 {
-    node->SetClassName(className);
+    AutoPtr<ICharSequence> classNameCS;
+    assert(0);
+    // TODO
+    // CString::New(className, (ICharSequence**)&classNameCS);
+    node->SetClassName(classNameCS);
 }
 
 //@CalledByNative
@@ -597,16 +670,24 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoContentDescription(
 {
     if (annotateAsLink) {
         AutoPtr<ISpannableString> spannable;
-        CSpannableString(contentDescription, (ISpannableString**)&spannable);
+        assert(0);
+        // TODO
+        // CSpannableString::New(contentDescription, (ISpannableString**)&spannable);
         AutoPtr<IURLSpan> URLSpan;
-        CURLSpan::New(String(""), (IURLSpan**)&URLSpan);
+        assert(0);
+        // TODO
+        // CURLSpan::New(String(""), (IURLSpan**)&URLSpan);
         Int32 length;
-        spannable->GetLength(&length);
-        spannable->SetSpan(URLSpan, 0, length, 0);
-        node->SetContentDescription(spannable);
+        ((ICharSequence*)spannable->Probe(EIID_ICharSequence))->GetLength(&length);
+        ((ISpannable*)spannable->Probe(EIID_ISpannable))->SetSpan(URLSpan, 0, length, 0);
+        node->SetContentDescription((ICharSequence*)spannable->Probe(EIID_ICharSequence));
     }
     else {
-        node->SetContentDescription(contentDescription);
+        AutoPtr<ICharSequence> contentDescriptionCS;
+        assert(0);
+        // TODO
+        // CString::New(contentDescription, (ICharSequence**)&contentDescriptionCS);
+        node->SetContentDescription(contentDescriptionCS);
     }
 }
 
@@ -623,8 +704,10 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
 {
     // First set the bounds in parent.
     AutoPtr<IRect> boundsInParent;
-    CRect::New(parentRelativeLeft, parentRelativeTop,
-            parentRelativeLeft + width, parentRelativeTop + height, (IRect**)&boundsInParent);
+    assert(0);
+    // TODO
+    // CRect::New(parentRelativeLeft, parentRelativeTop,
+    //         parentRelativeLeft + width, parentRelativeTop + height, (IRect**)&boundsInParent);
     if (isRootNode) {
         // Offset of the web content relative to the View.
         boundsInParent->Offset(0, (Int32) mRenderCoordinates->GetContentOffsetYPix());
@@ -634,7 +717,9 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
 
     // Now set the absolute rect, which requires several transformations.
     AutoPtr<IRect> rect;
-    CRect::New(absoluteLeft, absoluteTop, absoluteLeft + width, absoluteTop + height, (IRect**)&rect);
+    assert(0);
+    // TODO
+    // CRect::New(absoluteLeft, absoluteTop, absoluteLeft + width, absoluteTop + height, (IRect**)&rect);
 
     // Offset by the scroll position.
     rect->Offset(-(Int32) mRenderCoordinates->GetScrollX(),
@@ -660,7 +745,10 @@ void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
 
     // Finally offset by the location of the view within the screen.
     AutoPtr< ArrayOf<Int32> > viewLocation = ArrayOf<Int32>::Alloc(2);
-    mView->GetLocationOnScreen(viewLocation);
+    AutoPtr<IView> view = (IView*)mView->Probe(EIID_IView);
+    assert(0);
+    // TODO
+    // view->GetLocationOnScreen(viewLocation);
     rect->Offset((*viewLocation)[0], (*viewLocation)[1]);
 
     node->SetBoundsInScreen(rect);
@@ -720,10 +808,11 @@ void BrowserAccessibilityManager::SetAccessibilityEventBooleanAttributes(
     /* [in] */ Boolean password,
     /* [in] */ Boolean scrollable)
 {
-    event->SetChecked(checked);
-    event->SetEnabled(enabled);
-    event->SetPassword(password);
-    event->SetScrollable(scrollable);
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->SetChecked(checked);
+    record->SetEnabled(enabled);
+    record->SetPassword(password);
+    record->SetScrollable(scrollable);
 }
 
 //@CalledByNative
@@ -731,7 +820,12 @@ void BrowserAccessibilityManager::SetAccessibilityEventClassName(
     /* [in] */ IAccessibilityEvent* event,
     /* [in] */ const String& className)
 {
-    event->SetClassName(className);
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    AutoPtr<ICharSequence> classNameCS;
+    assert(0);
+    // TODO
+    // CString::New(className, (ICharSequence**)&classNameCS);
+    record->SetClassName(classNameCS);
 }
 
 //@CalledByNative
@@ -740,8 +834,9 @@ void BrowserAccessibilityManager::SetAccessibilityEventListAttributes(
     /* [in] */ Int32 currentItemIndex,
     /* [in] */ Int32 itemCount)
 {
-    event->SetCurrentItemIndex(currentItemIndex);
-    event->SetItemCount(itemCount);
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->SetCurrentItemIndex(currentItemIndex);
+    record->SetItemCount(itemCount);
 }
 
 //@CalledByNative
@@ -752,10 +847,11 @@ void BrowserAccessibilityManager::SetAccessibilityEventScrollAttributes(
     /* [in] */ Int32 maxScrollX,
     /* [in] */ Int32 maxScrollY)
 {
-    event.setScrollX(scrollX);
-    event.setScrollY(scrollY);
-    event.setMaxScrollX(maxScrollX);
-    event.setMaxScrollY(maxScrollY);
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->SetScrollX(scrollX);
+    record->SetScrollY(scrollY);
+    record->SetMaxScrollX(maxScrollX);
+    record->SetMaxScrollY(maxScrollY);
 }
 
 //@CalledByNative
@@ -767,13 +863,22 @@ void BrowserAccessibilityManager::SetAccessibilityEventTextChangedAttrs(
     /* [in] */ const String& beforeText,
     /* [in] */ const String& text)
 {
-    event->SetFromIndex(fromIndex);
-    event->SetAddedCount(addedCount);
-    event->SetRemovedCount(removedCount);
-    event->SetBeforeText(beforeText);
-    AutoPtr<IObjectContainer> container;
-    event->GetText((IObjectContainer**)&container);
-    container->Add(text);
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->SetFromIndex(fromIndex);
+    record->SetAddedCount(addedCount);
+    record->SetRemovedCount(removedCount);
+    AutoPtr<ICharSequence> beforeTextCS;
+    assert(0);
+    // TODO
+    // CString::New(beforeText, (ICharSequence**)&beforeTextCS);
+    record->SetBeforeText(beforeTextCS);
+    AutoPtr<IList> container;
+    record->GetText((IList**)&container);
+    AutoPtr<ICharSequence> textCS;
+    assert(0);
+    // TODO
+    // CString::New(text, (ICharSequence**)&textCS);
+    container->Add(textCS);
 }
 
 //@CalledByNative
@@ -784,12 +889,17 @@ void BrowserAccessibilityManager::SetAccessibilityEventSelectionAttrs(
     /* [in] */ Int32 itemCount,
     /* [in] */ const String& text)
 {
-    event->SetFromIndex(fromIndex);
-    event->SetAddedCount(addedCount);
-    event->SetItemCount(itemCount);
-    AutoPtr<IObjectContainer> container;
-    event->GetText((IObjectContainer**)&container);
-    container->Add(text);
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->SetFromIndex(fromIndex);
+    record->SetAddedCount(addedCount);
+    record->SetItemCount(itemCount);
+    AutoPtr<IList> container;
+    record->GetText((IList**)&container);
+    AutoPtr<ICharSequence> textCS;
+    assert(0);
+    // TODO
+    // CString::New(text, (ICharSequence**)&textCS);
+    container->Add(textCS);
 }
 
 //@CalledByNative

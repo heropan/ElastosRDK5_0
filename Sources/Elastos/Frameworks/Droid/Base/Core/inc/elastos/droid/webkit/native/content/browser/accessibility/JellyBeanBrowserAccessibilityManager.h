@@ -2,9 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_JELLYBEANBROWSERACCESSIBILITYMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_JELLYBEANBROWSERACCESSIBILITYMANAGER_H__
 
-// import android.os.Bundle;
-// import android.view.accessibility.AccessibilityNodeInfo;
-// import android.view.accessibility.AccessibilityNodeProvider;
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
+
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
 
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content.browser.ContentViewCore;
@@ -16,6 +19,9 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+
 namespace Accessibility {
 
 /**
@@ -31,6 +37,8 @@ private:
         , public IAccessibilityNodeProvider
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerAccessibilityNodeProvider(
             /* [in] */ JellyBeanBrowserAccessibilityManager* owner);
 
@@ -43,7 +51,7 @@ private:
         CARAPI FindAccessibilityNodeInfosByText(
             /* [in] */ const String& text,
             /* [in] */ Int32 virtualViewId,
-            /* [out] */ IObjectContainer** nodeInfos);
+            /* [out] */ IList** nodeInfos);
 
         //@Override
         CARAPI PerformAction(

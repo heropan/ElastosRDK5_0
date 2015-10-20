@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_KITKATBROWSERACCESSIBILITYManager_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_KITKATBROWSERACCESSIBILITYManager_H__
 
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.AccessibilityNodeInfo;
+#include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanBrowserAccessibilityManager.h"
+
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content.browser.ContentViewCore;
@@ -13,6 +15,9 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class ContentViewCore;
+
 namespace Accessibility {
 
 /**

@@ -1,4 +1,7 @@
 
+#include "elastos/droid/webkit/native/content/browser/input/SelectPopupItem.h"
+#include "elastos/droid/webkit/native/content/browser/input/PopupItemType.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -23,7 +26,7 @@ String SelectPopupItem::GetLabel()
 //@Override
 String SelectPopupItem::GetSublabel()
 {
-    return NULL;
+    return String(NULL);
 }
 
 //@Override

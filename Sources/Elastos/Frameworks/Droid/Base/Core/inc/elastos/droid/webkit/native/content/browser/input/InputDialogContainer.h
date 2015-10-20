@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__
 
-#include "ext/frameworkext.h"
-#include "webkit/native/content/browser/input/DateTimePickerDialog.h"
-#include "webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
-#include "webkit/native/content/browser/input/MultiFieldTimePickerDialog.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/input/DateTimePickerDialog.h"
+#include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
+#include "elastos/droid/webkit/native/content/browser/input/MultiFieldTimePickerDialog.h"
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::IDatePickerDialogOnDateSetListener;

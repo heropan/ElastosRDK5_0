@@ -17,7 +17,7 @@ namespace Ui {
 /**
   * Dropdown item interface used to access all the information needed to show the item.
   */
-class DropdownItem : public Object
+class DropdownItem : public ElRefBase
 {
 public:
     /**

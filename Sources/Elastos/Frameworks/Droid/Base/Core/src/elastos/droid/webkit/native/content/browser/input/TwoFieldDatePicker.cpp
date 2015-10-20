@@ -1,4 +1,15 @@
 
+#include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePicker.h"
+
+using Elastos::Core::IString;
+using Elastos::Utility::IList;
+using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::ITimeZoneHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
+using Elastos::Droid::Widget::EIID_IFrameLayout;
+using Elastos::Droid::Widget::EIID_INumberPickerOnValueChangeListener;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,6 +20,8 @@ namespace Input {
 //==================================================================
 //   TwoFieldDatePicker::InnerNumberPickerOnValueChangeListener
 //==================================================================
+
+CAR_INTERFACE_IMPL(TwoFieldDatePicker::InnerNumberPickerOnValueChangeListener, Object, INumberPickerOnValueChangeListener);
 
 TwoFieldDatePicker::InnerNumberPickerOnValueChangeListener::InnerNumberPickerOnValueChangeListener(
     /* [in] */ TwoFieldDatePicker* owner)
@@ -72,19 +85,28 @@ TwoFieldDatePicker::TwoFieldDatePicker(
     // super(context, NULL, android::R::attr::datePickerStyle);
 
     AutoPtr<ILayoutInflater> inflater;
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICEj, (IInterface**)&inflater);
-    inflater->Inflate(R::layout::two_field_date_picker, this, TRUE);
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+    assert(0);
+    // TODO
+    // inflater->Inflate(R::layout::two_field_date_picker, this, TRUE);
 
     AutoPtr<INumberPickerOnValueChangeListener> onChangeListener = new InnerNumberPickerOnValueChangeListener(this);
 
     AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
-    mCurrentDate
-    helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&mCurrentDate);
+    assert(0);
+    // TODO
+    // CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    AutoPtr<ITimeZoneHelper> timeZoneHelper;
+    assert(0);
+    // TODO
+    // CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&timeZoneHelper);
+    AutoPtr<ITimeZone> timeZome;
+    timeZoneHelper->GetTimeZone(String("UTC"), (ITimeZone**)&timeZome);
+    helper->GetInstance(timeZome, (ICalendar**)&mCurrentDate);
     if (minValue >= maxValue) {
-        helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&mMinDate);
+        helper->GetInstance(timeZome, (ICalendar**)&mMinDate);
         mMinDate->Set(0, 0, 1);
-        helper->GetInstance(TimeZone::GetTimeZone(String("UTC")), (ICalendar**)&mMaxDate);
+        helper->GetInstance(timeZome, (ICalendar**)&mMaxDate);
         mMaxDate->Set(9999, 0, 1);
     }
     else {
@@ -93,12 +115,16 @@ TwoFieldDatePicker::TwoFieldDatePicker(
     }
 
     // month
-    FindViewById(R::id::position_in_year, (IView**)&mPositionInYearSpinner);
+    assert(0);
+    // TODO
+    // FindViewById(R::id::position_in_year, (IView**)&mPositionInYearSpinner);
     mPositionInYearSpinner->SetOnLongPressUpdateInterval(200);
     mPositionInYearSpinner->SetOnValueChangedListener(onChangeListener);
 
     // year
-    FindViewById(R::id::year, (IView**)&mYearSpinner);
+    assert(0);
+    // TODO
+    // FindViewById(R::id::year, (IView**)&mYearSpinner);
     mYearSpinner->SetOnLongPressUpdateInterval(100);
     mYearSpinner->SetOnValueChangedListener(onChangeListener);
 }
@@ -171,19 +197,30 @@ ECode TwoFieldDatePicker::DispatchPopulateAccessibilityEvent(
 ECode TwoFieldDatePicker::OnPopulateAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    super.onPopulateAccessibilityEvent(event);
+    assert(0);
+    // TODO
+    // super.onPopulateAccessibilityEvent(event);
 
-    const Int32 flags = DateUtils::FORMAT_SHOW_DATE | DateUtils::FORMAT_SHOW_YEAR;
+    const Int32 flags = IDateUtils::FORMAT_SHOW_DATE | IDateUtils::FORMAT_SHOW_YEAR;
     AutoPtr<IDateUtils> dateUtils;
-    CDateUtils::AcquireSingleton((IDateUtils**)&dateUtils);
+    assert(0);
+    // TODO
+    // CDateUtils::AcquireSingleton((IDateUtils**)&dateUtils);
     Int64 millis;
     mCurrentDate->GetTimeInMillis(&millis);
     String selectedDateUtterance;
-    dateUtils->FormatDateTime(GetContext(),
-            millis, flags);
-    AutoPtr<IObjectContainer> text;
-    event->GetText((IObjectContainer**)&text);
-    text->Add(selectedDateUtterance);
+    assert(0);
+    // TODO
+    // dateUtils->FormatDateTime(GetContext(),
+    //         millis, flags);
+    AutoPtr<IList> text;
+    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    record->GetText((IList**)&text);
+    AutoPtr<IString> str;
+    assert(0);
+    // TODO
+    // CString::New(selectedDateUtterance, (IString**)&str)
+    text->Add(str);
 
     return NOERROR;
 }
@@ -235,9 +272,9 @@ void TwoFieldDatePicker::UpdateSpinners()
     mPositionInYearSpinner->SetMaxValue(GetMaxPositionInYear(GetYear()));
     Boolean bMinDate, bMaxDate;
     mCurrentDate->Equals(mMinDate, &bMinDate);
-    mCurrentDate->Equals(mMaxDate, &maxValue);
+    mCurrentDate->Equals(mMaxDate, &bMaxDate);
     mPositionInYearSpinner->SetWrapSelectorWheel(
-            !bMinDate && !maxValue);
+            !bMinDate && !bMaxDate);
 
     // year spinner range does not change based on the current date
     mYearSpinner->SetMinValue(GetMinYear());
@@ -254,7 +291,9 @@ void TwoFieldDatePicker::UpdateSpinners()
  */
 void TwoFieldDatePicker::NotifyDateChanged()
 {
-    SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SELECTED);
+    assert(0);
+    // TODO
+    // SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SELECTED);
     if (mMonthOrWeekChangedListener != NULL) {
         mMonthOrWeekChangedListener->OnMonthOrWeekChanged(this, GetYear(), GetPositionInYear());
     }

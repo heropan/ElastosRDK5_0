@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_BYTEARRAYGENERATOR_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_BYTEARRAYGENERATOR_H__
 
-// import java.io.FileInputStream;
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::IO::IFileInputStream;
 // import java.io.IOException;
 // import java.security.GeneralSecurityException;
 
@@ -17,7 +19,9 @@ namespace Crypto {
  * Generates byte arrays for use in crypto algorithms. Defaults to pulling random data
  * from /dev/urandom, but can be overwritten for other generation methods.
  */
-class ByteArrayGenerator {
+class ByteArrayGenerator
+{
+public:
     /**
      * Polls random data to generate the array.
      * @param numBytes Length of the array to generate.

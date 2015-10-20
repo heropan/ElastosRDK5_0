@@ -2,9 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_CIPHERFACTORY_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_CIPHERFACTORY_H__
 
-// import android.os.AsyncTask;
-// import android.os.Bundle;
-// import android.util.Log;
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Droid::Os::IAsyncTask;
+using Elastos::Droid::Os::IBundle;
+
+using Elastos::Utility::Concurrent::ICallable;
 
 // import java.security.GeneralSecurityException;
 // import java.security.Key;
@@ -26,6 +29,8 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 namespace Crypto {
+
+class ByteArrayGenerator;
 
 /**
  * Generates {@link Cipher} instances for encrypting session data that is temporarily stored.
@@ -52,7 +57,7 @@ class CipherFactory
 {
 private:
     /** Holds intermediate data for the computation. */
-    class CipherData
+    class CipherData : public Object
     {
     public:
         CipherData(
@@ -149,7 +154,7 @@ private:
      * {@link ByteArrayGenerator#getBytes(int)}.
      * @return Callable that generates the Cipher data.
      */
-    CARAPI_(Callable<CipherData>) CreateGeneratorCallable();
+    CARAPI_(AutoPtr<ICallable>) CreateGeneratorCallable();
 
 private:
     static const String TAG;
@@ -158,10 +163,10 @@ private:
      * Synchronization primitive to prevent thrashing the cipher parameters between threads
      * attempting to restore previous parameters and generate new ones.
      */
-    const Object mDataLock;
+    /*const*/ Object mDataLock;
 
     /** Used to generate data needed for the Cipher on a background thread. */
-    FutureTask<CipherData> mDataGenerator;
+    // FutureTask<CipherData> mDataGenerator;
 
     /** Holds data for cipher generation. */
     AutoPtr<CipherData> mData;

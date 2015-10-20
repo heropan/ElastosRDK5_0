@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDROPDOWN_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/input/SelectPopup.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
@@ -59,6 +60,8 @@ private:
         , public IAdapterViewOnItemClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerAdapterViewOnItemClickListener(
             /* [in] */ SelectPopupDropdown* owner);
 
@@ -77,6 +80,8 @@ private:
         , public IPopupWindowOnDismissListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerPopupWindowOnDismissListener(
             /* [in] */ SelectPopupDropdown* owner);
 
@@ -100,8 +105,8 @@ public:
     CARAPI_(void) Hide();
 
 private:
-    const AutoPtr<ContentViewCore> mContentViewCore;
-    const AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<ContentViewCore> mContentViewCore;
+    /*const*/ AutoPtr<IContext> mContext;
 
     AutoPtr<DropdownPopupWindow> mDropdownPopupWindow;
     Int32 mInitialSelection;

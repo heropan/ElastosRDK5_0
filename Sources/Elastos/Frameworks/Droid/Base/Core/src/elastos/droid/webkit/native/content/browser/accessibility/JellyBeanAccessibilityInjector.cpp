@@ -1,4 +1,14 @@
 
+#include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanAccessibilityInjector.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/StringUtils.h"
+
+using Elastos::Core::AutoLock;
+using Elastos::Core::StringUtils;
+using Elastos::Droid::Os::SystemClock;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -30,10 +40,12 @@ const String JellyBeanAccessibilityInjector::CallbackHandler::JAVASCRIPT_ACTION_
 // Time in milliseconds to wait for a result before failing.
 const Int64 JellyBeanAccessibilityInjector::CallbackHandler::RESULT_TIMEOUT;
 
-static AutoPtr<IAtomicInteger> mResultIdCounter_init()
+static AutoPtr<IAtomicInteger32> mResultIdCounter_init()
 {
-    AutoPtr<IAtomicInteger> ai;
-    CAtomicInteger::New((IAtomicInteger**)&ai);
+    AutoPtr<IAtomicInteger32> ai;
+    assert(0);
+    // TODO
+    // CAtomicInteger::New((IAtomicInteger32**)&ai);
     return ai;
 }
 
@@ -59,9 +71,11 @@ Boolean JellyBeanAccessibilityInjector::CallbackHandler::PerformAction(
 {
     Int32 resultId;
     mResultIdCounter->GetAndIncrement(&resultId);
-    const String js = String::Format(ILocale::US, JAVASCRIPT_ACTION_TEMPLATE, code,
-            mInterfaceName, resultId);
-    contentView->EvaluateJavaScript(js, NULL);
+    assert(0);
+    // TODO
+    // const String js = String::Format(ILocale::US, JAVASCRIPT_ACTION_TEMPLATE, code,
+    //         mInterfaceName, resultId);
+    // contentView->EvaluateJavaScript(js, NULL);
 
     return GetResultAndClear(resultId);
 }
@@ -102,15 +116,15 @@ Boolean JellyBeanAccessibilityInjector::CallbackHandler::WaitForResultTimedLocke
     /* [in] */ Int32 resultId)
 {
     Int64 waitTimeMillis = RESULT_TIMEOUT;
-    const Int64 startTimeMillis = SystemClock::UptimeMillis();
+    const Int64 startTimeMillis = SystemClock::GetUptimeMillis();
     while (TRUE) {
         // try {
             if (mResultId == resultId) return TRUE;
             if (mResultId > resultId) return FALSE;
-            const Int64 elapsedTimeMillis = SystemClock::UptimeMillis() - startTimeMillis;
+            const Int64 elapsedTimeMillis = SystemClock::GetUptimeMillis() - startTimeMillis;
             waitTimeMillis = RESULT_TIMEOUT - elapsedTimeMillis;
             if (waitTimeMillis <= 0) return FALSE;
-            mResultLock->Wait(waitTimeMillis);
+            mResultLock.Wait(waitTimeMillis);
         // } catch (InterruptedException ie) {
         //     /* ignore */
         // }
@@ -132,7 +146,7 @@ void JellyBeanAccessibilityInjector::CallbackHandler::OnResult(
 {
     Int64 resultId;
     // try {
-        resultId = Long.parseLong(id);
+        resultId = StringUtils::ParseInt64(id);
     // } catch (NumberFormatException e) {
     //     return;
     // }
@@ -140,7 +154,9 @@ void JellyBeanAccessibilityInjector::CallbackHandler::OnResult(
     {
         AutoLock lock(mResultLock);
         if (resultId > mResultId) {
-            mResult = Boolean.parseBoolean(result);
+            assert(0);
+            // TODO
+            // mResult = Boolean.parseBoolean(result);
             mResultId = resultId;
         }
         mResultLock.NotifyAll();
@@ -222,7 +238,9 @@ void JellyBeanAccessibilityInjector::AddAccessibilityApis()
 
     AutoPtr<IContext> context = mContentViewCore->GetContext();
     if (context != NULL && mCallback == NULL) {
-        mCallback = new CallbackHandler(ALIAS_TRAVERSAL_JS_INTERFACE);
+        assert(0);
+        // TODO
+        // CCallbackHandler::New(ALIAS_TRAVERSAL_JS_INTERFACE, (ICallbackHandler**)&mCallback);
         mContentViewCore->AddJavascriptInterface(mCallback, ALIAS_TRAVERSAL_JS_INTERFACE);
     }
 }
@@ -250,46 +268,60 @@ Boolean JellyBeanAccessibilityInjector::SendActionToAndroidVox(
     /* [in] */ IBundle* arguments)
 {
     if (mCallback == NULL) return FALSE;
-    if (mAccessibilityJSONObject == NULL) {
-        CJSONObject::New((IJSONObject**)&mAccessibilityJSONObject);
-    }
-    else {
-        // Remove all keys from the object.
-        final Iterator<?> keys = mAccessibilityJSONObject.keys();
-        while (keys->HasNext()) {
-            keys->Next();
-            keys->Remove();
-        }
-    }
+
+    assert(0);
+    // TODO
+    // if (mAccessibilityJSONObject == NULL) {
+    //     CJSONObject::New((IJSONObject**)&mAccessibilityJSONObject);
+    // }
+    // else {
+    //     // Remove all keys from the object.
+    //     final Iterator<?> keys = mAccessibilityJSONObject.keys();
+    //     while (keys->HasNext()) {
+    //         keys->Next();
+    //         keys->Remove();
+    //     }
+    // }
 
     // try {
-        mAccessibilityJSONObject->Accumulate(String("action"), action);
-        if (arguments != NULL) {
-            if (action == IAccessibilityNodeInfo::ACTION_NEXT_AT_MOVEMENT_GRANULARITY ||
-                    action == IAccessibilityNodeInfo::ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY) {
-                Int32 granularity;
-                arguments->GetInt32(IAccessibilityNodeInfo::ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT,
-                    &granularity);
-                mAccessibilityJSONObject->Accumulate(String("granularity"), granularity);
-            }
-            else if (action == IAccessibilityNodeInfo::ACTION_NEXT_HTML_ELEMENT ||
-                    action == IAccessibilityNodeInfo::ACTION_PREVIOUS_HTML_ELEMENT) {
-                String element;
-                arguments->GetString(
-                        IAccessibilityNodeInfo::ACTION_ARGUMENT_HTML_ELEMENT_STRING,
-                        &element);
-                mAccessibilityJSONObject->Accumulate(String("element"), element);
-            }
-        }
+        assert(0);
+        // TODO
+        // mAccessibilityJSONObject->Accumulate(String("action"), action);
+        // if (arguments != NULL) {
+        //     if (action == IAccessibilityNodeInfo::ACTION_NEXT_AT_MOVEMENT_GRANULARITY ||
+        //             action == IAccessibilityNodeInfo::ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY) {
+        //         Int32 granularity;
+        //         arguments->GetInt32(IAccessibilityNodeInfo::ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT,
+        //             &granularity);
+        //         mAccessibilityJSONObject->Accumulate(String("granularity"), granularity);
+        //     }
+        //     else if (action == IAccessibilityNodeInfo::ACTION_NEXT_HTML_ELEMENT ||
+        //             action == IAccessibilityNodeInfo::ACTION_PREVIOUS_HTML_ELEMENT) {
+        //         String element;
+        //         arguments->GetString(
+        //                 IAccessibilityNodeInfo::ACTION_ARGUMENT_HTML_ELEMENT_STRING,
+        //                 &element);
+        //         mAccessibilityJSONObject->Accumulate(String("element"), element);
+        //     }
+        // }
     // } catch (JSONException ex) {
     //     return false;
     // }
 
     String jsonString;
-    mAccessibilityJSONObject->ToString(&jsonString);
-    const String jsCode = String.Format(ILocale::US, ACCESSIBILITY_ANDROIDVOX_TEMPLATE,
-            jsonString);
-    return mCallback->PerformAction(mContentViewCore, jsCode);
+    assert(0);
+    // TODO
+    // mAccessibilityJSONObject->ToString(&jsonString);
+    const String jsCode;
+    assert(0);
+    // TODO
+    // jsCode = String.Format(ILocale::US, ACCESSIBILITY_ANDROIDVOX_TEMPLATE,
+    //         jsonString);
+    Boolean result = FALSE;
+    assert(0);
+    // TODO
+    // mCallback->PerformAction(mContentViewCore, jsCode, &result);
+    return result;
 }
 
 } // namespace Accessibility

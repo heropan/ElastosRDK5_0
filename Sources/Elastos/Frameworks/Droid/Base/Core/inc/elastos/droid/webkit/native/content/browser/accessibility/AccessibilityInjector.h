@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/webkit/native/content/browser/WebContentsObserverAndroid.h"
 
-//using Elastos::Droid::Accessibilityservice::IAccessibilityServiceInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Os::Build;
@@ -16,6 +16,7 @@ using Elastos::Droid::Speech::Tts::ITextToSpeech;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::Webkit::Content::Browser::WebContentsObserverAndroid;
 
 // import com.googlecode.eyesfree.braille.selfbraille.SelfBrailleClient;
 // import com.googlecode.eyesfree.braille.selfbraille.WriteData;
@@ -58,7 +59,7 @@ private:
      *
      * Also only exposes methods we *want* to expose, no others for the class.
      */
-    class VibratorWrapper
+    class VibratorWrapper : public Object
     {
     public:
         VibratorWrapper(
@@ -92,8 +93,9 @@ private:
     /**
      * Used to protect the TextToSpeech class, only exposing the methods we want to expose.
      */
-    class TextToSpeechWrapper
+    class TextToSpeechWrapper : public Object
     {
+        friend class AccessibilityInjector;
     public:
         TextToSpeechWrapper(
             /* [in] */ IView* view,
@@ -262,7 +264,7 @@ private:
     // The Java objects that are exposed to JavaScript
     AutoPtr<TextToSpeechWrapper> mTextToSpeech;
     AutoPtr<VibratorWrapper> mVibrator;
-    const Boolean mHasVibratePermission;
+    /*const*/ Boolean mHasVibratePermission;
 
     // Lazily loaded helper objects.
     AutoPtr<IAccessibilityManager> mAccessibilityManager;

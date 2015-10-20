@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKERDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKERDIALOG_H__
 
-#include "webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
+#include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
 
 // import android.content.Context;
 
@@ -14,6 +14,8 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 namespace Input {
+
+class WeekPicker;
 
 class WeekPickerDialog
     : public TwoFieldDatePickerDialog

@@ -1,4 +1,9 @@
 
+#include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanBrowserAccessibilityManager.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityNodeProvider;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,6 +14,8 @@ namespace Accessibility {
 //=================================================================================
 //       JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider
 //=================================================================================
+
+CAR_INTERFACE_IMPL(JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider, Object, IAccessibilityNodeProvider);
 
 JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::InnerAccessibilityNodeProvider(
     /* [in] */ JellyBeanBrowserAccessibilityManager* owner)
@@ -31,7 +38,7 @@ ECode JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::Crea
 ECode JellyBeanBrowserAccessibilityManager::InnerAccessibilityNodeProvider::FindAccessibilityNodeInfosByText(
     /* [in] */ const String& text,
     /* [in] */ Int32 virtualViewId,
-    /* [out] */ IObjectContainer** nodeInfos)
+    /* [out] */ IList** nodeInfos)
 {
     VALIDATE_NOT_NULL(nodeInfos);
     *nodeInfos = mOwner->FindAccessibilityNodeInfosByText(text, virtualViewId);
@@ -61,7 +68,9 @@ JellyBeanBrowserAccessibilityManager::JellyBeanBrowserAccessibilityManager(
     /* [in] */ ContentViewCore* contentViewCore)
     : BrowserAccessibilityManager(nativeBrowserAccessibilityManagerAndroid, contentViewCore)
 {
-    mAccessibilityNodeProvider = new InnerAccessibilityNodeProvider(this);
+    assert(0);
+    // TODO
+    // mAccessibilityNodeProvider = new InnerAccessibilityNodeProvider(this);
 }
 
 //@Override

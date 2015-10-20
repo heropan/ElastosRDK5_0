@@ -17,6 +17,9 @@ namespace Droid {
 namespace Webkit {
 namespace Content {
 namespace Browser {
+
+class PositionObserver;
+
 namespace Input {
 
 /**

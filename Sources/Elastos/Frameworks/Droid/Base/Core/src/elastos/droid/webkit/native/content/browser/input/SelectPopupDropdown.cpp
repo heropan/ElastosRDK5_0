@@ -1,4 +1,17 @@
 
+#include "elastos/droid/webkit/native/content/browser/input/SelectPopupDropdown.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
+#include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
+#include "elastos/droid/webkit/native/ui/DropdownItem.h"
+
+using Elastos::Droid::Webkit::Ui::DropdownAdapter;
+using Elastos::Droid::Webkit::Ui::DropdownItem;
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
+using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
+using Elastos::Droid::Widget::EIID_IListAdapter;
+using Elastos::Droid::Widget::IListAdapter;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,6 +22,8 @@ namespace Input {
 //==================================================================
 //    SelectPopupDropdown::InnerAdapterViewOnItemClickListener
 //==================================================================
+
+CAR_INTERFACE_IMPL(SelectPopupDropdown::InnerAdapterViewOnItemClickListener, Object, IAdapterViewOnItemClickListener);
 
 SelectPopupDropdown::InnerAdapterViewOnItemClickListener::InnerAdapterViewOnItemClickListener(
     /* [in] */ SelectPopupDropdown* owner)
@@ -24,9 +39,9 @@ ECode SelectPopupDropdown::InnerAdapterViewOnItemClickListener::OnItemClick(
 {
     AutoPtr< ArrayOf<Int32> > selectedIndices = ArrayOf<Int32>::Alloc(1);
     (*selectedIndices)[0] = position;
-    mContentViewCore->SelectPopupMenuItems(selectedIndices);
-    mAlreadySelectedItems = TRUE;
-    Hide();
+    mOwner->mContentViewCore->SelectPopupMenuItems(selectedIndices);
+    mOwner->mAlreadySelectedItems = TRUE;
+    mOwner->Hide();
 
     return NOERROR;
 }
@@ -34,6 +49,8 @@ ECode SelectPopupDropdown::InnerAdapterViewOnItemClickListener::OnItemClick(
 //==================================================================
 //     SelectPopupDropdown::InnerPopupWindowOnDismissListener
 //==================================================================
+
+CAR_INTERFACE_IMPL(SelectPopupDropdown::InnerPopupWindowOnDismissListener, Object, IPopupWindowOnDismissListener);
 
 SelectPopupDropdown::InnerPopupWindowOnDismissListener::InnerPopupWindowOnDismissListener(
     /* [in] */ SelectPopupDropdown* owner)
@@ -43,8 +60,8 @@ SelectPopupDropdown::InnerPopupWindowOnDismissListener::InnerPopupWindowOnDismis
 
 ECode SelectPopupDropdown::InnerPopupWindowOnDismissListener::OnDismiss()
 {
-    if (!mAlreadySelectedItems) {
-        mContentViewCore->SelectPopupMenuItems(NULL);
+    if (!mOwner->mAlreadySelectedItems) {
+        mOwner->mContentViewCore->SelectPopupMenuItems(NULL);
     }
 
     return NOERROR;
@@ -56,7 +73,7 @@ ECode SelectPopupDropdown::InnerPopupWindowOnDismissListener::OnDismiss()
 
 SelectPopupDropdown::SelectPopupDropdown(
     /* [in] */ ContentViewCore* contentViewCore,
-    /* [in] */ List<SelectPopupItem> items,
+    /* [in] */ IList* items,
     /* [in] */ IRect* bounds,
     /* [in] */ ArrayOf<Int32>* selected)
     : mInitialSelection(-1)
@@ -67,13 +84,25 @@ SelectPopupDropdown::SelectPopupDropdown(
     mDropdownPopupWindow = new DropdownPopupWindow(mContext,
             mContentViewCore->GetViewAndroidDelegate());
     AutoPtr<IAdapterViewOnItemClickListener> clickListener =  new InnerAdapterViewOnItemClickListener(this);
-    mDropdownPopupWindow->SetOnItemClickListener(clickListener);
+    assert(0);
+    // TODO
+    // mDropdownPopupWindow->SetOnItemClickListener(clickListener);
     if (selected->GetLength() > 0) {
         mInitialSelection = (*selected)[0];
     }
-    AutoPtr< ArrayOf<DropdownItem> > dropdownItems = items.toArray(new DropdownItem[items.size()]);
+    AutoPtr< ArrayOf<DropdownItem*> > dropdownItems;
+    Int32 size;
+    items->GetSize(&size);
+    AutoPtr< ArrayOf<DropdownItem*> > list = ArrayOf<DropdownItem*>::Alloc(size);
+    assert(0);
+    // TODO
+    // items->ToArray(list, (ArrayOf<DropdownItem*>**)&dropdownItems);
     AutoPtr<DropdownAdapter> adapter = new DropdownAdapter(mContext, dropdownItems, NULL);
-    mDropdownPopupWindow->SetAdapter(adapter);
+    AutoPtr<IListAdapter> listView;
+    assert(0);
+    // TODO
+    // listView = (IListAdapter*)adapter->Probe(EIID_IListAdapter);
+    mDropdownPopupWindow->SetAdapter(listView);
     AutoPtr<RenderCoordinates> renderCoordinates = mContentViewCore->GetRenderCoordinates();
     Int32 left;
     bounds->GetLeft(&left);
@@ -101,14 +130,18 @@ void SelectPopupDropdown::Show()
 {
     mDropdownPopupWindow->Show();
     if (mInitialSelection >= 0) {
-        mDropdownPopupWindow->GetListView()->SetSelection(mInitialSelection);
+        assert(0);
+        // TODO
+        // mDropdownPopupWindow->GetListView()->SetSelection(mInitialSelection);
     }
 }
 
 //@Override
 void SelectPopupDropdown::Hide()
 {
-    mDropdownPopupWindow->Dismiss();
+    assert(0);
+    // TODO
+    // mDropdownPopupWindow->Dismiss();
 }
 
 } // namespace Input

@@ -1,4 +1,10 @@
 
+#include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePickerDialog.h"
+
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::App::EIID_IAlertDialog;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -9,7 +15,11 @@ namespace Input {
 const String TwoFieldDatePickerDialog::YEAR("year");
 const String TwoFieldDatePickerDialog::POSITION_IN_YEAR("position_in_year");
 
-CAR_INTERFACE_IMPL_2(TwoFieldDatePickerDialog, Object, IAlertDialog, IDialogInterfaceOnClickListener);
+CAR_INTERFACE_IMPL_2(TwoFieldDatePickerDialog, TwoFieldDatePicker::OnMonthOrWeekChangedListener::Object, IAlertDialog, IDialogInterfaceOnClickListener);
+
+TwoFieldDatePickerDialog::TwoFieldDatePickerDialog()
+{
+}
 
 /**
  * @param context The context the dialog is to run in.
@@ -25,7 +35,7 @@ TwoFieldDatePickerDialog::TwoFieldDatePickerDialog(
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
 {
-    this(context, 0, callBack, year, positionInYear, minValue, maxValue);
+    Init(context, 0, callBack, year, positionInYear, minValue, maxValue);
 }
 
 /**
@@ -44,22 +54,47 @@ TwoFieldDatePickerDialog::TwoFieldDatePickerDialog(
     /* [in] */ Double minValue,
     /* [in] */ Double maxValue)
 {
-    super(context, theme);
+    Init(context, theme, callBack, year, positionInYear, minValue, maxValue);
+}
+
+
+void TwoFieldDatePickerDialog::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 theme,
+    /* [in] */ OnValueSetListener* callBack,
+    /* [in] */ Int32 year,
+    /* [in] */ Int32 positionInYear,
+    /* [in] */ Double minValue,
+    /* [in] */ Double maxValue)
+{
+    assert(0);
+    // TODO
+    // super(context, theme);
 
     mCallBack = callBack;
 
     AutoPtr<ICharSequence> setText;
-    context->GetText(
-            R::string::date_picker_dialog_set, (ICharSequence**)&setText);
-    SetButton(BUTTON_POSITIVE, setText, this);
+    assert(0);
+    // TODO
+    // context->GetText(
+    //         R::string::date_picker_dialog_set, (ICharSequence**)&setText);
+    assert(0);
+    // TODO
+    // SetButton(BUTTON_POSITIVE, setText, this);
     AutoPtr<ICharSequence> cancelText;
-    context->GetText(android::R::string::cancel, (ICharSequence**)&cancelText);
-    SetButton(BUTTON_NEGATIVE, cancelText,
-            (IDialogInterfaceOnClickListener*) NULL);
+    assert(0);
+    // TODO
+    // context->GetText(android::R::string::cancel, (ICharSequence**)&cancelText);
+    assert(0);
+    // TODO
+    // SetButton(BUTTON_NEGATIVE, cancelText,
+    //         (IDialogInterfaceOnClickListener*) NULL);
     SetIcon(0);
 
     mPicker = CreatePicker(context, minValue, maxValue);
-    SetView(mPicker);
+    assert(0);
+    // TODO
+    // SetView(mPicker);
     mPicker->Init(year, positionInYear, this);
 }
 
@@ -86,7 +121,9 @@ ECode TwoFieldDatePickerDialog::OnClick(
 void TwoFieldDatePickerDialog::TryNotifyDateSet()
 {
     if (mCallBack != NULL) {
-        mPicker->ClearFocus();
+        assert(0);
+        // TODO
+        // mPicker->ClearFocus();
         mCallBack->OnValueSet(mPicker->GetYear(), mPicker->GetPositionInYear());
     }
 }

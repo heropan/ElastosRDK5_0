@@ -1,6 +1,21 @@
 
-#ifndef __ACCESSIBILITYINJECTOR_H__
-#define __ACCESSIBILITYINJECTOR_H__
+#include "elastos/droid/webkit/native/content/browser/accessibility/AccessibilityInjector.h"
+#include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanAccessibilityInjector.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/common/ContentSwitches.h"
+#include "elastos/droid/webkit/native/base/CommandLine.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+
+// TODO using Elastos::Net::CURI;
+using Elastos::Net::IURI;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::IHashMap;
+// TODO using Elastos::Droid::Accessibilityservice::IAccessibilityServiceInfo;
+using Elastos::Droid::Webkit::Content::Common::ContentSwitches;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Base::CommandLine;
+using Elastos::Droid::View::EIID_IView;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +40,9 @@ AccessibilityInjector::VibratorWrapper::VibratorWrapper(
 //@SuppressWarnings("unused")
 Boolean AccessibilityInjector::VibratorWrapper::HasVibrator()
 {
-    return mVibrator->HasVibrator();
+    Boolean result = FALSE;
+    mVibrator->HasVibrator(&result);
+    return result;
 }
 
 //@JavascriptInterface
@@ -33,7 +50,7 @@ Boolean AccessibilityInjector::VibratorWrapper::HasVibrator()
 void AccessibilityInjector::VibratorWrapper::Vibrate(
     /* [in] */ Int64 milliseconds)
 {
-    milliseconds = Math::Min(milliseconds, MAX_VIBRATE_DURATION_MS);
+    milliseconds = Elastos::Core::Math::Min(milliseconds, MAX_VIBRATE_DURATION_MS);
     mVibrator->Vibrate(milliseconds);
 }
 
@@ -44,7 +61,7 @@ void AccessibilityInjector::VibratorWrapper::Vibrate(
     /* [in] */ Int32 repeat)
 {
     for (Int32 i = 0; i < pattern->GetLength(); ++i) {
-        (*pattern)[i] = Math::Min((*pattern)[i], MAX_VIBRATE_DURATION_MS);
+        (*pattern)[i] = Elastos::Core::Math::Min((*pattern)[i], MAX_VIBRATE_DURATION_MS);
     }
 
     repeat = -1;
@@ -68,16 +85,23 @@ AccessibilityInjector::TextToSpeechWrapper::TextToSpeechWrapper(
     /* [in] */ IContext* context)
 {
     mView = view;
-    CTextToSpeech::New(context, NULL, NULL, (ITextToSpeech**)&mTextToSpeech);
-    mSelfBrailleClient = new SelfBrailleClient(context, CommandLine::GetInstance()::HasSwitch(
-            ContentSwitches::ACCESSIBILITY_DEBUG_BRAILLE_SERVICE));
+    assert(0);
+    // TODO
+    // CTextToSpeech::New(context, NULL, NULL, (ITextToSpeech**)&mTextToSpeech);
+
+    assert(0);
+    // TODO
+    // mSelfBrailleClient = new SelfBrailleClient(context, CommandLine::GetInstance()::HasSwitch(
+    //         ContentSwitches::ACCESSIBILITY_DEBUG_BRAILLE_SERVICE));
 }
 
 //@JavascriptInterface
 //@SuppressWarnings("unused")
 Boolean AccessibilityInjector::TextToSpeechWrapper::IsSpeaking()
 {
-    return mTextToSpeech->IsSpeaking();
+    Boolean result = FALSE;
+    mTextToSpeech->IsSpeaking(&result);
+    return result;
 }
 
 //@JavascriptInterface
@@ -87,37 +111,43 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Speak(
     /* [in] */ Int32 queueMode,
     /* [in] */ const String& jsonParams)
 {
-    // Try to pull the params from the JSON string.
-    HashMap<String, String> params = null;
-    // try {
-        if (jsonParams != NULL) {
-            params = new HashMap<String, String>();
-            JSONObject json = new JSONObject(jsonParams);
+    assert(0);
+    // TODO
+    // // Try to pull the params from the JSON string.
+    // AutoPtr<IHashMap> params;
+    // // try {
+    //     if (jsonParams != NULL) {
+    //         params = new HashMap<String, String>();
+    //         JSONObject json = new JSONObject(jsonParams);
 
-            // Using legacy API here.
-            //@SuppressWarnings("unchecked")
-            Iterator<String> keyIt = json.keys();
+    //         // Using legacy API here.
+    //         //@SuppressWarnings("unchecked")
+    //         Iterator<String> keyIt = json.keys();
 
-            while (keyIt.hasNext()) {
-                String key = keyIt.next();
-                // Only add parameters that are raw data types.
-                if (json.optJSONObject(key) == null && json.optJSONArray(key) == null) {
-                    params.put(key, json.getString(key));
-                }
-            }
-        }
-    // } catch (JSONException e) {
-    //     params = null;
-    // }
+    //         while (keyIt.hasNext()) {
+    //             String key = keyIt.next();
+    //             // Only add parameters that are raw data types.
+    //             if (json.optJSONObject(key) == null && json.optJSONArray(key) == null) {
+    //                 params.put(key, json.getString(key));
+    //             }
+    //         }
+    //     }
+    // // } catch (JSONException e) {
+    // //     params = null;
+    // // }
 
-    return mTextToSpeech->Speak(text, queueMode, params);
+    // return mTextToSpeech->Speak(text, queueMode, params);
+
+    return -1;
 }
 
 //@JavascriptInterface
 //@SuppressWarnings("unused")
 Int32 AccessibilityInjector::TextToSpeechWrapper::Stop()
 {
-    return mTextToSpeech->Stop();
+    Int32 stop;
+    mTextToSpeech->Stop(&stop);
+    return stop;
 }
 
 //@JavascriptInterface
@@ -125,31 +155,35 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Stop()
 void AccessibilityInjector::TextToSpeechWrapper::Braille(
     /* [in] */ const String& jsonString)
 {
-    // try {
-        AutoPtr<IJSONObject> jsonObj;
-        CJSONObject::New(jsonString, (IJSONObject**)&jsonObj);
+    assert(0);
+    // TODO
+    // // try {
+    //     AutoPtr<IJSONObject> jsonObj;
+    //     CJSONObject::New(jsonString, (IJSONObject**)&jsonObj);
 
-        AutoPtr<WriteData> data = WriteData::ForView(mView);
-        String text;
-        jsonObj->GetString(String("text"), &text);
-        data->SetText(text);
-        Int32 startIndex;
-        jsonObj->GetInt32(String("startIndex"), &startIndex);
-        data->SetSelectionStart(startIndex);
-        Int32 endIndex;
-        jsonObj->GetInt32(String("endIndex"), &endIndex);
-        data->SetSelectionEnd(endIndex);
-        mSelfBrailleClient->Write(data);
-    // } catch (JSONException ex) {
-    //     Log.w(TAG, "Error parsing JS JSON object", ex);
-    // }
+    //     AutoPtr<WriteData> data = WriteData::ForView(mView);
+    //     String text;
+    //     jsonObj->GetString(String("text"), &text);
+    //     data->SetText(text);
+    //     Int32 startIndex;
+    //     jsonObj->GetInt32(String("startIndex"), &startIndex);
+    //     data->SetSelectionStart(startIndex);
+    //     Int32 endIndex;
+    //     jsonObj->GetInt32(String("endIndex"), &endIndex);
+    //     data->SetSelectionEnd(endIndex);
+    //     mSelfBrailleClient->Write(data);
+    // // } catch (JSONException ex) {
+    // //     Log.w(TAG, "Error parsing JS JSON object", ex);
+    // // }
 }
 
 //@SuppressWarnings("unused")
 void AccessibilityInjector::TextToSpeechWrapper::ShutdownInternal()
 {
     mTextToSpeech->Shutdown();
-    mSelfBrailleClient->Shutdown();
+    assert(0);
+    // TODO
+    // mSelfBrailleClient->Shutdown();
 }
 
 //==================================================================
@@ -160,34 +194,33 @@ const String AccessibilityInjector::TAG("AccessibilityInjector");
 
 // To support building against the JELLY_BEAN and not JELLY_BEAN_MR1 SDK we need to add this
 // constant here.
-private static final int FEEDBACK_BRAILLE = 0x00000020;
+const Int32 AccessibilityInjector::FEEDBACK_BRAILLE;
 
 // constants for determining script injection strategy
-private static final int ACCESSIBILITY_SCRIPT_INJECTION_UNDEFINED = -1;
-private static final int ACCESSIBILITY_SCRIPT_INJECTION_OPTED_OUT = 0;
-private static final int ACCESSIBILITY_SCRIPT_INJECTION_PROVIDED = 1;
-private static final String ALIAS_ACCESSIBILITY_JS_INTERFACE = "accessibility";
-private static final String ALIAS_ACCESSIBILITY_JS_INTERFACE_2 = "accessibility2";
+const Int32 AccessibilityInjector::ACCESSIBILITY_SCRIPT_INJECTION_UNDEFINED;
+const Int32 AccessibilityInjector::ACCESSIBILITY_SCRIPT_INJECTION_OPTED_OUT;
+const Int32 AccessibilityInjector::ACCESSIBILITY_SCRIPT_INJECTION_PROVIDED;
+const String AccessibilityInjector::ALIAS_ACCESSIBILITY_JS_INTERFACE("accessibility");
+const String AccessibilityInjector::ALIAS_ACCESSIBILITY_JS_INTERFACE_2("accessibility2");
 
 // Template for JavaScript that injects a screen-reader.
-private static final String DEFAULT_ACCESSIBILITY_SCREEN_READER_URL =
-        "https://ssl.gstatic.com/accessibility/javascript/android/chromeandroidvox.js";
+const String AccessibilityInjector::DEFAULT_ACCESSIBILITY_SCREEN_READER_URL("https://ssl.gstatic.com/accessibility/javascript/android/chromeandroidvox.js");
 
-private static final String ACCESSIBILITY_SCREEN_READER_JAVASCRIPT_TEMPLATE =
-        "(function() {" +
-        "    var chooser = document.createElement('script');" +
-        "    chooser.type = 'text/javascript';" +
-        "    chooser.src = '%1s';" +
-        "    document.getElementsByTagName('head')[0].appendChild(chooser);" +
-        "  })();";
+const String AccessibilityInjector::ACCESSIBILITY_SCREEN_READER_JAVASCRIPT_TEMPLATE(
+        "(function() {"
+        "    var chooser = document.createElement('script');"
+        "    chooser.type = 'text/javascript';"
+        "    chooser.src = '%1s';"
+        "    document.getElementsByTagName('head')[0].appendChild(chooser);"
+        "  })();");
 
 // JavaScript call to turn ChromeVox on or off.
-private static final String TOGGLE_CHROME_VOX_JAVASCRIPT =
-        "(function() {" +
-        "    if (typeof cvox !== 'undefined') {" +
-        "        cvox.ChromeVox.host.activateOrDeactivateChromeVox(%1s);" +
-        "    }" +
-        "  })();";
+const String AccessibilityInjector::TOGGLE_CHROME_VOX_JAVASCRIPT(
+        "(function() {"
+        "    if (typeof cvox !== 'undefined') {"
+        "        cvox.ChromeVox.host.activateOrDeactivateChromeVox(%1s);"
+        "    }"
+        "  })();");
 
 /**
  * Creates an instance of the IceCreamSandwichAccessibilityInjector.
@@ -197,16 +230,16 @@ AccessibilityInjector::AccessibilityInjector(
     /* [in] */ ContentViewCore* view)
     : WebContentsObserverAndroid(view)
     , mContentViewCore(view)
-{
-    mAccessibilityScreenReaderUrl = CommandLine::GetInstance()->GetSwitchValue(
+    , mAccessibilityScreenReaderUrl(CommandLine::GetInstance()->GetSwitchValue(
             ContentSwitches::ACCESSIBILITY_JAVASCRIPT_URL,
-            DEFAULT_ACCESSIBILITY_SCREEN_READER_URL);
-
-    AutoPtr<IContext> context;
-    mContentViewCore->GetContext((IContext**)&context);
+            DEFAULT_ACCESSIBILITY_SCREEN_READER_URL))
+{
+    AutoPtr<IContext> context = mContentViewCore->GetContext();
     Int32 permission;
-    context->CheckCallingOrSelfPermission(
-            android::Manifest::permission::VIBRATE, &permission);
+    assert(0);
+    // TODO
+    // context->CheckCallingOrSelfPermission(
+    //         android::Manifest::permission::VIBRATE, &permission);
     mHasVibratePermission = (permission == IPackageManager::PERMISSION_GRANTED);
 }
 
@@ -218,7 +251,7 @@ AccessibilityInjector::AccessibilityInjector(
 AutoPtr<AccessibilityInjector> AccessibilityInjector::NewInstance(
     /* [in] */ ContentViewCore* view)
 {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+    if (Build::VERSION::SDK_INT < Build::VERSION_CODES::JELLY_BEAN) {
         AutoPtr<AccessibilityInjector> ret = new AccessibilityInjector(view);
         return ret;
     }
@@ -291,10 +324,15 @@ Boolean AccessibilityInjector::AccessibilityIsAvailable()
 
     // try {
         // Check that there is actually a service running that requires injecting this script.
-        List<AccessibilityServiceInfo> services =
-                getAccessibilityManager().getEnabledAccessibilityServiceList(
-                        FEEDBACK_BRAILLE | AccessibilityServiceInfo.FEEDBACK_SPOKEN);
-        return services.size() > 0;
+        AutoPtr<IList> services;
+        assert(0);
+        // TODO
+        // GetAccessibilityManager()->GetEnabledAccessibilityServiceList(
+        //                 FEEDBACK_BRAILLE | IAccessibilityServiceInfo::FEEDBACK_SPOKEN,
+        //                 (IList**)&services);
+        Int32 size;
+        services->GetSize(&size);
+        return size > 0;
     // } catch (NullPointerException e) {
     //     // getEnabledAccessibilityServiceList() can throw an NPE due to a bad
     //     // AccessibilityService.
@@ -315,9 +353,11 @@ void AccessibilityInjector::SetScriptEnabled(
 
     mInjectedScriptEnabled = enabled;
     if (mContentViewCore->IsAlive()) {
-        String js = String.format(TOGGLE_CHROME_VOX_JAVASCRIPT, Boolean.toString(
-                mInjectedScriptEnabled));
-        mContentViewCore->EvaluateJavaScript(js, NULL);
+        assert(0);
+        // TODO
+        // String js = String.format(TOGGLE_CHROME_VOX_JAVASCRIPT, Boolean.toString(
+        //         mInjectedScriptEnabled));
+        // mContentViewCore->EvaluateJavaScript(js, NULL);
 
         if (!mInjectedScriptEnabled) {
             // Stop any TTS/Vibration right now.
@@ -332,17 +372,19 @@ void AccessibilityInjector::SetScriptEnabled(
  * accessibility gesture events.
  */
 //@Override
-void AccessibilityInjector::DidStartLoading(
+ECode AccessibilityInjector::DidStartLoading(
     /* [in] */ const String& url)
 {
     mScriptInjected = FALSE;
+    return NOERROR;
 }
 
 //@Override
-void AccessibilityInjector::DidStopLoading(
+ECode AccessibilityInjector::DidStopLoading(
     /* [in] */ const String& url)
 {
     InjectAccessibilityScriptIntoPage();
+    return NOERROR;
 }
 
 /**
@@ -407,15 +449,16 @@ void AccessibilityInjector::AddAccessibilityApis()
     if (context != NULL) {
         // Enabled, we should try to add if we have to.
         if (mTextToSpeech == NULL) {
-            mTextToSpeech = new TextToSpeechWrapper(mContentViewCore->GetContainerView(),
+            AutoPtr<IView> view = (IView*)mContentViewCore->GetContainerView()->Probe(EIID_IView);
+            mTextToSpeech = new TextToSpeechWrapper(view,
                     context);
-            mContentViewCore->AddJavascriptInterface(mTextToSpeech,
+            mContentViewCore->AddJavascriptInterface((IObject*)mTextToSpeech,
                     ALIAS_ACCESSIBILITY_JS_INTERFACE);
         }
 
         if (mVibrator == NULL && mHasVibratePermission) {
             mVibrator = new VibratorWrapper(context);
-            mContentViewCore->AddJavascriptInterface(mVibrator,
+            mContentViewCore->AddJavascriptInterface((IObject*)mVibrator,
                     ALIAS_ACCESSIBILITY_JS_INTERFACE_2);
         }
     }
@@ -439,17 +482,31 @@ void AccessibilityInjector::RemoveAccessibilityApis()
 
 Int32 AccessibilityInjector::GetAxsUrlParameterValue()
 {
-    if (mContentViewCore.getUrl() == null) return ACCESSIBILITY_SCRIPT_INJECTION_UNDEFINED;
+    if (mContentViewCore->GetUrl() == NULL) return ACCESSIBILITY_SCRIPT_INJECTION_UNDEFINED;
 
     // try {
-        List<NameValuePair> params = URLEncodedUtils.parse(new URI(mContentViewCore.getUrl()),
-                null);
+        assert(0);
+        // TODO
+        // AutoPtr<IURI> uri;
+        // CURI::New(mContentViewCore->GetUrl(), (IURI**)&uri)
+        // AutoPtr<IList> params = URLEncodedUtils::Parse(uri,
+        //         NULL);
 
-        for (NameValuePair param : params) {
-            if ("axs".equals(param.getName())) {
-                return Integer.parseInt(param.getValue());
-            }
-        }
+        // AutoPtr<IIterable> iterable = (IIterable*)params->Probe(EIID_IIterable);
+        // AutoPtr<IIterator> iter;
+        // iterable->GetIIterator((IIterator**)&iter);
+        // AutoPtr<INameValuePair> param;
+        // Boolean bNext;
+        // for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        //     iter->GetNext((IInterface**)&param);
+        //     String name;
+        //     param->GetName(&name);
+        //     if (String("axs").Equals(name)) {
+        //         String value;
+        //         param->GetValue(&value);
+        //         return StringUtils::ParseInt32(value);
+        //     }
+        // }
     // } catch (URISyntaxException ex) {
     // } catch (NumberFormatException ex) {
     // } catch (IllegalArgumentException ex) {
@@ -460,8 +517,11 @@ Int32 AccessibilityInjector::GetAxsUrlParameterValue()
 
 String AccessibilityInjector::GetScreenReaderInjectingJs()
 {
-    return String.format(ACCESSIBILITY_SCREEN_READER_JAVASCRIPT_TEMPLATE,
-            mAccessibilityScreenReaderUrl);
+    assert(0);
+    // TODO
+    // return String.format(ACCESSIBILITY_SCREEN_READER_JAVASCRIPT_TEMPLATE,
+    //         mAccessibilityScreenReaderUrl);
+    return String(NULL);
 }
 
 AutoPtr<IAccessibilityManager> AccessibilityInjector::GetAccessibilityManager()
@@ -474,13 +534,9 @@ AutoPtr<IAccessibilityManager> AccessibilityInjector::GetAccessibilityManager()
     return mAccessibilityManager;
 }
 
-}
-
 } // namespace Accessibility
 } // namespace Browser
 } // namespace Content
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
-
-#endif//__ACCESSIBILITYINJECTOR_H__

@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKERDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKERDIALOG_H__
 
-#include "ext/frameworkext.h"
-#include "webkit/native/content/browser/input/TwoFieldDatePicker.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePicker.h"
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;
@@ -21,8 +21,8 @@ namespace Browser {
 namespace Input {
 
 class TwoFieldDatePickerDialog
-    : public Object
-    , public IAlertDialog
+    //: public Object
+    : public IAlertDialog
     , public IDialogInterfaceOnClickListener
     , public TwoFieldDatePicker::OnMonthOrWeekChangedListener
 {
@@ -44,6 +44,8 @@ public:
 
 public:
     CAR_INTERFACE_DECL();
+
+    TwoFieldDatePickerDialog();
 
     /**
      * @param context The context the dialog is to run in.
@@ -108,8 +110,18 @@ protected:
     CARAPI_(void) TryNotifyDateSet();
 
 protected:
-    const AutoPtr<TwoFieldDatePicker> mPicker;
-    const AutoPtr<OnValueSetListener> mCallBack;
+    /*const*/ AutoPtr<TwoFieldDatePicker> mPicker;
+    /*const*/ AutoPtr<OnValueSetListener> mCallBack;
+
+private:
+    void Init(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 theme,
+        /* [in] */ OnValueSetListener* callBack,
+        /* [in] */ Int32 year,
+        /* [in] */ Int32 positionInYear,
+        /* [in] */ Double minValue,
+        /* [in] */ Double maxValue);
 
 private:
     static const String YEAR;

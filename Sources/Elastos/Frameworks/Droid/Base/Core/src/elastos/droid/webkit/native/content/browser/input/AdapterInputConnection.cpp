@@ -1,8 +1,8 @@
 
-#include "webkit/native/content/browser/input/AdapterInputConnection.h"
-#include "webkit/native/content/browser/input/ImeAdapter.h"
-// TODO #include "text/CSelection.h"
-#include "text/TextUtils.h"
+#include "elastos/droid/webkit/native/content/browser/input/AdapterInputConnection.h"
+#include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
+// TODO #include "elastos/droid/text/CSelection.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>

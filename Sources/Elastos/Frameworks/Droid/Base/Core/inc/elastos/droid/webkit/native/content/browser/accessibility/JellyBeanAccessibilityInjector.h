@@ -2,10 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_JELLYBEANACCESSIBIlITYINJECTOR_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_JELLYBEANACCESSIBIlITYINJECTOR_H__
 
-// import android.content.Context;
-// import android.os.Bundle;
-// import android.os.SystemClock;
-// import android.view.accessibility.AccessibilityNodeInfo;
+#include "elastos/droid/webkit/native/content/browser/accessibility/AccessibilityInjector.h"
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastosx::Security::Auth::Callback::ICallbackHandler;
 
 // import org.chromium.content.browser.ContentViewCore;
 // import org.chromium.content.browser.JavascriptInterface;
@@ -15,6 +17,7 @@
 // import java.util.Iterator;
 // import java.util.Locale;
 // import java.util.concurrent.atomic.AtomicInteger;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -29,9 +32,11 @@ namespace Accessibility {
  */
 class JellyBeanAccessibilityInjector : public AccessibilityInjector
 {
+    friend class AccessibilityInjector;
 private:
     class CallbackHandler
     {
+        friend class JellyBeanAccessibilityInjector;
     public:
         /**
          * Callback exposed to JavaScript.  Handles returning the result of a
@@ -90,8 +95,8 @@ private:
         // Time in milliseconds to wait for a result before failing.
         static const Int64 RESULT_TIMEOUT = 5000;
 
-        const AutoPtr<IAtomicInteger> mResultIdCounter;
-        const Object mResultLock;
+        /*const*/ AutoPtr<IAtomicInteger32> mResultIdCounter;
+        /*const*/ Object mResultLock;
         const String mInterfaceName;
 
         Boolean mResult;
@@ -139,8 +144,8 @@ private:
         /* [in] */ IBundle* arguments);
 
 private:
-    AutoPtr<CallbackHandler> mCallback;
-    AutoPtr<IJSONObject> mAccessibilityJSONObject;
+    AutoPtr<ICallbackHandler> mCallback;
+    // AutoPtr<IJSONObject> mAccessibilityJSONObject;
 
     static const String ALIAS_TRAVERSAL_JS_INTERFACE;
 

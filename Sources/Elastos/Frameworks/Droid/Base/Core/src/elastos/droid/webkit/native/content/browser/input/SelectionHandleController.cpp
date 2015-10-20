@@ -1,4 +1,7 @@
 
+#include "elastos/droid/webkit/native/content/browser/input/SelectionHandleController.h"
+#include "elastos/droid/webkit/native/content/browser/PositionObserver.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -38,13 +41,16 @@ void SelectionHandleController::HideAndDisallowAutomaticShowing()
 }
 
 //@Override
-Boolean SelectionHandleController::IsShowing()
+ECode SelectionHandleController::IsShowing(
+    /* [out] */ Boolean* result)
 {
-    return mIsShowing;
+    VALIDATE_NOT_NULL(result);
+    *result = mIsShowing;
+    return NOERROR;
 }
 
 //@Override
-void SelectionHandleController::Hide()
+ECode SelectionHandleController::Hide()
 {
     if (mIsShowing) {
         if (mStartHandle != NULL) {
@@ -57,6 +63,8 @@ void SelectionHandleController::Hide()
 
         mIsShowing = FALSE;
     }
+
+    return NOERROR;
 }
 
 void SelectionHandleController::CancelFadeOutAnimation()
@@ -72,21 +80,23 @@ void SelectionHandleController::CancelFadeOutAnimation()
  * actual coordinates later via set[Start|End]HandlePosition.
  */
 //@Override
-void SelectionHandleController::UpdatePosition(
+ECode SelectionHandleController::UpdatePosition(
     /* [in] */ HandleView* handle,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
     SelectBetweenCoordinates(mFixedHandleX, mFixedHandleY, x, y);
+    return NOERROR;
 }
 
 //@Override
-void SelectionHandleController::BeforeStartUpdatingPosition(
+ECode SelectionHandleController::BeforeStartUpdatingPosition(
     /* [in] */ HandleView* handle)
 {
     AutoPtr<HandleView> fixedHandle = (handle == mStartHandle) ? mEndHandle : mStartHandle;
     mFixedHandleX = fixedHandle->GetAdjustedPositionX();
     mFixedHandleY = fixedHandle->GetLineAdjustedPositionY();
+    return NOERROR;
 }
 
 /**
@@ -107,17 +117,19 @@ Boolean SelectionHandleController::IsDragging()
 }
 
 //@Override
-void SelectionHandleController::OnTouchModeChanged(
+ECode SelectionHandleController::OnTouchModeChanged(
     /* [in] */ Boolean isInTouchMode)
 {
     if (!isInTouchMode) {
         Hide();
     }
+    return NOERROR;
 }
 
 //@Override
-void SelectionHandleController::OnDetached()
+ECode SelectionHandleController::OnDetached()
 {
+    return NOERROR;
 }
 
 /**
@@ -160,8 +172,10 @@ void SelectionHandleController::BeginHandleFadeIn()
 void SelectionHandleController::SetHandleVisibility(
     /* [in] */ Int32 visibility)
 {
-    mStartHandle->SetVisibility(visibility);
-    mEndHandle->SetVisibility(visibility);
+    assert(0);
+    // TODO
+    // mStartHandle->SetVisibility(visibility);
+    // mEndHandle->SetVisibility(visibility);
 }
 
 /**
@@ -219,7 +233,7 @@ void SelectionHandleController::CreateHandlesIfNeeded(
 
     if (mEndHandle == NULL) {
         mEndHandle = new HandleView(this,
-                endDir == TEXT_DIRECTION_RTL ? HandleView.LEFT : HandleView::RIGHT, mParent,
+                endDir == TEXT_DIRECTION_RTL ? HandleView::LEFT : HandleView::RIGHT, mParent,
                 mPositionObserver);
     }
 }
@@ -230,7 +244,7 @@ void SelectionHandleController::ShowHandlesIfNeeded()
         mIsShowing = TRUE;
         mStartHandle->Show();
         mEndHandle->Show();
-        SetHandleVisibility(HandleView::VISIBLE);
+        SetHandleVisibility(IView::VISIBLE);
     }
 }
 

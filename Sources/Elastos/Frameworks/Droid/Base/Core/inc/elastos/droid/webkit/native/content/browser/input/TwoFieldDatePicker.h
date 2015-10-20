@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKER_H__
 
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Text::Format::IDateUtils;
@@ -57,6 +57,8 @@ private:
         , public INumberPickerOnValueChangeListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InnerNumberPickerOnValueChangeListener(
             /* [in] */ TwoFieldDatePicker* owner);
 

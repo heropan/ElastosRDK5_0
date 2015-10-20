@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMESUGGESTIONLISTADAPTER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATETIMESUGGESTIONLISTADAPTER_H__
 
-#include "ext/frameworkext.h"
-// TODO #include "widget/ArrayAdapter.h"
+#include "elastos/droid/ext/frameworkext.h"
+// TODO #include "elastos/droid/widget/ArrayAdapter.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;

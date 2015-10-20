@@ -86,7 +86,7 @@ protected:
      * @see AccessibilityNodeProvider#findAccessibilityNodeInfosByText(String, int)
      */
     virtual CARAPI_(AutoPtr<IList>) FindAccessibilityNodeInfosByText(
-        /* [in] */ String text,
+        /* [in] */ const String& text,
         /* [in] */ Int32 virtualViewId);
 
     /**
@@ -384,14 +384,14 @@ private:
 
     AutoPtr<ContentViewCore> mContentViewCore;
     AutoPtr<IAccessibilityManager> mAccessibilityManager;
-    const AutoPtr<RenderCoordinates> mRenderCoordinates;
+    /*const*/ AutoPtr<RenderCoordinates> mRenderCoordinates;
     Int64 mNativeObj;
     Int32 mAccessibilityFocusId;
     Boolean mIsHovering;
     Int32 mLastHoverId;
     Int32 mCurrentRootId;
-    const AutoPtr< ArrayOf<Int32> > mTempLocation;
-    const AutoPtr<IViewGroup> mView;
+    /*const*/ AutoPtr< ArrayOf<Int32> > mTempLocation;
+    /*const*/ AutoPtr<IViewGroup> mView;
     Boolean mUserHasTouchExplored;
     Boolean mPendingScrollToMakeNodeVisible;
 };

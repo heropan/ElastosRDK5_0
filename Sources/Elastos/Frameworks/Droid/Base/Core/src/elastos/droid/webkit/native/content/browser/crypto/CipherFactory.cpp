@@ -1,4 +1,9 @@
 
+#include "elastos/droid/webkit/native/content/browser/crypto/CipherFactory.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Utility::Logging::Slogger;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -57,18 +62,18 @@ AutoPtr<ICipher> CipherFactory::GetCipher(
 {
     AutoPtr<CipherData> data = GetCipherData(TRUE);
 
-    if (data != null) {
-        try {
+    if (data != NULL) {
+        // try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(opmode, data.key, new IvParameterSpec(data.iv));
             return cipher;
-        } catch (GeneralSecurityException e) {
-            // Can't do anything here.
-        }
+        // } catch (GeneralSecurityException e) {
+        //     // Can't do anything here.
+        // }
     }
 
-    Log.e(TAG, "Error in creating cipher instance.");
-    return null;
+    Slogger::E(TAG, "Error in creating cipher instance.");
+    return NULL;
 }
 
 /**

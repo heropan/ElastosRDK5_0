@@ -1,9 +1,9 @@
 
-#include "webkit/native/content/browser/input/GamepadList.h"
-#include "webkit/native/base/ThreadUtils.h"
-#include "os/Build.h"
-// TODO #include "view/CInputDeviceHelper.h"
-// TODO #include "view/CKeyEventHelper.h"
+#include "elastos/droid/webkit/native/content/browser/input/GamepadList.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/os/Build.h"
+// TODO #include "elastos/droid/view/CInputDeviceHelper.h"
+// TODO #include "elastos/droid/view/CKeyEventHelper.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Core::AutoLock;

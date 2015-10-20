@@ -1,4 +1,9 @@
 
+#include "elastos/droid/webkit/native/content/browser/crypto/ByteArrayGenerator.h"
+
+using Elastos::IO::IInputStream;
+using Elastos::IO::EIID_IInputStream;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -6,11 +11,6 @@ namespace Content {
 namespace Browser {
 namespace Crypto {
 
-/**
- * Generates byte arrays for use in crypto algorithms. Defaults to pulling random data
- * from /dev/urandom, but can be overwritten for other generation methods.
- */
-public class ByteArrayGenerator {
 /**
  * Polls random data to generate the array.
  * @param numBytes Length of the array to generate.
@@ -21,10 +21,13 @@ AutoPtr< ArrayOf<Byte> > ByteArrayGenerator::GetBytes(
 {
     AutoPtr<IFileInputStream> fis;
     // try {
-        CFileInputStream::New(String("/dev/urandom"), (IFileInputStream**)&fis);
-        AutoPtr< ArrayOf<Byte> > bytes = new ArrayOf<Byte>::Alloc(numBytes);
+        assert(0);
+        // TODO
+        // CFileInputStream::New(String("/dev/urandom"), (IFileInputStream**)&fis);
+        AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(numBytes);
         Int32 readLen;
-        fis->Read(bytes, &readLen);
+        AutoPtr<IInputStream> inputStream = (IInputStream*)fis->Probe(EIID_IInputStream);
+        inputStream->Read(bytes, &readLen);
         if (bytes->GetLength() != readLen) {
             //throw new GeneralSecurityException("Not enough random data available");
             assert(0);
@@ -32,7 +35,7 @@ AutoPtr< ArrayOf<Byte> > ByteArrayGenerator::GetBytes(
     //    return bytes;
     // } finally {
         if (fis != NULL) {
-            fis->Close();
+            inputStream->Close();
         }
     // }
 
