@@ -172,6 +172,7 @@ module
     interface Elastos.Utility.IUUID;
     interface Elastos.Utility.IArrayList;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Os.Storage.IStorageVolume;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IComponentName;
@@ -1028,6 +1029,44 @@ module
         }
 
     } // namespace Browse
+    } // namespace Media
+    } // namespace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+    namespace Projection {
+
+        class CMediaProjectionCallback {
+            interface IMediaProjectionCallback;
+        }
+
+        class CMediaProjection {
+            constructor(
+                [in] IContext * context,
+                [in] IIMediaProjection * impl);
+
+            interface IMediaProjection;
+        }
+
+        class CMediaProjectionInfo {
+            constructor(
+                [in] String packageName,
+                [in] IUserHandle * handle);
+
+            interface IMediaProjectionInfo;
+            interface IParcelable;
+        }
+
+        class CMediaProjectionManager {
+            constructor(
+                [in] IContext * context);
+
+            interface IMediaProjectionManager;
+        }
+
+    } // namespace Projection
     } // namespace Media
     } // namespace Droid
     } // namespace Elastos

@@ -34,6 +34,7 @@ LIBRARIES += internal/internal.lib
 LIBRARIES += media/audiofx/audiofx.lib
 LIBRARIES += media/audiopolicy/audiopolicy.lib
 LIBRARIES += media/browse/browse.lib
+LIBRARIES += media/projection/projection.lib
 LIBRARIES += mtp/mtp.lib
 LIBRARIES += net/net.lib
 LIBRARIES += os/os.lib

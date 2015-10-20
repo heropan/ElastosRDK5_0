@@ -7,6 +7,7 @@ module
     namespace Media {
     namespace Projection {
 
+    [parcelable]
     interface IMediaProjectionInfo {
         GetPackageName(
             [out] String * result);

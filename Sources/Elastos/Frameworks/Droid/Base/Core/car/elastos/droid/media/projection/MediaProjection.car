@@ -116,7 +116,7 @@ module
          * @hide
          */
         GetProjection(
-            [out] IMediaProjection ** result);
+            [out] IIMediaProjection ** result);
 
     }
 
