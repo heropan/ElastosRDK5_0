@@ -8,15 +8,16 @@ using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::CCharBufferHelper;
 using Elastos::IO::Charset::CCharsetHelper;
 using Elastos::IO::Charset::ICharset;
-using Elastos::IO::Charset::ICharsetEncoder;
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::ICoderResult;
 using Elastos::IO::COutputStreamWriter;
 using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::IBuffer;
 using Elastos::IO::ICharBuffer;
 using Elastos::IO::ICharBufferHelper;
 using Elastos::IO::IFlushable;
 using Elastos::IO::IOutputStreamWriter;
+using Org::Xmlpull::V1::EIID_IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -39,7 +40,7 @@ static AutoPtr<ArrayOf<String> > InitESCAPE_TABLE()
 
 const AutoPtr<ArrayOf<String> > CFastXmlSerializer::ESCAPE_TABLE = InitESCAPE_TABLE();
 const Int32 CFastXmlSerializer::BUFFER_LEN = 8192;
-static String CFastXmlSerializer::sSpace("                                                              ");
+String CFastXmlSerializer::sSpace("                                                              ");
 
 CAR_INTERFACE_IMPL_2(CFastXmlSerializer, Object, IFastXmlSerializer, IXmlSerializer)
 
@@ -47,8 +48,8 @@ CAR_OBJECT_IMPL(CFastXmlSerializer)
 
 CFastXmlSerializer::CFastXmlSerializer()
     : mPos(0)
-    , mInTag(FALSE)
     , mIndent(FALSE)
+    , mInTag(FALSE)
     , mNesting(0)
     , mLineStart(TRUE)
 {
@@ -268,13 +269,13 @@ ECode CFastXmlSerializer::WriteEntityRef(
 ECode CFastXmlSerializer::FlushBytes()
 {
     Int32 position;
-    mBytes->GetPosition(&position);
+    IBuffer::Probe(mBytes)->GetPosition(&position);
     if (position > 0) {
-        FAIL_RETURN(mBytes->Flip());
+        FAIL_RETURN(IBuffer::Probe(mBytes)->Flip());
         AutoPtr<ArrayOf<Byte> > bytes;
         mBytes->GetArray((ArrayOf<Byte>**)&bytes);
-        FAIL_RETURN(mOutputStream->WriteBytesEx(*bytes, 0, position));
-        FAIL_RETURN(mBytes->Clear());
+        FAIL_RETURN(mOutputStream->Write(bytes, 0, position));
+        FAIL_RETURN(IBuffer::Probe(mBytes)->Clear());
     }
     return NOERROR;
 }
@@ -287,9 +288,9 @@ ECode CFastXmlSerializer::Flush()
             AutoPtr<ICharBufferHelper> helper;
             CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&helper);
             AutoPtr<ICharBuffer> charBuffer;
-            helper->WrapArrayEx(mText, 0, mPos, (ICharBuffer**)&charBuffer);
+            helper->Wrap(mText, 0, mPos, (ICharBuffer**)&charBuffer);
             AutoPtr<ICoderResult> result;
-            mCharset->EncodeEx(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
+            mCharset->Encode(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
             Boolean bValue;
             while (TRUE) {
                 if (result->IsError(&bValue), bValue) {
@@ -299,7 +300,7 @@ ECode CFastXmlSerializer::Flush()
                 else if (result->IsOverflow(&bValue), bValue) {
                     FAIL_RETURN(FlushBytes());
                     result = NULL;
-                    mCharset->EncodeEx(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
+                    mCharset->Encode(charBuffer, mBytes, TRUE, (ICoderResult**)&result);
                     continue;
                 }
                 break;
@@ -309,7 +310,7 @@ ECode CFastXmlSerializer::Flush()
             FAIL_RETURN(flushable->Flush());
         }
         else {
-            FAIL_RETURN(mWriter->WriteCharsEx(*mText, 0, mPos));
+            FAIL_RETURN(mWriter->Write(mText, 0, mPos));
             IFlushable* flushable = IFlushable::Probe(mWriter.Get());
             FAIL_RETURN(flushable->Flush());
         }
@@ -424,12 +425,12 @@ ECode CFastXmlSerializer::SetOutput(
             COutputStreamWriter::New(os, encoding, (IOutputStreamWriter**)&opsr);
         }
 
-        return SetOutputEx(IWriter::Probe(opsr.Get()));
+        return SetOutput(IWriter::Probe(opsr.Get()));
     }
     return NOERROR;
 }
 
-ECode CFastXmlSerializer::SetOutputEx(
+ECode CFastXmlSerializer::SetOutput(
     /* [in] */ IWriter* writer)
 {
     mWriter = writer;
@@ -485,8 +486,8 @@ ECode CFastXmlSerializer::WriteStartTag(
 }
 
 
-ECode CFastXmlSerializer::WriteTextEx(
-    /* [in] */ const ArrayOf<Char32>& buf,
+ECode CFastXmlSerializer::WriteText(
+    /* [in] */ ArrayOf<Char32>* buf,
     /* [in] */ Int32 start,
     /* [in] */ Int32 len)
 {
@@ -494,9 +495,9 @@ ECode CFastXmlSerializer::WriteTextEx(
         FAIL_RETURN(Append('>'));
         mInTag = FALSE;
     }
-    FAIL_RETURN(EscapeAndAppendString((ArrayOf<Char32>*)&buf, start, len));
+    FAIL_RETURN(EscapeAndAppendString(buf, start, len));
     if (mIndent) {
-        mLineStart = buf[start+len-1] == '\n';
+        mLineStart = (*buf)[start+len-1] == '\n';
     }
     return NOERROR;
 }

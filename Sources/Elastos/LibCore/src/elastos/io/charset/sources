@@ -26,6 +26,7 @@ SOURCES += CharsetDecoderICU.cpp
 SOURCES += CCoderResult.cpp
 SOURCES += CCoderResultHelper.cpp
 SOURCES += CCodingErrorAction.cpp
+SOURCES += CCodingErrorActionHelper.cpp
 SOURCES += CCharsets.cpp
 SOURCES += CModifiedUtf8.cpp
 SOURCES += StandardCharsets.cpp

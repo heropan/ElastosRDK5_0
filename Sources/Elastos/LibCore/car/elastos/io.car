@@ -317,6 +317,10 @@ module
         interface IWriter;
     }
 
+    singleton class CCharBufferHelper {
+        interface ICharBufferHelper;
+    }
+
     class CDataInputStream {
         constructor(
             [in] IInputStream* is);
@@ -794,6 +798,10 @@ module
             constructor();
 
             interface ICodingErrorAction;
+        }
+
+        singleton class CCodingErrorActionHelper {
+            interface ICodingErrorActionHelper;
         }
 
         singleton class CCharsetHelper {

@@ -3,6 +3,7 @@
 #define __ELASTOS_IO_CCHARBUFFERHELPER_H__
 
 #include "_Elastos_IO_CCharBufferHelper.h"
+#include "Singleton.h"
 
 using Elastos::Core::ICharSequence;
 
@@ -10,8 +11,14 @@ namespace Elastos {
 namespace IO {
 
 CarClass(CCharBufferHelper)
+    , public Singleton
+    , public ICharBufferHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /*
      * Creates a char buffer based on a newly allocated char array.
      *
@@ -73,7 +80,7 @@ public:
      * @param charBuf
      *      the char buffer interface.
      */
-    CARAPI WrapSequence(
+    CARAPI Wrap(
         /* [in] */ ICharSequence* charSequence,
         /* [out] */ ICharBuffer**  charBuf);
 
@@ -95,7 +102,7 @@ public:
      * @param charBuf
      *      the char buffer interface.
      */
-    CARAPI WrapSequence(
+    CARAPI Wrap(
         /* [in] */ ICharSequence* cs,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,

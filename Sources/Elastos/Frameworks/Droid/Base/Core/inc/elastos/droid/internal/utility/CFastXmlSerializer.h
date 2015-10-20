@@ -9,7 +9,7 @@ using Elastos::IO::IWriter;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::Charset::ICharsetEncoder;
-using Org::Xmlpull::V1::IXmlPullParser;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -48,7 +48,7 @@ public:
         /* [in] */ IOutputStream* os,
         /* [in] */ const String& encoding);
 
-    CARAPI SetOutputEx(
+    CARAPI SetOutput(
         /* [in] */ IWriter* writer);
 
     CARAPI StartDocument(
@@ -91,8 +91,8 @@ public:
     CARAPI WriteText(
         /* [in] */ const String& text);
 
-    CARAPI WriteTextEx(
-        /* [in] */ const ArrayOf<Char32>& buf,
+    CARAPI WriteText(
+        /* [in] */ ArrayOf<Char32>* buf,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len);
 

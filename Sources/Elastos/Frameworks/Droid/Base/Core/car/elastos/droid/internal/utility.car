@@ -23,14 +23,35 @@ module
     merge("utility/VirtualRefBasePtr.car");
     merge("utility/WithFramework.car");
 
+    using interface Elastos.IO.IWriter;
+    using interface Org.Xmlpull.V1.IXmlSerializer;
+
     namespace Elastos {
     namespace Droid {
     namespace Internal {
     namespace Utility {
 
-        class CAsyncChannel {
-            interface IAsyncChannel;
-        }
+    class CAsyncChannel {
+        interface IAsyncChannel;
+    }
+
+    class CFastXmlSerializer {
+        interface IFastXmlSerializer;
+        interface IXmlSerializer;
+    }
+
+    class CIndentingPrintWriter {
+        constructor(
+            [in] IWriter* writer,
+            [in] String indent);
+
+        constructor(
+            [in] IWriter* writer,
+            [in] String indent,
+            [in] Int32 wrapLength);
+
+        interface IIndentingPrintWriter;
+    }
 
     } // namespace Utility
     } // namespace Internal

@@ -10,13 +10,13 @@ using Elastos::Core::StringUtils;
 using Elastos::IO::IBuffer;
 using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::IByteBufferHelper;
-// using Elastos::IO::CCharBufferHelper;
+using Elastos::IO::CCharBufferHelper;
 using Elastos::IO::ICharBufferHelper;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::CCharsetHelper;
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::ICodingErrorAction;
-// using Elastos::IO::Charset::CCodingErrorActionHelper;
+using Elastos::IO::Charset::CCodingErrorActionHelper;
 using Elastos::IO::Charset::ICodingErrorActionHelper;
 using Elastos::IO::Charset::ICoderResult;
 using Elastos::Utility::CFormatter;
@@ -108,8 +108,7 @@ ECode LoggingPrintStream::Write(
         CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bbHelper);
         bbHelper->Allocate(80, (IByteBuffer**)&mEncodedBytes);
         AutoPtr<ICharBufferHelper> cbHelper;
-        assert(0 && "CCharBufferHelper is not implemented!");
-        // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&cbHelper);
+        CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&cbHelper);
         cbHelper->Allocate(80, (ICharBuffer**)&mDecodedChars);
         AutoPtr<ICharsetHelper> cHelper;
         CCharsetHelper::AcquireSingleton((ICharsetHelper**)&cHelper);
@@ -118,8 +117,7 @@ ECode LoggingPrintStream::Write(
         FAIL_RETURN(charset->NewDecoder((ICharsetDecoder**)&mDecoder))
 
         AutoPtr<ICodingErrorActionHelper> ceaHelper;
-        assert(0 && "CCodingErrorActionHelper is not implemented!");
-        // CCodingErrorActionHelper::AcquireSingleton((ICodingErrorActionHelper**)&ceaHelper);
+        CCodingErrorActionHelper::AcquireSingleton((ICodingErrorActionHelper**)&ceaHelper);
         AutoPtr<ICodingErrorAction> replace;
         ceaHelper->GetREPLACE((ICodingErrorAction**)&replace);
         FAIL_RETURN(mDecoder->OnMalformedInput(replace))

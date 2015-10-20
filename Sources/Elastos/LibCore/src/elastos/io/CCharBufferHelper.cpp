@@ -6,6 +6,10 @@
 namespace Elastos {
 namespace IO {
 
+CAR_INTERFACE_IMPL(CCharBufferHelper, Singleton, ICharBufferHelper)
+
+CAR_SINGLETON_IMPL(CCharBufferHelper)
+
 ECode CCharBufferHelper::Allocate(
     /* [in] */ Int32 capacity,
     /* [out] */ ICharBuffer** charBuf)

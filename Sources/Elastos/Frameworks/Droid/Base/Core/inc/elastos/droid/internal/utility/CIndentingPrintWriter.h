@@ -1,13 +1,12 @@
 
-#ifndef __INDENTINGPRINTWRITER_H__
-#define __INDENTINGPRINTWRITER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_CINDENTINGPRINTWRITER_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_CINDENTINGPRINTWRITER_H__
 
-#include "_CIndentingPrintWriter.h"
-#include "elastos/io/PrintWriter.h"
-#include <elastos/StringBuilder.h>
+#include "_Elastos_Droid_Internal_Utility_CIndentingPrintWriter.h"
+#include <elastos/io/PrintWriter.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::ICharSequence;
 using Elastos::IO::IWriter;
 using Elastos::IO::PrintWriter;
 
@@ -16,17 +15,25 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-CarClass(CIndentingPrintWriter) , public PrintWriter
+CarClass(CIndentingPrintWriter)
+    , public PrintWriter
+    , public IIndentingPrintWriter
 {
 public:
     CIndentingPrintWriter();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ IWriter* writer,
         /* [in] */ const String& indent);
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
+    CARAPI constructor(
+        /* [in] */ IWriter* writer,
+        /* [in] */ const String& indent,
+        /* [in] */ Int32 wrapLength);
 
     CARAPI IncreaseIndent();
 
@@ -36,127 +43,32 @@ public:
         /* [in] */ const String& key,
         /* [in] */ IInterface* value);
 
-    CARAPI WriteCharsEx(
-        /* [in] */ const ArrayOf<Char32>& buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI AppendChar(
-        /* [in] */ Char32 c);
-
-    CARAPI AppendCharSequence(
-        /* [in] */ ICharSequence* csq);
-
-    CARAPI AppendCharSequenceEx(
-        /* [in] */ ICharSequence* csq,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
+    CARAPI PrintHexPair(
+        /* [in] */ const String& key,
+        /* [in] */ Int32 value);
 
     CARAPI Write(
-        /* [in] */ Int32 oneChar32);
-
-    CARAPI WriteChars(
-        /* [in] */ const ArrayOf<Char32>& buffer);
-
-    CARAPI WriteString(
-        /* [in] */ const String& str);
-
-    CARAPI WriteStringEx(
-        /* [in] */ const String& str,
+        /* [in] */ ArrayOf<Char32>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count);
 
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    CARAPI Format(
-        /* [in] */ const String& format,
-        /* [in] */ ArrayOf<IInterface*>* args);
-
-    CARAPI FormatEx(
-        /* [in] */ ILocale* l,
-        /* [in] */ const String& format,
-        /* [in] */ ArrayOf<IInterface*>* args);
-
-    CARAPI Printf(
-        /* [in] */ const String& format,
-        /* [in] */ ArrayOf<IInterface*>* args);
-
-    CARAPI PrintfEx(
-        /* [in] */ ILocale* l,
-        /* [in] */ const String& format,
-        /* [in] */ ArrayOf<IInterface*>* args);
-
-    CARAPI PrintChars(
-        /* [in] */ const ArrayOf<Char32>& charArray);
-
-    CARAPI PrintChar(
-        /* [in] */ Char32 ch);
-
-    CARAPI PrintDouble(
-        /* [in] */ Double dnum);
-
-    CARAPI PrintFloat(
-        /* [in] */ Float fnum);
-
-    CARAPI PrintInt32(
-        /* [in] */ Int32 inum);
-
-    CARAPI PrintInt64(
-        /* [in] */ Int64 lnum);
-
-    CARAPI PrintObject(
-        /* [in] */ IInterface* obj);
-
-    CARAPI PrintString(
-        /* [in] */ const String& str);
-
-    CARAPI PrintBoolean(
-        /* [in] */ Boolean result);
-
-    CARAPI Println();
-
-    CARAPI PrintCharsln(
-        /* [in] */ const ArrayOf<Char32>& charArray);
-
-    CARAPI PrintCharln(
-        /* [in] */ Char32 ch);
-
-    CARAPI PrintDoubleln(
-        /* [in] */ Double dnum);
-
-    CARAPI PrintFloatln(
-        /* [in] */ Float fnum);
-
-    CARAPI PrintInt32ln(
-        /* [in] */ Int32 inum);
-
-    CARAPI PrintInt64ln(
-        /* [in] */ Int64 lnum);
-
-    CARAPI PrintObjectln(
-        /* [in] */ IInterface* obj);
-
-    CARAPI PrintStringln(
-        /* [in] */ const String& str);
-
-    CARAPI PrintBooleanln(
-        /* [in] */ Boolean result);
-
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
 private:
-    CARAPI WriteIndent();
+    CARAPI MaybeWriteIndent();
 
 private:
-    String mIndent;
+    String mSingleIndent;
+    Int32 mWrapLength;
 
-    StringBuilder mBuilder;
-    AutoPtr<ArrayOf<Char32> > mCurrent;
+    /** Mutable version of current indent */
+    StringBuilder mIndentBuilder;
+    /** Cache of current {@link #mIndentBuilder} value */
+    AutoPtr<ArrayOf<Char32> > mCurrentIndent;
+    /** Length of current line being built, excluding any indent */
+    Int32 mCurrentLength;
+    /**
+     * Flag indicating if we're currently sitting on an empty line, and that
+     * next write should be prefixed with the current indent.
+     */
     Boolean mEmptyLine;
 };
 
@@ -165,4 +77,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INDENTINGPRINTWRITER_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_CINDENTINGPRINTWRITER_H__

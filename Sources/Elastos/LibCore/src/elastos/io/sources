@@ -78,6 +78,7 @@ SOURCES += ByteBuffer.cpp
 SOURCES += CByteBufferHelper.cpp
 SOURCES += ByteArrayBuffer.cpp
 SOURCES += CharBuffer.cpp
+SOURCES += CCharBufferHelper.cpp
 SOURCES += CharSequenceAdapter.cpp
 SOURCES += Buffer.cpp
 SOURCES += CByteOrderHelper.cpp
