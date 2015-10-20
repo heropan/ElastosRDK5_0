@@ -1,0 +1,24 @@
+
+module
+{
+    interface Elastos.Droid.Os.IMessenger;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Wifi {
+    namespace P2p {
+
+    /**
+     * A class representing Wifi Display information for a device
+     * @hide
+     */
+    interface IIWifiP2pManager {
+        GetMessenger(
+            [out] IMessenger** msg);
+    }
+
+    } // namespace p2p
+    } // namespace wifi
+    } // namespace Droid
+    } // namespace Elastos
+}

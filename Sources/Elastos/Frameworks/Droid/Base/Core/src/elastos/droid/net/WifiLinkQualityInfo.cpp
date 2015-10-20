@@ -14,6 +14,11 @@ WifiLinkQualityInfo::WifiLinkQualityInfo()
     , mTxBad(UNKNOWN_LONG)
 {}
 
+WifiLinkQualityInfo::constructor()
+{
+    return NOERROR;
+}
+
 ECode WifiLinkQualityInfo::WriteToParcel(
     /* [in] */ IParcel* dest,
     /* [in] */ Int32 flags)

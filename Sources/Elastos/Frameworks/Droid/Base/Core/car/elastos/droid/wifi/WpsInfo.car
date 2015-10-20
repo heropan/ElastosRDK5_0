@@ -1,0 +1,56 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Wifi {
+
+    /**
+     * A class representing the result of a WPS request
+     * @hide
+     */
+    interface IWpsInfo {
+        /** Push button configuration */
+        const Int32 PBC     = 0;
+
+        /** Display pin method configuration - pin is generated and displayed on device */
+        const Int32 DISPLAY = 1;
+
+        /** Keypad pin method configuration - pin is entered on device */
+        const Int32 KEYPAD  = 2;
+
+        /** Label pin method configuration - pin is labelled on device */
+        const Int32 LABEL   = 3;
+
+        /** Invalid configuration */
+        const Int32 INVALID = 4;
+
+        /** Wi-Fi Protected Setup. www.wi-fi.org/wifi-protected-setup has details */
+        GetSetup(
+            [out] Int32* setup);
+
+        SetSetup(
+            [in] Int32 setup);
+
+        /** @hide */
+        GetBSSID(
+            [out] String* BSSID);
+
+        SetBSSID(
+            [in] String BSSID);
+
+        /** Passed with pin method configuration */
+        GetPin(
+            [out] String* pin);
+
+        SetPin(
+            [in] String pin);
+
+        ToString(
+            [out] String* value);
+    }
+
+    } // namespace Wifi
+    } // namespace Droid
+    } // namespace Elastos
+}

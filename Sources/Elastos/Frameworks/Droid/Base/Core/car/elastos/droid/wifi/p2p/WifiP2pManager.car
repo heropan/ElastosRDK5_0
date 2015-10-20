@@ -1,0 +1,1113 @@
+
+module
+{
+    using interface Elastos.Utility.IObjectStringMap;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IMessenger;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.Wifi.P2p.IWifiP2pWfdInfo;
+    interface Elastos.Droid.Net.Wifi.P2p.Nsd.IWifiP2pServiceInfo;
+    interface Elastos.Droid.Net.Wifi.P2p.Nsd.IWifiP2pServiceResponse;
+    interface Elastos.Droid.Net.Wifi.P2p.Nsd.IWifiP2pServiceRequest;
+    interface Elastos.Droid.Net.Wifi.P2p.Nsd.IWifiP2pDnsSdServiceResponse;
+    interface Elastos.Droid.Net.Wifi.P2p.Nsd.IWifiP2pUpnpServiceResponse;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Wifi {
+    namespace P2p {
+
+    /** Interface for callback invocation when framework channel is lost */
+    interface IWifiP2pManagerChannelListener {
+        /**
+         * The channel to the framework has been disconnected.
+         * Application could try re-initializing using {@link #initialize}
+         */
+        OnChannelDisconnected();
+    }
+
+    /** Interface for callback invocation on an application action */
+    interface IWifiP2pManagerActionListener {
+        /** The operation succeeded */
+        OnSuccess();
+        /**
+         * The operation failed
+         * @param reason The reason for failure could be one of {@link #P2P_UNSUPPORTED},
+         * {@link #ERROR} or {@link #BUSY}
+         */
+        OnFailure(
+            [in] Int32 reason);
+    }
+
+    /** Interface for callback invocation when peer list is available */
+    interface IWifiP2pManagerPeerListListener {
+        /**
+         * The requested peer list is available
+         * @param peers List of available peers
+         */
+        OnPeersAvailable(
+            [in] IWifiP2pDeviceList* peers);
+    }
+
+    /** Interface for callback invocation when connection info is available */
+    interface IWifiP2pManagerConnectionInfoListener {
+        /**
+         * The requested connection info is available
+         * @param info Wi-Fi p2p connection info
+         */
+        OnConnectionInfoAvailable(
+            [in] IWifiP2pInfo* info);
+    }
+
+    /** Interface for callback invocation when group info is available */
+    interface IWifiP2pManagerGroupInfoListener {
+        /**
+         * The requested p2p group info is available
+         * @param group Wi-Fi p2p group info
+         */
+        OnGroupInfoAvailable(
+            [in] IWifiP2pGroup* group);
+    }
+
+   /**
+    * Interface for callback invocation when service discovery response other than
+    * Upnp or Bonjour is received
+    */
+   [deprecated]
+    interface IWifiP2pManagerServiceResponseListener {
+
+        /**
+         * The requested service response is available.
+         *
+         * @param protocolType protocol type. currently only
+         * {@link WifiP2pServiceInfo#SERVICE_TYPE_VENDOR_SPECIFIC}.
+         * @param responseData service discovery response data based on the requested
+         *  service protocol type. The format depends on the service type.
+         * @param srcDevice source device.
+         */
+        OnServiceAvailable(
+            [in] Int32 protocolType,
+            [in] ArrayOf<Byte>* responseData,
+            [in] IWifiP2pDevice* srcDevice);
+    }
+
+    /**
+     * Interface for callback invocation when Bonjour service discovery response
+     * is received
+     */
+    interface IWifiP2pManagerDnsSdServiceResponseListener {
+
+        /**
+         * The requested Bonjour service response is available.
+         *
+         * <p>This function is invoked when the device with the specified Bonjour
+         * registration type returned the instance name.
+         * @param instanceName instance name.<br>
+         *  e.g) "MyPrinter".
+         * @param registrationType <br>
+         * e.g) "_ipp._tcp.local."
+         * @param srcDevice source device.
+         */
+        OnDnsSdServiceAvailable(
+            [in] String instanceName,
+            [in] String registrationType,
+            [in] IWifiP2pDevice* srcDevice);
+
+   }
+
+    /**
+     * Interface for callback invocation when Bonjour TXT record is available
+     * for a service
+     */
+    interface IWifiP2pManagerDnsSdTxtRecordListener {
+        /**
+         * The requested Bonjour service response is available.
+         *
+         * <p>This function is invoked when the device with the specified full
+         * service domain service returned TXT record.
+         *
+         * @param fullDomainName full domain name. <br>
+         * e.g) "MyPrinter._ipp._tcp.local.".
+         * @param txtRecordMap TXT record data as a map of key/value pairs
+         * @param srcDevice source device.
+         */
+        OnDnsSdTxtRecordAvailable(
+            [in] String fullDomainName,
+            [in] IObjectStringMap* txtRecordMap,
+            [in] IWifiP2pDevice* srcDevice);
+   }
+
+    /**
+     * Interface for callback invocation when upnp service discovery response
+     * is received
+     * */
+    [deprecated]
+    interface IWifiP2pManagerUpnpServiceResponseListener {
+
+        /**
+         * The requested upnp service response is available.
+         *
+         * <p>This function is invoked when the specified device or service is found.
+         *
+         * @param uniqueServiceNames The list of unique service names.<br>
+         * e.g) uuid:6859dede-8574-59ab-9332-123456789012::urn:schemas-upnp-org:device:
+         * MediaServer:1
+         * @param srcDevice source device.
+         */
+        OnUpnpServiceAvailable(
+            [in] ArrayOf<String>* uniqueServiceNames,
+            [in] IWifiP2pDevice* srcDevice);
+    }
+
+
+    /**
+     * Interface for callback invocation when dialog events are received.
+     * see {@link #setDialogListener}.
+     * @hide
+     */
+    interface IWifiP2pManagerDialogListener {
+
+        /**
+         * Called by the system when a request to show WPS pin is received.
+         *
+         * @param pin WPS pin.
+         */
+        OnShowPinRequested(
+            [in] String pin);
+
+        /**
+         * Called by the system when a request to establish the connection is received.
+         *
+         * Application can then call {@link #connect} with the given config if the request
+         * is acceptable.
+         *
+         * @param device the source device.
+         * @param config p2p configuration.
+         */
+        OnConnectionRequested(
+            [in] IWifiP2pDevice* device,
+            [in] IWifiP2pConfig* config);
+
+        /**
+         * Called by the system when this listener was attached to the system.
+         */
+        OnAttached();
+
+        /**
+         * Called by the system when this listener was detached from the system or
+         * failed to attach.
+         *
+         * Application can request again using {@link #setDialogListener} when it is
+         * in the foreground.
+         *
+         * @param reason The reason for failure could be one of {@link #ERROR},
+         * {@link #BUSY}, {@link #P2P_UNSUPPORTED} or {@link #NOT_IN_FOREGROUND}
+         */
+        OnDetached(
+            [in] Int32 reason);
+    }
+
+    /** Interface for callback invocation when stored group info list is available {@hide}*/
+    interface IWifiP2pManagerPersistentGroupInfoListener {
+        /**
+         * The requested stored p2p group info list is available
+         * @param groups Wi-Fi p2p group info list
+         */
+        OnPersistentGroupInfoAvailable(
+            [in] IWifiP2pGroupList* groups);
+    }
+
+
+    /**
+     * A channel that connects the application to the Wifi p2p framework.
+     * Most p2p operations require a Channel as an argument. An instance of Channel is obtained
+     * by doing a call on {@link #initialize}
+     */
+    [deprecated, local]
+    interface IWifiP2pManagerChannel {
+
+        GetHandler(
+            [out] IHandler** handler);
+
+        SetHandler(
+            [in] IHandler* handler);
+
+        GetContext(
+            [out] IContext** context);
+
+        SetContext(
+            [in] IContext* ctx);
+
+        GetChannelListener(
+            [out] IWifiP2pManagerChannelListener** listener);
+
+        SetChannelListener(
+            [in] IWifiP2pManagerChannelListener* listener);
+
+        GetServRspListener(
+            [out] IWifiP2pManagerServiceResponseListener** listener);
+
+        SetServRspListener(
+            [in] IWifiP2pManagerServiceResponseListener* listener);
+
+        GetDnsSdServRspListener(
+            [out] IWifiP2pManagerDnsSdServiceResponseListener** listener);
+
+        SetDnsSdServRspListener(
+            [in] IWifiP2pManagerDnsSdServiceResponseListener* listener);
+
+        GetDnsSdTxtListener(
+            [out] IWifiP2pManagerDnsSdTxtRecordListener** listener);
+
+        SetDnsSdTxtListener(
+            [in] IWifiP2pManagerDnsSdTxtRecordListener* listener);
+
+        GetUpnpServRspListener(
+            [out] IWifiP2pManagerUpnpServiceResponseListener** listener);
+
+        SetUpnpServRspListener(
+            [in] IWifiP2pManagerUpnpServiceResponseListener* listener);
+
+        HandleServiceResponse(
+            [in] IWifiP2pServiceResponse* resp);
+
+        HandleUpnpServiceResponse(
+            [in] IWifiP2pUpnpServiceResponse* resp);
+
+        HandleDnsSdServiceResponse(
+            [in] IWifiP2pDnsSdServiceResponse* resp);
+
+        PutListener(
+            [in] IInterface* listener,
+            [out] Int32* val);
+
+        GetListener(
+            [in] Int32 key,
+            [out] IInterface** obj);
+
+        SetDialogListener(
+            [in] IWifiP2pManagerDialogListener* listener);
+    }
+
+    /**
+     * A class representing Wifi Display information for a device
+     * @hide
+     */
+    [deprecated, local]
+    interface IWifiP2pManager {
+        /**
+         * Broadcast intent action to indicate whether Wi-Fi p2p is enabled or disabled. An
+         * extra {@link #EXTRA_WIFI_STATE} provides the state information as int.
+         *
+         * @see #EXTRA_WIFI_STATE
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String WIFI_P2P_STATE_CHANGED_ACTION =
+            "android.net.wifi.p2p.STATE_CHANGED";
+
+        /**
+         * The lookup key for an int that indicates whether Wi-Fi p2p is enabled or disabled.
+         * Retrieve it with {@link android.content.Intent#getIntExtra(String,int)}.
+         *
+         * @see #WIFI_P2P_STATE_DISABLED
+         * @see #WIFI_P2P_STATE_ENABLED
+         */
+        const String EXTRA_WIFI_STATE = "wifi_p2p_state";
+
+        /**
+         * Wi-Fi p2p is disabled.
+         *
+         * @see #WIFI_P2P_STATE_CHANGED_ACTION
+         */
+        const Int32 WIFI_P2P_STATE_DISABLED = 1;
+
+        /**
+         * Wi-Fi p2p is enabled.
+         *
+         * @see #WIFI_P2P_STATE_CHANGED_ACTION
+         */
+        const Int32 WIFI_P2P_STATE_ENABLED = 2;
+
+        /**
+         * Broadcast intent action indicating that the state of Wi-Fi p2p connectivity
+         * has changed. One extra {@link #EXTRA_WIFI_P2P_INFO} provides the p2p connection info in
+         * the form of a {@link WifiP2pInfo} object. Another extra {@link #EXTRA_NETWORK_INFO} provides
+         * the network info in the form of a {@link android.net.NetworkInfo}.
+         *
+         * @see #EXTRA_WIFI_P2P_INFO
+         * @see #EXTRA_NETWORK_INFO
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String WIFI_P2P_CONNECTION_CHANGED_ACTION =
+            "android.net.wifi.p2p.CONNECTION_STATE_CHANGE";
+
+        /**
+         * The lookup key for a {@link android.net.wifi.p2p.WifiP2pInfo} object
+         * Retrieve with {@link android.content.Intent#getParcelableExtra(String)}.
+         */
+        const String EXTRA_WIFI_P2P_INFO = "wifiP2pInfo";
+
+        /**
+         * The lookup key for a {@link android.net.NetworkInfo} object associated with the
+         * Wi-Fi network. Retrieve with
+         * {@link android.content.Intent#getParcelableExtra(String)}.
+         */
+        const String EXTRA_NETWORK_INFO = "networkInfo";
+
+        /**
+         * The lookup key for a {@link android.net.LinkProperties} object associated with the
+         * network. Retrieve with
+         * {@link android.content.Intent#getParcelableExtra(String)}.
+         * @hide
+         */
+        const String EXTRA_LINK_PROPERTIES = "linkProperties";
+
+        /**
+         * The lookup key for a {@link android.net.LinkCapabilities} object associated with the
+         * network. Retrieve with
+         * {@link android.content.Intent#getParcelableExtra(String)}.
+         * @hide
+         */
+        const String EXTRA_LINK_CAPABILITIES = "linkCapabilities";
+
+        /**
+         * Broadcast intent action indicating that the available peer list has changed. Fetch
+         * the changed list of peers with {@link #requestPeers}
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String WIFI_P2P_PEERS_CHANGED_ACTION =
+            "android.net.wifi.p2p.PEERS_CHANGED";
+
+        /**
+         * Broadcast intent action indicating that peer discovery has either started or stopped.
+         * One extra {@link #EXTRA_DISCOVERY_STATE} indicates whether discovery has started
+         * or stopped.
+         *
+         * Note that discovery will be stopped during a connection setup. If the application tries
+         * to re-initiate discovery during this time, it can fail.
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String WIFI_P2P_DISCOVERY_CHANGED_ACTION =
+            "android.net.wifi.p2p.DISCOVERY_STATE_CHANGE";
+
+        /**
+         * The lookup key for an int that indicates whether p2p discovery has started or stopped.
+         * Retrieve it with {@link android.content.Intent#getIntExtra(String,int)}.
+         *
+         * @see #WIFI_P2P_DISCOVERY_STARTED
+         * @see #WIFI_P2P_DISCOVERY_STOPPED
+         */
+        const String EXTRA_DISCOVERY_STATE = "discoveryState";
+
+        /**
+         * p2p discovery has stopped
+         *
+         * @see #WIFI_P2P_DISCOVERY_CHANGED_ACTION
+         */
+        const Int32 WIFI_P2P_DISCOVERY_STOPPED = 1;
+
+        /**
+         * p2p discovery has started
+         *
+         * @see #WIFI_P2P_DISCOVERY_CHANGED_ACTION
+         */
+        const Int32 WIFI_P2P_DISCOVERY_STARTED = 2;
+
+        /**
+         * Broadcast intent action indicating that this device details have changed.
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String WIFI_P2P_THIS_DEVICE_CHANGED_ACTION =
+            "android.net.wifi.p2p.THIS_DEVICE_CHANGED";
+
+        /**
+         * The lookup key for a {@link android.net.wifi.p2p.WifiP2pDevice} object
+         * Retrieve with {@link android.content.Intent#getParcelableExtra(String)}.
+         */
+        const String EXTRA_WIFI_P2P_DEVICE = "wifiP2pDevice";
+
+        /**
+         * Broadcast intent action indicating that remembered persistent groups have changed.
+         * @hide
+         */
+        const String WIFI_P2P_PERSISTENT_GROUPS_CHANGED_ACTION =
+            "android.net.wifi.p2p.PERSISTENT_GROUPS_CHANGED";
+
+        /**
+         * The lookup key for a {@link #String} object.
+         * Retrieve with {@link android.os.Bundle#getString(String)}.
+         * @hide
+         */
+        const String APP_PKG_BUNDLE_KEY = "appPkgName";
+
+        /**
+         * The lookup key for a {@link #Boolean} object.
+         * Retrieve with {@link android.os.Bundle#getBoolean(String)}.
+         * @hide
+         */
+        const String RESET_DIALOG_LISTENER_BUNDLE_KEY = "dialogResetFlag";
+
+        /**
+         * The lookup key for a {@link #String} object.
+         * Retrieve with {@link android.os.Bundle#getString(String)}.
+         * @hide
+         */
+        const String WPS_PIN_BUNDLE_KEY = "wpsPin";
+
+        /**
+         * The lookup key for a {@link android.net.wifi.p2p.WifiP2pDevice} object
+         * Retrieve with {@link android.os.Bundle#getParcelable(String)}.
+         * @hide
+         */
+        const String P2P_DEV_BUNDLE_KEY = "wifiP2pDevice";
+
+        /**
+         * The lookup key for a {@link android.net.wifi.p2p.WifiP2pConfig} object
+         * Retrieve with {@link android.os.Bundle#getParcelable(String)}.
+         * @hide
+         */
+        const String P2P_CONFIG_BUNDLE_KEY = "wifiP2pConfig";
+
+        /** @hide */
+        const Int32 DISCOVER_PEERS                          = 0x00022001;      //IProtocol::BASE_WIFI_P2P_MANAGER + 1;
+        /** @hide */
+        const Int32 DISCOVER_PEERS_FAILED                   = 0x00022002;      //IProtocol::BASE_WIFI_P2P_MANAGER + 2;
+        /** @hide */
+        const Int32 DISCOVER_PEERS_SUCCEEDED                = 0x00022003;      //IProtocol::BASE_WIFI_P2P_MANAGER + 3;
+
+        /** @hide */
+        const Int32 STOP_DISCOVERY                          = 0x00022004;      //IProtocol::BASE_WIFI_P2P_MANAGER + 4;
+        /** @hide */
+        const Int32 STOP_DISCOVERY_FAILED                   = 0x00022005;      //IProtocol::BASE_WIFI_P2P_MANAGER + 5;
+        /** @hide */
+        const Int32 STOP_DISCOVERY_SUCCEEDED                = 0x00022006;      //IProtocol::BASE_WIFI_P2P_MANAGER + 6;
+
+        /** @hide */
+        const Int32 CONNECT                                 = 0x00022007;      //IProtocol::BASE_WIFI_P2P_MANAGER + 7;
+        /** @hide */
+        const Int32 CONNECT_FAILED                          = 0x00022008;      //IProtocol::BASE_WIFI_P2P_MANAGER + 8;
+        /** @hide */
+        const Int32 CONNECT_SUCCEEDED                       = 0x00022009;      //IProtocol::BASE_WIFI_P2P_MANAGER + 9;
+
+        /** @hide */
+        const Int32 CANCEL_CONNECT                          = 0x0002200a;      //IProtocol::BASE_WIFI_P2P_MANAGER + 10;
+        /** @hide */
+        const Int32 CANCEL_CONNECT_FAILED                   = 0x0002200b;      //IProtocol::BASE_WIFI_P2P_MANAGER + 11;
+        /** @hide */
+        const Int32 CANCEL_CONNECT_SUCCEEDED                = 0x0002200c;      //IProtocol::BASE_WIFI_P2P_MANAGER + 12;
+
+        /** @hide */
+        const Int32 CREATE_GROUP                            = 0x0002200d;      //IProtocol::BASE_WIFI_P2P_MANAGER + 13;
+        /** @hide */
+        const Int32 CREATE_GROUP_FAILED                     = 0x0002200e;      //IProtocol::BASE_WIFI_P2P_MANAGER + 14;
+        /** @hide */
+        const Int32 CREATE_GROUP_SUCCEEDED                  = 0x0002200f;      //IProtocol::BASE_WIFI_P2P_MANAGER + 15;
+
+        /** @hide */
+        const Int32 REMOVE_GROUP                            = 0x00022010;      //IProtocol::BASE_WIFI_P2P_MANAGER + 16;
+        /** @hide */
+        const Int32 REMOVE_GROUP_FAILED                     = 0x00022011;      //IProtocol::BASE_WIFI_P2P_MANAGER + 17;
+        /** @hide */
+        const Int32 REMOVE_GROUP_SUCCEEDED                  = 0x00022012;      //IProtocol::BASE_WIFI_P2P_MANAGER + 18;
+
+        /** @hide */
+        const Int32 REQUEST_PEERS                           = 0x00022013;      //IProtocol::BASE_WIFI_P2P_MANAGER + 19;
+        /** @hide */
+        const Int32 RESPONSE_PEERS                          = 0x00022014;      //IProtocol::BASE_WIFI_P2P_MANAGER + 20;
+
+        /** @hide */
+        const Int32 REQUEST_CONNECTION_INFO                 = 0x00022015;      //IProtocol::BASE_WIFI_P2P_MANAGER + 21;
+        /** @hide */
+        const Int32 RESPONSE_CONNECTION_INFO                = 0x00022016;      //IProtocol::BASE_WIFI_P2P_MANAGER + 22;
+
+        /** @hide */
+        const Int32 REQUEST_GROUP_INFO                      = 0x00022017;      //IProtocol::BASE_WIFI_P2P_MANAGER + 23;
+        /** @hide */
+        const Int32 RESPONSE_GROUP_INFO                     = 0x00022018;      //IProtocol::BASE_WIFI_P2P_MANAGER + 24;
+
+        /** @hide */
+        const Int32 ADD_LOCAL_SERVICE                       = 0x0002201c;      //IProtocol::BASE_WIFI_P2P_MANAGER + 28;
+        /** @hide */
+        const Int32 ADD_LOCAL_SERVICE_FAILED                = 0x0002201d;      //IProtocol::BASE_WIFI_P2P_MANAGER + 29;
+        /** @hide */
+        const Int32 ADD_LOCAL_SERVICE_SUCCEEDED             = 0x0002201e;      //IProtocol::BASE_WIFI_P2P_MANAGER + 30;
+
+        /** @hide */
+        const Int32 REMOVE_LOCAL_SERVICE                    = 0x0002201f;      //IProtocol::BASE_WIFI_P2P_MANAGER + 31;
+        /** @hide */
+        const Int32 REMOVE_LOCAL_SERVICE_FAILED             = 0x00022020;      //IProtocol::BASE_WIFI_P2P_MANAGER + 32;
+        /** @hide */
+        const Int32 REMOVE_LOCAL_SERVICE_SUCCEEDED          = 0x00022021;      //IProtocol::BASE_WIFI_P2P_MANAGER + 33;
+
+        /** @hide */
+        const Int32 CLEAR_LOCAL_SERVICES                    = 0x00022022;      //IProtocol::BASE_WIFI_P2P_MANAGER + 34;
+        /** @hide */
+        const Int32 CLEAR_LOCAL_SERVICES_FAILED             = 0x00022023;      //IProtocol::BASE_WIFI_P2P_MANAGER + 35;
+        /** @hide */
+        const Int32 CLEAR_LOCAL_SERVICES_SUCCEEDED          = 0x00022024;      //IProtocol::BASE_WIFI_P2P_MANAGER + 36;
+
+        /** @hide */
+        const Int32 ADD_SERVICE_REQUEST                     = 0x00022025;      //IProtocol::BASE_WIFI_P2P_MANAGER + 37;
+        /** @hide */
+        const Int32 ADD_SERVICE_REQUEST_FAILED              = 0x00022026;      //IProtocol::BASE_WIFI_P2P_MANAGER + 38;
+        /** @hide */
+        const Int32 ADD_SERVICE_REQUEST_SUCCEEDED           = 0x00022027;      //IProtocol::BASE_WIFI_P2P_MANAGER + 39;
+
+        /** @hide */
+        const Int32 REMOVE_SERVICE_REQUEST                  = 0x00022028;      //IProtocol::BASE_WIFI_P2P_MANAGER + 40;
+        /** @hide */
+        const Int32 REMOVE_SERVICE_REQUEST_FAILED           = 0x00022029;      //IProtocol::BASE_WIFI_P2P_MANAGER + 41;
+        /** @hide */
+        const Int32 REMOVE_SERVICE_REQUEST_SUCCEEDED        = 0x0002202a;      //IProtocol::BASE_WIFI_P2P_MANAGER + 42;
+
+        /** @hide */
+        const Int32 CLEAR_SERVICE_REQUESTS                  = 0x0002202b;      //IProtocol::BASE_WIFI_P2P_MANAGER + 43;
+        /** @hide */
+        const Int32 CLEAR_SERVICE_REQUESTS_FAILED           = 0x0002202c;      //IProtocol::BASE_WIFI_P2P_MANAGER + 44;
+        /** @hide */
+        const Int32 CLEAR_SERVICE_REQUESTS_SUCCEEDED        = 0x0002202d;      //IProtocol::BASE_WIFI_P2P_MANAGER + 45;
+
+        /** @hide */
+        const Int32 DISCOVER_SERVICES                       = 0x0002202e;      //IProtocol::BASE_WIFI_P2P_MANAGER + 46;
+        /** @hide */
+        const Int32 DISCOVER_SERVICES_FAILED                = 0x0002202f;      //IProtocol::BASE_WIFI_P2P_MANAGER + 47;
+        /** @hide */
+        const Int32 DISCOVER_SERVICES_SUCCEEDED             = 0x00022030;      //IProtocol::BASE_WIFI_P2P_MANAGER + 48;
+
+        /** @hide */
+        const Int32 PING                                    = 0x00022031;      //IProtocol::BASE_WIFI_P2P_MANAGER + 49;
+
+        /** @hide */
+        const Int32 RESPONSE_SERVICE                        = 0x00022032;      //IProtocol::BASE_WIFI_P2P_MANAGER + 50;
+
+        /** @hide */
+        const Int32 SET_DEVICE_NAME                         = 0x00022033;      //IProtocol::BASE_WIFI_P2P_MANAGER + 51;
+        /** @hide */
+        const Int32 SET_DEVICE_NAME_FAILED                  = 0x00022034;      //IProtocol::BASE_WIFI_P2P_MANAGER + 52;
+        /** @hide */
+        const Int32 SET_DEVICE_NAME_SUCCEEDED               = 0x00022035;      //IProtocol::BASE_WIFI_P2P_MANAGER + 53;
+
+        /** @hide */
+        const Int32 SET_DIALOG_LISTENER                     = 0x00022036;      //IProtocol::BASE_WIFI_P2P_MANAGER + 54;
+        /** @hide */
+        const Int32 DIALOG_LISTENER_DETACHED                = 0x00022037;      //IProtocol::BASE_WIFI_P2P_MANAGER + 55;
+        /** @hide */
+        const Int32 DIALOG_LISTENER_ATTACHED                = 0x00022038;      //IProtocol::BASE_WIFI_P2P_MANAGER + 56;
+
+        /** @hide */
+        const Int32 CONNECTION_REQUESTED                    = 0x00022039;      //IProtocol::BASE_WIFI_P2P_MANAGER + 57;
+        /** @hide */
+        const Int32 SHOW_PIN_REQUESTED                      = 0x0002203a;      //IProtocol::BASE_WIFI_P2P_MANAGER + 58;
+
+        /** @hide */
+        const Int32 DELETE_PERSISTENT_GROUP                 = 0x0002203b;      //IProtocol::BASE_WIFI_P2P_MANAGER + 59;
+        /** @hide */
+        const Int32 DELETE_PERSISTENT_GROUP_FAILED          = 0x0002203c;      //IProtocol::BASE_WIFI_P2P_MANAGER + 60;
+        /** @hide */
+        const Int32 DELETE_PERSISTENT_GROUP_SUCCEEDED       = 0x0002203d;      //IProtocol::BASE_WIFI_P2P_MANAGER + 61;
+
+        /** @hide */
+        const Int32 REQUEST_PERSISTENT_GROUP_INFO           = 0x0002203e;      //IProtocol::BASE_WIFI_P2P_MANAGER + 62;
+        /** @hide */
+        const Int32 RESPONSE_PERSISTENT_GROUP_INFO          = 0x0002203f;      //IProtocol::BASE_WIFI_P2P_MANAGER + 63;
+
+        /** @hide */
+        const Int32 SET_WFD_INFO                            = 0x00022040;      //IProtocol::BASE_WIFI_P2P_MANAGER + 64;
+        /** @hide */
+        const Int32 SET_WFD_INFO_FAILED                     = 0x00022041;      //IProtocol::BASE_WIFI_P2P_MANAGER + 65;
+        /** @hide */
+        const Int32 SET_WFD_INFO_SUCCEEDED                  = 0x00022042;      //IProtocol::BASE_WIFI_P2P_MANAGER + 66;
+
+        /* set GroupOnwer psk */
+        /** @hide */
+        const Int32 SET_GO_PSK                              = 0x00022043;      //IProtocol::BASE_WIFI_P2P_MANAGER + BASE + 67;
+        /** @hide */
+        const Int32 SET_GO_PSK_FAILED                       = 0x00022044;      //IProtocol::BASE_WIFI_P2P_MANAGER + BASE + 68;
+        /** @hide */
+        const Int32 SET_GO_PSK_SUCCEEDED                    = 0x00022045;      //IProtocol::BASE_WIFI_P2P_MANAGER + BASE + 69;
+
+        /**
+         * Passed with {@link ActionListener#onFailure}.
+         * Indicates that the operation failed due to an internal error.
+         */
+        const Int32 ERROR               = 0;
+
+        /**
+         * Passed with {@link ActionListener#onFailure}.
+         * Indicates that the operation failed because p2p is unsupported on the device.
+         */
+        const Int32 P2P_UNSUPPORTED     = 1;
+
+        /**
+         * Passed with {@link ActionListener#onFailure}.
+         * Indicates that the operation failed because the framework is busy and
+         * unable to service the request
+         */
+        const Int32 BUSY                = 2;
+
+        /**
+         * Passed with {@link ActionListener#onFailure}.
+         * Indicates that the {@link #discoverServices} failed because no service
+         * requests are added. Use {@link #addServiceRequest} to add a service
+         * request.
+         */
+        const Int32 NO_SERVICE_REQUESTS = 3;
+
+        /**
+         * Passed with {@link DialogListener#onDetached}.
+         * Indicates that the registered listener was detached from the system because
+         * the application went into background.
+         * @hide
+         */
+        const Int32 NOT_IN_FOREGROUND   = 4;
+
+        GetService(
+            [out] IIWifiP2pManager** service);
+
+        SetService(
+            [in] IIWifiP2pManager* service);
+
+        /**
+         * Registers the application with the Wi-Fi framework. This function
+         * must be the first to be called before any p2p operations are performed.
+         *
+         * @param srcContext is the context of the source
+         * @param srcLooper is the Looper on which the callbacks are receivied
+         * @param listener for callback at loss of framework communication. Can be null.
+         * @return Channel instance that is necessary for performing any further p2p operations
+         */
+        Initialize(
+            [in] IContext* srcContext,
+            [in] ILooper* srcLooper,
+            [in] IWifiP2pManagerChannelListener* listener,
+            [out] IWifiP2pManagerChannel** channel);
+
+        /**
+         * Initiate peer discovery. A discovery process involves scanning for available Wi-Fi peers
+         * for the purpose of establishing a connection.
+         *
+         * <p> The function call immediately returns after sending a discovery request
+         * to the framework. The application is notified of a success or failure to initiate
+         * discovery through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p> The discovery remains active until a connection is initiated or
+         * a p2p group is formed. Register for {@link #WIFI_P2P_PEERS_CHANGED_ACTION} intent to
+         * determine when the framework notifies of a change as peers are discovered.
+         *
+         * <p> Upon receiving a {@link #WIFI_P2P_PEERS_CHANGED_ACTION} intent, an application
+         * can request for the list of peers using {@link #requestPeers}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        DiscoverPeers(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+       /**
+         * Stop an ongoing peer discovery
+         *
+         * <p> The function call immediately returns after sending a stop request
+         * to the framework. The application is notified of a success or failure to initiate
+         * stop through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        StopPeerDiscovery(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Start a p2p connection to a device with the specified configuration.
+         *
+         * <p> The function call immediately returns after sending a connection request
+         * to the framework. The application is notified of a success or failure to initiate
+         * connect through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p> Register for {@link #WIFI_P2P_CONNECTION_CHANGED_ACTION} intent to
+         * determine when the framework notifies of a change in connectivity.
+         *
+         * <p> If the current device is not part of a p2p group, a connect request initiates
+         * a group negotiation with the peer.
+         *
+         * <p> If the current device is part of an existing p2p group or has created
+         * a p2p group with {@link #createGroup}, an invitation to join the group is sent to
+         * the peer device.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param config options as described in {@link WifiP2pConfig} class
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        Connect(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pConfig* config,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Cancel any ongoing p2p group negotiation
+         *
+         * <p> The function call immediately returns after sending a connection cancellation request
+         * to the framework. The application is notified of a success or failure to initiate
+         * cancellation through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        CancelConnect(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Create a p2p group with the current device as the group owner. This essentially creates
+         * an access point that can accept connections from legacy clients as well as other p2p
+         * devices.
+         *
+         * <p class="note"><strong>Note:</strong>
+         * This function would normally not be used unless the current device needs
+         * to form a p2p connection with a legacy client
+         *
+         * <p> The function call immediately returns after sending a group creation request
+         * to the framework. The application is notified of a success or failure to initiate
+         * group creation through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p> Application can request for the group details with {@link #requestGroupInfo}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        CreateGroup(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Remove the current p2p group.
+         *
+         * <p> The function call immediately returns after sending a group removal request
+         * to the framework. The application is notified of a success or failure to initiate
+         * group removal through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        RemoveGroup(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Register a local service for service discovery. If a local service is registered,
+         * the framework automatically responds to a service discovery request from a peer.
+         *
+         * <p> The function call immediately returns after sending a request to add a local
+         * service to the framework. The application is notified of a success or failure to
+         * add service through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p>The service information is set through {@link WifiP2pServiceInfo}.<br>
+         * or its subclass calls  {@link WifiP2pUpnpServiceInfo#newInstance} or
+         *  {@link WifiP2pDnsSdServiceInfo#newInstance} for a Upnp or Bonjour service
+         * respectively
+         *
+         * <p>The service information can be cleared with calls to
+         *  {@link #removeLocalService} or {@link #clearLocalServices}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param servInfo is a local service information.
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        AddLocalService(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pServiceInfo* servInfo,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Remove a registered local service added with {@link #addLocalService}
+         *
+         * <p> The function call immediately returns after sending a request to remove a
+         * local service to the framework. The application is notified of a success or failure to
+         * add service through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param servInfo is the local service information.
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        RemoveLocalService(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pServiceInfo* servInfo,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Clear all registered local services of service discovery.
+         *
+         * <p> The function call immediately returns after sending a request to clear all
+         * local services to the framework. The application is notified of a success or failure to
+         * add service through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        ClearLocalServices(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Register a callback to be invoked on receiving service discovery response.
+         * Used only for vendor specific protocol right now. For Bonjour or Upnp, use
+         * {@link #setDnsSdResponseListeners} or {@link #setUpnpServiceResponseListener}
+         * respectively.
+         *
+         * <p> see {@link #discoverServices} for the detail.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on receiving service discovery response.
+         */
+        SetServiceResponseListener(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerServiceResponseListener* listener);
+
+        /**
+         * Register a callback to be invoked on receiving Bonjour service discovery
+         * response.
+         *
+         * <p> see {@link #discoverServices} for the detail.
+         *
+         * @param c
+         * @param servListener is for listening to a Bonjour service response
+         * @param txtListener is for listening to a Bonjour TXT record response
+         */
+        SetDnsSdResponseListeners(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerDnsSdServiceResponseListener* servListener,
+            [in] IWifiP2pManagerDnsSdTxtRecordListener* txtListener);
+
+        /**
+         * Register a callback to be invoked on receiving upnp service discovery
+         * response.
+         *
+         * <p> see {@link #discoverServices} for the detail.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on receiving service discovery response.
+         */
+        SetUpnpServiceResponseListener(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerUpnpServiceResponseListener* listener);
+
+        /**
+         * Initiate service discovery. A discovery process involves scanning for
+         * requested services for the purpose of establishing a connection to a peer
+         * that supports an available service.
+         *
+         * <p> The function call immediately returns after sending a request to start service
+         * discovery to the framework. The application is notified of a success or failure to initiate
+         * discovery through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p> The services to be discovered are specified with calls to {@link #addServiceRequest}.
+         *
+         * <p>The application is notified of the response against the service discovery request
+         * through listener callbacks registered by {@link #setServiceResponseListener} or
+         * {@link #setDnsSdResponseListeners}, or {@link #setUpnpServiceResponseListener}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        DiscoverServices(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Add a service discovery request.
+         *
+         * <p> The function call immediately returns after sending a request to add service
+         * discovery request to the framework. The application is notified of a success or failure to
+         * add service through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p>After service discovery request is added, you can initiate service discovery by
+         * {@link #discoverServices}.
+         *
+         * <p>The added service requests can be cleared with calls to
+         * {@link #removeServiceRequest(Channel, WifiP2pServiceRequest, ActionListener)} or
+         * {@link #clearServiceRequests(Channel, ActionListener)}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param req is the service discovery request.
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        AddServiceRequest(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pServiceRequest* req,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Remove a specified service discovery request added with {@link #addServiceRequest}
+         *
+         * <p> The function call immediately returns after sending a request to remove service
+         * discovery request to the framework. The application is notified of a success or failure to
+         * add service through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param req is the service discovery request.
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        RemoveServiceRequest(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pServiceRequest* req,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Clear all registered service discovery requests.
+         *
+         * <p> The function call immediately returns after sending a request to clear all
+         * service discovery requests to the framework. The application is notified of a success
+         * or failure to add service through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callbacks on success or failure. Can be null.
+         */
+        ClearServiceRequests(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Request the current list of peers.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback when peer list is available. Can be null.
+         */
+        RequestPeers(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerPeerListListener* listener);
+
+        /**
+         * Request device connection info.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback when connection info is available. Can be null.
+         */
+        RequestConnectionInfo(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerConnectionInfoListener* listener);
+
+        /**
+         * Request p2p group info.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback when group info is available. Can be null.
+         */
+        RequestGroupInfo(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerGroupInfoListener* listener);
+
+        /**
+         * Set p2p device name.
+         * @hide
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback when group info is available. Can be null.
+         */
+        SetDeviceName(
+            [in] IWifiP2pManagerChannel* c,
+            [in] String devName,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /** @hide */
+        SetWFDInfo(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pWfdInfo* wfdInfo,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Set p2p GO device psk, psk.length=[8,12].
+         * Call this before createGroup; if not set,default value is 12345678.
+         * @hide
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback when group info is available. Can be null.
+         */
+        SetGroupOwnerPsk(
+            [in] IWifiP2pManagerChannel* c,
+            [in] String psk,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Set dialog listener to over-ride system dialogs on p2p events. This function
+         * allows an application to receive notifications on connection requests from
+         * peers so that it can customize the user experience for connection with
+         * peers.
+         *
+         * <p> The function call immediately returns after sending a request
+         * to the framework. The application is notified of a success or failure to attach
+         * to the system through listener callbacks {@link DialogListener#onAttached} or
+         * {@link DialogListener#onDetached}.
+         *
+         * <p> Note that only foreground application will be successful in overriding the
+         * system dialogs.
+         * @hide
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback on a dialog event.
+         */
+        SetDialogListener(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerDialogListener* listener);
+
+        /**
+         * Delete a stored persistent group from the system settings.
+         *
+         * <p> The function call immediately returns after sending a persistent group removal request
+         * to the framework. The application is notified of a success or failure to initiate
+         * group removal through listener callbacks {@link ActionListener#onSuccess} or
+         * {@link ActionListener#onFailure}.
+         *
+         * <p>The persistent p2p group list stored in the system can be obtained by
+         * {@link #requestPersistentGroupInfo(Channel, PersistentGroupInfoListener)} and
+         *  a network id can be obtained by {@link WifiP2pGroup#getNetworkId()}.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param netId he network id of the p2p group.
+         * @param listener for callbacks on success or failure. Can be null.
+         * @hide
+         */
+        DeletePersistentGroup(
+            [in] IWifiP2pManagerChannel* c,
+            [in] Int32 netId,
+            [in] IWifiP2pManagerActionListener* listener);
+
+        /**
+         * Request a list of all the persistent p2p groups stored in system.
+         *
+         * @param c is the channel created at {@link #initialize}
+         * @param listener for callback when persistent group info list is available. Can be null.
+         * @hide
+         */
+        RequestPersistentGroupInfo(
+            [in] IWifiP2pManagerChannel* c,
+            [in] IWifiP2pManagerPersistentGroupInfoListener* listener);
+
+        /**
+         * Get a reference to WifiP2pService handler. This is used to establish
+         * an AsyncChannel communication with WifiService
+         *
+         * @return Messenger pointing to the WifiP2pService handler
+         * @hide
+         */
+        GetMessenger(
+            [out] IMessenger** msg);
+        }
+
+    } // namespace p2p
+    } // namespace wifi
+    } // namespace Droid
+    } // namespace Elastos
+}

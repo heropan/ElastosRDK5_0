@@ -23,6 +23,8 @@ public:
 
     WifiLinkQualityInfo();
 
+    CARAPI constructor();
+
     /**
      * Implement the Parcelable interface.
      * @hide

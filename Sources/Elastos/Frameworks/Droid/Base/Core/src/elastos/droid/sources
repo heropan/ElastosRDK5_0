@@ -43,6 +43,7 @@ LIBRARIES += text/text.lib
 LIBRARIES += transition/transition.lib
 LIBRARIES += utility/utility.lib
 
+// LIBRARIES += wifi/wifi.lib
 // LIBRARIES += app/app.lib
 // LIBRARIES += view/view.lib
 // LIBRARIES += widget/widget.lib

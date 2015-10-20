@@ -1,0 +1,68 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Wifi {
+    namespace P2p {
+    namespace Nsd {
+
+    /**
+     * Describes information about a detected access point. In addition
+     * to the attributes described here, the supplicant keeps track of
+     * {@code quality}, {@code noise}, and {@code maxbitrate} attributes,
+     * but does not currently report them to external clients.
+     */
+    interface IWifiP2pServiceInfo {
+        /**
+         * All service protocol types.
+         */
+        const Int32 SERVICE_TYPE_ALL             = 0;
+
+        /**
+         * DNS based service discovery protocol.
+         */
+        const Int32 SERVICE_TYPE_BONJOUR         = 1;
+
+        /**
+         * UPnP protocol.
+         */
+        const Int32 SERVICE_TYPE_UPNP            = 2;
+
+        /**
+         * WS-Discovery protocol
+         * @hide
+         */
+        const Int32 SERVICE_TYPE_WS_DISCOVERY    = 3;
+
+        /**
+         * Vendor Specific protocol
+         */
+        const Int32 SERVICE_TYPE_VENDOR_SPECIFIC = 255;
+
+        /**
+         * Return the list of the query string for wpa_supplicant.
+         *
+         * @return the list of the query string for wpa_supplicant.
+         * @hide
+         */
+        GetSupplicantQueryList(
+            [out, callee] ArrayOf<String>* list);
+
+        // @Override
+        Equals(
+            [in] IInterface* obj,
+            [out] Boolean* isEqual);
+
+        // @Override
+        GetHashCode(
+            [out] Int32* hashCode);
+    }
+
+    } // namespace nsd
+    } // namespace p2p
+    } // namespace wifi
+    } // namespace Droid
+    } // namespace Elastos
+}
+

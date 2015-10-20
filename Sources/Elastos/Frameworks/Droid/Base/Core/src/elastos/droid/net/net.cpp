@@ -54,7 +54,7 @@
 #include "elastos/droid/net/CVpnServiceBuilder.h"
 #include "elastos/droid/net/CWebAddress.h"
 #include "elastos/droid/net/CWifiKey.h"
-// #include "elastos/droid/net/CWifiLinkQualityInfo.h"
+#include "elastos/droid/net/CWifiLinkQualityInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -170,7 +170,7 @@ CAR_OBJECT_IMPL(CWebAddress)
 
 CAR_OBJECT_IMPL(CWifiKey)
 
-// CAR_OBJECT_IMPL(CWifiLinkQualityInfo)
+CAR_OBJECT_IMPL(CWifiLinkQualityInfo)
 
 } // namespace Net
 } // namespace Droid

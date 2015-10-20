@@ -95,8 +95,8 @@ SOURCES += VpnService.cpp
 SOURCES += CVpnServiceHelper.cpp
 SOURCES += WebAddress.cpp
 SOURCES += WifiKey.cpp
+SOURCES += WifiLinkQualityInfo.cpp
 
 // LIBRARIES += nsd/nsd.lib
 // LIBRARIES += etherethernet.lib
 // LIBRARIES += pppoe/pppoe.lib
-// LIBRARIES += wifi/wifi.lib
