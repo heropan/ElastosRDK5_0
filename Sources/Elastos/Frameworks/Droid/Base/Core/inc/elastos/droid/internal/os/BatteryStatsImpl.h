@@ -1690,7 +1690,7 @@ public:
 
     CARAPI_(void) ReadLocked();
 
-    CARAPI_(Int32) DescribeContents();
+
 
     /**
      * Writes a summary of the statistics to a Parcel, in a format suitable to be written to

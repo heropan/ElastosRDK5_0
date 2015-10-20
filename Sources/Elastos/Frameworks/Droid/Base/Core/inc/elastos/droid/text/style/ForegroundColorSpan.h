@@ -31,7 +31,7 @@ public:
         /* [in] */ IParcel* src);
 
     CARAPI GetSpanTypeId(
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

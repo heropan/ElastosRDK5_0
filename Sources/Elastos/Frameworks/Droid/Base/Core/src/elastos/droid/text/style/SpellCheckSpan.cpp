@@ -5,7 +5,7 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-CAR_INTERFACE_IMPL(SpellCheckSpan, Object, ISpellCheckSpan, IParcelableSpan, IParcelable)
+CAR_INTERFACE_IMPL_3(SpellCheckSpan, Object, ISpellCheckSpan, IParcelableSpan, IParcelable)
 
 SpellCheckSpan::SpellCheckSpan()
     : mSpellCheckInProgress(FALSE)
@@ -49,7 +49,7 @@ ECode SpellCheckSpan::WriteToParcel(
 }
 
 ECode SpellCheckSpan::GetSpanTypeId(
-    /* [in] */ Int32* id);
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::SPELL_CHECK_SPAN;

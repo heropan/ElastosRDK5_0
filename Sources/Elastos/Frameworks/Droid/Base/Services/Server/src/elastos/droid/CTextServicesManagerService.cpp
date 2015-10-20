@@ -11,7 +11,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::ActivityManagerNative;
 //using Elastos::Droid::App::IIActivityManager;

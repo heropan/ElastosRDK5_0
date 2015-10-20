@@ -24,12 +24,18 @@ class TextAppearanceSpan
 public:
     CAR_INTERFACE_DECL()
 
+    TextAppearanceSpan();
+
+    virtual ~TextAppearanceSpan();
+
+    CARAPI constructor();
+
     /**
      * Uses the specified TextAppearance resource to determine the
      * text appearance.  The <code>appearance</code> should be, for example,
      * <code>android.R.style.TextAppearance_Small</code>.
      */
-    TextAppearanceSpan(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32  appearance);
 
@@ -41,7 +47,7 @@ public:
      * and the <code>colorList</code> should be, for example,
      * <code>android.R.styleable.Theme_textColorPrimary</code>.
      */
-    TextAppearanceSpan(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 appearance,
         /* [in] */ Int32 colorList);
@@ -50,38 +56,15 @@ public:
      * Makes text be drawn with the specified typeface, size, style,
      * and colors.
      */
-    TextAppearanceSpan(
+    CARAPI constructor(
         /* [in] */ const String& family,
         /* [in] */ Int32 style,
         /* [in] */ Int32 size,
         /* [in] */ IColorStateList* color,
         /* [in] */ IColorStateList* linkColor);
 
-    TextAppearanceSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32  appearance);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 appearance,
-        /* [in] */ Int32 colorList);
-
-    CARAPI_(void) Init(
-        /* [in] */ const String& family,
-        /* [in] */ Int32 style,
-        /* [in] */ Int32 size,
-        /* [in] */ IColorStateList* color,
-        /* [in] */ IColorStateList* linkColor);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-        CARAPI GetSpanTypeId(
-            /* [in] */ Int32* id);
-
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -93,31 +76,36 @@ public:
      * Returns the typeface family specified by this span, or <code>null</code>
      * if it does not specify one.
      */
-    CARAPI_(String) GetFamily();
+    CARAPI GetFamily(
+        /* [out] */ String* family);
 
     /**
      * Returns the text color specified by this span, or <code>null</code>
      * if it does not specify one.
      */
-    CARAPI_(AutoPtr<IColorStateList>) GetTextColor();
+    CARAPI GetTextColor(
+        /* [out] */ IColorStateList** color);
 
     /**
      * Returns the link color specified by this span, or <code>null</code>
      * if it does not specify one.
      */
-    CARAPI_(AutoPtr<IColorStateList>) GetLinkTextColor();
+    CARAPI GetLinkTextColor(
+        /* [out] */ IColorStateList** color);
 
     /**
      * Returns the text size specified by this span, or <code>-1</code>
      * if it does not specify one.
      */
-    CARAPI_(Int32) GetTextSize();
+    CARAPI GetTextSize(
+        /* [out] */ Int32* size);
 
     /**
      * Returns the text style specified by this span, or <code>0</code>
      * if it does not specify one.
      */
-    CARAPI_(Int32) GetTextStyle();
+    CARAPI GetTextStyle(
+        /* [out] */ Int32* style);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -127,8 +115,6 @@ public:
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* ds);
 
-protected:
-    TextAppearanceSpan();
 private:
     /*const*/ String mTypeface;
     /*const*/ Int32 mStyle;

@@ -3,7 +3,7 @@
 
 #include "Elastos.Droid.Core_server.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Core::ICharSequence;
 //using Elastos::Text::IBreakIterator;
 

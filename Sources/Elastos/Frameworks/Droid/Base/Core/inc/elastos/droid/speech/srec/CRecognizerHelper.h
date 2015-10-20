@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Speech_Srec_CRecognizerHelper.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {

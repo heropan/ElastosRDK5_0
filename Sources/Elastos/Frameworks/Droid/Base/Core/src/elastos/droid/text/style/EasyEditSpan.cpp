@@ -47,7 +47,7 @@ ECode EasyEditSpan::WriteToParcel(
 }
 
 ECode EasyEditSpan::GetSpanTypeId(
-    /* [in] */ Int32* id)
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::EASY_EDIT_SPAN;

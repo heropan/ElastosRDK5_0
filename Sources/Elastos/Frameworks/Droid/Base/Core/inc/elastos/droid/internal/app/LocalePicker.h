@@ -7,7 +7,7 @@
 
 #include "elastos/droid/widget/ArrayAdapter.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Core::IComparable;
 //using Elastos::Text::ICollator;
 using Elastos::Droid::App::ListFragment;

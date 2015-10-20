@@ -11,9 +11,9 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
 
-using Libcore::ICU::ILocale;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::IInteger32;

@@ -9,7 +9,7 @@
 #include "elastos/droid/widget/ListView.h"
 
 //using Elastos::Utility::Logging::Logger;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Text::TextUtils;

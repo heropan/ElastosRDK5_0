@@ -18,19 +18,19 @@ AbsoluteSizeSpan::AbsoluteSizeSpan()
 AbsoluteSizeSpan::~AbsoluteSizeSpan()
 {}
 
-ECode AbsoluteSizeSpan::cosntructor()
+ECode AbsoluteSizeSpan::constructor()
 {
     return NOERROR;
 }
 
-ECode AbsoluteSizeSpan::cosntructor(
+ECode AbsoluteSizeSpan::constructor(
     /* [in] */ Int32 size)
 {
     mSize = size;
     return NOERROR;
 }
 
-ECode AbsoluteSizeSpan::cosntructor(
+ECode AbsoluteSizeSpan::constructor(
     /* [in] */ Int32 size,
     /* [in] */ Boolean dip)
 {

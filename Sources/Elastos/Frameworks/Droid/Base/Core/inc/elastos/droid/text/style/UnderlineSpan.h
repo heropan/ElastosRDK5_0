@@ -20,6 +20,8 @@ public:
 
     UnderlineSpan();
 
+    virtual ~UnderlineSpan();
+
     CARAPI constructor();
 
     CARAPI GetSpanTypeId(
@@ -28,7 +30,6 @@ public:
     //@Override
     CARAPI UpdateDrawState(
         /* [in] */ ITextPaint* ds);
-
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

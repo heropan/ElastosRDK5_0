@@ -134,7 +134,7 @@ public:
         /* [out] */ String* str);
 
     /** Implement the Parcelable interface {@hide} */
-    CARAPI_(Int32) DescribeContents();
+
 
     /** Implement the Parcelable interface {@hide} */
     CARAPI WriteToParcel(

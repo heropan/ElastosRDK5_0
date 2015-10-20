@@ -9,7 +9,7 @@ using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Net::IUri;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {

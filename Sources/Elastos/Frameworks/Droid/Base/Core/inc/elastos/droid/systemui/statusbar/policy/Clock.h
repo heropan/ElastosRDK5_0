@@ -6,7 +6,7 @@
 #include "elastos/droid/widget/TextView.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::ICalendar;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Droid::Os::IHandler;

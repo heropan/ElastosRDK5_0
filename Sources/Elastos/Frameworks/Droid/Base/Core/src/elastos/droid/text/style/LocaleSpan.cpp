@@ -1,7 +1,7 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/style/LocaleSpan.h"
 
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Droid {
@@ -26,10 +26,11 @@ ECode LocaleSpan::constructor(
     /* [in] */ ILocale* locale)
 {
     mLocale = locale;
+    return NOERROR;
 }
 
 ECode LocaleSpan::GetSpanTypeId(
-    /* [in] */ Int32* id);
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::LOCALE_SPAN;

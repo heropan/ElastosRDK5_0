@@ -25,15 +25,9 @@ public:
 
     SuggestionRangeSpan();
 
-    SuggestionRangeSpan(
-    /* [in] */ IParcel* src);
+    virtual ~SuggestionRangeSpan();
 
-    CARAPI_(void) Init();
-
-    CARAPI_(void) Init(
-    /* [in] */ IParcel* src);
-
-    //@Override
+    CARAPI constructor();
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -42,15 +36,15 @@ public:
         /* [in] */ IParcel* dest);
 
     //@Override
-        CARAPI GetSpanTypeId(
-            /* [in] */ Int32* id);
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
-    CARAPI_(void) SetBackgroundColor(
-    /* [in] */ Int32 backgroundColor);
+    CARAPI SetBackgroundColor(
+        /* [in] */ Int32 backgroundColor);
 
     //@Override
     CARAPI UpdateDrawState(
-    /* [in] */ ITextPaint* tp);
+        /* [in] */ ITextPaint* tp);
 
 private:
     Int32 mBackgroundColor;

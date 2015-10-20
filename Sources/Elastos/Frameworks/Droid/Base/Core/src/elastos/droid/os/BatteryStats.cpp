@@ -85,11 +85,6 @@ BatteryStats::HistoryItem::HistoryItem(
 
 CAR_INTERFACE_IMPL(BatteryStats::HistoryItem, IParcelable)
 
-Int32 BatteryStats::HistoryItem::DescribeContents()
-{
-    return 0;
-}
-
 ECode BatteryStats::HistoryItem::WriteToParcel(
     /* [in] */ IParcel* dest)
 {

@@ -39,7 +39,7 @@ public:
 
     CARAPI GetLeadingMargin(
         /* [in] */ Boolean first,
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
     CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,

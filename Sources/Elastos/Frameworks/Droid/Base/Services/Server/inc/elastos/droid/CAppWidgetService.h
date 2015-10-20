@@ -24,8 +24,8 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
 
 namespace Elastos {
 namespace Droid {

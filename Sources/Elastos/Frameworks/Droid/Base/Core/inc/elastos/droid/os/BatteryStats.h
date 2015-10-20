@@ -392,7 +392,7 @@ public:
 
         CAR_INTERFACE_DECL()
 
-        CARAPI_(Int32) DescribeContents();
+
 
         CARAPI WriteToParcel(
             /* [in] */ IParcel* dest);

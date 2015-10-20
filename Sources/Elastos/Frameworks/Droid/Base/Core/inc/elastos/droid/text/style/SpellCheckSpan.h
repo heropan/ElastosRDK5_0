@@ -29,7 +29,7 @@ public:
 
     virtual ~SpellCheckSpan();
 
-    CARAPI cosntructor();
+    CARAPI constructor();
 
     CARAPI SetSpellCheckInProgress(
         /* [in] */ Boolean inProgress);
@@ -48,7 +48,7 @@ public:
 
     //@Override
     CARAPI GetSpanTypeId(
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
 private:
     Boolean mSpellCheckInProgress;

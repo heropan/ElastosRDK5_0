@@ -4,7 +4,7 @@
 
 #include <elastos/core/StringBuilder.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::SystemClock;
 

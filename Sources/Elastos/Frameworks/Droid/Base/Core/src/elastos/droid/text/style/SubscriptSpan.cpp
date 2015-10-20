@@ -6,37 +6,27 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(SubscriptSpan, MetricAffectingSpan, ISubscriptSpan, IParcelableSpan, IParcelable)
+
 SubscriptSpan::SubscriptSpan()
 {
-
 }
 
-SubscriptSpan::SubscriptSpan(
-    /* [in] */ IParcel* src)
+SubscriptSpan::~SubscriptSpan()
 {
-
 }
 
-void SubscriptSpan::Init()
+ECode SubscriptSpan::constructor()
 {
-
+    return NOERROR;
 }
 
-void SubscriptSpan::Init(
-    /* [in] */ IParcel* src)
+ECode SubscriptSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-
-}
-
-Int32 SubscriptSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
-{
-    return ITextUtils::SUBSCRIPT_SPAN;
-}
-
-Int32 SubscriptSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::SUBSCRIPT_SPAN;
+    return NOERROR;
 }
 
 ECode SubscriptSpan::ReadFromParcel(
@@ -57,7 +47,9 @@ ECode SubscriptSpan::UpdateDrawState(
     VALIDATE_NOT_NULL(tp);
     Float fAscent;
     Int32 baselineShift;
-    tp->SetBaselineShift((tp->GetBaselineShift(&baselineShift), baselineShift)-(Int32) ((tp->Ascent(&fAscent), fAscent) / 2));
+    tp->GetBaselineShift(&baselineShift);
+    IPaint::Probe(tp)->Ascent(&fAscent);
+    tp->SetBaselineShift(baselineShift-(Int32) (fAscent / 2));
     return NOERROR;
 }
 
@@ -66,7 +58,9 @@ ECode SubscriptSpan::UpdateMeasureState(
 {
     Float fAscent;
     Int32 baselineShift;
-    tp->SetBaselineShift((tp->GetBaselineShift(&baselineShift), baselineShift)-(Int32) ((tp->Ascent(&fAscent), fAscent) / 2));
+    tp->GetBaselineShift(&baselineShift);
+    IPaint::Probe(tp)->Ascent(&fAscent);
+    tp->SetBaselineShift(baselineShift-(Int32) (fAscent / 2));
     return NOERROR;
 }
 

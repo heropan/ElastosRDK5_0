@@ -31,9 +31,9 @@ using Elastos::Droid::Webkit::HTML5Audio;
 using Elastos::Droid::Webkit::HTML5VideoViewProxy;
 using Elastos::Droid::Webkit::CWebViewCore;
 using Elastos::Droid::Webkit::IWebViewCore;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::Logging::Logger;
 
 typedef struct ElaNativeUtilCallback

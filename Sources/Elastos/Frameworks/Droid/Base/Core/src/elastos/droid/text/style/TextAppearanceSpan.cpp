@@ -7,54 +7,29 @@
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::CColorStateList;
 using Elastos::Droid::Graphics::CTypeface;
+using Elastos::Droid::Graphics::ITypeface;
+using Elastos::Droid::Text::CTextPaint;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(TextAppearanceSpan, MetricAffectingSpan, ITextAppearanceSpan, IParcelableSpan, IParcelable)
+
 TextAppearanceSpan::TextAppearanceSpan()
+    : mStyle(0)
+    , mTextSize(0)
 {}
 
-TextAppearanceSpan::TextAppearanceSpan(
+ECode TextAppearanceSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 appearance)
 {
-    Init(context, appearance, -1);
+    return constructor(context, appearance, -1);
 }
 
-TextAppearanceSpan::TextAppearanceSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 appearance,
-    /* [in] */ Int32 colorList)
-{
-    Init(context, appearance, colorList);
-}
-
-TextAppearanceSpan::TextAppearanceSpan(
-    /* [in] */ const String& family,
-    /* [in] */ Int32 style,
-    /* [in] */ Int32 size,
-    /* [in] */ IColorStateList* color,
-    /* [in] */ IColorStateList* linkColor)
-{
-    Init(family, style, size, color, linkColor);
-}
-
-TextAppearanceSpan::TextAppearanceSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void TextAppearanceSpan::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 appearance)
-{
-    Init(context, appearance, -1);
-}
-
-void TextAppearanceSpan::Init(
+ECode TextAppearanceSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 appearance,
     /* [in] */ Int32 colorList)
@@ -115,9 +90,10 @@ void TextAppearanceSpan::Init(
     }
 
     mTextColor = textColor;
+    return NOERROR;
 }
 
-void TextAppearanceSpan::Init(
+ECode TextAppearanceSpan::constructor(
     /* [in] */ const String& family,
     /* [in] */ Int32 style,
     /* [in] */ Int32 size,
@@ -129,23 +105,15 @@ void TextAppearanceSpan::Init(
     mTextSize = size;
     mTextColor = color;
     mTextColorLink = linkColor;
+    return NOERROR;
 }
 
-void TextAppearanceSpan::Init(
-    /* [in] */ IParcel* src)
+ECode TextAppearanceSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    ReadFromParcel(src);
-}
-
-Int32 TextAppearanceSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
-{
-    return ITextUtils::TEXT_APPEARANCE_SPAN;
-}
-
-Int32 TextAppearanceSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::TEXT_APPEARANCE_SPAN;
+    return NOERROR;
 }
 
 ECode TextAppearanceSpan::ReadFromParcel(
@@ -195,29 +163,46 @@ ECode TextAppearanceSpan::WriteToParcel(
     return NOERROR;
 }
 
-String TextAppearanceSpan::GetFamily()
+ECode TextAppearanceSpan::GetFamily(
+    /* [out] */ String* family)
 {
-    return mTypeface;
+    VALIDATE_NOT_NULL(family)
+    *family = mTypeface;
+    return NOERROR;
 }
 
-AutoPtr<IColorStateList> TextAppearanceSpan::GetTextColor()
+ECode TextAppearanceSpan::GetTextColor(
+    /* [out] */ IColorStateList** list)
 {
-    return mTextColor;
+    VALIDATE_NOT_NULL(list)
+    *list = mTextColor;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
-AutoPtr<IColorStateList> TextAppearanceSpan::GetLinkTextColor()
+ECode TextAppearanceSpan::GetLinkTextColor(
+    /* [out] */ IColorStateList** list)
 {
-    return mTextColorLink;
+    VALIDATE_NOT_NULL(list)
+    *list = mTextColorLink;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
-Int32 TextAppearanceSpan::GetTextSize()
+ECode TextAppearanceSpan::GetTextSize(
+    /* [out] */ Int32* size)
 {
-    return mTextSize;
+    VALIDATE_NOT_NULL(size)
+    *size = mTextSize;
+    return NOERROR;
 }
 
-Int32 TextAppearanceSpan::GetTextStyle()
+ECode TextAppearanceSpan::GetTextStyle(
+    /* [out] */ Int32* style)
 {
-    return mStyle;
+    VALIDATE_NOT_NULL(style)
+    *style = mStyle;
+    return NOERROR;
 }
 
 ECode TextAppearanceSpan::UpdateDrawState(
@@ -225,20 +210,21 @@ ECode TextAppearanceSpan::UpdateDrawState(
 {
     FAIL_RETURN(UpdateMeasureState(ds));
 
+    CTextPaint* p = (CTextPaint*)ds;
     if (mTextColor != NULL) {
         AutoPtr< ArrayOf<Int32> > drawableState;
-        ds->GetDrawableState((ArrayOf<Int32>**)&drawableState);
+        p->GetDrawableState((ArrayOf<Int32>**)&drawableState);
         Int32 colorForState;
         mTextColor->GetColorForState(drawableState.Get(), 0, &colorForState);
-        ds->SetColor(colorForState);
+        p->SetColor(colorForState);
     }
 
     if (mTextColorLink != NULL) {
         AutoPtr< ArrayOf<Int32> > drawableState;
-        ds->GetDrawableState((ArrayOf<Int32>**)&drawableState);
+        p->GetDrawableState((ArrayOf<Int32>**)&drawableState);
         Int32 linkColor;
         mTextColorLink->GetColorForState(drawableState.Get(), 0, &linkColor);
-        ds->SetLinkColor(linkColor);
+        p->SetLinkColor(linkColor);
     }
     return NOERROR;
 }
@@ -247,9 +233,11 @@ ECode TextAppearanceSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
+    CTextPaint* p = (CTextPaint*)ds;
+
     if (!mTypeface.IsNull() || mStyle != 0) {
         AutoPtr<ITypeface> tf;
-        ds->GetTypeface((ITypeface**)&tf);
+        p->GetTypeface((ITypeface**)&tf);
         Int32 style = 0;
 
         if (tf != NULL) {
@@ -273,18 +261,18 @@ ECode TextAppearanceSpan::UpdateMeasureState(
         Int32 fake = style & ~tfStyle;
 
         if ((fake & ITypeface::BOLD) != 0) {
-            ds->SetFakeBoldText(TRUE);
+            p->SetFakeBoldText(TRUE);
         }
 
         if ((fake & ITypeface::ITALIC) != 0) {
-            ds->SetTextSkewX(-0.25f);
+            p->SetTextSkewX(-0.25f);
         }
 
-        ds->SetTypeface(tf);
+        p->SetTypeface(tf);
     }
 
     if (mTextSize > 0) {
-        ds->SetTextSize(mTextSize);
+        p->SetTextSize(mTextSize);
     }
     return NOERROR;
 }

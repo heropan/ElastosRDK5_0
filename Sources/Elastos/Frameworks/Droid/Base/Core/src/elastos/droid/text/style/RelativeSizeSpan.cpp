@@ -1,6 +1,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/RelativeSizeSpan.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -23,7 +25,7 @@ ECode RelativeSizeSpan::constructor(
 }
 
 ECode RelativeSizeSpan::GetSpanTypeId(
-    /* [in] */ Int32* id);
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::RELATIVE_SIZE_SPAN;
@@ -54,18 +56,21 @@ ECode RelativeSizeSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
+    IPaint* p = IPaint::Probe(ds);
     Float textSize;
-    ds->GetTextSize(&textSize);
-    ds->SetTextSize(textSize * mProportion);
+    p->GetTextSize(&textSize);
+    p->SetTextSize(textSize * mProportion);
     return NOERROR;
 }
 
 ECode RelativeSizeSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* ds)
 {
+    VALIDATE_NOT_NULL(ds);
+    IPaint* p = IPaint::Probe(ds);
     Float textSize;
-    ds->GetTextSize(&textSize);
-    ds->SetTextSize(textSize * mProportion);
+    p->GetTextSize(&textSize);
+    p->SetTextSize(textSize * mProportion);
     return NOERROR;
 }
 

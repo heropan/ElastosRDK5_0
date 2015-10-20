@@ -6,9 +6,9 @@
 
 using Elastos::Core::CString;
 using Elastos::Droid::Text::Selection;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
 
 namespace Elastos {
 namespace Droid {

@@ -96,7 +96,7 @@ private:
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler) = 0;
 
-        CARAPI_(Int32) DescribeContents();
+
 
         /**
          * Overridden by each class to report on it's own memory usage

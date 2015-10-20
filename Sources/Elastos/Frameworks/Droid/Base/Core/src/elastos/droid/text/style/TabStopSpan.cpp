@@ -6,56 +6,42 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-/*****************************TabStopSpan::Standard*****************************/
-PInterface TabStopSpan::Standard::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(ITabStopSpan*)this;
-    }
-    else if (riid == EIID_ITabStopSpan) {
-        return (ITabStopSpan*)this;
-    }
-    return NULL;
-}
 
-UInt32 TabStopSpan::Standard::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+//=====================================================================
+// TabStopSpan
+//=====================================================================
 
-UInt32 TabStopSpan::Standard::Release()
-{
-    return ElRefBase::Release();
-}
+CAR_INTERFACE_IMPL_2(TabStopSpan, Object, ITabStopSpan, IParagraphStyle)
 
-ECode TabStopSpan::Standard::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
+TabStopSpan::TabStopSpan()
+{}
 
-    if (object == (IInterface*)(ITabStopSpan*)this) {
-        *iID = EIID_ITabStopSpan;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+TabStopSpan::~TabStopSpan()
+{}
 
-TabStopSpan::Standard::Standard(
+//=====================================================================
+// TabStopSpanStandard
+//=====================================================================
+CAR_INTERFACE_IMPL(TabStopSpanStandard, TabStopSpan, ITabStopSpanStandard)
+
+TabStopSpanStandard::TabStopSpanStandard()
+    : mTab(0)
+{}
+
+TabStopSpanStandard::~TabStopSpanStandard()
+{}
+
+ECode TabStopSpanStandard::constructor(
     /* [in] */ Int32 where)
 {
     mTab = where;
+    return NOERROR;
 }
 
-ECode TabStopSpan::Standard::GetTabStop(
+ECode TabStopSpanStandard::GetTabStop(
     /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = mTab;
     return NOERROR;
 }

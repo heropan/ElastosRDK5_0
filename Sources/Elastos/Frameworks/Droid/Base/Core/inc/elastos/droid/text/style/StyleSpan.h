@@ -1,9 +1,11 @@
-#ifndef __ELASTOS_DROID_TEXT_STYLE_StyleSpan_H__
-#define __ELASTOS_DROID_TEXT_STYLE_StyleSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_STYLESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_STYLESPAN_H__
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
 
 using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Text::ITextPaint;
+using Elastos::Droid::Text::IParcelableSpan;
 
 namespace Elastos {
 namespace Droid {
@@ -30,6 +32,8 @@ public:
     StyleSpan();
 
     virtual ~StyleSpan();
+
+    CARAPI constructor();
 
     /**
      *
@@ -77,4 +81,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_STYLE_StyleSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_STYLESPAN_H__

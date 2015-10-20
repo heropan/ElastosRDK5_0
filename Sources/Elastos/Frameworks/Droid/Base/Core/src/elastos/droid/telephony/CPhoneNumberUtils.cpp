@@ -26,7 +26,7 @@ using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IPatternHelper;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Droid {

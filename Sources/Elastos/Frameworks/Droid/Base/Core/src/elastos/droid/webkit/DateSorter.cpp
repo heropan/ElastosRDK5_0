@@ -3,9 +3,9 @@
 #include <elastos/core/Math.h>
 #include "elastos/droid/R.h"
 
-using Libcore::ICU::ILocale;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::CLocaleDataHelper;
 using Libcore::ICU::ILocaleDataHelper;

@@ -80,11 +80,6 @@ Int32 GroupMetadata::CompareTo(
     return mGPos - another->mGPos;
 }
 
-Int32 GroupMetadata::DescribeContents()
-{
-    return 0;
-}
-
 //ECode GroupMetadata::WriteToParcel(
 //    /* [in] */ IParcel dest,
 //    /* [in] */ int32 flags)

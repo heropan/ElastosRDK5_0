@@ -8,6 +8,7 @@ module
      * @Involve
      * interface IBaseBundle;
      * interface ICloneable;
+     * interface IParcelable
      * interface IXmlUtilsWriteMapCallback;
      */
     [deprecated]

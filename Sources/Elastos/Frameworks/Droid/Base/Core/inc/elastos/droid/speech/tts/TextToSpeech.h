@@ -9,7 +9,7 @@
 #include <elastos/utility/etl/List.h>
 
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Map;
 using Elastos::Utility::Set;
 using Elastos::Utility::Etl::List;

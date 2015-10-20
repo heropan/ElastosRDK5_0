@@ -2,9 +2,9 @@
 #include "elastos/droid/text/method/CWordIterator.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 namespace Elastos {
 namespace Droid {

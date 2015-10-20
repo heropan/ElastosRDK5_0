@@ -8,7 +8,7 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 

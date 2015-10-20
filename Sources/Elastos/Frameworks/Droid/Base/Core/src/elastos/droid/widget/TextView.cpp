@@ -76,8 +76,8 @@ using Elastos::Core::Character;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
 
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 
 using Elastos::Utility::Logging::Logger;

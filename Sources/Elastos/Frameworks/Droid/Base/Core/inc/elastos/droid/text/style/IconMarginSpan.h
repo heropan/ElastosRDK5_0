@@ -30,16 +30,16 @@ public:
 
     virtual ~IconMarginSpan();
 
-    CARAPI cosntructor(
+    CARAPI constructor(
         /* [in] */ IBitmap* b);
 
-    CARAPI cosntructor(
+    CARAPI constructor(
         /* [in] */ IBitmap* b,
         /* [in] */ Int32 pad);
 
     CARAPI GetLeadingMargin(
         /* [in] */ Boolean first,
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
     CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,

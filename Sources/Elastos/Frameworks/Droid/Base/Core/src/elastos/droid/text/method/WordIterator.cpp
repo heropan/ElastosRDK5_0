@@ -7,9 +7,9 @@
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocale;
 using Elastos::Core::Character;
 using Elastos::Utility::Logging::Logger;
 //using Elastos::Text::BreakIterator;

@@ -348,12 +348,6 @@ ECode CWifiInfo::ToString(
 }
 
 /** Implement the Parcelable interface {@hide} */
-Int32 CWifiInfo::DescribeContents()
-{
-    return 0;
-}
-
-/** Implement the Parcelable interface {@hide} */
 ECode CWifiInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {

@@ -23,6 +23,16 @@ module
             [out] Int32* offset);
     }
 
+    /**
+     * The default implementation of TabStopSpan.
+     *
+     * @Involve
+     * interface IParagraphStyle
+     * interface ITabStopSpan
+     */
+    interface ITabStopSpanStandard {
+    }
+
     }//namespace Style
     }//namespace Text
     }//namespace Droid

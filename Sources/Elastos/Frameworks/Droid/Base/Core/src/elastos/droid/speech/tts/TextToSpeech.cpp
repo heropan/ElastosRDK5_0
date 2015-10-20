@@ -10,7 +10,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 

@@ -39,7 +39,7 @@ public:
         /* [in] */ Int32 color);
 
     CARAPI GetSpanTypeId(
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -49,7 +49,7 @@ public:
 
     CARAPI GetLeadingMargin(
         /* [in] */ Boolean first,
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
     CARAPI DrawLeadingMargin(
         /* [in] */ ICanvas* c,

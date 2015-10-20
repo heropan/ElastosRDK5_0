@@ -34,7 +34,7 @@
 #include <pthread.h>
 
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Core::IInteger32;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;

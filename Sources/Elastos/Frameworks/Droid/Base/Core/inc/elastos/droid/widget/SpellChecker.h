@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::Style::ISpellCheckSpan;
 using Elastos::Droid::View::Textservice::ISuggestionsInfo;
