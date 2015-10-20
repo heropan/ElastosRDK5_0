@@ -62,6 +62,9 @@ module
      *
      * @Involve
      * interface IPreference
+     * interface IComparable
+     * interface IGenericInflaterParent
+     * interface IPreferenceGroup
      * interface IAdapterViewOnItemClickListener
      */
     [local]
@@ -113,7 +116,9 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.IAbsSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     * interface IPreferenceBaseSavedState
      */
     interface IPreferenceScreenSavedState {
         IsDialogShowing(

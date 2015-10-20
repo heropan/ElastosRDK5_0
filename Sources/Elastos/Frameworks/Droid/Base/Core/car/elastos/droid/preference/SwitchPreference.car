@@ -19,6 +19,8 @@ module
      *
      * @Involve
      * interface ITwoStatePreference
+     * interface IComparable
+     * interface IPreference
      */
     interface ISwitchPreference {
         /**

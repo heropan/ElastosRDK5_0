@@ -1,6 +1,7 @@
 
 module
 {
+    interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.ISharedPreferences;
     interface Elastos.Core.ICharSequence;
@@ -259,6 +260,20 @@ module
          */
         ShouldCommit(
             [out] Boolean* result);
+
+        /**
+         * Returns the activity that shows the preferences. This is useful for doing
+         * managed queries, but in most cases the use of {@link #getContext()} is
+         * preferred.
+         * <p>
+         * This will return null if this class was instantiated with a Context
+         * instead of Activity. For example, when setting the default values.
+         *
+         * @return The activity that shows the preferences.
+         * @see #mContext
+         */
+        GetActivity(
+            [out] IActivity** act);
 
         /**
          * Returns the context. This is preferred over {@link #getActivity()} when

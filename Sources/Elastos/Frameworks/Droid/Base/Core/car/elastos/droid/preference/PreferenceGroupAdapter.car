@@ -72,6 +72,33 @@ module
             [in] IPreference* preference);
 
     }
+    /**
+     * @Involve
+     * interface IComparable
+     */
+    interface IPreferenceLayout {
+        CompareTo(
+            [in] IPreferenceLayout* other,
+            [out] Int32* result);
+
+        GetResId(
+            [out] Int32* resId);
+
+        SetResId(
+            [in] Int32 resId);
+
+        GetWidgetResId(
+            [out] Int32* resId);
+
+        SetWidgetResId(
+            [in] Int32 resId);
+
+        GetName(
+            [out] String* name);
+
+        SetName(
+            [in] String name);
+    }
 
     } // namespace Preference
     } // namespace Droid

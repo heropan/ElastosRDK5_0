@@ -14,6 +14,8 @@ module
      *
      * @Involve
      * interface Elastos.Droid.View.IAbsSavedState
+     * interface IParcelable
+     * interface IPreferenceBaseSavedState
      */
     interface ISeekBarPreferenceSavedState {
         SetProgress(
@@ -35,6 +37,7 @@ module
      * @Involve
      * interface ISeekBarOnSeekBarChangeListener
      * interface IPreference
+     * interface IComparable
      */
     interface ISeekBarPreference {
         SetMax(

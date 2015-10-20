@@ -18,6 +18,11 @@ module
     /**
      * @Involve
      * interface IDialogPreference
+     * interface IPreference
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
      */
      [deprecated]
     interface IMultiCheckPreference {
@@ -110,7 +115,20 @@ module
             [in] String value,
             [out] Int32* result);
     }
+    /**
+     * @Involve
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     */
+    [deprecated]
+    interface IMultiCheckPreferenceSavedState {
+        SetValues(
+            [in] ArrayOf<Boolean>* values);
 
+        GetValues(
+            [out,callee] ArrayOf<Boolean>* values);
+    }
     } // namespace Preference
     } // namespace Droid
     } // namespace Elastos

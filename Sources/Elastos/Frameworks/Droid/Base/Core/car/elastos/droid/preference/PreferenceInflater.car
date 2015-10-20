@@ -13,7 +13,7 @@ module
      * {@link Context#PREFERENCE_INFLATER_SERVICE}.
      *
      * @Involve
-     * interface GenericInflater
+     * interface IGenericInflater
      */
     interface IPreferenceInflater {}
 

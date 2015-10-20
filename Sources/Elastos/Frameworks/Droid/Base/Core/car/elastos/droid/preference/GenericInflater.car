@@ -36,7 +36,7 @@ module
             [out] IInterface** item);
     }
 
-    [local]
+    [local, deprecated]
     interface IGenericInflater {
         /**
          * Create a copy of the existing inflater object, with the copy
@@ -252,6 +252,18 @@ module
             [in] Boolean attachToGivenRoot,
             [in] IInterface* xmlRoot,
             [out] IInterface** ret);
+
+        GetFactorySet(
+            [out] Boolean* fs);
+
+        SetFactorySet(
+            [in] Boolean fs);
+
+        GetConstructorArgs(
+            [out, callee] ArrayOf<IInterface*>* ca);
+
+        SetConstructorArgs(
+            [in] ArrayOf<IInterface*>* ca);
     }
 
     } // Preference

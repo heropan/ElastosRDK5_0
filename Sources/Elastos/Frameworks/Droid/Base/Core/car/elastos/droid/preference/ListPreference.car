@@ -19,6 +19,11 @@ module
     /**
      * @Involve
      * interface IDialogPreference
+     * interface IPreference
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
      */
     [deprecated]
     interface IListPreference {
@@ -118,6 +123,20 @@ module
         FindIndexOfValue(
             [in] String value,
             [out] Int32* result);
+    }
+    /**
+     * @Involve
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     */
+    [deprecated]
+    interface IListPreferenceSavedState {
+        SetValue(
+            [in] String* vs);
+
+        GetValue(
+            [out] String* v);
     }
 
     } // namespace Preference
