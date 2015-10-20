@@ -82,6 +82,19 @@ module
      * interface IListActivity
      * interface IPreferenceManagerOnPreferenceTreeClickListener
      * interface IPreferenceFragmentOnPreferenceStartFragmentCallback
+     * interface IActivity
+     * interface IContextThemeWrapper
+     * interface ILayoutInflaterFactory
+     * interface ILayoutInflaterFactory2
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IViewOnCreateContextMenuListener //undefined
+     * interface IComponentCallbacks2
+     * interface IComponentCallbacks
+     * interface IOnWindowDismissedCallback  //IWindowOnWindowDismissedCallback
+     * interface IContextWrapper
+     * interface IContext
+     *
      */
      [local,deprecated]
     interface IPreferenceActivity {
@@ -495,6 +508,19 @@ module
         FindPreference(
             [in] String key,
             [out] IPreference** preference);
+    }
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IArrayAdapter
+     * interface Elastos.Droid.Widget.IBaseAdapter
+     * interface Elastos.Droid.Widget.IFilterable
+     * interface Elastos.Droid.Widget.IListAdapter
+     * interface Elastos.Droid.Widget.IAdapter
+     * interface Elastos.Droid.Widget.ISpinnerAdapter
+     */
+    interface IPreferenceActivityHeaderAdapter {
+
     }
 
     } // namespace Preference

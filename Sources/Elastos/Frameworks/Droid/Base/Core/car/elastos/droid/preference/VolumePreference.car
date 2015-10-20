@@ -16,6 +16,12 @@ module
      * interface IPreferenceManagerOnActivityStopListener
      * interface IViewOnKeyListener
      * interface ISeekBarVolumizerCallback
+     * interface IDialogPreference
+     * interface IPreference
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
      */
     [local]
     interface IVolumePreference {
@@ -47,11 +53,17 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.IAbsSavedState
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
      */
     interface IVolumePreferenceSavedState {
-    }
+        SetVolumeStore(
+            [in] IVolumePreferenceVolumeStore* vs);
 
+        GetVolumeStore(
+            [out] IVolumePreferenceVolumeStore** vs);
+    }
     } // namespace Preference
     } // namespace Droid
     } // namespace Elastos

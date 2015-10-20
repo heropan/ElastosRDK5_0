@@ -13,6 +13,11 @@ module
     /**
      * @Involve
      * interface IDialogPreference
+     * interface IPreference
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
      */
     interface ISeekBarDialogPreference {
         // Allow subclasses to override the action buttons

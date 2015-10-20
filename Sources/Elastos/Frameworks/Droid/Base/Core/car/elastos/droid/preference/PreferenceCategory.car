@@ -19,6 +19,9 @@ module
     /**
      * @Involve
      * interface IPreferenceGroup
+     * interface IPreference
+     * interface IComparable
+     * interface IGenericInflaterParent//=Generic from IInterface to IPreference
      */
     interface IPreferenceCategory {
     }

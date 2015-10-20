@@ -22,6 +22,11 @@ module
     /**
      * @Involve
      * interface IDialogPreference
+     * interface IPreference
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
      */
     [deprecated]
     interface IMultiSelectListPreference {
@@ -103,7 +108,20 @@ module
             [in] String value,
             [out] Int32* result);
     }
+    /**
+     * @Involve
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     */
+    [deprecated]
+    interface IMultiSelectListPreferenceSavedState {
+        SetValues(
+            [in] ISet* values);
 
+        GetValues(
+            [out] ISet** values);
+    }
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

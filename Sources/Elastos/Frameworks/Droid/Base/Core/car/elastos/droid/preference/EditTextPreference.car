@@ -23,6 +23,11 @@ module
     /**
      * @Involve
      * interface IDialogPreference
+     * interface IPreference
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
      */
      [local]
     interface IEditTextPreference {
@@ -58,6 +63,21 @@ module
          */
         GetEditText(
             [out] IEditText** result);
+    }
+
+    /**
+     * @Involve
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     */
+    [deprecated]
+    interface IEditTextPreferenceSavedState {
+        SetText(
+            [in] String* texts);
+
+        GetText(
+            [out] String* text);
     }
 
     } // namespace Preference

@@ -26,6 +26,7 @@ module
     /**
      * @Involve
      * interface IPreference
+     * interface IComparable
      * interface IPreferenceManagerOnActivityDestroyListener
      * interface IDialogInterfaceOnDismissListener
      * interface IDialogInterfaceOnClickListener
@@ -219,6 +220,26 @@ module
              * {@inheritDoc}
              */
         OnActivityDestroy();
+    }
+
+    /**
+     * @Involve
+     * interface IPreferenceBaseSavedState
+     * interface IAbsSavedState
+     * interface IParcelable
+     */
+    interface IDialogPreferenceSavedState {
+        SetIsDialogShowing(
+            [in] Boolean isDialogShowing);
+
+        GetIsDialogShowing(
+            [out] Boolean* isDialogShowing);
+
+        SetDialogBundle(
+            [in] IBundle* dialogBundle);
+
+        GetDialogBundle(
+            [out] IBundle** dialogBundle);
     }
 
     } // namespace Preference
