@@ -19,30 +19,7 @@ CarClass(CAbsoluteSizeSpan)
     , public AbsoluteSizeSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-    IMETRICAFFECTINGSPAN_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetSize(
-        /* [out] */ Int32* ret);
-
-    CARAPI GetDip(
-        /* [out] */ Boolean* ret);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 size);
-
-    CARAPI constructor(
-        /* [in] */ Int32 size,
-        /* [in] */ Boolean dip);
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 
 };
 

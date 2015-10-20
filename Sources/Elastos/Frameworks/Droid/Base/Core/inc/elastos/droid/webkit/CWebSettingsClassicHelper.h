@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Webkit_CWebSettingsClassicHelper.h"
 
 using Elastos::Droid::Content::IContext;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {

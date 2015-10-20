@@ -3,7 +3,7 @@
 #include "elastos/droid/os/CBundle.h"
 #include <elastos/core/Math.h>
 
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 using Elastos::Droid::Os::CBundle;
 
 namespace Elastos {

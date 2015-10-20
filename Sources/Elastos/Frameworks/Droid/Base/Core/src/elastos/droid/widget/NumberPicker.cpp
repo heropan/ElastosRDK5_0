@@ -14,8 +14,8 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;

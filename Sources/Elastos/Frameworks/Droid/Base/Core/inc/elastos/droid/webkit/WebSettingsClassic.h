@@ -9,7 +9,7 @@
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::Http::IEventHandler;
 using Elastos::Droid::Os::IMessage;

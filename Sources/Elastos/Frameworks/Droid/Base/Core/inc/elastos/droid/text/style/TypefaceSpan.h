@@ -18,32 +18,25 @@ class TypefaceSpan
     , public ITypefaceSpan
     , public IParcelableSpan
     , public IParcelable
-    , public ICharacterStyle
-    , public IUpdateLayout
-    , public IUpdateAppearance
 {
 public:
     CAR_INTERFACE_DECL()
+
+    TypefaceSpan();
+
+    virtual ~TypefaceSpan();
+
+    CARAPI constructor();
 
     /**
      * @param family The font family for this typeface.  Examples include
      * "monospace", "serif", and "sans-serif".
      */
-    TypefaceSpan(
+    CARAPI constructor(
         /* [in] */ const String& family);
 
-    TypefaceSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ const String& family);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-        CARAPI GetSpanTypeId(
-            /* [in] */ Int32* id);
-
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -54,7 +47,8 @@ public:
     /**
      * Returns the font family name.
      */
-    CARAPI_(String) GetFamily();
+    CARAPI GetFamily(
+        /* [out] */ String* family);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -64,11 +58,8 @@ public:
     CARAPI UpdateMeasureState(
         /* [in] */ ITextPaint* paint);
 
-protected:
-    TypefaceSpan();
-
 private:
-    static void Apply(
+    static CARAPI Apply(
         /* [in] */ IPaint* paint,
         /* [in] */ const String& family);
 

@@ -6,7 +6,7 @@
 #include "elastos/droid/widget/FrameLayout.h"
 #include <R.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Core::IInteger32;
 using Elastos::Utility::ICalendar;
 using Elastos::Droid::Content::IContext;

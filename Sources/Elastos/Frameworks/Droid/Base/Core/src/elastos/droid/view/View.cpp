@@ -41,9 +41,9 @@
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/R.h"
 
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::ILocale;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
 

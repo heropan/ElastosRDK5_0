@@ -1,18 +1,25 @@
 #include "elastos/droid/text/style/SuggestionSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
+#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/Arrays.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Text::CTextPaint;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
@@ -21,65 +28,40 @@ namespace Style {
 
 const String SuggestionSpan::TAG("SuggestionSpan");
 
+CAR_INTERFACE_IMPL_3(SuggestionSpan, CharacterStyle, ISuggestionSpan, IParcelableSpan, IParcelable)
+
 SuggestionSpan::SuggestionSpan()
 {}
 
-SuggestionSpan::SuggestionSpan(
+SuggestionSpan::~SuggestionSpan()
+{}
+
+ECode SuggestionSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<String>* suggestions,
     /* [in] */ Int32 flags)
 {
-    Init(context, NULL, suggestions, flags, NULL);
+    String nullStr;
+    return constructor(context, NULL, suggestions, flags, nullStr);
 }
 
-SuggestionSpan::SuggestionSpan(
+ECode SuggestionSpan::constructor(
     /* [in] */ ILocale* locale,
     /* [in] */ ArrayOf<String>* suggestions,
     /* [in] */ Int32 flags)
 {
-    Init(NULL, locale, suggestions, flags, NULL);
+    String nullStr;
+    return constructor(NULL, locale, suggestions, flags, nullStr);
 }
 
-SuggestionSpan::SuggestionSpan(
-    /* [in] */ IContext* context,
-    /* [in] */ ILocale* locale,
-    /* [in] */ ArrayOf<String>* suggestions,
-    /* [in] */ Int32 flags,
-    /* [in] */ Handle32 notificationTargetClass)
-{
-    Init(context, locale, suggestions, flags, notificationTargetClass);
-}
-
-SuggestionSpan::SuggestionSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void SuggestionSpan::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ ArrayOf<String>* suggestions,
-    /* [in] */ Int32 flags)
-{
-    Init(context, NULL, suggestions, flags, NULL);
-}
-
-void SuggestionSpan::Init(
-    /* [in] */ ILocale* locale,
-    /* [in] */ ArrayOf<String>* suggestions,
-    /* [in] */ Int32 flags)
-{
-    Init(NULL, locale, suggestions, flags, NULL);
-}
-
-void SuggestionSpan::Init(
+ECode SuggestionSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ILocale* locale,
     /* [in] */ ArrayOf<String>* suggestions,
     /* [in] */ Int32 flags,
-    /* [in] */ Handle32 notificationTargetClass)
+    /* [in] */ const String& notificationTargetClassName)
 {
-    /*const*/ Int32 N = Elastos::Core::Math::Min(ISuggestionSpan::SUGGESTIONS_MAX_SIZE, suggestions->GetLength());
+    Int32 N = Elastos::Core::Math::Min(ISuggestionSpan::SUGGESTIONS_MAX_SIZE, suggestions->GetLength());
     mSuggestions = ArrayOf<String>::Alloc(N);
     for(Int32 i=0; i<N; i++){
         (*mSuggestions)[i] = (*suggestions)[i];
@@ -106,21 +88,17 @@ void SuggestionSpan::Init(
         context->GetPackageName(&mNotificationTargetPackageName);
     }
 
-    if (notificationTargetClass != NULL) {
-//        notificationTargetClass->GetCanonicalName(&mNotificationTargetClassName);
+    if (!notificationTargetClassName.IsNull()) {
+        mNotificationTargetClassName = notificationTargetClassName;
     }
     else {
-        mNotificationTargetClassName = "";
+        mNotificationTargetClassName = String("");
     }
     mHashCode = HashCodeInternal(mSuggestions, mLocaleString, mNotificationTargetClassName);
 
     InitStyle(context);
-}
 
-void SuggestionSpan::Init(
-    /* [in] */ IParcel* src)
-{
-    ReadFromParcel(src);
+    return NOERROR;
 }
 
 void SuggestionSpan::InitStyle(
@@ -159,35 +137,44 @@ void SuggestionSpan::InitStyle(
     typedArray->GetColor( R::styleable::SuggestionSpan_textUnderlineColor, IColor::BLACK, &mAutoCorrectionUnderlineColor);
 }
 
-AutoPtr< ArrayOf<String> > SuggestionSpan::GetSuggestions()
+ECode SuggestionSpan::GetSuggestions(
+    /* [out, callee] */ ArrayOf<String>** array)
 {
-    return mSuggestions;
+    VALIDATE_NOT_NULL(array)
+    *array = mSuggestions;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
 }
 
-String SuggestionSpan::GetLocale()
+ECode SuggestionSpan::GetLocale(
+    /* [out] */ String* str)
 {
-    return mLocaleString;
+    VALIDATE_NOT_NULL(str)
+    *str = mLocaleString;
+    return NOERROR;
 }
 
-String SuggestionSpan::GetNotificationTargetClassName()
+ECode SuggestionSpan::GetNotificationTargetClassName(
+    /* [out] */ String* str)
 {
-    return mNotificationTargetClassName;
+    VALIDATE_NOT_NULL(str)
+    *str = mNotificationTargetClassName;
+    return NOERROR;
 }
 
-Int32 SuggestionSpan::GetFlags()
+ECode SuggestionSpan::GetFlags(
+    /* [out] */ Int32* flags)
 {
-    return mFlags;
+    VALIDATE_NOT_NULL(flags)
+    *flags = mFlags;
+    return NOERROR;
 }
 
-void SuggestionSpan::SetFlags(
+ECode SuggestionSpan::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
-}
-
-Int32 SuggestionSpan::DescribeContents()
-{
-    return 0;
+    return NOERROR;
 }
 
 ECode SuggestionSpan::ReadFromParcel(
@@ -227,26 +214,35 @@ ECode SuggestionSpan::WriteToParcel(
     return NOERROR;
 }
 
-Int32 SuggestionSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
+ECode SuggestionSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    return ITextUtils::SUGGESTION_SPAN;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::SUGGESTION_SPAN;
+    return NOERROR;
 }
 
-Boolean SuggestionSpan::Equals(
-    /* [in] */ IInterface* o)
+ECode SuggestionSpan::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
     AutoPtr<ISuggestionSpan> ss = ISuggestionSpan::Probe(o);
     if (ss != NULL) {
         Int32 hashCode;
-        return (ss->GetHashCode(&hashCode), hashCode) == mHashCode;
+        ss->GetHashCode(&hashCode);
+        *result = hashCode == mHashCode;
     }
-    return FALSE;
+    return NOERROR;
 }
 
-Int32 SuggestionSpan::GetHashCode()
+ECode SuggestionSpan::GetHashCode(
+    /* [out] */ Int32* hash)
 {
-    return mHashCode;
+    VALIDATE_NOT_NULL(hash)
+    *hash  = mHashCode;
+    return NOERROR;
 }
 
 Int32 SuggestionSpan::HashCodeInternal(
@@ -254,94 +250,106 @@ Int32 SuggestionSpan::HashCodeInternal(
     /* [in] */ const String& locale,
     /* [in] */ const String& notificationTargetClassName)
 {
-    //Java:    return Arrays.hashCode(new Object[] {Long.valueOf(SystemClock.uptimeMillis()), suggestions, locale, notificationTargetClassName});
-    return SystemClock::GetUptimeMillis();
+    Int32 size = suggestions->GetLength();
+    AutoPtr<ArrayOf<Int64> > arrays = ArrayOf<Int64>::Alloc(3 + size);
+    Int32 i = 0;
+    arrays->Set(i++, SystemClock::GetUptimeMillis());
+    for (Int32 j = 0; j < suggestions->GetLength(); ++j) {
+        arrays->Set(i++, (*suggestions)[j].GetHashCode());
+    }
+
+    arrays->Set(i++, locale.GetHashCode());
+    arrays->Set(i++, notificationTargetClassName.GetHashCode());
+
+    return Arrays::GetHashCode(arrays);
 }
 
 ECode SuggestionSpan::UpdateDrawState(
     /* [in] */ ITextPaint* tp)
 {
     VALIDATE_NOT_NULL(tp);
+    CTextPaint* p = (CTextPaint*)tp;
     /*const*/ Boolean misspelled = (mFlags & ISuggestionSpan::FLAG_MISSPELLED) != 0;
     /*const*/ Boolean easy = (mFlags & ISuggestionSpan::FLAG_EASY_CORRECT) != 0;
     /*const*/ Boolean autoCorrection = (mFlags & ISuggestionSpan::FLAG_AUTO_CORRECTION) != 0;
     if (easy) {
         Int32 underlineColor;
         if (!misspelled) {
-//            tp->SetUnderlineText(mEasyCorrectUnderlineColor, mEasyCorrectUnderlineThickness);
-            tp->SetUnderlineColor(mEasyCorrectUnderlineColor);
-            tp->SetUnderlineThickness(mEasyCorrectUnderlineThickness);
+            p->SetUnderlineText(mEasyCorrectUnderlineColor, mEasyCorrectUnderlineThickness);
         }
         else if ((tp->GetUnderlineColor(&underlineColor), underlineColor) == 0) {
             // Spans are rendered in an arbitrary order. Since misspelled is less prioritary
             // than just easy, do not apply misspelled if an easy (or a mispelled) has been set
-//            tp->SetUnderlineText(mMisspelledUnderlineColor, mMisspelledUnderlineThickness);
-            tp->SetUnderlineColor(mMisspelledUnderlineColor);
-            tp->SetUnderlineThickness(mMisspelledUnderlineThickness);
+            p->SetUnderlineText(mMisspelledUnderlineColor, mMisspelledUnderlineThickness);
         }
-    } else if (autoCorrection) {
-//        tp->SetUnderlineText(mAutoCorrectionUnderlineColor, mAutoCorrectionUnderlineThickness);
-        tp->SetUnderlineColor(mAutoCorrectionUnderlineColor);
-        tp->SetUnderlineThickness(mAutoCorrectionUnderlineThickness);
+    }
+    else if (autoCorrection) {
+        p->SetUnderlineText(mAutoCorrectionUnderlineColor, mAutoCorrectionUnderlineThickness);
     }
     return NOERROR;
 }
 
-Int32 SuggestionSpan::GetUnderlineColor()
+ECode SuggestionSpan::GetUnderlineColor(
+    /* [out] */ Int32* color)
 {
+    VALIDATE_NOT_NULL(color)
+    *color = 0;
     /*const*/ Boolean misspelled = (mFlags & ISuggestionSpan::FLAG_MISSPELLED) != 0;
     /*const*/ Boolean easy = (mFlags & ISuggestionSpan::FLAG_EASY_CORRECT) != 0;
     /*const*/ Boolean autoCorrection = (mFlags & ISuggestionSpan::FLAG_AUTO_CORRECTION) != 0;
     if (easy) {
         if (!misspelled) {
-                return mEasyCorrectUnderlineColor;
+            *color = mEasyCorrectUnderlineColor;
+        return NOERROR;
         }
         else {
-                return mMisspelledUnderlineColor;
+            *color =  mMisspelledUnderlineColor;
+        return NOERROR;
         }
     }
     else if (autoCorrection) {
-        return mAutoCorrectionUnderlineColor;
+        *color =  mAutoCorrectionUnderlineColor;
+        return NOERROR;
     }
-    return 0;
+    return NOERROR;
 }
 
-/**
- * Notifies a suggestion selection.
- *
- * @hide
- */
 ECode SuggestionSpan::NotifySelection(
     /* [in] */ IContext* context,
     /* [in] */ const String& original,
     /* [in] */ Int32 index)
 {
-    final Intent intent = new Intent();
+    AutoPtr<IIntent> intent;
+    CIntent::New((IIntent**)&intent);
 
     if (context == NULL || mNotificationTargetClassName.IsNull()) {
         return NOERROR;
     }
     // Ensures that only a class in the original IME package will receive the
     // notification.
-    if (mSuggestions == null || index < 0 || index >= mSuggestions.length) {
-        Log.w(TAG, "Unable to notify the suggestion as the index is out of range index=" + index
-                + " length=" + mSuggestions.length);
+    if (mSuggestions == NULL || index < 0 || index >= mSuggestions->GetLength()) {
+        // Log.w(TAG, "Unable to notify the suggestion as the index is out of range index=" + index
+        //         + " length=" + mSuggestions.length);
         return NOERROR;
     }
 
     // The package name is not mandatory (legacy from JB), and if the package name
     // is missing, we try to notify the suggestion through the input method manager.
-    if (mNotificationTargetPackageName != null) {
-        intent.setClassName(mNotificationTargetPackageName, mNotificationTargetClassName);
-        intent.setAction(SuggestionSpan.ACTION_SUGGESTION_PICKED);
-        intent.putExtra(SuggestionSpan.SUGGESTION_SPAN_PICKED_BEFORE, original);
-        intent.putExtra(SuggestionSpan.SUGGESTION_SPAN_PICKED_AFTER, mSuggestions[index]);
-        intent.putExtra(SuggestionSpan.SUGGESTION_SPAN_PICKED_HASHCODE, hashCode());
-        context.sendBroadcast(intent);
-    } else {
-        InputMethodManager imm = InputMethodManager.peekInstance();
-        if (imm != null) {
-            imm.notifySuggestionPicked(this, original, index);
+    if (!mNotificationTargetPackageName.IsNull()) {
+        Int32 hash;
+        GetHashCode(&hash);
+        intent->SetClassName(mNotificationTargetPackageName, mNotificationTargetClassName);
+        intent->SetAction(ISuggestionSpan::ACTION_SUGGESTION_PICKED);
+        intent->PutExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_BEFORE, original);
+        intent->PutExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_AFTER, (*mSuggestions)[index]);
+        intent->PutExtra(ISuggestionSpan::SUGGESTION_SPAN_PICKED_HASHCODE, hash);
+        context->SendBroadcast(intent);
+    }
+    else {
+        AutoPtr<IInputMethodManager> imm;
+        //imm = InputMethodManager::PeekInstance();
+        if (imm != NULL) {
+            imm->NotifySuggestionPicked(THIS_PROBE(ISuggestionSpan), original, index);
         }
     }
 

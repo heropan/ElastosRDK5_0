@@ -10,9 +10,9 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Net::IUri;
 //using Elastos::Droid::Internal::Telephony::ICallerInfo;
-using Libcore::ICU::CLocaleHelper;
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
 
 namespace Elastos {
 namespace Droid {

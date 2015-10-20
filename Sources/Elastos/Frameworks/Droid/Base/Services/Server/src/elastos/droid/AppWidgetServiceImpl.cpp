@@ -14,7 +14,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/IntegralToString.h>
 
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;

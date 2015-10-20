@@ -33,7 +33,7 @@ ECode QuoteSpan::constructor(
 }
 
 ECode QuoteSpan::GetSpanTypeId(
-    /* [in] */ Int32* id);
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::QUOTE_SPAN;

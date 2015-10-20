@@ -2,40 +2,35 @@
 #include "elastos/droid/text/CTextPaint.h"
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Text::CTextPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(SuperscriptSpan, MetricAffectingSpan, ISuperscriptSpan, IParcelableSpan, IParcelable)
+
 SuperscriptSpan::SuperscriptSpan()
 {
-    Init();
 }
 
-SuperscriptSpan::SuperscriptSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void SuperscriptSpan::Init()
+SuperscriptSpan::~SuperscriptSpan()
 {
 }
 
-void SuperscriptSpan::Init(
-    /* [in] */ IParcel* src)
+ECode SuperscriptSpan::constructor()
 {
+    return NOERROR;
 }
 
-Int32 SuperscriptSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
+ECode SuperscriptSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    return ITextUtils::SUPERSCRIPT_SPAN;
-}
-
-Int32 SuperscriptSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::SUPERSCRIPT_SPAN;
+    return NOERROR;
 }
 
 ECode SuperscriptSpan::ReadFromParcel(
@@ -54,20 +49,26 @@ ECode SuperscriptSpan::UpdateDrawState(
     /* [in] */ ITextPaint* tp)
 {
     VALIDATE_NOT_NULL(tp);
+    CTextPaint* p = (CTextPaint*)tp;
     Float fAscent;
     Int32 baselineShift;
-    tp->SetBaselineShift((tp->GetBaselineShift(&baselineShift), baselineShift)+(Int32)((tp->Ascent(&fAscent), fAscent) / 2));
+    p->GetBaselineShift(&baselineShift);
+    p->Ascent(&fAscent);
+    p->SetBaselineShift(baselineShift + (Int32)(fAscent / 2));
     return NOERROR;
 }
 
 ECode SuperscriptSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* tp)
 {
+    VALIDATE_NOT_NULL(tp);
+    CTextPaint* p = (CTextPaint*)tp;
     Float fAscent;
     Int32 baselineShift;
-    tp->SetBaselineShift((tp->GetBaselineShift(&baselineShift), baselineShift)+(Int32)((tp->Ascent(&fAscent), fAscent) / 2));
-    return NOERROR;
-}
+    p->GetBaselineShift(&baselineShift);
+    p->Ascent(&fAscent);
+    p->SetBaselineShift(baselineShift + (Int32)(fAscent / 2));
+    return NOERROR;}
 
 } // namespace Style
 } // namespace Text

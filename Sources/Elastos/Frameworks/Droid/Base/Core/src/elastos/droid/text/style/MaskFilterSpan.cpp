@@ -1,6 +1,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/MaskFilterSpan.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -26,7 +28,7 @@ ECode MaskFilterSpan::GetMaskFilter(
 {
     VALIDATE_NOT_NULL(filter)
     *filter = mFilter;
-    REFCOUNT_ADD(filter)
+    REFCOUNT_ADD(*filter)
     return NOERROR;
 }
 
@@ -34,7 +36,7 @@ ECode MaskFilterSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
-    ds->SetMaskFilter( mFilter );
+    IPaint::Probe(ds)->SetMaskFilter( mFilter );
     return NOERROR;
 }
 

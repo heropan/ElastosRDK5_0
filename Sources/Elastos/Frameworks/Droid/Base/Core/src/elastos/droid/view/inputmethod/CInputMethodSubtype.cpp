@@ -5,7 +5,7 @@
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Etl::List;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Text::TextUtils;
 

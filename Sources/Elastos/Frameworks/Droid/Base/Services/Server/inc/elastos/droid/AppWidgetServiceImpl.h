@@ -10,8 +10,8 @@
 #include <elastos/Pair.h>
 #include "elastos/droid/os/Runnable.h"
 
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::List;

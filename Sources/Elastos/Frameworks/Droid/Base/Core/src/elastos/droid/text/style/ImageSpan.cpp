@@ -113,7 +113,7 @@ ECode ImageSpan::constructor(
     DynamicDrawableSpan::constructor(verticalAlignment);
     mContext = context;
     mContentUri = uri;
-    uri->ToString(&mSource);
+    mSource = Object::ToString(uri);
     return NOERROR;
 }
 
@@ -134,7 +134,6 @@ ECode ImageSpan::constructor(
     mResourceId = resourceId;
     return NOERROR;
 }
-
 
 ECode ImageSpan::GetDrawable(
     /* [out] */ IDrawable** result)

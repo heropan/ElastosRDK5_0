@@ -375,7 +375,7 @@ ECode CPhoneNumberUtilsHelper::FormatNumber(
 }
 
 ECode CPhoneNumberUtilsHelper::GetFormatTypeForLocale(
-    /* [in] */ Libcore::ICU::ILocale* locale,
+    /* [in] */ Elastos::Utility::ILocale* locale,
     /* [out] */ Int32* res)
 {
 

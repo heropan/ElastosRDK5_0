@@ -19,17 +19,12 @@ public:
 
     SuperscriptSpan();
 
-    SuperscriptSpan(
-        /* [in] */ IParcel* src);
+    virtual ~SuperscriptSpan();
 
-    CARAPI_(void) Init();
+    CARAPI constructor();
 
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
-
-        CARAPI GetSpanTypeId(
-            /* [in] */ Int32* id);
-
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);

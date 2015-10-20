@@ -78,7 +78,7 @@ using Elastos::Utility::Logging::Logger;
 
 
 using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 
 namespace Elastos {

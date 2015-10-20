@@ -10,42 +10,30 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(TypefaceSpan, MetricAffectingSpan, ITypefaceSpan, IParcelableSpan, IParcelable)
+
 TypefaceSpan::TypefaceSpan()
 {}
 
-TypefaceSpan::TypefaceSpan(
+
+ECode TypefaceSpan::constructor()
+{
+    return NOERROR;
+}
+
+ECode TypefaceSpan::constructor(
     /* [in] */ const String& family)
 {
     mFamily = family;
+    return NOERROR;
 }
 
-TypefaceSpan::TypefaceSpan(
-    /* [in] */ IParcel* src)
+ECode TypefaceSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    Init(src);
-}
-
-void TypefaceSpan::Init(
-    /* [in] */ const String& family)
-{
-    mFamily = family;
-}
-
-void TypefaceSpan::Init(
-    /* [in] */ IParcel* src)
-{
-    ReadFromParcel(src);
-}
-
-Int32 TypefaceSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
-{
-    return ITextUtils::TYPEFACE_SPAN;
-}
-
-Int32 TypefaceSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::TYPEFACE_SPAN;
+    return NOERROR;
 }
 
 ECode TypefaceSpan::ReadFromParcel(
@@ -60,26 +48,28 @@ ECode TypefaceSpan::WriteToParcel(
     return dest->WriteString(mFamily);
 }
 
-String TypefaceSpan::GetFamily()
+ECode TypefaceSpan::GetFamily(
+    /* [out] */ String* family)
 {
-    return mFamily;
+    VALIDATE_NOT_NULL(family)
+    *family = mFamily;
+    return NOERROR;
 }
 
 ECode TypefaceSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
-    Apply(ds, mFamily);
-    return NOERROR;
+    return Apply(IPaint::Probe(ds), mFamily);
 }
 
 ECode TypefaceSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* paint)
 {
-    Apply(paint, mFamily);
+    Apply(IPaint::Probe(paint), mFamily);
     return NOERROR;
 }
 
-void TypefaceSpan::Apply(
+ECode TypefaceSpan::Apply(
     /* [in] */ IPaint* paint,
     /* [in] */ const String& family)
 {
@@ -97,7 +87,8 @@ void TypefaceSpan::Apply(
     AutoPtr<ITypeface> tf;
     CTypeface::Create(family, oldStyle, (ITypeface**)&tf);
     Int32 tfStyle;
-    Int32 fake = oldStyle & ~(tf->GetStyle(&tfStyle), tfStyle);
+    tf->GetStyle(&tfStyle);
+    Int32 fake = oldStyle & ~tfStyle;
 
     if ((fake & ITypeface::BOLD) != 0) {
         paint->SetFakeBoldText(TRUE);
@@ -108,6 +99,7 @@ void TypefaceSpan::Apply(
     }
 
     paint->SetTypeface(tf);
+    return NOERROR;
 }
 
 } // namespace Style

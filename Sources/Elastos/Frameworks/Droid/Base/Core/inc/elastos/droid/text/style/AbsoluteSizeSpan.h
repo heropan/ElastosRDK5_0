@@ -23,12 +23,12 @@ public:
 
     virtual ~AbsoluteSizeSpan();
 
-    CARAPI cosntructor();
+    CARAPI constructor();
 
     /**
      * Set the text size to <code>size</code> physical pixels.
      */
-    CARAPI cosntructor(
+    CARAPI constructor(
         /* [in] */ Int32 size);
 
     /**
@@ -36,7 +36,7 @@ public:
      * or to <code>size</code> device-independent pixels if
      * <code>dip</code> is true.
      */
-    CARAPI cosntructor(
+    CARAPI constructor(
         /* [in] */ Int32 size,
         /* [in] */ Boolean dip);
 

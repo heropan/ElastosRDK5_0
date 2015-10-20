@@ -3,7 +3,7 @@
 
 #include <elastos/io/InputStream.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::IO::IInputStream;
 
 namespace Elastos {

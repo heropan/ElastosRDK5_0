@@ -6,32 +6,16 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(SuggestionRangeSpan, CharacterStyle, ISuggestionRangeSpan, IParcelableSpan, IParcelable)
+
 SuggestionRangeSpan::SuggestionRangeSpan()
+    : mBackgroundColor(0) // 0 is a fully transparent black. Has to be set using #setBackgroundColor
 {
-    Init();
 }
 
-SuggestionRangeSpan::SuggestionRangeSpan(
-    /* [in] */ IParcel* src)
+ECode SuggestionRangeSpan::constructor()
 {
-    Init(src);
-}
-
-void SuggestionRangeSpan::Init()
-{
-    // 0 is a fully transparent black. Has to be set using #setBackgroundColor
-    mBackgroundColor = 0;
-}
-
-void SuggestionRangeSpan::Init(
-    /* [in] */ IParcel* src)
-{
-    ReadFromParcel(src);
-}
-
-Int32 SuggestionRangeSpan::DescribeContents()
-{
-    return 0;
+    return NOERROR;
 }
 
 ECode SuggestionRangeSpan::ReadFromParcel(
@@ -46,16 +30,19 @@ ECode SuggestionRangeSpan::WriteToParcel(
     return dest->WriteInt32(mBackgroundColor);
 }
 
-Int32 SuggestionRangeSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
+ECode SuggestionRangeSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    return ITextUtils::SUGGESTION_RANGE_SPAN;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::SUGGESTION_RANGE_SPAN;
+    return NOERROR;
 }
 
-void SuggestionRangeSpan::SetBackgroundColor(
+ECode SuggestionRangeSpan::SetBackgroundColor(
     /* [in] */ Int32 backgroundColor)
 {
     mBackgroundColor = backgroundColor;
+    return NOERROR;
 }
 
 ECode SuggestionRangeSpan::UpdateDrawState(

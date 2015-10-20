@@ -7,7 +7,7 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Text::IEditable;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -141,7 +141,7 @@ public:
         /* [out] */ String* res);
 
     CARAPI GetFormatTypeForLocale(
-        /* [in] */ Libcore::ICU::ILocale* locale,
+        /* [in] */ Elastos::Utility::ILocale* locale,
         /* [out] */ Int32* res);
 
     CARAPI FormatNumber(

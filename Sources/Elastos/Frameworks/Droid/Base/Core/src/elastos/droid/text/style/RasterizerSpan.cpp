@@ -1,6 +1,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/RasterizerSpan.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -26,7 +28,7 @@ ECode RasterizerSpan::GetRasterizer(
 {
     VALIDATE_NOT_NULL(rastersizer)
     *rastersizer = mRasterizer;
-    REFCOUNT_ADD(rastersizer)
+    REFCOUNT_ADD(*rastersizer)
     return NOERROR;
 }
 
@@ -34,7 +36,7 @@ ECode RasterizerSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
-    ds->SetRasterizer(mRasterizer);
+    IPaint::Probe(ds)->SetRasterizer(mRasterizer);
     return NOERROR;
 }
 

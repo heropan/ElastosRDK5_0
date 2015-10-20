@@ -14,42 +14,32 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_2(URLSpan, ClickableSpan, IParcelableSpan, IParcelable)
+
 URLSpan::URLSpan()
 {}
 
-URLSpan::URLSpan(
-    /* [in] */ const String& url)
+URLSpan::~URLSpan()
+{}
+
+ECode URLSpan::constructor()
 {
-    Init(url);
+    return NOERROR;
 }
 
-URLSpan::URLSpan(
-    /* [in] */ IParcel* src)
-{
-    Init(src);
-}
-
-void URLSpan::Init(
+ECode URLSpan::constructor(
     /* [in] */ const String& url)
 {
     mURL = url;
+    return NOERROR;
 }
 
-void URLSpan::Init(
-    /* [in] */ IParcel* src)
+ECode URLSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    ReadFromParcel(src);
-}
-
-Int32 URLSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
-{
-    return ITextUtils::URL_SPAN;
-}
-
-Int32 URLSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::URL_SPAN;
+    return NOERROR;
 }
 
 ECode URLSpan::ReadFromParcel(
@@ -64,22 +54,29 @@ ECode URLSpan::WriteToParcel(
     return dest->WriteString(mURL);
 }
 
-String URLSpan::GetURL()
+ECode URLSpan::GetURL(
+    /* [out] */ String* url)
 {
-    return mURL;
+    VALIDATE_NOT_NULL(url)
+    *url = mURL;
+    return NOERROR;
 }
 
 ECode URLSpan::OnClick(
     /* [in] */ IView* widget)
 {
+    String strUrl;
+    GetURL(&strUrl);
+
     AutoPtr<IUri> uri;
-    Uri::Parse(GetURL(), (IUri**)&uri);
+    Uri::Parse(strUrl, (IUri**)&uri);
     AutoPtr<IContext> context;
     widget->GetContext((IContext**)&context);
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_VIEW, uri, (IIntent**)&intent);
     String strPackageName;
-    intent->/*PutExtra*/PutExtra(/*IBrowser::EXTRA_APPLICATION_ID*/String("com.android.browser.application_id"), (context->GetPackageName(&strPackageName), strPackageName));
+    context->GetPackageName(&strPackageName);
+    intent->/*PutExtra*/PutExtra(/*IBrowser::EXTRA_APPLICATION_ID*/String("com.android.browser.application_id"), strPackageName);
     context->StartActivity(intent);
     return NOERROR;
 }

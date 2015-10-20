@@ -2,7 +2,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/location/CGeocoderParams.h"
 
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Droid {

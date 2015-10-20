@@ -1,13 +1,16 @@
 #include "elastos/droid/text/style/StyleSpan.h"
-// #include "elastos/droid/graphics/CTypeface.h"
+#include "elastos/droid/graphics/CTypeface.h"
 
 using Elastos::Droid::Graphics::ITypeface;
 // using Elastos::Droid::Graphics::CTypeface;
+using Elastos::Droid::Text::EIID_IParcelableSpan;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
+
+CAR_INTERFACE_IMPL_3(StyleSpan, MetricAffectingSpan, IStyleSpan, IParcelableSpan, IParcelable)
 
 StyleSpan::StyleSpan()
     : mStyle(0)
@@ -16,12 +19,12 @@ StyleSpan::StyleSpan()
 StyleSpan::~StyleSpan()
 {}
 
-ECode StyleSpan::cosntructor()
+ECode StyleSpan::constructor()
 {
     return NOERROR;
 }
 
-ECode StyleSpan::cosntructor(
+ECode StyleSpan::constructor(
     /* [in] */ Int32 style)
 {
     mStyle = style;
@@ -29,7 +32,7 @@ ECode StyleSpan::cosntructor(
 }
 
 ECode StyleSpan::GetSpanTypeId(
-    /* [out] */ Int32* id);
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::STYLE_SPAN;
@@ -59,13 +62,13 @@ ECode StyleSpan::GetStyle(
 ECode StyleSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
-    return Apply(ds, mStyle);
+    return Apply(IPaint::Probe(ds), mStyle);
 }
 
 ECode StyleSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* paint)
 {
-    return Apply(paint, mStyle);
+    return Apply(IPaint::Probe(paint), mStyle);
 }
 
 ECode StyleSpan::Apply(
@@ -109,7 +112,6 @@ ECode StyleSpan::Apply(
     paint->SetTypeface(tf);
     return NOERROR;
 }
-
 
 } // namespace Style
 } // namespace Text

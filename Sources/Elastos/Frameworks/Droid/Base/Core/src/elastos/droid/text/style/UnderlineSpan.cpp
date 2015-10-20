@@ -1,4 +1,7 @@
 #include "elastos/droid/text/style/UnderlineSpan.h"
+#include "elastos/droid/text/CTextPaint.h"
+
+using Elastos::Droid::Text::CTextPaint;
 
 namespace Elastos {
 namespace Droid {
@@ -9,35 +12,23 @@ CAR_INTERFACE_IMPL_4(UnderlineSpan, CharacterStyle, IUnderlineSpan, IUpdateAppea
 
 UnderlineSpan::UnderlineSpan()
 {
-    Init();
 }
 
-UnderlineSpan::UnderlineSpan(
-    /* [in] */ IParcel* src)
+UnderlineSpan::~UnderlineSpan()
 {
-    Init(src);
 }
 
-void UnderlineSpan::Init()
+ECode UnderlineSpan::constructor()
 {
-    return;
+    return NOERROR;
 }
 
-void UnderlineSpan::Init(
-    /* [in] */ IParcel* src)
+ECode UnderlineSpan::GetSpanTypeId(
+    /* [out] */ Int32* id)
 {
-    return;
-}
-
-Int32 UnderlineSpan::GetSpanTypeId(
-            /* [in] */ Int32* id);
-{
-    return ITextUtils::UNDERLINE_SPAN;
-}
-
-Int32 UnderlineSpan::DescribeContents()
-{
-    return 0;
+    VALIDATE_NOT_NULL(id)
+    *id = ITextUtils::UNDERLINE_SPAN;
+    return NOERROR;
 }
 
 ECode UnderlineSpan::ReadFromParcel(
@@ -56,7 +47,8 @@ ECode UnderlineSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
-    ds->SetUnderlineText(TRUE);
+    CTextPaint* p = (CTextPaint*)ds;
+    p->SetUnderlineText(TRUE);
     return NOERROR;
 }
 

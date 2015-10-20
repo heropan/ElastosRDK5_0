@@ -1,10 +1,14 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/StrikethroughSpan.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
+
+CAR_INTERFACE_IMPL_4(StrikethroughSpan, CharacterStyle, IStrikethroughSpan, IUpdateAppearance, IParcelableSpan, IParcelable)
 
 StrikethroughSpan::StrikethroughSpan()
 {
@@ -18,7 +22,6 @@ ECode StrikethroughSpan::constructor()
 {
     return NOERROR;
 }
-
 
 ECode StrikethroughSpan::GetSpanTypeId(
     /* [out] */ Int32* id)
@@ -44,7 +47,7 @@ ECode StrikethroughSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
-    ds->SetStrikeThruText(TRUE);
+    IPaint::Probe(ds)->SetStrikeThruText(TRUE);
     return NOERROR;
 }
 

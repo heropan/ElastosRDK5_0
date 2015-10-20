@@ -20,9 +20,9 @@ using Elastos::Droid::Content::Pm::CResolveInfo;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Text::TextUtils;
 
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocale;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocale;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 

@@ -12,7 +12,7 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

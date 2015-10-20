@@ -19,17 +19,12 @@ public:
 
     SubscriptSpan();
 
-    SubscriptSpan(
-    /* [in] */ IParcel* src);
+    virtual ~SubscriptSpan();
 
-    CARAPI_(void) Init();
+    CARAPI constructor();
 
-    CARAPI_(void) Init(
-    /* [in] */ IParcel* src);
-
-        CARAPI GetSpanTypeId(
-            /* [in] */ Int32* id);
-
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -39,11 +34,11 @@ public:
 
     //@Override
     CARAPI UpdateDrawState(
-    /* [in] */ ITextPaint* tp);
+        /* [in] */ ITextPaint* tp);
 
     //@Override
     CARAPI UpdateMeasureState(
-    /* [in] */ ITextPaint* tp);
+        /* [in] */ ITextPaint* tp);
 };
 
 } // namespace Style

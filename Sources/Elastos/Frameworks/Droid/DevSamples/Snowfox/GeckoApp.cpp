@@ -15,9 +15,9 @@
 #include <unistd.h>
 
 using Libcore::ICU::ILocale;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::IO::ICloseable;
 using Elastos::IO::CFile;
 using Elastos::IO::IFileHelper;

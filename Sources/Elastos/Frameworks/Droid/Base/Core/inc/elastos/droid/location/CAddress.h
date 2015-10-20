@@ -6,7 +6,7 @@
 #include "_Elastos_Droid_Location_CAddress.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Utility::Etl::HashMap;
 

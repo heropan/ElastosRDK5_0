@@ -4,8 +4,8 @@
 #include "elastos/droid/text/format/DateUtils.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Text::Format::IDateUtils;

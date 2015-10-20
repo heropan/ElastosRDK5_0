@@ -1,15 +1,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/ScaleXSpan.h"
 
+using Elastos::Droid::Graphics::IPaint;
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
-
-: public MetricAffectingSpan
-, public IScaleXSpan
-, public IParcelableSpan
-, public IParcelable
 
 CAR_INTERFACE_IMPL_3(ScaleXSpan, MetricAffectingSpan, IScaleXSpan, IParcelableSpan, IParcelable)
 
@@ -25,7 +22,7 @@ ECode ScaleXSpan::constructor(
 }
 
 ECode ScaleXSpan::GetSpanTypeId(
-    /* [in] */ Int32* id);
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::SCALE_X_SPAN;
@@ -44,18 +41,22 @@ ECode ScaleXSpan::WriteToParcel(
     return dest->WriteFloat(mProportion);
 }
 
-Float ScaleXSpan::GetScaleX()
+ECode ScaleXSpan::GetScaleX(
+    /* [out] */ Float* x)
 {
-    return mProportion;
+    VALIDATE_NOT_NULL(x)
+    *x = mProportion;
+    return NOERROR;
 }
 
 ECode ScaleXSpan::UpdateDrawState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
+    IPaint* p = IPaint::Probe(ds);
     Float textScaleX;
-    ds->GetTextScaleX(&textScaleX);
-    ds->SetTextScaleX(textScaleX * mProportion);
+    p->GetTextScaleX(&textScaleX);
+    p->SetTextScaleX(textScaleX * mProportion);
     return NOERROR;
 }
 
@@ -63,9 +64,10 @@ ECode ScaleXSpan::UpdateMeasureState(
     /* [in] */ ITextPaint* ds)
 {
     VALIDATE_NOT_NULL(ds);
+    IPaint* p = IPaint::Probe(ds);
     Float textScaleX;
-    ds->GetTextScaleX(&textScaleX);
-    ds->SetTextScaleX(textScaleX * mProportion);
+    p->GetTextScaleX(&textScaleX);
+    p->SetTextScaleX(textScaleX * mProportion);
     return NOERROR;
 }
 

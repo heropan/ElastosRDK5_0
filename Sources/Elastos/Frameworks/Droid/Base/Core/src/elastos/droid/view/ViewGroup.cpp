@@ -33,7 +33,7 @@ using Elastos::Droid::View::Animation::CLayoutAnimationController;
 using Elastos::Droid::View::Animation::Animation;
 using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::Animation::CTransformation;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;
 
 using Elastos::Core::CString;

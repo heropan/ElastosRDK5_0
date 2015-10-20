@@ -5945,11 +5945,6 @@ void BatteryStatsImpl::ReadLocked()
     AddHistoryBufferLocked(now, HistoryItem::CMD_START);
 }
 
-Int32 BatteryStatsImpl::DescribeContents()
-{
-    return 0;
-}
-
 void BatteryStatsImpl::ReadHistory(
     /* [in] */ IParcel* in,
     /* [in] */ Boolean andOldHistory)

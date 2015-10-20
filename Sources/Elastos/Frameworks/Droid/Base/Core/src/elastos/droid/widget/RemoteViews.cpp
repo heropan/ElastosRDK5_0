@@ -214,11 +214,6 @@ RemoteViews::Action::Action(
     : mViewId(viewId)
 {}
 
-Int32 RemoteViews::Action::DescribeContents()
-{
-    return 0;
-}
-
 void RemoteViews::Action::UpdateMemoryUsageEstimate(
     /* [in] */ MemoryUsageCounter* counter)
 {

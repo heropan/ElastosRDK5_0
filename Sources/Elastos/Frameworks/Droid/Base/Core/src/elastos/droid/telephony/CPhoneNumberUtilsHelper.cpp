@@ -2,7 +2,7 @@
 #include "CPhoneNumberUtilsHelper.h"
 #include "CPhoneNumberUtils.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {

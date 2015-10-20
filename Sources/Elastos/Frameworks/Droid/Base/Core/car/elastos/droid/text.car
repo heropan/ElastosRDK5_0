@@ -114,6 +114,8 @@ module
     using interface Elastos.Utility.IIterator;
     using interface Elastos.Utility.ILocale;
 
+    enum Elastos.Droid.Text.LayoutAlignment;
+
     interface Elastos.Droid.Graphics.IPaint;
     interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
 
@@ -404,8 +406,6 @@ module
     // } // namespace Text
     // } // namepsace Droid
     // } // namespace Elastos
-
-    enum Elastos.Droid.Text.LayoutAlignment;
 
     // namespace Elastos {
     // namespace Droid {

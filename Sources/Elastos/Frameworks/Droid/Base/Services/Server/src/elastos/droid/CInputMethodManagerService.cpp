@@ -28,7 +28,7 @@ using Elastos::IO::IFileOutputStream;
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::CObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::CLocale;
 using Elastos::Droid::R;
 using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::App::CPendingIntentHelper;

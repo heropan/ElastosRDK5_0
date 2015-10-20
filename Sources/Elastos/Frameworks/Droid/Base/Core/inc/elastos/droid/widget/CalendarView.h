@@ -7,9 +7,9 @@
 #include "elastos/droid/view/SimpleOnGestureListener.h"
 #include "elastos/droid/os/Runnable.h"
 
-using Libcore::ICU::ILocale;
-using Libcore::ICU::ILocaleHelper;
-using Libcore::ICU::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Libcore::ICU::ILocaleData;
 using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocaleDataHelper;

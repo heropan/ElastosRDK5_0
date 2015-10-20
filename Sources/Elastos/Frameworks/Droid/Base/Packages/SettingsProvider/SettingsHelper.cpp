@@ -4,8 +4,8 @@
 #include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/StringUtils.h>
 
-using Libcore::ICU::ILocale;
-using Libcore::ICU::CLocale;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::CLocale;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::App::ActivityManagerNative;

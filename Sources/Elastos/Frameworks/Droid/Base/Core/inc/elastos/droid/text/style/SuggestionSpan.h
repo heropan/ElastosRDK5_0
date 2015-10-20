@@ -3,7 +3,7 @@
 
 #include "elastos/droid/text/style/CharacterStyle.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
@@ -32,12 +32,18 @@ class SuggestionSpan
 public:
     CAR_INTERFACE_DECL()
 
+    SuggestionSpan();
+
+    virtual ~SuggestionSpan();
+
+    CARAPI constructor();
+
     /**
      * @param context Context for the application
      * @param suggestions Suggestions for the string under the span
      * @param flags Additional flags indicating how this span is handled in TextView
      */
-    SuggestionSpan(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ArrayOf<String>* suggestions,
         /* [in] */ Int32 flags);
@@ -47,7 +53,7 @@ public:
      * @param suggestions Suggestions for the string under the span
      * @param flags Additional flags indicating how this span is handled in TextView
      */
-    SuggestionSpan(
+    CARAPI constructor(
         /* [in] */ ILocale* locale,
         /* [in] */ ArrayOf<String>* suggestions,
         /* [in] */ Int32 flags);
@@ -61,45 +67,24 @@ public:
      * @param notificationTargetClass if not null, this class will get notified when the user
      * selects one of the suggestions.
      */
-    SuggestionSpan(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ILocale* locale,
         /* [in] */ ArrayOf<String>* suggestions,
         /* [in] */ Int32 flags,
-        /* [in] */ Handle32 notificationTargetClass);
-
-    SuggestionSpan(
-        /* [in] */ IParcel* src);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ArrayOf<String>* suggestions,
-        /* [in] */ Int32 flags);
-
-    CARAPI_(void) Init(
-        /* [in] */ ILocale* locale,
-        /* [in] */ ArrayOf<String>* suggestions,
-        /* [in] */ Int32 flags);
-
-    CARAPI_(void) Init(
-        /* [in] */ IContext* context,
-        /* [in] */ ILocale* locale,
-        /* [in] */ ArrayOf<String>* suggestions,
-        /* [in] */ Int32 flags,
-        /* [in] */ Handle32 notificationTargetClass);
-
-    CARAPI_(void) Init(
-        /* [in] */ IParcel* src);
+        /* [in] */ const String& otificationTargetClassName);
 
     /**
      * @return an array of suggestion texts for this span
      */
-    CARAPI_(AutoPtr< ArrayOf<String> >) GetSuggestions();
+    CARAPI GetSuggestions(
+        /* [out, callee] */ ArrayOf<String>** suggestions);
 
     /**
      * @return the locale of the suggestions
      */
-    CARAPI_(String) GetLocale();
+    CARAPI GetLocale(
+        /* [out] */ String* locale);
 
     /**
      * @return The name of the class to notify. The class of the original IME package will receive
@@ -110,14 +95,14 @@ public:
      *
      * @hide
      */
-    CARAPI_(String) GetNotificationTargetClassName();
+    CARAPI GetNotificationTargetClassName(
+        /* [out] */ String* str);
 
-    CARAPI_(Int32) GetFlags();
+    CARAPI GetFlags(
+        /* [out] */ Int32* flags);
 
-    CARAPI_(void) SetFlags(
+    CARAPI SetFlags(
         /* [in] */ Int32 flags);
-
-    //@Override
 
     //@Override
     CARAPI ReadFromParcel(
@@ -127,15 +112,17 @@ public:
         /* [in] */ IParcel* dest);
 
     //@Override
-        CARAPI GetSpanTypeId(
-            /* [in] */ Int32* id);
+    CARAPI GetSpanTypeId(
+        /* [out] */ Int32* id);
 
     //@Override
-    CARAPI_(Boolean) Equals(
-        /* [in] */ IInterface* o);
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Int32) GetHashCode();
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hash);
 
     //@Override
     CARAPI UpdateDrawState(
@@ -146,14 +133,13 @@ public:
      *
      * @hide
      */
-    CARAPI_(Int32) GetUnderlineColor();
+    CARAPI GetUnderlineColor(
+        /* [out] */ Int32* color);
 
     CARAPI NotifySelection(
         /* [in] */ IContext* context,
         /* [in] */ const String& original,
         /* [in] */ Int32 index);
-protected:
-    SuggestionSpan();
 
 private:
     CARAPI_(void) InitStyle(

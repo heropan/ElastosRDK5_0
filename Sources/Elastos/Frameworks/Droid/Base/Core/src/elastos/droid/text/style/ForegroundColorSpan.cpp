@@ -30,7 +30,7 @@ ECode ForegroundColorSpan::constructor(
 }
 
 ECode ForegroundColorSpan::GetSpanTypeId(
-    /* [in] */ Int32* id)
+    /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
     *id = ITextUtils::FOREGROUND_COLOR_SPAN;

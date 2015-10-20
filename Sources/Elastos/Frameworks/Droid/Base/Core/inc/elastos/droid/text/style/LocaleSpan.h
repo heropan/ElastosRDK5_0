@@ -3,7 +3,7 @@
 
 #include "elastos/droid/text/style/MetricAffectingSpan.h"
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Droid::Graphics::IPaint;
 
 namespace Elastos {
@@ -39,7 +39,7 @@ public:
 
     //@Override
     CARAPI GetSpanTypeId(
-        /* [in] */ Int32* id);
+        /* [out] */ Int32* id);
 
     //@Override
 

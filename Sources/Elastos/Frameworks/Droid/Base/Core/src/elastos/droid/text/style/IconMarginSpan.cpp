@@ -65,7 +65,7 @@ ECode IconMarginSpan::DrawLeadingMargin(
     if (dir < 0){
         Int32 bWidth;
         mBitmap->GetWidth(&bWidth);
-        x -= (bWidth;
+        x -= bWidth;
     }
 
     c->DrawBitmap(mBitmap, x, itop, p);

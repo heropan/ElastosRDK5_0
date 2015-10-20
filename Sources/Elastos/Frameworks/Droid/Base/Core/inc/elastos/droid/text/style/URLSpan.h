@@ -18,6 +18,10 @@ public:
 
     URLSpan();
 
+    virtual ~URLSpan();
+
+    CARAPI constructor();
+
     CARAPI constructor(
         /* [in] */ const String& url);
 
@@ -30,14 +34,12 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    CARAPI_(String) GetURL();
+    CARAPI GetURL(
+        /* [out] */ String* url);
 
     //@Override
     CARAPI OnClick(
         /* [in] */ IView* widget);
-
-protected:
-    URLSpan();
 
 private:
     String mURL;

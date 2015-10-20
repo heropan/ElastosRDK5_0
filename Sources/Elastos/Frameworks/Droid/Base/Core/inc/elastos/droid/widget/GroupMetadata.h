@@ -44,7 +44,7 @@ public:
     CARAPI_(Int32) CompareTo(
         /* [in] */ GroupMetadata* another);
 
-    CARAPI_(Int32) DescribeContents();
+
 
     //CARAPI WriteToParcel(
     //    /* [in] */ IParcel dest,
