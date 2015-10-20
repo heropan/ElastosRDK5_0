@@ -5,33 +5,18 @@
 #include "_Elastos_Droid_Text_Style_CBackgroundColorSpan.h"
 #include "elastos/droid/text/style/BackgroundColorSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CBackgroundColorSpan), public BackgroundColorSpan
+CarClass(CBackgroundColorSpan)
+    , public BackgroundColorSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetBackgroundColor(
-        /* [out] */ Int32* result);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 color);
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

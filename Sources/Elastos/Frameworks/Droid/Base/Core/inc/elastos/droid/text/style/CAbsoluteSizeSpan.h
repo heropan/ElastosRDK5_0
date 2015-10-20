@@ -5,11 +5,6 @@
 #include "_Elastos_Droid_Text_Style_CAbsoluteSizeSpan.h"
 #include "elastos/droid/text/style/AbsoluteSizeSpan.h"
 
-
-
-
-using Elastos::Droid::Text::Style::AbsoluteSizeSpan;
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -20,7 +15,6 @@ CarClass(CAbsoluteSizeSpan)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Style

@@ -5,37 +5,18 @@
 #include "_Elastos_Droid_Text_Style_CURLSpan.h"
 #include "elastos/droid/text/style/URLSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CURLSpan),public URLSpan
+CarClass(CURLSpan)
+    , public URLSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI OnClick(
-        /* [in] */ IView* widget);
-
-    CARAPI GetURL(
-        /* [out] */ String* url);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ const String& url);
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
-
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

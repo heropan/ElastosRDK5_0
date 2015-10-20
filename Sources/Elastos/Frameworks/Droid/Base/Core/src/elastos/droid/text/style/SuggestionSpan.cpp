@@ -36,6 +36,11 @@ SuggestionSpan::SuggestionSpan()
 SuggestionSpan::~SuggestionSpan()
 {}
 
+ECode SuggestionSpan::constructor()
+{
+    return NOERROR;
+}
+
 ECode SuggestionSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<String>* suggestions,

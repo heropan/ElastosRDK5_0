@@ -17,6 +17,13 @@ module
             [out] LayoutAlignment* alignment);
     }
 
+    /**
+     * @Involve
+     * interface IAlignmentSpan
+     */
+    interface IAlignmentSpanStandard {
+    }
+
     }//namespace Style
     }//namespace Text
     }//namespace Droid

@@ -9,6 +9,17 @@ namespace Style {
 //==================================================================
 // MetricAffectingSpan
 //==================================================================
+
+CAR_INTERFACE_IMPL_3(MetricAffectingSpan, CharacterStyle, IMetricAffectingSpan, IUpdateLayout, IUpdateAppearance)
+
+MetricAffectingSpan::MetricAffectingSpan()
+{
+}
+
+MetricAffectingSpan::~MetricAffectingSpan()
+{
+}
+
 ECode MetricAffectingSpan::GetUnderlying(
     /* [out] */ ICharacterStyle** style)
 {

@@ -5,26 +5,16 @@
 #include "_Elastos_Droid_Text_Style_CStrikethroughSpan.h"
 #include "elastos/droid/text/style/StrikethroughSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CStrikethroughSpan), public StrikethroughSpan
+CarClass(CStrikethroughSpan)
+    , public StrikethroughSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Style

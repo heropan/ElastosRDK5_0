@@ -14,7 +14,6 @@ namespace Style {
  * The classes that affect character-level text formatting in a way that
  * changes the width or height of characters extend this class.
  */
-//public abstract
 class MetricAffectingSpan
     : public CharacterStyle
     , public IMetricAffectingSpan

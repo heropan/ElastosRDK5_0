@@ -52,7 +52,7 @@ ECode DynamicDrawableSpan::GetSize(
     VALIDATE_NOT_NULL(size)
     AutoPtr<IDrawable> d = GetCachedDrawable();
     AutoPtr<IRect> rect;
-    d->GetBounds( (IRect**)&rect );
+    d->GetBounds((IRect**)&rect );
 
     if (fm != NULL) {
         Int32 bottom;

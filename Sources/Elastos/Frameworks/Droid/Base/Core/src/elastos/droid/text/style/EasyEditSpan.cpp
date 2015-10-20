@@ -8,10 +8,15 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
+CAR_INTERFACE_IMPL_3(EasyEditSpan, Object, IEasyEditSpan, IParcelableSpan, IParcelable)
+
 EasyEditSpan::EasyEditSpan()
     : mDeleteEnabled(TRUE)
 {
 }
+
+EasyEditSpan::~EasyEditSpan()
+{}
 
 ECode EasyEditSpan::constructor()
 {

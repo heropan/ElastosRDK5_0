@@ -5,8 +5,6 @@
 #include "_Elastos_Droid_Text_Style_CDrawableMarginSpan.h"
 #include "elastos/droid/text/style/DrawableMarginSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -16,41 +14,7 @@ CarClass(CDrawableMarginSpan)
     , public DrawableMarginSpan
 {
 public:
-    //ILEADINGMARGINSPAN_METHODS_DECL()
-    //ILineHeightSpan_METHODS_DECL()
-
-    CARAPI GetLeadingMargin(
-        /* [in] */ Boolean first,
-        /* [out] */ Int32* offset);
-
-    CARAPI DrawLeadingMargin(
-        /* [in] */ ICanvas* c,
-        /* [in] */ IPaint* p,
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 dir,
-        /* [in] */ Int32 top,
-        /* [in] */ Int32 baseline,
-        /* [in] */ Int32 bottom,
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Boolean first,
-        /* [in] */ ILayout* layout);
-
-    CARAPI ChooseHeight(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Int32 spanstartv,
-        /* [in] */ Int32 v,
-        /* [in] */ IPaintFontMetricsInt* fm);
-
-    CARAPI constructor(
-        /* [in] */ IDrawable* b);
-
-    CARAPI constructor(
-        /* [in] */ IDrawable* b,
-        /* [in] */ Int32 pad);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Style

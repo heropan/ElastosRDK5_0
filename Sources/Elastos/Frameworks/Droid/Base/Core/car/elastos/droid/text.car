@@ -116,8 +116,18 @@ module
 
     enum Elastos.Droid.Text.LayoutAlignment;
 
+    interface Elastos.Droid.Os.IPersistableBundle;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IColorStateList;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Graphics.IMaskFilter;
     interface Elastos.Droid.Graphics.IPaint;
+    interface Elastos.Droid.Graphics.IRasterizer;
     interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Text.IParcelableSpan;
 
     namespace Elastos {
     namespace Droid {
@@ -407,674 +417,497 @@ module
     // } // namepsace Droid
     // } // namespace Elastos
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Text {
-    // namespace Style {
-
-    // class CAbsoluteSizeSpan{
-    //     interface IAbsoluteSizeSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     /**
-    //      * Set the text size to <code>size</code> physical pixels.
-    //      */
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] Int32 size);
-
-    //     /**
-    //      * Set the text size to <code>size</code> physical pixels,
-    //      * or to <code>size</code> device-independent pixels if
-    //      * <code>dip</code> is true.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] Int32 size,
-    //         [in] Boolean dip);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CAbsoluteSizeSpanHelper{
-    //     interface IAbsoluteSizeSpanHelper;
-    // }
-
-    // class CBackgroundColorSpan{
-    //     interface IBackgroundColorSpan;
-    //     interface IUpdateAppearance;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] Int32 color);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CBackgroundColorSpanHelper{
-    //     interface IBackgroundColorSpanHelper;
-    // }
-
-    // class CBulletSpan{
-    //     interface IBulletSpan;
-    //     interface ILeadingMarginSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] Int32 gapWidth);
-
-    //     //public
-    //     constructor(
-    //         [in] Int32 gapWidth,
-    //         [in] Int32 color);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // class CDrawableMarginSpan{
-    //     interface IDrawableMarginSpan;
-    //     interface ILeadingMarginSpan;
-    //     interface ILineHeightSpan;
-
-    //     //public
-    //     constructor(
-    //         [in] IDrawable* b);
-
-    //     //public
-    //     constructor(
-    //         [in] IDrawable* b,
-    //         [in] Int32 pad);
-    // }
-
-    // class CEasyEditSpan{
-    //     interface IEasyEditSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     constructor();
-    // }
-
-    // class CForegroundColorSpan {
-    //     constructor(
-    //         [in] Int32 color);
-
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IForegroundColorSpan;
-    //     interface IUpdateAppearance;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CForegroundColorSpanHelper{
-    //     interface IForegroundColorSpanHelper;
-    // }
-
-    // class CIconMarginSpan{
-    //     //public
-    //     constructor(
-    //         [in] IBitmap* b);
-
-    //     //public
-    //     constructor(
-    //         [in] IBitmap* b,
-    //         [in] Int32 pad);
-
-    //     interface ILeadingMarginSpan;
-    //     interface ILineHeightSpan;
-    // }
-
-    // [local]
-    // class CImageSpan {
-    //     /**
-    //      * @deprecated Use {@link #ImageSpan(Context, Bitmap)} instead.
-    //      */
-    //     //@Deprecated
-    //     //public
-    //     constructor(
-    //         [in] IBitmap* b);
-
-    //     /**
-    //      * @deprecated Use {@link #ImageSpan(Context, Bitmap, int) instead.
-    //      */
-    //     //@Deprecated
-    //     //public
-    //     constructor(
-    //         [in] IBitmap* b,
-    //         [in] Int32 verticalAlignment);
-
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IBitmap* b);
-
-    //     /**
-    //      * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-    //      * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IBitmap* b,
-    //         [in] Int32 verticalAlignment);
-
-    //     //public
-    //     constructor(
-    //         [in] IDrawable* d);
-
-    //     /**
-    //      * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-    //      * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IDrawable* d,
-    //         [in] Int32 verticalAlignment);
-
-    //     //public
-    //     constructor(
-    //         [in] IDrawable* d,
-    //         [in] String source);
-
-    //     /**
-    //      * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-    //      * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IDrawable* d,
-    //         [in] String source,
-    //         [in] Int32 verticalAlignment);
-
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IUri* uri);
-
-    //     /**
-    //      * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-    //      * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IUri* uri,
-    //         [in] Int32 verticalAlignment);
-
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] Int32 resourceId);
-
-    //     /**
-    //      * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
-    //      * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] Int32 resourceId,
-    //         [in] Int32 verticalAlignment);
-
-    //     interface IImageSpan;
-    //     interface IUpdateLayout;
-    // }
-
-    // singleton class CImageSpanHelper{
-    //     interface IImageSpanHelper;
-    // }
-
-    // class CLocaleSpan{
-    //     /**
-    //      * Creates a LocaleSpan.
-    //      * @param locale The {@link Locale} of the text to which the span is
-    //      * attached.
-    //      */
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] ILocale* locale);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface ILocaleSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CLocaleSpanHelper{
-    //     interface ILocaleSpanHelper;
-    // }
-
-    // class CMaskFilterSpan{
-    //     //public
-    //     constructor(
-    //         [in] IMaskFilter* filter);
-
-    //     interface IMaskFilterSpan;
-    //     interface IUpdateAppearance;
-    // }
-
-    // singleton class CMaskFilterSpanHelper{
-    //     interface IMaskFilterSpanHelper;
-    // }
-
-    // class CQuoteSpan{
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] Int32 color);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IQuoteSpan;
-    //     interface ILeadingMarginSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // class CRasterizerSpan{
-    //     //public
-    //     constructor(
-    //         [in] IRasterizer* r);
-
-    //     interface IRasterizerSpan;
-    //     interface IUpdateAppearance;
-    // }
-
-    // singleton class CRasterizerSpanHelper{
-    //     interface IRasterizerSpanHelper;
-    // }
-
-    // class CRelativeSizeSpan{
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] Float proportion);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IRelativeSizeSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CRelativeSizeSpanHelper{
-    //     interface IRelativeSizeSpanHelper;
-    // }
-
-    // class CScaleXSpan{
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] Float proportion);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IScaleXSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CScaleXSpanHelper{
-    //     interface IScaleXSpanHelper;
-    // }
-
-    // class CSpellCheckSpan{
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface ISpellCheckSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // class CStrikethroughSpan{
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IStrikethroughSpan;
-    //     //interface ICharacterStyle;//be extends by IStrikethroughSpan
-    //     interface IUpdateAppearance;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CStrikethroughSpanHelper{
-    //     interface IStrikethroughSpanHelper;
-    // }
-
-    // class CStyleSpan{
-    //     constructor();
-
-    //     /**
-    //      *
-    //      * @param style An integer constant describing the style for this span. Examples
-    //      * include bold, italic, and normal. Values are constants defined
-    //      * in {@link android.graphics.Typeface}.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] Int32 style);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IStyleSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CStyleSpanHelper{
-    //     interface IStyleSpanHelper;
-    // }
-
-    // class CSubscriptSpan{
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface ISubscriptSpan;
-    //     //interface IMetricAffectingSpan;//be extends by ISubscriptSpan
-    //     interface IUpdateLayout;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CSubscriptSpanHelper{
-    //     interface ISubscriptSpanHelper;
-    // }
-
-    // class CSuggestionRangeSpan{
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface ISuggestionRangeSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CSuggestionRangeSpanHelper{
-    //     interface ISuggestionRangeSpanHelper;
-    // }
-
-    // [local,deprecated]
-    // class CSuggestionSpan{
-    //     interface ISuggestionSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     constructor();
-
-    //     /**
-    //      * @param context Context for the application
-    //      * @param suggestions Suggestions for the string under the span
-    //      * @param flags Additional flags indicating how this span is handled in TextView
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] ArrayOf<String>* suggestions,
-    //         [in] Int32 flags);
-
-    //     /**
-    //      * @param locale Locale of the suggestions
-    //      * @param suggestions Suggestions for the string under the span
-    //      * @param flags Additional flags indicating how this span is handled in TextView
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] ILocale* locale,
-    //         [in] ArrayOf<String>* suggestions,
-    //         [in] Int32 flags);
-
-    //     /**
-    //      * @param context Context for the application
-    //      * @param locale locale Locale of the suggestions
-    //      * @param suggestions Suggestions for the string under the span. Only the first up to
-    //      * {@link SuggestionSpan#SUGGESTIONS_MAX_SIZE} will be considered. Null values not permitted.
-    //      * @param flags Additional flags indicating how this span is handled in TextView
-    //      * @param notificationTargetClass if not null, this class will get notified when the user
-    //      * selects one of the suggestions.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] ILocale* locale,
-    //         [in] ArrayOf<String>* suggestions,
-    //         [in] Int32 flags,
-    //         [in] Handle32 notificationTargetClass);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CSuggestionSpanHelper{
-    //     interface ISuggestionSpanHelper;
-    // }
-
-    // class CSuperscriptSpan{
-    //     interface ISuperscriptSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CSuperscriptSpanHelper{
-    //     interface ISuperscriptSpanHelper;
-    // }
-
-    // [local]
-    // class CTextAppearanceSpan{
-    //     interface ITextAppearanceSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-
-    //     constructor();
-
-    //     /**
-    //      * Uses the specified TextAppearance resource to determine the
-    //      * text appearance.  The <code>appearance</code> should be, for example,
-    //      * <code>android.R.style.TextAppearance_Small</code>.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] Int32 appearance);
-
-    //     /**
-    //      * Uses the specified TextAppearance resource to determine the
-    //      * text appearance, and the specified text color resource
-    //      * to determine the color.  The <code>appearance</code> should be,
-    //      * for example, <code>android.R.style.TextAppearance_Small</code>,
-    //      * and the <code>colorList</code> should be, for example,
-    //      * <code>android.R.styleable.Theme_textColorPrimary</code>.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] Int32 appearance,
-    //         [in] Int32 colorList);
-
-    //     /**
-    //      * Makes text be drawn with the specified typeface, size, style,
-    //      * and colors.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] String family,
-    //         [in] Int32 style,
-    //         [in] Int32 size,
-    //         [in] IColorStateList* color,
-    //         [in] IColorStateList* linkColor);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CTextAppearanceSpanHelper{
-    //     interface ITextAppearanceSpanHelper;
-    // }
-
-    // class CTypefaceSpan{
-    //     interface ITypefaceSpan;
-    //     interface IParcelableSpan;
-    //     interface IUpdateLayout;
-    //     interface IParcelable;
-
-    //     constructor();
-
-    //     /**
-    //      * @param family The font family for this typeface.  Examples include
-    //      * "monospace", "serif", and "sans-serif".
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] String family);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CTypefaceSpanHelper{
-    //     interface ITypefaceSpanHelper;
-    // }
-
-    // class CUnderlineSpan{
-    //     interface IUnderlineSpan;
-    //     //interface ICharacterStyle;//be extends by IUnderlineSpan
-    //     interface IUpdateAppearance;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     //public
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CUnderlineSpanHelper{
-    //     interface IUnderlineSpanHelper;
-    // }
-
-    // class CURLSpan{
-    //     interface IURLSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-
-    //     constructor();
-
-    //     //public
-    //     constructor(
-    //         [in] String url);
-
-    //     //public
-    //     constructor(
-    //         [in] IParcel* src);
-    // }
-
-    // singleton class CURLSpanHelper{
-    //     interface IURLSpanHelper;
-    // }
-
-    // class CAlignmentSpanStandard {
-    //     constructor();
-
-    //     constructor(
-    //         [in] LayoutAlignment align);
-
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface IAlignmentSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // class CLeadingMarginSpanStandard {
-    //     constructor();
-
-    //     constructor(
-    //         [in] LayoutAlignment align);
-
-    //     constructor(
-    //         [in] IParcel* src);
-
-    //     interface ILeadingMarginSpan;
-    //     interface IParcelableSpan;
-    //     interface IParcelable;
-    // }
-
-    // } // namespace Style
-    // } // namespace Text
-    // } // namepsace Droid
-    // } // namespace Elastos
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Style {
+
+    class CAbsoluteSizeSpan {
+        constructor();
+
+        constructor(
+            [in] Int32 size);
+
+        constructor(
+            [in] Int32 size,
+            [in] Boolean dip);
+
+        interface IAbsoluteSizeSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CBackgroundColorSpan {
+        constructor();
+
+        constructor(
+            [in] Int32 color);
+
+        interface IBackgroundColorSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CBulletSpan {
+        constructor();
+
+        constructor(
+            [in] Int32 gapWidth);
+
+        constructor(
+            [in] Int32 gapWidth,
+            [in] Int32 color);
+
+        interface IBulletSpan;
+        interface ILeadingMarginSpan;
+        interface IParagraphStyle;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    singleton class CCharacterStyleHelper {
+        interface ICharacterStyleHelper;
+    }
+
+    class CDrawableMarginSpan {
+        constructor(
+            [in] IDrawable* b);
+
+        constructor(
+            [in] IDrawable* b,
+            [in] Int32 pad);
+
+        interface IDrawableMarginSpan;
+        interface ILeadingMarginSpan;
+        interface ILineHeightSpan;
+        interface IParagraphStyle;
+        interface IWrapTogetherSpan;
+    }
+
+    class CEasyEditSpan {
+        constructor();
+
+        constructor(
+            [in] IPendingIntent* intent);
+
+        interface IEasyEditSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CForegroundColorSpan {
+        constructor();
+
+        constructor(
+            [in] Int32 color);
+
+        interface IForegroundColorSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CIconMarginSpan {
+        constructor(
+            [in] IBitmap* b);
+
+        constructor(
+            [in] IBitmap* b,
+            [in] Int32 pad);
+
+        interface IIconMarginSpan;
+        interface ILeadingMarginSpan;
+        interface ILineHeightSpan;
+        interface IParagraphStyle;
+        interface IWrapTogetherSpan;
+    }
+
+    [local]
+    class CImageSpan {
+        /**
+         * @deprecated Use {@link #ImageSpan(Context, Bitmap)} instead.
+         */
+        //@Deprecated
+        constructor(
+            [in] IBitmap* b);
+
+        /**
+         * @deprecated Use {@link #ImageSpan(Context, Bitmap, int) instead.
+         */
+        //@Deprecated
+        constructor(
+            [in] IBitmap* b,
+            [in] Int32 verticalAlignment);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IBitmap* b);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] IBitmap* b,
+            [in] Int32 verticalAlignment);
+
+        constructor(
+            [in] IDrawable* d);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        constructor(
+            [in] IDrawable* d,
+            [in] Int32 verticalAlignment);
+
+        constructor(
+            [in] IDrawable* d,
+            [in] String source);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        constructor(
+            [in] IDrawable* d,
+            [in] String source,
+            [in] Int32 verticalAlignment);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IUri* uri);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] IUri* uri,
+            [in] Int32 verticalAlignment);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 resourceId);
+
+        /**
+         * @param verticalAlignment one of {@link DynamicDrawableSpan#ALIGN_BOTTOM} or
+         * {@link DynamicDrawableSpan#ALIGN_BASELINE}.
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 resourceId,
+            [in] Int32 verticalAlignment);
+
+        interface IImageSpan;
+        interface IDynamicDrawableSpan;
+        interface IReplacementSpan;
+        interface IMetricAffectingSpan;
+        interface IUpdateLayout;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+    }
+
+    class CLocaleSpan {
+        /**
+         * Creates a LocaleSpan.
+         * @param locale The {@link Locale} of the text to which the span is
+         * attached.
+         */
+        constructor();
+
+        constructor(
+            [in] ILocale* locale);
+
+        interface ILocaleSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CMaskFilterSpan {
+        constructor(
+            [in] IMaskFilter* filter);
+
+        interface IMaskFilterSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+    }
+
+    class CQuoteSpan {
+        constructor();
+
+        constructor(
+            [in] Int32 color);
+
+        interface IQuoteSpan;
+        interface ILeadingMarginSpan;
+        interface IParagraphStyle;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CRasterizerSpan {
+        constructor(
+            [in] IRasterizer* r);
+
+        interface IRasterizerSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+    }
+
+    class CRelativeSizeSpan {
+        constructor();
+
+        constructor(
+            [in] Float proportion);
+
+        interface IRelativeSizeSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CScaleXSpan {
+        constructor();
+
+        constructor(
+            [in] Float proportion);
+
+        interface IScaleXSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CSpellCheckSpan {
+        constructor();
+
+        interface ISpellCheckSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CStrikethroughSpan {
+        constructor();
+
+        interface IStrikethroughSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CStyleSpan {
+        constructor();
+
+        constructor(
+            [in] Int32 style);
+
+        interface IStyleSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CSubscriptSpan {
+        constructor();
+
+        interface ISubscriptSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CSuggestionRangeSpan {
+        constructor();
+
+        interface ISuggestionRangeSpan;
+        interface ICharacterStyle;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    [local,deprecated]
+    class CSuggestionSpan {
+
+        constructor();
+
+        constructor(
+            [in] IContext* ctx,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 flags);
+
+        constructor(
+            [in] ILocale* locale,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 flags);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] ILocale* locale,
+            [in] ArrayOf<String>* suggestions,
+            [in] Int32 flags,
+            [in] String notificationTargetClassName);
+
+        interface ISuggestionSpan;
+        interface ICharacterStyle;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CSuperscriptSpan {
+        constructor();
+
+        interface ISuperscriptSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    [local]
+    class CTextAppearanceSpan {
+
+        constructor();
+
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 appearance);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 appearance,
+            [in] Int32 colorList);
+
+        constructor(
+            [in] String family,
+            [in] Int32 style,
+            [in] Int32 size,
+            [in] IColorStateList* color,
+            [in] IColorStateList* linkColor);
+
+        interface ITextAppearanceSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CTypefaceSpan {
+        constructor();
+
+        constructor(
+            [in] String family);
+
+        interface ITypefaceSpan;
+        interface IMetricAffectingSpan;
+        interface ICharacterStyle;
+        interface IUpdateLayout;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CTtsSpan {
+        constructor();
+
+        constructor(
+            [in] String type,
+            [in] IPersistableBundle* args);
+
+        interface ITtsSpan;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CUnderlineSpan {
+        constructor();
+
+        interface IUnderlineSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CURLSpan {
+        constructor();
+
+        constructor(
+            [in] String url);
+
+        interface IURLSpan;
+        interface IClickableSpan;
+        interface ICharacterStyle;
+        interface IUpdateAppearance;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CAlignmentSpanStandard {
+        constructor();
+
+        constructor(
+            [in] LayoutAlignment align);
+
+        interface IAlignmentSpanStandard;
+        interface IAlignmentSpan;
+        interface IParagraphStyle;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    class CLeadingMarginSpanStandard {
+        constructor();
+
+        constructor(
+            [in] Int32 first,
+            [in] Int32 rest);
+
+        constructor(
+            [in] Int32 every);
+
+        interface ILeadingMarginSpanStandard;
+        interface ILeadingMarginSpan;
+        interface IParagraphStyle;
+        interface IParcelableSpan;
+        interface IParcelable;
+    }
+
+    } // namespace Style
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
@@ -1205,6 +1038,7 @@ module
             [in] Int32 ellipsizedWidth);
 
         interface IBoringLayout;
+        interface ILayout;
         interface ITextUtilsEllipsizeCallback;
     }
 
@@ -1263,6 +1097,7 @@ module
             [in] Int32 ellipsizedWidth);
 
         interface IDynamicLayout;
+        interface ILayout;
     }
 
     singleton class CLayoutHelper {
@@ -1369,6 +1204,7 @@ module
             [in] ICharSequence* text);
 
         interface IStaticLayout;
+        interface ILayout;
     }
 
     class CSpannableStringBuilder {

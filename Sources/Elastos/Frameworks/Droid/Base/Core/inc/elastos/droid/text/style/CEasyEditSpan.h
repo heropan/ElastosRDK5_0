@@ -11,12 +11,11 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CEasyEditSpan), public EasyEditSpan
+CarClass(CEasyEditSpan)
+    , public EasyEditSpan
 {
 public:
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI constructor();
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Style

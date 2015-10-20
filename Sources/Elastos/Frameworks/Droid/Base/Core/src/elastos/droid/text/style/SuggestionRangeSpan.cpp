@@ -13,6 +13,9 @@ SuggestionRangeSpan::SuggestionRangeSpan()
 {
 }
 
+SuggestionRangeSpan::~SuggestionRangeSpan()
+{}
+
 ECode SuggestionRangeSpan::constructor()
 {
     return NOERROR;

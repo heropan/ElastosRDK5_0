@@ -22,6 +22,14 @@ TextAppearanceSpan::TextAppearanceSpan()
     , mTextSize(0)
 {}
 
+TextAppearanceSpan::~TextAppearanceSpan()
+{}
+
+ECode TextAppearanceSpan::constructor()
+{
+    return NOERROR;
+}
+
 ECode TextAppearanceSpan::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 appearance)
@@ -30,6 +38,7 @@ ECode TextAppearanceSpan::constructor(
 }
 
 ECode TextAppearanceSpan::constructor(
+
     /* [in] */ IContext* context,
     /* [in] */ Int32 appearance,
     /* [in] */ Int32 colorList)

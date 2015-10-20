@@ -5,49 +5,18 @@
 #include "_Elastos_Droid_Text_Style_CBulletSpan.h"
 #include "elastos/droid/text/style/BulletSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CBulletSpan), public BulletSpan
+CarClass(CBulletSpan)
+    , public BulletSpan
 {
 public:
-    IPARCELABLESPAN_METHODS_DECL()
-    //ILEADINGMARGINSPAN_METHODS_DECL()
-
-    CARAPI GetLeadingMargin(
-        /* [in] */ Boolean first,
-        /* [out] */ Int32* offset);
-
-    CARAPI DrawLeadingMargin(
-        /* [in] */ ICanvas* c,
-        /* [in] */ IPaint* p,
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 dir,
-        /* [in] */ Int32 top,
-        /* [in] */ Int32 baseline,
-        /* [in] */ Int32 bottom,
-        /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Boolean first,
-        /* [in] */ ILayout* layout);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 gapWidth);
-
-    CARAPI constructor(
-        /* [in] */ Int32 gapWidth,
-        /* [in] */ Int32 color);
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

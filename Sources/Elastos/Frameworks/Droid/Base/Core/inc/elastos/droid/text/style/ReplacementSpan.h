@@ -13,7 +13,6 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-//public abstract
 class ReplacementSpan
     : public MetricAffectingSpan
     , public IReplacementSpan
@@ -21,12 +20,13 @@ class ReplacementSpan
 public:
     CAR_INTERFACE_DECL()
 
-    virtual CARAPI_(Int32) GetSize(
+    virtual CARAPI GetSize(
         /* [in] */ IPaint* paint,
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
-        /* [in] */ IPaintFontMetricsInt* fm) = 0;
+        /* [in] */ IPaintFontMetricsInt* fm,
+        /* [in] */ Int32* size) = 0;
 
     virtual CARAPI Draw(
         /* [in] */ ICanvas* canvas,

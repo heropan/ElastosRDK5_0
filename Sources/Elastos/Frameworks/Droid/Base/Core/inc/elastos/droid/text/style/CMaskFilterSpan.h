@@ -11,19 +11,11 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CMaskFilterSpan), public MaskFilterSpan
+CarClass(CMaskFilterSpan)
+    , public MaskFilterSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetMaskFilter(
-        /* [out] */ IMaskFilter** ret);
-
-    CARAPI constructor(
-        /* [in] */ IMaskFilter* filter);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Style

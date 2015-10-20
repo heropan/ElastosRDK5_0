@@ -15,6 +15,8 @@ CAR_INTERFACE_IMPL_3(TypefaceSpan, MetricAffectingSpan, ITypefaceSpan, IParcelab
 TypefaceSpan::TypefaceSpan()
 {}
 
+TypefaceSpan::~TypefaceSpan()
+{}
 
 ECode TypefaceSpan::constructor()
 {

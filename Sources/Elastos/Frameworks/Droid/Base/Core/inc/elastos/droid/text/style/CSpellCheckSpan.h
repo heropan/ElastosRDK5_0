@@ -11,21 +11,11 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CSpellCheckSpan),public SpellCheckSpan
+CarClass(CSpellCheckSpan)
+    , public SpellCheckSpan
 {
 public:
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI SetSpellCheckInProgress(
-        /* [in] */ Boolean inProgress);
-
-    CARAPI IsSpellCheckInProgress(
-        /* [out] */ Boolean* ret);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Style

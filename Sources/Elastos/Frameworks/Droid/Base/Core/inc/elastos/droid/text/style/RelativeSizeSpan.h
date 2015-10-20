@@ -21,6 +21,8 @@ public:
 
     virtual ~RelativeSizeSpan();
 
+    CARAPI constructor();
+
     CARAPI constructor(
         /* [in] */ Float proportion);
 

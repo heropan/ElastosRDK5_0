@@ -17,6 +17,11 @@ RelativeSizeSpan::RelativeSizeSpan()
 RelativeSizeSpan::~RelativeSizeSpan()
 {}
 
+ECode RelativeSizeSpan::constructor()
+{
+    return NOERROR;
+}
+
 ECode RelativeSizeSpan::constructor(
     /* [in] */ Float proportion)
 {

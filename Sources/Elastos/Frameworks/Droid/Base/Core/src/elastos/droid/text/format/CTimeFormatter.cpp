@@ -561,6 +561,7 @@ ECode CTimeFormatter::ModifyAndAppend(
     default:
         mOutputBuilder.Append(str);
     }
+    return NOERROR;
 }
 
 ECode CTimeFormatter::OutputYear(

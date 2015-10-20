@@ -5,30 +5,18 @@
 #include "_Elastos_Droid_Text_Style_CSuggestionRangeSpan.h"
 #include "elastos/droid/text/style/SuggestionRangeSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CSuggestionRangeSpan), public SuggestionRangeSpan
+CarClass(CSuggestionRangeSpan)
+    , public SuggestionRangeSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI SetBackgroundColor(
-        /* [in] */ Int32 backgroundColor);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

@@ -70,6 +70,14 @@ module
             [in] ILayout* layout);
     }
 
+    /*
+     * @Involve
+     * interface ILeadingMarginSpan
+     */
+    interface ILeadingMarginSpanStandard
+    {
+    }
+
     /**
      * An extended version of {@link LeadingMarginSpan}, which allows the
      * implementor to specify the number of lines of the paragraph to which

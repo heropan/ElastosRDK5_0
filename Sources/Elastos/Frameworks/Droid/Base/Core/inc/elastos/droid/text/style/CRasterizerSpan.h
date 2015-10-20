@@ -11,21 +11,13 @@ namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CRasterizerSpan), public RasterizerSpan
+CarClass(CRasterizerSpan)
+    , public RasterizerSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetRasterizer(
-        /* [out] */ IRasterizer** ret);
-
-    CARAPI constructor(
-        /* [in] */ IRasterizer* r);
-
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

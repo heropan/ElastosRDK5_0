@@ -5,30 +5,18 @@
 #include "_Elastos_Droid_Text_Style_CSubscriptSpan.h"
 #include "elastos/droid/text/style/SubscriptSpan.h"
 
-
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CSubscriptSpan), public SubscriptSpan
+CarClass(CSubscriptSpan)
+    , public SubscriptSpan
 {
 public:
-    ICHARACTERSTYLE_METHODS_DECL()
-    IMETRICAFFECTINGSPAN_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
-
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

@@ -5,30 +5,18 @@
 #include "_Elastos_Droid_Text_Style_CQuoteSpan.h"
 #include "elastos/droid/text/style/QuoteSpan.h"
 
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Style {
 
-CarClass(CQuoteSpan), public QuoteSpan
+CarClass(CQuoteSpan)
+    , public QuoteSpan
 {
 public:
-    ILEADINGMARGINSPAN_METHODS_DECL()
-    IPARCELABLESPAN_METHODS_DECL()
-
-    CARAPI GetColor(
-        /* [out] */ Int32* ret);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ Int32 color);
-
-    CARAPI constructor(
-        /* [in] */ IParcel* src);
+    CAR_OBJECT_DECL()
 };
+
 
 } // namespace Style
 } // namespace Text

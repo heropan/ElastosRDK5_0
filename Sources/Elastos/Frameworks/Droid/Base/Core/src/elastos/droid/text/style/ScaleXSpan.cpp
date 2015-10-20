@@ -14,6 +14,14 @@ ScaleXSpan::ScaleXSpan()
     : mProportion(0)
 {}
 
+ScaleXSpan::~ScaleXSpan()
+{}
+
+ECode ScaleXSpan::constructor()
+{
+    return NOERROR;
+}
+
 ECode ScaleXSpan::constructor(
     /* [in] */ Float proportion)
 {
