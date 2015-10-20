@@ -28,7 +28,7 @@ class HttpEntityEnclosingRequestBase
 public:
     HttpEntityEnclosingRequestBase();
 
-    virtual ~HttpEntityEnclosingRequestBase() = 0;
+    virtual ~HttpEntityEnclosingRequestBase() {}
 
     CAR_INTERFACE_DECL()
 

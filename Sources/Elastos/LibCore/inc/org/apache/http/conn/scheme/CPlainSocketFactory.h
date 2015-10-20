@@ -15,6 +15,8 @@ namespace Http {
 namespace Conn {
 namespace Scheme {
 
+class CPlainSocketFactoryHelper;
+
 /**
  * The default class for creating sockets.
  *
@@ -76,7 +78,7 @@ public:
      */
     CARAPI ConnectSocket(
         /* [in] */ ISocket* sock,
-        /* [in] */ String host,
+        /* [in] */ const String& host,
         /* [in] */ Int32 port,
         /* [in] */ IInetAddress* localAddress,
         /* [in] */ Int32 localPort,
@@ -135,6 +137,8 @@ private:
     static const AutoPtr<IPlainSocketFactory> DEFAULT_FACTORY;
 
     AutoPtr<IHostNameResolver> mNameResolver;
+
+    friend class CPlainSocketFactoryHelper;
 
 };
 

@@ -1,7 +1,7 @@
 
 #include "AbstractMessageParser.h"
 #include "BasicLineParser.h"
-#include "org/apache/http/util/CCharArrayBuffer.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
 #include "elastos/utility/CArrayList.h"
 #include "Logger.h"
 

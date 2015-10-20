@@ -37,7 +37,7 @@ class HttpRequestBase
 public:
     HttpRequestBase();
 
-    virtual ~HttpRequestBase() = 0;
+    virtual ~HttpRequestBase() {}
 
     CAR_INTERFACE_DECL()
 

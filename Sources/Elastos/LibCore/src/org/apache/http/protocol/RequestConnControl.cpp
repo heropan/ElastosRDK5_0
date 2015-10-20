@@ -10,6 +10,8 @@ namespace Apache {
 namespace Http {
 namespace Protocol {
 
+CAR_INTERFACE_IMPL(RequestConnControl, Object, IHttpRequestInterceptor)
+
 ECode RequestConnControl::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)

@@ -28,6 +28,9 @@ class BasicTokenIterator
     , public IIterator
 {
 public:
+    CARAPI constructor(
+        /* [in] */ IHeaderIterator* headerIterator);
+
     CAR_INTERFACE_DECL()
 
     BasicTokenIterator();
@@ -73,9 +76,6 @@ public:
     CARAPI Remove();
 
 protected:
-    CARAPI constructor(
-        /* [in] */ IHeaderIterator* headerIterator);
-
     /**
      * Determines the next token.
      * If found, the token is stored in {@link #currentToken}.

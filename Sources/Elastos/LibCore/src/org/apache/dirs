@@ -1,3 +1,3 @@
 
 DIRS = harmony
-#DIRS += http
+DIRS += http
