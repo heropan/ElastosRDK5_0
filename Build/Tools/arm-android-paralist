@@ -85,6 +85,35 @@
   Elastos/LibCore/src/org/apache/harmony/security/pkcs7
   Elastos/LibCore/src/org/apache/harmony/security/utils
 > Elastos/LibCore/src/org/apache/harmony/security
+  Elastos/LibCore/src/org/apache/http/auth/params
+  Elastos/LibCore/src/org/apache/http/auth
+  Elastos/LibCore/src/org/apache/http/client/entity
+  Elastos/LibCore/src/org/apache/http/client/methods
+  Elastos/LibCore/src/org/apache/http/client/params
+  Elastos/LibCore/src/org/apache/http/client/protocol
+  Elastos/LibCore/src/org/apache/http/client/utils
+  Elastos/LibCore/src/org/apache/http/conn/params
+  Elastos/LibCore/src/org/apache/http/conn/routing
+  Elastos/LibCore/src/org/apache/http/conn/scheme
+  Elastos/LibCore/src/org/apache/http/conn/ssl
+  Elastos/LibCore/src/org/apache/http/conn/util
+  Elastos/LibCore/src/org/apache/http/conn
+  Elastos/LibCore/src/org/apache/http/cookie/params
+  Elastos/LibCore/src/org/apache/http/cookie
+  Elastos/LibCore/src/org/apache/http/entity
+  Elastos/LibCore/src/org/apache/http/impl/auth
+  Elastos/LibCore/src/org/apache/http/impl/client
+  Elastos/LibCore/src/org/apache/http/impl/conn/tsccm
+  Elastos/LibCore/src/org/apache/http/impl/conn
+  Elastos/LibCore/src/org/apache/http/impl/cookie
+  Elastos/LibCore/src/org/apache/http/impl/entity
+  Elastos/LibCore/src/org/apache/http/impl/io
+  Elastos/LibCore/src/org/apache/http/impl
+  Elastos/LibCore/src/org/apache/http/message
+  Elastos/LibCore/src/org/apache/http/params
+  Elastos/LibCore/src/org/apache/http/protocol
+  Elastos/LibCore/src/org/apache/http/utility
+> Elastos/LibCore/src/org/apache/http
   Elastos/LibCore/src/org/xml/sax/ext
   Elastos/LibCore/src/org/xml/sax/helpers
 > Elastos/LibCore/src/org/xml/sax
@@ -93,6 +122,11 @@
   Elastos/LibCore/src/org/kxml2/io
   Elastos/LibCore/src/org/w3c/dom
 > Elastos/LibCore/src/corelibrary
+
+
+
+
+
 # ==== buid Framework ====
 #> Elastos/Frameworks/Droid/ServiceManager
 - Elastos/Frameworks/Droid/DroidRuntime/lib
