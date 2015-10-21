@@ -36,7 +36,7 @@ module
      * @Involved
      * interface IHttpClient;
      */
-    interface IAndroidHttpClient {
+    interface IElastosHttpClient {
         /**
          * Release resources associated with this client.  You must call this,
          * or significant resources (sockets and memory) may be leaked.
@@ -111,7 +111,7 @@ module
     }
 
     [deprecated]
-    interface IAndroidHttpClientHelper {
+    interface IElastosHttpClientHelper {
         // Gzip of data shorter than this probably won't be worthwhile
         GetDEFAULT_SYNC_MIN_GZIP_BYTES(
             [out] Int64* result);
@@ -129,7 +129,7 @@ module
         NewInstance(
             [in] String userAgent,
             [in] IContext* context,
-            [out] IAndroidHttpClient** result);
+            [out] IElastosHttpClient** result);
 
         /**
          * Create a new HttpClient with reasonable defaults (which you can update).
@@ -138,7 +138,7 @@ module
          */
         NewInstance(
             [in] String userAgent,
-            [out] IAndroidHttpClient** result);
+            [out] IElastosHttpClient** result);
 
         /**
          * Modifies a request to indicate to the server that we would like a

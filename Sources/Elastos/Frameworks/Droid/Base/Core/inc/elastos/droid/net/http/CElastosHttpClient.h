@@ -1,8 +1,8 @@
 
-#ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
-#define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENT_H__
+#define __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENT_H__
 
-#include "_Elastos_Droid_Net_Http_CAndroidHttpClient.h"
+#include "_Elastos_Droid_Net_Http_CElastosHttpClient.h"
 #include "elastos/droid/ext/frameworkext.h"
 // #include "DefaultHttpClient.h"
 
@@ -30,9 +30,9 @@ namespace Http {
  *
  * <pre>context.setAttribute(ClientContext.COOKIE_STORE, cookieStore);</pre>
  */
-CarClass(CAndroidHttpClient)
+CarClass(CElastosHttpClient)
 {
-    friend class CAndroidHttpClientHelper;
+    friend class CElastosHttpClientHelper;
 
 private:
     class HttpRequestInterceptor
@@ -139,9 +139,9 @@ private:
     };
 
 public:
-    CAndroidHttpClient();
+    CElastosHttpClient();
 
-    ~CAndroidHttpClient();
+    ~CElastosHttpClient();
 
     constructor(
         /* [in] */ IClientConnectionManager* ccm,
@@ -217,7 +217,7 @@ public:
 private:
     static ArrayOf<String>* InitTextContentTypes();
 
-    CAndroidHttpClient(
+    CElastosHttpClient(
         /* [in] */ IClientConnectionManager* ccm,
         /* [in] */ IHttpParams* params);
 
@@ -254,4 +254,4 @@ private:
 }
 }
 
-#endif // __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENT_H__

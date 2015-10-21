@@ -1,5 +1,5 @@
 
-#include "CAndroidHttpClientConnection.h"
+#include "CElastosHttpClientConnection.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -8,16 +8,16 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-CAndroidHttpClientConnection::CAndroidHttpClientConnection()
+CElastosHttpClientConnection::CElastosHttpClientConnection()
     : mMaxHeaderCount(0)
     , mMaxLineLength(0)
     , mOpen(FALSE)
 {}
 
-CAndroidHttpClientConnection::~CAndroidHttpClientConnection()
+CElastosHttpClientConnection::~CElastosHttpClientConnection()
 {}
 
-ECode CAndroidHttpClientConnection::constructor()
+ECode CElastosHttpClientConnection::constructor()
 {
     // TODO:
     // AutoPtr<IStrictContentLengthStrategy> strategy;
@@ -26,7 +26,7 @@ ECode CAndroidHttpClientConnection::constructor()
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClientConnection::Bind(
+ECode CElastosHttpClientConnection::Bind(
     /* [in] */ Elastos::Net::ISocket* socket,
     /* [in] */ Org::Apache::Http::Params::IHttpParams* params)
 {
@@ -72,11 +72,11 @@ ECode CAndroidHttpClientConnection::Bind(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClientConnection::ToString(
+ECode CElastosHttpClientConnection::ToString(
     /* [out] */ String* str)
 {
     AutoPtr<StringBuilder> buffer = new StringBuilder();
-    buffer->AppendCStr("CAndroidHttpClientConnection[");
+    buffer->AppendCStr("CElastosHttpClientConnection[");
     Boolean isOpen;
     IsOpen(&isOpen);
     if (isOpen) {
@@ -91,19 +91,19 @@ ECode CAndroidHttpClientConnection::ToString(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::AssertNotOpen()
+ECode CElastosHttpClientConnection::AssertNotOpen()
 {
     if (mOpen) return E_ILLEGALSTATE_EXCEPTION;
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::AssertOpen()
+ECode CElastosHttpClientConnection::AssertOpen()
 {
     if (!mOpen) return E_ILLEGALSTATE_EXCEPTION;
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::IsOpen(
+ECode CElastosHttpClientConnection::IsOpen(
     /* [out] */ Boolean* isOpen)
 {
     VALIDATE_NOT_NULL(isOpen);
@@ -119,7 +119,7 @@ ECode CAndroidHttpClientConnection::IsOpen(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::GetLocalAddress(
+ECode CElastosHttpClientConnection::GetLocalAddress(
     /* [out] */ IInetAddress** address)
 {
     if (mSocket != NULL) {
@@ -131,7 +131,7 @@ ECode CAndroidHttpClientConnection::GetLocalAddress(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::GetLocalPort(
+ECode CElastosHttpClientConnection::GetLocalPort(
     /* [out] */ Int32* port)
 {
     if (mSocket != NULL) {
@@ -143,7 +143,7 @@ ECode CAndroidHttpClientConnection::GetLocalPort(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::GetRemoteAddress(
+ECode CElastosHttpClientConnection::GetRemoteAddress(
     /* [out] */ IInetAddress** address)
 {
     if (mSocket != NULL) {
@@ -155,7 +155,7 @@ ECode CAndroidHttpClientConnection::GetRemoteAddress(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::GetRemotePort(
+ECode CElastosHttpClientConnection::GetRemotePort(
     /* [out] */ Int32* port)
 {
     if (mSocket != NULL) {
@@ -167,7 +167,7 @@ ECode CAndroidHttpClientConnection::GetRemotePort(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::SetSocketTimeout(
+ECode CElastosHttpClientConnection::SetSocketTimeout(
     /* [in] */ Int32 timeout)
 {
     FAIL_RETURN(AssertOpen());
@@ -181,7 +181,7 @@ ECode CAndroidHttpClientConnection::SetSocketTimeout(
     return E_ILLEGALSTATE_EXCEPTION;
 }
 
-ECode CAndroidHttpClientConnection::GetSocketTimeout(
+ECode CElastosHttpClientConnection::GetSocketTimeout(
     /* [out] */ Int32* timeout)
 {
     if (mSocket != NULL) {
@@ -192,7 +192,7 @@ ECode CAndroidHttpClientConnection::GetSocketTimeout(
     return E_ILLEGALSTATE_EXCEPTION;
 }
 
-ECode CAndroidHttpClientConnection::Shutdown()
+ECode CElastosHttpClientConnection::Shutdown()
 {
     mOpen = FALSE;
     if (mSocket != NULL) {
@@ -202,7 +202,7 @@ ECode CAndroidHttpClientConnection::Shutdown()
     return E_ILLEGALSTATE_EXCEPTION;
 }
 
-ECode CAndroidHttpClientConnection::Close()
+ECode CElastosHttpClientConnection::Close()
 {
     if (!mOpen)
     {
@@ -221,7 +221,7 @@ ECode CAndroidHttpClientConnection::Close()
     return mSocket->Close();
 }
 
-ECode CAndroidHttpClientConnection::SendRequestHeader(
+ECode CElastosHttpClientConnection::SendRequestHeader(
     /* [in] */ Org::Apache::Http::IHttpRequest* request)
 {
     if (request == NULL)
@@ -236,7 +236,7 @@ ECode CAndroidHttpClientConnection::SendRequestHeader(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientConnection::SendRequestEntity(
+ECode CElastosHttpClientConnection::SendRequestEntity(
     /* [in] */ Org::Apache::Http::IHttpEntityEnclosingRequest* request)
 {
     if (request == NULL) {
@@ -253,7 +253,7 @@ ECode CAndroidHttpClientConnection::SendRequestEntity(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClientConnection::DoFlush()
+ECode CElastosHttpClientConnection::DoFlush()
 {
     // if (mOutbuffer != NULL)
     // {
@@ -264,13 +264,13 @@ ECode CAndroidHttpClientConnection::DoFlush()
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClientConnection::Flush()
+ECode CElastosHttpClientConnection::Flush()
 {
     FAIL_RETURN(AssertOpen());
     return DoFlush();
 }
 
-ECode CAndroidHttpClientConnection::ParseResponseHeader(
+ECode CElastosHttpClientConnection::ParseResponseHeader(
     /* [in] */ Elastos::Droid::Net::Http::IHeaders* headers,
     /* [out] */ Org::Apache::Http::IStatusLine** statusLine)
 {
@@ -368,7 +368,7 @@ ECode CAndroidHttpClientConnection::ParseResponseHeader(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClientConnection::ReceiveResponseEntity(
+ECode CElastosHttpClientConnection::ReceiveResponseEntity(
     /* [in] */ Elastos::Droid::Net::Http::IHeaders* headers,
     /* [out] */ Org::Apache::Http::IHttpEntity** entity)
 {
@@ -416,7 +416,7 @@ ECode CAndroidHttpClientConnection::ReceiveResponseEntity(
     return E_NOT_IMPLEMENTED;
 }
 
-Int64 CAndroidHttpClientConnection::DetermineLength(
+Int64 CElastosHttpClientConnection::DetermineLength(
         /* [in] */ IHeaders* headers)
 {
     Int64 transferEncoding;
@@ -436,7 +436,7 @@ Int64 CAndroidHttpClientConnection::DetermineLength(
     }
 }
 
-ECode CAndroidHttpClientConnection::IsStale(
+ECode CElastosHttpClientConnection::IsStale(
         /* [out] */ Boolean* isStale)
 {
     FAIL_RETURN(AssertOpen());

@@ -1,5 +1,5 @@
 
-#include "CAndroidHttpClientHelper.h"
+#include "CElastosHttpClientHelper.h"
 #include "CHttpDateTime.h"
 #include "elastos/droid/ext/frameworkext.h"
 
@@ -14,12 +14,12 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-Int64 CAndroidHttpClientHelper::DEFAULT_SYNC_MIN_GZIP_BYTES = 256;
+Int64 CElastosHttpClientHelper::DEFAULT_SYNC_MIN_GZIP_BYTES = 256;
 
-ECode CAndroidHttpClientHelper::NewInstance(
+ECode CElastosHttpClientHelper::NewInstance(
     /* [in] */ const String& userAgent,
     /* [in] */ Elastos::Droid::Content::IContext* context,
-    /* [out] */ Elastos::Droid::Net::Http::IAndroidHttpClient** client)
+    /* [out] */ Elastos::Droid::Net::Http::IElastosHttpClient** client)
 {
     VALIDATE_NOT_NULL(client);
 
@@ -83,14 +83,14 @@ ECode CAndroidHttpClientHelper::NewInstance(
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CAndroidHttpClientHelper::NewInstance(
+ECode CElastosHttpClientHelper::NewInstance(
     /* [in] */ const String& userAgent,
-    /* [out] */ Elastos::Droid::Net::Http::IAndroidHttpClient** client)
+    /* [out] */ Elastos::Droid::Net::Http::IElastosHttpClient** client)
 {
     return NewInstance(userAgent, NULL, client);
 }
 
-ECode CAndroidHttpClientHelper::ModifyRequestToAcceptGzipResponse(
+ECode CElastosHttpClientHelper::ModifyRequestToAcceptGzipResponse(
     /* [in, out] */ Org::Apache::Http::IHttpRequest* request)
 {
     VALIDATE_NOT_NULL(request);
@@ -98,7 +98,7 @@ ECode CAndroidHttpClientHelper::ModifyRequestToAcceptGzipResponse(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClientHelper::GetUngzippedContent(
+ECode CElastosHttpClientHelper::GetUngzippedContent(
     /* [in] */ Org::Apache::Http::IHttpEntity* entity,
     /* [out] */ Elastos::IO::IInputStream** stream)
 {
@@ -132,7 +132,7 @@ ECode CAndroidHttpClientHelper::GetUngzippedContent(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientHelper::GetCompressedEntity(
+ECode CElastosHttpClientHelper::GetCompressedEntity(
     /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Elastos::Droid::Content::IContentResolver* resolver,
     /* [out] */ Org::Apache::Http::Entity::IAbstractHttpEntity** entity)
@@ -157,7 +157,7 @@ ECode CAndroidHttpClientHelper::GetCompressedEntity(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientHelper::GetMinGzipSize(
+ECode CElastosHttpClientHelper::GetMinGzipSize(
     /* [in] */ Elastos::Droid::Content::IContentResolver* resolver,
     /* [out] */ Int64* size)
 {
@@ -166,7 +166,7 @@ ECode CAndroidHttpClientHelper::GetMinGzipSize(
     return NOERROR;
 }
 
-ECode CAndroidHttpClientHelper::ParseDate(
+ECode CElastosHttpClientHelper::ParseDate(
     /* [in] */ const String& dateString,
     /* [out] */ Int64* date)
 {

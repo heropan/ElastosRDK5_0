@@ -217,7 +217,7 @@ ECode HttpsConnection::SetCertificate(
 
 ECode HttpsConnection::OpenConnection(
     /* [in] */ Request* req,
-    /* [out] */ IAndroidHttpClientConnection** connection)
+    /* [out] */ IElastosHttpClientConnection** connection)
 {
     AutoPtr<ISSLSocket> sslSock;
 
@@ -229,7 +229,7 @@ ECode HttpsConnection::OpenConnection(
         // handler with the response status and headers. The event
         // handler is then responsible for cancelling the load or
         // issueing a new request.
-        AutoPtr<IAndroidHttpClientConnection> proxyConnection;
+        AutoPtr<IElastosHttpClientConnection> proxyConnection;
         AutoPtr<ISocket> proxySock;
 
         String name;
@@ -243,7 +243,7 @@ ECode HttpsConnection::OpenConnection(
         // ec = proxySock->SetSoTimeout(60 * 1000);
         FAIL_RETURN(CheckErrorAndClose(ec, proxyConnection));
 
-        CAndroidHttpClientConnection::New((IAndroidHttpClientConnection**)&proxyConnection);
+        CElastosHttpClientConnection::New((IElastosHttpClientConnection**)&proxyConnection);
         AutoPtr<IHttpParams> params;
         // CBasicHttpParams::New((IHttpParams**)&params);
         AutoPtr<IHttpConnectionParamsHelper> helper;
@@ -438,8 +438,8 @@ ECode HttpsConnection::OpenConnection(
     }
 
     // All went well, we have an open, verified connection.
-    AutoPtr<IAndroidHttpClientConnection> conn;
-    CAndroidHttpClientConnection::New((IAndroidHttpClientConnection**)&conn);
+    AutoPtr<IElastosHttpClientConnection> conn;
+    CElastosHttpClientConnection::New((IElastosHttpClientConnection**)&conn);
     AutoPtr<IBasicHttpParams> params;
     // CBasicHttpParams::New((IBasicHttpParams**)&params);
     // params->SetIntParameter(IHttpConnectionParams::SOCKET_BUFFER_SIZE, 8192);
@@ -506,7 +506,7 @@ ECode HttpsConnection::GetScheme(
 
 ECode HttpsConnection::CheckErrorAndClose(
         /* [in] */ ECode ec,
-        /* [in] */ IAndroidHttpClientConnection* connection)
+        /* [in] */ IElastosHttpClientConnection* connection)
 {
     if (FAILED(ec))    {
         if (connection != NULL) {

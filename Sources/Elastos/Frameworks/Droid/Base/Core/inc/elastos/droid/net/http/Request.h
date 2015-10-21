@@ -109,7 +109,7 @@ public:
      * Send the request line and headers
      */
     CARAPI SendRequest(
-        /* [in] */ IAndroidHttpClientConnection* httpClientConnection);
+        /* [in] */ IElastosHttpClientConnection* httpClientConnection);
 
     /**
      * Receive a single http response.
@@ -117,7 +117,7 @@ public:
      * @param httpClientConnection the request to receive the response for.
      */
     CARAPI ReadResponse(
-        /* [in] */ IAndroidHttpClientConnection* httpClientConnection);
+        /* [in] */ IElastosHttpClientConnection* httpClientConnection);
 
     /**
      * Data will not be sent to or received from server after cancel()

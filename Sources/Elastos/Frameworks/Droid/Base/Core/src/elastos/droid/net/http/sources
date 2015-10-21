@@ -7,9 +7,9 @@ INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
 INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/net/http
 
-SOURCES += CAndroidHttpClient.cpp
-SOURCES += CAndroidHttpClientHelper.cpp
-SOURCES += CAndroidHttpClientConnection.cpp
+SOURCES += CElastosHttpClient.cpp
+SOURCES += CElastosHttpClientHelper.cpp
+SOURCES += CElastosHttpClientConnection.cpp
 SOURCES += CCertificateChainValidatorHelper.cpp
 SOURCES += CCharArrayBuffers.cpp
 SOURCES += CCharArrayBuffersHelper.cpp

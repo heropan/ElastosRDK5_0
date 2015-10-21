@@ -193,7 +193,7 @@ ECode Request::AddHeaders(
 }
 
 ECode Request::SendRequest(
-    /* [in] */ IAndroidHttpClientConnection* httpClientConnection)
+    /* [in] */ IElastosHttpClientConnection* httpClientConnection)
 {
     if (mCancelled){
         return NOERROR; // don't send cancelled requests
@@ -231,7 +231,7 @@ ECode Request::SendRequest(
 }
 
 ECode Request::ReadResponse(
-    /* [in] */ IAndroidHttpClientConnection* httpClientConnection)
+    /* [in] */ IElastosHttpClientConnection* httpClientConnection)
 {
     if (mCancelled){
         return NOERROR; // don't send cancelled requests

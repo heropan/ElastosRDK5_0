@@ -1,5 +1,5 @@
 
-#include "CAndroidHttpClient.h"
+#include "CElastosHttpClient.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>
@@ -13,7 +13,7 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-AutoPtr<ArrayOf<String> > CAndroidHttpClient::InitTextContentTypes()
+AutoPtr<ArrayOf<String> > CElastosHttpClient::InitTextContentTypes()
 {
     AutoPtr<ArrayOf<String> > textContentTypes = ArrayOf<String>::Alloc(3);
     (*textContentTypes)[0] = String("text/");
@@ -23,35 +23,35 @@ AutoPtr<ArrayOf<String> > CAndroidHttpClient::InitTextContentTypes()
     return textContentTypes;
 }
 
-const Int32 CAndroidHttpClient::SOCKET_OPERATION_TIMEOUT = 60 * 1000;
-const String CAndroidHttpClient::TAG("AndroidHttpClient");
+const Int32 CElastosHttpClient::SOCKET_OPERATION_TIMEOUT = 60 * 1000;
+const String CElastosHttpClient::TAG("ElastosHttpClient");
 
-AutoPtr<ArrayOf<String> > CAndroidHttpClient::mTextContentTypes = InitTextContentTypes();
+AutoPtr<ArrayOf<String> > CElastosHttpClient::mTextContentTypes = InitTextContentTypes();
 
-const CAndroidHttpClient::HttpRequestInterceptor* CAndroidHttpClient::mThreadCheckInterceptor = new CAndroidHttpClient::HttpRequestInterceptor();
+const CElastosHttpClient::HttpRequestInterceptor* CElastosHttpClient::mThreadCheckInterceptor = new CElastosHttpClient::HttpRequestInterceptor();
 
-CAR_INTERFACE_IMPL(CAndroidHttpClient::HttpRequestInterceptor, IHttpRequestInterceptor);
+CAR_INTERFACE_IMPL(CElastosHttpClient::HttpRequestInterceptor, IHttpRequestInterceptor);
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::Aggregate(
+ECode CElastosHttpClient::HttpRequestInterceptor::Aggregate(
     /* [in] */ AggrType aggrType,
     /* [in] */ PInterface pObject)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::GetDomain(
+ECode CElastosHttpClient::HttpRequestInterceptor::GetDomain(
     /* [out] */ PInterface *ppObject)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::GetClassID(
+ECode CElastosHttpClient::HttpRequestInterceptor::GetClassID(
     /* [out] */ ClassID *pCLSID)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::Equals(
+ECode CElastosHttpClient::HttpRequestInterceptor::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean * result)
 {
@@ -66,7 +66,7 @@ ECode CAndroidHttpClient::HttpRequestInterceptor::Equals(
     return NOERROR;
 }
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::GetHashCode(
+ECode CElastosHttpClient::HttpRequestInterceptor::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash);
@@ -74,7 +74,7 @@ ECode CAndroidHttpClient::HttpRequestInterceptor::GetHashCode(
     return NOERROR;
 }
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::ToString(
+ECode CElastosHttpClient::HttpRequestInterceptor::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
@@ -85,7 +85,7 @@ ECode CAndroidHttpClient::HttpRequestInterceptor::ToString(
     return NOERROR;
 }
 
-ECode CAndroidHttpClient::HttpRequestInterceptor::Process(
+ECode CElastosHttpClient::HttpRequestInterceptor::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)
 {
@@ -103,7 +103,7 @@ ECode CAndroidHttpClient::HttpRequestInterceptor::Process(
     return NOERROR;
 }
 
-ECode CAndroidHttpClient::LocalDefaultHttpClient::CreateHttpProcessor(
+ECode CElastosHttpClient::LocalDefaultHttpClient::CreateHttpProcessor(
     /* [out] */ IBasicHttpProcessor** processor)
 {
     // TODO:
@@ -120,7 +120,7 @@ ECode CAndroidHttpClient::LocalDefaultHttpClient::CreateHttpProcessor(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::LocalDefaultHttpClient::CreateHttpContext(
+ECode CElastosHttpClient::LocalDefaultHttpClient::CreateHttpContext(
     /* [out] */ IHttpContext** httpContext)
 {
     // TODO:
@@ -143,7 +143,7 @@ ECode CAndroidHttpClient::LocalDefaultHttpClient::CreateHttpContext(
     return E_NOT_IMPLEMENTED;
 }
 
-CAndroidHttpClient::LoggingConfiguration::LoggingConfiguration(
+CElastosHttpClient::LoggingConfiguration::LoggingConfiguration(
     /* [in] */ const String& tag,
     /* [in] */ Int32 level)
     : mTag(tag)
@@ -153,43 +153,43 @@ CAndroidHttpClient::LoggingConfiguration::LoggingConfiguration(
 /**
  * Returns true if logging is turned on for this configuration.
  */
-Boolean CAndroidHttpClient::LoggingConfiguration::IsLoggable()
+Boolean CElastosHttpClient::LoggingConfiguration::IsLoggable()
 {
     return Logger::IsLoggable(mTag, mLevel);
 }
 
-ECode CAndroidHttpClient::LoggingConfiguration::Println(
+ECode CElastosHttpClient::LoggingConfiguration::Println(
     /* [in] */ const String& message) {
     return Logger::Println(mLevel, mTag, message);
 }
 
-CAR_INTERFACE_IMPL(CAndroidHttpClient::CurlLogger, IHttpRequestInterceptor);
+CAR_INTERFACE_IMPL(CElastosHttpClient::CurlLogger, IHttpRequestInterceptor);
 
-CAndroidHttpClient::CurlLogger::CurlLogger(
+CElastosHttpClient::CurlLogger::CurlLogger(
     /* [in] */ LoggingConfiguration* logCongfig)
     : mLogConfig(logCongfig)
 {}
 
-ECode CAndroidHttpClient::CurlLogger::Aggregate(
+ECode CElastosHttpClient::CurlLogger::Aggregate(
     /* [in] */ AggrType aggrType,
     /* [in] */ PInterface pObject)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::CurlLogger::GetDomain(
+ECode CElastosHttpClient::CurlLogger::GetDomain(
     /* [out] */ PInterface *ppObject)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::CurlLogger::GetClassID(
+ECode CElastosHttpClient::CurlLogger::GetClassID(
     /* [out] */ ClassID *pCLSID)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::CurlLogger::Process(
+ECode CElastosHttpClient::CurlLogger::Process(
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context)
 {
@@ -208,11 +208,11 @@ ECode CAndroidHttpClient::CurlLogger::Process(
     return NOERROR;
 }
 
-CAndroidHttpClient::CAndroidHttpClient()
+CElastosHttpClient::CElastosHttpClient()
     : mCurlConfiguration(NULL)
 {}
 
-CAndroidHttpClient::constructor(
+CElastosHttpClient::constructor(
     /* [in] */  IClientConnectionManager* ccm,
     /* [in] */  IHttpParams* params)
 {
@@ -220,10 +220,10 @@ CAndroidHttpClient::constructor(
     // mDelegate = new LocalDefaultHttpClient(ccm, params);
 }
 
-CAndroidHttpClient::~CAndroidHttpClient()
+CElastosHttpClient::~CElastosHttpClient()
 {}
 
-ECode CAndroidHttpClient::Close()
+ECode CElastosHttpClient::Close()
 {
     AutoPtr<IClientConnectionManager> manager;
     GetConnectionManager((IClientConnectionManager**)&manager);
@@ -232,7 +232,7 @@ ECode CAndroidHttpClient::Close()
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::EnableCurlLogging(
+ECode CElastosHttpClient::EnableCurlLogging(
     /* [in] */ const String& name,
     /* [in] */ Int32 level)
 {
@@ -255,7 +255,7 @@ ECode CAndroidHttpClient::EnableCurlLogging(
     return NOERROR;
 }
 
-ECode CAndroidHttpClient::DisableCurlLogging()
+ECode CElastosHttpClient::DisableCurlLogging()
 {
     if (mCurlConfiguration != NULL)
     {
@@ -266,7 +266,7 @@ ECode CAndroidHttpClient::DisableCurlLogging()
     return NOERROR;
 }
 
- ECode CAndroidHttpClient::GetParams(
+ ECode CElastosHttpClient::GetParams(
     /* [out] */ IHttpParams** params)
 {
     VALIDATE_NOT_NULL(params);
@@ -275,7 +275,7 @@ ECode CAndroidHttpClient::DisableCurlLogging()
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::GetConnectionManager(
+ECode CElastosHttpClient::GetConnectionManager(
         /* [out] */ IClientConnectionManager** manager)
 {
     VALIDATE_NOT_NULL(manager);
@@ -284,7 +284,7 @@ ECode CAndroidHttpClient::GetConnectionManager(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::Execute(
+ECode CElastosHttpClient::Execute(
     /* [in] */ IHttpUriRequest* request,
     /* [out] */ IHttpResponse** response) {
     // TODO:
@@ -292,7 +292,7 @@ ECode CAndroidHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::Execute(
+ECode CElastosHttpClient::Execute(
     /* [in] */ IHttpUriRequest* request,
     /* [in] */ IHttpContext* context,
     /* [out] */ IHttpResponse** response) {
@@ -301,7 +301,7 @@ ECode CAndroidHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::Execute(
+ECode CElastosHttpClient::Execute(
     /* [in] */ IHttpHost* target,
     /* [in] */ IHttpRequest* request,
     /* [out] */ IHttpResponse** response) {
@@ -310,7 +310,7 @@ ECode CAndroidHttpClient::Execute(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode CAndroidHttpClient::Execute(
+ECode CElastosHttpClient::Execute(
     /* [in] */ IHttpHost* target,
     /* [in] */ IHttpRequest* request,
     /* [in] */ IHttpContext* context,
@@ -360,7 +360,7 @@ ECode CAndroidHttpClient::Execute(
 //     return E_NOT_IMPLEMENTED;
 // }
 
-ECode CAndroidHttpClient::ToCurl(
+ECode CElastosHttpClient::ToCurl(
         /* [in] */ IHttpUriRequest* request,
         /* [in] */ Boolean logAuthToken,
         /* [out] */ String* curl)
@@ -437,7 +437,7 @@ ECode CAndroidHttpClient::ToCurl(
     return NOERROR;
 }
 
-Boolean CAndroidHttpClient::IsBinaryContent(
+Boolean CElastosHttpClient::IsBinaryContent(
     /* [in] */ IHttpUriRequest* request)
 {
     AutoPtr<ArrayOf<IHeader*> > headers;

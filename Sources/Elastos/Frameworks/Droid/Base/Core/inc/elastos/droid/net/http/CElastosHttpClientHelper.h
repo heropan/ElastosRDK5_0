@@ -1,8 +1,8 @@
 
-#ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTHELPER_H__
-#define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTHELPER_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTHELPER_H__
+#define __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTHELPER_H__
 
-#include "_Elastos_Droid_Net_Http_CAndroidHttpClientHelper.h"
+#include "_Elastos_Droid_Net_Http_CElastosHttpClientHelper.h"
 
 using Org::Apache::Http::Entity::IAbstractHttpEntity;
 
@@ -11,7 +11,7 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-CarClass(CAndroidHttpClientHelper)
+CarClass(CElastosHttpClientHelper)
 {
 public:
     /**
@@ -24,7 +24,7 @@ public:
     CARAPI NewInstance(
         /* [in] */ const String& userAgent,
         /* [in] */ Elastos::Droid::Content::IContext* context,
-        /* [out] */ Elastos::Droid::Net::Http::IAndroidHttpClient** client);
+        /* [out] */ Elastos::Droid::Net::Http::IElastosHttpClient** client);
 
     /**
      * Create a new HttpClient with reasonable defaults (which you can update).
@@ -33,7 +33,7 @@ public:
      */
     CARAPI NewInstance(
         /* [in] */ const String& userAgent,
-        /* [out] */ Elastos::Droid::Net::Http::IAndroidHttpClient** client);
+        /* [out] */ Elastos::Droid::Net::Http::IElastosHttpClient** client);
 
     /**
      * Modifies a request to indicate to the server that we would like a
@@ -105,4 +105,4 @@ public:
 }
 }
 
-#endif // __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTHELPER_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTHELPER_H__

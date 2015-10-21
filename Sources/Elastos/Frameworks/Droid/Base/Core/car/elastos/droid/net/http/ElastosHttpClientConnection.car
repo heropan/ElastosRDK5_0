@@ -29,7 +29,7 @@ module
      * interface IHttpInetConnection;
      * interface IHttpConnection;
      */
-    interface IAndroidHttpClientConnection {
+    interface IElastosHttpClientConnection {
         /**
          * Bind socket and set HttpParams to AndroidHttpClientConnection
          * @param socket outgoing socket

@@ -73,7 +73,7 @@ public:
 
     virtual CARAPI OpenConnection(
         /* [in] */ Request* req,
-        /* [out] */ IAndroidHttpClientConnection** scheme) = 0;
+        /* [out] */ IElastosHttpClientConnection** scheme) = 0;
 
     /**
      * Prints request queue to log, for debugging.
@@ -151,7 +151,7 @@ public:
 
 protected:
     /** The low level connection */
-    AutoPtr<IAndroidHttpClientConnection> mHttpClientConnection;
+    AutoPtr<IElastosHttpClientConnection> mHttpClientConnection;
 
     /**
      * The server SSL certificate associated with this connection

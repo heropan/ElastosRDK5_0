@@ -128,7 +128,7 @@ public:
      */
     CARAPI OpenConnection(
         /* [in] */ Request* req,
-        /* [out] */ IAndroidHttpClientConnection** scheme);
+        /* [out] */ IElastosHttpClientConnection** scheme);
 
     /**
      * Closes the low level connection.
@@ -154,7 +154,7 @@ private:
 
     CARAPI CheckErrorAndClose(
         /* [in] */ ECode ec,
-        /* [in] */ IAndroidHttpClientConnection* connection);
+        /* [in] */ IElastosHttpClientConnection* connection);
 
 private:
     /**

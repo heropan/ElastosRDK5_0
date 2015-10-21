@@ -1,8 +1,8 @@
 
-#ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTCONNECTION_H__
-#define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTCONNECTION_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTCONNECTION_H__
+#define __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTCONNECTION_H__
 
-#include "_Elastos_Droid_Net_Http_CAndroidHttpClientConnection.h"
+#include "_Elastos_Droid_Net_Http_CElastosHttpClientConnection.h"
 
 using namespace Elastos::Core;
 using namespace Elastos::Net;
@@ -23,12 +23,12 @@ namespace Http {
  *
  * {@hide}
  */
-CarClass(CAndroidHttpClientConnection)
+CarClass(CElastosHttpClientConnection)
 {
 public:
-    CAndroidHttpClientConnection();
+    CElastosHttpClientConnection();
 
-    ~CAndroidHttpClientConnection();
+    ~CElastosHttpClientConnection();
 
     CARAPI constructor();
 
@@ -174,4 +174,4 @@ private:
 }
 }
 
-#endif // __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTCONNECTION_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTCONNECTION_H__

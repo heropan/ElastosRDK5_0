@@ -78,8 +78,8 @@ module
     merge("net/WifiKey.car");
     merge("net/WifiLinkQualityInfo.car");
 
-    merge("net/http/AndroidHttpClient.car");
-    merge("net/http/AndroidHttpClientConnection.car");
+    merge("net/http/ElastosHttpClient.car");
+    merge("net/http/ElastosHttpClientConnection.car");
     merge("net/http/CertificateChainValidator.car");
     merge("net/http/DelegatingSSLSession.car");
     merge("net/http/ErrorStrings.car");

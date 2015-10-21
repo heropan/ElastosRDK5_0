@@ -292,7 +292,7 @@ Boolean Connection::OpenHttpConnection(
 
     // reset the certificate to null before opening a connection
     mCertificate = NULL;
-    ECode eResult = OpenConnection(req, (IAndroidHttpClientConnection**)&mHttpClientConnection);
+    ECode eResult = OpenConnection(req, (IElastosHttpClientConnection**)&mHttpClientConnection);
     if (mHttpClientConnection != NULL) {
         // TODO:
         // mHttpClientConnection->SetSocketTimeout(SOCKET_TIMEOUT);

@@ -76,14 +76,14 @@ HttpConnection::HttpConnection(
 
 ECode HttpConnection::OpenConnection(
     /* [in] */ Request* req,
-    /* [out] */ IAndroidHttpClientConnection** connection)
+    /* [out] */ IElastosHttpClientConnection** connection)
 {
     // Update the certificate info (connection not secure - set to null)
     AutoPtr<IEventHandler> eventHandler = req->GetEventHandler();
     mCertificate = NULL;
     eventHandler->Certificate(mCertificate);
 
-    AutoPtr<IAndroidHttpClientConnection> conn;
+    AutoPtr<IElastosHttpClientConnection> conn;
     // TODO:
     // CCAndroidHttpClientConnection::New((IAndroidHttpClientConnection**)&conn);
     AutoPtr<IBasicHttpParams> params;

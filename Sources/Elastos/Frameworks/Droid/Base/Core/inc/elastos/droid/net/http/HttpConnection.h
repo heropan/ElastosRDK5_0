@@ -70,7 +70,7 @@ public:
      */
     CARAPI OpenConnection(
         /* [in] */ Request* req,
-        /* [out] */ IAndroidHttpClientConnection** scheme);
+        /* [out] */ IElastosHttpClientConnection** scheme);
 
     /**
      * Restart a secure connection suspended waiting for user interaction.
