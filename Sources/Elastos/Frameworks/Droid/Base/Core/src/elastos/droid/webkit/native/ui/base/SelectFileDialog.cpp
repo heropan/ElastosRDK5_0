@@ -14,6 +14,7 @@ using Elastos::Core::CSystem;
 using Elastos::Core::IntegralToString;
 using Elastos::Core::CString;
 using Elastos::Utility::Arrays;
+using Elastos::Utility::CArrayList;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::IO::IFileHelper;
@@ -54,6 +55,8 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
     /* [in] */ ArrayOf<IInterface*>* params,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(params);
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // mFilePaths = new String[uris.length];
     // String[] displayNames = new String[uris.length];
@@ -67,24 +70,28 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
     assert(0);
     *result = NULL;
     mFilePaths = ArrayOf<String>::Alloc(params->GetLength());
-    AutoPtr< ArrayOf<String> > dispalyNames = ArrayOf<String>::Alloc(params->GetLength());
-    AutoPtr<ICharSequence> charSequecneTmp;
-    String sTmp;
-    AutoPtr<IUri> uriTmp;
-    for (Int32 i = 0; i < params->GetLength(); ++i) {
-        charSequecneTmp = ICharSequence::Probe((*params)[i]);
-        charSequecneTmp->ToString(&sTmp);
-        (*mFilePaths)[i] = sTmp;
+    AutoPtr<IList> dispalyNames;
+    CArrayList::New(params->GetLength(), (IList**)&dispalyNames);
 
-        uriTmp = IUri::Probe((*params)[i]);
-        assert(0); // java source will return a array but here out param is only one
-        (*dispalyNames)[i] = ContentUriUtils::GetDisplayName(uriTmp, mContentResolver, IMediaStoreMediaColumns::DISPLAY_NAME);
+    String sTmp;
+    for (Int32 i = 0; i < params->GetLength(); ++i) {
+        AutoPtr<ICharSequence> charSequecneTmp = ICharSequence::Probe((*params)[i]);
+        charSequecneTmp->ToString(&sTmp);
+        mFilePaths->Set(i, sTmp);
+
+        AutoPtr<IUri> uriTmp = IUri::Probe((*params)[i]);
+        sTmp = ContentUriUtils::GetDisplayName(uriTmp, mContentResolver, IMediaStoreMediaColumns::DISPLAY_NAME);
+        AutoPtr<ICharSequence> charSequenceTmp1;
+        CString::New(sTmp, (ICharSequence**)&charSequenceTmp1);
+        dispalyNames->Set(i, charSequenceTmp1);
     }
+
+    *result = dispalyNames->Probe(EIID_IInterface);
     return NOERROR;
 }
 
 ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
-    /* [in] */ ArrayOf<String>* result)
+    /* [in] */ IInterface* result)
 {
     VALIDATE_NOT_NULL(result);
     // ==================before translated======================
@@ -94,7 +101,13 @@ ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
 
     assert(NULL == mOwner);
     if (!mIsMultiple) {
-        mOwner->NativeOnFileSelected(mOwner->mNativeSelectFileDialog, (*mFilePaths)[0], (*result)[0]);
+        AutoPtr<IList> list = IList::Probe(result);
+        AutoPtr<IInterface> interfaceTmp;
+        list->Get(0, (IInterface**)&interfaceTmp);
+        AutoPtr<ICharSequence> charSequecneTmp = ICharSequence::Probe(interfaceTmp);
+        String displayName;
+        charSequecneTmp->ToString(&displayName);
+        mOwner->NativeOnFileSelected(mOwner->mNativeSelectFileDialog, (*mFilePaths)[0], displayName);
     }
     return NOERROR;
 }
@@ -536,8 +549,7 @@ Boolean SelectFileDialog::AcceptSpecificType(
     AutoPtr<IInterface> interfaceTmp;
     AutoPtr<ICharSequence> charSequenceTmp;
     String type;
-    for (Int32 i=0; i<size; ++i)
-    {
+    for (Int32 i=0; i<size; ++i) {
         mFileTypes->Get(i, (IInterface**)&interfaceTmp);
         charSequenceTmp = ICharSequence::Probe(interfaceTmp);
         charSequenceTmp->ToString(&type);

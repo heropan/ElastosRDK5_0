@@ -276,9 +276,9 @@ ECode ColorPickerAdvanced::UpdateHueGradient()
     CColor::AcquireSingleton((IColor**)&color);
     Int32 colorTemp = 0;
     for (Int32 i = 0; i < HUE_COLOR_COUNT; ++i) {
-        (*tempHsvValues)[0] = i * 60.0f;
+        tempHsvValues->Set(0, i * 60.0f);
         color->HSVToColor(tempHsvValues, &colorTemp);
-        (*newColors)[i] = colorTemp;
+        newColors->Set(i, colorTemp);
     }
     mHueDetails->SetGradientColors(newColors);
     return NOERROR;

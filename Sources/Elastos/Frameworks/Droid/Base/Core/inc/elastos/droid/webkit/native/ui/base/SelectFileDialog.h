@@ -66,7 +66,7 @@ private:
 
         // @Override
         CARAPI OnPostExecute(
-            /* [in] */ ArrayOf<String>* result);
+            /* [in] */ IInterface* result);
 
     public:
         SelectFileDialog* mOwner;

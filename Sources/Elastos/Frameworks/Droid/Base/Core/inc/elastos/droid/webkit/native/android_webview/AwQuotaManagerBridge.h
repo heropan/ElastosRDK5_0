@@ -39,7 +39,7 @@ public:
             /* [in] */ ArrayOf<Int64>* usages,
             /* [in] */ ArrayOf<Int64>* quotas);
 
-    private:
+    public:
         // Origin, usage, and quota data in parallel arrays of same length.
         AutoPtr<ArrayOf<String> > mOrigins;
         AutoPtr<ArrayOf<Int64> > mUsages;

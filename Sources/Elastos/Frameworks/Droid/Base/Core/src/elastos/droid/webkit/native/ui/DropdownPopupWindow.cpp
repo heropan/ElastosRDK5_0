@@ -213,7 +213,7 @@ ECode DropdownPopupWindow::Show()
     assert(0);
     // An ugly hack to keep the popup from expanding on top of the keyboard.
     //SetInputMethodMode(INPUT_METHOD_NEEDED);
-    Int32 contentWidth = MeasureContentWidth();
+    //Int32 contentWidth = MeasureContentWidth();
 
     AutoPtr<IResources> resources;
     mContext->GetResources((IResources**)&resources);
