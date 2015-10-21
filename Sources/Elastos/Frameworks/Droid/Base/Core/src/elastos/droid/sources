@@ -24,6 +24,7 @@ SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 
+LIBRARIES += app/app.lib
 LIBRARIES += animation/animation.lib
 LIBRARIES += content/content.lib
 LIBRARIES += database/database.lib
@@ -45,7 +46,6 @@ LIBRARIES += transition/transition.lib
 LIBRARIES += utility/utility.lib
 
 // LIBRARIES += wifi/wifi.lib
-// LIBRARIES += app/app.lib
 // LIBRARIES += view/view.lib
 // LIBRARIES += widget/widget.lib
 // LIBRARIES += appwidget/appwidget.lib

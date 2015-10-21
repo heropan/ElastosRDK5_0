@@ -78,11 +78,12 @@ module
     merge("os/storage/StorageManager.car");
     merge("os/storage/StorageVolume.car");
 
+    merge("internal/utility/XmlUtils.car");
+
     using interface Elastos.Core.IClassLoader;
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.IThread;
     using interface Elastos.Core.IRunnable;
-    // using interface Elastos.IO.IFile;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFlushable;
     using interface Elastos.IO.IInputStream;
@@ -91,10 +92,8 @@ module
     using interface Elastos.IO.IFileOutputStream;
     using interface Elastos.Utility.IUUID;
 
-    // interface Elastos.Droid.Os.ILooper;
-    //interface Elastos.Droid.Os.IUserHandle;
-    // interface Elastos.Droid.Content.IContext;
-    // interface Elastos.Droid.Internal.Os.IDropBoxManagerService;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Internal.Utility.IXmlUtilsWriteMapCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -394,6 +393,21 @@ module
 
         interface IPatternMatcher;
         interface IParcelable;
+    }
+
+    class CPersistableBundle {
+        constructor();
+
+        constructor(
+           [in] Int32 capacity);
+
+        constructor(
+           [in] IPersistableBundle* b);
+
+        interface IPersistableBundle;
+        interface ICloneable;
+        interface IParcelable;
+        interface IXmlUtilsWriteMapCallback;
     }
 
     class CProcessStartResult {

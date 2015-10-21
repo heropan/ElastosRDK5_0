@@ -81,8 +81,6 @@ module
     //
     // merge("app/IBatteryStats.car");
     // merge("app/IUsageStats.car");
-    // merge("app/IThumbnailReceiver.car");
-    // merge("app/IThumbnailRetriever.car");
     // merge("app/PermissionController.car");
     // merge("app/ActionBarImpl.car");
     // merge("app/AlertController.car");
@@ -123,14 +121,13 @@ module
     merge("app/backup/SharedPreferencesBackupHelper.car");
     merge("app/backup/WallpaperBackupHelper.car");
 
-//     using interface Elastos.Utility.IObjectStringMap;
-//     using interface Elastos.Utility.IObjectContainer;
+    interface Elastos.Droid.Os.IBundle;
+
 //     using interface Elastos.Core.IClassLoader;
 //     using interface Elastos.Core.ICharSequence;
 //     using interface Elastos.Core.IRunnable;
 //     interface Elastos.Droid.Os.IHandler;
 //     interface Elastos.Droid.Os.IBinder;
-//     interface Elastos.Droid.Os.IBundle;
 //     interface Elastos.Droid.Os.ILooper;
 //     interface Elastos.Droid.Os.IParcelFileDescriptor;
 //     interface Elastos.Droid.Os.IRemoteCallback;
@@ -167,9 +164,9 @@ module
 //     interface Elastos.Droid.App.IDialog;
 //     interface Elastos.Droid.Net.IUri;
 
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace App {
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
 
 //     [local]
 //     class CContextImpl {
@@ -900,14 +897,18 @@ module
 //         interface IFragmentManagerImplHelper;
 //     }
 
-//     class CActivityOptions {
-//         constructor();
+    class CActivityOptions {
+        constructor();
 
-//         constructor(
-//             [in] IBundle* opts);
+        constructor(
+            [in] IBundle* opts);
 
-//         interface IActivityOptions;
-//     }
+        interface IActivityOptions;
+    }
+
+    singleton class CActivityOptionsHelper {
+        interface IActivityOptionsHelper;
+    }
 
 //     class CActivityOptionsAnimationStartedListener {
 //         constructor(
@@ -916,10 +917,6 @@ module
 
 //         interface IRemoteCallback;
 //         interface IBinder;
-//     }
-
-//     singleton class CActivityOptionsHelper {
-//         interface IActivityOptionsHelper;
 //     }
 
 // //    class CPendingIntent {
@@ -1044,89 +1041,8 @@ module
 //         interface IDownloadManagerQuery;
 //     }
 
-//     } // namespace App
-//     } // namespace Droid
-//     } // namespace Elastos
-
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Internal {
-//     namespace App {
-
-//     [local]
-//     class CActionBarImpl {
-//         constructor(
-//             [in] IActivity* activity);
-
-//         constructor(
-//             [in] IDialog* dialog);
-
-//         interface IActionBarImpl;
-//     }
-
-//     [local]
-//     class CDisableCarModeActivity {
-//         constructor();
-
-//         interface IActivity;
-//     }
-
-
-//     [local]
-//     class CAlertController {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IDialogInterface* di,
-//             [in] IWindow* window);
-
-//         interface IAlertController;
-//     }
-
-//     [local]
-//     class CAlertControllerAlertParams {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IAlertControllerAlertParams;
-//     }
-
-//     class CMediaRouteChooserDialogFragment {
-//         constructor();
-
-//         interface IMediaRouteChooserDialogFragment;
-//     }
-
-//     class CHeavyWeightSwitcherActivity {
-//         interface IActivity;
-//         interface IHeavyWeightSwitcherActivity;
-//     }
-
-//     class CExternalMediaFormatActivity {
-//         interface IActivity;
-//         interface IDialogInterfaceOnClickListener;
-//     }
-
-//     } // namespace App
-//     } // namespace Internal
-//     } // namespace Droid
-//     } // namespace Elastos
-
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace Internal {
-//     namespace Backup {
-
-//     [local]
-//     class CLocalTransport {
-//         constructor(
-//             [in] IContext* context);
-//         interface IIBackupTransport;
-//         interface IBinder;
-//     }
-
-//     } // namespace Backup
-//     } // namespace Internal
-//     } // namespace Droid
-//     } // namespace Elastos
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
 
 }

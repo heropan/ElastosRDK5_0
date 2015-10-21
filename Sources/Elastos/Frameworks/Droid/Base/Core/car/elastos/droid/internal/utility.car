@@ -22,7 +22,6 @@ module
     merge("utility/TypedProperties.car");
     merge("utility/VirtualRefBasePtr.car");
     merge("utility/WithFramework.car");
-    merge("utility/XmlUtils.car");
 
     using interface Elastos.IO.IWriter;
     using interface Org.Xmlpull.V1.IXmlSerializer;

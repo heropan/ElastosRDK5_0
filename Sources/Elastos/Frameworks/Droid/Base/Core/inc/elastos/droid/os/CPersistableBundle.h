@@ -2,11 +2,14 @@
 #define __ELASTOS_DROID_OS_CPERSISTABLE_BUNDLE_H__
 
 #include "_Elastos_Droid_Os_CPersistableBundle.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/BaseBundle.h"
 
 using Elastos::Droid::Internal::Utility::IXmlUtilsWriteMapCallback;
 using Org::Xmlpull::V1::IXmlSerializer;
 using Org::Xmlpull::V1::IXmlPullParser;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::IMap;
 
 namespace Elastos {
@@ -76,7 +79,7 @@ public:
      * values to which it refers are copied by reference.
      */
     CARAPI Clone(
-        /* [out] */ IInterface* obj);
+        /* [out] */ IInterface** obj);
 
     /**
      * Inserts a PersistableBundle value into the mapping of this Bundle, replacing
@@ -87,6 +90,10 @@ public:
      */
     CARAPI PutPersistableBundle(
         /* [in] */ const String& key,
+        /* [in] */ IPersistableBundle* value);
+
+    CARAPI PutPersistableBundle(
+        /* [in] */ ICharSequence* key,
         /* [in] */ IPersistableBundle* value);
 
     /**
@@ -101,8 +108,12 @@ public:
         /* [in] */ const String& key,
         /* [out] */ IPersistableBundle** value);
 
+    CARAPI GetPersistableBundle(
+        /* [in] */ ICharSequence* key,
+        /* [out] */ IPersistableBundle** value);
+
     CARAPI WriteUnknownObject(
-        /* [in] */ IInterface v,
+        /* [in] */ IInterface* v,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out);
 

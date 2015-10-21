@@ -1,13 +1,20 @@
 
 #include "elastos/droid/app/CActivityOptions.h"
-#include "elastos/droid/app/CActivityOptionsAnimationStartedListener.h"
+// #include "elastos/droid/app/CActivityOptionsAnimationStartedListener.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/utility/CPairHelper.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/CoreUtils.h>
 
 using Elastos::Droid::Os::EIID_IRemoteCallback;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::App::CActivityOptionsAnimationStartedListener;
+using Elastos::Droid::Utility::IPairHelper;
+using Elastos::Droid::Utility::CPairHelper;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -34,6 +41,25 @@ ECode AnimationStartedListenerRunnable::Run()
 //=============================================================================
 //              CActivityOptions
 //=============================================================================
+const String CActivityOptions::TAG("CActivityOptions");
+
+/**
+ * For Activity transitions, the calling Activity's TransitionListener used to
+ * notify the called Activity when the shared element and the exit transitions
+ * complete.
+ */
+const String CActivityOptions::KEY_TRANSITION_COMPLETE_LISTENER("android:transitionCompleteListener");
+
+const String CActivityOptions::KEY_TRANSITION_IS_RETURNING("android:transitionIsReturning");
+const String CActivityOptions::KEY_TRANSITION_SHARED_ELEMENTS("android:sharedElementNames");
+const String CActivityOptions::KEY_RESULT_DATA("android:resultData");
+const String CActivityOptions::KEY_RESULT_CODE("android:resultCode");
+const String CActivityOptions::KEY_EXIT_COORDINATOR_INDEX("android:exitCoordinatorIndex");
+
+CAR_INTERFACE_IMPL(CActivityOptions, Object, IActivityOptions)
+
+CAR_OBJECT_IMPL(CActivityOptions)
+
 ECode CActivityOptions::MakeCustomAnimation(
     /* [in] */ IContext* context,
     /* [in] */ Int32 enterResId,
@@ -64,19 +90,20 @@ ECode CActivityOptions::MakeCustomAnimation(
     opts->SetAnimationType(IActivityOptions::ANIM_CUSTOM);
     opts->SetCustomEnterResId(enterResId);
     opts->SetCustomExitResId(exitResId);
-    ((CActivityOptions*)opts.Get())->SetListener(handler, listener);
+    ((CActivityOptions*)opts.Get())->SetOnAnimationStartedListener(handler, listener);
     *options = opts;
     REFCOUNT_ADD(*options);
     return NOERROR;
 }
 
-ECode CActivityOptions::SetListener(
+ECode CActivityOptions::SetOnAnimationStartedListener(
     /* [in] */ IHandler* handler,
     /* [in] */ IActivityOptionsOnAnimationStartedListener* listener)
 {
+    assert(0 && "TODO");
     if (listener != NULL) {
         mAnimationStartedListener = NULL;
-        CActivityOptionsAnimationStartedListener::New(handler, listener, (IRemoteCallback**)&mAnimationStartedListener);
+        // CActivityOptionsAnimationStartedListener::New(handler, listener, (IRemoteCallback**)&mAnimationStartedListener);
     }
     return NOERROR;
 }
@@ -85,8 +112,8 @@ ECode CActivityOptions::MakeScaleUpAnimation(
     /* [in] */ IView* source,
     /* [in] */ Int32 startX,
     /* [in] */ Int32 startY,
-    /* [in] */ Int32 startWidth,
-    /* [in] */ Int32 startHeight,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
     /* [out] */ IActivityOptions** options)
 {
     VALIDATE_NOT_NULL(options);
@@ -105,8 +132,8 @@ ECode CActivityOptions::MakeScaleUpAnimation(
     opts->SetAnimationType(IActivityOptions::ANIM_SCALE_UP);
     opts->SetStartX(x + startX);
     opts->SetStartY(y + startY);
-    opts->SetStartWidth(startWidth);
-    opts->SetStartHeight(startHeight);
+    opts->SetWidth(width);
+    opts->SetHeight(height);
     *options = opts;
     REFCOUNT_ADD(*options);
     return NOERROR;
@@ -171,9 +198,190 @@ ECode CActivityOptions::MakeThumbnailAnimation(
     opts->SetThumbnail(thumbnail);
     opts->SetStartX(x + startX);
     opts->SetStartY(y + startY);
-    ((CActivityOptions*)opts.Get())->SetListener(handler, listener);
+    ((CActivityOptions*)opts.Get())->SetOnAnimationStartedListener(handler, listener);
     *options = opts;
     REFCOUNT_ADD(*options);
+    return NOERROR;
+}
+
+ECode CActivityOptions::MakeThumbnailAspectScaleUpAnimation(
+    /* [in] */ IView* source,
+    /* [in] */ IBitmap* thumbnail,
+    /* [in] */ Int32 startX,
+    /* [in] */ Int32 startY,
+    /* [in] */ Int32 targetWidth,
+    /* [in] */ Int32 targetHeight,
+    /* [in] */ IActivityOptionsOnAnimationStartedListener* listener,
+    /* [out] */ IActivityOptions** options)
+{
+    return MakeAspectScaledThumbnailAnimation(source, thumbnail, startX, startY,
+        targetWidth, targetHeight, listener, TRUE, options);
+}
+
+ECode CActivityOptions::MakeThumbnailAspectScaleDownAnimation(
+    /* [in] */ IView* source,
+    /* [in] */ IBitmap* thumbnail,
+    /* [in] */ Int32 startX,
+    /* [in] */ Int32 startY,
+    /* [in] */ Int32 targetWidth,
+    /* [in] */ Int32 targetHeight,
+    /* [in] */ IActivityOptionsOnAnimationStartedListener* listener,
+    /* [out] */ IActivityOptions** options)
+{
+    return MakeAspectScaledThumbnailAnimation(source, thumbnail, startX, startY,
+            targetWidth, targetHeight, listener, FALSE, options);
+}
+
+ECode CActivityOptions::MakeAspectScaledThumbnailAnimation(
+    /* [in] */ IView* source,
+    /* [in] */ IBitmap* thumbnail,
+    /* [in] */ Int32 startX,
+    /* [in] */ Int32 startY,
+    /* [in] */ Int32 targetWidth,
+    /* [in] */ Int32 targetHeight,
+    /* [in] */ IActivityOptionsOnAnimationStartedListener* listener,
+    /* [in] */ Boolean scaleUp,
+    /* [out] */ IActivityOptions** options)
+{
+    VALIDATE_NOT_NULL(options)
+    AutoPtr<CActivityOptions> opts;
+    CActivityOptions::NewByFriend((CActivityOptions**)&opts);
+
+    AutoPtr<IContext> ctx;
+    source->GetContext((IContext**)&ctx);
+    ctx->GetPackageName(&opts->mPackageName);
+
+    opts->mAnimationType =
+        scaleUp ?
+            IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_UP :
+            IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_DOWN;
+    opts->mThumbnail = thumbnail;
+    Int32 x, y;
+    source->GetLocationOnScreen(&x, &y);
+    opts->mStartX = x + startX;
+    opts->mStartY = y + startY;
+    opts->mWidth = targetWidth;
+    opts->mHeight = targetHeight;
+    AutoPtr<IHandler> h;
+    source->GetHandler((IHandler**)&h);
+    opts->SetOnAnimationStartedListener(h, listener);
+    *options = opts;
+    REFCOUNT_ADD(*options)
+    return NOERROR;
+}
+
+ECode CActivityOptions::MakeSceneTransitionAnimation(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IView* sharedElement,
+    /* [in] */ const String& sharedElementName,
+    /* [out] */ IActivityOptions** options)
+{
+    AutoPtr<ICharSequence> csq = CoreUtils::Convert(sharedElementName);
+    AutoPtr<IPairHelper> helper;
+    CPairHelper::AcquireSingleton((IPairHelper**)&helper);
+    AutoPtr<IPair> pair;
+    helper->Create(TO_IINTERFACE(sharedElement), TO_IINTERFACE(csq), (IPair**)&pair);
+    AutoPtr< ArrayOf<IPair*> > arrays = ArrayOf<IPair*>::Alloc(1);
+    arrays->Set(0, pair);
+    return MakeSceneTransitionAnimation(activity, arrays, options);
+}
+
+ECode CActivityOptions::MakeSceneTransitionAnimation(
+    /* [in] */ IActivity* activity,
+    /* [in] */ ArrayOf<IPair*>* sharedElements,
+    /* [out] */ IActivityOptions** options)
+{
+    VALIDATE_NOT_NULL(options)
+    *options = NULL;
+
+    AutoPtr<CActivityOptions> opts;
+    CActivityOptions::NewByFriend((CActivityOptions**)&opts);
+    AutoPtr<IWindow> window;
+    activity->GetWindow((IWindow**)&window);
+    Boolean bval;
+    window->HasFeature(IWindow::FEATURE_ACTIVITY_TRANSITIONS, &bval);
+    if (!bval) {
+        opts->mAnimationType = IActivityOptions::ANIM_DEFAULT;
+        *options = (IActivityOptions*)opts;
+        return NOERROR;
+    }
+
+    opts->mAnimationType = IActivityOptions::ANIM_SCENE_TRANSITION;
+
+    AutoPtr<IArrayList> names, views;
+    CArrayList::New((IArrayList**)&names);
+    CArrayList::New((IArrayList**)&views);
+
+    if (sharedElements != NULL) {
+        for (Int32 i = 0; i < sharedElements->GetLength(); i++) {
+            IPair* sharedElement = IPair::Probe((*sharedElements)[i]); //Pair<View, String>
+            AutoPtr<IInterface> first, second;
+            sharedElement->GetFirst((IInterface**)&first);
+            sharedElement->GetSecond((IInterface**)&second);
+
+            String sharedElementName = Object::ToString(second);
+            if (sharedElementName.IsNull()) {
+                // throw new IllegalArgumentException("Shared element name must not be null");
+                Logger::E(TAG, "Shared element name must not be null");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+
+            names->Add(second);
+            IView* view = IView::Probe(first);
+            if (view == NULL) {
+                Logger::E(TAG, "Shared element must not be null");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
+            views->Add(first);
+        }
+    }
+
+    // ExitTransitionCoordinator exit = new ExitTransitionCoordinator(activity, names, names,
+    //         views, false);
+    // opts->mTransitionReceiver = exit;
+    // opts->mSharedElementNames = names;
+    // opts->mIsReturning = false;
+    // opts->mExitCoordinatorIndex =
+    //         activity.mActivityTransitionState.addExitTransitionCoordinator(exit);
+    // return opts;
+    return NOERROR;
+}
+
+ECode CActivityOptions::MakeSceneTransitionAnimation(
+    /* [in] */ IActivity* activity,
+    /* [in] */ ExitTransitionCoordinator* exitCoordinator,
+    /* [in] */ IArrayList* sharedElementNames,
+    /* [in] */ Int32 resultCode,
+    /* [in] */ IIntent* resultData,
+    /* [out] */ IActivityOptions** options)
+{
+    // ActivityOptions opts = new ActivityOptions();
+    // opts.mAnimationType = ANIM_SCENE_TRANSITION;
+    // opts.mSharedElementNames = sharedElementNames;
+    // opts.mTransitionReceiver = exitCoordinator;
+    // opts.mIsReturning = true;
+    // opts.mResultCode = resultCode;
+    // opts.mResultData = resultData;
+    // opts.mExitCoordinatorIndex =
+    //         activity.mActivityTransitionState.addExitTransitionCoordinator(exitCoordinator);
+    // return opts;
+    return NOERROR;
+}
+
+ECode CActivityOptions::MakeTaskLaunchBehind(
+    /* [out] */ IActivityOptions** options)
+{
+    // final ActivityOptions opts = new ActivityOptions();
+    // opts.mAnimationType = ANIM_LAUNCH_TASK_BEHIND;
+    // return opts;
+    return NOERROR;
+}
+
+ECode CActivityOptions::GetLaunchTaskBehind(
+    /* [out] */ Boolean* bebind)
+{
+    VALIDATE_NOT_NULL(bebind)
+    *bebind = mAnimationType == IActivityOptions::ANIM_LAUNCH_TASK_BEHIND;
     return NOERROR;
 }
 
@@ -183,8 +391,14 @@ CActivityOptions::CActivityOptions()
     , mCustomExitResId(0)
     , mStartX(0)
     , mStartY(0)
-    , mStartWidth(0)
-    , mStartHeight(0)
+    , mWidth(0)
+    , mHeight(0)
+    , mIsReturning(FALSE)
+    , mResultCode(0)
+    , mExitCoordinatorIndex(0)
+{}
+
+CActivityOptions::~CActivityOptions()
 {}
 
 ECode CActivityOptions::constructor()
@@ -195,7 +409,7 @@ ECode CActivityOptions::constructor()
 ECode CActivityOptions::constructor(
     /* [in] */ IBundle* opts)
 {
-    assert(opts != NULL);
+    VALIDATE_NOT_NULL(opts)
 
     opts->GetString(IActivityOptions::KEY_PACKAGE_NAME, &mPackageName);
     opts->GetInt32(IActivityOptions::KEY_ANIM_TYPE, &mAnimationType);
@@ -211,20 +425,37 @@ ECode CActivityOptions::constructor(
     else if (mAnimationType == IActivityOptions::ANIM_SCALE_UP) {
         opts->GetInt32(IActivityOptions::KEY_ANIM_START_X, 0, &mStartX);
         opts->GetInt32(IActivityOptions::KEY_ANIM_START_Y, 0, &mStartY);
-        opts->GetInt32(IActivityOptions::KEY_ANIM_START_WIDTH, 0, &mStartWidth);
-        opts->GetInt32(IActivityOptions::KEY_ANIM_START_HEIGHT, 0, &mStartHeight);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_WIDTH, 0, &mWidth);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_HEIGHT, 0, &mHeight);
     }
-    else if (mAnimationType == IActivityOptions::ANIM_THUMBNAIL_SCALE_UP ||
-            mAnimationType == IActivityOptions::ANIM_THUMBNAIL_SCALE_DOWN) {
+    else if (mAnimationType == IActivityOptions::ANIM_THUMBNAIL_SCALE_UP
+        || mAnimationType == IActivityOptions::ANIM_THUMBNAIL_SCALE_DOWN
+        || mAnimationType == IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_UP
+        || mAnimationType == IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_DOWN
+    ) {
         AutoPtr<IParcelable> parcelable;
         opts->GetParcelable(IActivityOptions::KEY_ANIM_THUMBNAIL, (IParcelable**)&parcelable);
         mThumbnail = IBitmap::Probe(parcelable);
         opts->GetInt32(IActivityOptions::KEY_ANIM_START_X, 0, &mStartX);
         opts->GetInt32(IActivityOptions::KEY_ANIM_START_Y, 0, &mStartY);
-
+        opts->GetInt32(IActivityOptions::KEY_ANIM_WIDTH, 0, &mWidth);
+        opts->GetInt32(IActivityOptions::KEY_ANIM_START_Y, 0, &mHeight);
         AutoPtr<IBinder> binder;
-        opts->GetIBinder(IActivityOptions::KEY_ANIM_START_LISTENER, (IBinder**)&binder);
+        opts->GetBinder(IActivityOptions::KEY_ANIM_START_LISTENER, (IBinder**)&binder);
         mAnimationStartedListener = IRemoteCallback::Probe(binder);
+    }
+    else if (mAnimationType == IActivityOptions::ANIM_SCENE_TRANSITION) {
+        AutoPtr<IParcelable> parcelable;
+        opts->GetParcelable(KEY_TRANSITION_COMPLETE_LISTENER, (IParcelable**)&parcelable);
+        mTransitionReceiver = IResultReceiver::Probe(parcelable);
+
+        opts->GetBoolean(KEY_TRANSITION_IS_RETURNING, FALSE, &mIsReturning);
+        opts->GetStringArrayList(KEY_TRANSITION_SHARED_ELEMENTS, (IArrayList**)&mSharedElementNames);
+        parcelable = NULL;
+        opts->GetParcelable(KEY_RESULT_DATA, (IParcelable**)&parcelable);
+        mResultData = IIntent::Probe(parcelable);
+        opts->GetInt32(KEY_RESULT_CODE, &mResultCode);
+        opts->GetInt32(KEY_EXIT_COORDINATOR_INDEX, &mExitCoordinatorIndex);
     }
     return NOERROR;
 }
@@ -342,34 +573,34 @@ ECode CActivityOptions::SetStartY(
 }
 
 /** @hide */
-ECode CActivityOptions::GetStartWidth(
+ECode CActivityOptions::GetWidth(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width);
-    *width = mStartWidth;
+    *width = mWidth;
     return NOERROR;
 }
 
-ECode CActivityOptions::SetStartWidth(
+ECode CActivityOptions::SetWidth(
     /* [in] */ Int32 width)
 {
-    mStartWidth = width;
+    mWidth = width;
     return NOERROR;
 }
 
 /** @hide */
-ECode CActivityOptions::GetStartHeight(
+ECode CActivityOptions::GetHeight(
     /* [out] */ Int32* height)
 {
     VALIDATE_NOT_NULL(height);
-    *height = mStartHeight;
+    *height = mHeight;
     return NOERROR;
 }
 
-ECode CActivityOptions::SetStartHeight(
+ECode CActivityOptions::SetHeight(
     /* [in] */ Int32 height)
 {
-    mStartHeight = height;
+    mHeight = height;
     return NOERROR;
 }
 
@@ -390,6 +621,14 @@ ECode CActivityOptions::SetOnAnimationStartListener(
     return NOERROR;
 }
 
+ECode CActivityOptions::GetExitCoordinatorKey(
+    /* [out] */ Int32* key)
+{
+    VALIDATE_NOT_NULL(key)
+    *key = mExitCoordinatorIndex;
+    return NOERROR;
+}
+
 ECode CActivityOptions::Abort()
 {
    if (mAnimationStartedListener != NULL) {
@@ -398,6 +637,47 @@ ECode CActivityOptions::Abort()
         // } catch (RemoteException e) {
         // }
     }
+    return NOERROR;
+}
+
+ECode CActivityOptions::IsReturning(
+    /* [out] */ Boolean* bval)
+{
+    return mIsReturning;
+}
+
+ECode CActivityOptions::GetSharedElementNames(
+    /* [out] */ IArrayList** list)
+{
+    VALIDATE_NOT_NULL(list)
+    *list = mSharedElementNames;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
+}
+
+ECode CActivityOptions::GetResultReceiver(
+    /* [out] */ IResultReceiver** receiver)
+{
+    VALIDATE_NOT_NULL(receiver)
+    *receiver = mTransitionReceiver;
+    REFCOUNT_ADD(*receiver)
+    return NOERROR;
+}
+
+ECode CActivityOptions::GetResultCode(
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    *code = mResultCode;
+    return NOERROR;
+}
+
+ECode CActivityOptions::GetResultData(
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = mResultData;
+    REFCOUNT_ADD(*intent)
     return NOERROR;
 }
 
@@ -415,59 +695,75 @@ ECode CActivityOptions::Abort(
 ECode CActivityOptions::Update(
     /* [in] */ IActivityOptions* otherOptions)
 {
-    assert(otherOptions != NULL);
+    VALIDATE_NOT_NULL(otherOptions)
     String pkgName;
     otherOptions->GetPackageName(&pkgName);
     if (!pkgName.IsNull()) {
         mPackageName = pkgName;
     }
 
-    Int32 animationType;
-    otherOptions->GetAnimationType(&animationType);
-    AutoPtr<IRemoteCallback> callback;
-    otherOptions->GetOnAnimationStartListener((IRemoteCallback**)&callback);
-    switch (animationType) {
+    CActivityOptions* other = (CActivityOptions*)otherOptions;
+
+    mTransitionReceiver = NULL;
+    mSharedElementNames = NULL;
+    mIsReturning = FALSE;
+    mResultData = NULL;
+    mResultCode = 0;
+    mExitCoordinatorIndex = 0;
+    mAnimationType = other->mAnimationType;
+
+    switch (other->mAnimationType) {
         case IActivityOptions::ANIM_CUSTOM:
-            mAnimationType = animationType;
             otherOptions->GetCustomEnterResId(&mCustomEnterResId);
             otherOptions->GetCustomExitResId(&mCustomExitResId);
             mThumbnail = NULL;
-            if (callback != NULL) {
+            if (mAnimationStartedListener != NULL) {
                 // try {
-                    callback->SendResult(NULL);
+                    mAnimationStartedListener->SendResult(NULL);
                 // } catch (RemoteException e) {
                 // }
             }
-            mAnimationStartedListener = callback;
+            mAnimationStartedListener = other->mAnimationStartedListener;
             break;
+
         case IActivityOptions::ANIM_SCALE_UP:
-            mAnimationType = animationType;
             otherOptions->GetStartX(&mStartX);
             otherOptions->GetStartX(&mStartY);
-            otherOptions->GetStartWidth(&mStartWidth);
-            otherOptions->GetStartHeight(&mStartHeight);
-            if (callback != NULL) {
+            otherOptions->GetWidth(&mWidth);
+            otherOptions->GetHeight(&mHeight);
+            if (mAnimationStartedListener != NULL) {
                 // try {
-                    callback->SendResult(NULL);
+                    mAnimationStartedListener->SendResult(NULL);
                 // } catch (RemoteException e) {
                 // }
             }
-            mAnimationStartedListener = NULL;
             break;
+
         case IActivityOptions::ANIM_THUMBNAIL_SCALE_UP:
         case IActivityOptions::ANIM_THUMBNAIL_SCALE_DOWN:
-            mAnimationType = animationType;
-            mThumbnail = NULL;
+        case IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_UP:
+        case IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_DOWN:
             otherOptions->GetThumbnail((IBitmap**)&mThumbnail);
             otherOptions->GetStartX(&mStartX);
             otherOptions->GetStartX(&mStartY);
-            if (callback != NULL) {
+            if (mAnimationStartedListener != NULL) {
                 // try {
-                    callback->SendResult(NULL);
+                    mAnimationStartedListener->SendResult(NULL);
                 // } catch (RemoteException e) {
                 // }
             }
-            mAnimationStartedListener = callback;
+            mAnimationStartedListener = other->mAnimationStartedListener;
+            break;
+
+        case IActivityOptions::ANIM_SCENE_TRANSITION:
+            mTransitionReceiver = other->mTransitionReceiver;
+            mSharedElementNames = other->mSharedElementNames;
+            mIsReturning = other->mIsReturning;
+            mThumbnail = NULL;
+            mAnimationStartedListener = NULL;
+            mResultData = other->mResultData;
+            mResultCode = other->mResultCode;
+            mExitCoordinatorIndex = other->mExitCoordinatorIndex;
             break;
     }
     return NOERROR;
@@ -477,6 +773,11 @@ ECode CActivityOptions::ToBundle(
     /* [out] */ IBundle** bundle)
 {
     VALIDATE_NOT_NULL(bundle);
+    *bundle = NULL;
+
+    if (mAnimationType == IActivityOptions::ANIM_DEFAULT) {
+        return NOERROR;
+    }
 
     AutoPtr<IBundle> b;
     CBundle::New((IBundle**)&b);
@@ -484,34 +785,63 @@ ECode CActivityOptions::ToBundle(
     if (!mPackageName.IsNull()) {
         b->PutString(IActivityOptions::KEY_PACKAGE_NAME, mPackageName);
     }
+
+    b->PutInt32(IActivityOptions::KEY_ANIM_TYPE, mAnimationType);
     switch (mAnimationType) {
-        case ANIM_CUSTOM:
-            b->PutInt32(IActivityOptions::KEY_ANIM_TYPE, mAnimationType);
+        case IActivityOptions::ANIM_CUSTOM:
             b->PutInt32(IActivityOptions::KEY_ANIM_ENTER_RES_ID, mCustomEnterResId);
             b->PutInt32(IActivityOptions::KEY_ANIM_EXIT_RES_ID, mCustomExitResId);
-            b->PutIBinder(IActivityOptions::KEY_ANIM_START_LISTENER,
-                mAnimationStartedListener ? (IBinder*)mAnimationStartedListener->Probe(EIID_IBinder) : NULL);
+            b->PutBinder(IActivityOptions::KEY_ANIM_START_LISTENER, IBinder::Probe(mAnimationStartedListener));
             break;
-        case ANIM_SCALE_UP:
-            b->PutInt32(IActivityOptions::KEY_ANIM_TYPE, mAnimationType);
+
+        case IActivityOptions::ANIM_SCALE_UP:
             b->PutInt32(IActivityOptions::KEY_ANIM_START_X, mStartX);
             b->PutInt32(IActivityOptions::KEY_ANIM_START_Y, mStartY);
-            b->PutInt32(IActivityOptions::KEY_ANIM_START_WIDTH, mStartWidth);
-            b->PutInt32(IActivityOptions::KEY_ANIM_START_HEIGHT, mStartHeight);
+            b->PutInt32(IActivityOptions::KEY_ANIM_WIDTH, mWidth);
+            b->PutInt32(IActivityOptions::KEY_ANIM_HEIGHT, mHeight);
             break;
-        case ANIM_THUMBNAIL_SCALE_UP:
-        case ANIM_THUMBNAIL_SCALE_DOWN:
-            b->PutInt32(IActivityOptions::KEY_ANIM_TYPE, mAnimationType);
-            b->PutParcelable(IActivityOptions::KEY_ANIM_THUMBNAIL, mThumbnail ? (IParcelable*)mThumbnail->Probe(EIID_IParcelable) : NULL);
+
+        case IActivityOptions::ANIM_THUMBNAIL_SCALE_UP:
+        case IActivityOptions::ANIM_THUMBNAIL_SCALE_DOWN:
+        case IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_UP:
+        case IActivityOptions::ANIM_THUMBNAIL_ASPECT_SCALE_DOWN:
+            b->PutParcelable(IActivityOptions::KEY_ANIM_THUMBNAIL, IParcelable::Probe(mThumbnail));
             b->PutInt32(IActivityOptions::KEY_ANIM_START_X, mStartX);
             b->PutInt32(IActivityOptions::KEY_ANIM_START_Y, mStartY);
-            b->PutIBinder(IActivityOptions::KEY_ANIM_START_LISTENER,
-                mAnimationStartedListener ? (IBinder*)mAnimationStartedListener->Probe(EIID_IBinder) : NULL);
+            b->PutBinder(IActivityOptions::KEY_ANIM_START_LISTENER,IBinder::Probe(mAnimationStartedListener));
+            break;
+
+        case IActivityOptions::ANIM_SCENE_TRANSITION:
+            if (mTransitionReceiver != NULL) {
+                b->PutParcelable(KEY_TRANSITION_COMPLETE_LISTENER, IParcelable::Probe(mTransitionReceiver));
+            }
+            b->PutBoolean(KEY_TRANSITION_IS_RETURNING, mIsReturning);
+            b->PutStringArrayList(KEY_TRANSITION_SHARED_ELEMENTS, mSharedElementNames);
+            b->PutParcelable(KEY_RESULT_DATA, IParcelable::Probe(mResultData));
+            b->PutInt32(KEY_RESULT_CODE, mResultCode);
+            b->PutInt32(KEY_EXIT_COORDINATOR_INDEX, mExitCoordinatorIndex);
             break;
     }
 
     *bundle = b;
     REFCOUNT_ADD(*bundle);
+    return NOERROR;
+}
+
+ECode CActivityOptions::ForTargetActivity(
+    /* [out] */ IActivityOptions** options)
+{
+    VALIDATE_NOT_NULL(options)
+    *options = NULL;
+
+    if (mAnimationType == IActivityOptions::ANIM_SCENE_TRANSITION) {
+        AutoPtr<IActivityOptions> result;
+        CActivityOptions::New((IActivityOptions**)&result);
+        result->Update(THIS_PROBE(IActivityOptions));
+        *options = result;
+        REFCOUNT_ADD(*options)
+    }
+
     return NOERROR;
 }
 

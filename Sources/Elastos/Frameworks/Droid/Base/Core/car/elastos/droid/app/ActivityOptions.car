@@ -159,17 +159,17 @@ module
             [in] Int32 y);
 
         /** @hide */
-        GetStartWidth(
+        GetWidth(
             [out] Int32* width);
 
-        SetStartWidth(
+        SetWidth(
             [in] Int32 width);
 
         /** @hide */
-        GetStartHeight(
+        GetHeight(
             [out] Int32* height);
 
-        SetStartHeight(
+        SetHeight(
             [in] Int32 height);
 
         /** @hide */
