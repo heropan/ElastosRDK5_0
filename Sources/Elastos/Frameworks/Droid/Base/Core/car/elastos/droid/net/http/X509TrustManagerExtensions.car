@@ -1,3 +1,4 @@
+
 module
 {
     using interface Elastos.Security.Cert.IX509Certificate;
@@ -8,7 +9,19 @@ module
     namespace Net {
     namespace Http {
 
-    [local]
+    /**
+     * X509TrustManager wrapper exposing Android-added features.
+     * <p>
+     * The checkServerTrusted method allows callers to perform additional
+     * verification of certificate chains after they have been successfully verified
+     * by the platform.
+     * </p>
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
+    [deprecated]
     interface IX509TrustManagerExtensions {
         /**
          * Verifies the given certificate chain.
@@ -21,10 +34,25 @@ module
          * @return the properly ordered chain used for verification as a list of X509Certificates.
          */
         CheckServerTrusted(
-            [in] ArrayOf<IX509Certificate*> chain,
+            [in] ArrayOf<IX509Certificate*>* chain,
             [in] String authType,
             [in] String host,
-            [out] IList** certificates);
+            [out] IList** result);
+
+        /**
+         * Checks whether a CA certificate is added by an user.
+         *
+         * <p>Since {@link X509TrustManager#checkServerTrusted} allows its parameter {@code chain} to
+         * chain up to user-added CA certificates, this method can be used to perform additional
+         * policies for user-added CA certificates.
+         *
+         * @return {@code true} to indicate that the certificate was added by the user, {@code false}
+         * otherwise.
+         */
+        IsUserAddedCertificate(
+            [in] IX509Certificate* cert,
+            [out] Boolean* result);
+
     }
 
     } // namespace Http
@@ -32,3 +60,4 @@ module
     } // namespace Droid
     } // namespace Elastos
 }
+

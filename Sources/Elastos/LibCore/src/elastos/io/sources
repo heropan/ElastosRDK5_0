@@ -8,6 +8,7 @@ include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../inc/
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
@@ -100,6 +101,7 @@ SOURCES += Int32ArrayBuffer.cpp
 SOURCES += Int64ArrayBuffer.cpp
 SOURCES += IoVec.cpp
 SOURCES += NIOAccess.cpp
+SOURCES += CNIOAccess.cpp
 SOURCES += PipeImpl.cpp
 SOURCES += SelectionKeyImpl.cpp
 SOURCES += SelectorImpl.cpp

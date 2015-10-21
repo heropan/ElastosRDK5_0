@@ -1,43 +1,41 @@
+
 module
 {
-    interface Elastos.Droid.Net.Http.ISslCertificate;
-
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    /**
+     * This class represents a set of one or more SSL errors and the associated SSL
+     * certificate.
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
     [local]
     interface ISslError {
-        /**
-         * Individual SSL errors (in the order from the least to the most severe):
-         */
-
         /**
          * The certificate is not yet valid
          */
         const Int32 SSL_NOTYETVALID = 0;
-
         /**
          * The certificate has expired
          */
         const Int32 SSL_EXPIRED = 1;
-
         /**
          * Hostname mismatch
          */
         const Int32 SSL_IDMISMATCH = 2;
-
         /**
          * The certificate authority is not trusted
          */
         const Int32 SSL_UNTRUSTED = 3;
-
         /**
          * The date of the certificate is invalid
          */
         const Int32 SSL_DATE_INVALID = 4;
-
         /**
          * A generic error occurred
          */
@@ -52,19 +50,19 @@ module
         // @Deprecated
         const Int32 SSL_MAX_ERROR = 6;
 
-         /**
+        /**
          * Gets the SSL certificate associated with this object.
          * @return The SSL certificate, non-null.
          */
         GetCertificate(
-            [out] ISslCertificate** certificate);
+            [out] ISslCertificate** result);
 
         /**
          * Gets the URL associated with this object.
          * @return The URL, non-null.
          */
         GetUrl(
-            [out] String* url);
+            [out] String* result);
 
         /**
          * Adds the supplied SSL error to the set.
@@ -83,7 +81,7 @@ module
          */
         HasError(
             [in] Int32 error,
-            [out] Boolean* hasError);
+            [out] Boolean* result);
 
         /**
          * Gets the most severe SSL error in this object's set of errors.
@@ -91,14 +89,8 @@ module
          * @return The most severe SSL error, or -1 if the set is empty.
          */
         GetPrimaryError(
-            [out] Int32* error);
+            [out] Int32* result);
 
-//        /**
-//         * Returns a string representation of this object.
-//         * @return A String representation of this object.
-//         */
-//        ToString(
-//            [out] String* str);
     }
 
     [local]
@@ -114,7 +106,8 @@ module
             [in] Int32 error,
             [in] ISslCertificate* cert,
             [in] String url,
-            [out] ISslError** sslError);
+            [out] ISslError** result);
+
     }
 
     } // namespace Http

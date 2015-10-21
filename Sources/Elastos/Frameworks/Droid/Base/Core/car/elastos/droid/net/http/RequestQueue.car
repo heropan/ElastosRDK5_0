@@ -1,18 +1,25 @@
+
 module
 {
+
+    interface Elastos.Droid.Net.IWebAddress;
+
+    using interface Org.Apache.Http.IHttpHost;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IMap;
-
-    interface Elastos.Droid.Net.Http.IRequest;
-    interface Elastos.Droid.Net.IWebAddress;
-    using interface Org.Apache.Http.IHttpHost;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
-    [local]
+    /**
+     * {@hide}
+     */
+    /**
+     * @Involved
+     * interface IRequestFeeder;
+     */
     interface IRequestQueue {
         /**
          * Enables data state and proxy tracking
@@ -30,7 +37,7 @@ module
          * @return proxy host if set, null otherwise
          */
         GetProxyHost(
-            [out] IHttpHost** host);
+            [out] IHttpHost** result);
 
         /**
          * Queues an HTTP request
@@ -49,7 +56,7 @@ module
             [in] IEventHandler* eventHandler,
             [in] IInputStream* bodyProvider,
             [in] Int32 bodyLength,
-            [out] IRequestHandle** handle);
+            [out] IRequestHandle** result);
 
         /**
          * Queues an HTTP request
@@ -70,7 +77,7 @@ module
             [in] IEventHandler* eventHandler,
             [in] IInputStream* bodyProvider,
             [in] Int32 bodyLength,
-            [out] IRequestHandle** handle);
+            [out] IRequestHandle** result);
 
         QueueSynchronousRequest(
             [in] String url,
@@ -80,27 +87,27 @@ module
             [in] IEventHandler* eventHandler,
             [in] IInputStream* bodyProvider,
             [in] Int32 bodyLength,
-            [out] IRequestHandle** handle);
+            [out] IRequestHandle** result);
 
         /*
          * RequestFeeder implementation
          */
         GetRequest(
-            [out] IRequest** request);
+            [out] IRequest** result);
 
         /**
          * @return a request for given host if possible
          */
         GetRequest(
             [in] IHttpHost* host,
-            [out] IRequest** request);
+            [out] IRequest** result);
 
         /**
          * @return true if a request for this host is available
          */
         HaveRequest(
             [in] IHttpHost* host,
-            [out] Boolean* haveRequest);
+            [out] Boolean* result);
 
         /**
          * Put request back on head of queue
@@ -116,6 +123,7 @@ module
         StartTiming();
 
         StopTiming();
+
     }
 
     } // namespace Http

@@ -81,6 +81,7 @@ module
     merge("net/http/ElastosHttpClient.car");
     merge("net/http/ElastosHttpClientConnection.car");
     merge("net/http/CertificateChainValidator.car");
+    merge("net/http/Connection.car");
     merge("net/http/DelegatingSSLSession.car");
     merge("net/http/ErrorStrings.car");
     merge("net/http/EventHandler.car");
@@ -89,13 +90,13 @@ module
     merge("net/http/HttpResponseCache.car");
     merge("net/http/HttpsConnection.car");
     merge("net/http/LoggingEventHandler.car");
-    merge("net/http/X509TrustManagerExtensions.car");
     merge("net/http/Request.car");
     merge("net/http/RequestFeeder.car");
     merge("net/http/RequestHandle.car");
     merge("net/http/RequestQueue.car");
     merge("net/http/SslCertificate.car");
     merge("net/http/SslError.car");
+    merge("net/http/X509TrustManagerExtensions.car");
 
     merge("net/nsd/NsdServiceInfo.car");
     merge("net/nsd/NsdManager.car");

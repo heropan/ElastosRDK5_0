@@ -1,3 +1,4 @@
+
 module
 {
     namespace Elastos {
@@ -5,12 +6,23 @@ module
     namespace Net {
     namespace Http {
 
+    /**
+     * Represents an HTTP request for a given host.
+     *
+     * {@hide}
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IRequest {
-//        ToString(
-//            [out] String*str);
-
+        /**
+         * Handles SSL error(s) on the way down from the user (the user
+         * has already provided their feedback).
+         */
         HandleSslErrorResponse(
             [in] Boolean proceed);
+
     }
 
     } // namespace Http

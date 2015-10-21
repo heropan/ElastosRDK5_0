@@ -1,22 +1,32 @@
+
 module
 {
-    using interface Org.Apache.Http.Utility.ICharArrayBuffer;
+
+    interface Elastos.Droid.Net.Http.IHeaderCallback;
+
     using interface Elastos.Utility.IArrayList;
+    using interface Org.Apache.Http.Utility.ICharArrayBuffer;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
-    interface IHeaderCallback;
-
+    /**
+     * Manages received headers
+     *
+     * {@hide}
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IHeaders {
         // header parsing constant
         /**
          * indicate HTTP 1.0 connection close after the response
          */
         const Int32 CONN_CLOSE = 1;
-
         /**
          * indicate HTTP 1.1 connection keep alive
          */
@@ -24,157 +34,145 @@ module
 
         // initial values.
         const Int32 NO_CONN_TYPE = 0;
-
         const Int64 NO_TRANSFER_ENCODING = 0;
-
         const Int64 NO_CONTENT_LENGTH = -1;
 
         // header strings
         const String TRANSFER_ENCODING = "transfer-encoding";
-
         const String CONTENT_LEN = "content-length";
-
         const String CONTENT_TYPE = "content-type";
-
         const String CONTENT_ENCODING = "content-encoding";
-
         const String CONN_DIRECTIVE = "connection";
 
         const String LOCATION = "location";
-
         const String PROXY_CONNECTION = "proxy-connection";
 
         const String WWW_AUTHENTICATE = "www-authenticate";
-
         const String PROXY_AUTHENTICATE = "proxy-authenticate";
-
         const String CONTENT_DISPOSITION = "content-disposition";
-
         const String ACCEPT_RANGES = "accept-ranges";
-
         const String EXPIRES = "expires";
-
         const String CACHE_CONTROL = "cache-control";
-
         const String LAST_MODIFIED = "last-modified";
-
         const String ETAG = "etag";
-
         const String SET_COOKIE = "set-cookie";
-
         const String PRAGMA = "pragma";
-
         const String REFRESH = "refresh";
-
         const String X_PERMITTED_CROSS_DOMAIN_POLICIES = "x-permitted-cross-domain-policies";
 
         ParseHeader(
             [in] ICharArrayBuffer* buffer);
 
         GetTransferEncoding(
-            [out] Int64* encoding);
+            [out] Int64* result);
 
         GetContentLength(
-            [out] Int64* length);
+            [out] Int64* result);
 
         GetConnectionType(
-            [out] Int32* type);
+            [out] Int32* result);
 
         GetContentType(
-            [out] String* type);
+            [out] String* result);
 
         GetContentEncoding(
-            [out] String* encoding);
+            [out] String* result);
 
         GetLocation(
-            [out] String* location);
+            [out] String* result);
 
         GetWwwAuthenticate(
-            [out] String* authenticate);
+            [out] String* result);
 
         GetProxyAuthenticate(
-            [out] String* authenticate);
+            [out] String* result);
 
         GetContentDisposition(
-            [out] String* disposition);
+            [out] String* result);
 
         GetAcceptRanges(
-            [out] String* ranges);
+            [out] String* result);
 
         GetExpires(
-            [out] String* expires);
+            [out] String* result);
 
         GetCacheControl(
-            [out] String* control);
+            [out] String* result);
 
         GetLastModified(
-            [out] String* modified);
+            [out] String* result);
 
         GetEtag(
-            [out] String* etag);
+            [out] String* result);
 
         GetSetCookie(
-            [out] IArrayList** cookie);
+            [out] IArrayList** result);
 
         GetPragma(
-            [out] String* sPragma);
+            [out] String* result);
 
         GetRefresh(
-            [out] String* refresh);
+            [out] String* result);
 
         GetXPermittedCrossDomainPolicies(
-            [out] String* policies);
+            [out] String* result);
 
         SetContentLength(
-            [in] Int64 length);
+            [in] Int64 value);
 
         SetContentType(
-            [in] String type);
+            [in] String value);
 
         SetContentEncoding(
-            [in] String encoding);
+            [in] String value);
 
         SetLocation(
-            [in] String location);
+            [in] String value);
 
         SetWwwAuthenticate(
-            [in] String authenticate);
+            [in] String value);
 
         SetProxyAuthenticate(
-            [in] String authenticate);
+            [in] String value);
 
         SetContentDisposition(
-            [in] String disposition);
+            [in] String value);
 
         SetAcceptRanges(
-            [in] String ranges);
+            [in] String value);
 
         SetExpires(
-            [in] String expires);
+            [in] String value);
 
         SetCacheControl(
-            [in] String control);
+            [in] String value);
 
         SetLastModified(
-            [in] String modified);
+            [in] String value);
 
         SetEtag(
-            [in] String etage);
+            [in] String value);
 
         SetXPermittedCrossDomainPolicies(
-            [in] String policies);
+            [in] String value);
 
         /**
          * Reports all non-null headers to the callback
          */
         GetHeaders(
-            [out] IHeaderCallback** hcb);
+            [in] IHeaderCallback* hcb);
+
     }
 
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IHeaderCallback {
         Header(
             [in] String name,
             [in] String value);
+
     }
 
     } // namespace Http

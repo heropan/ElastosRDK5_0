@@ -1,51 +1,44 @@
 
-#include "NIOAccess.h"
-#include "Buffer.h"
+#include "elastos/io/NIOAccess.h"
 
 namespace Elastos {
 namespace IO {
 
-Int64 NIOAccess::GetBasePointer(
-    /* [in] */ IBuffer* b)
+ECode NIOAccess::GetBasePointer(
+    /* [in] */ IBuffer* b,
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(b)
-    Buffer* buf = (Buffer*)b;
-    if (buf == NULL || buf->mEffectiveDirectAddress == 0) {
-        return 0L;
-    }
-    return buf->mEffectiveDirectAddress + (buf->mPosition << buf->mElementSizeShift);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        long address = b.effectiveDirectAddress;
+        if (address == 0L) {
+            return 0L;
+        }
+        return address + (b.position << b._elementSizeShift);
+
+#endif
 }
 
-AutoPtr<IInterface> NIOAccess::GetBaseArray(
-    /* [in] */ IBuffer* b)
+ECode NIOAccess::GetBaseArray(
+    /* [in] */ IBuffer* b,
+    /* [out] */ IInterface** result)
 {
-    assert(b);
-    Boolean isflag = FALSE;
-    b->HasArray(&isflag);
-    if (isflag) {
-        AutoPtr<IArrayOf> outface;
-        b->GetArray((IArrayOf**)&outface);
-        return outface;
-    }
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return b.hasArray() ? b.array() : null;
 
-    return NULL;
+#endif
 }
 
-Int32 NIOAccess::GetBaseArrayOffset(
-    /* [in] */ IBuffer* b)
+ECode NIOAccess::GetBaseArrayOffset(
+    /* [in] */ IBuffer* b,
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(b)
-    Boolean hasArray;
-    b->HasArray(&hasArray);
-    if (hasArray) {
-        Int32 offset, position;
-        Buffer* buf = (Buffer*)b;
-        b->GetArrayOffset(&offset);
-        b->GetPosition(&position);
-        return (offset + position) << buf->mElementSizeShift;
-    }
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return b.hasArray() ? ((b.arrayOffset() + b.position) << b._elementSizeShift) : 0;
 
-    return 0;
+#endif
 }
 
 } // namespace IO

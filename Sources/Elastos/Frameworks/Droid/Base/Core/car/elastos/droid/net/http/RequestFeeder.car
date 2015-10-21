@@ -1,20 +1,27 @@
+
 module
 {
     using interface Org.Apache.Http.IHttpHost;
-    interface Elastos.Droid.Net.Http.IRequest;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    /**
+     * {@hide}
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IRequestFeeder {
         GetRequest(
-            [out] IRequest** request);
+            [out] IRequest** result);
 
         GetRequest(
             [in] IHttpHost* host,
-            [out] IRequest** request);
+            [out] IRequest** result);
 
         /**
          * @return true if a request for this host is available
@@ -28,6 +35,7 @@ module
          */
         RequeueRequest(
             [in] IRequest* request);
+
     }
 
     } // namespace Http
@@ -35,3 +43,4 @@ module
     } // namespace Droid
     } // namespace Elastos
 }
+
