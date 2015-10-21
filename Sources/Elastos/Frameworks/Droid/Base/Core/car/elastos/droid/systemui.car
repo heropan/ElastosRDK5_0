@@ -252,10 +252,10 @@ module
 
 
 //     interface Elastos.Core.ICharSequence;
-//     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IContext;
 //     interface Elastos.Droid.Content.IIntent;
 //     interface Elastos.Droid.Content.Pm.IResolveInfo;
-//     interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Utility.IAttributeSet;
 //     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 //     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
 //     interface Elastos.Droid.Animation.IAnimatorListener;
@@ -278,11 +278,29 @@ module
 //     interface Elastos.Droid.SystemUI.StatusBar.Policy.IFixedSizeDrawable;
 //     interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerSignalCluster;
 //     interface Elastos.Droid.SystemUI.StatusBar.Policy.IRotationLockCallbacks;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
 
 
-//     namespace Elastos {
-//     namespace Droid {
-//     namespace SystemUI {
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+    class CBatteryMeterView {
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
+
+        interface IBatteryStateChangeCallback;
+        interface IDemoMode;
+    }
 
 //     [local]
 //     class CSwipeHelper {
@@ -1119,7 +1137,7 @@ module
 
 //     } // namespace StatusBar
 
-//     } // namespace SystemUI
-//     } // namespace Droid
-//     } // namespace Elastos
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
 }

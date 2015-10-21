@@ -1,4 +1,3 @@
-
 TARGET_NAME = systemui
 TARGET_TYPE = lib
 
@@ -9,16 +8,16 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = SystemUI.cpp
-SOURCES += SystemUIR.cpp
-SOURCES += CExpandHelper.cpp
-SOURCES += CViewScaller.cpp
-SOURCES += CSwipeHelper.cpp
-SOURCES += SearchPanelView.cpp
-SOURCES += CSearchPanelView.cpp
-SOURCES += UniverseBackground.cpp
-SOURCES += CUniverseBackground.cpp
+SOURCES = CBatteryMeterView.cpp
+//SOURCES += SystemUIR.cpp
+//SOURCES += CExpandHelper.cpp
+//SOURCES += CViewScaller.cpp
+//SOURCES += CSwipeHelper.cpp
+//SOURCES += SearchPanelView.cpp
+//SOURCES += CSearchPanelView.cpp
+//SOURCES += UniverseBackground.cpp
+//SOURCES += CUniverseBackground.cpp
 
-LIBRARIES += statusbar/statusbar.lib
-LIBRARIES += recent/recent.lib
-LIBRARIES += media/media.lib
+//LIBRARIES += statusbar/statusbar.lib
+//LIBRARIES += recent/recent.lib
+//LIBRARIES += media/media.lib
