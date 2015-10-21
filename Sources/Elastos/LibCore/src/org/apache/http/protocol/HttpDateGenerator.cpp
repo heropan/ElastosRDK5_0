@@ -1,11 +1,11 @@
 
-#include "HttpDateGenerator.h"
-#include "CSystem.h"
+#include "org/apache/http/protocol/HttpDateGenerator.h"
+#include "elastos/core/CSystem.h"
+#include "elastos/core/AutoLock.h"
 #include "elastos/text/CSimpleDateFormat.h"
-#include "CDate.h"
-#include "CTimeZoneHelper.h"
-#include "AutoLock.h"
-#include "Logger.h"
+#include "elastos/utility/CDate.h"
+#include "elastos/utility/CTimeZoneHelper.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICLINEPARSER_H_
 
 #include "_Org_Apache_Http_Message_CBasicLineParser.h"
-#include "BasicLineParser.h"
+#include "org/apache/http/message/BasicLineParser.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IProtocolVersion;

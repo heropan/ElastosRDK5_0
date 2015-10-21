@@ -1,7 +1,7 @@
 
-#include "CByteArrayBuffer.h"
-#include "Logger.h"
-#include "Math.h"
+#include "org/apache/http/utility/CByteArrayBuffer.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

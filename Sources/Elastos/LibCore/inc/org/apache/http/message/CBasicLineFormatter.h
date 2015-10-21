@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICLINEFORMATTER_H_
 
 #include "_Org_Apache_Http_Message_CBasicLineFormatter.h"
-#include "BasicLineFormatter.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
 
 namespace Org {
 namespace Apache {

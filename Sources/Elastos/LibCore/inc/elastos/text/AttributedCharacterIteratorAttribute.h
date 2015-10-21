@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_TEXT_ATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
 #define __ELASTOS_TEXT_ATTRIBUTEDCHARACTERITERATORATTRIBUTE_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::ISerializable;
 using Elastos::Text::IAttributedCharacterIteratorAttribute;

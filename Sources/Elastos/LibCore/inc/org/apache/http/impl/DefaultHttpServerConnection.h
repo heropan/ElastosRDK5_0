@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPSERVERCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPSERVERCONNECTION_H__
 
-#include "SocketHttpServerConnection.h"
+#include "org/apache/http/impl/SocketHttpServerConnection.h"
 
 namespace Org {
 namespace Apache {

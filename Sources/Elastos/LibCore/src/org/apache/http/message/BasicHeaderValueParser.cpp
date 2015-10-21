@@ -1,14 +1,14 @@
 
-#include "BasicHeaderValueParser.h"
-#include "CBasicHeaderValueParser.h"
-#include "CBasicHeaderElement.h"
-#include "CCharArrayBuffer.h"
-#include "CParserCursor.h"
-#include "CBasicNameValuePair.h"
-#include "HTTP.h"
+#include "org/apache/http/message/BasicHeaderValueParser.h"
+#include "org/apache/http/message/CBasicHeaderValueParser.h"
+#include "org/apache/http/message/CBasicHeaderElement.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "org/apache/http/message/CBasicNameValuePair.h"
+#include "org/apache/http/protocol/HTTP.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
 #include "elastos/core/CArrayOf.h"
 #include "elastos/utility/CArrayList.h"
-#include "Logger.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;

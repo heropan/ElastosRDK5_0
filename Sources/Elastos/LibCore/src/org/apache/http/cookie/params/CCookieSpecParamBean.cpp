@@ -1,6 +1,5 @@
 
-#include "CCookieSpecParamBean.h"
-#include "AuthParams.h"
+#include "org/apache/http/cookie/params/CCookieSpecParamBean.h"
 
 namespace Org {
 namespace Apache {

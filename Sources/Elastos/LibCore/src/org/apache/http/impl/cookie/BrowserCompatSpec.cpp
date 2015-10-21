@@ -1,17 +1,17 @@
 
-#include "BrowserCompatSpec.h"
-#include "DateUtils.h"
-#include "BasicPathHandler.h"
-#include "BasicDomainHandler.h"
-#include "BasicSecureHandler.h"
-#include "BasicMaxAgeHandler.h"
-#include "BasicCommentHandler.h"
-#include "BasicExpiresHandler.h"
-#include "NetscapeDraftHeaderParser.h"
-#include "CParserCursor.h"
-#include "CCharArrayBuffer.h"
-#include "CBufferedHeader.h"
-#include <elastos/Logger.h>
+#include "org/apache/http/impl/cookie/BrowserCompatSpec.h"
+#include "org/apache/http/impl/cookie/DateUtils.h"
+#include "org/apache/http/impl/cookie/BasicPathHandler.h"
+#include "org/apache/http/impl/cookie/BasicDomainHandler.h"
+#include "org/apache/http/impl/cookie/BasicSecureHandler.h"
+#include "org/apache/http/impl/cookie/BasicMaxAgeHandler.h"
+#include "org/apache/http/impl/cookie/BasicCommentHandler.h"
+#include "org/apache/http/impl/cookie/BasicExpiresHandler.h"
+#include "org/apache/http/impl/cookie/NetscapeDraftHeaderParser.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "org/apache/http/message/CBufferedHeader.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IIterator;

@@ -1,11 +1,11 @@
 
-#include "AbstractHttpClient.h"
-#include "CDefaultedHttpContext.h"
-#include "DefaultRequestDirector.h"
-#include "ClientParamsStack.h"
-#include "CHttpHost.h"
-#include "AutoLock.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/AbstractHttpClient.h"
+#include "org/apache/http/impl/client/DefaultRequestDirector.h"
+#include "org/apache/http/impl/client/ClientParamsStack.h"
+#include "org/apache/http/CHttpHost.h"
+#include "org/apache/http/protocol/CDefaultedHttpContext.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Elastos::Net::IURI;

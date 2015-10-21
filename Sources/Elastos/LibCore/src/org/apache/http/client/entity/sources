@@ -8,8 +8,6 @@ include $(MAKEDIR)/../../../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../../../corelibrary
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/entity
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/utils
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/entity
+INCLUDES += $(MAKEDIR)/../../../../../../inc;
 
 SOURCES = CUrlEncodedFormEntity.cpp

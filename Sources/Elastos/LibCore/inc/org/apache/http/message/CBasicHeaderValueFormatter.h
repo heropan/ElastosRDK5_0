@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHEADERVALUEFORMATTER_H_
 
 #include "_Org_Apache_Http_Message_CBasicHeaderValueFormatter.h"
-#include "BasicHeaderValueFormatter.h"
+#include "org/apache/http/message/BasicHeaderValueFormatter.h"
 
 namespace Org {
 namespace Apache {

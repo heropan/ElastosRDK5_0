@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CHTTPCONNECTIONPARAMS_H_
 
 #include "_Org_Apache_Http_Params_CHttpConnectionParams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 namespace Org {
 namespace Apache {

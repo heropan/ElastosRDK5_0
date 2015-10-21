@@ -1,8 +1,8 @@
 
-#include "RouteSpecificPool.h"
-#include "WaitingThread.h"
-#include "CLinkedList.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/tsccm/RouteSpecificPool.h"
+#include "org/apache/http/impl/conn/tsccm/WaitingThread.h"
+#include "elastos/utility/CLinkedList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::CLinkedList;
 using Elastos::Utility::IListIterator;

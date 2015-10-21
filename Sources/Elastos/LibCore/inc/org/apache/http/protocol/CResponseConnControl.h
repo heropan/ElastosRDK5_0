@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CRESPONSECONNCONTROL_H_
 
 #include "_Org_Apache_Http_Protocol_CResponseConnControl.h"
-#include "ResponseConnControl.h"
+#include "org/apache/http/protocol/ResponseConnControl.h"
 
 namespace Org {
 namespace Apache {

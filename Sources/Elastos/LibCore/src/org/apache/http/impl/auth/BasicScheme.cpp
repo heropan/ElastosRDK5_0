@@ -1,11 +1,11 @@
 
-#include "BasicScheme.h"
-#include "EncodingUtils.h"
-#include "CCharArrayBuffer.h"
-#include "CBufferedHeader.h"
-#include "AuthParams.h"
-#include "Logger.h"
-#include "StringBuilder.h"
+#include "org/apache/http/impl/auth/BasicScheme.h"
+#include "org/apache/http/utility/EncodingUtils.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "org/apache/http/message/CBufferedHeader.h"
+#include "org/apache/http/auth/params/AuthParams.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Security::IPrincipal;

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CParserCursor_H_
 
 #include "_Org_Apache_Http_Message_CParserCursor.h"
-#include "BasicLineFormatter.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHeaderIterator;

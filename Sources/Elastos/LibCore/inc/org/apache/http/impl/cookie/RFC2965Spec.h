@@ -2,8 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2965SPEC_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2965SPEC_H__
 
-#include "RFC2109Spec.h"
-#include "BasicClientCookie.h"
+#include "org/apache/http/impl/cookie/RFC2109Spec.h"
+#include "org/apache/http/impl/cookie/BasicClientCookie.h"
 
 using Org::Apache::Http::Cookie::ISetCookie;
 

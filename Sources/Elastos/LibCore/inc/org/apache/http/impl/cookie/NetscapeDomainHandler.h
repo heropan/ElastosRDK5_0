@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_NETSCAPEDOMAINHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_NETSCAPEDOMAINHANDLER_H__
 
-#include "BasicDomainHandler.h"
+#include "org/apache/http/impl/cookie/BasicDomainHandler.h"
 
 using Org::Apache::Http::Cookie::ICookie;
 using Org::Apache::Http::Cookie::ICookieOrigin;

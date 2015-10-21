@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_URLCONNECTION_H__
 #define __ELASTOS_NET_URLCONNECTION_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::IO::IInputStream;

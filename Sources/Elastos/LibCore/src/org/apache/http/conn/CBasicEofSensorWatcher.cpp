@@ -1,6 +1,6 @@
 
-#include "CBasicEofSensorWatcher.h"
-#include "Logger.h"
+#include "org/apache/http/conn/CBasicEofSensorWatcher.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;

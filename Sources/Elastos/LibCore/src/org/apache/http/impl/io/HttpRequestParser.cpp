@@ -1,8 +1,8 @@
 
-#include "HttpRequestParser.h"
-#include "CCharArrayBuffer.h"
-#include "CParserCursor.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/HttpRequestParser.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IRequestLine;

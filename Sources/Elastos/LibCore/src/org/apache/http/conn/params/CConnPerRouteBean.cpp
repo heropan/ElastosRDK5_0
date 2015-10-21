@@ -1,7 +1,7 @@
 
-#include "CConnPerRouteBean.h"
-#include "CInteger32.h"
-#include "Logger.h"
+#include "org/apache/http/conn/params/CConnPerRouteBean.h"
+#include "elastos/core/CInteger32.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::CInteger32;
 using Elastos::Utility::IIterable;

@@ -1,8 +1,8 @@
 
-#include "CHttpRequestExecutor.h"
-#include "CHttpVersion.h"
-#include "CBoolean.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/CHttpRequestExecutor.h"
+#include "org/apache/http/CHttpVersion.h"
+#include "elastos/core/CBoolean.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;

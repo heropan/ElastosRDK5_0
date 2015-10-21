@@ -2,8 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTSESSIONINPUTBUFFER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTSESSIONINPUTBUFFER_H__
 
-#include "HttpTransportMetricsImpl.h"
-#include "Object.h"
+#include "org/apache/http/impl/io/HttpTransportMetricsImpl.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::IInputStream;
 using Org::Apache::Http::IO::ISessionInputBuffer;

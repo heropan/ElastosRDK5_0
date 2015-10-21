@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CREQUESTCONNCONTROL_H_
 
 #include "_Org_Apache_Http_Protocol_CRequestConnControl.h"
-#include "RequestConnControl.h"
+#include "org/apache/http/protocol/RequestConnControl.h"
 
 namespace Org {
 namespace Apache {

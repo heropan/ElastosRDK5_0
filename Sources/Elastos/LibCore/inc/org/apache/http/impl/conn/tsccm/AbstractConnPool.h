@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_ABSTRACTCONNPOOL_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_ABSTRACTCONNPOOL_H__
 
-#include "IdleConnectionHandler.h"
-#include "RefQueueWorker.h"
-#include "BasicPoolEntry.h"
+#include "org/apache/http/impl/conn/IdleConnectionHandler.h"
+#include "org/apache/http/impl/conn/tsccm/RefQueueWorker.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntry.h"
 
 using Elastos::Utility::ISet;
 using Elastos::Utility::IQueue;

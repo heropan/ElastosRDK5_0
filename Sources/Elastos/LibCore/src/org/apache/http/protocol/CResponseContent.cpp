@@ -1,5 +1,5 @@
 
-#include "CResponseContent.h"
+#include "org/apache/http/protocol/CResponseContent.h"
 
 namespace Org {
 namespace Apache {

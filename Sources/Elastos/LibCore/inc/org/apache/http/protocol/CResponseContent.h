@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CRESPONSECONTENT_H_
 
 #include "_Org_Apache_Http_Protocol_CResponseContent.h"
-#include "ResponseContent.h"
+#include "org/apache/http/protocol/ResponseContent.h"
 
 namespace Org {
 namespace Apache {

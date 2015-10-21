@@ -2,8 +2,8 @@
 #define __ELASTOS_NET_CURLENCODER_H__
 
 #include "_Elastos_Net_CURLEncoder.h"
-#include "UriCodec.h"
-#include "Singleton.h"
+#include "libcore/net/UriCodec.h"
+#include "elastos/core/Singleton.h"
 
 using Libcore::Net::UriCodec;
 

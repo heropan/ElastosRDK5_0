@@ -3,8 +3,8 @@
 #define __ORG_APACHE_HTTP_CLIENT_PARAMS_CCLIENTPARAMBEAN_H_
 
 #include "_Org_Apache_Http_Client_Params_CClientParamBean.h"
-#include "HttpAbstractParamBean.h"
-#include <elastos/core/Object.h>
+#include "org/apache/http/params/HttpAbstractParamBean.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::Object;
 using Elastos::Utility::ICollection;

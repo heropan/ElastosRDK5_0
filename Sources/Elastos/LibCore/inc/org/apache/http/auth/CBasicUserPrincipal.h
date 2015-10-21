@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_AUTH_CBASICUSERPRINCIPAL_H_
 
 #include "_Org_Apache_Http_Auth_CBasicUserPrincipal.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Security::IPrincipal;
 

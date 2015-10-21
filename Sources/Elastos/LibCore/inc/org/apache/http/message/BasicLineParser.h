@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICLINEPARSER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICLINEPARSER_H_
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IProtocolVersion;

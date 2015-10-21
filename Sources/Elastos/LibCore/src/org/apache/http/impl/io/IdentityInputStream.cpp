@@ -1,10 +1,10 @@
 
-#include "IdentityInputStream.h"
-#include "CCharArrayBuffer.h"
-#include "AbstractMessageParser.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/IdentityInputStream.h"
+#include "org/apache/http/impl/io/AbstractMessageParser.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
 #include "elastos/core/Math.h"
 #include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::StringUtils;

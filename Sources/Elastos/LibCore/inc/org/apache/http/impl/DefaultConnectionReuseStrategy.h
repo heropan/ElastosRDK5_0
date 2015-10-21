@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_DEFAULTCONNECTIONREUSESTRATEGY_H__
 #define __ORG_APACHE_HTTP_IMPL_DEFAULTCONNECTIONREUSESTRATEGY_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IConnectionReuseStrategy;
 using Org::Apache::Http::IHttpResponse;

@@ -1,10 +1,10 @@
 
-#include "DefaultClientConnectionOperator.h"
-#include "DefaultClientConnection.h"
-#include "HttpConnectionParams.h"
-#include "scheme/CPlainSocketFactory.h"
-#include "CInetAddressHelper.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/DefaultClientConnectionOperator.h"
+#include "org/apache/http/impl/conn/DefaultClientConnection.h"
+#include "org/apache/http/params/HttpConnectionParams.h"
+#include "org/apache/http/conn/scheme/CPlainSocketFactory.h"
+#include "elastos/net/CInetAddressHelper.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;

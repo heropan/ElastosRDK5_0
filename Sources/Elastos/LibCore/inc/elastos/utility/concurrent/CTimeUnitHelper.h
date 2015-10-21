@@ -3,8 +3,7 @@
 #define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CTIMEUNITHELPER_H__
 
 #include "_Elastos_Utility_Concurrent_CTimeUnitHelper.h"
-#include "Singleton.h"
-
+#include "elastos/core/Singleton.h"
 
 namespace Elastos {
 namespace Utility {

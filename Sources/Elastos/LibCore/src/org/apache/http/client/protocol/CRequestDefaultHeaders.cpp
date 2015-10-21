@@ -1,6 +1,6 @@
 
-#include "CRequestDefaultHeaders.h"
-#include "Logger.h"
+#include "org/apache/http/client/protocol/CRequestDefaultHeaders.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;

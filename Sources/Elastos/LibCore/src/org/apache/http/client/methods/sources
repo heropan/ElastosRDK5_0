@@ -8,16 +8,7 @@ include $(MAKEDIR)/../../../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../../../corelibrary
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/net;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/logging;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/concurrent/locks;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/libcore/net;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/methods;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/client/utils;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/message;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/params;
+INCLUDES += $(MAKEDIR)/../../../../../../inc;
 
 SOURCES = HttpRequestBase.cpp
 SOURCES += HttpEntityEnclosingRequestBase.cpp

@@ -1,5 +1,5 @@
 
-#include "CBasicHttpEntityEnclosingRequest.h"
+#include "org/apache/http/message/CBasicHttpEntityEnclosingRequest.h"
 
 namespace Org {
 namespace Apache {

@@ -9,13 +9,6 @@ include $(MAKEDIR)/../../../../../sources.inc
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../../../inc;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/net;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/logging;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/conn/ssl;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/conn/util;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/params;
 
 SOURCES = AbstractVerifier.cpp
 SOURCES += CAllowAllHostnameVerifier.cpp

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_COOKIE_CCOOKIESPECREGISTRY_H_
 
 #include "_Org_Apache_Http_Cookie_CCookieSpecRegistry.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Utility::IMap;
 using Elastos::Utility::IList;

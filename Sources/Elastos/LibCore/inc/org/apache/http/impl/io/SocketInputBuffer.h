@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_SOCKETINPUTBUFFER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_SOCKETINPUTBUFFER_H__
 
-#include "AbstractSessionInputBuffer.h"
+#include "org/apache/http/impl/io/AbstractSessionInputBuffer.h"
 
 using Elastos::Net::ISocket;
 using Org::Apache::Http::Params::IHttpParams;

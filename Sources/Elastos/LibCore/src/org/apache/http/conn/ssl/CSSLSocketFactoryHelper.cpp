@@ -1,6 +1,6 @@
 
-#include "CSSLSocketFactoryHelper.h"
-#include "CSSLSocketFactory.h"
+#include "org/apache/http/conn/ssl/CSSLSocketFactoryHelper.h"
+#include "org/apache/http/conn/ssl/CSSLSocketFactory.h"
 
 namespace Org {
 namespace Apache {

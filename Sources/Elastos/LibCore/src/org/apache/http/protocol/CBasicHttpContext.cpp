@@ -1,5 +1,5 @@
 
-#include "CBasicHttpContext.h"
+#include "org/apache/http/protocol/CBasicHttpContext.h"
 
 namespace Org {
 namespace Apache {

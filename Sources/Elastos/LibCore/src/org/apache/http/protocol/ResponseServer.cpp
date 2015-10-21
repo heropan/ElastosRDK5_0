@@ -1,6 +1,6 @@
 
-#include "ResponseServer.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/ResponseServer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;

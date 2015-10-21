@@ -1,7 +1,7 @@
 
-#include "CEntityTemplate.h"
-#include "CByteArrayInputStream.h"
-#include "Logger.h"
+#include "org/apache/http/entity/CEntityTemplate.h"
+#include "elastos/io/CByteArrayInputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;

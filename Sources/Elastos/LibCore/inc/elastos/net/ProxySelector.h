@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_PROXYSELECTOR_H__
 #define __ELASTOS_NET_PROXYSELECTOR_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::Object;

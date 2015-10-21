@@ -1,6 +1,6 @@
 
-#include "IdentityOutputStream.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/IdentityOutputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

@@ -1,10 +1,10 @@
 
-#include "BasicClientCookie.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
-#include "CString.h"
-#include "CHashMap.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/BasicClientCookie.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

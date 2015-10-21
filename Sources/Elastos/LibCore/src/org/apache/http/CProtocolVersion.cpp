@@ -1,5 +1,5 @@
 
-#include "CProtocolVersion.h"
+#include "org/apache/http/CProtocolVersion.h"
 
 namespace Org {
 namespace Apache {

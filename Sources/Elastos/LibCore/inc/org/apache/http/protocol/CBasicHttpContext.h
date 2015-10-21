@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CBASICHTTPCONTEXT_H_
 
 #include "_Org_Apache_Http_Protocol_CBasicHttpContext.h"
-#include "BasicHttpContext.h"
+#include "org/apache/http/protocol/BasicHttpContext.h"
 
 namespace Org {
 namespace Apache {

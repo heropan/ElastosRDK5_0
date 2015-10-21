@@ -1,9 +1,9 @@
 
-#include "AbstractSessionInputBuffer.h"
-#include "CCharArrayBuffer.h"
-#include "CByteArrayBuffer.h"
-#include "HttpProtocolParams.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/AbstractSessionInputBuffer.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "org/apache/http/utility/CByteArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IO::EIID_ISessionInputBuffer;

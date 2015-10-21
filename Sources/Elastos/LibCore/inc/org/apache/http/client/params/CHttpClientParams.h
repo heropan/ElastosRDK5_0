@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_PARAMS_CHTTPCLIENTPARAMS_H_
 
 #include "_Org_Apache_Http_Client_Params_CHttpClientParams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Org::Apache::Http::Params::IHttpParams;
 

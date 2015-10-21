@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_THREADSAFECLIENTCONNMANAGER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_THREADSAFECLIENTCONNMANAGER_H__
 
-#include "AbstractConnPool.h"
+#include "org/apache/http/impl/conn/tsccm/AbstractConnPool.h"
 
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Org::Apache::Http::Conn::IClientConnectionManager;

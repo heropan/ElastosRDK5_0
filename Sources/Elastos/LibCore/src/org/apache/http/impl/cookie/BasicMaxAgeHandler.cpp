@@ -1,9 +1,9 @@
 
-#include "BasicMaxAgeHandler.h"
-#include "StringUtils.h"
-#include "CSystem.h"
-#include "CDate.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/BasicMaxAgeHandler.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/core/CSystem.h"
+#include "elastos/utility/CDate.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;

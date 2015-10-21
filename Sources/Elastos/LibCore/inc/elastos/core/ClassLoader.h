@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_CORE_CLASSLOADER_H__
 #define __ELASTOS_CORE_CLASSLOADER_H__
 
-#include "coredef.h"
-#include "core/Object.h"
-#include "utility/etl/HashMap.h"
+#include "elastos/coredef.h"
+#include "elastos/core/Object.h"
+#include "elastos/utility/etl/HashMap.h"
 
 using Elastos::Utility::Etl::HashMap;
 

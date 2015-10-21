@@ -1,7 +1,7 @@
 
-#include "BasicNameValuePair.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicNameValuePair.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;

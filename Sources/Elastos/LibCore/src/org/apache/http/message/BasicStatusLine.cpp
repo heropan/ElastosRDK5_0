@@ -1,7 +1,7 @@
 
-#include "BasicStatusLine.h"
-#include "BasicLineFormatter.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicStatusLine.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;

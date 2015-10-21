@@ -2,10 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPCLIENTCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPCLIENTCONNECTION_H__
 
-#include "HttpConnectionMetricsImpl.h"
-#include "EntityDeserializer.h"
-#include "EntitySerializer.h"
-#include "Object.h"
+#include "org/apache/http/impl/HttpConnectionMetricsImpl.h"
+#include "org/apache/http/impl/entity/EntityDeserializer.h"
+#include "org/apache/http/impl/entity/EntitySerializer.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpClientConnection;
 using Org::Apache::Http::IHttpConnection;

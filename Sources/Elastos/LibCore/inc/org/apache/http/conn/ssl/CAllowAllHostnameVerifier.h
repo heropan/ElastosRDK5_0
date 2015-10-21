@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_SSL_CALLOWALLHOSTNAMEVERIFIER_H_
 
 #include "_Org_Apache_Http_Conn_SSL_CAllowAllHostnameVerifier.h"
-#include "AbstractVerifier.h"
+#include "org/apache/http/conn/ssl/AbstractVerifier.h"
 
 namespace Org {
 namespace Apache {

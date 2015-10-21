@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLEDCONNADAPTER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLEDCONNADAPTER_H__
 
-#include "AbstractPooledConnAdapter.h"
-#include "AbstractPoolEntry.h"
-#include "ThreadSafeClientConnManager.h"
+#include "org/apache/http/impl/conn/AbstractPooledConnAdapter.h"
+#include "org/apache/http/impl/conn/AbstractPoolEntry.h"
+#include "org/apache/http/impl/conn/tsccm/ThreadSafeClientConnManager.h"
 
 using Org::Apache::Http::Conn::IClientConnectionManager;
 using Org::Apache::Http::Impl::Conn::AbstractPooledConnAdapter;

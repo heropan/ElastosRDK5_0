@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_WAITINGTHREAD_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_WAITINGTHREAD_H__
 
-#include "RouteSpecificPool.h"
+#include "org/apache/http/impl/conn/tsccm/RouteSpecificPool.h"
 
 using Elastos::Core::IThread;
 using Elastos::Utility::IDate;

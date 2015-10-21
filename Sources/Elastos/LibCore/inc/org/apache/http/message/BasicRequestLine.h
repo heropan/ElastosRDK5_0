@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICREQUESTLINE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICREQUESTLINE_H_
 
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
 using Elastos::Core::ICloneable;
 using Org::Apache::Http::IRequestLine;

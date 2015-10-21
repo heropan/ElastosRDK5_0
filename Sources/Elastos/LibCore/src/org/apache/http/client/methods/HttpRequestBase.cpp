@@ -1,10 +1,10 @@
 
-#include "HttpRequestBase.h"
-#include "HttpProtocolParams.h"
-#include "CBasicRequestLine.h"
-#include "CloneUtils.h"
-#include "CReentrantLock.h"
-#include "Logger.h"
+#include "org/apache/http/client/methods/HttpRequestBase.h"
+#include "org/apache/http/client/utils/CloneUtils.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "org/apache/http/message/CBasicRequestLine.h"
+#include "elastos/utility/concurrent/locks/CReentrantLock.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Concurrent::Locks::CReentrantLock;

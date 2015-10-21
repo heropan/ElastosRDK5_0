@@ -1,6 +1,6 @@
 
-#include "CHttpVersionHelper.h"
-#include "CHttpVersion.h"
+#include "org/apache/http/CHttpVersionHelper.h"
+#include "org/apache/http/CHttpVersion.h"
 
 namespace Org {
 namespace Apache {

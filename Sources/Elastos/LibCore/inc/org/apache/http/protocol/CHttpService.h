@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CHTTPSERVICE_H_
 
 #include "_Org_Apache_Http_Protocol_CHttpService.h"
-#include "HttpService.h"
+#include "org/apache/http/protocol/HttpService.h"
 
 namespace Org {
 namespace Apache {

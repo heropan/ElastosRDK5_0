@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2965SPECFACTORY_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2965SPECFACTORY_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::Cookie::ICookieSpec;
 using Org::Apache::Http::Cookie::ICookieSpecFactory;

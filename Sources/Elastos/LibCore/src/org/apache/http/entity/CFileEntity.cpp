@@ -1,7 +1,7 @@
 
-#include "CFileEntity.h"
-#include "CFileInputStream.h"
-#include "Logger.h"
+#include "org/apache/http/entity/CFileEntity.h"
+#include "elastos/io/CFileInputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::IO::IFileInputStream;

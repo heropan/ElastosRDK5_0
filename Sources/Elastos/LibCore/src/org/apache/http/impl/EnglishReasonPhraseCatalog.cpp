@@ -1,8 +1,8 @@
 
-#include "EnglishReasonPhraseCatalog.h"
-#include "CString.h"
-#include "CArrayOf.h"
-#include "Logger.h"
+#include "org/apache/http/impl/EnglishReasonPhraseCatalog.h"
+#include "elastos/core/CString.h"
+#include "elastos/core/CArrayOf.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::ICharSequence;

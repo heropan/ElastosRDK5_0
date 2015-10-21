@@ -1,6 +1,6 @@
 
-#include "CClientParamBean.h"
-#include "CString.h"
+#include "org/apache/http/client/params/CClientParamBean.h"
+#include "elastos/core/CString.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

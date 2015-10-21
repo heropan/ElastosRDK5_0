@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREQUESTDIRECTOR_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTREQUESTDIRECTOR_H__
 
-#include "RequestWrapper.h"
-#include "RoutedRequest.h"
-#include "Object.h"
+#include "org/apache/http/impl/client/RequestWrapper.h"
+#include "org/apache/http/impl/client/RoutedRequest.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Net::IURI;
 using Elastos::Utility::IMap;

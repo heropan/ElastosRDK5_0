@@ -3,8 +3,8 @@
 #define __ORG_APACHE_HTTP_PARAMS_CHTTPPROTOCOLPARAMBEAN_H_
 
 #include "_Org_Apache_Http_Params_CHttpProtocolParamBean.h"
-#include "HttpAbstractParamBean.h"
-#include <elastos/core/Object.h>
+#include "org/apache/http/params/HttpAbstractParamBean.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpVersion;
 

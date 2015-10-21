@@ -1,6 +1,6 @@
 
-#include "RequestConnControl.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/RequestConnControl.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;

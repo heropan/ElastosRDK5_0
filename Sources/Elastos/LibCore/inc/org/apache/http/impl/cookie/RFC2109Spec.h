@@ -2,8 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2109SPEC_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_RFC2109SPEC_H__
 
-#include "CookieSpecBase.h"
-#include "CCookiePathComparator.h"
+#include "org/apache/http/impl/cookie/CookieSpecBase.h"
+#include "org/apache/http/cookie/CCookiePathComparator.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHeader;

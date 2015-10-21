@@ -1,7 +1,7 @@
 
-#include "CBasicManagedEntity.h"
-#include "CEofSensorInputStream.h"
-#include "Logger.h"
+#include "org/apache/http/conn/CBasicManagedEntity.h"
+#include "org/apache/http/conn/CEofSensorInputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;

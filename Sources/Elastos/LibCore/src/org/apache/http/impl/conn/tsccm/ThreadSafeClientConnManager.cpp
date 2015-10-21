@@ -1,11 +1,11 @@
 
-#include "ThreadSafeClientConnManager.h"
-#include "ConnPoolByRoute.h"
-#include "DefaultClientConnectionOperator.h"
-#include "BasicPooledConnAdapter.h"
+#include "org/apache/http/impl/conn/tsccm/ThreadSafeClientConnManager.h"
+#include "org/apache/http/impl/conn/tsccm/ConnPoolByRoute.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPooledConnAdapter.h"
+#include "org/apache/http/impl/conn/DefaultClientConnectionOperator.h"
 #include "libcore/io/CSocketTaggerHelper.h"
-#include "AutoLock.h"
-#include "Logger.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Libcore::IO::ISocketTagger;
 using Libcore::IO::ISocketTaggerHelper;

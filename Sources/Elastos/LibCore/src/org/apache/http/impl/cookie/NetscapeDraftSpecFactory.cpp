@@ -1,6 +1,6 @@
 
-#include "NetscapeDraftSpecFactory.h"
-#include "NetScapeDraftSpec.h"
+#include "org/apache/http/impl/cookie/NetscapeDraftSpecFactory.h"
+#include "org/apache/http/impl/cookie/NetScapeDraftSpec.h"
 
 using Elastos::Core::ICharSequence;
 using Org::Apache::Http::Cookie::EIID_ICookieSpecFactory;

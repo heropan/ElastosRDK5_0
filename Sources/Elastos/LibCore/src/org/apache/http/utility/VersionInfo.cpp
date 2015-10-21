@@ -1,11 +1,11 @@
 
-#include "VersionInfo.h"
-#include "Logger.h"
-#include "CString.h"
-#include "elastos/utility/CProperties.h"
-#include "elastos/utility/CArrayList.h"
+#include "org/apache/http/utility/VersionInfo.h"
+#include "elastos/core/CString.h"
 #include "elastos/core/StringBuilder.h"
 #include "elastos/core/Thread.h"
+#include "elastos/utility/CProperties.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;

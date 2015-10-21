@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CCLIENTCONTEXTCONFIGURER_H_
 
 #include "_Org_Apache_Http_Client_Protocol_CClientContextConfigurer.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::Auth::IAuthSchemeRegistry;

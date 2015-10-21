@@ -1,9 +1,9 @@
 
-#include "CHttpOptions.h"
-#include "CURI.h"
-#include "CHashSet.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/client/methods/CHttpOptions.h"
+#include "elastos/core/CString.h"
+#include "elastos/net/CURI.h"
+#include "elastos/utility/CHashSet.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

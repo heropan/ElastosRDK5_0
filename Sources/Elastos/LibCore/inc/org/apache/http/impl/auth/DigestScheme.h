@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_DIGESTSCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_DIGESTSCHEME_H__
 
-#include "RFC2617Scheme.h"
+#include "org/apache/http/impl/auth/RFC2617Scheme.h"
 
 using Elastos::Security::IMessageDigest;
 using Elastos::Utility::IMap;

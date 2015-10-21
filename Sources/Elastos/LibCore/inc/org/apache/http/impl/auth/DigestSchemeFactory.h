@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_DIGESTSCHEMEFACTORY_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_DIGESTSCHEMEFACTORY_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::Auth::IAuthScheme;
 using Org::Apache::Http::Auth::IAuthSchemeFactory;

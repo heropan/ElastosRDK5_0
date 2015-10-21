@@ -1,5 +1,5 @@
 
-#include "EntityEnclosingRequestWrapper.h"
+#include "org/apache/http/impl/client/EntityEnclosingRequestWrapper.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::Protocol::IHTTP;

@@ -1,7 +1,7 @@
 
-#include "WaitingThread.h"
-#include "core/Thread.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/tsccm/WaitingThread.h"
+#include "elastos/core/Thread.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Logger;

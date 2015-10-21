@@ -1,7 +1,7 @@
 
-#include "HttpRequestHandlerRegistry.h"
-#include "CUriPatternMatcher.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/HttpRequestHandlerRegistry.h"
+#include "org/apache/http/protocol/CUriPatternMatcher.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_SCHEME_CPLAINSOCKETFACTORYHELPER_H_
 
 #include "_Org_Apache_Http_Conn_Scheme_CPlainSocketFactoryHelper.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 namespace Org {
 namespace Apache {

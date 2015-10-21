@@ -1,5 +1,5 @@
 
-#include "HTTP.h"
+#include "org/apache/http/protocol/HTTP.h"
 
 namespace Org {
 namespace Apache {
@@ -11,8 +11,7 @@ CAR_INTERFACE_IMPL(HTTP, Object, IHTTP)
 Boolean HTTP::IsWhitespace(
     /* [in] */ Char32 ch)
 {
-    String str(ch);
-    return str == SP || str == HT || str == CR || str == LF;
+    return (Int32)ch == SP || (Int32)ch == HT || (Int32)ch == CR || (Int32)ch == LF;
 }
 
 } // namespace Protocol

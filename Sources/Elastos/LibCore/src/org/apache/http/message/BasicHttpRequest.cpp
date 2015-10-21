@@ -1,8 +1,8 @@
 
-#include "BasicHttpRequest.h"
-#include "CBasicRequestLine.h"
-#include "HttpProtocolParams.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicHttpRequest.h"
+#include "org/apache/http/message/CBasicRequestLine.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Params::HttpProtocolParams;

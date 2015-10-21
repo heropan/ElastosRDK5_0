@@ -1,9 +1,9 @@
 
-#include "IdleConnectionHandler.h"
-#include "CSystem.h"
-#include "Math.h"
-#include "CHashMap.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/IdleConnectionHandler.h"
+#include "elastos/core/CSystem.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

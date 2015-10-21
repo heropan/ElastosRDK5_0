@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_ENTITY_CBYTEARRAYENTITY_H_
 
 #include "_Org_Apache_Http_Entity_CByteArrayEntity.h"
-#include "AbstractHttpEntity.h"
+#include "org/apache/http/entity/AbstractHttpEntity.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::IO::IInputStream;

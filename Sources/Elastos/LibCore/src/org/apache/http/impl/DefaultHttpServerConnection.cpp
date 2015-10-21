@@ -1,8 +1,8 @@
 
-#include "DefaultHttpServerConnection.h"
-#include "HttpConnectionParams.h"
-#include "Logger.h"
-#include "StringBuilder.h"
+#include "org/apache/http/impl/DefaultHttpServerConnection.h"
+#include "org/apache/http/params/HttpConnectionParams.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;

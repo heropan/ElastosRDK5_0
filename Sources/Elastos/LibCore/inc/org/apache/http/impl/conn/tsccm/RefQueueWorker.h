@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_REFQUEUEWORKER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_REFQUEUEWORKER_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;

@@ -1,6 +1,6 @@
 
-#include "CHttpDateGeneratorHelper.h"
-#include "HttpDateGenerator.h"
+#include "org/apache/http/protocol/CHttpDateGeneratorHelper.h"
+#include "org/apache/http/protocol/HttpDateGenerator.h"
 
 namespace Org {
 namespace Apache {

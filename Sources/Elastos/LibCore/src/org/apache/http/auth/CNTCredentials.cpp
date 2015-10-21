@@ -1,10 +1,10 @@
 
-#include "CNTCredentials.h"
-#include "CNTUserPrincipal.h"
-#include "LangUtils.h"
-#include "CString.h"
-#include "StringBuilder.h"
-#include "Logger.h"
+#include "org/apache/http/auth/CNTCredentials.h"
+#include "org/apache/http/auth/CNTUserPrincipal.h"
+#include "org/apache/http/utility/LangUtils.h"
+#include "elastos/core/CString.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

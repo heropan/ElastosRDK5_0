@@ -1,8 +1,8 @@
 
-#include "BasicLineFormatter.h"
-#include "CBasicLineFormatter.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
+#include "org/apache/http/message/CBasicLineFormatter.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 #include "elastos/core/StringUtils.h"
 
 using Elastos::Core::StringUtils;

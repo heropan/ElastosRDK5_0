@@ -1,9 +1,9 @@
 
-#include "ProtocolVersion.h"
-#include "CProtocolVersion.h"
-#include "CCharArrayBuffer.h"
-#include "StringUtils.h"
-#include "Logger.h"
+#include "org/apache/http/ProtocolVersion.h"
+#include "org/apache/http/CProtocolVersion.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICloneable;

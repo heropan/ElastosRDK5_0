@@ -1,10 +1,10 @@
 
-#include "DefaultHttpResponseFactory.h"
-#include "EnglishReasonPhraseCatalog.h"
-#include "CBasicStatusLine.h"
-#include "CBasicHttpResponse.h"
-#include "CLocaleHelper.h"
-#include "Logger.h"
+#include "org/apache/http/impl/DefaultHttpResponseFactory.h"
+#include "org/apache/http/impl/EnglishReasonPhraseCatalog.h"
+#include "org/apache/http/message/CBasicStatusLine.h"
+#include "org/apache/http/message/CBasicHttpResponse.h"
+#include "elastos/utility/CLocaleHelper.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;

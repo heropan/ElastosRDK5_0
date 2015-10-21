@@ -1,9 +1,9 @@
 
-#include "SocketHttpServerConnection.h"
-#include "HttpConnectionParams.h"
-#include "SocketInputBuffer.h"
-#include "SocketOutputBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/impl/SocketHttpServerConnection.h"
+#include "org/apache/http/params/HttpConnectionParams.h"
+#include "org/apache/http/impl/io/SocketInputBuffer.h"
+#include "org/apache/http/impl/io/SocketOutputBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;

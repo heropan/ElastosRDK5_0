@@ -1,7 +1,7 @@
 
-#include "CHttpRoute.h"
-#include "Logger.h"
-#include "StringBuilder.h"
+#include "org/apache/http/conn/routing/CHttpRoute.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;

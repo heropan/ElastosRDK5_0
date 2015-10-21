@@ -1,7 +1,7 @@
 
-#include "AbstractHttpEntity.h"
-#include "CBasicHeader.h"
-#include "Logger.h"
+#include "org/apache/http/entity/AbstractHttpEntity.h"
+#include "org/apache/http/message/CBasicHeader.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Protocol::IHTTP;

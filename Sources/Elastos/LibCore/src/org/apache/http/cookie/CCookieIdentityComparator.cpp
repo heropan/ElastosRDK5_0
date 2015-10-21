@@ -1,5 +1,5 @@
 
-#include "CCookieIdentityComparator.h"
+#include "org/apache/http/cookie/CCookieIdentityComparator.h"
 
 using Elastos::Core::EIID_IComparator;
 using Elastos::IO::EIID_ISerializable;

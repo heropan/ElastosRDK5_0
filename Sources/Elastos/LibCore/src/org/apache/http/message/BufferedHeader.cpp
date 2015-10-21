@@ -1,8 +1,8 @@
 
-#include "BufferedHeader.h"
-#include "CParserCursor.h"
-#include "BasicHeaderValueParser.h"
-#include "Logger.h"
+#include "org/apache/http/message/BufferedHeader.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "org/apache/http/message/BasicHeaderValueParser.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;

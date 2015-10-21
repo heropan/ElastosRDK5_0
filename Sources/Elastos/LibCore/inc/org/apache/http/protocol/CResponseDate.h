@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CRESPONSEDATE_H_
 
 #include "_Org_Apache_Http_Protocol_CResponseDate.h"
-#include "ResponseDate.h"
+#include "org/apache/http/protocol/ResponseDate.h"
 
 namespace Org {
 namespace Apache {

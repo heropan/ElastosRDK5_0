@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_CEOFSENSORINPUTSTREAM_H_
 
 #include "_Org_Apache_Http_Conn_CEofSensorInputStream.h"
-#include "InputStream.h"
+#include "elastos/io/InputStream.h"
 
 using Elastos::IO::InputStream;
 

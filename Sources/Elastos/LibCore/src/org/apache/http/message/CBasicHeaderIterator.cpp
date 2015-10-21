@@ -1,5 +1,5 @@
 
-#include "CBasicHeaderIterator.h"
+#include "org/apache/http/message/CBasicHeaderIterator.h"
 
 namespace Org {
 namespace Apache {

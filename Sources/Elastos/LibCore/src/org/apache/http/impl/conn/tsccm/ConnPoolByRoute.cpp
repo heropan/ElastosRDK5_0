@@ -1,12 +1,12 @@
 
-#include "ConnPoolByRoute.h"
-#include "BasicPoolEntryRef.h"
-#include "params/ConnManagerParams.h"
-#include "CSystem.h"
-#include "CLinkedList.h"
-#include "CHashMap.h"
-#include "CDate.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/tsccm/ConnPoolByRoute.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntryRef.h"
+#include "org/apache/http/conn/params/ConnManagerParams.h"
+#include "elastos/core/CSystem.h"
+#include "elastos/utility/CLinkedList.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/CDate.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

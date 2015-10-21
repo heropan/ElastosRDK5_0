@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_PROTOCOL_CREQUESTPROXYAUTHENTICATION_H_
 
 #include "_Org_Apache_Http_Client_Protocol_CRequestProxyAuthentication.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IHttpRequestInterceptor;

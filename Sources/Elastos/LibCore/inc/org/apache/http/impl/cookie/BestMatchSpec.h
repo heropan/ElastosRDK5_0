@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_BestMatchSpec_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_BestMatchSpec_H__
 
-#include "RFC2965Spec.h"
-#include "BrowserCompatSpec.h"
-#include "NetScapeDraftSpec.h"
+#include "org/apache/http/impl/cookie/RFC2965Spec.h"
+#include "org/apache/http/impl/cookie/BrowserCompatSpec.h"
+#include "org/apache/http/impl/cookie/NetScapeDraftSpec.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHeader;

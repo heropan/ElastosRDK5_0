@@ -8,9 +8,7 @@ include $(MAKEDIR)/../../../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../../../corelibrary
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/logging;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/conn/routing;
+INCLUDES += $(MAKEDIR)/../../../../../../inc;
 
 SOURCES = CBasicRouteDirector.cpp
 SOURCES += CHttpRoute.cpp

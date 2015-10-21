@@ -1,8 +1,8 @@
 
-#include "BasicHeaderElement.h"
-#include "CArrayOf.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicHeaderElement.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/core/CArrayOf.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::CArrayOf;

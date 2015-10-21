@@ -1,5 +1,5 @@
 
-#include "CRequestContent.h"
+#include "org/apache/http/protocol/CRequestContent.h"
 
 namespace Org {
 namespace Apache {

@@ -8,8 +8,6 @@ include $(MAKEDIR)/../../../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../../../corelibrary
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/utility/regex;
-INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/http/conn/util
+INCLUDES += $(MAKEDIR)/../../../../../../inc;
 
 SOURCES = InetAddressUtils.cpp

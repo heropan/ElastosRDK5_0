@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_LOGGINGSESSIONOUTPUTBUFFER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_LOGGINGSESSIONOUTPUTBUFFER_H__
 
-#include "Wire.h"
+#include "org/apache/http/impl/conn/Wire.h"
 
 using Org::Apache::Http::IO::ISessionOutputBuffer;
 using Org::Apache::Http::IO::IHttpTransportMetrics;

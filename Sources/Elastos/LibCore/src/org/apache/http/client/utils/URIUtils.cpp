@@ -1,8 +1,8 @@
 
-#include "URIUtils.h"
-#include "StringBuilder.h"
-#include "CURI.h"
-#include "Logger.h"
+#include "org/apache/http/client/utils/URIUtils.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/net/CURI.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Net::CURI;

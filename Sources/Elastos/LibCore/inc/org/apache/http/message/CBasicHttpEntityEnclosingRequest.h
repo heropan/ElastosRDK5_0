@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHTTPENTITYENCLOSINGREQUEST_H_
 
 #include "_Org_Apache_Http_Message_CBasicHttpEntityEnclosingRequest.h"
-#include "BasicHttpEntityEnclosingRequest.h"
+#include "org/apache/http/message/BasicHttpEntityEnclosingRequest.h"
 
 namespace Org {
 namespace Apache {

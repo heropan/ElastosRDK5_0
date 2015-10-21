@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CCALENDARHELPER_H__
 
 #include "_Elastos_Utility_CCalendarHelper.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Elastos::Utility::ILocale;
 

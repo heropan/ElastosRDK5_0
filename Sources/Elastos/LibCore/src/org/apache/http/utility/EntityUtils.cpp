@@ -1,10 +1,10 @@
 
-#include "EntityUtils.h"
-#include "CByteArrayBuffer.h"
-#include "CCharArrayBuffer.h"
+#include "org/apache/http/utility/EntityUtils.h"
+#include "org/apache/http/utility/CByteArrayBuffer.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
 #include "elastos/core/Math.h"
 #include "elastos/io/CInputStreamReader.h"
-#include "Logger.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Math;
 using Elastos::IO::IInputStream;

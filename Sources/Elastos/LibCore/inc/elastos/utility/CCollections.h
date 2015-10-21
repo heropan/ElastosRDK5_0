@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_UTILITY_CCOLLECTIONSHELPER_H__
 #define __ELASTOS_UTILITY_CCOLLECTIONSHELPER_H__
 
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 #include "_Elastos_Utility_CCollections.h"
 
 using Elastos::Core::Singleton;

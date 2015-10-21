@@ -1,7 +1,7 @@
 
-#include "RequestUserAgent.h"
-#include "HttpProtocolParams.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/RequestUserAgent.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;

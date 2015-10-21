@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPCLIENTCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPCLIENTCONNECTION_H__
 
-#include "SocketHttpClientConnection.h"
+#include "org/apache/http/impl/SocketHttpClientConnection.h"
 
 namespace Org {
 namespace Apache {

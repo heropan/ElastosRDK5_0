@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CREQUESTUSERAGENT_H_
 
 #include "_Org_Apache_Http_Protocol_CRequestUserAgent.h"
-#include "RequestUserAgent.h"
+#include "org/apache/http/protocol/RequestUserAgent.h"
 
 namespace Org {
 namespace Apache {

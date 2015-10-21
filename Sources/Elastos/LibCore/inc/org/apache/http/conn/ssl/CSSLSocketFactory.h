@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORY_H_
 
 #include "_Org_Apache_Http_Conn_SSL_CSSLSocketFactory.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;

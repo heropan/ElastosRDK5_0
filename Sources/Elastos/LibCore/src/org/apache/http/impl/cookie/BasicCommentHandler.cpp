@@ -1,6 +1,6 @@
 
-#include "BasicCommentHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/BasicCommentHandler.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

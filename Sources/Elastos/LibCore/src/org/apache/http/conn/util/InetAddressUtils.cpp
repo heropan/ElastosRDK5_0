@@ -1,6 +1,6 @@
 
-#include "InetAddressUtils.h"
-#include "CPatternHelper.h"
+#include "org/apache/http/conn/util/InetAddressUtils.h"
+#include "elastos/utility/regex/CPatternHelper.h"
 
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;

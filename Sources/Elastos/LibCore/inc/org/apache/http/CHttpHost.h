@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CHTTPHOST_H_
 
 #include "_Org_Apache_Http_CHttpHost.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::ICloneable;
 

@@ -1,8 +1,8 @@
 
-#include "CSerializableEntity.h"
-#include "CByteArrayInputStream.h"
-#include "CByteArrayOutputStream.h"
-#include "Logger.h"
+#include "org/apache/http/entity/CSerializableEntity.h"
+#include "elastos/io/CByteArrayInputStream.h"
+#include "elastos/io/CByteArrayOutputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;

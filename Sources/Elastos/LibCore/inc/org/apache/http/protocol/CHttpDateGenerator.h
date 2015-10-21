@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CHTTPDATEGENERATOR_H_
 
 #include "_Org_Apache_Http_Protocol_CHttpDateGenerator.h"
-#include "HttpDateGenerator.h"
+#include "org/apache/http/protocol/HttpDateGenerator.h"
 
 namespace Org {
 namespace Apache {

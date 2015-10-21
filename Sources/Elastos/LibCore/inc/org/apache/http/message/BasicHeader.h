@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHEADER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHEADER_H_
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::ICloneable;
 using Org::Apache::Http::IHeader;

@@ -1,6 +1,6 @@
 
-#include "DefaultProxyAuthenticationHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/DefaultProxyAuthenticationHandler.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IStatusLine;

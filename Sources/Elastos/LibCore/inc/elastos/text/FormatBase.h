@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_TEXT_FORMATBASE_H_
 #define __ELASTOS_TEXT_FORMATBASE_H_
 
-#include "Object.h"
-#include "StringBuffer.h"
+#include "elastos/core/Object.h"
+#include "elastos/core/StringBuffer.h"
 #include "AttributedCharacterIteratorAttribute.h"
 
 using Elastos::Core::EIID_ICloneable;

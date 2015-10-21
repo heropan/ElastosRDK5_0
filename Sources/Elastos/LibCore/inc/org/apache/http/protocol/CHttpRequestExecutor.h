@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CHTTPREQUESTEXECUTOR_H_
 
 #include "_Org_Apache_Http_Protocol_CHttpRequestExecutor.h"
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpClientConnection;
 using Org::Apache::Http::IHttpRequest;

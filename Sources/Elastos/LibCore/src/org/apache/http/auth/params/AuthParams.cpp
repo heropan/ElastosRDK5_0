@@ -1,7 +1,7 @@
 
-#include "AuthParams.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/auth/params/AuthParams.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

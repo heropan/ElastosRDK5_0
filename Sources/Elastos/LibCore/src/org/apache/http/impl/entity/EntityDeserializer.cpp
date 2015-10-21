@@ -1,11 +1,11 @@
 
-#include "EntityDeserializer.h"
-#include "CBasicHttpEntity.h"
-#include "io/ContentLengthInputStream.h"
-#include "io/ChunkedInputStream.h"
-#include "io/IdentityInputStream.h"
-#include "io/ChunkedInputStream.h"
-#include "Logger.h"
+#include "org/apache/http/impl/entity/EntityDeserializer.h"
+#include "org/apache/http/entity/CBasicHttpEntity.h"
+#include "org/apache/http/impl/io/ContentLengthInputStream.h"
+#include "org/apache/http/impl/io/ChunkedInputStream.h"
+#include "org/apache/http/impl/io/IdentityInputStream.h"
+#include "org/apache/http/impl/io/ChunkedInputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::Logging::Logger;

@@ -1,6 +1,6 @@
 
-#include "CAuthParams.h"
-#include "AuthParams.h"
+#include "org/apache/http/auth/params/CAuthParams.h"
+#include "org/apache/http/auth/params/AuthParams.h"
 
 namespace Org {
 namespace Apache {

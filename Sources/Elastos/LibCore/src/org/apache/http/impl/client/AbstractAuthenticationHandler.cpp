@@ -1,11 +1,11 @@
 
-#include "AbstractAuthenticationHandler.h"
-#include "HTTP.h"
-#include "CCharArrayBuffer.h"
-#include "CString.h"
-#include "CHashMap.h"
-#include "CArrayList.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/AbstractAuthenticationHandler.h"
+#include "org/apache/http/protocol/HTTP.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

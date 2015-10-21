@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_SOCKETHTTPCLIENTCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_SOCKETHTTPCLIENTCONNECTION_H__
 
-#include "AbstractHttpClientConnection.h"
+#include "org/apache/http/impl/AbstractHttpClientConnection.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;

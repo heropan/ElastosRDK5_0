@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHTTPENTITYENCLOSINGREQUEST_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHTTPENTITYENCLOSINGREQUEST_H_
 
-#include "BasicHttpRequest.h"
+#include "org/apache/http/message/BasicHttpRequest.h"
 
 using Org::Apache::Http::IHttpEntity;
 using Org::Apache::Http::IRequestLine;

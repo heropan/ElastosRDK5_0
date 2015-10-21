@@ -1,6 +1,6 @@
 
-#include "CPlainSocketFactoryHelper.h"
-#include "CPlainSocketFactory.h"
+#include "org/apache/http/conn/scheme/CPlainSocketFactoryHelper.h"
+#include "org/apache/http/conn/scheme/CPlainSocketFactory.h"
 
 namespace Org {
 namespace Apache {

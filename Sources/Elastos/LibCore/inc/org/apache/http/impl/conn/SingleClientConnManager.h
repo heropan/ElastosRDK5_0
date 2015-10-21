@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_SINGLECLIENTCONNMANAGER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_SINGLECLIENTCONNMANAGER_H__
 
-#include "AbstractPoolEntry.h"
-#include "AbstractPooledConnAdapter.h"
-#include "Object.h"
+#include "org/apache/http/impl/conn/AbstractPoolEntry.h"
+#include "org/apache/http/impl/conn/AbstractPooledConnAdapter.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Net::ISocket;
 using Elastos::Utility::Concurrent::ITimeUnit;

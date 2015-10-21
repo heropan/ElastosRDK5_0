@@ -1,6 +1,6 @@
 
-#include "CHttpClientParams.h"
-#include "HttpClientParams.h"
+#include "org/apache/http/client/params/CHttpClientParams.h"
+#include "org/apache/http/client/params/HttpClientParams.h"
 
 namespace Org {
 namespace Apache {

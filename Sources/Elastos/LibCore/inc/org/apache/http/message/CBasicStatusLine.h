@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICSTATUSLINE_H_
 
 #include "_Org_Apache_Http_Message_CBasicStatusLine.h"
-#include "BasicStatusLine.h"
+#include "org/apache/http/message/BasicStatusLine.h"
 
 namespace Org {
 namespace Apache {

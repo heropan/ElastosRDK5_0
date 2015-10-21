@@ -3,7 +3,7 @@
 #define __ELASTOSX_NET_SSL_CTRUSTMANAGERFACTORYHELPER_H__
 
 #include "_Elastosx_Net_Ssl_CTrustManagerFactoryHelper.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Elastos::Security::IProvider;
 

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CHTTPPROTOCOLPARAMS_H_
 
 #include "_Org_Apache_Http_Params_CHttpProtocolParams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Org::Apache::Http::IProtocolVersion;
 

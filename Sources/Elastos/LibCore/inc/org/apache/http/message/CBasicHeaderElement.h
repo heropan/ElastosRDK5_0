@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHEADERELEMENT_H_
 
 #include "_Org_Apache_Http_Message_CBasicHeaderElement.h"
-#include "BasicHeaderElement.h"
+#include "org/apache/http/message/BasicHeaderElement.h"
 
 using Elastos::Core::IArrayOf;
 using Org::Apache::Http::IHeaderElement;

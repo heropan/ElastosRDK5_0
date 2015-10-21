@@ -1,9 +1,9 @@
 
-#include "CAuthSchemeRegistry.h"
-#include "CArrayList.h"
-#include "CLinkedHashMap.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/auth/CAuthSchemeRegistry.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/CLinkedHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;

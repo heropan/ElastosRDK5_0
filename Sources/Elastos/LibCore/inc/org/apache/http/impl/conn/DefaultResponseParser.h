@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_DefaultResponseParser_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_DefaultResponseParser_H__
 
-#include "io/AbstractMessageParser.h"
+#include "org/apache/http/impl/io/AbstractMessageParser.h"
 
 using Org::Apache::Http::IHttpResponseFactory;
 using Org::Apache::Http::IHttpMessage;

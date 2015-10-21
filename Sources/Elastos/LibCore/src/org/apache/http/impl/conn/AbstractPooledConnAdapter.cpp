@@ -1,6 +1,6 @@
 
-#include "AbstractPooledConnAdapter.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/AbstractPooledConnAdapter.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

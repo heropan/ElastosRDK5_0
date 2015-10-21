@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPPOST_H_
 
 #include "_Org_Apache_Http_Client_Methods_CHttpPost.h"
-#include "HttpEntityEnclosingRequestBase.h"
+#include "org/apache/http/client/methods/HttpEntityEnclosingRequestBase.h"
 
 namespace Org {
 namespace Apache {

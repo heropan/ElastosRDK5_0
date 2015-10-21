@@ -1,7 +1,7 @@
 
-#include "RefQueueWorker.h"
-#include "Logger.h"
-#include "Thread.h"
+#include "org/apache/http/impl/conn/tsccm/RefQueueWorker.h"
+#include "elastos/core/Thread.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::Thread;

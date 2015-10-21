@@ -1,6 +1,6 @@
 
-#include "CUrlEncodedFormEntity.h"
-#include "URLEncodedUtils.h"
+#include "org/apache/http/client/entity/CUrlEncodedFormEntity.h"
+#include "org/apache/http/client/utils/URLEncodedUtils.h"
 
 using Org::Apache::Http::Client::Utils::URLEncodedUtils;
 using Org::Apache::Http::Protocol::IHTTP;

@@ -1,8 +1,8 @@
 
-#include "RFC2965PortAttributeHandler.h"
-#include "CStringTokenizer.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/RFC2965PortAttributeHandler.h"
 #include "elastos/core/StringUtils.h"
+#include "elastos/utility/CStringTokenizer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::IStringTokenizer;

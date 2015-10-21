@@ -1,12 +1,12 @@
 
-#include "AbstractHttpClientConnection.h"
-#include "DefaultHttpResponseFactory.h"
-#include "SocketInputBuffer.h"
-#include "LaxContentLengthStrategy.h"
-#include "StrictContentLengthStrategy.h"
-#include "HttpResponseParser.h"
-#include "HttpRequestWriter.h"
-#include "Logger.h"
+#include "org/apache/http/impl/AbstractHttpClientConnection.h"
+#include "org/apache/http/impl/DefaultHttpResponseFactory.h"
+#include "org/apache/http/impl/io/SocketInputBuffer.h"
+#include "org/apache/http/impl/entity/LaxContentLengthStrategy.h"
+#include "org/apache/http/impl/entity/StrictContentLengthStrategy.h"
+#include "org/apache/http/impl/io/HttpResponseParser.h"
+#include "org/apache/http/impl/io/HttpRequestWriter.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpMessage;

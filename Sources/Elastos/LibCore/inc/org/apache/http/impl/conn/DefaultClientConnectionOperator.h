@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_DEFAULTCLIENTCONNECTIONOPERATOR_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_DEFAULTCLIENTCONNECTIONOPERATOR_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ISocket;

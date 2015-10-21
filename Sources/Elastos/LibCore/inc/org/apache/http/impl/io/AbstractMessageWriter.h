@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTMESSAGEWRITER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_ABSTRACTMESSAGEWRITER_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHttpMessage;

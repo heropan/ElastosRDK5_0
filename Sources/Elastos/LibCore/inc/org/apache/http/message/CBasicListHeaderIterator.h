@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICLISTHEADERITERATOR_H_
 
 #include "_Org_Apache_Http_Message_CBasicListHeaderIterator.h"
-#include "BasicListHeaderIterator.h"
+#include "org/apache/http/message/BasicListHeaderIterator.h"
 
 namespace Org {
 namespace Apache {

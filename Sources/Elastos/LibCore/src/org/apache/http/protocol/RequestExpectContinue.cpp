@@ -1,8 +1,8 @@
 
-#include "RequestExpectContinue.h"
-#include "CHttpVersion.h"
-#include "HttpProtocolParams.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/RequestExpectContinue.h"
+#include "org/apache/http/CHttpVersion.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CPROTOCOLVERSION_H__
 
 #include "_Org_Apache_Http_CProtocolVersion.h"
-#include "ProtocolVersion.h"
+#include "org/apache/http/ProtocolVersion.h"
 
 namespace Org {
 namespace Apache {

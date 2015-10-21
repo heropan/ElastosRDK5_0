@@ -1,5 +1,5 @@
 
-#include "CResponseConnControl.h"
+#include "org/apache/http/protocol/CResponseConnControl.h"
 
 namespace Org {
 namespace Apache {

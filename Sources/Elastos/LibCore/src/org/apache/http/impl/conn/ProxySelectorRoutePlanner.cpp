@@ -1,12 +1,12 @@
 
-#include "ProxySelectorRoutePlanner.h"
-#include "ProxySelector.h"
-#include "CHttpHost.h"
-#include "params/ConnRouteParams.h"
-#include "routing/CHttpRoute.h"
-#include "CURI.h"
-#include "CProxyHelper.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/ProxySelectorRoutePlanner.h"
+#include "org/apache/http/conn/routing/CHttpRoute.h"
+#include "org/apache/http/conn/params/ConnRouteParams.h"
+#include "org/apache/http/CHttpHost.h"
+#include "elastos/net/CURI.h"
+#include "elastos/net/ProxySelector.h"
+#include "elastos/net/CProxyHelper.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::ProxySelector;

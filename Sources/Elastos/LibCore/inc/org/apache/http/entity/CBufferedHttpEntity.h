@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_ENTITY_CBUFFEREDHTTPENTITY_H_
 
 #include "_Org_Apache_Http_Entity_CBufferedHttpEntity.h"
-#include "HttpEntityWrapper.h"
+#include "org/apache/http/entity/HttpEntityWrapper.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

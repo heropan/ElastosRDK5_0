@@ -3,17 +3,17 @@
 
 #include "DateFormat.h"
 #include <elastos/utility/etl/List.h>
-#include "StringBuffer.h"
-#include "Character.h"
+#include "elastos/core/StringBuffer.h"
+#include "elastos/core/Character.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::StringBuffer;
-using Elastos::Utility::Etl::List;
 using Elastos::Core::Character;
 using Elastos::Core::INumber;
 using Elastos::Text::IAttributedCharacterIterator;;
 using Elastos::Text::IFieldPosition;
 using Elastos::Text::IParsePosition;
+using Elastos::Utility::Etl::List;
 
 
 namespace Elastos {

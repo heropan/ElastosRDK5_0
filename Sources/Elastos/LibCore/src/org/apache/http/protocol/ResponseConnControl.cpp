@@ -1,7 +1,7 @@
 
-#include "ResponseConnControl.h"
-#include "CHttpVersion.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/ResponseConnControl.h"
+#include "org/apache/http/CHttpVersion.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IStatusLine;

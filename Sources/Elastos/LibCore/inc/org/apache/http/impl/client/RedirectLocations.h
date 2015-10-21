@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_REDIRECTLOCATIONS_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_REDIRECTLOCATIONS_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Net::IURI;
 using Elastos::Utility::ISet;

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_ENTITY_CINPUTSTREAMENTITY_H_
 
 #include "_Org_Apache_Http_Entity_CInputStreamEntity.h"
-#include "AbstractHttpEntity.h"
+#include "org/apache/http/entity/AbstractHttpEntity.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

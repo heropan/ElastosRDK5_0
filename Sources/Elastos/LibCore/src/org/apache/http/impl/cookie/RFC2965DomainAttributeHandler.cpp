@@ -1,6 +1,6 @@
 
-#include "RFC2965DomainAttributeHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/RFC2965DomainAttributeHandler.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Logging::Logger;

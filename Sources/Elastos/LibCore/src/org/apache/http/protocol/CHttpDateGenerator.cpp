@@ -1,5 +1,5 @@
 
-#include "CHttpDateGenerator.h"
+#include "org/apache/http/protocol/CHttpDateGenerator.h"
 
 namespace Org {
 namespace Apache {

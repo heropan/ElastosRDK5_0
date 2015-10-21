@@ -2,9 +2,9 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPSERVERCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_ABSTRACTHTTPSERVERCONNECTION_H__
 
-#include "HttpConnectionMetricsImpl.h"
-#include "EntityDeserializer.h"
-#include "EntitySerializer.h"
+#include "org/apache/http/impl/HttpConnectionMetricsImpl.h"
+#include "org/apache/http/impl/entity/EntityDeserializer.h"
+#include "org/apache/http/impl/entity/EntitySerializer.h"
 
 using Org::Apache::Http::IHttpServerConnection;
 using Org::Apache::Http::IHttpConnection;

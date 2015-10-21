@@ -1,5 +1,5 @@
 
-#include "CConnRouteParamBean.h"
+#include "org/apache/http/conn/params/CConnRouteParamBean.h"
 
 namespace Org {
 namespace Apache {

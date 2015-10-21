@@ -1,12 +1,12 @@
 
-#include "AbstractConnPool.h"
-#include "BasicPoolEntry.h"
-#include "BasicPoolEntryRef.h"
-#include "CThread.h"
-#include "CHashSet.h"
-#include "CLinkedList.h"
-#include "utility/concurrent/locks/CReentrantLock.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/tsccm/AbstractConnPool.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntry.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntryRef.h"
+#include "elastos/core/CThread.h"
+#include "elastos/utility/CHashSet.h"
+#include "elastos/utility/CLinkedList.h"
+#include "elastos/utility/concurrent/locks/CReentrantLock.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IThread;
 using Elastos::Core::CThread;

@@ -1,9 +1,9 @@
 
-#include "BasicHeaderElementIterator.h"
-#include "BasicHeaderValueParser.h"
-#include "CParserCursor.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicHeaderElementIterator.h"
+#include "org/apache/http/message/BasicHeaderValueParser.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::Logging::Logger;

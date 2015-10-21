@@ -1,6 +1,6 @@
 
-#include "BasicSecureHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/BasicSecureHandler.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

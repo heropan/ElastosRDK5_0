@@ -1,6 +1,6 @@
 
-#include "BestMatchSpecFactory.h"
-#include "BestMatchSpec.h"
+#include "org/apache/http/impl/cookie/BestMatchSpecFactory.h"
+#include "org/apache/http/impl/cookie/BestMatchSpec.h"
 
 using Elastos::Core::ICharSequence;
 using Org::Apache::Http::Cookie::Params::ICookieSpecPNames;

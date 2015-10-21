@@ -1,6 +1,6 @@
 
-#include "BasicListHeaderIterator.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicListHeaderIterator.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::Logging::Logger;

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_DEFAULTCLIENTCONNECTION_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_DEFAULTCLIENTCONNECTION_H__
 
-#include "SocketHttpClientConnection.h"
+#include "org/apache/http/impl/SocketHttpClientConnection.h"
 
 using Elastos::Net::ISocket;
 using Org::Apache::Http::IHttpHost;

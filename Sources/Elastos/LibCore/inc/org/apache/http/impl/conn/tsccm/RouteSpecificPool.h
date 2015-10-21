@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_ROUTESPECIFICPOOL_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_ROUTESPECIFICPOOL_H__
 
-#include "BasicPoolEntry.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntry.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Utility::IQueue;

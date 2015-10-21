@@ -1,7 +1,7 @@
 
-#include "NetscapeDomainHandler.h"
-#include "CStringTokenizer.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/NetscapeDomainHandler.h"
+#include "elastos/utility/CStringTokenizer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IStringTokenizer;
