@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_FOCUSFINDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <pthread.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>

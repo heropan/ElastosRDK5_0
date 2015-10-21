@@ -5,7 +5,6 @@ include $(MAKEDIR)/../../../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc
-INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/androidfw

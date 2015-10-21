@@ -6,9 +6,7 @@ C_DEFINES += -DDROID_CORE
 include $(MAKEDIR)/../../../../../../../sources.inc
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/systemui
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/systemui/media
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 
 SOURCES = CNotificationPlayer.cpp

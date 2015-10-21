@@ -1,11 +1,9 @@
 TARGET_NAME= nsd
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid/net/wifi/p2p/nsd
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid/net/wifi/p2p
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid/net/wifi
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid
+
 INCLUDES += ../../../../
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/
 
 SOURCES = WifiP2pServiceInfo.cpp
 SOURCES += CWifiP2pServiceInfo.cpp

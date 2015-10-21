@@ -1,10 +1,8 @@
 TARGET_NAME= p2p
 TARGET_TYPE= lib
 
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/net/wifi
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/net/wifi/p2p
 INCLUDES += ../../../
+INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 SOURCES = CWifiP2pConfig.cpp
 SOURCES += CWifiP2pDevice.cpp

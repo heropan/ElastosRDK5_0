@@ -4,8 +4,7 @@ TARGET_TYPE= lib
 C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid
-INCLUDES += $(MAKEDIR)/../../../../../inc/elastos/droid/net/http
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES += CElastosHttpClient.cpp
 SOURCES += CElastosHttpClientHelper.cpp

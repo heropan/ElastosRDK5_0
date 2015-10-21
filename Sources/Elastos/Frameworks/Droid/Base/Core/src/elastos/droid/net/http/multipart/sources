@@ -5,9 +5,7 @@ C_DEFINES += -DDROID_CORE
 
 INCLUDES += ../../
 INCLUDES += ../../../
-#INCLUDES += $(MAKEDIR)/../../../inc
-#INCLUDES += $(MAKEDIR)/../../../inc/net/http
-INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/droid/net/http/multipart
+INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 SOURCES += CByteArrayPartSource.cpp
 SOURCES += CFilePart.cpp

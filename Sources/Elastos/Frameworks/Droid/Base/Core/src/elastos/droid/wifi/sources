@@ -4,8 +4,8 @@ TARGET_TYPE= lib
 C_DEFINES += -DDROID_CORE
 
 include $(MAKEDIR)/../../../../../../../sources.inc
-INCLUDES += $(MAKEDIR)/../../../../../../Core/inc/elastos/droid
 INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 SOURCES += NetworkUpdateResult.cpp
 SOURCES += CWifiSsid.cpp

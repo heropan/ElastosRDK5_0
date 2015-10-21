@@ -5,7 +5,7 @@ include $(MAKEDIR)/../../../../../../../../../sources.inc
 
 INCLUDES += ../../../../
 INCLUDES += $(MAKEDIR)/../../../../../../../inc
-INCLUDES += $(MAKEDIR)/../../../../../../../inc/elastos/droid
+INCLUDES += $(MAKEDIR)/../../../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
