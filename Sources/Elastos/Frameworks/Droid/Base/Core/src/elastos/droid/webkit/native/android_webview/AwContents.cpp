@@ -1,3 +1,69 @@
+#include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content_public/Referrer.h"
+#include "elastos/droid/webkit/native/ui/base/ActivityWindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
+#include "elastos/droid/webkit/native/android_webview/ErrorCodeConversionHelper.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientCallbackHelper.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsStatics.h"
+#include "elastos/droid/webkit/native/android_webview/NullAwViewMethods.h"
+#include "elastos/droid/webkit/native/android_webview/AwPicture.h"
+#include "elastos/droid/webkit/native/android_webview/FullScreenView.h"
+#include "elastos/droid/webkit/native/android_webview/SslUtil.h"
+#include "elastos/droid/os/Build.h"
+//TODO #include "elastos/droid/os/CBundle"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/graphics/CRect.h"
+//TODO #include "elastos/droid/net/CUri.h"
+//TODO #include "elastos/net/CURL.h"
+//TODO #include "elastos/io/CFile.h"
+//#include "elastos/droid/widget/COverScroller.h"
+#include "elastos/core/Math.h"
+#include "elastos/core/StringUtils.h"
+//TODO #include "elastos/utility/CHashMap.h"
+#include "elastos/utility/logging/Logger.h"
+
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::EIID_IActivity;
+using Elastos::Droid::Content::EIID_IComponentCallbacks2;
+using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Os::Build;
+//TODO using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::Utility::IPair;
+//TODO using Elastos::Droid::Webkit::IGeolocationPermissions;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Content_Public::Referrer;
+using Elastos::Droid::Webkit::Ui::Base::ActivityWindowAndroid;
+using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
+using Elastos::Droid::Webkit::Ui::Gfx::DeviceDisplayInfo;
+//TODO using Elastos::Droid::Webkit::EIID_IGeolocationPermissionsCallback;
+//TODO Elastos::Droid::Widget::COverScroller;
+//TODO using Elastos::Droid::Net::CUri;
+
+
+using Elastos::Net::IURL;
+using Elastos::Net::CURL;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::CHashMap;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::Concurrent::EIID_ICallable;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +91,7 @@ AutoPtr<AwScrollOffsetManager> AwContents::DependencyFactory::CreateScrollOffset
 //===============================================================
 //                AwContents::DestroyRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::DestroyRunnable, Object, IRunnable);
 
 AwContents::DestroyRunnable::DestroyRunnable(
     /* [in] */ Int64 nativeAwContents)
@@ -54,7 +121,7 @@ AwContents::FullScreenTransitionsState::FullScreenTransitionsState(
 }
 
 void AwContents::FullScreenTransitionsState::EnterFullScreen(
-    /* [in] */ FullScreenView fullScreenView)
+    /* [in] */ FullScreenView* fullScreenView)
 {
     mFullScreenView = fullScreenView;
 }
@@ -74,7 +141,7 @@ AutoPtr<IViewGroup> AwContents::FullScreenTransitionsState::GetInitialContainerV
     return mInitialContainerView;
 }
 
-AutoPtr<InternalAccessDelegate> AwContents::FullScreenTransitionsState::GetInitialInternalAccessDelegate()
+AutoPtr<AwContents::InternalAccessDelegate> AwContents::FullScreenTransitionsState::GetInitialInternalAccessDelegate()
 {
     return mInitialInternalAccessAdapter;
 }
@@ -102,7 +169,7 @@ AwContents::IoThreadClientImpl::IoThreadClientImpl(
 //@Override
 Int32 AwContents::IoThreadClientImpl::GetCacheMode()
 {
-    return mSettings->GetCacheMode();
+    return mOwner->mSettings->GetCacheMode();
 }
 
 //@Override
@@ -112,23 +179,23 @@ AutoPtr<AwWebResourceResponse> AwContents::IoThreadClientImpl::ShouldInterceptRe
     String url = params->url;
     AutoPtr<AwWebResourceResponse> awWebResourceResponse;
     // Return the response directly if the url is default video poster url.
-    awWebResourceResponse = mDefaultVideoPosterRequestHandler->ShouldInterceptRequest(url);
+    awWebResourceResponse = mOwner->mDefaultVideoPosterRequestHandler->ShouldInterceptRequest(url);
     if (awWebResourceResponse != NULL) return awWebResourceResponse;
 
-    awWebResourceResponse = mContentsClient->ShouldInterceptRequest(params);
+    awWebResourceResponse = mOwner->mContentsClient->ShouldInterceptRequest(params);
 
     if (awWebResourceResponse == NULL) {
-        mContentsClient->GetCallbackHelper()->PostOnLoadResource(url);
+        mOwner->mContentsClient->GetCallbackHelper()->PostOnLoadResource(url);
     }
 
-    if (params.isMainFrame && awWebResourceResponse != NULL &&
+    if (params->isMainFrame && awWebResourceResponse != NULL &&
             awWebResourceResponse->GetData() == NULL) {
         // In this case the intercepted URLRequest job will simulate an empty response
         // which doesn't trigger the onReceivedError callback. For WebViewClassic
         // compatibility we synthesize that callback. http://crbug.com/180950
-        mContentsClient->GetCallbackHelper()->PostOnReceivedError(
+        mOwner->mContentsClient->GetCallbackHelper()->PostOnReceivedError(
                 ErrorCodeConversionHelper::ERROR_UNKNOWN,
-                NULL /* filled in by the glue layer */, url);
+                String(NULL) /* filled in by the glue layer */, url);
     }
     return awWebResourceResponse;
 }
@@ -136,25 +203,25 @@ AutoPtr<AwWebResourceResponse> AwContents::IoThreadClientImpl::ShouldInterceptRe
 //@Override
 Boolean AwContents::IoThreadClientImpl::ShouldBlockContentUrls()
 {
-    return (!mSettings->GetAllowContentAccess());
+    return (!mOwner->mSettings->GetAllowContentAccess());
 }
 
 //@Override
 Boolean AwContents::IoThreadClientImpl::ShouldBlockFileUrls()
 {
-    return (!mSettings->GetAllowFileAccess());
+    return (!mOwner->mSettings->GetAllowFileAccess());
 }
 
 //@Override
 Boolean AwContents::IoThreadClientImpl::ShouldBlockNetworkLoads()
 {
-    return mSettings->GetBlockNetworkLoads();
+    return mOwner->mSettings->GetBlockNetworkLoads();
 }
 
 //@Override
 Boolean AwContents::IoThreadClientImpl::ShouldAcceptThirdPartyCookies()
 {
-    return mSettings->GetAcceptThirdPartyCookies();
+    return mOwner->mSettings->GetAcceptThirdPartyCookies();
 }
 
 //@Override
@@ -165,7 +232,7 @@ void AwContents::IoThreadClientImpl::OnDownloadStart(
     /* [in] */ const String& mimeType,
     /* [in] */ Int64 contentLength)
 {
-    mContentsClient->GetCallbackHelper()->PostOnDownloadStart(url, userAgent,
+    mOwner->mContentsClient->GetCallbackHelper()->PostOnDownloadStart(url, userAgent,
             contentDisposition, mimeType, contentLength);
 }
 
@@ -175,7 +242,7 @@ void AwContents::IoThreadClientImpl::NewLoginRequest(
     /* [in] */ const String& account,
     /* [in] */ const String& args)
 {
-    mContentsClient->GetCallbackHelper()->PostOnReceivedLoginRequest(realm, account, args);
+    mOwner->mContentsClient->GetCallbackHelper()->PostOnReceivedLoginRequest(realm, account, args);
 }
 
 //===============================================================
@@ -194,19 +261,19 @@ Boolean AwContents::InterceptNavigationDelegateImpl::ShouldIgnoreNavigation(
 {
     const String url = navigationParams->url;
     Boolean ignoreNavigation = FALSE;
-    if (mDeferredShouldOverrideUrlLoadingIsPendingForPopup) {
-        mDeferredShouldOverrideUrlLoadingIsPendingForPopup = FALSE;
+    if (mOwner->mDeferredShouldOverrideUrlLoadingIsPendingForPopup) {
+        mOwner->mDeferredShouldOverrideUrlLoadingIsPendingForPopup = FALSE;
         // If this is used for all navigations in future, cases for application initiated
         // load, redirect and backforward should also be filtered out.
         if (!navigationParams->isPost) {
-            ignoreNavigation = mContentsClient->ShouldOverrideUrlLoading(url);
+            ignoreNavigation = mOwner->mContentsClient->ShouldOverrideUrlLoading(url);
         }
     }
     // The shouldOverrideUrlLoading call might have resulted in posting messages to the
     // UI thread. Using sendMessage here (instead of calling onPageStarted directly)
     // will allow those to run in order.
     if (!ignoreNavigation) {
-        mContentsClient->GetCallbackHelper()->PostOnPageStarted(url);
+        mOwner->mContentsClient->GetCallbackHelper()->PostOnPageStarted(url);
     }
     return ignoreNavigation;
 }
@@ -224,7 +291,8 @@ AwContents::AwLayoutSizerDelegate::AwLayoutSizerDelegate(
 //@Override
 void AwContents::AwLayoutSizerDelegate::RequestLayout()
 {
-    mContainerView->RequestLayout();
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    view->RequestLayout();
 }
 
 //@Override
@@ -232,21 +300,27 @@ void AwContents::AwLayoutSizerDelegate::SetMeasuredDimension(
     /* [in] */ Int32 measuredWidth,
     /* [in] */ Int32 measuredHeight)
 {
-    mInternalAccessAdapter->SetMeasuredDimension(measuredWidth, measuredHeight);
+    mOwner->mInternalAccessAdapter->SetMeasuredDimension(measuredWidth, measuredHeight);
 }
 
 //@Override
 Boolean AwContents::AwLayoutSizerDelegate::IsLayoutParamsHeightWrapContent()
 {
-    return mContainerView->GetLayoutParams() != NULL &&
-            mContainerView->GetLayoutParams()->height == IViewGroupLayoutParams::WRAP_CONTENT;
+    AutoPtr<IViewGroupLayoutParams> layoutParams;
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    view->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
+    if (layoutParams == NULL)
+        return FALSE;
+    Int32 height;
+    layoutParams->GetHeight(&height);
+    return height == IViewGroupLayoutParams::WRAP_CONTENT;
 }
 
 //@Override
 void AwContents::AwLayoutSizerDelegate::SetForceZeroLayoutHeight(
     /* [in] */ Boolean forceZeroHeight)
 {
-    GetSettings()->SetForceZeroLayoutHeight(forceZeroHeight);
+    mOwner->GetSettings()->SetForceZeroLayoutHeight(forceZeroHeight);
 }
 
 //===============================================================
@@ -269,7 +343,7 @@ void AwContents::AwScrollOffsetManagerDelegate::OverScrollContainerViewBy(
     /* [in] */ Int32 scrollRangeY,
     /* [in] */ Boolean isTouchEvent)
 {
-    mInternalAccessAdapter->OverScrollBy(deltaX, deltaY, scrollX, scrollY,
+    mOwner->mInternalAccessAdapter->OverScrollBy(deltaX, deltaY, scrollX, scrollY,
             scrollRangeX, scrollRangeY, 0, 0, isTouchEvent);
 }
 
@@ -278,7 +352,7 @@ void AwContents::AwScrollOffsetManagerDelegate::ScrollContainerViewTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    mInternalAccessAdapter->Super_scrollTo(x, y);
+    mOwner->mInternalAccessAdapter->Super_scrollTo(x, y);
 }
 
 //@Override
@@ -286,26 +360,35 @@ void AwContents::AwScrollOffsetManagerDelegate::ScrollNativeTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    if (mNativeAwContents == 0) return;
-    NativeScrollTo(mNativeAwContents, x, y);
+    if (mOwner->mNativeAwContents == 0) return;
+    mOwner->NativeScrollTo(mOwner->mNativeAwContents, x, y);
 }
 
 //@Override
 Int32 AwContents::AwScrollOffsetManagerDelegate::GetContainerViewScrollX()
 {
-    return mContainerView->GetScrollX();
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    //return mOwner->mContainerView->GetScrollX();
+    Int32 x;
+    view->GetScrollX(&x);
+    return x;
 }
 
 //@Override
 Int32 AwContents::AwScrollOffsetManagerDelegate::GetContainerViewScrollY()
 {
-    return mContainerView->GetScrollY();
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    //return mOwner->mContainerView->GetScrollY();
+    Int32 y;
+    view->GetScrollY(&y);
+    return y;
 }
 
 //@Override
 void AwContents::AwScrollOffsetManagerDelegate::Invalidate()
 {
-    mContainerView->Invalidate();
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    view->Invalidate();
 }
 
 //===============================================================
@@ -327,19 +410,19 @@ void AwContents::AwGestureStateListener::OnPinchStarted()
     // screen). It's also quite expensive to do a re-layout, so we simply postpone
     // re-layout for the duration of the gesture. This is compatible with what
     // WebViewClassic does.
-    mLayoutSizer->FreezeLayoutRequests();
+    mOwner->mLayoutSizer->FreezeLayoutRequests();
 }
 
 //@Override
 void AwContents::AwGestureStateListener::OnPinchEnded()
 {
-    mLayoutSizer->UnfreezeLayoutRequests();
+    mOwner->mLayoutSizer->UnfreezeLayoutRequests();
 }
 
 //@Override
 void AwContents::AwGestureStateListener::OnFlingCancelGesture()
 {
-    mScrollOffsetManager->OnFlingCancelGesture();
+    mOwner->mScrollOffsetManager->OnFlingCancelGesture();
 }
 
 //@Override
@@ -347,18 +430,19 @@ void AwContents::AwGestureStateListener::OnUnhandledFlingStartEvent(
     /* [in] */ Int32 velocityX,
     /* [in] */ Int32 velocityY)
 {
-    mScrollOffsetManager->OnUnhandledFlingStartEvent(velocityX, velocityY);
+    mOwner->mScrollOffsetManager->OnUnhandledFlingStartEvent(velocityX, velocityY);
 }
 
 //@Override
 void AwContents::AwGestureStateListener::OnScrollUpdateGestureConsumed()
 {
-    mScrollAccessibilityHelper->PostViewScrolledAccessibilityEventCallback();
+    mOwner->mScrollAccessibilityHelper->PostViewScrolledAccessibilityEventCallback();
 }
 
 //===============================================================
 //              AwContents::AwComponentCallbacks
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::AwComponentCallbacks, Object, IComponentCallbacks2);
 
 AwContents::AwComponentCallbacks::AwComponentCallbacks(
     /* [in] */ AwContents* owner)
@@ -367,13 +451,15 @@ AwContents::AwComponentCallbacks::AwComponentCallbacks(
 }
 
 //@Override
-void AwContents::AwComponentCallbacks::OnTrimMemory(
+ECode AwContents::AwComponentCallbacks::OnTrimMemory(
     /* [in] */ Int32 level)
 {
-    if (mNativeAwContents == 0) return;
-    Boolean visibleRectEmpty = GetGlobalVisibleRect()->IsEmpty();
-    const Boolean visible = mIsViewVisible && mIsWindowVisible && !visibleRectEmpty;
-    NativeTrimMemory(mNativeAwContents, level, visible);
+    if (mOwner->mNativeAwContents == 0) return NOERROR;
+    Boolean visibleRectEmpty;
+    mOwner->GetGlobalVisibleRect()->IsEmpty(&visibleRectEmpty);
+    const Boolean visible = mOwner->mIsViewVisible && mOwner->mIsWindowVisible && !visibleRectEmpty;
+    mOwner->NativeTrimMemory(mOwner->mNativeAwContents, level, visible);
+    return NOERROR;
 }
 
 //@Override
@@ -390,6 +476,7 @@ void AwContents::AwComponentCallbacks::OnConfigurationChanged(
 //===============================================================
 //             AwContents::AwLayoutChangeListener
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::AwLayoutChangeListener, Object, IViewOnLayoutChangeListener);
 
 AwContents::AwLayoutChangeListener::AwLayoutChangeListener(
     /* [in] */ AwContents* owner)
@@ -409,8 +496,9 @@ ECode AwContents::AwLayoutChangeListener::OnLayoutChange(
     /* [in] */ Int32 oldRight,
     /* [in] */ Int32 oldBottom)
 {
-    assert(v == mContainerView);
+    //assert(v == mContainerView);
     mOwner->mLayoutSizer->OnLayoutChange();
+    return NOERROR;
 }
 
 //===============================================================
@@ -418,7 +506,10 @@ ECode AwContents::AwLayoutChangeListener::OnLayoutChange(
 //===============================================================
 
 AwContents::InnerZoomSupportChangeListener::InnerZoomSupportChangeListener(
-    /* [in] */ AwContents* owner);
+    /* [in] */ AwContents* owner)
+    :mOwner(owner)
+{
+}
 
 //@Override
 void AwContents::InnerZoomSupportChangeListener::OnGestureZoomSupportChanged(
@@ -432,6 +523,7 @@ void AwContents::InnerZoomSupportChangeListener::OnGestureZoomSupportChanged(
 //===============================================================
 //                   AwContents::InnerCallable
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::InnerCallable, Object, ICallable);
 
 AwContents::InnerCallable::InnerCallable(
     /* [in] */ AwContents* owner)
@@ -440,10 +532,11 @@ AwContents::InnerCallable::InnerCallable(
 }
 
 ECode AwContents::InnerCallable::Call(
-    /* [out] */ IPicture** pic)
+    /* [out] */ IInterface** pic)//IPicture
 {
     VALIDATE_NOT_NULL(pic);
-    *pic = mOwner->CapturePicture();
+    AutoPtr<IPicture> picture = mOwner->CapturePicture();
+    *pic = picture->Probe(EIID_IInterface);
     REFCOUNT_ADD(*pic);
     return NOERROR;
 }
@@ -460,9 +553,14 @@ AwContents::InnerValueCallback::InnerValueCallback(
 }
 
 ECode AwContents::InnerValueCallback::OnReceiveValue(
-    /* [in] */ ArrayOf<String>* value)
+    /* [in] */ IInterface* value)//ArrayOf<String>
 {
-    AutoPtr<IRunnable> runnable = new InnerRunnable(this);
+    AutoPtr<ArrayOf<String> > arrayStr;
+    if (value != NULL)
+    {
+        //TODO how to get the strings, what kind of form in value, ArrayList??
+    }
+    AutoPtr<IRunnable> runnable = new InnerRunnable(this, arrayStr);
     ThreadUtils::RunOnUiThread(runnable);
     return NOERROR;
 }
@@ -470,6 +568,7 @@ ECode AwContents::InnerValueCallback::OnReceiveValue(
 //===============================================================
 //        AwContents::InnerValueCallback::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::InnerValueCallback::InnerRunnable, Object, IRunnable);
 
 AwContents::InnerValueCallback::InnerRunnable::InnerRunnable(
     /* [in] */ InnerValueCallback* owner,
@@ -481,7 +580,7 @@ AwContents::InnerValueCallback::InnerRunnable::InnerRunnable(
 
 ECode AwContents::InnerValueCallback::InnerRunnable::Run()
 {
-    if (mOwner->mOwner->mNativeAwContents == 0) return;
+    if (mOwner->mOwner->mNativeAwContents == 0) return NOERROR;
     mOwner->mOwner->NativeAddVisitedLinks(mOwner->mOwner->mNativeAwContents, mValue);
     return NOERROR;
 }
@@ -492,7 +591,7 @@ ECode AwContents::InnerValueCallback::InnerRunnable::Run()
 
 AwContents::InnerJavaScriptCallback::InnerJavaScriptCallback(
     /* [in] */ AwContents* owner,
-    /* [in] */ IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
     : mOwner(owner)
     , mCallback(callback)
 {
@@ -501,26 +600,33 @@ AwContents::InnerJavaScriptCallback::InnerJavaScriptCallback(
 void AwContents::InnerJavaScriptCallback::HandleJavaScriptResult(
     /* [in] */ const String& jsonResult)
 {
-    mCallback->OnReceiveValue(jsonResult);
+    //TODO transfer jsonResult to a kind of object with IInterface support
+    AutoPtr<ICharSequence> icsq;
+    CString::New(jsonResult, (ICharSequence**)&icsq);
+    AutoPtr<IInterface> result = icsq->Probe(EIID_IInterface);
+    //TODO mCallback->OnReceiveValue(result);
 }
 
 //===============================================================
 //             AwContents::AwGeolocationCallback
 //===============================================================
+//CAR_INTERFACE_IMPL(AwContents::AwGeolocationCallback, Object, IGeolocationPermissionsCallback);
 
 //@Override
-void AwContents::AwGeolocationCallback::Invoke(
+ECode AwContents::AwGeolocationCallback::Invoke(
     /* [in] */ const String& origin,
     /* [in] */ Boolean allow,
     /* [in] */ Boolean retain)
 {
     AutoPtr<IRunnable> runnable = new InnerRunnable(this, origin, allow, retain);
     ThreadUtils::RunOnUiThread(runnable);
+    return NOERROR;
 }
 
 //===============================================================
 //       AwContents::AwGeolocationCallback::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::AwGeolocationCallback::InnerRunnable, Object, IRunnable);
 
 AwContents::AwGeolocationCallback::InnerRunnable::InnerRunnable(
     /* [in] */ AwGeolocationCallback* owner,
@@ -538,25 +644,64 @@ ECode AwContents::AwGeolocationCallback::InnerRunnable::Run()
 {
     if (mRetain) {
         if (mAllow) {
-            mBrowserContext->GetGeolocationPermissions()->Allow(mOrigin);
+            mOwner->mOwner->mBrowserContext->GetGeolocationPermissions()->Allow(mOrigin);
         }
         else {
-            mBrowserContext->GetGeolocationPermissions()->Deny(mOrigin);
+            mOwner->mOwner->mBrowserContext->GetGeolocationPermissions()->Deny(mOrigin);
         }
     }
-    if (mNativeAwContents == 0) return;
-    mOwner->NativeInvokeGeolocationCallback(mOwner->mNativeAwContents, mAllow, mOrigin);
+    if (mOwner->mOwner->mNativeAwContents == 0) return NOERROR;;
+    mOwner->mOwner->NativeInvokeGeolocationCallback(mOwner->mOwner->mNativeAwContents, mAllow, mOrigin);
 
+    return NOERROR;
+}
+
+//===============================================================
+//          AwContents::SaveWebArchiveInternalTask
+//===============================================================
+AwContents::SaveWebArchiveInternalTask::SaveWebArchiveInternalTask(
+    /* [in] */ AwContents* owner,
+    /* [in] */ const String& basename,
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
+    : mOwner(owner)
+    , mBasename(basename)
+    , mCallback(callback)
+{
+}
+
+ECode AwContents::SaveWebArchiveInternalTask::DoInBackground(
+    /* [in] */ ArrayOf<IInterface*>* params,
+    /* [out] */ IInterface** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    String namePath = mOwner->GenerateArchiveAutoNamePath(mOwner->GetOriginalUrl(), mBasename);
+    AutoPtr<ICharSequence> csq;
+    CString::New(namePath, (ICharSequence**)&csq);
+    *result = csq.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+//@Override
+ECode AwContents::SaveWebArchiveInternalTask::OnPostExecute(
+    /* [in] */ IInterface* result)
+{
+    AutoPtr<ICharSequence> csq = ICharSequence::Probe(result);
+    String res;
+    csq->ToString(&res);
+    mOwner->SaveWebArchiveInternal(res, mCallback);
     return NOERROR;
 }
 
 //===============================================================
 //          AwContents::SaveWebArchiveInternalRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwContents::SaveWebArchiveInternalRunnable, Object, IRunnable);
 
 AwContents::SaveWebArchiveInternalRunnable::SaveWebArchiveInternalRunnable(
     /* [in] */ AwContents* owner,
-    /* [in] */ const IValueCallback* callback)
+    /* [in] */ /*IValueCallback*/IInterface* callback)
     : mOwner(owner)
     , mCallback(callback)
 {
@@ -564,7 +709,8 @@ AwContents::SaveWebArchiveInternalRunnable::SaveWebArchiveInternalRunnable(
 
 ECode AwContents::SaveWebArchiveInternalRunnable::Run()
 {
-    return mCallback->OnReceiveValue(NULL);
+    //TODO return mCallback->OnReceiveValue(NULL);
+    return E_NOT_IMPLEMENTED;
 }
 
 //===============================================================
@@ -573,7 +719,7 @@ ECode AwContents::SaveWebArchiveInternalRunnable::Run()
 
 AwContents::InnerSmartClipDataListener::InnerSmartClipDataListener(
     /* [in] */ AwContents* owner,
-    /* [in] */ const IHandler* resultHandler)
+    /* [in] */ IHandler* resultHandler)
     : mOwner(owner)
     , mResultHandler(resultHandler)
 {
@@ -585,17 +731,18 @@ void AwContents::InnerSmartClipDataListener::OnSmartClipDataExtracted(
     /* [in] */ IRect* clipRect)
 {
     AutoPtr<IBundle> bundle;
-    CBundle::New((IBundle**)&bundle);
-    bundle->PutString(String("url"), mContentViewCore->GetWebContents()->GetVisibleUrl());
-    bundle->PutString(String("title"), mContentViewCore->GetWebContents()->GetTitle());
-    bundle->PutParcelable(String("rect"), clipRect);
+    //TODO CBundle::New((IBundle**)&bundle);
+    bundle->PutString(String("url"), mOwner->mContentViewCore->GetWebContents()->GetVisibleUrl());
+    bundle->PutString(String("title"), mOwner->mContentViewCore->GetWebContents()->GetTitle());
+    AutoPtr<IParcelable> rectParcelable = IParcelable::Probe(clipRect);
+    bundle->PutParcelable(String("rect"), rectParcelable);
     bundle->PutString(String("text"), text);
     bundle->PutString(String("html"), html);
     //try {
         AutoPtr<IMessageHelper> msgHelper;
         CMessageHelper::AcquireSingleton((IMessageHelper**)&msgHelper);
         AutoPtr<IMessage> msg;
-        msgHelper->Obtain(resultHandler, 0, (IMessageHelper**)&msgHelper);
+        msgHelper->Obtain(mResultHandler, 0, (IMessage**)&msgHelper);
         msg->SetData(bundle);
         msg->SendToTarget();
     //} catch (Exception e) {
@@ -617,8 +764,8 @@ static AutoPtr<IRect> ClipBoundsTemporaryCreate()
 AwContents::AwViewMethodsImpl::AwViewMethodsImpl(
     /* [in] */ AwContents* owner)
     : mOwner(owner)
-    , mLayerType(IView::LAYER_TYPE_NONE)
     , mClipBoundsTemporary(ClipBoundsTemporaryCreate())
+    , mLayerType(IView::LAYER_TYPE_NONE)
 {
 }
 
@@ -636,7 +783,7 @@ void AwContents::AwViewMethodsImpl::OnDraw(
     Boolean bIsHardwareAccelerated = FALSE;
     Boolean bIsNonEmpty = FALSE;
     canvas->IsHardwareAccelerated(&bIsHardwareAccelerated);
-    canvas->GetClipBounds(mOwner->mClipBoundsTemporary, &bIsNonEmpty);
+    canvas->GetClipBounds(mClipBoundsTemporary, &bIsNonEmpty);
     if (!bIsHardwareAccelerated && !bIsNonEmpty) {
         return;
     }
@@ -649,8 +796,9 @@ void AwContents::AwViewMethodsImpl::OnDraw(
     globalVisibleRect->GetTop(&top);
     globalVisibleRect->GetBottom(&bottom);
     Int32 scrollX, scrollY;
-    mOwner->mContainerView->GetScrollX(&scrollX);
-    mOwner->mContainerView->GetScrollY(&scrollY);
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    view->GetScrollX(&scrollX);
+    view->GetScrollY(&scrollY);
     if (!mOwner->NativeOnDraw(mOwner->mNativeAwContents, canvas, bIsHardwareAccelerated,
             scrollX, scrollY, left, top, right, bottom)) {
         // Can happen during initialization when compositor is not set
@@ -662,7 +810,7 @@ void AwContents::AwViewMethodsImpl::OnDraw(
     if (mOwner->mOverScrollGlow != NULL && mOwner->mOverScrollGlow->DrawEdgeGlows(canvas,
             mOwner->mScrollOffsetManager->ComputeMaximumHorizontalScrollOffset(),
             mOwner->mScrollOffsetManager->ComputeMaximumVerticalScrollOffset())) {
-        mOwner->mContainerView->Invalidate();
+        view->Invalidate();
     }
 }
 
@@ -671,14 +819,17 @@ void AwContents::AwViewMethodsImpl::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    mLayoutSizer->OnMeasure(widthMeasureSpec, heightMeasureSpec);
+    mOwner->mLayoutSizer->OnMeasure(widthMeasureSpec, heightMeasureSpec);
 }
 
 //@Override
 void AwContents::AwViewMethodsImpl::RequestFocus()
 {
     if (mOwner->mNativeAwContents == 0) return;
-    if (!mOwner->mContainerView->isInTouchMode() && mOwner->mSettings->ShouldFocusFirstNode()) {
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    Boolean inTouchMode;
+    view->IsInTouchMode(&inTouchMode);
+    if (!inTouchMode && mOwner->mSettings->ShouldFocusFirstNode()) {
         mOwner->NativeFocusFirstNode(mOwner->mNativeAwContents);
     }
 }
@@ -688,23 +839,26 @@ void AwContents::AwViewMethodsImpl::SetLayerType(
     /* [in] */ Int32 layerType,
     /* [in] */ IPaint* paint)
 {
-    mOwner->mLayerType = layerType;
-    mOwner->UpdateHardwareAcceleratedFeaturesToggle();
+    mLayerType = layerType;
+    UpdateHardwareAcceleratedFeaturesToggle();
 }
 
 void AwContents::AwViewMethodsImpl::UpdateHardwareAcceleratedFeaturesToggle()
 {
-    mOwner->mSettings.setEnableSupportedHardwareAcceleratedFeatures(
-            mOwner->mIsAttachedToWindow && mOwner->mContainerView->IsHardwareAccelerated() &&
-                    (mOwner->mLayerType == IView::LAYER_TYPE_NONE
-                    || mOwner->mLayerType == IView::LAYER_TYPE_HARDWARE));
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    Boolean isHardWareAccelerated;
+    view->IsHardwareAccelerated(&isHardWareAccelerated);
+    mOwner->mSettings->SetEnableSupportedHardwareAcceleratedFeatures(
+            mOwner->mIsAttachedToWindow && isHardWareAccelerated &&
+                    (mLayerType == IView::LAYER_TYPE_NONE
+                    || mLayerType == IView::LAYER_TYPE_HARDWARE));
 }
 
 //@Override
 AutoPtr<IInputConnection> AwContents::AwViewMethodsImpl::OnCreateInputConnection(
     /* [in] */ IEditorInfo* outAttrs)
 {
-    return mContentViewCore->OnCreateInputConnection(outAttrs);
+    return mOwner->mContentViewCore->OnCreateInputConnection(outAttrs);
 }
 
 //@Override
@@ -719,7 +873,7 @@ Boolean AwContents::AwViewMethodsImpl::OnKeyUp(
 Boolean AwContents::AwViewMethodsImpl::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    if (mOwner->IsDpadEvent(event)) {
+    if (IsDpadEvent(event)) {
         mOwner->mSettings->SetSpatialNavigationEnabled(TRUE);
     }
     return mOwner->mContentViewCore->DispatchKeyEvent(event);
@@ -767,12 +921,12 @@ Boolean AwContents::AwViewMethodsImpl::OnTouchEvent(
 
         // Note this will trigger IPC back to browser even if nothing is
         // hit.
-        Int32 x, y;
+        Float x, y;
         event->GetX(actionIndex, &x);
         event->GetY(actionIndex, &y);
-        NativeRequestNewHitTestDataAt(mOwner->mNativeAwContents,
-                (Int32) Math::Round(x / mOwner->mDIPScale),
-                (Int32) Math::Round(y / mOwner->mDIPScale));
+        mOwner->NativeRequestNewHitTestDataAt(mOwner->mNativeAwContents,
+                (Int32) Elastos::Core::Math::Round(x / mOwner->mDIPScale),
+                (Int32) Elastos::Core::Math::Round(y / mOwner->mDIPScale));
     }
 
     if (mOwner->mOverScrollGlow != NULL) {
@@ -815,42 +969,45 @@ void AwContents::AwViewMethodsImpl::OnAttachedToWindow()
 {
     if (mOwner->mNativeAwContents == 0) return;
     if (mOwner->mIsAttachedToWindow) {
-//        Log.w(TAG, "onAttachedToWindow called when already attached. Ignoring");
+        Logger::W(TAG, "onAttachedToWindow called when already attached. Ignoring");
         return;
     }
     mOwner->mIsAttachedToWindow = TRUE;
 
     mOwner->mContentViewCore->OnAttachedToWindow();
     Int32 width, height;
-    mOwner->mContainerView->GetWidth(&width);
-    mOwner->mContainerView->GetHeight(&height);
-    AwContents::AwViewMethodsImpl::NativeOnAttachedToWindow(mOwner->mNativeAwContents, height, height);
-    AwContents::AwViewMethodsImpl::UpdateHardwareAcceleratedFeaturesToggle();
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    view->GetWidth(&width);
+    view->GetHeight(&height);
+    mOwner->NativeOnAttachedToWindow(mOwner->mNativeAwContents, height, height);
+    UpdateHardwareAcceleratedFeaturesToggle();
 
-    if (mOwner->mComponentCallbacks != NULL) return;
-    mOwner->mComponentCallbacks = new AwComponentCallbacks();
-    mOwner->mContext->RegisterComponentCallbacks(mOwner->mComponentCallbacks);
+    if (mComponentCallbacks != NULL) return;
+    mComponentCallbacks = new AwComponentCallbacks(mOwner);
+    AutoPtr<IComponentCallbacks> cbs = IComponentCallbacks::Probe(mComponentCallbacks);
+    mOwner->mContext->RegisterComponentCallbacks(cbs);
 }
 
 //@Override
 void AwContents::AwViewMethodsImpl::OnDetachedFromWindow()
 {
     if (!mOwner->mIsAttachedToWindow) {
-//        Log.w(TAG, "onDetachedFromWindow called when already detached. Ignoring");
+        Logger::W(TAG, "onDetachedFromWindow called when already detached. Ignoring");
         return;
     }
     mOwner->mIsAttachedToWindow = FALSE;
-    HideAutofillPopup();
+    mOwner->HideAutofillPopup();
     if (mOwner->mNativeAwContents != 0) {
-        NativeOnDetachedFromWindow(mOwner->mNativeAwContents);
+        mOwner->NativeOnDetachedFromWindow(mOwner->mNativeAwContents);
     }
 
     mOwner->mContentViewCore->OnDetachedFromWindow();
     UpdateHardwareAcceleratedFeaturesToggle();
 
-    if (mOwner->mComponentCallbacks != NULL) {
-        mOwner->mContext->UnregisterComponentCallbacks(mOwner->mComponentCallbacks);
-        mOwner->mComponentCallbacks = NULL;
+    if (mComponentCallbacks != NULL) {
+        AutoPtr<IComponentCallbacks> cbs = IComponentCallbacks::Probe(mComponentCallbacks);
+        mOwner->mContext->UnregisterComponentCallbacks(cbs);
+        mComponentCallbacks = NULL;
     }
 
     mOwner->mScrollAccessibilityHelper->RemovePostedCallbacks();
@@ -900,7 +1057,8 @@ void AwContents::AwViewMethodsImpl::OnVisibilityChanged(
     /* [in] */ Int32 _visibility)
 {
     Int32 visibility;
-    mOwner->mContainerView->GetVisibility(&visibility);
+    AutoPtr<IView> view = IView::Probe(mOwner->mContainerView);
+    view->GetVisibility(&visibility);
     Boolean viewVisible = visibility == IView::VISIBLE;
     if (mOwner->mIsViewVisible == viewVisible) return;
     mOwner->SetViewVisibilityInternal(viewVisible);
@@ -912,7 +1070,7 @@ void AwContents::AwViewMethodsImpl::OnWindowVisibilityChanged(
 {
     Boolean windowVisible = visibility == IView::VISIBLE;
     if (mOwner->mIsWindowVisible == windowVisible) return;
-    mOwner->setWindowVisibilityInternal(windowVisible);
+    mOwner->SetWindowVisibilityInternal(windowVisible);
 }
 
 //===============================================================
@@ -928,16 +1086,16 @@ AutoPtr<IRect> sLocalGlobalVisibleRectCreate()
 
 const String AwContents::TAG("AwContents");
 const String AwContents::WEB_ARCHIVE_EXTENSION(".mht");
-const Float AwContents::ZOOM_CONTROLS_EPSILON;
+const Float AwContents::ZOOM_CONTROLS_EPSILON = 0.007f;
 const AutoPtr<IRect> AwContents::sLocalGlobalVisibleRect = sLocalGlobalVisibleRectCreate();
 const String AwContents::SAVE_RESTORE_STATE_KEY("WEBVIEW_CHROMIUM_STATE");
-const Boolean AwContents::SUPPORTS_ON_ANIMATION = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+const Boolean AwContents::SUPPORTS_ON_ANIMATION = Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN;
 
 void AwContents::Init(
     /* [in] */ AwBrowserContext* browserContext,
     /* [in] */ IViewGroup* containerView,
     /* [in] */ IContext* context,
-    /* [in] */ InternalAccessDelegate* internalAccessAdapter,
+    /* [in] */ AwContents::InternalAccessDelegate* internalAccessAdapter,
     /* [in] */ NativeGLDelegate* nativeGLDelegate,
     /* [in] */ AwContentsClient* contentsClient,
     /* [in] */ AwSettings* settings,
@@ -970,41 +1128,44 @@ void AwContents::Init(
     mInternalAccessAdapter = internalAccessAdapter;
     mNativeGLDelegate = nativeGLDelegate;
     mContentsClient = contentsClient;
-    mAwViewMethods = new AwViewMethodsImpl();
+    mAwViewMethods = new AwViewMethodsImpl(this);
     mFullScreenTransitionsState = new FullScreenTransitionsState(
             mContainerView, mInternalAccessAdapter, mAwViewMethods);
     mContentViewClient = new AwContentViewClient(contentsClient, settings, this, mContext);
     mLayoutSizer = dependencyFactory->CreateLayoutSizer();
     mSettings = settings;
-    mDIPScale = DeviceDisplayInfo->Create(mContext)->GetDIPScale();
-    AutoPtr<AwLayoutSizerDelegate> alsd = new AwLayoutSizerDelegate();
+    mDIPScale = DeviceDisplayInfo::Create(mContext)->GetDIPScale();
+    AutoPtr<AwLayoutSizerDelegate> alsd = new AwLayoutSizerDelegate(this);
     mLayoutSizer->SetDelegate(alsd);
     mLayoutSizer->SetDIPScale(mDIPScale);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     mWebContentsDelegate = new AwWebContentsDelegateAdapter(
-            contentsClient, mContainerView, mContext);
+            contentsClient, view, mContext);
     mContentsClientBridge = new AwContentsClientBridge(contentsClient,
-            mBrowserContext->GetKeyStore(), AwContentsStatics->GetClientCertLookupTable());
+            mBrowserContext->GetKeyStore(), AwContentsStatics::GetClientCertLookupTable());
     mZoomControls = new AwZoomControls(this);
-    mIoThreadClient = new IoThreadClientImpl();
-    mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
+    mIoThreadClient = new IoThreadClientImpl(this);
+    mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl(this);
 
     AutoPtr<AwSettings::ZoomSupportChangeListener> zoomListener = new InnerZoomSupportChangeListener(this);
     mSettings->SetZoomListener(zoomListener);
     mDefaultVideoPosterRequestHandler = new DefaultVideoPosterRequestHandler(mContentsClient);
     mSettings->SetDefaultVideoPosterURL(
-            mDefaultVideoPosterRequestHandler.getDefaultVideoPosterURL());
+            mDefaultVideoPosterRequestHandler->GetDefaultVideoPosterURL());
     mSettings->SetDIPScale(mDIPScale);
 
-    AutoPtr<AwScrollOffsetManagerDelegate> asomd = new AwScrollOffsetManagerDelegate();
+    AutoPtr<AwScrollOffsetManagerDelegate> asomd = new AwScrollOffsetManagerDelegate(this);
     AutoPtr<IOverScroller> overScroller;
-    COverScroller::New(mContext, (IOverScroller**)&overScroller);
+    //TODO COverScroller::New(mContext, (IOverScroller**)&overScroller);
     mScrollOffsetManager = dependencyFactory->CreateScrollOffsetManager(asomd, overScroller);
-    mScrollAccessibilityHelper = new ScrollAccessibilityHelper(mContainerView);
+    mScrollAccessibilityHelper = new ScrollAccessibilityHelper(view);
 
-    SetOverScrollMode(mContainerView->GetOverScrollMode());
+    Int32 overScrollMode;
+    view->GetOverScrollMode(&overScrollMode);
+    SetOverScrollMode(overScrollMode);
     SetScrollBarStyle(mInternalAccessAdapter->Super_getScrollBarStyle());
-    mLayoutChangeListener = new AwLayoutChangeListener();
-    mContainerView->AddOnLayoutChangeListener(mLayoutChangeListener);
+    mLayoutChangeListener = new AwLayoutChangeListener(this);
+    view->AddOnLayoutChangeListener(mLayoutChangeListener);
 
     SetNewAwContents(NativeInit(mBrowserContext));
 
@@ -1026,7 +1187,7 @@ AwContents::AwContents(
     /* [in] */ AwBrowserContext* browserContext,
     /* [in] */ IViewGroup* containerView,
     /* [in] */ IContext* context,
-    /* [in] */ InternalAccessDelegate* internalAccessAdapter,
+    /* [in] */ AwContents::InternalAccessDelegate* internalAccessAdapter,
     /* [in] */ NativeGLDelegate* nativeGLDelegate,
     /* [in] */ AwContentsClient* contentsClient,
     /* [in] */ AwSettings* awSettings)
@@ -1047,20 +1208,20 @@ AwContents::AwContents(
     /* [in] */ AwBrowserContext* browserContext,
     /* [in] */ IViewGroup* containerView,
     /* [in] */ IContext* context,
-    /* [in] */ InternalAccessDelegate* internalAccessAdapter,
+    /* [in] */ AwContents::InternalAccessDelegate* internalAccessAdapter,
     /* [in] */ NativeGLDelegate* nativeGLDelegate,
     /* [in] */ AwContentsClient* contentsClient,
     /* [in] */ AwSettings* settings,
     /* [in] */ DependencyFactory* dependencyFactory)
 {
     Init(browserContext, containerView, context,
-          internalAccessAdapter, nativeGLDelegate, contentsClient, settings, dependencyFactory)
+          internalAccessAdapter, nativeGLDelegate, contentsClient, settings, dependencyFactory);
 }
 
 AutoPtr<ContentViewCore> AwContents::CreateAndInitializeContentViewCore(
     /* [in] */ IViewGroup* containerView,
     /* [in] */ IContext* context,
-    /* [in] */ InternalAccessDelegate* internalDispatcher,
+    /* [in] */ AwContents::InternalAccessDelegate* internalDispatcher,
     /* [in] */ Int64 nativeWebContents,
     /* [in] */ GestureStateListener* gestureStateListener,
     /* [in] */ ContentViewClient* contentViewClient,
@@ -1068,15 +1229,16 @@ AutoPtr<ContentViewCore> AwContents::CreateAndInitializeContentViewCore(
 {
     AutoPtr<ContentViewCore> contentViewCore = new ContentViewCore(context);
     AutoPtr<WindowAndroid> window;
-    AutoPtr<IContext> ctx = (IContext*)context->Probe(EIID_IActivity);
-    if (ctx != NULL) {
-        window = new ActivityWindowAndroid(ctx);
+    AutoPtr<IActivity> activity = (IActivity*)(context->Probe(EIID_IActivity));
+    if (activity != NULL) {
+        window = new ActivityWindowAndroid(activity);
     }
     else {
+        AutoPtr<IContext> ctx;
         context->GetApplicationContext((IContext**)&ctx);
-        window = WindowAndroid(ctx);
+        window = new WindowAndroid(ctx);
     }
-    contentViewCore->Initialize(containerView, internalDispatcher, nativeWebContents, window);
+    //TODO contentViewCore->Initialize(containerView, internalDispatcher, nativeWebContents, window);
     contentViewCore->AddGestureStateListener(gestureStateListener);
     contentViewCore->SetContentViewClient(contentViewClient);
     contentViewCore->SetZoomControlsDelegate(zoomControlsDelegate);
@@ -1105,15 +1267,19 @@ AutoPtr<IView> AwContents::EnterFullScreen()
     // a NullAwViewMethods.
     AutoPtr<FullScreenView> fullScreenView = new FullScreenView(mContext, mAwViewMethods);
     mFullScreenTransitionsState->EnterFullScreen(fullScreenView);
-    mAwViewMethods = new NullAwViewMethods(this, mInternalAccessAdapter, mContainerView);
-    mContainerView->RemoveOnLayoutChangeListener(mLayoutChangeListener);
-    fullScreenView->AddOnLayoutChangeListener(mLayoutChangeListener);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    mAwViewMethods = new NullAwViewMethods(this, mInternalAccessAdapter, view);
+    view->RemoveOnLayoutChangeListener(mLayoutChangeListener);
+    //TODO because the parent class AbsoluteLayout of FullScreenView
+    //TODO fullScreenView->AddOnLayoutChangeListener(mLayoutChangeListener);
 
     // Associate this AwContents with the FullScreenView.
     SetInternalAccessAdapter(fullScreenView->GetInternalAccessAdapter());
-    SetContainerView(fullScreenView);
+    //because the parent class AbsoluteLayout of FullScreenView
+    //TODO SetContainerView(fullScreenView);
 
-    return fullScreenView;
+    AutoPtr<IView> res = IView::Probe(fullScreenView);
+    return res;
 }
 
 /**
@@ -1138,12 +1304,15 @@ void AwContents::ExitFullScreen()
     // Swap the view delegates. In embedded mode the FullScreenView owns a
     // NullAwViewMethods and AwContents the AwViewMethodsImpl.
     AutoPtr<FullScreenView> fullscreenView = mFullScreenTransitionsState->GetFullScreenView();
-    AutoPtr<NullAwViewMethods> viewMethods = new NullAwViewMethods(this, fullscreenView->GetInternalAccessAdapter(), fullscreenView);
+    AutoPtr<IView> fsView;
+    //TODO fsView = IView::Probe(fullscreenView);
+    AutoPtr<NullAwViewMethods> viewMethods = new NullAwViewMethods(this, fullscreenView->GetInternalAccessAdapter(), fsView);
     fullscreenView->SetAwViewMethods(viewMethods);
     mAwViewMethods = awViewMethodsImpl;
     AutoPtr<IViewGroup> initialContainerView = mFullScreenTransitionsState->GetInitialContainerView();
-    initialContainerView->AddOnLayoutChangeListener(mLayoutChangeListener);
-    fullscreenView->RemoveOnLayoutChangeListener(mLayoutChangeListener);
+    AutoPtr<IView> icView = IView::Probe(initialContainerView);
+    icView->AddOnLayoutChangeListener(mLayoutChangeListener);
+    fsView->RemoveOnLayoutChangeListener(mLayoutChangeListener);
 
     // Re-associate this AwContents with the WebView.
     SetInternalAccessAdapter(mFullScreenTransitionsState->GetInitialInternalAccessDelegate());
@@ -1167,7 +1336,8 @@ void AwContents::SetContainerView(
     if (mAwPdfExporter != NULL) {
         mAwPdfExporter->SetContainerView(mContainerView);
     }
-    mWebContentsDelegate->SetContainerView(mContainerView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    mWebContentsDelegate->SetContainerView(view);
 
     OnContainerViewChanged();
 }
@@ -1182,19 +1352,32 @@ void AwContents::OnContainerViewChanged()
     // the new container view correctly, we bypass mAwViewMethods and use the real
     // implementation directly.
     AutoPtr<AwViewMethods> awViewMethodsImpl = mFullScreenTransitionsState->GetInitialAwViewMethods();
-    awViewMethodsImpl->OnVisibilityChanged(mContainerView, mContainerView->GetVisibility());
-    awViewMethodsImpl->OnWindowVisibilityChanged(mContainerView->GetWindowVisibility());
-    if (mContainerView->IsAttachedToWindow()) {
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    Int32 visibility;
+    view->GetVisibility(&visibility);
+    awViewMethodsImpl->OnVisibilityChanged(view, visibility);
+    Int32 windowVisibility;
+    view->GetWindowVisibility(&windowVisibility);
+    awViewMethodsImpl->OnWindowVisibilityChanged(windowVisibility);
+    Boolean isATW;
+    view->IsAttachedToWindow(&isATW);
+    if (isATW) {
         awViewMethodsImpl->OnAttachedToWindow();
     }
     else {
         awViewMethodsImpl->OnDetachedFromWindow();
     }
-    awViewMethodsImpl->OnSizeChanged(
-            mContainerView->GetWidth(), mContainerView->GetHeight(), 0, 0);
-    awViewMethodsImpl->OnWindowFocusChanged(mContainerView->HasWindowFocus());
-    awViewMethodsImpl->OnFocusChanged(mContainerView->HasFocus(), 0, NULL);
-    mContainerView->RequestLayout();
+    Int32 width, height;
+    view->GetWidth(&width);
+    view->GetHeight(&height);
+    awViewMethodsImpl->OnSizeChanged(width, height, 0, 0);
+    Boolean hWFocus;
+    view->HasWindowFocus(&hWFocus);
+    awViewMethodsImpl->OnWindowFocusChanged(hWFocus);
+    Boolean hFocus;
+    view->HasFocus(&hFocus);
+    awViewMethodsImpl->OnFocusChanged(hFocus, 0, NULL);
+    view->RequestLayout();
 }
 
 /* Common initialization routine for adopting a native AwContents instance into this
@@ -1221,10 +1404,10 @@ void AwContents::SetNewAwContents(
     // The native side object has been bound to this java instance, so now is the time to
     // bind all the native->java relationships.
     AutoPtr<IRunnable> runnable = new DestroyRunnable(mNativeAwContents);
-    mCleanupReference = new CleanupReference(this, runnable);
+    //TODO mCleanupReference = new CleanupReference(this, runnable);
 
     Int64 nativeWebContents = NativeGetWebContents(mNativeAwContents);
-    AutoPtr<AwGestureStateListener> listener = new AwGestureStateListener();
+    AutoPtr<AwGestureStateListener> listener = new AwGestureStateListener(this);
     mContentViewCore = CreateAndInitializeContentViewCore(
             mContainerView, mContext, mInternalAccessAdapter, nativeWebContents,
             listener, mContentViewClient, mZoomControls);
@@ -1243,11 +1426,11 @@ void AwContents::SetNewAwContents(
  * provide the AwContents to host the pop up content.
  */
 void AwContents::SupplyContentsForPopup(
-    /* [in] */ AwContents newContents)
+    /* [in] */ AwContents* newContents)
 {
     Int64 popupNativeAwContents = NativeReleasePopupAwContents(mNativeAwContents);
     if (popupNativeAwContents == 0) {
-//        Log.w(TAG, "Popup WebView bind failed: no pending content.");
+        Logger::W(TAG, "Popup WebView bind failed: no pending content.");
         if (newContents != NULL) newContents->Destroy();
         return;
     }
@@ -1282,10 +1465,12 @@ void AwContents::ReceivePopupContents(
     if (!wasPaused) OnPause();
 
     // Save injected JavaScript interfaces.
-    Map<String, Pair<Object, Class>> javascriptInterfaces =
-            new HashMap<String, Pair<Object, Class>>();
-    if (mContentViewCore != null) {
-        javascriptInterfaces.putAll(mContentViewCore.getJavascriptInterfaces());
+    //Map<String, Pair<Object, Class>> javascriptInterfaces = new HashMap<String, Pair<Object, Class>>();
+    AutoPtr<IMap> javascriptInterfaces;
+    CHashMap::New((IMap**)&javascriptInterfaces);
+
+    if (mContentViewCore != NULL) {
+        javascriptInterfaces->PutAll(mContentViewCore->GetJavascriptInterfaces());
     }
 
     SetNewAwContents(popupNativeAwContents);
@@ -1296,18 +1481,42 @@ void AwContents::ReceivePopupContents(
         OnAttachedToWindow();
         PostInvalidateOnAnimation();
     }
-    OnSizeChanged(mContainerView->GetWidth(), mContainerView->GetHeight(), 0, 0);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    Int32 width, height;
+    view->GetWidth(&width);
+    view->GetHeight(&height);
+    OnSizeChanged(width, height, 0, 0);
     if (wasWindowVisible) SetWindowVisibilityInternal(TRUE);
     if (wasViewVisible) SetViewVisibilityInternal(TRUE);
     if (wasWindowFocused) OnWindowFocusChanged(wasWindowFocused);
     if (wasFocused) OnFocusChanged(TRUE, 0, NULL);
 
     // Restore injected JavaScript interfaces.
-    for (Map.Entry<String, Pair<Object, Class>> entry : javascriptInterfaces.entrySet()) {
-        mContentViewCore.addPossiblyUnsafeJavascriptInterface(
-                entry.getValue().first,
-                entry.getKey(),
-                entry.getValue().second);
+    //for (Map.Entry<String, Pair<Object, Class>> entry : javascriptInterfaces.entrySet())
+    AutoPtr<ISet> entrySet;
+    javascriptInterfaces->GetEntrySet((ISet**)&entrySet);
+    AutoPtr<IIterator> it;
+    entrySet->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    AutoPtr<IMapEntry> entry;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> mapEntry;
+        it->GetNext((IInterface**)&mapEntry);
+        entry = IMapEntry::Probe(mapEntry);
+        AutoPtr<IInterface> ko, vo;
+        entry->GetKey((IInterface**)&ko);//ko string, vo is Pair
+        entry->GetValue((IInterface**)&vo);
+        AutoPtr<ICharSequence> ics = ICharSequence::Probe(ko);
+        String keyStr;
+        ics->ToString(&keyStr);
+        AutoPtr<IPair> pair = IPair::Probe(vo);
+
+        AutoPtr<IInterface> objectValue, classValue;
+        pair->GetFirst((IInterface**)&objectValue);
+        pair->GetSecond((IInterface**)&classValue);
+
+        AutoPtr<Object> obj = (Object*)IObject::Probe(objectValue);
+        //TODO mContentViewCore->AddPossiblyUnsafeJavascriptInterface(objectValue, keyStr, classValue);
     }
 }
 
@@ -1331,7 +1540,7 @@ void AwContents::Destroy()
         mContentViewCore->Destroy();
         mNativeAwContents = 0;
 
-        mCleanupReference->CleanupNow();
+        //TODO mCleanupReference->CleanupNow();
         mCleanupReference = NULL;
     }
 
@@ -1420,7 +1629,10 @@ Int64 AwContents::GetAwDrawGLViewContext()
 
 AutoPtr<IRect> AwContents::GetGlobalVisibleRect()
 {
-    if (!mContainerView->GetGlobalVisibleRect(sLocalGlobalVisibleRect)) {
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    Boolean res;
+    view->GetGlobalVisibleRect(sLocalGlobalVisibleRect, &res);
+    if (!res) {
         sLocalGlobalVisibleRect->SetEmpty();
     }
     return sLocalGlobalVisibleRect;
@@ -1445,12 +1657,12 @@ void AwContents::OnMeasure(
 
 Int32 AwContents::GetContentHeightCss()
 {
-    return (Int32) Math::Ceil(mContentHeightDip);
+    return (Int32) Elastos::Core::Math::Ceil(mContentHeightDip);
 }
 
 Int32 AwContents::GetContentWidthCss()
 {
-    return (Int32) Math::Ceil(mContentWidthDip);
+    return (Int32) Elastos::Core::Math::Ceil(mContentWidthDip);
 }
 
 AutoPtr<IPicture> AwContents::CapturePicture()
@@ -1480,7 +1692,7 @@ void AwContents::EnableOnNewPicture(
 {
     if (mNativeAwContents == 0) return;
     if (invalidationOnly) {
-        mPictureListenerContentProvider = null;
+        mPictureListenerContentProvider = NULL;
     }
     else if (enabled && mPictureListenerContentProvider == NULL) {
         mPictureListenerContentProvider = new InnerCallable(this);
@@ -1524,7 +1736,7 @@ AutoPtr<IBitmap> AwContents::GetFavicon()
 
 void AwContents::RequestVisitedHistoryFromClient()
 {
-    AutoPtr<IValueCallback> callback = new InnerValueCallback(this);
+    AutoPtr</*TODO IValueCallback*/IInterface> callback;//TODO  = new InnerValueCallback(this);
     mContentsClient->GetVisitedHistory(callback);
 }
 
@@ -1547,7 +1759,7 @@ void AwContents::LoadUrl(
 
     // If we are reloading the same url, then set transition type as reload.
     if (params->GetUrl() != NULL &&
-            params->GetUrl()->Equals(mContentViewCore->GetUrl()) &&
+            params->GetUrl().Equals(mContentViewCore->GetUrl()) &&
             params->GetTransitionType() == PageTransitionTypes::PAGE_TRANSITION_LINK) {
         params->SetTransitionType(PageTransitionTypes::PAGE_TRANSITION_RELOAD);
     }
@@ -1563,13 +1775,34 @@ void AwContents::LoadUrl(
     // was adding them in a very narrow set of conditions. See http://crbug.com/306873
     // However, if the embedder is attempting to inject a Referer header for their
     // loadUrl call, then we set that separately and remove it from the extra headers map/
-    const String REFERER = "referer";
-    Map<String, String> extraHeaders = params.getExtraHeaders();
-    if (extraHeaders != null) {
-        for (String header : extraHeaders.keySet()) {
-            if (REFERER.equals(header.toLowerCase(Locale.US))) {
-                params.setReferrer(new Referrer(extraHeaders.remove(header), 1));
-                params.setExtraHeaders(extraHeaders);
+    String REFERER("referer");
+    AutoPtr<IMap> extraHeaders = params->GetExtraHeaders();//Map<String, String>
+    //for (String header : extraHeaders.keySet())
+    if (extraHeaders != NULL) {
+        AutoPtr<ISet> entrySet;
+        extraHeaders->GetEntrySet((ISet**)&entrySet);
+        AutoPtr<IIterator> it;
+        entrySet->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        AutoPtr<IMapEntry> entry;
+        while(it->HasNext(&hasNext), hasNext)
+        {
+            AutoPtr<IInterface> mapEntry;
+            it->GetNext((IInterface**)&mapEntry);
+            entry = IMapEntry::Probe(mapEntry);
+            AutoPtr<IInterface> ko, vo;
+            entry->GetKey((IInterface**)&ko);
+            entry->GetValue((IInterface**)&vo);
+            AutoPtr<ICharSequence> ics = ICharSequence::Probe(ko);
+            String header;
+            ics->ToString(&header);
+            if (REFERER.Equals(header.ToLowerCase(/*Locale.US*/))) {//TODO not support Local.US
+                AutoPtr<ICharSequence> vics = ICharSequence::Probe(vo);
+                String strValue;
+                vics->ToString(&strValue);
+                extraHeaders->Remove(ko);
+                params->SetReferrer(new Referrer(strValue, 1));
+                params->SetExtraHeaders(extraHeaders);
                 break;
             }
         }
@@ -1579,7 +1812,9 @@ void AwContents::LoadUrl(
         NativeSetExtraHeadersForUrl(
                 mNativeAwContents, params->GetUrl(), params->GetExtraHttpRequestHeadersString());
     }
-    params->SetExtraHeaders(new HashMap<String, String>());
+    AutoPtr<IMap> newExtraHeaders;
+    CHashMap::New((IMap**)&newExtraHeaders);
+    params->SetExtraHeaders(newExtraHeaders);
 
     mContentViewCore->LoadUrl(params);
 
@@ -1607,7 +1842,7 @@ void AwContents::LoadUrl(
 String AwContents::GetUrl()
 {
     String url =  mContentViewCore->GetUrl();
-    if (url == NULL || url.Trim().IsEmpty()) return String(NULL);
+    if (url.IsNull() || url.Trim().IsEmpty()) return String(NULL);
     return url;
 }
 
@@ -1627,7 +1862,7 @@ void AwContents::SetBackgroundColor(
  */
 void AwContents::SetLayerType(
     /* [in] */ Int32 layerType,
-    /* [in] */ IPaint paint)
+    /* [in] */ IPaint* paint)
 {
     mAwViewMethods->SetLayerType(layerType, paint);
 }
@@ -1666,8 +1901,9 @@ AutoPtr<ContentSettings> AwContents::GetContentSettings()
  */
 void AwContents::SetOverScrollMode(int mode)
 {
-    if (mode != View.OVER_SCROLL_NEVER) {
-        mOverScrollGlow = new OverScrollGlow(mContext, mContainerView);
+    if (mode != IView::OVER_SCROLL_NEVER) {
+        AutoPtr<IView> view = IView::Probe(mContainerView);
+        mOverScrollGlow = new OverScrollGlow(mContext, view);
     }
     else {
         mOverScrollGlow = NULL;
@@ -1750,14 +1986,20 @@ void AwContents::OnContainerViewOverScrolled(
     /* [in] */ Boolean clampedX,
     /* [in] */ Boolean clampedY)
 {
-    Int32 oldX = mContainerView->GetScrollX();
-    Int32 oldY = mContainerView->GetScrollY();
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    Int32 oldX;
+    view->GetScrollX(&oldX);
+    Int32 oldY;
+    view->GetScrollY(&oldY);
 
     mScrollOffsetManager->OnContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
 
     if (mOverScrollGlow != NULL) {
-        mOverScrollGlow->PullGlow(mContainerView->GetScrollX(), mContainerView->GetScrollY(),
-                oldX, oldY,
+        Int32 x;
+        view->GetScrollX(&x);
+        Int32 y;
+        view->GetScrollY(&y);
+        mOverScrollGlow->PullGlow(x, y, oldX, oldY,
                 mScrollOffsetManager->ComputeMaximumHorizontalScrollOffset(),
                 mScrollOffsetManager->ComputeMaximumVerticalScrollOffset());
     }
@@ -1786,7 +2028,8 @@ Boolean AwContents::RequestChildRectangleOnScreen(
  */
 void AwContents::ComputeScroll()
 {
-    mScrollOffsetManager->ComputeScrollAndAbsorbGlow(mOverScrollGlow);
+    AutoPtr<IInterface> iter = mOverScrollGlow->Probe(EIID_IInterface);
+    mScrollOffsetManager->ComputeScrollAndAbsorbGlow(/*TODO mOverScrollGlow*/iter);
 }
 
 /**
@@ -1939,7 +2182,7 @@ Boolean AwContents::IsPaused()
 /**
  * @see android.webkit.WebView#onCreateInputConnection(EditorInfo)
  */
-AutoPtr<InputConnection> AwContents::OnCreateInputConnection(
+AutoPtr<IInputConnection> AwContents::OnCreateInputConnection(
     /* [in] */ IEditorInfo* outAttrs)
 {
     return mAwViewMethods->OnCreateInputConnection(outAttrs);
@@ -1987,7 +2230,7 @@ void AwContents::DocumentHasImages(
 void AwContents::SaveWebArchive(
     /* [in] */ const String& basename,
     /* [in] */ Boolean autoname,
-    /* [in] */ const IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     if (!autoname) {
         SaveWebArchiveInternal(basename, callback);
@@ -1995,17 +2238,8 @@ void AwContents::SaveWebArchive(
     }
     // If auto-generating the file name, handle the name generation on a background thread
     // as it will require I/O access for checking whether previous files existed.
-    new AsyncTask<Void, Void, String>() {
-        @Override
-        protected String doInBackground(Void... params) {
-            return generateArchiveAutoNamePath(getOriginalUrl(), basename);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            saveWebArchiveInternal(result, callback);
-        }
-    }.execute();
+    AutoPtr<SaveWebArchiveInternalTask> task = new SaveWebArchiveInternalTask(this, basename, callback);
+    task->Execute((ArrayOf<IInterface*>*)NULL);
 }
 
 String AwContents::GetOriginalUrl()
@@ -2015,7 +2249,7 @@ String AwContents::GetOriginalUrl()
     if (currentIndex >= 0 && currentIndex < history->GetEntryCount()) {
         return history->GetEntryAtIndex(currentIndex)->GetOriginalUrl();
     }
-    return NULL;
+    return String(NULL);
 }
 
 /**
@@ -2042,7 +2276,7 @@ void AwContents::ClearHistory()
     mContentViewCore->ClearHistory();
 }
 
-AutoPtr< ArrayOf<String> > AwContents::GetHttpAuthUsernamePassword(
+AutoPtr<ArrayOf<String> > AwContents::GetHttpAuthUsernamePassword(
     /* [in] */ const String& host,
     /* [in] */ const String& realm)
 {
@@ -2086,7 +2320,7 @@ void AwContents::ClearClientCertPreferences()
  * Unsafely returning reference to mutable internal object to avoid excessive
  * garbage allocation on repeated calls.
  */
-AutoPtr<HitTestData> AwContents::GetLastHitTestResult()
+AutoPtr<AwContents::HitTestData> AwContents::GetLastHitTestResult()
 {
     if (mNativeAwContents == 0) return NULL;
     NativeUpdateLastHitTestData(mNativeAwContents);
@@ -2108,9 +2342,9 @@ void AwContents::RequestFocusNodeHref(
     // In order to maintain compatibility with the old WebView's implementation,
     // the absolute (full) url is passed in the |url| field, not only the href attribute.
     // Note: HitTestData could be cleaned up at this point. See http://crbug.com/290992.
-    data->PutString(String("url"), mPossiblyStaleHitTestData.href);
-    data->PutString(String("title"), mPossiblyStaleHitTestData.anchorText);
-    data->PutString(String("src"), mPossiblyStaleHitTestData.imgSrc);
+    data->PutString(String("url"), mPossiblyStaleHitTestData->href);
+    data->PutString(String("title"), mPossiblyStaleHitTestData->anchorText);
+    data->PutString(String("src"), mPossiblyStaleHitTestData->imgSrc);
     msg->SetData(data);
     msg->SendToTarget();
 }
@@ -2126,7 +2360,7 @@ void AwContents::RequestImageRef(
     NativeUpdateLastHitTestData(mNativeAwContents);
     AutoPtr<IBundle> data;
     msg->GetData((IBundle**)&data);
-    data->PutString(String("url"), mPossiblyStaleHitTestData.imgSrc);
+    data->PutString(String("url"), mPossiblyStaleHitTestData->imgSrc);
     msg->SetData(data);
     msg->SendToTarget();
 }
@@ -2233,7 +2467,9 @@ Boolean AwContents::ZoomBy(
     /* [in] */ Float delta)
 {
     if (delta < 0.01f || delta > 100.0f) {
-        throw new IllegalStateException("zoom delta value outside [0.01, 100] range.");
+        //throw new IllegalStateException("zoom delta value outside [0.01, 100] range.");
+        Logger::E(TAG, "zoom delta value outside [0.01, 100] range.");
+        return FALSE;
     }
     return mContentViewCore->PinchByDelta(delta);
 }
@@ -2254,8 +2490,9 @@ void AwContents::PreauthorizePermission(
     /* [in] */ Int64 resources)
 {
     if (mNativeAwContents == 0) return;
+    //TODO AutoPtr<CUri> cOrigin = (CUri*)origin;
     String originStr;
-    origin->ToString(&originStr);
+    //TODO cOrigin->ToString(&originStr);
     NativePreauthorizePermission(mNativeAwContents, originStr, resources);
 }
 
@@ -2264,7 +2501,7 @@ void AwContents::PreauthorizePermission(
  */
 void AwContents::EvaluateJavaScript(
     /* [in] */ const String& script,
-    /* [in] */ const IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     AutoPtr<ContentViewCore::JavaScriptCallback> jsCallback;
     if (callback != NULL) {
@@ -2386,7 +2623,7 @@ void AwContents::OnSizeChanged(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Int32 ow,
-    /* [in] */ Int32t oh)
+    /* [in] */ Int32 oh)
 {
     mAwViewMethods->OnSizeChanged(w, h, ow, oh);
 }
@@ -2435,7 +2672,7 @@ Boolean AwContents::SaveState(
 {
     if (mNativeAwContents == 0 || outState == NULL) return FALSE;
 
-    AutoPtr< ArrayOf<Byte> > state = NativeGetOpaqueState(mNativeAwContents);
+    AutoPtr<ArrayOf<Byte> > state = NativeGetOpaqueState(mNativeAwContents);
     if (state == NULL) return FALSE;
 
     outState->PutByteArray(SAVE_RESTORE_STATE_KEY, state);
@@ -2452,7 +2689,8 @@ Boolean AwContents::RestoreState(
 {
     if (mNativeAwContents == 0 || inState == NULL) return FALSE;
 
-    AutoPtr< ArrayOf<Byte> > state = inState->GetByteArray(SAVE_RESTORE_STATE_KEY);
+    AutoPtr<ArrayOf<Byte> > state;
+    inState->GetByteArray(SAVE_RESTORE_STATE_KEY, (ArrayOf<Byte>**)&state);
     if (state == NULL) return FALSE;
 
     Boolean result = NativeRestoreFromOpaqueState(mNativeAwContents, state);
@@ -2474,7 +2712,7 @@ void AwContents::AddPossiblyUnsafeJavascriptInterface(
     /* [in] */ const String& name,
     /* [in] */ IInterface* requiredAnnotation)
 {
-    mContentViewCore->AddPossiblyUnsafeJavascriptInterface(object, name, requiredAnnotation);
+    //TODO mContentViewCore->AddPossiblyUnsafeJavascriptInterface(object, name, requiredAnnotation);
 }
 
 /**
@@ -2492,7 +2730,7 @@ void AwContents::RemoveJavascriptInterface(
  * implements native accessibility for this view. Returns null otherwise.
  * @return The AccessibilityNodeProvider, if available, or null otherwise.
  */
-AutoPtr<AccessibilityNodeProvider> AwContents::GetAccessibilityNodeProvider()
+AutoPtr<IAccessibilityNodeProvider> AwContents::GetAccessibilityNodeProvider()
 {
     return mContentViewCore->GetAccessibilityNodeProvider();
 }
@@ -2501,7 +2739,7 @@ AutoPtr<AccessibilityNodeProvider> AwContents::GetAccessibilityNodeProvider()
  * @see android.webkit.WebView#onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo)
  */
 void AwContents::OnInitializeAccessibilityNodeInfo(
-    /* [in] */ AccessibilityNodeInfo* info)
+    /* [in] */ IAccessibilityNodeInfo* info)
 {
     mContentViewCore->OnInitializeAccessibilityNodeInfo(info);
 }
@@ -2564,7 +2802,7 @@ void AwContents::OnDocumentHasImagesResponse(
 //@CalledByNative
 void AwContents::OnReceivedTouchIconUrl(
     /* [in] */ const String& url,
-    /* [in] */ boolean precomposed)
+    /* [in] */ Boolean precomposed)
 {
     mContentsClient->OnReceivedTouchIconUrl(url, precomposed);
 }
@@ -2582,10 +2820,13 @@ void AwContents::OnReceivedIcon(
 void AwContents::GenerateMHTMLCallback(
     /* [in] */ const String& path,
     /* [in] */ Int64 size,
-    /* [in] */ IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
     if (callback == NULL) return;
-    callback->OnReceiveValue(size < 0 ? NULL : path);
+    AutoPtr<ICharSequence> icsq;
+    CString::New(path, (ICharSequence**)&icsq);
+    AutoPtr<IInterface> iPath = icsq->Probe(EIID_IInterface);
+    //TODO callback->OnReceiveValue(size < 0 ? NULL : iPath);
 }
 
 //@CalledByNative
@@ -2614,8 +2855,8 @@ void AwContents::OnGeolocationPermissionsShowPrompt(
                 origin);
         return;
     }
-    AutoPtr<AwGeolocationCallback> callbak =  new AwGeolocationCallback();
-    mContentsClient->OnGeolocationPermissionsShowPrompt(origin, callbak);
+    AutoPtr<AwGeolocationCallback> callback =  new AwGeolocationCallback(this);
+    mContentsClient->OnGeolocationPermissionsShowPrompt(origin, callback->Probe(EIID_IInterface)/*TODO*/);
 }
 
 //@CalledByNative
@@ -2626,7 +2867,7 @@ void AwContents::OnGeolocationPermissionsHidePrompt()
 
 //@CalledByNative
 void AwContents::OnPermissionRequest(
-    /* [in] */ AwPermissionRequest awPermissionRequest)
+    /* [in] */ AwPermissionRequest* awPermissionRequest)
 {
     mContentsClient->OnPermissionRequest(awPermissionRequest);
 }
@@ -2677,17 +2918,19 @@ Boolean AwContents::RequestDrawGL(
     /* [in] */ ICanvas* canvas,
     /* [in] */ Boolean waitForCompletion)
 {
-    return mNativeGLDelegate->RequestDrawGL(canvas, waitForCompletion, mContainerView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    return mNativeGLDelegate->RequestDrawGL(canvas, waitForCompletion, view);
 }
 
 //@CalledByNative
 void AwContents::PostInvalidateOnAnimation()
 {
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     if (SUPPORTS_ON_ANIMATION) {
-        mContainerView->PostInvalidateOnAnimation();
+        view->PostInvalidateOnAnimation();
     }
     else {
-        mContainerView->PostInvalidate();
+        view->PostInvalidate();
     }
 }
 
@@ -2696,14 +2939,19 @@ void AwContents::PostInvalidateOnAnimation()
 //@CalledByNative
 void AwContents::InvalidateOnFunctorDestroy()
 {
-    mContainerView->Invalidate();
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    view->Invalidate();
 }
 
 //@CalledByNative
-AutoPtr< ArrayOf<Int32> > AwContents::GetLocationOnScreen()
+AutoPtr<ArrayOf<Int32> > AwContents::GetLocationOnScreen()
 {
-    AutoPtr< ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(2);
-    mContainerView->GetLocationOnScreen((ArrayOf<Int32>**)&result);
+    AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(2);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
+    Int32 x,y;
+    view->GetLocationOnScreen(&x, &y);
+    (*result)[0] = x;
+    (*result)[1] = y;
     return result;
 }
 
@@ -2775,7 +3023,8 @@ void AwContents::DidOverscroll(
     mScrollOffsetManager->OverScrollBy(deltaX, deltaY);
 
     if (mOverScrollGlow != NULL && mOverScrollGlow->IsAnimating()) {
-        mContainerView->Invalidate();
+        AutoPtr<IView> view = IView::Probe(mContainerView);
+        view->Invalidate();
     }
 }
 
@@ -2806,9 +3055,9 @@ void AwContents::SetPageScaleFactorAndLimits(
 
 void AwContents::SaveWebArchiveInternal(
     /* [in] */ const String& path,
-    /* [in] */ const IValueCallback* callback)
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
-    if (path == null || mNativeAwContents == 0) {
+    if (path.IsNull() || mNativeAwContents == 0) {
         AutoPtr<IRunnable> runnable = new SaveWebArchiveInternalRunnable(this, callback);
         ThreadUtils::RunOnUiThread(runnable);
     }
@@ -2826,10 +3075,10 @@ String AwContents::GenerateArchiveAutoNamePath(
     /* [in] */ const String& baseName)
 {
     String name;
-    if (originalUrl != NULL && !originalUrl.IsEmpty()) {
+    if (!originalUrl.IsNullOrEmpty()) {
         //try {
-            AutoPtr<IUrl> url;
-            CUrl::New(originalUrl, (IUrl**)&url);
+            AutoPtr<IURL> url;
+            CURL::New(originalUrl, (IURL**)&url);
             String path;
             url->GetPath(&path);
             Int32 lastSlash = path.LastIndexOf('/');
@@ -2844,8 +3093,8 @@ String AwContents::GenerateArchiveAutoNamePath(
         //}
     }
 
-    if (TextUtils::IsEmpty(name)) name = "index";
-
+    //TODO if (TextUtils::IsEmpty(name)) name = "index";
+    if (name.IsNullOrEmpty()) name = "index";
     String testName = baseName + name + WEB_ARCHIVE_EXTENSION;
     AutoPtr<IFile> file;
     CFile::New(testName, (IFile**)&file);
@@ -2854,27 +3103,33 @@ String AwContents::GenerateArchiveAutoNamePath(
     if (!bExists) return testName;
 
     for (Int32 i = 1; i < 100; i++) {
-        testName = baseName + name + "-" + i + WEB_ARCHIVE_EXTENSION;
+        String iStr = StringUtils::ToString(i);
+        testName = baseName + name + "-" + iStr + WEB_ARCHIVE_EXTENSION;
+        file = NULL;
+        CFile::New(testName, (IFile**)&file);
+        Boolean bExists = FALSE;
+        file->Exists(&bExists);
         if (!bExists) return testName;
     }
 
-//    Log.e(TAG, "Unable to auto generate archive name for path: " + baseName);
+    Logger::E(TAG, "Unable to auto generate archive name for path: %s", baseName.string());
     return String(NULL);
 }
 
 //@Override
-void AwContents::ExtractSmartClipData(
+ECode AwContents::ExtractSmartClipData(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
     mContentViewCore->ExtractSmartClipData(x, y, width, height);
+    return NOERROR;
 }
 
 //@Override
 void AwContents::SetSmartClipResultHandler(
-    /* [in] */ const IHandler* resultHandler)
+    /* [in] */ IHandler* resultHandler)
 {
     if (resultHandler == NULL) {
         mContentViewCore->SetSmartClipDataListener(NULL);
@@ -2900,22 +3155,39 @@ Boolean AwContents::UseLegacyGeolocationPermissionAPI()
 //--------------------------------------------------------------------------------------------
 
 Int64 AwContents::NativeInit(
-    /* [in] */ AwBrowserContext* browserContext);
+    /* [in] */ AwBrowserContext* browserContext)
+{
+    return 0;
+}
 
 void AwContents::NativeDestroy(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+}
 
 void AwContents::NativeSetAwDrawSWFunctionTable(
-    /* [in] */ Int64 functionTablePointer);
+    /* [in] */ Int64 functionTablePointer)
+{
+}
 
 void AwContents::NativeSetAwDrawGLFunctionTable(
-    /* [in] */ Int64 functionTablePointer);
+    /* [in] */ Int64 functionTablePointer)
+{
+}
 
-Int64 AwContents::NativeGetAwDrawGLFunction();
+Int64 AwContents::NativeGetAwDrawGLFunction()
+{
+    return 0;
+}
 
-Int32 AwContents::NativeGetNativeInstanceCount();
+Int32 AwContents::NativeGetNativeInstanceCount()
+{
+    return 0;
+}
 
-void AwContents::NativeSetShouldDownloadFavicons();
+void AwContents::NativeSetShouldDownloadFavicons()
+{
+}
 
 void AwContents::NativeSetJavaPeers(
     /* [in] */ Int64 nativeAwContents,
@@ -2923,23 +3195,34 @@ void AwContents::NativeSetJavaPeers(
     /* [in] */ AwWebContentsDelegate* webViewWebContentsDelegate,
     /* [in] */ AwContentsClientBridge* contentsClientBridge,
     /* [in] */ AwContentsIoThreadClient* ioThreadClient,
-    /* [in] */ InterceptNavigationDelegate* navigationInterceptionDelegate);
+    /* [in] */ InterceptNavigationDelegate* navigationInterceptionDelegate)
+{
+}
 
 Int64 AwContents::NativeGetWebContents(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+    return 0;
+}
 
 void AwContents::NativeDocumentHasImages(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ IMessage* message);
+    /* [in] */ IMessage* message)
+{
+}
 
 void AwContents::NativeGenerateMHTML(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ const String& path,
-    /* [in] */ IValueCallback* callback);
+    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
+{
+}
 
 void AwContents::NativeAddVisitedLinks(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ ArrayOf<String>* visitedLinks);
+    /* [in] */ ArrayOf<String>* visitedLinks)
+{
+}
 
 Boolean AwContents::NativeOnDraw(
     /* [in] */ Int64 nativeAwContents,
@@ -2950,132 +3233,201 @@ Boolean AwContents::NativeOnDraw(
     /* [in] */ Int32 visibleLeft,
     /* [in] */ Int32 visibleTop,
     /* [in] */ Int32 visibleRight,
-    /* [in] */ Int32 visibleBottom);
+    /* [in] */ Int32 visibleBottom)
+{
+    return FALSE;
+}
 
 void AwContents::NativeFindAllAsync(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ const String& searchString);
+    /* [in] */ const String& searchString)
+{
+}
 
 void AwContents::NativeFindNext(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Boolean forward);
+    /* [in] */ Boolean forward)
+{
+}
 
 void AwContents::NativeClearMatches(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+}
 
 void AwContents::NativeClearCache(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Boolean includeDiskFiles);
+    /* [in] */ Boolean includeDiskFiles)
+{
+}
 
 AutoPtr< ArrayOf<Byte> > AwContents::NativeGetCertificate(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+    return NULL;
+}
 
 // Coordinates in desity independent pixels.
 void AwContents::NativeRequestNewHitTestDataAt(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y);
+    /* [in] */ Int32 y)
+{
+}
 
 void AwContents::NativeUpdateLastHitTestData(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+}
 
 void AwContents::NativeOnSizeChanged(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */  Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Int32 ow,
-    /* [in] */ Int32 oh);
+    /* [in] */ Int32 oh)
+{
+}
 
 void AwContents::NativeScrollTo(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y);
+    /* [in] */ Int32 y)
+{
+}
 
 void AwContents::NativeSetViewVisibility(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ boolean visible);
+    /* [in] */ Boolean visible)
+{
+}
 
 void AwContents::NativeSetWindowVisibility(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Boolean visible);
+    /* [in] */ Boolean visible)
+{
+}
 
 void AwContents::NativeSetIsPaused(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Boolean paused);
+    /* [in] */ Boolean paused)
+{
+}
 
 void AwContents::NativeOnAttachedToWindow(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Int32 w,
-    /* [in] */ Int32 h);
+    /* [in] */ Int32 h)
+{
+}
 
 void AwContents::NativeOnDetachedFromWindow(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+}
 
 void AwContents::NativeSetDipScale(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Float dipScale);
+    /* [in] */ Float dipScale)
+{
+}
 
 // Returns null if save state fails.
 AutoPtr< ArrayOf<Byte> > AwContents::NativeGetOpaqueState(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+    return NULL;
+}
 
 // Returns false if restore state fails.
 Boolean AwContents::NativeRestoreFromOpaqueState(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ ArrayOf<Byte>* state);
+    /* [in] */ ArrayOf<Byte>* state)
+{
+    return FALSE;
+}
 
 Int64 AwContents::NativeReleasePopupAwContents(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+    return 0;
+}
 
 void AwContents::NativeFocusFirstNode(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+}
 
 void AwContents::NativeSetBackgroundColor(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Int32 color);
+    /* [in] */ Int32 color)
+{
+}
 
 Int64 AwContents::NativeGetAwDrawGLViewContext(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+    return 0;
+}
 
 Int64 AwContents::NativeCapturePicture(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Int32 width,
-    /* [in] */ Int32 height);
+    /* [in] */ Int32 height)
+{
+    return 0;
+}
 
 void AwContents::NativeEnableOnNewPicture(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Boolean enabled);
+    /* [in] */ Boolean enabled)
+{
+}
 
 void AwContents::NativeClearView(
-    /* [in] */ Int64 nativeAwContents);
+    /* [in] */ Int64 nativeAwContents)
+{
+}
 
 void AwContents::NativeSetExtraHeadersForUrl(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ const String& url,
-    /* [in] */ const String& extraHeaders);
+    /* [in] */ const String& extraHeaders)
+{
+}
 
 void AwContents::NativeInvokeGeolocationCallback(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean value,
-    /* [in] */ const String& requestingFrame);
+    /* [in] */ const String& requestingFrame)
+{
+}
 
 void AwContents::NativeSetJsOnlineProperty(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ Boolean networkUp);
+    /* [in] */ Boolean networkUp)
+{
+}
 
 void AwContents::NativeTrimMemory(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Int32 level,
-    /* [in] */ Boolean visible);
+    /* [in] */ Boolean visible)
+{
+}
 
 void AwContents::NativeCreatePdfExporter(
     /* [in] */ Int64 nativeAwContents,
-    /* [in] */ AwPdfExporter* awPdfExporter);
+    /* [in] */ AwPdfExporter* awPdfExporter)
+{
+}
 
 void AwContents::NativePreauthorizePermission(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ const String& origin,
-    /* [in] */ Int64 resources);
+    /* [in] */ Int64 resources)
+{
+}
 
 } // namespace AndroidWebview
 } // namespace Webkit

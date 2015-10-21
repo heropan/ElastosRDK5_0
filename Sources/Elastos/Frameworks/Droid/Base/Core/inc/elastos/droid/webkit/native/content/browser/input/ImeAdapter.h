@@ -306,7 +306,7 @@ public:
     static Int32 sModifierNumLockOn;
 
     //@VisibleForTesting
-    Boolean mIsShowWithoutHideOutstanding = FALSE;
+    Boolean mIsShowWithoutHideOutstanding;
 
 private:
     static CARAPI_(Int32) GetModifiers(

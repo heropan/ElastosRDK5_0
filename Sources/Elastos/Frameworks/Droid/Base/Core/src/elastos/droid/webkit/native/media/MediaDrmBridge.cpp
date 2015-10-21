@@ -292,7 +292,8 @@ AutoPtr<ArrayOf<Byte> > MediaDrmBridge::PostRequestTask::PostRequest(
 }
 
 //@Override
-ECode MediaDrmBridge::PostRequestTask::OnPostExecute(IInterface*)
+ECode MediaDrmBridge::PostRequestTask::OnPostExecute(
+    /* [in] */ IInterface*)
 {
     mOwner->OnProvisionResponse(mResponseBody);
     return NOERROR;

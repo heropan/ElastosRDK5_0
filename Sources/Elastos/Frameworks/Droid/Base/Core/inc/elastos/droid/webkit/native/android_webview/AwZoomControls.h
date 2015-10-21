@@ -1,8 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
-//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::IFrameLayout;
@@ -14,6 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+class AwContents;
 
 class AwZoomControls
 : public ContentViewCore::ZoomControlsDelegate
@@ -42,7 +42,7 @@ private:
 
 public:
     AwZoomControls(
-        /* [in] */ /*TODO AwContents*/IInterface* awContents);
+        /* [in] */ AwContents* awContents);
 
     //@Override
     CARAPI_(void) InvokeZoomPicker();
@@ -59,7 +59,7 @@ public:
 private:
     CARAPI_(AutoPtr<IZoomButtonsController>) GetZoomController();
 
-    AutoPtr</*TODO AwContents*/IInterface> mAwContents;
+    AwContents* mAwContents;
     // It is advised to use getZoomController() where possible.
     AutoPtr<IZoomButtonsController> mZoomButtonsController;
 };

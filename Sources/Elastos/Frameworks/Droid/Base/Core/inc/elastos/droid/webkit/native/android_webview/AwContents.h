@@ -1,77 +1,104 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTS_H__
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/permission/AwPermissionRequest.h"
+#include "elastos/droid/webkit/native/components/InterceptNavigationDelegate.h"
+#include "elastos/droid/webkit/native/components/NavigationParams.h"
+#include "elastos/droid/webkit/native/content/browser/ContentSettings.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewStatics.h"
+#include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
+#include "elastos/droid/webkit/native/content/browser/NavigationHistory.h"
+#include "elastos/droid/webkit/native/content/browser/PageTransitionTypes.h"
+#include "elastos/droid/webkit/native/content/browser/SmartClipProvider.h"
+#include "elastos/droid/webkit/native/content_public/browser/GestureStateListener.h"
+//TODO #include "elastos/droid/webkit/native/content/common/CleanupReference.h"
+#include "elastos/droid/webkit/native/android_webview/AwViewMethods.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsIoThreadClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwLayoutSizer.h"
+#include "elastos/droid/webkit/native/android_webview/AwScrollOffsetManager.h"
+#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
+#include "elastos/droid/webkit/native/android_webview/AwBrowserContext.h"
+#include "elastos/droid/webkit/native/android_webview/AwPdfExporter.h"
+#include "elastos/droid/webkit/native/android_webview/AwHttpAuthHandler.h"
+#include "elastos/droid/webkit/native/android_webview/AwAutofillClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebContentsDelegate.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
+#include "elastos/droid/webkit/native/android_webview/AwZoomControls.h"
+#include "elastos/droid/webkit/native/android_webview/OverScrollGlow.h"
+#include "elastos/droid/webkit/native/android_webview/ScrollAccessibilityHelper.h"
+#include "elastos/droid/webkit/native/android_webview/DefaultVideoPosterRequestHandler.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentViewClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebContentsDelegateAdapter.h"
+#include "elastos/droid/os/AsyncTask.h"
 
 // import android.annotation.SuppressLint;
-// import android.app.Activity;
-// import android.content.ComponentCallbacks2;
-// import android.content.Context;
-// import android.content.res.Configuration;
-// import android.graphics.Bitmap;
-// import android.graphics.Canvas;
-// import android.graphics.Color;
-// import android.graphics.Paint;
-// import android.graphics.Picture;
-// import android.graphics.Rect;
-// import android.net.Uri;
-// import android.net.http.SslCertificate;
-// import android.os.AsyncTask;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.os.Handler;
-// import android.os.Message;
-// import android.text.TextUtils;
-// import android.util.Log;
-// import android.util.Pair;
-// import android.view.KeyEvent;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.AccessibilityNodeInfo;
-// import android.view.accessibility.AccessibilityNodeProvider;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
-// import android.webkit.GeolocationPermissions;
-// import android.webkit.ValueCallback;
-// import android.widget.OverScroller;
 
+using Elastos::Droid::Content::IComponentCallbacks2;
+using Elastos::Droid::Content::IComponentCallbacks;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IPicture;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::Http::ISslCertificate;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewOnLayoutChangeListener;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IInputConnection;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
+//TODO using Elastos::Droid::Webkit::IGeolocationPermissionsCallback;
+using Elastos::Droid::Widget::IOverScroller;
+
+using Elastos::Droid::Webkit::Content::Browser::ContentViewStatics;
+using Elastos::Droid::Webkit::Content::Browser::PageTransitionTypes;
 // import com.google.common.annotations.VisibleForTesting;
 
-// import org.chromium.android_webview.permission.AwPermissionRequest;
+using Elastos::Droid::Webkit::AndroidWebview::Permission::AwPermissionRequest;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
-// import org.chromium.components.navigation_interception.NavigationParams;
-// import org.chromium.content.browser.ContentSettings;
-// import org.chromium.content.browser.ContentViewClient;
-// import org.chromium.content.browser.ContentViewCore;
-// import org.chromium.content.browser.ContentViewStatics;
-// import org.chromium.content.browser.LoadUrlParams;
-// import org.chromium.content.browser.NavigationHistory;
-// import org.chromium.content.browser.PageTransitionTypes;
-// import org.chromium.content.browser.SmartClipProvider;
-// import org.chromium.content.common.CleanupReference;
-// import org.chromium.content_public.Referrer;
-// import org.chromium.content_public.browser.GestureStateListener;
-// import org.chromium.ui.base.ActivityWindowAndroid;
-// import org.chromium.ui.base.WindowAndroid;
-// import org.chromium.ui.gfx.DeviceDisplayInfo;
+using Elastos::Droid::Webkit::Components::InterceptNavigationDelegate;
+using Elastos::Droid::Webkit::Components::NavigationParams;
+using Elastos::Droid::Webkit::Content::Browser::ContentSettings;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewClient;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+using Elastos::Droid::Webkit::Content::Browser::LoadUrlParams;
+using Elastos::Droid::Webkit::Content::Browser::NavigationHistory;
+using Elastos::Droid::Webkit::Content::Browser::SmartClipProvider;
+//TODO using Elastos::Droid::Webkit::Content::Common::CleanupReference;
+using Elastos::Droid::Webkit::Content_Public::Browser::GestureStateListener;
 
-// import java.io.File;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IFile;
+using Elastos::Net::IURL;
 // import java.lang.annotation.Annotation;
 // import java.net.MalformedURLException;
-// import java.net.URL;
 // import java.util.HashMap;
 // import java.util.Locale;
 // import java.util.Map;
-// import java.util.concurrent.Callable;
+using Elastos::Utility::Concurrent::ICallable;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+class FullScreenView;
 
 /**
  * Exposes the native AwContents class, and together these classes wrap the ContentViewCore
@@ -83,8 +110,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwContents
-    : public Object
-    , public SmartClipProvider
+    : public SmartClipProvider
 {
 public:
     /**
@@ -94,6 +120,7 @@ public:
      * AwHitTestData.
      */
     struct HitTestData
+        :public Object
     {
         HitTestData()
             : hitTestResultType(0)
@@ -114,7 +141,8 @@ public:
      * Interface that consumers of {@link AwContents} must implement to allow the proper
      * dispatching of view methods through the containing view.
      */
-    class InternalAccessDelegate : public ContentViewCore::InternalAccessDelegate
+    class InternalAccessDelegate
+        : public ContentViewCore::InternalAccessDelegate
     {
     public:
         /**
@@ -156,6 +184,7 @@ public:
      * native GL rendering.
      */
     class NativeGLDelegate
+        :public Object
     {
     public:
         /**
@@ -186,6 +215,7 @@ public:
      * certain AwContents dependencies.
      */
     class DependencyFactory
+    :public Object
     {
     public:
         virtual CARAPI_(AutoPtr<AwLayoutSizer>) CreateLayoutSizer();
@@ -195,16 +225,17 @@ public:
             /* [in] */ IOverScroller* overScroller);
     };
 
-private:
+public:
     class DestroyRunnable
         : public Object
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         //@Override
         CARAPI Run();
 
-    private:
+    public:
         DestroyRunnable(
             /* [in] */ Int64 nativeAwContents);
 
@@ -215,8 +246,9 @@ private:
      * A class that stores the state needed to enter and exit fullscreen.
      */
     class FullScreenTransitionsState
+    :public Object
     {
-    private:
+    public:
         FullScreenTransitionsState(
             /* [in] */ IViewGroup* initialContainerView,
             /* [in] */ InternalAccessDelegate* initialInternalAccessAdapter,
@@ -231,16 +263,16 @@ private:
 
         CARAPI_(AutoPtr<IViewGroup>) GetInitialContainerView();
 
-        CARAPI_(AutoPtr<InternalAccessDelegate>) GetInitialInternalAccessDelegate();
+        CARAPI_(AutoPtr<AwContents::InternalAccessDelegate>) GetInitialInternalAccessDelegate();
 
         CARAPI_(AutoPtr<AwViewMethods>) GetInitialAwViewMethods();
 
         CARAPI_(AutoPtr<FullScreenView>) GetFullScreenView();
 
     private:
-        const AutoPtr<IViewGroup> mInitialContainerView;
-        const AutoPtr<InternalAccessDelegate> mInitialInternalAccessAdapter;
-        const AutoPtr<AwViewMethods> mInitialAwViewMethods;
+        AutoPtr<IViewGroup> mInitialContainerView;
+        AutoPtr<InternalAccessDelegate> mInitialInternalAccessAdapter;
+        AutoPtr<AwViewMethods> mInitialAwViewMethods;
         AutoPtr<FullScreenView> mFullScreenView;
     };
 
@@ -299,7 +331,8 @@ private:
     // We are not using WebContentsObserver.didStartLoading because of stale URLs, out of order
     // onPageStarted's and double onPageStarted's.
     //
-    class InterceptNavigationDelegateImpl implements InterceptNavigationDelegate
+    class InterceptNavigationDelegateImpl
+        :public InterceptNavigationDelegate
     {
     public:
         InterceptNavigationDelegateImpl(
@@ -413,11 +446,12 @@ private:
         , public IComponentCallbacks2
     {
     public:
+        CAR_INTERFACE_DECL();
         AwComponentCallbacks(
             /* [in] */ AwContents* owner);
 
         //@Override
-        CARAPI_(void) OnTrimMemory(
+        CARAPI OnTrimMemory(
             /* [in] */ Int32 level);
 
         //@Override
@@ -437,6 +471,7 @@ private:
         , public IViewOnLayoutChangeListener
     {
     public:
+        CAR_INTERFACE_DECL();
         AwLayoutChangeListener(
             /* [in] */ AwContents* owner);
 
@@ -458,14 +493,16 @@ private:
 
     class AwGeolocationCallback
         : public Object
-        , public IGeolocationPermissionsCallback
+        //TODO , public IGeolocationPermissionsCallback
     {
-    private:
+    public:
+        //TODO CAR_INTERFACE_DECL();
         class InnerRunnable
             : public Object
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerRunnable(
                 /* [in] */ AwGeolocationCallback* owner,
                 /* [in] */ const String& origin,
@@ -477,7 +514,7 @@ private:
         private:
             AwGeolocationCallback* mOwner;
             const String& mOrigin;
-            Boolean mAllow,
+            Boolean mAllow;
             Boolean mRetain;
         };
 
@@ -592,14 +629,13 @@ private:
     private:
         AwContents* mOwner;
         // Only valid within software onDraw().
-        const Rect mClipBoundsTemporary = new Rect();
-        Int32 mLayerType = View.LAYER_TYPE_NONE;
+        AutoPtr<IRect> mClipBoundsTemporary;
+        Int32 mLayerType;
         AutoPtr<IComponentCallbacks2> mComponentCallbacks;
     };
 
     class InnerZoomSupportChangeListener
-        : public Object
-        , public ZoomSupportChangeListener
+        : public AwSettings::ZoomSupportChangeListener
     {
     public:
         InnerZoomSupportChangeListener(
@@ -619,11 +655,12 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL();
         InnerCallable(
             /* [in] */ AwContents* owner);
 
         CARAPI Call(
-            /* [out] */ IPicture** pic);
+            /* [out] */ IInterface** pic);//IPicture
 
     private:
         AwContents* mOwner;
@@ -631,7 +668,7 @@ private:
 
     class InnerValueCallback
         : public Object
-        , public IValueCallback
+        /*TODO , public IValueCallback*/
     {
     private:
         class InnerRunnable
@@ -639,6 +676,7 @@ private:
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerRunnable(
                 /* [in] */ InnerValueCallback* owner,
                 /* [in] */ ArrayOf<String>* value);
@@ -647,7 +685,7 @@ private:
 
         private:
             InnerValueCallback* mOwner;
-            ArrayOf<String>* mValue;
+            AutoPtr<ArrayOf<String> > mValue;
         };
 
     public:
@@ -655,7 +693,7 @@ private:
             /* [in] */ AwContents* owner);
 
         CARAPI OnReceiveValue(
-            /* [in] */ ArrayOf<String>* value);
+            /* [in] */ IInterface* value);//ArrayOf<String>
 
     private:
         AwContents* mOwner;
@@ -666,14 +704,38 @@ private:
     public:
         InnerJavaScriptCallback(
             /* [in] */ AwContents* owner,
-            /* [in] */ IValueCallback* callback);
+            /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
         CARAPI_(void) HandleJavaScriptResult(
             /* [in] */ const String& jsonResult);
 
     private:
         AwContents* mOwner;
-        IValueCallback* mCallback;
+        /*TODO IValueCallback*/IInterface* mCallback;
+    };
+
+    class SaveWebArchiveInternalTask : public AsyncTask
+    {
+        public:
+            SaveWebArchiveInternalTask(
+                    /* [in] */ AwContents* owner,
+                    /* [in] */ const String& basename,
+                    /* [in] */ /*TODO IValueCallback*/IInterface* callback);
+
+        protected:
+            //@Override
+            CARAPI DoInBackground(
+                    /* [in] */ ArrayOf<IInterface*>* params,
+                    /* [out] */ IInterface** result);
+
+            //@Override
+            CARAPI OnPostExecute(
+                    /* [in] */ IInterface*);
+
+        private:
+            AwContents* mOwner;
+            const String mBasename;
+            AutoPtr</*TODO IValueCallback*/IInterface> mCallback;
     };
 
     class SaveWebArchiveInternalRunnable
@@ -681,25 +743,25 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         SaveWebArchiveInternalRunnable(
             /* [in] */ AwContents* owner,
-            /* [in] */ const IValueCallback* callback);
+            /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
         CARAPI Run();
 
     private:
         AwContents* mOwner;
-        const IValueCallback* mCallback;
+        /*TODO IValueCallback*/IInterface* mCallback;
     };
 
     class InnerSmartClipDataListener
-        : public Object
-        , public ContentViewCore::SmartClipDataListener
+        : public ContentViewCore::SmartClipDataListener
     {
     public:
         InnerSmartClipDataListener(
             /* [in] */ AwContents* owner,
-            /* [in] */ const IHandler* resultHandler);
+            /* [in] */ IHandler* resultHandler);
 
         CARAPI_(void) OnSmartClipDataExtracted(
             /* [in] */ const String& text,
@@ -708,7 +770,7 @@ private:
 
     private:
         AwContents* mOwner;
-        const IHandler* mResultHandler;
+        AutoPtr<IHandler> mResultHandler;
     };
 
 public:
@@ -1090,7 +1152,7 @@ public:
     virtual CARAPI_(void) SaveWebArchive(
         /* [in] */ const String& basename,
         /* [in] */ Boolean autoname,
-        /* [in] */ IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     virtual CARAPI_(String) GetOriginalUrl();
 
@@ -1235,7 +1297,7 @@ public:
      */
     virtual CARAPI_(void) EvaluateJavaScript(
         /* [in] */ const String& script,
-        /* [in] */ const IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * @see ContentViewCore.evaluateJavaScriptEvenIfNotYetNavigated(String)
@@ -1405,7 +1467,7 @@ public:
     virtual CARAPI_(void) OnNewPicture();
 
     //@Override
-    virtual CARAPI_(void) ExtractSmartClipData(
+    virtual CARAPI ExtractSmartClipData(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 width,
@@ -1413,7 +1475,7 @@ public:
 
     //@Override
     virtual CARAPI_(void) SetSmartClipResultHandler(
-        /* [in] */ const IHandler* resultHandler);
+        /* [in] */ IHandler* resultHandler);
 
 private:
     static CARAPI_(AutoPtr<ContentViewCore>) CreateAndInitializeContentViewCore(
@@ -1484,7 +1546,7 @@ private:
     static CARAPI_(void) GenerateMHTMLCallback(
         /* [in] */ const String& path,
         /* [in] */ Int64 size,
-        /* [in] */ IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     //@CalledByNative
     CARAPI_(void) OnReceivedHttpAuthRequest(
@@ -1579,7 +1641,7 @@ private:
 
     CARAPI_(void) SaveWebArchiveInternal(
         /* [in] */ const String& path,
-        /* [in] */ const IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     /**
      * Try to generate a pathname for saving an MHTML archive. This roughly follows WebView's
@@ -1635,7 +1697,7 @@ private:
     CARAPI_(void) NativeGenerateMHTML(
         /* [in] */ Int64 nativeAwContents,
         /* [in] */ const String& path,
-        /* [in] */ IValueCallback* callback);
+        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
 
     CARAPI_(void) NativeAddVisitedLinks(
         /* [in] */ Int64 nativeAwContents,
@@ -1667,7 +1729,7 @@ private:
         /* [in] */ Int64 nativeAwContents,
         /* [in] */ Boolean includeDiskFiles);
 
-    CARAPI_(AutoPtr< ArrayOf<Byte> >) NativeGetCertificate(
+    CARAPI_(AutoPtr<ArrayOf<Byte> >) NativeGetCertificate(
         /* [in] */ Int64 nativeAwContents);
 
     // Coordinates in desity independent pixels.
@@ -1716,7 +1778,7 @@ private:
         /* [in] */ Float dipScale);
 
     // Returns null if save state fails.
-    CARAPI_(AutoPtr< ArrayOf<Byte> >) NativeGetOpaqueState(
+    CARAPI_(AutoPtr<ArrayOf<Byte> >) NativeGetOpaqueState(
         /* [in] */ Int64 nativeAwContents);
 
     // Returns false if restore state fails.
@@ -1811,26 +1873,26 @@ private:
     static const Float ZOOM_CONTROLS_EPSILON;
 
     Int64 mNativeAwContents;
-    const AutoPtr<AwBrowserContext> mBrowserContext;
+    AutoPtr<AwBrowserContext> mBrowserContext;
     AutoPtr<IViewGroup> mContainerView;
-    const AutoPtr<AwLayoutChangeListener> mLayoutChangeListener;
-    const AutoPtr<IContext> mContext;
+    AutoPtr<AwLayoutChangeListener> mLayoutChangeListener;
+    AutoPtr<IContext> mContext;
     AutoPtr<ContentViewCore> mContentViewCore;
-    const AutoPtr<AwContentsClient> mContentsClient;
-    const AutoPtr<AwContentViewClient> mContentViewClient;
-    const AutoPtr<AwContentsClientBridge> mContentsClientBridge;
-    const AutoPtr<AwWebContentsDelegateAdapter> mWebContentsDelegate;
-    const AutoPtr<AwContentsIoThreadClient> mIoThreadClient;
-    const InterceptNavigationDelegateImpl> mInterceptNavigationDelegate;
+    AutoPtr<AwContentsClient> mContentsClient;
+    AutoPtr<AwContentViewClient> mContentViewClient;
+    AutoPtr<AwContentsClientBridge> mContentsClientBridge;
+    AutoPtr<AwWebContentsDelegateAdapter> mWebContentsDelegate;
+    AutoPtr<AwContentsIoThreadClient> mIoThreadClient;
+    AutoPtr<InterceptNavigationDelegateImpl> mInterceptNavigationDelegate;
     AutoPtr<InternalAccessDelegate> mInternalAccessAdapter;
-    const AutoPtr<NativeGLDelegate> mNativeGLDelegate;
-    const AutoPtr<AwLayoutSizer> mLayoutSizer;
-    const AutoPtr<AwZoomControls> mZoomControls;
-    const AutoPtr<AwScrollOffsetManager> mScrollOffsetManager;
+    AutoPtr<NativeGLDelegate> mNativeGLDelegate;
+    AutoPtr<AwLayoutSizer> mLayoutSizer;
+    AutoPtr<AwZoomControls> mZoomControls;
+    AutoPtr<AwScrollOffsetManager> mScrollOffsetManager;
     AutoPtr<OverScrollGlow> mOverScrollGlow;
     // This can be accessed on any thread after construction. See AwContentsIoThreadClient.
-    const AutoPtr<AwSettings> mSettings;
-    const AutoPtr<ScrollAccessibilityHelper> mScrollAccessibilityHelper;
+    AutoPtr<AwSettings> mSettings;
+    AutoPtr<ScrollAccessibilityHelper> mScrollAccessibilityHelper;
 
     Boolean mIsPaused;
     Boolean mIsViewVisible;
@@ -1839,15 +1901,15 @@ private:
     AutoPtr<IBitmap> mFavicon;
     Boolean mHasRequestedVisitedHistoryFromClient;
     // TODO(boliu): This should be in a global context, not per webview.
-    const Double mDIPScale;
+    Double mDIPScale;
 
     // The base background color, i.e. not accounting for any CSS body from the current page.
     Int32 mBaseBackgroundColor;
 
     // Must call nativeUpdateLastHitTestData first to update this before use.
-    const AutoPtr<HitTestData> mPossiblyStaleHitTestData;
+    AutoPtr<HitTestData> mPossiblyStaleHitTestData;
 
-    const AutoPtr<DefaultVideoPosterRequestHandler> mDefaultVideoPosterRequestHandler;
+    AutoPtr<DefaultVideoPosterRequestHandler> mDefaultVideoPosterRequestHandler;
 
     // Bound method for suppling Picture instances to the AwContentsClient. Will be null if the
     // picture listener API has not yet been enabled, or if it is using invalidation-only mode.
@@ -1870,7 +1932,7 @@ private:
 
     AutoPtr<AwViewMethods> mAwViewMethods;
 
-    const FullScreenTransitionsState mFullScreenTransitionsState;
+    AutoPtr<FullScreenTransitionsState> mFullScreenTransitionsState;
 
     // This flag indicates that ShouldOverrideUrlNavigation should be posted
     // through the resourcethrottle. This is only used for popup windows.
@@ -1883,7 +1945,7 @@ private:
 
     // Reference to the active mNativeAwContents pointer while it is active use
     // (ie before it is destroyed).
-    AutoPtr<CleanupReference> mCleanupReference;
+    AutoPtr</*TODO CleanupReference*/IInterface> mCleanupReference;
 };
 
 } // namespace AndroidWebview

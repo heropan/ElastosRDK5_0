@@ -12,6 +12,7 @@ namespace AndroidWebview {
  */
 class ErrorCodeConversionHelper
 {
+public:
     // Success
     static const Int32 ERROR_OK = 0;
     // Generic error

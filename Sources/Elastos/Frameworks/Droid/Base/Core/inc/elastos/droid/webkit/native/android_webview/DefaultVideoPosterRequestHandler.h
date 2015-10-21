@@ -29,6 +29,7 @@ namespace AndroidWebview {
  * the mDefaultVideoPosterURL.
  */
 class DefaultVideoPosterRequestHandler
+:public Object
 {
 private:
     class UIRunnable

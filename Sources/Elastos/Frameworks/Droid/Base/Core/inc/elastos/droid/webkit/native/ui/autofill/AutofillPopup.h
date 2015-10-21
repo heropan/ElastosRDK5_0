@@ -43,8 +43,7 @@ namespace Autofill {
   * The Autofill suggestion popup that lists relevant suggestions.
   */
 class AutofillPopup
-    : public Object
-    , public DropdownPopupWindow
+    : public DropdownPopupWindow
     , public IAdapterViewOnItemClickListener
 {
 public:

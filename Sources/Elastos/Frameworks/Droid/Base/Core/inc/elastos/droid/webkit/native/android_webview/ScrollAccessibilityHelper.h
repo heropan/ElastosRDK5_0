@@ -20,6 +20,7 @@ namespace AndroidWebview {
  * layer.
  */
 class ScrollAccessibilityHelper
+  :public Object
 {
 public:
     class HandlerCallback

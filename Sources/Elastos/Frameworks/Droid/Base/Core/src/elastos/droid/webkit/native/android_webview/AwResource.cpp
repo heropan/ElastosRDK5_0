@@ -1,7 +1,16 @@
 #include "elastos/droid/webkit/native/android_webview/AwResource.h"
+//TODO #include "elastos/utility/CScanner.h"
+//TODO #include "elastos/io/CInputStreamReader.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::IO::IInputStreamReader;
+using Elastos::IO::CInputStreamReader;
+using Elastos::IO::IInputStream;
 using Elastos::Utility::IScanner;
+//TODO using Elastos::Utility::CScanner;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -12,7 +21,8 @@ Int32 AwResource::RAW_LOAD_ERROR = 0;
 Int32 AwResource::RAW_NO_DOMAIN = 0;
 Int32 AwResource::STRING_ARRAY_CONFIG_KEY_SYSTEM_UUID_MAPPING = 0;
 AutoPtr<IResources> AwResource::sResources;
-SparseArray<SoftReference<String>> AwResource::sResourceCache;
+//TODO AutoPtr<ISparseArray> AwResource::sResourceCache;
+HashMap<Int32, AutoPtr<IWeakReference> > AwResource::sResourceCache;//TODO when SparseArray ok ,try to replace this
 const Int32 AwResource::TYPE_STRING;
 const Int32 AwResource::TYPE_RAW;
 
@@ -20,7 +30,8 @@ void AwResource::SetResources(
     /* [in] */ IResources* resources)
 {
     sResources = resources;
-    sResourceCache = new SparseArray<SoftReference<String>>();
+    //sResourceCache = new SparseArray<SoftReference<String>>();
+    //TODO CSparseArray::New((ISparseArray**)&sResourceCache);
 }
 
 void AwResource::SetErrorPageResources(
@@ -63,7 +74,9 @@ String AwResource::GetLoadErrorPageContent()
 AutoPtr<ArrayOf<String> > AwResource::GetConfigKeySystemUuidMapping()
 {
     // No need to cache, since this should be called only once.
-    return sResources.getStringArray(STRING_ARRAY_CONFIG_KEY_SYSTEM_UUID_MAPPING);
+    AutoPtr<ArrayOf<String> > stringArray;
+    sResources->GetStringArray(STRING_ARRAY_CONFIG_KEY_SYSTEM_UUID_MAPPING, (ArrayOf<String>**)&stringArray);
+    return stringArray;
 }
 
 String AwResource::GetResource(
@@ -72,11 +85,18 @@ String AwResource::GetResource(
 {
     assert(resid != 0);
     assert(sResources != NULL);
-    assert(sResourceCache != NULL);
+    //TODO assert(sResourceCache != NULL);
 
-    SoftReference<String> stringRef = sResourceCache.get(resid);
-    String result = stringRef == NULL ? NULL : stringRef.get();
-    if (result == NULL) {
+    //SoftReference<String> stringRef = sResourceCache.get(resid);
+    AutoPtr<IWeakReference> stringRef = sResourceCache[resid];
+    AutoPtr<IInterface> ws;
+    stringRef->Resolve(EIID_IInterface, (IInterface**)&ws);
+    String result(NULL);
+    if (ws) {
+        AutoPtr<ICharSequence> ics = ICharSequence::Probe(ws);
+        ics->ToString(&result);
+    }
+    if (result.IsNull()) {
         switch (type) {
             case TYPE_STRING:
                 sResources->GetString(resid, &result);
@@ -86,10 +106,17 @@ String AwResource::GetResource(
                 break;
             default:
 //                throw new IllegalArgumentException("Unknown resource type");
+                Logger::E("AwResource", "GetResource: Unknown resource type");
                 assert(0);
         }
 
-        sResourceCache.put(resid, new SoftReference<String>(result));
+        AutoPtr<ICharSequence> ics;
+        CString::New(result, (ICharSequence**)&ics);
+        //sResourceCache.put(resid, new SoftReference<String>(result));
+        AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe(ics);
+        AutoPtr<IWeakReference> wr;
+        source->GetWeakReference((IWeakReference**)&wr);
+        sResourceCache[resid] = wr;
     }
     return result;
 }
@@ -106,11 +133,11 @@ String AwResource::GetRawFileResourceContent(
     // try {
         AutoPtr<IInputStream> res;
         sResources->OpenRawResource(resid, (IInputStream**)&res);
-        CInputStreamReader(res, (IInputStreamReader**)&isr);
+        CInputStreamReader::New(res, (IInputStreamReader**)&isr);
         // \A tells the scanner to use the beginning of the input
         // as the delimiter, hence causes it to read the entire text.
         AutoPtr<IScanner> scanner;
-        CScanner::New(isr, (IScanner**)&scanner);
+        //TODO CScanner::New(isr, (IScanner**)&scanner);
         AutoPtr<IScanner> _scanner;
         scanner->UseDelimiter(String("\\A"), (IScanner**)&_scanner);
         _scanner->Next(&result);
@@ -127,8 +154,11 @@ String AwResource::GetRawFileResourceContent(
     //         // Nothing to do if close() fails.
     //     }
     // }
+    if (isr)
+    {
+        //TODO isr->Close();//should have the Close method
+    }
     return result;
-}
 }
 
 } // namespace AndroidWebview

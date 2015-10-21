@@ -104,7 +104,8 @@ private:
             /* [out] */ IInterface** result);
 
         //@Override
-        CARAPI OnPostExecute(IInterface*);
+        CARAPI OnPostExecute(
+            /* [in] */ IInterface*);
 
     private:
         CARAPI_(AutoPtr<ArrayOf<Byte> >) PostRequest(

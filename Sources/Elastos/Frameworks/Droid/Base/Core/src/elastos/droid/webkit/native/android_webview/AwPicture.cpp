@@ -1,6 +1,7 @@
 #include "elastos/droid/webkit/native/android_webview/AwPicture.h"
 
 using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Graphics::EIID_IPicture;
 
 namespace Elastos {
 namespace Droid {
@@ -28,6 +29,7 @@ ECode AwPicture::DestroyRunnable::Run()
 //===============================================================
 //                         AwPicture
 //===============================================================
+CAR_INTERFACE_IMPL(AwPicture, Object, IPicture);
 
 /**
  * @param nativeAwPicture is an instance of the AwPicture native class. Ownership is
@@ -42,31 +44,42 @@ AwPicture::AwPicture(
 }
 
 //@Override
-AutoPtr<ICanvas> AwPicture::BeginRecording(
+ECode AwPicture::BeginRecording(
     /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
+    /* [in] */ Int32 height,
+    /* [out] */ ICanvas** canvas)
 {
+    VALIDATE_NOT_NULL(canvas)
+    *canvas = NULL;
     UnsupportedOperation();
-    return NULL;
+    return E_NOT_IMPLEMENTED;
 }
 
 //@Override
 ECode AwPicture::EndRecording()
 {
     // Intentional no-op. The native picture ended recording prior to java c'tor call.
+    return E_NOT_IMPLEMENTED;
+}
+
+//@Override
+ECode AwPicture::GetWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width);
+    Int32 w = NativeGetWidth(mNativeAwPicture);
+    *width = w;
     return NOERROR;
 }
 
 //@Override
-Int32 AwPicture::GetWidth()
+ECode AwPicture::GetHeight(
+        /* [out] */ Int32* height)
 {
-    return NativeGetWidth(mNativeAwPicture);
-}
-
-//@Override
-Int32 AwPicture::GetHeight()
-{
-    return NativeGetHeight(mNativeAwPicture);
+    VALIDATE_NOT_NULL(height);
+    Int32 h = NativeGetHeight(mNativeAwPicture);
+    *height = h;
+    return NOERROR;
 }
 
 //@Override
@@ -75,6 +88,12 @@ ECode AwPicture::Draw(
 {
     NativeDraw(mNativeAwPicture, canvas);
     return NOERROR;
+}
+
+ECode GetNativePicture(
+    /* [out] */ Handle32* handle)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //@Override

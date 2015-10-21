@@ -1,9 +1,10 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__
+#include "elastos/droid/ext/frameworkext.h"
 
-// import android.graphics.Rect;
-// import android.widget.OverScroller;
+using Elastos::Droid::Graphics::IRect;
+//TODO using Elastos::Droid::Widget::IOverScroller;
+//TODO using Elastos::Droid::Widget::IOverScrollGlow;
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -20,6 +21,7 @@ namespace AndroidWebview {
  */
 //@VisibleForTesting
 class AwScrollOffsetManager
+:public Object
 {
 public:
     /**
@@ -28,6 +30,7 @@ public:
      * The unit of all the values in this delegate are physical pixels.
      */
     class Delegate
+    :public Object
     {
     public:
         // Call View#overScrollBy on the containerView.
@@ -62,7 +65,7 @@ public:
 public:
     AwScrollOffsetManager(
         /* [in] */ Delegate* delegate,
-        /* [in] */ IOverScroller* overScroller);
+        /* [in] */ /*TODO IOverScroller*/IInterface* overScroller);
 
     //----- Scroll range and extent calculation methods -------------------------------------------
 
@@ -145,7 +148,7 @@ public:
 
     // Called immediately before the draw to update the scroll offset.
     CARAPI_(void) ComputeScrollAndAbsorbGlow(
-        /* [in] */ IOverScrollGlow* overScrollGlow);
+        /* [in] */ /*TODO IOverScrollGlow*/IInterface* overScrollGlow);
 
     /**
      * See {@link android.webkit.WebView#pageUp(boolean)}
@@ -201,7 +204,7 @@ private:
     // Time for the longest scroll animation.
     static const Int32 MAX_SCROLL_ANIMATION_DURATION_MILLISEC = 750;
 
-    const AutoPtr<Delegate> mDelegate;
+    AutoPtr<Delegate> mDelegate;
 
     // Scroll offset as seen by the native side.
     Int32 mNativeScrollX;
@@ -227,7 +230,7 @@ private:
     Int32 mDeferredNativeScrollX;
     Int32 mDeferredNativeScrollY;
 
-    AutoPtr<IOverScroller> mScroller;
+    AutoPtr</*IOverScroller*/IInterface> mScroller;
 };
 
 } // namespace AndroidWebview

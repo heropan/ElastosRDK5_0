@@ -263,6 +263,7 @@ public:
 
     /** Callback interface for evaluateJavaScript(). */
     class JavaScriptCallback
+        :public Object
     {
     public:
         virtual CARAPI_(void) HandleJavaScriptResult(

@@ -6,8 +6,8 @@ namespace Webkit {
 namespace AndroidWebview {
 
 NullAwViewMethods::NullAwViewMethods(
-    /* [in] */ /*TODO AwContents*/IInterface* awContents,
-    /* [in] */ /*TODO InternalAccessDelegate*/IInterface* internalAccessAdapter,
+    /* [in] */ AwContents* awContents,
+    /* [in] */ AwContents::InternalAccessDelegate* internalAccessAdapter,
     /* [in] */ IView* containerView)
     : mAwContents(awContents)
     , mInternalAccessAdapter(internalAccessAdapter)
@@ -19,7 +19,7 @@ NullAwViewMethods::NullAwViewMethods(
 void NullAwViewMethods::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    canvas->DrawColor(/*TODO mAwContents->GetEffectiveBackgroundColor()*/0);
+    canvas->DrawColor(mAwContents->GetEffectiveBackgroundColor());
 }
 
 //@Override
@@ -30,7 +30,10 @@ void NullAwViewMethods::OnMeasure(
     // When the containerView is using the NullNullAwViewMethods then it is not
     // attached to the AwContents. As such, we don't have any contents to measure
     // and using the last measured dimension is the best we can do.
-    //TODO mInternalAccessAdapter->SetMeasuredDimension(mContainerView->GetMeasuredWidth(), mContainerView->GetMeasuredHeight());
+    Int32 measuredWidth, measuredHeight;
+    mContainerView->GetMeasuredWidth(&measuredWidth);
+    mContainerView->GetMeasuredHeight(&measuredHeight);
+    mInternalAccessAdapter->SetMeasuredDimension(measuredWidth, measuredHeight);
 }
 
 //@Override

@@ -1,4 +1,29 @@
+#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
+#include "elastos/droid/webkit/native/android_webview/AwResource.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/Process.h"
+//TODO #include "elastos/droid/provider/CSettingsSystem.h"
+#include "elastos/droid/Manifest.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/logging/Logger.h"
 
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Provider::ISettings;
+using Elastos::Droid::Provider::ISettingsSystem;
+//TODO using Elastos::Droid::Provider::CSettingsSystem;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
+
+using Elastos::Droid::Webkit::Base::ThreadUtils;
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -7,6 +32,7 @@ namespace AndroidWebview {
 //===============================================================
 //            AwSettings::SetInitialPageScaleRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwSettings::SetInitialPageScaleRunnable, Object, IRunnable);
 
 AwSettings::SetInitialPageScaleRunnable::SetInitialPageScaleRunnable(
     /* [in] */ AwSettings* owner)
@@ -16,8 +42,8 @@ AwSettings::SetInitialPageScaleRunnable::SetInitialPageScaleRunnable(
 
 ECode AwSettings::SetInitialPageScaleRunnable::Run()
 {
-    if (mNativeAwSettings != 0) {
-        NativeUpdateInitialPageScaleLocked(mNativeAwSettings);
+    if (mOwner->mNativeAwSettings != 0) {
+        mOwner->NativeUpdateInitialPageScaleLocked(mOwner->mNativeAwSettings);
     }
 
     return NOERROR;
@@ -26,6 +52,7 @@ ECode AwSettings::SetInitialPageScaleRunnable::Run()
 //===============================================================
 //           AwSettings::SetSaveFormDataRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwSettings::SetSaveFormDataRunnable, Object, IRunnable);
 
 AwSettings::SetSaveFormDataRunnable::SetSaveFormDataRunnable(
     /* [in] */ AwSettings* owner)
@@ -35,8 +62,8 @@ AwSettings::SetSaveFormDataRunnable::SetSaveFormDataRunnable(
 
 ECode AwSettings::SetSaveFormDataRunnable::Run()
 {
-    if (mNativeAwSettings != 0) {
-        NativeUpdateFormDataPreferencesLocked(mNativeAwSettings);
+    if (mOwner->mNativeAwSettings != 0) {
+        mOwner->NativeUpdateFormDataPreferencesLocked(mOwner->mNativeAwSettings);
     }
 
     return NOERROR;
@@ -45,6 +72,7 @@ ECode AwSettings::SetSaveFormDataRunnable::Run()
 //===============================================================
 //            AwSettings::SetUserAgentStringRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwSettings::SetUserAgentStringRunnable, Object, IRunnable);
 
 AwSettings::SetUserAgentStringRunnable::SetUserAgentStringRunnable(
     /* [in] */ AwSettings* owner)
@@ -54,8 +82,8 @@ AwSettings::SetUserAgentStringRunnable::SetUserAgentStringRunnable(
 
 ECode AwSettings::SetUserAgentStringRunnable::Run()
 {
-    if (mNativeAwSettings != 0) {
-        NativeUpdateUserAgentLocked(mNativeAwSettings);
+    if (mOwner->mNativeAwSettings != 0) {
+        mOwner->NativeUpdateUserAgentLocked(mOwner->mNativeAwSettings);
     }
     return NOERROR;
 }
@@ -63,6 +91,7 @@ ECode AwSettings::SetUserAgentStringRunnable::Run()
 //===============================================================
 //          AwSettings::SetLoadWithOverviewModeRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwSettings::SetLoadWithOverviewModeRunnable, Object, IRunnable);
 
 AwSettings::SetLoadWithOverviewModeRunnable::SetLoadWithOverviewModeRunnable(
     /* [in] */ AwSettings* owner)
@@ -72,9 +101,9 @@ AwSettings::SetLoadWithOverviewModeRunnable::SetLoadWithOverviewModeRunnable(
 
 ECode AwSettings::SetLoadWithOverviewModeRunnable::Run()
 {
-    if (mNativeAwSettings != 0) {
-        UpdateWebkitPreferencesOnUiThreadLocked();
-        NativeResetScrollAndScaleState(mNativeAwSettings);
+    if (mOwner->mNativeAwSettings != 0) {
+        mOwner->UpdateWebkitPreferencesOnUiThreadLocked();
+        mOwner->NativeResetScrollAndScaleState(mOwner->mNativeAwSettings);
     }
     return NOERROR;
 }
@@ -82,6 +111,7 @@ ECode AwSettings::SetLoadWithOverviewModeRunnable::Run()
 //===============================================================
 //       AwSettings::OnGestureZoomSupportChangedRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwSettings::OnGestureZoomSupportChangedRunnable, Object, IRunnable);
 
 AwSettings::OnGestureZoomSupportChangedRunnable::OnGestureZoomSupportChangedRunnable(
     /* [in] */ AwSettings* owner,
@@ -95,10 +125,10 @@ AwSettings::OnGestureZoomSupportChangedRunnable::OnGestureZoomSupportChangedRunn
 
 ECode AwSettings::OnGestureZoomSupportChangedRunnable::Run()
 {
-    AutoLock lock(mAwSettingsLock);
-    if (mZoomChangeListener != NULL) {
-        mZoomChangeListener->OnGestureZoomSupportChanged(
-                supportsDoubleTapZoom, supportsMultiTouchZoom);
+    AutoLock lock(mOwner->mAwSettingsLock);
+    if (mOwner->mZoomChangeListener != NULL) {
+        mOwner->mZoomChangeListener->OnGestureZoomSupportChanged(
+                mSupportsDoubleTapZoom, mSupportsMultiTouchZoom);
     }
 
     return NOERROR;
@@ -107,6 +137,7 @@ ECode AwSettings::OnGestureZoomSupportChangedRunnable::Run()
 //============================================================================
 //           AwSettings::SetVideoOverlayForEmbeddedVideoEnabledRunnable
 //============================================================================
+CAR_INTERFACE_IMPL(AwSettings::SetVideoOverlayForEmbeddedVideoEnabledRunnable, Object, IRunnable);
 
 AwSettings::SetVideoOverlayForEmbeddedVideoEnabledRunnable::SetVideoOverlayForEmbeddedVideoEnabledRunnable(
     /* [in] */ AwSettings* owner)
@@ -127,15 +158,17 @@ ECode AwSettings::SetVideoOverlayForEmbeddedVideoEnabledRunnable::Run()
 //              AwSettings::LazyDefaultUserAgent
 //===============================================================
 
-const String AwSettings::LazyDefaultUserAgent::sInstance = NativeGetDefaultUserAgent();
+const String AwSettings::LazyDefaultUserAgent::sInstance = AwSettings::NativeGetDefaultUserAgent();
 
 //===============================================================
 //             AwSettings::EventHandler::InnerHandler
 //===============================================================
 
 AwSettings::EventHandler::InnerHandler::InnerHandler(
-    /* [in] */ EventHandler* owner)
-    : mOwner(owner)
+    /* [in] */ EventHandler* owner,
+    /* [in] */ ILooper* looper)
+    : Handler(looper)
+    , mOwner(owner)
 {
 }
 
@@ -149,14 +182,14 @@ ECode AwSettings::EventHandler::InnerHandler::HandleMessage(
     switch (what) {
         case RUN_RUNNABLE_BLOCKING:
             {
-                AutoLock lock(mAwSettingsLock);
-                if (mNativeAwSettings != 0) {
+                AutoLock lock(&(mOwner->mOwner->mAwSettingsLock));
+                if (mOwner->mOwner->mNativeAwSettings != 0) {
                     AutoPtr<IRunnable> runnable;
                     msg->GetObj((IInterface**)&runnable);
                     runnable->Run();
                 }
-                mSynchronizationPending = FALSE;
-                mAwSettingsLock.NotifyAll();
+                mOwner->mSynchronizationPending = FALSE;
+                mOwner->mOwner->mAwSettingsLock.NotifyAll();
             }
             break;
     }
@@ -167,6 +200,7 @@ ECode AwSettings::EventHandler::InnerHandler::HandleMessage(
 //===============================================================
 //            AwSettings::EventHandler::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(AwSettings::EventHandler::InnerRunnable, Object, IRunnable);
 
 AwSettings::EventHandler::InnerRunnable::InnerRunnable(
     /* [in] */ EventHandler* owner)
@@ -204,7 +238,7 @@ void AwSettings::EventHandler::BindUiThread()
 void AwSettings::EventHandler::RunOnUiThreadBlockingAndLocked(
     /* [in] */ IRunnable* r)
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
 
     if (mHandler == NULL) return;
 
@@ -218,10 +252,17 @@ void AwSettings::EventHandler::RunOnUiThreadBlockingAndLocked(
         CMessageHelper::AcquireSingleton((IMessageHelper**)&msgHelper);
         AutoPtr<IMessage> msg;
         msgHelper->Obtain(NULL, RUN_RUNNABLE_BLOCKING, r, (IMessage**)&msg);
-        mHandler->SendMessage(msg);
+        Boolean result;
+        mHandler->SendMessage(msg, &result);
         // try {
             while (mSynchronizationPending) {
-                mAwSettingsLock.Wait();
+                ECode ecode = mOwner->mAwSettingsLock.Wait();
+                if (FAILED(ecode))
+                {
+                    if ((unsigned)ecode == E_INTERRUPTED_EXCEPTION)
+                        mSynchronizationPending = false;
+                    break;
+                }
             }
         // } catch (InterruptedException e) {
         //     Log.e(TAG, "Interrupted waiting a Runnable to complete", e);
@@ -234,7 +275,8 @@ void AwSettings::EventHandler::MaybePostOnUiThread(
     /* [in] */ IRunnable* r)
 {
     if (mHandler != NULL) {
-        mHandler->Post(r);
+        Boolean res;
+        mHandler->Post(r, &res);
     }
 }
 
@@ -252,7 +294,7 @@ const Int32 AwSettings::MIXED_CONTENT_ALWAYS_ALLOW;
 const Int32 AwSettings::MIXED_CONTENT_NEVER_ALLOW;
 const Int32 AwSettings::MIXED_CONTENT_COMPATIBILITY_MODE;
 const String AwSettings::TAG("AwSettings");
-static const Object AwSettings::sGlobalContentSettingsLock;
+Object AwSettings::sGlobalContentSettingsLock;
 
 Boolean AwSettings::sAppCachePathIsSet = FALSE;
 const Int32 AwSettings::MINIMUM_FONT_SIZE;
@@ -282,7 +324,7 @@ AwSettings::AwSettings(
     , mAllowFileAccessFromFileURLs(FALSE)
     , mJavaScriptCanOpenWindowsAutomatically(FALSE)
     , mSupportMultipleWindows(FALSE)
-    , mPluginState(OFF)
+    , mPluginState(/*TODO OFF*/0)
     , mAppCacheEnabled(FALSE)
     , mDomStorageEnabled(FALSE)
     , mDatabaseEnabled(FALSE)
@@ -300,7 +342,7 @@ AwSettings::AwSettings(
     , mBlockNetworkLoads(FALSE)
     , mAllowContentUrlAccess(TRUE)
     , mAllowFileUrlAccess(TRUE)
-    , mCacheMode(WebSettings::LOAD_DEFAULT)
+    , mCacheMode(/*TODO IWebSettings::LOAD_DEFAULT*/-1)
     , mShouldFocusFirstNode(TRUE)
     , mGeolocationEnabled(TRUE)
     , mAutoCompleteEnabled(TRUE)
@@ -312,16 +354,16 @@ AwSettings::AwSettings(
 {
     Int32 permission;
     context->CheckPermission(
-                android::Manifest::permission::INTERNET,
+                Elastos::Droid::Manifest::Permission::INTERNET,
                 Process::MyPid(),
                 Process::MyUid(), &permission);
-    Boolean hasInternetPermission permission == PackageManager.PERMISSION_GRANTED;
+    Boolean hasInternetPermission = (permission == IPackageManager::PERMISSION_GRANTED);
 
     {
-        AutoLock lock(mAwSettingsLock);
+        AutoLock lock(&mAwSettingsLock);
         mHasInternetPermission = hasInternetPermission;
         mBlockNetworkLoads = !hasInternetPermission;
-        mEventHandler = new EventHandler();
+        mEventHandler = new EventHandler(this);
         if (isAccessFromFileURLsGrantedByDefault) {
             mAllowUniversalAccessFromFileURLs = TRUE;
             mAllowFileAccessFromFileURLs = TRUE;
@@ -339,10 +381,10 @@ AwSettings::AwSettings(
         AutoPtr<IContentResolver> contentResolver;
         context->GetContentResolver((IContentResolver**)&contentResolver);
         AutoPtr<ISettingsSystem> settingsSystem;
-        CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
+        //TODO CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
         Int32 value;
         settingsSystem->GetInt32(contentResolver, ISettingsSystem::TEXT_SHOW_PASSWORD, 1, &value);
-        mPasswordEchoEnabled = value == 1;
+        mPasswordEchoEnabled = (value == 1);
 
         // By default, scale the text size by the system font scale factor. Embedders
         // may override this by invoking setTextZoom().
@@ -350,7 +392,7 @@ AwSettings::AwSettings(
         context->GetResources((IResources**)&resources);
         AutoPtr<IConfiguration> configuration;
         resources->GetConfiguration((IConfiguration**)&configuration);
-        Float* fontScale;
+        Float fontScale;
         configuration->GetFontScale(&fontScale);
         mTextSizePercent *= fontScale;
 
@@ -361,7 +403,7 @@ AwSettings::AwSettings(
 
 //@CalledByNative
 void AwSettings::NativeAwSettingsGone(
-    /* [in] */ Int32 nativeAwSettings)
+    /* [in] */ Int64 nativeAwSettings)
 {
     assert(mNativeAwSettings != 0 && mNativeAwSettings == nativeAwSettings);
     mNativeAwSettings = 0;
@@ -370,14 +412,14 @@ void AwSettings::NativeAwSettingsGone(
 //@CalledByNative
 Double AwSettings::GetDIPScaleLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDIPScale;
 }
 
 void AwSettings::SetDIPScale(
     /* [in] */ Double dipScale)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     mDIPScale = dipScale;
     // TODO(joth): This should also be synced over to native side, but right now
     // the setDIPScale call is always followed by a setWebContents() which covers this.
@@ -386,14 +428,14 @@ void AwSettings::SetDIPScale(
 void AwSettings::SetZoomListener(
     /* [in] */ ZoomSupportChangeListener* zoomChangeListener)
 {
-    AutoLock lock(mAwSettingsLock)
+    AutoLock lock(&mAwSettingsLock);
     mZoomChangeListener = zoomChangeListener;
 }
 
 void AwSettings::SetWebContents(
     /* [in] */ Int64 nativeWebContents)
 {
-    AutoLock lock(mAwSettingsLock)
+    AutoLock lock(&mAwSettingsLock);
     if (mNativeAwSettings != 0) {
         NativeDestroy(mNativeAwSettings);
         assert(mNativeAwSettings == 0);  // nativeAwSettingsGone should have been called.
@@ -407,9 +449,9 @@ void AwSettings::SetWebContents(
 
 void AwSettings::UpdateEverythingLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     assert(mNativeAwSettings != 0);
-    nativeUpdateEverythingLocked(mNativeAwSettings);
+    NativeUpdateEverythingLocked(mNativeAwSettings);
     OnGestureZoomSupportChanged(
             SupportsDoubleTapZoomLocked(), SupportsMultiTouchZoomLocked());
 }
@@ -420,10 +462,11 @@ void AwSettings::UpdateEverythingLocked()
 void AwSettings::SetBlockNetworkLoads(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (!flag && !mHasInternetPermission) {
         // throw new SecurityException("Permission denied - " +
         //         "application missing INTERNET permission");
+        Logger::E(TAG, "Permission denied,  missing INTERNET permission");
         assert(0);
     }
     mBlockNetworkLoads = flag;
@@ -434,7 +477,7 @@ void AwSettings::SetBlockNetworkLoads(
  */
 Boolean AwSettings::GetBlockNetworkLoads()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mBlockNetworkLoads;
 }
 
@@ -445,7 +488,7 @@ Boolean AwSettings::GetBlockNetworkLoads()
 void AwSettings::SetAcceptThirdPartyCookies(
     /* [in] */ Boolean accept)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mAcceptThirdPartyCookies != accept) {
         mAcceptThirdPartyCookies = accept;
     }
@@ -457,7 +500,7 @@ void AwSettings::SetAcceptThirdPartyCookies(
  */
 Boolean AwSettings::GetAcceptThirdPartyCookies()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mAcceptThirdPartyCookies;
 }
 
@@ -467,7 +510,7 @@ Boolean AwSettings::GetAcceptThirdPartyCookies()
 void AwSettings::SetAllowFileAccess(
     /* [in] */ Boolean allow)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mAllowFileUrlAccess != allow) {
         mAllowFileUrlAccess = allow;
     }
@@ -478,7 +521,7 @@ void AwSettings::SetAllowFileAccess(
  */
 Boolean AwSettings::GetAllowFileAccess()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mAllowFileUrlAccess;
 }
 
@@ -488,7 +531,7 @@ Boolean AwSettings::GetAllowFileAccess()
 void AwSettings::SetAllowContentAccess(
     /* [in] */ Boolean allow)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mAllowContentUrlAccess != allow) {
         mAllowContentUrlAccess = allow;
     }
@@ -499,7 +542,7 @@ void AwSettings::SetAllowContentAccess(
  */
 Boolean AwSettings::GetAllowContentAccess()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mAllowContentUrlAccess;
 }
 
@@ -509,7 +552,7 @@ Boolean AwSettings::GetAllowContentAccess()
 void AwSettings::SetCacheMode(
     /* [in] */ Int32 mode)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mCacheMode != mode) {
         mCacheMode = mode;
     }
@@ -520,7 +563,7 @@ void AwSettings::SetCacheMode(
  */
 Int32 AwSettings::GetCacheMode()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mCacheMode;
 }
 
@@ -530,7 +573,7 @@ Int32 AwSettings::GetCacheMode()
 void AwSettings::SetShouldFocusFirstNode(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     mShouldFocusFirstNode = flag;
 }
 
@@ -540,10 +583,10 @@ void AwSettings::SetShouldFocusFirstNode(
 void AwSettings::SetInitialPageScale(
     /* [in] */ Float scaleInPercent)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mInitialPageScalePercent != scaleInPercent) {
         mInitialPageScalePercent = scaleInPercent;
-        Autolock<IRunnable> runnable = new SetInitialPageScaleRunnable(this);
+        AutoPtr<IRunnable> runnable = new SetInitialPageScaleRunnable(this);
         mEventHandler->RunOnUiThreadBlockingAndLocked(runnable);
     }
 }
@@ -551,31 +594,31 @@ void AwSettings::SetInitialPageScale(
 //@CalledByNative
 Float AwSettings::GetInitialPageScalePercentLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mInitialPageScalePercent;
 }
 
 void AwSettings::SetSpatialNavigationEnabled(
     /* [in] */ Boolean enable)
 {
-    AutoLock lock(mAwSettingsLock) ;
+    AutoLock lock(&mAwSettingsLock) ;
     if (mSpatialNavigationEnabled != enable) {
         mSpatialNavigationEnabled = enable;
-        mEventHandler.updateWebkitPreferencesLocked();
+        mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
 
 //@CalledByNative
 Boolean AwSettings::GetSpatialNavigationLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSpatialNavigationEnabled;
 }
 
 void AwSettings::SetEnableSupportedHardwareAcceleratedFeatures(
     /* [in] */ Boolean enable)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mEnableSupportedHardwareAcceleratedFeatures != enable) {
         mEnableSupportedHardwareAcceleratedFeatures = enable;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -585,14 +628,14 @@ void AwSettings::SetEnableSupportedHardwareAcceleratedFeatures(
 //@CalledByNative
 Boolean AwSettings::GetEnableSupportedHardwareAcceleratedFeaturesLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mEnableSupportedHardwareAcceleratedFeatures;
 }
 
 void AwSettings::SetFullscreenSupported(
     /* [in] */ Boolean supported)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mFullscreenSupported != supported) {
         mFullscreenSupported = supported;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -602,7 +645,7 @@ void AwSettings::SetFullscreenSupported(
 //@CalledByNative
 Boolean AwSettings::GetFullscreenSupportedLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mFullscreenSupported;
 }
 
@@ -611,7 +654,7 @@ Boolean AwSettings::GetFullscreenSupportedLocked()
  */
 Boolean AwSettings::ShouldFocusFirstNode()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mShouldFocusFirstNode;
 }
 
@@ -621,7 +664,7 @@ Boolean AwSettings::ShouldFocusFirstNode()
 void AwSettings::SetGeolocationEnabled(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mGeolocationEnabled != flag) {
         mGeolocationEnabled = flag;
     }
@@ -632,7 +675,7 @@ void AwSettings::SetGeolocationEnabled(
  */
 Boolean AwSettings::GetGeolocationEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mGeolocationEnabled;
 }
 
@@ -642,13 +685,12 @@ Boolean AwSettings::GetGeolocationEnabled()
 void AwSettings::SetSaveFormData(
     /* [in] */ Boolean enable)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
         if (mAutoCompleteEnabled != enable) {
             mAutoCompleteEnabled = enable;
             AutoPtr<IRunnable> runnable =  new SetSaveFormDataRunnable(this);
             mEventHandler->RunOnUiThreadBlockingAndLocked(runnable);
         }
-    }
 }
 
 /**
@@ -656,14 +698,14 @@ void AwSettings::SetSaveFormData(
  */
 Boolean AwSettings::GetSaveFormData()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetSaveFormDataLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetSaveFormDataLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mAutoCompleteEnabled;
 }
 
@@ -679,11 +721,11 @@ String AwSettings::GetDefaultUserAgent()
 /**
  * See {@link android.webkit.WebSettings#setUserAgentString}.
  */
-void AwSettings::SetUserAgentString(String ua)
+void AwSettings::SetUserAgentString(const String& ua)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     const String oldUserAgent = mUserAgent;
-    if (ua == NULL || ua.GetLength() == 0) {
+    if (ua.IsNullOrEmpty()) {
         mUserAgent = LazyDefaultUserAgent::sInstance;
     }
     else {
@@ -691,7 +733,7 @@ void AwSettings::SetUserAgentString(String ua)
     }
 
     if (!oldUserAgent.Equals(mUserAgent)) {
-        Autolock<IRunnable> runnable = new SetUserAgentStringRunnable(this);
+        AutoPtr<IRunnable> runnable = new SetUserAgentStringRunnable(this);
         mEventHandler->RunOnUiThreadBlockingAndLocked(runnable);
     }
 }
@@ -701,14 +743,14 @@ void AwSettings::SetUserAgentString(String ua)
  */
 String AwSettings::GetUserAgentString()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getUserAgentLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetUserAgentLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetUserAgentLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mUserAgent;
 }
 
@@ -718,7 +760,7 @@ String AwSettings::GetUserAgentLocked()
 void AwSettings::SetLoadWithOverviewMode(
     /* [in] */ Boolean overview)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mLoadWithOverviewMode != overview) {
         mLoadWithOverviewMode = overview;
         AutoPtr<IRunnable> runnable = new SetLoadWithOverviewModeRunnable(this);
@@ -731,14 +773,14 @@ void AwSettings::SetLoadWithOverviewMode(
  */
 Boolean AwSettings::GetLoadWithOverviewMode()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetLoadWithOverviewModeLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetLoadWithOverviewModeLocked()
 {
-    assert Thread.holdsLock(mAwSettingsLock);
+    //TODO assert Thread.holdsLock(mAwSettingsLock);
     return mLoadWithOverviewMode;
 }
 
@@ -748,10 +790,10 @@ Boolean AwSettings::GetLoadWithOverviewModeLocked()
 void AwSettings::SetTextZoom(
     /* [in] */ Int32 textZoom)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mTextSizePercent != textZoom) {
         mTextSizePercent = textZoom;
-        mEventHandler.updateWebkitPreferencesLocked();
+        mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
 
@@ -760,14 +802,14 @@ void AwSettings::SetTextZoom(
  */
 Int32 AwSettings::GetTextZoom()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getTextSizePercentLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetTextSizePercentLocked();
 }
 
 //@CalledByNative
 Int32 AwSettings::GetTextSizePercentLocked()
 {
-    assert(Thread::holdsLock(mAwSettingsLock));
+    //TODO assert(Thread::holdsLock(mAwSettingsLock));
     return mTextSizePercent;
 }
 
@@ -777,7 +819,7 @@ Int32 AwSettings::GetTextSizePercentLocked()
 void AwSettings::SetStandardFontFamily(
     /* [in] */ const String& font)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (font != NULL && !mStandardFontFamily.Equals(font)) {
         mStandardFontFamily = font;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -789,14 +831,14 @@ void AwSettings::SetStandardFontFamily(
  */
 String AwSettings::GetStandardFontFamily()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getStandardFontFamilyLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetStandardFontFamilyLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetStandardFontFamilyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mStandardFontFamily;
 }
 
@@ -806,8 +848,8 @@ String AwSettings::GetStandardFontFamilyLocked()
 void AwSettings::SetFixedFontFamily(
     /* [in] */ const String& font)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (font != NULL && !mFixedFontFamily.Equals(font)) {
+    AutoLock lock(&mAwSettingsLock);
+    if (!font.IsNull() && !mFixedFontFamily.Equals(font)) {
         mFixedFontFamily = font;
         mEventHandler->UpdateWebkitPreferencesLocked();
     }
@@ -818,14 +860,14 @@ void AwSettings::SetFixedFontFamily(
  */
 String AwSettings::GetFixedFontFamily()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getFixedFontFamilyLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetFixedFontFamilyLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetFixedFontFamilyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mFixedFontFamily;
 }
 
@@ -835,8 +877,8 @@ String AwSettings::GetFixedFontFamilyLocked()
 void AwSettings::SetSansSerifFontFamily(
     /* [in] */ const String& font)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (font != NULL && !mSansSerifFontFamily.Equals(font)) {
+    AutoLock lock(&mAwSettingsLock);
+    if (!font.IsNull() && !mSansSerifFontFamily.Equals(font)) {
         mSansSerifFontFamily = font;
         mEventHandler->UpdateWebkitPreferencesLocked();
     }
@@ -847,15 +889,14 @@ void AwSettings::SetSansSerifFontFamily(
  */
 String AwSettings::GetSansSerifFontFamily()
 {
-    synchronized (mAwSettingsLock) {
-        return getSansSerifFontFamilyLocked();
-    }
+    AutoLock lock(&mAwSettingsLock);
+    return GetSansSerifFontFamilyLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetSansSerifFontFamilyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSansSerifFontFamily;
 }
 
@@ -865,10 +906,10 @@ String AwSettings::GetSansSerifFontFamilyLocked()
 void AwSettings::SetSerifFontFamily(
     /* [in] */ const String& font)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (font != NULL && !mSerifFontFamily.Equals(font)) {
+    AutoLock lock(&mAwSettingsLock);
+    if (!font.IsNull() && !mSerifFontFamily.Equals(font)) {
         mSerifFontFamily = font;
-        mEventHandler.UpdateWebkitPreferencesLocked();
+        mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
 
@@ -877,14 +918,14 @@ void AwSettings::SetSerifFontFamily(
  */
 String AwSettings::GetSerifFontFamily()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetSerifFontFamilyLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetSerifFontFamilyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSerifFontFamily;
 }
 
@@ -894,8 +935,8 @@ String AwSettings::GetSerifFontFamilyLocked()
 void AwSettings::SetCursiveFontFamily(
     /* [in] */ const String& font)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (font != NULL && !mCursiveFontFamily.Equals(font)) {
+    AutoLock lock(&mAwSettingsLock);
+    if (!font.IsNull() && !mCursiveFontFamily.Equals(font)) {
         mCursiveFontFamily = font;
         mEventHandler->UpdateWebkitPreferencesLocked();
     }
@@ -906,14 +947,14 @@ void AwSettings::SetCursiveFontFamily(
  */
 String AwSettings::GetCursiveFontFamily()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetCursiveFontFamilyLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetCursiveFontFamilyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mCursiveFontFamily;
 }
 
@@ -923,10 +964,10 @@ String AwSettings::GetCursiveFontFamilyLocked()
 void AwSettings::SetFantasyFontFamily(
     /* [in] */ const String& font)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (font != null && !mFantasyFontFamily.equals(font)) {
+    AutoLock lock(&mAwSettingsLock);
+    if (!font.IsNull() && !mFantasyFontFamily.Equals(font)) {
         mFantasyFontFamily = font;
-        mEventHandler.updateWebkitPreferencesLocked();
+        mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
 
@@ -935,14 +976,14 @@ void AwSettings::SetFantasyFontFamily(
  */
 String AwSettings::GetFantasyFontFamily()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getFantasyFontFamilyLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetFantasyFontFamilyLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetFantasyFontFamilyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mFantasyFontFamily;
 }
 
@@ -952,7 +993,7 @@ String AwSettings::GetFantasyFontFamilyLocked()
 void AwSettings::SetMinimumFontSize(
     /* [in] */ Int32 size)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     size = ClipFontSize(size);
     if (mMinimumFontSize != size) {
         mMinimumFontSize = size;
@@ -965,14 +1006,14 @@ void AwSettings::SetMinimumFontSize(
  */
 Int32 AwSettings::GetMinimumFontSize()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetMinimumFontSizeLocked();
 }
 
 //@CalledByNative
 Int32 AwSettings::GetMinimumFontSizeLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mMinimumFontSize;
 }
 
@@ -982,7 +1023,7 @@ Int32 AwSettings::GetMinimumFontSizeLocked()
 void AwSettings::SetMinimumLogicalFontSize(
     /* [in] */ Int32 size)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     size = ClipFontSize(size);
     if (mMinimumLogicalFontSize != size) {
         mMinimumLogicalFontSize = size;
@@ -995,14 +1036,14 @@ void AwSettings::SetMinimumLogicalFontSize(
  */
 Int32 AwSettings::GetMinimumLogicalFontSize()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetMinimumLogicalFontSizeLocked();
 }
 
 //@CalledByNative
 Int32 AwSettings::GetMinimumLogicalFontSizeLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mMinimumLogicalFontSize;
 }
 
@@ -1012,7 +1053,7 @@ Int32 AwSettings::GetMinimumLogicalFontSizeLocked()
 void AwSettings::SetDefaultFontSize(
     /* [in] */ Int32 size)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     size = ClipFontSize(size);
     if (mDefaultFontSize != size) {
         mDefaultFontSize = size;
@@ -1025,14 +1066,14 @@ void AwSettings::SetDefaultFontSize(
  */
 Int32 AwSettings::GetDefaultFontSize()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getDefaultFontSizeLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetDefaultFontSizeLocked();
 }
 
 //@CalledByNative
 Int32 AwSettings::GetDefaultFontSizeLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDefaultFontSize;
 }
 
@@ -1042,11 +1083,11 @@ Int32 AwSettings::GetDefaultFontSizeLocked()
 void AwSettings::SetDefaultFixedFontSize(
     /* [in] */ Int32 size)
 {
-    AutoLock lock(mAwSettingsLock);
-    size = clipFontSize(size);
+    AutoLock lock(&mAwSettingsLock);
+    size = ClipFontSize(size);
     if (mDefaultFixedFontSize != size) {
         mDefaultFixedFontSize = size;
-        mEventHandler.updateWebkitPreferencesLocked();
+        mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
 
@@ -1055,14 +1096,14 @@ void AwSettings::SetDefaultFixedFontSize(
  */
 Int32 AwSettings::GetDefaultFixedFontSize()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetDefaultFixedFontSizeLocked();
 }
 
 //@CalledByNative
 Int32 AwSettings::GetDefaultFixedFontSizeLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDefaultFixedFontSize;
 }
 
@@ -1072,7 +1113,7 @@ Int32 AwSettings::GetDefaultFixedFontSizeLocked()
 void AwSettings::SetJavaScriptEnabled(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);{
+    AutoLock lock(&mAwSettingsLock);
     if (mJavaScriptEnabled != flag) {
         mJavaScriptEnabled = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1082,9 +1123,9 @@ void AwSettings::SetJavaScriptEnabled(
 /**
  * See {@link android.webkit.WebSettings#setAllowUniversalAccessFromFileURLs}.
  */
-void AwSettings::SetAllowUniversalAccessFromFileURLs(boolean flag)
+void AwSettings::SetAllowUniversalAccessFromFileURLs(Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mAllowUniversalAccessFromFileURLs != flag) {
         mAllowUniversalAccessFromFileURLs = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1097,7 +1138,7 @@ void AwSettings::SetAllowUniversalAccessFromFileURLs(boolean flag)
 void AwSettings::SetAllowFileAccessFromFileURLs(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mAllowFileAccessFromFileURLs != flag) {
         mAllowFileAccessFromFileURLs = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1110,7 +1151,7 @@ void AwSettings::SetAllowFileAccessFromFileURLs(
 void AwSettings::SetLoadsImagesAutomatically(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mLoadsImagesAutomatically != flag) {
         mLoadsImagesAutomatically = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1122,14 +1163,14 @@ void AwSettings::SetLoadsImagesAutomatically(
  */
 Boolean AwSettings::GetLoadsImagesAutomatically()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetLoadsImagesAutomaticallyLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetLoadsImagesAutomaticallyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mLoadsImagesAutomatically;
 }
 
@@ -1139,7 +1180,7 @@ Boolean AwSettings::GetLoadsImagesAutomaticallyLocked()
 void AwSettings::SetImagesEnabled(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mImagesEnabled != flag) {
         mImagesEnabled = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1151,14 +1192,14 @@ void AwSettings::SetImagesEnabled(
  */
 Boolean AwSettings::GetImagesEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mImagesEnabled;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetImagesEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mImagesEnabled;
 }
 
@@ -1167,14 +1208,14 @@ Boolean AwSettings::GetImagesEnabledLocked()
  */
 Boolean AwSettings::GetJavaScriptEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mJavaScriptEnabled;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetJavaScriptEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mJavaScriptEnabled;
 }
 
@@ -1183,14 +1224,14 @@ Boolean AwSettings::GetJavaScriptEnabledLocked()
  */
 Boolean AwSettings::GetAllowUniversalAccessFromFileURLs()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetAllowUniversalAccessFromFileURLsLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetAllowUniversalAccessFromFileURLsLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mAllowUniversalAccessFromFileURLs;
 }
 
@@ -1199,31 +1240,31 @@ Boolean AwSettings::GetAllowUniversalAccessFromFileURLsLocked()
  */
 Boolean AwSettings::GetAllowFileAccessFromFileURLs()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetAllowFileAccessFromFileURLsLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetAllowFileAccessFromFileURLsLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mAllowFileAccessFromFileURLs;
 }
 
 /**
  * See {@link android.webkit.WebSettings#setPluginsEnabled}.
  */
-void AwSettings::SetPluginsEnabled(boolean flag)
+void AwSettings::SetPluginsEnabled(Boolean flag)
 {
-    SetPluginState(flag ? PluginState.ON : PluginState.OFF);
+    SetPluginState(flag ? 0:2/*TODO PluginState.ON : PluginState.OFF*/);
 }
 
 /**
  * See {@link android.webkit.WebSettings#setPluginState}.
  */
-void AwSettings::SetPluginState(PluginState state)
+void AwSettings::SetPluginState(/*TODO PluginState*/Int32 state)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mPluginState != state) {
         mPluginState = state;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1235,8 +1276,8 @@ void AwSettings::SetPluginState(PluginState state)
  */
 Boolean AwSettings::GetPluginsEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
-    return mPluginState == PluginState.ON;
+    AutoLock lock(&mAwSettingsLock);
+    return mPluginState == /*TODO PluginState.ON*/0;
 }
 
 /**
@@ -1246,16 +1287,16 @@ Boolean AwSettings::GetPluginsEnabled()
 //@CalledByNative
 Boolean AwSettings::GetPluginsDisabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
-    return mPluginState == PluginState.OFF;
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
+    return mPluginState == /*TODO PluginState.OFF*/2;
 }
 
 /**
  * See {@link android.webkit.WebSettings#getPluginState}.
  */
-PluginState AwSettings::GetPluginState()
+/*TODO PluginState*/Int32 AwSettings::GetPluginState()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mPluginState;
 }
 
@@ -1266,7 +1307,7 @@ PluginState AwSettings::GetPluginState()
 void AwSettings::SetJavaScriptCanOpenWindowsAutomatically(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mJavaScriptCanOpenWindowsAutomatically != flag) {
         mJavaScriptCanOpenWindowsAutomatically = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1278,14 +1319,14 @@ void AwSettings::SetJavaScriptCanOpenWindowsAutomatically(
  */
 Boolean AwSettings::GetJavaScriptCanOpenWindowsAutomatically()
 {
-    AutoLock lock(mAwSettingsLock);
-    return getJavaScriptCanOpenWindowsAutomaticallyLocked();
+    AutoLock lock(&mAwSettingsLock);
+    return GetJavaScriptCanOpenWindowsAutomaticallyLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetJavaScriptCanOpenWindowsAutomaticallyLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mJavaScriptCanOpenWindowsAutomatically;
 }
 
@@ -1295,7 +1336,7 @@ Boolean AwSettings::GetJavaScriptCanOpenWindowsAutomaticallyLocked()
 void AwSettings::SetLayoutAlgorithm(
     /* [in] */ LayoutAlgorithm l)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mLayoutAlgorithm != l) {
         mLayoutAlgorithm = l;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1305,9 +1346,9 @@ void AwSettings::SetLayoutAlgorithm(
 /**
  * See {@link android.webkit.WebSettings#getLayoutAlgorithm}.
  */
-LayoutAlgorithm AwSettings::GetLayoutAlgorithm()
+AwSettings::LayoutAlgorithm AwSettings::GetLayoutAlgorithm()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mLayoutAlgorithm;
 }
 
@@ -1319,7 +1360,7 @@ LayoutAlgorithm AwSettings::GetLayoutAlgorithm()
 //@CalledByNative
 Boolean AwSettings::GetTextAutosizingEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mLayoutAlgorithm == TEXT_AUTOSIZING;
 }
 
@@ -1329,7 +1370,7 @@ Boolean AwSettings::GetTextAutosizingEnabledLocked()
 void AwSettings::SetSupportMultipleWindows(
     /* [in] */ Boolean support)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mSupportMultipleWindows != support) {
         mSupportMultipleWindows = support;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1341,21 +1382,21 @@ void AwSettings::SetSupportMultipleWindows(
  */
 Boolean AwSettings::SupportMultipleWindows()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mSupportMultipleWindows;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetSupportMultipleWindowsLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSupportMultipleWindows;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetSupportLegacyQuirksLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSupportLegacyQuirks;
 }
 
@@ -1365,7 +1406,7 @@ Boolean AwSettings::GetSupportLegacyQuirksLocked()
 void AwSettings::SetUseWideViewPort(
     /* [in] */ Boolean use)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mUseWideViewport != use) {
         mUseWideViewport = use;
         OnGestureZoomSupportChanged(
@@ -1379,44 +1420,44 @@ void AwSettings::SetUseWideViewPort(
  */
 Boolean AwSettings::GetUseWideViewPort()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetUseWideViewportLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetUseWideViewportLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mUseWideViewport;
 }
 
 void AwSettings::SetZeroLayoutHeightDisablesViewportQuirk(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mZeroLayoutHeightDisablesViewportQuirk != enabled) {
         mZeroLayoutHeightDisablesViewportQuirk = enabled;
-        mEventHandler.updateWebkitPreferencesLocked();
+        mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
 
 Boolean AwSettings::GetZeroLayoutHeightDisablesViewportQuirk()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetZeroLayoutHeightDisablesViewportQuirkLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetZeroLayoutHeightDisablesViewportQuirkLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mZeroLayoutHeightDisablesViewportQuirk;
 }
 
 void AwSettings::SetForceZeroLayoutHeight(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mForceZeroLayoutHeight != enabled) {
         mForceZeroLayoutHeight = enabled;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1425,30 +1466,30 @@ void AwSettings::SetForceZeroLayoutHeight(
 
 Boolean AwSettings::GetForceZeroLayoutHeight()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetForceZeroLayoutHeightLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetForceZeroLayoutHeightLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mForceZeroLayoutHeight;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetPasswordEchoEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mPasswordEchoEnabled;
 }
 
 /**
  * See {@link android.webkit.WebSettings#setAppCacheEnabled}.
  */
-void AwSettings::SetAppCacheEnabled(boolean flag)
+void AwSettings::SetAppCacheEnabled(Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mAppCacheEnabled != flag) {
         mAppCacheEnabled = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1463,9 +1504,9 @@ void AwSettings::SetAppCachePath(
 {
     Boolean needToSync = FALSE;
     {
-        AutoLock lock(sGlobalContentSettingsLock)
+        AutoLock lock(&sGlobalContentSettingsLock);
         // AppCachePath can only be set once.
-        if (!sAppCachePathIsSet && path != NULL && !path.IsEmpty()) {
+        if (!sAppCachePathIsSet && !path.IsNull() && !path.IsEmpty()) {
             sAppCachePathIsSet = TRUE;
             needToSync = TRUE;
         }
@@ -1474,7 +1515,7 @@ void AwSettings::SetAppCachePath(
     // until they execute synchronization from Java to the native side.
     // But this is the same behaviour as it was in the legacy WebView.
     if (needToSync) {
-        AutoLock lock(mAwSettingsLock)
+        AutoLock lock(&mAwSettingsLock);
         mEventHandler->UpdateWebkitPreferencesLocked();
     }
 }
@@ -1487,15 +1528,13 @@ void AwSettings::SetAppCachePath(
 //@CalledByNative
 Boolean AwSettings::GetAppCacheEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     if (!mAppCacheEnabled) {
         return FALSE;
     }
 
-    {
-        AutoLock lock(sGlobalContentSettingsLock);
-        return sAppCachePathIsSet;
-    }
+    AutoLock lock(&sGlobalContentSettingsLock);
+    return sAppCachePathIsSet;
 }
 
 /**
@@ -1504,7 +1543,7 @@ Boolean AwSettings::GetAppCacheEnabledLocked()
 void AwSettings::SetDomStorageEnabled(
     /* [in] */ Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock)
+    AutoLock lock(&mAwSettingsLock);
     {
         if (mDomStorageEnabled != flag) {
             mDomStorageEnabled = flag;
@@ -1518,23 +1557,23 @@ void AwSettings::SetDomStorageEnabled(
  */
 Boolean AwSettings::GetDomStorageEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mDomStorageEnabled;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetDomStorageEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDomStorageEnabled;
 }
 
 /**
  * See {@link android.webkit.WebSettings#setDatabaseEnabled}.
  */
-void AwSettings::SetDatabaseEnabled(boolean flag)
+void AwSettings::SetDatabaseEnabled(Boolean flag)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mDatabaseEnabled != flag) {
         mDatabaseEnabled = flag;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1546,14 +1585,14 @@ void AwSettings::SetDatabaseEnabled(boolean flag)
  */
 Boolean AwSettings::GetDatabaseEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mDatabaseEnabled;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetDatabaseEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDatabaseEnabled;
 }
 
@@ -1563,8 +1602,8 @@ Boolean AwSettings::GetDatabaseEnabledLocked()
 void AwSettings::SetDefaultTextEncodingName(
     /* [in] */ const String& encoding)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (encoding != NULL && !mDefaultTextEncoding.Equals(encoding)) {
+    AutoLock lock(&mAwSettingsLock);
+    if (!encoding.IsNull() && !mDefaultTextEncoding.Equals(encoding)) {
         mDefaultTextEncoding = encoding;
         mEventHandler->UpdateWebkitPreferencesLocked();
     }
@@ -1575,14 +1614,14 @@ void AwSettings::SetDefaultTextEncodingName(
  */
 String AwSettings::GetDefaultTextEncodingName()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetDefaultTextEncodingLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetDefaultTextEncodingLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDefaultTextEncoding;
 }
 
@@ -1592,7 +1631,7 @@ String AwSettings::GetDefaultTextEncodingLocked()
 void AwSettings::SetMediaPlaybackRequiresUserGesture(
     /* [in] */ Boolean require)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mMediaPlaybackRequiresUserGesture != require) {
         mMediaPlaybackRequiresUserGesture = require;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1604,14 +1643,14 @@ void AwSettings::SetMediaPlaybackRequiresUserGesture(
  */
 Boolean AwSettings::GetMediaPlaybackRequiresUserGesture()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetMediaPlaybackRequiresUserGestureLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetMediaPlaybackRequiresUserGestureLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mMediaPlaybackRequiresUserGesture;
 }
 
@@ -1621,9 +1660,9 @@ Boolean AwSettings::GetMediaPlaybackRequiresUserGestureLocked()
 void AwSettings::SetDefaultVideoPosterURL(
     /* [in] */ const String& url)
 {
-    AutoLock lock(mAwSettingsLock);
-    if (mDefaultVideoPosterURL != NULL && !mDefaultVideoPosterURL.Equals(url) ||
-            mDefaultVideoPosterURL == NULL && url != NULL) {
+    AutoLock lock(&mAwSettingsLock);
+    if ((!mDefaultVideoPosterURL.IsNull() && !mDefaultVideoPosterURL.Equals(url)) ||
+            (mDefaultVideoPosterURL.IsNull() && !url.IsNull())) {
         mDefaultVideoPosterURL = url;
         mEventHandler->UpdateWebkitPreferencesLocked();
     }
@@ -1634,14 +1673,14 @@ void AwSettings::SetDefaultVideoPosterURL(
  */
 String AwSettings::GetDefaultVideoPosterURL()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetDefaultVideoPosterURLLocked();
 }
 
 //@CalledByNative
 String AwSettings::GetDefaultVideoPosterURLLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mDefaultVideoPosterURL;
 }
 
@@ -1650,7 +1689,7 @@ void AwSettings::OnGestureZoomSupportChanged(
     /* [in] */ Boolean supportsMultiTouchZoom)
 {
     // Always post asynchronously here, to avoid doubling back onto the caller.
-    AutoPtr<IRunnable> runnable = new OnGestureZoomSupportChangedRunnable(this);
+    AutoPtr<IRunnable> runnable = new OnGestureZoomSupportChangedRunnable(this, supportsDoubleTapZoom, supportsMultiTouchZoom);
     mEventHandler->MaybePostOnUiThread(runnable);
 }
 
@@ -1660,7 +1699,7 @@ void AwSettings::OnGestureZoomSupportChanged(
 void AwSettings::SetSupportZoom(
     /* [in] */ Boolean support)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mSupportZoom != support) {
         mSupportZoom = support;
         OnGestureZoomSupportChanged(
@@ -1673,7 +1712,7 @@ void AwSettings::SetSupportZoom(
  */
 Boolean AwSettings::SupportZoom()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mSupportZoom;
 }
 
@@ -1683,7 +1722,7 @@ Boolean AwSettings::SupportZoom()
 void AwSettings::SetBuiltInZoomControls(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mBuiltInZoomControls != enabled) {
         mBuiltInZoomControls = enabled;
         OnGestureZoomSupportChanged(
@@ -1696,7 +1735,7 @@ void AwSettings::SetBuiltInZoomControls(
  */
 Boolean AwSettings::GetBuiltInZoomControls()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mBuiltInZoomControls;
 }
 
@@ -1706,7 +1745,7 @@ Boolean AwSettings::GetBuiltInZoomControls()
 void AwSettings::SetDisplayZoomControls(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     mDisplayZoomControls = enabled;
 }
 
@@ -1715,14 +1754,14 @@ void AwSettings::SetDisplayZoomControls(
  */
 Boolean AwSettings::GetDisplayZoomControls()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mDisplayZoomControls;
 }
 
 void AwSettings::SetMixedContentMode(
     /* [in] */ Int32 mode)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mMixedContentMode != mode) {
         mMixedContentMode = mode;
         mEventHandler->UpdateWebkitPreferencesLocked();
@@ -1731,21 +1770,21 @@ void AwSettings::SetMixedContentMode(
 
 Int32 AwSettings::GetMixedContentMode()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return mMixedContentMode;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetAllowRunningInsecureContentLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mMixedContentMode == MIXED_CONTENT_ALWAYS_ALLOW;
 }
 
 //@CalledByNative
 Boolean AwSettings::GetAllowDisplayingInsecureContentLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mMixedContentMode == MIXED_CONTENT_ALWAYS_ALLOW ||
             mMixedContentMode == MIXED_CONTENT_COMPATIBILITY_MODE;
 }
@@ -1757,7 +1796,7 @@ Boolean AwSettings::GetAllowDisplayingInsecureContentLocked()
 void AwSettings::SetVideoOverlayForEmbeddedVideoEnabled(
     /* [in] */ Boolean enabled)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     if (mVideoOverlayForEmbeddedVideoEnabled != enabled) {
         mVideoOverlayForEmbeddedVideoEnabled = enabled;
         AutoPtr<IRunnable> runnable = new SetVideoOverlayForEmbeddedVideoEnabledRunnable(this);
@@ -1771,38 +1810,38 @@ void AwSettings::SetVideoOverlayForEmbeddedVideoEnabled(
  */
 Boolean AwSettings::GetVideoOverlayForEmbeddedVideoEnabled()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return GetVideoOverlayForEmbeddedVideoEnabledLocked();
 }
 
 //@CalledByNative
 Boolean AwSettings::GetVideoOverlayForEmbeddedVideoEnabledLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mVideoOverlayForEmbeddedVideoEnabled;
 }
 
 //@CalledByNative
 Boolean AwSettings::SupportsDoubleTapZoomLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSupportZoom && mBuiltInZoomControls && mUseWideViewport;
 }
 
 Boolean AwSettings::SupportsMultiTouchZoomLocked()
 {
-    assert(Thread::HoldsLock(mAwSettingsLock));
+    //TODO assert(Thread::HoldsLock(mAwSettingsLock));
     return mSupportZoom && mBuiltInZoomControls;
 }
 
 Boolean AwSettings::SupportsMultiTouchZoom() {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return SupportsMultiTouchZoomLocked();
 }
 
 Boolean AwSettings::ShouldDisplayZoomControls()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     return SupportsMultiTouchZoomLocked() && mDisplayZoomControls;
 }
 
@@ -1821,7 +1860,7 @@ Int32 AwSettings::ClipFontSize(
 //@CalledByNative
 void AwSettings::UpdateEverything()
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     UpdateEverythingLocked();
 }
 
@@ -1829,14 +1868,14 @@ void AwSettings::UpdateEverything()
 void AwSettings::PopulateWebPreferences(
     /* [in] */ Int64 webPrefsPtr)
 {
-    AutoLock lock(mAwSettingsLock);
+    AutoLock lock(&mAwSettingsLock);
     assert(mNativeAwSettings != 0);
     NativePopulateWebPreferencesLocked(mNativeAwSettings, webPrefsPtr);
 }
 
 void AwSettings::UpdateWebkitPreferencesOnUiThreadLocked()
 {
-    assert(mEventHandler->mHandler != NULL);
+    //TODO assert(mEventHandler->mHandler != NULL);
     ThreadUtils::AssertOnUiThread();
     if (mNativeAwSettings != 0) {
         NativeUpdateWebkitPreferencesLocked(mNativeAwSettings);
@@ -1846,6 +1885,7 @@ void AwSettings::UpdateWebkitPreferencesOnUiThreadLocked()
 Int64 AwSettings::NativeInit(
     /* [in] */ Int64 webContentsPtr)
 {
+    return 0;
 }
 
 void AwSettings::NativeDestroy(
@@ -1886,6 +1926,7 @@ void AwSettings::NativeUpdateWebkitPreferencesLocked(
 
 String AwSettings::NativeGetDefaultUserAgent()
 {
+    return String(NULL);
 }
 
 void AwSettings::NativeUpdateFormDataPreferencesLocked(
@@ -1897,3 +1938,8 @@ void AwSettings::NativeUpdateRendererPreferencesLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
 }
+
+} // namespace AndroidWebview
+} // namespace Webkit
+} // namespace Droid
+} //namespace Elastos

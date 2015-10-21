@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/utility/etl/HashMap.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::ISparseArray;
@@ -11,6 +12,7 @@ using Elastos::Droid::Utility::ISparseArray;
 // import java.io.IOException;
 // import java.lang.ref.SoftReference;
 // import java.util.NoSuchElementException;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -78,7 +80,8 @@ private:
 
     // Loading some resources is expensive, so cache the results.
     //static SparseArray<SoftReference<String>> sResourceCache;
-    static AutoPtr<ISparseArray> sResourceCache;//TODO
+    //static AutoPtr<ISparseArray> sResourceCache;//TODO now web use HashMap replace this
+    static HashMap<Int32, AutoPtr<IWeakReference> > sResourceCache;
 
     static const Int32 TYPE_STRING = 0;
     static const Int32 TYPE_RAW = 1;

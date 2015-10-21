@@ -3,8 +3,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/ContentVideoViewClient.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
-//TODO #include "elastos/droid/webkit/native/android_webview/AwSettings.h"
-//TODO #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 
 using Elastos::Droid::Content::IContext;
@@ -21,6 +20,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
+    class AwContents;
 
 /**
  * ContentViewClient implementation for WebView
@@ -99,8 +99,8 @@ public:
 public:
     AwContentViewClient(
         /* [in] */ AwContentsClient* awContentsClient,
-        /* [in] */ /*TODO AwSettings*/IInterface* awSettings,
-        /* [in] */ /*TODO AwContents*/IInterface* awContents,
+        /* [in] */ AwSettings* awSettings,
+        /* [in] */ AwContents* awContents,
         /* [in] */ IContext* context);
 
     //@Override
@@ -132,8 +132,8 @@ private:
 
 private:
     AutoPtr<AwContentsClient> mAwContentsClient;
-    AutoPtr</*TODO AwSettings*/IInterface> mAwSettings;
-    AutoPtr</*TODO AwContents*/IInterface> mAwContents;
+    AutoPtr<AwSettings> mAwSettings;
+    AwContents* mAwContents;
     AutoPtr<IContext> mContext;
 };
 

@@ -1,22 +1,21 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSETTINGS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSETTINGS_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
 
-// import android.content.Context;
-// import android.content.pm.PackageManager;
-// import android.os.Handler;
-// import android.os.Message;
-// import android.os.Process;
-// import android.provider.Settings;
-// import android.util.Log;
-// import android.webkit.WebSettings;
-// import android.webkit.WebSettings.PluginState;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+//TODO using Elastos::Droid::Webkit::IWebSettings;
+//TODO using Elastos::Droid::Webkit::PluginState;
+using Elastos::Core::IRunnable;
 
 // import com.google.common.annotations.VisibleForTesting;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-// import org.chromium.base.ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -32,13 +31,15 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwSettings
+:public Object
 {
-private:
+public:
     class SetInitialPageScaleRunnable
         : public Object
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         SetInitialPageScaleRunnable(
             /* [in] */ AwSettings* owner);
 
@@ -53,6 +54,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         SetSaveFormDataRunnable(
             /* [in] */ AwSettings* owner);
 
@@ -67,6 +69,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         SetUserAgentStringRunnable(
             /* [in] */ AwSettings* owner);
 
@@ -81,6 +84,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         SetLoadWithOverviewModeRunnable(
             /* [in] */ AwSettings* owner);
 
@@ -95,6 +99,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         OnGestureZoomSupportChangedRunnable(
             /* [in] */ AwSettings* owner,
             /* [in] */ Boolean supportsDoubleTapZoom,
@@ -104,8 +109,8 @@ private:
 
     private:
         AwSettings* mOwner;
-        Boolean mSupportsDoubleTapZoom,
-        Boolean mSupportsMultiTouchZoom
+        Boolean mSupportsDoubleTapZoom;
+        Boolean mSupportsMultiTouchZoom;
     };
 
     class SetVideoOverlayForEmbeddedVideoEnabledRunnable
@@ -113,6 +118,7 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL();
         SetVideoOverlayForEmbeddedVideoEnabledRunnable(
             /* [in] */ AwSettings* owner);
 
@@ -135,27 +141,28 @@ public:
 
     class LazyDefaultUserAgent
     {
-    private:
+    public:
         // Lazy Holder pattern
         static const String sInstance;
     };
 
     class ZoomSupportChangeListener
+        :public Object
     {
     public:
-        CARAPI_(void) OnGestureZoomSupportChanged(
+        virtual CARAPI_(void) OnGestureZoomSupportChanged(
             /* [in] */ Boolean supportsDoubleTapZoom,
             /* [in] */ Boolean supportsMultiTouchZoom) = 0;
     };
 
-private:
+public:
     // Class to handle messages to be processed on the UI thread.
     class EventHandler
+    :public Object
     {
-    private:
+    public:
         class InnerHandler
-            : public Object
-            , public IHandler
+            : public Handler
         {
         public:
             InnerHandler(
@@ -174,6 +181,7 @@ private:
             , public IRunnable
         {
         public:
+            CAR_INTERFACE_DECL();
             InnerRunnable(
                 /* [in] */ EventHandler* owner);
 
@@ -551,7 +559,7 @@ public:
      * See {@link android.webkit.WebSettings#setPluginState}.
      */
     CARAPI_(void) SetPluginState(
-        /* [in] */ PluginState state);
+        /* [in] */ /*TODO PluginState*/Int32 state);
 
     /**
      * See {@link android.webkit.WebSettings#getPluginsEnabled}.
@@ -561,7 +569,7 @@ public:
     /**
      * See {@link android.webkit.WebSettings#getPluginState}.
      */
-    CARAPI_(PluginState) GetPluginState();
+    CARAPI_(/*TODO PluginState*/Int32) GetPluginState();
 
     /**
      * See {@link android.webkit.WebSettings#setJavaScriptCanOpenWindowsAutomatically}.
@@ -676,7 +684,7 @@ public:
     /**
      * See {@link android.webkit.WebSettings#setDefaultVideoPosterURL}.
      */
-    CARAPI_(void) SetDefaultVideoPosterURL(String url);
+    CARAPI_(void) SetDefaultVideoPosterURL(const String& url);
 
     /**
      * See {@link android.webkit.WebSettings#getDefaultVideoPosterURL}.
@@ -947,13 +955,13 @@ private:
     // to call native code on the UI thread only.
 
     // Values passed in on construction.
-    const Boolean mHasInternetPermission;
+    Boolean mHasInternetPermission;
 
     AutoPtr<ZoomSupportChangeListener> mZoomChangeListener;
     Double mDIPScale;
 
     // Lock to protect all settings.
-    const Object mAwSettingsLock;
+    Object mAwSettingsLock;
 
     LayoutAlgorithm mLayoutAlgorithm;
     Int32 mTextSizePercent;
@@ -976,7 +984,7 @@ private:
     Boolean mAllowFileAccessFromFileURLs;
     Boolean mJavaScriptCanOpenWindowsAutomatically;
     Boolean mSupportMultipleWindows;
-    PluginState mPluginState;
+    /*TODO PluginState*/Int32 mPluginState;
     Boolean mAppCacheEnabled;
     Boolean mDomStorageEnabled;
     Boolean mDatabaseEnabled;
@@ -995,9 +1003,9 @@ private:
     // Although this bit is stored on AwSettings it is actually controlled via the CookieManager.
     Boolean mAcceptThirdPartyCookies;
 
-    const Boolean mSupportLegacyQuirks;
+    Boolean mSupportLegacyQuirks;
 
-    const Boolean mPasswordEchoEnabled;
+    Boolean mPasswordEchoEnabled;
 
     // Not accessed by the native side.
     Boolean mBlockNetworkLoads;  // Default depends on permission of embedding APK.
@@ -1013,7 +1021,7 @@ private:
     Boolean mDisplayZoomControls;
 
     // Protects access to settings global fields.
-    static const Object sGlobalContentSettingsLock;
+    static Object sGlobalContentSettingsLock;
     // For compatibility with the legacy WebView, we can only enable AppCache when the path is
     // provided. However, we don't use the path, so we just check if we have received it from the
     // client.
@@ -1023,7 +1031,7 @@ private:
     Int64 mNativeAwSettings;
 
     // Custom handler that queues messages to call native code on the UI thread.
-    const AutoPtr<EventHandler> mEventHandler;
+    AutoPtr<EventHandler> mEventHandler;
 
     static const Int32 MINIMUM_FONT_SIZE = 1;
     static const Int32 MAXIMUM_FONT_SIZE = 72;

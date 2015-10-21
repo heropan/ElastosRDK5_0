@@ -1,24 +1,23 @@
-
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATEADAPTER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATEADAPTER_H__
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/android_webview/AwWebContentsDelegate.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/AsyncTask.h"
 
-// import android.content.ContentResolver;
-// import android.content.Context;
-// import android.net.Uri;
-// import android.os.AsyncTask;
-// import android.os.Handler;
-// import android.os.Message;
-// import android.provider.MediaStore;
-// import android.util.Log;
-// import android.view.KeyEvent;
-// import android.view.View;
-// import android.webkit.ConsoleMessage;
-// import android.webkit.ValueCallback;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
+//TODO using Elastos::Droid::Webkit::IValueCallback;
 
-// import org.chromium.base.ContentUriUtils;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.content.browser.ContentVideoView;
-// import org.chromium.content.browser.ContentViewCore;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
 
 namespace Elastos {
 namespace Droid {
@@ -32,8 +31,8 @@ namespace AndroidWebview {
  */
 class AwWebContentsDelegateAdapter : public AwWebContentsDelegate
 {
-private:
-    class GetDisplayNameTask : public AsyncTask<Void, Void, String[]>
+public:
+    class GetDisplayNameTask : public AsyncTask
     {
     public:
         GetDisplayNameTask(
@@ -47,16 +46,18 @@ private:
         const Int32 mProcessId;
         const Int32 mRenderId;
         const Int32 mModeFlags;
-        const AutoPtr< ArrayOf<String> > mFilePaths;
-        const AutoPtr<IContentResolver> mContentResolver;
+        AutoPtr<ArrayOf<String> > mFilePaths;
+        AutoPtr<IContentResolver> mContentResolver;
 
     protected:
         //@Override
-        CARAPI_(AutoPtr< ArrayOf<String> >) DoInBackground(/*Void...voids*/);
+        CARAPI DoInBackground(
+            /* [in] */ ArrayOf<IInterface*>* params,
+            /* [in] */ IInterface** result);
 
         //@Override
-        CARAPI_(void) OnPostExecute(
-            /* [in] */ ArrayOf<String>* result);
+        CARAPI OnPostExecute(
+            /* [in] */ IInterface* result);
 
     private:
         /**
@@ -68,8 +69,7 @@ private:
     };
 
     class InnerHandler
-        : public Object
-        , public IHandler
+        : public Handler
     {
     public:
         InnerHandler(
@@ -81,13 +81,16 @@ private:
             /* [in] */ IMessage* msg);
 
     private:
-        AwWebContentsDelegateAdapter* mOwner
+        AwWebContentsDelegateAdapter* mOwner;
         ContentViewCore* mContentViewCore;
     };
 
     class InnerValueCallback
+        : public Object
+        //TODO , public IValueCallback
     {
     public:
+        //TODO CAR_INTERFACE_DECL();
         InnerValueCallback(
             /* [in] */ AwWebContentsDelegateAdapter* owner,
             /* [in] */ Int32 processId,
@@ -95,20 +98,20 @@ private:
             /* [in] */ Int32 modeFlags,
             /* [in] */ Boolean completed);
 
-        CARAPI onReceiveValue(
+        CARAPI OnReceiveValue(
             /* [in] */ IInterface* results);
     private:
         AwWebContentsDelegateAdapter* mOwner;
-        Int32 mProcessId,
-        Int32 mRenderId,
-        Int32 mModeFlags,
-        Boolean mCompleted
+        Int32 mProcessId;
+        Int32 mRenderId;
+        Int32 mModeFlags;
+        Boolean mCompleted;
     };
 
 public:
-    const AutoPtr<AwContentsClient> mContentsClient;
+    AutoPtr<AwContentsClient> mContentsClient;
     AutoPtr<IView> mContainerView;
-    const AutoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;
 
 public:
     AwWebContentsDelegateAdapter(
@@ -120,11 +123,11 @@ public:
         /* [in] */ IView* containerView);
 
     //@Override
-    CARAPI_(void) OnLoadProgressChanged(
+    CARAPI OnLoadProgressChanged(
         /* [in] */ Int32 progress);
 
     //@Override
-    CARAPI_(void) HandleKeyboardEvent(
+    CARAPI HandleKeyboardEvent(
         /* [in] */ IKeyEvent* event);
 
     //@Override
@@ -139,11 +142,11 @@ public:
         /* [in] */ const String& sourceId);
 
     //@Override
-    CARAPI_(void) OnUpdateUrl(
+    CARAPI OnUpdateUrl(
         /* [in] */ const String& url);
 
     //@Override
-    CARAPI_(void) OpenNewTab(
+    CARAPI OpenNewTab(
         /* [in] */ const String& url,
         /* [in] */ const String& extraHeaders,
         /* [in] */ ArrayOf<Byte>* postData,
@@ -151,11 +154,11 @@ public:
         /* [in] */ Boolean isRendererInitiated);
 
     //@Override
-    CARAPI_(void) CloseContents();
+    CARAPI CloseContents();
 
     //@Override
     CARAPI_(void) ShowRepostFormWarningDialog(
-        /* [in] */ const ContentViewCore* contentViewCore);
+        /* [in] */ ContentViewCore* contentViewCore);
 
     //@Override
     CARAPI_(void) RunFileChooser(
@@ -173,14 +176,17 @@ public:
         /* [in] */ Boolean isUserGesture);
 
     //@Override
-    CARAPI_(void) ActivateContents();
+    CARAPI ActivateContents();
 
     //@Override
-    CARAPI_(void) ToggleFullscreenModeForTab(
+    CARAPI ToggleFullscreenModeForTab(
         /* [in] */ Boolean enterFullscreen);
 
 private:
     static const String TAG;
+    static const Int32 MSG_CONTINUE_PENDING_RELOAD;
+    static const Int32 MSG_CANCEL_PENDING_RELOAD;
+
 
     CARAPI_(Boolean) TryToMoveFocus(
         /* [in] */ Int32 direction);

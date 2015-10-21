@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__
-#include "ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/core/Thread.h"
 
 using Elastos::Droid::Content::IContext;

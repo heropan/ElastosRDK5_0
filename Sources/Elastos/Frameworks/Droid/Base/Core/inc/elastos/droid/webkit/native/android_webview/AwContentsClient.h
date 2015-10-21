@@ -34,7 +34,6 @@ namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 class AwContentsClientCallbackHelper;
-
 /**
  * Base-class that an AwContents embedder derives from to receive callbacks.
  * This extends ContentViewClient, as in many cases we want to pass-thru ContentViewCore
@@ -95,6 +94,7 @@ public:
      * Parameters for the {@link AwContentsClient#showFileChooser} method.
      */
     struct FileChooserParams
+    :public Object
     {
         FileChooserParams()
             : mode(0)
@@ -338,6 +338,7 @@ private:
 
     friend class AwContentsClientBridge;
     friend class AwContentViewClient;
+    friend class AwWebContentsDelegateAdapter;
 };
 
 } // namespace AndroidWebview

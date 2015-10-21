@@ -16,6 +16,7 @@ namespace AndroidWebview {
  * This class manages the edge glow effect when a WebView is flung or pulled beyond the edges.
  */
 class OverScrollGlow
+:public Object
 {
 public:
     OverScrollGlow(
