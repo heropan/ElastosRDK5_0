@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CRESQUESTDATE_H_
 
 #include "_Org_Apache_Http_Protocol_CRequestDate.h"
-#include "RequestDate.h"
+#include "org/apache/http/protocol/RequestDate.h"
 
 namespace Org {
 namespace Apache {

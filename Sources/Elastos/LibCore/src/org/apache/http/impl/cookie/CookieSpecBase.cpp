@@ -1,8 +1,8 @@
 
-#include "CookieSpecBase.h"
-#include "BasicClientCookie.h"
-#include "CArrayList.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/CookieSpecBase.h"
+#include "org/apache/http/impl/cookie/BasicClientCookie.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::IArrayList;

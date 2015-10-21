@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CLOCALE_H__
 
 #include "_Elastos_Utility_CLocale.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Core::ICloneable;

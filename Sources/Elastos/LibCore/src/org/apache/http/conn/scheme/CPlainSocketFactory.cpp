@@ -1,9 +1,9 @@
 
-#include "CPlainSocketFactory.h"
-#include "HttpConnectionParams.h"
-#include "CInetSocketAddress.h"
-#include "CSocket.h"
-#include "Logger.h"
+#include "org/apache/http/conn/scheme/CPlainSocketFactory.h"
+#include "org/apache/http/params/HttpConnectionParams.h"
+#include "elastos/net/CInetSocketAddress.h"
+#include "elastos/net/CSocket.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::CSocket;
 using Elastos::Net::IInetSocketAddress;

@@ -2,10 +2,10 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_CONNPOOLBYROUTE_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_CONNPOOLBYROUTE_H__
 
-#include "AbstractConnPool.h"
-#include "BasicPoolEntry.h"
-#include "WaitingThreadAborter.h"
-#include "WaitingThread.h"
+#include "org/apache/http/impl/conn/tsccm/AbstractConnPool.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntry.h"
+#include "org/apache/http/impl/conn/tsccm/WaitingThreadAborter.h"
+#include "org/apache/http/impl/conn/tsccm/WaitingThread.h"
 
 using Elastos::Utility::IMap;
 using Elastos::Utility::IQueue;

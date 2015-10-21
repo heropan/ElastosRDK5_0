@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHTTPREQUEST_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHTTPREQUEST_H_
 
-#include "AbstractHttpMessage.h"
+#include "org/apache/http/message/AbstractHttpMessage.h"
 
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IRequestLine;

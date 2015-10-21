@@ -1,6 +1,6 @@
 
-#include "HttpAbstractParamBean.h"
-#include "Logger.h"
+#include "org/apache/http/params/HttpAbstractParamBean.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

@@ -1,8 +1,8 @@
 
-#include "CScheme.h"
-#include "Logger.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
+#include "org/apache/http/conn/scheme/CScheme.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

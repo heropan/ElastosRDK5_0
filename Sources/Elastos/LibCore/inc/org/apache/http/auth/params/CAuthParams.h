@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_AUTH_PARAMS_CAUTHPARAMS_H_
 
 #include "_Org_Apache_Http_Auth_Params_CAuthParams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Org::Apache::Http::Params::IHttpParams;
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CLOCALEHELPER_H__
 
 #include "_Elastos_Utility_CLocaleHelper.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 
 namespace Elastos {

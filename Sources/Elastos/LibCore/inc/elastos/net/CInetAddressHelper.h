@@ -3,7 +3,7 @@
 
 #include "_Elastos_Net_CInetAddressHelper.h"
 #include "InetAddress.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 
 namespace Elastos {

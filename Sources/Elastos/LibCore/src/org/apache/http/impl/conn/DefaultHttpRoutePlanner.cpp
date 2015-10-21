@@ -1,8 +1,8 @@
 
-#include "DefaultHttpRoutePlanner.h"
-#include "params/ConnRouteParams.h"
-#include "routing/CHttpRoute.h"
-#include "Logger.h"
+#include "org/apache/http/impl/conn/DefaultHttpRoutePlanner.h"
+#include "org/apache/http/conn/params/ConnRouteParams.h"
+#include "org/apache/http/conn/routing/CHttpRoute.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;

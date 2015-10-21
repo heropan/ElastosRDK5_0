@@ -1,6 +1,6 @@
 
-#include "RFC2109SpecFactory.h"
-#include "RFC2109Spec.h"
+#include "org/apache/http/impl/cookie/RFC2109SpecFactory.h"
+#include "org/apache/http/impl/cookie/RFC2109Spec.h"
 
 using Elastos::Core::ICharSequence;
 using Org::Apache::Http::Cookie::EIID_ICookieSpecFactory;

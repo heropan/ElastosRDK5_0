@@ -1,8 +1,8 @@
 
-#include "NTLMScheme.h"
-#include "CCharArrayBuffer.h"
-#include "CBufferedHeader.h"
-#include "Logger.h"
+#include "org/apache/http/impl/auth/NTLMScheme.h"
+#include "org/apache/http/message/CBufferedHeader.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Auth::IAUTH;

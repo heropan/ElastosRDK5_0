@@ -1,5 +1,5 @@
 
-#include "CStrictHostnameVerifier.h"
+#include "org/apache/http/conn/ssl/CStrictHostnameVerifier.h"
 
 namespace Org {
 namespace Apache {

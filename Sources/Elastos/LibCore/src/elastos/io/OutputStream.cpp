@@ -1,6 +1,6 @@
 
-#include "OutputStream.h"
-#include "AutoLock.h"
+#include "elastos/io/OutputStream.h"
+#include "elastos/core/AutoLock.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;

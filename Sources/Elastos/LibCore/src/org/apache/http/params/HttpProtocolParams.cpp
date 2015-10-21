@@ -1,8 +1,8 @@
 
-#include "HttpProtocolParams.h"
-#include "CHttpVersion.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "org/apache/http/CHttpVersion.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

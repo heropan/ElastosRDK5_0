@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_CONTENTLENGHTINPUTSTREAM_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_CONTENTLENGHTINPUTSTREAM_H__
 
-#include "InputStream.h"
+#include "elastos/io/InputStream.h"
 
 using Elastos::IO::InputStream;
 using Org::Apache::Http::IO::ISessionInputBuffer;

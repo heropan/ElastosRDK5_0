@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_COOKIE_PARAMS_CCOOKIESPECPARAMBEAN_H_
 
 #include "_Org_Apache_Http_Cookie_Params_CCookieSpecParamBean.h"
-#include "HttpAbstractParamBean.h"
+#include "org/apache/http/params/HttpAbstractParamBean.h"
 
 using Elastos::Utility::ICollection;
 using Org::Apache::Http::Params::HttpAbstractParamBean;

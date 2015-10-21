@@ -1,9 +1,9 @@
 
-#include "NetscapeDraftHeaderParser.h"
-#include "CBasicHeaderElement.h"
-#include "CArrayList.h"
-#include "CArrayOf.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/NetscapeDraftHeaderParser.h"
+#include "org/apache/http/message/CBasicHeaderElement.h"
+#include "elastos/core/CArrayOf.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;

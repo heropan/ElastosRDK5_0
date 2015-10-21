@@ -1,9 +1,9 @@
 
-#include "AbstractClientConnAdapter.h"
-#include "Thread.h"
-#include "Logger.h"
-#include "CTimeUnitHelper.h"
-#include "Math.h"
+#include "org/apache/http/impl/conn/AbstractClientConnAdapter.h"
+#include "elastos/core/Thread.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/concurrent/CTimeUnitHelper.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Thread;
 using Elastos::Core::Math;

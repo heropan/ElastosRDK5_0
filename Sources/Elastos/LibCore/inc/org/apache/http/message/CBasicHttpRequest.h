@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHTTPREQUEST_H_
 
 #include "_Org_Apache_Http_Message_CBasicHttpRequest.h"
-#include "BasicHttpRequest.h"
+#include "org/apache/http/message/BasicHttpRequest.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_HTTPCONNECTIONMETRICSIMPL_H__
 #define __ORG_APACHE_HTTP_IMPL_HTTPCONNECTIONMETRICSIMPL_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Utility::IHashMap;
 using Org::Apache::Http::IHttpConnectionMetrics;

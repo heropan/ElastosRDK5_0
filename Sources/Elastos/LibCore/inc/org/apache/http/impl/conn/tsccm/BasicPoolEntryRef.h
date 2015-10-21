@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLENTRYREF_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_BASICPOOLENTRYREF_H__
 
-#include "BasicPoolEntry.h"
+#include "org/apache/http/impl/conn/tsccm/BasicPoolEntry.h"
 
 using Org::Apache::Http::Conn::Routing::IHttpRoute;
 

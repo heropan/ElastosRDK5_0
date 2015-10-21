@@ -1,12 +1,12 @@
 
-#include "CSchemeRegistry.h"
-#include "Logger.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
-#include "CLinkedHashMap.h"
-#include "CArrayList.h"
-#include "CString.h"
-#include "AutoLock.h"
+#include "org/apache/http/conn/scheme/CSchemeRegistry.h"
+#include "elastos/core/CString.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/CLinkedHashMap.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

@@ -1,8 +1,8 @@
 
-#include "BasicHeaderValueFormatter.h"
-#include "CBasicHeaderValueFormatter.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicHeaderValueFormatter.h"
+#include "org/apache/http/message/CBasicHeaderValueFormatter.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Utility::CCharArrayBuffer;

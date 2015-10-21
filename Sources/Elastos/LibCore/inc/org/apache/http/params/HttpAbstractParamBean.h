@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PARAMS_HTTPABSTRACTPARAMBEAN_H_
 #define __ORG_APACHE_HTTP_PARAMS_HTTPABSTRACTPARAMBEAN_H_
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 namespace Org {
 namespace Apache {

@@ -1,10 +1,10 @@
 
-#include "RFC2617Scheme.h"
-#include "BasicHeaderValueParser.h"
-#include "CParserCursor.h"
-#include "CHashMap.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/impl/auth/RFC2617Scheme.h"
+#include "org/apache/http/message/BasicHeaderValueParser.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

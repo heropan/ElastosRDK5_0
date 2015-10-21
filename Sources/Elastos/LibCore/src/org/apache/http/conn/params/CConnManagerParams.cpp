@@ -1,6 +1,6 @@
 
-#include "CConnManagerParams.h"
-#include "ConnManagerParams.h"
+#include "org/apache/http/conn/params/CConnManagerParams.h"
+#include "org/apache/http/conn/params/ConnManagerParams.h"
 
 namespace Org {
 namespace Apache {

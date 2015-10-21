@@ -1,6 +1,6 @@
 
-#include "EncodingUtils.h"
-#include "Logger.h"
+#include "org/apache/http/utility/EncodingUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CHttpDateGeneratorHelper_H_
 
 #include "_Org_Apache_Http_Protocol_CHttpDateGeneratorHelper.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Elastos::Utility::ITimeZone;
 

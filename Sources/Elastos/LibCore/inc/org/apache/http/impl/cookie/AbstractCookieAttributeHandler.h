@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_ABSTRACTCOOKIEATTRIBUTEHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_ABSTRACTCOOKIEATTRIBUTEHANDLER_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::Cookie::ICookieAttributeHandler;
 using Org::Apache::Http::Cookie::ICookie;

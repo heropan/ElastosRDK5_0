@@ -1,5 +1,5 @@
 
-#include "CStringEntity.h"
+#include "org/apache/http/entity/CStringEntity.h"
 
 namespace Org {
 namespace Apache {

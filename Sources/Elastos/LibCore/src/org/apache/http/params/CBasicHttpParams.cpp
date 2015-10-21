@@ -1,8 +1,8 @@
 
-#include "CBasicHttpParams.h"
-#include "CString.h"
-#include "CHashMap.h"
-#include "Logger.h"
+#include "org/apache/http/params/CBasicHttpParams.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;

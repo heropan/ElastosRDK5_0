@@ -1,9 +1,9 @@
 
-#include "EntitySerializer.h"
-#include "io/ChunkedOutputStream.h"
-#include "io/IdentityOutputStream.h"
-#include "io/ContentLengthOutputStream.h"
-#include "Logger.h"
+#include "org/apache/http/impl/entity/EntitySerializer.h"
+#include "org/apache/http/impl/io/ChunkedOutputStream.h"
+#include "org/apache/http/impl/io/IdentityOutputStream.h"
+#include "org/apache/http/impl/io/ContentLengthOutputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHeader;

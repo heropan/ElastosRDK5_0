@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CREQUESTCONTENT_H_
 
 #include "_Org_Apache_Http_Protocol_CRequestContent.h"
-#include "RequestContent.h"
+#include "org/apache/http/protocol/RequestContent.h"
 
 namespace Org {
 namespace Apache {

@@ -3,8 +3,8 @@
 #define __ELASTOS_UTILITY_CSCANNER_H__
 
 #include "_Elastos_Utility_CScanner.h"
-#include "StringBuilder.h"
-#include "Object.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::IO::ICloseable;

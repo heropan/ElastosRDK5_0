@@ -1,8 +1,8 @@
 
-#include "CCookieOrigin.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
-#include "Logger.h"
+#include "org/apache/http/cookie/CCookieOrigin.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

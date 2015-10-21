@@ -1,10 +1,10 @@
 
-#include "AbstractVerifier.h"
-#include "InetAddressUtils.h"
-#include "Logger.h"
-#include "Arrays.h"
-#include "CString.h"
-#include "CLinkedList.h"
+#include "org/apache/http/conn/ssl/AbstractVerifier.h"
+#include "org/apache/http/conn/util/InetAddressUtils.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
+#include "elastos/utility/Arrays.h"
+#include "elastos/utility/CLinkedList.h"
 #include "elastosx/net/ssl/CDistinguishedNameParser.h"
 
 using Elastos::Core::ICharSequence;

@@ -1,5 +1,5 @@
 
-#include "AbstractCookieAttributeHandler.h"
+#include "org/apache/http/impl/cookie/AbstractCookieAttributeHandler.h"
 
 using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;
 

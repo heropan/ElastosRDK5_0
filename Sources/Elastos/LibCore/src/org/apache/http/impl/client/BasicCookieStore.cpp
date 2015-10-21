@@ -1,11 +1,11 @@
 
-#include "BasicCookieStore.h"
-#include "CCookieIdentityComparator.h"
-#include "CDate.h"
-#include "CArrayList.h"
-#include "Logger.h"
-#include "Collections.h"
-#include "AutoLock.h"
+#include "org/apache/http/impl/client/BasicCookieStore.h"
+#include "org/apache/http/cookie/CCookieIdentityComparator.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/CDate.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
+#include "elastos/utility/Collections.h"
 
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::CDate;

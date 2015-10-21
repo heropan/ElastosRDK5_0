@@ -2,8 +2,7 @@
 #define __ELASTOS_UTILITY_CSTINGTOKENIZER_H__
 
 #include "_Elastos_Utility_CStringTokenizer.h"
-#include "Object.h"
-
+#include "elastos/core/Object.h"
 
 namespace Elastos {
 namespace Utility {

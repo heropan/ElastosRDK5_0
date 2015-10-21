@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_HTTP_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_HTTP_H_
 
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
 namespace Org {
 namespace Apache {

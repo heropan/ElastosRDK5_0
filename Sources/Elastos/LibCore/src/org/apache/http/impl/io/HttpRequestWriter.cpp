@@ -1,7 +1,7 @@
 
-#include "HttpRequestWriter.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/HttpRequestWriter.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpRequest;

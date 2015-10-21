@@ -3,7 +3,7 @@
 #define __ELASTOS_SECURITY_CMESSAGEDIGESTHELPER_H__
 
 #include "_Elastos_Security_CMessageDigestHelper.h"
-#include "core/Singleton.h"
+#include "elastos/core/Singleton.h"
 
 namespace Elastos {
 namespace Security {

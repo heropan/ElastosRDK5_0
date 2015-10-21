@@ -3,7 +3,7 @@
 #define __ELASTOSX_NET_SSL_CTRUSTMANAGERFACTORY_H__
 
 #include "_Elastosx_Net_Ssl_CDistinguishedNameParser.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::Object;
 using Elastos::Utility::IList;

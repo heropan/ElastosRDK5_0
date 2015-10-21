@@ -1,10 +1,10 @@
 
-#include "CRequestAddCookies.h"
-#include "CCookieOrigin.h"
-#include "HttpClientParams.h"
-#include "CArrayList.h"
-#include "CURI.h"
-#include "Logger.h"
+#include "org/apache/http/client/protocol/CRequestAddCookies.h"
+#include "org/apache/http/client/params/HttpClientParams.h"
+#include "org/apache/http/cookie/CCookieOrigin.h"
+#include "elastos/net/CURI.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::IURI;
 using Elastos::Net::CURI;

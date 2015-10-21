@@ -1,8 +1,8 @@
 
-#include "BasicHttpResponse.h"
-#include "CBasicStatusLine.h"
+#include "org/apache/http/message/BasicHttpResponse.h"
+#include "org/apache/http/message/CBasicStatusLine.h"
 #include "elastos/utility/CLocale.h"
-#include "Logger.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::CLocale;
 using Elastos::Utility::Logging::Logger;

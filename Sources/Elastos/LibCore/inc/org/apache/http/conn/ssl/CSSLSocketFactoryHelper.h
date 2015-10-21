@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORYHELPER_H_
 
 #include "_Org_Apache_Http_Conn_SSL_CSSLSocketFactoryHelper.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 namespace Org {
 namespace Apache {

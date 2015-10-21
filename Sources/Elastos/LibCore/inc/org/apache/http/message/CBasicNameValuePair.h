@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICNAMEVALUEPAIR_H_
 
 #include "_Org_Apache_Http_Message_CBasicNameValuePair.h"
-#include "BasicNameValuePair.h"
+#include "org/apache/http/message/BasicNameValuePair.h"
 
 namespace Org {
 namespace Apache {

@@ -1,6 +1,6 @@
 
-#include "RedirectLocations.h"
-#include "CHashSet.h"
+#include "org/apache/http/impl/client/RedirectLocations.h"
+#include "elastos/utility/CHashSet.h"
 
 using Elastos::Utility::IHashSet;
 using Elastos::Utility::CHashSet;

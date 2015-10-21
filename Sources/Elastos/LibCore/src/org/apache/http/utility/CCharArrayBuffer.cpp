@@ -1,8 +1,8 @@
 
-#include "CCharArrayBuffer.h"
-#include "HTTP.h"
-#include "Logger.h"
-#include "Math.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "org/apache/http/protocol/HTTP.h"
+#include "elastos/utility/logging/Logger.h"
+#include "elastos/core/Math.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Protocol::HTTP;

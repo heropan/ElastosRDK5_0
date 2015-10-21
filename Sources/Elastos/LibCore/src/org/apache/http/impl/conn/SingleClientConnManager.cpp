@@ -1,11 +1,11 @@
 
-#include "SingleClientConnManager.h"
-#include "DefaultClientConnectionOperator.h"
-#include "CSystem.h"
-#include "Math.h"
-#include "CTimeUnitHelper.h"
+#include "org/apache/http/impl/conn/SingleClientConnManager.h"
+#include "org/apache/http/impl/conn/DefaultClientConnectionOperator.h"
+#include "elastos/core/CSystem.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/concurrent/CTimeUnitHelper.h"
+#include "elastos/utility/logging/Logger.h"
 #include "libcore/io/CSocketTaggerHelper.h"
-#include "Logger.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;

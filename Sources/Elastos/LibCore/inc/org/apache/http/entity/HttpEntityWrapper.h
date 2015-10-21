@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_ENTITY_HTTPENTITYWRAPPER_H__
 #define __ORG_APACHE_HTTP_ENTITY_HTTPENTITYWRAPPER_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::Object;
 using Elastos::IO::IInputStream;

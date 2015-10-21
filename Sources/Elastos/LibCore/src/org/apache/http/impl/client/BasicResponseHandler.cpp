@@ -1,8 +1,8 @@
 
-#include "BasicResponseHandler.h"
-#include "EntityUtils.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/BasicResponseHandler.h"
+#include "org/apache/http/utility/EntityUtils.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

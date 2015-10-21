@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_REQUESTWRAPPER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_REQUESTWRAPPER_H__
 
-#include "AbstractHttpMessage.h"
+#include "org/apache/http/message/AbstractHttpMessage.h"
 
 using Elastos::Net::IURI;
 using Org::Apache::Http::IHttpRequest;

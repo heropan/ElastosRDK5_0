@@ -1,7 +1,7 @@
 
-#include "BestMatchSpec.h"
-#include "Math.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/BestMatchSpec.h"
+#include "elastos/core/Math.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Math;
 using Elastos::Utility::IIterator;

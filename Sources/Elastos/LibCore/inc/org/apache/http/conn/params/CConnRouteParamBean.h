@@ -3,8 +3,8 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CConnRouteParamBean_H_
 
 #include "_Org_Apache_Http_Conn_Params_CConnRouteParamBean.h"
-#include "HttpAbstractParamBean.h"
-#include "Object.h"
+#include "org/apache/http/params/HttpAbstractParamBean.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Net::IInetAddress;
 using Org::Apache::Http::Conn::Routing::IHttpRoute;

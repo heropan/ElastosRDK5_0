@@ -1,8 +1,8 @@
 
-#include "InputStream.h"
-#include "Math.h"
+#include "elastos/io/InputStream.h"
+#include "elastos/core/Math.h"
 #include <elastos/utility/logging/Logger.h>
-#include "CStreams.h"
+#include "libcore/io/CStreams.h"
 
 using Elastos::Utility::Logging::Logger;
 using Libcore::IO::IStreams;

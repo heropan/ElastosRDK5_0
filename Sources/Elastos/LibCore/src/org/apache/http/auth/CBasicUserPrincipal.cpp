@@ -1,9 +1,9 @@
 
-#include "CBasicUserPrincipal.h"
-#include "LangUtils.h"
-#include "StringBuilder.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/auth/CBasicUserPrincipal.h"
+#include "org/apache/http/utility/LangUtils.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

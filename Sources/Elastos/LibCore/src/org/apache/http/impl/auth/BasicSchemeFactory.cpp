@@ -1,6 +1,6 @@
 
-#include "BasicSchemeFactory.h"
-#include "BasicScheme.h"
+#include "org/apache/http/impl/auth/BasicSchemeFactory.h"
+#include "org/apache/http/impl/auth/BasicScheme.h"
 
 using Org::Apache::Http::Auth::EIID_IAuthSchemeFactory;
 using Org::Apache::Http::Auth::EIID_IAuthScheme;

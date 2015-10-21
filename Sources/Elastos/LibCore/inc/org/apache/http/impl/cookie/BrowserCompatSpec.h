@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_BROWSERCOMPATSPEC_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_BROWSERCOMPATSPEC_H__
 
-#include "CookieSpecBase.h"
+#include "org/apache/http/impl/cookie/CookieSpecBase.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::IHeader;

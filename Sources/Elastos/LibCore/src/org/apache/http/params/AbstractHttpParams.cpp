@@ -1,10 +1,10 @@
 
-#include "AbstractHttpParams.h"
+#include "org/apache/http/params/AbstractHttpParams.h"
 #include "elastos/core/CInteger64.h"
 #include "elastos/core/CInteger32.h"
 #include "elastos/core/CDouble.h"
 #include "elastos/core/CBoolean.h"
-#include "Logger.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;

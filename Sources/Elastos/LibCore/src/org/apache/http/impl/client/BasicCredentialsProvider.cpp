@@ -1,8 +1,8 @@
 
-#include "BasicCredentialsProvider.h"
-#include "CHashMap.h"
-#include "Logger.h"
-#include "AutoLock.h"
+#include "org/apache/http/impl/client/BasicCredentialsProvider.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::ISet;

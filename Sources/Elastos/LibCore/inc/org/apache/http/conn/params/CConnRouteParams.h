@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNROUTEPARAMS_H__
 
 #include "_Org_Apache_Http_Conn_Params_CConnRouteParams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Elastos::Net::IInetAddress;
 using Org::Apache::Http::Conn::Routing::IHttpRoute;

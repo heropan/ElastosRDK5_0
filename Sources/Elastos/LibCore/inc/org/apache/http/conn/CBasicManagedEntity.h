@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_CBASICMANAGEDENTITY_H_
 
 #include "_Org_Apache_Http_Conn_CBasicManagedEntity.h"
-#include "HttpEntityWrapper.h"
+#include "org/apache/http/entity/HttpEntityWrapper.h"
 
 using Elastos::IO::IInputStream;
 using Org::Apache::Http::Entity::HttpEntityWrapper;

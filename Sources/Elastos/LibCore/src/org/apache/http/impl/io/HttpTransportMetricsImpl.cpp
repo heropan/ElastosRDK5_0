@@ -1,5 +1,5 @@
 
-#include "HttpTransportMetricsImpl.h"
+#include "org/apache/http/impl/io/HttpTransportMetricsImpl.h"
 
 using Org::Apache::Http::IO::EIID_IHttpTransportMetrics;
 

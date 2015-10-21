@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_AUTH_CAUTHSCOPE_H_
 
 #include "_Org_Apache_Http_Auth_CAuthScope.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 namespace Org {
 namespace Apache {

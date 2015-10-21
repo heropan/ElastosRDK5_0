@@ -1,5 +1,5 @@
 
-#include "CHttpRequestHandlerRegistry.h"
+#include "org/apache/http/protocol/CHttpRequestHandlerRegistry.h"
 
 namespace Org {
 namespace Apache {

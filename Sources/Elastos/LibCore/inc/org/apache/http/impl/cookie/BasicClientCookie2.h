@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_BASICCLIENTCOOKIE2_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_BASICCLIENTCOOKIE2_H__
 
-#include "BasicClientCookie.h"
+#include "org/apache/http/impl/cookie/BasicClientCookie.h"
 
 using Org::Apache::Http::Cookie::ISetCookie2;
 

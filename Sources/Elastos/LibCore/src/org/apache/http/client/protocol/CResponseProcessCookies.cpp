@@ -1,6 +1,6 @@
 
-#include "CResponseProcessCookies.h"
-#include "Logger.h"
+#include "org/apache/http/client/protocol/CResponseProcessCookies.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;

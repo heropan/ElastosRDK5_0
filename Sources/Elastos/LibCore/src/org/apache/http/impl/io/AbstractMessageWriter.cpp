@@ -1,8 +1,8 @@
 
-#include "AbstractMessageWriter.h"
-#include "BasicLineFormatter.h"
-#include "CCharArrayBuffer.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/AbstractMessageWriter.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;

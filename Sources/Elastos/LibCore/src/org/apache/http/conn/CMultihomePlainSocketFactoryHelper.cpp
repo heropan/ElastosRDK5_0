@@ -1,6 +1,6 @@
 
-#include "CMultihomePlainSocketFactoryHelper.h"
-#include "MultihomePlainSocketFactory.h"
+#include "org/apache/http/conn/CMultihomePlainSocketFactoryHelper.h"
+#include "org/apache/http/conn/MultihomePlainSocketFactory.h"
 
 namespace Org {
 namespace Apache {

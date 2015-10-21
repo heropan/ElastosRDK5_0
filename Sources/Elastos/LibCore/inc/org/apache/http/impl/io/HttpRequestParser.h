@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_HTTPREQUESTPARSER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_HTTPREQUESTPARSER_H__
 
-#include "AbstractMessageParser.h"
+#include "org/apache/http/impl/io/AbstractMessageParser.h"
 
 using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IHttpRequestFactory;

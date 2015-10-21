@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CBASICHTTPPARAMS_H_
 
 #include "_Org_Apache_Http_Params_CBasicHttpParams.h"
-#include "AbstractHttpParams.h"
+#include "org/apache/http/params/AbstractHttpParams.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::Utility::IHashMap;

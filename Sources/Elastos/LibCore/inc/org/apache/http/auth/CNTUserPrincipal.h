@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_AUTH_CNTUSERPRINCIPAL_H_
 
 #include "_Org_Apache_Http_Auth_CNTUserPrincipal.h"
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
 using Elastos::Security::IPrincipal;
 

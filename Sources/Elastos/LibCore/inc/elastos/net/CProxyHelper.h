@@ -2,7 +2,7 @@
 #define __ELASTOS_NET_CPROXYHELPER_H__
 
 #include <_Elastos_Net_CProxyHelper.h>
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 namespace Elastos {
 namespace Net {

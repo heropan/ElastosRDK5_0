@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_BASICRESPONSEHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_BASICRESPONSEHANDLER_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpResponse;
 using Org::Apache::Http::Client::IResponseHandler;

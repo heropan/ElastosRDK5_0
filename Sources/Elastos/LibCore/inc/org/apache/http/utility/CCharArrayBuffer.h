@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_UTILITY_CCHARARRAYBUFFER_H_
 
 #include "_Org_Apache_Http_Utility_CCharArrayBuffer.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 namespace Org {
 namespace Apache {

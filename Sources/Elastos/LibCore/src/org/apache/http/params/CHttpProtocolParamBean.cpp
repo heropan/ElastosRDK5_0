@@ -1,6 +1,6 @@
 
-#include "CHttpProtocolParamBean.h"
-#include "HttpProtocolParams.h"
+#include "org/apache/http/params/CHttpProtocolParamBean.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_METHODS_HTTPENTITYENCLOSINGREQUESTBASE_H__
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_HTTPENTITYENCLOSINGREQUESTBASE_H__
 
-#include "HttpRequestBase.h"
+#include "org/apache/http/client/methods/HttpRequestBase.h"
 
 using Org::Apache::Http::IHttpEntity;
 

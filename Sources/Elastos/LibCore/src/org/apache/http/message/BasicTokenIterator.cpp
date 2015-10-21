@@ -1,8 +1,8 @@
 
-#include "BasicTokenIterator.h"
-#include "Logger.h"
-#include "Character.h"
-#include "CString.h"
+#include "org/apache/http/message/BasicTokenIterator.h"
+#include "elastos/core/Character.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::ICharSequence;

@@ -1,8 +1,8 @@
 
-#include "CHeaderGroup.h"
-#include "CCharArrayBuffer.h"
-#include "CBasicListHeaderIterator.h"
-#include "CBasicHeader.h"
+#include "org/apache/http/message/CHeaderGroup.h"
+#include "org/apache/http/message/CBasicListHeaderIterator.h"
+#include "org/apache/http/message/CBasicHeader.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
 #include "elastos/utility/CArrayList.h"
 
 using Elastos::Core::EIID_ICloneable;

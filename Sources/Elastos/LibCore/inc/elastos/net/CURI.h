@@ -3,9 +3,9 @@
 #define __ELASTOS_NET_CURI_H__
 
 #include "_Elastos_Net_CURI.h"
-#include "Object.h"
-#include "Character.h"
-#include "UriCodec.h"
+#include "elastos/core/Object.h"
+#include "elastos/core/Character.h"
+#include "libcore/net/UriCodec.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::IComparable;

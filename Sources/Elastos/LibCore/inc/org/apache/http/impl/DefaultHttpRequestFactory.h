@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPREQUESTFACTORY_H__
 #define __ORG_APACHE_HTTP_IMPL_DEFAULTHTTPREQUESTFACTORY_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpRequestFactory;
 using Org::Apache::Http::IHttpRequest;

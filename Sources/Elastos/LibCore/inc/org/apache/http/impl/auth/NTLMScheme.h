@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_AUTH_NTLMSCHEME_H__
 #define __ORG_APACHE_HTTP_IMPL_AUTH_NTLMSCHEME_H__
 
-#include "AuthSchemeBase.h"
+#include "org/apache/http/impl/auth/AuthSchemeBase.h"
 
 using Elastos::Utility::IMap;
 using Org::Apache::Http::IHeader;

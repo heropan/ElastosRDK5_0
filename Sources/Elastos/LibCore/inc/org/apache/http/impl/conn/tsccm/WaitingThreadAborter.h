@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_WAITINGTHREADABORTER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_TSCCM_WAITINGTHREADABORTER_H__
 
-#include "WaitingThread.h"
+#include "org/apache/http/impl/conn/tsccm/WaitingThread.h"
 
 namespace Org {
 namespace Apache {

@@ -1,7 +1,7 @@
 
-#include "RFC2109VersionHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/RFC2109VersionHandler.h"
 #include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

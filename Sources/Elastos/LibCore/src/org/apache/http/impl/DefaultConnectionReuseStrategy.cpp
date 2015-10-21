@@ -1,8 +1,8 @@
 
-#include "DefaultConnectionReuseStrategy.h"
-#include "CHttpVersion.h"
-#include "CBasicTokenIterator.h"
-#include "Logger.h"
+#include "org/apache/http/impl/DefaultConnectionReuseStrategy.h"
+#include "org/apache/http/CHttpVersion.h"
+#include "org/apache/http/message/CBasicTokenIterator.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpEntity;

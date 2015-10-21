@@ -1,7 +1,7 @@
 
-#include "CDefaultedHttpContext.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/CDefaultedHttpContext.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

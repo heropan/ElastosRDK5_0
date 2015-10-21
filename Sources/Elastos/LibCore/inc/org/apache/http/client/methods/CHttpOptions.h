@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPOPTIONS_H_
 
 #include "_Org_Apache_Http_Client_Methods_CHttpOptions.h"
-#include "HttpRequestBase.h"
+#include "org/apache/http/client/methods/HttpRequestBase.h"
 
 using Elastos::Utility::ISet;
 

@@ -1,6 +1,6 @@
 
-#include "CBasicHttpEntity.h"
-#include "Logger.h"
+#include "org/apache/http/entity/CBasicHttpEntity.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

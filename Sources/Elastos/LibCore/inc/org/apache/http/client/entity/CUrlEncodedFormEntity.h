@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
 
 #include "_Org_Apache_Http_Client_Entity_CUrlEncodedFormEntity.h"
-#include "StringEntity.h"
+#include "org/apache/http/entity/StringEntity.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::Entity::StringEntity;

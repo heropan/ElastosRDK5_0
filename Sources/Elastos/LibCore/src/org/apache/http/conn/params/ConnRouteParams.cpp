@@ -1,8 +1,8 @@
 
-#include "ConnRouteParams.h"
-#include "CHttpHost.h"
-#include "CHttpRoute.h"
-#include "Logger.h"
+#include "org/apache/http/conn/params/ConnRouteParams.h"
+#include "org/apache/http/conn/routing/CHttpRoute.h"
+#include "org/apache/http/CHttpHost.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpHost;

@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CHTTPREQUESTHANDLERREGISTRY_H_
 
 #include "_Org_Apache_Http_Protocol_CHttpRequestHandlerRegistry.h"
-#include "HttpRequestHandlerRegistry.h"
+#include "org/apache/http/protocol/HttpRequestHandlerRegistry.h"
 
 namespace Org {
 namespace Apache {

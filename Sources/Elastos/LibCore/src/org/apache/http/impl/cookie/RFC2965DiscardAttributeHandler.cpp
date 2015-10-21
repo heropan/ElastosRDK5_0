@@ -1,6 +1,6 @@
 
-#include "RFC2965DiscardAttributeHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/RFC2965DiscardAttributeHandler.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Cookie::EIID_ICookieAttributeHandler;

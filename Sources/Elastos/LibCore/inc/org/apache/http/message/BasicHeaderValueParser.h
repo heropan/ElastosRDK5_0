@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHEADERVALUEPARSER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHEADERVALUEPARSER_H_
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHeaderElement;
 using Org::Apache::Http::Utility::ICharArrayBuffer;

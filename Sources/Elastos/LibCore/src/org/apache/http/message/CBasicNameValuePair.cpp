@@ -1,5 +1,5 @@
 
-#include "CBasicNameValuePair.h"
+#include "org/apache/http/message/CBasicNameValuePair.h"
 
 namespace Org {
 namespace Apache {

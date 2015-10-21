@@ -1,9 +1,9 @@
 
-#include "CAuthScope.h"
-#include "LangUtils.h"
-#include "StringBuilder.h"
-#include "CString.h"
-#include "Logger.h"
+#include "org/apache/http/auth/CAuthScope.h"
+#include "org/apache/http/utility/LangUtils.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;

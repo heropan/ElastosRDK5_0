@@ -1,7 +1,7 @@
 
-#include "BasicExpiresHandler.h"
-#include "DateUtils.h"
-#include "Logger.h"
+#include "org/apache/http/impl/cookie/BasicExpiresHandler.h"
+#include "org/apache/http/impl/cookie/DateUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

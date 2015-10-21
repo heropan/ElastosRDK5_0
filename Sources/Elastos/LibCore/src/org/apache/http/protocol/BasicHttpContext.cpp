@@ -1,8 +1,8 @@
 
-#include "BasicHttpContext.h"
-#include "CString.h"
-#include "CHashMap.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/BasicHttpContext.h"
+#include "elastos/core/CString.h"
+#include "elastos/utility/CHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

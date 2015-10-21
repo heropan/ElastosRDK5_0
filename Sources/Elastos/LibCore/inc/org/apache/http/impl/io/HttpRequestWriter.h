@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_HTTPREQUESTWRITER_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_HTTPREQUESTWRITER_H__
 
-#include "AbstractMessageWriter.h"
+#include "org/apache/http/impl/io/AbstractMessageWriter.h"
 
 using Org::Apache::Http::IHttpMessage;
 using Org::Apache::Http::IO::ISessionOutputBuffer;

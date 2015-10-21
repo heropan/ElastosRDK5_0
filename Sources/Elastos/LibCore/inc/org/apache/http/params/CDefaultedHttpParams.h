@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CDefaultedHttpParams_H_
 
 #include "_Org_Apache_Http_Params_CDefaultedHttpParams.h"
-#include "AbstractHttpParams.h"
+#include "org/apache/http/params/AbstractHttpParams.h"
 
 namespace Org {
 namespace Apache {

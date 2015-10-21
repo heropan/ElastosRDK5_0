@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PARAMS_CHTTPCONNECTIONPARAMBEAN_H_
 
 #include "_Org_Apache_Http_Params_CHttpConnectionParamBean.h"
-#include "HttpAbstractParamBean.h"
+#include "org/apache/http/params/HttpAbstractParamBean.h"
 #include "elastos/core/Object.h"
 
 namespace Org {

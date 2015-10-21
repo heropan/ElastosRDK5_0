@@ -1,6 +1,6 @@
 
-#include "HttpEntityEnclosingRequestBase.h"
-#include "CloneUtils.h"
+#include "org/apache/http/client/methods/HttpEntityEnclosingRequestBase.h"
+#include "org/apache/http/client/utils/CloneUtils.h"
 
 using Org::Apache::Http::IHeader;
 using Org::Apache::Http::Client::Utils::CloneUtils;

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_ENTITYENCLOSINGREQUESTWRAPPER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_ENTITYENCLOSINGREQUESTWRAPPER_H__
 
-#include "RequestWrapper.h"
+#include "org/apache/http/impl/client/RequestWrapper.h"
 
 using Elastos::Net::IURI;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;

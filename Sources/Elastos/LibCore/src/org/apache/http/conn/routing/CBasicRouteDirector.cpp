@@ -1,6 +1,6 @@
 
-#include "CBasicRouteDirector.h"
-#include "Logger.h"
+#include "org/apache/http/conn/routing/CBasicRouteDirector.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;

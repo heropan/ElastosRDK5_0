@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CREQUESTEXPECTCONTINUE_H_
 
 #include "_Org_Apache_Http_Protocol_CRequestExpectContinue.h"
-#include "RequestExpectContinue.h"
+#include "org/apache/http/protocol/RequestExpectContinue.h"
 
 namespace Org {
 namespace Apache {

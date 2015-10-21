@@ -1,12 +1,12 @@
 
-#include "MultihomePlainSocketFactory.h"
-#include "HttpConnectionParams.h"
-#include "CInetAddressHelper.h"
-#include "CInetSocketAddress.h"
-#include "CSocket.h"
-#include "CCollections.h"
-#include "CArrayList.h"
-#include "Logger.h"
+#include "org/apache/http/conn/MultihomePlainSocketFactory.h"
+#include "org/apache/http/params/HttpConnectionParams.h"
+#include "elastos/net/CInetAddressHelper.h"
+#include "elastos/net/CInetSocketAddress.h"
+#include "elastos/net/CSocket.h"
+#include "elastos/utility/CCollections.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::Net::IInetAddress;

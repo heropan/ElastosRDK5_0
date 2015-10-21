@@ -2,7 +2,7 @@
 #define __LIBCORE_IO_ELASTOS_IO_CSTREAMS_H__
 
 #include "_Libcore_IO_CStreams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;

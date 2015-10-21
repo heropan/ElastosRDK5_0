@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTPROXYAUTHENTICATIONHANDLER_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DEFAULTPROXYAUTHENTICATIONHANDLER_H__
 
-#include "AbstractAuthenticationHandler.h"
+#include "org/apache/http/impl/client/AbstractAuthenticationHandler.h"
 
 using Elastos::Utility::IMap;
 using Org::Apache::Http::IHttpResponse;

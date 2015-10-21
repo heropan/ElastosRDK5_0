@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultUserTokenHandler_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultUserTokenHandler_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Security::IPrincipal;
 using Org::Apache::Http::Auth::IAuthState;

@@ -1,6 +1,6 @@
 
-#include "CloneUtils.h"
-#include "Logger.h"
+#include "org/apache/http/client/utils/CloneUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::Utility::Logging::Logger;

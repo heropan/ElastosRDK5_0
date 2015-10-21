@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_COOKIESPECBASE_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_COOKIESPECBASE_H__
 
-#include "AbstractCookieSpec.h"
+#include "org/apache/http/impl/cookie/AbstractCookieSpec.h"
 
 using Elastos::Utility::IList;
 using Org::Apache::Http::Cookie::ICookieSpec;

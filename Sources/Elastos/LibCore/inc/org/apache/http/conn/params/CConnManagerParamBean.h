@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNMANAGERPARAMBEAN_H_
 
 #include "_Org_Apache_Http_Conn_Params_CConnManagerParamBean.h"
-#include "HttpAbstractParamBean.h"
+#include "org/apache/http/params/HttpAbstractParamBean.h"
 
 using Org::Apache::Http::Params::HttpAbstractParamBean;
 using Org::Apache::Http::Params::IHttpParams;

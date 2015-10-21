@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTCLIENTCONNADAPTER_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::IThread;
 using Elastos::Net::IInetAddress;

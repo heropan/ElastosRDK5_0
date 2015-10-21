@@ -1,6 +1,6 @@
 
-#include "CHttpPut.h"
-#include "CURI.h"
+#include "org/apache/http/client/methods/CHttpPut.h"
+#include "elastos/net/CURI.h"
 
 using Elastos::Net::CURI;
 

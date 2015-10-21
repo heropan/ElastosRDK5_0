@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CHEADERGROUP_H_
 
 #include "_Org_Apache_Http_Message_CHeaderGroup.h"
-#include "BasicLineFormatter.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::Utility::IList;

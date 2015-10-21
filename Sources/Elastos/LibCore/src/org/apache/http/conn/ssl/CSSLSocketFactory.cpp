@@ -1,15 +1,15 @@
 
-#include "CSSLSocketFactory.h"
-#include "CAllowAllHostnameVerifier.h"
-#include "CBrowserCompatHostnameVerifier.h"
-#include "CStrictHostnameVerifier.h"
-#include "HttpConnectionParams.h"
-#include "CInetSocketAddress.h"
+#include "org/apache/http/conn/ssl/CSSLSocketFactory.h"
+#include "org/apache/http/conn/ssl/CAllowAllHostnameVerifier.h"
+#include "org/apache/http/conn/ssl/CBrowserCompatHostnameVerifier.h"
+#include "org/apache/http/conn/ssl/CStrictHostnameVerifier.h"
+#include "org/apache/http/params/HttpConnectionParams.h"
+#include "elastos/net/CInetSocketAddress.h"
+#include "elastos/utility/logging/Logger.h"
 #include "elastosx/net/ssl/CTrustManagerFactoryHelper.h"
 #include "elastosx/net/ssl/CKeyManagerFactoryHelper.h"
 #include "elastosx/net/ssl/CSSLContextHelper.h"
 #include "elastosx/net/ssl/HttpsURLConnection.h"
-#include "Logger.h"
 
 using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::ISocketAddress;

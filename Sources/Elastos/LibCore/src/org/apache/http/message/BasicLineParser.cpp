@@ -1,15 +1,15 @@
 
-#include "BasicLineParser.h"
-#include "CBasicLineParser.h"
-#include "CCharArrayBuffer.h"
-#include "CParserCursor.h"
-#include "HTTP.h"
-#include "CBasicRequestLine.h"
-#include "CBasicStatusLine.h"
-#include "CBufferedHeader.h"
-#include "CHttpVersion.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicLineParser.h"
+#include "org/apache/http/message/CBasicLineParser.h"
+#include "org/apache/http/message/CBasicRequestLine.h"
+#include "org/apache/http/message/CBasicStatusLine.h"
+#include "org/apache/http/message/CBufferedHeader.h"
+#include "org/apache/http/message/CParserCursor.h"
+#include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "org/apache/http/protocol/HTTP.h"
+#include "org/apache/http/CHttpVersion.h"
 #include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

@@ -1,9 +1,9 @@
 
-#include "AbstractMessageParser.h"
-#include "BasicLineParser.h"
+#include "org/apache/http/impl/io/AbstractMessageParser.h"
+#include "org/apache/http/message/BasicLineParser.h"
 #include "org/apache/http/utility/CCharArrayBuffer.h"
 #include "elastos/utility/CArrayList.h"
-#include "Logger.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;

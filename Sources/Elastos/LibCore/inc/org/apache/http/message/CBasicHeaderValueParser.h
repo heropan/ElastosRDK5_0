@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHEADERVALUEPARSER_H_
 
 #include "_Org_Apache_Http_Message_CBasicHeaderValueParser.h"
-#include "BasicHeaderValueParser.h"
+#include "org/apache/http/message/BasicHeaderValueParser.h"
 
 namespace Org {
 namespace Apache {

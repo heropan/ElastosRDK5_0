@@ -1,8 +1,8 @@
 
-#include "RequestContent.h"
-#include "CHttpVersion.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/RequestContent.h"
+#include "org/apache/http/CHttpVersion.h"
 #include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

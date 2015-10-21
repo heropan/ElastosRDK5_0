@@ -1,9 +1,9 @@
 
-#include "AbstractHttpMessage.h"
-#include "CHeaderGroup.h"
-#include "CBasicHeader.h"
-#include "CBasicHttpParams.h"
-#include "Logger.h"
+#include "org/apache/http/message/AbstractHttpMessage.h"
+#include "org/apache/http/message/CHeaderGroup.h"
+#include "org/apache/http/message/CBasicHeader.h"
+#include "org/apache/http/params/CBasicHttpParams.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;

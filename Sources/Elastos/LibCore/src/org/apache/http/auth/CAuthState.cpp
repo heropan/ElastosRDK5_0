@@ -1,6 +1,6 @@
 
-#include "CAuthState.h"
-#include <StringBuilder.h>
+#include "org/apache/http/auth/CAuthState.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 

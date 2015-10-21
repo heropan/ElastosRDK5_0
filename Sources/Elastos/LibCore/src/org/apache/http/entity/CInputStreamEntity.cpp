@@ -1,8 +1,8 @@
 
-#include "CInputStreamEntity.h"
-#include "CByteArrayInputStream.h"
-#include "Math.h"
-#include "Logger.h"
+#include "org/apache/http/entity/CInputStreamEntity.h"
+#include "elastos/core/Math.h"
+#include "elastos/io/CByteArrayInputStream.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::Math;
 using Elastos::IO::IByteArrayInputStream;

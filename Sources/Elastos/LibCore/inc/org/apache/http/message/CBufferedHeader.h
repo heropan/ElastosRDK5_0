@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBUFFEREDHEADER_H_
 
 #include "_Org_Apache_Http_Message_CBufferedHeader.h"
-#include "BufferedHeader.h"
+#include "org/apache/http/message/BufferedHeader.h"
 
 namespace Org {
 namespace Apache {

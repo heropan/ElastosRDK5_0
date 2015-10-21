@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultHttpClient_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultHttpClient_H__
 
-#include "AbstractHttpClient.h"
+#include "org/apache/http/impl/client/AbstractHttpClient.h"
 
 namespace Org {
 namespace Apache {

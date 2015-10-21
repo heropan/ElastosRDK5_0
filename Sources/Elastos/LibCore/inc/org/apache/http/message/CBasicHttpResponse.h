@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHTTPRESPONSE_H_
 
 #include "_Org_Apache_Http_Message_CBasicHttpResponse.h"
-#include "BasicHttpResponse.h"
+#include "org/apache/http/message/BasicHttpResponse.h"
 
 namespace Org {
 namespace Apache {

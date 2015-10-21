@@ -1,6 +1,6 @@
 
-#include "CClientContextConfigurer.h"
-#include "Logger.h"
+#include "org/apache/http/client/protocol/CClientContextConfigurer.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

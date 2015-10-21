@@ -1,10 +1,10 @@
 
-#include "DefaultRedirectHandler.h"
-#include "RedirectLocations.h"
-#include "CHttpHost.h"
-#include "net/CURI.h"
-#include "URIUtils.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/DefaultRedirectHandler.h"
+#include "org/apache/http/impl/client/RedirectLocations.h"
+#include "org/apache/http/CHttpHost.h"
+#include "org/apache/http/client/utils/URIUtils.h"
+#include "elastos/net/CURI.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::IURI;
 using Elastos::Net::CURI;

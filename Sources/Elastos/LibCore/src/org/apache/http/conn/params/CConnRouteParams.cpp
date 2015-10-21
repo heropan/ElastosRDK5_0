@@ -1,6 +1,6 @@
 
-#include "CConnRouteParams.h"
-#include "ConnRouteParams.h"
+#include "org/apache/http/conn/params/CConnRouteParams.h"
+#include "org/apache/http/conn/params/ConnRouteParams.h"
 
 namespace Org {
 namespace Apache {

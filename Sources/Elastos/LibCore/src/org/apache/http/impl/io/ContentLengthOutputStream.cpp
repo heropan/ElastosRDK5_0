@@ -1,7 +1,7 @@
 
-#include "ContentLengthOutputStream.h"
-#include "Logger.h"
+#include "org/apache/http/impl/io/ContentLengthOutputStream.h"
 #include "elastos/core/StringUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;

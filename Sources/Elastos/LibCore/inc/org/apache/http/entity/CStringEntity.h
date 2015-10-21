@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_ENTITY_CSTRINGENTITY_H_
 
 #include "_Org_Apache_Http_Entity_CStringEntity.h"
-#include "StringEntity.h"
+#include "org/apache/http/entity/StringEntity.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;

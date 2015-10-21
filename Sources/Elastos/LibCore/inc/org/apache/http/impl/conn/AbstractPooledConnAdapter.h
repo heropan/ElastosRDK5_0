@@ -2,8 +2,8 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLEDCONNADAPTER_H__
 #define __ORG_APACHE_HTTP_IMPL_CONN_ABSTRACTPOOLEDCONNADAPTER_H__
 
-#include "AbstractClientConnAdapter.h"
-#include "AbstractPoolEntry.h"
+#include "org/apache/http/impl/conn/AbstractClientConnAdapter.h"
+#include "org/apache/http/impl/conn/AbstractPoolEntry.h"
 
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::Params::IHttpParams;
@@ -37,7 +37,7 @@ namespace Conn {
 class AbstractPooledConnAdapter : public AbstractClientConnAdapter
 {
 public:
-    virtual ~AbstractPooledConnAdapter() = 0;
+    virtual ~AbstractPooledConnAdapter() {};
 
     CARAPI GetRoute(
         /* [out] */ IHttpRoute** route);

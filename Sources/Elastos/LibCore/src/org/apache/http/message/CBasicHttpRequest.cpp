@@ -1,5 +1,5 @@
 
-#include "CBasicHttpRequest.h"
+#include "org/apache/http/message/CBasicHttpRequest.h"
 
 namespace Org {
 namespace Apache {

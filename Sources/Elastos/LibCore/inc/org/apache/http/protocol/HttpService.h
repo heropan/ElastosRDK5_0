@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_HTTPSERVICE_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_HTTPSERVICE_H_
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpServerConnection;
 using Org::Apache::Http::IHttpResponseFactory;

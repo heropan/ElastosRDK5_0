@@ -1,6 +1,6 @@
 
-#include "ConnManagerParams.h"
-#include "Logger.h"
+#include "org/apache/http/conn/params/ConnManagerParams.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

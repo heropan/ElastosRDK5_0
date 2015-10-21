@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CREQUESTTARGETHOST_H_
 
 #include "_Org_Apache_Http_Protocol_CRequestTargetHost.h"
-#include "RequestTargetHost.h"
+#include "org/apache/http/protocol/RequestTargetHost.h"
 
 namespace Org {
 namespace Apache {

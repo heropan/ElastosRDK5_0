@@ -1,6 +1,6 @@
 
-#include "DefaultHttpRequestRetryHandler.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/DefaultHttpRequestRetryHandler.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Utility::Logging::Logger;

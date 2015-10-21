@@ -1,8 +1,8 @@
 #ifndef __LIBCORE_NET_URICODEC_H__
 #define __LIBCORE_NET_URICODEC_H__
 
-#include "Object.h"
-#include "StringBuilder.h"
+#include "elastos/core/Object.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IStringBuilder;

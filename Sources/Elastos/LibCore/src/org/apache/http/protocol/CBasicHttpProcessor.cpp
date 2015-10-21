@@ -1,7 +1,7 @@
 
-#include "CBasicHttpProcessor.h"
-#include "CArrayList.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/CBasicHttpProcessor.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::IArrayList;

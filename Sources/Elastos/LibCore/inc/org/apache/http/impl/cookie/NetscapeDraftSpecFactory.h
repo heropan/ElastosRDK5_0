@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_NETSCAPEDRAFTSPECFACTORY_H__
 #define __ORG_APACHE_HTTP_IMPL_COOKIE_NETSCAPEDRAFTSPECFACTORY_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::Cookie::ICookieSpec;
 using Org::Apache::Http::Cookie::ICookieSpecFactory;

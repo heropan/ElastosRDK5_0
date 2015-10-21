@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_IO_CONTENTLENGTHOUTPUTSTREAM_H__
 #define __ORG_APACHE_HTTP_IMPL_IO_CONTENTLENGTHOUTPUTSTREAM_H__
 
-#include "OutputStream.h"
+#include "elastos/io/OutputStream.h"
 
 using Elastos::IO::OutputStream;
 using Org::Apache::Http::IO::ISessionOutputBuffer;

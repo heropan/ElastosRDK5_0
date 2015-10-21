@@ -1,8 +1,8 @@
 
-#include "BasicHeader.h"
-#include "BasicLineFormatter.h"
-#include "BasicHeaderValueParser.h"
-#include "Logger.h"
+#include "org/apache/http/message/BasicHeader.h"
+#include "org/apache/http/message/BasicLineFormatter.h"
+#include "org/apache/http/message/BasicHeaderValueParser.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;

@@ -3,8 +3,7 @@
 #define __ELASTOS_UTILITY_CTIMEZONEHELPER_H__
 
 #include "_Elastos_Utility_CTimeZoneHelper.h"
-#include "Singleton.h"
-
+#include "elastos/core/Singleton.h"
 
 namespace Elastos {
 namespace Utility {

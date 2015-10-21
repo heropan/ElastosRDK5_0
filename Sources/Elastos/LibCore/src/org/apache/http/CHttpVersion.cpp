@@ -1,5 +1,5 @@
 
-#include "CHttpVersion.h"
+#include "org/apache/http/CHttpVersion.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_ENTITY_STRINGENTITY_H_
 #define __ORG_APACHE_HTTP_ENTITY_STRINGENTITY_H_
 
-#include "AbstractHttpEntity.h"
+#include "org/apache/http/entity/AbstractHttpEntity.h"
 
 using Elastos::Core::ICloneable;
 using Elastos::IO::IFile;

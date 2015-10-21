@@ -1,6 +1,6 @@
 
-#include "ClientParamsStack.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/ClientParamsStack.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 

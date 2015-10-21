@@ -1,5 +1,5 @@
 
-#include "CBufferedHeader.h"
+#include "org/apache/http/message/CBufferedHeader.h"
 
 namespace Org {
 namespace Apache {

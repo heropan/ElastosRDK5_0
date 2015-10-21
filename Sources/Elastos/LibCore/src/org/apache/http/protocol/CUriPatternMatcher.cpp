@@ -1,5 +1,5 @@
 
-#include "CUriPatternMatcher.h"
+#include "org/apache/http/protocol/CUriPatternMatcher.h"
 
 namespace Org {
 namespace Apache {

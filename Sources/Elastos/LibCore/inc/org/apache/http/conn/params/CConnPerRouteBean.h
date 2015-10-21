@@ -3,8 +3,8 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNPERROUTEBEANS_H_
 
 #include "_Org_Apache_Http_Conn_Params_CConnPerRouteBean.h"
-#include "Object.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "elastos/core/Object.h"
+#include "elastos/utility/etl/HashMap.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Utility::Etl::HashMap;

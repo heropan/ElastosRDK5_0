@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICHTTPRESPONSE_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICHTTPRESPONSE_H_
 
-#include "AbstractHttpMessage.h"
+#include "org/apache/http/message/AbstractHttpMessage.h"
 
 using Elastos::Utility::ILocale;
 using Org::Apache::Http::IStatusLine;

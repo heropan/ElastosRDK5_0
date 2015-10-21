@@ -1,9 +1,9 @@
 
-#include "RequestWrapper.h"
-#include "HttpProtocolParams.h"
-#include "CBasicRequestLine.h"
-#include "CURI.h"
-#include "Logger.h"
+#include "org/apache/http/impl/client/RequestWrapper.h"
+#include "org/apache/http/params/HttpProtocolParams.h"
+#include "org/apache/http/message/CBasicRequestLine.h"
+#include "elastos/net/CURI.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Net::CURI;
 using Elastos::Utility::Logging::Logger;

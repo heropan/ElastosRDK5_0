@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_PROTOCOL_REQUESTEXPECTCONTINUE_H_
 #define __ORG_APACHE_HTTP_PROTOCOL_REQUESTEXPECTCONTINUE_H_
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IHttpRequestInterceptor;
 using Org::Apache::Http::IHttpRequest;

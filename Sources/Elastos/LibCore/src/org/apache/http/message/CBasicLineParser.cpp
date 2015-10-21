@@ -1,5 +1,5 @@
 
-#include "CBasicLineParser.h"
+#include "org/apache/http/message/CBasicLineParser.h"
 
 namespace Org {
 namespace Apache {

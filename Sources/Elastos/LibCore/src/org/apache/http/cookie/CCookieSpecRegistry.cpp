@@ -1,12 +1,12 @@
 
-#include "CCookieSpecRegistry.h"
-#include "StringBuilder.h"
-#include "StringUtils.h"
-#include "CArrayList.h"
-#include "CLinkedHashMap.h"
-#include "CString.h"
-#include "AutoLock.h"
-#include "Logger.h"
+#include "org/apache/http/cookie/CCookieSpecRegistry.h"
+#include "elastos/core/StringBuilder.h"
+#include "elastos/core/StringUtils.h"
+#include "elastos/core/CString.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/CLinkedHashMap.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;

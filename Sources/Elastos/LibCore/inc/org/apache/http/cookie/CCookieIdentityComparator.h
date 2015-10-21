@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_COOKIE_CCOOKIEIDENTITYCOMPARATOR_H_
 
 #include "_Org_Apache_Http_Cookie_CCookieIdentityComparator.h"
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::IComparator;
 using Elastos::IO::ISerializable;

@@ -1,5 +1,5 @@
 
-#include "CConnConnectionParamBean.h"
+#include "org/apache/http/conn/params/CConnConnectionParamBean.h"
 
 namespace Org {
 namespace Apache {

@@ -1,9 +1,9 @@
 
-#include "DefaultHttpRequestFactory.h"
-#include "CBasicHttpRequest.h"
-#include "CBasicHttpEntityEnclosingRequest.h"
-#include "Logger.h"
-#include "StringBuilder.h"
+#include "org/apache/http/impl/DefaultHttpRequestFactory.h"
+#include "org/apache/http/message/CBasicHttpRequest.h"
+#include "org/apache/http/message/CBasicHttpEntityEnclosingRequest.h"
+#include "elastos/utility/logging/Logger.h"
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;

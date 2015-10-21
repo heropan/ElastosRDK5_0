@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_BASICCOOKIESTORE_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_BASICCOOKIESTORE_H__
 
-#include "Object.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Core::IComparator;
 using Elastos::Utility::IArrayList;

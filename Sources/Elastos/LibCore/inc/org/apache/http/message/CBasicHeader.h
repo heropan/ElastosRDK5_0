@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_MESSAGE_CBASICHEADER_H_
 
 #include "_Org_Apache_Http_Message_CBasicHeader.h"
-#include "BasicHeader.h"
+#include "org/apache/http/message/BasicHeader.h"
 
 namespace Org {
 namespace Apache {

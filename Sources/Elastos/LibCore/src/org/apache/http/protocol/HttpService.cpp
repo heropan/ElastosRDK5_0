@@ -1,9 +1,9 @@
 
-#include "HttpService.h"
-#include "CDefaultedHttpParams.h"
-#include "CHttpVersion.h"
-#include "EncodingUtils.h"
-#include "Logger.h"
+#include "org/apache/http/protocol/HttpService.h"
+#include "org/apache/http/params/CDefaultedHttpParams.h"
+#include "org/apache/http/CHttpVersion.h"
+#include "org/apache/http/utility/EncodingUtils.h"
+#include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::CHttpVersion;

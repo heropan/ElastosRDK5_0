@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_PROTOCOL_CURIPATTERNMATCHER_H_
 
 #include "_Org_Apache_Http_Protocol_CUriPatternMatcher.h"
-#include "UriPatternMatcher.h"
+#include "org/apache/http/protocol/UriPatternMatcher.h"
 
 namespace Org {
 namespace Apache {

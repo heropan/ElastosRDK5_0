@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HTTP_CONN_PARAMS_CCONNMANAGERPARAMS_H__
 
 #include "_Org_Apache_Http_Conn_Params_CConnManagerParams.h"
-#include "Singleton.h"
+#include "elastos/core/Singleton.h"
 
 using Org::Apache::Http::Params::IHttpParams;
 

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_MESSAGE_BASICLINEFORMATTER_H_
 #define __ORG_APACHE_HTTP_MESSAGE_BASICLINEFORMATTER_H_
 
-#include <elastos/core/Object.h>
+#include "elastos/core/Object.h"
 
 using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::IProtocolVersion;

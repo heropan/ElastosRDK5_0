@@ -1,6 +1,6 @@
 
-#include "CAuthScopeHelper.h"
-#include "CAuthScope.h"
+#include "org/apache/http/auth/CAuthScopeHelper.h"
+#include "org/apache/http/auth/CAuthScope.h"
 
 namespace Org {
 namespace Apache {
