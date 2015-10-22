@@ -1,4 +1,4 @@
-TARGET_NAME = android.webview
+TARGET_NAME = android_webview
 TARGET_TYPE = lib
 
 include $(MAKEDIR)/../../../../../../../../sources.inc

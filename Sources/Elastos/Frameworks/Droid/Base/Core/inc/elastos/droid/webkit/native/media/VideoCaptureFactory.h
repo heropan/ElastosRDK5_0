@@ -137,11 +137,6 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Droid::Webkit::Media::VideoCaptureFactory::CamParams*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
-
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Media::VideoCaptureFactory::CamParams, IInterface);
 
 #endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__

@@ -1,8 +1,8 @@
 #include "elastos/droid/webkit/native/android_webview/JavaBrowserViewRendererHelper.h"
 
 //TODO #include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/utility/logging/Logger.h"
-#include "elastos/core/Math.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/Math.h>
 
 //TODO using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactory;

@@ -5,8 +5,8 @@
 #include "elastos/droid/os/Process.h"
 //TODO #include "elastos/droid/provider/CSettingsSystem.h"
 #include "elastos/droid/Manifest.h"
-#include "elastos/core/AutoLock.h"
-#include "elastos/utility/logging/Logger.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::IContentResolver;

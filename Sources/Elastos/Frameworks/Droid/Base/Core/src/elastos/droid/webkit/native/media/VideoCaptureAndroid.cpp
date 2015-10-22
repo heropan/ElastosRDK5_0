@@ -4,11 +4,11 @@
 //TODO #include "elastos/droid/graphics/CImageFormat.h"
 #include "elastos/droid/hardware/CHardwareCameraHelper.h"
 //TODO #include "elastos/droid/hardware/CHardwareCamera.h"
-
-//TODO #include "elastos/utility/CArrayList.h"
-//TODO #include "elastos/core/CInteger32.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/utility/logging/Logger.h"
+
+//TODO #include <elastos/utility/CArrayList.h>
+//TODO #include <elastos/core/CInteger32.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Graphics::IImageFormat;
 //TODO using Elastos::Droid::Graphics::CImageFormat;

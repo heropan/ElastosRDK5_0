@@ -4,10 +4,9 @@
 #include "elastos/droid/hardware/CHardwareCameraHelper.h"
 //TODO#include "elastos/droid/opengl/CGLES20.h"
 //TODO#include "elastos/droid/graphics/CSurfaceTexture.h"
-#include "elastos/core/Math.h"
-#include "elastos/utility/logging/Logger.h"
-
-//TODO #include "elastos/utility/concurrent/locks/CReentrantLock.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
+//TODO #include <elastos/utility/concurrent/locks/CReentrantLock.h>
 
 using Elastos::Droid::Graphics::IImageFormat;
 using Elastos::Droid::Hardware::ICameraSize;

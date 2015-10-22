@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/utility/etl/HashMap.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Utility::ISparseArray;

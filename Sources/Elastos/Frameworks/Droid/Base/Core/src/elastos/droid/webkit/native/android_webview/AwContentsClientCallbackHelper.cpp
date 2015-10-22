@@ -1,8 +1,8 @@
 #include "elastos/droid/webkit/native/android_webview/AwContentsClientCallbackHelper.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 #include "elastos/droid/os/SystemClock.h"
-#include "elastos/core/Math.h"
-#include "elastos/utility/logging/Logger.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Graphics::IPicture;
 using Elastos::Droid::Os::SystemClock;

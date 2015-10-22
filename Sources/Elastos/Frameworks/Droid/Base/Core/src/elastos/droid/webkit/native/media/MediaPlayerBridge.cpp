@@ -5,13 +5,13 @@
 #include "elastos/droid/utility/CBase64InputStream.h"
 //TODO #include "elastos/droid/net/CUriHelper.h"
 //TODO #include "elastos/droid/media/CMediaPlayer.h"
-
-//TODO #include "elastos/io/CFileHelper.h"
-//TODO #include "elastos/io/CFileOutputStream.h"
-//TODO #include "elastos/io/CByteArrayInputStream.h"
-//TODO #include "elastos/utility/CHashMap.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/utility/logging/Logger.h"
+
+//TODO #include <elastos/io/CFileHelper.h>
+//TODO #include <elastos/io/CFileOutputStream.h>
+//TODO #include <elastos/io/CByteArrayInputStream.h>
+//TODO #include <elastos/utility/CHashMap.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ISurface;
@@ -19,7 +19,6 @@ using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriHelper;
 //TODO using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::AsyncTask;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IParcelFileDescriptorHelper;
 using Elastos::Droid::Os::CParcelFileDescriptorHelper;
@@ -32,6 +31,8 @@ using Elastos::Droid::Media::IMediaPlayer;
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileHelper;
@@ -70,6 +71,9 @@ ECode MediaPlayerBridge::LoadDataUriTask::DoInBackground(
     /* [in] */ ArrayOf<IInterface*>* params,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+    Boolean runResult = FALSE;//update runResult when fail
     AutoPtr<IFileOutputStream> fos;
     // try {
     AutoPtr<IFileHelper> fileHelper;
@@ -100,16 +104,24 @@ ECode MediaPlayerBridge::LoadDataUriTask::DoInBackground(
     //     }
     // }
 
-    return TRUE;
+    runResult = TRUE;
+    AutoPtr<IBoolean> res;
+    CBoolean::New(runResult, (IBoolean**)&res);
+    *result = res;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 //@Override
-void MediaPlayerBridge::LoadDataUriTask::OnPostExecute(
-    /* [in] */ Boolean result)
+ECode MediaPlayerBridge::LoadDataUriTask::OnPostExecute(
+    /* [in] */ IInterface* iresult)
 {
+    Boolean result;
+    AutoPtr<IBoolean> ib = IBoolean::Probe(iresult);
+    ib->GetValue(&result);
     if (IsCancelled()) {
         DeleteFile();
-        return;
+        return NOERROR;
     }
 
     // try {
@@ -125,6 +137,7 @@ void MediaPlayerBridge::LoadDataUriTask::OnPostExecute(
     DeleteFile();
     assert (mOwner->mNativeMediaPlayerBridge != 0);
     mOwner->NativeOnDidSetDataUriDataSource(mOwner->mNativeMediaPlayerBridge, result);
+    return NOERROR;
 }
 
 void MediaPlayerBridge::LoadDataUriTask::DeleteFile()
