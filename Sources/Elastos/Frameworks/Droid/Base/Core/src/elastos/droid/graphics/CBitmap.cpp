@@ -8,6 +8,7 @@
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/GraphicsNative.h"
 #include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
+#include "elastos/droid/graphics/NativePaint.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 // #include "elastos/droid/utility/droid_nio_utils.h"
 #include <elastos/core/Math.h>
@@ -29,24 +30,84 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+// static AutoPtr<INIOAccessHelper> sNioAccessHelper;
+// static void* nio_getPointer(
+//     /* [in] */ IBuffer* buffer,
+//     /* [in] */ IInterface** array)
+// {
+//     assert(array);
+//     if (sNioAccessHelper == NULL) {
+//         CNIOAccessHelper::AcquireSingleton((INIOAccessHelper**)&sNioAccessHelper);
+//     }
+
+//     Int64 pointer = 0;
+//     Int32 offset = 0;
+//     void *data;
+
+//     sNioAccessHelper->GetBasePointer(buffer, &pointer);
+
+//     if (pointer != 0L) {
+//         *array = NULL;
+//         return reinterpret_cast<void *>(pointer);
+//     }
+
+//     AutoPtr<IInterface> ia;
+//     sNioAccessHelper->GetBaseArray(buffer, array);
+
+//     sNioAccessHelper->GetBaseArrayOffset(buffer, &offset);
+//     data = _env->GetPrimitiveArrayCritical(*array, (jboolean *) 0);
+
+//     return (void *) ((char *) data + offset);
+// }
+
+
+// void nio_releasePointer(
+//     /* [in] */ IBuffer* array,
+//     /* [in] */ void *data,
+//     /* [in] */ Boolean commit)
+// {
+//     _env->ReleasePrimitiveArrayCritical(array, data,
+//                                         commit ? 0 : JNI_ABORT);
+// }
+
+// class AutoBufferPointer {
+// public:
+//     AutoBufferPointer(
+//         /* [in] */ IBuffer* nioBuffer,
+//         /* [in] */ Boolean commit);
+
+//     ~AutoBufferPointer();
+
+//     void* Pointer() const { return fPointer; }
+
+// private:
+//     void*   fPointer;
+//     /*jarray*/AutoPtr<IInterface>  fArray;
+//     Int32    fRemaining;
+//     Boolean fCommit;
+// };
+
+// AutoBufferPointer::AutoBufferPointer(
+//     /* [in] */ IBuffer* nioBuffer,
+//     /* [in] */ Boolean commit)
+// {
+//     fCommit = commit;
+//     fPointer = nio_getPointer(nioBuffer, &fArray);
+// }
+
+// AutoBufferPointer::~AutoBufferPointer()
+// {
+//     if (NULL != fArray) {
+//         nio_releasePointer(fArray, fPointer, fCommit);
+//     }
+// }
+
 static const char* TAG = "CBitmap";
 const Int32 CBitmap::DENSITY_NONE;
 AutoPtr<IMatrix> CBitmap::sScaleMatrix;
 Int32 CBitmap::sDefaultDensity = -1;
 Int32 CBitmap::WORKING_COMPRESS_STORAGE = 4096;
 Object CBitmap::sClassLock;
-
-// struct ElaBitmapCallback Init_BitmapCallback()
-// {
-//     static struct ElaBitmapCallback t =
-//     {
-//         &CBitmap::CreateBitmap,
-//         &CBitmap::CreateBitmap
-//     };
-//     Elastos_Bitmap_InitCallback((Int32)&t);
-//     return t;
-// }
-// struct ElaBitmapCallback sElaBitmapCallback = Init_BitmapCallback();
 
 CAR_OBJECT_IMPL(CBitmap);
 CAR_INTERFACE_IMPL_2(CBitmap, Object, IBitmap, IParcelable);
@@ -1530,7 +1591,6 @@ ECode CBitmap::NativeCreate(
 
     SkBitmap nativeBitmap;
 
-    assert(0 && "TODO");
     nativeBitmap.setInfo(SkImageInfo::Make(width, height, colorType, kPremul_SkAlphaType));
 
     AutoPtr< ArrayOf<Byte> > buff;
@@ -1558,11 +1618,10 @@ ECode CBitmap::NativeCopy(
     SkBitmap result;
     GraphicsNative::DroidPixelAllocator allocator;
 
-    assert(0 && "TODO");
-    // if (!src->copyTo(&result, dstCT, &allocator)) {
-    //     *bitmap = NULL;
-    //     return NOERROR;
-    // }
+    if (!src->copyTo(&result, dstCT, &allocator)) {
+        *bitmap = NULL;
+        return NOERROR;
+    }
 
     return GraphicsNative::CreateBitmap(new SkBitmap(result), allocator.getStorageObj(),
             GetPremulBitmapCreateFlags(isMutable), NULL, NULL, -1, bitmap);
@@ -1899,7 +1958,6 @@ ECode CBitmap::NativeCreateFromParcel(
 
     SkBitmap* bmp = new SkBitmap;
 
-    assert(0 && "TODO");
     bmp->setInfo(SkImageInfo::Make(width, height, colorType, alphaType), rowBytes);
 
     SkColorTable* ctable = NULL;
@@ -1927,6 +1985,7 @@ ECode CBitmap::NativeCreateFromParcel(
 
     size_t size = bmp->getSize();
 
+    assert(0 && "TODO");
     // android::Parcel::ReadableBlob blob;
     // android::status_t status = p->readBlob(size, &blob);
     // if (status) {
@@ -2010,15 +2069,13 @@ ECode CBitmap::NativeExtractAlpha(
 {
     assert(nativeBitmap);
     const SkBitmap* src = reinterpret_cast<SkBitmap*>(nativeBitmap);
-    assert(0 && "TODO");
-    // const android::Paint* paint = reinterpret_cast<android::Paint*>(nativePaint);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(nativePaint);
 
     SkIPoint  offset;
     SkBitmap* dst = new SkBitmap;
     GraphicsNative::DroidPixelAllocator allocator;
 
-    assert(0 && "TODO");
-    // src->extractAlpha(dst, paint, &allocator, &offset);
+    src->extractAlpha(dst, paint, &allocator, &offset);
     // If Skia can't allocate pixels for destination bitmap, it resets
     // it, that is set its pixels buffer to NULL, and zero width and height.
     if (dst->getPixels() == NULL && src->getPixels() != NULL) {
@@ -2084,7 +2141,6 @@ void CBitmap::NativeSetHasAlpha(
     /* [in] */ Boolean requestPremul)
 {
     assert(nativeBitmap);
-    assert(0 && "TODO");
     SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(nativeBitmap);
     if (hasAlpha) {
         bitmap->setAlphaType(requestPremul ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);

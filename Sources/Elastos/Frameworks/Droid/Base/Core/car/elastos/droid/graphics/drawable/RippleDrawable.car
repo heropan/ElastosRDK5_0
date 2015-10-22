@@ -94,6 +94,8 @@ module
             [out] Int32* maxRadius);
     }
 
+    interface IRippleState {}
+
     } // namespace Drawable
     } // namespace Graphics
     } // namespace Droid

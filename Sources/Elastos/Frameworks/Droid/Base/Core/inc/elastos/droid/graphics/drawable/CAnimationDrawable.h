@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Graphics_Drawable_CAnimationDrawable.h"
 #include "elastos/droid/graphics/drawable/AnimationDrawable.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Graphics {

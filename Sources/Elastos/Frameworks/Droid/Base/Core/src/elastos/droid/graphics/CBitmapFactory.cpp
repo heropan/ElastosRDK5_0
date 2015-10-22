@@ -11,7 +11,7 @@
 #include "elastos/droid/graphics/NinePatchPeeker.h"
 #include "elastos/droid/graphics/NBitmapFactory.h"
 #include "elastos/droid/utility/CTypedValue.h"
-// #include "elastos/droid/content/res/CAssetManager.h"
+#include "elastos/droid/content/res/CAssetManager.h"
 #include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkTemplates.h>
@@ -28,7 +28,7 @@
 #include <cutils/compiler.h>
 
 using Elastos::Droid::Content::Res::IAssetInputStream;
-// using Elastos::Droid::Content::Res::CAssetManager;
+using Elastos::Droid::Content::Res::CAssetManager;
 using Elastos::Droid::Utility::CTypedValue;
 
 using Elastos::IO::ICloseable;
@@ -405,8 +405,7 @@ ECode CBitmapFactory::DecodeStream(
     // try {
     if (IAssetInputStream::Probe(is)) {
         Int64 asset = 0;
-        assert(0 && "TODO");
-        // ((CAssetManager::AssetInputStream*)IAssetInputStream::Probe(is))->GetNativeAsset(&asset);
+        ((CAssetManager::AssetInputStream*)IAssetInputStream::Probe(is))->GetNativeAsset(&asset);
         bm = NativeDecodeAsset(asset, outPadding, opts);
     } else {
         bm = DecodeStreamInternal(is, outPadding, opts);
