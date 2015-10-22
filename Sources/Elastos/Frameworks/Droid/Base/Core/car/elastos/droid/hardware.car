@@ -126,6 +126,9 @@ module
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.View.IRotationWatcher;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Media.IAudioFormat;
+
+    using interface Elastos.Utility.IUUID;
 
     namespace Elastos {
     namespace Droid {
@@ -282,6 +285,174 @@ module
         }
 
     } // namespace Input
+
+    namespace Soundtrigger {
+
+    class CSoundTriggerModuleProperties {
+        constructor();
+
+        /**
+         * Create a segment of a carrier frequency range.
+         *
+         * @param min The minimum transmittable frequency in this range segment.
+         * @param max The maximum transmittable frequency in this range segment.
+         */
+        constructor(
+            [in] Int32 id,
+            [in] String implementor,
+            [in] String description,
+            [in] String uuid,
+            [in] Int32 _version,
+            [in] Int32 maxSoundModels,
+            [in] Int32 maxKeyphrases,
+            [in] Int32 maxUsers,
+            [in] Int32 recognitionModes,
+            [in] Boolean supportsCaptureTransition,
+            [in] Int32 maxBufferMs,
+            [in] Boolean supportsConcurrentCapture,
+            [in] Int32 powerConsumptionMw,
+            [in] Boolean returnsTriggerInEvent);
+
+        interface ISoundTriggerModuleProperties;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerSoundModel {
+        constructor();
+
+        constructor(
+            [in] IUUID* uuid,
+            [in] IUUID* vendorUuid,
+            [in] Int32 type,
+            [in] ArrayOf<Byte>* data);
+
+        interface ISoundTriggerSoundModel;
+    }
+
+    [deprecated]
+    class CSoundTriggerKeyphrase {
+        constructor();
+
+        constructor(
+            [in] Int32 id,
+            [in] Int32 recognitionModes,
+            [in] String locale,
+            [in] String text,
+            [in] ArrayOf<Int32>* users);
+
+        interface ISoundTriggerKeyphrase;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerKeyphraseSoundModel {
+        constructor();
+
+        constructor(
+            [in] IUUID* uuid,
+            [in] IUUID* vendorUuid,
+            [in] ArrayOf<Byte>* data,
+            [in] ArrayOf<ISoundTriggerKeyphrase*>* keyphrases);
+
+        interface ISoundTriggerKeyphraseSoundModel;
+        interface ISoundTriggerSoundModel;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerRecognitionEvent {
+        constructor();
+
+        constructor(
+            [in] Int32 status,
+            [in] Int32 soundModelHandle,
+            [in] Boolean captureAvailable,
+            [in] Int32 captureSession,
+            [in] Int32 captureDelayMs,
+            [in] Int32 capturePreambleMs,
+            [in] Boolean triggerInData,
+            [in] IAudioFormat* captureFormat,
+            [in] ArrayOf<Byte>* data);
+
+        interface ISoundTriggerRecognitionEvent;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerRecognitionConfig {
+        constructor();
+
+        constructor(
+            [in] Boolean captureRequested,
+            [in] Boolean allowMultipleTriggers,
+            [in] ArrayOf<ISoundTriggerKeyphraseRecognitionExtra*>* keyphrases,
+            [in] ArrayOf<Byte>* data);
+
+        interface ISoundTriggerRecognitionConfig;
+        interface IParcelable;
+    }
+
+    class CSoundTriggerConfidenceLevel {
+        constructor();
+
+        constructor(
+            [in] Int32 userId,
+            [in] Int32 confidenceLevel);
+
+        interface ISoundTriggerConfidenceLevel;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerKeyphraseRecognitionExtra {
+        constructor();
+
+        constructor(
+            [in] Int32 id,
+            [in] Int32 recognitionModes,
+            [in] Int32 coarseConfidenceLevel,
+            [in] ArrayOf<ISoundTriggerConfidenceLevel*>* confidenceLevels);
+
+        interface ISoundTriggerKeyphraseRecognitionExtra;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerKeyphraseRecognitionEvent {
+        constructor();
+
+        constructor(
+            [in] Int32 status,
+            [in] Int32 soundModelHandle,
+            [in] Boolean captureAvailable,
+            [in] Int32 captureSession,
+            [in] Int32 captureDelayMs,
+            [in] Int32 capturePreambleMs,
+            [in] Boolean triggerInData,
+            [in] IAudioFormat* captureFormat,
+            [in] ArrayOf<Byte>* data,
+            [in] ArrayOf<ISoundTriggerKeyphraseRecognitionExtra*>* keyphraseExtras);
+
+        interface ISoundTriggerKeyphraseRecognitionEvent;
+        interface ISoundTriggerRecognitionEvent;
+        interface IParcelable;
+    }
+
+    [deprecated]
+    class CSoundTriggerSoundModelEvent {
+        constructor();
+
+        constructor(
+            [in] Int32 status,
+            [in] Int32 soundModelHandle,
+            [in] ArrayOf<Byte>* data);
+
+        interface ISoundTriggerSoundModelEvent;
+        interface IParcelable;
+    }
+
+    } // namespace Soundtrigger
 
     namespace Usb {
 
