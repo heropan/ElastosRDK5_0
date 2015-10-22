@@ -1,5 +1,42 @@
 
 #include "elastos/droid/systemui/CBatteryMeterView.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CRectF.h"
+//#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CTypefaceHelper.h"
+#include "elastos/droid/graphics/CPaintFontMetrics.h"
+
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::ITypeface;
+using Elastos::Droid::Graphics::ITypefaceHelper;
+using Elastos::Droid::Graphics::CTypefaceHelper;
+using Elastos::Droid::Graphics::PaintStyle_FILL_AND_STROKE;
+using Elastos::Droid::Graphics::PaintAlign_CENTER;
+using Elastos::Droid::Graphics::IPaintFontMetrics;
+using Elastos::Droid::Graphics::CPaintFontMetrics;
+using Elastos::Droid::Graphics::PathOp_DIFFERENCE;
+using Elastos::Droid::Graphics::PathOp_INTERSECT;
+using Elastos::Droid::Graphics::PathDirection_CCW;
+//using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Os::IBatteryManager;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::SystemUI::StatusBar::Policy::EIID_IBatteryStateChangeCallback;
+
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -32,31 +69,34 @@ ECode CBatteryMeterView::BatteryTracker::OnReceive(
     intent->GetAction(&action);
     if (action.Equals(IIntent::ACTION_BATTERY_CHANGED)) {
         Boolean bExt = FALSE;
-        if (testmode && ! (intent->GetBooleanExtra("testmode", FALSE, &bExt), bExt))
+        if (mTestmode && ! (intent->GetBooleanExtra(String("testmode"), FALSE, &bExt), bExt))
             return NOERROR;
 
         Int32 ext1 = 0, ext2 = 0;
         intent->GetInt32Extra(IBatteryManager::EXTRA_LEVEL, 0, &ext1);
         intent->GetInt32Extra(IBatteryManager::EXTRA_SCALE, 100, &ext2);
-        level = (Int32)(100f * ext1 / ext2);
+        mLevel = (Int32)(100.0 * ext1 / ext2);
 
-        intent->GetInt32Extra(IBatteryManager::EXTRA_PLUGGED, 0, &plugType);
-        plugged = plugType != 0;
+        intent->GetInt32Extra(IBatteryManager::EXTRA_PLUGGED, 0, &mPlugType);
+        mPlugged = mPlugType != 0;
         intent->GetInt32Extra(IBatteryManager::EXTRA_HEALTH,
-                IBatteryManager::BATTERY_HEALTH_UNKNOWN, &health);
+                IBatteryManager::BATTERY_HEALTH_UNKNOWN, &mHealth);
         intent->GetInt32Extra(IBatteryManager::EXTRA_STATUS,
-                IBatteryManager::BATTERY_STATUS_UNKNOWN, &status);
-        intent->GetStringExtra(IBatteryManager::EXTRA_TECHNOLOGY, &technology);
-        intent->GetInt32Extra(IBatteryManager::EXTRA_VOLTAGE, 0, &voltage);
-        intent->GetInt32Extra(IBatteryManager::EXTRA_TEMPERATURE, 0, &temperature);
+                IBatteryManager::BATTERY_STATUS_UNKNOWN, &mStatus);
+        intent->GetStringExtra(IBatteryManager::EXTRA_TECHNOLOGY, &mTechnology);
+        intent->GetInt32Extra(IBatteryManager::EXTRA_VOLTAGE, 0, &mVoltage);
+        intent->GetInt32Extra(IBatteryManager::EXTRA_TEMPERATURE, 0, &mTemperature);
 
-        SetContentDescription(
-                context->GetString(R::string::accessibility_battery_level, level));
-        PostInvalidate();
+        String str;
+        assert(0 && "TODO");
+//        context->GetString(R::string::accessibility_battery_level, mLevel, &str);
+//        View::SetContentDescription(str);
+//        View::PostInvalidate();
     }
     else if (action.Equals(ACTION_LEVEL_TEST)) {
-        testmode = TRUE;
-        Post(new Runnable());
+        mTestmode = TRUE;
+        assert(0 && "TODO");
+//        View::Post(new Runnable_1());
     }
     return NOERROR;
 }
@@ -64,39 +104,47 @@ ECode CBatteryMeterView::BatteryTracker::OnReceive(
 //===============================================================
 // CBatteryMeterView::Runnable_1::
 //===============================================================
-CBatteryMeterView::Runnable_1::Runnable_1()
+CBatteryMeterView::Runnable_1::Runnable_1(
+    /* [in] */ Int32 level,
+    /* [in] */ Int32 plugType,
+    /* [in] */ Boolean testmode,
+    /* [in] */ CBatteryMeterView* owner)
 {
     mCurLevel = 0;
     mIncr = 1;
     mSaveLevel = level;
     mSavePlugged = plugType;
-    mDummy = new Intent(IIntent::ACTION_BATTERY_CHANGED);
+    mTestmode = testmode;
+    mOwner = owner;
+    CIntent::New(IIntent::ACTION_BATTERY_CHANGED, (IIntent**)&mDummy);
 }
 
 ECode CBatteryMeterView::Runnable_1::Run()
 {
     if (mCurLevel < 0) {
-        testmode = FALSE;
-        mDummy->PutExtra("level", saveLevel);
-        mDummy->PutExtra("plugged", savePlugged);
-        mDummy->PutExtra("testmode", FALSE);
+        mTestmode = FALSE;
+        mDummy->PutExtra(String("level"), mSaveLevel);
+        mDummy->PutExtra(String("plugged"), mSavePlugged);
+        mDummy->PutExtra(String("testmode"), FALSE);
     }
     else {
-        mDummy->PutExtra("level", curLevel);
-        mDummy->PutExtra("plugged", incr > 0 ? IBatteryManager::BATTERY_PLUGGED_AC : 0);
-        mDummy->PutExtra("testmode", TRUE);
+        mDummy->PutExtra(String("level"), mCurLevel);
+        mDummy->PutExtra(String("plugged"), mIncr > 0 ? IBatteryManager::BATTERY_PLUGGED_AC : 0);
+        mDummy->PutExtra(String("testmode"), TRUE);
     }
     AutoPtr<IContext> ctx;
-    GetContext((IContext**)&ctx);
+    assert(0 && "TODO");
+//    mOwner->GetContext((IContext**)&ctx);
     ctx->SendBroadcast(mDummy);
 
-    if (!testmode) return NOERROR;
+    if (!mTestmode) return NOERROR;
 
-    curLevel += incr;
-    if (curLevel == 100) {
-        incr *= -1;
+    mCurLevel += mIncr;
+    if (mCurLevel == 100) {
+        mIncr *= -1;
     }
-    PostDelayed(this, 200);
+    assert(0 && "TODO");
+//    mOwner->PostDelayed(this, 200);
     return NOERROR;
 }
 
@@ -116,7 +164,7 @@ Float CBatteryMeterView::BOLT_LEVEL_THRESHOLD = 0.3f;  // opaque bolt below this
 
 CAR_OBJECT_IMPL(CBatteryMeterView)
 
-CAR_INTERFACE_IMPL_2(CBatteryMeterView, View, IDemoMode, IBatteryStateChangeCallback)
+CAR_INTERFACE_IMPL_2(CBatteryMeterView, Object, IDemoMode, IBatteryStateChangeCallback)
 
 CBatteryMeterView::CBatteryMeterView()
 {
@@ -141,19 +189,21 @@ CBatteryMeterView::CBatteryMeterView()
 
 ECode CBatteryMeterView::OnAttachedToWindow()
 {
-    View::OnAttachedToWindow();
+    assert(0 && "TODO");
+//    View::OnAttachedToWindow();
 
-    AutoPtr<IIntentFilter> filter = new IntentFilter();
+    AutoPtr<IIntentFilter> filter;
+    CIntentFilter::New((IIntentFilter**)&filter);
     filter->AddAction(IIntent::ACTION_BATTERY_CHANGED);
     filter->AddAction(ACTION_LEVEL_TEST);
     AutoPtr<IContext> ctx;
-    GetContext((IContext**)&ctx);
+//    GetContext((IContext**)&ctx);
     AutoPtr<IIntent> sticky;
     ctx->RegisterReceiver(mTracker, filter, (IIntent**)&sticky);
     if (sticky != NULL) {
         // preload the battery level
         AutoPtr<IContext> c;
-        GetContext((IContext**)&c);
+//        GetContext((IContext**)&c);
         mTracker->OnReceive(c, sticky);
     }
     mBatteryController->AddStateChangedCallback(this);
@@ -162,10 +212,11 @@ ECode CBatteryMeterView::OnAttachedToWindow()
 
 ECode CBatteryMeterView::OnDetachedFromWindow()
 {
-    View::OnDetachedFromWindow();
+    assert(0 && "TODO");
+//    View::OnDetachedFromWindow();
 
     AutoPtr<IContext> ctx;
-    GetContext((IContext**)&ctx);
+//    GetContext((IContext**)&ctx);
     ctx->UnregisterReceiver(mTracker);
     mBatteryController->RemoveStateChangedCallback(this);
     return NOERROR;
@@ -189,23 +240,25 @@ ECode CBatteryMeterView::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    View::constructor(context, attrs, defStyle);
+    assert(0 && "TODO");
+//    View::constructor(context, attrs, defStyle);
 
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     AutoPtr<ITypedArray> atts;
-    context->ObtainStyledAttributes(attrs, R::styleable::BatteryMeterView,
-            defStyle, 0, (ITypedArray**)&atts);
+    // context->ObtainStyledAttributes(attrs, R::styleable::BatteryMeterView,
+    //         defStyle, 0, (ITypedArray**)&atts);
     Int32 clr = 0;
-    res->GetColor(R::color::batterymeter_frame_color, &clr);
+//    res->GetColor(R::color::batterymeter_frame_color, &clr);
     Int32 frameColor = 0;
-    atts->GetColor(R::styleable::BatteryMeterView_frameColor, clr, &frameColor);
+//    atts->GetColor(R::styleable::BatteryMeterView_frameColor, clr, &frameColor);
     AutoPtr<ITypedArray> levels;
-    res->ObtainTypedArray(R::array::batterymeter_color_levels, (ITypedArray**)&levels);
+//    res->ObtainTypedArray(R::array::batterymeter_color_levels, (ITypedArray**)&levels);
     AutoPtr<ITypedArray> colors;
-    res->ObtainTypedArray(R::array::batterymeter_color_values, (ITypedArray**)&colors);
+//    res->ObtainTypedArray(R::array::batterymeter_color_values, (ITypedArray**)&colors);
 
-    Int32 N = levels->GetLength();
+    Int32 N = 0;
+    levels->GetLength(&N);
     mColors = ArrayOf<Int32>::Alloc(2*N);
     for (Int32 i = 0; i < N; i++) {
         levels->GetInt32(i, 0, &((*mColors)[2*i]));
@@ -217,53 +270,53 @@ ECode CBatteryMeterView::constructor(
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
     Int32 iPercent = 0;
-    Settings::System::GetInt32(
-            cr, "status_bar_show_battery_percent", 0, &iPercent);
+    // Settings::System::GetInt32(
+    //         cr, "status_bar_show_battery_percent", 0, &iPercent);
     mShowPercent = ENABLE_PERCENT && 0 != iPercent;
-    context->GetString(R::string::battery_meter_very_low_overlay_symbol, &mWarningString);
+//    context->GetString(R::string::battery_meter_very_low_overlay_symbol, &mWarningString);
     AutoPtr<IResources> r;
-    mContext->GetResources((IResources**)&r);
+    context->GetResources((IResources**)&r);
     r->GetInteger(
             R::integer::config_criticalBatteryWarningLevel, &mCriticalLevel);
-    r->GetFraction(
-            R::fraction::battery_button_height_fraction, 1, 1, &mButtonHeightFraction);
-    r->GetFraction(
-            R::fraction::battery_subpixel_smoothing_left, 1, 1, &mSubpixelSmoothingLeft);
-    r->GetFraction(
-            R::fraction::battery_subpixel_smoothing_right, 1, 1, &mSubpixelSmoothingRight);
+    // r->GetFraction(
+    //         R::fraction::battery_button_height_fraction, 1, 1, &mButtonHeightFraction);
+    // r->GetFraction(
+    //         R::fraction::battery_subpixel_smoothing_left, 1, 1, &mSubpixelSmoothingLeft);
+    // r->GetFraction(
+    //         R::fraction::battery_subpixel_smoothing_right, 1, 1, &mSubpixelSmoothingRight);
 
-    mFramePaint = new Paint(IPaint::ANTI_ALIAS_FLAG);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mFramePaint);
     mFramePaint->SetColor(frameColor);
     mFramePaint->SetDither(TRUE);
     mFramePaint->SetStrokeWidth(0);
-    mFramePaint->SetStyle(IPaint::Style::FILL_AND_STROKE);
+    mFramePaint->SetStyle(PaintStyle_FILL_AND_STROKE);
 
-    mBatteryPaint = new Paint(IPaint::ANTI_ALIAS_FLAG);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mBatteryPaint);
     mBatteryPaint->SetDither(TRUE);
     mBatteryPaint->SetStrokeWidth(0);
-    mBatteryPaint->SetStyle(IPaint::Style::FILL_AND_STROKE);
+    mBatteryPaint->SetStyle(PaintStyle_FILL_AND_STROKE);
 
-    mTextPaint = new Paint(IPaint::ANTI_ALIAS_FLAG);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mTextPaint);
     AutoPtr<ITypefaceHelper> tfacehlp;
-    CTransitionUtils::AcquireSingleton((ITypefaceHelper**)&tfacehlp);
+    CTypefaceHelper::AcquireSingleton((ITypefaceHelper**)&tfacehlp);
     AutoPtr<ITypeface> font;
-    tfacehlp->Create("sans-serif-condensed", ITypeface::BOLD, (ITypeface**)&font);
+    tfacehlp->Create(String("sans-serif-condensed"), ITypeface::BOLD, (ITypeface**)&font);
     mTextPaint->SetTypeface(font);
-    mTextPaint->SetTextAlign(IPaint::Align::CENTER);
+    mTextPaint->SetTextAlign(PaintAlign_CENTER);
 
-    mWarningTextPaint = new Paint(IPaint::ANTI_ALIAS_FLAG);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mWarningTextPaint);
     mWarningTextPaint->SetColor((*mColors)[1]);
-    tfacehlp->Create("sans-serif", ITypeface::BOLD, (ITypeface**)&font);
+    tfacehlp->Create(String("sans-serif"), ITypeface::BOLD, (ITypeface**)&font);
     mWarningTextPaint->SetTypeface(font);
-    mWarningTextPaint->SetTextAlign(IPaint::Align::CENTER);
+    mWarningTextPaint->SetTextAlign(PaintAlign_CENTER);
 
     AutoPtr<IResources> rClr;
-    GetResources((IResources**)&rClr);
-    rClr->GetColor(R::color::batterymeter_charge_color, &mChargeColor);
+//    GetResources((IResources**)&rClr);
+//    rClr->GetColor(R::color::batterymeter_charge_color, &mChargeColor);
 
-    mBoltPaint = new Paint(IPaint::ANTI_ALIAS_FLAG);
+    CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&mBoltPaint);
     Int32 bolt_clr = 0;
-    res->GetColor(R::color::batterymeter_bolt_color, &bolt_clr)
+//    res->GetColor(R::color::batterymeter_bolt_color, &bolt_clr)
     mBoltPaint->SetColor(bolt_clr);
     mBoltPoints = LoadBoltPoints(res);
     return NOERROR;
@@ -289,15 +342,16 @@ ECode CBatteryMeterView::OnBatteryLevelChanged(
 ECode CBatteryMeterView::OnPowerSaveChanged()
 {
     mBatteryController->IsPowerSave(&mPowerSaveEnabled);
-    Invalidate();
+    // View::Invalidate();
     return NOERROR;
 }
 
 AutoPtr<ArrayOf<Float> > CBatteryMeterView::LoadBoltPoints(
     /* [in] */ IResources* res)
 {
+    assert(0 && "TODO");
     AutoPtr<ArrayOf<Int32> > pts;
-    res->GetIntArray(R::array::batterymeter_bolt_points, (ArrayOf<Int32>**)&pts);
+//    res->GetIntArray(R::array::batterymeter_bolt_points, (ArrayOf<Int32>**)&pts);
     Int32 maxX = 0, maxY = 0;
     for (Int32 i = 0; i < pts->GetLength(); i += 2) {
         maxX = Elastos::Core::Math::Max(maxX, (*pts)[i]);
@@ -320,7 +374,10 @@ ECode CBatteryMeterView::OnSizeChanged(
     mHeight = h;
     mWidth = w;
     mWarningTextPaint->SetTextSize(h * 0.75f);
-    mWarningTextHeight = -mWarningTextPaint->GetFontMetrics()->mAscent;
+    AutoPtr<IPaintFontMetrics> fm;
+    mWarningTextPaint->GetFontMetrics((IPaintFontMetrics**)&fm);
+    fm->GetAscent(&mWarningTextHeight);
+    mWarningTextHeight = -mWarningTextHeight;
     return NOERROR;
 }
 
@@ -344,20 +401,21 @@ Int32 CBatteryMeterView::GetColorForLevel(
 ECode CBatteryMeterView::Draw(
     /* [in] */ ICanvas* c)
 {
-    AutoPtr<IBatteryTracker> tracker = mDemoMode ? mDemoTracker : mTracker;
+    AutoPtr<BatteryTracker> tracker = mDemoMode ? mDemoTracker : mTracker;
     Int32 level = tracker->mLevel;
 
     if (level == BatteryTracker::UNKNOWN_LEVEL) return NOERROR;
 
-    Float drawFrac = (float) level / 100f;
+    Float drawFrac = (float) level / 100.0f;
     Int32 pt = 0;
-    GetPaddingTop(&pt);
+    assert(0 && "TODO");
+    // View::GetPaddingTop(&pt);
     Int32 pl = 0;
-    GetPaddingLeft(&pl);
+    // View::GetPaddingLeft(&pl);
     Int32 pr = 0;
-    GetPaddingRight(&pr);
+    // View::GetPaddingRight(&pr);
     Int32 pb = 0;
-    GetPaddingBottom(&pb);
+    // View::GetPaddingBottom(&pb);
     Int32 height = mHeight - pt - pb;
     Int32 width = mWidth - pl - pr;
 
@@ -367,80 +425,92 @@ ECode CBatteryMeterView::Draw(
     mFrame->Offset(pl, pt);
 
     // button-frame: area above the battery body
+    AutoPtr<CRectF> cfm = (CRectF*)mFrame.Get();
     mButtonFrame->Set(
-            mFrame->mLeft + Elastos::Core::Math::Round(width * 0.25f),
-            mFrame->mTop,
-            mFrame->mRight - Elastos::Core::Math::Round(width * 0.25f),
-            mFrame->mTop + buttonHeight);
+            cfm->mLeft + Elastos::Core::Math::Round(width * 0.25f),
+            cfm->mTop,
+            cfm->mRight - Elastos::Core::Math::Round(width * 0.25f),
+            cfm->mTop + buttonHeight);
 
-    mButtonFrame->mTop += mSubpixelSmoothingLeft;
-    mButtonFrame->mLeft += mSubpixelSmoothingLeft;
-    mButtonFrame->mRight -= mSubpixelSmoothingRight;
+    AutoPtr<CRectF> cbfm = (CRectF*)mButtonFrame.Get();
+    cbfm->mTop += mSubpixelSmoothingLeft;
+    cbfm->mLeft += mSubpixelSmoothingLeft;
+    cbfm->mRight -= mSubpixelSmoothingRight;
 
     // frame: battery body area
-    mFrame->mTop += buttonHeight;
-    mFrame->mLeft += mSubpixelSmoothingLeft;
-    mFrame->mTop += mSubpixelSmoothingLeft;
-    mFrame->mRight -= mSubpixelSmoothingRight;
-    mFrame->mBottom -= mSubpixelSmoothingRight;
+    cfm->mTop += buttonHeight;
+    cfm->mLeft += mSubpixelSmoothingLeft;
+    cfm->mTop += mSubpixelSmoothingLeft;
+    cfm->mRight -= mSubpixelSmoothingRight;
+    cfm->mBottom -= mSubpixelSmoothingRight;
 
     // set the battery charging color
     mBatteryPaint->SetColor(tracker->mPlugged ? mChargeColor : GetColorForLevel(level));
 
     if (level >= FULL) {
-        drawFrac = 1f;
+        drawFrac = 1.0;
     }
     else if (level <= mCriticalLevel) {
-        drawFrac = 0f;
+        drawFrac = 0.f;
     }
 
-    Float levelTop = drawFrac == 1f ? mButtonFrame.top
-            : (mFrame->mTop + (mFrame->Height() * (1f - drawFrac)));
+    Float fh = 0;
+    mFrame->GetHeight(&fh);
+    Float levelTop = drawFrac == 1.0f ? cbfm->mTop
+            : (cfm->mTop + (fh * (1.0f - drawFrac)));
 
     // define the battery shape
     mShapePath->Reset();
-    mShapePath->MoveTo(mButtonFrame->mLeft, mButtonFrame->mTop);
-    mShapePath->LineTo(mButtonFrame->mRight, mButtonFrame->mTop);
-    mShapePath->LineTo(mButtonFrame->mRight, mFrame->mTop);
-    mShapePath->LineTo(mFrame->mRight, mFrame->mTop);
-    mShapePath->LineTo(mFrame->mRight, mFrame->mBottom);
-    mShapePath->LineTo(mFrame->mLeft, mFrame->mBottom);
-    mShapePath->LineTo(mFrame->mLeft, mFrame->mTop);
-    mShapePath->LineTo(mButtonFrame->mLeft, mFrame->mTop);
-    mShapePath->LineTo(mButtonFrame->mLeft, mButtonFrame->mTop);
+    mShapePath->MoveTo(cbfm->mLeft, cbfm->mTop);
+    mShapePath->LineTo(cbfm->mRight, cbfm->mTop);
+    mShapePath->LineTo(cbfm->mRight, cfm->mTop);
+    mShapePath->LineTo(cfm->mRight, cfm->mTop);
+    mShapePath->LineTo(cfm->mRight, cfm->mBottom);
+    mShapePath->LineTo(cfm->mLeft, cfm->mBottom);
+    mShapePath->LineTo(cfm->mLeft, cfm->mTop);
+    mShapePath->LineTo(cbfm->mLeft, cfm->mTop);
+    mShapePath->LineTo(cbfm->mLeft, cbfm->mTop);
 
     if (tracker->mPlugged) {
         // define the bolt shape
-        Float bl = mFrame->mLeft + mFrame->GetWidth() / 4.5f;
-        Float bt = mFrame->mTop + mFrame->GetHeight() / 6f;
-        Float br = mFrame->mRight - mFrame->GetWidth() / 7f;
-        Float bb = mFrame->mBottom - mFrame->GetHeight() / 10f;
-        if (mBoltFrame->mLeft != bl || mBoltFrame->mTop != bt
-                || mBoltFrame->mRight != br || mBoltFrame->mBottom != bb) {
+        Float w, h;
+        mFrame->GetWidth(&w);
+        mFrame->GetHeight(&h);
+        Float bl = cfm->mLeft + w / 4.5f;
+        Float bt = cfm->mTop + h / 6.0f;
+        Float br = cfm->mRight - w / 7.0f;
+        Float bb = cfm->mBottom - h / 10.0f;
+        AutoPtr<CRectF> cblfm = (CRectF*)mBoltFrame.Get();
+        if (cblfm->mLeft != bl || cblfm->mTop != bt
+                || cblfm->mRight != br || cblfm->mBottom != bb) {
             mBoltFrame->Set(bl, bt, br, bb);
             mBoltPath->Reset();
+            Float bw, bh;
+            mBoltFrame->GetWidth(&bw);
+            mBoltFrame->GetHeight(&bh);
             mBoltPath->MoveTo(
-                    mBoltFrame->mLeft + (*mBoltPoints)[0] * mBoltFrame->GetWidth(),
-                    mBoltFrame->mTop + (*mBoltPoints)[1] * mBoltFrame->GetHeight());
+                    cblfm->mLeft + (*mBoltPoints)[0] * bw,
+                    cblfm->mTop + (*mBoltPoints)[1] * bh);
             for (Int32 i = 2; i < mBoltPoints->GetLength(); i += 2) {
                 mBoltPath->LineTo(
-                        mBoltFrame->mLeft + (*mBoltPoints)[i] * mBoltFrame->GetWidth(),
-                        mBoltFrame->mTop + (*mBoltPoints)[i + 1] * mBoltFrame->GetHeight());
+                        cblfm->mLeft + (*mBoltPoints)[i] * bw,
+                        cblfm->mTop + (*mBoltPoints)[i + 1] * bh);
             }
             mBoltPath->LineTo(
-                    mBoltFrame->mLeft + (*mBoltPoints)[0] * mBoltFrame->GetWidth(),
-                    mBoltFrame->mTop + (*mBoltPoints)[1] * mBoltFrame->GetHeight());
+                    cblfm->mLeft + (*mBoltPoints)[0] * bw,
+                    cblfm->mTop + (*mBoltPoints)[1] * bh);
         }
 
-        Float boltPct = (mBoltFrame->mBottom - levelTop) / (mBoltFrame->mBottom - mBoltFrame->mTop);
-        boltPct = Math::Min(Math::Max(boltPct, 0), 1);
+        Float boltPct = (cblfm->mBottom - levelTop) / (cblfm->mBottom - cblfm->mTop);
+        boltPct = Elastos::Core::Math::Min(Elastos::Core::Math::Max(boltPct, 0.f), 1.f);
         if (boltPct <= BOLT_LEVEL_THRESHOLD) {
             // draw the bolt if opaque
             c->DrawPath(mBoltPath, mBoltPaint);
         }
         else {
             // otherwise cut the bolt out of the overall shape
-            mShapePath->Op(mBoltPath, Path::Op::DIFFERENCE);
+            Boolean b = FALSE;
+            mShapePath->Op(mBoltPath, PathOp_DIFFERENCE, &b);
         }
     }
 
@@ -454,16 +524,21 @@ ECode CBatteryMeterView::Draw(
         mTextPaint->SetTextSize(height *
                 (SINGLE_DIGIT_PERCENT ? 0.75f
                         : (tracker->mLevel == 100 ? 0.38f : 0.5f)));
-        mTextHeight = -mTextPaint->GetFontMetrics()->mAscent;
-        pctText = String::ValueOf(SINGLE_DIGIT_PERCENT ? (level/10) : level);
+        AutoPtr<IPaintFontMetrics> pm;
+        mTextPaint->GetFontMetrics((IPaintFontMetrics**)&pm);
+        pm->GetAscent(&mTextHeight);
+        mTextHeight = -mTextHeight;
+        assert(0 && "TODO");
+        // pctText = String::ValueOf(SINGLE_DIGIT_PERCENT ? (level/10) : level);
         pctX = mWidth * 0.5f;
         pctY = (mHeight + mTextHeight) * 0.47f;
         pctOpaque = levelTop > pctY;
         if (!pctOpaque) {
             mTextPath->Reset();
-            mTextPaint->GetTextPath(pctText, 0, pctText->GetLength(), pctX, pctY, mTextPath);
+            mTextPaint->GetTextPath(pctText, 0, pctText.GetLength(), pctX, pctY, mTextPath);
             // cut the percentage text out of the overall shape
-            mShapePath->Op(mTextPath, Path::Op::DIFFERENCE);
+            Boolean bRes = FALSE;
+            mShapePath->Op(mTextPath, PathOp_DIFFERENCE, &bRes);
         }
     }
 
@@ -471,10 +546,11 @@ ECode CBatteryMeterView::Draw(
     c->DrawPath(mShapePath, mFramePaint);
 
     // draw the battery shape, clipped to charging level
-    mFrame->mTop = levelTop;
+    cfm->mTop = levelTop;
     mClipPath->Reset();
-    mClipPath->AddRect(mFrame,  Path::Direction::CCW);
-    mShapePath->Op(mClipPath, Path::Op::INTERSECT);
+    mClipPath->AddRect(mFrame,  PathDirection_CCW);
+    Boolean b = FALSE;
+    mShapePath->Op(mClipPath, PathOp_INTERSECT, &b);
     c->DrawPath(mShapePath, mBatteryPaint);
 
     if (!tracker->mPlugged) {
@@ -511,20 +587,21 @@ ECode CBatteryMeterView::DispatchDemoCommand(
     }
     else if (mDemoMode && command.Equals(COMMAND_EXIT)) {
         mDemoMode = FALSE;
-        PostInvalidate();
+//         View::PostInvalidate();
     }
     else if (mDemoMode && command.Equals(COMMAND_BATTERY)) {
        String level;
-       args->GetString("level", &level);
+       args->GetString(String("level"), &level);
        String plugged;
-       args->GetString("plugged", &plugged);
+       args->GetString(String("plugged"), &plugged);
        if (level != NULL) {
            mDemoTracker->mLevel = Elastos::Core::Math::Min(Elastos::Core::Math::Max(StringUtils::ParseInt32(level), 0), 100);
        }
        if (plugged != NULL) {
-           mDemoTracker->mPlugged = StringUtils::ParseBoolean(plugged);
+        assert(0 && "TODO");
+//           mDemoTracker->mPlugged = StringUtils::ParseBoolean(plugged);
        }
-       PostInvalidate();
+//         View::PostInvalidate();
     }
     return NOERROR;
 }

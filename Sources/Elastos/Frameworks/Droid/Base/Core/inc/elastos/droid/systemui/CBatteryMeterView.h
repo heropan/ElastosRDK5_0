@@ -26,6 +26,7 @@ namespace SystemUI {
 
 CarClass(CBatteryMeterView)
 //    , public View
+    , public Object
     , public IDemoMode
     , public IBatteryStateChangeCallback
 {
@@ -34,6 +35,8 @@ private:
         : public BroadcastReceiver
     {
     public:
+        BatteryTracker();
+
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
@@ -58,7 +61,11 @@ private:
         : public Runnable
     {
     public:
-        Runnable_1();
+        Runnable_1(
+            /* [in] */ Int32 level,
+            /* [in] */ Int32 plugType,
+            /* [in] */ Boolean testmode,
+            /* [in] */ CBatteryMeterView* owner);
 
         CARAPI Run();
 
@@ -68,6 +75,8 @@ private:
         Int32 mSaveLevel;
         Int32 mSavePlugged;
         AutoPtr<IIntent> mDummy;
+        Boolean mTestmode;
+        CBatteryMeterView* mOwner;
     };
 
 public:
