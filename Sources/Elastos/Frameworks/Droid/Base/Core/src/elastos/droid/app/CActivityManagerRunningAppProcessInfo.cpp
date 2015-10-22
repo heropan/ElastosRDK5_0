@@ -18,6 +18,7 @@ CActivityManagerRunningAppProcessInfo::CActivityManagerRunningAppProcessInfo()
     , mLru(0)
     , mImportanceReasonCode(0)
     , mImportanceReasonPid(0)
+    , mProcessState(IActivityManagerRunningAppProcessInfo::PROCESS_STATE_IMPORTANT_FOREGROUND)
 {
 }
 
@@ -39,6 +40,24 @@ ECode CActivityManagerRunningAppProcessInfo::constructor(
     return NOERROR;
 }
 
+Int32 CActivityManagerRunningAppProcessInfo::ProcStateToImportance(
+    /* [in] */ Int32 procState)
+{
+    if (procState >= ActivityManager.PROCESS_STATE_HOME) {
+        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+    } else if (procState >= ActivityManager.PROCESS_STATE_SERVICE) {
+        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_SERVICE;
+    } else if (procState > ActivityManager.PROCESS_STATE_HEAVY_WEIGHT) {
+        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_CANT_SAVE_STATE;
+    } else if (procState >= ActivityManager.PROCESS_STATE_IMPORTANT_BACKGROUND) {
+        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE;
+    } else if (procState >= ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND) {
+        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
+    } else {
+        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
+    }
+}
+
 ECode CActivityManagerRunningAppProcessInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
@@ -56,6 +75,7 @@ ECode CActivityManagerRunningAppProcessInfo::WriteToParcel(
     FAIL_RETURN(dest->WriteInt32(mImportanceReasonPid));
     FAIL_RETURN(CComponentName::WriteToParcel(mImportanceReasonComponent, dest));
     FAIL_RETURN(dest->WriteInt32(mImportanceReasonImportance));
+    FAIL_RETURN(dest->WriteInt32(mProcessState));
 
     return NOERROR;
 }
@@ -77,6 +97,7 @@ ECode CActivityManagerRunningAppProcessInfo::ReadFromParcel(
     FAIL_RETURN(source->ReadInt32(&mImportanceReasonPid));
     FAIL_RETURN(CComponentName::ReadFromParcel(source, (IComponentName**)&mImportanceReasonComponent));
     FAIL_RETURN(source->ReadInt32(&mImportanceReasonImportance));
+    FAIL_RETURN(source->ReadInt32(&mProcessState));
 
     return NOERROR;
 }

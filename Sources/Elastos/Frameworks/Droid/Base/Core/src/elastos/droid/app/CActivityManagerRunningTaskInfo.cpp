@@ -16,6 +16,7 @@ CActivityManagerRunningTaskInfo::CActivityManagerRunningTaskInfo()
     : mId(0)
     , mNumActivities(0)
     , mNumRunning(0)
+    , mLastActiveTime(0)
 {
 }
 

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYNONCONFIGURATIONINSTANCES_H__
 
 #include "_Elastos_Droid_App_CActivityNonConfigurationInstances.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IObjectStringMap;
 
@@ -11,6 +12,8 @@ namespace Droid {
 namespace App {
 
 CarClass(CActivityNonConfigurationInstances)
+    , public Object
+    , public IActivityNonConfigurationInstances
 {
 public:
 
@@ -18,9 +21,10 @@ public:
 
     CARAPI constructor(
         /* [in] */ IInterface* activity,
-        /* [in] */ IObjectStringMap* children,
-        /* [in] */ IObjectContainer* fragments,
-        /* [in] */ IObjectStringMap* loaders);
+        /* [in] */ IHashMap* children,
+        /* [in] */ IArrayList* fragments,
+        /* [in] */ IArrayMap* loaders,
+        /* [in] */ IVoiceInteractor* vi);
 
     CARAPI SetActivity(
         /* [in] */ IInterface* activity);
@@ -29,28 +33,29 @@ public:
         /* [out] */ IInterface** activity);
 
     CARAPI SetChildren(
-        /* [in] */ IObjectStringMap* children);
+        /* [in] */ IHashMap* children);
 
     CARAPI GetChildren(
-        /* [out] */ IObjectStringMap** children);
+        /* [out] */ IHashMap** children);
 
     CARAPI SetFragments(
-        /* [in] */ IObjectContainer* fragments);
+        /* [in] */ IArrayList* fragments);
 
     CARAPI GetFragments(
-        /* [out] */ IObjectContainer** fragments);
+        /* [out] */ IArrayList** fragments);
 
     CARAPI SetLoaders(
-        /* [in] */ IObjectStringMap* loaders);
+        /* [in] */ IArrayMap* loaders);
 
     CARAPI GetLoaders(
-        /* [out] */ IObjectStringMap** loaders);
+        /* [out] */ IArrayMap** loaders);
 
 private:
     AutoPtr<IInterface> mActivity;
-    AutoPtr<IObjectStringMap> mChildren;
-    AutoPtr<IObjectContainer> mFragments;
-    AutoPtr<IObjectStringMap> mLoaders;
+    AutoPtr<IHashMap> mChildren; //HashMap<String, Object>
+    AutoPtr<IArrayList> mFragments; //ArrayList<Fragment>
+    AutoPtr<IArrayMap> mLoaders;//ArrayMap<String, LoaderManagerImpl>
+    AutoPtr<IVoiceInteractor> mVoiceInteractor;
 };
 
 } // namespace App
