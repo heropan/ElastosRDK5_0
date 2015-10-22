@@ -406,7 +406,7 @@ protected:
         /* [in] */ IResources* res,
         /* [in] */ IResourcesTheme* theme);
 
-private:
+protected:
     /**
      * Add a new layer to this drawable. The new layer is identified by an id.
      *

@@ -55,5 +55,9 @@ SOURCES += AnimatedVectorDrawable.cpp
 SOURCES += CAnimatedVectorDrawable.cpp
 SOURCES += VectorDrawable.cpp
 SOURCES += CVectorDrawable.cpp
+SOURCES += Ripple.cpp
+SOURCES += RippleDrawable.cpp
+SOURCES += CRippleDrawable.cpp
+SOURCES += RippleBackground.cpp
 
 LIBRARIES += shapes/shapes.lib
