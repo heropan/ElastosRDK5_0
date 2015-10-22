@@ -36,6 +36,7 @@ module
         const Int32 BASE_WIFI_P2P_SERVICE                                   = 0x00023000;
         const Int32 BASE_WIFI_MONITOR                                       = 0x00024000;
         const Int32 BASE_WIFI_MANAGER                                       = 0x00025000;
+        const Int32 BASE_WIFI_RTT_MANAGER                                   = 0x00027200;
         const Int32 BASE_DHCP                                               = 0x00030000;
         const Int32 BASE_DATA_CONNECTION                                    = 0x00040000;
         const Int32 BASE_DATA_CONNECTION_AC                                 = 0x00041000;

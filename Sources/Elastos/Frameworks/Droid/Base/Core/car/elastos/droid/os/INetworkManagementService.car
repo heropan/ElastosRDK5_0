@@ -8,8 +8,8 @@ module
     interface Elastos.Droid.Net.INetworkStats;
     interface Elastos.Droid.Net.IRouteInfo;
     interface Elastos.Droid.Net.IUidRange;
-    interface Elastos.Droid.Net.Wifi.IWifiConfiguration;
     interface Elastos.Droid.Os.INetworkActivityListener;
+    interface Elastos.Droid.Wifi.IWifiConfiguration;
 
     namespace Elastos {
     namespace Droid {

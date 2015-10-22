@@ -1,60 +1,111 @@
+
 module
 {
+
     using interface Elastos.Net.IInetAddress;
-    interface Elastos.Droid.Net.Nsd.IDnsSdTxtRecord;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Nsd {
 
-        interface INsdServiceInfo
-        {
-            /** Get the service name */
-            GetServiceName(
-                [out] String* name);
+    /**
+     * A class representing service information for network service discovery
+     * {@see NsdManager}
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
+    [deprecated]
+    interface INsdServiceInfo {
+        /** Get the service name */
+        GetServiceName(
+            [out] String* result);
 
-            /** Set the service name */
-            SetServiceName(
-                [in] String s);
+        /** Set the service name */
+        SetServiceName(
+            [in] String s);
 
-            /** Get the service type */
-            GetServiceType(
-                [out] String* type);
+        /** Get the service type */
+        GetServiceType(
+            [out] String* result);
 
-            /** Set the service type */
-            SetServiceType(
-                [in] String s);
+        /** Set the service type */
+        SetServiceType(
+            [in] String s);
 
-            /** @hide */
-            GetTxtRecord(
-                [out] IDnsSdTxtRecord** rec);
+        /** Get the host address. The host address is valid for a resolved service. */
+        GetHost(
+            [out] IInetAddress** result);
 
-            /** @hide */
-            SetTxtRecord(
-                [in] IDnsSdTxtRecord* t);
+        /** Set the host address */
+        SetHost(
+            [in] IInetAddress* s);
 
-            /** Get the host address. The host address is valid for a resolved service. */
-            GetHost(
-                [out] IInetAddress** host);
+        /** Get port number. The port number is valid for a resolved service. */
+        GetPort(
+            [out] Int32* result);
 
-            /** Set the host address */
-            SetHost(
-                [in] IInetAddress* s);
+        /** Set port number */
+        SetPort(
+            [in] Int32 p);
 
-            /** Get port number. The port number is valid for a resolved service. */
-            GetPort(
-                [out] Int32* port);
+        /** @hide */
+        SetAttribute(
+            [in] String key,
+            [in] ArrayOf<Byte>* value);
 
-            /** Set port number */
-            SetPort(
-                [in] Int32 p);
+        /**
+         * Add a service attribute as a key/value pair.
+         *
+         * <p> Service attributes are included as DNS-SD TXT record pairs.
+         *
+         * <p> The key must be US-ASCII printable characters, excluding the '=' character.  Values may
+         * be UTF-8 strings or null.  The total length of key + value must be less than 255 bytes.
+         *
+         * <p> Keys should be short, ideally no more than 9 characters, and unique per instance of
+         * {@link NsdServiceInfo}.  Calling {@link #setAttribute} twice with the same key will overwrite
+         * first value.
+         */
+        SetAttribute(
+            [in] String key,
+            [in] String value);
 
-            ToString(
-                [out] String* info);
-        }
+        /** Remove an attribute by key */
+        RemoveAttribute(
+            [in] String key);
+
+        /**
+         * Retrive attributes as a map of String keys to byte[] values.
+         *
+         * <p> The returned map is unmodifiable; changes must be made through {@link #setAttribute} and
+         * {@link #removeAttribute}.
+         */
+        GetAttributes(
+            [out, callee] ArrayOf<Byte>* result);
+
+        /** @hide */
+        GetTxtRecord(
+            [out, callee] ArrayOf<Byte>* result);
+
+        ToString(
+            [out] String* result);
+
+        /** Implement the Parcelable interface */
+        DescribeContents(
+            [out] Int32* result);
+
+        /** Implement the Parcelable interface */
+        WriteToParcel(
+            [in] IParcel* dest,
+            [in] Int32 flags);
+
     }
-    }
-    }
-    }
+
+    } // namespace Nsd
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
 }
+

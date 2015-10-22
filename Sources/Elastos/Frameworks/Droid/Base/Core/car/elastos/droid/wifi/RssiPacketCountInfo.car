@@ -12,25 +12,35 @@ module
      *
      * @hide
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IRssiPacketCountInfo {
-
         GetRssi(
-            [out] Int32* rssi);
+            [out] Int32* result);
 
         SetRssi(
             [in] Int32 rssi);
 
         GetTxgood(
-            [out] Int32* txgood);
+            [out] Int32* result);
 
         SetTxgood(
             [in] Int32 txgood);
 
         GetTxbad(
-            [out] Int32* txbad);
+            [out] Int32* result);
 
         SetTxbad(
             [in] Int32 txbad);
+
+        GetRxgood(
+            [out] Int32* result);
+
+        SetRxgood(
+            [in] Int32 rxgood);
+
     }
 
     } // namespace Wifi

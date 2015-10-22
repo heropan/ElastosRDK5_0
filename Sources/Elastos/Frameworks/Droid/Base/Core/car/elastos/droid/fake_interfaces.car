@@ -12,16 +12,25 @@ module
 
         interface IIProxyService {}
 
-        namespace Wifi {
-
-            interface IWifiConfiguration {}
-
-            interface IWifiInfo {}
-
-            interface IWifiManager {}
-        }
-
     }}} // Elastos.Droid.Net
+
+    //
+    // Elastos.Droid.Wifi
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Wifi {
+        interface IWifiActivityEnergyInfo {}
+
+        interface IWifiConfiguration {}
+
+        interface IWifiInfo {}
+
+        interface IWifiConnectionStatistics {}
+
+        interface IWifiSsid {}
+
+    }}} // Elastos.Droid.Wifi
 
     //
     // Elastos.Droid.Internal.Utility

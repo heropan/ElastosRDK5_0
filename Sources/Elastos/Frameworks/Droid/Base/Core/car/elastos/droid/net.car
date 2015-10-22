@@ -99,9 +99,11 @@ module
     merge("net/http/X509TrustManagerExtensions.car");
 
     merge("net/nsd/NsdServiceInfo.car");
-    merge("net/nsd/NsdManager.car");
     merge("net/nsd/INsdManager.car");
+    merge("net/nsd/NsdManager.car");
     merge("net/nsd/DnsSdTxtRecord.car");
+
+    merge("net/wimax/WimaxManagerConstants.car");
 
     interface Elastos.Droid.App.IService;
     interface Elastos.Droid.Content.IContext;

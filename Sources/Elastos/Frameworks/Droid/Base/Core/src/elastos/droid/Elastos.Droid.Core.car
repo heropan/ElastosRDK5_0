@@ -29,6 +29,7 @@ module
     merge("../../../car/elastos/droid/transition.car");
     merge("../../../car/elastos/droid/systemui.car");
     merge("../../../car/elastos/droid/opengl.car");
+    merge("../../../car/elastos/droid/wifi.car");
 
     merge("../../../car/elastos/droid/internal/app.car");
     merge("../../../car/elastos/droid/internal/appwidget.car");

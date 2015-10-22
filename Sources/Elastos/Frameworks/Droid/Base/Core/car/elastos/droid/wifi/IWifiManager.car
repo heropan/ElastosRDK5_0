@@ -2,11 +2,16 @@
 module
 {
     interface Elastos.Droid.Net.IDhcpInfo;
-    interface Elastos.Droid.Net.Wifi.IWifiConfiguration;
-    interface Elastos.Droid.Net.Wifi.IWifiInfo;
+    interface Elastos.Droid.Os.IMessenger;
     interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IMessenger;
+    interface Elastos.Droid.Wifi.IWifiActivityEnergyInfo;
+    interface Elastos.Droid.Wifi.IWifiConfiguration;
+    interface Elastos.Droid.Wifi.IWifiInfo;
+    interface Elastos.Droid.Wifi.IScanSettings;
+    interface Elastos.Droid.Wifi.IWifiConnectionStatistics;
+
+    using interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {
@@ -17,9 +22,22 @@ module
      *
      * {@hide}
      */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IIWifiManager {
+        GetSupportedFeatures(
+            [out] Int32* result);
+
+        ReportActivityInfo(
+            [out] IWifiActivityEnergyInfo** result);
+
         GetConfiguredNetworks(
-            [out] IObjectContainer** configList);
+            [out] IList** result);
+
+        GetPrivilegedConfiguredNetworks(
+            [out] IList** result);
 
         AddOrUpdateNetwork(
             [in] IWifiConfiguration* config,
@@ -27,25 +45,30 @@ module
 
         RemoveNetwork(
             [in] Int32 netId,
-            [out] Boolean* state);
+            [out] Boolean* result);
 
         EnableNetwork(
             [in] Int32 netId,
             [in] Boolean disableOthers,
-            [out] Boolean* enabled);
+            [out] Boolean* result);
 
         DisableNetwork(
             [in] Int32 netId,
-            [out] Boolean* disabled);
+            [out] Boolean* result);
 
         PingSupplicant(
-            [out] Boolean* state);
+            [out] Boolean* result);
+
+        GetChannelList(
+            [out] IList** result);
 
         StartScan(
-            [in] Boolean forceActive);
+            [in] IScanSettings* requested,
+            [in] IWorkSource* ws);
 
         GetScanResults(
-            [out] IObjectContainer** results);
+            [in] String callingPackage,
+            [out] IList** result);
 
         Disconnect();
 
@@ -54,14 +77,14 @@ module
         Reassociate();
 
         GetConnectionInfo(
-            [out] IWifiInfo** info);
+            [out] IWifiInfo** result);
 
         SetWifiEnabled(
-            [in] Boolean enabled,
+            [in] Boolean wifiEnable,
             [out] Boolean* result);
 
         GetWifiEnabledState(
-            [out] Int32* state);
+            [out] Int32* result);
 
         SetCountryCode(
             [in] String country,
@@ -72,16 +95,19 @@ module
             [in] Boolean persist);
 
         GetFrequencyBand(
-            [out] Int32* band);
+            [out] Int32* result);
 
         IsDualBandSupported(
-            [out] Boolean* supported);
+            [out] Boolean* result);
 
         SaveConfiguration(
-            [out] Boolean* state);
+            [out] Boolean* result);
 
         GetDhcpInfo(
-            [out] IDhcpInfo** info);
+            [out] IDhcpInfo** result);
+
+        IsScanAlwaysAvailable(
+            [out] Boolean* result);
 
         AcquireWifiLock(
             [in] IBinder* lock,
@@ -101,7 +127,7 @@ module
         InitializeMulticastFiltering();
 
         IsMulticastEnabled(
-            [out] Boolean* enabled);
+            [out] Boolean* result);
 
         AcquireMulticastLock(
             [in] IBinder* binder,
@@ -111,13 +137,13 @@ module
 
         SetWifiApEnabled(
             [in] IWifiConfiguration* wifiConfig,
-            [in] Boolean enabled);
+            [in] Boolean wifiApEnable);
 
         GetWifiApEnabledState(
-            [out] Int32* state);
+            [out] Int32* result);
 
         GetWifiApConfiguration(
-            [out] IWifiConfiguration** apConfig);
+            [out] IWifiConfiguration** result);
 
         SetWifiApConfiguration(
             [in] IWifiConfiguration* wifiConfig);
@@ -132,15 +158,62 @@ module
         ClearBlacklist();
 
         GetWifiServiceMessenger(
-            [out] IMessenger** msg);
-
-        GetWifiStateMachineMessenger(
-            [out] IMessenger** msg);
+            [out] IMessenger** result);
 
         GetConfigFile(
-            [out] String* file);
+            [out] String* result);
 
-        CaptivePortalCheckComplete();
+        EnableTdls(
+            [in] String remoteIPAddress,
+            [in] Boolean enableTdls);
+
+        EnableTdlsWithMacAddress(
+            [in] String remoteMacAddress,
+            [in] Boolean enableTdsWithMacAddress);
+
+        RequestBatchedScan(
+            [in] IBatchedScanSettings* requested,
+            [in] IBinder* binder,
+            [in] IWorkSource* ws,
+            [out] Boolean* result);
+
+        StopBatchedScan(
+            [in] IBatchedScanSettings* requested);
+
+        GetBatchedScanResults(
+            [in] String callingPackage,
+            [out] IList** result);
+
+        IsBatchedScanSupported(
+            [out] Boolean* result);
+
+        PollBatchedScan();
+
+        GetWpsNfcConfigurationToken(
+            [in] Int32 netId,
+            [out] String* result);
+
+        EnableVerboseLogging(
+            [in] Int32 verbose);
+
+        GetVerboseLoggingLevel(
+            [out] Int32* result);
+
+        GetAggressiveHandover(
+            [out] Int32* result);
+
+        EnableAggressiveHandover(
+            [in] Int32 enabled);
+
+        GetAllowScansWithTraffic(
+            [out] Int32* result);
+
+        SetAllowScansWithTraffic(
+            [in] Int32 enabledScansWithTraffic);
+
+        GetConnectionStatistics(
+            [out] IWifiConnectionStatistics** result);
+
     }
 
     } // namespace Wifi
