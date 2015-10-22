@@ -3675,6 +3675,7 @@ private:
 
     AutoPtr<IComponentName> mComponent;
     Boolean mDestroyed;
+    Boolean mDoReportFullyDrawn;// = TRUE;
 
     AutoPtr<ISearchManager> mSearchManager;
     AutoPtr<IMenuInflater> mMenuInflater;

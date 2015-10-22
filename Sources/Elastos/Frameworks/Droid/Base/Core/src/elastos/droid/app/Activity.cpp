@@ -2,7 +2,6 @@
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
-#ifdef DROID_CORE
 //#include "elastos/droid/app/CSearchManager.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CHandler.h"
@@ -27,20 +26,15 @@
 #include "elastos/droid/app/CActivityNonConfigurationInstances.h"
 #include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/net/CUriHelper.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
-#include <Elastos.CoreLibrary.h>
-#include <Elastos.CoreLibrary.h>
-#include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IRunnable;
@@ -56,15 +50,12 @@ using Elastos::Droid::R;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Os::IServiceManager;
-#ifdef DROID_CORE
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::Looper;
-#else
 using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::CLooperHelper;
-#endif
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Build;
@@ -126,13 +117,8 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-// e906c772-090f-4ae6-881d-2d430a060cfe
-extern "C" const InterfaceID EIID_Activity =
-        { 0xe906c772, 0x090f, 0x4ae6, { 0x88, 0x1d, 0x2d, 0x43, 0x0a, 0x06, 0x0c, 0xfe } };
-
-
 class FragmentContainerLocal
-    : public ElRefBase
+    : public Object
     , public IFragmentContainer
 {
 public:
@@ -141,49 +127,18 @@ public:
         : mHost(host)
     {}
 
-    PInterface Probe(
-        /* [in]  */ REIID riid)
-    {
-        if (riid == EIID_IInterface) {
-            return (PInterface)this;
-        }
-        else if (riid == EIID_IFragmentContainer) {
-            return (IFragmentContainer*)this;
-        }
-
-        return NULL;
-
-    }
-
-    UInt32 AddRef()
-    {
-        return ElRefBase::AddRef();
-    }
-
-    UInt32 Release()
-    {
-        return ElRefBase::Release();
-    }
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface *Object,
-        /* [out] */ InterfaceID *IID)
-    {
-        VALIDATE_NOT_NULL(IID);
-
-        if (Object == (IInterface*)(IFragmentContainer*)this) {
-            *IID = EIID_IFragmentContainer;
-            return NOERROR;
-        }
-
-        return E_INVALID_ARGUMENT;
-    }
-
     ECode FindViewById(
         /* [in] */ Int32 id,
         /* [out] */ IView** view)
     {
         return mHost->FindViewById(id, view);
+    }
+
+    ECode HasView(
+        /* [in] */ Boolean* view)
+    {
+        Window window = Activity.this.getWindow();
+        return (window != null && window.peekDecorView() != null);
     }
 
 private:
@@ -200,13 +155,10 @@ const String Activity::SAVED_DIALOGS_TAG("android:savedDialogs");
 const String Activity::SAVED_DIALOG_KEY_PREFIX("android:dialog_");
 const String Activity::SAVED_DIALOG_ARGS_KEY_PREFIX("android:dialog_args_");
 
+CAR_INTERFACE_IMPL_12(Activity, Object, IActivity, IContext, IContextWrapper, IContextThemeWrapper, ILayoutInflaterFactory, ILayoutInflaterFactory2, IWindowCallback, IKeyEventCallback, IViewOnCreateContextMenuListener, IComponentCallbacks, IComponentCallbacks2, IWindowOnWindowDismissedCallback)
+
 Activity::Activity()
-    : mEmbeddedID(String(NULL))
-    , mIntent(NULL)
-    , mActivityInfo(NULL)
-    , mMainThread(NULL)
-    , mParent(NULL)
-    , mCalled(FALSE)
+    : mCalled(FALSE)
     , mCheckedForLoaderManager(FALSE)
     , mLoadersStarted(FALSE)
     , mResumed(FALSE)
@@ -218,13 +170,13 @@ Activity::Activity()
     , mConfigChangeFlags(0)
     , mWindowAdded(FALSE)
     , mVisibleFromServer(FALSE)
-    , mVisibleFromClient(TRUE)
-    , mAllLoaderManagers(0)
+    , mVisibleFromClient(FALSE)
     , mResultCode(IActivity::RESULT_CANCELED)
+    , mChangeCanvasToTranslucent(FALSE)
+    , mVisibleBehind(FALSE)
     , mIdent(0)
     , mDestroyed(FALSE)
     , mEnableDefaultActionBarUp(FALSE)
-    , mTitle(NULL)
     , mTitleColor(0)
     , mTitleReady(FALSE)
     , mDefaultKeyMode(IActivity::DEFAULT_KEYS_DISABLE)
@@ -245,135 +197,6 @@ Activity::~Activity()
 ECode Activity::Initialize()
 {
     return NOERROR;
-}
-
-PInterface Activity::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IActivity*)this;
-    }
-    else if (riid == EIID_IObject) {
-        return (IObject*)this;
-    }
-    else if (riid == EIID_IActivity) {
-        return (IActivity*)this;
-    }
-    else if (riid == EIID_IContextThemeWrapper) {
-        return (IContextThemeWrapper*)this;
-    }
-    else if (riid == EIID_IContextWrapper) {
-        return (IContextWrapper*)this;
-    }
-    else if (riid == EIID_IContext) {
-        return (IContext*)this;
-    }
-    else if (riid == EIID_ILayoutInflaterFactory2) {
-        return (ILayoutInflaterFactory2*)this;
-    }
-    else if (riid == EIID_IWindowCallback) {
-        return (IWindowCallback*)this;
-    }
-    else if (riid == EIID_IKeyEventCallback) {
-        return (IKeyEventCallback*)this;
-    }
-    else if (riid == EIID_IViewOnCreateContextMenuListener) {
-        return (IViewOnCreateContextMenuListener*)this;
-    }
-    else if (riid == EIID_IComponentCallbacks2) {
-        return (IComponentCallbacks2*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_Activity) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return NULL;
-}
-
-UInt32 Activity::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Activity::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Activity::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IActivity *)this) {
-        *pIID = EIID_IActivity;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IContextThemeWrapper *)this) {
-        *pIID = EIID_IContextThemeWrapper;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IContextWrapper *)this) {
-        *pIID = EIID_IContextWrapper;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IContext *)this) {
-        *pIID = EIID_IContext;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(ILayoutInflaterFactory2 *)this) {
-        *pIID = EIID_ILayoutInflaterFactory2;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IWindowCallback *)this) {
-        *pIID = EIID_IWindowCallback;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IKeyEventCallback *)this) {
-        *pIID = EIID_IKeyEventCallback;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IViewOnCreateContextMenuListener *)this) {
-        *pIID = EIID_IViewOnCreateContextMenuListener;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IComponentCallbacks2 *)this) {
-        *pIID = EIID_IComponentCallbacks2;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IWeakReferenceSource *)this) {
-        *pIID = EIID_IWeakReferenceSource;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
-ECode Activity::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Activity::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Activity::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode Activity::Equals(
@@ -509,8 +332,8 @@ ECode Activity::GetLoaderManager(
 
     if (mLoaderManager == NULL) {
         mCheckedForLoaderManager = TRUE;
-        String nullStr;
-        mLoaderManager = GetLoaderManager(nullStr, mLoadersStarted, TRUE);
+        String str("(root)");
+        mLoaderManager = GetLoaderManager(str, mLoadersStarted, TRUE);
     }
 
     *manager = mLoaderManager.Get();
@@ -524,9 +347,7 @@ AutoPtr<ILoaderManagerImpl> Activity::GetLoaderManager(
     /* [in] */ Boolean create)
 {
     if (mAllLoaderManagers == NULL) {
-        ECode ec = CObjectStringMap::New((IObjectStringMap**)&mAllLoaderManagers);
-        if (FAILED(ec))
-            return NULL;
+        CArrayMap::New((IArrayMap**)&mAllLoaderManagers);
     }
 
     AutoPtr<ILoaderManagerImpl> lm;
@@ -601,16 +422,37 @@ ECode Activity::OnCreate(
     assert(app != NULL);
     FAIL_RETURN(app->DispatchActivityCreated(THIS_PROBE(IActivity), savedInstanceState));
 
+    if (mVoiceInteractor != NULL) {
+        mVoiceInteractor->AttachActivity(THIS_PROBE(IActivity));
+    }
+
     mCalled = TRUE;
     return NOERROR;
+}
+
+ECode Activity::OnCreate(
+    /* [in] */ IBundle* savedInstanceState,
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    return OnCreate(savedInstanceState);;
 }
 
 ECode Activity::PerformRestoreInstanceState(
     /* [in] */ IBundle* savedInstanceState)
 {
-    VALIDATE_NOT_NULL(savedInstanceState);
     FAIL_RETURN(OnRestoreInstanceState(savedInstanceState));
     return RestoreManagedDialogs(savedInstanceState);
+}
+
+ECode Activity::PerformRestoreInstanceState(
+    /* [in] */ IBundle* savedInstanceState,
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    FAIL_RETURN(OnRestoreInstanceState(savedInstanceState, persistentState))
+    if (savedInstanceState != NULL) {
+        RestoreManagedDialogs(savedInstanceState);
+    }
+    return NOERROR;
 }
 
 ECode Activity::OnRestoreInstanceState(
@@ -624,6 +466,17 @@ ECode Activity::OnRestoreInstanceState(
             mWindow->RestoreHierarchyState(windowState);
         }
     }
+    return NOERROR;
+}
+
+ECode Activity::OnRestoreInstanceState(
+    /* [in] */ IBundle* savedInstanceState,
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    if (savedInstanceState != NULL) {
+        return OnRestoreInstanceState(savedInstanceState);
+    }
+
     return NOERROR;
 }
 
@@ -709,6 +562,13 @@ ECode Activity::OnPostCreate(
     return NOERROR;
 }
 
+ECode Activity::OnPostCreate(
+    /* [in] */ IBundle* savedInstanceState,
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    return OnPostCreate(savedInstanceState);
+}
+
 ECode Activity::OnStart()
 {
     if (DEBUG_LIFECYCLE) {
@@ -723,8 +583,8 @@ ECode Activity::OnStart()
         if (mLoaderManager != NULL) {
             mLoaderManager->DoStart();
         } else if (!mCheckedForLoaderManager) {
-            String nullStr;
-            mLoaderManager = GetLoaderManager(nullStr, mLoadersStarted, FALSE);
+            String str("(root)");
+            mLoaderManager = GetLoaderManager(str, mLoadersStarted, FALSE);
         }
         mCheckedForLoaderManager = TRUE;
     }
@@ -748,6 +608,7 @@ ECode Activity::OnResume()
     }
     AutoPtr<IApplication> app = GetApplication();
     FAIL_RETURN(app->DispatchActivityResumed(THIS_PROBE(IActivity)));
+    mActivityTransitionState->OnResume();
     mCalled = TRUE;
     return NOERROR;
 }
@@ -765,6 +626,23 @@ ECode Activity::OnPostResume()
     return NOERROR;
 }
 
+ECode Activity::IsVoiceInteraction(
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+    *bval = mVoiceInteractor != NULL;
+    return NOERROR;
+}
+
+ECode Activity::GetVoiceInteractor(
+    /* [out] */ IVoiceInteractor** vi)
+{
+    VALIDATE_NOT_NULL(vi)
+    *vi = mVoiceInteractor;
+    REFCOUNT_ADD(*vi)
+    return NOERROR;
+}
+
 ECode Activity::OnNewIntent(
     /* [in] */ IIntent *intent)
 {
@@ -776,15 +654,35 @@ ECode Activity::PerformSaveInstanceState(
 {
     FAIL_RETURN(OnSaveInstanceState(outState));
     FAIL_RETURN(SaveManagedDialogs(outState));
+    FAIL_RETURN(mActivityTransitionState->SaveState(outState))
+
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onSaveInstanceState ");
         sb.Append(ToString());
         sb.Append(": ");
-        String temp;
-        outState->ToString(&temp);
-        sb.Append(temp);
+        sb.Append(Object::ToString(outState));
         Slogger::V(TAG, sb.ToString());
     }
+    return NOERROR;
+}
+
+ECode Activity::PerformSaveInstanceState(
+    /* [in] */ IBundle* outState,
+    /* [in] */ IPersistableBundle* outPersistentState)
+{
+    FAIL_RETURN(OnSaveInstanceState(outState, outPersistentState))
+    FAIL_RETURN(SaveManagedDialogs(outState));
+
+    if (DEBUG_LIFECYCLE) {
+        StringBuilder sb("onSaveInstanceState ");
+        sb.Append(ToString());
+        sb.Append(": ");
+        sb.Append(Object::ToString(outState));
+        sb.Append(", ");
+        sb.Append(Object::ToString(outPersistentState));
+        Slogger::V(TAG, sb.ToString());
+    }
+
     return NOERROR;
 }
 
@@ -802,6 +700,13 @@ ECode Activity::OnSaveInstanceState(
     }
     AutoPtr<IApplication> app = GetApplication();
     return app->DispatchActivitySaveInstanceState(THIS_PROBE(IActivity), outState);
+}
+
+ECode Activity::ECode Activity::OnSaveInstanceState(
+    /* [in] */ IBundle* outState,
+    /* [in] */ IPersistableBundle* outPersistentState)
+{
+    return OnSaveInstanceState(outState);
 }
 
 ECode Activity::SaveManagedDialogs(
@@ -871,6 +776,12 @@ ECode Activity::OnCreateDescription(
     return NOERROR;
 }
 
+ECode Activity::OnProvideAssistData(
+    /* [out] */ IBundle* data)
+{
+    return NOERROR;
+}
+
 ECode Activity::OnStop()
 {
     if (DEBUG_LIFECYCLE) {
@@ -881,8 +792,10 @@ ECode Activity::OnStop()
     if (mActionBar != NULL) {
         FAIL_RETURN(mActionBar->SetShowHideAnimationEnabled(FALSE));
     }
+    FAIL_RETURN(mActivityTransitionState->OnStop())
     AutoPtr<IApplication> app = GetApplication();
     FAIL_RETURN(app->DispatchActivityDestroyed(THIS_PROBE(IActivity)));
+    mTranslucentCallback = NULL;
     mCalled = TRUE;
     return NOERROR;
 }
@@ -930,6 +843,19 @@ ECode Activity::OnDestroy()
 
     AutoPtr<IApplication> app = GetApplication();
     return app->DispatchActivityDestroyed(THIS_PROBE(IActivity));
+}
+
+ECode Activity::ReportFullyDrawn()
+{
+    if (mDoReportFullyDrawn) {
+        mDoReportFullyDrawn = FALSE;
+        // try {
+        AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+        return defaultAM->ReportActivityFullyDrawn(mToken);
+        // } catch (RemoteException e) {
+        // }
+    }
+    return NOERROR;
 }
 
 ECode Activity::OnConfigurationChanged(
@@ -1024,42 +950,39 @@ ECode Activity::RetainNonConfigurationInstances(
     FAIL_RETURN(mFragments->RetainNonConfig((IObjectContainer**)&fragments));
 
     Boolean retainLoaders = FALSE;
-    if (mAllLoaderManagers != NULL) {
+
+    if (mAllLoaderManagers != null) {
         // prune out any loader managers that were already stopped and so
         // have nothing useful to retain.
-        AutoPtr<IObjectContainer> values;
-        mAllLoaderManagers->GetValues((IObjectContainer**)&values);
-
-        if (values != NULL) {
-            AutoPtr<IObjectEnumerator> it;
-            values->GetObjectEnumerator((IObjectEnumerator**)&it);
-            Boolean succeeded = FALSE, isRetaining = FALSE;;
-            String who;
-            ILoaderManagerImpl* lm;
-            while (it->MoveNext(&succeeded), succeeded) {
-                AutoPtr<IInterface> obj;
-                it->Current((IInterface**)&obj);
-                lm = (ILoaderManagerImpl*)obj->Probe(EIID_ILoaderManagerImpl);
-                lm->IsRetaining(&isRetaining);
-                if (isRetaining) {
-                    retainLoaders = TRUE;
-                }
-                else {
-                    lm->DoDestroy();
-                    lm->GetName(&who);
-                    mAllLoaderManagers->Remove(who);
-                }
+        Int32 N;
+        mAllLoaderManagers->GetSize(&n);
+        AutoPtr<ArrayOf<ILoaderManagerImpl*> > loaders = ArrayOf<ILoaderManagerImpl*>::Alloc(N);
+        for (Int32 i = N - 1; i >= 0; i--) {
+            AutoPtr<IInterface> obj;
+            mAllLoaderManagers->GetValueAt(i, (IInterface**)&obj);
+            loaders->Set(i, ILoaderManagerImpl::Probe(obj));
+        }
+        for (Int32 i = 0; i < N; i++) {
+            ILoaderManagerImpl* lm = (*loaders)[i];
+            lm->IsRetaining(&isRetaining);
+            if (isRetaining) {
+                retainLoaders = TRUE;
+            }
+            else {
+                lm->DoDestroy();
+                lm->GetName(&who);
+                mAllLoaderManagers->Remove(who);
             }
         }
     }
 
     if (activity == NULL && children == NULL && fragments == NULL
-            && !retainLoaders) {
+            && !retainLoaders && mVoiceInteractor == NULL) {
         return NOERROR;
     }
 
     return CActivityNonConfigurationInstances::New(activity, children,
-            fragments, mAllLoaderManagers, instance);
+            fragments, mAllLoaderManagers, mVoiceInteractor, instance);
 }
 
 ECode Activity::OnLowMemory()
@@ -1205,28 +1128,43 @@ AutoPtr<IView> Activity::FindViewById(
     return view;
 }
 
-/**
- * Retrieve a reference to this activity's ActionBar.
- *
- * @return The Activity's ActionBar, or NULL if it does not have one.
- */
+ECode Activity::SetActionBar(
+    /* [in] */ IToolbar* toolbar)
+{
+    AutoPtr<IActionBar> ab;
+    GetActionBar((IActionBar**)&ab);
+
+    if (IWindowDecorActionBar::Probe(ab) != NULL) {
+        Logger::E(TAG, "This Activity already has an action bar supplied "
+                "by the window decor. Do not request Window.FEATURE_ACTION_BAR and set "
+                "android:windowActionBar to false in your theme to use a Toolbar instead.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    AutoPtr<ICharSequence> title;
+    GetTitle((ICharSequence**)&title);
+    AutoPtr<IToolbarActionBar> tbab;
+    CToolbarActionBar::New(toolbar, title, THIS_PROBE(IActivity), (IToolbarActionBar**)&tbab);
+    mActionBar = tbab;
+    AutoPtr<IWindowCallback> cb;
+    tbab->GetWrappedWindowCallback((IWindowCallback**)&cb);
+    mWindow->SetCallback(cb);
+    return mActionBar->InvalidateOptionsMenu();
+}
+
 ECode Activity::GetActionBar(
     /* [out] */ IActionBar** actionbar)
 {
     VALIDATE_NOT_NULL(actionbar);
     *actionbar = NULL;
 
-    FAIL_RETURN(InitActionBar());
+    FAIL_RETURN(InitWindowDecorActionBar());
     *actionbar = mActionBar;
     REFCOUNT_ADD(*actionbar)
     return NOERROR;
 }
 
-/**
- * Creates a new ActionBar, locates the inflated ActionBarView,
- * initializes the ActionBar with the view, and sets mActionBar.
- */
-ECode Activity::InitActionBar()
+ECode Activity::InitWindowDecorActionBar()
 {
      AutoPtr<IWindow> window = GetWindow();
 
@@ -1251,23 +1189,31 @@ ECode Activity::InitActionBar()
          return NOERROR;
      }
 
-    FAIL_RETURN(CActionBarImpl::New(THIS_PROBE(IActivity),
+    FAIL_RETURN(CWindowDecorActionBar::New(THIS_PROBE(IActivity),
             (IActionBarImpl**)&mActionBar));
-     return mActionBar->SetDefaultDisplayHomeAsUpEnabled(mEnableDefaultActionBarUp);
+    FAIL_RETURN(mActionBar->SetDefaultDisplayHomeAsUpEnabled(mEnableDefaultActionBarUp))
+
+    IComponentInfo* ci = IComponentInfo::Probe(mActivityInfo);
+    Int32 iconRes, logoRes;
+    ci->GetIconResource(&iconRes);
+    ci->GetLogoResource(&logoRes);
+    FAIL_RETURN(mWindow->SetDefaultIcon(iconRes))
+    FAIL_RETURN(mWindow->SetDefaultLogo(logoRes))
+    return NOERROR;
 }
 
 ECode Activity::SetContentView(
     /* [in] */ Int32 layoutResID)
 {
     FAIL_RETURN(GetWindow()->SetContentView(layoutResID));
-    return InitActionBar();
+    return InitWindowDecorActionBar();
 }
 
 ECode Activity::SetContentView(
     /* [in] */ IView* view)
 {
     FAIL_RETURN(GetWindow()->SetContentView(view));
-    return InitActionBar();
+    return InitWindowDecorActionBar();
 }
 
 ECode Activity::SetContentView(
@@ -1275,7 +1221,7 @@ ECode Activity::SetContentView(
     /* [in] */ IViewGroupLayoutParams* params)
 {
     FAIL_RETURN(GetWindow()->SetContentView(view, params));
-    return InitActionBar();
+    return InitWindowDecorActionBar();
 }
 
 ECode Activity::AddContentView(
@@ -1283,7 +1229,35 @@ ECode Activity::AddContentView(
     /* [in] */ IViewGroupLayoutParams* params)
 {
     FAIL_RETURN(GetWindow()->AddContentView(view, params));
-    return InitActionBar();
+    return InitWindowDecorActionBar();
+}
+
+ECode Activity::GetContentTransitionManager(
+    /* [out] */ ITransitionManager** tm)
+{
+    VALIDATE_NOT_NULL(tm)
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->GetTransitionManager(tm);
+}
+
+ECode Activity::SetContentTransitionManager(
+    /* [in] */ ITransitionManager* tm)
+{
+    VALIDATE_NOT_NULL(tm)
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    window->SetTransitionManager(tm);
+    return NOERROR;
+}
+
+ECode Activity::GetContentScene(
+    /* [out] */ IScene** scene)
+{
+    VALIDATE_NOT_NULL(scene)
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    return window->GetContentScene(scene);
 }
 
 ECode Activity::SetFinishOnTouchOutside(
@@ -1482,10 +1456,18 @@ ECode Activity::OnKeyMultiple(
 
 ECode Activity::OnBackPressed()
 {
+    Boolean actionBar = FALSE;
+    if (mActionBar != NULl) {
+        mActionBar->collapseActionView(&actionbar);
+    }
+    if (actionbar) {
+        return NOERROR;
+    }
+
     Boolean val = FALSE;
     FAIL_RETURN(mFragments->PopBackStackImmediate(&val));
     if (!val) {
-        return Finish();
+        return FinishAfterTransition();
     }
     return NOERROR;
 }
@@ -1598,6 +1580,11 @@ ECode Activity::HasWindowFocus(
     return NOERROR;
 }
 
+ECode Activity::OnWindowDismissed();
+{
+    return Finish();
+}
+
 ECode Activity::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* isConsumed)
@@ -1607,10 +1594,21 @@ ECode Activity::DispatchKeyEvent(
 
     FAIL_RETURN(OnUserInteraction());
 
-    AutoPtr<IWindow> win = GetWindow();
-    Boolean succeeded;
-    FAIL_RETURN(win->SuperDispatchKeyEvent(event, &succeeded));
 
+    // Let action bars open menus in response to the menu key prioritized over
+    // the window handling it
+    Int32 keyCode;
+    event->GetKeyCode(&keyCode);
+    Boolean succeeded = FALSE;
+    if (keyCode == IKeyEvent::KEYCODE_MENU
+        && mActionBar != NULL && (mActionBar->OnMenuKeyEvent(event, &succeeded), succeeded)) {
+        *isConsumed = TRUE;
+        return NOERROR;;
+    }
+
+
+    AutoPtr<IWindow> win = GetWindow();
+    FAIL_RETURN(win->SuperDispatchKeyEvent(event, &succeeded));
     if (succeeded) {
         *isConsumed = TRUE;
         return NOERROR;
@@ -1815,7 +1813,7 @@ ECode Activity::OnMenuOpened(
     *allowToOpen = TRUE;
 
     if (featureId == IWindow::FEATURE_ACTION_BAR) {
-        InitActionBar();
+        InitWindowDecorActionBar();
         if (mActionBar != NULL) {
             FAIL_RETURN(mActionBar->DispatchMenuVisibilityChanged(TRUE));
         }
@@ -1835,6 +1833,8 @@ ECode Activity::OnMenuItemSelected(
     VALIDATE_NOT_NULL(toFinish);
     *toFinish = FALSE;
 
+    // AutoPtr<ICharSequence> titleCondensed;
+    // item->GetTitleCondensed((ICharSequence**)&titleCondensed);
     switch(featureId) {
         case IWindow::FEATURE_OPTIONS_PANEL: {
             // Put event logging here so it gets called even if subclass
@@ -1907,7 +1907,7 @@ ECode Activity::OnPanelClosed(
             break;
         }
         case IWindow::FEATURE_ACTION_BAR:
-            FAIL_RETURN(InitActionBar());
+            FAIL_RETURN(InitWindowDecorActionBar());
             FAIL_RETURN(mActionBar->DispatchMenuVisibilityChanged(FALSE));
             break;
     }
@@ -1917,7 +1917,11 @@ ECode Activity::OnPanelClosed(
 
 ECode Activity::InvalidateOptionsMenu()
 {
-     return mWindow->InvalidatePanelMenu(IWindow::FEATURE_OPTIONS_PANEL);
+    Boolean bval;
+    if (mActionBar == NULL || (mActionBar->InvalidateOptionsMenu(&bval), !bval)) {
+        return mWindow->InvalidatePanelMenu(IWindow::FEATURE_OPTIONS_PANEL);
+    }
+    return NOERROR;
 }
 
 ECode Activity::OnCreateOptionsMenu(
@@ -2041,7 +2045,10 @@ ECode Activity::OnOptionsMenuClosed(
 
 ECode Activity::OpenOptionsMenu()
 {
-    return mWindow->OpenPanel(IWindow::FEATURE_OPTIONS_PANEL, NULL);
+    Boolean bval;
+    if (mActionBar == NULL || (mActionBar->OpenOptionsMenu(&bval), !bval)) {
+        return mWindow->OpenPanel(IWindow::FEATURE_OPTIONS_PANEL, NULL);
+    }
 }
 
 ECode Activity::CloseOptionsMenu()
@@ -2209,10 +2216,21 @@ ECode Activity::OnSearchRequested(
     /* [out] */ Boolean* isLaunched)
 {
     VALIDATE_NOT_NULL(isLaunched);
-    String nullStr;
-    ECode ec = StartSearch(nullStr, FALSE, NULL, FALSE);
-    *isLaunched = TRUE;
-    return ec;
+    *isLaunched = FALSE;
+
+    AutoPtr<IResources> res;
+    GetResources((IResources**)&res);
+    AutoPtr<IConfiguration> cfg;
+    res->GetConfiguration((IConfiguration**)&cfg);
+    Int32 uiMode;
+    GetUiMode(&uiMode);
+    if ((uiMode & IConfiguration::UI_MODE_TYPE_MASK) != IConfiguration::UI_MODE_TYPE_TELEVISION) {
+        String nullStr;
+        ECode ec = StartSearch(nullStr, FALSE, NULL, FALSE);
+        *isLaunched = TRUE;
+        return ec;
+    }
+    return NOERROR;
 }
 
 ECode Activity::StartSearch(
@@ -2300,7 +2318,7 @@ ECode Activity::GetMenuInflater (
     VALIDATE_NOT_NULL(menuInflater);
 
     // mMenuInflater and Activity have circular reference, modified by xihao
-    InitActionBar();
+    InitWindowDecorActionBar();
     if (mActionBar != NULL) {
         AutoPtr<IContext> context;
         mActionBar->GetThemedContext((IContext**)&context);
@@ -2312,7 +2330,7 @@ ECode Activity::GetMenuInflater (
 
     // Make sure that action views can get an appropriate theme.
     // if (mMenuInflater == NULL) {
-    //     InitActionBar();
+    //     InitWindowDecorActionBar();
     //     if (mActionBar != NULL) {
     //         AutoPtr<IContext> context;
     //         mActionBar->GetThemedContext((IContext**)&context);
@@ -2343,6 +2361,24 @@ ECode Activity::OnApplyThemeResource(
         FAIL_RETURN(mParent->GetTheme((IResourcesTheme**)&parentTheme));
         theme->SetTo(parentTheme);
         FAIL_RETURN(theme->ApplyStyle(resid, FALSE));
+    }
+
+    // Get the primary color and update the TaskDescription for this activity
+    if (theme != NULL) {
+        AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Theme),
+            ARRAY_SIZE(R::styleable::Theme));
+        AutoPtr<ITypedArray> a;
+        theme->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);
+
+        Int32 colorPrimary;
+        a->GetColor(R::styleable::Theme_colorPrimary, 0, &colorPrimary);
+        a->Recycle();
+        if (colorPrimary != 0) {
+            AutoPtr<IActivityManagerTaskDescription> v;
+            CActivityManagerTaskDescription::New(NULL, NULL, colorPrimary, (IActivityManagerTaskDescription**)&v);
+            SetTaskDescription(v);
+        }
     }
 
     return NOERROR;
@@ -2385,6 +2421,15 @@ ECode Activity::StartActivityForResult(
             // activity is finished, no matter what happens to it.
             mStartedActivity = TRUE;
         }
+
+        AutoPtr<IView> decor;
+        if (mWindow != NULL) {
+            mWindow->PeekDecorView((IView**)&decor);
+        }
+        if (decor != NULL) {
+            decor->CancelPendingInputEvents();
+        }
+        // TODO Consider clearing/flushing other event sources and events for child windows.
     }
     else {
         if (options != NULL) {
@@ -2397,6 +2442,68 @@ ECode Activity::StartActivityForResult(
         }
     }
 
+    Boolean bval;
+    if (options != NULL && (IsTopOfTask(&bval), !bval)) {
+        mActivityTransitionState->StartExitOutTransition(THIS_PROBE(IActivity), options);
+    }
+
+    return NOERROR;
+}
+
+ECode Activity::StartActivityForResultAsUser(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 requestCode,
+    /* [in] */ IUserHandle* user);
+{
+    return StartActivityForResultAsUser(intent, requestCode, NULL, user);
+}
+
+ECode Activity::StartActivityForResultAsUser(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 requestCode,
+    /* [in] */ IBundle* options,
+    /* [in] */ IUserHandle* user);
+{
+    if (options != NULL) {
+        mActivityTransitionState->StartExitOutTransition(THIS_PROBE(IActivity), options);
+    }
+    if (mParent != NULL) {
+        Logger::E(TAG, "Can't be called from a child");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr<IApplicationThread> at;
+    FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
+
+    AutoPtr<IInstrumentationActivityResult> ar;
+    mInstrumentation->ExecStartActivity(
+        THIS_PROBE(IContext), at, mToken, THIS_PROBE(IActivity),
+        intent, requestCode, options, user, (IInstrumentationActivityResult**)&ar);
+    if (ar != NULL) {
+        Int32 code;
+        ar->GetResultCode(&code);
+        AutoPtr<IIntent> intent;
+        ar->GetResultData((IIntent**)&intent);
+        mMainThread->SendActivityResult(mToken, mEmbeddedID, requestCode, code, intent);
+    }
+    if (requestCode >= 0) {
+        // If this start is requesting a result, we can avoid making
+        // the activity visible until the result is received.  Setting
+        // this code during onCreate(Bundle savedInstanceState) or onResume() will keep the
+        // activity hidden during this time, to avoid flickering.
+        // This can only be done when a result is requested because
+        // that guarantees we will get information back when the
+        // activity is finished, no matter what happens to it.
+        mStartedActivity = TRUE;
+    }
+
+    AutoPtr<IView> decor;
+    if (mWindow != NULL) {
+        mWindow->PeekDecorView((IView**)&decor);
+    }
+    if (decor != NULL) {
+        decor->CancelPendingInputEvents();
+    }
     return NOERROR;
 }
 
@@ -2450,7 +2557,8 @@ ECode Activity::StartIntentSenderForResultInner(
     if (fillInIntent != NULL) {
         AutoPtr<IContentResolver> resolver;
         GetContentResolver((IContentResolver**)&resolver);
-        FAIL_RETURN(fillInIntent->SetAllowFds(FALSE));
+        FAIL_RETURN(fillInIntent->MigrateExtraStreamToClipData())
+        FAIL_RETURN(fillInIntent->PrepareToLeaveProcess())
         FAIL_RETURN(fillInIntent->ResolveTypeIfNeeded(resolver, &resolvedType));
     }
 
@@ -2502,14 +2610,15 @@ ECode Activity::StartActivityIfNeeded(
     /* [in] */ IBundle* options,
     /* [out] */ Boolean* started)
 {
-    VALIDATE_NOT_NULL(intent);
     VALIDATE_NOT_NULL(started);
     *started = FALSE;
+    VALIDATE_NOT_NULL(intent);
 
     if (mParent == NULL) {
         Int32 result = IActivityManager::START_RETURN_INTENT_TO_CALLER;
         //try {
-        intent->SetAllowFds(FALSE);
+        FAIL_RETURN(intent->MigrateExtraStreamToClipData())
+        FAIL_RETURN(intent->PrepareToLeaveProcess())
 
         AutoPtr<IContentResolver> resolver;
         FAIL_RETURN(GetContentResolver((IContentResolver**)&resolver));
@@ -2520,10 +2629,10 @@ ECode Activity::StartActivityIfNeeded(
         AutoPtr<IApplicationThread> at;
         FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
 
-        String nullStr;
-        ECode ec = defaultAM->StartActivity(at, intent, resolvedType, mToken, mEmbeddedID,
-                requestCode, IActivityManager::START_FLAG_ONLY_IF_NEEDED,
-                nullStr, NULL, options, &result);
+        String bpn;
+        GetBasePackageName(&bpn);
+        ECode ec = defaultAM->StartActivity(at, bpn, intent, resolvedType, mToken, mEmbeddedID,
+                requestCode, IActivityManager::START_FLAG_ONLY_IF_NEEDED, NULL, options, &result);
         if(ec == (ECode)E_REMOTE_EXCEPTION) {
             ec = NOERROR;
         }
@@ -2572,7 +2681,9 @@ ECode Activity::StartNextMatchingActivity(
 
     if (mParent == NULL) {
 //        try {
-        intent->SetAllowFds(FALSE);
+        FAIL_RETURN(intent->MigrateExtraStreamToClipData())
+        FAIL_RETURN(intent->PrepareToLeaveProcess())
+
         AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
 
         ECode ec = defaultAM->StartNextMatchingActivity(mToken, intent, options, started);
@@ -2640,6 +2751,10 @@ ECode Activity::StartActivityFromFragment(
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options)
 {
+    if (options != NULL) {
+        mActivityTransitionState->StartExitOutTransition(this, options);
+    }
+
     AutoPtr<IInstrumentationActivityResult> result;
     AutoPtr<IApplicationThread> at;
     FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
@@ -2815,14 +2930,8 @@ ECode Activity::Recreate()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    AutoPtr<ILooper> myLooper;
-#ifdef DROID_CORE
-    myLooper = Looper::GetMyLooper();
-#else
-    AutoPtr<ILooperHelper> helper;
-    CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
-    helper->MyLooper((ILooper**)&myLooper);
-#endif
+    AutoPtr<ILooper> myLooper = Looper::GetMyLooper();
+
     AutoPtr<ILooper> mainLooper;
     mMainThread->GetLooper((ILooper**)&mainLooper);
     if (myLooper != mainLooper) {
@@ -2833,13 +2942,14 @@ ECode Activity::Recreate()
     return mMainThread->RequestRelaunchActivity(mToken, NULL, NULL, 0, FALSE, NULL, FALSE);
 }
 
-ECode Activity::Finish()
+ECode Activity::Finish(
+    /* [in] */ Boolean finishTask)
 {
     if (mParent == NULL) {
         Int32 resultCode;
         AutoPtr<IIntent> resultData;
         {
-            AutoLock lock(mThisLock);
+            AutoLock lock(this);
             resultCode = mResultCode;
             resultData = mResultData;
         }
@@ -2853,12 +2963,12 @@ ECode Activity::Finish()
         }
 
         if (resultData != NULL) {
-            FAIL_RETURN(resultData->SetAllowFds(FALSE));
+            FAIL_RETURN(resultData->PrepareToLeaveProcess())
         }
 
         AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
         Boolean finished;
-        ECode ec = defaultAM->FinishActivity(mToken, resultCode, resultData, &finished);
+        ECode ec = defaultAM->FinishActivity(mToken, resultCode, resultData, finishTask, &finished);
         if (finished) {
             mFinished = TRUE;
         }
@@ -2871,6 +2981,13 @@ ECode Activity::Finish()
     else {
         return mParent->FinishFromChild(THIS_PROBE(IActivity));
     }
+
+    return NOERROR;
+}
+
+ECode Activity::Finish()
+{
+    return Finish(FALSE);
 }
 
 ECode Activity::FinishAffinity()
@@ -2902,6 +3019,15 @@ ECode Activity::FinishAffinity()
 //    } catch (RemoteException e) {
 //    // Empty
 //    }
+}
+
+ECode Activity::FinishAfterTransition();
+{
+    Boolean bval;
+    if (mActivityTransitionState->StartExitBackTransition(THIS_PROBE(IActivity), &bval), !bval) {
+        Finish();
+    }
+    return NOERROR;
 }
 
 ECode Activity::FinishFromChild(
@@ -2948,6 +3074,31 @@ ECode Activity::FinishActivityFromChild(
 //    }
 }
 
+ECode Activity::FinishAndRemoveTask();
+{
+    return Finish(TRUE);
+}
+
+ECode Activity::ReleaseInstance(
+    /* [out] */ Boolean* result);
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->ReleaseActivityInstance(mToken, result);
+    // } catch (RemoteException e) {
+    //     // Empty
+    // }
+}
+
+ECode Activity::OnActivityReenter(
+    /* [in] */ Int32 resultCode,
+    /* [in] */ IIntent* data);
+{
+    return NOERROR;
+}
+
 ECode Activity::OnActivityResult(
     /* [in] */ Int32 requestCode,
     /* [in] */ Int32 resultCode,
@@ -2970,16 +3121,9 @@ ECode Activity::CreatePendingResult(
     GetPackageName(&packageName);
 
 //    try {
-    data->SetAllowFds(FALSE);
+    data->PrepareToLeaveProcess();
 
-#ifdef DROID_CORE
     Int32 myUserId = CUserHandle::GetMyUserId();
-#else
-    Int32 myUserId;
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    helper->GetMyUserId(&myUserId);
-#endif
     AutoPtr<IBinder> token;
     if (mParent == NULL) {
         token = mToken;
@@ -3204,6 +3348,10 @@ ECode Activity::OnTitleChanged(
                 FAIL_RETURN(win->SetTitleColor(color));
             }
         }
+
+        if (mActionBar != NULL) {
+            mActionBar->SetWindowTitle(title);
+        }
     }
     return NOERROR;
 }
@@ -3213,6 +3361,35 @@ ECode Activity::OnChildTitleChanged(
     /* [in] */ ICharSequence* title)
 {
     return NOERROR;
+}
+
+ECode Activity::SetTaskDescription(
+    /* [in] */ IActivityManagerTaskDescription* taskDescription);
+{
+    AutoPtr<IActivityManagerTaskDescription> td;
+    // Scale the icon down to something reasonable if it is provided
+    String iconFilename;
+    taskDescription->GetIconFilename(&iconFilename);
+    AutoPtr<IBitmap> icon;
+    taskDescription->GetIcon((IBitmap**)&icon);
+    if (!iconFilename.IsNull() && icon != null) {
+        Int32 size = CActivityManager::GetLauncherLargeIconSizeInner(this);
+        AutoPtr<IBitmap> bmp;
+        CBitmap::CreateScaledBitmap(icon, size, size, TRUE, (IBitmap**)&bmp);
+        AutoPtr<ICharSequence> label;
+        taskDescription->GetLabel((ICharSequence**)&label);
+        Int32 color;
+        taskDescription->GetPrimaryColor(&color);
+        CActivityManagerTaskDescription::New(label, icon, color, (IActivityManagerTaskDescription**)&td);
+    } else {
+        td = taskDescription;
+    }
+
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->SetTaskDescription(mToken, td);
+    // } catch (RemoteException e) {
+    // }
 }
 
 ECode Activity::SetProgressBarVisibility(
@@ -3270,6 +3447,20 @@ ECode Activity::GetVolumeControlStream(
     return win->GetVolumeControlStream(type);
 }
 
+ECode Activity::SetMediaController(
+    /* [in] */ IMediaController* controller)
+{
+    AutoPtr<IWindow> win = GetWindow();
+    return win->SetMediaController(controller);
+}
+
+ECode Activity::GetMediaController(
+    /* [out] */ IMediaController** mc);
+{
+    AutoPtr<IWindow> win = GetWindow();
+    return win->GetMediaController(mc);
+}
+
 ECode Activity::RunOnUiThread(
     /* [in] */ IRunnable* action)
 {
@@ -3310,129 +3501,7 @@ ECode Activity::OnCreateView(
         return OnCreateView(name, context, attrs, view);
     }
 
-    String fname;
-    attrs->GetAttributeValue(String(NULL), String("class"), &fname);
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::Fragment),
-            ARRAY_SIZE(R::styleable::Fragment));
-
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
-    if (fname.IsNull()) {
-        a->GetString(R::styleable::Fragment_name, &fname);
-    }
-    Int32 id;
-    a->GetResourceId(R::styleable::Fragment_id, IView::NO_ID, &id);
-    String tag;
-    a->GetString(R::styleable::Fragment_tag, &tag);
-    a->Recycle();
-
-    Int32 parentId = 0;
-    if (parent != NULL) {
-        parent->GetId(&parentId);
-    }
-    Int32 containerId = parentId;
-    if (containerId == IView::NO_ID && id == IView::NO_ID && tag.IsNull()) {
-//        throw new IllegalArgumentException(attrs.getPositionDescription()
-//                + ": Must specify unique android:id, android:tag, or have a parent with an id for " + fname);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    // If we restored from a previous state, we may already have
-    // instantiated this fragment from the state and should use
-    // that instance instead of making a new one.
-    AutoPtr<IFragment> fragment;
-    if (id != IView::NO_ID) {
-        FAIL_RETURN(mFragments->FindFragmentById(id, (IFragment**)&fragment));
-    }
-    if (fragment == NULL && !tag.IsNull()) {
-        FAIL_RETURN(mFragments->FindFragmentByTag(tag, (IFragment**)&fragment));
-    }
-    if (fragment == NULL && containerId != IView::NO_ID) {
-        FAIL_RETURN(mFragments->FindFragmentById(containerId, (IFragment**)&fragment));
-    }
-    AutoPtr<IFragmentManagerImplHelper> fHelper;
-    CFragmentManagerImplHelper::AcquireSingleton((IFragmentManagerImplHelper**)&fHelper);
-    Boolean debug;
-    fHelper->GetDEBUG(&debug);
-    if (debug) {
-        StringBuilder info("onCreateView: id=0x");
-        info += StringUtils::ToString(id, 16);
-        info += " fname=";
-        info += fname;
-        info += " existing=";
-        info += fragment;
-        Logger::V(TAG, info.ToString());
-    }
-
-    Boolean inLayout;
-    if (fragment != NULL) {
-        fragment->IsInLayout(&inLayout);
-    }
-    if (fragment == NULL) {
-        Fragment::Instantiate(THIS_PROBE(IContext), fname, (IFragment**)&fragment);
-        fragment->SetFromLayout(TRUE);
-        fragment->SetFragmentId(id != 0 ? id : containerId);
-        fragment->SetContainerId(containerId);
-        fragment->SetTag(tag);
-        fragment->SetInLayout(TRUE);
-        fragment->SetFragmentManager(mFragments);
-        AutoPtr<IBundle> savedFragmentState;
-        fragment->GetSavedFragmentState((IBundle**)&savedFragmentState);
-        fragment->OnInflate(THIS_PROBE(IActivity), attrs, savedFragmentState);
-        mFragments->AddFragment(fragment, TRUE);
-    }
-    else if (inLayout) {
-        // A fragment already exists and it is not one we restored from
-        // previous state.
-//        throw new IllegalArgumentException(attrs.getPositionDescription()
-//                + ": Duplicate id 0x" + Integer.toHexString(id)
-//                + ", tag " + tag + ", or parent id 0x" + Integer.toHexString(containerId)
-//                + " with another fragment for " + fname);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    else {
-        // This fragment was retained from a previous instance; get it
-        // going now.
-        fragment->SetInLayout(TRUE);
-        // If this fragment is newly instantiated (either right now, or
-        // from last saved state), then give it the attributes to
-        // initialize itself.
-        Boolean retaining;
-        fragment->GetRetaining(&retaining);
-        AutoPtr<IBundle> savedFragmentState;
-        fragment->GetSavedFragmentState((IBundle**)&savedFragmentState);
-        if (!retaining) {
-            fragment->OnInflate(THIS_PROBE(IActivity), attrs, savedFragmentState);
-        }
-        FAIL_RETURN(mFragments->MoveToState(fragment));
-    }
-
-    AutoPtr<IView> fview;
-    fragment->GetView((IView**)&fview);
-    if (fview == NULL) {
-//        throw new IllegalStateException("Fragment " + fname
-//                + " did not create a view.");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    if (id != 0) {
-       fview->SetId(id);
-    }
-
-    AutoPtr<IInterface> viewTag;
-    fview->GetTag((IInterface**)&viewTag);
-    if (viewTag == NULL) {
-        AutoPtr<ICharSequence> tagcs;
-        if (tag.IsNull()) fview->SetTag(NULL);
-        else {
-            CString::New(tag, (ICharSequence**)&tagcs);
-            fview->SetTag(tagcs);
-        }
-    }
-
-    *view = fview;
-    REFCOUNT_ADD(*view);
-    return NOERROR;
+    return mFragments->OnCreateView(parent, name, context, attrs, view);
 }
 
 ECode Activity::Dump(
@@ -3527,6 +3596,137 @@ ECode Activity::IsImmersive(
 //    }
 }
 
+ECode Activity::ConvertFromTranslucent();
+{
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    mTranslucentCallback = NULL;
+    Boolean bval;
+    if (defaultAM->ConvertFromTranslucent(mToken, &bval), bval) {
+        AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+        return wmg->ChangeCanvasOpacity(mToken, TRUE);
+    }
+
+    return NOERROR;
+    // } catch (RemoteException e) {
+    //     // pass
+    // }
+}
+
+Boolean ConvertToTranslucent(
+    /* [in] */ ITranslucentConversionListener* callback,
+    /* [in] */ IActivityOptions* options);
+{
+    Boolean drawComplete;
+
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    mTranslucentCallback = callback;
+    ECode ec = defaultAM->ConvertToTranslucent(mToken, options, mChangeCanvasToTranslucent);
+    if (ec == E_REMOTE_EXCEPTION) {
+        // Make callback return as though it timed out.
+        mChangeCanvasToTranslucent = FALSE;
+        drawComplete = FALSE;
+    }
+    else {
+        AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+        wmg->ChangeCanvasOpacity(mToken, FALSE);
+        drawComplete = TRUE;
+    }
+
+    if (!mChangeCanvasToTranslucent && mTranslucentCallback != NULL) {
+        // Window is already translucent.
+        mTranslucentCallback->OnTranslucentConversionComplete(drawComplete);
+    }
+    return mChangeCanvasToTranslucent;
+}
+
+ECode Activity::OnTranslucentConversionComplete(
+    /* [in] */ Boolean drawComplete);
+{
+    if (mTranslucentCallback != NULL) {
+        mTranslucentCallback->OnTranslucentConversionComplete(drawComplete);
+        mTranslucentCallback = NULL;
+    }
+    if (mChangeCanvasToTranslucent) {
+        AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+        wmg->ChangeCanvasOpacity(mToken, FALSE);
+    }
+    return NOERROR;
+}
+
+ECode Activity::OnNewActivityOptions(
+    /* [in] */ IActivityOptions* options);
+{
+    mActivityTransitionState->SetEnterActivityOptions(THIS_PROBE(IActivity), options);
+    if (!mStopped) {
+        return mActivityTransitionState->EnterReady(THIS_PROBE(IActivity));
+    }
+    return NOERROR;
+}
+
+ECode Activity::GetActivityOptions(
+    /* [out] */ IActivityOptions** options);
+{
+    VALIDATE_NOT_NULL(options)
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->GetActivityOptions(mToken, (IActivityOptions**)&options);
+    // } catch (RemoteException e) {
+    // }
+}
+
+ECode Activity::RequestVisibleBehind(
+    /* [in] */ Boolean visible,
+    /* [out] */ Boolean* result);
+{
+    VALIDATE_NOT_NULL(result)
+    if (!mResumed) {
+        // Do not permit paused or stopped activities to do this.
+        visible = false;
+    }
+    // try {
+        AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+        ECode ec = defaultAM->RequestVisibleBehind(mToken, visible, &mVisibleBehind);
+        mVisibleBehind = mVisibleBehind && visible;
+        if (ec == E_REMOTE_EXCEPTION) {
+            mVisibleBehind = FALSE;
+            ec = NOERROR;
+        }
+    // } catch (RemoteException e) {
+    //     mVisibleBehind = false;
+    // }
+    *result = mVisibleBehind;
+    return ec;
+}
+
+ECode Activity::OnVisibleBehindCanceled();
+{
+    mCalled = true;
+}
+
+ECode Activity::IsBackgroundVisibleBehind(
+    /* [out] */ Boolean* result);
+{
+    VALIDATE_NOT_NULL(result)
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->IsBackgroundVisibleBehind(mToken, result);
+    // } catch (RemoteException e) {
+    // }
+    // return false;
+}
+
+ECode Activity::OnBackgroundVisibleBehindChanged(
+    /* [in] */ Boolean visible)
+{
+    return NOERROR;
+}
+
+ECode Activity::OnEnterAnimationComplete()
+{
+    return NOERROR;
+}
+
 ECode Activity::SetImmersive(
     /* [in] */ Boolean i)
 {
@@ -3541,6 +3741,19 @@ ECode Activity::SetImmersive(
 //    } catch (RemoteException e) {
 //        // pass
 //    }
+}
+
+ECode Activity::IsTopOfTask(
+    /* [out] */ Boolean* top)
+{
+    VALIDATE_NOT_NULL(top)
+    *top = FALSE;
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->IsTopOfTask(mToken, top);
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
 }
 
 ECode Activity::StartActionMode(
@@ -3563,7 +3776,7 @@ ECode Activity::OnWindowStartingActionMode(
     VALIDATE_NOT_NULL(mode);
     *mode = NULL;
 
-    FAIL_RETURN(InitActionBar());
+    FAIL_RETURN(InitWindowDecorActionBar());
     if (mActionBar) {
         return mActionBar->StartActionMode(callback, mode);
     }
@@ -3610,7 +3823,7 @@ ECode Activity::ShouldUpRecreateTask(
     AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
 
     Boolean val;
-    ECode ec = defaultAM->TargetTaskAffinityMatchesActivity(mToken, affinity, &val);
+    ECode ec = defaultAM->ShouldUpRecreateTask(mToken, affinity, &val);
     *result = !val;
     if (ec == (ECode)E_REMOTE_EXCEPTION || ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         *result = FALSE;
@@ -3653,14 +3866,15 @@ ECode Activity::NavigateUpTo(
         Int32 resultCode;
         AutoPtr<IIntent> resultData;
         {
-            AutoLock lock(mThisLock);
+            AutoLock lock(this);
             resultCode = mResultCode;
             resultData = mResultData;
         }
         if (resultData != NULL) {
-            resultData->SetAllowFds(FALSE);
+            resultData->PrepareToLeaveProcess();
         }
 //        try {
+        upIntent->PrepareToLeaveProcess();
         AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
         return defaultAM->NavigateUpTo(mToken, inUpIntent, resultCode, resultData, success);
 //        } catch (RemoteException e) {
@@ -3730,29 +3944,43 @@ ECode Activity::GetParentActivityIntent(
 //    }
 }
 
+ECode Activity::SetEnterSharedElementCallback(
+    /* [in] */ ISharedElementCallback* callback);
+{
+    AutoPtr<ISharedElementCallback> cb = callback;
+    if (cb == NULL) {
+        cb = SharedElementCallback::NULL_CALLBACK;
+    }
+    mEnterTransitionListener = cb;
+    return NOERROR;
+}
+
+ECode Activity::SetExitSharedElementCallback(
+    /* [in] */ ISharedElementCallback* callback);
+{
+    AutoPtr<ISharedElementCallback> cb = callback;
+    if (cb == NULL) {
+        cb = SharedElementCallback::NULL_CALLBACK;
+    }
+    mExitTransitionListener = cb;
+    return NOERROR;
+}
+
+ECode Activity::PostponeEnterTransition();
+{
+    return mActivityTransitionState->PostponeEnterTransition();
+}
+
+ECode Activity::StartPostponedEnterTransition();
+{
+    return mActivityTransitionState->StartPostponedEnterTransition();
+}
+
 ECode Activity::SetParent(
     /* [in] */ IActivity* parent)
 {
     mParent = parent;
     return NOERROR;
-}
-
-ECode Activity::Attach(
-    /* [in] */ IContext* context,
-    /* [in] */ IActivityThread* aThread,
-    /* [in] */ IInstrumentation* instr,
-    /* [in] */ IBinder* token,
-    /* [in] */ IApplication* application,
-    /* [in] */ IIntent* intent,
-    /* [in] */ IActivityInfo* info,
-    /* [in] */ ICharSequence* title,
-    /* [in] */ IActivity* parent,
-    /* [in] */ const String& id,
-    /* [in] */ IInterface* lastNonConfigurationInstances,
-    /* [in] */ IConfiguration* config)
-{
-    return Attach(context, aThread, instr, token, 0, application,
-            intent, info, title, parent, id, lastNonConfigurationInstances, config);
 }
 
 ECode Activity::Attach(
@@ -3768,7 +3996,8 @@ ECode Activity::Attach(
     /* [in] */ IActivity* parent,
     /* [in] */ const String& id,
     /* [in] */ IInterface* lastNonConfigurationInstances,
-    /* [in] */ IConfiguration* config)
+    /* [in] */ IConfiguration* config,
+    /* [in] */ IIVoiceInteractor* voiceInteractor))
 {
     FAIL_RETURN(AttachBaseContext(context));
 
@@ -3779,6 +4008,7 @@ ECode Activity::Attach(
     mWindow = NULL;
     FAIL_RETURN(pm->MakeNewWindow(THIS_PROBE(IContext), (IWindow**)&mWindow));
     FAIL_RETURN(mWindow->SetCallback(THIS_PROBE(IWindowCallback)));
+    FAIL_RETURN(mWindow->SetOnWindowDismissedCallback(THIS_PROBE(IWindowOnWindowDismissedCallback));
     AutoPtr<ILayoutInflater> inflater;
     mWindow->GetLayoutInflater((ILayoutInflater**)&inflater);
     inflater->SetPrivateFactory(THIS_PROBE(ILayoutInflaterFactory2));
@@ -3809,8 +4039,19 @@ ECode Activity::Attach(
     mParent = parent;
     mEmbeddedID = id;
     if (lastNonConfigurationInstances) {
-        mLastNonConfigurationInstances = (IActivityNonConfigurationInstances*)
-                lastNonConfigurationInstances->Probe(EIID_IActivityNonConfigurationInstances);
+        mLastNonConfigurationInstances = IActivityNonConfigurationInstances::Probe(lastNonConfigurationInstances);
+    }
+
+    if (voiceInteractor != NULL) {
+        mVoiceInteractor = NULL;
+        if (lastNonConfigurationInstances != NULL) {
+            lastNonConfigurationInstances->GetVoiceInteractor((IVoiceInteractor**)&mVoiceInteractor);
+        }
+        else {
+            AutoPtr<ILooper> looper = Looper::GetMyLooper();
+            CVoiceInteractor::New(voiceInteractor, THIS_PROBE(IContext), THIS_PROBE(IActivity),
+                looper, (IVoiceInteractor**)&mVoiceInteractor);
+        }
     }
 
     AutoPtr<IWindowManager> wm;
@@ -3849,21 +4090,42 @@ ECode Activity::GetActivityToken(
     return NOERROR;
 }
 
-ECode Activity::PerformCreate(
-    /* [in] */ IBundle* icicle)
+ECode Activity::Activity::PerformCreateCommon()
 {
-    FAIL_RETURN(OnCreate(icicle));
     AutoPtr<ITypedArray> winStyle;
     FAIL_RETURN(mWindow->GetWindowStyle((ITypedArray**)&winStyle));
     Boolean noDisplay = FALSE;
     winStyle->GetBoolean(R::styleable::Window_windowNoDisplay, FALSE, &noDisplay);
     mVisibleFromClient = !noDisplay;
     FAIL_RETURN(mFragments->DispatchActivityCreated());
-    return NOERROR;
+    AutoPtr<IActivityOptions> options;
+    GetActivityOptions((IActivityOptions**)&options);
+    return mActivityTransitionState->SetEnterActivityOptions(THIS_PROBE(IActivity), options);
+}
+
+ECode Activity::PerformCreate(
+    /* [in] */ IBundle* icicle)
+{
+    FAIL_RETURN(OnCreate(icicle))
+    mActivityTransitionState->ReadState(icicle);
+    return PerformCreateCommon();
+}
+
+ECode Activity::PerformCreate(
+    /* [in] */ IBundle* icicle,
+    /* [in] */ IPersistableBundle* bundle)
+{
+    FAIL_RETURN(OnCreate(icicle, bundle))
+    mActivityTransitionState->ReadState(icicle);
+    return PerformCreateCommon();
 }
 
 ECode Activity::PerformStart()
 {
+    AutoPtr<IActivityOptions> options;
+    GetActivityOptions((IActivityOptions**)&options);
+    FAIL_RETURN(mActivityTransitionState->SetEnterActivityOptions(THIS_PROBE(IActivity), options))
+
     FAIL_RETURN(mFragments->NoteStateNotSaved());
     mCalled = FALSE;
     Boolean exected;
@@ -3895,7 +4157,23 @@ ECode Activity::PerformStart()
                 lm->DoReportStart();
             }
         }
+
+        Int32 N;
+        mAllLoaderManagers->GetSize(&n);
+        AutoPtr<ArrayOf<ILoaderManagerImpl*> > loaders = ArrayOf<ILoaderManagerImpl*>::Alloc(N);
+        for (Int32 i = N - 1; i >= 0; i--) {
+            AutoPtr<IInterface> obj;
+            mAllLoaderManagers->GetValueAt(i, (IInterface**)&obj);
+            loaders->Set(i, ILoaderManagerImpl::Probe(obj));
+        }
+        for (Int32 i = 0; i < N; i++) {
+            ILoaderManagerImpl* lm = (*loaders)[i];
+            lm->FinishRetain();
+            lm->DoReportStart();
+        }
     }
+
+    mActivityTransitionState->EnterReady(THIS_PROBE(IActivity));
 
     return NOERROR;
 }
@@ -4002,6 +4280,7 @@ ECode Activity::PerformResume()
 
 ECode Activity::PerformPause()
 {
+    mDoReportFullyDrawn = FALSE;
     FAIL_RETURN(mFragments->DispatchPause());
     mCalled = FALSE;
     FAIL_RETURN(OnPause());
@@ -4035,6 +4314,7 @@ ECode Activity::PerformUserLeaving()
 
 ECode Activity::PerformStop()
 {
+    mDoReportFullyDrawn = FALSE;
     if (mLoadersStarted) {
         mLoadersStarted = FALSE;
         if (mLoaderManager != NULL) {
@@ -4101,6 +4381,9 @@ ECode Activity::PerformDestroy()
     if (mLoaderManager != NULL) {
         mLoaderManager->DoDestroy();
     }
+    if (mVoiceInteractor != NULL) {
+        mVoiceInteractor->DetachActivity();
+    }
     return NOERROR;
 }
 
@@ -4135,6 +4418,24 @@ ECode Activity::DispatchActivityResult(
         }
     }
     return NOERROR;
+}
+
+ECode Activity::StartLockTask();
+{
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->StartLockTaskMode(mToken);
+    // } catch (RemoteException e) {
+    // }
+}
+
+ECode Activity::StopLockTask();
+{
+    // try {
+    AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
+    return defaultAM->StopLockTaskMode();
+    // } catch (RemoteException e) {
+    // }
 }
 
 ECode Activity::SetStartedActivity(
@@ -4353,410 +4654,6 @@ ECode Activity::Destroy()
     return OnDestroy();
 }
 
-//
-// IContext interfaces
-//
-ECode Activity::AttachBaseContext(
-    /* [in] */ IContext* newBase)
-{
-    if (mBase != NULL) {
-        Slogger::E(TAG, "Base context already set");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    mBase = newBase;
-    return NOERROR;
-}
-
-ECode Activity::GetBaseContext(
-    /* [out] */ IContext** ctx)
-{
-    VALIDATE_NOT_NULL(ctx);
-
-    *ctx = mBase;
-    REFCOUNT_ADD(*ctx)
-    return NOERROR;
-}
-
-ECode Activity::GetAssets(
-    /* [out] */ IAssetManager** assetManager)
-{
-    return mBase->GetAssets(assetManager);
-}
-
-ECode Activity::GetResources(
-    /* [out] */ IResources** resources)
-{
-    VALIDATE_NOT_NULL(resources);
-    if (mResources != NULL) {
-        *resources = mResources;
-        REFCOUNT_ADD(*resources)
-        return NOERROR;
-    }
-
-    if (mOverrideConfiguration == NULL) {
-        return mBase->GetResources(resources);
-    }
-    else {
-        AutoPtr<IContext> resc;
-        CreateConfigurationContext(mOverrideConfiguration, (IContext**)&resc);
-        resc->GetResources(resources);
-        mResources = *resources;
-        return NOERROR;
-    }
-}
-
-ECode Activity::GetPackageManager(
-    /* [out] */ IPackageManager** packageManager)
-{
-    return mBase->GetPackageManager(packageManager);
-}
-
-ECode Activity::GetContentResolver(
-    /* [out] */ IContentResolver** resolver)
-{
-    return mBase->GetContentResolver(resolver);
-}
-
-ECode Activity::GetMainLooper(
-    /* [out] */ ILooper** looper)
-{
-    return mBase->GetMainLooper(looper);
-}
-
-ECode Activity::GetApplicationContext(
-    /* [out] */ IContext** ctx)
-{
-    return mBase->GetApplicationContext(ctx);
-}
-
-ECode Activity::RegisterComponentCallbacks(
-    /* [in] */ IComponentCallbacks* componentCallback)
-{
-    AutoPtr<IContext> ctx;
-    GetApplicationContext((IContext**)&ctx);
-    return ctx->RegisterComponentCallbacks(componentCallback);
-}
-
-ECode Activity::UnregisterComponentCallbacks(
-    /* [in] */ IComponentCallbacks* componentCallback)
-{
-    AutoPtr<IContext> ctx;
-    GetApplicationContext((IContext**)&ctx);
-    return ctx->UnregisterComponentCallbacks(componentCallback);
-}
-
-ECode Activity::GetText(
-    /* [in] */ Int32 resId,
-    /* [out] */ ICharSequence** text)
-{
-    AutoPtr<IResources> res;
-    GetResources((IResources**)&res);
-    return res->GetText(resId, text);
-}
-
-ECode Activity::GetString(
-    /* [in] */ Int32 resId,
-    /* [out] */ String* str)
-{
-    AutoPtr<IResources> res;
-    GetResources((IResources**)&res);
-    return res->GetString(resId, str);
-}
-
-ECode Activity::GetString(
-    /* [in] */ Int32 resId,
-    /* [in] */ ArrayOf<IInterface*>* formatArgs,
-    /* [out] */ String* str)
-{
-    AutoPtr<IResources> res;
-    GetResources((IResources**)&res);
-    //return res->GetString(resId, formatArgs, str);
-    return NOERROR;
-}
-
-ECode Activity::SetTheme(
-    /* [in] */ Int32 resid)
-{
-    mThemeResource = resid;
-    return InitializeTheme();
-}
-
-ECode Activity::GetThemeResId(
-    /* [out] */ Int32* resId)
-{
-    VALIDATE_NOT_NULL(resId);
-    *resId = mThemeResource;
-    return NOERROR;
-}
-
-ECode Activity::GetTheme(
-    /* [out] */ IResourcesTheme** theme)
-{
-    VALIDATE_NOT_NULL(theme);
-    *theme = NULL;
-
-    if (mTheme == NULL) {
-        AutoPtr<IApplicationInfo> appInfo;
-        GetApplicationInfo((IApplicationInfo**)&appInfo);
-        Int32 version;
-        appInfo->GetTargetSdkVersion(&version);
-        AutoPtr<IResourcesHelper> rh;
-        CResourcesHelper::AcquireSingleton((IResourcesHelper**)&rh);
-        rh->SelectDefaultTheme(mThemeResource, version, &mThemeResource);
-        FAIL_RETURN(InitializeTheme());
-    }
-
-    *theme = mTheme;
-    REFCOUNT_ADD(*theme)
-
-    return NOERROR;
-}
-
-ECode Activity::ObtainStyledAttributes(
-    /* [in] */ ArrayOf<Int32>* attrs,
-    /* [out] */ ITypedArray** styles)
-{
-    VALIDATE_NOT_NULL(styles);
-    AutoPtr<IResourcesTheme> theme;
-    GetTheme((IResourcesTheme**)&theme);
-    return theme->ObtainStyledAttributes(attrs, styles);
-}
-
-ECode Activity::ObtainStyledAttributes(
-    /* [in] */ Int32 resid,
-    /* [in] */ ArrayOf<Int32>* attrs,
-    /* [out] */ ITypedArray** styles)
-{
-    VALIDATE_NOT_NULL(styles);
-    AutoPtr<IResourcesTheme> theme;
-    GetTheme((IResourcesTheme**)&theme);
-    return theme->ObtainStyledAttributes(resid, attrs, styles);
-}
-
-ECode Activity::ObtainStyledAttributes(
-    /* [in] */ IAttributeSet* set,
-    /* [in] */ ArrayOf<Int32>* attrs,
-    /* [out] */ ITypedArray** styles)
-{
-    VALIDATE_NOT_NULL(styles);
-    AutoPtr<IResourcesTheme> theme;
-    GetTheme((IResourcesTheme**)&theme);
-    return mTheme->ObtainStyledAttributes(set, attrs, 0, 0, styles);
-}
-
-ECode Activity::ObtainStyledAttributes(
-    /* [in] */ IAttributeSet* set,
-    /* [in] */ ArrayOf<Int32>* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes,
-    /* [out] */ ITypedArray** styles)
-{
-    VALIDATE_NOT_NULL(styles);
-    AutoPtr<IResourcesTheme> theme;
-    GetTheme((IResourcesTheme**)&theme);
-    return mTheme->ObtainStyledAttributes(set, attrs,
-            defStyleAttr, defStyleRes, styles);
-}
-
-ECode Activity::GetClassLoader(
-    /* [out] */ IClassLoader** loader)
-{
-    return mBase->GetClassLoader(loader);
-}
-
-ECode Activity::GetPackageName(
-    /* [out] */ String* packageName)
-{
-    return mBase->GetPackageName(packageName);
-}
-
-ECode Activity::GetApplicationInfo(
-    /* [out] */ IApplicationInfo** info)
-{
-    return mBase->GetApplicationInfo(info);
-}
-
-ECode Activity::GetPackageResourcePath(
-    /* [out] */ String* path)
-{
-    return mBase->GetPackageResourcePath(path);
-}
-
-ECode Activity::GetPackageCodePath(
-    /* [out] */ String* codePath)
-{
-    return mBase->GetPackageCodePath(codePath);
-}
-
-ECode Activity::GetSharedPrefsFile(
-    /* [in] */ const String& name,
-    /* [out] */ IFile** file)
-{
-    return mBase->GetSharedPrefsFile(name, file);
-}
-
-ECode Activity::GetSharedPreferences(
-    /* [in] */ const String& name,
-    /* [in] */ Int32 mode,
-    /* [out] */ ISharedPreferences** prefs)
-{
-    return mBase->GetSharedPreferences(name, mode, prefs);
-}
-
-ECode Activity::OpenFileInput(
-    /* [in] */ const String& name,
-    /* [out] */ IFileInputStream** fileInputStream)
-{
-    return mBase->OpenFileInput(name, fileInputStream);
-}
-
-ECode Activity::OpenFileOutput(
-    /* [in] */ const String& name,
-    /* [in] */ Int32 mode,
-    /* [out] */ IFileOutputStream** fileOutputStream)
-{
-    return mBase->OpenFileOutput(name, mode, fileOutputStream);
-}
-
-ECode Activity::DeleteFile(
-    /* [in] */ const String& name,
-    /* [out] */ Boolean* succeeded)
-{
-    return mBase->DeleteFile(name, succeeded);
-}
-
-ECode Activity::GetFileStreamPath(
-    /* [in] */ const String& name,
-    /* [out] */ IFile** file)
-{
-    return mBase->GetFileStreamPath(name, file);
-}
-
-ECode Activity::GetFilesDir(
-    /* [out] */ IFile** filesDir)
-{
-    return mBase->GetFilesDir(filesDir);
-}
-
-ECode Activity::GetExternalFilesDir(
-    /* [in] */ const String& type,
-    /* [out] */ IFile** filesDir)
-{
-    return mBase->GetExternalFilesDir(type, filesDir);
-}
-
-ECode Activity::GetObbDir(
-    /* [out] */ IFile** obbDir)
-{
-    return mBase->GetObbDir(obbDir);
-}
-
-ECode Activity::GetCacheDir(
-    /* [out] */ IFile** cacheDir)
-{
-    return mBase->GetCacheDir(cacheDir);
-}
-
-ECode Activity::GetExternalCacheDir(
-    /* [out] */ IFile** externalDir)
-{
-    return mBase->GetExternalCacheDir(externalDir);
-}
-
-ECode Activity::GetFileList(
-    /* [out, callee] */ ArrayOf<String>** fileList)
-{
-    return mBase->GetFileList(fileList);
-}
-
-ECode Activity::GetDir(
-    /* [in] */ const String& name,
-    /* [in] */ Int32 mode,
-    /* [out] */ IFile** dir)
-{
-    return mBase->GetDir(name, mode, dir);
-}
-
-ECode Activity::OpenOrCreateDatabase(
-    /* [in] */ const String& name,
-    /* [in] */ Int32 mode,
-    /* [in] */ ISQLiteDatabaseCursorFactory* factory,
-    /* [out] */ ISQLiteDatabase** sqliteDB)
-{
-    return mBase->OpenOrCreateDatabase(name, mode, factory, sqliteDB);
-}
-
-ECode Activity::OpenOrCreateDatabase(
-    /* [in] */ const String& name,
-    /* [in] */ Int32 mode,
-    /* [in] */ ISQLiteDatabaseCursorFactory* factory,
-    /* [in] */ IDatabaseErrorHandler* errorHandler,
-    /* [out] */ ISQLiteDatabase** sqliteDB)
-{
-    return mBase->OpenOrCreateDatabase(name, mode, factory, errorHandler, sqliteDB);
-}
-
-ECode Activity::DeleteDatabase(
-    /* [in] */ const String& name,
-    /* [out] */ Boolean* succeeded)
-{
-    return mBase->DeleteDatabase(name, succeeded);
-}
-
-ECode Activity::GetDatabasePath(
-    /* [in] */ const String& name,
-    /* [out] */ IFile** path)
-{
-    return mBase->GetDatabasePath(name, path);
-}
-
-ECode Activity::GetDatabaseList(
-    /* [out, callee] */ ArrayOf<String>** databaseList)
-{
-    return mBase->GetDatabaseList(databaseList);
-}
-
-ECode Activity::GetWallpaper(
-    /* [out] */ IDrawable** drawable)
-{
-    return mBase->GetWallpaper(drawable);
-}
-
-ECode Activity::PeekWallpaper(
-    /* [out] */ IDrawable** drawable)
-{
-    return mBase->PeekWallpaper(drawable);
-}
-
-ECode Activity::GetWallpaperDesiredMinimumWidth(
-    /* [out] */ Int32* minWidth)
-{
-    return mBase->GetWallpaperDesiredMinimumWidth(minWidth);
-}
-
-ECode Activity::GetWallpaperDesiredMinimumHeight(
-    /* [out] */ Int32* minHeight)
-{
-    return mBase->GetWallpaperDesiredMinimumHeight(minHeight);
-}
-
-ECode Activity::SetWallpaper(
-    /* [in] */ IBitmap* bitmap)
-{
-    return mBase->SetWallpaper(bitmap);
-}
-
-ECode Activity::SetWallpaper(
-    /* [in] */ IInputStream* data)
-{
-    return mBase->SetWallpaper(data);
-}
-
-ECode Activity::ClearWallpaper()
-{
-    return mBase->ClearWallpaper();
-}
-
 //    @Override
 ECode Activity::StartActivity(
     /* [in] */ IIntent *intent)
@@ -4814,6 +4711,34 @@ ECode Activity::StartActivityAsUser(
     return NOERROR;
 }
 
+ECode Activity::StartActivityAsCaller(
+    /* [in] */ IIntent* intent,
+    /* [in] */ IBundle* options,
+    /* [in] */ Int32 userId)
+{
+    if (mParent != NULL) {
+        Logger::E(TAG, "Can't be called from a child");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr<IInstrumentationActivityResult> ar;
+    AutoPtr<IApplicationThread> at;
+    mMainThread->GetApplicationThread((IApplicationThread**)&at);
+
+    FAIL_RETURN(mInstrumentation->ExecStartActivity(
+        THIS_PROBE(IContext), IBinder::Probe(at.Get()), mToken, THIS_PROBE(IActivity),
+        intent, -1, options, user, (IInstrumentationActivityResult**)&result));
+    if (ar != NULL) {
+        Int32 resultCode;
+        AutoPtr<IIntent> resultData;
+        result->GetResultCode(&resultCode);
+        result->GetResultData((IIntent**)&resultData);
+        FAIL_RETURN(mMainThread->SendActivityResult(
+                mToken, mEmbeddedID, -1, resultCode, resultData));
+    }
+    return NOERROR;
+}
+
 //    @Override
 ECode Activity::StartActivities(
     /* [in] */ ArrayOf<IIntent*>* intents)
@@ -4843,14 +4768,7 @@ ECode Activity::StartActivitiesAsUser(
         return E_RUNTIME_EXCEPTION;
     }
 
-#ifdef DROID_CORE
     Int32 myUserId = CUserHandle::GetMyUserId();
-#else
-    Int32 myUserId;
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    helper->GetMyUserId(&myUserId);
-#endif
 
     AutoPtr<IApplicationThread> at;
     mMainThread->GetApplicationThread((IApplicationThread**)&at);
@@ -4893,219 +4811,6 @@ ECode Activity::StartIntentSender(
     }
 }
 
-ECode Activity::SendBroadcast(
-    /* [in] */ IIntent* intent)
-{
-    return mBase->SendBroadcast(intent);
-}
-
-ECode Activity::SendBroadcast(
-    /* [in] */ IIntent* intent,
-    /* [in] */ const String& receiverPermission)
-{
-    return mBase->SendBroadcast(intent, receiverPermission);
-}
-
-ECode Activity::SendOrderedBroadcast(
-    /* [in] */ IIntent* intent,
-    /* [in] */ const String& receiverPermission)
-{
-    return mBase->SendOrderedBroadcast(intent, receiverPermission);
-}
-
-ECode Activity::SendOrderedBroadcast(
-    /* [in] */ IIntent* intent,
-    /* [in] */ const String& receiverPermission,
-    /* [in] */ IBroadcastReceiver* resultReceiver,
-    /* [in] */ IHandler* scheduler,
-    /* [in] */ Int32 initialCode,
-    /* [in] */ const String& initialData,
-    /* [in] */ IBundle* initialExtras)
-{
-    return mBase->SendOrderedBroadcast(intent, receiverPermission, resultReceiver, scheduler,
-        initialCode, initialData, initialExtras);
-}
-
-ECode Activity::SendBroadcastAsUser(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IUserHandle* user)
-{
-    return mBase->SendBroadcastAsUser(intent, user);
-}
-
-ECode Activity::SendBroadcastAsUser(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IUserHandle* user,
-    /* [in] */ const String& receiverPermission)
-{
-    return mBase->SendBroadcastAsUser(intent, user, receiverPermission);
-}
-
-ECode Activity::SendOrderedBroadcastAsUser(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IUserHandle* user,
-    /* [in] */ const String& receiverPermission,
-    /* [in] */ IBroadcastReceiver* resultReceiver,
-    /* [in] */ IHandler* scheduler,
-    /* [in] */ Int32 initialCode,
-    /* [in] */ const String& initialData,
-    /* [in] */ IBundle* initialExtras)
-{
-    return mBase->SendOrderedBroadcastAsUser(intent, user, receiverPermission, resultReceiver, scheduler,
-        initialCode, initialData, initialExtras);
-}
-
-ECode Activity::SendStickyBroadcast(
-    /* [in] */ IIntent* intent)
-{
-    return mBase->SendStickyBroadcast(intent);
-}
-
-ECode Activity::SendStickyOrderedBroadcast(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IBroadcastReceiver* resultReceiver,
-    /* [in] */ IHandler* scheduler,
-    /* [in] */ Int32 initialCode,
-    /* [in] */ const String& initialData,
-    /* [in] */ IBundle* initialExtras)
-{
-    return mBase->SendStickyOrderedBroadcast(intent, resultReceiver, scheduler, initialCode, initialData,
-        initialExtras);
-}
-
-ECode Activity::RemoveStickyBroadcast(
-    /* [in] */ IIntent* intent)
-{
-    return mBase->RemoveStickyBroadcast(intent);
-}
-
-ECode Activity::SendStickyBroadcastAsUser(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IUserHandle* user)
-{
-    return mBase->SendStickyBroadcastAsUser(intent, user);
-}
-
-ECode Activity::SendStickyOrderedBroadcastAsUser(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IUserHandle* user,
-    /* [in] */ IBroadcastReceiver* resultReceiver,
-    /* [in] */ IHandler* scheduler,
-    /* [in] */ Int32 initialCode,
-    /* [in] */ const String& initialData,
-    /* [in] */ IBundle* initialExtras)
-{
-    return mBase->SendStickyOrderedBroadcastAsUser(intent, user, resultReceiver, scheduler, initialCode,
-        initialData, initialExtras);
-}
-
-ECode Activity::RemoveStickyBroadcastAsUser(
-    /* [in] */ IIntent* intent,
-    /* [in] */ IUserHandle* user)
-{
-    return mBase->RemoveStickyBroadcastAsUser(intent, user);
-}
-
-ECode Activity::RegisterReceiver(
-    /* [in] */ IBroadcastReceiver* receiver,
-    /* [in] */ IIntentFilter* filter,
-    /* [out] */ IIntent** stickyIntent)
-{
-    return mBase->RegisterReceiver(receiver, filter, stickyIntent);
-}
-
-ECode Activity::RegisterReceiver(
-    /* [in] */ IBroadcastReceiver* receiver,
-    /* [in] */ IIntentFilter* filter,
-    /* [in] */ const String& broadcastPermission,
-    /* [in] */ IHandler* scheduler,
-    /* [out] */ IIntent** stickyIntent)
-{
-    return mBase->RegisterReceiver(receiver, filter, broadcastPermission, scheduler, stickyIntent);
-}
-
-ECode Activity::RegisterReceiverAsUser(
-    /* [in] */ IBroadcastReceiver* receiver,
-    /* [in] */ IUserHandle* user,
-    /* [in] */ IIntentFilter* filter,
-    /* [in] */ const String& broadcastPermission,
-    /* [in] */ IHandler* scheduler,
-    /* [out] */ IIntent** stickyIntent)
-{
-    return mBase->RegisterReceiverAsUser(receiver, user, filter, broadcastPermission, scheduler, stickyIntent);
-}
-
-ECode Activity::UnregisterReceiver(
-    /* [in] */ IBroadcastReceiver* receiver)
-{
-    return mBase->UnregisterReceiver(receiver);
-}
-
-ECode Activity::StartService(
-    /* [in] */ IIntent* service,
-    /* [out] */ IComponentName** name)
-{
-    return mBase->StartService(service, name);
-}
-
-ECode Activity::StopService(
-    /* [in] */ IIntent* service,
-    /* [out] */ Boolean* succeeded)
-{
-    return mBase->StopService(service, succeeded);
-}
-
-ECode Activity::StartServiceAsUser(
-    /* [in] */ IIntent* service,
-    /* [in] */ IUserHandle* user,
-    /* [out] */ IComponentName** name)
-{
-    return mBase->StartServiceAsUser(service, user, name);
-}
-
-ECode Activity::StopServiceAsUser(
-    /* [in] */ IIntent* service,
-    /* [in] */ IUserHandle* user,
-    /* [out] */ Boolean* succeeded)
-{
-    VALIDATE_NOT_NULL(succeeded)
-    return mBase->StopServiceAsUser(service, user, succeeded);
-}
-
-ECode Activity::BindService(
-    /* [in] */ IIntent* service,
-    /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
-    /* [in] */ Int32 flags,
-    /* [out] */ Boolean* succeeded)
-{
-    return mBase->BindService(service, conn, flags, succeeded);
-}
-
-ECode Activity::BindService(
-    /* [in] */ IIntent* service,
-    /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
-    /* [in] */ Int32 flags,
-    /* [in] */ Int32 userHandle,
-    /* [out] */ Boolean* succeeded)
-{
-    return mBase->BindService(service, conn, flags, userHandle, succeeded);
-}
-
-ECode Activity::UnbindService(
-    /* [in] */ Elastos::Droid::Content::IServiceConnection* conn)
-{
-    return mBase->UnbindService(conn);
-}
-
-ECode Activity::StartInstrumentation(
-    /* [in] */ IComponentName* className,
-    /* [in] */ const String& profileFile,
-    /* [in] */ IBundle* arguments,
-    /* [out] */ Boolean* succeeded)
-{
-    return mBase->StartInstrumentation(className, profileFile, arguments, succeeded);
-}
-
 //    @Override
 ECode Activity::GetSystemService(
     /* [in] */ const String& name,
@@ -5145,204 +4850,6 @@ ECode Activity::GetSystemService(
     }
 
     return mBase->GetSystemService(name, object);
-}
-
-ECode Activity::CheckPermission(
-    /* [in] */ const String& permission,
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [out] */ Int32 * result)
-{
-    return mBase->CheckPermission(permission, pid, uid, result);
-}
-
-ECode Activity::CheckCallingPermission(
-    /* [in] */ const String& permission,
-    /* [out] */ Int32* value)
-{
-    return mBase->CheckCallingPermission(permission, value);
-}
-
-ECode Activity::CheckCallingOrSelfPermission(
-    /* [in] */ const String& permission,
-    /* [out] */ Int32* perm)
-{
-    return mBase->CheckCallingOrSelfPermission(permission, perm);
-}
-
-ECode Activity::EnforcePermission(
-    /* [in] */ const String& permission,
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforcePermission(permission, pid, uid, message);
-}
-
-ECode Activity::EnforceCallingPermission(
-    /* [in] */ const String& permission,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforceCallingPermission(permission, message);
-}
-
-ECode Activity::EnforceCallingOrSelfPermission(
-    /* [in] */ const String& permission,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforceCallingOrSelfPermission(permission, message);
-}
-
-ECode Activity::GrantUriPermission(
-    /* [in] */ const String& toCapsule,
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 modeFlags)
-{
-    return mBase->GrantUriPermission(toCapsule, uri, modeFlags);
-}
-
-ECode Activity::RevokeUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 modeFlags)
-{
-    return mBase->RevokeUriPermission(uri, modeFlags);
-}
-
-ECode Activity::CheckUriPermission(
-    /* [in] */ IUri * uri,
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 modeFlags,
-    /* [out] */ Int32 * result)
-{
-    return mBase->CheckUriPermission(uri, pid, uid, modeFlags, result);
-}
-
-ECode Activity::CheckCallingUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 modeFlags,
-    /* [out] */ Int32* permissionId)
-{
-    return mBase->CheckCallingUriPermission(uri, modeFlags, permissionId);
-}
-
-ECode Activity::CheckCallingOrSelfUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 modeFlags,
-    /* [out] */ Int32* permissionId)
-{
-    return mBase->CheckCallingOrSelfUriPermission(uri, modeFlags, permissionId);
-}
-
-ECode Activity::CheckUriPermission(
-    /* [in] */ IUri * uri,
-    /* [in] */ const String& readPermission,
-    /* [in] */ const String& writePermission,
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 modeFlags,
-    /* [out] */ Int32 * result)
-{
-    return mBase->CheckUriPermission(uri, readPermission, writePermission,
-                    pid, uid, modeFlags, result);
-}
-
-ECode Activity::EnforceUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 modeFlags,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforceUriPermission(uri, pid, uid, modeFlags, message);
-}
-
-ECode Activity::EnforceCallingUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 modeFlags,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforceCallingUriPermission(uri, modeFlags, message);
-}
-
-ECode Activity::EnforceCallingOrSelfUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ Int32 modeFlags,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforceCallingOrSelfUriPermission(uri, modeFlags, message);
-}
-
-ECode Activity::EnforceUriPermission(
-    /* [in] */ IUri* uri,
-    /* [in] */ const String& readPermission,
-    /* [in] */ const String& writePermission,
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 modeFlags,
-    /* [in] */ const String& message)
-{
-    return mBase->EnforceUriPermission(uri, readPermission, writePermission,
-            pid, uid, modeFlags, message);
-}
-
-ECode Activity::CreatePackageContext(
-    /* [in] */ const String& capsuleName,
-    /* [in] */ Int32 flags,
-    /* [out] */ IContext** ctx)
-{
-    return mBase->CreatePackageContext(capsuleName, flags, ctx);
-}
-
-ECode Activity::CreatePackageContextAsUser(
-    /* [in] */ const String& packageName,
-    /* [in] */ Int32 flags,
-    /* [in] */ IUserHandle* user,
-    /* [out] */ IContext** ctx)
-{
-    return mBase->CreatePackageContextAsUser(packageName, flags, user, ctx);
-}
-
-ECode Activity::CreateConfigurationContext(
-    /* [in] */ IConfiguration* overrideConfiguration,
-    /* [out] */ IContext** ctx)
-{
-    return mBase->CreateConfigurationContext(overrideConfiguration, ctx);
-}
-
-ECode Activity::CreateDisplayContext(
-    /* [in] */ IDisplay* display,
-    /* [out] */ IContext** ctx)
-{
-    return mBase->CreateDisplayContext(display, ctx);
-}
-
-ECode Activity::GetCompatibilityInfo(
-    /* [in] */ Int32 displayId,
-    /* [out] */ ICompatibilityInfoHolder** infoHolder)
-{
-    return mBase->GetCompatibilityInfo(displayId, infoHolder);
-}
-
-ECode Activity::IsRestricted(
-    /* [out] */ Boolean* isRestricted)
-{
-    return mBase->IsRestricted(isRestricted);
-}
-
-// interface of ContextThemeWrapper
-ECode Activity::ApplyOverrideConfiguration(
-    /* [in] */ IConfiguration* overrideConfiguration)
-{
-    if (mResources != NULL) {
-        Slogger::E(TAG, "getResources() has already been called");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    if (mOverrideConfiguration != NULL) {
-        Slogger::E(TAG, "Override configuration has already been set");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    return CConfiguration::New(overrideConfiguration, (IConfiguration**)&mOverrideConfiguration);
 }
 
 } // namespace App

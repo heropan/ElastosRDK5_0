@@ -27,8 +27,13 @@ ECode ActivityManagerTaskThumbnails::WriteToParcel(
     } else {
         FAIL_RETURN(dest->WriteInt32(0));
     }
-    FAIL_RETURN(dest->WriteInt32(mNumSubThumbbails));
-    FAIL_RETURN(dest->WriteInterfacePtr((IInterface*)mRetriever));
+
+    if (mThumbnailFileDescriptor != NULL) {
+        FAIL_RETURN(dest->WriteInt32(1));
+        mThumbnailFileDescriptor.writeToParcel(dest, flags);
+    } else {
+        FAIL_RETURN(dest->WriteInt32(0));
+    }
 
     return NOERROR;
 }
@@ -45,8 +50,12 @@ ECode ActivityManagerTaskThumbnails::ReadFromParcel(
     } else {
         mMainThumbnail = NULL;
     }
-    FAIL_RETURN(source->ReadInt32(&mNumSubThumbbails));
-//    retriever = IThumbnailRetriever.Stub.asInterface(source.readStrongBinder());
+    FAIL_RETURN(source->ReadInt32(&value));
+    if (value != 0)  {
+        mThumbnailFileDescriptor = ParcelFileDescriptor.CREATOR.createFromParcel(source);
+    } else {
+        mThumbnailFileDescriptor = NULL;
+    }
 
     return NOERROR;
 }

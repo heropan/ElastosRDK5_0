@@ -16,6 +16,12 @@ namespace App {
 CActivityManagerRecentTaskInfo::CActivityManagerRecentTaskInfo()
     : mId(0)
     , mPersistentId(0)
+    , mStackId(0)
+    , mUserId(0)
+    , firstActiveTime(0)
+    , lastActiveTime(0)
+    , mAffiliatedTaskId(0)
+    , mAffiliatedTaskColor(0)
 {
 }
 
@@ -39,6 +45,19 @@ ECode CActivityManagerRecentTaskInfo::WriteToParcel(
     // TODO
 //    TextUtils.writeToParcel(description, dest,
 //            Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+
+    if (mTaskDescription != NULL) {
+        dest->WriteInt32(1);
+        mTaskDescription.writeToParcel(dest, 0);
+    } else {
+        dest->WriteInt32(0);
+    }
+    dest->WriteInt32(mStackId);
+    dest->WriteInt32(mUserId);
+    dest->WriteInt64(mFirstActiveTime);
+    dest->WriteInt64(mLastActiveTime);
+    dest->WriteInt32(mAffiliatedTaskId);
+    dest->WriteInt32(mAffiliatedTaskColor);
     return NOERROR;
 }
 
@@ -58,6 +77,14 @@ ECode CActivityManagerRecentTaskInfo::ReadFromParcel(
     mDescription = ICharSequence::Probe(obj);
     // TODO
 //    description = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
+    taskDescription = source->ReadInt32() > 0 ?
+            TaskDescription.CREATOR.createFromParcel(source) : null;
+    source->ReadInt32(&mStackId);
+    source->ReadInt32(&mUserId);
+    source->ReadInt64(&mFirstActiveTime);
+    source->ReadInt64(&mLastActiveTime);
+    source->ReadInt32(&mAffiliatedTaskId);
+    source->ReadInt32(&mAffiliatedTaskColor);
     return NOERROR;
 }
 

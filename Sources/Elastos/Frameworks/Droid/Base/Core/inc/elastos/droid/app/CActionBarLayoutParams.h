@@ -52,10 +52,6 @@ public:
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-
-
-
-
     CARAPI GetLeftMargin(
         /* [out] */ Int32* leftMargin);
 
@@ -148,6 +144,16 @@ public:
 
 public:
     Int32 mGravity;// = Gravity.NO_GRAVITY;
+
+    /*
+     * Note for framework developers:
+     *
+     * You might notice that ActionBar.LayoutParams is missing a constructor overload
+     * for MarginLayoutParams. While it may seem like a good idea to add one, at this
+     * point it's dangerous for source compatibility. Upon building against a new
+     * version of the SDK an app can end up statically linking to the new MarginLayoutParams
+     * overload, causing a crash when running on older platform versions with no other changes.
+     */
 };
 
 } // namespace App

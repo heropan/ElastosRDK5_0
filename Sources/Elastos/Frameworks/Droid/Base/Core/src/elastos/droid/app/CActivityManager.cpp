@@ -34,6 +34,7 @@ namespace App {
 
 String CActivityManager::TAG("CActivityManager");
 Boolean CActivityManager::localLOGV = FALSE;
+Int32 CActivityManager::gMaxRecentTasks = -1;
 
 /*package*/
 ECode CActivityManager::constructor(
@@ -145,31 +146,42 @@ ECode CActivityManager::GetMemoryClass(
     /* [out] */ Int32* cls)
 {
     VALIDATE_NOT_NULL(cls)
-    *cls = 0;
-//     return staticGetMemoryClass();
+    *cls = StaticGetMemoryClass();
     return E_NOT_IMPLEMENTED;
 }
 
-/**
- * Return the approximate per-application memory class of the current
- * device when an application is running with a large heap.  This is the
- * space available for memory-intensive applications; most applications
- * should not need this amount of memory, and should instead stay with the
- * {@link #getMemoryClass()} limit.  The returned value is in megabytes.
- * This may be the same size as {@link #getMemoryClass()} on memory
- * constrained devices, or it may be significantly larger on devices with
- * a large amount of available RAM.
- *
- * <p>The is the size of the application's Dalvik heap if it has
- * specified <code>android:largeHeap="true"</code> in its manifest.
- */
 ECode CActivityManager::GetLargeMemoryClass(
     /* [out] */ Int32* cls)
 {
     VALIDATE_NOT_NULL(cls)
-    *cls = 0;
-//     return staticGetLargeMemoryClass();
+    *cls = StaticGetLargeMemoryClass();
     return E_NOT_IMPLEMENTED;
+}
+
+Int32 CActivityManager::StaticGetLargeMemoryClass()
+{
+    // Really brain dead right now -- just take this from the configured
+    // vm heap size, and assume it is in megabytes and thus ends with "m".
+    String vmHeapSize;
+    SystemProperties::Get(String("dalvik.vm.heapsize"), String("16m"), &vmHeapSize);
+    Int32 value;
+    StringUtils::Parse(vmHeapSize.Substring(0, vmHeapSize.GetLength() - 1), &value);
+    return value;
+}
+
+Boolean CActivityManager::IsLowRamDevice(
+    /* [out] */ Boolean* isLow)
+{
+    VALIDATE_NOT_NULL(isLow)
+    *isLow = IsLowRamDeviceStatic();
+    return NOERROR;
+}
+
+Boolean CActivityManager::IsLowRamDeviceStatic()
+{
+    String value;
+    SystemProperties::Get(String("ro.config.low_ram"), String("false"), &value);
+    return value.Equals("true");
 }
 
 ECode CActivityManager::GetRecentTasks(
@@ -215,47 +227,103 @@ ECode CActivityManager::GetRecentTasksForUser(
     // }
 }
 
-ECode CActivityManager::GetRunningTasks(
-    /* [in] */ Int32 maxNum,
-    /* [in] */ Int32 flags,
-    /* [in] */ IThumbnailReceiver* receiver,
-    /* [out] */ IObjectContainer** tasks)
+ECode CActivityManager::GetAppTasks(
+    /* [out] */ IList* tasks)
 {
-    VALIDATE_NOT_NULL(tasks);
-    *tasks = NULL;
-    // try {
-    AutoPtr<IObjectContainer> temp;
-    FAIL_RETURN(ActivityManagerNative::GetDefault()->GetTasks(
-        maxNum, flags, receiver, (IObjectContainer**)&temp));
-    *tasks = temp;
-    REFCOUNT_ADD(*tasks);
-    return NOERROR;
-    // } catch (RemoteException e) {
-    //     // System dead, we will be dead too soon!
-    //     return null;
-    // }
+    ArrayList<AppTask> tasks = new ArrayList<AppTask>();
+    List<IAppTask> appTasks;
+    try {
+        appTasks = return ActivityManagerNative::GetDefault()->getAppTasks(mContext.getPackageName());
+    } catch (RemoteException e) {
+        // System dead, we will be dead too soon!
+        return null;
+    }
+    int numAppTasks = appTasks.size();
+    for (int i = 0; i < numAppTasks; i++) {
+        tasks.add(new AppTask(appTasks.get(i)));
+    }
+    return tasks;
+}
+
+
+ECode CActivityManager::GetAppTaskThumbnailSize(
+    /* [out] */ ISize** size)
+{
+    synchronized (this) {
+        ensureAppTaskThumbnailSizeLocked();
+        return new Size(mAppTaskThumbnailSize.x, mAppTaskThumbnailSize.y);
+    }
+}
+
+ECode CActivityManager::EnsureAppTaskThumbnailSizeLocked()
+{
+    if (mAppTaskThumbnailSize == null) {
+        try {
+            mAppTaskThumbnailSize = return ActivityManagerNative::GetDefault()->getAppTaskThumbnailSize();
+        } catch (RemoteException e) {
+            throw new IllegalStateException("System dead?", e);
+        }
+    }
+}
+
+ECode CActivityManager::AddAppTask(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IIntent* intent,
+    /* [in] */ ITaskDescription* description,
+    /* [in] */ IBitmap* thumbnail,
+    /* [out] */ Int32* value)
+{
+    Point size;
+    synchronized (this) {
+        ensureAppTaskThumbnailSizeLocked();
+        size = mAppTaskThumbnailSize;
+    }
+    final int tw = thumbnail.getWidth();
+    final int th = thumbnail.getHeight();
+    if (tw != size.x || th != size.y) {
+        Bitmap bm = Bitmap.createBitmap(size.x, size.y, thumbnail.getConfig());
+
+        // Use ScaleType.CENTER_CROP, except we leave the top edge at the top.
+        float scale;
+        float dx = 0, dy = 0;
+        if (tw * size.x > size.y * th) {
+            scale = (float) size.x / (float) th;
+            dx = (size.y - tw * scale) * 0.5f;
+        } else {
+            scale = (float) size.y / (float) tw;
+            dy = (size.x - th * scale) * 0.5f;
+        }
+        Matrix matrix = new Matrix();
+        matrix.setScale(scale, scale);
+        matrix.postTranslate((int) (dx + 0.5f), 0);
+
+        Canvas canvas = new Canvas(bm);
+        canvas.drawBitmap(thumbnail, matrix, null);
+        canvas.setBitmap(null);
+
+        thumbnail = bm;
+    }
+    if (description == null) {
+        description = new TaskDescription();
+    }
+    try {
+        return return ActivityManagerNative::GetDefault()->addAppTask(activity.getActivityToken(),
+                intent, description, thumbnail);
+    } catch (RemoteException e) {
+        throw new IllegalStateException("System dead?", e);
+    }
 }
 
 ECode CActivityManager::GetRunningTasks(
     /* [in] */ Int32 maxNum,
-    /* [out] */ IObjectContainer** tasks)
+    /* [out] */ IList** tasks)
 {
-    return GetRunningTasks(maxNum, 0, NULL, tasks);
-}
-
-ECode CActivityManager::RemoveSubTask(
-    /* [in] */ Int32 taskId,
-    /* [in] */ Int32 subTaskIndex,
-    /* [out] */ Boolean* removed)
-{
-//     try {
-    ECode ec = ActivityManagerNative::GetDefault()->RemoveSubTask(taskId, subTaskIndex, removed);
-    if (FAILED(ec)) *removed = FALSE;
-    return NOERROR;
-//     } catch (RemoteException e) {
-//         // System dead, we will be dead too soon!
-//         return false;
-//     }
+    try {
+        return return ActivityManagerNative::GetDefault()->getTasks(maxNum, 0);
+    } catch (RemoteException e) {
+        // System dead, we will be dead too soon!
+        return null;
+    }
 }
 
 ECode CActivityManager::RemoveTask(
@@ -273,13 +341,13 @@ ECode CActivityManager::RemoveTask(
     // }
 }
 
-ECode CActivityManager::GetTaskThumbnails(
+ECode CActivityManager::GetTaskThumbnail(
     /* [in] */ Int32 id,
-    /* [out] */ IActivityManagerTaskThumbnails** taskThumbnail)
+    /* [out] */ IActivityManagerTaskThumbnail** taskThumbnail)
 {
     // try {
     VALIDATE_NOT_NULL(taskThumbnail)
-    ECode ec = ActivityManagerNative::GetDefault()->GetTaskThumbnails(id, taskThumbnail);
+    ECode ec = ActivityManagerNative::GetDefault()->GetTaskThumbnail(id, taskThumbnail);
     if (FAILED(ec)) {
         *taskThumbnail = NULL;
     }
@@ -292,12 +360,12 @@ ECode CActivityManager::GetTaskThumbnails(
 
 /** @hide */
 ECode CActivityManager::GetTaskTopThumbnail(
-    /* [in] */ Int32 id,
-    /* [out] */ IBitmap** thumbnail)
+    /* [in] */ Int32 taskId,
+    /* [out] */ Boolean* isin)
 {
-    VALIDATE_NOT_NULL(thumbnail);
+    VALIDATE_NOT_NULL(isin);
     // try {
-    ECode ec = ActivityManagerNative::GetDefault()->GetTaskTopThumbnail(id, thumbnail);
+    ECode ec = ActivityManagerNative::GetDefault()->IsInHomeStack(id, taskId);
     if (FAILED(ec)) {
         *thumbnail = NULL;
     }
@@ -391,6 +459,14 @@ ECode CActivityManager::ClearApplicationUserData(
     // }
 }
 
+ECode CActivityManager::ClearApplicationUserData(
+    /* [out] */ Boolean* result )
+{
+    String pkgname;
+    mContext->GetPackageName(&pkgname);
+    return ClearApplicationUserData(pkgname, NULL, result);
+}
+
 ECode CActivityManager::GetProcessesInErrorState(
     /* [out] */ IObjectContainer** records)
 {
@@ -470,8 +546,15 @@ ECode CActivityManager::KillBackgroundProcesses(
 ECode CActivityManager::ForceStopPackage(
     /* [in] */ const String& packageName)
 {
+    return ForceStopPackageAsUser(packageName, UserHandle::GetMyUserId());
+}
+
+ECode CActivityManager::ForceStopPackageAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userId)
+{
     // try {
-    return ActivityManagerNative::GetDefault()->ForceStopPackage(packageName, UserHandle::GetMyUserId());
+    return ActivityManagerNative::GetDefault()->ForceStopPackage(packageName, userId);
     // } catch (RemoteException e) {
     // }
 }
@@ -502,12 +585,6 @@ ECode CActivityManager::GetLauncherLargeIconDensity(
     Int32 sw;
     res->GetConfiguration((IConfiguration**)&conf);
     conf->GetSmallestScreenWidthDp(&sw);
-
-    String tabeltUI = Build::TABLETUI;
-    if (tabeltUI.EqualsIgnoreCase("TRUE")){
-            *density = IDisplayMetrics::DENSITY_HIGH;
-            return NOERROR;
-    }
 
     if (sw < 600) {
         // Smaller than approx 7" tablets, use the regular icon size.
@@ -540,6 +617,13 @@ ECode CActivityManager::GetLauncherLargeIconSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
+    *size = GetLauncherLargeIconSizeInner(mContext);
+    return NOERROR;
+}
+
+Int CActivityManager::GetLauncherLargeIconSizeInner(
+        /* [in] */ IContext* context)
+{
     AutoPtr<IResources> res;
     mContext->GetResources((IResources**)&res);
     Int32 pSize;
@@ -551,8 +635,7 @@ ECode CActivityManager::GetLauncherLargeIconSize(
 
     if (sw < 600) {
         // Smaller than approx 7" tablets, use the regular icon size.
-        *size = pSize;
-        return NOERROR;
+        return pSize;
     }
 
     AutoPtr<IDisplayMetrics> dm;
@@ -562,83 +645,87 @@ ECode CActivityManager::GetLauncherLargeIconSize(
 
     switch (density) {
         case IDisplayMetrics::DENSITY_LOW:
-            *size = (pSize * IDisplayMetrics::DENSITY_MEDIUM) / IDisplayMetrics::DENSITY_LOW;
+            return (pSize * IDisplayMetrics::DENSITY_MEDIUM) / IDisplayMetrics::DENSITY_LOW;
         case IDisplayMetrics::DENSITY_MEDIUM:
-            *size = (pSize * IDisplayMetrics::DENSITY_HIGH) / IDisplayMetrics::DENSITY_MEDIUM;
+            return (pSize * IDisplayMetrics::DENSITY_HIGH) / IDisplayMetrics::DENSITY_MEDIUM;
         case IDisplayMetrics::DENSITY_TV:
-            *size = (pSize * IDisplayMetrics::DENSITY_XHIGH) / IDisplayMetrics::DENSITY_HIGH;
+            return (pSize * IDisplayMetrics::DENSITY_XHIGH) / IDisplayMetrics::DENSITY_HIGH;
         case IDisplayMetrics::DENSITY_HIGH:
-            *size = (pSize * IDisplayMetrics::DENSITY_XHIGH) / IDisplayMetrics::DENSITY_HIGH;
+            return (pSize * IDisplayMetrics::DENSITY_XHIGH) / IDisplayMetrics::DENSITY_HIGH;
         case IDisplayMetrics::DENSITY_XHIGH:
-            *size = (pSize * IDisplayMetrics::DENSITY_XXHIGH) / IDisplayMetrics::DENSITY_XHIGH;
+            return (pSize * IDisplayMetrics::DENSITY_XXHIGH) / IDisplayMetrics::DENSITY_XHIGH;
         case IDisplayMetrics::DENSITY_XXHIGH:
-            *size = (pSize * IDisplayMetrics::DENSITY_XHIGH*2) / IDisplayMetrics::DENSITY_XXHIGH;
+            return (pSize * IDisplayMetrics::DENSITY_XHIGH*2) / IDisplayMetrics::DENSITY_XXHIGH;
         default:
             // The density is some abnormal value.  Return some other
             // abnormal value that is a reasonable scaling of it.
-            *size = (Int32)((pSize*1.5f) + .5f);
+            return (Int32)((pSize*1.5f) + .5f);
     }
-    return NOERROR;
+    return 0;
 }
 
-ECode CActivityManager::GetAllPackageLaunchCounts(
-    /* [out] */ IObjectStringMap** counts)
+// ECode CActivityManager::GetAllPackageLaunchCounts(
+//     /* [out] */ IMap** counts)
+// {
+//     VALIDATE_NOT_NULL(counts)
+//     *counts = NULL;
+//     // try {
+//     AutoPtr<IInterface> service = ServiceManager::GetService(String("usagestats"));
+//     AutoPtr<IIUsageStats> usageStatsService = IIUsageStats::Probe(service);
+//     if (usageStatsService == NULL) {
+//         return CObjectStringMap::New(counts);
+//     }
+
+//     AutoPtr< ArrayOf<IPkgUsageStats*> > allPkgUsageStats;
+//     if (FAILED(usageStatsService->GetAllPkgUsageStats((ArrayOf<IPkgUsageStats*>**)&allPkgUsageStats))) {
+//         Slogger::W(TAG, "Could not query launch counts");
+//         return CObjectStringMap::New(counts);
+//     }
+//     if (allPkgUsageStats == NULL) {
+//         return CObjectStringMap::New(counts);
+//     }
+
+//     AutoPtr<IObjectStringMap> launchCounts;
+//     CObjectStringMap::New((IObjectStringMap**)&launchCounts);
+//     for (Int32 i = 0; i < allPkgUsageStats->GetLength(); ++i) {
+//         Slogger::E(TAG, "TODO: PkgUsageStats has not been realized!!!!!!!!!!!!!!");
+//         assert(0);
+//         // launchCounts.put(pkgUsageStats.packageName, pkgUsageStats.launchCount);
+//     }
+
+//     *counts = launchCounts;
+//     REFCOUNT_ADD(*counts);
+//     return NOERROR;
+//     // } catch (RemoteException e) {
+//     //     Log.w(TAG, "Could not query launch counts", e);
+//     //     return new HashMap<String, Integer>();
+//     // }
+// }
+
+ECode CActivityManager::StartLockTaskMode(
+    /* [in] */ Int32 taskId)
 {
-    VALIDATE_NOT_NULL(counts)
-    *counts = NULL;
     // try {
-    AutoPtr<IInterface> service = ServiceManager::GetService(String("usagestats"));
-    AutoPtr<IIUsageStats> usageStatsService = IIUsageStats::Probe(service);
-    if (usageStatsService == NULL) {
-        return CObjectStringMap::New(counts);
-    }
-
-    AutoPtr< ArrayOf<IPkgUsageStats*> > allPkgUsageStats;
-    if (FAILED(usageStatsService->GetAllPkgUsageStats((ArrayOf<IPkgUsageStats*>**)&allPkgUsageStats))) {
-        Slogger::W(TAG, "Could not query launch counts");
-        return CObjectStringMap::New(counts);
-    }
-    if (allPkgUsageStats == NULL) {
-        return CObjectStringMap::New(counts);
-    }
-
-    AutoPtr<IObjectStringMap> launchCounts;
-    CObjectStringMap::New((IObjectStringMap**)&launchCounts);
-    for (Int32 i = 0; i < allPkgUsageStats->GetLength(); ++i) {
-        Slogger::E(TAG, "TODO: PkgUsageStats has not been realized!!!!!!!!!!!!!!");
-        assert(0);
-        // launchCounts.put(pkgUsageStats.packageName, pkgUsageStats.launchCount);
-    }
-
-    *counts = launchCounts;
-    REFCOUNT_ADD(*counts);
-    return NOERROR;
+    return ActivityManagerNative::GetDefault()->StartLockTaskMode(taskId);
     // } catch (RemoteException e) {
-    //     Log.w(TAG, "Could not query launch counts", e);
-    //     return new HashMap<String, Integer>();
     // }
 }
 
-ECode CActivityManager::GetAllPackageUsageStats(
-    /* [out, callee] */ ArrayOf<IPkgUsageStats*>** stats)
+ECode CActivityManager::StopLockTaskMode()
 {
-    VALIDATE_NOT_NULL(stats)
-    *stats = NULL;
     // try {
-    AutoPtr<IInterface> service = ServiceManager::GetService(String("usagestats"));
-    AutoPtr<IIUsageStats> usageStatsService = IIUsageStats::Probe(service);
-    if (usageStatsService != NULL) {
-        ECode ec = usageStatsService->GetAllPkgUsageStats(stats);
-        if (FAILED(ec)) {
-            Slogger::W(TAG, "Could not query launch counts");
-            AutoPtr< ArrayOf<IPkgUsageStats*> > array = ArrayOf<IPkgUsageStats*>::Alloc(0);
-            *stats = array;
-            REFCOUNT_ADD(*stats);
-        }
-    }
-    return NOERROR;
+    return ActivityManagerNative::GetDefault()->stopLockTaskMode();
     // } catch (RemoteException e) {
-    //     Log.w(TAG, "Could not query usage stats", e);
+    // }
+}
+
+ECode CActivityManager::IsInLockTaskMode(
+    /* [out] */ Boolean* mode)
+{
+    // try {
+        return return ActivityManagerNative::GetDefault()->IsInLockTaskMode(mode);
+    // } catch (RemoteException e) {
+    //     return false;
     // }
 }
 
@@ -693,26 +780,26 @@ Int32 CActivityManager::GetLargeMemoryClass()
 
 Boolean CActivityManager::IsHighEndGfx()
 {
-    // MemInfoReader reader = new MemInfoReader();
-    // reader.readMemInfo();
-    // if (reader.getTotalSize() >= (512*1024*1024)) {
-    //     // If the device has at least 512MB RAM available to the kernel,
-    //     // we can afford the overhead of graphics acceleration.
-    //     return true;
-    // }
+    return !IsLowRamDeviceStatic() &&
+            !Resources.getSystem().getBoolean(R::_bool::config_avoidGfxAccel);
+}
 
-    // Display display = DisplayManagerGlobal.getInstance().getRealDisplay(
-    //         Display.DEFAULT_DISPLAY);
-    // Point p = new Point();
-    // display.getRealSize(p);
-    // int pixels = p.x * p.y;
-    // if (pixels >= (1024*600)) {
-    //     // If this is a sufficiently large screen, then there are enough
-    //     // pixels on it that we'd really like to use hw drawing.
-    //     return true;
-    // }
-    // return false;
-    return FALSE;
+Int32 CActivityManager::GetMaxRecentTasksStatic()
+{
+    if (gMaxRecentTasks < 0) {
+        return gMaxRecentTasks = IsLowRamDeviceStatic() ? 50 : 100;
+    }
+    return gMaxRecentTasks;
+}
+
+Int32 CActivityManager::GetDefaultAppRecentsLimitStatic()
+{
+    return GetMaxRecentTasksStatic() / 6;
+}
+
+Int32 CActivityManager::GetMaxAppRecentsLimitStatic()
+{
+    return getMaxRecentTasksStatic() / 2;
 }
 
 Boolean CActivityManager::IsLargeRAM()
@@ -728,10 +815,11 @@ Boolean CActivityManager::IsLargeRAM()
     return FALSE;
 }
 
+
 AutoPtr<IActivityManagerRunningAppProcessInfo> CActivityManager::GetMyMemoryState()
 {
     //     try {
-    //         ActivityManagerNative.getDefault().getMyMemoryState(outState);
+    //         return ActivityManagerNative::GetDefault()->getMyMemoryState(outState);
     //     } catch (RemoteException e) {
     //     }
     AutoPtr<IActivityManagerRunningAppProcessInfo> info;
@@ -777,7 +865,6 @@ Int32 CActivityManager::CheckComponentPermission(
     }
     // If the target is not exported, then nobody else can get to it.
     if (!exported) {
-        //Slogger::W(TAG, "Permission denied: checkComponentPermission() owningUid=%d", owningUid);
         return IPackageManager::PERMISSION_DENIED;
     }
     if (permission.IsNull()) {
