@@ -1,7 +1,7 @@
 #include "elastos/droid/webkit/native/android_webview/HttpAuthDatabase.h"
 #include "elastos/droid/content/CContentValues.h"
-#include "elastos/core/AutoLock.h"
-#include "elastos/utility/logging/Logger.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;

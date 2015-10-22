@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/utility/etl/HashMap.h"
-#include "elastos/core/Thread.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Thread.h>
 // import android.annotation.TargetApi;
 using Elastos::Droid::Hardware::Usb::IUsbManager;
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
@@ -23,12 +23,7 @@ using Elastos::IO::IByteBuffer;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Utility::Etl::HashMap;
 
-_ETL_NAMESPACE_BEGIN
-template<> struct Hash<AutoPtr<Elastos::Droid::Hardware::Usb::IUsbEndpoint> >
-{
-            size_t operator() (AutoPtr<IUsbEndpoint> x) const { return (size_t)x.Get(); }
-};
-_ETL_NAMESPACE_END
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Hardware::Usb::IUsbEndpoint);
 
 namespace Elastos {
 namespace Droid {

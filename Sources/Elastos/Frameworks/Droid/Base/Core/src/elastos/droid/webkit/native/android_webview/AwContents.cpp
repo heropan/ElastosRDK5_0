@@ -16,13 +16,13 @@
 #include "elastos/droid/os/CMessageHelper.h"
 #include "elastos/droid/graphics/CRect.h"
 //TODO #include "elastos/droid/net/CUri.h"
-//TODO #include "elastos/net/CURL.h"
-//TODO #include "elastos/io/CFile.h"
 //#include "elastos/droid/widget/COverScroller.h"
-#include "elastos/core/Math.h"
-#include "elastos/core/StringUtils.h"
-//TODO #include "elastos/utility/CHashMap.h"
-#include "elastos/utility/logging/Logger.h"
+//TODO #include <elastos/net/CURL.h>
+//TODO #include <elastos/io/CFile.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+//TODO #include <elastos/utility/CHashMap.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::EIID_IActivity;

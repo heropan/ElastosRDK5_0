@@ -730,7 +730,7 @@ public:
 
             //@Override
             CARAPI OnPostExecute(
-                    /* [in] */ IInterface*);
+                    /* [in] */ IInterface* result);
 
         private:
             AwContents* mOwner;

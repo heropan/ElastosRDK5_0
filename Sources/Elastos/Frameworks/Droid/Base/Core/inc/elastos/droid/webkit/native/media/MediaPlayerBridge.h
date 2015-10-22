@@ -52,8 +52,8 @@ private:
             /* [out] */ IInterface** result);
 
         //@Override
-        CARAPI_(void) OnPostExecute(
-            /* [in] */ Boolean result);
+        CARAPI OnPostExecute(
+            /* [in] */ IInterface* result);
 
     private:
         CARAPI_(void) DeleteFile();

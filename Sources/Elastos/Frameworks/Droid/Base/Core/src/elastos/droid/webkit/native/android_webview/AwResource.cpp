@@ -1,7 +1,7 @@
 #include "elastos/droid/webkit/native/android_webview/AwResource.h"
-//TODO #include "elastos/utility/CScanner.h"
-//TODO #include "elastos/io/CInputStreamReader.h"
-#include "elastos/utility/logging/Logger.h"
+//TODO #include <elastos/utility/CScanner.h>
+//TODO #include <elastos/io/CInputStreamReader.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IInputStreamReader;
 using Elastos::IO::CInputStreamReader;

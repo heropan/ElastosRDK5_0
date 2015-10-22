@@ -1,11 +1,11 @@
 #include "elastos/droid/webkit/native/android_webview/DefaultVideoPosterRequestHandler.h"
 
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
-#include "elastos/core/StringUtils.h"
-//TODO #include "elastos/io/CPipedInputStream.h"
-//TODO #include "elastos/io/CPipedOutputStream.h"
-#include "elastos/utility/logging/Logger.h"
-//TODO #include "elastos/utility/CRandom.h"
+#include <elastos/core/StringUtils.h>
+//TODO #include <elastos/io/CPipedInputStream.h>
+//TODO #include <elastos/io/CPipedOutputStream.h>
+//TODO #include <elastos/utility/CRandom.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Droid::Graphics::BitmapCompressFormat_PNG;

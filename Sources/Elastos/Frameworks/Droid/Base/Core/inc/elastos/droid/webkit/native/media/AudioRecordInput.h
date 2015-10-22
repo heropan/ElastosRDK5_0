@@ -2,8 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__
 #include "elastos/droid/ext/frameworkext.h"
-
-#include "elastos/core/Thread.h"
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::Media::IAudioRecord;
 using Elastos::Droid::Media::Audiofx::IAcousticEchoCanceler;

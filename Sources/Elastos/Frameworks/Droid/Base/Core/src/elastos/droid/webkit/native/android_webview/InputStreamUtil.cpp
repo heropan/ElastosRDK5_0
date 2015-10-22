@@ -1,6 +1,6 @@
 #include "elastos/droid/webkit/native/android_webview/InputStreamUtil.h"
-#include "elastos/core/Math.h"
-#include "elastos/utility/logging/Logger.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 

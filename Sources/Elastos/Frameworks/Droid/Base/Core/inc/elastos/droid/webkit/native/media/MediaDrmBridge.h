@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/utility/etl/HashMap.h"
 #include "elastos/droid/os/AsyncTask.h"
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Media::IMediaCrypto;
 using Elastos::Droid::Media::IMediaDrmOnEventListener;
@@ -25,12 +25,8 @@ using Elastos::Utility::Etl::HashMap;
 
 // import java.io.IOException;
 
-_ETL_NAMESPACE_BEGIN
-template<> struct Hash<AutoPtr<Elastos::IO::IByteBuffer> >
-{
-        size_t operator() (AutoPtr<IByteBuffer> x) const { return (size_t)x.Get(); }
-};
-_ETL_NAMESPACE_END
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::IO::IByteBuffer);
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -105,7 +101,7 @@ private:
 
         //@Override
         CARAPI OnPostExecute(
-            /* [in] */ IInterface*);
+            /* [in] */ IInterface* result);
 
     private:
         CARAPI_(AutoPtr<ArrayOf<Byte> >) PostRequest(

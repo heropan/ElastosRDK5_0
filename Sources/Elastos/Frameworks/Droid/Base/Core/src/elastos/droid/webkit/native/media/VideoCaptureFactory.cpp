@@ -5,8 +5,8 @@
 //TODO #include "elastos/droid/hardware/CHardwareCamera.h"
 #include "elastos/droid/hardware/CHardwareCameraHelper.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/core/StringUtils.h"
-#include "elastos/utility/logging/Logger.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;

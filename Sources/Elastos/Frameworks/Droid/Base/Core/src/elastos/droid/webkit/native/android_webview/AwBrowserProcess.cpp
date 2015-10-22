@@ -4,8 +4,7 @@
 #include "elastos/droid/webkit/native/base/PathUtils.h"
 #include "elastos/droid/webkit/native/content/browser/BrowserStartupController.h"
 #include "elastos/droid/webkit/native/media/MediaDrmBridge.h"
-//#include "elastos/utility/CUUIDHelper.h"
-#include "elastos/utility/logging/Logger.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Droid::Webkit::Base::PathUtils;

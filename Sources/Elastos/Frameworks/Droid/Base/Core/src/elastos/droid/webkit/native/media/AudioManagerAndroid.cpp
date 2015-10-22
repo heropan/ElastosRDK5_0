@@ -10,12 +10,12 @@
 //TODO #include "elastos/droid/media/CAudioTrackHelper.h"
 //TODO #include "elastos/droid/media/audiofx/CAcousticEchoCanceler.h"
 //TODO #include "elastos/droid/bluetooth/CBluetoothAdapterHelper.h"
-//#include "elastos/core/Thread.h"
-#include "elastos/core/AutoLock.h"
-#include "elastos/core/IntegralToString.h"
-#include "elastos/core/StringToIntegral.h"
-#include "elastos/utility/logging/Logger.h"
-//#include "elastos/utility/etl/etl_list.h"
+//#include <elastos/core/Thread.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/IntegralToString.h>
+#include <elastos/core/StringToIntegral.h>
+#include <elastos/utility/logging/Logger.h>
+//#include <elastos/utility/etl/etl_list.h>
 //#include "stdlib.h"
 
 //TODO using Elastos::Droid::Bluetooth::IBluetoothAdapter;

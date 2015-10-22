@@ -1,1 +1,2 @@
-#DIRS = native
+DIRS = native
+#DIRS += webview

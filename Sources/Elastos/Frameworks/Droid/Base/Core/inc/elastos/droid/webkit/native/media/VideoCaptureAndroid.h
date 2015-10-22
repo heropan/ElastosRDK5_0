@@ -111,10 +111,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Droid::Webkit::Media::VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Media::VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes, IInterface);
 
 #endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__

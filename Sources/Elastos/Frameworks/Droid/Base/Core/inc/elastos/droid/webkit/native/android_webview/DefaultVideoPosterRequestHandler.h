@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_DEFAULTVIDEOPOSTERREQUESTHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_DEFAULTVIDEOPOSTERREQUESTHANDLER_H__
 #include "elastos/droid/ext/frameworkext.h"
-//TODO #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 #include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
 #include "elastos/droid/os/AsyncTask.h"
 
@@ -14,7 +14,6 @@ using Elastos::IO::IOutputStream;
 class IPipedOutputStream;//TODO remove when above line is ok
 
 // import java.io.IOException;
-class AwContentsClient;
 
 namespace Elastos {
 namespace Droid {
@@ -101,8 +100,7 @@ private:
 private:
     static const String TAG;
     String mDefaultVideoPosterURL;
-    //TODO AutoPtr<AwContentsClient> mContentClient;
-    AwContentsClient *mContentClient;//TODO remove when above line is ok
+    AutoPtr<AwContentsClient> mContentClient;
 };
 
 } // namespace AndroidWebview
