@@ -20,3 +20,4 @@ SOURCES += WebBackForwardListChromium.cpp
 SOURCES += WebHistoryItemChromium.cpp
 SOURCES += WebIconDatabaseAdapter.cpp
 SOURCES += WebStorageAdapter.cpp
+SOURCES += WebViewChromium.cpp
