@@ -34,6 +34,9 @@ module
         /*package*/
         GetId(
             [out] Int32* result);
+
+        SetId(
+            [in] Int32 id);
     }
 
     /**

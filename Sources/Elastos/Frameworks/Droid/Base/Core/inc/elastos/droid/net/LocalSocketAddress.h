@@ -96,6 +96,13 @@ public:
         return NOERROR;
     }
 
+    ECode SetId(
+        /* [in] */ Int32 id)
+    {
+        mId = id;
+        return NOERROR;
+    }
+
 private:
     /** The id matches with a #define in include/cutils/sockets.h */
     Int32 mId;

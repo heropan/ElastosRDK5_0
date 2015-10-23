@@ -10,9 +10,12 @@ module
     merge("wifi/RttManager.car");
     merge("wifi/ScanResult.car");
     merge("wifi/ScanSettings.car");
-//    merge("wifi/SupplicantState.car");
-//    merge("wifi/StateChangeResult.car");
-//    merge("wifi/WifiConfiguration.car");
+    merge("wifi/SupplicantState.car");
+    merge("wifi/WifiActivityEnergyInfo.car");
+    merge("wifi/WifiChannel.car");
+    merge("wifi/WifiConfiguration.car");
+    merge("wifi/WifiConnectionStatistics.car");
+    merge("wifi/WifiEnterpriseConfig.car");
 //    merge("wifi/WpsInfo.car");
 //    merge("wifi/WpsResult.car");
 //    merge("wifi/WifiInfo.car");

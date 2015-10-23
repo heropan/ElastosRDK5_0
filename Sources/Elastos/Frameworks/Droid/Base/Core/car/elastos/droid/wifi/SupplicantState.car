@@ -146,6 +146,10 @@ module
         SupplicantState_INVALID
     }
 
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface ISupplicantState {
         Get(
             [out] SupplicantState* state);
@@ -170,6 +174,17 @@ module
         IsHandshakeState(
             [in] SupplicantState state,
             [out] Boolean* isHandshakeState);
+
+        /** @hide */
+        IsConnecting(
+            [in] SupplicantState state,
+            [out] Boolean* result);
+
+        /** @hide */
+        IsDriverActive(
+            [in] SupplicantState state,
+            [out] Boolean* result);
+
     }
 
     } // namespace Wifi

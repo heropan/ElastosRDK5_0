@@ -24,8 +24,8 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ IpAssignment ipAssignment,
-        /* [in] */ ProxySettings proxySettings,
+        /* [in] */ IpConfigurationIpAssignment ipAssignment,
+        /* [in] */ IpConfigurationProxySettings proxySettings,
         /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
         /* [in] */ IProxyInfo* httpProxy);
 
@@ -33,10 +33,10 @@ public:
         /* [in] */ IIpConfiguration* source);
 
     CARAPI GetIpAssignment(
-        /* [out] */ IpAssignment* result);
+        /* [out] */ IpConfigurationIpAssignment* result);
 
     CARAPI SetIpAssignment(
-        /* [in] */ IpAssignment ipAssignment);
+        /* [in] */ IpConfigurationIpAssignment ipAssignment);
 
     CARAPI GetStaticIpConfiguration(
         /* [out] */ IStaticIpConfiguration** result);
@@ -45,10 +45,10 @@ public:
         /* [in] */ IStaticIpConfiguration* staticIpConfiguration);
 
     CARAPI GetProxySettings(
-        /* [out] */ ProxySettings* result);
+        /* [out] */ IpConfigurationProxySettings* result);
 
     CARAPI SetProxySettings(
-        /* [in] */ ProxySettings proxySettings);
+        /* [in] */ IpConfigurationProxySettings proxySettings);
 
     CARAPI GetHttpProxy(
         /* [out] */ IProxyInfo** result);
@@ -87,15 +87,15 @@ public:
 
 private:
     CARAPI Init(
-        /* [in] */ IpAssignment ipAssignment,
-        /* [in] */ ProxySettings proxySettings,
+        /* [in] */ IpConfigurationIpAssignment ipAssignment,
+        /* [in] */ IpConfigurationProxySettings proxySettings,
         /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
         /* [in] */ IProxyInfo* httpProxy);
 
     static const String sTAG;
-    IpAssignment mIpAssignment;
+    IpConfigurationIpAssignment mIpAssignment;
     AutoPtr<IStaticIpConfiguration> mStaticIpConfiguration;
-    ProxySettings mProxySettings;
+    IpConfigurationProxySettings mProxySettings;
     AutoPtr<IProxyInfo> mHttpProxy;
 };
 

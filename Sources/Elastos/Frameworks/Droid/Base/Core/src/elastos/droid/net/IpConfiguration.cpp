@@ -10,8 +10,8 @@ CAR_INTERFACE_IMPL_2(IpConfiguration, Object, IIpConfiguration, IParcelable)
 const String IpConfiguration::sTAG = String("IpConfiguration");
 
 ECode IpConfiguration::Init(
-    /* [in] */ IpAssignment ipAssignment,
-    /* [in] */ ProxySettings proxySettings,
+    /* [in] */ IpConfigurationIpAssignment ipAssignment,
+    /* [in] */ IpConfigurationProxySettings proxySettings,
     /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
     /* [in] */ IProxyInfo* httpProxy)
 {
@@ -37,8 +37,8 @@ ECode IpConfiguration::constructor()
 }
 
 ECode IpConfiguration::constructor(
-    /* [in] */ IpAssignment ipAssignment,
-    /* [in] */ ProxySettings proxySettings,
+    /* [in] */ IpConfigurationIpAssignment ipAssignment,
+    /* [in] */ IpConfigurationProxySettings proxySettings,
     /* [in] */ IStaticIpConfiguration* staticIpConfiguration,
     /* [in] */ IProxyInfo* httpProxy)
 {
@@ -64,7 +64,7 @@ ECode IpConfiguration::constructor(
 }
 
 ECode IpConfiguration::GetIpAssignment(
-    /* [out] */ IpAssignment* result)
+    /* [out] */ IpConfigurationIpAssignment* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mIpAssignment;
@@ -73,7 +73,7 @@ ECode IpConfiguration::GetIpAssignment(
 }
 
 ECode IpConfiguration::SetIpAssignment(
-    /* [in] */ IpAssignment ipAssignment)
+    /* [in] */ IpConfigurationIpAssignment ipAssignment)
 {
     mIpAssignment = ipAssignment;
     return NOERROR;
@@ -98,7 +98,7 @@ ECode IpConfiguration::SetStaticIpConfiguration(
 }
 
 ECode IpConfiguration::GetProxySettings(
-    /* [out] */ ProxySettings* result)
+    /* [out] */ IpConfigurationProxySettings* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mProxySettings;
@@ -107,7 +107,7 @@ ECode IpConfiguration::GetProxySettings(
 }
 
 ECode IpConfiguration::SetProxySettings(
-    /* [in] */ ProxySettings proxySettings)
+    /* [in] */ IpConfigurationProxySettings proxySettings)
 {
     mProxySettings = proxySettings;
     return NOERROR;

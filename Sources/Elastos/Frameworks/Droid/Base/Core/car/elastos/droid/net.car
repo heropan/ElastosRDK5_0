@@ -212,8 +212,8 @@ module
         constructor();
 
         constructor(
-            [in] IpAssignment ipAssignment,
-            [in] ProxySettings proxySettings,
+            [in] IpConfigurationIpAssignment ipAssignment,
+            [in] IpConfigurationProxySettings proxySettings,
             [in] IStaticIpConfiguration* staticIpConfiguration,
             [in] IProxyInfo* httpProxy);
 

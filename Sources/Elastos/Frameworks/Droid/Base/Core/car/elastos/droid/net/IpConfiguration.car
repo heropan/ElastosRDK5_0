@@ -7,7 +7,7 @@ module
     namespace Droid {
     namespace Net {
 
-    enum IpAssignment {
+    enum IpConfigurationIpAssignment {
         /* Use statically configured IP settings. Configuration can be accessed
          * with staticIpConfiguration */
         STATIC_IpAssignment,
@@ -18,7 +18,7 @@ module
         UNASSIGNED_IpAssignment
     }
 
-    enum ProxySettings {
+    enum IpConfigurationProxySettings {
         /* No proxy is to be used. Any existing proxy settings
          * should be cleared. */
         NONE_ProxySettings,
@@ -44,10 +44,10 @@ module
     interface IIpConfiguration {
 
         GetIpAssignment(
-            [out] IpAssignment* result);
+            [out] IpConfigurationIpAssignment* result);
 
         SetIpAssignment(
-            [in] IpAssignment ipAssignment);
+            [in] IpConfigurationIpAssignment ipAssignment);
 
         GetStaticIpConfiguration(
             [out] IStaticIpConfiguration** result);
@@ -56,10 +56,10 @@ module
             [in] IStaticIpConfiguration* staticIpConfiguration);
 
         GetProxySettings(
-            [out] ProxySettings* result);
+            [out] IpConfigurationProxySettings* result);
 
         SetProxySettings(
-            [in] ProxySettings proxySettings);
+            [in] IpConfigurationProxySettings proxySettings);
 
         GetHttpProxy(
             [out] IProxyInfo** result);
