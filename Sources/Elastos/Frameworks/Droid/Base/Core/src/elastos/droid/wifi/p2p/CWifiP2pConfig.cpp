@@ -10,7 +10,7 @@
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::Wifi::CWpsInfo;
+using Elastos::Droid::Wifi::CWpsInfo;
 
 namespace Elastos {
 namespace Droid {
@@ -215,7 +215,7 @@ ECode CWifiP2pConfig::constructor(
 }
 
 ECode CWifiP2pConfig::constructor(
-    /* [in] */ Elastos::Droid::Net::Wifi::P2p::IWifiP2pConfig* source)
+    /* [in] */ Elastos::Droid::Wifi::P2p::IWifiP2pConfig* source)
 {
     if (source != NULL) {
         FAIL_RETURN(source->GetDeviceAddress(&mDeviceAddress));

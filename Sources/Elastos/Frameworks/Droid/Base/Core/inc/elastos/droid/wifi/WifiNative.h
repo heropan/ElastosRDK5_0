@@ -4,9 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pConfig;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pGroup;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pServiceInfo;
+using Elastos::Droid::Wifi::P2p::IWifiP2pConfig;
+using Elastos::Droid::Wifi::P2p::IWifiP2pGroup;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pServiceInfo;
 
 namespace Elastos {
 namespace Droid {

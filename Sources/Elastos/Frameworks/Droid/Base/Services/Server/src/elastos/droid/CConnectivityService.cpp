@@ -61,7 +61,7 @@ using Elastos::Droid::Net::NetworkInfoDetailedState_CAPTIVE_PORTAL_CHECK;
 using Elastos::Droid::Net::NetworkInfoDetailedState_CONNECTED;
 using Elastos::Droid::Net::NetworkUtils;
 using Elastos::Droid::Net::Ethernet::EthernetDataTracker;
-using Elastos::Droid::Net::Wifi::WifiStateTracker;
+using Elastos::Droid::Wifi::WifiStateTracker;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::FileUtils;
 using Elastos::Droid::Os::SystemClock;

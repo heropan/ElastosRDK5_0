@@ -6,7 +6,7 @@
 #include "elastos/droid/net/wifi/WifiNative.h"
 #include "elastos/droid/utility/StateMachine.h"
 
-using Elastos::Droid::Net::Wifi::P2p::P2pStatus;
+using Elastos::Droid::Wifi::P2p::P2pStatus;
 using Elastos::Utility::Regex::IPattern;
 using Elastos::Droid::Utility::IProtocol;
 using Elastos::Droid::Internal::Utility::StateMachine;

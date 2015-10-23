@@ -49,21 +49,21 @@ using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Droid::Widget::CToastHelper;
 using Elastos::Droid::Widget::IToast;
 
-using Elastos::Droid::Net::Wifi::IWpsInfo;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pConfig;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pConfig;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerChannelListener;
-using Elastos::Droid::Net::Wifi::P2p::EIID_IWifiP2pManagerChannelListener;
-using Elastos::Droid::Net::Wifi::P2p::EIID_IWifiP2pManagerActionListener;
-using Elastos::Droid::Net::Wifi::P2p::EIID_IWifiP2pManagerPeerListListener;
-using Elastos::Droid::Net::Wifi::P2p::EIID_IWifiP2pManagerConnectionInfoListener;
-using Elastos::Droid::Net::Wifi::P2p::EIID_IWifiP2pManagerDnsSdServiceResponseListener;
-using Elastos::Droid::Net::Wifi::P2p::EIID_IWifiP2pManagerDnsSdTxtRecordListener;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceInfo;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceInfoHelper;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::CWifiP2pDnsSdServiceInfoHelper;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceRequestHelper;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::CWifiP2pDnsSdServiceRequestHelper;
+using Elastos::Droid::Wifi::IWpsInfo;
+using Elastos::Droid::Wifi::P2p::IWifiP2pConfig;
+using Elastos::Droid::Wifi::P2p::CWifiP2pConfig;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerChannelListener;
+using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerChannelListener;
+using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerActionListener;
+using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerPeerListListener;
+using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerConnectionInfoListener;
+using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerDnsSdServiceResponseListener;
+using Elastos::Droid::Wifi::P2p::EIID_IWifiP2pManagerDnsSdTxtRecordListener;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceInfo;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceInfoHelper;
+using Elastos::Droid::Wifi::P2p::Nsd::CWifiP2pDnsSdServiceInfoHelper;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceRequestHelper;
+using Elastos::Droid::Wifi::P2p::Nsd::CWifiP2pDnsSdServiceRequestHelper;
 
 namespace Elastos {
 namespace Droid {

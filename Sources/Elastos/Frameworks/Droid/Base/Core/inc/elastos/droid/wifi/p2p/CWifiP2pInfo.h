@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pInfo.h"
 
 using Elastos::Net::IInetAddress;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pInfo;
+using Elastos::Droid::Wifi::P2p::IWifiP2pInfo;
 
 namespace Elastos {
 namespace Droid {

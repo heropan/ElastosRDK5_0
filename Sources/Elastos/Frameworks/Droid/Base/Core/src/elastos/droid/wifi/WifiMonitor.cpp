@@ -25,19 +25,19 @@ using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Net::Wifi::P2p::P2pStatus_UNKNOWN;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDevice;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pDevice;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pConfig;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pConfig;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pGroup;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pGroup;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pProvDiscEvent;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pProvDiscEvent;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pServiceResponse;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::CWifiP2pServiceResponse;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pServiceResponseHelper;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::CWifiP2pServiceResponseHelper;
+using Elastos::Droid::Wifi::P2p::P2pStatus_UNKNOWN;
+using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
+using Elastos::Droid::Wifi::P2p::CWifiP2pDevice;
+using Elastos::Droid::Wifi::P2p::IWifiP2pConfig;
+using Elastos::Droid::Wifi::P2p::CWifiP2pConfig;
+using Elastos::Droid::Wifi::P2p::IWifiP2pGroup;
+using Elastos::Droid::Wifi::P2p::CWifiP2pGroup;
+using Elastos::Droid::Wifi::P2p::IWifiP2pProvDiscEvent;
+using Elastos::Droid::Wifi::P2p::CWifiP2pProvDiscEvent;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pServiceResponse;
+using Elastos::Droid::Wifi::P2p::Nsd::CWifiP2pServiceResponse;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pServiceResponseHelper;
+using Elastos::Droid::Wifi::P2p::Nsd::CWifiP2pServiceResponseHelper;
 using Elastos::Droid::Internal::Utility::ArrayUtils;
 
 namespace Elastos {
@@ -414,7 +414,7 @@ void WifiMonitor::MonitorThread::HandleWpsFailEvent(
 P2pStatus WifiMonitor::MonitorThread::ValueOf(
     /* [in] */ Int32 error)
 {
-    using namespace Elastos::Droid::Net::Wifi::P2p;
+    using namespace Elastos::Droid::Wifi::P2p;
     switch(error) {
     case 0 :
         return P2pStatus_SUCCESS;
@@ -460,7 +460,7 @@ P2pStatus WifiMonitor::MonitorThread::P2pError(
 
     /* Handle the special case of reason=FREQ+CONFLICT */
     if ((*nameValue)[1].Equals("FREQ_CONFLICT")) {
-        return Elastos::Droid::Net::Wifi::P2p::P2pStatus_NO_COMMON_CHANNEL;
+        return Elastos::Droid::Wifi::P2p::P2pStatus_NO_COMMON_CHANNEL;
     }
     // try {
     Int32 value;

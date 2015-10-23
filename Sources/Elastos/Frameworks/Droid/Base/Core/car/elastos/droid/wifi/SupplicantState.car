@@ -22,7 +22,7 @@ module
          * start looking for an access point. This state is entered when a
          * connection is lost.
          */
-        SupplicantState_DISCONNECTED = 0,
+        SupplicantState_DISCONNECTED,
 
         /**
          * Interface is disabled
@@ -31,7 +31,7 @@ module
          * wpa_supplicant refuses any new operations that would
          * use the radio until the interface has been enabled.
          */
-        SupplicantState_INTERFACE_DISABLED = 1,
+        SupplicantState_INTERFACE_DISABLED,
 
         /**
          * Inactive state (wpa_supplicant disabled).
@@ -41,7 +41,7 @@ module
          * network and external interaction (e.g., ctrl_iface call to add or
          * enable a network) is needed to start association.
          */
-        SupplicantState_INACTIVE = 2,
+        SupplicantState_INACTIVE,
 
         /**
          * Scanning for a network.
@@ -49,7 +49,7 @@ module
          * This state is entered when wpa_supplicant starts scanning for a
          * network.
          */
-        SupplicantState_SCANNING = 3,
+        SupplicantState_SCANNING,
 
         /**
          * Trying to authenticate with a BSS/SSID
@@ -58,7 +58,7 @@ module
          * to authenticate with and the driver is configured to try to
          * authenticate with this BSS.
          */
-        SupplicantState_AUTHENTICATING = 4,
+        SupplicantState_AUTHENTICATING,
 
         /**
          * Trying to associate with a BSS/SSID.
@@ -69,7 +69,7 @@ module
          * state is entered when the driver is configured to try to associate
          * with a network using the configured SSID and security policy.
          */
-        SupplicantState_ASSOCIATING = 5,
+        SupplicantState_ASSOCIATING,
 
         /**
          * Association completed.
@@ -79,7 +79,7 @@ module
          * (with or without WPA/WPA2), wpa_supplicant remains in this state
          * until the IEEE 802.1X/EAPOL authentication has been completed.
          */
-        SupplicantState_ASSOCIATED = 6,
+        SupplicantState_ASSOCIATED,
 
         /**
          * WPA 4-Way Key Handshake in progress.
@@ -89,7 +89,7 @@ module
          * frame after association. In case of WPA-EAP, this state is entered
          * when the IEEE 802.1X/EAPOL authentication has been completed.
          */
-        SupplicantState_FOUR_WAY_HANDSHAKE = 7,
+        SupplicantState_FOUR_WAY_HANDSHAKE,
 
         /**
          * WPA Group Key Handshake in progress.
@@ -99,7 +99,7 @@ module
          * Key rekeying is started by the AP (i.e., when supplicant receives
          * message 1/2).
          */
-        SupplicantState_GROUP_HANDSHAKE = 8,
+        SupplicantState_GROUP_HANDSHAKE,
 
         /**
          * All authentication completed.
@@ -119,7 +119,7 @@ module
          * address associated with the connection yet. Typically, a DHCP
          * request needs to be sent at this point to obtain an address.
          */
-        SupplicantState_COMPLETED = 9,
+        SupplicantState_COMPLETED,
 
         /**
          * An Android-added state that is reported when a client issues an
@@ -129,7 +129,7 @@ module
          * to any access point until a RECONNECT or REASSOCIATE command
          * is issued by the client.
          */
-        SupplicantState_DORMANT = 10,
+        SupplicantState_DORMANT,
 
         /**
          * No connection to wpa_supplicant.
@@ -138,12 +138,12 @@ module
          * wpa_supplicant is not running and/or we have not been able
          * to establish a connection to it.
          */
-        SupplicantState_UNINITIALIZED = 11,
+        SupplicantState_UNINITIALIZED,
 
         /**
          * A pseudo-state that should normally never be seen.
          */
-        SupplicantState_INVALID = 12
+        SupplicantState_INVALID
     }
 
     interface ISupplicantState {

@@ -12,11 +12,11 @@ CarClass(CSupplicantStateHelper)
 {
 public:
     CARAPI IsValidState(
-        /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+        /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
         /* [out] */ Boolean* isValidState);
 
     CARAPI IsHandshakeState(
-        /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+        /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
         /* [out] */ Boolean* isHandshakeState);
 
     CARAPI WriteToParcel(
@@ -27,11 +27,11 @@ public:
 
 private:
     CARAPI IsConnecting(
-        /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+        /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
         /* [out] */ Boolean* isConnecting);
 
     CARAPI IsDriverActive(
-        /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+        /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
         /* [out] */ Boolean* isDriverActive);
 
 private:

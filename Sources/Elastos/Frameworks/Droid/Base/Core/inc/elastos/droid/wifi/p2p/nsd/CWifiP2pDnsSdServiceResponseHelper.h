@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceResponseHelper.h"
 
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDevice;
+using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
 
 namespace Elastos {
 namespace Droid {

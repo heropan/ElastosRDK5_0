@@ -30,6 +30,8 @@ module
 
         interface IWifiSsid {}
 
+        interface IWifiManager {}
+
     }}} // Elastos.Droid.Wifi
 
     //

@@ -12,8 +12,8 @@ using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Utility::IProtocol;
 using Elastos::Droid::Internal::Utility::AsyncChannel;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pManagerChannel;
-using Elastos::Droid::Net::Wifi::P2p::CWifiP2pDevice;
+using Elastos::Droid::Wifi::P2p::CWifiP2pManagerChannel;
+using Elastos::Droid::Wifi::P2p::CWifiP2pDevice;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

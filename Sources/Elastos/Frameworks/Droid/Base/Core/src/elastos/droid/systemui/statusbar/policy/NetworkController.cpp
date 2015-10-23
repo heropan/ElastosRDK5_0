@@ -30,8 +30,8 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Net::Ethernet::IEthernetManager;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::Wifi::IWifiConfiguration;
-using Elastos::Droid::Net::Wifi::CWifiManager;
+using Elastos::Droid::Wifi::IWifiConfiguration;
+using Elastos::Droid::Wifi::CWifiManager;
 
 namespace Elastos {
 namespace Droid {

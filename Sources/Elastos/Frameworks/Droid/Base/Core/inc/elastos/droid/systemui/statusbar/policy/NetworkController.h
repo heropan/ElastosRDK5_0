@@ -16,8 +16,8 @@ using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Net::Wifi::IWifiInfo;
-using Elastos::Droid::Net::Wifi::IWifiManager;
+using Elastos::Droid::Wifi::IWifiInfo;
+using Elastos::Droid::Wifi::IWifiManager;
 using Elastos::Droid::Content::BroadcastReceiver;
 
 namespace Elastos {
