@@ -5,12 +5,12 @@
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkRect.h>
 #include <skia/core/SkMallocPixelRef.h>
-// #include <skia/images/SkBitmapRegionDecoder.h>
-
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
+
+class SkBitmapRegionDecoder;
 
 class GraphicsNative
 {
@@ -22,20 +22,31 @@ public:
     };
 
     // class DroidPixelRef : public SkMallocPixelRef
-    // {
-    // public:
-    //     DroidPixelRef(
-    //         /* [in] */ void* storage,
-    //         /* [in] */ size_t size,
-    //         /* [in] */ ArrayOf<Byte>* storageObj,
-    //         /* [in] */ SkColorTable* ctable);
+    class DroidPixelRef : public SkMallocPixelRef {
+    public:
+        DroidPixelRef(
+            /* [in] */ const SkImageInfo& info,
+            /* [in] */ void* storage,
+            /* [in] */ size_t rowBytes,
+            /* [in] */ ArrayOf<Byte>* storageObj,
+            /* [in] */ SkColorTable* ctable);
 
-    //     virtual ~DroidPixelRef();
+        /**
+         * Creates an DroidPixelRef that wraps (and refs) another to reuse/share
+         * the same storage and java byte array refcounting, yet have a different
+         * color table.
+         */
+        DroidPixelRef(
+            /* [in] */ DroidPixelRef& wrappedPixelRef,
+            /* [in] */ const SkImageInfo& info,
+            /* [in] */ size_t rowBytes,
+            /* [in] */ SkColorTable* ctable);
 
-    //     AutoPtr< ArrayOf<Byte> > getStorageObj() { return mStorageObj; }
+        virtual ~DroidPixelRef();
 
-    //     void setLocalRef(
-    //         /* [in] */ ArrayOf<Byte>* arr);
+        AutoPtr<ArrayOf<Byte> > getStorageObj();
+
+        void setLocalJNIRef(ArrayOf<Byte>* arr);
 
         /** Used to hold a ref to the pixels when the Java bitmap may be collected.
          *  If specified, 'localref' is a valid JNI local reference to the byte array
@@ -44,20 +55,21 @@ public:
          *  'localref' may only be NULL if setLocalJNIRef() was already called with
          *  a JNI local ref that is still valid.
          */
-    //     virtual void globalRef(
-    //         /* [in] */ void* localref=NULL);
+        virtual void globalRef(void* localref=NULL);
 
-    //     /** Release a ref that was acquired using globalRef(). */
-    //     virtual void globalUnref();
+        /** Release a ref that was acquired using globalRef(). */
+        virtual void globalUnref();
 
-    // private:
-    //     bool mOnDroidHeap; // If true, the memory was allocated on the Java heap
+    private:
+        DroidPixelRef* const fWrappedPixelRef; // if set, delegate memory management calls to this
 
-    //     AutoPtr< ArrayOf<Byte> > mStorageObj; // The Java byte[] object used as the bitmap backing store
-    //     bool mHasGlobalRef; // If true, fStorageObj holds a JNI global ref
+        bool fOnJavaHeap; // If true, the memory was allocated on the Java heap
 
-    //     mutable int32_t mGlobalRefCnt;
-    // };
+        AutoPtr<ArrayOf<Byte> > fStorageObj; // The Java byte[] object used as the bitmap backing store
+        bool fHasGlobalRef; // If true, fStorageObj holds a JNI global ref
+
+        mutable int32_t fGlobalRefCnt;
+    };
 
     class DroidPixelAllocator : public SkBitmap::Allocator
     {
@@ -137,27 +149,17 @@ public:
     static CARAPI_(SkColorType) GetNativeBitmapColorType(
         /* [in] */ BitmapConfig config);
 
-    static CARAPI CreateBitmap(
-        /* [in] */ SkBitmap* dst,
-        /* [in] */ ArrayOf<Byte>* buffer,
-        /* [in] */ Boolean isMutable,
-        /* [in] */ ArrayOf<Byte>* ninepatch,
-        /* [in] */ ArrayOf<Int32>* layoutbounds,
-        /* [in] */ Int32 density,
-        /* [out] */ CBitmap** bitmap);
-
-    static CARAPI CreateBitmap(
+    static CARAPI_(AutoPtr<IBitmap>) CreateBitmap(
         /* [in] */ SkBitmap* bitmap,
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 bitmapCreateFlags,
         /* [in] */ ArrayOf<Byte>* ninePatchChunk,
         /* [in] */ INinePatchInsetStruct* ninePatchInsets,
-        /* [in] */ Int32 density,
-        /* [in, out] */ CBitmap* bitmapObj);
+        /* [in] */ Int32 density);
 
-    // static CARAPI CreateBitmapRegionDecoder(
-    //     /* [in] */ SkBitmapRegionDecoder* bitmap,
-    //     /* [out] */ IBitmapRegionDecoder** decoder);
+    static CARAPI CreateBitmapRegionDecoder(
+        /* [in] */ SkBitmapRegionDecoder* bitmap,
+        /* [out] */ IBitmapRegionDecoder** decoder);
 
     static CARAPI AllocateDroidPixelRef(
         /* [in] */ SkBitmap* bitmap,
@@ -173,6 +175,17 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ const SkBitmap& dstBitmap);
+
+    /** Reinitialize a bitmap. bitmap must already have its SkAlphaType set in
+        sync with isPremultiplied
+    */
+    static CARAPI_(void) ReinitBitmap(
+        /* [in] */ IBitmap* bitmapObj,
+        /* [in] */ SkBitmap* bitmap,
+        /* [in] */ Boolean isPremultiplied);
+
+    static CARAPI_(Int32) GetBitmapAllocationByteCount(
+        /* [in] */ IBitmap* bitmapObj);
 };
 
 } // namespace Graphics

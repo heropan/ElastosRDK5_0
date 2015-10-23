@@ -2,7 +2,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CCamera.h"
 #include "elastos/droid/graphics/Matrix.h"
-#include "elastos/droid/graphics/Canvas.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CCanvas.h"
 #include <skia/utils/SkCamera.h>
 
 namespace Elastos {
@@ -63,17 +64,6 @@ ECode CCamera::RotateZ(
     return NOERROR;
 }
 
-/**
- * Applies a rotation transform around all three axis.
- *
- * @param x The angle of rotation around the X axis, in degrees
- * @param y The angle of rotation around the Y axis, in degrees
- * @param z The angle of rotation around the Z axis, in degrees
- *
- * @see #rotateX(Float)
- * @see #rotateY(Float)
- * @see #rotateZ(Float)
- */
 ECode CCamera::Rotate(
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -85,11 +75,6 @@ ECode CCamera::Rotate(
     return NOERROR;
 }
 
-/**
- * Gets the x location of the camera.
- *
- * @see #setLocation(Float, Float, Float)
- */
 ECode CCamera::GetLocationX(
     /* [out] */ Float* locationX)
 {
@@ -98,12 +83,6 @@ ECode CCamera::GetLocationX(
     return NOERROR;
 }
 
-
-/**
- * Gets the y location of the camera.
- *
- * @see #setLocation(Float, Float, Float)
- */
 ECode CCamera::GetLocationY(
     /* [out] */ Float* locationY)
 {
@@ -112,12 +91,6 @@ ECode CCamera::GetLocationY(
     return NOERROR;
 }
 
-
-/**
- * Gets the z location of the camera.
- *
- * @see #setLocation(Float, Float, Float)
- */
 ECode CCamera::GetLocationZ(
     /* [out] */ Float* locationZ)
 {
@@ -126,14 +99,6 @@ ECode CCamera::GetLocationZ(
     return NOERROR;
 }
 
-/**
- * Sets the location of the camera. The default location is set at
- * 0, 0, -8.
- *
- * @param x The x location of the camera
- * @param y The y location of the camera
- * @param z The z location of the camera
- */
 ECode CCamera::SetLocation(
     /* [in] */ Float x,
     /* [in] */ Float y,
@@ -153,15 +118,16 @@ ECode CCamera::GetMatrix(
 ECode CCamera::ApplyToCanvas(
     /* [in] */ ICanvas* canvas)
 {
-    assert(0 && "TODO");
-    // Boolean is = FALSE;
-    // if (canvas->IsHardwareAccelerated(&is), is) {
-    //     if (mMatrix == NULL) mMatrix = new Matrix();
-    //     GetMatrix(mMatrix);
-    //     canvas->Concat(mMatrix);
-    // } else {
-    //     NativeApplyToCanvas(canvas->GetNativeCanvasWrapper());
-    // }
+    Boolean is = FALSE;
+    if (canvas->IsHardwareAccelerated(&is), is) {
+        if (mMatrix == NULL) {
+            CMatrix::New((IMatrix**)&mMatrix);
+        }
+        GetMatrix(mMatrix);
+        canvas->Concat(mMatrix);
+    } else {
+        NativeApplyToCanvas(((CCanvas*)canvas)->GetNativeCanvasWrapper());
+    }
     return NOERROR;
 }
 

@@ -12,32 +12,35 @@ namespace Graphics {
 ////////////////////////////////////////////////////////////////////////////////
 // NinePatchPeeker
 
-class NinePatchPeeker : public SkImageDecoder::Peeker
-{
+class NinePatchPeeker : public SkImageDecoder::Peeker {
+private:
+    // the host lives longer than we do, so a raw ptr is safe
+    SkImageDecoder* mHost;
 public:
     NinePatchPeeker(SkImageDecoder* host)
-    {
-        // the host lives longer than we do, so a raw ptr is safe
-        mHost = host;
-        mPatch = NULL;
-        mLayoutBounds = NULL;
+            : mHost(host)
+            , mPatch(NULL)
+            , mPatchSize(0)
+            , mHasInsets(false)
+            , mOutlineRadius(0)
+            , mOutlineAlpha(0) {
+        memset(mOpticalInsets, 0, 4 * sizeof(int32_t));
+        memset(mOutlineInsets, 0, 4 * sizeof(int32_t));
     }
 
-    ~NinePatchPeeker()
-    {
+    ~NinePatchPeeker() {
         free(mPatch);
-        if (mLayoutBounds != NULL) {
-            delete mLayoutBounds;
-            mLayoutBounds = NULL;
-        }
     }
 
     virtual bool peek(const char tag[], const void* data, size_t length);
 
-public:
-    SkImageDecoder* mHost;
-    android::Res_png_9patch*  mPatch;
-    int    *mLayoutBounds;
+    android::Res_png_9patch* mPatch;
+    size_t mPatchSize;
+    bool mHasInsets;
+    int32_t mOpticalInsets[4];
+    int32_t mOutlineInsets[4];
+    float mOutlineRadius;
+    uint8_t mOutlineAlpha;
 };
 
 } // namespace Graphics

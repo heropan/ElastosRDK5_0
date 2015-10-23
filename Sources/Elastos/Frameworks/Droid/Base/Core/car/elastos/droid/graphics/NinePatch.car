@@ -24,26 +24,14 @@ module
         GetOpticalRect(
             [out] IRect** rect);
 
-        SetOpticalRect(
-            [in] IRect* rect);
-
         GetOutlineRect(
             [out] IRect** rect);
-
-        SetOutlineRect(
-            [in] IRect* rect);
 
         GetOutlineRadius(
             [out] Float* radius);
 
-        SetOutlineRadius(
-            [in] Float radius);
-
         GetOutlineAlpha(
-            [out] Float* radius);
-
-        SetOutlineAlpha(
-            [in] Float radius);
+            [out] Float* alpha);
      }
     /**
      * The NinePatch class permits drawing a bitmap in nine sections.

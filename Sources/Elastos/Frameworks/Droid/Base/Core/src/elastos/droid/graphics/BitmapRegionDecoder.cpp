@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/BitmapRegionDecoder.h"
-// #include "elastos/droid/content/res/CAssetManager.h"
+#include "elastos/droid/content/res/CAssetManager.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/AutoDecoderCancel.h"
 #include "elastos/droid/graphics/Utils.h"
@@ -16,7 +16,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-// using Elastos::Droid::Content::Res::CAssetManager;
+using Elastos::Droid::Content::Res::CAssetManager;
 using Elastos::Droid::Content::Res::IAssetInputStream;
 using Elastos::Core::AutoLock;
 using Elastos::IO::IBufferedInputStream;
@@ -116,8 +116,7 @@ ECode BitmapRegionDecoder::NewInstance(
 
     if (IAssetInputStream::Probe(is.Get()) != NULL) {
         Int64 value;
-        assert(0 && "TODO");
-        // ((CAssetManager::AssetInputStream*)IAssetInputStream::Probe(is.Get()))->GetNativeAsset(&value);
+        ((CAssetManager::AssetInputStream*)IAssetInputStream::Probe(is.Get()))->GetNativeAsset(&value);
         return NativeNewInstance(value, isShareable, decoder);
     }
     else {
@@ -288,16 +287,14 @@ static ECode CreateBitmapRegionDecoder(
         //         decoder->getFormatName());
         // doThrowIOE(env, msg);
         // return nullObjectReturn("decoder->buildTileIndex returned false");
-        // *_decoder = NULL;
+        *_decoder = NULL;
         SkDELETE(decoder);
         return E_IO_EXCEPTION;
     }
 
     SkBitmapRegionDecoder *bm = new SkBitmapRegionDecoder(decoder, width, height);
 
-    assert(0 && "TODO");
-    // return GraphicsNative::CreateBitmapRegionDecoder(bm, _decoder);
-    return NOERROR;
+    return GraphicsNative::CreateBitmapRegionDecoder(bm, _decoder);
 }
 
 static Boolean OptionsCancel(IBitmapFactoryOptions* options)
@@ -387,8 +384,7 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
         // TODO: set the mimeType field with the data from the codec.
         // but how to reuse a set of strings, rather than allocating new one
         // each time?
-        assert(0 && "TODO");
-        // options->SetOutMimeType(NBitmapFactory::GetMimeTypeString(decoder->getFormat()));
+        options->SetOutMimeType(NBitmapFactory::GetMimeTypeString(decoder->getFormat()));
     }
 
    if (tileBitmap != NULL) {
@@ -402,11 +398,9 @@ ECode BitmapRegionDecoder::NativeDecodeRegion(
 
     GraphicsNative::DroidPixelAllocator* allocator = (GraphicsNative::DroidPixelAllocator*)decoder->getAllocator();
     AutoPtr< ArrayOf<Byte> > buff = allocator->getStorageObjAndReset();
-    AutoPtr<CBitmap> bitmapObj;
     Int32 bitmapCreateFlags = 0;
     if (!requireUnpremultiplied) bitmapCreateFlags |= GraphicsNative::kBitmapCreateFlag_Premultiplied;
-    FAIL_RETURN(GraphicsNative::CreateBitmap(nativeBitmap, buff, bitmapCreateFlags, NULL, NULL, -1, (CBitmap**)&bitmapObj));
-    *bitmap = (IBitmap*)bitmapObj.Get();
+    *bitmap = GraphicsNative::CreateBitmap(nativeBitmap, buff, bitmapCreateFlags, NULL, NULL, -1);
     REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }

@@ -463,6 +463,9 @@ public:
     CARAPI GetNinePatchInsets(
         /* [out] */ INinePatchInsetStruct** inset);
 
+    CARAPI SetNinePatchInsets(
+        /* [in] */ INinePatchInsetStruct* inset);
+
     CARAPI Compress(
         /* [in] */ BitmapCompressFormat format,
         /* [in] */ Int32 quality,
@@ -843,13 +846,13 @@ private:
         /* [in] */ Int32 height,
         /* [in] */ Int32 nativeConfig,
         /* [in] */ Boolean isMutable,
-        /* [out] */ CBitmap** bitmap);
+        /* [out] */ IBitmap** bitmap);
 
     static CARAPI NativeCopy(
         /* [in] */ Int64 srcBitmap,
         /* [in] */ Int32 nativeConfig,
         /* [in] */ Boolean isMutable,
-        /* [out] */ CBitmap** bitmap);
+        /* [out] */ IBitmap** bitmap);
 
     static CARAPI_(void) NativeDestructor(
         /* [in] */ Int64 nativeBitmap);
@@ -938,7 +941,7 @@ private:
         /* [in] */ Int64 nativeBitmap,
         /* [in] */ Int64 nativePaint,
         /* [in] */ ArrayOf<Int32>* offsetXY,
-        /* [out] */ CBitmap** bitmap);
+        /* [out] */ IBitmap** bitmap);
 
     static CARAPI_(void) NativePrepareToDraw(
         /* [in] */ Int64 nativeBitmap);
@@ -974,7 +977,7 @@ private:
      * width/height values
      */
     // @SuppressWarnings({"UnusedDeclaration"}) // called from JNI
-    CARAPI_(void) Reinit(
+    CARAPI Reinit(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Boolean requestPremultiplied);
@@ -1044,6 +1047,7 @@ private:
     static Int32 WORKING_COMPRESS_STORAGE;
 
     static Object sClassLock;
+    friend class CBitmapFactory;
 };
 
 } // namespace Graphics

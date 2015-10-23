@@ -622,6 +622,9 @@ module
         GetNinePatchInsets(
             [out] INinePatchInsetStruct** inset);
 
+        SetNinePatchInsets(
+            [in] INinePatchInsetStruct* inset);
+
         /**
          * Write a compressed version of the bitmap to the specified outputstream.
          * If this returns true, the bitmap can be reconstructed by passing a
@@ -1074,6 +1077,11 @@ module
 
         GetNativeBitmap(
             [out] Handle32* bitmap);
+
+        Reinit(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Boolean requestPremultiplied);
     }
 
     } // namespace Graphics

@@ -1,6 +1,7 @@
 
 #include "elastos/droid/graphics/NinePatch.h"
 #include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/Canvas.h"
 #include "elastos/droid/graphics/CPaint.h"
@@ -21,6 +22,69 @@ extern ECode NinePatch_Draw(SkCanvas* canvas, const SkRect& bounds,
         const SkPaint* paint, SkRegion** outRegion);
 
 static const char* TAG = "NinePatch";
+
+CAR_INTERFACE_IMPL(NinePatch::InsetStruct, Object, INinePatchInsetStruct);
+NinePatch::InsetStruct::InsetStruct(
+    /* [in] */ Int32 opticalLeft,
+    /* [in] */ Int32 opticalTop,
+    /* [in] */ Int32 opticalRight,
+    /* [in] */ Int32 opticalBottom,
+    /* [in] */ Int32 outlineLeft,
+    /* [in] */ Int32 outlineTop,
+    /* [in] */ Int32 outlineRight,
+    /* [in] */ Int32 outlineBottom,
+    /* [in] */ Float outlineRadius,
+    /* [in] */ Int32 outlineAlpha,
+    /* [in] */ Float decodeScale)
+    : mOutlineRadius(outlineRadius * decodeScale)
+    , mOutlineAlpha(outlineAlpha / 255.0f)
+{
+    CRect::New(opticalLeft, opticalTop, opticalRight, opticalBottom, (IRect**)&mOpticalRect);
+    CRect::New(outlineLeft, outlineTop, outlineRight, outlineBottom, (IRect**)&mOutlineRect);
+
+    if (decodeScale != 1.0f) {
+        // if bitmap was scaled when decoded, scale the insets from the metadata values
+        mOpticalRect->Scale(decodeScale);
+
+        // round inward while scaling outline, as the outline should always be conservative
+        assert(0 && "TODO");
+        // mOutlineRect->ScaleRoundIn(decodeScale);
+    }
+}
+
+ECode NinePatch::InsetStruct::GetOpticalRect(
+    /* [out] */ IRect** rect)
+{
+    VALIDATE_NOT_NULL(rect);
+    *rect = mOpticalRect;
+    REFCOUNT_ADD(*rect);
+    return NOERROR;
+}
+
+ECode NinePatch::InsetStruct::GetOutlineRect(
+    /* [out] */ IRect** rect)
+{
+    VALIDATE_NOT_NULL(rect);
+    *rect = mOutlineRect;
+    REFCOUNT_ADD(*rect);
+    return NOERROR;
+}
+
+ECode NinePatch::InsetStruct::GetOutlineRadius(
+    /* [out] */ Float* radius)
+{
+    VALIDATE_NOT_NULL(radius);
+    *radius = mOutlineRadius;
+    return NOERROR;
+}
+
+ECode NinePatch::InsetStruct::GetOutlineAlpha(
+    /* [out] */ Float* alpha)
+{
+    VALIDATE_NOT_NULL(alpha);
+    *alpha = mOutlineAlpha;
+    return NOERROR;
+}
 
 CAR_INTERFACE_IMPL(NinePatch, Object, INinePatch);
 NinePatch::~NinePatch()

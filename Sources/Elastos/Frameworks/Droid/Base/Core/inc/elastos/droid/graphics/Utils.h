@@ -10,15 +10,38 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-class AssetStreamAdaptor : public SkStream
-{
+class AssetStreamAdaptor : public SkStreamRewindable {
 public:
-    AssetStreamAdaptor(android::Asset* a) : mAsset(a) {}
+    // Enum passed to constructor. If set to kYes_OwnAsset,
+    // the passed in Asset will be deleted upon destruction.
+    enum OwnAsset {
+        kYes_OwnAsset,
+        kNo_OwnAsset,
+    };
+
+    // Enum passed to constructor. If set to kYes_HasMemoryBase,
+    // getMemoryBase will return the Asset's buffer.
+    enum HasMemoryBase {
+        kYes_HasMemoryBase,
+        kNo_HasMemoryBase,
+    };
+
+    AssetStreamAdaptor(android::Asset*, OwnAsset, HasMemoryBase);
+    ~AssetStreamAdaptor();
+
     virtual bool rewind();
     virtual size_t read(void* buffer, size_t size);
+    virtual bool hasLength() const { return true; }
+    virtual size_t getLength() const;
+    virtual bool isAtEnd() const;
 
+    virtual const void* getMemoryBase() { return fMemoryBase; }
+
+    virtual SkStreamRewindable* duplicate() const;
 private:
-    android::Asset*  mAsset;
+    android::Asset*              fAsset;
+    const void* const   fMemoryBase;
+    const OwnAsset      fOwnAsset;
 };
 
 /**

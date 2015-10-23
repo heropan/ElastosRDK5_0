@@ -8,6 +8,7 @@
 
 using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
+using Elastosx::Microedition::Khronos::Opengles::IGL;
 
 namespace Elastos {
 namespace Droid {
@@ -647,7 +648,7 @@ protected:
     CARAPI constructor(
         /* [in] */ Int64 nativeCanvas);
 
-    // virtual CARAPI_(AutoPtr<IGL>) GetGL();
+    virtual CARAPI_(AutoPtr<IGL>) GetGL();
 
     static CARAPI CheckRange(
         /* [in] */ Int32 length,
@@ -945,7 +946,8 @@ private:
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Int32 flags,
-        /* [in] */ Int64 nativePaint);
+        /* [in] */ Int64 nativePaint,
+        /* [in] */ Int64 nativeTypeface);
 
     static CARAPI_(void) NativeDrawText(
         /* [in] */ Int64 nativeCanvas,
@@ -955,7 +957,8 @@ private:
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Int32 flags,
-        /* [in] */ Int64 nativePaint);
+        /* [in] */ Int64 nativePaint,
+        /* [in] */ Int64 nativeTypeface);
 
     static CARAPI_(void) NativeDrawTextRun(
         /* [in] */ Int64 nativeCanvas,

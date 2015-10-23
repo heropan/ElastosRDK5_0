@@ -172,7 +172,7 @@ ECode CBitmap::constructor(
     return NOERROR;
 }
 
-void CBitmap::Reinit(
+ECode CBitmap::Reinit(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Boolean requestPremultiplied)
@@ -180,6 +180,7 @@ void CBitmap::Reinit(
     mWidth = width;
     mHeight = height;
     mRequestPremultiplied = requestPremultiplied;
+    return NOERROR;
 }
 
 void CBitmap::SetDefaultDensity(
@@ -463,11 +464,11 @@ ECode CBitmap::Copy(
 
     FAIL_RETURN(CheckRecycled(String("Can't copy a recycled bitmap")));
 
-    AutoPtr<CBitmap> b;
-    FAIL_RETURN(NativeCopy(mNativeBitmap, (Int32)config, isMutable, (CBitmap**)&b));
+    AutoPtr<IBitmap> b;
+    FAIL_RETURN(NativeCopy(mNativeBitmap, (Int32)config, isMutable, (IBitmap**)&b));
     if (b != NULL) {
         b->SetPremultiplied(mRequestPremultiplied);
-        b->mDensity = mDensity;
+        b->SetDensity(mDensity);
     }
     *bitmap = (IBitmap*)b.Get();
     REFCOUNT_ADD(*bitmap);
@@ -714,21 +715,21 @@ ECode CBitmap::CreateBitmap(
         // throw new IllegalArgumentException("width and height must be > 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<CBitmap> bm;
-    FAIL_RETURN(NativeCreate(NULL, 0, width, width, height, config, TRUE, (CBitmap**)&bm));
+    AutoPtr<IBitmap> bm;
+    FAIL_RETURN(NativeCreate(NULL, 0, width, width, height, config, TRUE, (IBitmap**)&bm));
     if (display != NULL) {
         Int32 densityDpi;
         display->GetDensityDpi(&densityDpi);
-        bm->mDensity = densityDpi;
+        bm->SetDensity(densityDpi);
     }
     bm->SetHasAlpha(hasAlpha);
     if (config == BitmapConfig_ARGB_8888 && !hasAlpha) {
-        NativeErase(bm->mNativeBitmap, 0xff000000);
+        NativeErase(((CBitmap*)bm.Get())->mNativeBitmap, 0xff000000);
     }
     // No need to initialize the bitmap to zeroes with other configs;
     // it is backed by a VM byte array which is by definition preinitialized
     // to all zeroes.
-    *bitmap = (IBitmap*)bm.Get();
+    *bitmap = bm;
     REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
@@ -774,15 +775,15 @@ ECode CBitmap::CreateBitmap(
         // throw new IllegalArgumentException("width and height must be > 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    AutoPtr<CBitmap> bm;
+    AutoPtr<IBitmap> bm;
     FAIL_RETURN(NativeCreate(colors, offset, stride, width, height,
-            config, FALSE, (CBitmap**)&bm));
+            config, FALSE, (IBitmap**)&bm));
     if (display != NULL) {
         Int32 densityDpi;
         display->GetDensityDpi(&densityDpi);
-        bm->mDensity = densityDpi;
+        bm->SetDensity(densityDpi);
     }
-    *bitmap = (IBitmap*)bm.Get();
+    *bitmap = bm;
     REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
@@ -838,6 +839,13 @@ ECode CBitmap::GetNinePatchInsets(
     VALIDATE_NOT_NULL(inset);
     *inset = mNinePatchInsets;
     REFCOUNT_ADD(*inset);
+    return NOERROR;
+}
+
+ECode CBitmap::SetNinePatchInsets(
+    /* [in] */ INinePatchInsetStruct* inset)
+{
+    mNinePatchInsets = inset;
     return NOERROR;
 }
 
@@ -1266,14 +1274,14 @@ ECode CBitmap::ExtractAlpha(
 
     FAIL_RETURN(CheckRecycled(String("Can't extractAlpha on a recycled bitmap")));
     Int64 nativePaint = paint != NULL ? ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint : 0;
-    AutoPtr<CBitmap> bm;
-    ECode ec = NativeExtractAlpha(mNativeBitmap, nativePaint, offsetXY, (CBitmap**)&bm);
+    AutoPtr<IBitmap> bm;
+    ECode ec = NativeExtractAlpha(mNativeBitmap, nativePaint, offsetXY, (IBitmap**)&bm);
     if (FAILED(ec)) {
         Logger::E(TAG, "Failed to extractAlpha on Bitmap");
         return E_RUNTIME_EXCEPTION;
     }
-    bm->mDensity = mDensity;
-    *bitmap = (IBitmap*)bm.Get();
+    bm->SetDensity(mDensity);
+    *bitmap = bm;
     REFCOUNT_ADD(*bitmap);
     return NOERROR;
 }
@@ -1571,7 +1579,7 @@ ECode CBitmap::NativeCreate(
     /* [in] */ Int32 height,
     /* [in] */ Int32 nativeConfig,
     /* [in] */ Boolean isMutable,
-    /* [out] */ CBitmap** bitmap)
+    /* [out] */ IBitmap** bitmap)
 {
     VALIDATE_NOT_NULL(bitmap);
 
@@ -1604,14 +1612,16 @@ ECode CBitmap::NativeCreate(
         FAIL_RETURN(GraphicsNative::SetPixels(colors, offset, stride, 0, 0, width, height, nativeBitmap));
     }
 
-    return GraphicsNative::CreateBitmap(new SkBitmap(nativeBitmap), buff, GetPremulBitmapCreateFlags(isMutable), NULL, NULL, -1, bitmap);
+    *bitmap = GraphicsNative::CreateBitmap(new SkBitmap(nativeBitmap), buff, GetPremulBitmapCreateFlags(isMutable), NULL, NULL, -1);
+    REFCOUNT_ADD(*bitmap);
+    return NOERROR;
 }
 
 ECode CBitmap::NativeCopy(
     /* [in] */ Int64 srcBitmap,
     /* [in] */ Int32 nativeConfig,
     /* [in] */ Boolean isMutable,
-    /* [out] */ CBitmap** bitmap)
+    /* [out] */ IBitmap** bitmap)
 {
     const SkBitmap* src = reinterpret_cast<SkBitmap*>(srcBitmap);
     SkColorType dstCT = GraphicsNative::LegacyBitmapConfigToColorType(nativeConfig);
@@ -1623,8 +1633,10 @@ ECode CBitmap::NativeCopy(
         return NOERROR;
     }
 
-    return GraphicsNative::CreateBitmap(new SkBitmap(result), allocator.getStorageObj(),
-            GetPremulBitmapCreateFlags(isMutable), NULL, NULL, -1, bitmap);
+    *bitmap = GraphicsNative::CreateBitmap(new SkBitmap(result), allocator.getStorageObj(),
+            GetPremulBitmapCreateFlags(isMutable), NULL, NULL, -1);
+    REFCOUNT_ADD(*bitmap);
+    return NOERROR;
 }
 
 void CBitmap::NativeDestructor(
@@ -2004,8 +2016,9 @@ ECode CBitmap::NativeCreateFromParcel(
 
     // blob.release();
 
-    return GraphicsNative::CreateBitmap(bmp, buffer, GetPremulBitmapCreateFlags(isMutable),
-            NULL, NULL, density, thisObj);
+    /*return*/ GraphicsNative::CreateBitmap(bmp, buffer, GetPremulBitmapCreateFlags(isMutable),
+            NULL, NULL, density);
+    return NOERROR;
 }
 
 Boolean CBitmap::NativeWriteToParcel(
@@ -2065,7 +2078,7 @@ ECode CBitmap::NativeExtractAlpha(
     /* [in] */ Int64 nativeBitmap,
     /* [in] */ Int64 nativePaint,
     /* [in] */ ArrayOf<Int32>* offsetXY,
-    /* [out] */ CBitmap** bitmap)
+    /* [out] */ IBitmap** bitmap)
 {
     assert(nativeBitmap);
     const SkBitmap* src = reinterpret_cast<SkBitmap*>(nativeBitmap);
@@ -2090,7 +2103,8 @@ ECode CBitmap::NativeExtractAlpha(
         array[1] = offset.fY;
     }
 
-    return GraphicsNative::CreateBitmap(dst, allocator.getStorageObj(), GetPremulBitmapCreateFlags(TRUE), NULL, NULL, -1, bitmap);
+    *bitmap = GraphicsNative::CreateBitmap(dst, allocator.getStorageObj(), GetPremulBitmapCreateFlags(TRUE), NULL, NULL, -1);
+    return NOERROR;
 }
 
 void CBitmap::NativePrepareToDraw(

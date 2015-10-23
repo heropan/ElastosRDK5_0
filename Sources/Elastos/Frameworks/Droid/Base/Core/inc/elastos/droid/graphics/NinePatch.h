@@ -17,8 +17,6 @@ class NinePatch
     , public INinePatch
 {
 public:
-    CAR_INTERFACE_DECL();
-
     /**
      * Struct of inset information attached to a 9 patch bitmap.
      *
@@ -27,32 +25,50 @@ public:
      *
      * @hide
      */
-    // public static class InsetStruct {
-    //     @SuppressWarnings({"UnusedDeclaration"}) // called from JNI
-    //     InsetStruct(Int32 opticalLeft, Int32 opticalTop, Int32 opticalRight, Int32 opticalBottom,
-    //             Int32 outlineLeft, Int32 outlineTop, Int32 outlineRight, Int32 outlineBottom,
-    //             float outlineRadius, Int32 outlineAlpha, float decodeScale) {
-    //         opticalRect = new Rect(opticalLeft, opticalTop, opticalRight, opticalBottom);
-    //         outlineRect = new Rect(outlineLeft, outlineTop, outlineRight, outlineBottom);
+    class InsetStruct
+        : public Object
+        , public INinePatchInsetStruct
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
-    //         if (decodeScale != 1.0f) {
-    //             // if bitmap was scaled when decoded, scale the insets from the metadata values
-    //             opticalRect.scale(decodeScale);
+        // @SuppressWarnings({"UnusedDeclaration"}) // called from JNI
+        InsetStruct(
+            /* [in] */ Int32 opticalLeft,
+            /* [in] */ Int32 opticalTop,
+            /* [in] */ Int32 opticalRight,
+            /* [in] */ Int32 opticalBottom,
+            /* [in] */ Int32 outlineLeft,
+            /* [in] */ Int32 outlineTop,
+            /* [in] */ Int32 outlineRight,
+            /* [in] */ Int32 outlineBottom,
+            /* [in] */ Float outlineRadius,
+            /* [in] */ Int32 outlineAlpha,
+            /* [in] */ Float decodeScale);
 
-    //             // round inward while scaling outline, as the outline should always be conservative
-    //             outlineRect.scaleRoundIn(decodeScale);
-    //         }
-    //         this.outlineRadius = outlineRadius * decodeScale;
-    //         this.outlineAlpha = outlineAlpha / 255.0f;
-    //     }
+        CARAPI GetOpticalRect(
+            /* [out] */ IRect** rect);
 
-    //     public final Rect opticalRect;
-    //     public final Rect outlineRect;
-    //     public final float outlineRadius;
-    //     public final float outlineAlpha;
-    // }/
+        CARAPI GetOutlineRect(
+            /* [out] */ IRect** rect);
 
-     virtual ~NinePatch();
+        CARAPI GetOutlineRadius(
+            /* [out] */ Float* radius);
+
+        CARAPI GetOutlineAlpha(
+            /* [out] */ Float* alpha);
+
+    public:
+        AutoPtr<IRect> mOpticalRect;
+        AutoPtr<IRect> mOutlineRect;
+        const Float mOutlineRadius;
+        const Float mOutlineAlpha;
+    };
+
+public:
+    CAR_INTERFACE_DECL();
+
+    virtual ~NinePatch();
 
     /**
      * Create a drawable projection from a bitmap to nine patches.

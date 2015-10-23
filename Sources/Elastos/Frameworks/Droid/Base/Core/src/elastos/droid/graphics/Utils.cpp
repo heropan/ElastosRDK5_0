@@ -9,44 +9,70 @@ namespace Droid {
 namespace Graphics {
 
 static const char* TAG = "AssetStreamAdaptor";
-
-bool AssetStreamAdaptor::rewind()
+AssetStreamAdaptor::AssetStreamAdaptor(android::Asset* asset, OwnAsset ownAsset,
+                                       HasMemoryBase hasMemoryBase)
+    : fAsset(asset)
+    , fMemoryBase(kYes_HasMemoryBase == hasMemoryBase ?
+                  asset->getBuffer(false) : NULL)
+    , fOwnAsset(ownAsset)
 {
-    off64_t pos = mAsset->seek(0, SEEK_SET);
+}
+
+AssetStreamAdaptor::~AssetStreamAdaptor() {
+    if (kYes_OwnAsset == fOwnAsset) {
+        delete fAsset;
+    }
+}
+
+bool AssetStreamAdaptor::rewind() {
+    off64_t pos = fAsset->seek(0, SEEK_SET);
     if (pos == (off64_t)-1) {
-        Slogger::E(TAG, "----- mAsset->seek(rewind) failed");
+        SkDebugf("----- fAsset->seek(rewind) failed\n");
         return false;
     }
     return true;
 }
 
-size_t AssetStreamAdaptor::read(void* buffer, size_t size)
-{
+size_t AssetStreamAdaptor::getLength() const {
+    return fAsset->getLength();
+}
+
+bool AssetStreamAdaptor::isAtEnd() const {
+    return fAsset->getRemainingLength() == 0;
+}
+
+SkStreamRewindable* AssetStreamAdaptor::duplicate() const {
+    // Cannot create a duplicate, since each AssetStreamAdaptor
+    // would be modifying the Asset.
+    //return new AssetStreamAdaptor(fAsset);
+    return NULL;
+}
+
+size_t AssetStreamAdaptor::read(void* buffer, size_t size) {
     ssize_t amount;
 
     if (NULL == buffer) {
-        if (0 == size) {  // caller is asking us for our total length
-            return mAsset->getLength();
+        if (0 == size) {
+            return 0;
         }
         // asset->seek returns new total offset
         // we want to return amount that was skipped
 
-        off64_t oldOffset = mAsset->seek(0, SEEK_CUR);
+        off64_t oldOffset = fAsset->seek(0, SEEK_CUR);
         if (-1 == oldOffset) {
-            Slogger::E(TAG, "---- mAsset->seek(oldOffset) failed");
+            SkDebugf("---- fAsset->seek(oldOffset) failed\n");
             return 0;
         }
-        off64_t newOffset = mAsset->seek(size, SEEK_CUR);
+        off64_t newOffset = fAsset->seek(size, SEEK_CUR);
         if (-1 == newOffset) {
-            Slogger::E(TAG, "---- mAsset->seek(%d) failed\n", size);
+            SkDebugf("---- fAsset->seek(%d) failed\n", size);
             return 0;
         }
         amount = newOffset - oldOffset;
-    }
-    else {
-        amount = mAsset->read(buffer, size);
+    } else {
+        amount = fAsset->read(buffer, size);
         if (amount <= 0) {
-            Slogger::E(TAG, "---- mAsset->read(%d) returned %d\n", size, amount);
+            SkDebugf("---- fAsset->read(%d) returned %d\n", size, amount);
         }
     }
 

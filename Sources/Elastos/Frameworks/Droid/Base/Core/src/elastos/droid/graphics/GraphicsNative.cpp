@@ -11,6 +11,21 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
+// Assert that bitmap's SkAlphaType is consistent with isPremultiplied.
+static void assert_premultiplied(
+    /* [in] */ const SkBitmap& bitmap,
+    /* [in] */ Boolean isPremultiplied)
+{
+    // kOpaque_SkAlphaType and kIgnore_SkAlphaType mean that isPremultiplied is
+    // irrelevant. This just tests to ensure that the SkAlphaType is not
+    // opposite of isPremultiplied.
+    if (isPremultiplied) {
+        SkASSERT(bitmap.alphaType() != kUnpremul_SkAlphaType);
+    } else {
+        SkASSERT(bitmap.alphaType() != kPremul_SkAlphaType);
+    }
+}
+
 SkRect* GraphicsNative::IRect2SkRect(
     /* [in] */ IRect* obj,
     /* [in] */ SkRect* sr)
@@ -152,33 +167,13 @@ Int32 GraphicsNative::ColorTypeToLegacyBitmapConfig(
     return kNo_LegacyBitmapConfig;
 }
 
-ECode GraphicsNative::CreateBitmap(
-    /* [in] */ SkBitmap* nativeBitmap,
-    /* [in] */ ArrayOf<Byte>* buffer,
-    /* [in] */ Boolean isMutable,
-    /* [in] */ ArrayOf<Byte>* ninepatch,
-    /* [in] */ ArrayOf<Int32>* layoutbounds,
-    /* [in] */ Int32 density,
-    /* [out] */ CBitmap** bitmap)
-{
-    VALIDATE_NOT_NULL(bitmap);
-
-    SkASSERT(nativeBitmap != NULL);
-    SkASSERT(NULL != nativeBitmap->pixelRef());
-    assert(0 && "TODO");
-    // return CBitmap::NewByFriend((Int64)nativeBitmap, buffer,
-    //         isMutable, ninepatch, layoutbounds, density, bitmap);
-    return NOERROR;
-}
-
-ECode GraphicsNative::CreateBitmap(
+AutoPtr<IBitmap> GraphicsNative::CreateBitmap(
     /* [in] */ SkBitmap* bitmap,
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 bitmapCreateFlags,
     /* [in] */ ArrayOf<Byte>* ninePatchChunk,
     /* [in] */ INinePatchInsetStruct* ninePatchInsets,
-    /* [in] */ Int32 density,
-    /* [in, out] */ CBitmap* bitmapObj)
+    /* [in] */ Int32 density)
 {
     SkASSERT(bitmap);
     SkASSERT(bitmap->pixelRef());
@@ -187,103 +182,155 @@ ECode GraphicsNative::CreateBitmap(
 
     // The caller needs to have already set the alpha type properly, so the
     // native SkBitmap stays in sync with the Java Bitmap.
-    assert(0 && "TODO");
-    // assert_premultiplied(*bitmap, isPremultiplied);
+    assert_premultiplied(*bitmap, isPremultiplied);
 
-    // return bitmapObj->construtcor(reinterpret_cast<Int64>(bitmap), buffer,
-    //         bitmap->width(), bitmap->height(), density, isMutable, isPremultiplied,
-    //         ninePatchChunk, ninePatchInsets);
-    return NOERROR;
+    AutoPtr<IBitmap> obj;
+    ECode ec = CBitmap::New(reinterpret_cast<Int64>(bitmap), buffer,
+            bitmap->width(), bitmap->height(), density, isMutable, isPremultiplied,
+            ninePatchChunk, ninePatchInsets, (IBitmap**)&obj);
+    if (FAILED(ec)) {
+        //write log;
+    }
     // hasException(env); // For the side effect of logging.
-    // return obj;
+    return obj;
 }
 
-// ECode GraphicsNative::CreateBitmapRegionDecoder(
-//     /* [in] */ SkBitmapRegionDecoder* bitmap,
-//     /* [out] */ IBitmapRegionDecoder** decoder)
-// {
-//     VALIDATE_NOT_NULL(decoder);
+ECode GraphicsNative::CreateBitmapRegionDecoder(
+    /* [in] */ SkBitmapRegionDecoder* bitmap,
+    /* [out] */ IBitmapRegionDecoder** decoder)
+{
+    VALIDATE_NOT_NULL(decoder);
 
-//     SkASSERT(bitmap != NULL);
+    SkASSERT(bitmap != NULL);
 
-//     *decoder = new BitmapRegionDecoder((Handle32)bitmap);
-//     REFCOUNT_ADD(*decoder);
-//     return NOERROR;
-// }
+    *decoder = new BitmapRegionDecoder((Handle32)bitmap);
+    REFCOUNT_ADD(*decoder);
+    return NOERROR;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
+GraphicsNative::DroidPixelRef::DroidPixelRef(
+    /* [in] */ const SkImageInfo& info,
+    /* [in] */ void* storage,
+    /* [in] */ size_t rowBytes,
+    /* [in] */ ArrayOf<Byte>* storageObj,
+    /* [in] */ SkColorTable* ctable)
+    : SkMallocPixelRef(info, storage, rowBytes, ctable, (storageObj == NULL)), fWrappedPixelRef(NULL)
+{
+    SkASSERT(storage);
+    SkASSERT(env);
 
-// GraphicsNative::DroidPixelRef::DroidPixelRef(void* storage, size_t size, ArrayOf<Byte>* storageObj,
-//         SkColorTable* ctable) : SkMallocPixelRef(storage, size, ctable)
-// {
-//     SkASSERT(storage);
+    fStorageObj = storageObj;
+    fHasGlobalRef = false;
+    fGlobalRefCnt = 0;
 
-//     mStorageObj = storageObj;
-//     mHasGlobalRef = FALSE;
-//     mGlobalRefCnt = 0;
+    // If storageObj is NULL, the memory was NOT allocated on the Java heap
+    fOnJavaHeap = (storageObj != NULL);
+}
 
-//     // If storageObj is NULL, the memory was NOT allocated on the Java heap
-//     mOnDroidHeap = (storageObj != NULL);
+GraphicsNative::DroidPixelRef::DroidPixelRef(
+    /* [in] */ DroidPixelRef& wrappedPixelRef,
+    /* [in] */ const SkImageInfo& info,
+    /* [in] */ size_t rowBytes,
+    /* [in] */ SkColorTable* ctable)
+    : SkMallocPixelRef(info, wrappedPixelRef.getAddr(), rowBytes, ctable, false),
+        fWrappedPixelRef(wrappedPixelRef.fWrappedPixelRef ?
+                wrappedPixelRef.fWrappedPixelRef : &wrappedPixelRef)
+{
+    SkASSERT(fWrappedPixelRef);
+    SkSafeRef(fWrappedPixelRef);
 
-// }
+    // don't need to initialize these, as all the relevant logic delegates to the wrapped ref
+    fStorageObj = NULL;
+    fHasGlobalRef = false;
+    fGlobalRefCnt = 0;
+    fOnJavaHeap = false;
+}
 
-// GraphicsNative::DroidPixelRef::~DroidPixelRef()
-// {
-//     if (mOnDroidHeap) {
-//         if (mStorageObj && mHasGlobalRef) {
-//             // env->DeleteGlobalRef(fStorageObj);
-//         }
-//         mStorageObj = NULL;
+GraphicsNative::DroidPixelRef::~DroidPixelRef()
+{
+    if (fWrappedPixelRef) {
+        SkSafeUnref(fWrappedPixelRef);
+    } else if (fOnJavaHeap) {
+        if (fStorageObj && fHasGlobalRef) {
+            // env->DeleteGlobalRef(fStorageObj);
+            REFCOUNT_RELEASE(fStorageObj);
+        }
+        fStorageObj = NULL;
+    }
+}
+AutoPtr<ArrayOf<Byte> > GraphicsNative::DroidPixelRef::getStorageObj()
+{
+    if (fWrappedPixelRef) {
+        return fWrappedPixelRef->fStorageObj;
+    }
+    return fStorageObj;
+}
 
-//         // Set this to NULL to prevent the SkMallocPixelRef destructor
-//         // from freeing the memory.
-//         fStorage = NULL;
-//     }
-// }
+void GraphicsNative::DroidPixelRef::setLocalJNIRef(
+    /* [in] */ ArrayOf<Byte>* arr)
+{
+    if (fWrappedPixelRef) {
+        // delegate java obj management to the wrapped ref
+        fWrappedPixelRef->setLocalJNIRef(arr);
+    } else if (!fHasGlobalRef) {
+        fStorageObj = arr;
+    }
+}
 
-// void GraphicsNative::DroidPixelRef::setLocalRef(ArrayOf<Byte>* arr)
-// {
-//     if (!mHasGlobalRef) {
-//         mStorageObj = arr;
-//     }
-// }
+void GraphicsNative::DroidPixelRef::globalRef(
+    /* [in] */ void* localref)
+{
+    if (fWrappedPixelRef) {
+        // delegate java obj management to the wrapped ref
+        fWrappedPixelRef->globalRef(localref);
 
-// void GraphicsNative::DroidPixelRef::globalRef(void* localref)
-// {
-//     if (mOnDroidHeap && sk_atomic_inc(&mGlobalRefCnt) == 0) {
-//         // If JNI ref was passed, it is always used
-//         if (localref) mStorageObj = (ArrayOf<Byte>*)localref;
+        // Note: we only ref and unref the wrapped DroidPixelRef so that
+        // bitmap->pixelRef()->globalRef() and globalUnref() can be used in a pair, even if
+        // the bitmap has its underlying DroidPixelRef swapped out/wrapped
+        return;
+    }
+    if (fOnJavaHeap && sk_atomic_inc(&fGlobalRefCnt) == 0) {
+        // If JNI ref was passed, it is always used
+        if (localref) fStorageObj = (ArrayOf<Byte>*) localref;
 
-//         if (mStorageObj == NULL) {
-//             SkDebugf("No valid local ref to create a JNI global ref\n");
-//             sk_throw();
-//         }
-//         if (mHasGlobalRef) {
-//             // This should never happen
-//             SkDebugf("Already holding a JNI global ref");
-//             sk_throw();
-//         }
+        if (fStorageObj == NULL) {
+            SkDebugf("No valid local ref to create a JNI global ref\n");
+            sk_throw();
+        }
+        if (fHasGlobalRef) {
+            // This should never happen
+            SkDebugf("Already holding a JNI global ref");
+            sk_throw();
+        }
 
-//         // fStorageObj = (jbyteArray) env->NewGlobalRef(fStorageObj);
-//         // TODO: Check for failure here
-//         mHasGlobalRef = TRUE;
-//     }
-//     ref();
-// }
+        // fStorageObj = (jbyteArray) env->NewGlobalRef(fStorageObj);
+        REFCOUNT_ADD(fStorageObj);
+        // TODO: Check for failure here
+        fHasGlobalRef = true;
+    }
+    ref();
+}
 
-// void GraphicsNative::DroidPixelRef::globalUnref()
-// {
-//     if (mOnDroidHeap && sk_atomic_dec(&mGlobalRefCnt) == 1) {
-//         if (!mHasGlobalRef) {
-//             SkDebugf("We don't have a global ref!");
-//             sk_throw();
-//         }
-//         // env->DeleteGlobalRef(fStorageObj);
-//         mStorageObj = NULL;
-//         mHasGlobalRef = FALSE;
-//     }
-//     unref();
-// }
+void GraphicsNative::DroidPixelRef::globalUnref()
+{
+    if (fWrappedPixelRef) {
+        // delegate java obj management to the wrapped ref
+        fWrappedPixelRef->globalUnref();
+        return;
+    }
+    if (fOnJavaHeap && sk_atomic_dec(&fGlobalRefCnt) == 1) {
+        if (!fHasGlobalRef) {
+            SkDebugf("We don't have a global ref!");
+            sk_throw();
+        }
+        // env->DeleteGlobalRef(fStorageObj);
+        REFCOUNT_RELEASE(fStorageObj);
+        fStorageObj = NULL;
+        fHasGlobalRef = false;
+    }
+    unref();
+}
 
 ECode GraphicsNative::AllocateDroidPixelRef(
     /* [in] */ SkBitmap* bitmap,
@@ -429,6 +476,26 @@ Boolean GraphicsNative::SetPixels(
     // dstBitmap.notifyPixelsChanged();
 
     return TRUE;
+}
+
+void GraphicsNative::ReinitBitmap(
+    /* [in] */ IBitmap* bitmapObj,
+    /* [in] */ SkBitmap* bitmap,
+    /* [in] */ Boolean isPremultiplied)
+{
+    // The caller needs to have already set the alpha type properly, so the
+    // native SkBitmap stays in sync with the Java Bitmap.
+    assert_premultiplied(*bitmap, isPremultiplied);
+
+    bitmapObj->Reinit(bitmap->width(), bitmap->height(), isPremultiplied);
+}
+
+Int32 GraphicsNative::GetBitmapAllocationByteCount(
+    /* [in] */ IBitmap* bitmapObj)
+{
+    Int32 count = 0;
+    bitmapObj->GetAllocationByteCount(&count);
+    return count;
 }
 
 } // namespace Graphics
