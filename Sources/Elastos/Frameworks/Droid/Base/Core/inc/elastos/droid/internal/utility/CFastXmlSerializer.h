@@ -53,7 +53,7 @@ public:
 
     CARAPI StartDocument(
        /* [in] */ const String& encoding,
-       /* [in] */ IBoolean* standalone);
+       /* [in] */ Boolean standalone);
 
     CARAPI EndDocument();
 

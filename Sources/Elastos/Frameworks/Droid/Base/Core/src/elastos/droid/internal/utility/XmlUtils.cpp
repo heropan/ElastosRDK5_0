@@ -1,20 +1,18 @@
 
-#include "ext/frameworkdef.h"
-#include "util/XmlUtils.h"
-#include "util/Xml.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Slogger.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/List.h>
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/Xml.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/etl/List.h>
+#include <elastos/utility/logging/Slogger.h>
 
 #ifdef DROID_CORE
-#include "util/CFastXmlSerializer.h"
+#include "elastos/droid/internal/utility/CFastXmlSerializer.h"
 #endif
 
-
-#include <elastos/Slogger.h>
-using Elastos::Utility::Logging::Slogger;
-
+using Elastos::Droid::Utility::CFastXmlSerializer;
+using Elastos::Droid::Utility::IFastXmlSerializer;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CInteger32;
@@ -32,15 +30,14 @@ using Elastos::Core::CStringWrapper;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::EIID_IInteger32;
-using Elastos::Droid::Utility::CFastXmlSerializer;
-using Elastos::Droid::Utility::IFastXmlSerializer;
 using Elastos::Utility::CObjectMap;
-using Elastos::Utility::List;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Slogger;
 using Org::Kxml2::IO::CKXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
+namespace Internal {
 namespace Utility {
 
 const String XmlUtils::TAG("XmlUtils");
@@ -185,71 +182,94 @@ Int32 XmlUtils::ParseUnsignedIntAttribute(
 }
 
 ECode XmlUtils::WriteMapXml(
-    /* [in] */ IObjectMap* val,
+    /* [in] */ IMap* val,
     /* [in] */ IOutputStream* out) //throws XmlPullParserException, java.io.IOException
 {
     AutoPtr<IFastXmlSerializer> serializer;
     CFastXmlSerializer::New((IFastXmlSerializer**)&serializer);
     FAIL_RETURN(serializer->SetOutput(out, String("utf-8")));
-    AutoPtr<IBoolean> bv;
-    CBoolean::New(TRUE, (IBoolean**)&bv);
-    FAIL_RETURN(serializer->StartDocument(String(NULL), bv));
+    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE));
     FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE));
     FAIL_RETURN(WriteMapXml(val, String(NULL), serializer));
     return serializer->EndDocument();
 }
 
 ECode XmlUtils::WriteListXml(
-    /* [in] */ /*List*/IObjectContainer* val,
+    /* [in] */ IList* val,
     /* [in] */ IOutputStream* out) //throws XmlPullParserException, java.io.IOException
 {
-    //TODO
-    AutoPtr<IXmlSerializer> serializer ;// serializer = Xml::NewSerializer();
-    CKXmlSerializer::New((IXmlSerializer**)&serializer);
+    AutoPtr<IXmlSerializer> serializer;
+    Xml::NewSerializer((IXmlSerializer**)&serializer);
+    // CKXmlSerializer::New((IXmlSerializer**)&serializer);
     FAIL_RETURN(serializer->SetOutput(out, String("utf-8")));
-    AutoPtr<IBoolean> bv;
-    CBoolean::New(TRUE, (IBoolean**)&bv);
-    FAIL_RETURN(serializer->StartDocument(String(NULL), bv));
+    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE));
     FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE));
     FAIL_RETURN(WriteListXml(val, String(NULL), serializer));
     return serializer->EndDocument();
 }
 
 ECode XmlUtils::WriteMapXml(
-    /* [in] */ IObjectMap* val,
+    /* [in] */ IMap* val,
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
+    return WriteMapXml(val, name, out, NULL);
+}
+
+ECode XmlUtils::WriteMapXml(
+    /* [in] */ IMap* val,
+    /* [in] */ const String& name,
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ WriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
+{
     if (val == NULL) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")));
-        return out->WriteEndTag(String(NULL), String("NULL"));
+        FAIL_RETURN(out->WirteStartTag(String(NULL), String("NULL"))
+        FAIL_RETURN(out->WirteEndTag(String(NULL), String("NULL"))
+        return NOERROR;
     }
 
-    AutoPtr<ArrayOf<IInterface*> > keys;
-    val->GetKeys((ArrayOf<IInterface*>**)&keys);
-    assert(keys != NULL);
-
-    FAIL_RETURN(out->WriteStartTag(String(NULL), String("map")));
-    if (!name.IsNull()) {
-        out->WriteAttribute(String(NULL), String("name"), name);
+    FAIL_RETURN(out->WirteStartTag(String(NULL), String("map"))
+    if (name != NULL) {
+        FAIL_RETURN(out->WirteAttribute(String(NULL), String("name"), name)
     }
 
-    AutoPtr<IInterface> key;
-    String k;
-    for (Int32 i = 0; i < keys->GetLength(); i++) {
-        key = (*keys)[i];
-        AutoPtr<IInterface> value;
-        val->Get(key, (IInterface**)&value);
-        assert(ICharSequence::Probe(key) != NULL);
+    FAIL_RETURN(WriteMapXml(val, out, callback))
+
+    return out->WirteEndTag(String(NULL), String("map");
+}
+
+ECode XmlUtils::WriteMapXml(
+    /* [in] */ IMap* val,
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ WriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
+{
+    if (val == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<ISet> s;
+    val->GetEntrySet((ISet**)&s);
+    AutoPtr<IIterator> i;
+    s->GetIterator((IIterator**)&i);
+
+    Boolean hasNext;
+    while (i->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> object;
+        i->GetNext((IInterface**)&object);
+        AutoPtr<IMapEntry> e = IMapEntry::Probe(object);
+        AutoPtr<IInterface> value, key;
+        e->GetValue((IInterface**)&value);
+        e->GetKey((IInterface**)&key);
+        String k;
+        assert(IString::Probe(key) != NULL);
         ICharSequence::Probe(key)->ToString(&k);
-        FAIL_RETURN(WriteValueXml(value, k, out));
+        FAIL_RETURN(WriteValueXml(value, k, out, callback))
     }
-
-    return out->WriteEndTag(String(NULL), String("map"));
+    return NOERROR;
 }
 
 ECode XmlUtils::WriteListXml(
-    /* [in] */ /*List*/IObjectContainer* val,
+    /* [in] */ IList* val,
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
@@ -263,20 +283,21 @@ ECode XmlUtils::WriteListXml(
         FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
     }
 
-    AutoPtr<IObjectEnumerator> ator;
-    val->GetObjectEnumerator((IObjectEnumerator**)&ator);
-    Boolean hasNext = FALSE;
-    while (ator->MoveNext(&hasNext), hasNext) {
+    Int32 N;
+    val->GetSize((Int32*)&N);
+    Int32 i = 0;
+    while (i < N) {
         AutoPtr<IInterface> value;
-        ator->Current((IInterface**)&value);
-        FAIL_RETURN(WriteValueXml(value, String(NULL), out));
+        val->Get(i, (IInterface**)&value);
+        FAIL_RETURN(WriteValueXml(value, String(NULL), out))
+        i++;
     }
 
     return out->WriteEndTag(String(NULL), String("list"));
 }
 
 ECode XmlUtils::WriteSetXml(
-    /* [in] */ /*Set*/IObjectContainer* val,
+    /* [in] */ ISet* val,
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
@@ -290,13 +311,13 @@ ECode XmlUtils::WriteSetXml(
         FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
     }
 
-    AutoPtr<IObjectEnumerator> ator;
-    val->GetObjectEnumerator((IObjectEnumerator**)&ator);
+    AutoPtr<IIterator> iter;
+    val->GetIterator((IIterator**)&iter);
     Boolean hasNext = FALSE;
-    while (ator->MoveNext(&hasNext), hasNext) {
+    while (iter->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> value;
-        ator->Current((IInterface**)&value);
-        FAIL_RETURN(WriteValueXml(value, String(NULL), out));
+        iter->GetNext((IInterface**)&value);
+        FAIL_RETURN(WriteValueXml(value, String(NULL), out))
     }
 
     return out->WriteEndTag(String(NULL), String("set"));
@@ -438,8 +459,8 @@ ECode XmlUtils::WriteValueXml(
 
         return NOERROR;
     }
-    else if (IObjectMap::Probe(v) != NULL) {
-        return WriteMapXml(IObjectMap::Probe(v), name, out);
+    else if (IMap::Probe(v) != NULL) {
+        return WriteMapXml(IMap::Probe(v), name, out);
     }
     // TODO: Combine list and set' process.
     else if (IObjectContainer::Probe(v) != NULL) {
@@ -474,7 +495,7 @@ ECode XmlUtils::WriteValueXml(
     return out->WriteEndTag(String(NULL), typeStr);
 }
 
-AutoPtr<IObjectMap> XmlUtils::ReadMapXml(
+AutoPtr<IMap> XmlUtils::ReadMapXml(
     /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
 {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
@@ -482,7 +503,7 @@ AutoPtr<IObjectMap> XmlUtils::ReadMapXml(
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
     ReadValueXml(parser, name, (IInterface**)&obj);
-    return IObjectMap::Probe(obj);
+    return IMap::Probe(obj);
 }
 
 AutoPtr<IArrayOf> XmlUtils::ReadListXml(
@@ -496,7 +517,7 @@ AutoPtr<IArrayOf> XmlUtils::ReadListXml(
     return IArrayOf::Probe(obj);
 }
 
-AutoPtr<IObjectContainer> XmlUtils::ReadSetXml(
+AutoPtr<ISet> XmlUtils::ReadSetXml(
     /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
 {
     AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
@@ -504,14 +525,14 @@ AutoPtr<IObjectContainer> XmlUtils::ReadSetXml(
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
     ReadValueXml(parser, name, (IInterface**)&obj);
-    return IObjectContainer::Probe(obj);
+    return ISet::Probe(obj);
 }
 
 ECode XmlUtils::ReadThisMapXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ const String& endTag,
     /* [in] */ ArrayOf<String>* name,
-    /* [out] */ IObjectMap** map)//throws XmlPullParserException, java.io.IOException
+    /* [out] */ IMap** map)//throws XmlPullParserException, java.io.IOException
 {
     VALIDATE_NOT_NULL(map);
     CObjectMap::New(map);
@@ -596,7 +617,7 @@ ECode XmlUtils::ReadThisSetXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ const String& endTag,
     /* [in] */ ArrayOf<String>* name,
-    /* [out] */ IObjectContainer** container)//throws XmlPullParserException, java.io.IOException
+    /* [out] */ ISet** container)//throws XmlPullParserException, java.io.IOException
 {
     VALIDATE_NOT_NULL(container);
     CObjectContainer::New(container);
@@ -812,8 +833,8 @@ ECode XmlUtils::ReadThisValueXml(
     else if (tagName.Equals("map")) {
         Int32 t = 0;
         FAIL_RETURN(parser->Next(&t));
-        AutoPtr<IObjectMap> mv;
-        FAIL_RETURN(ReadThisMapXml(parser, String("map"), name, (IObjectMap**)&mv));
+        AutoPtr<IMap> mv;
+        FAIL_RETURN(ReadThisMapXml(parser, String("map"), name, (IMap**)&mv));
         (*name)[0] = valueName;
         *ret = mv;
         INTERFACE_ADDREF(*ret);
@@ -834,8 +855,8 @@ ECode XmlUtils::ReadThisValueXml(
     else if (tagName.Equals("set")) {
         Int32 t = 0;
         FAIL_RETURN(parser->Next(&t));
-        AutoPtr<IObjectContainer> oc;
-        FAIL_RETURN(ReadThisSetXml(parser, String("set"), name, (IObjectContainer**)&oc));
+        AutoPtr<ISet> oc;
+        FAIL_RETURN(ReadThisSetXml(parser, String("set"), name, (ISet**)&oc));
         (*name)[0] = valueName;
         //System.out.println("Returning value for " + valueName + ": " + res);
         *ret = oc;
@@ -922,5 +943,6 @@ Boolean XmlUtils::NextElementWithin(
 }
 
 } // namespace Utility
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos

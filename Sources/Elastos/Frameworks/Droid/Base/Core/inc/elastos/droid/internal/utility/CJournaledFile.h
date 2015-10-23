@@ -1,8 +1,9 @@
 
-#ifndef __JOURNALEDFILE_H__
-#define __JOURNALEDFILE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_JOURNALEDFILE_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_JOURNALEDFILE_H__
 
-#include "ext/frameworkext.h"
+#include "_Elastos_Droid_Internal_Utility_CJournaledFile.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFile;
 
@@ -11,10 +12,18 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-class JournaledFile : public ElRefBase
+CarClass(CJournaledFile)
+    , public Object
+    , public IJournaledFile
 {
 public:
-    JournaledFile(
+    CJournaledFile();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
         /* [in] */ IFile* real,
         /* [in] */ IFile* temp);
 
@@ -24,7 +33,8 @@ public:
      * it to the real one.  If there is both a real file and a temp one, assumes that the
      * temp one isn't fully written and deletes it.
      */
-    CARAPI_(AutoPtr<IFile>) ChooseForRead();
+    CARAPI ChooseForRead(
+        /* [out] */ IFile** file);
 
     /**
      * Returns a file for you to write.
@@ -34,7 +44,8 @@ public:
      * <p>
      * Call {@link #commit} to commit the changes, or {@link #rollback} to forget the changes.
      */
-    CARAPI_(AutoPtr<IFile>) ChooseForWrite();
+    CARAPI ChooseForWrite(
+        /* [out] */ IFile** file);
 
     /**
      * Commit changes.
@@ -57,4 +68,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__JOURNALEDFILE_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_JOURNALEDFILE_H__

@@ -453,7 +453,7 @@ ECode CFastXmlSerializer::SetProperty(
 
 ECode CFastXmlSerializer::StartDocument(
    /* [in] */ const String& encoding,
-   /* [in] */ IBoolean* standalone)
+   /* [in] */ Boolean standalone)
 {
     StringBuilder sb("<?xml version='1.0' encoding='utf-8' standalone='");
     sb += (standalone ? "yes" : "no");

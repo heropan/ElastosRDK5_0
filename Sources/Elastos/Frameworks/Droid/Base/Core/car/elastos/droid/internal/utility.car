@@ -12,6 +12,7 @@ module
     merge("utility/FileRotator.car");
     merge("utility/HexDump.car");
     merge("utility/IndentingPrintWriter.car");
+    merge("utility/JournaledFile.car");
     merge("utility/MemInfoReader.car");
     merge("utility/Preconditions.car");
     merge("utility/Predicate.car");
@@ -20,9 +21,11 @@ module
     merge("utility/Protocol.car");
     merge("utility/SizedInputStream.car");
     merge("utility/TypedProperties.car");
+    merge("utility/UserIcons.car");
     merge("utility/VirtualRefBasePtr.car");
     merge("utility/WithFramework.car");
 
+    using interface Elastos.IO.IFile;
     using interface Elastos.IO.IWriter;
     using interface Org.Xmlpull.V1.IXmlSerializer;
 
@@ -35,10 +38,25 @@ module
         interface IAsyncChannel;
     }
 
+    singleton class CCharSequences {
+        interface ICharSequences;
+    }
+
     class CFastXmlSerializer {
         interface IFastXmlSerializer;
         interface IXmlSerializer;
     }
+
+    class CFileRotator {
+        constructor(
+            [in] IFile* basePath,
+            [in] String prefix,
+            [in] Int64 rotateAgeMillis,
+            [in] Int64 deleteAgeMillis);
+
+        interface IFileRotator;
+    }
+
 
     class CIndentingPrintWriter {
         constructor(
@@ -51,6 +69,14 @@ module
             [in] Int32 wrapLength);
 
         interface IIndentingPrintWriter;
+    }
+
+    class CJournaledFile {
+        constructor(
+            [in] IFile* real,
+            [in] IFile* temp);
+
+        interface IJournaledFile;
     }
 
     } // namespace Utility

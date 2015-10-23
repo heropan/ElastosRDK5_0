@@ -301,7 +301,6 @@ AutoPtr<IInterface> ActivityChooserModel::PersistHistoryAsyncTask::DoInBackgroun
     AutoPtr<IFileOutputStream> fos;
     AutoPtr<IObjectEnumerator> em;
     Boolean hasNext;
-    AutoPtr<IBoolean> param;
 
     // try {
     ECode ec = mHost->mContext->OpenFileOutput(historyFileName, IContext::MODE_PRIVATE, (IFileOutputStream**)&fos);
@@ -321,8 +320,8 @@ AutoPtr<IInterface> ActivityChooserModel::PersistHistoryAsyncTask::DoInBackgroun
         if (FAILED(serializer->SetOutput(fos, String(NULL)))) {
             goto finally;
         }
-        CBoolean::New(TRUE, (IBoolean**)&param);
-        if (FAILED(serializer->StartDocument(String("UTF-8"), param))) {
+
+        if (FAILED(serializer->StartDocument(String("UTF-8"), TRUE))) {
             goto finally;
         }
         if (FAILED(serializer->WriteStartTag(String(NULL), TAG_HISTORICAL_RECORDS))) {

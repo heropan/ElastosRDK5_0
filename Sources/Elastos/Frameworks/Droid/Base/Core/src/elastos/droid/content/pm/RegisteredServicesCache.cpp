@@ -849,9 +849,8 @@ void RegisteredServicesCache::WritePersistentServicesLocked()
         }
         return;
     }
-    AutoPtr<IBoolean> ib;
-    CBoolean::New(TRUE, (IBoolean**)&ib);
-    ec = out->StartDocument(String(NULL), ib);
+
+    ec = out->StartDocument(String(NULL), TRUE);
     if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::W(TAG, "Error writing accounts 0x%08x", ec);
         if (fos != NULL) {

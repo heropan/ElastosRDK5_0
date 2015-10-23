@@ -1,6 +1,6 @@
 
-#include "util/JournaledFile.h"
-#include <elastos/Logger.h>
+#include "elastos/droid/internal/utility/CJournaledFile.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
 
@@ -9,17 +9,28 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-JournaledFile::JournaledFile(
-    /* [in] */ IFile* real,
-    /* [in] */ IFile* temp)
-    : mReal(real)
-    , mTemp(temp)
-    , mWriting(FALSE)
+CAR_INTERFACE_IMPL(CJournaledFile, Object, IJournaledFile)
+
+CAR_OBJECT_IMPL(CJournaledFile)
+
+CJournaledFile::CJournaledFile()
+    : mWriting(FALSE)
 {
 }
 
-AutoPtr<IFile> JournaledFile::ChooseForRead()
+ECode CJournaledFile::constructor(
+    /* [in] */ IFile* real,
+    /* [in] */ IFile* temp)
 {
+    mReal = real;
+    mTemp = temp;
+    return NOERROR;
+}
+
+ECode CJournaledFile::ChooseForRead(
+    /* [out] */ IFile** file)
+{
+    VALIDATE_NOT_NULL(file)
     AutoPtr<IFile> result;
     Boolean rExists, tExists;
     mReal->Exists(&rExists);
@@ -37,17 +48,20 @@ AutoPtr<IFile> JournaledFile::ChooseForRead()
         mTemp->RenameTo(mReal, &res);
     }
     else {
-        return mReal;
+        result = mReal;
     }
-    return result;
+    *file = result;
+    REFCOUNT_ADD(*file);
+    return NOERROR;
 }
 
-AutoPtr<IFile> JournaledFile::ChooseForWrite()
+ECode CJournaledFile::ChooseForWrite(
+    /* [out] */ IFile** file)
 {
+    VALIDATE_NOT_NULL(file)
     if (mWriting) {
-        Logger::E("JournaledFile", "uncommitted write already in progress");
-        assert(0);
-        //throw new IllegalStateException("uncommitted write already in progress");
+        Logger::E("CJournaledFile", "uncommitted write already in progress");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
 
     Boolean rExists, tExists;
@@ -68,13 +82,15 @@ AutoPtr<IFile> JournaledFile::ChooseForWrite()
         mTemp->Delete(&res);
     }
     mWriting = TRUE;
-    return mTemp;
+    *file = mTemp;
+    REFCOUNT_ADD(*file);
+    return NOERROR;
 }
 
-ECode JournaledFile::Commit()
+ECode CJournaledFile::Commit()
 {
     if (!mWriting) {
-        Logger::E("JournaledFile", "no file to commit");
+        Logger::E("CJournaledFile", "no file to commit");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     mWriting = FALSE;
@@ -82,10 +98,10 @@ ECode JournaledFile::Commit()
     return mTemp->RenameTo(mReal, &res);
 }
 
-ECode JournaledFile::Rollback()
+ECode CJournaledFile::Rollback()
 {
     if (!mWriting) {
-        Logger::E("JournaledFile", "no file to roll back");
+        Logger::E("CJournaledFile", "no file to roll back");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     mWriting = FALSE;

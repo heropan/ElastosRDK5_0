@@ -1,5 +1,5 @@
-#ifndef __HH_XMLUTILS_H__
-#define __HH_XMLUTILS_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_XMLUTILS_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_XMLUTILS_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -11,13 +11,14 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::IArrayOf;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
-using Elastos::Utility::IObjectMap;
+using Elastos::Utility::IMap;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
 
 
 namespace Elastos {
 namespace Droid {
+namespace Internal {
 namespace Utility {
 
 class XmlUtils
@@ -59,7 +60,7 @@ public:
      * @see #readMapXml
      */
     static CARAPI WriteMapXml(
-        /* [in] */ IObjectMap* val,
+        /* [in] */ IMap* val,
         /* [in] */ IOutputStream* out);
 
     /**
@@ -75,7 +76,7 @@ public:
      * @see #readListXml
      */
     static CARAPI WriteListXml(
-        /* [in] */ /*List*/IObjectContainer* val,
+        /* [in] */ IList* val,
         /* [in] */ IOutputStream* out);
 
     /**
@@ -93,9 +94,52 @@ public:
      * @see #readMapXml
      */
     static CARAPI WriteMapXml(
-        /* [in] */ IObjectMap* val,
+        /* [in] */ IMap* val,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out);
+
+    /**
+     * Flatten a Map into an XmlSerializer.  The map can later be read back
+     * with readThisMapXml().
+     *
+     * @param val The map to be flattened.
+     * @param name Name attribute to include with this list's tag, or null for
+     *             none.
+     * @param out XmlSerializer to write the map into.
+     * @param callback Method to call when an Object type is not recognized.
+     *
+     * @see #writeMapXml(Map, OutputStream)
+     * @see #writeListXml
+     * @see #writeValueXml
+     * @see #readMapXml
+     *
+     * @hide
+     */
+    static CARAPI WriteMapXml(
+        /* [in] */ IMap* val,
+        /* [in] */ const String& name,
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ WriteMapCallback* callback);
+
+    /**
+     * Flatten a Map into an XmlSerializer.  The map can later be read back
+     * with readThisMapXml(). This method presumes that the start tag and
+     * name attribute have already been written and does not write an end tag.
+     *
+     * @param val The map to be flattened.
+     * @param out XmlSerializer to write the map into.
+     *
+     * @see #writeMapXml(Map, OutputStream)
+     * @see #writeListXml
+     * @see #writeValueXml
+     * @see #readMapXml
+     *
+     * @hide
+     */
+    static CARAPI WriteMapXml(
+        /* [in] */ IMap* val,
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ WriteMapCallback* callback);
 
     /**
      * Flatten a List into an XmlSerializer.  The list can later be read back
@@ -112,12 +156,12 @@ public:
      * @see #readListXml
      */
     static CARAPI WriteListXml(
-        /* [in] */ /*List*/IObjectContainer* val,
+        /* [in] */ IList* val,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out);
 
     static CARAPI WriteSetXml(
-        /* [in] */ /*Set*/IObjectContainer* val,
+        /* [in] */ ISet* val,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out);
 
@@ -190,7 +234,7 @@ public:
      * @see #readThisMapXml
      * #see #writeMapXml
      */
-    static CARAPI_(AutoPtr<IObjectMap>) ReadMapXml(
+    static CARAPI_(AutoPtr<IMap>) ReadMapXml(
         /* [in] */ IInputStream* in);
 
     /**
@@ -224,7 +268,7 @@ public:
      * @see #readThisSetXml
      * @see #writeSetXml
      */
-    static CARAPI_(AutoPtr<IObjectContainer>) ReadSetXml(
+    static CARAPI_(AutoPtr<ISet>) ReadSetXml(
         /* [in] */ IInputStream* in);
 
     /**
@@ -245,7 +289,7 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
-        /* [out] */ IObjectMap** map);
+        /* [out] */ IMap** map);
 
     /**
      * Read an ArrayList object from an XmlPullParser.  The XML data could
@@ -288,7 +332,7 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
-        /* [out] */ IObjectContainer** container);
+        /* [out] */ ISet** container);
 
     /**
      * Read an Int32[] object from an XmlPullParser.  The XML data could
@@ -353,7 +397,8 @@ private:
 };
 
 } // namespace Utility
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_XMLUTILS_H__
+#endif // __ELASTOS_DROID_INTERNAL_UTILITY_XMLUTILS_H__

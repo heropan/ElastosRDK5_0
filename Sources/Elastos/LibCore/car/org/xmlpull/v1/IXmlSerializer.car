@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Core.IBoolean;
     interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IWriter;
 
@@ -115,7 +114,7 @@ module
          */
         StartDocument(
             [in] String encoding,
-            [in] IBoolean* standalone);
+            [in] Boolean standalone);
 
         /**
          * Finish writing. All unclosed start tags will be closed and output

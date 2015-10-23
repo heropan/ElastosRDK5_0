@@ -412,7 +412,7 @@ ECode CKXmlSerializer::SetOutput(
 
 ECode CKXmlSerializer::StartDocument(
     /* [in] */ const String& encoding,
-    /* [in] */ IBoolean* standalone)
+    /* [in] */ Boolean standalone)
 {
     FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("<?xml version='1.0' ")));
 
@@ -429,14 +429,11 @@ ECode CKXmlSerializer::StartDocument(
         FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("' ")));
     }
 
-    if (standalone != NULL) {
-        Boolean b;
-        standalone->GetValue(&b);
-        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("standalone='")));
-        FAIL_RETURN(IWriter::Probe(mWriter)->Write(
-            b ? String("yes") : String("no")));
-        FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("' ")));
-    }
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("standalone='")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(
+        standalone ? String("yes") : String("no")));
+    FAIL_RETURN(IWriter::Probe(mWriter)->Write(String("' ")));
+
     return IWriter::Probe(mWriter)->Write(String("?>"));
 }
 

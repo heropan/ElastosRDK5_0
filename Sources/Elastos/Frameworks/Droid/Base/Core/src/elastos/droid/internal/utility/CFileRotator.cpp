@@ -1,20 +1,18 @@
 
-#include "util/FileRotator.h"
-#include "os/FileUtils.h"
-#include <elastos/StringUtils.h>
-#include <elastos/Math.h>
-#include <elastos/StringBuilder.h>
-#include <elastos/Slogger.h>
+#include "elastos/droid/internal/utility/CFileRotator.h"
+#include "elastos/droid/os/FileUtils.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Os::FileUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::IO::ICloseable;
 using Elastos::IO::CFile;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
-using Elastos::IO::IIoUtils;
-using Elastos::IO::CIoUtils;
-using Elastos::IO::IStreams;
-using Elastos::IO::CStreams;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::IO::CFileOutputStream;
@@ -26,14 +24,17 @@ using Elastos::Utility::Zip::IZipOutputStream;
 using Elastos::Utility::Zip::CZipOutputStream;
 using Elastos::Utility::Zip::IZipEntry;
 using Elastos::Utility::Zip::CZipEntry;
-using Elastos::Droid::Os::FileUtils;
+using Libcore::IO::IIoUtils;
+using Libcore::IO::CIoUtils;
+using Libcore::IO::IStreams;
+using Libcore::IO::CStreams;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Utility {
 
-FileRotator::FileInfo::FileInfo(
+CFileRotator::FileInfo::FileInfo(
     /* [in] */ const String& prefix)
     : mStartMillis(0)
     , mEndMillis(0)
@@ -42,7 +43,7 @@ FileRotator::FileInfo::FileInfo(
     mPrefix = prefix;
 }
 
-Boolean FileRotator::FileInfo::Parse(
+Boolean CFileRotator::FileInfo::Parse(
     /* [in] */ const String& name)
 {
     mStartMillis = mEndMillis = -1;
@@ -57,17 +58,13 @@ Boolean FileRotator::FileInfo::Parse(
     if (!mPrefix.Equals(name.Substring(0, dotIndex))) return FALSE;
 
     // try {
-    if (FAILED(StringUtils::ParseInt64(name.Substring(dotIndex + 1, dashIndex), &mStartMillis))) {
-        return FALSE;
-    }
+    mStartMillis = StringUtils::ParseInt64(name.Substring(dotIndex + 1, dashIndex));
 
     if (name.GetLength() - dashIndex == 1) {
         mEndMillis = Elastos::Core::Math::INT64_MAX_VALUE;
     }
     else {
-        if (FAILED(StringUtils::ParseInt64(name.Substring(dashIndex + 1), &mEndMillis))) {
-            return FALSE;
-        }
+        mEndMillis = StringUtils::ParseInt64(name.Substring(dashIndex + 1));
     }
 
     return TRUE;
@@ -76,67 +73,46 @@ Boolean FileRotator::FileInfo::Parse(
     // }
 }
 
-String FileRotator::FileInfo::Build()
+String CFileRotator::FileInfo::Build()
 {
     StringBuilder name(mPrefix);
     name.AppendChar('.');
-    name.AppendInt64(mStartMillis);
+    name.Append(mStartMillis);
     name.AppendChar('-');
     if (mEndMillis != Elastos::Core::Math::INT64_MAX_VALUE) {
-        name.AppendInt64(mEndMillis);
+        name.Append(mEndMillis);
     }
     return name.ToString();
 }
 
-Boolean FileRotator::FileInfo::IsActive()
+Boolean CFileRotator::FileInfo::IsActive()
 {
     return mEndMillis == Elastos::Core::Math::INT64_MAX_VALUE;
 }
 
+CAR_INTERFACE_IMPL_3(CFileRotator::CombineActiveRewriter, Object,
+    IFileRotatorReader, IFileRotatorWriter, IFileRotatorRewriter)
 
-FileRotator::CombineActiveRewriter::CombineActiveRewriter(
-    /* [in] */ Reader* reader,
-    /* [in] */ Writer* writer)
+CFileRotator::CombineActiveRewriter::CombineActiveRewriter(
+    /* [in] */ IFileRotatorReader* reader,
+    /* [in] */ IFileRotatorWriter* writer)
     : mReader(reader)
     , mWriter(writer)
 {}
 
-UInt32 FileRotator::CombineActiveRewriter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 FileRotator::CombineActiveRewriter::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface FileRotator::CombineActiveRewriter::Probe(
-    /* [in] */ REIID riid)
-{
-    return NULL;
-}
-
-ECode FileRotator::CombineActiveRewriter::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return NOERROR;
-}
-
-ECode FileRotator::CombineActiveRewriter::Reset()
+ECode CFileRotator::CombineActiveRewriter::Reset()
 {
     // ignored
     return NOERROR;
 }
 
-ECode FileRotator::CombineActiveRewriter::Read(
+ECode CFileRotator::CombineActiveRewriter::Read(
     /* [in] */ IInputStream* in)
 {
     return mReader->Read(in);
 }
 
-ECode FileRotator::CombineActiveRewriter::ShouldWrite(
+ECode CFileRotator::CombineActiveRewriter::ShouldWrite(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -144,38 +120,40 @@ ECode FileRotator::CombineActiveRewriter::ShouldWrite(
     return NOERROR;
 }
 
-ECode FileRotator::CombineActiveRewriter::Write(
+ECode CFileRotator::CombineActiveRewriter::Write(
     /* [in] */ IOutputStream* out)
 {
     return mWriter->Write(out);
 }
 
+const String CFileRotator::TAG("CFileRotator");
+const Boolean CFileRotator::LOGD = FALSE;
+const String CFileRotator::SUFFIX_BACKUP(".backup");
+const String CFileRotator::SUFFIX_NO_BACKUP(".no_backup");
 
-const String FileRotator::TAG("FileRotator");
-const Boolean FileRotator::LOGD;
-const String FileRotator::SUFFIX_BACKUP(".backup");
-const String FileRotator::SUFFIX_NO_BACKUP(".no_backup");
+CAR_INTERFACE_IMPL(CFileRotator, Object, IFileRotator)
+CAR_OBJECT_IMPL(CFileRotator)
 
-FileRotator::FileRotator(
+ECode CFileRotator::constructor(
     /* [in] */ IFile* basePath,
     /* [in] */ const String& prefix,
     /* [in] */ Int64 rotateAgeMillis,
     /* [in] */ Int64 deleteAgeMillis)
-    : mRotateAgeMillis(rotateAgeMillis)
-    , mDeleteAgeMillis(deleteAgeMillis)
 {
-    assert(basePath != NULL);
+    if (basePath == NULL || prefix.IsNull())
+        return E_NULL_POINTER_EXCEPTION;
     mBasePath = basePath;
-    assert(!prefix.IsNull());
     mPrefix = prefix;
+    mRotateAgeMillis = rotateAgeMillis;
+    mDeleteAgeMillis = deleteAgeMillis;
 
     // ensure that base path exists
     Boolean result;
-    mBasePath->Mkdirs(&result);
+    FAIL_RETURN(mBasePath->Mkdirs(&result))
 
     // recover any backup files
     AutoPtr< ArrayOf<String> > files;
-    ASSERT_SUCCEEDED(mBasePath->List((ArrayOf<String>**)&files))
+    FAIL_RETURN(mBasePath->List((ArrayOf<String>**)&files))
     for (Int32 i = 0; i < files->GetLength(); ++i) {
         String name = (*files)[0];
         if (!name.StartWith(mPrefix)) continue;
@@ -189,7 +167,7 @@ FileRotator::FileRotator(
 
             // write failed with backup; recover last file
             Boolean result;
-            backupFile->RenameTo(file, &result);
+            FAIL_RETURN(backupFile->RenameTo(file, &result))
         }
         else if (name.EndWith(SUFFIX_NO_BACKUP)) {
             if (LOGD) Slogger::D(TAG, "recovering %s", name.string());
@@ -200,17 +178,18 @@ FileRotator::FileRotator(
 
             // write failed without backup; delete both
             Boolean result;
-            noBackupFile->Delete(&result);
-            file->Delete(&result);
+            FAIL_RETURN(noBackupFile->Delete(&result))
+            FAIL_RETURN(file->Delete(&result))
         }
     }
+    return NOERROR;
 }
 
-void FileRotator::DeleteAll()
+ECode CFileRotator::DeleteAll()
 {
     AutoPtr<FileInfo> info = new FileInfo(mPrefix);
     AutoPtr< ArrayOf<String> > files;
-    ASSERT_SUCCEEDED(mBasePath->List((ArrayOf<String>**)&files))
+    FAIL_RETURN(mBasePath->List((ArrayOf<String>**)&files))
     for (Int32 i = 0; i < files->GetLength(); ++i) {
         String name = (*files)[i];
         if (info->Parse(name)) {
@@ -218,12 +197,13 @@ void FileRotator::DeleteAll()
             AutoPtr<IFile> file;
             CFile::New(mBasePath, name, (IFile**)&file);
             Boolean result;
-            file->Delete(&result);
+            FAIL_RETURN(file->Delete(&result));
         }
     }
+    return NOERROR;
 }
 
-ECode FileRotator::DumpAll(
+ECode CFileRotator::DumpAll(
     /* [in] */ IOutputStream* os)
 {
     AutoPtr<IZipOutputStream> zos;
@@ -249,10 +229,10 @@ ECode FileRotator::DumpAll(
             AutoPtr<IStreams> stream;
             CStreams::AcquireSingleton((IStreams**)&stream);
             Int32 result;
-            stream->Copy(is, zos, &result);
+            stream->Copy(IInputStream::Probe(is), IOutputStream::Probe(zos), &result);
             AutoPtr<IIoUtils> ioutils;
             CIoUtils::AcquireSingleton((IIoUtils**)&ioutils);
-            ioutils->CloseQuietly(is);
+            ioutils->CloseQuietly(ICloseable::Probe(is));
             // } finally {
             //     IoUtils.closeQuietly(is);
             // }
@@ -266,29 +246,29 @@ ECode FileRotator::DumpAll(
 failed:
     AutoPtr<IIoUtils> ioutils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioutils);
-    ioutils->CloseQuietly(zos);
+    ioutils->CloseQuietly(ICloseable::Probe(zos));
     return ec;
 }
 
-ECode FileRotator::RewriteActive(
-    /* [in] */ Rewriter* rewriter,
+ECode CFileRotator::RewriteActive(
+    /* [in] */ IFileRotatorRewriter* rewriter,
     /* [in] */ Int64 currentTimeMillis)
 {
     String activeName = GetActiveName(currentTimeMillis);
     return RewriteSingle(rewriter, activeName);
 }
 
-ECode FileRotator::CombineActive(
-    /* [in] */ Reader* reader,
-    /* [in] */ Writer* writer,
+ECode CFileRotator::CombineActive(
+    /* [in] */ IFileRotatorReader* reader,
+    /* [in] */ IFileRotatorWriter* writer,
     /* [in] */ Int64 currentTimeMillis)
 {
     AutoPtr<CombineActiveRewriter> rewriter = new CombineActiveRewriter(reader, writer);
     return RewriteActive(rewriter, currentTimeMillis);
 }
 
-ECode FileRotator::RewriteAll(
-    /* [in] */ Rewriter* rewriter)
+ECode CFileRotator::RewriteAll(
+    /* [in] */ IFileRotatorRewriter* rewriter)
 {
     AutoPtr<FileInfo> info = new FileInfo(mPrefix);
     AutoPtr< ArrayOf<String> > files;
@@ -303,8 +283,8 @@ ECode FileRotator::RewriteAll(
     return NOERROR;
 }
 
-ECode FileRotator::RewriteSingle(
-    /* [in] */ Rewriter* rewriter,
+ECode CFileRotator::RewriteSingle(
+    /* [in] */ IFileRotatorRewriter* rewriter,
     /* [in] */ const String& name)
 {
     if (LOGD) Slogger::D(TAG, "rewriting %s", name.string());
@@ -318,7 +298,7 @@ ECode FileRotator::RewriteSingle(
     Boolean isExist;
     if (file->Exists(&isExist), isExist) {
         // read existing data
-        FAIL_RETURN(ReadFile(file, rewriter))
+        FAIL_RETURN(ReadFile(file, IFileRotatorReader::Probe(rewriter)))
 
         // skip when rewriter has nothing to write
         Boolean shouldWrite;
@@ -330,7 +310,7 @@ ECode FileRotator::RewriteSingle(
         file->RenameTo(backupFile, &result);
 
         // try {
-        ECode ec = WriteFile(file, rewriter);
+        ECode ec = WriteFile(file, IFileRotatorWriter::Probe(rewriter));
         if (FAILED(ec)) {
             // write failed, delete file and restore backup
             file->Delete(&result);
@@ -354,7 +334,7 @@ ECode FileRotator::RewriteSingle(
         backupFile->CreateNewFile(&result);
 
         // try {
-        ECode ec = WriteFile(file, rewriter);
+        ECode ec = WriteFile(file, IFileRotatorWriter::Probe(rewriter));
         if (FAILED(ec)) {
             // write failed, delete file and restore backup
             file->Delete(&result);
@@ -374,8 +354,8 @@ ECode FileRotator::RewriteSingle(
     return NOERROR;
 }
 
-ECode FileRotator::ReadMatching(
-    /* [in] */ Reader* reader,
+ECode CFileRotator::ReadMatching(
+    /* [in] */ IFileRotatorReader* reader,
     /* [in] */ Int64 matchStartMillis,
     /* [in] */ Int64 matchEndMillis)
 {
@@ -398,7 +378,7 @@ ECode FileRotator::ReadMatching(
     return NOERROR;
 }
 
-String FileRotator::GetActiveName(
+String CFileRotator::GetActiveName(
     /* [in] */ Int64 currentTimeMillis)
 {
     String oldestActiveName;
@@ -430,17 +410,19 @@ String FileRotator::GetActiveName(
     }
 }
 
-void FileRotator::MaybeRotate(
+ECode CFileRotator::MaybeRotate(
     /* [in] */ Int64 currentTimeMillis)
 {
     Int64 rotateBefore = currentTimeMillis - mRotateAgeMillis;
     Int64 deleteBefore = currentTimeMillis - mDeleteAgeMillis;
 
     AutoPtr<FileInfo> info = new FileInfo(mPrefix);
-    AutoPtr< ArrayOf<String> > files;
-    ASSERT_SUCCEEDED(mBasePath->List((ArrayOf<String>**)&files))
-    for (Int32 i = 0; i < files->GetLength(); ++i) {
-        String name = (*files)[i];
+    AutoPtr< ArrayOf<String> > baseFiles;
+    FAIL_RETURN(mBasePath->List((ArrayOf<String>**)&baseFiles))
+    if (baseFiles == NULL)
+        return NOERROR;
+    for (Int32 i = 0; i < baseFiles->GetLength(); ++i) {
+        String name = (*baseFiles)[i];
         if (!info->Parse(name)) continue;
 
         if (info->IsActive()) {
@@ -455,7 +437,7 @@ void FileRotator::MaybeRotate(
                 AutoPtr<IFile> destFile;
                 CFile::New(mBasePath, info->Build(), (IFile**)&destFile);
                 Boolean result;
-                file->RenameTo(destFile, &result);
+                FAIL_RETURN(file->RenameTo(destFile, &result))
             }
         }
         else if (info->mEndMillis <= deleteBefore) {
@@ -465,39 +447,40 @@ void FileRotator::MaybeRotate(
             AutoPtr<IFile> file;
             CFile::New(mBasePath, name, (IFile**)&file);
             Boolean result;
-            file->Delete(&result);
+            FAIL_RETURN(file->Delete(&result))
         }
     }
+    return NOERROR;
 }
 
-ECode FileRotator::ReadFile(
+ECode CFileRotator::ReadFile(
     /* [in] */ IFile* file,
-    /* [in] */ Reader* reader)
+    /* [in] */ IFileRotatorReader* reader)
 {
     AutoPtr<IFileInputStream> fis;
     CFileInputStream::New(file, (IFileInputStream**)&fis);
     AutoPtr<IBufferedInputStream> bis;
-    CBufferedInputStream::New(fis, (IBufferedInputStream**)&bis);
+    CBufferedInputStream::New(IInputStream::Probe(fis), (IBufferedInputStream**)&bis);
     // try {
     ECode ec = reader->Read(IInputStream::Probe(bis));
     // } finally {
     AutoPtr<IIoUtils> ioutils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioutils);
-    ioutils->CloseQuietly(bis);
+    ioutils->CloseQuietly(ICloseable::Probe(bis));
     // }
     return ec;
 }
 
-ECode FileRotator::WriteFile(
+ECode CFileRotator::WriteFile(
     /* [in] */ IFile* file,
-    /* [in] */ Writer* writer)
+    /* [in] */ IFileRotatorWriter* writer)
 {
     AutoPtr<IFileOutputStream> fos;
     CFileOutputStream::New(file, (IFileOutputStream**)&fos);
     AutoPtr<IBufferedOutputStream> bos;
-    CBufferedOutputStream::New(fos, (IBufferedOutputStream**)&bos);
+    CBufferedOutputStream::New(IOutputStream::Probe(fos), (IBufferedOutputStream**)&bos);
     // try {
-    ECode ec = writer->Write(bos);
+    ECode ec = writer->Write(IOutputStream::Probe(bos));
     FAIL_GOTO(ec, failed)
     IFlushable::Probe(bos)->Flush();
     // } finally {
@@ -505,11 +488,10 @@ ECode FileRotator::WriteFile(
     //     IoUtils.closeQuietly(bos);
     // }
 failed:
-    Boolean result;
-    FileUtils::Sync(fos, &result);
+    FileUtils::Sync(fos);
     AutoPtr<IIoUtils> ioutils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioutils);
-    ioutils->CloseQuietly(bos);
+    ioutils->CloseQuietly(ICloseable::Probe(bos));
     return ec;
 }
 

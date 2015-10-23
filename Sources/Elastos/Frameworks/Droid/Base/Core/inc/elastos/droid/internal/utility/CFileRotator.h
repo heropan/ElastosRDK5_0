@@ -1,14 +1,9 @@
 
-#ifndef __FILEROTATOR_H__
-#define __FILEROTATOR_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_CFILEROTATOR_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_CFILEROTATOR_H__
 
-#include "ext/frameworkdef.h"
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-#include <elrefbase.h>
+#include "_Elastos_Droid_Internal_Utility_CFileRotator.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
@@ -19,49 +14,12 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-class FileRotator : public ElRefBase
+CarClass(CFileRotator)
+    , public Object
+    , public IFileRotator
 {
-public:
-    // TODO: provide method to append to active file
-
-    /**
-     * External class that reads data from a given {@link InputStream}. May be
-     * called multiple times when reading rotated data.
-     */
-    interface Reader : public IInterface
-    {
-    public:
-        virtual CARAPI Read(
-            /* [in] */ IInputStream* in) = 0;
-    };
-
-    /**
-     * External class that writes data to a given {@link OutputStream}.
-     */
-    interface Writer : public IInterface
-    {
-    public:
-        virtual CARAPI Write(
-            /* [in] */ IOutputStream* out) = 0;
-    };
-
-    /**
-     * External class that reads existing data from given {@link InputStream},
-     * then writes any modified data to {@link OutputStream}.
-     */
-    interface Rewriter
-        : public Reader
-        , public Writer
-    {
-    public:
-        virtual CARAPI Reset() = 0;
-
-        virtual CARAPI ShouldWrite(
-            /* [out] */ Boolean* result) = 0;
-    };
-
 private:
-    class FileInfo : public ElRefBase
+    class FileInfo : public Object
     {
     public:
         FileInfo(
@@ -93,13 +51,15 @@ private:
     };
 
     class CombineActiveRewriter
-        : public ElRefBase
-        , public Rewriter
+        : public Object
+        , public IFileRotatorReader
+        , public IFileRotatorWriter
+        , public IFileRotatorRewriter
     {
     public:
         CombineActiveRewriter(
-            /* [in] */ Reader* reader,
-            /* [in] */ Writer* writer);
+            /* [in] */ IFileRotatorReader* reader,
+            /* [in] */ IFileRotatorWriter* writer);
 
         CAR_INTERFACE_DECL()
 
@@ -115,11 +75,15 @@ private:
             /* [in] */ IOutputStream* out);
 
     private:
-        AutoPtr<Reader> mReader;
-        AutoPtr<Writer> mWriter;
+        AutoPtr<IFileRotatorReader> mReader;
+        AutoPtr<IFileRotatorWriter> mWriter;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Create a file rotator.
      *
@@ -130,7 +94,7 @@ public:
      * @param deleteAgeMillis Age in milliseconds beyond which a rotated file
      *            may be deleted.
      */
-    FileRotator(
+    CARAPI constructor(
         /* [in] */ IFile* basePath,
         /* [in] */ const String& prefix,
         /* [in] */ Int64 rotateAgeMillis,
@@ -139,7 +103,7 @@ public:
     /**
      * Delete all files managed by this rotator.
      */
-    CARAPI_(void) DeleteAll();
+    CARAPI DeleteAll();
 
     /**
      * Dump all files managed by this rotator for debugging purposes.
@@ -153,12 +117,12 @@ public:
      * if the write fails.
      */
     CARAPI RewriteActive(
-        /* [in] */ Rewriter* rewriter,
+        /* [in] */ IFileRotatorRewriter* rewriter,
         /* [in] */ Int64 currentTimeMillis);
 
     CARAPI CombineActive(
-        /* [in] */ Reader* reader,
-        /* [in] */ Writer* writer,
+        /* [in] */ IFileRotatorReader* reader,
+        /* [in] */ IFileRotatorWriter* writer,
         /* [in] */ Int64 currentTimeMillis);
 
     /**
@@ -166,13 +130,13 @@ public:
      * data. Each file is processed atomically.
      */
     CARAPI RewriteAll(
-        /* [in] */ Rewriter* rewriter);
+        /* [in] */ IFileRotatorRewriter* rewriter);
 
     /**
      * Read any rotated data that overlap the requested time range.
      */
     CARAPI ReadMatching(
-        /* [in] */ Reader* reader,
+        /* [in] */ IFileRotatorReader* reader,
         /* [in] */ Int64 matchStartMillis,
         /* [in] */ Int64 matchEndMillis);
 
@@ -180,7 +144,7 @@ public:
      * Examine all files managed by this rotator, renaming or deleting if their
      * age matches the configured thresholds.
      */
-    CARAPI_(void) MaybeRotate(
+    CARAPI MaybeRotate(
         /* [in] */ Int64 currentTimeMillis);
 
 private:
@@ -190,7 +154,7 @@ private:
      * if the write fails.
      */
     CARAPI RewriteSingle(
-        /* [in] */ Rewriter* rewriter,
+        /* [in] */ IFileRotatorRewriter* rewriter,
         /* [in] */ const String& name);
 
     /**
@@ -201,15 +165,15 @@ private:
 
     static CARAPI ReadFile(
         /* [in] */ IFile* file,
-        /* [in] */ Reader* reader);
+        /* [in] */ IFileRotatorReader* reader);
 
     static CARAPI WriteFile(
         /* [in] */ IFile* file,
-        /* [in] */ Writer* writer);
+        /* [in] */ IFileRotatorWriter* writer);
 
 private:
     static const String TAG;
-    static const Boolean LOGD = FALSE;
+    static const Boolean LOGD;
 
     AutoPtr<IFile> mBasePath;
     String mPrefix;
@@ -225,4 +189,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __FILEROTATOR_H__
+#endif // __ELASTOS_DROID_INTERNAL_UTILITY_CFILEROTATOR_H__

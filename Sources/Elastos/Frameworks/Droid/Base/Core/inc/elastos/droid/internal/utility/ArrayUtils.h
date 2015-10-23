@@ -296,7 +296,7 @@ AutoPtr<ArrayOf<T> > ArrayUtils::AppendElement(
         end = 0;
         result = ArrayOf<T>::Alloc(1);
     }
-    (*result)[end] = element;
+    (*result)->Set(end, element);
     return result;
 }
 

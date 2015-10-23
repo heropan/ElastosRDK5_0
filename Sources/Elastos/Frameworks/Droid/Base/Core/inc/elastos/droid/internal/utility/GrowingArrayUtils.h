@@ -22,9 +22,6 @@ namespace Utility {
  */
 class GrowingArrayUtils {
 public:
-
-    //TODO
-
     /**
      * Appends an element to the end of the array, growing the array if there is no more room.
      * @param array The array to which to append the element. This must NOT be null.
@@ -46,91 +43,30 @@ public:
         /* [in] */ Int32 currentSize,
         /* [in] */ T element);
 
-    // *
-    //  * Inserts an element into the array at the specified index, growing the array if there is no
-    //  * more room.
-    //  *
-    //  * @param array The array to which to append the element. Must NOT be null.
-    //  * @param currentSize The number of elements in the array. Must be less than or equal to
-    //  *                    array.length.
-    //  * @param element The element to insert.
-    //  * @return the array to which the element was appended. This may be different than the given
-    //  *         array.
+    /**
+     * Inserts an element into the array at the specified index, growing the array if there is no
+     * more room.
+     *
+     * @param array The array to which to append the element. Must NOT be null.
+     * @param currentSize The number of elements in the array. Must be less than or equal to
+     *                    array.length.
+     * @param element The element to insert.
+     * @return the array to which the element was appended. This may be different than the given
+     *         array.
+     */
+    template<typename T>
+    static AutoPtr<ArrayOf<T> > Insert(
+        /* [in] */ ArrayOf<T>* array,
+        /* [in] */ Int32 currentSize,
+        /* [in] */ Int32 index,
+        /* [in] */ T element);
 
-    // public static <T> T[] insert(T[] array, int currentSize, int index, T element) {
-    //     assert currentSize <= array.length;
-
-    //     if (currentSize + 1 <= array.length) {
-    //         System.arraycopy(array, index, array, index + 1, currentSize - index);
-    //         array[index] = element;
-    //         return array;
-    //     }
-
-    //     @SuppressWarnings("unchecked")
-    //     T[] newArray = ArrayUtils.newUnpaddedArray((Class<T>)array.getClass().getComponentType(),
-    //             growSize(currentSize));
-    //     System.arraycopy(array, 0, newArray, 0, index);
-    //     newArray[index] = element;
-    //     System.arraycopy(array, index, newArray, index + 1, array.length - index);
-    //     return newArray;
-    // }
-
-    // /**
-    //  * Primitive int version of {@link #insert(Object[], int, int, Object)}.
-    //  */
-    // public static int[] insert(int[] array, int currentSize, int index, int element) {
-    //     assert currentSize <= array.length;
-
-    //     if (currentSize + 1 <= array.length) {
-    //         System.arraycopy(array, index, array, index + 1, currentSize - index);
-    //         array[index] = element;
-    //         return array;
-    //     }
-
-    //     int[] newArray = ArrayUtils.newUnpaddedIntArray(growSize(currentSize));
-    //     System.arraycopy(array, 0, newArray, 0, index);
-    //     newArray[index] = element;
-    //     System.arraycopy(array, index, newArray, index + 1, array.length - index);
-    //     return newArray;
-    // }
-
-    // /**
-    //  * Primitive long version of {@link #insert(Object[], int, int, Object)}.
-    //  */
-    // public static long[] insert(long[] array, int currentSize, int index, long element) {
-    //     assert currentSize <= array.length;
-
-    //     if (currentSize + 1 <= array.length) {
-    //         System.arraycopy(array, index, array, index + 1, currentSize - index);
-    //         array[index] = element;
-    //         return array;
-    //     }
-
-    //     long[] newArray = ArrayUtils.newUnpaddedLongArray(growSize(currentSize));
-    //     System.arraycopy(array, 0, newArray, 0, index);
-    //     newArray[index] = element;
-    //     System.arraycopy(array, index, newArray, index + 1, array.length - index);
-    //     return newArray;
-    // }
-
-    // /**
-    //  * Primitive boolean version of {@link #insert(Object[], int, int, Object)}.
-    //  */
-    // public static boolean[] insert(boolean[] array, int currentSize, int index, boolean element) {
-    //     assert currentSize <= array.length;
-
-    //     if (currentSize + 1 <= array.length) {
-    //         System.arraycopy(array, index, array, index + 1, currentSize - index);
-    //         array[index] = element;
-    //         return array;
-    //     }
-
-    //     boolean[] newArray = ArrayUtils.newUnpaddedBooleanArray(growSize(currentSize));
-    //     System.arraycopy(array, 0, newArray, 0, index);
-    //     newArray[index] = element;
-    //     System.arraycopy(array, index, newArray, index + 1, array.length - index);
-    //     return newArray;
-    // }
+    template<typename T>
+    static AutoPtr<ArrayOf<T> > Insert(
+        /* [in] */ AutoPtr< ArrayOf<T> >& array,
+        /* [in] */ Int32 currentSize,
+        /* [in] */ Int32 index,
+        /* [in] */ T element);
 
     /**
      * Given the current size of an array, returns an ideal size to which the array should grow.
@@ -170,6 +106,39 @@ AutoPtr<ArrayOf<T> > GrowingArrayUtils::Append(
     /* [in] */ T element)
 {
     return Append(array.Get(), currentSize, element);
+}
+
+template<typename T>
+AutoPtr<ArrayOf<T> > GrowingArrayUtils::Insert(
+    /* [in] */ ArrayOf<T>* array,
+    /* [in] */ Int32 currentSize,
+    /* [in] */ Int32 index,
+    /* [in] */ T element)
+{
+    assert(array != NULL && currentSize <= array->GetLength());
+
+    if (currentSize + 1 <= array->GetLength()) {
+        array->Copy(index + 1, array, index, currentSize - index);
+        array->Set(index, element);
+        return array;
+    }
+
+    // @SuppressWarnings("unchecked")
+    AutoPtr<ArrayOf<T> > newArray = ArrayUtils::NewUnpaddedArray(GrowSize(currentSize), element);
+    newArray->Copy(array, index);
+    newArray->Set(index, element);
+    newArray->Copy(index + 1, array, index, array->GetLength() - index);
+    return newArray;
+}
+
+template<typename T>
+AutoPtr<ArrayOf<T> > GrowingArrayUtils::Insert(
+    /* [in] */ AutoPtr< ArrayOf<T> >& array,
+    /* [in] */ Int32 currentSize,
+    /* [in] */ Int32 index,
+    /* [in] */ T element)
+{
+    return Insert(array.Get(), currentSize, index, element);
 }
 
 } // namespace Utility
