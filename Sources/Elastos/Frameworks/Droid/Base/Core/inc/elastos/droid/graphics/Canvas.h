@@ -12,6 +12,14 @@ using Elastosx::Microedition::Khronos::Opengles::IGL;
 
 namespace Elastos {
 namespace Droid {
+namespace View {
+    class GraphicBuffer;
+}
+}
+}
+
+namespace Elastos {
+namespace Droid {
 namespace Graphics {
 
 extern const InterfaceID EIID_Canvas;
@@ -20,6 +28,8 @@ class Canvas
     : public Object
     , public ICanvas
 {
+    friend class Elastos::Droid::View::GraphicBuffer;
+
 public:
     CAR_INTERFACE_DECL();
 

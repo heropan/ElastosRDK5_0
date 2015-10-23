@@ -4,6 +4,7 @@ TARGET_TYPE= lib
 include $(MAKEDIR)/../../../../../../sources.inc
 
 C_DEFINES += -DDROID_CORE
+CPP_FLAGS += -std=c++0x
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
@@ -14,6 +15,10 @@ INCLUDES += $(PREBUILD_INC)/skia/effects
 INCLUDES += $(PREBUILD_INC)/skia/images
 INCLUDES += $(PREBUILD_INC)/hwui
 INCLUDES += $(PREBUILD_INC)/jpeg
+INCLUDES += $(PREBUILD_INC)/libcxx
+INCLUDES += $(PREBUILD_INC)/freetype
+INCLUDES += $(PREBUILD_INC)/harfbuzz_ng
+INCLUDES += $(PREBUILD_INC)/machine
 
 SOURCES += Xfermode.cpp
 SOURCES += CAvoidXfermode.cpp
@@ -103,5 +108,9 @@ SOURCES += NinePatchPeeker.cpp
 #SOURCES += SkiaIOStreamAdaptor.cpp
 SOURCES += Utils.cpp
 #SOURCES += YuvToJpegEncoder.cpp
+SOURCES += MinikinSkia.cpp
+SOURCES += MinikinUtils.cpp
+SOURCES += NativePaintImpl.cpp
+SOURCES += SkiaCanvas.cpp
 
 LIBRARIES += drawable/drawable.lib

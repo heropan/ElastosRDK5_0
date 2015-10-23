@@ -1,15 +1,12 @@
+#ifndef __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
+#define __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
 
-#ifndef  __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
-#define  __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
+#include <SkPaint.h>
+#include <string>
 
-#include "elastos/droid/ext/frameworkext.h"
-#include <skia/core/SkPaint.h>
+#include <minikin/FontFamily.h>
 
-enum FontVariant {
-    VARIANT_DEFAULT = 0,
-    VARIANT_COMPACT = 1,
-    VARIANT_ELEGANT = 2,
-};
+using android::FontVariant;
 
 namespace Elastos {
 namespace Droid {
@@ -37,19 +34,19 @@ public:
         return mLetterSpacing;
     }
 
-    void setFontFeatureSettings(const String &fontFeatureSettings) {
+    void setFontFeatureSettings(const std::string &fontFeatureSettings) {
         mFontFeatureSettings = fontFeatureSettings;
     }
 
-    String getFontFeatureSettings() const {
+    std::string getFontFeatureSettings() const {
         return mFontFeatureSettings;
     }
 
-    void setTextLocale(const String &textLocale) {
+    void setTextLocale(const std::string &textLocale) {
         mTextLocale = textLocale;
     }
 
-    String getTextLocale() const {
+    std::string getTextLocale() const {
         return mTextLocale;
     }
 
@@ -63,14 +60,13 @@ public:
 
 private:
     float mLetterSpacing;
-    String mFontFeatureSettings;
-    String mTextLocale;
+    std::string mFontFeatureSettings;
+    std::string mTextLocale;
     FontVariant mFontVariant;
 };
-
 
 } // namespace Graphics
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_NATIVEPAINT_H__
