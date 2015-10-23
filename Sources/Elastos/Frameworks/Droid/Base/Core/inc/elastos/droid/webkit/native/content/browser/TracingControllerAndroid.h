@@ -7,8 +7,8 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TRACINGCONTROLLERANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "content/IntentFilter.h"
-#include "content/BroadcastReceiver.h"
+#include "elastos/droid/content/IntentFilter.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;

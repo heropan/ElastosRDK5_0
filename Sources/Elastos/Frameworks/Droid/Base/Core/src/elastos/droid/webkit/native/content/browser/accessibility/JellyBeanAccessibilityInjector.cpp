@@ -51,8 +51,8 @@ static AutoPtr<IAtomicInteger32> mResultIdCounter_init()
 
 JellyBeanAccessibilityInjector::CallbackHandler::CallbackHandler(
     /* [in] */ const String& interfaceName)
-    : mInterfaceName(interfaceName)
-    , mResultIdCounter(mResultIdCounter_init())
+    : mResultIdCounter(mResultIdCounter_init())
+    , mInterfaceName(interfaceName)
     , mResult(FALSE)
     , mResultId(-1)
 {

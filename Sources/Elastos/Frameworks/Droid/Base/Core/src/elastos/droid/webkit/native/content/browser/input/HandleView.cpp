@@ -71,11 +71,11 @@ HandleView::HandleView(
     /* [in] */ PositionObserver* parentPositionObserver)
     : mPositionX(0)
     , mPositionY(0)
-    , mParent(parent)
     , mParentPositionX(0)
     , mParentPositionY(0)
     , mHotspotX(0.0f)
     , mHotspotY(0.0f)
+    , mController(controller)
     , mIsDragging(FALSE)
     , mTouchToWindowOffsetX(0.0f)
     , mTouchToWindowOffsetY(0.0f)
@@ -83,8 +83,9 @@ HandleView::HandleView(
     , mDownPositionY(0.0f)
     , mTouchTimer(0)
     , mIsInsertionHandle(FALSE)
+    , mAlpha(0.0f)
     , mFadeStartTime(0)
-    , mController(controller)
+    , mParent(parent)
 {
     assert(0);
     // TODO
@@ -249,6 +250,7 @@ Boolean HandleView::IsShowing()
 {
     Boolean bFlag = FALSE;
     mContainer->IsShowing(&bFlag);
+    return bFlag;
 }
 
 Boolean HandleView::IsPositionVisible()

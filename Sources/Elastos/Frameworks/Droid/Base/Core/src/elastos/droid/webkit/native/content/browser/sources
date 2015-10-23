@@ -61,3 +61,9 @@ SOURCES += TracingControllerAndroid.cpp
 SOURCES += VibrationProvider.cpp
 SOURCES += ViewPositionObserver.cpp
 SOURCES += WebContentsObserverAndroid.cpp
+
+LIBRARIES += accessibility/accessibility.lib
+LIBRARIES += crypto/crypto.lib
+LIBRARIES += framehost/framehost.lib
+LIBRARIES += input/input.lib
+LIBRARIES += webcontents/webcontents.lib

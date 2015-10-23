@@ -124,6 +124,8 @@ void ContentReadbackHandler::GetContentBitmapAsync(
 
 Int64 ContentReadbackHandler::NativeInit()
 {
+    assert(0);
+    return 0;
 }
 
 void ContentReadbackHandler::NativeDestroy(

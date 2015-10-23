@@ -62,16 +62,18 @@ AdapterInputConnection::AdapterInputConnection(
     /* [in] */ IEditable* editable,
     /* [in] */ IEditorInfo* outAttrs)
     // TODO : BaseInputConnection(view, TRUE)
-    : mNumNestedBatchEdits(0)
+    : mInternalView(view)
+    , mImeAdapter(imeAdapter)
+    , mEditable(editable)
+    , mSingleLine(FALSE)
+    , mNumNestedBatchEdits(0)
     , mLastUpdateSelectionStart(INVALID_SELECTION)
     , mLastUpdateSelectionEnd(INVALID_SELECTION)
     , mLastUpdateCompositionStart(INVALID_COMPOSITION)
     , mLastUpdateCompositionEnd(INVALID_COMPOSITION)
-    , mInternalView(view)
-    , mImeAdapter(imeAdapter)
 {
     mImeAdapter->SetInputConnection(this);
-    mEditable = editable;
+
     // The editable passed in might have been in use by a prior keyboard and could have had
     // prior composition spans set.  To avoid keyboard conflicts, remove all composing spans
     // when taking ownership of an existing Editable.
@@ -256,7 +258,9 @@ void AdapterInputConnection::UpdateState(
     if (!isNonImeChange) return;
 
     // Non-breaking spaces can cause the IME to get confused. Replace with normal spaces.
-    text = text.Replace('\u00A0', ' ');
+    assert(0);
+    // TODO
+    // text = text.Replace('\u00A0', ' ');
 
     selectionStart = Elastos::Core::Math::Min(selectionStart, text.GetLength());
     selectionEnd = Elastos::Core::Math::Min(selectionEnd, text.GetLength());
@@ -943,3 +947,4 @@ AutoPtr<AdapterInputConnection::ImeState> AdapterInputConnection::GetImeStateFor
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+

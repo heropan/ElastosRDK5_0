@@ -214,9 +214,9 @@ void InsertionHandleController::PastePopupMenu::PositionAtCursor()
 InsertionHandleController::InsertionHandleController(
     /* [in] */ IView* parent,
     /* [in] */ PositionObserver* positionObserver)
-    : mIsShowing(FALSE)
+    : mParent(parent)
+    , mIsShowing(FALSE)
     , mAllowAutomaticShowing(FALSE)
-    , mParent(parent)
     , mPositionObserver(positionObserver)
 {
     parent->GetContext((IContext**)&mContext);

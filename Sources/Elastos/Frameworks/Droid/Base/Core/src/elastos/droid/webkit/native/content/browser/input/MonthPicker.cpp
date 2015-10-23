@@ -180,6 +180,7 @@ Int32 MonthPicker::GetMinYear()
 {
     Int32 year;
     GetMinDate()->Get(ICalendar::YEAR, &year);
+    return year;
 }
 
 //@Override

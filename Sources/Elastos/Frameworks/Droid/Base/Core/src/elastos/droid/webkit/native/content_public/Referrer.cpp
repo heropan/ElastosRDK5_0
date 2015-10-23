@@ -1,4 +1,6 @@
 
+#include "elastos/droid/webkit/native/content_public/Referrer.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

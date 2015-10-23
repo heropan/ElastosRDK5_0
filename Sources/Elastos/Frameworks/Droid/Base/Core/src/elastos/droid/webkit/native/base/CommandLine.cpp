@@ -418,11 +418,15 @@ void CommandLine::NativeReset()
 Boolean CommandLine::NativeHasSwitch(
     /* [in] */ const String& switchString)
 {
+    assert(0);
+    return FALSE;
 }
 
 String CommandLine::NativeGetSwitchValue(
     /* [in] */ const String& switchString)
 {
+    assert(0);
+    return String(NULL);
 }
 
 void CommandLine::NativeAppendSwitch(

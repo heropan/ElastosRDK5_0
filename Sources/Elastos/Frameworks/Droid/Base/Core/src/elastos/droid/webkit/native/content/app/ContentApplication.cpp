@@ -1,12 +1,11 @@
 
 #include "elastos/droid/webkit/native/content/app/ContentApplication.h"
+#include "elastos/droid/webkit/native/content/browser/TracingControllerAndroid.h"
 
-// import android.os.Looper;
-// import android.os.MessageQueue;
-
-// import org.chromium.base.BaseChromiumApplication;
-// import org.chromium.base.library_loader.LibraryLoader;
-// import org.chromium.content.browser.TracingControllerAndroid;
+using Elastos::Droid::Content::EIID_IContext;
+using Elastos::Droid::Os::EIID_IIdleHandler;
+// TODO using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::ILooperHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -14,10 +13,53 @@ namespace Webkit {
 namespace Content {
 namespace App {
 
+//=====================================================================
+//            ContentApplication::InnerIdleHandler
+//=====================================================================
+
+CAR_INTERFACE_IMPL(ContentApplication::InnerIdleHandler, Object, IIdleHandler);
+
+ContentApplication::InnerIdleHandler::InnerIdleHandler(
+    /* [in] */ ContentApplication* owner)
+    : mOwner(owner)
+{
+}
+
+ECode ContentApplication::InnerIdleHandler::QueueIdle(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    // Will retry if the native library has not been initialized.
+    assert(0);
+    // TODO
+    // if (!LibraryLoader::IsInitialized()) {
+    //     *result = TRUE;
+    //     return result;
+    // }
+
+    // try {
+        AutoPtr<IContext> context = (IContext*)mOwner->Probe(EIID_IContext);
+        mOwner->GetTracingController()->RegisterReceiver(context);
+    // } catch (SecurityException e) {
+    //     // Happens if the process is isolated. Ignore.
+    // }
+
+    // Remove the idle handler.
+    *result = FALSE;
+
+    return NOERROR;
+}
+
+//=====================================================================
+//                     ContentApplication
+//=====================================================================
+
 AutoPtr<TracingControllerAndroid> ContentApplication::GetTracingController()
 {
     if (mTracingController == NULL) {
-        mTracingController = new TracingControllerAndroid(this);
+        AutoPtr<IContext> context = THIS_PROBE(IContext);
+        mTracingController = new TracingControllerAndroid(context);
     }
     return mTracingController;
 }
@@ -25,29 +67,17 @@ AutoPtr<TracingControllerAndroid> ContentApplication::GetTracingController()
 //@Override
 ECode ContentApplication::OnCreate()
 {
-    assert(0);
-#if 0
-    super.onCreate();
+    BaseChromiumApplication::OnCreate();
 
     // Delay TracingControllerAndroid.registerReceiver() until the main loop is idle.
-    Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
-        @Override
-        public boolean queueIdle() {
-            // Will retry if the native library has not been initialized.
-            if (!LibraryLoader.isInitialized()) return true;
+    AutoPtr<ILooperHelper> helper;
+    // TODO CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
+    AutoPtr<IMessageQueue> queue;
+    helper->GetMyQueue((IMessageQueue**)&queue);
+    AutoPtr<IIdleHandler> handler = new InnerIdleHandler(this);
+    queue->AddIdleHandler(handler);
 
-            try {
-                getTracingController().registerReceiver(ContentApplication.this);
-            } catch (SecurityException e) {
-                // Happens if the process is isolated. Ignore.
-            }
-            // Remove the idle handler.
-            return false;
-        }
-    });
-#endif
-
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 /**
@@ -58,18 +88,16 @@ ECode ContentApplication::OnCreate()
 //@Override
 ECode ContentApplication::OnTerminate()
 {
-    assert(0);
-#if 0
-    try {
-        getTracingController().unregisterReceiver(this);
-    } catch (SecurityException e) {
-        // Happens if the process is isolated. Ignore.
-    }
+    // try {
+        AutoPtr<IContext> context = THIS_PROBE(IContext);
+        GetTracingController()->UnregisterReceiver(context);
+    // } catch (SecurityException e) {
+    //     // Happens if the process is isolated. Ignore.
+    // }
 
-    super.onTerminate();
-#endif
+    BaseChromiumApplication::OnTerminate();
 
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 } // namespace App

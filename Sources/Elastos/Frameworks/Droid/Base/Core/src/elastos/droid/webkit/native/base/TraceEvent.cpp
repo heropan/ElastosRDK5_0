@@ -59,7 +59,6 @@ const Int64 TraceEvent::IdleTracingLooperMonitor::MIN_INTERESTING_BURST_DURATION
 
 // Stats tracking
 
-
 TraceEvent::IdleTracingLooperMonitor::IdleTracingLooperMonitor()
     : mLastIdleStartedAt(0L)
     , mLastWorkStartedAt(0L)
@@ -176,6 +175,7 @@ AutoPtr<TraceEvent::BasicLooperMonitor> BasicLooperMonitor_Create()
     else {
         instant = new TraceEvent::BasicLooperMonitor();
     }
+    return instant;
 }
 
 const AutoPtr<TraceEvent::BasicLooperMonitor> TraceEvent::LooperMonitorHolder::sInstance = BasicLooperMonitor_Create();

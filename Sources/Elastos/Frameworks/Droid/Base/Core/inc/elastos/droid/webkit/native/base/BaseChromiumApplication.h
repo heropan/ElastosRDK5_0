@@ -3,11 +3,12 @@
 #define __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/base/ObserverList.h"
 #include "elastos/droid/webkit/native/base/WindowCallbackWrapper.h"
-//#include "elastos/droid/app/Application.h"
+// TODO #include "elastos/droid/app/Application.h"
 
 using Elastos::Droid::App::IActivity;
-//using Elastos::Droid::App::Application;
+// TODO using Elastos::Droid::App::Application;
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::App::IActivityLifecycleCallbacks;
 using Elastos::Droid::Os::IBundle;
@@ -22,18 +23,16 @@ namespace Base {
  */
 class BaseChromiumApplication
     //: public Object
-    //: public Application
+    // TODO : public Application
     : public IApplication
 {
 public:
     /**
      * Interface to be implemented by listeners for window focus events.
      */
-    class WindowFocusChangedListener
+    class WindowFocusChangedListener : public Object
     {
     public:
-        CAR_INTERFACE_DECL();
-
         /**
          * Called when the window focus changes for {@code activity}.
          * @param activity The {@link Activity} that has a window focus changed event.
@@ -46,8 +45,8 @@ public:
 
 private:
     class InnerActivityLifecycleCallbacks
-        //: public Object
-        : public IActivityLifecycleCallbacks
+        : public Object
+        , public IActivityLifecycleCallbacks
     {
     private:
         class InnerWindowCallbackWrapper : public WindowCallbackWrapper
@@ -59,6 +58,7 @@ private:
 
             //@Override
             CARAPI OnWindowFocusChanged(
+                /* [in] */ IActivity* activity,
                 /* [in] */ Boolean hasFocus);
 
         private:
@@ -128,6 +128,7 @@ public:
 private:
     // ObserverList<WindowFocusChangedListener> mWindowFocusListeners =
     //         new ObserverList<WindowFocusChangedListener>();
+    ObserverList mWindowFocusListeners;
 };
 
 } // namespace Base

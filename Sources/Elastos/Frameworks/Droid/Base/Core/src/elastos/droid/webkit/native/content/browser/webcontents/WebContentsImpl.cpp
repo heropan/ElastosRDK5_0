@@ -1,4 +1,6 @@
 
+#include "elastos/droid/webkit/native/content/browser/webcontents/WebContentsImpl.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -62,11 +64,15 @@ void WebContentsImpl::Stop()
 String WebContentsImpl::NativeGetTitle(
     /* [in] */ Int64 nativeWebContentsAndroid)
 {
+    assert(0);
+    return String(NULL);
 }
 
 String WebContentsImpl::NativeGetVisibleURL(
     /* [in] */ Int64 nativeWebContentsAndroid)
 {
+    assert(0);
+    return String(NULL);
 }
 
 void WebContentsImpl::NativeStop(

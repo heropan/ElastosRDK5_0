@@ -29,11 +29,11 @@ class SelectionHandleController
     : public CursorController
 {
 public:
+    CAR_INTERFACE_DECL();
+
     SelectionHandleController(
         /* [in] */ IView* parent,
         /* [in] */ PositionObserver* positionObserver);
-
-    CAR_INTERFACE_DECL();
 
     /** Automatically show selection anchors when text is selected. */
     CARAPI_(void) AllowAutomaticShowing();

@@ -453,8 +453,8 @@ private:
     Int64 mNativeImeAdapterAndroid;
     AutoPtr<InputMethodManagerWrapper> mInputMethodManagerWrapper;
     AutoPtr<AdapterInputConnection> mInputConnection;
-    const AutoPtr<ImeAdapterDelegate> mViewEmbedder;
-    const AutoPtr<IHandler> mHandler;
+    /*const*/ AutoPtr<ImeAdapterDelegate> mViewEmbedder;
+    /*const*/ AutoPtr<IHandler> mHandler;
     AutoPtr<DelayedDismissInput> mDismissInput;
     Int32 mTextInputType;
 };

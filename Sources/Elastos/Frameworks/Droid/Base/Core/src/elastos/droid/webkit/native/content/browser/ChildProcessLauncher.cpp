@@ -652,6 +652,8 @@ void ChildProcessLauncher::NativeEstablishSurfacePeer(
 
 Boolean ChildProcessLauncher::NativeIsSingleProcess()
 {
+    assert(0);
+    return FALSE;
 }
 
 } // namespace Browser

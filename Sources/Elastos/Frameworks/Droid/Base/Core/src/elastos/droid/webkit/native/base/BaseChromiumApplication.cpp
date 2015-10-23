@@ -2,6 +2,7 @@
 #include "elastos/droid/webkit/native/base/BaseChromiumApplication.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 
+using Elastos::Droid::App::EIID_IActivityLifecycleCallbacks;
 using Elastos::Droid::View::IWindow;
 
 namespace Elastos {
@@ -13,24 +14,31 @@ namespace Base {
 //   BaseChromiumApplication::InnerActivityLifecycleCallbacks::InnerWindowCallbackWrapper
 //============================================================================================
 
+CAR_INTERFACE_IMPL(BaseChromiumApplication::InnerActivityLifecycleCallbacks, Object, IActivityLifecycleCallbacks);
+
 BaseChromiumApplication::InnerActivityLifecycleCallbacks::InnerWindowCallbackWrapper::InnerWindowCallbackWrapper(
     /* [in] */ BaseChromiumApplication::InnerActivityLifecycleCallbacks* owner,
     /* [in] */ IWindowCallback* callback)
-    : mOwner(owner)
-    , WindowCallbackWrapper(callback)
+    : WindowCallbackWrapper(callback)
+    , mOwner(owner)
 {
 }
 
 //@Override
 ECode BaseChromiumApplication::InnerActivityLifecycleCallbacks::InnerWindowCallbackWrapper::OnWindowFocusChanged(
+    /* [in] */ IActivity* activity,
     /* [in] */ Boolean hasFocus)
 {
     WindowCallbackWrapper::OnWindowFocusChanged(hasFocus);
 
-    assert(0);
-    // for (WindowFocusChangedListener listener : mWindowFocusListeners) {
-    //     listener.onWindowFocusChanged(activity, hasFocus);
-    // }
+    AutoPtr<IIterator> iter;
+    mOwner->mOwner->mWindowFocusListeners.GetIterator((IIterator**)&iter);
+    Boolean bNext;
+    AutoPtr<WindowFocusChangedListener> listener;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        iter->GetNext((IInterface**)&listener);
+        listener->OnWindowFocusChanged(activity, hasFocus);
+    }
 
     return NOERROR;
 }
@@ -166,8 +174,7 @@ ECode BaseChromiumApplication::OnCreate()
 void BaseChromiumApplication::RegisterWindowFocusChangedListener(
     /* [in] */ WindowFocusChangedListener* listener)
 {
-    assert(0);
-//    mWindowFocusListeners.addObserver(listener);
+    mWindowFocusListeners.AddObserver((IObject*)listener);
 }
 
 /**
@@ -177,8 +184,7 @@ void BaseChromiumApplication::RegisterWindowFocusChangedListener(
 void BaseChromiumApplication::UnregisterWindowFocusChangedListener(
     /* [in] */ WindowFocusChangedListener* listener)
 {
-    assert(0);
-//    mWindowFocusListeners.removeObserver(listener);
+    mWindowFocusListeners.RemoveObserver((IObject*)listener);
 }
 
 } // namespace Base

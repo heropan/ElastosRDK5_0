@@ -369,12 +369,13 @@ String PerfTraceEvent::MakeSafeTraceName(
     /* [in] */ const String& suffix)
 {
     Int32 suffixLength = suffix.GetLength();
+    String _baseName;
 
     if (baseName.GetLength() + suffixLength > MAX_NAME_LENGTH) {
-        baseName = baseName.Substring(0, MAX_NAME_LENGTH - suffixLength);
+        _baseName = baseName.Substring(0, MAX_NAME_LENGTH - suffixLength);
     }
 
-    return baseName + suffix;
+    return _baseName + suffix;
 }
 
 /**

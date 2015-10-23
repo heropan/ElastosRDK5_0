@@ -11,8 +11,8 @@ const Int32 SystemMessageHandler::DELAYED_SCHEDULED_WORK;
 
 SystemMessageHandler::SystemMessageHandler(
     /* [in] */ Int64 messagePumpDelegateNative)
-    : mDelayedScheduledTimeTicks(0)
-    , mMessagePumpDelegateNative(messagePumpDelegateNative)
+    : mMessagePumpDelegateNative(messagePumpDelegateNative)
+    , mDelayedScheduledTimeTicks(0)
 {
 }
 

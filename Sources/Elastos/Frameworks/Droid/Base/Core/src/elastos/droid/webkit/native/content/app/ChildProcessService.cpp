@@ -1,30 +1,18 @@
 
 #include "elastos/droid/webkit/native/content/app/ChildProcessService.h"
+#include "elastos/droid/webkit/native/content/browser/ChildProcessConnection.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/os/Process.h"
 
-// import android.app.Service;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.graphics.SurfaceTexture;
-// import android.os.Bundle;
-// import android.os.IBinder;
-// import android.os.ParcelFileDescriptor;
-// import android.os.Process;
-// import android.os.RemoteException;
-// import android.util.Log;
-// import android.view.Surface;
-
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.library_loader.LibraryLoader;
-// import org.chromium.base.library_loader.Linker;
-// import org.chromium.base.library_loader.ProcessInitException;
-// import org.chromium.content.browser.ChildProcessConnection;
-// import org.chromium.content.browser.ChildProcessLauncher;
-// import org.chromium.content.common.IChildProcessCallback;
-// import org.chromium.content.common.IChildProcessService;
-
-// import java.util.ArrayList;
-// import java.util.concurrent.atomic.AtomicReference;
+using Elastos::Core::AutoLock;
+using Elastos::Core::StringUtils;
+using Elastos::Droid::Graphics::EIID_ISurfaceTexture;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::View::EIID_ISurface;
+using Elastos::Droid::Webkit::Content::Browser::ChildProcessConnection;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -32,9 +20,87 @@ namespace Webkit {
 namespace Content {
 namespace App {
 
-private static final String MAIN_THREAD_NAME = "ChildProcessMain";
-private static final String TAG = "ChildProcessService";
-private static AtomicReference<Context> sContext = new AtomicReference<Context>(null);
+//=====================================================================
+//                ChildProcessService::InnerRunnable
+//=====================================================================
+
+ChildProcessService::InnerRunnable::InnerRunnable(
+    /* [in] */ ChildProcessService* owner)
+    : mOwner(owner)
+{
+}
+
+ECode ChildProcessService::InnerRunnable::Run()
+{
+    // try {
+        assert(0);
+
+        // TODO
+        // Boolean useLinker = Linker.isUsed();
+
+        // if (useLinker) {
+        //     synchronized (mMainThread) {
+        //         while (!mIsBound) {
+        //             mMainThread.wait();
+        //         }
+        //     }
+        //     if (mLinkerParams != null) {
+        //         if (mLinkerParams.mWaitForSharedRelro)
+        //             Linker.initServiceProcess(mLinkerParams.mBaseLoadAddress);
+        //         else
+        //             Linker.disableSharedRelros();
+
+        //         Linker.setTestRunnerClassName(mLinkerParams.mTestRunnerClassName);
+        //     }
+        // }
+        // try {
+        //     LibraryLoader.loadNow(getApplicationContext(), false);
+        // } catch (ProcessInitException e) {
+        //     Log.e(TAG, "Failed to load native library, exiting child process", e);
+        //     System.exit(-1);
+        // }
+        // synchronized (mMainThread) {
+        //     while (mCommandLineParams == null) {
+        //         mMainThread.wait();
+        //     }
+        // }
+        // LibraryLoader.initialize(mCommandLineParams);
+        // synchronized (mMainThread) {
+        //     mLibraryInitialized = true;
+        //     mMainThread.notifyAll();
+        //     while (mFileIds == null) {
+        //         mMainThread.wait();
+        //     }
+        // }
+        // assert mFileIds.size() == mFileFds.size();
+        // int[] fileIds = new int[mFileIds.size()];
+        // int[] fileFds = new int[mFileFds.size()];
+        // for (int i = 0; i < mFileIds.size(); ++i) {
+        //     fileIds[i] = mFileIds.get(i);
+        //     fileFds[i] = mFileFds.get(i).detachFd();
+        // }
+        // ContentMain.initApplicationContext(sContext.get().getApplicationContext());
+        // NativeInitChildProcess(sContext.get().getApplicationContext(),
+        //         ChildProcessService.this, fileIds, fileFds,
+        //         mCpuCount, mCpuFeatures);
+        // ContentMain.start();
+        // NativeExitChildProcess();
+    // } catch (InterruptedException e) {
+    //     Log.w(TAG, MAIN_THREAD_NAME + " startup failed: " + e);
+    // } catch (ProcessInitException e) {
+    //     Log.w(TAG, MAIN_THREAD_NAME + " startup failed: " + e);
+    // }
+
+    return E_NOT_IMPLEMENTED;
+}
+
+//=====================================================================
+//                        ChildProcessService
+//=====================================================================
+
+const String ChildProcessService::MAIN_THREAD_NAME("ChildProcessMain");
+const String ChildProcessService::TAG("ChildProcessService");
+// TODO AtomicReference<Context> ChildProcessService::sContext = new AtomicReference<Context>(null);
 
 ChildProcessService::ChildProcessService()
     : mCpuCount(0)
@@ -43,141 +109,85 @@ ChildProcessService::ChildProcessService()
     , mIsBound(FALSE)
 {
     assert(0);
-#if 0
-    // Binder object used by clients for this service.
-    private final IChildProcessService.Stub mBinder = new IChildProcessService.Stub() {
-        // NOTE: Implement any IChildProcessService methods here.
-        @Override
-        public int setupConnection(Bundle args, IChildProcessCallback callback) {
-            mCallback = callback;
-            synchronized (mMainThread) {
-                // Allow the command line to be set via bind() intent or setupConnection, but
-                // the FD can only be transferred here.
-                if (mCommandLineParams == null) {
-                    mCommandLineParams = args.getStringArray(
-                            ChildProcessConnection.EXTRA_COMMAND_LINE);
-                }
-                // We must have received the command line by now
-                assert mCommandLineParams != null;
-                mCpuCount = args.getInt(ChildProcessConnection.EXTRA_CPU_COUNT);
-                mCpuFeatures = args.getLong(ChildProcessConnection.EXTRA_CPU_FEATURES);
-                assert mCpuCount > 0;
-                mFileIds = new ArrayList<Integer>();
-                mFileFds = new ArrayList<ParcelFileDescriptor>();
-                for (int i = 0;; i++) {
-                    String fdName = ChildProcessConnection.EXTRA_FILES_PREFIX + i
-                            + ChildProcessConnection.EXTRA_FILES_FD_SUFFIX;
-                    ParcelFileDescriptor parcel = args.getParcelable(fdName);
-                    if (parcel == null) {
-                        // End of the file list.
-                        break;
-                    }
-                    mFileFds.add(parcel);
-                    String idName = ChildProcessConnection.EXTRA_FILES_PREFIX + i
-                            + ChildProcessConnection.EXTRA_FILES_ID_SUFFIX;
-                    mFileIds.add(args.getInt(idName));
-                }
-                Bundle sharedRelros = args.getBundle(Linker.EXTRA_LINKER_SHARED_RELROS);
-                if (sharedRelros != null) {
-                    Linker.useSharedRelros(sharedRelros);
-                    sharedRelros = null;
-                }
-                mMainThread.notifyAll();
-            }
-            return Process.myPid();
-        }
+    // TODO
+    // // Binder object used by clients for this service.
+    // private final IChildProcessService.Stub mBinder = new IChildProcessService.Stub() {
+    //     // NOTE: Implement any IChildProcessService methods here.
+    //     @Override
+    //     public int setupConnection(Bundle args, IChildProcessCallback callback) {
+    //         mCallback = callback;
+    //         synchronized (mMainThread) {
+    //             // Allow the command line to be set via bind() intent or setupConnection, but
+    //             // the FD can only be transferred here.
+    //             if (mCommandLineParams == null) {
+    //                 mCommandLineParams = args.getStringArray(
+    //                         ChildProcessConnection.EXTRA_COMMAND_LINE);
+    //             }
+    //             // We must have received the command line by now
+    //             assert mCommandLineParams != null;
+    //             mCpuCount = args.getInt(ChildProcessConnection.EXTRA_CPU_COUNT);
+    //             mCpuFeatures = args.getLong(ChildProcessConnection.EXTRA_CPU_FEATURES);
+    //             assert mCpuCount > 0;
+    //             mFileIds = new ArrayList<Integer>();
+    //             mFileFds = new ArrayList<ParcelFileDescriptor>();
+    //             for (int i = 0;; i++) {
+    //                 String fdName = ChildProcessConnection.EXTRA_FILES_PREFIX + i
+    //                         + ChildProcessConnection.EXTRA_FILES_FD_SUFFIX;
+    //                 ParcelFileDescriptor parcel = args.getParcelable(fdName);
+    //                 if (parcel == null) {
+    //                     // End of the file list.
+    //                     break;
+    //                 }
+    //                 mFileFds.add(parcel);
+    //                 String idName = ChildProcessConnection.EXTRA_FILES_PREFIX + i
+    //                         + ChildProcessConnection.EXTRA_FILES_ID_SUFFIX;
+    //                 mFileIds.add(args.getInt(idName));
+    //             }
+    //             Bundle sharedRelros = args.getBundle(Linker.EXTRA_LINKER_SHARED_RELROS);
+    //             if (sharedRelros != null) {
+    //                 Linker.useSharedRelros(sharedRelros);
+    //                 sharedRelros = null;
+    //             }
+    //             mMainThread.notifyAll();
+    //         }
+    //         return Process.myPid();
+    //     }
 
-        @Override
-        public void crashIntentionallyForTesting() {
-            Process.killProcess(Process.myPid());
-        }
-    };
-#endif
+    //     @Override
+    //     public void crashIntentionallyForTesting() {
+    //         Process.killProcess(Process.myPid());
+    //     }
+    // };
 }
 
 AutoPtr<IContext> ChildProcessService::GetContext()
 {
     assert(0);
-#if 0
-    return sContext.get();
-#endif
+    // TODO
+    // return sContext.get();
     return NULL;
 }
 
 //@Override
 ECode ChildProcessService::OnCreate()
 {
+    String logStr("Creating new ChildProcessService pid=");
+    logStr += StringUtils::ToString(Process::MyPid());
+    Slogger::I(TAG, logStr);
     assert(0);
-#if 0
-    Log.i(TAG, "Creating new ChildProcessService pid=" + Process.myPid());
-    if (sContext.get() != null) {
-        Log.e(TAG, "ChildProcessService created again in process!");
-    }
-    sContext.set(this);
-    super.onCreate();
+    // TODO
+    // if (sContext.get() != NULL) {
+    //     Slogger::E(TAG, "ChildProcessService created again in process!");
+    // }
+    // sContext.set(this);
+    // super.onCreate();
 
-    mMainThread = new Thread(new Runnable() {
-        @Override
-        public void run()  {
-            try {
-                boolean useLinker = Linker.isUsed();
+    AutoPtr<IRunnable> runnable = new InnerRunnable(this);
 
-                if (useLinker) {
-                    synchronized (mMainThread) {
-                        while (!mIsBound) {
-                            mMainThread.wait();
-                        }
-                    }
-                    if (mLinkerParams != null) {
-                        if (mLinkerParams.mWaitForSharedRelro)
-                            Linker.initServiceProcess(mLinkerParams.mBaseLoadAddress);
-                        else
-                            Linker.disableSharedRelros();
-
-                        Linker.setTestRunnerClassName(mLinkerParams.mTestRunnerClassName);
-                    }
-                }
-                try {
-                    LibraryLoader.loadNow(getApplicationContext(), false);
-                } catch (ProcessInitException e) {
-                    Log.e(TAG, "Failed to load native library, exiting child process", e);
-                    System.exit(-1);
-                }
-                synchronized (mMainThread) {
-                    while (mCommandLineParams == null) {
-                        mMainThread.wait();
-                    }
-                }
-                LibraryLoader.initialize(mCommandLineParams);
-                synchronized (mMainThread) {
-                    mLibraryInitialized = true;
-                    mMainThread.notifyAll();
-                    while (mFileIds == null) {
-                        mMainThread.wait();
-                    }
-                }
-                assert mFileIds.size() == mFileFds.size();
-                int[] fileIds = new int[mFileIds.size()];
-                int[] fileFds = new int[mFileFds.size()];
-                for (int i = 0; i < mFileIds.size(); ++i) {
-                    fileIds[i] = mFileIds.get(i);
-                    fileFds[i] = mFileFds.get(i).detachFd();
-                }
-                ContentMain.initApplicationContext(sContext.get().getApplicationContext());
-                nativeInitChildProcess(sContext.get().getApplicationContext(),
-                        ChildProcessService.this, fileIds, fileFds,
-                        mCpuCount, mCpuFeatures);
-                ContentMain.start();
-                nativeExitChildProcess();
-            } catch (InterruptedException e) {
-                Log.w(TAG, MAIN_THREAD_NAME + " startup failed: " + e);
-            } catch (ProcessInitException e) {
-                Log.w(TAG, MAIN_THREAD_NAME + " startup failed: " + e);
-            }
-        }
-    }, MAIN_THREAD_NAME);
-    mMainThread.start();
-#endif
+    assert(0);
+    // TODO
+    // CThread::New(runnable, MAIN_THREAD_NAME, (IThread**)&mMainThread);
+    mMainThread->Start();
 
     return E_NOT_IMPLEMENTED;
 }
@@ -185,29 +195,35 @@ ECode ChildProcessService::OnCreate()
 //@Override
 ECode ChildProcessService::OnDestroy()
 {
+    String logStr("Destroying ChildProcessService pid=");
+    logStr += StringUtils::ToString(Process::MyPid());
+    Slogger::I(TAG, logStr);
     assert(0);
-#if 0
-    Log.i(TAG, "Destroying ChildProcessService pid=" + Process.myPid());
-    super.onDestroy();
-    if (mCommandLineParams == null) {
+    // TODO
+    // super.onDestroy();
+    if (mCommandLineParams == NULL) {
         // This process was destroyed before it even started. Nothing more to do.
-        return;
+        return NOERROR;
     }
-    synchronized (mMainThread) {
-        try {
+
+    //synchronized (mMainThread)
+    {
+        AutoLock lock(mMainThreadLock);
+        // try {
             while (!mLibraryInitialized) {
                 // Avoid a potential race in calling through to native code before the library
                 // has loaded.
-                mMainThread.wait();
+                assert(0);
+                // TODO
+                // mMainThread->Wait();
             }
-        } catch (InterruptedException e) {
-            // Ignore
-        }
+        // } catch (InterruptedException e) {
+        //     // Ignore
+        // }
     }
     // Try to shutdown the MainThread gracefully, but it might not
     // have chance to exit normally.
-    nativeShutdownMainThread();
-#endif
+    NativeShutdownMainThread();
 
     return E_NOT_IMPLEMENTED;
 }
@@ -217,26 +233,37 @@ ECode ChildProcessService::OnBind(
     /* [in] */ IIntent* intent,
     /* [out] */ IBinder** binder)
 {
-    assert(0);
-#if 0
+    VALIDATE_NOT_NULL(binder);
+
     // We call stopSelf() to request that this service be stopped as soon as the client
     // unbinds. Otherwise the system may keep it around and available for a reconnect. The
     // child processes do not currently support reconnect; they must be initialized from
     // scratch every time.
-    stopSelf();
+    assert(0);
+    // TODO
+    // StopSelf();
 
-    synchronized (mMainThread) {
-        mCommandLineParams = intent.getStringArrayExtra(
-                ChildProcessConnection.EXTRA_COMMAND_LINE);
-        mLinkerParams = null;
-        if (Linker.isUsed())
-            mLinkerParams = new ChromiumLinkerParams(intent);
-        mIsBound = true;
-        mMainThread.notifyAll();
+    //synchronized (mMainThread)
+    {
+        AutoLock lock(mMainThreadLock);
+        intent->GetStringArrayExtra(
+                ChildProcessConnection::EXTRA_COMMAND_LINE,
+                (ArrayOf<String>**)&mCommandLineParams);
+        mLinkerParams = NULL;
+        assert(0);
+        // TODO
+        // if (Linker.isUsed())
+        //     mLinkerParams = new ChromiumLinkerParams(intent);
+        mIsBound = TRUE;
+        assert(0);
+        // TODO
+        // mMainThread->NotifyAll();
     }
 
-    return mBinder;
-#endif
+    assert(0);
+    // TODO
+    // *binder = mBinder;
+    REFCOUNT_ADD(*binder);
 
     return E_NOT_IMPLEMENTED;
 }
@@ -255,39 +282,53 @@ ECode ChildProcessService::OnBind(
 //@CalledByNative
 void ChildProcessService::EstablishSurfaceTexturePeer(
     /* [in] */ Int32 pid,
-    /* [in] */ Object& surfaceObject,
+    /* [in] */ IInterface* surfaceObject,
     /* [in] */ Int32 primaryID,
     /* [in] */ Int32 secondaryID)
 {
     assert(0);
-#if 0
-    if (mCallback == null) {
-        Log.e(TAG, "No callback interface has been provided.");
+    // TODO
+    // if (mCallback == NULL) {
+    //     Slogger::E(TAG, "No callback interface has been provided.");
+    //     return;
+    // }
+
+    AutoPtr<ISurface> surface;
+    Boolean needRelease = FALSE;
+    if (surfaceObject->Probe(EIID_ISurface)) {
+        surface = (ISurface*) surfaceObject->Probe(EIID_ISurface);
+    }
+    else if (surfaceObject->Probe(EIID_ISurfaceTexture)) {
+        AutoPtr<ISurfaceTexture> surfaceTexture = (ISurfaceTexture*)surfaceObject->Probe(EIID_ISurfaceTexture);
+        assert(0);
+        // TODO
+        // CSurface::New((SurfaceTexture) surfaceObject, (ISurface**)&surface);
+        needRelease = TRUE;
+    }
+    else {
+        String str;
+        assert(0);
+        // TODO
+        // surfaceObject.ToString(&str);
+        String logStr("Not a valid surfaceObject: ");
+        logStr += str;
+        Slogger::E(TAG, logStr);
         return;
     }
 
-    Surface surface = null;
-    boolean needRelease = false;
-    if (surfaceObject instanceof Surface) {
-        surface = (Surface) surfaceObject;
-    } else if (surfaceObject instanceof SurfaceTexture) {
-        surface = new Surface((SurfaceTexture) surfaceObject);
-        needRelease = true;
-    } else {
-        Log.e(TAG, "Not a valid surfaceObject: " + surfaceObject);
-        return;
-    }
-    try {
-        mCallback.establishSurfacePeer(pid, surface, primaryID, secondaryID);
-    } catch (RemoteException e) {
-        Log.e(TAG, "Unable to call establishSurfaceTexturePeer: " + e);
-        return;
-    } finally {
+    // try {
+        assert(0);
+        // TODO
+        // mCallback->EstablishSurfacePeer(pid, surface, primaryID, secondaryID);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Unable to call establishSurfaceTexturePeer: " + e);
+    //     return;
+    // } finally {
         if (needRelease) {
-            surface.release();
+            surface->Release();
         }
-    }
-#endif
+    // }
+
 }
 
 //@SuppressWarnings("unused")
@@ -296,19 +337,18 @@ AutoPtr<ISurface> ChildProcessService::GetViewSurface(
     /* [in] */ Int32 surfaceId)
 {
     assert(0);
-#if 0
-    if (mCallback == null) {
-        Log.e(TAG, "No callback interface has been provided.");
-        return null;
-    }
+    // TODO
+    // if (mCallback == NULL) {
+    //     Slogger::E(TAG, "No callback interface has been provided.");
+    //     return NULL;
+    // }
 
-    try {
-        return mCallback.getViewSurface(surfaceId).getSurface();
-    } catch (RemoteException e) {
-        Log.e(TAG, "Unable to call establishSurfaceTexturePeer: " + e);
-        return null;
-    }
-#endif
+    // // try {
+    //     return mCallback->GetViewSurface(surfaceId)->GetSurface();
+    // // } catch (RemoteException e) {
+    // //     Log.e(TAG, "Unable to call establishSurfaceTexturePeer: " + e);
+    // //     return null;
+    // // }
 
     return NULL;
 }
@@ -320,19 +360,18 @@ AutoPtr<ISurface> ChildProcessService::GetSurfaceTextureSurface(
     /* [in] */ Int32 secondaryId)
 {
     assert(0);
-#if 0
-    if (mCallback == null) {
-        Log.e(TAG, "No callback interface has been provided.");
-        return null;
-    }
+    // TODO
+    // if (mCallback == NULL) {
+    //     Slogger::E(TAG, "No callback interface has been provided.");
+    //     return NULL;
+    // }
 
-    try {
-        return mCallback.getSurfaceTextureSurface(primaryId, secondaryId).getSurface();
-    } catch (RemoteException e) {
-        Log.e(TAG, "Unable to call getSurfaceTextureSurface: " + e);
-        return null;
-    }
-#endif
+    // // try {
+    //     return mCallback->GetSurfaceTextureSurface(primaryId, secondaryId)->GetSurface();
+    // // } catch (RemoteException e) {
+    // //     Log.e(TAG, "Unable to call getSurfaceTextureSurface: " + e);
+    // //     return null;
+    // // }
 
     return NULL;
 }

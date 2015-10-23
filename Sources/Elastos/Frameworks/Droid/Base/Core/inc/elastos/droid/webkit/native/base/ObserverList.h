@@ -2,6 +2,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_OBSERVERLIST_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_OBSERVERLIST_H__
 
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IList;
+
 // import java.util.ArrayList;
 // import java.util.Iterator;
 // import java.util.List;
@@ -32,25 +39,66 @@ namespace Base {
  * @param <E> The type of observers that this list should hold.
  */
 //@NotThreadSafe
-public class ObserverList<E> implements Iterable<E> {
+class ObserverList
+    : public Object
+    , public IIterable
+{
+public:
     /**
      * Extended iterator interface that provides rewind functionality.
      */
-    public interface RewindableIterator<E> extends Iterator<E> {
+    class RewindableIterator : public IIterator
+    {
+    public:
         /**
          * Rewind the iterator back to the beginning.
          *
          * If we need to iterate multiple times, we can avoid iterator object reallocation by using
          * this method.
          */
-        public void rewind();
-    }
+        virtual CARAPI Rewind() = 0;
+    };
 
-    public final List<E> mObservers = new ArrayList<E>();
-    private int mIterationDepth = 0;
-    private int mCount = 0;
+private:
+    class ObserverListIterator
+        : public Object
+        , public RewindableIterator
+    {
+        friend class ObserverList;
+    public:
+        CAR_INTERFACE_DECL()
 
-    public ObserverList() {}
+        //@Override
+        CARAPI Rewind();
+
+        //@Override
+        CARAPI HasNext(
+            /* [out] */ Boolean* result);
+
+        //@Override
+        CARAPI GetNext(
+            /* [out] */ IInterface** object);
+
+        //@Override
+        CARAPI Remove();
+
+    private:
+        ObserverListIterator(
+            /* [in] */ ObserverList* owner);
+
+        CARAPI_(void) CompactListIfNeeded();
+
+    private:
+        ObserverList* mOwner;
+        Int32 mListEndMarker;
+        Int32 mIndex;
+        Boolean mIsExhausted;
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    ObserverList();
 
     /**
      * Add an observer to the list.
@@ -60,189 +108,69 @@ public class ObserverList<E> implements Iterable<E> {
      *
      * @return true if the observer list changed as a result of the call.
      */
-    public boolean addObserver(E obs) {
-        // Avoid adding null elements to the list as they may be removed on a compaction.
-        if (obs == null || mObservers.contains(obs)) {
-            return false;
-        }
-
-        // Structurally modifying the underlying list here. This means we
-        // cannot use the underlying list's iterator to iterate over the list.
-        boolean result = mObservers.add(obs);
-        assert result == true;
-
-        ++mCount;
-        return true;
-    }
+    CARAPI_(Boolean) AddObserver(
+        /* [in] */ IInterface* obs);
 
     /**
      * Remove an observer from the list if it is in the list.
      *
      * @return true if an element was removed as a result of this call.
      */
-    public boolean removeObserver(E obs) {
-        if (obs == null) {
-            return false;
-        }
+    CARAPI_(Boolean) RemoveObserver(
+        /* [in] */ IInterface* obs);
 
-        int index = mObservers.indexOf(obs);
-        if (index == -1) {
-            return false;
-        }
+    CARAPI_(Boolean) HasObserver(
+        /* [in] */ IInterface* obs);
 
-        if (mIterationDepth == 0) {
-            // No one is iterating over the list.
-            mObservers.remove(index);
-        } else {
-            mObservers.set(index, null);
-        }
-        --mCount;
-        assert mCount >= 0;
+    CARAPI_(void) Clear();
 
-        return true;
-    }
-
-    public boolean hasObserver(E obs) {
-        return mObservers.contains(obs);
-    }
-
-    public void clear() {
-        mCount = 0;
-
-        if (mIterationDepth == 0) {
-            mObservers.clear();
-            return;
-        }
-
-        int size = mObservers.size();
-        for (int i = 0; i < size; i++) {
-            mObservers.set(i, null);
-        }
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        return new ObserverListIterator();
-    }
+    //@Override
+    CARAPI GetIterator(
+        /* [out] */ IIterator** iter);
 
     /**
      * It's the same as {@link ObserverList#iterator()} but the return type is
      * {@link RewindableIterator}. Use this iterator type if you need to use
      * {@link RewindableIterator#rewind()}.
      */
-    public RewindableIterator<E> rewindableIterator() {
-        return new ObserverListIterator();
-    }
+    CARAPI_(AutoPtr<RewindableIterator>) GetRewindableIterator();
 
     /**
      * Returns the number of observers currently registered in the ObserverList.
      * This is equivalent to the number of non-empty spaces in |mObservers|.
      */
-    public int size() {
-        return mCount;
-    }
+    CARAPI_(Int32) Size();
 
     /**
      * Returns true if the ObserverList contains no observers.
      */
-    public boolean isEmpty() {
-        return mCount == 0;
-    }
+    CARAPI_(Boolean) IsEmpty();
 
+private:
     /**
      * Compact the underlying list be removing null elements.
      * <p/>
      * Should only be called when mIterationDepth is zero.
      */
-    private void compact() {
-        assert mIterationDepth == 0;
-        for (int i = mObservers.size() - 1; i >= 0; i--) {
-            if (mObservers.get(i) == null) {
-                mObservers.remove(i);
-            }
-        }
-    }
+    CARAPI_(void) Compact();
 
-    private void incrementIterationDepth() {
-        mIterationDepth++;
-    }
+    CARAPI_(void) IncrementIterationDepth();
 
-    private void decrementIterationDepthAndCompactIfNeeded() {
-        mIterationDepth--;
-        assert mIterationDepth >= 0;
-        if (mIterationDepth == 0) compact();
-    }
+    CARAPI_(void) DecrementIterationDepthAndCompactIfNeeded();
 
     /**
      * Returns the size of the underlying storage of the ObserverList.
      * It will take into account the empty spaces inside |mObservers|.
      */
-    private int capacity() {
-        return mObservers.size();
-    }
+    CARAPI_(Int32) Capacity();
 
-    private E getObserverAt(int index) {
-        return mObservers.get(index);
-    }
+    CARAPI_(AutoPtr<IInterface>) GetObserverAt(
+        /* [in] */ Int32 index);
 
-    private class ObserverListIterator implements RewindableIterator<E> {
-        private int mListEndMarker;
-        private int mIndex = 0;
-        private boolean mIsExhausted = false;
-
-        private ObserverListIterator() {
-            ObserverList.this.incrementIterationDepth();
-            mListEndMarker = ObserverList.this.capacity();
-        }
-
-        @Override
-        public void rewind() {
-            compactListIfNeeded();
-            ObserverList.this.incrementIterationDepth();
-            mListEndMarker = ObserverList.this.capacity();
-            mIsExhausted = false;
-            mIndex = 0;
-        }
-
-        @Override
-        public boolean hasNext() {
-            int lookupIndex = mIndex;
-            while (lookupIndex < mListEndMarker &&
-                    ObserverList.this.getObserverAt(lookupIndex) == null) {
-                lookupIndex++;
-            }
-            if (lookupIndex < mListEndMarker) return true;
-
-            // We have reached the end of the list, allow for compaction.
-            compactListIfNeeded();
-            return false;
-        }
-
-        @Override
-        public E next() {
-            // Advance if the current element is null.
-            while (mIndex < mListEndMarker && ObserverList.this.getObserverAt(mIndex) == null) {
-                mIndex++;
-            }
-            if (mIndex < mListEndMarker) return ObserverList.this.getObserverAt(mIndex++);
-
-            // We have reached the end of the list, allow for compaction.
-            compactListIfNeeded();
-            throw new NoSuchElementException();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        private void compactListIfNeeded() {
-            if (!mIsExhausted) {
-                mIsExhausted = true;
-                ObserverList.this.decrementIterationDepthAndCompactIfNeeded();
-            }
-        }
-    };
+private:
+    AutoPtr<IList> mObservers;
+    Int32 mIterationDepth;
+    Int32 mCount;
 };
 
 } // namespace Base

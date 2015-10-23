@@ -32,12 +32,12 @@ static AutoPtr< ArrayOf<Int32> > mTempLocation_init()
 BrowserAccessibilityManager::BrowserAccessibilityManager(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ ContentViewCore* contentViewCore)
-    : mNativeObj(nativeBrowserAccessibilityManagerAndroid)
-    , mContentViewCore(contentViewCore)
+    : mContentViewCore(contentViewCore)
+    , mNativeObj(nativeBrowserAccessibilityManagerAndroid)
     , mAccessibilityFocusId(IView::NO_ID)
     , mIsHovering(FALSE)
-    , mCurrentRootId(IView::NO_ID)
     , mLastHoverId(IView::NO_ID)
+    , mCurrentRootId(IView::NO_ID)
     , mTempLocation(mTempLocation_init())
     , mUserHasTouchExplored(FALSE)
     , mPendingScrollToMakeNodeVisible(FALSE)
@@ -79,12 +79,10 @@ AutoPtr<BrowserAccessibilityManager> BrowserAccessibilityManager::Create(
     }
 }
 
-
-
 //@CalledByNative
 void BrowserAccessibilityManager::OnNativeObjectDestroyed()
 {
-    if (mContentViewCore->GetBrowserAccessibilityManager() == this) {
+    if (mContentViewCore->GetBrowserAccessibilityManager().Get() == this) {
         mContentViewCore->SetBrowserAccessibilityManager(NULL);
     }
 
@@ -981,12 +979,16 @@ void BrowserAccessibilityManager::SetAccessibilityEventRangeInfo(
 Int32 BrowserAccessibilityManager::NativeGetRootId(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid)
 {
+    assert(0);
+    return 0;
 }
 
 Boolean BrowserAccessibilityManager::NativeIsNodeValid(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
+    assert(0);
+    return FALSE;
 }
 
 void BrowserAccessibilityManager::NativeHitTest(
@@ -1001,6 +1003,8 @@ Boolean BrowserAccessibilityManager::NativePopulateAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [in] */ Int32 id)
 {
+    assert(0);
+    return FALSE;
 }
 
 Boolean BrowserAccessibilityManager::NativePopulateAccessibilityEvent(
@@ -1009,6 +1013,8 @@ Boolean BrowserAccessibilityManager::NativePopulateAccessibilityEvent(
     /* [in] */ Int32 id,
     /* [in] */ Int32 eventType)
 {
+    assert(0);
+    return FALSE;
 }
 
 void BrowserAccessibilityManager::NativeClick(
@@ -1040,6 +1046,8 @@ Int32 BrowserAccessibilityManager::NativeFindElementType(
     /* [in] */ const String& elementType,
     /* [in] */ Boolean forwards)
 {
+    assert(0);
+    return 0;
 }
 
 } // namespace Accessibility

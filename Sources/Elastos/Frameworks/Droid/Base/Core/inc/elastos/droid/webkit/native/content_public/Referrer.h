@@ -16,7 +16,9 @@ namespace Content_Public {
 class Referrer : public Object
 {
 public:
-    Referrer(String url, int policy);
+    Referrer(
+        /* [in] */ const String& url,
+        /* [in] */ Int32 policy);
 
     CARAPI_(String) GetUrl();
 

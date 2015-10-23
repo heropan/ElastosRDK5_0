@@ -13,6 +13,7 @@ ECode PowerStatusReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     PowerMonitor::OnBatteryChargingChanged(intent);
+    return NOERROR;
 }
 
 } // namespace Base

@@ -1,5 +1,5 @@
 
-#include "webkit/native/content/browser/VibrationProvider.h"
+#include "elastos/droid/webkit/native/content/browser/VibrationProvider.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;

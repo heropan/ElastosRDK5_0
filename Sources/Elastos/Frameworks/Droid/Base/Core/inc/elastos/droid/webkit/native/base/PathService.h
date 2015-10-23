@@ -20,7 +20,8 @@ public:
     static const Int32 DIR_MODULE = 3;
 
     static CARAPI_(void) Override(
-        /* [in] */ Int32 what, String path);
+        /* [in] */ Int32 what,
+        /* [in] */ const String& path);
 
 private:
     // Prevent instantiation.

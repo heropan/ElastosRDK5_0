@@ -121,7 +121,7 @@ private:
         /* [in] */ Int64 nativeWindowAndroid);
 
 private:
-    Int32 mNextReadbackId = 1;
+    Int32 mNextReadbackId;
 //    SparseArray<GetBitmapCallback> mGetBitmapRequests;
 
     Int64 mNativeContentReadbackHandler;

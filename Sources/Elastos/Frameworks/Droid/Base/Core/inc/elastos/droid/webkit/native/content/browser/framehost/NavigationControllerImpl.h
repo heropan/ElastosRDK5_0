@@ -1,4 +1,12 @@
 
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_FRAMEHOST_NAVIGATIONCONTROLLERIMPL_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_FRAMEHOST_NAVIGATIONCONTROLLERIMPL_H__
+
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content_public/browser/NavigationController.h"
+
+using Elastos::Droid::Webkit::Content_Public::Browser::NavigationController;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -28,13 +36,16 @@ public:
     CARAPI_(Boolean) CanGoForward();
 
     //@Override
-    CARAPI_(Boolean) CanGoToOffset(int offset);
+    CARAPI_(Boolean) CanGoToOffset(
+        /* [in] */ Int32 offset);
 
     //@Override
-    CARAPI_(void) GoToOffset(int offset);
+    CARAPI_(void) GoToOffset(
+        /* [in] */ Int32 offset);
 
     //@Override
-    CARAPI_(void) GoToNavigationIndex(int index);
+    CARAPI_(void) GoToNavigationIndex(
+        /* [in] */ Int32 index);
 
     //@Override
     CARAPI_(void) GoBack();
@@ -43,29 +54,39 @@ public:
     CARAPI_(void) GoForward();
 
 private:
-    NavigationControllerImpl(long nativeNavigationControllerAndroid);
+    NavigationControllerImpl(
+        /* [in] */ Int64 nativeNavigationControllerAndroid);
 
     //@CalledByNative
-    static CARAPI_(AutoPtr<NavigationControllerImpl>) Create(long nativeNavigationControllerAndroid);
+    static CARAPI_(AutoPtr<NavigationControllerImpl>) Create(
+        /* [in] */ Int64 nativeNavigationControllerAndroid);
 
     //@CalledByNative
     CARAPI_(void) Destroy();
 
-    CARAPI_(Boolean) NativeCanGoBack(long nativeNavigationControllerAndroid);
+    CARAPI_(Boolean) NativeCanGoBack(
+        /* [in] */ Int64 nativeNavigationControllerAndroid);
 
-    CARAPI_(Boolean) NativeCanGoForward(long nativeNavigationControllerAndroid);
+    CARAPI_(Boolean) NativeCanGoForward(
+        /* [in] */ Int64 nativeNavigationControllerAndroid);
 
     CARAPI_(Boolean) NativeCanGoToOffset(
-            long nativeNavigationControllerAndroid, int offset);
+        /* [in] */ Int64 nativeNavigationControllerAndroid,
+        /* [in] */ Int32 offset);
 
-    CARAPI_(void) NativeGoBack(long nativeNavigationControllerAndroid);
+    CARAPI_(void) NativeGoBack(
+        /* [in] */ Int64 nativeNavigationControllerAndroid);
 
-    CARAPI_(void) NativeGoForward(long nativeNavigationControllerAndroid);
+    CARAPI_(void) NativeGoForward(
+        /* [in] */ Int64 nativeNavigationControllerAndroid);
 
-    CARAPI_(void) NativeGoToOffset(long nativeNavigationControllerAndroid, int offset);
+    CARAPI_(void) NativeGoToOffset(
+        /* [in] */ Int64 nativeNavigationControllerAndroid,
+        /* [in] */ Int32 offset);
 
     CARAPI_(void) NativeGoToNavigationIndex(
-            long nativeNavigationControllerAndroid, int index);
+        /* [in] */ Int64 nativeNavigationControllerAndroid,
+        /* [in] */ Int32 index);
 
 private:
     Int64 mNativeNavigationControllerAndroid;
@@ -77,3 +98,5 @@ private:
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_FRAMEHOST_NAVIGATIONCONTROLLERIMPL_H__

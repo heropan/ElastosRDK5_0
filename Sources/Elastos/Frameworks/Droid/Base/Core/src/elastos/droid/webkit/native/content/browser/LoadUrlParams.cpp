@@ -31,9 +31,11 @@ const Int32 LoadUrlParams::UA_OVERRIDE_TRUE;
 LoadUrlParams::LoadUrlParams(
     /* [in] */ const String& url)
     : mUrl(url)
-    , mTransitionType(PageTransitionTypes::PAGE_TRANSITION_LINK)
     , mLoadUrlType(LOAD_TYPE_DEFAULT)
+    , mTransitionType(PageTransitionTypes::PAGE_TRANSITION_LINK)
     , mUaOverrideOption(UA_OVERRIDE_INHERIT)
+    , mCanLoadLocalResources(FALSE)
+    , mIsRendererInitiated(FALSE)
 {
 }
 
@@ -41,9 +43,11 @@ LoadUrlParams::LoadUrlParams(
     /* [in] */ const String& url,
     /* [in] */ Int32 transitionType)
     : mUrl(url)
-    , mTransitionType(transitionType)
     , mLoadUrlType(LOAD_TYPE_DEFAULT)
+    , mTransitionType(transitionType)
     , mUaOverrideOption(UA_OVERRIDE_INHERIT)
+    , mCanLoadLocalResources(FALSE)
+    , mIsRendererInitiated(FALSE)
 {
 }
 
@@ -182,6 +186,7 @@ ECode LoadUrlParams::SetExtraHeaders(
     /* [in] */ IMap* extraHeaders)
 {
     mExtraHeaders = extraHeaders;
+    return NOERROR;
 }
 
 AutoPtr<IMap> LoadUrlParams::GetExtraHeaders()

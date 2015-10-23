@@ -176,15 +176,15 @@ ChildProcessConnectionImpl::ChildProcessConnectionImpl(
     /* [in] */ ChildProcessConnection::DeathCallback* deathCallback,
     /* [in] */ ChildProcessService* serviceClass,
     /* [in] */ ChromiumLinkerParams* chromiumLinkerParams)
-    : mServiceConnectComplete(FALSE)
+    : mContext(context)
+    , mServiceNumber(number)
+    , mInSandbox(inSandbox)
+    , mDeathCallback(deathCallback)
+    , mServiceConnectComplete(FALSE)
     , mServiceDisconnected(FALSE)
     , mWasOomProtected(FALSE)
     , mPid(0)
     , mStrongBindingCount(0)
-    , mContext(context)
-    , mServiceNumber(number)
-    , mInSandbox(inSandbox)
-    , mDeathCallback(deathCallback)
 //    , mServiceClass(serviceClass)
     , mLinkerParams(chromiumLinkerParams)
 {

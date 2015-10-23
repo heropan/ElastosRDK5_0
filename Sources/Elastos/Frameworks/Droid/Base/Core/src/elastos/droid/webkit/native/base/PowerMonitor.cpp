@@ -30,6 +30,7 @@ PowerMonitor::InnerRunnable::InnerRunnable()
 ECode PowerMonitor::InnerRunnable::Run()
 {
     NativeOnMainActivitySuspended();
+    return NOERROR;
 }
 
 //===============================================================

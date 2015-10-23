@@ -305,6 +305,8 @@ void ContentViewRenderView::OnSwapBuffersCompleted()
 Int64 ContentViewRenderView::NativeInit(
     /* [in] */ Int64 rootWindowNativePointer)
 {
+    assert(0);
+    return 0;
 }
 
 void ContentViewRenderView::NativeDestroy(

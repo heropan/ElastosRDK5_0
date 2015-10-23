@@ -1,4 +1,6 @@
 
+#include "elastos/droid/webkit/native/content/common/ResultCodes.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

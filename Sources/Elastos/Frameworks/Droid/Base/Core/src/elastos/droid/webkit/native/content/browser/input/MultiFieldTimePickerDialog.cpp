@@ -86,7 +86,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     // TODO
     // inflater->Inflate(R::layout::multi_field_time_picker_dialog, NULL,
     //         (IView**)&view);
-    SetView(view);
+    // SetView(view);
 
     assert(0);
     // TODO

@@ -42,23 +42,23 @@ DateTimePickerDialog::DateTimePickerDialog(
     /* [in] */ Double min,
     /* [in] */ Double max)
     // TODO : AlertDialog(context, 0)
-    : mMinTimeMillis((Int64)min)
+    : mCallBack(callBack)
+    , mMinTimeMillis((Int64)min)
     , mMaxTimeMillis((Int64)max)
-    , mCallBack(callBack)
 {
     AutoPtr<ICharSequence> setCS;
     assert(0);
     // TODO
     // context->GetText(
     //         R::string::date_picker_dialog_set, (ICharSequence**)&setCS);
-    SetButton(IDialogInterface::BUTTON_POSITIVE, setCS, this);
+    // SetButton(IDialogInterface::BUTTON_POSITIVE, setCS, this);
     AutoPtr<ICharSequence> cancelCS;
     assert(0);
     // TODO
     // context->GetText(android::R::string::cancel, (ICharSequence**)&cancelCS);
-    SetButton(IDialogInterface::BUTTON_NEGATIVE, cancelCS,
-            (IMessage*)NULL);
-    SetIcon(0);
+    // SetButton(IDialogInterface::BUTTON_NEGATIVE, cancelCS,
+    //         (IMessage*)NULL);
+    // SetIcon(0);
     AutoPtr<ICharSequence> titleCS;
     assert(0);
     // TODO
@@ -71,7 +71,7 @@ DateTimePickerDialog::DateTimePickerDialog(
     assert(0);
     // TODO
     // inflater->Inflate(R::layout::date_time_picker_dialog, NULL, (IView**)&view);
-    SetView(view);
+    // SetView(view);
     assert(0);
     // TODO
     // view->FindViewById(R::id::date_picker, (IView**)&mDatePicker);

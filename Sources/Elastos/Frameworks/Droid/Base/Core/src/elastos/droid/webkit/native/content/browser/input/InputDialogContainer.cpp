@@ -121,7 +121,7 @@ ECode InputDialogContainer::InnerDialogInterfaceOnDismissListener::OnDismiss(
     /* [in] */ IDialogInterface* dialog)
 {
     AutoPtr<IDialogInterface> dialogInterface = (IDialogInterface*)mOwner->mDialog->Probe(EIID_IDialogInterface);
-    if (dialogInterface == dialog && !mOwner->mDialogAlreadyDismissed) {
+    if (dialogInterface.Get() == dialog && !mOwner->mDialogAlreadyDismissed) {
         mOwner->mDialogAlreadyDismissed = TRUE;
         mOwner->mInputActionDelegate->CancelDateTimeDialog();
     }
@@ -283,8 +283,8 @@ Int32 InputDialogContainer::sTextInputTypeWeek = 0;
 InputDialogContainer::InputDialogContainer(
     /* [in] */ IContext* context,
     /* [in] */ InputActionDelegate* inputActionDelegate)
-    : mDialogAlreadyDismissed(FALSE)
-    , mContext(context)
+    : mContext(context)
+    , mDialogAlreadyDismissed(FALSE)
     , mInputActionDelegate(inputActionDelegate)
 {
 }

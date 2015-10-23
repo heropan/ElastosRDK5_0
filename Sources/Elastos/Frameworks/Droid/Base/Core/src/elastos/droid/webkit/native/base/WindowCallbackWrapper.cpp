@@ -133,7 +133,7 @@ ECode WindowCallbackWrapper::OnPanelClosed(
     /* [in] */ Int32 featureId,
     /* [in] */ IMenu* menu)
 {
-    mCallback->OnPanelClosed(featureId, menu);
+    return mCallback->OnPanelClosed(featureId, menu);
 }
 
 //@Override
@@ -157,14 +157,14 @@ ECode WindowCallbackWrapper::OnSearchRequested(
 ECode WindowCallbackWrapper::OnWindowAttributesChanged(
     /* [in] */ IWindowManagerLayoutParams* attrs)
 {
-    mCallback->OnWindowAttributesChanged(attrs);
+    return mCallback->OnWindowAttributesChanged(attrs);
 }
 
 //@Override
 ECode WindowCallbackWrapper::OnWindowFocusChanged(
     /* [in] */ Boolean hasFocus)
 {
-    mCallback->OnWindowFocusChanged(hasFocus);
+    return mCallback->OnWindowFocusChanged(hasFocus);
 }
 
 //@Override

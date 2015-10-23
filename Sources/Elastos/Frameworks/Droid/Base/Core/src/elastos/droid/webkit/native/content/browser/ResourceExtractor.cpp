@@ -1,6 +1,6 @@
 
-#include "webkit/native/content/browser/ResourceExtractor.h"
-#include "webkit/native/ui/base/LocalizationUtils.h"
+#include "elastos/droid/webkit/native/content/browser/ResourceExtractor.h"
+#include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 //TODO #include "preference/CPreferenceManagerHelper.h"

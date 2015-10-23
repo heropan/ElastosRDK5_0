@@ -3,6 +3,18 @@
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/native/base/ActivityState.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
+// TODO #include "elastos/droid/content/pm/CActivityInfo.h"
+
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
+using Elastos::Droid::App::EIID_IActivityLifecycleCallbacks;
+using Elastos::Droid::Content::EIID_IContext;
+// TODO using Elastos::Droid::Content::Pm::CActivityInfo;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::EIID_IIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +28,7 @@ namespace Base {
 ApplicationStatus::ActivityInfo::ActivityInfo()
     : mStatus(ActivityState::DESTROYED)
 {
+    mListeners = new ObserverList();
 }
 
 /**
@@ -38,10 +51,10 @@ void ApplicationStatus::ActivityInfo::SetStatus(
 /**
  * @return A list of {@link ActivityStateListener}s listening to this activity.
  */
-// ObserverList<ActivityStateListener> ApplicationStatus::ActivityInfo::GetListeners()
-// {
-//     return mListeners;
-// }
+AutoPtr<ObserverList> ApplicationStatus::ActivityInfo::GetListeners()
+{
+    return mListeners;
+}
 
 //===============================================================
 //      ApplicationStatus::InnerWindowFocusChangedListener
@@ -69,6 +82,8 @@ void ApplicationStatus::InnerWindowFocusChangedListener::OnWindowFocusChanged(
 //===============================================================
 //      ApplicationStatus::InnerActivityLifecycleCallbacks
 //===============================================================
+
+CAR_INTERFACE_IMPL(ApplicationStatus::InnerActivityLifecycleCallbacks, Object, IActivityLifecycleCallbacks);
 
 ApplicationStatus::InnerActivityLifecycleCallbacks::InnerActivityLifecycleCallbacks()
 {
@@ -160,6 +175,15 @@ void ApplicationStatus::InnerApplicationStateListener::OnApplicationStateChange(
 //                    ApplicationStatus
 //===============================================================
 
+AutoPtr<IApplication> ApplicationStatus::sApplication;
+Object ApplicationStatus::sCachedApplicationStateLock;
+AutoPtr<IInteger32> ApplicationStatus::sCachedApplicationState;
+AutoPtr<IActivity> ApplicationStatus::sActivity;
+AutoPtr<ApplicationStatus::ApplicationStateListener> ApplicationStatus::sNativeApplicationStateListener;
+AutoPtr<IMap> ApplicationStatus::sActivityInfo;
+ObserverList ApplicationStatus::sGeneralActivityStateListeners;
+ObserverList ApplicationStatus::sApplicationStateListeners;
+
 ApplicationStatus::ApplicationStatus()
 {
 }
@@ -191,8 +215,6 @@ void ApplicationStatus::OnStateChange(
     /* [in] */ IActivity* activity,
     /* [in] */ Int32 newState)
 {
-    assert(0);
-#if 0
     if (activity == NULL) {
         assert(0);
 //        throw new IllegalArgumentException("null activity is not supported");
@@ -207,42 +229,63 @@ void ApplicationStatus::OnStateChange(
 
     Int32 oldApplicationState = GetStateForApplication();
 
-    if (newState == ActivityState.CREATED) {
-        assert !sActivityInfo.containsKey(activity);
-        sActivityInfo.put(activity, new ActivityInfo());
+    if (newState == ActivityState::CREATED) {
+        Boolean result;
+        sActivityInfo->ContainsKey(activity, &result);
+        assert(!result);
+        AutoPtr<IActivityInfo> activityInfo;
+        assert(0);
+        // TODO
+        // CActivityInfo::New((IActivityInfo**)&activityInfo);
+        sActivityInfo->Put(activity, activityInfo);
     }
 
     // Invalidate the cached application state.
     synchronized (sCachedApplicationStateLock) {
-        sCachedApplicationState = null;
+        sCachedApplicationState = NULL;
     }
 
-    ActivityInfo info = sActivityInfo.get(activity);
-    info.setStatus(newState);
+    AutoPtr<ActivityInfo> info;
+    sActivityInfo->Get(activity, (IInterface**)&info);
+    info->SetStatus(newState);
 
     // Notify all state observers that are specifically listening to this activity.
-    for (ActivityStateListener listener : info.getListeners()) {
-        listener.onActivityStateChange(activity, newState);
+    AutoPtr<IIterator> iter;
+    info->GetListeners()->GetIterator((IIterator**)&iter);
+    Boolean bNext;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        AutoPtr<ActivityStateListener> listener;
+        iter->GetNext((IInterface**)&listener);
+        listener->OnActivityStateChange(activity, newState);
     }
 
     // Notify all state observers that are listening globally for all activity state
     // changes.
-    for (ActivityStateListener listener : sGeneralActivityStateListeners) {
-        listener.onActivityStateChange(activity, newState);
+    AutoPtr<IIterator> iter2;
+    sGeneralActivityStateListeners.GetIterator((IIterator**)&iter2);
+    Boolean bNext2;
+    for (iter2->HasNext(&bNext2); bNext2; iter2->HasNext(&bNext2)) {
+        AutoPtr<ActivityStateListener> listener;
+        iter2->GetNext((IInterface**)&listener);
+        listener->OnActivityStateChange(activity, newState);
     }
 
-    int applicationState = getStateForApplication();
+    Int32 applicationState = GetStateForApplication();
     if (applicationState != oldApplicationState) {
-        for (ApplicationStateListener listener : sApplicationStateListeners) {
-            listener.onApplicationStateChange(applicationState);
+        AutoPtr<IIterator> iter;
+        sApplicationStateListeners.GetIterator((IIterator**)&iter);
+        Boolean bNext;
+        for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+            AutoPtr<ApplicationStateListener> listener;
+            iter->GetNext((IInterface**)&listener);
+            listener->OnApplicationStateChange(applicationState);
         }
     }
 
-    if (newState == ActivityState.DESTROYED) {
-        sActivityInfo.remove(activity);
-        if (activity == sActivity) sActivity = null;
+    if (newState == ActivityState::DESTROYED) {
+        sActivityInfo->Remove(activity);
+        if (activity == sActivity) sActivity = NULL;
     }
-#endif
 }
 
 /**
@@ -281,9 +324,12 @@ AutoPtr<IActivity> ApplicationStatus::GetLastTrackedFocusedActivity()
  */
 AutoPtr<IContext> ApplicationStatus::GetApplicationContext()
 {
-    AutoPtr<IContext> context;
-    assert(0);
-//    return sApplication != NULL ? (sApplication->GetApplicationContext((IContext**)&context), context) : NULL;
+    if (sApplication != NULL) {
+        AutoPtr<IContext> appContext = (IContext*)sApplication->Probe(EIID_IContext);
+        AutoPtr<IContext> context;
+        appContext->GetApplicationContext((IContext**)&context);
+        return context;
+    }
     return NULL;
 }
 
@@ -333,12 +379,9 @@ AutoPtr<IContext> ApplicationStatus::GetApplicationContext()
 Int32 ApplicationStatus::GetStateForActivity(
     /* [in] */ IActivity* activity)
 {
-    assert(0);
-#if 0
-    ActivityInfo info = sActivityInfo.get(activity);
-    return info != null ? info.getStatus() : ActivityState.DESTROYED;
-#endif
-    return 0;
+    AutoPtr<ActivityInfo> info;
+    sActivityInfo->Get(activity, (IInterface**)&info);
+    return info != NULL ? info->GetStatus() : ActivityState::DESTROYED;
 }
 
 /**
@@ -346,20 +389,17 @@ Int32 ApplicationStatus::GetStateForActivity(
  */
 Int32 ApplicationStatus::GetStateForApplication()
 {
-    assert(0);
-#if 0
-    {
-        AutoLock lock(sCachedApplicationStateLock);
+    synchronized(sCachedApplicationStateLock) {
         if (sCachedApplicationState == NULL) {
-            sCachedApplicationState = DetermineApplicationState();
+            assert(0);
+            // TODO
+            // CInteger32::New(DetermineApplicationState(), (IInteger32**)&sCachedApplicationState);
         }
     }
 
     Int32 value;
     sCachedApplicationState->GetValue(&value);
     return value;
-#endif
-    return 0;
 }
 
 /**
@@ -381,9 +421,9 @@ Boolean ApplicationStatus::HasVisibleActivities()
  */
 Boolean ApplicationStatus::IsEveryActivityDestroyed()
 {
-    assert(0);
-//    return sActivityInfo.isEmpty();
-    return FALSE;
+    Boolean result;
+    sActivityInfo->IsEmpty(&result);
+    return result;
 }
 
 /**
@@ -393,8 +433,7 @@ Boolean ApplicationStatus::IsEveryActivityDestroyed()
 void ApplicationStatus::RegisterStateListenerForAllActivities(
     /* [in] */ ActivityStateListener* listener)
 {
-    assert(0);
-//    sGeneralActivityStateListeners->AddObserver(listener);
+    sGeneralActivityStateListeners.AddObserver((IObject*)listener);
 }
 
 /**
@@ -409,14 +448,12 @@ void ApplicationStatus::RegisterStateListenerForActivity(
     /* [in] */ ActivityStateListener* listener,
     /* [in] */ IActivity* activity)
 {
-    assert(0);
-#if 0
-    assert activity != null;
+    assert(activity != NULL);
 
-    ActivityInfo info = sActivityInfo.get(activity);
-    assert info != null && info.getStatus() != ActivityState.DESTROYED;
-    info.getListeners().addObserver(listener);
-#endif
+    AutoPtr<ActivityInfo> info;
+    sActivityInfo->Get(activity, (IInterface**)&info);
+    assert(info != NULL && info->GetStatus() != ActivityState::DESTROYED);
+    info->GetListeners()->AddObserver((IObject*)listener);
 }
 
 /**
@@ -426,15 +463,19 @@ void ApplicationStatus::RegisterStateListenerForActivity(
 void ApplicationStatus::UnregisterActivityStateListener(
     /* [in] */ ActivityStateListener* listener)
 {
-    assert(0);
-#if 0
-    sGeneralActivityStateListeners.removeObserver(listener);
+    sGeneralActivityStateListeners.RemoveObserver((IObject*)listener);
 
     // Loop through all observer lists for all activities and remove the listener.
-    for (ActivityInfo info : sActivityInfo.values()) {
-        info.getListeners().removeObserver(listener);
+    AutoPtr<ICollection> collection;
+    sActivityInfo->GetValues((ICollection**)&collection);
+    AutoPtr<IIterator> iter;
+    collection->GetIterator((IIterator**)&iter);
+    AutoPtr<ActivityInfo> info;
+    Boolean bNext;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        iter->GetNext((IInterface**)&info);
+        info->GetListeners()->RemoveObserver((IObject*)listener);
     }
-#endif
 }
 
 /**
@@ -444,8 +485,7 @@ void ApplicationStatus::UnregisterActivityStateListener(
 void ApplicationStatus::RegisterApplicationStateListener(
     /* [in] */ ApplicationStateListener* listener)
 {
-    assert(0);
-//    sApplicationStateListeners->AddObserver(listener);
+    sApplicationStateListeners.AddObserver((IObject*)listener);
 }
 
 /**
@@ -455,8 +495,7 @@ void ApplicationStatus::RegisterApplicationStateListener(
 void ApplicationStatus::UnregisterApplicationStateListener(
     /* [in] */ ApplicationStateListener* listener)
 {
-    assert(0);
-//    sApplicationStateListeners->RemoveObserver(listener);
+    sApplicationStateListeners.RemoveObserver((IObject*)listener);
 }
 
 /**
@@ -483,29 +522,34 @@ void ApplicationStatus::RegisterThreadSafeNativeApplicationStateListener()
  */
 Int32 ApplicationStatus::DetermineApplicationState()
 {
-    assert(0);
-#if 0
     Boolean hasPausedActivity = FALSE;
     Boolean hasStoppedActivity = FALSE;
 
-    for (ActivityInfo info : sActivityInfo.values()) {
-        int state = info.getStatus();
-        if (state != ActivityState.PAUSED
-                && state != ActivityState.STOPPED
-                && state != ActivityState.DESTROYED) {
-            return ApplicationState.HAS_RUNNING_ACTIVITIES;
-        } else if (state == ActivityState.PAUSED) {
-            hasPausedActivity = true;
-        } else if (state == ActivityState.STOPPED) {
-            hasStoppedActivity = true;
+    AutoPtr<ICollection> collection;
+    sActivityInfo->GetValues((ICollection**)&collection);
+    AutoPtr<IIterator> iter = (IIterator*)collection->Probe(EIID_IIterator);
+    Boolean bNext;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        AutoPtr<ActivityInfo> info;
+        iter->GetNext((IInterface**)&info);
+        Int32 state = info->GetStatus();
+        if (state != ActivityState::PAUSED
+                && state != ActivityState::STOPPED
+                && state != ActivityState::DESTROYED) {
+            return ApplicationState::HAS_RUNNING_ACTIVITIES;
+        }
+        else if (state == ActivityState::PAUSED) {
+            hasPausedActivity = TRUE;
+        }
+        else if (state == ActivityState::STOPPED) {
+            hasStoppedActivity = TRUE;
         }
     }
 
-    if (hasPausedActivity) return ApplicationState.HAS_PAUSED_ACTIVITIES;
-    if (hasStoppedActivity) return ApplicationState.HAS_STOPPED_ACTIVITIES;
-    return ApplicationState.HAS_DESTROYED_ACTIVITIES;
-#endif
-    return 0;
+    if (hasPausedActivity) return ApplicationState::HAS_PAUSED_ACTIVITIES;
+    if (hasStoppedActivity) return ApplicationState::HAS_STOPPED_ACTIVITIES;
+
+    return ApplicationState::HAS_DESTROYED_ACTIVITIES;
 }
 
 // Called to notify the native side of state changes.

@@ -19,26 +19,29 @@ class HandleView;
  * A CursorController instance can be used to control a cursor in the text.
  */
 class CursorController
-    : public IOnTouchModeChangeListener
+    : public Object
+    , public IOnTouchModeChangeListener
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Hide the cursor controller from screen.
      */
-    virtual CARAPI Hide();
+    virtual CARAPI Hide() = 0;
 
     /**
      * @return true if the CursorController is currently visible
      */
     virtual CARAPI IsShowing(
-        /* [out] */ Boolean* result);
+        /* [out] */ Boolean* result) = 0;
 
     /**
      * Called when the handle is about to start updating its position.
      * @param handle
      */
     virtual CARAPI BeforeStartUpdatingPosition(
-        /* [in] */ HandleView* handle);
+        /* [in] */ HandleView* handle) = 0;
 
     /**
      * Update the controller's position.
@@ -46,14 +49,14 @@ public:
     virtual CARAPI UpdatePosition(
         /* [in] */ HandleView* handle,
         /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 y) = 0;
 
     /**
      * Called when the view is detached from window. Perform house keeping task, such as
      * stopping Runnable thread that would otherwise keep a reference on the context, thus
      * preventing the activity to be recycled.
      */
-    virtual CARAPI OnDetached();
+    virtual CARAPI OnDetached() = 0;
 };
 
 } // namespace Input

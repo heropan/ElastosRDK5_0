@@ -113,9 +113,9 @@ const Int32 DeviceSensors::DEVICE_MOTION;
 
 DeviceSensors::DeviceSensors(
     /* [in] */ IContext* context)
-    : mNativePtr(0)
-    , mDeviceMotionIsActive(FALSE)
+    : mDeviceMotionIsActive(FALSE)
     , mDeviceOrientationIsActive(FALSE)
+    , mNativePtr(0)
 {
     context->GetApplicationContext((IContext**)&mAppContext);
 }

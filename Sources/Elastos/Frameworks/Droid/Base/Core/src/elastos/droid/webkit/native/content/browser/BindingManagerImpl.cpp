@@ -68,10 +68,10 @@ BindingManagerImpl::ManagedConnection::ManagedConnection(
     /* [in] */ BindingManagerImpl* owner,
     /* [in] */ ChildProcessConnection* connection)
     : mOwner(owner)
+    , mConnection(connection)
     , mInForeground(FALSE)
     , mBoundForBackgroundPeriod(FALSE)
     , mWasOomProtected(FALSE)
-    , mConnection(connection)
 {
 }
 
@@ -205,9 +205,9 @@ BindingManagerImpl::BindingManagerImpl(
     /* [in] */ Boolean isLowMemoryDevice,
     /* [in] */ Int64 removeInitialBindingDelay,
     /* [in] */ Int64 removeStrongBindingDelay)
-    : mIsLowMemoryDevice(isLowMemoryDevice)
-    , mRemoveInitialBindingDelay(removeInitialBindingDelay)
+    : mRemoveInitialBindingDelay(removeInitialBindingDelay)
     , mRemoveStrongBindingDelay(removeStrongBindingDelay)
+    , mIsLowMemoryDevice(isLowMemoryDevice)
 {
 }
 

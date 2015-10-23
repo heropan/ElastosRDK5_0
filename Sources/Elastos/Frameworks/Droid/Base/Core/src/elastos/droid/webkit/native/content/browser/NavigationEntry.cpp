@@ -20,8 +20,8 @@ NavigationEntry::NavigationEntry(
     /* [in] */ IBitmap* favicon)
     : mIndex(index)
     , mUrl(url)
-    , mVirtualUrl(virtualUrl)
     , mOriginalUrl(originalUrl)
+    , mVirtualUrl(virtualUrl)
     , mTitle(title)
     , mFavicon(favicon)
 {

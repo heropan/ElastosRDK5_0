@@ -25,7 +25,7 @@ const String ContentSwitches::ENABLE_TEST_INTENTS("enable-test-intents");
 const String ContentSwitches::LOG_FPS("log-fps");
 
 // Whether Chromium should use a mobile user agent.
-const String ContentSwitches::String USE_MOBILE_UA("use-mobile-user-agent");
+const String ContentSwitches::USE_MOBILE_UA("use-mobile-user-agent");
 
 // Change the url of the JavaScript that gets injected when accessibility mode is enabled.
 const String ContentSwitches::ACCESSIBILITY_JAVASCRIPT_URL("accessibility-js-url");
