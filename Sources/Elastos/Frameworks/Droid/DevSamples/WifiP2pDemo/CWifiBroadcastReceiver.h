@@ -6,8 +6,8 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManager;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerChannel;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManager;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerChannel;
 
 namespace Elastos {
 namespace Droid {

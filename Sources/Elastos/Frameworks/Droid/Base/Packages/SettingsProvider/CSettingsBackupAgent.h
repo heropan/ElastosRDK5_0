@@ -20,7 +20,7 @@ using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::Backup::BackupAgentHelper;
 using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Net::Wifi::IWifiManager;
+using Elastos::Droid::Wifi::IWifiManager;
 using Elastos::Droid::Os::Runnable;
 
 namespace Elastos {

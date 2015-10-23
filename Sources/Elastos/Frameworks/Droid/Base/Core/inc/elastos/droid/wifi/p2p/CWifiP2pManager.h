@@ -4,7 +4,7 @@
 #include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pManager.h"
 #include "elastos/droid/ext/frameworkdef.h"
 
-using namespace Elastos::Droid::Net::Wifi::P2p::Nsd;
+using namespace Elastos::Droid::Wifi::P2p::Nsd;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessenger;

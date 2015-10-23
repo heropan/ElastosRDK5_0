@@ -23,18 +23,18 @@ using Elastos::Droid::Widget::IRadioGroup;
 using Elastos::Droid::Widget::IToast;
 
 using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pInfo;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDevice;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDeviceList;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManager;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerChannel;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerChannelListener;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerActionListener;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerPeerListListener;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerConnectionInfoListener;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerDnsSdServiceResponseListener;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManagerDnsSdTxtRecordListener;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceRequest;
+using Elastos::Droid::Wifi::P2p::IWifiP2pInfo;
+using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
+using Elastos::Droid::Wifi::P2p::IWifiP2pDeviceList;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManager;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerChannel;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerChannelListener;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerActionListener;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerPeerListListener;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerConnectionInfoListener;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerDnsSdServiceResponseListener;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManagerDnsSdTxtRecordListener;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceRequest;
 
 namespace Elastos {
 namespace Droid {

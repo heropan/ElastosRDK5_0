@@ -40,9 +40,9 @@ using Elastos::Droid::Net::CHierarchicalUri;
 using Elastos::Droid::Net::COpaqueUri;
 using Elastos::Droid::Net::NetworkInfoState;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
-using Elastos::Droid::Net::Wifi::IWifiConfiguration;
-using Elastos::Droid::Net::Wifi::IWifiConfigurationEnterpriseField;
-using Elastos::Droid::Net::Wifi::IWifiInfo;
+using Elastos::Droid::Wifi::IWifiConfiguration;
+using Elastos::Droid::Wifi::IWifiConfigurationEnterpriseField;
+using Elastos::Droid::Wifi::IWifiInfo;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CClipData;
 using Elastos::Droid::Content::CClipDataItem;
@@ -5967,55 +5967,55 @@ jobject Util::ToJavaSupplicantState(
     jfieldID f = NULL;
 
     switch(state) {
-        case Elastos::Droid::Net::Wifi::SupplicantState_DISCONNECTED: {
+        case Elastos::Droid::Wifi::SupplicantState_DISCONNECTED: {
             f = env->GetStaticFieldID(supsKlass, "DISCONNECTED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_INTERFACE_DISABLED: {
+        case Elastos::Droid::Wifi::SupplicantState_INTERFACE_DISABLED: {
             f = env->GetStaticFieldID(supsKlass, "INTERFACE_DISABLED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_INACTIVE: {
+        case Elastos::Droid::Wifi::SupplicantState_INACTIVE: {
             f = env->GetStaticFieldID(supsKlass, "INACTIVE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_SCANNING: {
+        case Elastos::Droid::Wifi::SupplicantState_SCANNING: {
             f = env->GetStaticFieldID(supsKlass, "SCANNING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_AUTHENTICATING: {
+        case Elastos::Droid::Wifi::SupplicantState_AUTHENTICATING: {
             f = env->GetStaticFieldID(supsKlass, "AUTHENTICATING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_ASSOCIATING: {
+        case Elastos::Droid::Wifi::SupplicantState_ASSOCIATING: {
             f = env->GetStaticFieldID(supsKlass, "ASSOCIATING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_ASSOCIATED: {
+        case Elastos::Droid::Wifi::SupplicantState_ASSOCIATED: {
             f = env->GetStaticFieldID(supsKlass, "ASSOCIATED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_FOUR_WAY_HANDSHAKE: {
+        case Elastos::Droid::Wifi::SupplicantState_FOUR_WAY_HANDSHAKE: {
             f = env->GetStaticFieldID(supsKlass, "FOUR_WAY_HANDSHAKE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_GROUP_HANDSHAKE: {
+        case Elastos::Droid::Wifi::SupplicantState_GROUP_HANDSHAKE: {
             f = env->GetStaticFieldID(supsKlass, "GROUP_HANDSHAKE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_COMPLETED: {
+        case Elastos::Droid::Wifi::SupplicantState_COMPLETED: {
             f = env->GetStaticFieldID(supsKlass, "COMPLETED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_DORMANT: {
+        case Elastos::Droid::Wifi::SupplicantState_DORMANT: {
             f = env->GetStaticFieldID(supsKlass, "DORMANT", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_UNINITIALIZED: {
+        case Elastos::Droid::Wifi::SupplicantState_UNINITIALIZED: {
             f = env->GetStaticFieldID(supsKlass, "UNINITIALIZED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Net::Wifi::SupplicantState_INVALID: {
+        case Elastos::Droid::Wifi::SupplicantState_INVALID: {
             f = env->GetStaticFieldID(supsKlass, "INVALID", "Landroid/net/wifi/SupplicantState;");
             break;
         }
@@ -9351,10 +9351,10 @@ jobject Util::ToJavaWifiConfiguration(
     jclass ipaClass = env->FindClass("android/net/wifi/WifiConfiguration$IpAssignment");
     Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass IpAssignment %d", __LINE__);
 
-    Elastos::Droid::Net::Wifi::IpAssignment ipAssignment;
+    Elastos::Droid::Wifi::IpAssignment ipAssignment;
     config->GetIpAssignment(&ipAssignment);
     switch(ipAssignment) {
-        case Elastos::Droid::Net::Wifi::IpAssignment_STATIC: {
+        case Elastos::Droid::Wifi::IpAssignment_STATIC: {
             jfieldID f = env->GetStaticFieldID(ipaClass, "STATIC", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
 
@@ -9370,7 +9370,7 @@ jobject Util::ToJavaWifiConfiguration(
             env->DeleteLocalRef(jSTATIC);
             break;
         }
-        case Elastos::Droid::Net::Wifi::IpAssignment_DHCP: {
+        case Elastos::Droid::Wifi::IpAssignment_DHCP: {
             jfieldID f = env->GetStaticFieldID(ipaClass, "DHCP", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: DHCP : %d!\n", __LINE__);
 
@@ -9407,10 +9407,10 @@ jobject Util::ToJavaWifiConfiguration(
     jclass psClass = env->FindClass("android/net/wifi/WifiConfiguration$ProxySettings");
     Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass ProxySettings %d", __LINE__);
 
-    Elastos::Droid::Net::Wifi::ProxySettings proxySettings;
+    Elastos::Droid::Wifi::ProxySettings proxySettings;
     config->GetIpAssignment(&proxySettings);
     switch(proxySettings) {
-        case Elastos::Droid::Net::Wifi::ProxySettings_NONE: {
+        case Elastos::Droid::Wifi::ProxySettings_NONE: {
             jfieldID f = env->GetStaticFieldID(psClass, "NONE", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: NONE : %d!\n", __LINE__);
 
@@ -9426,7 +9426,7 @@ jobject Util::ToJavaWifiConfiguration(
             env->DeleteLocalRef(jNONE);
             break;
         }
-        case Elastos::Droid::Net::Wifi::ProxySettings_STATIC: {
+        case Elastos::Droid::Wifi::ProxySettings_STATIC: {
             jfieldID f = env->GetStaticFieldID(psClass, "STATIC", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
 

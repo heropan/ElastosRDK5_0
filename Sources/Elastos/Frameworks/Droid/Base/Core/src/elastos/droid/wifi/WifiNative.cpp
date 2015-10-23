@@ -12,7 +12,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Etl::List;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDevice;
+using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
 
 #define WIFI_PKG_NAME "android/net/wifi/WifiNative"
 #define BUF_SIZE 256

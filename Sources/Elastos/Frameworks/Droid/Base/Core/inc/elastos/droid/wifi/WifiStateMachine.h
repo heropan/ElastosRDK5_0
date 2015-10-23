@@ -29,7 +29,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Net::DhcpInfoInternal;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManager;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManager;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBatteryStats;
 using Elastos::Droid::Os::IMessenger;

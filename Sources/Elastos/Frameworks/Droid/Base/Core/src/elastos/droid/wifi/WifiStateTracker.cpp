@@ -17,7 +17,7 @@ using Elastos::Droid::Net::EIID_INetworkInfo;
 using Elastos::Droid::Net::EIID_ILinkProperties;
 using Elastos::Droid::Net::EIID_ILinkCapabilities;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
-using Elastos::Droid::Net::Wifi::P2p::IWifiP2pManager;
+using Elastos::Droid::Wifi::P2p::IWifiP2pManager;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::CMessage;
 

@@ -6,7 +6,7 @@ namespace Droid {
 namespace Wifi {
 
 ECode CSupplicantStateHelper::IsValidState(
-    /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+    /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
     /* [out] */ Boolean* isValidState)
 {
     if (isValidState == NULL) {
@@ -20,7 +20,7 @@ ECode CSupplicantStateHelper::IsValidState(
 }
 
 ECode CSupplicantStateHelper::IsHandshakeState(
-    /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+    /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
     /* [out] */ Boolean* isHandshakeState)
 {
     if (isHandshakeState == NULL) {
@@ -63,7 +63,7 @@ ECode CSupplicantStateHelper::ReadFromParcel(
 }
 
 ECode CSupplicantStateHelper::IsConnecting(
-    /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+    /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
     /* [out] */ Boolean* isConnecting)
 {
     if (isConnecting == NULL) {
@@ -94,7 +94,7 @@ ECode CSupplicantStateHelper::IsConnecting(
 }
 
 ECode CSupplicantStateHelper::IsDriverActive(
-    /* [in] */ Elastos::Droid::Net::Wifi::SupplicantState state,
+    /* [in] */ Elastos::Droid::Wifi::SupplicantState state,
     /* [out] */ Boolean* isDriverActive)
 {
     if (isDriverActive == NULL) {

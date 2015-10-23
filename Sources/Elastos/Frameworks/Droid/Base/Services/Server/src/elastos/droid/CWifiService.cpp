@@ -31,7 +31,7 @@ using Elastos::Droid::Net::CNetworkInfo;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::CTrafficStats;
 using Elastos::Droid::Net::ITrafficStats;
-using Elastos::Droid::Net::Wifi::IWifiManager;
+using Elastos::Droid::Wifi::IWifiManager;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::CMessenger;

@@ -13,9 +13,9 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::Utility::AsyncChannel;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pServiceResponse;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pUpnpServiceResponse;
-using Elastos::Droid::Net::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceResponse;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pServiceResponse;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pUpnpServiceResponse;
+using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceResponse;
 
 namespace Elastos {
 namespace Droid {
