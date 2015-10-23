@@ -663,6 +663,15 @@ ECode CAlertDialogBuilder::SetOnItemSelectedListener(
     return NOERROR;
 }
 
+ECode CAlertDialogBuilder::SetView(
+    /* [in] */ Int32 layoutResId)
+{
+    mP->SetView(NULL);
+    mP->SetViewLayoutResId(layoutResId);
+    mP->SetViewSpacingSpecified(FALSE);
+    return NOERROR;
+}
+
 /**
  * Set a custom view to be the contents of the Dialog. If the supplied view is an instance
  * of a {@link ListView} the light background will be used.
@@ -675,6 +684,7 @@ ECode CAlertDialogBuilder::SetView(
     /* [in] */ IView* view)
 {
     mP->SetView(view);
+    mP->SetViewLayoutResId(0);
     mP->SetViewSpacingSpecified(FALSE);
     return NOERROR;
 }
@@ -709,6 +719,7 @@ ECode CAlertDialogBuilder::SetView(
     /* [in] */ Int32 viewSpacingBottom)
 {
     mP->SetView(view);
+    mP->SetViewLayoutResId(0);
     mP->SetViewSpacingSpecified(TRUE);
     mP->SetViewSpacingLeft(viewSpacingLeft);
     mP->SetViewSpacingTop(viewSpacingTop);

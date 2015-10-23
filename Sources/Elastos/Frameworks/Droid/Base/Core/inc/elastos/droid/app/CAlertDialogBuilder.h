@@ -183,6 +183,17 @@ public:
     CARAPI SetOnItemSelectedListener(
         /* [in] */ IAdapterViewOnItemSelectedListener* listener);
 
+    /**
+     * Set a custom view resource to be the contents of the Dialog. The
+     * resource will be inflated, adding all top-level views to the screen.
+     *
+     * @param layoutResId Resource ID to be inflated.
+     * @return This Builder object to allow for chaining of calls to set
+     *         methods
+     */
+    CARAPI SetView(
+        /* [in] */ Int32 layoutResId);
+
     CARAPI SetView(
         /* [in] */ IView* view);
 

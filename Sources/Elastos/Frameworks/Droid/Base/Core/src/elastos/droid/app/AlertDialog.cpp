@@ -203,6 +203,12 @@ ECode AlertDialog::SetView(
             viewSpacingRight, viewSpacingBottom);
 }
 
+ECode AlertDialog::SetButtonPanelLayoutHint(
+    /* [in] */ Int32 layoutHint);
+{
+    return mAlert->SetButtonPanelLayoutHint(layoutHint);
+}
+
 /**
  * Set a message to be sent when a button is pressed.
  *

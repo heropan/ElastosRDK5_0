@@ -25,6 +25,10 @@ public:
         /* [in] */ Int32 pPid,
         /* [in] */ ArrayOf<String>* pArr);
 
+    /** @hide */
+    static Int32 ProcStateToImportance(
+        /* [in] */ Int32 procState);
+
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
@@ -182,6 +186,12 @@ private:
     AutoPtr<IComponentName> mImportanceReasonComponent;
 
     Int32 mImportanceReasonImportance;
+
+   /**
+     * Current process state, as per PROCESS_STATE_* constants.
+     * @hide
+     */
+    Int32 mProcessState;
 };
 
 } // namespace App

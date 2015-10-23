@@ -108,6 +108,11 @@ private:
     AutoPtr<ICharSequence> mDescription;
     Int32 mNumActivities;
     Int32 mNumRunning;
+    /**
+     * Last time task was run. For sorting.
+     * @hide
+     */
+    Int64 mLastActiveTime;
 };
 
 } // namespace App

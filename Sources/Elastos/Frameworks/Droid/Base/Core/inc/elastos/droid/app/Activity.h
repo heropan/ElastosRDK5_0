@@ -6,19 +6,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::IClassLoader;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IRunnable;
-using Elastos::Core::IThread;
-using Elastos::Utility::IObjectStringMap;
-using Elastos::IO::IFile;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::IFileOutputStream;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IInputStream;
-using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBundle;
@@ -80,24 +67,41 @@ using Elastos::Droid::App::ILoaderManagerImpl;
 using Elastos::Droid::App::IActivityNonConfigurationInstances;
 using Elastos::Droid::Internal::App::IActionBarImpl;
 
+using Elastos::Core::IClassLoader;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IRunnable;
+using Elastos::Core::IThread;
+using Elastos::IO::IFile;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-extern "C" const InterfaceID EIID_Activity;
-
 class Activity
-    : public ElRefBase
-    , public IObject
+    : public Object
     , public IActivity
+    , public IContext
+    , public IContextWrapper
+    , public IContextThemeWrapper
+    , public ILayoutInflaterFactory
     , public ILayoutInflaterFactory2
     , public IWindowCallback
     , public IKeyEventCallback
     , public IViewOnCreateContextMenuListener
+    , public IComponentCallbacks
     , public IComponentCallbacks2
-    , public IWeakReferenceSource
+    , public IWindowOnWindowDismissedCallback
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Activity();
 
     virtual ~Activity();
@@ -248,6 +252,35 @@ public:
         /* [out] */ ICharSequence** description);
 
     /**
+     * This is called when the user is requesting an assist, to build a full
+     * {@link Intent#ACTION_ASSIST} Intent with all of the context of the current
+     * application.  You can override this method to place into the bundle anything
+     * you would like to appear in the {@link Intent#EXTRA_ASSIST_CONTEXT} part
+     * of the assist Intent.  The default implementation does nothing.
+     *
+     * <p>This function will be called after any global assist callbacks that had
+     * been registered with {@link Application#registerOnProvideAssistDataListener
+     * Application.registerOnProvideAssistDataListener}.
+     */
+    CARAPI OnProvideAssistData(
+        /* [out] */ IBundle* data);
+
+    /**
+     * Report to the system that your app is now fully drawn, purely for diagnostic
+     * purposes (calling it does not impact the visible behavior of the activity).
+     * This is only used to help instrument application launch times, so that the
+     * app can report when it is fully in a usable state; without this, the only thing
+     * the system itself can determine is the point at which the activity's window
+     * is <em>first</em> drawn and displayed.  To participate in app launch time
+     * measurement, you should always call this method after first launch (when
+     * {@link #onCreate(android.os.Bundle)} is called), at the point where you have
+     * entirely drawn your UI and populated with all of the significant data.  You
+     * can safely call this method any time after first launch as well, in which case
+     * it will simply be ignored.
+     */
+    CARAPI ReportFullyDrawn();
+
+    /**
      * Called by the system when the device configuration changes while your
      * activity is running.  Note that this will <em>only</em> be called if
      * you have selected configurations you would like to handle with the
@@ -381,7 +414,7 @@ public:
      * {@link #onRetainNonConfigurationChildInstances()}
      */
     CARAPI GetLastNonConfigurationChildInstances(
-        /* [out] */ IObjectStringMap** data);
+        /* [out] */ IHashMap** data);
 
     /**
      * This method is similar to {@link #onRetainNonConfigurationInstance()} except that
@@ -391,7 +424,7 @@ public:
      * as for {@link #onRetainNonConfigurationInstance()}.  The default implementation returns null.
      */
     CARAPI OnRetainNonConfigurationChildInstances(
-        /* [out] */ IObjectStringMap** objectStringMap);
+        /* [out] */ IHashMap** objectStringMap);
 
     CARAPI RetainNonConfigurationInstances(
         /* [out] */ IActivityNonConfigurationInstances** instance);
@@ -571,6 +604,24 @@ public:
         /* [in] */ Int32 id);
 
     /**
+     * Set a {@link android.widget.Toolbar Toolbar} to act as the {@link ActionBar} for this
+     * Activity window.
+     *
+     * <p>When set to a non-null value the {@link #getActionBar()} method will return
+     * an {@link ActionBar} object that can be used to control the given toolbar as if it were
+     * a traditional window decor action bar. The toolbar's menu will be populated with the
+     * Activity's options menu and the navigation button will be wired through the standard
+     * {@link android.R.id#home home} menu select action.</p>
+     *
+     * <p>In order to use a Toolbar within the Activity's window content the application
+     * must not request the window feature {@link Window#FEATURE_ACTION_BAR FEATURE_ACTION_BAR}.</p>
+     *
+     * @param toolbar Toolbar to set as the Activity's action bar
+     */
+    CARAPI SetActionBar(
+        /* [in] */ IActionBar* actionbar);
+
+    /**
      * Retrieve a reference to this activity's ActionBar.
      *
      * @return The Activity's ActionBar, or null if it does not have one.
@@ -614,6 +665,38 @@ public:
     CARAPI AddContentView(
         /* [in] */ IView* view,
         /* [in] */ IViewGroupLayoutParams* params);
+
+    /**
+     * Retrieve the {@link TransitionManager} responsible for default transitions in this window.
+     * Requires {@link Window#FEATURE_CONTENT_TRANSITIONS}.
+     *
+     * <p>This method will return non-null after content has been initialized (e.g. by using
+     * {@link #setContentView}) if {@link Window#FEATURE_CONTENT_TRANSITIONS} has been granted.</p>
+     *
+     * @return This window's content TransitionManager or null if none is set.
+     */
+    CARAPI GetContentTransitionManager(
+        /* [out] */ ITransitionManager** tm);
+
+    /**
+     * Set the {@link TransitionManager} to use for default transitions in this window.
+     * Requires {@link Window#FEATURE_CONTENT_TRANSITIONS}.
+     *
+     * @param tm The TransitionManager to use for scene changes.
+     */
+    CARAPI SetContentTransitionManager(
+        /* [in] */ ITransitionManager* tm);
+
+    /**
+     * Retrieve the {@link Scene} representing this window's current content.
+     * Requires {@link Window#FEATURE_CONTENT_TRANSITIONS}.
+     *
+     * <p>This method will return null if the current content is not represented by a Scene.</p>
+     *
+     * @return Current Scene being shown or null
+     */
+    CARAPI GetContentScene(
+        /* [out] */ IScene** scene);
 
     CARAPI SetFinishOnTouchOutside(
         /* [in] */ Boolean finish);
@@ -901,6 +984,12 @@ public:
      */
     CARAPI HasWindowFocus(
         /* [out] */ Boolean* hasFocus);
+
+    /**
+     * Called when the main window associated with the activity has been dismissed.
+     * @hide
+     */
+    CARAPI OnWindowDismissed();
 
     /**
      * Called to process key events.  You can override this to intercept all
@@ -1663,6 +1752,20 @@ public:
         /* [in] */ IBundle* options);
 
     /**
+     * @hide Implement to provide correct calling token.
+     */
+    CARAPI StartActivityForResultAsUser(
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 requestCode,
+        /* [in] */ IUserHandle* user);
+
+    CARAPI StartActivityForResultAsUser(
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 requestCode,
+        /* [in] */ IBundle* options,
+        /* [in] */ IUserHandle* user);
+
+    /**
      * Same as calling {@link #startActivityIfNeeded(Intent, int, Bundle)}
      * with no options.
      *
@@ -2064,6 +2167,15 @@ public:
         /* [in] */ IActivity* child);
 
     /**
+     * Reverses the Activity Scene entry Transition and triggers the calling Activity
+     * to reverse its exit Transition. When the exit Transition completes,
+     * {@link #finish()} is called. If no entry Transition was used, finish() is called
+     * immediately and the Activity exit Transition is run.
+     * @see android.app.ActivityOptions#makeSceneTransitionAnimation(Activity, android.util.Pair[])
+     */
+    CARAPI FinishAfterTransition();
+
+    /**
      * Force finish another activity that you had previously started with
      * {@link #startActivityForResult}.
      *
@@ -2086,6 +2198,48 @@ public:
     CARAPI FinishActivityFromChild(
         /* [in] */ IActivity* child,
         /* [in] */ Int32 requestCode);
+
+    /**
+     * Call this when your activity is done and should be closed and the task should be completely
+     * removed as a part of finishing the Activity.
+     */
+    CARAPI FinishAndRemoveTask();
+
+    /**
+     * Ask that the local app instance of this activity be released to free up its memory.
+     * This is asking for the activity to be destroyed, but does <b>not</b> finish the activity --
+     * a new instance of the activity will later be re-created if needed due to the user
+     * navigating back to it.
+     *
+     * @return Returns true if the activity was in a state that it has started the process
+     * of destroying its current instance; returns false if for any reason this could not
+     * be done: it is currently visible to the user, it is already being destroyed, it is
+     * being finished, it hasn't yet saved its state, etc.
+     */
+    CARAPI ReleaseInstance(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Called when an activity you launched with an activity transition exposes this
+     * Activity through a returning activity transition, giving you the resultCode
+     * and any additional data from it. This method will only be called if the activity
+     * set a result code other than {@link #RESULT_CANCELED} and it supports activity
+     * transitions with {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * <p>The purpose of this function is to let the called Activity send a hint about
+     * its state so that this underlying Activity can prepare to be exposed. A call to
+     * this method does not guarantee that the called Activity has or will be exiting soon.
+     * It only indicates that it will expose this Activity's Window and it has
+     * some data to pass to prepare it.</p>
+     *
+     * @param resultCode The integer result code returned by the child activity
+     *                   through its setResult().
+     * @param data An Intent, which can return result data to the caller
+     *               (various data can be attached to Intent "extras").
+     */
+    CARAPI OnActivityReenter(
+        /* [in] */ Int32 resultCode,
+        /* [in] */ IIntent* data);
 
     /**
      * Called when an activity you launched exits, giving you the requestCode
@@ -2272,8 +2426,23 @@ public:
         /* [in] */ Int32 color);
 
     virtual CARAPI OnChildTitleChanged(
-            /* [in] */ IActivity* childActivity,
-            /* [in] */ ICharSequence* title);
+        /* [in] */ IActivity* childActivity,
+        /* [in] */ ICharSequence* title);
+
+    /**
+     * Sets information describing the task with this activity for presentation inside the Recents
+     * System UI. When {@link ActivityManager#getRecentTasks} is called, the activities of each task
+     * are traversed in order from the topmost activity to the bottommost. The traversal continues
+     * for each property until a suitable value is found. For each task the taskDescription will be
+     * returned in {@link android.app.ActivityManager.TaskDescription}.
+     *
+     * @see ActivityManager#getRecentTasks
+     * @see android.app.ActivityManager.TaskDescription
+     *
+     * @param taskDescription The TaskDescription properties that describe the task with this activity
+     */
+    CARAPI SetTaskDescription(
+        /* [in] */ IActivityManagerTaskDescription* taskDescription);
 
     /**
      * Sets the visibility of the progress bar in the title.
@@ -2369,6 +2538,42 @@ public:
         /* [out] */ Int32* type);
 
     /**
+     * Sets a {@link MediaController} to send media keys and volume changes to.
+     * <p>
+     * The controller will be tied to the window of this Activity. Media key and
+     * volume events which are received while the Activity is in the foreground
+     * will be forwarded to the controller and used to invoke transport controls
+     * or adjust the volume. This may be used instead of or in addition to
+     * {@link #setVolumeControlStream} to affect a specific session instead of a
+     * specific stream.
+     * <p>
+     * It is not guaranteed that the hardware volume controls will always change
+     * this session's volume (for example, if a call is in progress, its
+     * stream's volume may be changed instead). To reset back to the default use
+     * null as the controller.
+     *
+     * @param controller The controller for the session which should receive
+     *            media keys and volume changes.
+     */
+    CARAPI SetMediaController(
+        /* [in] */ IMediaController* controller) {
+        getWindow().setMediaController(controller);
+    }
+
+    /**
+     * Gets the controller which should be receiving media key and volume events
+     * while this activity is in the foreground.
+     *
+     * @return The controller which should receive events.
+     * @see #setMediaController(android.media.session.MediaController)
+     */
+    CARAPI GetMediaController(
+        /* [out] */ IMediaController** mc);
+    {
+        return getWindow().getMediaController();
+    }
+
+    /**
      * Runs the specified action on the UI thread. If the current thread is the UI
      * thread, then the action is executed immediately. If the current thread is
      * not the UI thread, the action is posted to the event queue of the UI thread.
@@ -2441,6 +2646,163 @@ public:
      */
     CARAPI IsImmersive(
         /* [out] */ Boolean* isImmersive);
+
+    /**
+     * Convert a translucent themed Activity {@link android.R.attr#windowIsTranslucent} to a
+     * fullscreen opaque Activity.
+     * <p>
+     * Call this whenever the background of a translucent Activity has changed to become opaque.
+     * Doing so will allow the {@link android.view.Surface} of the Activity behind to be released.
+     * <p>
+     * This call has no effect on non-translucent activities or on activities with the
+     * {@link android.R.attr#windowIsFloating} attribute.
+     *
+     * @see #convertToTranslucent(android.app.Activity.TranslucentConversionListener,
+     * ActivityOptions)
+     * @see TranslucentConversionListener
+     *
+     * @hide
+     */
+    CARAPI ConvertFromTranslucent();
+
+    /**
+     * Convert a translucent themed Activity {@link android.R.attr#windowIsTranslucent} back from
+     * opaque to translucent following a call to {@link #convertFromTranslucent()}.
+     * <p>
+     * Calling this allows the Activity behind this one to be seen again. Once all such Activities
+     * have been redrawn {@link TranslucentConversionListener#onTranslucentConversionComplete} will
+     * be called indicating that it is safe to make this activity translucent again. Until
+     * {@link TranslucentConversionListener#onTranslucentConversionComplete} is called the image
+     * behind the frontmost Activity will be indeterminate.
+     * <p>
+     * This call has no effect on non-translucent activities or on activities with the
+     * {@link android.R.attr#windowIsFloating} attribute.
+     *
+     * @param callback the method to call when all visible Activities behind this one have been
+     * drawn and it is safe to make this Activity translucent again.
+     * @param options activity options delivered to the activity below this one. The options
+     * are retrieved using {@link #getActivityOptions}.
+     * @return <code>true</code> if Window was opaque and will become translucent or
+     * <code>false</code> if window was translucent and no change needed to be made.
+     *
+     * @see #convertFromTranslucent()
+     * @see TranslucentConversionListener
+     *
+     * @hide
+     */
+    Boolean ConvertToTranslucent(
+        /* [in] */ ITranslucentConversionListener* callback,
+        /* [in] */ IActivityOptions* options);
+
+    /** @hide */
+    CARAPI OnTranslucentConversionComplete(
+        /* [in] */ Boolean drawComplete);
+
+    /** @hide */
+    CARAPI OnNewActivityOptions(
+        /* [in] */ IActivityOptions* options);
+
+    /**
+     * Retrieve the ActivityOptions passed in from the launching activity or passed back
+     * from an activity launched by this activity in its call to {@link
+     * #convertToTranslucent(TranslucentConversionListener, ActivityOptions)}
+     *
+     * @return The ActivityOptions passed to {@link #convertToTranslucent}.
+     * @hide
+     */
+    CARAPI GetActivityOptions(
+        /* [out] */ IActivityOptions** options);
+
+    /**
+     * Activities that want to remain visible behind a translucent activity above them must call
+     * this method anytime between the start of {@link #onResume()} and the return from
+     * {@link #onPause()}. If this call is successful then the activity will remain visible after
+     * {@link #onPause()} is called, and is allowed to continue playing media in the background.
+     *
+     * <p>The actions of this call are reset each time that this activity is brought to the
+     * front. That is, every time {@link #onResume()} is called the activity will be assumed
+     * to not have requested visible behind. Therefore, if you want this activity to continue to
+     * be visible in the background you must call this method again.
+     *
+     * <p>Only fullscreen opaque activities may make this call. I.e. this call is a nop
+     * for dialog and translucent activities.
+     *
+     * <p>Under all circumstances, the activity must stop playing and release resources prior to or
+     * within a call to {@link #onVisibleBehindCanceled()} or if this call returns false.
+     *
+     * <p>False will be returned any time this method is called between the return of onPause and
+     *      the next call to onResume.
+     *
+     * @param visible true to notify the system that the activity wishes to be visible behind other
+     *                translucent activities, false to indicate otherwise. Resources must be
+     *                released when passing false to this method.
+     * @return the resulting visibiity state. If true the activity will remain visible beyond
+     *      {@link #onPause()} if the next activity is translucent or not fullscreen. If false
+     *      then the activity may not count on being visible behind other translucent activities,
+     *      and must stop any media playback and release resources.
+     *      Returning false may occur in lieu of a call to {@link #onVisibleBehindCanceled()} so
+     *      the return value must be checked.
+     *
+     * @see #onVisibleBehindCanceled()
+     * @see #onBackgroundVisibleBehindChanged(boolean)
+     */
+    CARAPI RequestVisibleBehind(
+        /* [in] */ Boolean visible,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Called when a translucent activity over this activity is becoming opaque or another
+     * activity is being launched. Activities that override this method must call
+     * <code>super.onVisibleBehindCanceled()</code> or a SuperNotCalledException will be thrown.
+     *
+     * <p>When this method is called the activity has 500 msec to release any resources it may be
+     * using while visible in the background.
+     * If the activity has not returned from this method in 500 msec the system will destroy
+     * the activity and kill the process in order to recover the resources for another
+     * process. Otherwise {@link #onStop()} will be called following return.
+     *
+     * @see #requestVisibleBehind(boolean)
+     * @see #onBackgroundVisibleBehindChanged(boolean)
+     */
+    CARAPI OnVisibleBehindCanceled();
+
+    /**
+     * Translucent activities may call this to determine if there is an activity below them that
+     * is currently set to be visible in the background.
+     *
+     * @return true if an activity below is set to visible according to the most recent call to
+     * {@link #requestVisibleBehind(boolean)}, false otherwise.
+     *
+     * @see #requestVisibleBehind(boolean)
+     * @see #onVisibleBehindCanceled()
+     * @see #onBackgroundVisibleBehindChanged(boolean)
+     * @hide
+     */
+    CARPAI IsBackgroundVisibleBehind(
+        /* [out] */ Boolean* result);
+
+    /**
+     * The topmost foreground activity will receive this call when the background visibility state
+     * of the activity below it changes.
+     *
+     * This call may be a consequence of {@link #requestVisibleBehind(boolean)} or might be
+     * due to a background activity finishing itself.
+     *
+     * @param visible true if a background activity is visible, false otherwise.
+     *
+     * @see #requestVisibleBehind(boolean)
+     * @see #onVisibleBehindCanceled()
+     * @hide
+     */
+    CARAPI OnBackgroundVisibleBehindChanged(
+        /* [in] */ Boolean visible);
+
+    /**
+     * Activities cannot draw during the period that their windows are animating in. In order
+     * to know when it is safe to begin drawing they can override this method which will be
+     * called when the entering animation has completed.
+     */
+    CARAPI OnEnterAnimationComplete();
 
     /**
      * Adjust the current immersive mode setting.
@@ -2565,6 +2927,52 @@ public:
         /* [in] */ IIntent* upIntent,
         /* [out] */ Boolean* success);
 
+    /**
+     * When {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+     * android.view.View, String)} was used to start an Activity, <var>callback</var>
+     * will be called to handle shared elements on the <i>launched</i> Activity. This requires
+     * {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param callback Used to manipulate shared element transitions on the launched Activity.
+     */
+    CARAPI SetEnterSharedElementCallback(
+        /* [in] */ ISharedElementCallback* callback);
+
+    /**
+     * When {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+     * android.view.View, String)} was used to start an Activity, <var>callback</var>
+     * will be called to handle shared elements on the <i>launching</i> Activity. Most
+     * calls will only come when returning from the started Activity.
+     * This requires {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
+     *
+     * @param callback Used to manipulate shared element transitions on the launching Activity.
+     */
+    CARAPI SetExitSharedElementCallback(
+        /* [in] */ ISharedElementCallback* callback);
+
+    /**
+     * Postpone the entering activity transition when Activity was started with
+     * {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+     * android.util.Pair[])}.
+     * <p>This method gives the Activity the ability to delay starting the entering and
+     * shared element transitions until all data is loaded. Until then, the Activity won't
+     * draw into its window, leaving the window transparent. This may also cause the
+     * returning animation to be delayed until data is ready. This method should be
+     * called in {@link #onCreate(android.os.Bundle)} or in
+     * {@link #onActivityReenter(int, android.content.Intent)}.
+     * {@link #startPostponedEnterTransition()} must be called to allow the Activity to
+     * start the transitions. If the Activity did not use
+     * {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+     * android.util.Pair[])}, then this method does nothing.</p>
+     */
+    CARAPI PostponeEnterTransition();
+
+    /**
+     * Begin postponed transitions after {@link #postponeEnterTransition()} was called.
+     * If postponeEnterTransition() was called, you must call startPostponedEnterTransition()
+     * to have your Activity start drawing.
+     */
+    CARAPI StartPostponedEnterTransition();
 
     /**
      * Obtain an {@link Intent} that will launch an explicit target activity specified by
@@ -2595,20 +3003,6 @@ public:
         /* [int] */ IActivity* parent);
 
     CARAPI Attach(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IActivityThread* thread,
-        /* [in] */ IInstrumentation* instr,
-        /* [in] */ IBinder* token,
-        /* [in] */ IApplication* application,
-        /* [in] */ IIntent* intent,
-        /* [in] */ IActivityInfo* info,
-        /* [in] */ ICharSequence* title,
-        /* [in] */ IActivity* parent,
-        /* [in] */ const String& id,
-        /* [in] */ IInterface* lastNonConfigurationInstance,
-        /* [in] */ IConfiguration* config);
-
-    CARAPI Attach(
         /* [in] */ IContext* context,
         /* [in] */ IActivityThread* thread,
         /* [in] */ IInstrumentation* instr,
@@ -2621,7 +3015,8 @@ public:
         /* [in] */ IActivity* parent,
         /* [in] */ const String& id,
         /* [in] */ IInterface* lastNonConfigurationInstance,
-        /* [in] */ IConfiguration* config);
+        /* [in] */ IConfiguration* config,
+        /* [in] */ IIVoiceInteractor* voiceInteractor);
 
     /**
      * The hook for {@link ActivityThread} to restore the state of this activity.
@@ -2633,6 +3028,19 @@ public:
      */
     CARAPI PerformRestoreInstanceState(
         /* [in] */ IBundle* savedInstanceState);
+
+    /**
+     * The hook for {@link ActivityThread} to restore the state of this activity.
+     *
+     * Calls {@link #onSaveInstanceState(android.os.Bundle)} and
+     * {@link #restoreManagedDialogs(android.os.Bundle)}.
+     *
+     * @param savedInstanceState contains the saved state
+     * @param persistentState contains the persistable saved state
+     */
+    CARAPI PerformRestoreInstanceState(
+        /* [in] */ IBundle* savedInstanceState,
+        /* [in] */ IPersistableBundle* persistentState);
 
     CARAPI GetID(
         /* [out] */ String* id);
@@ -2667,6 +3075,36 @@ public:
     CARAPI DispatchNewIntent(
         /* [in] */ IIntent *intent);
 
+    /**
+     * Request to put this Activity in a mode where the user is locked to the
+     * current task.
+     *
+     * This will prevent the user from launching other apps, going to settings,
+     * or reaching the home screen.
+     *
+     * If {@link DevicePolicyManager#isLockTaskPermitted(String)} returns true
+     * for this component then the app will go directly into Lock Task mode.  The user
+     * will not be able to exit this mode until {@link Activity#stopLockTask()} is called.
+     *
+     * If {@link DevicePolicyManager#isLockTaskPermitted(String)} returns false
+     * then the system will prompt the user with a dialog requesting permission to enter
+     * this mode.  When entered through this method the user can exit at any time through
+     * an action described by the request dialog.  Calling stopLockTask will also exit the
+     * mode.
+     */
+    CARPAI StartLockTask();
+
+    /**
+     * Allow the user to switch away from the current task.
+     *
+     * Called to end the mode started by {@link Activity#startLockTask}. This
+     * can only be called by activities that have successfully called
+     * startLockTask previously.
+     *
+     * This will allow the user to exit this app and move onto other activities.
+     */
+    CARPAI StopLockTask();
+
     CARAPI SetCalled(
         /* [in] */ Boolean called);
 
@@ -2676,8 +3114,14 @@ public:
     CARAPI SetFinishing(
         /* [in] */ Boolean finished);
 
+    CARAPI PerformCreateCommon();
+
     CARAPI PerformCreate(
         /* [in] */ IBundle* icicle);
+
+    CARAPI PerformCreate(
+        /* [in] */ IBundle* icicle,
+        /* [in] */ IPersistableBundle* bundle);
 
     CARAPI PerformStart();
 
@@ -2703,6 +3147,19 @@ public:
      */
     CARAPI PerformSaveInstanceState(
         /* [in] */ IBundle* outState);
+
+    /**
+     * The hook for {@link ActivityThread} to save the state of this activity.
+     *
+     * Calls {@link #onSaveInstanceState(android.os.Bundle)}
+     * and {@link #saveManagedDialogs(android.os.Bundle)}.
+     *
+     * @param outState The bundle to save the state to.
+     * @param outPersistentState The bundle to save persistent state to.
+     */
+    CARAPI PerformSaveInstanceState(
+        /* [in] */ IBundle* outState,
+        /* [in] */ IPersistableBundle* outPersistentState);
 
     // internal use.
     CARAPI IsStartedActivity(
@@ -2747,6 +3204,25 @@ public:
     virtual CARAPI OnSaveInstanceState(
         /* [in] */ IBundle* outState);
 
+    /**
+     * This is the same as {@link #onSaveInstanceState} but is called for activities
+     * created with the attribute {@link android.R.attr#persistableMode} set to
+     * <code>persistAcrossReboots</code>. The {@link android.os.PersistableBundle} passed
+     * in will be saved and presented in {@link #onCreate(Bundle, PersistableBundle)}
+     * the first time that this activity is restarted following the next device reboot.
+     *
+     * @param outState Bundle in which to place your saved state.
+     * @param outPersistentState State which will be saved across reboots.
+     *
+     * @see #onSaveInstanceState(Bundle)
+     * @see #onCreate
+     * @see #onRestoreInstanceState(Bundle, PersistableBundle)
+     * @see #onPause
+     */
+    virtual CARAPI OnSaveInstanceState(
+        /* [in] */ IBundle* outState,
+        /* [in] */ IPersistableBundle* outPersistentState);
+
     CARAPI SetResumed(
         /* [in] */ Boolean resumed);
 
@@ -2761,194 +3237,6 @@ public:
         /* [out] */ String* str);
 
     CARAPI_(String) ToString();
-
-    //
-    // IContext interfaces
-    //
-    /**
-     * @return the base context as set by the constructor or setBaseContext
-     */
-    CARAPI GetBaseContext(
-        /* [out] */ IContext** ctx);
-
-    virtual CARAPI AttachBaseContext(
-        /* [in] */ IContext* base);
-
-    CARAPI GetAssets(
-        /* [out] */ IAssetManager** assetManager);
-
-    CARAPI GetResources(
-        /* [out] */ IResources** resources);
-
-    CARAPI GetPackageManager(
-        /* [out] */ IPackageManager** packageManager);
-
-    CARAPI GetContentResolver(
-        /* [out] */ IContentResolver** resolver);
-
-    CARAPI GetMainLooper(
-        /* [out] */ ILooper** looper);
-
-    CARAPI GetApplicationContext(
-        /* [out] */ IContext** ctx);
-
-    CARAPI RegisterComponentCallbacks(
-        /* [in] */ IComponentCallbacks* componentCallback);
-
-    CARAPI UnregisterComponentCallbacks(
-        /* [in] */ IComponentCallbacks* componentCallback);
-
-    CARAPI GetText(
-        /* [in] */ Int32 resId,
-        /* [out] */ ICharSequence** text);
-
-    CARAPI GetString(
-        /* [in] */ Int32 resId,
-        /* [out] */ String* str);
-
-    CARAPI GetString(
-        /* [in] */ Int32 resId,
-        /* [in] */ ArrayOf<IInterface*>* formatArgs,
-        /* [out] */ String* str);
-
-    CARAPI SetTheme(
-        /* [in] */ Int32 resid);
-
-    CARAPI GetThemeResId(
-        /* [out] */ Int32* resId);
-
-    CARAPI GetTheme(
-        /* [out] */ IResourcesTheme** theme);
-
-    CARAPI ObtainStyledAttributes(
-        /* [in] */ ArrayOf<Int32>* attrs,
-        /* [out] */ ITypedArray** styles);
-
-    CARAPI ObtainStyledAttributes(
-        /* [in] */ Int32 resid,
-        /* [in] */ ArrayOf<Int32>* attrs,
-        /* [out] */ ITypedArray** styles);
-
-    CARAPI ObtainStyledAttributes(
-        /* [in] */ IAttributeSet* set,
-        /* [in] */ ArrayOf<Int32>* attrs,
-        /* [out] */ ITypedArray** styles);
-
-    CARAPI ObtainStyledAttributes(
-        /* [in] */ IAttributeSet* set,
-        /* [in] */ ArrayOf<Int32>* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes,
-        /* [out] */ ITypedArray** styles);
-
-    CARAPI GetClassLoader(
-        /* [out] */ IClassLoader** loader);
-
-    CARAPI GetPackageName(
-        /* [out] */ String* packageName);
-
-    CARAPI GetApplicationInfo(
-        /* [out] */ IApplicationInfo** info);
-
-    CARAPI GetPackageResourcePath(
-        /* [out] */ String* path);
-
-    CARAPI GetPackageCodePath(
-        /* [out] */ String* codePath);
-
-    CARAPI GetSharedPrefsFile(
-        /* [in] */ const String& name,
-        /* [out] */ IFile** file);
-
-    CARAPI GetSharedPreferences(
-        /* [in] */ const String& name,
-        /* [in] */ Int32 mode,
-        /* [out] */ ISharedPreferences** prefs);
-
-    CARAPI OpenFileInput(
-        /* [in] */ const String& name,
-        /* [out] */ IFileInputStream** fileInputStream);
-
-    CARAPI OpenFileOutput(
-        /* [in] */ const String& name,
-        /* [in] */ Int32 mode,
-        /* [out] */IFileOutputStream** fileOutputStream);
-
-    CARAPI DeleteFile(
-        /* [in] */ const String& name,
-        /* [out] */ Boolean* succeeded);
-
-    CARAPI GetFileStreamPath(
-        /* [in] */ const String& name,
-        /* [out] */ IFile** file);
-
-    CARAPI GetFilesDir(
-        /* [out] */ IFile** filesDir);
-
-    CARAPI GetExternalFilesDir(
-        /* [in] */ const String& type,
-        /* [out] */ IFile** filesDir);
-
-    CARAPI GetObbDir(
-        /* [out] */ IFile** obbDir);
-
-    CARAPI GetCacheDir(
-        /* [out] */ IFile** cacheDir);
-
-    CARAPI GetExternalCacheDir(
-        /* [out] */ IFile** externalDir);
-
-    CARAPI GetFileList(
-        /* [out, callee] */ ArrayOf<String>** fileList);
-
-    CARAPI GetDir(
-        /* [in] */ const String& name,
-        /* [in] */ Int32 mode,
-        /* [out] */ IFile** dir);
-
-    CARAPI OpenOrCreateDatabase(
-        /* [in] */ const String& name,
-        /* [in] */ Int32 mode,
-        /* [in] */ ISQLiteDatabaseCursorFactory* factory,
-        /* [out] */ ISQLiteDatabase** sqliteDB);
-
-    CARAPI OpenOrCreateDatabase(
-        /* [in] */ const String& name,
-        /* [in] */ Int32 mode,
-        /* [in] */ ISQLiteDatabaseCursorFactory* factory,
-        /* [in] */ IDatabaseErrorHandler* errorHandler,
-        /* [out] */ ISQLiteDatabase** sqliteDB);
-
-    CARAPI DeleteDatabase(
-        /* [in] */ const String& name,
-        /* [out] */ Boolean* succeeded);
-
-    CARAPI GetDatabasePath(
-        /* [in] */ const String& name,
-        /* [out] */ IFile** path);
-
-    CARAPI GetDatabaseList(
-        /* [out, callee] */ ArrayOf<String>** databaseList);
-
-    CARAPI GetWallpaper(
-        /* [out] */ IDrawable** drawable);
-
-    CARAPI PeekWallpaper(
-        /* [out] */ IDrawable** drawable);
-
-    CARAPI GetWallpaperDesiredMinimumWidth(
-        /* [out] */ Int32* minWidth);
-
-    CARAPI GetWallpaperDesiredMinimumHeight(
-        /* [out] */ Int32* minHeight);
-
-    CARAPI SetWallpaper(
-        /* [in] */ IBitmap* bitmap);
-
-    CARAPI SetWallpaper(
-        /* [in] */ IInputStream* data);
-
-    CARAPI ClearWallpaper();
 
     CARAPI StartActivity(
         /* [in] */ IIntent* intent);
@@ -2993,260 +3281,9 @@ public:
         /* [in] */ Int32 extraFlags,
         /* [in] */ IBundle* options);
 
-    CARAPI SendBroadcast(
-        /* [in] */ IIntent* intent);
-
-    CARAPI SendBroadcast(
-        /* [in] */ IIntent* intent,
-        /* [in] */ const String& receiverPermission);
-
-    CARAPI SendOrderedBroadcast(
-        /* [in] */ IIntent* intent,
-        /* [in] */ const String& receiverPermission);
-
-    CARAPI SendOrderedBroadcast(
-        /* [in] */ IIntent* intent,
-        /* [in] */ const String& receiverPermission,
-        /* [in] */ IBroadcastReceiver* resultReceiver,
-        /* [in] */ IHandler* scheduler,
-        /* [in] */ Int32 initialCode,
-        /* [in] */ const String& initialData,
-        /* [in] */ IBundle* initialExtras);
-
-    CARAPI SendBroadcastAsUser(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user);
-
-    CARAPI SendBroadcastAsUser(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user,
-        /* [in] */ const String& receiverPermission);
-
-    CARAPI SendOrderedBroadcastAsUser(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user,
-        /* [in] */ const String& receiverPermission,
-        /* [in] */ IBroadcastReceiver* resultReceiver,
-        /* [in] */ IHandler* scheduler,
-        /* [in] */ Int32 initialCode,
-        /* [in] */ const String& initialData,
-        /* [in] */ IBundle* initialExtras);
-
-    CARAPI SendStickyBroadcast(
-        /* [in] */ IIntent* intent);
-
-    CARAPI SendStickyOrderedBroadcast(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IBroadcastReceiver* resultReceiver,
-        /* [in] */ IHandler* scheduler,
-        /* [in] */ Int32 initialCode,
-        /* [in] */ const String& initialData,
-        /* [in] */ IBundle* initialExtras);
-
-    CARAPI RemoveStickyBroadcast(
-        /* [in] */ IIntent* intent);
-
-    CARAPI SendStickyBroadcastAsUser(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user);
-
-    CARAPI SendStickyOrderedBroadcastAsUser(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user,
-        /* [in] */ IBroadcastReceiver* resultReceiver,
-        /* [in] */ IHandler* scheduler,
-        /* [in] */ Int32 initialCode,
-        /* [in] */ const String& initialData,
-        /* [in] */ IBundle* initialExtras);
-
-    CARAPI RemoveStickyBroadcastAsUser(
-        /* [in] */ IIntent* intent,
-        /* [in] */ IUserHandle* user);
-
-    CARAPI RegisterReceiver(
-        /* [in] */ IBroadcastReceiver* receiver,
-        /* [in] */ IIntentFilter* filter,
-        /* [out] */ IIntent** intent);
-
-    CARAPI RegisterReceiver(
-        /* [in] */ IBroadcastReceiver* receiver,
-        /* [in] */ IIntentFilter* filter,
-        /* [in] */ const String& broadcastPermission,
-        /* [in] */ IHandler* scheduler,
-        /* [out] */ IIntent** intent);
-
-    CARAPI RegisterReceiverAsUser(
-        /* [in] */ IBroadcastReceiver* receiver,
-        /* [in] */ IUserHandle* user,
-        /* [in] */ IIntentFilter* filter,
-        /* [in] */ const String& broadcastPermission,
-        /* [in] */ IHandler* scheduler,
-        /* [out] */ IIntent** stickyIntent);
-
-    CARAPI UnregisterReceiver(
-        /* [in] */ IBroadcastReceiver* receiver);
-
-    CARAPI StartService(
-        /* [in] */ IIntent* service,
-        /* [out] */ IComponentName** name);
-
-    CARAPI StopService(
-        /* [in] */ IIntent* service,
-        /* [out] */ Boolean* succeeded);
-
-    CARAPI StartServiceAsUser(
-        /* [in] */ IIntent* service,
-        /* [in] */ IUserHandle* user,
-        /* [out] */ IComponentName** name);
-
-    CARAPI StopServiceAsUser(
-        /* [in] */ IIntent* service,
-        /* [in] */ IUserHandle* user,
-        /* [out] */ Boolean* succeeded);
-
-    CARAPI BindService(
-        /* [in] */ IIntent* service,
-        /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
-        /* [in] */ Int32 flags,
-        /* [out] */ Boolean* succeeded);
-
-    CARAPI BindService(
-        /* [in] */ IIntent* service,
-        /* [in] */ Elastos::Droid::Content::IServiceConnection* conn,
-        /* [in] */ Int32 flags,
-        /* [in] */ Int32 userHandle,
-        /* [out] */ Boolean* succeeded);
-
-    CARAPI UnbindService(
-        /* [in] */ Elastos::Droid::Content::IServiceConnection* conn);
-
-    CARAPI StartInstrumentation(
-        /* [in] */ IComponentName* className,
-        /* [in] */ const String& profileFile,
-        /* [in] */ IBundle* arguments,
-        /* [out] */ Boolean* succeeded);
-
     CARAPI GetSystemService(
         /* [in] */ const String& name,
         /* [out] */ IInterface** object);
-
-    CARAPI CheckPermission(
-        /* [in] */ const String& permission,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [out] */ Int32 * result);
-
-    CARAPI CheckCallingPermission(
-        /* [in] */ const String& permission,
-        /* [out] */ Int32* value);
-
-    CARAPI CheckCallingOrSelfPermission(
-        /* [in] */ const String& permission,
-        /* [out] */ Int32* perm);
-
-    CARAPI EnforcePermission(
-        /* [in] */ const String& permission,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [in] */ const String& message);
-
-    CARAPI EnforceCallingPermission(
-        /* [in] */ const String& permission,
-        /* [in] */ const String& message);
-
-    CARAPI EnforceCallingOrSelfPermission(
-        /* [in] */ const String& permission,
-        /* [in] */ const String& message);
-
-    CARAPI GrantUriPermission(
-        /* [in] */ const String& toPackage,
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 modeFlags);
-
-    CARAPI RevokeUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 modeFlags);
-
-    CARAPI CheckUriPermission(
-        /* [in] */ IUri * uri,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [in] */ Int32 modeFlags,
-        /* [out] */ Int32 * result);
-
-    CARAPI CheckCallingUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 modeFlags,
-        /* [out] */ Int32* result);
-
-    CARAPI CheckCallingOrSelfUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 modeFlags,
-        /* [out] */ Int32* result);
-
-    CARAPI CheckUriPermission(
-        /* [in] */ IUri * uri,
-        /* [in] */ const String& readPermission,
-        /* [in] */ const String& writePermission,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [in] */ Int32 modeFlags,
-        /* [out] */ Int32 * result);
-
-    CARAPI EnforceUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [in] */ Int32 modeFlags,
-        /* [in] */ const String& message);
-
-    CARAPI EnforceCallingUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 modeFlags,
-        /* [in] */ const String& message);
-
-    CARAPI EnforceCallingOrSelfUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ Int32 modeFlags,
-        /* [in] */ const String& message);
-
-    CARAPI EnforceUriPermission(
-        /* [in] */ IUri* uri,
-        /* [in] */ const String& readPermission,
-        /* [in] */ const String& writePermission,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [in] */ Int32 modeFlags,
-        /* [in] */ const String& message);
-
-    CARAPI CreatePackageContext(
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 flags,
-        /* [out] */ IContext** ctx);
-
-    CARAPI CreatePackageContextAsUser(
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 flags,
-        /* [in] */ IUserHandle* user,
-        /* [out] */ IContext** ctx);
-
-    CARAPI CreateConfigurationContext(
-        /* [in] */ IConfiguration* overrideConfiguration,
-        /* [out] */ IContext** ctx);
-
-    CARAPI CreateDisplayContext(
-        /* [in] */ IDisplay* display,
-        /* [out] */ IContext** ctx);
-
-    CARAPI GetCompatibilityInfo(
-        /* [in] */ Int32 displayId,
-        /* [out] */ ICompatibilityInfoHolder** infoHolder);
-
-    CARAPI IsRestricted(
-        /* [out] */ Boolean* isRestricted);
-
-    CARAPI ApplyOverrideConfiguration(
-        /* [in] */ IConfiguration* overrideConfiguration);
 
 public:
     // @Override
@@ -3286,6 +3323,31 @@ public:
         /* [in] */ IBundle* savedInstanceState);
 
     /**
+     * Same as {@link #onCreate(android.os.Bundle)} but called for those activities created with
+     * the attribute {@link android.R.attr#persistableMode} set to
+     * <code>persistAcrossReboots</code>.
+     *
+     * @param savedInstanceState if the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.
+     *     <b><i>Note: Otherwise it is null.</i></b>
+     * @param persistentState if the activity is being re-initialized after
+     *     previously being shut down or powered off then this Bundle contains the data it most
+     *     recently supplied to outPersistentState in {@link #onSaveInstanceState}.
+     *     <b><i>Note: Otherwise it is null.</i></b>
+     *
+     * @see #onCreate(android.os.Bundle)
+     * @see #onStart
+     * @see #onSaveInstanceState
+     * @see #onRestoreInstanceState
+     * @see #onPostCreate
+     */
+    virtual CARAPI OnCreate(
+        /* [in] */ IBundle* savedInstanceState,
+        /* [in] */ IPersistableBundle* persistentState);
+
+
+    /**
      * This method is called after {@link #onStart} when the activity is
      * being re-initialized from a previously saved state, given here in
      * <var>savedInstanceState</var>.  Most implementations will simply use {@link #onCreate}
@@ -3307,6 +3369,31 @@ public:
      */
     virtual CARAPI OnRestoreInstanceState(
         /* [in] */ IBundle* savedInstanceState);
+
+    /**
+     * This is the same as {@link #onRestoreInstanceState(Bundle)} but is called for activities
+     * created with the attribute {@link android.R.attr#persistableMode} set to
+     * <code>persistAcrossReboots</code>. The {@link android.os.PersistableBundle} passed
+     * came from the restored PersistableBundle first
+     * saved in {@link #onSaveInstanceState(Bundle, PersistableBundle)}.
+     *
+     * <p>This method is called between {@link #onStart} and
+     * {@link #onPostCreate}.
+     *
+     * <p>If this method is called {@link #onRestoreInstanceState(Bundle)} will not be called.
+     *
+     * @param savedInstanceState the data most recently supplied in {@link #onSaveInstanceState}.
+     * @param persistentState the data most recently supplied in {@link #onSaveInstanceState}.
+     *
+     * @see #onRestoreInstanceState(Bundle)
+     * @see #onCreate
+     * @see #onPostCreate
+     * @see #onResume
+     * @see #onSaveInstanceState
+     */
+    virtual CARAPI OnRestoreInstanceState(
+        /* [in] */ IBundle* savedInstanceState,
+        /* [in] */ IPersistableBundle* persistentState);
 
     virtual CARAPI_(AutoPtr<IDialog>) CreateDialog(
         /* [in] */ Int32 dialogId,
@@ -3330,6 +3417,21 @@ public:
      */
     virtual CARAPI OnPostCreate(
         /* [in] */ IBundle* savedInstanceState);
+
+    /**
+     * This is the same as {@link #onPostCreate(Bundle)} but is called for activities
+     * created with the attribute {@link android.R.attr#persistableMode} set to
+     * <code>persistAcrossReboots</code>.
+     *
+     * @param savedInstanceState The data most recently supplied in {@link #onSaveInstanceState}
+     * @param persistentState The data caming from the PersistableBundle first
+     * saved in {@link #onSaveInstanceState(Bundle, PersistableBundle)}.
+     *
+     * @see #onCreate
+     */
+    virtual CARAPI OnPostCreate(
+        /* [in] */ IBundle* savedInstanceState,
+        /* [in] */ IPersistableBundle* persistentState);
 
     /**
      * Called after {@link #onCreate} &mdash; or after {@link #onRestart} when
@@ -3409,6 +3511,23 @@ public:
     virtual CARAPI OnStop();
 
     virtual CARAPI OnDestroy();
+
+    /**
+     * @hide
+     * Check whether this activity is running as part of a voice interaction with the user.
+     * If true, it should perform its interaction with the user through the
+     * {@link VoiceInteractor} returned by {@link #getVoiceInteractor}.
+     */
+    CARAPI IsVoiceInteraction(
+        /* [out] */ Boolean* bval);
+
+    /**
+     * @hide
+     * Retrieve the active {@link VoiceInteractor} that the user is going through to
+     * interact with this activity.
+     */
+    CARAPI GetVoiceInteractor(
+        /* [out] */ IVoiceInteractor** vi);
 
     /**
      * This is called for activities that set launchMode to "singleTop" in
@@ -3579,7 +3698,7 @@ private:
     static CARAPI_(String) SavedDialogArgsKeyFor(
         /* [in] */ Int32 key);
 
-    CARAPI InitActionBar();
+    CARAPI InitWindowDecorActionBar();
 
     CARAPI StartIntentSenderForResultInner(
         /* [in] */ IIntentSender* intent,
@@ -3599,9 +3718,28 @@ private:
         /* [in] */ ArrayOf<String>* args);
 
     CARAPI DumpViewHierarchy(
-            /* [in] */ const String& prefix,
-            /* [in] */ IPrintWriter* writer,
-            /* [in] */ IView* view);
+        /* [in] */ const String& prefix,
+        /* [in] */ IPrintWriter* writer,
+        /* [in] */ IView* view);
+
+    /**
+     * Finishes the current activity and specifies whether to remove the task associated with this
+     * activity.
+     */
+    CARAPI Finish(
+        /* [in] */ Boolean finishTask);
+
+
+    /**
+     * Indication of whether this is the highest level activity in this task. Can be used to
+     * determine whether an activity launched by this activity was placed in the same task or
+     * another task.
+     *
+     * @return true if this is the topmost, non-finishing activity in its task.
+     */
+    CARAPI IsTopOfTask(
+        /* [out] */ Boolean* top);
+
 public:
     static const String FRAGMENTS_TAG;
 
@@ -3633,18 +3771,29 @@ public:
     Boolean mWindowAdded;
     Boolean mVisibleFromServer;
     Boolean mVisibleFromClient;
-    /*package*/ AutoPtr<IActionBarImpl> mActionBar;
+    /*package*/ AutoPtr<IActionBar> mActionBar;
 
     AutoPtr<IFragmentManagerImpl> mFragments;
     AutoPtr<IFragmentContainer> mContainer;
 
-    AutoPtr<IObjectStringMap> mAllLoaderManagers;
+    AutoPtr<IArrayMap> mAllLoaderManagers;
     AutoPtr<ILoaderManagerImpl> mLoaderManager;
 
     // protected by synchronized (this)
     Int32 mResultCode;
     AutoPtr<IIntent> mResultData;
     AutoPtr<IHandler> mHandler;
+
+    AutoPtr<ITranslucentConversionListener> mTranslucentCallback;
+    Boolean mChangeCanvasToTranslucent;
+
+    // Most recent call to requestVisibleBehind().
+    Boolean mVisibleBehind;
+
+    AutoPtr<ActivityTransitionState> mActivityTransitionState;// = new ActivityTransitionState();
+    AutoPtr<ISharedElementCallback> mEnterTransitionListener;// = SharedElementCallback.NULL_CALLBACK;
+    AutoPtr<ISharedElementCallback> mExitTransitionListener;// = SharedElementCallback.NULL_CALLBACK;
+
 
 protected:
     AutoPtr<IContext> mBase;
@@ -3675,7 +3824,6 @@ private:
 
     AutoPtr<IComponentName> mComponent;
     Boolean mDestroyed;
-    Boolean mDoReportFullyDrawn;// = TRUE;
 
     AutoPtr<ISearchManager> mSearchManager;
     AutoPtr<IMenuInflater> mMenuInflater;
@@ -3684,6 +3832,8 @@ private:
     AutoPtr<IWindowManager> mWindowManager;
 
     Boolean mEnableDefaultActionBarUp;
+
+    AutoPtr<IVoiceInteractor> mVoiceInteractor;
 
     AutoPtr<ICharSequence> mTitle;
     Int32 mTitleColor;
@@ -3704,7 +3854,6 @@ private:
 
     AutoPtr<IThread> mUiThread;
 
-    Object mThisLock;
     Object mManagedCursorsLock;
 };
 

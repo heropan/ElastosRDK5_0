@@ -86,16 +86,7 @@ public:
         /* [in] */ CContextImpl* context,
         /* [in] */ IIPackageManager* pm);
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    AutoPtr<IUserManager> GetUserManager();
 
     CARAPI GetPackageInfo(
         /* [in] */ const String& packageName,
@@ -114,6 +105,10 @@ public:
         /* [in] */ const String& packageName,
         /* [out] */ IIntent** intent);
 
+    CARAPI GetLeanbackLaunchIntentForPackage(
+        /* [in] */ const String& packageName,
+        /* [out] */ IIntent** intent);
+
     CARAPI GetPackageGids(
         /* [in] */ const String& packageName,
         /* [out, callee] */ ArrayOf<Int32>** pgids);
@@ -122,6 +117,11 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 flags,
         /* [out] */ IPermissionInfo** info);
+
+    CARAPI GetPackageUid(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userHandle,
+        /* [out] */ Int32* uid);
 
     CARAPI QueryPermissionsByGroup(
         /* [in] */ const String& group,
@@ -220,16 +220,21 @@ public:
 
     CARAPI GetInstalledPackages(
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** infos);
+        /* [out] */ IList** infos);
 
     CARAPI GetInstalledPackages(
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** infos);
+        /* [out] */ IList** infos);
+
+    CARAPI GetPackagesHoldingPermissions(
+        /* [in] */ ArrayOf<String>* permissions,
+        /* [in] */ Int32 flags,
+        /* [out] */ IList** permissions);
 
     CARAPI GetInstalledApplications(
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** apps);
+        /* [out] */ IList** apps);
 
     CARAPI ResolveActivity(
         /* [in] */ IIntent* intent,
@@ -287,9 +292,26 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ IObjectContainer** resolves);
 
+    CARAPI QueryIntentContentProvidersAsUser(
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 userId,
+        /* [out] */ IList** resolveInfos); //List<ResolveInfo>
+
+    CARAPI QueryIntentContentProviders(
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 flags,
+        /* [out] */ IList** resolveInfos); //List<ResolveInfo>
+
     CARAPI ResolveContentProvider(
         /* [in] */ const String& name,
         /* [in] */ Int32 flags,
+        /* [out] */ IProviderInfo** provider);
+
+    CARAPI ResolveContentProvider(
+        /* [in] */ const String& name,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 userId,
         /* [out] */ IProviderInfo** provider);
 
     CARAPI QueryContentProviders(
@@ -330,6 +352,22 @@ public:
         /* [out] */ IDrawable** icon);
 
     CARAPI GetApplicationIcon(
+        /* [in] */ const String& packageName,
+        /* [out] */ IDrawable** icon);
+
+    CARAPI GetActivityBanner(
+        /* [in] */ IComponentName* activityName,
+        /* [out] */ IDrawable** icon);
+
+    CARAPI GetActivityBanner(
+        /* [in] */ IIntent* intent,
+        /* [out] */ IDrawable** icon);
+
+    CARAPI GetApplicationBanner(
+        /* [in] */ IApplicationInfo* info,
+        /* [out] */ IDrawable** icon);
+
+    CARAPI GetApplicationBanner(
         /* [in] */ const String& packageName,
         /* [out] */ IDrawable** icon);
 
@@ -539,6 +577,9 @@ private:
     CARAPI_(AutoPtr<IDrawable>) GetCachedIcon(
         /* [in] */ ResourceName* name);
 
+    static CARAPI_(void) MaybeAdjustApplicationInfo(
+        /* [in] */ IApplicationInfo* info);
+
     CARAPI_(void) PutCachedIcon(
         /* [in] */ ResourceName* name,
         /* [in] */ IDrawable* dr);
@@ -554,6 +595,16 @@ private:
     static const String TAG;
     static const Boolean DEBUG;
     static const Boolean DEBUG_ICONS;
+
+    // Default flags to use with PackageManager when no flags are given.
+    static Int32 sDefaultFlags;// = PackageManager.GET_SHARED_LIBRARY_FILES;
+
+    Object mLock;// = new Object();
+
+    // @GuardedBy("mLock")
+    AutoPtr<IUserManager> mUserManager;
+    // @GuardedBy("mLock")
+    AutoPtr<IPackageInstaller> mInstaller;
 
     CContextImpl* mContext;
     AutoPtr<IIPackageManager> mPM;

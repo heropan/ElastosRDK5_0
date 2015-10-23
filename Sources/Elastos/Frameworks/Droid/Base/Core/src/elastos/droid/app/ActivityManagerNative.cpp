@@ -35,9 +35,10 @@ void ActivityManagerNative::BroadcastStickyIntent(
     /* [in] */ Int32 userId)
 {
     Int32 res;
+    String nullStr;
     GetDefault()->BroadcastIntent(
-        NULL, intent, String(NULL), NULL, IActivity::RESULT_OK, String(NULL), NULL,
-        String(NULL) /*permission*/, FALSE, TRUE, userId, &res);
+        NULL, intent, nullStr, NULL, IActivity::RESULT_OK, nullStr, NULL,
+        nullStr /*permission*/, IAppOpsManager::OP_NONE, FALSE, TRUE, userId, &res);
 }
 
 void ActivityManagerNative::NoteWakeupAlarm(

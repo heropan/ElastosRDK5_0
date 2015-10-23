@@ -115,6 +115,12 @@ public:
     CARAPI UnregisterActivityLifecycleCallbacks(
         /* [in] */ IActivityLifecycleCallbacks* cb);
 
+    CARAPI RegisterOnProvideAssistDataListener(
+        /* [in] */ IApplicationOnProvideAssistDataListener* callback);
+
+    CARAPI UnregisterOnProvideAssistDataListener(
+        /* [in] */ IApplicationOnProvideAssistDataListener* callback);
+
     /**
      * @hide
      */
@@ -152,6 +158,11 @@ public:
     CARAPI DispatchActivityDestroyed(
         /* [in] */ IActivity* activity);
 
+    /* package */
+    CARAPI DispatchOnProvideAssistData(
+        /* [in] */ IActivity* activity,
+        /* [ini] */ IBundle* data);
+
 private:
     CARAPI_(AutoPtr< ArrayOf<IComponentCallbacks*> >) CollectComponentCallbacks();
 
@@ -165,6 +176,7 @@ private:
     Object mComponentCallbacksLock;
     List< AutoPtr<IActivityLifecycleCallbacks> > mActivityLifecycleCallbacks;
     Object mActivityLifecycleCallbacksLock;
+    AutoPtr< List< AutoPtr<IActivityLifecycleCallbacks> > >  mAssistCallbacks;
 };
 
 } // namespace App

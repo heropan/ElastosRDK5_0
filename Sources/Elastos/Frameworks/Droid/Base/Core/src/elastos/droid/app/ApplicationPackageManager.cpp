@@ -46,45 +46,14 @@ ApplicationPackageManager::ApplicationPackageManager(
     , mCachedSafeMode(-1)
 {}
 
-PInterface ApplicationPackageManager::Probe(
-    /* [in]  */ REIID riid)
+AutoPtr<IUserManager> ApplicationPackageManager::GetUserManager()
 {
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
+    synchronized (mLock) {
+        if (mUserManager == NULL) {
+            mUserManager = UserManager.get(mContext);
+        }
     }
-    else if (riid == EIID_IPackageManager) {
-        return (IPackageManager*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 ApplicationPackageManager::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ApplicationPackageManager::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ApplicationPackageManager::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(IPackageManager*)this) {
-        *pIID = EIID_IPackageManager;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
+    return mUserManager;
 }
 
 ECode ApplicationPackageManager::GetPackageInfo(
@@ -184,6 +153,29 @@ ECode ApplicationPackageManager::GetLaunchIntentForPackage(
     return NOERROR;
 }
 
+ECode ApplicationPackageManager::GetLeanbackLaunchIntentForPackage(
+    /* [in] */ const String& packageName,
+    /* [out] */ IIntent** intent);
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = NULL;
+
+    // Try to find a main leanback_launcher activity.
+    Intent intentToResolve = new Intent(Intent.ACTION_MAIN);
+    intentToResolve.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
+    intentToResolve.setPackage(packageName);
+    List<ResolveInfo> ris = queryIntentActivities(intentToResolve, 0);
+
+    if (ris == null || ris.size() <= 0) {
+        return null;
+    }
+    Intent intent = new Intent(intentToResolve);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.setClassName(ris.get(0).activityInfo.packageName,
+            ris.get(0).activityInfo.name);
+    return intent;
+}
+
 ECode ApplicationPackageManager::GetPackageGids(
     /* [in] */ const String& packageName,
     /* [out, callee] */ ArrayOf<Int32>** pgids)
@@ -229,6 +221,24 @@ ECode ApplicationPackageManager::GetPermissionInfo(
 
 //     throw new NameNotFoundException(name);
     return E_NAME_NOT_FOUND_EXCEPTION;
+}
+
+ECode ApplicationPackageManager::GetPackageUid(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userHandle,
+    /* [out] */ Int32* uid)
+{
+    try {
+        int uid = mPM.getPackageUid(packageName, userHandle);
+        if (uid >= 0) {
+            return uid;
+        }
+    } catch (RemoteException e) {
+        throw new RuntimeException("Package manager has died", e);
+    }
+
+    throw new NameNotFoundException(packageName);
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::QueryPermissionsByGroup(
@@ -306,11 +316,36 @@ ECode ApplicationPackageManager::GetApplicationInfo(
         FAIL_RETURN(mPM->GetApplicationInfo(packageName, flags, 0, (IApplicationInfo**)&ai));
     #endif
     if (ai != NULL) {
+        // This is a temporary hack. Callers must use
+        // createPackageContext(packageName).getApplicationInfo() to
+        // get the right paths.
+        MaybeAdjustApplicationInfo(ai);
+
         *info = ai;
         REFCOUNT_ADD(*info)
         return NOERROR;
     }
     return E_NAME_NOT_FOUND_EXCEPTION;
+}
+
+void ApplicationPackageManager::MaybeAdjustApplicationInfo(
+    /* [in] */ IApplicationInfo* info)
+{
+    // If we're dealing with a multi-arch application that has both
+    // 32 and 64 bit shared libraries, we might need to choose the secondary
+    // depending on what the current runtime's instruction set is.
+    if (info.primaryCpuAbi != null && info.secondaryCpuAbi != null) {
+        final String runtimeIsa = VMRuntime.getRuntime().vmInstructionSet();
+        final String secondaryIsa = VMRuntime.getInstructionSet(info.secondaryCpuAbi);
+
+        // If the runtimeIsa is the same as the primary isa, then we do nothing.
+        // Everything will be set up correctly because info.nativeLibraryDir will
+        // correspond to the right ISA.
+        if (runtimeIsa.equals(secondaryIsa)) {
+            info.nativeLibraryDir = info.secondaryNativeLibraryDir;
+        }
+    }
+    return NOERROR;
 }
 
 ECode ApplicationPackageManager::GetActivityInfo(
@@ -587,7 +622,7 @@ ECode ApplicationPackageManager::GetUidForSharedUser(
 
 ECode ApplicationPackageManager::GetInstalledPackages(
     /* [in] */ Int32 flags,
-    /* [out] */ IObjectContainer** infos)
+    /* [out] */ IList** infos)
 {
     VALIDATE_NOT_NULL(infos);
     Int32 id;
@@ -598,56 +633,48 @@ ECode ApplicationPackageManager::GetInstalledPackages(
 ECode ApplicationPackageManager::GetInstalledPackages(
     /* [in] */ Int32 flags,
     /* [in] */ Int32 userId,
-    /* [out] */ IObjectContainer** infos)
+    /* [out] */ IList** infos)
 {
     VALIDATE_NOT_NULL(infos);
 //     try {
-    AutoPtr<IObjectContainer> packageInfos;
-    CObjectContainer::New((IObjectContainer**)&packageInfos);
-    AutoPtr<IPackageInfo> lastItem = NULL;
-    AutoPtr<IParceledListSlice> slice;
-
-    Boolean lastSlice;
-    String lastKey;
-    do {
-        if (lastItem != NULL) lastItem->GetPackageName(&lastKey);
-        slice = NULL;
-        FAIL_RETURN(mPM->GetInstalledPackages(flags, lastKey, userId, (IParceledListSlice**)&slice));
-        lastItem = NULL;
-        FAIL_RETURN(slice->PopulateList(packageInfos, ECLSID_CPackageInfo, (IInterface**)&lastItem));
-    } while (slice->IsLastSlice(&lastSlice), !lastSlice);
-
-    *infos = packageInfos;
-    REFCOUNT_ADD(*infos);
-    return NOERROR;
+    try {
+        ParceledListSlice<PackageInfo> slice = mPM.getInstalledPackages(flags, userId);
+        return slice.getList();
+    } catch (RemoteException e) {
+        throw new RuntimeException("Package manager has died", e);
+    }
 //     } catch (RemoteException e) {
 //         throw new RuntimeException("Package manager has died", e);
 //     }
 }
 
+ECode ApplicationPackageManager::GetPackagesHoldingPermissions(
+    /* [in] */ ArrayOf<String>* permissions,
+    /* [in] */ Int32 flags,
+    /* [out] */ IList** permissions)
+{
+    final int userId = mContext.getUserId();
+    try {
+        ParceledListSlice<PackageInfo> slice = mPM.getPackagesHoldingPermissions(
+                permissions, flags, userId);
+        return slice.getList();
+    } catch (RemoteException e) {
+        throw new RuntimeException("Package manager has died", e);
+    }
+    return NOERROR;
+}
+
 ECode ApplicationPackageManager::GetInstalledApplications(
     /* [in] */ Int32 flags,
-    /* [out] */ IObjectContainer** apps)
+    /* [out] */ IList** apps)
 {
     VALIDATE_NOT_NULL(apps);
     Int32 userId = 0;
     mContext->GetUserId(&userId);
-    AutoPtr<IObjectContainer> applicationInfos;
-    CObjectContainer::New((IObjectContainer**)&applicationInfos);
-    AutoPtr<IApplicationInfo> lastItem = NULL;
-    AutoPtr<IParceledListSlice> slice;
 
-    Boolean lastSlice;
-    String lastKey;
-    do {
-        if (lastItem != NULL) lastItem->GetPackageName(&lastKey);
-        slice = NULL;
-        FAIL_RETURN(mPM->GetInstalledApplications(flags, lastKey, userId, (IParceledListSlice**)&slice));
-        lastItem = NULL;
-        FAIL_RETURN(slice->PopulateList(applicationInfos, ECLSID_CApplicationInfo, (IInterface**)&lastItem));
-    } while (!(slice->IsLastSlice(&lastSlice), lastSlice));
-    *apps = applicationInfos;
-    REFCOUNT_ADD(*apps);
+    AutoPtr<IParceledListSlice> slice;
+    FAIL_RETURN(mPM->GetInstalledApplications(flags, userId, (IParceledListSlice**)&slice));
+    return slice.getList();
     return NOERROR;
 }
 
@@ -853,18 +880,47 @@ ECode ApplicationPackageManager::QueryIntentServices(
     return QueryIntentServicesAsUser(intent, flags, id, resolves);
 }
 
+ECode ApplicationPackageManager::QueryIntentContentProvidersAsUser(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 userId,
+    /* [out] */ IList** resolveInfos); //List<ResolveInfo>
+{
+    try {
+        return mPM.queryIntentContentProviders(intent,
+                intent.resolveTypeIfNeeded(mContext.getContentResolver()), flags, userId);
+    } catch (RemoteException e) {
+        throw new RuntimeException("Package manager has died", e);
+    }
+}
+
+ECode ApplicationPackageManager::QueryIntentContentProviders(
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 flags,
+    /* [out] */ IList** resolveInfos); //List<ResolveInfo>
+{
+    Int32 id;
+    mContext->GetUserId(&id);
+    return QueryIntentContentProvidersAsUser(intent, flags, id, resolveInfos);
+}
+
 ECode ApplicationPackageManager::ResolveContentProvider(
     /* [in] */ const String& name,
     /* [in] */ Int32 flags,
     /* [out] */ IProviderInfo** provider)
 {
-//     try {
     Int32 id;
     mContext->GetUserId(&id);
-    return mPM->ResolveContentProvider(name, flags, id, provider);
-//     } catch (RemoteException e) {
-//         throw new RuntimeException("Package manager has died", e);
-//     }
+    return ResolveContentProvider(name, flags, id, provider);
+}
+
+ECode ApplicationPackageManager::ResolveContentProvider(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 userId,
+    /* [out] */ IProviderInfo** provider)
+{
+    return mPM->ResolveContentProvider(name, flags, userId, provider);
 }
 
 ECode ApplicationPackageManager::QueryContentProviders(
@@ -931,7 +987,7 @@ ECode ApplicationPackageManager::GetDrawable(
         return NOERROR;
     }
     if (appInfo == NULL) {
-        if (FAILED(GetApplicationInfo(packageName, 0, &appInfo))) {
+        if (FAILED(GetApplicationInfo(packageName, sDefaultFlags, &appInfo))) {
             *drawable = NULL;
             return NOERROR;
         }
@@ -957,7 +1013,7 @@ ECode ApplicationPackageManager::GetActivityIcon(
 {
     VALIDATE_NOT_NULL(icon);
     AutoPtr<IActivityInfo> aInfo;
-    GetActivityInfo(activityName, 0, (IActivityInfo**)&aInfo);
+    GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&aInfo);
     FAIL_RETURN(aInfo->LoadIcon(this, icon));
     return NOERROR;
 }
@@ -1013,9 +1069,50 @@ ECode ApplicationPackageManager::GetApplicationIcon(
 {
     VALIDATE_NOT_NULL(icon);
     AutoPtr<IApplicationInfo> appInfo;
-    GetApplicationInfo(packageName, 0, (IApplicationInfo**)&appInfo);
+    GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&appInfo);
     GetApplicationIcon(appInfo, icon);
     return NOERROR;
+}
+
+ECode ApplicationPackageManager::GetActivityBanner(
+    /* [in] */ IComponentName* activityName,
+    /* [out] */ IDrawable** icon)
+{
+    return GetActivityInfo(activityName, sDefaultFlags).loadBanner(this);
+}
+
+ECode ApplicationPackageManager::GetActivityBanner(
+    /* [in] */ IIntent* intent,
+    /* [out] */ IDrawable** icon)
+{
+    if (intent.getComponent() != null) {
+        return GetActivityBanner(intent.getComponent());
+    }
+
+    ResolveInfo info = resolveActivity(
+            intent, PackageManager.MATCH_DEFAULT_ONLY);
+    if (info != null) {
+        return info.activityInfo.loadBanner(this);
+    }
+
+    // throw new NameNotFoundException(intent.toUri(0));
+    return E_NAME_NOT_FOUND_EXCEPTION;
+}
+
+ECode ApplicationPackageManager::GetApplicationBanner(
+    /* [in] */ IApplicationInfo* info,
+    /* [out] */ IDrawable** icon)
+{
+    return info->LoadBanner(this, icon);
+}
+
+ECode ApplicationPackageManager::GetApplicationBanner(
+    /* [in] */ const String& packageName,
+    /* [out] */ IDrawable** icon)
+{
+    AutoPtr<IApplicationInfo> info;
+    GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&info);
+    return GetApplicationBanner(info, icon);
 }
 
 ECode ApplicationPackageManager::GetActivityLogo(
@@ -1024,7 +1121,7 @@ ECode ApplicationPackageManager::GetActivityLogo(
 {
     VALIDATE_NOT_NULL(logo);
     AutoPtr<IActivityInfo> aInfo;
-    GetActivityInfo(activityName, 0, (IActivityInfo**)&aInfo);
+    GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&aInfo);
     return aInfo->LoadLogo(this, logo);
 }
 

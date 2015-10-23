@@ -93,6 +93,48 @@ private:
      */
     AutoPtr<ICharSequence> mDescription;
 
+
+    /**
+     * The id of the ActivityStack this Task was on most recently.
+     * @hide
+     */
+    Int32 mStackId;
+
+    /**
+     * The id of the user the task was running as.
+     * @hide
+     */
+    Int32 mUserId;
+
+    /**
+     * The first time this task was active.
+     * @hide
+     */
+    Int64 firstActiveTime;
+
+    /**
+     * The last time this task was active.
+     * @hide
+     */
+    Int64 lastActiveTime;
+
+    /**
+     * The recent activity values for the highest activity in the stack to have set the values.
+     * {@link Activity#setTaskDescription(android.app.ActivityManager.TaskDescription)}.
+     */
+    AutoPtr<IActivityTaskDescription> taskDescription;
+
+    /**
+     * Task affiliation for grouping with other tasks.
+     */
+    Int32 mAffiliatedTaskId;
+
+    /**
+     * Task affiliation color of the source task with the affiliated task id.
+     *
+     * @hide
+     */
+    Int32 mAffiliatedTaskColor;
 };
 
 } // namespace App

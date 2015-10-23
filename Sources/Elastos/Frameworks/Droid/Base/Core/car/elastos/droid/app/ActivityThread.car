@@ -82,9 +82,6 @@ module
         GetInstrumentation(
             [out] IInstrumentation** instrumentation);
 
-        GetConfiguration(
-            [out] IConfiguration** configuration);
-
         IsProfiling(
             [out] Boolean* profiled);
 

@@ -1383,9 +1383,9 @@ ECode OpaqueUri::BuildUpon(
     FAIL_RETURN(CUriBuilder::New((IUriBuilder**)&builder));
 #endif
 
-    FAIL_RETURN((*result)->Scheme(mScheme));
-    FAIL_RETURN((*result)->OpaquePart((Handle32)&mSsp));
-    FAIL_RETURN((*result)->Fragment((Handle32)&mFragment));
+    FAIL_RETURN(builder->Scheme(mScheme));
+    FAIL_RETURN(builder->OpaquePart((Handle32)&mSsp));
+    FAIL_RETURN(builder->Fragment((Handle32)&mFragment));
     *result = (IUriBuilder*)builder.Get();
     REFCOUNT_ADD(*result);
     return NOERROR;

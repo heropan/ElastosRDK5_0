@@ -1715,7 +1715,6 @@ module
          */
         const Int32 FLAG_HAS_ACTIVITIES = 1<<2;
 
-
         /**
          * Constant for {@link #importance}: this process is running the
          * foreground UI.

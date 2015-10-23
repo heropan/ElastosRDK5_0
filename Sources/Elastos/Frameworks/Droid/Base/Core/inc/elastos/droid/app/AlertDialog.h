@@ -102,6 +102,13 @@ public:
         /* [in] */ Int32 viewSpacingBottom);
 
     /**
+     * Internal api to allow hinting for the best button panel layout.
+     * @hide
+     */
+    CARAPI SetButtonPanelLayoutHint(
+        /* [in] */ Int32 layoutHint);
+
+    /**
      * Set a message to be sent when a button is pressed.
      *
      * @param whichButton Which button to set the message for, can be one of

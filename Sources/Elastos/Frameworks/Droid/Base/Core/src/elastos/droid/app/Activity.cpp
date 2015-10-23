@@ -3,19 +3,6 @@
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 //#include "elastos/droid/app/CSearchManager.h"
-#include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/os/CUserHandle.h"
-#include "elastos/droid/os/Looper.h"
-#include "elastos/droid/view/CWindowManagerGlobal.h"
-#include "elastos/droid/view/CMenuInflater.h"
-#include "elastos/droid/text/CSpannableStringBuilder.h"
-#include "elastos/droid/text/method/CTextKeyListenerHelper.h"
-#include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/content/CIntentHelper.h"
-#include "elastos/droid/content/CComponentName.h"
-#include "elastos/droid/content/res/CResourcesHelper.h"
-#include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/app/CInstrumentationHelper.h"
 #include "elastos/droid/app/CFragmentManagerImpl.h"
 #include "elastos/droid/app/CFragmentManagerImplHelper.h"
@@ -24,11 +11,25 @@
 #include "elastos/droid/app/CPendingIntent.h"
 #include "elastos/droid/app/CTaskStackBuilderHelper.h"
 #include "elastos/droid/app/CActivityNonConfigurationInstances.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/view/CWindowManagerGlobal.h"
+#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/text/CSpannableStringBuilder.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/text/method/CTextKeyListenerHelper.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentHelper.h"
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/net/CUriHelper.h"
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/os/Build.h"
 #include "elastos/droid/R.h"
+
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>
@@ -36,16 +37,6 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::IRunnable;
-using Elastos::Core::StringBuffer;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CString;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::Thread;
-using Elastos::Utility::CObjectStringMap;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
@@ -59,14 +50,6 @@ using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::CWindowManagerGlobal;
-using Elastos::Droid::View::CMenuInflater;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Text::CSpannableStringBuilder;
-using Elastos::Droid::Text::Method::ITextKeyListenerHelper;
-using Elastos::Droid::Text::Method::CTextKeyListenerHelper;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::CIntentHelper;
@@ -80,11 +63,19 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::CSpannableStringBuilder;
 using Elastos::Droid::Text::ISelectionHelper;
 //using Elastos::Droid::Text::CSelectionHelper;
-using Elastos::Droid::Text::Method::ITextKeyListener;
+using Elastos::Droid::Text::Method::ITextKeyListenerHelper;
+using Elastos::Droid::Text::Method::CTextKeyListenerHelper;
 using Elastos::Droid::Text::Method::IKeyListener;
 using Elastos::Droid::Text::Method::EIID_IKeyListener;
+using Elastos::Droid::Text::Method::ITextKeyListener;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::CWindowManagerGlobal;
+using Elastos::Droid::View::CMenuInflater;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::IViewManager;
@@ -110,8 +101,16 @@ using Elastos::Droid::App::ITaskStackBuilderHelper;
 using Elastos::Droid::Internal::App::CActionBarImpl;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
 using Elastos::Droid::Internal::Policy::CPolicyManager;
-using Elastos::Droid::Text::Method::IKeyListener;
-using Elastos::Droid::Text::Method::EIID_IKeyListener;
+
+using Elastos::Core::StringUtils;
+using Elastos::Core::IRunnable;
+using Elastos::Core::StringBuffer;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Thread;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

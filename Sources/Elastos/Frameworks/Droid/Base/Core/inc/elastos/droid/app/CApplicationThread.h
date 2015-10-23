@@ -30,11 +30,14 @@ CarClass(CApplicationThread)
     friend class CActivityThread;
 
 public:
+    CApplicationThread();
+
     CARAPI SchedulePauseActivity(
         /* [in] */ IBinder* token,
         /* [in] */ Boolean finished,
         /* [in] */ Boolean userLeaving,
-        /* [in] */ Int32 configChanges);
+        /* [in] */ Int32 configChanges,
+        /* [in] */ Boolean dontReport);
 
     CARAPI ScheduleStopActivity(
         /* [in] */ IBinder* token,
@@ -66,14 +69,15 @@ public:
         /* [in] */ IActivityInfo* info,
         /* [in] */ IConfiguration* curConfig,
         /* [in] */ ICompatibilityInfo* compatInfo,
+        /* [in] */ IIVoiceInteractor* voiceInteractor,
+        /* [in] */ Int32 procState,
         /* [in] */ IBundle* state,
-        /* [in] */ IObjectContainer* pendingResults,
-        /* [in] */ IObjectContainer* pendingNewIntents,
+        /* [in] */ IPersistableBundle* persistentState,
+        /* [in] */ IList* pendingResults,   //List<ResultInfo>
+        /* [in] */ IList* pendingNewIntents, //List<Intent>
         /* [in] */ Boolean notResumed,
         /* [in] */ Boolean isForward,
-        /* [in] */ const String& profileName,
-        /* [in] */ IParcelFileDescriptor* profileFd,
-        /* [in] */ Boolean autoStopProfiler);
+        /* [in] */ IProfilerInfo* pi);
 
     CARAPI ScheduleRelaunchActivity(
         /* [in] */ IBinder* token,
@@ -100,7 +104,8 @@ public:
         /* [in] */ const String& data,
         /* [in] */ IBundle* extras,
         /* [in] */ Boolean sync,
-        /* [in] */ Int32 sendingUser);
+        /* [in] */ Int32 sendingUser,
+        /* [in] */ Int32 processState);
 
     CARAPI ScheduleCreateBackupAgent(
         /* [in] */ IApplicationInfo* app,
@@ -138,20 +143,19 @@ public:
     CARAPI BindApplication(
         /* [in] */ const String& processName,
         /* [in] */ IApplicationInfo* appInfo,
-        /* [in] */ IObjectContainer* providers,
+        /* [in] */ IList* providers,
         /* [in] */ IComponentName* instrumentationName,
-        /* [in] */ const String& profileFile,
-        /* [in] */ IParcelFileDescriptor* profileFd,
-        /* [in] */ Boolean autoStopProfiler,
+        /* [in] */ IProfilerInfo* pi,
         /* [in] */ IBundle* instrumentationArgs,
         /* [in] */ IInstrumentationWatcher* instrumentationWatcher,
+        /* [in] */ IIUiAutomationConnection* instrumentationUiConnection,
         /* [in] */ Int32 debugMode,
         /* [in] */ Boolean enableOpenGlTrace,
         /* [in] */ Boolean isRestrictedBackupMode,
         /* [in] */ Boolean persistent,
         /* [in] */ IConfiguration* config,
         /* [in] */ ICompatibilityInfo* compatInfo,
-        /* [in] */ IObjectStringMap* services,
+        /* [in] */ IMap* services,
         /* [in] */ IBundle* coreSettings);
 
     CARAPI ScheduleExit();
@@ -171,7 +175,8 @@ public:
     CARAPI SetHttpProxy(
         /* [in] */ const String& host,
         /* [in] */ const String& port,
-        /* [in] */ const String& exclList);
+        /* [in] */ const String& exclList,
+        /* [in] */ IUri* pacFileUrl);
 
     CARAPI ProcessInBackground();
 
@@ -191,7 +196,8 @@ public:
         /* [in] */ IBundle* extras,
         /* [in] */ Boolean ordered,
         /* [in] */ Boolean sticky,
-        /* [in] */ Int32 sendingUser);
+        /* [in] */ Int32 sendingUser,
+        /* [in] */ Int32 processState);
 
     CARAPI ScheduleLowMemory();
 
@@ -200,8 +206,7 @@ public:
 
     CARAPI ProfilerControl(
         /* [in] */ Boolean start,
-        /* [in] */ const String& path,
-        /* [in] */ IParcelFileDescriptor* fd,
+        /* [in] */ IProfilerInfo* profilerInfo,
         /* [in] */ Int32 profileType);
 
     CARAPI DumpHeap(
@@ -211,9 +216,6 @@ public:
 
     CARAPI SetSchedulingGroup(
         /* [in] */ Int32 group);
-
-    CARAPI GetMemoryInfo(
-        /* [in] */ IDebugMemoryInfo* outInfo);
 
     CARAPI DispatchPackageBroadcast(
         /* [in] */ Int32 cmd,
@@ -235,10 +237,11 @@ public:
 
     CARAPI DumpMemInfo(
         /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IDebugMemoryInfo* mem,
         /* [in] */ Boolean checkin,
-        /* [in] */ Boolean all,
-        /* [in] */ ArrayOf<String>* args,
-        /* [out] */ IDebugMemoryInfo** mInfo);
+        /* [in] */ Boolean dumpFullInfo,
+        /* [in] */ Boolean dumpDalvik,
+        /* [in] */ ArrayOf<String>* args);
 
     CARAPI DumpGfxInfo(
         /* [in] */ IFileDescriptor* fd,
@@ -251,10 +254,10 @@ public:
     CARAPI UnstableProviderDied(
         /* [in] */ IBinder* provider);
 
-    CARAPI_(void) PrintRow(
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ const String& format,
-        /* [in] */ ArrayOf<IInterface>* objs);
+    CARAPI RequestAssistContextExtras(
+        /* [in] */ IBinder* activityToken,
+        /* [in] */ IBinder* requestToken,
+        /* [in] */ Int32 requestType);
 
     CARAPI SetCoreSettings(
         /* [in] */ IBundle* coreSettings);
@@ -266,6 +269,41 @@ public:
     CARAPI ScheduleTrimMemory(
         /* [in] */ Int32 level);
 
+    CARAPI ScheduleTranslucentConversionComplete(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean drawComplete);
+
+    CARAPI ScheduleOnNewActivityOptions(
+        /* [in] */ IBinder* token,
+        /* [in] */ IActivityOptions* options);
+
+    CARAPI SetProcessState(
+        /* [in] */ Int32 state);
+
+    CARAPI UpdateProcessState(
+        /* [in] */ Int32 processState,
+        /* [in] */ Boolean fromIpc);
+
+    //@Override
+    CARAPI ScheduleInstallProvider(
+        /* [in] */ IProviderInfo* provider);
+
+    //@Override
+    CARAPI UpdateTimePrefs(
+        /* [in] */ Boolean is24Hour);
+
+    //@Override
+    CARAPI ScheduleCancelVisibleBehind(
+        /* [in] */ IBinder* token);
+
+    //@Override
+    CARAPI ScheduleBackgroundVisibleBehindChanged(
+        /* [in] */ IBinder* token,
+        /* [in] */ Boolean visible);
+
+    CARAPI ScheduleEnterAnimationComplete(
+        /* [in] */ IBinder* token);
+
     CARAPI ToString(
         /* [out] */ String* string);
 
@@ -273,19 +311,19 @@ private:
     CARAPI_(void) UpdatePendingConfiguration(
         /* [in] */ IConfiguration* config);
 
-    CARAPI_(AutoPtr<IDebugMemoryInfo>) DumpMemInfo(
+    CARAPI DumpMemInfo(
         /* [in] */ IPrintWriter* pw,
+        /* [in] */ IDebugMemoryInfo* mem,
         /* [in] */ Boolean checkin,
-        /* [in] */ Boolean all);
+        /* [in] */ Boolean dumpFullInfo,
+        /* [in] */ Boolean dumpDalvik);
 
 private:
-    static const String HEAP_COLUMN;
     static const String ONE_COUNT_COLUMN;
     static const String TWO_COUNT_COLUMNS;
     static const String DB_INFO_FORMAT;
 
-    // Formatting for checkin service - update version if row format changes
-    static const Int32 ACTIVITY_THREAD_CHECKIN_VERSION = 1;
+    Int32 mLastProcessState = -1;
 
     CActivityThread* mAThread;//CActivityThread is host of CApplicationThread
 

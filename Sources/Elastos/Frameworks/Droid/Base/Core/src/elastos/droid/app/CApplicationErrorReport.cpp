@@ -367,6 +367,7 @@ ECode CApplicationErrorReport::WriteToParcel(
 {
     VALIDATE_NOT_NULL(dest);
 
+    Int32 start = dest.dataPosition();
     FAIL_RETURN(dest->WriteInt32(mType));
     FAIL_RETURN(dest->WriteString(mPackageName));
     FAIL_RETURN(dest->WriteString(mInstallerPackageName));
@@ -403,6 +404,17 @@ ECode CApplicationErrorReport::WriteToParcel(
         default:
             Logger::W(TAG, "WriteToParcel: Invalid Error type!");
             break;
+    }
+
+    int total = dest.dataPosition()-start;
+    if (total > 20*1024) {
+        Slog.d("Error", "ERR: exClass=" + exceptionClassName);
+        Slog.d("Error", "ERR: exMsg=" + exceptionMessage);
+        Slog.d("Error", "ERR: file=" + throwFileName);
+        Slog.d("Error", "ERR: class=" + throwClassName);
+        Slog.d("Error", "ERR: method=" + throwMethodName + " line=" + throwLineNumber);
+        Slog.d("Error", "ERR: stack=" + stackTrace);
+        Slog.d("Error", "ERR: TOTAL BYTES WRITTEN: " + (dest.dataPosition()-start));
     }
 
     return NOERROR;

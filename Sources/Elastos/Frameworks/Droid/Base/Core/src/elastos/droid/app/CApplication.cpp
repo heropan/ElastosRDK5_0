@@ -235,6 +235,27 @@ ECode CApplication::UnregisterActivityLifecycleCallbacks(
     return NOERROR;
 }
 
+ECode CApplication::RegisterOnProvideAssistDataListener(
+    /* [in] */ IApplicationOnProvideAssistDataListener* callback);
+{
+    synchronized (this) {
+        if (mAssistCallbacks == NULL) {
+            mAssistCallbacks = new ArrayList<OnProvideAssistDataListener>();
+        }
+        mAssistCallbacks.add(callback);
+    }
+}
+
+ECode CApplication::UnregisterOnProvideAssistDataListener(
+    /* [in] */ IApplicationOnProvideAssistDataListener* callback);
+ {
+    synchronized (this) {
+        if (mAssistCallbacks != null) {
+            mAssistCallbacks.remove(callback);
+        }
+    }
+}
+
 /**
  * @hide
  */
@@ -370,6 +391,28 @@ AutoPtr< ArrayOf<IActivityLifecycleCallbacks*> > CApplication::CollectActivityLi
 
     }
     return callbacks;
+}
+
+ECode CApplication::DispatchOnProvideAssistData(
+    /* [in] */ IActivity* activity,
+    /* [ini] */ IBundle* data)
+{
+    AutoPtr< List< AutoPtr<IActivityLifecycleCallbacks> > > callbacks;
+    synchronized (this) {
+        if (mAssistCallbacks == NULL) {
+            return NOERROR;
+        }
+        callbacks = new List< AutoPtr<IActivityLifecycleCallbacks> >(*mAssistCallbacks.Get());
+    }
+    if (callbacks != NULL) {
+        List< AutoPtr<IActivityLifecycleCallbacks> >::Iterator it;
+        IApplicationOnProvideAssistDataListener* listener;
+        for (it = callbacks->Begin(); it != callbacks->End(); ++it) {
+            listener = IApplicationOnProvideAssistDataListener::Probe(*it);
+            listener->OnProvideAssistData(activity, data);
+        }
+    }
+    return NOERROR;
 }
 
 } // namespace App

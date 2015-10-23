@@ -82,6 +82,15 @@ public:
     CARAPI GetLargeMemoryClass(
         /* [out] */ Int32* cls);
 
+    /** @hide */
+    static Int32 StaticGetLargeMemoryClass();
+
+    Boolean IsLowRamDevice(
+        /* [out] */ Boolean* isLow);
+
+    /** @hide */
+    static Boolean IsLowRamDeviceStatic();
+
     /**
      * Return a list of the tasks that the user has recently launched, with
      * the most recent being first and older ones after in order.
@@ -137,36 +146,50 @@ public:
         /* [out] */ IObjectContainer** tasks);
 
     /**
-     * Return a list of the tasks that are currently running, with
-     * the most recent being first and older ones after in order.  Note that
-     * "running" does not mean any of the task's code is currently loaded or
-     * activity -- the task may have been frozen by the system, so that it
-     * can be restarted in its previous state when next brought to the
-     * foreground.
+     * Get the list of tasks associated with the calling application.
      *
-     * @param maxNum The maximum number of entries to return in the list.  The
-     * actual number returned may be smaller, depending on how many tasks the
-     * user has started.
-     *
-     * @param flags Optional flags
-     * @param receiver Optional receiver for delayed thumbnails
-     *
-     * @return Returns a list of RunningTaskInfo records describing each of
-     * the running tasks.
-     *
-     * Some thumbnails may not be available at the time of this call. The optional
-     * receiver may be used to receive those thumbnails.
-     *
-     * @throws SecurityException Throws SecurityException if the caller does
-     * not hold the {@link android.Manifest.permission#GET_TASKS} permission.
-     *
-     * @hide
+     * @return The list of tasks associated with the application making this call.
+     * @throws SecurityException
      */
-    CARAPI GetRunningTasks(
-        /* [in] */ Int32 maxNum,
-        /* [in] */ Int32 flags,
-        /* [in] */ IThumbnailReceiver* receiver,
-        /* [out] */ IObjectContainer** tasks);
+    CARAPI GetAppTasks(
+        /* [out] */ IList* tasks); //List<ActivityManager.AppTask>
+
+    /**
+     * Return the current design dimensions for {@link AppTask} thumbnails, for use
+     * with {@link #addAppTask}.
+     */
+    CARAPI GetAppTaskThumbnailSize(
+        /* [out] */ ISize** size);
+
+
+    /**
+     * Add a new {@link AppTask} for the calling application.  This will create a new
+     * recents entry that is added to the <b>end</b> of all existing recents.
+     *
+     * @param activity The activity that is adding the entry.   This is used to help determine
+     * the context that the new recents entry will be in.
+     * @param intent The Intent that describes the recents entry.  This is the same Intent that
+     * you would have used to launch the activity for it.  In generally you will want to set
+     * both {@link Intent#FLAG_ACTIVITY_NEW_DOCUMENT} and
+     * {@link Intent#FLAG_ACTIVITY_RETAIN_IN_RECENTS}; the latter is required since this recents
+     * entry will exist without an activity, so it doesn't make sense to not retain it when
+     * its activity disappears.  The given Intent here also must have an explicit ComponentName
+     * set on it.
+     * @param description Optional additional description information.
+     * @param thumbnail Thumbnail to use for the recents entry.  Should be the size given by
+     * {@link #getAppTaskThumbnailSize()}.  If the bitmap is not that exact size, it will be
+     * recreated in your process, probably in a way you don't like, before the recents entry
+     * is added.
+     *
+     * @return Returns the task id of the newly added app task, or -1 if the add failed.  The
+     * most likely cause of failure is that there is no more room for more tasks for your app.
+     */
+    CARAPI AddAppTask(
+        /* [in] */ IActivity* activity,
+        /* [in] */ IIntent* intent,
+        /* [in] */ ITaskDescription* description,
+        /* [in] */ IBitmap* thumbnail,
+        /* [out] */ Int32* value);
 
     /**
      * Return a list of the tasks that are currently running, with
@@ -197,24 +220,7 @@ public:
      */
     CARAPI GetRunningTasks(
         /* [in] */ Int32 maxNum,
-        /* [out] */ IObjectContainer** tasks);
-
-    /**
-     * Remove some end of a task's activity stack that is not part of
-     * the main application.  The selected activities will be finished, so
-     * they are no longer part of the main task.
-     *
-     * @param taskId The identifier of the task.
-     * @param subTaskIndex The number of the sub-task; this corresponds
-     * to the index of the thumbnail returned by {@link #getTaskThumbnails(int)}.
-     * @return Returns true if the sub-task was found and was removed.
-     *
-     * @hide
-     */
-    CARAPI RemoveSubTask(
-        /* [in] */ Int32 taskId,
-        /* [in] */ Int32 subTaskIndex,
-        /* [out] */ Boolean* removed);
+        /* [out] */ IList** tasks);
 
     /**
      * Completely remove the given task.
@@ -232,14 +238,14 @@ public:
         /* [out] */ Boolean* removed);
 
     /** @hide */
-    CARAPI GetTaskThumbnails(
+    CARAPI GetTaskThumbnail(
         /* [in] */ Int32 id,
-        /* [out] */ IActivityManagerTaskThumbnails** taskThumbnail);
+        /* [out] */ IActivityManagerTaskThumbnail** taskThumbnail);
 
     /** @hide */
-    CARAPI GetTaskTopThumbnail(
-        /* [in] */ Int32 id,
-        /* [out] */ IBitmap** thumbnail);
+    CARAPI IsInHomeStack(
+        /* [in] */ Int32 taskId,
+        /* [out] */ Boolean** isin);
 
     /**
      * Equivalent to calling {@link #moveTaskToFront(int, int, Bundle)}
@@ -319,6 +325,19 @@ public:
         /* [in] */ const String& packageName,
         /* [in] */ IPackageDataObserver* observer,
         /* [out] */ Boolean* result);
+
+    /**
+     * Permits an application to erase its own data from disk.  This is equivalent to
+     * the user choosing to clear the app's data from within the device settings UI.  It
+     * erases all dynamic data associated with the app -- its private data and data in its
+     * private area on external storage -- but does not remove the installed application
+     * itself, nor any OBB files.
+     *
+     * @return {@code true} if the application successfully requested that the application's
+     *     data be erased; {@code false} otherwise.
+     */
+    CARAPI ClearApplicationUserData(
+        /* [out] */ Boolean* result) {
 
     /**
      * Returns a list of any processes that are currently in an error condition.  The result
@@ -418,6 +437,14 @@ public:
      * it allowing them to break other applications by stopping their
      * services, removing their alarms, etc.
      */
+    CARAPI ForceStopPackageAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId);
+
+    /**
+     * @see #forceStopPackageAsUser(String, int)
+     * @hide
+     */
     CARAPI ForceStopPackage(
         /* [in] */ const String& packageName);
 
@@ -445,21 +472,36 @@ public:
     CARAPI GetLauncherLargeIconSize(
         /* [out] */ Int32* size);
 
+    static Int GetLauncherLargeIconSizeInner(
+        /* [in] */ IContext* context);
+
     /**
      * Returns the launch count of each installed package.
      *
      * @hide
      */
-    CARAPI GetAllPackageLaunchCounts(
-        /* [out] */ IObjectStringMap** counts);
+    // CARAPI GetAllPackageLaunchCounts(
+    //     /* [out] */ IMap** counts);
 
     /**
-     * Returns the usage statistics of each installed package.
-     *
      * @hide
      */
-    CARAPI GetAllPackageUsageStats(
-        /* [out, callee] */ ArrayOf<IPkgUsageStats*>** stats);
+    CARAPI StartLockTaskMode(
+        /* [in] */ Int32 taskId);
+
+    /**
+     * @hide
+     */
+    CARAPI StopLockTaskMode();
+
+    /**
+     * Return whether currently in lock task mode.  When in this mode
+     * no new tasks can be created or switched to.
+     *
+     * @see Activity#startLockTask()
+     */
+    CARAPI IsInLockTaskMode(
+        /* [out] */ Boolean* mode);
 
     /**
      * @param userid the user's id. Zero indicates the default user
@@ -496,6 +538,24 @@ public:
      * @hide
      */
     static CARAPI_(Boolean) IsHighEndGfx();
+
+    /**
+     * Return the maximum number of recents entries that we will maintain and show.
+     * @hide
+     */
+    static Int32 GetMaxRecentTasksStatic();
+
+    /**
+     * Return the default limit on the number of recents that an app can make.
+     * @hide
+     */
+    static Int32 GetDefaultAppRecentsLimitStatic()
+
+    /**
+     * Return the maximum limit on the number of recents that an app can make.
+     * @hide
+     */
+    static Int32 GetMaxAppRecentsLimitStatic();
 
     /**
      * Use to decide whether the running device can be considered a "large
@@ -542,7 +602,30 @@ public:
         /* [in] */ const String& permission,
         /* [in] */ Int32 uid);
 
-    /** @hide */
+    /**
+     * @hide
+     * Helper for dealing with incoming user arguments to system service calls.
+     * Takes care of checking permissions and converting USER_CURRENT to the
+     * actual current user.
+     *
+     * @param callingPid The pid of the incoming call, as per Binder.getCallingPid().
+     * @param callingUid The uid of the incoming call, as per Binder.getCallingUid().
+     * @param userId The user id argument supplied by the caller -- this is the user
+     * they want to run as.
+     * @param allowAll If true, we will allow USER_ALL.  This means you must be prepared
+     * to get a USER_ALL returned and deal with it correctly.  If false,
+     * an exception will be thrown if USER_ALL is supplied.
+     * @param requireFull If true, the caller must hold
+     * {@link android.Manifest.permission#INTERACT_ACROSS_USERS_FULL} to be able to run as a
+     * different user than their current process; otherwise they must hold
+     * {@link android.Manifest.permission#INTERACT_ACROSS_USERS}.
+     * @param name Optional textual name of the incoming call; only for generating error messages.
+     * @param callerPackage Optional package name of caller; only for error messages.
+     *
+     * @return Returns the user ID that the call should run as.  Will always be a concrete
+     * user number, unless <var>allowAll</var> is true in which case it could also be
+     * USER_ALL.
+     */
     static CARAPI HandleIncomingUser(
         /* [in] */ Int32 callingPid,
         /* [in] */ Int32 callingUid,
@@ -553,15 +636,24 @@ public:
         /* [in] */ const String& callerPackage,
         /* [out] */ Int32* value);
 
-    /** @hide */
+    /**
+     * Gets the userId of the current foreground user. Requires system permissions.
+     * @hide
+     */
     static CARAPI_(Int32) GetCurrentUser();
+
+private:
+    CARAPI EnsureAppTaskThumbnailSizeLocked();
 
 private:
     static String TAG;
     static Boolean localLOGV;
+    static Int32 gMaxRecentTasks;// = -1;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IHandler> mHandler;
+
+    AutoPtr<IPoint> mAppTaskThumbnailSize;
 };
 
 } // namespace App
