@@ -9,9 +9,20 @@ CAR_INTERFACE_IMPL(CLocaleHelper, Singleton, ILocaleHelper)
 
 CAR_SINGLETON_IMPL(CLocaleHelper)
 
+ECode CLocaleHelper::ForLanguageTag(
+    /* [in] */ const String& languageTag,
+    /* [out] */ ILocale** locale)
+{
+    VALIDATE_NOT_NULL(locale);
+
+    return CLocale::ForLanguageTag(languageTag, locale);
+}
+
 ECode CLocaleHelper::GetAvailableLocales(
     /* [out] */ ArrayOf<ILocale*>** locales)
 {
+    VALIDATE_NOT_NULL(locales);
+
     return CLocale::GetAvailableLocales(locales);
 }
 

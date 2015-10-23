@@ -19,6 +19,20 @@ public:
     CAR_SINGLETON_DECL()
 
     /**
+     * Returns a locale for a given BCP-47 language tag. This method is more
+     * lenient than {@link Builder#setLanguageTag}. For a given language tag, parsing
+     * will proceed up to the first malformed subtag. All subsequent tags are discarded.
+     * Note that language tags use {@code -} rather than {@code _}, for example {@code en-US}.
+     *
+     * @throws NullPointerException if {@code languageTag} is {@code null}.
+     *
+     * @since 1.7
+     */
+    CARAPI ForLanguageTag(
+        /* [in] */ const String& languageTag,
+        /* [out] */ ILocale** locale);
+
+    /**
      * Returns the system's installed locales. This array always includes {@code
      * Locale.US}, and usually several others. Most locale-sensitive classes
      * offer their own {@code getAvailableLocales} method, which should be
