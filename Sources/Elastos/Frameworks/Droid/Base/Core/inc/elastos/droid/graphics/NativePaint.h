@@ -7,6 +7,7 @@
 #include <minikin/FontFamily.h>
 
 using android::FontVariant;
+using android::VARIANT_DEFAULT;
 
 namespace Elastos {
 namespace Droid {

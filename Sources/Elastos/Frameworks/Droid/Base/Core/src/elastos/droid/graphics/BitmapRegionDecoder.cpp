@@ -495,7 +495,8 @@ ECode BitmapRegionDecoder::NativeNewInstance(
     android::Asset* asset = reinterpret_cast<android::Asset*>(nativeAsset);
     SkAutoTUnref<SkMemoryStream> stream(CopyAssetToStream(asset));
     if (NULL == stream.get()) {
-        return NULL;
+        *decoder = NULL;
+        return NOERROR;
     }
 
     // The decoder now holds a reference to stream.

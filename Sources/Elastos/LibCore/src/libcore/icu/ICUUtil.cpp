@@ -41,7 +41,6 @@
 #include <unicode/ulocdata.h>
 #include <unicode/ucurr.h>
 
-using Elastos::Core::UniquePtr;
 using Libcore::Utility::CBasicLruCache;
 using Elastos::Utility::Collections;
 using Elastos::Utility::ISet;
