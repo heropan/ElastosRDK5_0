@@ -82,7 +82,7 @@ module
     merge("view/WindowManager.car");
     merge("view/WindowManagerGlobal.car");
     merge("view/WindowManagerPolicy.car");
-
+    merge("view/GraphicBuffer.car");
     // merge("view/CompatibilityInfoHolder.car");
     // merge("view/DisplayList.car");
     // merge("view/IDisplayContentChangeListener.car");

@@ -8,7 +8,7 @@
 #include "CSystem.h"
 #include "CZoneInfoDB.h"
 #include "StringUtils.h"
-#include "UniquePtr.h"
+#include <UniquePtr.h>
 #include "AutoLock.h"
 #include <elastos/utility/etl/Vector.h>
 #include <elastos/utility/etl/List.h>
@@ -21,7 +21,6 @@
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Core::UniquePtr;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringUtils;

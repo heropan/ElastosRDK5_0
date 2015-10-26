@@ -1,7 +1,5 @@
-/*	$OpenBSD: endian.h,v 1.3 2005/12/13 00:35:23 millert Exp $	*/
-
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2013 The Android Open Source Project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,52 +26,33 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _ARM_ENDIAN_H_
-#define _ARM_ENDIAN_H_
+#ifndef _AARCH64_ENDIAN_H_
+#define _AARCH64_ENDIAN_H_
+
+#include <sys/types.h>
+#include <sys/endian.h>
 
 #ifdef __GNUC__
 
-/* According to RealView Assembler User's Guide, REV and REV16 are available
- * in Thumb code and 16-bit instructions when used in Thumb-2 code.
- *
- * REV Rd, Rm
- *   Rd and Rm must both be Lo registers.
- *
- * REV16 Rd, Rm
- *   Rd and Rm must both be Lo registers.
- *
- * The +l constraint takes care of this without constraining us in ARM mode.
- */
 #define __swap16md(x) ({                                        \
     register u_int16_t _x = (x);                                \
-    __asm__ __volatile__("rev16 %0, %0" : "+l" (_x));           \
+    __asm volatile ("rev16 %0, %0" : "+r" (_x));                \
     _x;                                                         \
 })
 
-#define __swap32md(x) ({                                        \
-    register u_int32_t _x = (x);                                \
-    __asm__ __volatile__("rev %0, %0" : "+l" (_x));             \
-    _x;                                                         \
-})
-
-#define __swap64md(x) ({                                        \
-    u_int64_t _swap64md_x = (x);                                \
-    (u_int64_t) __swap32md(_swap64md_x >> 32) |                 \
-        (u_int64_t) __swap32md(_swap64md_x & 0xffffffff) << 32; \
-})
+/* Use GCC builtins */
+#define __swap32md(x) __builtin_bswap32(x)
+#define __swap64md(x) __builtin_bswap64(x)
 
 /* Tell sys/endian.h we have MD variants of the swap macros.  */
 #define MD_SWAP
 
 #endif  /* __GNUC__ */
 
-#if defined(__ARMEB__)
+#if defined(__AARCH64EB__)
 #define _BYTE_ORDER _BIG_ENDIAN
 #else
 #define _BYTE_ORDER _LITTLE_ENDIAN
 #endif
-#define __STRICT_ALIGNMENT
-#include <sys/types.h>
-#include <sys/endian.h>
 
-#endif  /* !_ARM_ENDIAN_H_ */
+#endif /* _AARCH64_ENDIAN_H_ */
