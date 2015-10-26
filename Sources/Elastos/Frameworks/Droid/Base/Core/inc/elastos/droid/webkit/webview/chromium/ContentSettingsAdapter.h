@@ -18,6 +18,7 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CONTENTSETTINGSADAPTER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
 //#include "elastos/droid/webkit/WebSettings.h"
 //#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
 
@@ -35,13 +36,13 @@
 //using Elastos::Droid::Webkit::RenderPriority;
 //using Elastos::Droid::Webkit::AndroidWebview::AwSettings;
 
+using Elastos::Droid::Webkit::AndroidWebview::AwSettings;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Webview {
 namespace Chromium {
-
-class AwSettings;
 
 class ContentSettingsAdapter
     : public Object

@@ -228,8 +228,12 @@ private:
             , public IClassLoader
         {
         public:
+            CAR_INTERFACE_DECL()
+
             InnerClassLoader(
-                /* [in] */ InnerContextWrapper* owner);
+                /* [in] */ InnerContextWrapper* owner,
+                /* [in] */ IClassLoader* appCl,
+                /* [in] */ IClassLoader* webViewCl);
 
         protected:
             // @Override
@@ -237,11 +241,20 @@ private:
                 /* [in] */ const String& name,
                 /* [out] */ IClassInfo** klass);
 
+            // @Override
+            CARAPI LoadClass(
+                /* [in] */ const String& name,
+                /* [out] */ IClassInfo ** klass);
+
         private:
             InnerContextWrapper* mOwner;
+            IClassLoader* mAppCl;
+            IClassLoader* mWebViewCl;
         };
 
     public:
+        CAR_INTERFACE_DECL()
+
         InnerContextWrapper(
             /* [in] */ WebViewChromium* owner);
 
@@ -262,6 +275,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerThreadViolationRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -277,14 +292,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetHorizontalScrollbarOverlayRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Boolean overlay);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mOverlay;
     };
 
     class InnerSetVerticalScrollbarOverlayRunnable
@@ -292,14 +311,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetVerticalScrollbarOverlayRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Boolean overlay);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mOverlay;
     };
 
     class InnerOverlayHorizontalScrollbarCallable
@@ -307,6 +330,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOverlayHorizontalScrollbarCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -323,6 +348,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOverlayVerticalScrollbarCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -339,6 +366,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetCertificateCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -355,14 +384,24 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetHttpAuthUsernamePasswordRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const String& host,
+            /* [in] */ const String& realm,
+            /* [in] */ const String& username,
+            /* [in] */ const String& password);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const String mHost;
+        const String mRealm;
+        const String mUsername;
+        const String mPassword;
     };
 
     class InnerGetHttpAuthUsernamePasswordCallable
@@ -370,8 +409,12 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetHttpAuthUsernamePasswordCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const String& host,
+            /* [in] */ const String& realm);
 
         // @Override
         CARAPI Call(
@@ -379,6 +422,8 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const String mHost;
+        const String mRealm;
     };
 
     class InnerDestroyRunnable
@@ -386,6 +431,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerDestroyRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -401,14 +448,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetNetworkAvailableRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Boolean networkUp);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mNetworkUp;
     };
 
     class InnerSaveStateCallable
@@ -416,8 +467,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSaveStateCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IBundle* outState);
 
         // @Override
         CARAPI Call(
@@ -425,6 +479,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IBundle* mOutState;
     };
 
     class InnerRestoreStateCallable
@@ -432,8 +487,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRestoreStateCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IBundle* inState);
 
         // @Override
         CARAPI Call(
@@ -441,6 +499,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IBundle* mInState;
     };
 
     class InnerEvaluateJavaScriptRunnable
@@ -448,14 +507,20 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerEvaluateJavaScriptRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const String& url,
+            /* [in] */ const String& javascriptScheme);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const String mUrl;
+        const String mJavascriptScheme;
     };
 
     class InnerLoadUrlRunnable
@@ -463,14 +528,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerLoadUrlRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ LoadUrlParams* loadUrlParams);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        LoadUrlParams* mLoadUrlParams;
     };
 
     class InnerSaveWebArchiveRunnable
@@ -478,14 +547,22 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSaveWebArchiveRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const String& basename,
+            /* [in] */ const Boolean autoname,
+            /* [in] */ IInterface/*IValueCallback*/* callback);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const String mBasename;
+        const Boolean mAutoname;
+        IInterface/*IValueCallback*/* mCallback;
     };
 
     class InnerStopLoadingRunnable
@@ -493,6 +570,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerStopLoadingRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -508,6 +587,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerReloadRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -523,6 +604,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerCanGoBackCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -539,6 +622,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGoBackRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -554,6 +639,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerCanGoForwardCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -570,6 +657,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGoForwardRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -585,8 +674,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerCanGoBackOrForwardCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& steps);
 
         // @Override
         CARAPI Call(
@@ -594,6 +686,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mSteps;
     };
 
     class InnerGoBackOrForwardRunnable
@@ -601,14 +694,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGoBackOrForwardRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& steps);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mSteps;
     };
 
     class InnerPageUpCallable
@@ -616,8 +713,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerPageUpCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Boolean top);
 
         // @Override
         CARAPI Call(
@@ -625,6 +725,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mTop;
     };
 
     class InnerPageDownCallable
@@ -632,8 +733,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerPageDownCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Boolean bottom);
 
         // @Override
         CARAPI Call(
@@ -641,6 +745,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mBottom;
     };
 
     class InnerClearViewRunnable
@@ -648,6 +753,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerClearViewRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -663,6 +770,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerCapturePictureCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -679,6 +788,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerInvokeZoomPickerRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -694,6 +805,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetHitTestResultCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -710,14 +823,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRequestFocusNodeHrefRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IMessage* hrefMsg);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IMessage* mHrefMsg;
     };
 
     class InnerRequestImageRefRunnable
@@ -725,14 +842,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRequestImageRefRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IMessage* msg);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IMessage* mMsg;
     };
 
     class InnerGetUrlCallable
@@ -740,6 +861,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetUrlCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -756,6 +879,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetOriginalUrlCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -772,6 +897,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetTitleCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -788,6 +915,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetFaviconCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -804,6 +933,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerPauseTimersRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -819,6 +950,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerResumeTimersRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -834,6 +967,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnPauseRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -849,6 +984,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnResumeRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -864,6 +1001,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerIsPausedCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -880,14 +1019,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerClearCacheRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Boolean includeDiskFiles);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mIncludeDiskFiles;
     };
 
     class InnerClearFormDataRunnable
@@ -895,6 +1038,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerClearFormDataRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -910,6 +1055,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerClearHistoryRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -925,6 +1072,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerClearSslPreferencesRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -940,6 +1089,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerCopyBackForwardListCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -956,14 +1107,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerFindNextRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Boolean forwards);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mForwards;
     };
 
     class InnerFindAllAsyncRunnable
@@ -971,14 +1126,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerFindAllAsyncRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const String& searchString);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const String mSearchString;
     };
 
     class InnerNotifyFindDialogDismissedRunnable
@@ -986,6 +1145,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerNotifyFindDialogDismissedRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1001,6 +1162,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerClearMatchesRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1016,14 +1179,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerDocumentHasImagesRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IMessage* response);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IMessage* mResponse;
     };
 
     class InnerSetPictureListenerRunnable
@@ -1031,14 +1198,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetPictureListenerRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IInterface/*IWebViewPictureListener*/* listener);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IInterface/*IWebViewPictureListener*/* mListener;
     };
 
     class InnerAddJavascriptInterfaceRunnable
@@ -1046,14 +1217,20 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerAddJavascriptInterfaceRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Object* obj,
+            /* [in] */ const String& interfaceName);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        Object* mObj;
+        String mInterfaceName;
     };
 
     class InnerRemoveJavascriptInterfaceRunnable
@@ -1061,14 +1238,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRemoveJavascriptInterfaceRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const String& interfaceName);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        String mInterfaceName;
     };
 
     class InnerFlingScrollRunnable
@@ -1076,14 +1257,20 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerFlingScrollRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& vx,
+            /* [in] */ const Int32& vy);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mVx;
+        const Int32 mVy;
     };
 
     class InnerZoomInCallable
@@ -1091,6 +1278,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerZoomInCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1107,6 +1296,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerZoomOutCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1123,6 +1314,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerShouldDelayChildPressedStateCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1139,6 +1332,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerGetAccessibilityNodeProviderCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1155,14 +1350,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnInitializeAccessibilityNodeInfoRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IAccessibilityNodeInfo* info);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IAccessibilityNodeInfo* mInfo;
     };
 
     class InnerOnInitializeAccessibilityEventRunnable
@@ -1170,14 +1369,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnInitializeAccessibilityEventRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IAccessibilityEvent* event);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IAccessibilityEvent* mEvent;
     };
 
     class InnerPerformAccessibilityActionCallable
@@ -1185,8 +1388,12 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerPerformAccessibilityActionCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32 action,
+            /* [in] */ IBundle* arguments);
 
         // @Override
         CARAPI Call(
@@ -1194,6 +1401,8 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mAction;
+        IBundle* mArguments;
     };
 
     class InnerSetOverScrollModeRunnable
@@ -1201,14 +1410,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetOverScrollModeRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& mode);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mMode;
     };
 
     class InnerSetScrollBarStyleRunnable
@@ -1216,14 +1429,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetScrollBarStyleRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& style);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mStyle;
     };
 
     class InnerOnOverScrolledRunnable
@@ -1231,14 +1448,24 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnOverScrolledRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& scrollX,
+            /* [in] */ const Int32& scrollY,
+            /* [in] */ Boolean clampedX,
+            /* [in] */ Boolean clampedY);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mScrollX;
+        const Int32 mScrollY;
+        const Boolean mClampedX;
+        const Boolean mClampedY;
     };
 
     class InnerOnWindowVisibilityChangedRunnable
@@ -1246,14 +1473,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnWindowVisibilityChangedRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& visibility);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mVisibility;
     };
 
     class InnerOnDrawRunnable
@@ -1261,14 +1492,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnDrawRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ ICanvas* canvas);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        ICanvas* mCanvas;
     };
 
     class InnerOnConfigurationChangedRunnable
@@ -1276,14 +1511,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnConfigurationChangedRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IConfiguration* newConfig);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IConfiguration* mNewConfig;
     };
 
     class InnerOnKeyMultipleCallable
@@ -1291,8 +1530,13 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnKeyMultipleCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& keyCode,
+            /* [in] */ const Int32& repeatCount,
+            /* [in] */ IKeyEvent* event);
 
         // @Override
         CARAPI Call(
@@ -1300,6 +1544,9 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mKeyCode;
+        const Int32 mRepeatCount;
+        IKeyEvent* mEvent;
     };
 
     class InnerOnKeyDownCallable
@@ -1307,8 +1554,12 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnKeyDownCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& keyCode,
+            /* [in] */ IKeyEvent* event);
 
         // @Override
         CARAPI Call(
@@ -1316,6 +1567,8 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mKeyCode;
+        IKeyEvent* mEvent;
     };
 
     class InnerOnKeyUpCallable
@@ -1323,8 +1576,12 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnKeyUpCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& keyCode,
+            /* [in] */ IKeyEvent* event);
 
         // @Override
         CARAPI Call(
@@ -1332,6 +1589,8 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mKeyCode;
+        IKeyEvent* mEvent;
     };
 
     class InnerOnDetachedFromWindowRunnable
@@ -1339,6 +1598,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnDetachedFromWindowRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1354,14 +1615,20 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnVisibilityChangedRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IView* changedView,
+            /* [in] */ const Int32& visibility);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        IView* mChangedView;
+        const Int32 mVisibility;
     };
 
     class InnerOnWindowFocusChangedRunnable
@@ -1369,14 +1636,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnWindowFocusChangedRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Boolean hasWindowFocus);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        Boolean mHasWindowFocus;
     };
 
     class InnerOnFocusChangedRunnable
@@ -1384,14 +1655,22 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnFocusChangedRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ Boolean focused,
+            /* [in] */ const Int32& direction,
+            /* [in] */ IRect* previouslyFocusedRect);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Boolean mFocused;
+        const Int32 mDirection;
+        IRect* mPreviouslyFocusedRect;
     };
 
     class InnerOnSizeChangedRunnable
@@ -1399,14 +1678,24 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnSizeChangedRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& w,
+            /* [in] */ const Int32& h,
+            /* [in] */ const Int32& ow,
+            /* [in] */ const Int32& oh);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mW;
+        const Int32 mH;
+        const Int32 mOw;
+        const Int32 mOh;
     };
 
     class InnerDispatchKeyEventCallable
@@ -1414,8 +1703,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerDispatchKeyEventCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IKeyEvent* event);
 
         // @Override
         CARAPI Call(
@@ -1423,6 +1715,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IKeyEvent* mEvent;
     };
 
     class InnerOnTouchEventCallable
@@ -1430,8 +1723,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnTouchEventCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IMotionEvent* ev);
 
         // @Override
         CARAPI Call(
@@ -1439,6 +1735,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IMotionEvent* mEv;
     };
 
     class InnerOnHoverEventCallable
@@ -1446,8 +1743,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnHoverEventCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IMotionEvent* event);
 
         // @Override
         CARAPI Call(
@@ -1455,6 +1755,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IMotionEvent* mEvent;
     };
 
     class InnerOnGenericMotionEventCallable
@@ -1462,8 +1763,11 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnGenericMotionEventCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IMotionEvent* event);
 
         // @Override
         CARAPI Call(
@@ -1471,6 +1775,7 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IMotionEvent* mEvent;
     };
 
     class InnerRequestFocusCallable
@@ -1478,8 +1783,12 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRequestFocusCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& direction,
+            /* [in] */ IRect* previouslyFocusedRect);
 
         // @Override
         CARAPI Call(
@@ -1487,6 +1796,8 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mDirection;
+        IRect* mPreviouslyFocusedRect;
     };
 
     class InnerOnMeasureRunnable
@@ -1494,14 +1805,20 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerOnMeasureRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& widthMeasureSpec,
+            /* [in] */ const Int32& heightMeasureSpec);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mWidthMeasureSpec;
+        const Int32 mHeightMeasureSpec;
     };
 
     class InnerRequestChildRectangleOnScreenCallable
@@ -1509,8 +1826,13 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRequestChildRectangleOnScreenCallable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ IView* child,
+            /* [in] */ IRect* rect,
+            /* [in] */ Boolean immediate);
 
         // @Override
         CARAPI Call(
@@ -1518,6 +1840,9 @@ private:
 
     private:
         WebViewChromium* mOwner;
+        IView* mChild;
+        IRect* mRect;
+        const Boolean mImmediate;
     };
 
     class InnerSetBackgroundColorRunnable
@@ -1525,14 +1850,18 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetBackgroundColorRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& color);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mColor;
     };
 
     class InnerSetLayerTypeRunnable
@@ -1540,14 +1869,20 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSetLayerTypeRunnable(
-            /* [in] */ WebViewChromium* owner);
+            /* [in] */ WebViewChromium* owner,
+            /* [in] */ const Int32& layerType,
+            /* [in] */ IPaint* paint);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
+        const Int32 mLayerType;
+        IPaint* mPaint;
     };
 
     class InnerComputeHorizontalScrollRangeCallable
@@ -1555,6 +1890,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerComputeHorizontalScrollRangeCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1571,6 +1908,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerComputeHorizontalScrollOffsetCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1587,6 +1926,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerComputeVerticalScrollRangeCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1603,6 +1944,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerComputeVerticalScrollOffsetCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1619,6 +1962,8 @@ private:
         , public ICallable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerComputeVerticalScrollExtentCallable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1635,6 +1980,8 @@ private:
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerComputeScrollRunnable(
             /* [in] */ WebViewChromium* owner);
 
@@ -1649,6 +1996,9 @@ private:
     class WebViewNativeGLDelegate : public AwContents::NativeGLDelegate
     {
     public:
+        WebViewNativeGLDelegate(
+            /* [in] */ WebViewChromium* owner);
+
         // @Override
         CARAPI_(Boolean) RequestDrawGL(
             /* [in] */ ICanvas* canvas,
@@ -1657,12 +2007,18 @@ private:
 
         // @Override
         CARAPI_(void) DetachGLFunctor();
+
+    private:
+        WebViewChromium* mOwner;
     };
 
     // AwContents.InternalAccessDelegate implementation --------------------------------------
     class InternalAccessAdapter : public AwContents::InternalAccessDelegate
     {
     public:
+        InternalAccessAdapter(
+            /* [in] */ WebViewChromium* owner);
+
         // @Override
         CARAPI_(Boolean) DrawChild(
             /* [in] */ ICanvas* arg0,
@@ -1733,6 +2089,9 @@ private:
         // @Override
         CARAPI_(Boolean) Super_onHoverEvent(
             /* [in] */ IMotionEvent* event);
+
+    private:
+        WebViewChromium* mOwner;
     };
 
 public:
@@ -1754,18 +2113,18 @@ public:
     // BUG=6790250 |javaScriptInterfaces| was only ever used by the obsolete DumpRenderTree
     // so is ignored. TODO: remove it from WebViewProvider.
     virtual CARAPI Init(
-        /* [in] */ const IMap* javaScriptInterfaces,
-        /* [in] */ const Boolean& privateBrowsing);
+        /* [in] */ IMap* javaScriptInterfaces,
+        /* [in] */ Boolean privateBrowsing);
 
     virtual CARAPI StartYourEngine();
 
     // @Override
     CARAPI SetHorizontalScrollbarOverlay(
-        /* [in] */ const Boolean& overlay);
+        /* [in] */ Boolean overlay);
 
     // @Override
     CARAPI SetVerticalScrollbarOverlay(
-        /* [in] */ const Boolean& overlay);
+        /* [in] */ Boolean overlay);
 
     // @Override
     CARAPI_(Boolean) OverlayHorizontalScrollbar();
@@ -1806,11 +2165,11 @@ public:
 
     // @Override
     CARAPI SetNetworkAvailable(
-        /* [in] */ const Boolean& networkUp);
+        /* [in] */ Boolean networkUp);
 
     // @Override
     CARAPI_(AutoPtr<IInterface/*IWebBackForwardList*/>) SaveState(
-        /* [in] */ const IBundle* outState);
+        /* [in] */ IBundle* outState);
 
     // @Override
     CARAPI_(Boolean) SavePicture(
@@ -1824,7 +2183,7 @@ public:
 
     // @Override
     CARAPI_(AutoPtr<IInterface/*IWebBackForwardList*/>) RestoreState(
-        /* [in] */ const IBundle* inState);
+        /* [in] */ IBundle* inState);
 
     // @Override
     CARAPI LoadUrl(
@@ -1865,8 +2224,8 @@ public:
     // @Override
     CARAPI SaveWebArchive(
         /* [in] */ const String& basename,
-        /* [in] */ const Boolean& autoname,
-        /* [in] */ const IInterface/*IValueCallback*/* callback);
+        /* [in] */ Boolean autoname,
+        /* [in] */ IInterface/*IValueCallback*/* callback);
 
     // @Override
     CARAPI StopLoading();
@@ -1899,11 +2258,11 @@ public:
 
     // @Override
     CARAPI_(Boolean) PageUp(
-        /* [in] */ const Boolean& top);
+        /* [in] */ Boolean top);
 
     // @Override
     CARAPI_(Boolean) PageDown(
-        /* [in] */ const Boolean& bottom);
+        /* [in] */ Boolean bottom);
 
     // @Override
     CARAPI ClearView();
@@ -1926,11 +2285,11 @@ public:
 
     // @Override
     CARAPI RequestFocusNodeHref(
-        /* [in] */ const IMessage* hrefMsg);
+        /* [in] */ IMessage* hrefMsg);
 
     // @Override
     CARAPI RequestImageRef(
-        /* [in] */ const IMessage* msg);
+        /* [in] */ IMessage* msg);
 
     // @Override
     CARAPI_(String) GetUrl();
@@ -1976,7 +2335,7 @@ public:
 
     // @Override
     CARAPI ClearCache(
-        /* [in] */ const Boolean& includeDiskFiles);
+        /* [in] */ Boolean includeDiskFiles);
 
     /**
       * This is a poorly named method, but we keep it for historical reasons.
@@ -1999,7 +2358,7 @@ public:
 
     // @Override
     CARAPI FindNext(
-        /* [in] */ const Boolean& forwards);
+        /* [in] */ Boolean forwards);
 
     // @Override
     CARAPI_(Int32) FindAll(
@@ -2012,7 +2371,7 @@ public:
     // @Override
     CARAPI_(Boolean) ShowFindDialog(
         /* [in] */ const String& text,
-        /* [in] */ const Boolean& showIme);
+        /* [in] */ Boolean showIme);
 
     // @Override
     CARAPI NotifyFindDialogDismissed();
@@ -2022,7 +2381,7 @@ public:
 
     // @Override
     CARAPI DocumentHasImages(
-        /* [in] */ const IMessage* response);
+        /* [in] */ IMessage* response);
 
     // @Override
     CARAPI SetWebViewClient(
@@ -2038,7 +2397,7 @@ public:
 
     // @Override
     CARAPI SetPictureListener(
-        /* [in] */ const IInterface/*WebView::PictureListener*/* listener);
+        /* [in] */ IInterface/*WebView::PictureListener*/* listener);
 
     // @Override
     CARAPI AddJavascriptInterface(
@@ -2110,16 +2469,16 @@ public:
 
     // @Override
     CARAPI OnInitializeAccessibilityNodeInfo(
-        /* [in] */ const IAccessibilityNodeInfo* info);
+        /* [in] */ IAccessibilityNodeInfo* info);
 
     // @Override
     CARAPI OnInitializeAccessibilityEvent(
-        /* [in] */ const IAccessibilityEvent* event);
+        /* [in] */ IAccessibilityEvent* event);
 
     // @Override
     CARAPI_(Boolean) PerformAccessibilityAction(
         /* [in] */ const Int32& action,
-        /* [in] */ const IBundle* arguments);
+        /* [in] */ IBundle* arguments);
 
     // @Override
     CARAPI SetOverScrollMode(
@@ -2131,8 +2490,8 @@ public:
 
     // @Override
     CARAPI OnDrawVerticalScrollBar(
-        /* [in] */ const ICanvas* canvas,
-        /* [in] */ const IDrawable* scrollBar,
+        /* [in] */ ICanvas* canvas,
+        /* [in] */ IDrawable* scrollBar,
         /* [in] */ const Int32& l,
         /* [in] */ const Int32& t,
         /* [in] */ const Int32& r,
@@ -2142,8 +2501,8 @@ public:
     CARAPI OnOverScrolled(
         /* [in] */ const Int32& scrollX,
         /* [in] */ const Int32& scrollY,
-        /* [in] */ const Boolean& clampedX,
-        /* [in] */ const Boolean& clampedY);
+        /* [in] */ Boolean clampedX,
+        /* [in] */ Boolean clampedY);
 
     // @Override
     CARAPI OnWindowVisibilityChanged(
@@ -2151,38 +2510,38 @@ public:
 
     // @Override
     CARAPI OnDraw(
-        /* [in] */ const ICanvas* canvas);
+        /* [in] */ ICanvas* canvas);
 
     // @Override
     CARAPI SetLayoutParams(
-        /* [in] */ const IViewGroupLayoutParams* layoutParams);
+        /* [in] */ IViewGroupLayoutParams* layoutParams);
 
     // @Override
     CARAPI_(Boolean) PerformLongClick();
 
     // @Override
     CARAPI OnConfigurationChanged(
-        /* [in] */ const IConfiguration* newConfig);
+        /* [in] */ IConfiguration* newConfig);
 
     // @Override
     CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
-        /* [in] */ const IEditorInfo* outAttrs);
+        /* [in] */ IEditorInfo* outAttrs);
 
     // @Override
     CARAPI_(Boolean) OnKeyMultiple(
         /* [in] */ const Int32& keyCode,
         /* [in] */ const Int32& repeatCount,
-        /* [in] */ const IKeyEvent* event);
+        /* [in] */ IKeyEvent* event);
 
     // @Override
     CARAPI_(Boolean) OnKeyDown(
         /* [in] */ const Int32& keyCode,
-        /* [in] */ const IKeyEvent* event);
+        /* [in] */ IKeyEvent* event);
 
     // @Override
     CARAPI_(Boolean) OnKeyUp(
         /* [in] */ const Int32& keyCode,
-        /* [in] */ const IKeyEvent* event);
+        /* [in] */ IKeyEvent* event);
 
     // @Override
     CARAPI OnAttachedToWindow();
@@ -2192,18 +2551,18 @@ public:
 
     // @Override
     CARAPI OnVisibilityChanged(
-        /* [in] */ const IView* changedView,
+        /* [in] */ IView* changedView,
         /* [in] */ const Int32& visibility);
 
     // @Override
     CARAPI OnWindowFocusChanged(
-        /* [in] */ const Boolean& hasWindowFocus);
+        /* [in] */ Boolean hasWindowFocus);
 
     // @Override
     CARAPI OnFocusChanged(
-        /* [in] */ const Boolean& focused,
+        /* [in] */ Boolean focused,
         /* [in] */ const Int32& direction,
-        /* [in] */ const IRect* previouslyFocusedRect);
+        /* [in] */ IRect* previouslyFocusedRect);
 
     // @Override
     CARAPI_(Boolean) SetFrame(
@@ -2228,19 +2587,19 @@ public:
 
     // @Override
     CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ const IKeyEvent* event);
+        /* [in] */ IKeyEvent* event);
 
     // @Override
     CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ const IMotionEvent* ev);
+        /* [in] */ IMotionEvent* ev);
 
     // @Override
     CARAPI_(Boolean) OnHoverEvent(
-        /* [in] */ const IMotionEvent* event);
+        /* [in] */ IMotionEvent* event);
 
     // @Override
     CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ const IMotionEvent* event);
+        /* [in] */ IMotionEvent* event);
 
     // @Override
     CARAPI_(Boolean) OnTrackballEvent(
@@ -2249,7 +2608,7 @@ public:
     // @Override
     CARAPI_(Boolean) RequestFocus(
         /* [in] */ const Int32& direction,
-        /* [in] */ const IRect* previouslyFocusedRect);
+        /* [in] */ IRect* previouslyFocusedRect);
 
     // @Override
     CARAPI OnMeasure(
@@ -2258,9 +2617,9 @@ public:
 
     // @Override
     CARAPI_(Boolean) RequestChildRectangleOnScreen(
-        /* [in] */ const IView* child,
-        /* [in] */ const IRect* rect,
-        /* [in] */ const Boolean& immediate);
+        /* [in] */ IView* child,
+        /* [in] */ IRect* rect,
+        /* [in] */ Boolean immediate);
 
     // @Override
     CARAPI SetBackgroundColor(
@@ -2269,7 +2628,7 @@ public:
     // @Override
     CARAPI SetLayerType(
         /* [in] */ const Int32& layerType,
-        /* [in] */ const IPaint* paint);
+        /* [in] */ IPaint* paint);
 
     // Remove from superclass
     virtual CARAPI PreDispatchDraw(
@@ -2316,7 +2675,7 @@ public:
     // Implements SmartClipProvider
     // @Override
     CARAPI SetSmartClipResultHandler(
-        /* [in] */ const IHandler* resultHandler);
+        /* [in] */ IHandler* resultHandler);
 
 public:
     // The WebView that this WebViewChromium is the provider for.
@@ -2339,7 +2698,7 @@ private:
 
     // Wrap Context so that we can use resources from the webview resource apk.
     static CARAPI_(AutoPtr<IContext>) ResourcesContextWrapper(
-        /* [in] */ const IContext* ctx);
+        /* [in] */ IContext* ctx);
 
     CARAPI InitForReal();
 
@@ -2367,7 +2726,7 @@ private:
         /* [in] */ const String& encoding);
 
     CARAPI LoadUrlOnUiThread(
-        /* [in] */ const IInterface/*LoadUrlParams*/* loadUrlParams);
+        /* [in] */ IInterface/*LoadUrlParams*/* loadUrlParams);
 
     /**
      * Returns true if the supplied {@link WebChromeClient} supports fullscreen.
