@@ -589,6 +589,8 @@ Int64 ContentVideoView::GetNativeViewAndroid()
 
 AutoPtr<ContentVideoView> ContentVideoView::NativeGetSingletonJavaContentVideoView()
 {
+    assert(0);
+    return NULL;
 }
 
 void ContentVideoView::NativeExitFullscreen(
@@ -600,11 +602,15 @@ void ContentVideoView::NativeExitFullscreen(
 Int32 ContentVideoView::NativeGetCurrentPosition(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    assert(0);
+    return 0;
 }
 
 Int32 ContentVideoView::NativeGetDurationInMilliSeconds(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    assert(0);
+    return 0;
 }
 
 void ContentVideoView::NativeRequestMediaMetadata(
@@ -615,16 +621,22 @@ void ContentVideoView::NativeRequestMediaMetadata(
 Int32 ContentVideoView::NativeGetVideoWidth(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    assert(0);
+    return 0;
 }
 
 Int32 ContentVideoView::NativeGetVideoHeight(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    assert(0);
+    return 0;
 }
 
 Boolean ContentVideoView::NativeIsPlaying(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    assert(0);
+    return FALSE;
 }
 
 void ContentVideoView::NativePause(

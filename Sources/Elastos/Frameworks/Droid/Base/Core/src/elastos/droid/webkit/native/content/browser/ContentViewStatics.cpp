@@ -70,6 +70,8 @@ void ContentViewStatics::DisablePlatformNotifications ()
 String ContentViewStatics::NativeFindAddress(
     /* [in] */ const String& addr)
 {
+    assert(0);
+    return String(NULL);
 }
 
 void ContentViewStatics::NativeSetWebKitSharedTimersSuspended(

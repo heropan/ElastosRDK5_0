@@ -1,9 +1,9 @@
 
-#include "webkit/native/content/browser/ScreenOrientationListener.h"
-#include "webkit/native/ui/gfx/DeviceDisplayInfo.h"
-#include "webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/content/browser/ScreenOrientationListener.h"
+#include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include <elastos/utility/logging/Slogger.h>
-#include "os/Build.h"
+#include "elastos/droid/os/Build.h"
 
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Os::Build;
@@ -165,20 +165,16 @@ ECode ScreenOrientationListener::AddObserver(
     assert(mAppContext == con);
     assert(mAppContext != NULL);
 
-    assert(0);
-    // TODO
-    // if (!mObservers.addObserver(observer)) {
-    //     Slogger::W(TAG, "Adding an observer that is already present!");
-    //     return NOERROR;
-    // }
+    if (!mObservers.AddObserver((IObject*)observer)) {
+        Slogger::W(TAG, "Adding an observer that is already present!");
+        return NOERROR;
+    }
 
-    assert(0);
-    // TODO
-    // // If we got our first observer, we should start listening.
-    // if (mObservers.size() == 1) {
-    //     UpdateOrientation();
-    //     mBackend->StartListening();
-    // }
+    // If we got our first observer, we should start listening.
+    if (mObservers.Size() == 1) {
+        UpdateOrientation();
+        mBackend->StartListening();
+    }
 
     // We need to send the current value to the added observer as soon as
     // possible but outside of the current stack.
@@ -195,19 +191,15 @@ ECode ScreenOrientationListener::RemoveObserver(
 {
     VALIDATE_NOT_NULL(observer);
 
-    assert(0);
-    // TODO
-    // if (!mObservers.removeObserver(observer)) {
-    //     Slogger::W(TAG, "Removing an inexistent observer!");
-    //     return;
-    // }
+    if (!mObservers.RemoveObserver((IObject*)observer)) {
+        Slogger::W(TAG, "Removing an inexistent observer!");
+        return NOERROR;
+    }
 
-    assert(0);
-    // TODO
-    // if (mObservers.isEmpty()) {
-    //     // The last observer was removed, we should just stop listening.
-    //     mBackend->StopListening();
-    // }
+    if (mObservers.IsEmpty()) {
+        // The last observer was removed, we should just stop listening.
+        mBackend->StopListening();
+    }
 
     return NOERROR;
 }
@@ -223,11 +215,14 @@ ECode ScreenOrientationListener::NotifyObservers()
         return NOERROR;
     }
 
-    assert(0);
-    // TODO
-    // for (ScreenOrientationObserver observer : mObservers) {
-    //     observer.onScreenOrientationChanged(mOrientation);
-    // }
+    AutoPtr<IIterator> iter;
+    mObservers.GetIterator((IIterator**)&iter);
+    Boolean bNext;
+    for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
+        AutoPtr<ScreenOrientationObserver> observer;
+        iter->GetNext((IInterface**)&observer);
+        observer->OnScreenOrientationChanged(mOrientation);
+    }
 
     return NOERROR;
 }

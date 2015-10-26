@@ -92,11 +92,11 @@ Int32 ImeAdapter::sModifierNumLockOn = 0;
 ImeAdapter::ImeAdapter(
     /* [in] */ InputMethodManagerWrapper* wrapper,
     /* [in] */ ImeAdapterDelegate* embedder)
-    : mNativeImeAdapterAndroid(0)
-    , mTextInputType(0)
-    , mIsShowWithoutHideOutstanding(FALSE)
+    : mIsShowWithoutHideOutstanding(FALSE)
+    , mNativeImeAdapterAndroid(0)
     , mInputMethodManagerWrapper(wrapper)
     , mViewEmbedder(embedder)
+    , mTextInputType(0)
 {
     assert(0);
     // TODO
@@ -648,6 +648,8 @@ Boolean ImeAdapter::NativeSendSyntheticKeyEvent(
     /* [in] */ Int32 keyCode,
     /* [in] */ Int32 unicodeChar)
 {
+    assert(0);
+    return FALSE;
 }
 
 Boolean ImeAdapter::NativeSendKeyEvent(
@@ -660,6 +662,8 @@ Boolean ImeAdapter::NativeSendKeyEvent(
     /* [in] */ Boolean isSystemKey,
     /* [in] */ Int32 unicodeChar)
 {
+    assert(0);
+    return FALSE;
 }
 
 void ImeAdapter::NativeAppendUnderlineSpan(

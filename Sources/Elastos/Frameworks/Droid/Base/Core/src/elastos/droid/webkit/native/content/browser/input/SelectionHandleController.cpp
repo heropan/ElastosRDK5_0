@@ -2,6 +2,8 @@
 #include "elastos/droid/webkit/native/content/browser/input/SelectionHandleController.h"
 #include "elastos/droid/webkit/native/content/browser/PositionObserver.h"
 
+using Elastos::Droid::View::EIID_IOnTouchModeChangeListener;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -15,14 +17,16 @@ const Int32 SelectionHandleController::TEXT_DIRECTION_DEFAULT;
 const Int32 SelectionHandleController::TEXT_DIRECTION_LTR;
 const Int32 SelectionHandleController::TEXT_DIRECTION_RTL;
 
+CAR_INTERFACE_IMPL(SelectionHandleController, CursorController, IOnTouchModeChangeListener);
+
 SelectionHandleController::SelectionHandleController(
     /* [in] */ IView* parent,
     /* [in] */ PositionObserver* positionObserver)
     : mAllowAutomaticShowing(TRUE)
     , mIsShowing(FALSE)
+    , mParent(parent)
     , mFixedHandleX(0)
     , mFixedHandleY(0)
-    , mParent(parent)
     , mPositionObserver(positionObserver)
 {
 }

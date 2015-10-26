@@ -90,14 +90,15 @@ SelectPopupDropdown::SelectPopupDropdown(
     if (selected->GetLength() > 0) {
         mInitialSelection = (*selected)[0];
     }
-    AutoPtr< ArrayOf<DropdownItem*> > dropdownItems;
-    Int32 size;
-    items->GetSize(&size);
-    AutoPtr< ArrayOf<DropdownItem*> > list = ArrayOf<DropdownItem*>::Alloc(size);
+
     assert(0);
     // TODO
+    // AutoPtr< ArrayOf<DropdownItem*> > dropdownItems;
+    // Int32 size;
+    // items->GetSize(&size);
+    // AutoPtr< ArrayOf<DropdownItem*> > list = ArrayOf<DropdownItem*>::Alloc(size);
     // items->ToArray(list, (ArrayOf<DropdownItem*>**)&dropdownItems);
-    AutoPtr<DropdownAdapter> adapter = new DropdownAdapter(mContext, dropdownItems, NULL);
+    // AutoPtr<DropdownAdapter> adapter = new DropdownAdapter(mContext, dropdownItems, NULL);
     AutoPtr<IListAdapter> listView;
     assert(0);
     // TODO

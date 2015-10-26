@@ -1,8 +1,8 @@
 
-#include "webkit/native/content/browser/TracingControllerAndroid.h"
-#include "text/TextUtils.h"
-// TODO #include "os/CEnvironment.h"
-// TODO #include "widget/CToastHelper.h"
+#include "elastos/droid/webkit/native/content/browser/TracingControllerAndroid.h"
+#include "elastos/droid/text/TextUtils.h"
+// TODO #include "elastos/droid/os/CEnvironment.h"
+// TODO #include "elastos/droid/widget/CToastHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;

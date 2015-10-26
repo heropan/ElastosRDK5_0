@@ -23,8 +23,7 @@ namespace Browser {
  * Uses an existing Activity to handle displaying video in full screen.
  */
 class ActivityContentVideoViewClient
-    : public Object
-    , public ContentVideoViewClient
+    : public ContentVideoViewClient
 {
 public:
     ActivityContentVideoViewClient(

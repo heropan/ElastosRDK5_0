@@ -8,14 +8,14 @@ namespace Content {
 namespace App {
 
 
-const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS =
-    "org.chromium.content.common.linker_params.base_load_address";
+const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS(
+    "org.chromium.content.common.linker_params.base_load_address");
 
-const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_WAIT_FOR_SHARED_RELRO =
-    "org.chromium.content.common.linker_params.wait_for_shared_relro";
+const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_WAIT_FOR_SHARED_RELRO(
+    "org.chromium.content.common.linker_params.wait_for_shared_relro");
 
-const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME =
-    "org.chromium.content.common.linker_params.test_runner_class_name";
+const String ChromiumLinkerParams::EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME(
+    "org.chromium.content.common.linker_params.test_runner_class_name");
 
 ChromiumLinkerParams::ChromiumLinkerParams(
     /* [in] */ Int64 baseLoadAddress,
@@ -35,14 +35,11 @@ ChromiumLinkerParams::ChromiumLinkerParams(
 ChromiumLinkerParams::ChromiumLinkerParams(
     /* [in] */ IIntent* intent)
 {
-    assert(0);
-#if 0
-    mBaseLoadAddress = intent.getLongExtra(EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS, 0);
-    mWaitForSharedRelro = intent.getBooleanExtra(
-            EXTRA_LINKER_PARAMS_WAIT_FOR_SHARED_RELRO, false);
-    mTestRunnerClassName = intent.getStringExtra(
-            EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME);
-#endif
+    intent->GetInt64Extra(EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS, 0, &mBaseLoadAddress);
+    intent->GetBooleanExtra(
+            EXTRA_LINKER_PARAMS_WAIT_FOR_SHARED_RELRO, FALSE, &mWaitForSharedRelro);
+    intent->GetStringExtra(
+            EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME, &mTestRunnerClassName);
 }
 
 /**
@@ -53,26 +50,22 @@ ChromiumLinkerParams::ChromiumLinkerParams(
 void ChromiumLinkerParams::AddIntentExtras(
     /* [in] */ IIntent* intent)
 {
-    assert(0);
-#if 0
-    intent.putExtra(EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS, mBaseLoadAddress);
-    intent.putExtra(EXTRA_LINKER_PARAMS_WAIT_FOR_SHARED_RELRO, mWaitForSharedRelro);
-    intent.putExtra(EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME, mTestRunnerClassName);
-#endif
+    intent->PutExtra(EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS, mBaseLoadAddress);
+    intent->PutExtra(EXTRA_LINKER_PARAMS_WAIT_FOR_SHARED_RELRO, mWaitForSharedRelro);
+    intent->PutExtra(EXTRA_LINKER_PARAMS_TEST_RUNNER_CLASS_NAME, mTestRunnerClassName);
 }
 
 // For debugging traces only.
 String ChromiumLinkerParams::ToString()
 {
     assert(0);
-#if 0
-    return String.format(
-            "LinkerParams(baseLoadAddress:0x%x, waitForSharedRelro:%s, " +
-                    "testRunnerClassName:%s",
-            mBaseLoadAddress,
-            mWaitForSharedRelro ? "true" : "false",
-            mTestRunnerClassName);
-#endif
+    // TODO
+    // return String.format(
+    //         "LinkerParams(baseLoadAddress:0x%x, waitForSharedRelro:%s, " +
+    //                 "testRunnerClassName:%s",
+    //         mBaseLoadAddress,
+    //         mWaitForSharedRelro ? "true" : "false",
+    //         mTestRunnerClassName);
     return String(NULL);
 }
 

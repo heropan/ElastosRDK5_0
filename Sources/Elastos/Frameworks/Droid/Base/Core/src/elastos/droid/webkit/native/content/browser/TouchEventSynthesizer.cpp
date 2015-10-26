@@ -1,9 +1,9 @@
 
-#include "webkit/native/content/browser/TouchEventSynthesizer.h"
-#include "webkit/native/content/browser/ContentViewCore.h"
-// TODO #include "view/CPointerCoords.h"
-// TODO #include "view/CPointerProperties.h"
-// TODO #include "view/CMotionEventHelper.h"
+#include "elastos/droid/webkit/native/content/browser/TouchEventSynthesizer.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+// TODO #include "elastos/droid/view/CPointerCoords.h"
+// TODO #include "elastos/droid/view/CPointerProperties.h"
+// TODO #include "elastos/droid/view/CMotionEventHelper.h"
 
 // TODO using Elastos::Droid::View::CPointerCoords;
 // TODO using Elastos::Droid::View::CPointerProperties;

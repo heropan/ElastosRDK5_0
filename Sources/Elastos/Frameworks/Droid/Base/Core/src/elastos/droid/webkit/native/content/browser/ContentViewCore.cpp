@@ -876,7 +876,8 @@ CAR_INTERFACE_IMPL(ContentViewCore, ScreenOrientationListener::ScreenOrientation
  */
 ContentViewCore::ContentViewCore(
     /* [in] */ IContext* context)
-    : mNativeContentViewCore(0)
+    : mContext(context)
+    , mNativeContentViewCore(0)
     , mViewportWidthPix(0)
     , mViewportHeightPix(0)
     , mPhysicalBackingWidthPix(0)
@@ -899,7 +900,6 @@ ContentViewCore::ContentViewCore(
     , mCurrentTouchOffsetY(0.0f)
     , mSmartClipOffsetX(0)
     , mSmartClipOffsetY(0)
-    , mContext(context)
 {
     mAdapterInputConnectionFactory = new ImeAdapter::AdapterInputConnectionFactory();
     mInputMethodManagerWrapper = new InputMethodManagerWrapper(mContext);
@@ -921,9 +921,7 @@ ContentViewCore::ContentViewCore(
     mEndHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     mInsertionHandlePoint = mRenderCoordinates->CreateNormalizedPoint();
     GetContext()->GetSystemService(IContext::ACCESSIBILITY_SERVICE, (IInterface**)&mAccessibilityManager);
-    // TODO
-    //mGestureStateListeners = new ObserverList<GestureStateListener>();
-    //mGestureStateListenersIterator = mGestureStateListeners->RewindableIterator();
+    mGestureStateListenersIterator = mGestureStateListeners.GetRewindableIterator();
 
     AutoPtr<IEditableFactory> factory;
     // TODO
@@ -1199,9 +1197,7 @@ void ContentViewCore::Destroy()
     mJavaScriptInterfaces->Clear();
     mRetainedJavaScriptObjects->Clear();
     UnregisterAccessibilityContentObserver();
-    assert(0);
-    // TODO
-    // mGestureStateListeners->Clear();
+    mGestureStateListeners.Clear();
     ScreenOrientationListener::GetInstance()->RemoveObserver(this);
 }
 
@@ -1623,7 +1619,7 @@ Boolean ContentViewCore::IsSelectionEditable()
 Boolean ContentViewCore::IsSPenSupported(
     /* [in] */ IContext* context)
 {
-    if (sIsSPenSupported == NULL) {
+    if (sIsSPenSupported == FALSE/*NULL*/) {
         sIsSPenSupported = DetectSPenSupport(context);
     }
 
@@ -1793,13 +1789,15 @@ void ContentViewCore::OnFlingStartEventConsumed(
     mTouchScrollInProgress = FALSE;
     mPotentiallyActiveFlingCount++;
     TemporarilyHideTextHandles();
-    assert(0);
-    // TODO
-    // for (mGestureStateListenersIterator->Rewind();
-    //             mGestureStateListenersIterator->HasNext();) {
-    //     mGestureStateListenersIterator->Next()->OnFlingStartGesture(
-    //             vx, vy, ComputeVerticalScrollOffset(), ComputeVerticalScrollExtent());
-    // }
+    Boolean bNext;
+    mGestureStateListenersIterator->HasNext(&bNext);
+    for (mGestureStateListenersIterator->Rewind();
+                bNext; mGestureStateListenersIterator->HasNext(&bNext)) {
+        AutoPtr<GestureStateListener> listener;
+        mGestureStateListenersIterator->GetNext((IInterface**)&listener);
+        listener->OnFlingStartGesture(
+                vx, vy, ComputeVerticalScrollOffset(), ComputeVerticalScrollExtent());
+    }
 }
 
 //@SuppressWarnings("unused")
@@ -1809,12 +1807,14 @@ void ContentViewCore::OnFlingStartEventHadNoConsumer(
     /* [in] */ Int32 vy)
 {
     mTouchScrollInProgress = FALSE;
-    assert(0);
-    // TODO
-    // for (mGestureStateListenersIterator->Rewind();
-    //             mGestureStateListenersIterator->HasNext();) {
-    //     mGestureStateListenersIterator->Next()->OnUnhandledFlingStartEvent(vx, vy);
-    // }
+    Boolean bNext;
+    mGestureStateListenersIterator->HasNext(&bNext);
+    for (mGestureStateListenersIterator->Rewind();
+                bNext; mGestureStateListenersIterator->HasNext(&bNext)) {
+        AutoPtr<GestureStateListener> listener;
+        mGestureStateListenersIterator->GetNext((IInterface**)&listener);
+        listener->OnUnhandledFlingStartEvent(vx, vy);
+    }
 }
 
 //@SuppressWarnings("unused")
@@ -1839,12 +1839,14 @@ void ContentViewCore::OnScrollBeginEventAck()
 void ContentViewCore::OnScrollUpdateGestureConsumed()
 {
     mZoomControlsDelegate->InvokeZoomPicker();
-    assert(0);
-    // TODO
-    // for (mGestureStateListenersIterator->Rewind();
-    //         mGestureStateListenersIterator->HasNext();) {
-    //     mGestureStateListenersIterator->Next()->OnScrollUpdateGestureConsumed();
-    // }
+    Boolean bNext;
+    mGestureStateListenersIterator->HasNext(&bNext);
+    for (mGestureStateListenersIterator->Rewind();
+            bNext; mGestureStateListenersIterator->HasNext(&bNext)) {
+        AutoPtr<GestureStateListener> listener;
+        mGestureStateListenersIterator->GetNext((IInterface**)&listener);
+        listener->OnScrollUpdateGestureConsumed();
+    }
 }
 
 //@SuppressWarnings("unused")
@@ -1880,12 +1882,14 @@ void ContentViewCore::OnSingleTapEventAck(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    assert(0);
-    // TODO
-    // for (mGestureStateListenersIterator->Rewind();
-    //         mGestureStateListenersIterator->HasNext();) {
-    //     mGestureStateListenersIterator->Next()->OnSingleTap(consumed, x, y);
-    // }
+    Boolean bNext;
+    mGestureStateListenersIterator->HasNext(&bNext);
+    for (mGestureStateListenersIterator->Rewind();
+            bNext; mGestureStateListenersIterator->HasNext(&bNext)) {
+        AutoPtr<GestureStateListener> listener;
+        mGestureStateListenersIterator->GetNext((IInterface**)&listener);
+        listener->OnSingleTap(consumed, x, y);
+    }
 }
 
 //@SuppressWarnings("unused")
@@ -1965,9 +1969,7 @@ void ContentViewCore::CancelFling(
 void ContentViewCore::AddGestureStateListener(
     /* [in] */ GestureStateListener* listener)
 {
-    assert(0);
-    // TODO
-    // mGestureStateListeners->AddObserver(listener);
+    mGestureStateListeners.AddObserver((IObject*)listener);
 }
 
 /**
@@ -1977,48 +1979,47 @@ void ContentViewCore::AddGestureStateListener(
 void ContentViewCore::RemoveGestureStateListener(
     /* [in] */ GestureStateListener* listener)
 {
-    assert(0);
-    // TODO
-    // mGestureStateListeners->RemoveObserver(listener);
+    mGestureStateListeners.RemoveObserver((IObject*)listener);
 }
 
 void ContentViewCore::UpdateGestureStateListener(
     /* [in] */ Int32 gestureType)
 {
-    assert(0);
-    // TODO
-    // for (mGestureStateListenersIterator->Rewind();
-    //         mGestureStateListenersIterator->HasNext();) {
-    //     GestureStateListener listener = mGestureStateListenersIterator->Next();
-    //     switch (gestureType) {
-    //         case GestureEventType::PINCH_BEGIN:
-    //             listener->OnPinchStarted();
-    //             break;
-    //         case GestureEventType::PINCH_END:
-    //             listener->OnPinchEnded();
-    //             break;
-    //         case GestureEventType::FLING_END:
-    //             listener->OnFlingEndGesture(
-    //                     ComputeVerticalScrollOffset(),
-    //                     ComputeVerticalScrollExtent());
-    //             break;
-    //         case GestureEventType::FLING_CANCEL:
-    //             listener->OnFlingCancelGesture();
-    //             break;
-    //         case GestureEventType::SCROLL_START:
-    //             listener->OnScrollStarted(
-    //                     ComputeVerticalScrollOffset(),
-    //                     ComputeVerticalScrollExtent());
-    //             break;
-    //         case GestureEventType->SCROLL_END:
-    //             listener->OnScrollEnded(
-    //                     ComputeVerticalScrollOffset(),
-    //                     ComputeVerticalScrollExtent());
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
+    Boolean bNext;
+    mGestureStateListenersIterator->HasNext(&bNext);
+    for (mGestureStateListenersIterator->Rewind();
+            bNext; mGestureStateListenersIterator->HasNext(&bNext)) {
+        AutoPtr<GestureStateListener> listener;
+        mGestureStateListenersIterator->GetNext((IInterface**)&listener);
+        switch (gestureType) {
+            case GestureEventType::PINCH_BEGIN:
+                listener->OnPinchStarted();
+                break;
+            case GestureEventType::PINCH_END:
+                listener->OnPinchEnded();
+                break;
+            case GestureEventType::FLING_END:
+                listener->OnFlingEndGesture(
+                        ComputeVerticalScrollOffset(),
+                        ComputeVerticalScrollExtent());
+                break;
+            case GestureEventType::FLING_CANCEL:
+                listener->OnFlingCancelGesture();
+                break;
+            case GestureEventType::SCROLL_START:
+                listener->OnScrollStarted(
+                        ComputeVerticalScrollOffset(),
+                        ComputeVerticalScrollExtent());
+                break;
+            case GestureEventType::SCROLL_END:
+                listener->OnScrollEnded(
+                        ComputeVerticalScrollOffset(),
+                        ComputeVerticalScrollExtent());
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 /**
@@ -2485,11 +2486,12 @@ Boolean ContentViewCore::OnHoverEvent(
                     x, y);
         }
 
-        return TRUE;
     // } finally {
         inputEvent->Recycle();
         TraceEvent::End(String("onHoverEvent"));
     // }
+
+    return TRUE;
 }
 
 /**
@@ -3120,14 +3122,16 @@ void ContentViewCore::UpdateFrameInfo(
             contentOffsetYPix);
 
     if (scrollChanged || contentOffsetChanged) {
-        assert(0);
-        // TODO
-        // for (mGestureStateListenersIterator->Rewind();
-        //         mGestureStateListenersIterator->HasNext();) {
-        //     mGestureStateListenersIterator->Next()->OnScrollOffsetOrExtentChanged(
-        //             ComputeVerticalScrollOffset(),
-        //             ComputeVerticalScrollExtent());
-        // }
+        Boolean bNext;
+        mGestureStateListenersIterator->HasNext(&bNext);
+        for (mGestureStateListenersIterator->Rewind();
+                bNext; mGestureStateListenersIterator->HasNext(&bNext)) {
+            AutoPtr<GestureStateListener> listener;
+            mGestureStateListenersIterator->GetNext((IInterface**)&listener);
+            listener->OnScrollOffsetOrExtentChanged(
+                    ComputeVerticalScrollOffset(),
+                    ComputeVerticalScrollExtent());
+        }
     }
 
     if (needTemporarilyHideHandles) {
@@ -4033,10 +4037,8 @@ AutoPtr<NavigationHistory> ContentViewCore::GetDirectedNavigationHistory(
 {
     AutoPtr<NavigationHistory> history = new NavigationHistory();
     if (mNativeContentViewCore != 0) {
-        assert(0);
-        // TODO
-        // NativeGetDirectedNavigationHistory(
-        //     mNativeContentViewCore, history, isForward, itemLimit);
+        NativeGetDirectedNavigationHistory(
+            mNativeContentViewCore, (IObject*)history, isForward, itemLimit);
     }
     return history;
 }
@@ -4175,6 +4177,8 @@ Int64 ContentViewCore::NativeInit(
     /* [in] */ Int64 windowAndroidPtr,
     /* [in] */ IHashSet* retainedObjectSet)
 {
+    assert(0);
+    return 0;
 }
 
 //@CalledByNative
@@ -4214,6 +4218,8 @@ ECode ContentViewCore::OnScreenOrientationChanged(
 AutoPtr<WebContents> ContentViewCore::NativeGetWebContentsAndroid(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return NULL;
 }
 
 void ContentViewCore::NativeOnJavaContentViewCoreDestroyed(
@@ -4241,6 +4247,8 @@ void ContentViewCore::NativeLoadUrl(
 String ContentViewCore::NativeGetURL(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return String(NULL);
 }
 
 void ContentViewCore::NativeShowInterstitialPage(
@@ -4253,11 +4261,15 @@ void ContentViewCore::NativeShowInterstitialPage(
 Boolean ContentViewCore::NativeIsShowingInterstitialPage(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return FALSE;
 }
 
 Boolean ContentViewCore::NativeIsIncognito(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return FALSE;
 }
 
 void ContentViewCore::NativeSetFocus(
@@ -4295,6 +4307,8 @@ Boolean ContentViewCore::NativeOnTouchEvent(
     /* [in] */ Int32 androidToolType1,
     /* [in] */ Int32 androidButtonState)
 {
+    assert(0);
+    return FALSE;
 }
 
 Int32 ContentViewCore::NativeSendMouseMoveEvent(
@@ -4303,6 +4317,8 @@ Int32 ContentViewCore::NativeSendMouseMoveEvent(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
+    assert(0);
+    return 0;
 }
 
 Int32 ContentViewCore::NativeSendMouseWheelEvent(
@@ -4312,6 +4328,8 @@ Int32 ContentViewCore::NativeSendMouseWheelEvent(
     /* [in] */ Float y,
     /* [in] */ Float verticalAxis)
 {
+    assert(0);
+    return 0;
 }
 
 void ContentViewCore::NativeScrollBegin(
@@ -4506,16 +4524,22 @@ void ContentViewCore::NativeEvaluateJavaScript(
 Int64 ContentViewCore::NativeGetNativeImeAdapter(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return 0;
 }
 
 Int32 ContentViewCore::NativeGetCurrentRenderProcessId(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return 0;
 }
 
 Int32 ContentViewCore::NativeGetBackgroundColor(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return 0;
 }
 
 void ContentViewCore::NativeOnShow(
@@ -4538,6 +4562,8 @@ void ContentViewCore::NativeSetUseDesktopUserAgent(
 Boolean ContentViewCore::NativeGetUseDesktopUserAgent(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return FALSE;
 }
 
 void ContentViewCore::NativeClearSslPreferences(
@@ -4569,6 +4595,8 @@ Int32 ContentViewCore::NativeGetNavigationHistory(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* context)
 {
+    assert(0);
+    return 0;
 }
 
 void ContentViewCore::NativeGetDirectedNavigationHistory(
@@ -4582,6 +4610,8 @@ void ContentViewCore::NativeGetDirectedNavigationHistory(
 String ContentViewCore::NativeGetOriginalUrlForActiveNavigationEntry(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return String(NULL);
 }
 
 void ContentViewCore::NativeWasResized(
@@ -4592,6 +4622,8 @@ void ContentViewCore::NativeWasResized(
 Boolean ContentViewCore::NativeIsRenderWidgetHostViewReady(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    assert(0);
+    return FALSE;
 }
 
 void ContentViewCore::NativeExitFullscreen(

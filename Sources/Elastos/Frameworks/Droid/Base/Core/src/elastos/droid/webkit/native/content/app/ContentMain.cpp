@@ -1,10 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/app/ContentMain.h"
 
-// import android.content.Context;
-
-// import org.chromium.base.JNINamespace;
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -35,6 +31,8 @@ void ContentMain::NativeInitApplicationContext(
 
 Int32 ContentMain::NativeStart()
 {
+    assert(0);
+    return -1;
 }
 
 } // namespace App

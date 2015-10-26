@@ -4,7 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/app/ChromiumLinkerParams.h"
+#include "elastos/droid/os/Runnable.h"
 
+using Elastos::Core::IThread;
 using Elastos::Droid::App::IService;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -13,9 +15,11 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::Runnable;
 // import android.os.RemoteException;
 // import android.util.Log;
 using Elastos::Droid::View::ISurface;
+using Elastos::Utility::IArrayList;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -48,8 +52,22 @@ namespace App {
  */
 //@JNINamespace("content")
 class ChildProcessService
-    //: public Service
+    // TODO : public Service
 {
+private:
+    class InnerRunnable
+        : public Runnable
+    {
+    public:
+        InnerRunnable(
+            /* [in] */ ChildProcessService* owner);
+
+        CARAPI Run();
+
+    private:
+        ChildProcessService* mOwner;
+    };
+
 public:
     ChildProcessService();
 
@@ -127,27 +145,29 @@ private:
 private:
     static const String MAIN_THREAD_NAME;
     static const String TAG;
-//    AutoPtr<IChildProcessCallback> mCallback;
+// TODO    AutoPtr<IChildProcessCallback> mCallback;
 
     // This is the native "Main" thread for the renderer / utility process.
-//    AutoPtr<IThread> mMainThread;
+    AutoPtr<IThread> mMainThread;
+    Object mMainThreadLock;
+
     // Parameters received via IPC, only accessed while holding the mMainThread monitor.
     AutoPtr< ArrayOf<String> > mCommandLineParams;
     Int32 mCpuCount;
     Int64 mCpuFeatures;
     // Pairs IDs and file descriptors that should be registered natively.
-//    ArrayList<Integer> mFileIds;
-//    ArrayList<ParcelFileDescriptor> mFileFds;
+    AutoPtr<IArrayList> mFileIds;
+    AutoPtr<IArrayList> mFileFds;
     // Linker-specific parameters for this child process service.
     AutoPtr<ChromiumLinkerParams> mLinkerParams;
 
-//    static AtomicReference<Context> sContext;
+// TODO   static AtomicReference<Context> sContext;
     Boolean mLibraryInitialized;
     // Becomes true once the service is bound. Access must synchronize around mMainThread.
     Boolean mIsBound;
 
     // Binder object used by clients for this service.
-//    const IChildProcessService.Stub mBinder;
+// TODO   const IChildProcessService.Stub mBinder;
 };
 
 } // namespace App

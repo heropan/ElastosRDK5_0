@@ -2,12 +2,32 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_APP_CONTENTAPPLICATION_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_APP_CONTENTAPPLICATION_H__
 
-// import android.os.Looper;
-// import android.os.MessageQueue;
+#include "elastos/droid/webkit/native/base/BaseChromiumApplication.h"
+
+using Elastos::Droid::Os::IIdleHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessageQueue;
+using Elastos::Droid::Webkit::Base::BaseChromiumApplication;
 
 // import org.chromium.base.BaseChromiumApplication;
 // import org.chromium.base.library_loader.LibraryLoader;
 // import org.chromium.content.browser.TracingControllerAndroid;
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace Content {
+namespace Browser {
+
+class TracingControllerAndroid;
+
+} // namespace Browser
+} // namespace Content
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
+
+using Elastos::Droid::Webkit::Content::Browser::TracingControllerAndroid;
 
 namespace Elastos {
 namespace Droid {
@@ -21,6 +41,24 @@ namespace App {
  */
 class ContentApplication : public BaseChromiumApplication
 {
+private:
+    class InnerIdleHandler
+        : public Object
+        , public IIdleHandler
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        InnerIdleHandler(
+            /* [in] */ ContentApplication* owner);
+
+        CARAPI QueueIdle(
+            /* [out] */ Boolean* result);
+
+    private:
+        ContentApplication* mOwner;
+    };
+
 public:
     CARAPI_(AutoPtr<TracingControllerAndroid>) GetTracingController();
 

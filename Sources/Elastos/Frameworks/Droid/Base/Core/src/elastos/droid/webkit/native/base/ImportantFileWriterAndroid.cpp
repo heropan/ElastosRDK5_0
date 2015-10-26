@@ -26,6 +26,8 @@ Boolean ImportantFileWriterAndroid::NativeWriteFileAtomically(
     /* [in] */ const String& fileName,
     /* [in] */ ArrayOf<Byte>* data)
 {
+    assert(0);
+    return FALSE;
 }
 
 } // namespace Base

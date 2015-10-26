@@ -1,4 +1,6 @@
 
+#include "elastos/droid/webkit/native/content_public/browser/GestureStateListener.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

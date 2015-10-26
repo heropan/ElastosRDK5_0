@@ -1,4 +1,6 @@
 
+#include "elastos/droid/webkit/native/content/browser/framehost/NavigationControllerImpl.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -17,6 +19,7 @@ AutoPtr<NavigationControllerImpl> NavigationControllerImpl::Create(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
     AutoPtr<NavigationControllerImpl> ret = new NavigationControllerImpl(nativeNavigationControllerAndroid);
+    return ret;
 }
 
 //@CalledByNative
@@ -84,17 +87,23 @@ void NavigationControllerImpl::GoForward()
 Boolean NavigationControllerImpl::NativeCanGoBack(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
+    assert(0);
+    return FALSE;
 }
 
 Boolean NavigationControllerImpl::NativeCanGoForward(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
+    assert(0);
+    return FALSE;
 }
 
 Boolean NavigationControllerImpl::NativeCanGoToOffset(
     /* [in] */ Int64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 offset)
 {
+    assert(0);
+    return FALSE;
 }
 
 void NavigationControllerImpl::NativeGoBack(

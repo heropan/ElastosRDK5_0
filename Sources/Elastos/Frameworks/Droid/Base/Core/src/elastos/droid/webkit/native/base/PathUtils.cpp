@@ -36,6 +36,7 @@ String PathUtils::GetDataDirectory(
     /* [in] */ IContext* appContext)
 {
     if (sDataDirectorySuffix == NULL) {
+        assert(0);
 //        throw new IllegalStateException(
 //                "setDataDirectorySuffix must be called before getDataDirectory");
     }

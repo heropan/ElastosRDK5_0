@@ -55,11 +55,15 @@ Boolean ContentSettings::GetJavaScriptEnabled()
 Int64 ContentSettings::NativeInit(
     /* [in] */ Int64 contentViewPtr)
 {
+    assert(0);
+    return 0;
 }
 
 Boolean ContentSettings::NativeGetJavaScriptEnabled(
     /* [in] */ Int64 nativeContentSettings)
 {
+    assert(0);
+    return FALSE;
 }
 
 } // namespace Browser

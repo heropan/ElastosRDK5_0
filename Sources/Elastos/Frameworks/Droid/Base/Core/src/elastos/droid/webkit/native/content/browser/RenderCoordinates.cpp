@@ -1,5 +1,5 @@
 
-#include "webkit/native/content/browser/RenderCoordinates.h"
+#include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {
@@ -54,6 +54,7 @@ ECode RenderCoordinates::NormalizedPoint::SetAbsoluteCss(
 {
     mXAbsoluteCss = xCss;
     mYAbsoluteCss = yCss;
+    return NOERROR;
 }
 
 ECode RenderCoordinates::NormalizedPoint::SetLocalDip(

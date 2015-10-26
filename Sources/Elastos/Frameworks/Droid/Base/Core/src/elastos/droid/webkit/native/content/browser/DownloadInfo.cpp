@@ -170,9 +170,9 @@ DownloadInfo::DownloadInfo(
     , mContentLength(builder->mContentLength)
     , mHasDownloadId(builder->mHasDownloadId)
     , mDownloadId(builder->mDownloadId)
-    , mIsSuccessful(builder->mIsSuccessful)
-    , mIsGETRequest(builder->mIsGETRequest)
     , mContentDisposition(builder->mContentDisposition)
+    , mIsGETRequest(builder->mIsGETRequest)
+    , mIsSuccessful(builder->mIsSuccessful)
     , mPercentCompleted(builder->mPercentCompleted)
     , mTimeRemainingInMillis(builder->mTimeRemainingInMillis)
 {

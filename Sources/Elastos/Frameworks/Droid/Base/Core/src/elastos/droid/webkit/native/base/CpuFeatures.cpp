@@ -26,10 +26,14 @@ Int64 CpuFeatures::GetMask()
 
 Int32 CpuFeatures::NativeGetCoreCount()
 {
+    assert(0);
+    return 0;
 }
 
 Int64 CpuFeatures::NativeGetCpuFeatures()
 {
+    assert(0);
+    return 0;
 }
 
 } // namespace Base

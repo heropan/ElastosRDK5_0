@@ -1,9 +1,9 @@
 
-#include "webkit/native/content/browser/SpeechRecognition.h"
-#include "webkit/native/content/browser/SpeechRecognitionError.h"
-// TODO #include "content/CIntent.h"
-// TODO #include "content/CComponentName.h"
-// TODO #include "speech/CSpeechRecognizerHelper.h"
+#include "elastos/droid/webkit/native/content/browser/SpeechRecognition.h"
+#include "elastos/droid/webkit/native/content/browser/SpeechRecognitionError.h"
+// TODO #include "elastos/droid/content/CIntent.h"
+// TODO #include "elastos/droid/content/CComponentName.h"
+// TODO #include "elastos/droid/speech/CSpeechRecognizerHelper.h"
 
 using Elastos::Core::IString;
 // TODO using Elastos::Droid::Content::CIntent;
@@ -184,8 +184,8 @@ SpeechRecognition::SpeechRecognition(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
     : mContext(context)
-    , mContinuous(FALSE)
     , mNativeSpeechRecognizerImplAndroid(nativeSpeechRecognizerImplAndroid)
+    , mContinuous(FALSE)
 {
     mListener = new Listener(this);
     assert(0);
@@ -393,3 +393,4 @@ ECode SpeechRecognition::NativeOnRecognitionEnd(
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+

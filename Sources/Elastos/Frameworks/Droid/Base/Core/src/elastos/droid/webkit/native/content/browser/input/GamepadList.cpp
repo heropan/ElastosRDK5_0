@@ -446,7 +446,6 @@ void GamepadList::NativeSetGamepadData(
 {
 }
 
-
 } // namespace Input
 } // namespace Browser
 } // namespace Content

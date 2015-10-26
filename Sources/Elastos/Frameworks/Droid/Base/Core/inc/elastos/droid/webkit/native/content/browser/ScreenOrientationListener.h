@@ -9,6 +9,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/webkit/native/base/ObserverList.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IComponentCallbacks;
@@ -18,7 +19,7 @@ using Elastos::Droid::Hardware::Display::IDisplayListener;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IWindowManager;
-//using Elastos::Droid::Webkit::Base::ObserverList;
+using Elastos::Droid::Webkit::Base::ObserverList;
 
 namespace Elastos {
 namespace Droid {
@@ -219,7 +220,8 @@ private:
 private:
     static const String TAG;
     // List of observers to notify when the screen orientation changes.
-//    /*const*/ AutoPtr< ObserverList<ScreenOrientationObserver> > mObservers;
+    ///*const*/ AutoPtr< ObserverList<ScreenOrientationObserver> > mObservers;
+    ObserverList mObservers;
     // mOrientation will be updated every time the orientation changes. When not
     // listening for changes, the value will be invalid and will be updated when
     // starting to listen again.

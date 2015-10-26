@@ -1,8 +1,28 @@
 
 #include "elastos/droid/webkit/native/content/browser/crypto/CipherFactory.h"
+#include "elastos/droid/webkit/native/content/browser/crypto/ByteArrayGenerator.h"
+#include "elastos/droid/os/AsyncTask.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Core::AutoLock;
+using Elastosx::Crypto::ICipherHelper;
+// TODO using Elastosx::Crypto::CCipherHelper;
+using Elastosx::Crypto::ISecretKey;
+using Elastosx::Crypto::IKeyGenerator;
+using Elastosx::Crypto::IKeyGeneratorHelper;
+using Elastosx::Crypto::CKeyGeneratorHelper;
+using Elastosx::Crypto::Spec::IIvParameterSpec;
+// TODO using Elastosx::Crypto::Spec::CIvParameterSpec;
+using Elastos::Droid::Os::AsyncTask;
+using Elastos::Security::EIID_IKey;
+using Elastos::Security::ISecureRandom;
+using Elastos::Security::ISecureRandomHelper;
+// TODO using Elastos::Security::CSecureRandomHelper;
+using Elastos::Security::Spec::IAlgorithmParameterSpec;
+using Elastos::Security::Spec::EIID_IAlgorithmParameterSpec;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Concurrent::EIID_ICallable;
 
 namespace Elastos {
 namespace Droid {
@@ -28,6 +48,71 @@ CipherFactory::CipherData::CipherData(
 //==================================================================
 
 AutoPtr<CipherFactory> CipherFactory::LazyHolder::sInstance = new CipherFactory();
+
+//==================================================================
+//                  CipherFactory::InnerCallable
+//==================================================================
+
+CAR_INTERFACE_IMPL(CipherFactory::InnerCallable, Object, ICallable);
+
+CipherFactory::InnerCallable::InnerCallable(
+    /* [in] */ CipherFactory* owner)
+    : mOwner(owner)
+{
+}
+
+ECode CipherFactory::InnerCallable::Call(
+    /* [out] */ IInterface** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    // Poll random data to generate initialization parameters for the Cipher.
+    AutoPtr< ArrayOf<Byte> > seed, iv;
+    // try {
+        seed = mOwner->mRandomNumberProvider->GetBytes(NUM_BYTES);
+        iv = mOwner->mRandomNumberProvider->GetBytes(NUM_BYTES);
+    // } catch (Exception e) {
+    //     Log.e(TAG, "Couldn't get generator data.");
+    //     return null;
+    // }
+
+    // try {
+        // Old versions of SecureRandom do not seed themselves as securely as possible.
+        // This workaround should suffice until the fixed version is deployed to all
+        // users. The seed comes from RandomNumberProvider.getBytes(), which reads
+        // from /dev/urandom, which is as good as the platform can get.
+        //
+        // TODO(palmer): Consider getting rid of this once the updated platform has
+        // shipped to everyone. Alternately, leave this in as a defense against other
+        // bugs in SecureRandom.
+        AutoPtr<ISecureRandomHelper> secureRandomHelper;
+        assert(0);
+        // TODO
+        // CSecureRandomHelper::AcquireSingleton((ISecureRandomHelper**)&secureRandomHelper);
+        AutoPtr<ISecureRandom> random;
+        secureRandomHelper->GetInstance(String("SHA1PRNG"), (ISecureRandom**)&random);
+        random->SetSeed(seed);
+
+        AutoPtr<IKeyGeneratorHelper> keyGeneratorHelper;
+        assert(0);
+        // TODO
+        // CKeyGeneratorHelper::AcquireSingleton((IKeyGeneratorHelper**)&keyGeneratorHelper);
+        AutoPtr<IKeyGenerator> generator;
+        keyGeneratorHelper->GetInstance(String("AES"), (IKeyGenerator**)&generator);
+        generator->Init(128, random);
+        AutoPtr<ISecretKey> secretKey;
+        generator->GenerateKey((ISecretKey**)&secretKey);
+        AutoPtr<IKey> key = (IKey*)secretKey->Probe(EIID_IKey);
+        AutoPtr<CipherData> cipherData = new CipherData(key, iv);
+        *result = (IInterface*)(IObject*)cipherData;
+        REFCOUNT_ADD(*result);
+    // } catch (GeneralSecurityException e) {
+    //     Log.e(TAG, "Couldn't get generator instances.");
+    //     return null;
+    // }
+
+    return NOERROR;
+}
 
 //==================================================================
 //                        CipherFactory
@@ -64,8 +149,19 @@ AutoPtr<ICipher> CipherFactory::GetCipher(
 
     if (data != NULL) {
         // try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(opmode, data.key, new IvParameterSpec(data.iv));
+            AutoPtr<ICipher> cipher;
+            AutoPtr<ICipherHelper> helper;
+            assert(0);
+            // TODO
+            // CCipherHelper::AcquireSingleton((ICipherHelper**)&helper);
+            helper->GetInstance(String("AES/CBC/PKCS5Padding"), (ICipher**)&cipher);
+            AutoPtr<IIvParameterSpec> ivParameterSpec;
+            assert(0);
+            // TODO
+            // CIvParameterSpec::New((IIvParameterSpec**)&ivParameterSpec);
+            AutoPtr<IAlgorithmParameterSpec> algorithmParameterSpec =
+                   (IAlgorithmParameterSpec*)ivParameterSpec->Probe(EIID_IAlgorithmParameterSpec);
+            cipher->Init(opmode, data->key, algorithmParameterSpec);
             return cipher;
         // } catch (GeneralSecurityException e) {
         //     // Can't do anything here.
@@ -73,6 +169,7 @@ AutoPtr<ICipher> CipherFactory::GetCipher(
     }
 
     Slogger::E(TAG, "Error in creating cipher instance.");
+
     return NULL;
 }
 
@@ -81,26 +178,30 @@ AutoPtr<ICipher> CipherFactory::GetCipher(
  * @param generateIfNeeded Generates data on the background thread, blocking until it is done.
  * @return Data to use for the Cipher, null if it couldn't be generated.
  */
-AutoPtr<CipherData> CipherFactory::GetCipherData(
+AutoPtr<CipherFactory::CipherData> CipherFactory::GetCipherData(
     /* [in] */ Boolean generateIfNeeded)
 {
     if (mData == NULL && generateIfNeeded) {
         // Ideally, this task should have been started way before this.
-        triggerKeyGeneration();
+        TriggerKeyGeneration();
 
         // Grab the data from the task.
-        CipherData data;
-        try {
-            data = mDataGenerator.get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        AutoPtr<CipherData> data;
+        // try {
+            mDataGenerator->Get((IInterface**)&data);
+        // } catch (InterruptedException e) {
+        //     throw new RuntimeException(e);
+        // } catch (ExecutionException e) {
+        //     throw new RuntimeException(e);
+        // }
 
         // Only the first thread is allowed to save the data.
-        synchronized (mDataLock) {
-            if (mData == null) mData = data;
+        //synchronized (mDataLock)
+        {
+            AutoLock lock(mDataLock);
+            if (mData == NULL) {
+                mData = data;
+            }
         }
     }
     return mData;
@@ -112,42 +213,10 @@ AutoPtr<CipherData> CipherFactory::GetCipherData(
  * {@link ByteArrayGenerator#getBytes(int)}.
  * @return Callable that generates the Cipher data.
  */
-Callable<CipherData> CipherFactory::CreateGeneratorCallable()
+AutoPtr<ICallable> CipherFactory::CreateGeneratorCallable()
 {
-    return new Callable<CipherData>() {
-        @Override
-        public CipherData call() {
-            // Poll random data to generate initialization parameters for the Cipher.
-            byte[] seed, iv;
-            try {
-                seed = mRandomNumberProvider.getBytes(NUM_BYTES);
-                iv = mRandomNumberProvider.getBytes(NUM_BYTES);
-            } catch (Exception e) {
-                Log.e(TAG, "Couldn't get generator data.");
-                return null;
-            }
-
-            try {
-                // Old versions of SecureRandom do not seed themselves as securely as possible.
-                // This workaround should suffice until the fixed version is deployed to all
-                // users. The seed comes from RandomNumberProvider.getBytes(), which reads
-                // from /dev/urandom, which is as good as the platform can get.
-                //
-                // TODO(palmer): Consider getting rid of this once the updated platform has
-                // shipped to everyone. Alternately, leave this in as a defense against other
-                // bugs in SecureRandom.
-                SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-                random.setSeed(seed);
-
-                KeyGenerator generator = KeyGenerator.getInstance("AES");
-                generator.init(128, random);
-                return new CipherData(generator.generateKey(), iv);
-            } catch (GeneralSecurityException e) {
-                Log.e(TAG, "Couldn't get generator instances.");
-                return null;
-            }
-        }
-    };
+    AutoPtr<ICallable> callable = new InnerCallable(this);
+    return callable;
 }
 
 /**
@@ -157,12 +226,14 @@ Callable<CipherData> CipherFactory::CreateGeneratorCallable()
  */
 void CipherFactory::TriggerKeyGeneration()
 {
-    if (mData != null) return;
+    if (mData != NULL) return;
 
-    synchronized (mDataLock) {
-        if (mDataGenerator == null) {
-            mDataGenerator = new FutureTask<CipherData>(createGeneratorCallable());
-            AsyncTask.THREAD_POOL_EXECUTOR.execute(mDataGenerator);
+    //synchronized (mDataLock)
+    {
+        AutoLock lock(mDataLock);
+        if (mDataGenerator == NULL) {
+            mDataGenerator = new FutureTask(CreateGeneratorCallable());
+            AsyncTask::THREAD_POOL_EXECUTOR->Execute(mDataGenerator);
         }
     }
 }
@@ -177,15 +248,17 @@ void CipherFactory::TriggerKeyGeneration()
  *
  * @param outState The data bundle to store data into.
  */
-void CipherFactory::SaveToBundle(Bundle outState)
+void CipherFactory::SaveToBundle(
+    /* [in] */ IBundle* outState)
 {
-    CipherData data = getCipherData(false);
-    if (data == null) return;
+    AutoPtr<CipherData> data = GetCipherData(false);
+    if (data == NULL) return;
 
-    byte[] wrappedKey = data.key.getEncoded();
-    if (wrappedKey != null && data.iv != null) {
-        outState.putByteArray(BUNDLE_KEY, wrappedKey);
-        outState.putByteArray(BUNDLE_IV, data.iv);
+    AutoPtr< ArrayOf<Byte> > wrappedKey;
+    data->key->GetEncoded((ArrayOf<Byte>**)&wrappedKey);
+    if (wrappedKey != NULL && data->iv != NULL) {
+        outState->PutByteArray(BUNDLE_KEY, wrappedKey);
+        outState->PutByteArray(BUNDLE_IV, data->iv);
     }
 }
 
@@ -205,13 +278,17 @@ Boolean CipherFactory::RestoreFromBundle(
 {
     if (savedInstanceState == NULL) return FALSE;
 
-    AutoPtr< ArrayOf<Byte> > wrappedKey = savedInstanceState->GetByteArray(BUNDLE_KEY);
-    AutoPtr< ArrayOf<Byte> > iv = savedInstanceState->GetByteArray(BUNDLE_IV);
+    AutoPtr< ArrayOf<Byte> > wrappedKey;
+    savedInstanceState->GetByteArray(BUNDLE_KEY, (ArrayOf<Byte>**)&wrappedKey);
+    AutoPtr< ArrayOf<Byte> > iv;
+    savedInstanceState->GetByteArray(BUNDLE_IV, (ArrayOf<Byte>**)&iv);
     if (wrappedKey == NULL || iv == NULL) return FALSE;
 
     // try {
         AutoPtr<IKey> bundledKey;
-        CSecretKeySpec(wrappedKey, String("AES"), (IKey**)&bundledKey);
+        assert(0);
+        // TODO
+        // CSecretKeySpec(wrappedKey, String("AES"), (IKey**)&bundledKey);
 
         {
             AutoLock lock(mDataLock);
@@ -219,11 +296,11 @@ Boolean CipherFactory::RestoreFromBundle(
                 mData = new CipherData(bundledKey, iv);
                 return TRUE;
             }
-            else if (mData->key->Equals(bundledKey) && Arrays.equals(mData.iv, iv)) {
+            else if (/* TODO mData->key->Equals(bundledKey) && Arrays.equals(mData.iv, iv)*/FALSE) {
                 return TRUE;
             }
             else {
-//                Log.e(TAG, "Attempted to restore different cipher data.");
+                Slogger::E(TAG, "Attempted to restore different cipher data.");
             }
         }
     // } catch (IllegalArgumentException e) {

@@ -2,6 +2,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTS_WEBCONTENTSIMPL_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTS_WEBCONTENTSIMPL_H__
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/webkit/native/content_public/browser/NavigationController.h"
+#include "elastos/droid/webkit/native/content_public/browser/WebContents.h"
+
+using Elastos::Droid::Webkit::Content_Public::Browser::NavigationController;
+using Elastos::Droid::Webkit::Content_Public::Browser::WebContents;
+
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content_public.browser.NavigationController;

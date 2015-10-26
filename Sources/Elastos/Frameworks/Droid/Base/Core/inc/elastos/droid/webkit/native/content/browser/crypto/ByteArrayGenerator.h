@@ -19,7 +19,7 @@ namespace Crypto {
  * Generates byte arrays for use in crypto algorithms. Defaults to pulling random data
  * from /dev/urandom, but can be overwritten for other generation methods.
  */
-class ByteArrayGenerator
+class ByteArrayGenerator : public Object
 {
 public:
     /**

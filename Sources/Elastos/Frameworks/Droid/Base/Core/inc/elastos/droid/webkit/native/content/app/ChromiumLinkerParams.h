@@ -17,7 +17,7 @@ namespace App {
  * service one when using the chromium linker. For more information, read the
  * technical notes in Linker.java.
  */
-class ChromiumLinkerParams
+class ChromiumLinkerParams : public Object
 {
 public:
     ChromiumLinkerParams(
@@ -33,8 +33,6 @@ public:
     ChromiumLinkerParams(
         /* [in] */ IIntent* intent);
 
-    CAR_INTERFACE_DECL();
-
     /**
      * Ensure this LinkerParams instance is sent to a service process by adding
      * it to an intent's extras.
@@ -48,14 +46,14 @@ public:
 
 public:
     // Use this base address to load native shared libraries. If 0, ignore other members.
-    const Int64 mBaseLoadAddress;
+    /*const*/ Int64 mBaseLoadAddress;
 
     // If true, wait for a shared RELRO Bundle just after loading the libraries.
-    const Boolean mWaitForSharedRelro;
+    /*const*/ Boolean mWaitForSharedRelro;
 
     // If not empty, name of Linker.TestRunner implementation that needs to be
     // registered in the service process.
-    const String mTestRunnerClassName;
+    /*const*/ String mTestRunnerClassName;
 
 private:
     static const String EXTRA_LINKER_PARAMS_BASE_LOAD_ADDRESS;

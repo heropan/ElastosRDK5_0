@@ -170,7 +170,7 @@ private:
     CARAPI_(void) DoConnectionSetupLocked();
 
 private:
-    const AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<IContext> mContext;
     const Int32 mServiceNumber;
     const Boolean mInSandbox;
     const AutoPtr<ChildProcessConnection::DeathCallback> mDeathCallback;

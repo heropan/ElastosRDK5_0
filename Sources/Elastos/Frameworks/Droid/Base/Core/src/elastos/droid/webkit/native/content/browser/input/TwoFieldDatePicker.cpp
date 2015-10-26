@@ -110,8 +110,10 @@ TwoFieldDatePicker::TwoFieldDatePicker(
         mMaxDate->Set(9999, 0, 1);
     }
     else {
-        mMinDate = GetDateForValue(minValue);
-        mMaxDate = GetDateForValue(maxValue);
+        assert(0);
+        // TODO
+        // mMinDate = GetDateForValue(minValue);
+        // mMaxDate = GetDateForValue(maxValue);
     }
 
     // month

@@ -8,6 +8,7 @@
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/SystemClock.h"
 //#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/webkit/native/base/ObserverList.h"
 #include "elastos/droid/webkit/native/content/browser/ContentSettings.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewDownloadDelegate.h"
@@ -83,6 +84,7 @@ using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::Widget::IFrameLayout;
 
+using Elastos::Droid::Webkit::Base::ObserverList;
 using Elastos::Droid::Webkit::Ui::Base::ViewAndroidDelegate;
 using Elastos::Droid::Webkit::Content::Browser::Accessibility::AccessibilityInjector;
 using Elastos::Droid::Webkit::Content::Browser::Accessibility::BrowserAccessibilityManager;
@@ -2355,7 +2357,7 @@ private:
 //    const HashSet<Object> mRetainedJavaScriptObjects = new HashSet<Object>();
     AutoPtr<ISet> mRetainedJavaScriptObjects;
 
-    const AutoPtr<IContext> mContext;
+    /*const*/ AutoPtr<IContext> mContext;
     AutoPtr<IViewGroup> mContainerView;
     AutoPtr<InternalAccessDelegate> mContainerViewInternals;
     AutoPtr<WebContents> mWebContents;
@@ -2368,8 +2370,8 @@ private:
     // Native pointer to C++ ContentViewCoreImpl object which will be set by nativeInit().
     Int64 mNativeContentViewCore;
 
-//    const ObserverList<GestureStateListener> mGestureStateListeners;
-//    const RewindableIterator<GestureStateListener> mGestureStateListenersIterator;
+    /*const*/ ObserverList mGestureStateListeners;
+    /*const*/ AutoPtr<ObserverList::RewindableIterator> mGestureStateListenersIterator;
     AutoPtr<ZoomControlsDelegate> mZoomControlsDelegate;
 
     AutoPtr<PopupZoomer> mPopupZoomer;

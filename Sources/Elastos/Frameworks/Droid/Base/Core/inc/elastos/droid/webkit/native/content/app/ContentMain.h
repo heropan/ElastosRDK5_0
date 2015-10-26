@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_APP_CONTENTMAIN_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_APP_CONTENTMAIN_H__
 
-// import android.content.Context;
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Droid::Content::IContext;
 
 // import org.chromium.base.JNINamespace;
 

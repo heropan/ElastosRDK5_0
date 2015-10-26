@@ -106,10 +106,10 @@ const Int32 BrowserStartupController::MAX_RENDERERS_LIMIT;
 
 BrowserStartupController::BrowserStartupController(
     /* [in] */ IContext* context)
-    : mStartupSuccess(FALSE)
+    : mContext(context)
     , mHasStartedInitializingBrowserProcess(FALSE)
     , mStartupDone(FALSE)
-    , mContext(context)
+    , mStartupSuccess(FALSE)
 {
     assert(0);
 //    mAsyncStartupCallbacks = new ArrayList<StartupCallback>();
@@ -360,10 +360,14 @@ void BrowserStartupController::NativeSetCommandLineFlags(
 // knowledge is needed very early in process startup.
 Boolean BrowserStartupController::NativeIsOfficialBuild()
 {
+    assert(0);
+    return FALSE;
 }
 
 Boolean BrowserStartupController::NativeIsPluginEnabled()
 {
+    assert(0);
+    return FALSE;
 }
 
 } // namespace Browser

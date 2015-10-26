@@ -3,11 +3,13 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_CIPHERFACTORY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/utility/concurrent/FutureTask.h>
 
-using Elastos::Droid::Os::IAsyncTask;
+using Elastosx::Crypto::ICipher;
 using Elastos::Droid::Os::IBundle;
-
+using Elastos::Security::IKey;
 using Elastos::Utility::Concurrent::ICallable;
+using Elastos::Utility::Concurrent::FutureTask;
 
 // import java.security.GeneralSecurityException;
 // import java.security.Key;
@@ -53,11 +55,12 @@ class ByteArrayGenerator;
  * unreadable.
  */
 //@ThreadSafe
-class CipherFactory
+class CipherFactory : public Object
 {
 private:
     /** Holds intermediate data for the computation. */
-    class CipherData : public Object
+    class CipherData
+        : public Object
     {
     public:
         CipherData(
@@ -65,15 +68,33 @@ private:
             /* [in] */ ArrayOf<Byte>* iv);
 
     public:
-        const AutoPtr<IKey> key;
-        const AutoPtr< ArrayOf<Byte> > iv;
+        /*const*/ AutoPtr<IKey> key;
+        /*const*/ AutoPtr< ArrayOf<Byte> > iv;
     };
 
     /** Singleton holder for the class. */
     class LazyHolder
     {
+        friend class CipherFactory;
     private:
         static AutoPtr<CipherFactory> sInstance;
+    };
+
+    class InnerCallable
+        : public Object
+        , public ICallable
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        InnerCallable(
+            /* [in] */ CipherFactory* owner);
+
+        CARAPI Call(
+            /* [out] */ IInterface** result);
+
+    private:
+        CipherFactory* mOwner;
     };
 
 public:
@@ -167,6 +188,7 @@ private:
 
     /** Used to generate data needed for the Cipher on a background thread. */
     // FutureTask<CipherData> mDataGenerator;
+    AutoPtr<FutureTask> mDataGenerator;
 
     /** Holds data for cipher generation. */
     AutoPtr<CipherData> mData;

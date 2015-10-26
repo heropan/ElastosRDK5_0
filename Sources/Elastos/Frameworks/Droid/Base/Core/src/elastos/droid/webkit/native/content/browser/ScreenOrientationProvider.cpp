@@ -1,6 +1,6 @@
 
-#include "webkit/native/content/browser/ScreenOrientationProvider.h"
-#include "webkit/native/base/ApplicationStatus.h"
+#include "elastos/droid/webkit/native/content/browser/ScreenOrientationProvider.h"
+#include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Webkit::Base::ApplicationStatus;
