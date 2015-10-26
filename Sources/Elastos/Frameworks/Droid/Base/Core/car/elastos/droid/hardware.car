@@ -39,6 +39,26 @@ module
     merge("hardware/input/KeyboardLayout.car");
     merge("hardware/input/TouchCalibration.car");
 
+    merge("hardware/location/ActivityChangedEvent.car");
+    merge("hardware/location/ActivityRecognitionEvent.car");
+    merge("hardware/location/ActivityRecognitionHardware.car");
+    merge("hardware/location/GeofenceHardware.car");
+    merge("hardware/location/GeofenceHardwareCallback.car");
+    merge("hardware/location/GeofenceHardwareImpl.car");
+    merge("hardware/location/GeofenceHardwareMonitorCallback.car");
+    merge("hardware/location/GeofenceHardwareMonitorEvent.car");
+    merge("hardware/location/GeofenceHardwareRequest.car");
+    merge("hardware/location/GeofenceHardwareRequestParcelable.car");
+    merge("hardware/location/GeofenceHardwareService.car");
+    merge("hardware/location/IActivityRecognitionHardware.car");
+    merge("hardware/location/IActivityRecognitionHardwareSink.car");
+    merge("hardware/location/IActivityRecognitionHardwareWatcher.car");
+    merge("hardware/location/IFusedLocationHardware.car");
+    merge("hardware/location/IFusedLocationHardwareSink.car");
+    merge("hardware/location/IGeofenceHardware.car");
+    merge("hardware/location/IGeofenceHardwareCallback.car");
+    merge("hardware/location/IGeofenceHardwareMonitorCallback.car");
+
     merge("hardware/soundtrigger/IRecognitionStatusCallback.car");
     merge("hardware/soundtrigger/KeyphraseEnrollmentInfo.car");
     merge("hardware/soundtrigger/KeyphraseMetadata.car");
