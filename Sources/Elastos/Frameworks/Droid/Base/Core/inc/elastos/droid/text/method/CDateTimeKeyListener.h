@@ -17,14 +17,7 @@ CarClass(CDateTimeKeyListener)
     , public DateTimeKeyListener
 {
 public:
-    IBaseKeyListener_METHODS_DECL()
-    IKeyListener_METHODS_DECL()
-    IInputFilter_METHODS_DECL()
-
-    static CARAPI_(AutoPtr<IDateTimeKeyListener>) GetInstance();
-
-private:
-    static AutoPtr<IDateTimeKeyListener> sInstance;
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Method

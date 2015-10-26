@@ -54,6 +54,6 @@ SOURCES += TextUtils.cpp
 SOURCES += CTextUtils.cpp
 
 LIBRARIES += format/format.lib
-#LIBRARIES += method/method.lib
+LIBRARIES += method/method.lib
 LIBRARIES += style/style.lib
 LIBRARIES += utility/utility.lib

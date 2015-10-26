@@ -27,14 +27,6 @@ module
      * interface IBaseKeyListener
      */
     interface INumberKeyListener {
-        Filter(
-            [in] ICharSequence* source,
-            [in] Int32 start,
-            [in] Int32 end,
-            [in] ISpanned* dest,
-            [in] Int32 dstart,
-            [in] Int32 dend,
-            [out] ICharSequence** ret);
     }
 
     }//namespace Method

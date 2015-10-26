@@ -128,6 +128,9 @@ module
     interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
     interface Elastos.Droid.App.IPendingIntent;
     interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.IInputFilter;
+    interface Elastos.Droid.Text.ISpanWatcher;
+
 
     namespace Elastos {
     namespace Droid {
@@ -197,10 +200,10 @@ module
     } // namespace Elastos
 
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Text {
-    // namespace Method {
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Method {
 
     // [local]
     // class CAllCapsTransformationMethod{
@@ -223,25 +226,25 @@ module
     //     interface IMovementMethod;
     // }
 
-    // class CDateKeyListener{
-    //     interface IDateKeyListener;
-    //     interface IInputFilter;
-    //     interface IKeyListener;
-    // }
+    class CDateKeyListener{
+        interface IDateKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
 
-    // singleton class CDateKeyListenerHelper{
-    //     interface IDateKeyListenerHelper;
-    // }
+    singleton class CDateKeyListenerHelper{
+        interface IDateKeyListenerHelper;
+    }
 
-    // class CDateTimeKeyListener{
-    //     interface IDateTimeKeyListener;
-    //     interface IInputFilter;
-    //     interface IKeyListener;
-    // }
+    class CDateTimeKeyListener{
+        interface IDateTimeKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
 
-    // singleton class CDateTimeKeyListenerHelper{
-    //     interface IDateTimeKeyListenerHelper;
-    // }
+    singleton class CDateTimeKeyListenerHelper{
+        interface IDateTimeKeyListenerHelper;
+    }
 
     // class CDialerKeyListener{
     //     interface IDialerKeyListener;
@@ -354,26 +357,26 @@ module
     //     interface ISingleLineTransformationMethodHelper;
     // }
 
-    // class CTextKeyListener{
-    //     interface ITextKeyListener;
-    //     interface IKeyListener;
-    //     interface ISpanWatcher;
+    class CTextKeyListener{
+        interface ITextKeyListener;
+        interface IKeyListener;
+        interface ISpanWatcher;
 
-    //     /**
-    //      * Creates a new TextKeyListener with the specified capitalization
-    //      * and correction properties.
-    //      *
-    //      * @param cap when, if ever, to automatically capitalize.
-    //      * @param autotext whether to automatically do spelling corrections.
-    //      */
-    //     constructor(
-    //         [in] Capitalize cap,
-    //         [in] Boolean autotext);
-    // }
+        /**
+         * Creates a new TextKeyListener with the specified capitalization
+         * and correction properties.
+         *
+         * @param cap when, if ever, to automatically capitalize.
+         * @param autotext whether to automatically do spelling corrections.
+         */
+         constructor(
+            [in] Capitalize cap,
+            [in] Boolean autotext);
+    }
 
-    // singleton class CTextKeyListenerHelper{
-    //     interface ITextKeyListenerHelper;
-    // }
+    singleton class CTextKeyListenerHelper{
+        interface ITextKeyListenerHelper;
+    }
 
     // class CTimeKeyListener{
     //     interface ITimeKeyListener;
@@ -382,7 +385,7 @@ module
     // }
 
     // singleton class CTimeKeyListenerHelper{
-    //     interface ITimeKeyListenerHelper;
+    //    interface ITimeKeyListenerHelper;
     // }
 
     // singleton class CTouch{
@@ -408,14 +411,19 @@ module
     //         [in] ILocale* locale);
     // }
 
-    // singleton class CMetaKeyKeyListenerHelper {
-    //     interface IMetaKeyKeyListenerHelper;
-    // }
+    singleton class CMetaKeyKeyListenerHelper {
+        interface IMetaKeyKeyListenerHelper;
+    }
 
-    // } // namespace Method
-    // } // namespace Text
-    // } // namepsace Droid
-    // } // namespace Elastos
+    singleton class CBaseKeyListenerHelper {
+        interface IBaseKeyListenerHelper;
+    }
+
+
+    } // namespace Method
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

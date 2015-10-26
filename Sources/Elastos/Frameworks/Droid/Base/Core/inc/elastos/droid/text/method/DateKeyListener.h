@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_DateKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_DateKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_DATEKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_DATEKEYLISTENER_H__
 
 #include "elastos/droid/text/method/NumberKeyListener.h"
 
@@ -15,14 +15,35 @@ namespace Method {
  * with hardware keyboards.  Software input methods have no obligation to trigger
  * the methods in this class.
  */
-class DateKeyListener : public NumberKeyListener
+class DateKeyListener
+    : public NumberKeyListener
+    , public IDateKeyListener
 {
 public:
-    CARAPI_(Int32) GetInputType();
+    CAR_INTERFACE_DECL()
 
-    static CARAPI_(AutoPtr< ArrayOf<Char32> >) GetCHARACTERS();
+    DateKeyListener();
 
-    //static AutoPtr<IDateKeyListener> GetInstance();
+    virtual ~DateKeyListener();
+
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
+
+    static CARAPI GetCHARACTERS(
+        /* [out] */ ArrayOf<Char32>** array);
+
+     //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
+
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
 
 protected:
     //@Override
@@ -35,10 +56,7 @@ public:
      * @see KeyEvent#getMatch
      * @see #getAcceptedChars
      */
-    static const Char32 CHARACTERS[];// = new Char32[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-', '.' };
-
-private:
-    //static AutoPtr<IDateKeyListener> sInstance;
+    static const AutoPtr<ArrayOf<Char32> > CHARACTERS;// = new Char32[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-', '.' };
 };
 
 
@@ -47,4 +65,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_DateKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_DATEKEYLISTENER_H__

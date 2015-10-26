@@ -4,12 +4,13 @@
 
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/database/ContentObserver.h"
-//#include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
@@ -18,23 +19,16 @@ namespace Method {
 
 class TextKeyListener
     : public BaseKeyListener
+    , public ITextKeyListener
+    , public ISpanWatcher
 {
 private:
     class NullKeyListener
-        : public ElRefBase
+        : public Object
         , public IKeyListener
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* IID);
+        CAR_INTERFACE_DECL()
 
         CARAPI GetInputType(
             /* [out] */ Int32* inputType);
@@ -70,14 +64,49 @@ private:
         static AutoPtr<NullKeyListener> sInstance;
     };
 
-    class SettingsObserver : public ContentObserver
+    class SettingsObserver
+        : public IContentObserver
+        , public Object
     {
     public:
+        CAR_INTERFACE_DECL()
+
         SettingsObserver(
             /* [in] */ TextKeyListener* host);
 
         CARAPI OnChange(
             /* [in] */ Boolean selfChange);
+
+        //override IContentObserver
+        CARAPI GetContentObserver(
+            /* [out] */ IIContentObserver** observer);
+
+        CARAPI ReleaseContentObserver(
+            /* [out] */ IIContentObserver** oldObserver);
+
+        CARAPI DeliverSelfNotifications(
+            /* [out] */ Boolean* result);
+
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange,
+            /* [in] */ IUri* uri);
+
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange,
+            /* [in] */ IUri* uri,
+            /* [in] */ Int32 userId);
+
+        CARAPI DispatchChange(
+            /* [in] */ Boolean selfChange);
+
+        CARAPI DispatchChange(
+            /* [in] */ Boolean selfChange,
+            /* [in] */ IUri* uri);
+
+        CARAPI DispatchChange(
+            /* [in] */ Boolean selfChange,
+            /* [in] */ IUri* uri,
+            /* [in] */ Int32 userId);
 
     private:
         TextKeyListener* mHost;
@@ -88,35 +117,52 @@ public:
 
     TextKeyListener();
 
-    TextKeyListener(
+    virtual ~TextKeyListener();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ Capitalize cap,
         /* [in] */ Boolean autotext);
 
-    static CARAPI_(Boolean) ShouldCap(
+    static CARAPI GetInstance(
+        /* [in] */ Boolean autotext,
+        /* [in] */ Capitalize cap,
+        /* [out] */ ITextKeyListener** ret);
+
+    static CARAPI GetInstance(
+        /* [out] */ ITextKeyListener** ret);
+
+    static CARAPI ShouldCap(
         /* [in] */ Capitalize cap,
         /* [in] */ ICharSequence* cs,
-        /* [in] */ Int32 off);
+        /* [in] */ Int32 off,
+        /* [out] */ Boolean* ret);
 
-    CARAPI_(Int32) GetInputType();
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
 
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    CARAPI_(Boolean) OnKeyOther(
+    CARAPI OnKeyOther(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    static CARAPI_(void) Clear(
+    static CARAPI Clear(
         /* [in] */ IEditable* e);
 
     CARAPI OnSpanAdded(
@@ -141,13 +187,15 @@ public:
 
     CARAPI ReleaseListener();
 
-    CARAPI_(Int32) GetPrefs(
-        /* [in] */ IContext* context);
+    CARAPI GetPrefs(
+        /* [in] */ IContext* context,
+        /* [out] */ Int32* ret);
 
-protected:
-    CARAPI Init(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext);
+    //override
+    CARAPI ClearMetaKeyState(
+            /* [in] */ IView* view,
+            /* [in] */ IEditable* content,
+            /* [in] */ Int32 states);
 
 private:
     CARAPI_(AutoPtr<IKeyListener>) GetKeyListener(

@@ -1,20 +1,23 @@
 
 #include "elastos/droid/text/method/TextKeyListener.h"
-#include "elastos/droid/text/method/CQwertyKeyListener.h"
-#include "elastos/droid/text/method/CMultiTapKeyListener.h"
+// #include "elastos/droid/text/method/CQwertyKeyListener.h"
+// #include "elastos/droid/text/method/CMultiTapKeyListener.h"
 #include "elastos/droid/text/SpannableStringInternal.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/provider/Settings.h"
+// #include "elastos/droid/provider/Settings.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Database::EIID_IContentObserver;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Provider::Settings;
+// using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::Content::EIID_IContentResolver;
 using Elastos::Droid::View::IKeyCharacterMap;
-using Elastos::Droid::Text::Method::CQwertyKeyListener;
+// using Elastos::Droid::Text::Method::CQwertyKeyListener;
+
 
 namespace Elastos {
 namespace Droid {
@@ -23,44 +26,7 @@ namespace Method {
 
 AutoPtr<TextKeyListener::NullKeyListener> TextKeyListener::NullKeyListener::sInstance;
 
-PInterface TextKeyListener::NullKeyListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IKeyListener*)this;
-    }
-    else if (riid == EIID_IKeyListener) {
-        return (IKeyListener*)this;
-    }
-    return NULL;
-}
-
-UInt32 TextKeyListener::NullKeyListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 TextKeyListener::NullKeyListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode TextKeyListener::NullKeyListener::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* IID)
-{
-    if (IID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (object == (IInterface*)(IKeyListener*)this) {
-        *IID = EIID_IKeyListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(TextKeyListener::NullKeyListener, Object, IKeyListener)
 
 ECode TextKeyListener::NullKeyListener::GetInputType(
     /* [out] */ Int32* inputType)
@@ -130,6 +96,8 @@ TextKeyListener::SettingsObserver::SettingsObserver(
 {
 }
 
+CAR_INTERFACE_IMPL(TextKeyListener::SettingsObserver, Object, IContentObserver)
+
 //@Override
 ECode TextKeyListener::SettingsObserver::OnChange(
     /* [in] */ Boolean selfChange)
@@ -151,10 +119,66 @@ ECode TextKeyListener::SettingsObserver::OnChange(
     return NOERROR;
 }
 
-const AutoPtr<IInterface> TextKeyListener::ACTIVE = MetaKeyKeyListener::NewNoCopySpan();
-const AutoPtr<IInterface> TextKeyListener::CAPPED = MetaKeyKeyListener::NewNoCopySpan();
-const AutoPtr<IInterface> TextKeyListener::INHIBIT_REPLACEMENT = MetaKeyKeyListener::NewNoCopySpan();
-const AutoPtr<IInterface> TextKeyListener::LAST_TYPED = MetaKeyKeyListener::NewNoCopySpan();
+//override
+using Elastos::Droid::Database::IIContentObserver;
+ECode TextKeyListener::SettingsObserver::GetContentObserver(
+    /* [out] */ IIContentObserver** observer)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::ReleaseContentObserver(
+    /* [out] */ IIContentObserver** observer)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::DeliverSelfNotifications(
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::OnChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::OnChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri,
+    /* [in] */ Int32 userId)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::DispatchChange(
+    /* [in] */ Boolean selfChange)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::DispatchChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode TextKeyListener::SettingsObserver::DispatchChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri,
+    /* [in] */ Int32 userId)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+const AutoPtr<IInterface> TextKeyListener::ACTIVE /*= MetaKeyKeyListener::NewNoCopySpan()*/;
+const AutoPtr<IInterface> TextKeyListener::CAPPED /*= MetaKeyKeyListener::NewNoCopySpan()*/;
+const AutoPtr<IInterface> TextKeyListener::INHIBIT_REPLACEMENT/* = MetaKeyKeyListener::NewNoCopySpan()*/;
+const AutoPtr<IInterface> TextKeyListener::LAST_TYPED/* = MetaKeyKeyListener::NewNoCopySpan()*/;
 
 const Int32 TextKeyListener::AUTO_CAP = 1;
 const Int32 TextKeyListener::AUTO_TEXT = 2;
@@ -164,15 +188,49 @@ const Int32 TextKeyListener::SHOW_PASSWORD = 8;
 const Int32 TextKeyListener::CAPITALIZELENGTH;// = 4;
 //AutoPtr<ITextKeyListener> TextKeyListener::sInstance[TextKeyListener::CAPITALIZELENGTH * 2];
 
+CAR_INTERFACE_IMPL_6(TextKeyListener, Object, ITextKeyListener, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener, ISpanWatcher, INoCopySpan)
+
 TextKeyListener::TextKeyListener()
 {}
 
-TextKeyListener::TextKeyListener(
+TextKeyListener::~TextKeyListener()
+{}
+
+ECode TextKeyListener::constructor(
     /* [in] */ Capitalize cap,
     /* [in] */ Boolean autotext)
 {
-    Init(cap, autotext);
+    mAutoCap = cap;
+    mAutoText = autotext;
+    return NOERROR;
 }
+
+/**
+ * Returns a new or existing instance with no automatic capitalization
+ * or correction.
+ */
+ECode TextKeyListener::GetInstance(
+        /* [out] */ ITextKeyListener** ret)
+{
+    return NOERROR;
+}
+
+/**
+ * Returns a new or existing instance with the specified capitalization
+ * and correction properties.
+ *
+ * @param cap when, if ever, to automatically capitalize.
+ * @param autotext whether to automatically do spelling corrections.
+ */
+ECode TextKeyListener::GetInstance(
+        /* [in] */ Boolean autotext,
+        /* [in] */ Capitalize cap,
+        /* [out] */ ITextKeyListener** ret)
+{
+    return NOERROR;
+}
+
+
 
 /**
  * Returns whether it makes sense to automatically capitalize at the
@@ -184,67 +242,74 @@ TextKeyListener::TextKeyListener(
  *
  * @return whether the character being inserted should be capitalized.
  */
-Boolean TextKeyListener::ShouldCap(
+ECode TextKeyListener::ShouldCap(
     /* [in] */ Capitalize cap,
     /* [in] */ ICharSequence* cs,
-    /* [in] */ Int32 off)
+    /* [in] */ Int32 off,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     if (cap == Capitalize_NONE) {
-        return FALSE;
+        *ret = FALSE;
+        return NOERROR;
     }
     if (cap == Capitalize_CHARACTERS) {
-        return TRUE;
+        *ret = TRUE;
+        return NOERROR;
     }
 
-    return TextUtils::GetCapsMode(cs, off, cap == Capitalize_WORDS
+    *ret = TextUtils::GetCapsMode(cs, off, cap == Capitalize_WORDS
         ? ITextUtils::CAP_MODE_WORDS : ITextUtils::CAP_MODE_SENTENCES)
             != 0;
+    return NOERROR;
 }
 
-Int32 TextKeyListener::GetInputType()
+ECode TextKeyListener::GetInputType(
+        /* [out] */ Int32* ret)
 {
-    return MakeTextContentType(mAutoCap, mAutoText);
+    VALIDATE_NOT_NULL(ret)
+    return BaseKeyListener::MakeTextContentType(mAutoCap, mAutoText, ret);
 }
 
 //@Override
-Boolean TextKeyListener::OnKeyDown(
+ECode TextKeyListener::OnKeyDown(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     AutoPtr<IKeyListener> im = GetKeyListener(event);
 
-    Boolean res;
-    im->OnKeyDown(view, content, keyCode, event, &res);
-    return res;
+    return im->OnKeyDown(view, content, keyCode, event, ret);
 }
 
 //@Override
-Boolean TextKeyListener::OnKeyUp(
+ECode TextKeyListener::OnKeyUp(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     AutoPtr<IKeyListener> im = GetKeyListener(event);
 
-    Boolean res;
-    im->OnKeyUp(view, content, keyCode, event, &res);
-    return res;
+    return im->OnKeyUp(view, content, keyCode, event, ret);
 }
 
 //@Override
-Boolean TextKeyListener::OnKeyOther(
+ECode TextKeyListener::OnKeyOther(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     AutoPtr<IKeyListener> im = GetKeyListener(event);
 
-    Boolean res;
-    im->OnKeyOther(view, content, event, &res);
-    return res;
+    return im->OnKeyOther(view, content, event, ret);
 }
 
 /**
@@ -254,22 +319,25 @@ Boolean TextKeyListener::OnKeyOther(
  *
  * @param e the buffer whose text and state are to be cleared.
  */
-void TextKeyListener::Clear(
+ECode TextKeyListener::Clear(
     /* [in] */ IEditable* e)
 {
     e->Clear();
-    e->RemoveSpan(ACTIVE);
-    e->RemoveSpan(CAPPED);
-    e->RemoveSpan(INHIBIT_REPLACEMENT);
-    e->RemoveSpan(LAST_TYPED);
+    ISpannable::Probe(e)->RemoveSpan(ACTIVE);
+    ISpannable::Probe(e)->RemoveSpan(CAPPED);
+    ISpannable::Probe(e)->RemoveSpan(INHIBIT_REPLACEMENT);
+    ISpannable::Probe(e)->RemoveSpan(LAST_TYPED);
 
     Int32 len;
+    ICharSequence::Probe(e)->GetLength(&len);
     AutoPtr< ArrayOf<IInterface*> > repl = NULL;
-    e->GetSpans(0, (e->GetLength(&len), len), /*EIID_Replaced*/EIID_INoCopySpan, (ArrayOf<IInterface*>**)&repl);
+    assert(0 && "TODO");
+    // e->GetSpans(0, len, /*EIID_Replaced*/EIID_INoCopySpan, (ArrayOf<IInterface*>**)&repl);
     Int32 count = repl->GetLength();
     for (Int32 i = 0; i < count; i++) {
-        e->RemoveSpan((*repl)[i]);
+        ISpannable::Probe(e)->RemoveSpan((*repl)[i]);
     }
+    return NOERROR;
 }
 
 ECode TextKeyListener::OnSpanAdded(
@@ -313,12 +381,13 @@ AutoPtr<IKeyListener> TextKeyListener::GetKeyListener(
     kmap->GetKeyboardType(&kind);
 
     if (kind == IKeyCharacterMap::ALPHA) {
-        AutoPtr<IQwertyKeyListener> qkl = CQwertyKeyListener::GetInstance(mAutoText, mAutoCap);
+        assert(0 && "TODO");
+        AutoPtr<IQwertyKeyListener> qkl; /*= CQwertyKeyListener::GetInstance(mAutoText, mAutoCap);*/
         AutoPtr<IKeyListener> kl = IKeyListener::Probe(qkl);
         return kl;
     }
     else if (kind == IKeyCharacterMap::NUMERIC) {
-        AutoPtr<IMultiTapKeyListener> mtkl = CMultiTapKeyListener::GetInstance(mAutoText, mAutoCap);
+        AutoPtr<IMultiTapKeyListener> mtkl /*= CMultiTapKeyListener::GetInstance(mAutoText, mAutoCap)*/;
         AutoPtr<IKeyListener> kl = IKeyListener::Probe(mtkl);
         return kl;
     }
@@ -330,7 +399,8 @@ AutoPtr<IKeyListener> TextKeyListener::GetKeyListener(
         // a special function keyboard using a default key map.  Ideally, as of Honeycomb,
         // these applications should be modified to use KeyCharacterMap.VIRTUAL_KEYBOARD.
 
-        AutoPtr<IQwertyKeyListener> listener = CQwertyKeyListener::GetInstanceForFullKeyboard();
+        assert(0 && "TODO");
+        AutoPtr<IQwertyKeyListener> listener /*= CQwertyKeyListener::GetInstanceForFullKeyboard()*/;
         return (IKeyListener*)listener->Probe(EIID_IKeyListener);
         //Java:    return QwertyKeyListener.getInstanceForFullKeyboard();
         /*
@@ -349,8 +419,8 @@ ECode TextKeyListener::ReleaseListener()
         AutoPtr<IInterface> obj;
         mResolver->Resolve(EIID_IInterface, (IInterface**)&obj);
         if (obj != NULL) {
-            AutoPtr<IContentResolver> resolver = (IContentResolver*)obj->Probe(EIID_IContentResolver);
-            resolver->UnregisterContentObserver((IContentObserver*)(mObserver->Probe(EIID_IContentObserver)));
+            AutoPtr<IContentResolver> resolver = (IContentResolver*)IContentResolver::Probe(obj);/*(IContentResolver*)obj->Probe(EIID_IContentResolver)*/
+            resolver->UnregisterContentObserver(IContentObserver::Probe(obj)/*(IContentObserver*)(mObserver->Probe(EIID_IContentObserver))*/);
         }
 
         mObserver = NULL;
@@ -375,7 +445,8 @@ void TextKeyListener::InitPrefs(
 
     if (mObserver == NULL) {
         mObserver = new SettingsObserver(this);
-        contentResolver->RegisterContentObserver(Settings::System::CONTENT_URI, TRUE, (IContentObserver*)(mObserver->Probe(EIID_IContentObserver)));
+        assert(0 && "TODO");
+        // contentResolver->RegisterContentObserver(Settings::System::CONTENT_URI, TRUE, (IContentObserver*)(mObserver->Probe(EIID_IContentObserver)));
     }
 
     UpdatePrefs(contentResolver);
@@ -385,19 +456,19 @@ void TextKeyListener::InitPrefs(
 void TextKeyListener::UpdatePrefs(
     /* [in] */ IContentResolver* resolver)
 {
-    Int32 nHelp;
     Boolean cap;
     Int32 value;
-    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_CAPS, 1, &value);
+    assert(0 && "TODO");
+    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_CAPS, 1, &value);
     cap = value > 0;
     Boolean text;
-    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_REPLACE, 1, &value);
+    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_REPLACE, 1, &value);
     text = value > 0;
     Boolean period;
-    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_PUNCTUATE, 1, &value);
+    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_PUNCTUATE, 1, &value);
     period = value > 0;
     Boolean pw;
-    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_SHOW_PASSWORD, 1, &value);
+    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_SHOW_PASSWORD, 1, &value);
     pw = value > 0;
 
     mPrefs = (cap ? AUTO_CAP : 0) |
@@ -406,8 +477,9 @@ void TextKeyListener::UpdatePrefs(
              (pw ? SHOW_PASSWORD : 0);
 }
 
-Int32 TextKeyListener::GetPrefs(
-    /* [in] */ IContext* context)
+ECode TextKeyListener::GetPrefs(
+    /* [in] */ IContext* context,
+    /* [out] */ Int32* ret)
 {
     AutoLock lock(mLock);
 
@@ -422,24 +494,16 @@ Int32 TextKeyListener::GetPrefs(
         InitPrefs(context);
     }
 
-    return mPrefs;
+    *ret = mPrefs;
+    return NOERROR;
 }
 
-/**
- * Creates a new TextKeyListener with the specified capitalization
- * and correction properties.
- *
- * @param cap when, if ever, to automatically capitalize.
- * @param autotext whether to automatically do spelling corrections.
- */
-ECode TextKeyListener::Init(
-    /* [in] */ Capitalize cap,
-    /* [in] */ Boolean autotext)
+ECode TextKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
 {
-    mAutoCap = cap;
-    mAutoText = autotext;
-
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 } // namespace Method

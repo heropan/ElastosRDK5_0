@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/method/CDateTimeKeyListenerHelper.h"
-#include "elastos/droid/text/method/CDateTimeKeyListener.h"
+#include "elastos/droid/text/method/DateTimeKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,26 +8,20 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CDateTimeKeyListenerHelper, CDateTimeKeyListener, CDateTimeKeyListener)
+CAR_INTERFACE_IMPL(CDateTimeKeyListenerHelper, Singleton, IDateTimeKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CDateTimeKeyListenerHelper)
 
 ECode CDateTimeKeyListenerHelper::GetCHARACTERS(
     /* [out, callee] */ ArrayOf<Char32>** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr< ArrayOf<Char32> > o = CDateTimeKeyListener::GetCHARACTERS();
-    *ret = o;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DateTimeKeyListener::GetCHARACTERS(ret);
 }
 
 ECode CDateTimeKeyListenerHelper::GetInstance(
     /* [out] */ IDateTimeKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDateTimeKeyListener> dtkl = CDateTimeKeyListener::GetInstance();
-    *ret = dtkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DateTimeKeyListener::GetInstance(ret);
 }
 
 } // namespace Method

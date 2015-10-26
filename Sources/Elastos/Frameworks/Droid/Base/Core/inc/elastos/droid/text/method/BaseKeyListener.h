@@ -1,7 +1,13 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_BaseKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_BaseKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_BASEKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_BASEKEYLISTENER_H__
 
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
@@ -21,8 +27,15 @@ namespace Method {
  */
 class BaseKeyListener
     : public MetaKeyKeyListener
+    , public IKeyListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    BaseKeyListener();
+
+    virtual ~BaseKeyListener();
+
     /**
      * Performs the action that happens when you press the {@link KeyEvent#KEYCODE_DEL} key in
      * a {@link TextView}.  If there is a selection, deletes the selection; otherwise,
@@ -31,11 +44,12 @@ public:
      *
      * @return true if anything was deleted; false otherwise.
      */
-    CARAPI_(Boolean) Backspace(
+    CARAPI Backspace(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     /**
      * Performs the action that happens when you press the {@link KeyEvent#KEYCODE_FORWARD_DEL}
@@ -45,30 +59,34 @@ public:
      *
      * @return true if anything was deleted; false otherwise.
      */
-    CARAPI_(Boolean) ForwardDelete(
+    CARAPI ForwardDelete(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    static CARAPI_(Int32) MakeTextContentType(
+    static CARAPI MakeTextContentType(
         /* [in] */ Capitalize caps,
-        /* [in] */ Boolean autoText);
+        /* [in] */ Boolean autoText,
+        /* [out] */ Int32* ret);
 
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     /**
      * Base implementation handles ACTION_MULTIPLE KEYCODE_UNKNOWN by inserting
      * the event's text into the content.
      */
-    CARAPI_(Boolean) OnKeyOther(
+    CARAPI OnKeyOther(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
 private:
     CARAPI_(Boolean) BackspaceOrForwardDelete(
@@ -97,4 +115,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_BaseKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_BASEKEYLISTENER_H__

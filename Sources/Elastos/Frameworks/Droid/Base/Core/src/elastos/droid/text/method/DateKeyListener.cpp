@@ -1,33 +1,70 @@
 #include "elastos/droid/text/method/DateKeyListener.h"
 
+
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-const Char32 DateKeyListener::CHARACTERS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-', '.' };
-
-Int32 DateKeyListener::GetInputType()
+static AutoPtr<ArrayOf<Char32> > InitCHARACTERS()
 {
-    return IInputType::TYPE_CLASS_DATETIME | IInputType::TYPE_DATETIME_VARIATION_DATE;
+    Char32 ch[] = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            '/', '-', '.'};
+    AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(ARRAY_SIZE(ch));
+    chars->Copy(ch, ARRAY_SIZE(ch));
+    return chars;
+}
+
+const AutoPtr<ArrayOf<Char32> > DateKeyListener::CHARACTERS = InitCHARACTERS();
+
+CAR_INTERFACE_IMPL_6(DateKeyListener, Object, IDateKeyListener, INumberKeyListener, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener, IInputFilter)
+
+DateKeyListener::DateKeyListener()
+{}
+
+DateKeyListener::~DateKeyListener()
+{}
+
+ECode DateKeyListener::GetInputType(
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = IInputType::TYPE_CLASS_DATETIME | IInputType::TYPE_DATETIME_VARIATION_DATE;
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<Char32> > DateKeyListener::GetAcceptedChars()
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(13);
-    for(Int32 i=0; i<13; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    return CHARACTERS;
 }
 
-AutoPtr< ArrayOf<Char32> > DateKeyListener::GetCHARACTERS()
+ECode DateKeyListener::GetCHARACTERS(
+    /* [out] */ ArrayOf<Char32>** array)
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(13);
-    for(Int32 i=0; i<13; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    VALIDATE_NOT_NULL(array)
+    *array = CHARACTERS;
+    REFCOUNT_ADD(*array);
+    return NOERROR;
+}
+
+ //override
+ECode DateKeyListener::OnKeyUp(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
+{
+    return MetaKeyKeyListener::OnKeyUp(view, content, keyCode, event, ret);
+}
+
+CARAPI DateKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
+{
+    return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
 }
 
 } // namespace Method

@@ -1,33 +1,75 @@
 #include "elastos/droid/text/method/DateTimeKeyListener.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-const Char32 DateTimeKeyListener::CHARACTERS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':', '/', '-', ' ' };
+AutoPtr<IDateTimeKeyListener> DateTimeKeyListener::sInstance;
 
-Int32 DateTimeKeyListener::GetInputType()
+static AutoPtr<ArrayOf<Char32> > InitCHARACTERS()
 {
-    return IInputType::TYPE_CLASS_DATETIME | IInputType::TYPE_DATETIME_VARIATION_NORMAL;
+    Char32 ch[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':', '/', '-', ' ' };
+    AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(ARRAY_SIZE(ch));
+    chars->Copy(ch, ARRAY_SIZE(ch));
+    return chars;
+}
+
+const AutoPtr<ArrayOf<Char32> > DateTimeKeyListener::CHARACTERS = InitCHARACTERS();
+
+CAR_INTERFACE_IMPL_6(DateTimeKeyListener, Object, IDateTimeKeyListener, INumberKeyListener, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener, IInputFilter)
+
+ECode DateTimeKeyListener::GetInputType(
+    /* [out] */ Int32* ret)
+{
+    *ret = IInputType::TYPE_CLASS_DATETIME | IInputType::TYPE_DATETIME_VARIATION_NORMAL;
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<Char32> > DateTimeKeyListener::GetAcceptedChars()
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(17);
-    for(Int32 i=0; i<17; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    return CHARACTERS;
 }
 
-AutoPtr< ArrayOf<Char32> > DateTimeKeyListener::GetCHARACTERS()
+ECode DateTimeKeyListener::GetCHARACTERS(
+    /* [out] */ ArrayOf<Char32>** ret)
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(17);
-    for(Int32 i=0; i<17; i++){
-        (*charactersR)[i]=CHARACTERS[i];
+    VALIDATE_NOT_NULL(ret)
+    *ret = CHARACTERS;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
+}
+
+ECode DateTimeKeyListener::GetInstance(
+    /* [out] */ IDateTimeKeyListener** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    if (sInstance == NULL) {
+        sInstance = new DateTimeKeyListener();
     }
-    return charactersR;
+
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
+}
+
+ECode DateTimeKeyListener::OnKeyUp(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
+{
+    return MetaKeyKeyListener::OnKeyUp(view, content, keyCode, event, ret);
+}
+
+ECode DateTimeKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
+{
+    return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
 }
 
 } // namespace Method

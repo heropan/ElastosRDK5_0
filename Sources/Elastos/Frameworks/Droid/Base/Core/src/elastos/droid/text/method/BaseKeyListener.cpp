@@ -1,41 +1,54 @@
 #include <elastos/core/Math.h>
-
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/text/TextUtils.h"
-#ifdef DROID_CORE
 #include "elastos/droid/text/CSelection.h"
-#include "elastos/droid/view/CKeyEventHelper.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+//assert(0 && "TODO"); not implemented
+// #include "elastos/droid/view/CKeyEventHelper.h"
 
 using Elastos::Core::CString;
 using Elastos::Droid::View::IKeyEventHelper;
-using Elastos::Droid::View::CKeyEventHelper;
+// using Elastos::Droid::View::CKeyEventHelper;
+using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
+using Elastos::Droid::Text::CSelection;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-const AutoPtr<IInterface> BaseKeyListener::OLD_SEL_START = MetaKeyKeyListener::NewNoCopySpan();
+CAR_INTERFACE_IMPL_3(BaseKeyListener, Object, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener)
 
-Boolean BaseKeyListener::Backspace(
+BaseKeyListener::BaseKeyListener()
+{}
+
+BaseKeyListener::~BaseKeyListener()
+{}
+
+//assert(0 && "TODO");
+const AutoPtr<IInterface> BaseKeyListener::OLD_SEL_START/* = MetaKeyKeyListener::NewNoCopySpan()*/;
+
+ECode BaseKeyListener::Backspace(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
-    return BackspaceOrForwardDelete(view, content, keyCode, event, FALSE);
+    VALIDATE_NOT_NULL(ret)
+    *ret = BackspaceOrForwardDelete(view, content, keyCode, event, FALSE);
+    return NOERROR;
 }
 
-Boolean BaseKeyListener::ForwardDelete(
+ECode BaseKeyListener::ForwardDelete(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
-    return BackspaceOrForwardDelete(view, content, keyCode, event, TRUE);
+    VALIDATE_NOT_NULL(ret)
+    *ret = BackspaceOrForwardDelete(view, content, keyCode, event, TRUE);
+    return NOERROR;
 }
 
 Boolean BaseKeyListener::BackspaceOrForwardDelete(
@@ -48,7 +61,7 @@ Boolean BaseKeyListener::BackspaceOrForwardDelete(
     // Ensure the key event does not have modifiers except ALT or SHIFT.
     Int32 metaState;
     AutoPtr<IKeyEventHelper> helper;
-    CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
+    // CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
     Boolean res = FALSE;
     helper->MetaStateHasNoModifiers((event->GetMetaState(&metaState), metaState) & ~(IKeyEvent::META_SHIFT_MASK | IKeyEvent::META_ALT_MASK), &res);
     if (!res) {
@@ -62,7 +75,8 @@ Boolean BaseKeyListener::BackspaceOrForwardDelete(
 
     // Alt+Backspace or Alt+ForwardDelete deletes the current line, if possible.
     Boolean bIsAltPressed;
-    if (GetMetaState(content, IKeyEvent::META_ALT_ON, event) == 1) {
+    Int32 tmpOut;
+    if ((GetMetaState(ICharSequence::Probe(content), IKeyEvent::META_ALT_ON, event, &tmpOut), tmpOut) == 1) {
         if (DeleteLine(view, content)) {
             return TRUE;
         }
@@ -72,15 +86,14 @@ Boolean BaseKeyListener::BackspaceOrForwardDelete(
     AutoPtr<ISelection> sel;
     CSelection::AcquireSingleton((ISelection**)&sel);
     /*const*/ Int32 start = 0;
-    sel->GetSelectionEnd(content, &start);
+    sel->GetSelectionEnd(ICharSequence::Probe(content), &start);
     /*const*/ Int32 end;
     Boolean bIsShiftPressed;
-    ;
     if (isForwardDelete || (event->IsShiftPressed(&bIsShiftPressed), bIsShiftPressed)
-            || GetMetaState(content, IMetaKeyKeyListener::META_SHIFT_ON) == 1) {
-        end = TextUtils::GetOffsetAfter(content, start);
+            || ((GetMetaState(ICharSequence::Probe(content), IMetaKeyKeyListener::META_SHIFT_ON, &tmpOut), tmpOut) == 1)) {
+        end = TextUtils::GetOffsetAfter(ICharSequence::Probe(content), start);
     } else {
-        end = TextUtils::GetOffsetBefore(content, start);
+        end = TextUtils::GetOffsetBefore(ICharSequence::Probe(content), start);
     }
     if (start != end) {
         content->Delete(Elastos::Core::Math::Min(start, end), Elastos::Core::Math::Max(start, end));
@@ -96,8 +109,8 @@ Boolean BaseKeyListener::DeleteSelection(
     AutoPtr<ISelection> sel;
     CSelection::AcquireSingleton((ISelection**)&sel);
     Int32 selectionStart = 0,  selectionEnd = 0;
-    sel->GetSelectionStart(content, &selectionStart);
-    sel->GetSelectionEnd(content, &selectionEnd);
+    sel->GetSelectionStart(ICharSequence::Probe(content), &selectionStart);
+    sel->GetSelectionEnd(ICharSequence::Probe(content), &selectionEnd);
     if (selectionEnd < selectionStart) {
         Int32 temp = selectionEnd;
         selectionEnd = selectionStart;
@@ -122,7 +135,7 @@ Boolean BaseKeyListener::DeleteLine(
             Int32 line, selStart;
             AutoPtr<ISelection> sel;
             CSelection::AcquireSingleton((ISelection**)&sel);
-            sel->GetSelectionStart(content, &selStart);
+            sel->GetSelectionStart(ICharSequence::Probe(content), &selStart);
             layout->GetLineForOffset(selStart, &line);
             Int32 start;
             layout->GetLineStart(line, &start);
@@ -137,10 +150,12 @@ Boolean BaseKeyListener::DeleteLine(
     return FALSE;
 }
 
-Int32 BaseKeyListener::MakeTextContentType(
+ECode BaseKeyListener::MakeTextContentType(
     /* [in] */ Capitalize caps,
-    /* [in] */ Boolean autoText)
+    /* [in] */ Boolean autoText,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     Int32 contentType = IInputType::TYPE_CLASS_TEXT;
     switch (caps) {
         case Capitalize_CHARACTERS:
@@ -156,22 +171,26 @@ Int32 BaseKeyListener::MakeTextContentType(
     if (autoText) {
         contentType |= IInputType::TYPE_TEXT_FLAG_AUTO_CORRECT;
     }
-    return contentType;
+
+    *ret = contentType;
+    return NOERROR;
 }
 
-Boolean BaseKeyListener::OnKeyDown(
+ECode BaseKeyListener::OnKeyDown(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     Boolean handled;
     switch (keyCode) {
         case IKeyEvent::KEYCODE_DEL:
-            handled = Backspace(view, content, keyCode, event);
+            Backspace(view, content, keyCode, event, &handled);
             break;
         case IKeyEvent::KEYCODE_FORWARD_DEL:
-            handled = ForwardDelete(view, content, keyCode, event);
+            ForwardDelete(view, content, keyCode, event, &handled);
             break;
         default:
             handled = FALSE;
@@ -179,28 +198,31 @@ Boolean BaseKeyListener::OnKeyDown(
     }
 
     if (handled) {
-        AdjustMetaAfterKeypress(content);
+        AdjustMetaAfterKeypress(ISpannable::Probe(content));
     }
 
-    return MetaKeyKeyListener::OnKeyDown(view, content, keyCode, event);
+    return MetaKeyKeyListener::OnKeyDown(view, content, keyCode, event, ret);
 }
 
-Boolean BaseKeyListener::OnKeyOther(
+ECode BaseKeyListener::OnKeyOther(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     Int32 action, keyCode;
     if ((event->GetAction(&action), action) != IKeyEvent::ACTION_MULTIPLE
             || (event->GetKeyCode(&keyCode), keyCode) != IKeyEvent::KEYCODE_UNKNOWN) {
         // Not something we are interested in.
-        return FALSE;
+        *ret = FALSE;
+        return NOERROR;
     }
     AutoPtr<ISelection> sel;
     CSelection::AcquireSingleton((ISelection**)&sel);
     Int32 selectionStart,  selectionEnd;
-    sel->GetSelectionStart(content, &selectionStart);
-    sel->GetSelectionEnd(content, &selectionEnd);
+    sel->GetSelectionStart(ICharSequence::Probe(content), &selectionStart);
+    sel->GetSelectionEnd(ICharSequence::Probe(content), &selectionEnd);
     if (selectionEnd < selectionStart) {
         Int32 temp = selectionEnd;
         selectionEnd = selectionStart;
@@ -210,13 +232,15 @@ Boolean BaseKeyListener::OnKeyOther(
     String text;
     event->GetCharacters(&text);
     if (text.IsNullOrEmpty()) {
-        return FALSE;
+        *ret = FALSE;
+        return NOERROR;
     }
 
     AutoPtr<ICharSequence> cs;
     CString::New(text, (ICharSequence**)&cs);
     content->Replace(selectionStart, selectionEnd, cs);
-    return TRUE;
+    *ret = TRUE;
+    return NOERROR;
 }
 
 } // namespace Method

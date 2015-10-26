@@ -8,23 +8,21 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CTextKeyListenerHelper, CTextKeyListener, CTextKeyListener)
+CAR_INTERFACE_IMPL(CTextKeyListenerHelper, Singleton, ITextKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CTextKeyListenerHelper)
 
 ECode CTextKeyListenerHelper::Clear(
     /* [in] */ IEditable* e)
 {
-    CTextKeyListener::Clear(e);
-    return NOERROR;
+    return TextKeyListener::Clear(e);
 }
 
 ECode CTextKeyListenerHelper::GetInstance(
     /* [out] */ ITextKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<ITextKeyListener> tkl = CTextKeyListener::GetInstance();
-    *ret = tkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return TextKeyListener::GetInstance(ret);
 }
 
 ECode CTextKeyListenerHelper::GetInstance(
@@ -33,10 +31,7 @@ ECode CTextKeyListenerHelper::GetInstance(
     /* [out] */ ITextKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<ITextKeyListener> tkl = CTextKeyListener::GetInstance(autotext, cap);
-    *ret = tkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return TextKeyListener::GetInstance(autotext, cap, ret);
 }
 
 ECode CTextKeyListenerHelper::ShouldCap(
@@ -46,8 +41,7 @@ ECode CTextKeyListenerHelper::ShouldCap(
     /* [out] */ Boolean* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret=CTextKeyListener::ShouldCap(cap, cs, off);
-    return NOERROR;
+    return TextKeyListener::ShouldCap(cap, cs, off, ret);
 }
 
 } // namespace Method

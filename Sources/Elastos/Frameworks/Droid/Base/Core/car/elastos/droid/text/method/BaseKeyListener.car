@@ -6,6 +6,7 @@ module
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Text.IEditable;
     interface Elastos.Droid.Text.ISpannable;
+    enum Elastos.Droid.Text.Method.Capitalize;
 
     namespace Elastos {
     namespace Droid {
@@ -60,12 +61,12 @@ module
             [out] Boolean* ret);
     }
 
-    // interface IBaseKeyListenerHelper {
-    //     MakeTextContentType(
-    //         [in] ICapitalize* caps,
-    //         [in] Boolean autoText,
-    //         [out] Int32* ret);
-    // }
+    interface IBaseKeyListenerHelper {
+        MakeTextContentType(
+            [in] Capitalize caps,
+            [in] Boolean autoText,
+            [out] Int32* ret);
+    }
 
     }//namespace Method
     }//namespace Text

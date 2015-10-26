@@ -1,32 +1,34 @@
 
 #include "elastos/droid/text/method/CDateKeyListenerHelper.h"
 #include "elastos/droid/text/method/CDateKeyListener.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/text/method/DateKeyListener.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CDateKeyListenerHelper, CDateKeyListener, CDateKeyListener)
+CAR_INTERFACE_IMPL(CDateKeyListenerHelper, Object, IDateKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CDateKeyListenerHelper)
+
+AutoPtr<IDateKeyListener> CDateKeyListenerHelper::sInstance;
 
 ECode CDateKeyListenerHelper::GetCHARACTERS(
     /* [out, callee] */ ArrayOf<Char32>** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr< ArrayOf<Char32> > o = CDateKeyListener::GetCHARACTERS();
-    *ret = o;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DateKeyListener::GetCHARACTERS(ret);
 }
 
 ECode CDateKeyListenerHelper::GetInstance(
     /* [out] */ IDateKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDateKeyListener> dkl = CDateKeyListener::GetInstance();
-    *ret = dkl;
-    REFCOUNT_ADD(*ret);
+    if (sInstance == NULL) {
+        sInstance = new DateKeyListener();
+    }
+
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 

@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CDATETIMEKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CDateTimeKeyListenerHelper.h"
-
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -16,15 +16,20 @@ namespace Text {
 namespace Method {
 
 CarClass(CDateTimeKeyListenerHelper)
+    , public Singleton
+    , public IDateTimeKeyListenerHelper
 {
 public:
-    IBaseKeyListenerHelper_METHODS_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetCHARACTERS(
         /* [out, callee] */ ArrayOf<Char32>** ret);
 
     CARAPI GetInstance(
         /* [out] */ IDateTimeKeyListener** ret);
+
 };
 
 } // namespace Method

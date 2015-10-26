@@ -1,9 +1,7 @@
-#ifdef DROID_CORE
 #include "elastos/droid/text/method/NumberKeyListener.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/Selection.h"
-#endif
-
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 
@@ -15,24 +13,37 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+NumberKeyListener::NumberKeyListener()
+{}
+
+NumberKeyListener::~NumberKeyListener()
+{}
+
+CAR_INTERFACE_IMPL_5(NumberKeyListener, Object, INumberKeyListener, IInputFilter, IKeyListener, IMetaKeyKeyListener, IBaseKeyListener)
+
 Int32 NumberKeyListener::Lookup(
     /* [in] */ IKeyEvent* event,
     /* [in] */ ISpannable* content)
 {
     Int32 metaState;
+    MetaKeyKeyListener::GetMetaState(ICharSequence::Probe(content), event, &metaState);
+    AutoPtr< ArrayOf<Char32> > accepedChars;
+    accepedChars = GetAcceptedChars();
     Char32 c;
-    event->GetMatch(*((GetAcceptedChars()).Get()), THIS_PROBE(IMetaKeyKeyListener)->GetMetaState(ICharSequence::Probe(content), event, &metaState));
+    event->GetMatch(accepedChars.Get(), metaState, &c);
     return (Int32)c;
 }
 
-AutoPtr<ICharSequence> NumberKeyListener::Filter(
+ECode NumberKeyListener::Filter(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ISpanned* dest,
     /* [in] */ Int32 dstart,
-    /* [in] */ Int32 dend)
+    /* [in] */ Int32 dend,
+    /* [out] */ ICharSequence** ret)
 {
+    VALIDATE_NOT_NULL(ret)
     PRINT_ENTER_LEAVE("NumberKeyListener::Filter jiazhenjiang");
     AutoPtr< ArrayOf<Char32> > accept = GetAcceptedChars();
     Boolean filter = FALSE;
@@ -47,14 +58,17 @@ AutoPtr<ICharSequence> NumberKeyListener::Filter(
 
     if (i == end) {
         // It was all OK.
-        return NULL;
+        *ret = NULL;
+        return NOERROR;
     }
 
     if (end - start == 1) {
         // It was not OK, and there is only one char, so nothing remains.
         AutoPtr<ICharSequence> cs;
         CString::New(String(""), (ICharSequence**)&cs);
-        return cs;
+        *ret = cs;
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
     }
 
     AutoPtr<ISpannableStringBuilder> filtered;
@@ -67,11 +81,13 @@ AutoPtr<ICharSequence> NumberKeyListener::Filter(
     for (Int32 j = end - 1; j >= i; j--) {
         Char32 c;
         if (!Ok(accept, (source->GetCharAt(i, &c), c))) {
-            filtered->Delete(j, j + 1);
+            IEditable::Probe(filtered)->Delete(j, j + 1);
         }
     }
 
-    return filtered;
+    *ret = ICharSequence::Probe(filtered);
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 Boolean NumberKeyListener::Ok(
@@ -86,17 +102,19 @@ Boolean NumberKeyListener::Ok(
     return FALSE;
 }
 
-Boolean NumberKeyListener::OnKeyDown(
+ECode NumberKeyListener::OnKeyDown(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     Int32 selStart, selEnd;
 
     {
-        Int32 a = Selection::GetSelectionStart(content);
-        Int32 b = Selection::GetSelectionEnd(content);
+        Int32 a = Selection::GetSelectionStart(ICharSequence::Probe(content));
+        Int32 b = Selection::GetSelectionEnd(ICharSequence::Probe(content));
 
         selStart = Elastos::Core::Math::Min(a, b);
         selEnd = Elastos::Core::Math::Max(a, b);
@@ -104,40 +122,45 @@ Boolean NumberKeyListener::OnKeyDown(
 
     if (selStart < 0 || selEnd < 0) {
         selStart = selEnd = 0;
-        Selection::SetSelection(content, 0);
+        Selection::SetSelection(ISpannable::Probe(content), 0);
     }
 
-    Int32 i = event != NULL ? Lookup(event, content) : 0;
+    Int32 i = event != NULL ? Lookup(event, ISpannable::Probe(content)) : 0;
     Int32 repeatCount = event != NULL ? event->GetRepeatCount(&repeatCount) : 0;
     if (repeatCount == 0) {
         if (i != 0) {
             if (selStart != selEnd) {
-                Selection::SetSelection(content, selEnd);
+                Selection::SetSelection(ISpannable::Probe(content), selEnd);
             }
 
             AutoPtr<ICharSequence> cs;
-            CString::New(StringUtils::Int32ToString(i), (ICharSequence**)&cs);
+            CString::New(StringUtils::ToBinaryString(i), (ICharSequence**)&cs);
             content->Replace(selStart, selEnd, cs);
 
-            AdjustMetaAfterKeypress(content);
-            return TRUE;
+            AdjustMetaAfterKeypress(ISpannable::Probe(content));
+            *ret = TRUE;
+            return NOERROR;
         }
     }
     else if (i == '0' && repeatCount == 1) {
         // Pretty hackish, it replaces the 0 with the +
         Char32 c;
-        if (selStart == selEnd && selEnd > 0 && (content->GetCharAt(selStart - 1, &c), c) == '0') {
+        if (selStart == selEnd && selEnd > 0 && (ICharSequence::Probe(content)->GetCharAt(selStart - 1, &c), c) == '0') {
 
             AutoPtr<ICharSequence> cs;
             CString::New(String("+"), (ICharSequence**)&cs);
             content->Replace(selStart - 1, selEnd, cs);
-            AdjustMetaAfterKeypress(content);
-            return TRUE;
+            AdjustMetaAfterKeypress(ISpannable::Probe(content));
+            *ret = TRUE;
+            return NOERROR;
         }
     }
 
-    AdjustMetaAfterKeypress(content);
-    return BaseKeyListener::OnKeyDown(view, content, keyCode, event);
+    AdjustMetaAfterKeypress(ISpannable::Probe(content));
+    Boolean flag(FALSE);
+    BaseKeyListener::OnKeyDown(view, content, keyCode, event, &flag);
+    *ret = flag;
+    return NOERROR;
 }
 
 

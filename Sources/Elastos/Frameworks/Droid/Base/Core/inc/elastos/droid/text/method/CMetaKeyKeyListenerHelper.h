@@ -3,6 +3,8 @@
 #define  __ELASTOS_DROID_TEXT_METHOD_CMETAKEYKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CMetaKeyKeyListenerHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -100,13 +102,6 @@ public:
         /* [in] */ IKeyEvent* event,
         /* [out] */ Int64* result);
 
-private:
-    //private
-    static CARAPI_(Int32) GetActive(
-        /* [in] */ ICharSequence* text,
-        /* [in] */ IInterface* meta,
-        /* [in] */ Int32 on,
-        /* [in] */ Int32 lock);
 };
 
 } // namespace Method

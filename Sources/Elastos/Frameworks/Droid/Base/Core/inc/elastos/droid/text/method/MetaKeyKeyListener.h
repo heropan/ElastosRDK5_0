@@ -1,17 +1,13 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_MetaKeyKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_MetaKeyKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_METAKEYKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_METAKEYKEYLISTENER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -66,18 +62,20 @@ namespace Method {
  */
 //public abstract
 class MetaKeyKeyListener
-    : public object
-    , public IMetaKeyListener
+    : public Object
+    , public IMetaKeyKeyListener
 {
 public:
     CAR_INTERFACE_DECL()
 
-    static CARAPI_(AutoPtr<IInterface>) NewNoCopySpan();
+    MetaKeyKeyListener();
+
+    virtual ~MetaKeyKeyListener();
 
     /**
      * Resets all meta state to inactive.
      */
-    static CARAPI_(void) ResetMetaState(
+    static CARAPI ResetMetaState(
         /* [in] */ ISpannable* text);
 
     /**
@@ -88,8 +86,9 @@ public:
      * @return an Int32eger in which each bit set to one represents a pressed
      *         or locked meta key.
      */
-    static const CARAPI_(Int32) GetMetaState(
-        /* [in] */ ICharSequence* text);
+    static /*const*/ CARAPI GetMetaState(
+        /* [in] */ ICharSequence* text,
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the state of a particular meta key.
@@ -99,9 +98,10 @@ public:
      *
      * @return 0 if inactive, 1 if active, 2 if locked.
      */
-    static const CARAPI_(Int32) GetMetaState(
+    static /*const*/ CARAPI GetMetaState(
         /* [in] */ ICharSequence* text,
-        /* [in] */ Int32 meta);
+        /* [in] */ Int32 meta,
+        /* [out] */ Int32* ret);
 
      /**
      * Gets the state of the meta keys.
@@ -111,8 +111,9 @@ public:
      * @return an Int32eger in which each bit set to one represents a pressed
      *         or locked meta key.
      */
-    static const CARAPI_(Int32) GetMetaState(
-        /* [in] */ Int64 state);
+    static /*const*/ CARAPI GetMetaState(
+        /* [in] */ Int64 state,
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the state of a particular meta key.
@@ -122,57 +123,63 @@ public:
      *
      * @return 0 if inactive, 1 if active, 2 if locked.
      */
-    static const CARAPI_(Int32) GetMetaState(
+    static /*const*/ CARAPI GetMetaState(
         /* [in] */ Int64 state,
-        /* [in] */ Int32 meta);
+        /* [in] */ Int32 meta,
+        /* [out] */ Int32* ret);
 
-    static const CARAPI_(Int32) GetMetaState(
+    static /*const*/ CARAPI GetMetaState(
         /* [in] */ ICharSequence* text,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Int32* ret);
 
-    static const CARAPI_(Int32) GetMetaState(
+    static /*const*/ CARAPI GetMetaState(
            /* [in] */ ICharSequence* text,
            /* [in] */ Int32 meta,
-           /* [in] */ IKeyEvent* event);
+           /* [in] */ IKeyEvent* event,
+           /* [out] */ Int32* ret);
 
     /**
      * Call this method after you handle a keypress so that the meta
      * state will be reset to unshifted (if it is not still down)
      * or primed to be reset to unshifted (once it is released).
      */
-    static CARAPI_(void) AdjustMetaAfterKeypress(
+    static CARAPI AdjustMetaAfterKeypress(
         /* [in] */ ISpannable* content);
 
     /**
      * Returns true if this object is one that this class would use to
      * keep track of any meta state in the specified text.
      */
-    static CARAPI_(Boolean) IsMetaTracker(
+    static CARAPI IsMetaTracker(
         /* [in] */ ICharSequence* text,
-        /* [in] */ IInterface* what);
+        /* [in] */ IInterface* what,
+        /* [out] */ Boolean* ret);
 
     /**
      * Returns true if this object is one that this class would use to
      * keep track of the selecting meta state in the specified text.
      */
-    static CARAPI_(Boolean) IsSelectingMetaTracker(
+    static CARAPI IsSelectingMetaTracker(
         /* [in] */ ICharSequence* text,
-        /* [in] */ IInterface* what);
+        /* [in] */ IInterface* what,
+        /* [out] */ Boolean* ret);
 
     /**
      * Handles presses of the meta keys.
      */
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     /**
      * Start selecting text.
      * @hide pending API review
      */
-    static CARAPI_(void) StartSelecting(
+    static CARAPI StartSelecting(
         /* [in] */ IView* view,
         /* [in] */ ISpannable* content);
 
@@ -181,25 +188,26 @@ public:
      * call {@link android.text.Selection#setSelection} too.
      * @hide pending API review
      */
-    static CARAPI_(void) StopSelecting(
+    static CARAPI StopSelecting(
         /* [in] */ IView* view,
         /* [in] */ ISpannable* content);
 
     /**
      * Handles release of the meta keys.
      */
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    CARAPI_(void) ClearMetaKeyState(
+    CARAPI ClearMetaKeyState(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 states);
 
-    static CARAPI_(void) ClearMetaKeyState(
+    static CARAPI ClearMetaKeyState(
         /* [in] */ IEditable* content,
         /* [in] */ Int32 states);
 
@@ -207,8 +215,9 @@ public:
      * Call this if you are a method that ignores the locked meta state
      * (arrow keys, for example) and you handle a key.
      */
-    static CARAPI_(Int64) ResetLockedMeta(
-        /* [in] */ Int64 state);
+    static CARAPI ResetLockedMeta(
+        /* [in] */ Int64 state,
+        /* [out] */ Int64* ret);
 
     // ---------------------------------------------------------------------
     // Version of API that operates on a state bit mask
@@ -220,24 +229,27 @@ public:
      * or primed to be reset to unshifted (once it is released).  Takes
      * the current state, returns the new state.
      */
-    static CARAPI_(Int64) AdjustMetaAfterKeypress(
-        /* [in] */ Int64 state);
+    static CARAPI AdjustMetaAfterKeypress(
+        /* [in] */ Int64 state,
+        /* [out] */ Int64* ret);
 
     /**
      * Handles presses of the meta keys.
      */
-    static CARAPI_(Int64) HandleKeyDown(
+    static CARAPI HandleKeyDown(
         /* [in] */ Int64 state,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Int64* ret);
 
     /**
      * Handles release of the meta keys.
      */
-    static CARAPI_(Int64) HandleKeyUp(
+    static CARAPI HandleKeyUp(
         /* [in] */ Int64 state,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Int64* ret);
 
     /**
      * Clears the state of the specified meta key if it is locked.
@@ -245,16 +257,16 @@ public:
      * @param which meta keys to clear, may be a combination of {@link #META_SHIFT_ON},
      * {@link #META_ALT_ON} or {@link #META_SYM_ON}.
      */
-    CARAPI_(Int64) ClearMetaKeyState(
+    CARAPI ClearMetaKeyState(
         /* [in] */ Int64 state,
-        /* [in] */ Int32 which);
+        /* [in] */ Int32 which,
+        /* [out] */ Int64* ret);
 
-public://protected:
     /**
      * Call this if you are a method that ignores the locked meta state
      * (arrow keys, for example) and you handle a key.
      */
-    static CARAPI_(void) ResetLockedMeta(
+    static CARAPI ResetLockedMeta(
         /* [in] */ ISpannable* content);
 
 private:
@@ -356,4 +368,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_MetaKeyKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_METAKEYKEYLISTENER_H__

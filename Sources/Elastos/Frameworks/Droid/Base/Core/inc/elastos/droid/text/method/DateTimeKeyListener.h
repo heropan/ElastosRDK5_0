@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_DateTimeKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_DateTimeKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_DATETIMEKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_DATETIMEKEYLISTENER_H__
 
 #include "elastos/droid/text/method/NumberKeyListener.h"
 
@@ -15,14 +15,34 @@ namespace Method {
  * with hardware keyboards.  Software input methods have no obligation to trigger
  * the methods in this class.
  */
-class DateTimeKeyListener : public NumberKeyListener
+class DateTimeKeyListener
+    : public NumberKeyListener
+    , public IDateTimeKeyListener
 {
 public:
-    CARAPI_(Int32) GetInputType();
+    CAR_INTERFACE_DECL()
 
-    static CARAPI_(AutoPtr< ArrayOf<Char32> >) GetCHARACTERS();
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
 
-    //static AutoPtr<IDateTimeKeyListener> GetInstance();
+    static CARAPI GetCHARACTERS(
+        /* [out] */ ArrayOf<Char32>** ret);
+
+    static CARAPI GetInstance(
+        /* [out] */ IDateTimeKeyListener** ret);
+
+    //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
+
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
 
 protected:
     //@Override
@@ -35,10 +55,10 @@ public:
      * @see KeyEvent#getMatch
      * @see #getAcceptedChars
      */
-    static const Char32 CHARACTERS[];// = new Char32[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':', '/', '-', ' ' };
+    static const AutoPtr<ArrayOf<Char32> > CHARACTERS;// = new Char32[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':', '/', '-', ' ' };
 
 private:
-    //static AutoPtr<IDateTimeKeyListener> sInstance;
+    static AutoPtr<IDateTimeKeyListener> sInstance;
 };
 
 } // namespace Method
@@ -46,4 +66,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_DateTimeKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_DATETIMEKEYLISTENER_H__

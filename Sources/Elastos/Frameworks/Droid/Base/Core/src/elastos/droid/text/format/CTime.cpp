@@ -290,7 +290,7 @@ Boolean CTime::ParseInternal(
     if (len < 8) {
         // throw new TimeFormatException("String is too short: \"" + s +
         //             "\" Expected at least 8 characters.");
-        return E_TIME_FORMAT_EXCEPTION;
+        return FALSE;
     }
 
     Boolean inUtc = FALSE;
@@ -319,7 +319,7 @@ Boolean CTime::ParseInternal(
             //         "String is too short: \"" + s
             //                 + "\" If there are more than 8 characters there must be at least"
             //                 + " 15.");
-            return E_TIME_FORMAT_EXCEPTION;
+            return FALSE;
         }
         CheckChar(s, 8, 'T');
         mAllDay = FALSE;
@@ -411,7 +411,7 @@ Boolean CTime::Parse3339Internal(
     Int32 len = s.GetLength();
     if (len < 10) {
         // throw new TimeFormatException("String too short --- expected at least 10 characters.");
-        return E_TIME_FORMAT_EXCEPTION;
+        return FALSE;
     }
     Boolean inUtc = FALSE;
 
@@ -493,7 +493,7 @@ Boolean CTime::Parse3339Internal(
                     // throw new TimeFormatException(String.format(
                     //      "Unexpected character 0x%02d at position %d.  Expected + or -",
                     //      (int) c, tzIndex));
-                    return E_TIME_FORMAT_EXCEPTION;
+                    return FALSE;
          }
          inUtc = TRUE;
 
@@ -502,7 +502,7 @@ Boolean CTime::Parse3339Internal(
                  // throw new TimeFormatException(
                  //         String.format("Unexpected length; should be %d characters",
                  //                 tzIndex + 6));
-                return E_TIME_FORMAT_EXCEPTION;
+                return FALSE;
              }
 
              // hour

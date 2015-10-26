@@ -1,7 +1,16 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_NumberKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_NumberKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_NUMBERKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_NUMBERKEYLISTENER_H__
 
 #include "elastos/droid/text/method/BaseKeyListener.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::View::IInputFilter;
+using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -16,23 +25,34 @@ namespace Method {
  * the methods in this class.
  */
 //public abstract
-class NumberKeyListener : public BaseKeyListener /*implements InputFilter*/
+class NumberKeyListener
+    : public BaseKeyListener
+    , public IInputFilter
+    , public INumberKeyListener
 {
 public:
-    CARAPI_(AutoPtr<ICharSequence>) Filter(
+    CAR_INTERFACE_DECL()
+
+    NumberKeyListener();
+
+    virtual ~NumberKeyListener();
+
+    CARAPI Filter(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ISpanned* dest,
         /* [in] */ Int32 dstart,
-        /* [in] */ Int32 dend);
+        /* [in] */ Int32 dend,
+        /* [out] */ ICharSequence** ret);
 
     //@Override
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
 protected:
     /**
@@ -54,4 +74,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_NumberKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_NUMBERKEYLISTENER_H__

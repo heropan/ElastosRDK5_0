@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CTEXTKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CTextKeyListenerHelper.h"
-
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -16,9 +16,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CTextKeyListenerHelper)
+    , public Singleton
+    , public ITextKeyListenerHelper
 {
 public:
-    IBaseKeyListenerHelper_METHODS_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI Clear(
         /* [in] */ IEditable* e);
