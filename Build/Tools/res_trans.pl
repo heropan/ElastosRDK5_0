@@ -43,10 +43,6 @@ if ($SourcesType eq "ecx") {
         }
     }
 
-    if ($carFile && ($defFile || $rcFile)) {
-        die "ERROR: in same sources file there is car and (rc or def)\n";
-    }
-
     if ($tatol != $currentIndex) {
         goto EXIT;
     }

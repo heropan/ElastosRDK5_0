@@ -293,15 +293,18 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
     DEF_FILE_NAME := $(patsubst %.def,%,$(filter %.def,$(SOURCES)))
   endif
 
+  ifneq "$(findstring .def,$(SOURCES)))" ""
+    DEF_FLAGS := -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym
+   endif
+
     ifeq "$(XDK_TARGET_PLATFORM)" "linux"
         DLL_FLAGS := $(32B_FLAG) $(DLL_FLAGS) -shared -Wl,-fPIC,--no-undefined,--no-undefined-version
         ifeq "$(EXPORT_ALL_SYMBOLS)" ""
-            DLL_FLAGS := $(DLL_FLAGS) -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym -Wl,--version-script,__$(DEF_FILE_NAME).vs
+            DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
         else
             DLL_DBGINFO_FLAGS := $(DLL_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
-            DLL_FLAGS := $(DLL_FLAGS) -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym -Wl,--version-script,__$(DEF_FILE_NAME).vs
+            DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
         endif
-
           GCC_SYSROOT=$(XDK_SYSROOT_PATH)
           GCC_LIB_PATH=$(shell $(CC) -print-file-name=)
 
@@ -321,10 +324,10 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
     ifeq "$(XDK_TARGET_PLATFORM)" "android"
          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--no-undefined,--no-undefined-version
           ifeq "$(EXPORT_ALL_SYMBOLS)" ""
-              DLL_FLAGS := $(DLL_FLAGS) -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym -Wl,--version-script,__$(DEF_FILE_NAME).vs
+              DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
           else
               DLL_DBGINFO_FLAGS := $(DLL_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
-              DLL_FLAGS := $(DLL_FLAGS) -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym -Wl,--version-script,__$(DEF_FILE_NAME).vs
+              DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
           endif
 
           GCC_SYSROOT=$(PREBUILD_PATH)
@@ -339,10 +342,6 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           DLL_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
           DLL_CRT_END=$(GCC_LIB_PATH)/libgcc.a
       endif
-
-  ifneq "$(DEF_FILE_NAME)" ""
-    DLL_ENTRY_OBJECT_FILE = __$(DEF_FILE_NAME)_dllmain.o
-  endif
 endif # elf
 
 ##########################################################################
@@ -589,7 +588,6 @@ ifneq "$(SOURCES)" ""
     OBJECTS := $(OBJECTS:.c=.o)
     OBJECTS := $(OBJECTS:.S=.o)
     OBJECTS := $(OBJECTS:.asm=.o)
-    CAR_DEF_FILE := $(patsubst %.car,%.def,$(filter %.car,$(OBJECTS)))
     OBJECTS := $(OBJECTS:.lub=.lbo)
     OBJECTS := $(OBJECTS:.rc=.res)
     OBJECTS := $(OBJECTS:.def=.exp)

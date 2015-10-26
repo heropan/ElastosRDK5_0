@@ -336,33 +336,6 @@ endif
 	touch $@
 
 ifeq "$(TARGET_TYPE)" "eco"
-	@echo Generating $*_.def ...
-	echo LIBRARY $(TARGET_NAME).eco> $*_.def
-ifneq "$(DEF_FLAGS)" "EXPORTS_NONE"
-ifeq "$(XDK_TARGET_CPU)" "x86"
-	echo EXPORTS>> $*_.def
-	echo "DllGetClassObject   = DllGetClassObject@12">> $*_.def
-	echo "DllCanUnloadNow     = DllCanUnloadNow@0">> $*_.def
-ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-	echo "g_pDllResource     DATA">> $*_.def
-	echo "g_pDllCarCode     DATA">> $*_.def
-endif
-else
-	echo EXPORTS>> $*_.def
-	echo "DllGetClassObject PRIVATE">> $*_.def
-	echo "DllCanUnloadNow PRIVATE">> $*_.def
-	echo "g_pDllResource     DATA">> $*_.def
-	echo "g_pDllCarCode     DATA">> $*_.def
-endif
-endif
-	if [ -f $(MAKEDIR)/$*.def ]; then \
-		cat $(MAKEDIR)/$*.def >>$*_.def; \
-	fi
-	$(CC) $(C_DEFINES) -E -P -x c -Wall -o __$*.def $*_.def
-	perl $(XDK_TOOLS)/def_trans.pl __$*.def
-	$(CC) $(C_FLAGS) -o __$*_dllmain.o __$*_dllmain.c
-	$(CC) $(C_FLAGS) -o $*.def __$*_exp.c
-
 	@echo Compiling $*.rc ...
 	echo 1 ClassInfo $*.cls > $*.rc
 	if [ -d $(MAKEDIR)/$*.rc ]; then \
@@ -612,31 +585,31 @@ ifneq "$(EXPORT_ALL_SYMBOLS)" ""
 	@echo $(LD) $(DLL_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) \
 		-o $(TARGET_DBG_INFO_PATH)/$@ \
 		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
-		$(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END) $(BLACKHOLE)
+		$(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END) $(BLACKHOLE)
 	$(LD) $(DLL_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) \
 		-o $(TARGET_DBG_INFO_PATH)/$@ \
 		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
-		$(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
+		$(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 	$(STRIP) --strip-all -o $(XDK_TARGETS)/$@ $(TARGET_DBG_INFO_PATH)/$@
 	rm -f $(TARGET_DBG_INFO_PATH)/$@
 	$(LD) $(DLL_DBGINFO_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) \
 		-o $(TARGET_DBG_INFO_PATH)/$@ \
 		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
-		$(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
+		$(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 else
 	$(LD) $(DLL_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) \
 		-o $(TARGET_DBG_INFO_PATH)/$@ \
 		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
-		$(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
+		$(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 	$(STRIP) --strip-all -o $(XDK_TARGETS)/$@ $(TARGET_DBG_INFO_PATH)/$@
 endif
 else
 	@echo $(LD) $(DLL_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) -o  $(XDK_TARGETS)/$@ \
 		$(PASS2LD)--strip-all $(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) \
-		$(ELASTOS_LIBS) $(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END) $(BLACKHOLE)
+		$(ELASTOS_LIBS) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END) $(BLACKHOLE)
 	$(LD) $(DLL_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) -o  $(XDK_TARGETS)/$@ \
 		$(PASS2LD)--strip-all $(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) \
-		$(ELASTOS_LIBS) $(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
+		$(ELASTOS_LIBS) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 endif
 endif
 ifneq "$(APPPACK)" ""
