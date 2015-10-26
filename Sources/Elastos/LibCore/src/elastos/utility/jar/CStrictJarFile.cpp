@@ -11,7 +11,7 @@
 #include "Math.h"
 #include "CZipEntry.h"
 #include "CStreams.h"
-#include "UniquePtr.h"
+#include "elastos/core/UniquePtr.h"
 #include <ziparchive/zip_archive.h>
 
 using Elastos::Core::UniquePtr;

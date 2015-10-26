@@ -1,10 +1,19 @@
 
+#include "elastos/droid/graphics/NativePaint.h"
 #include "elastos/droid/graphics/CanvasProperty.h"
 #include "elastos/droid/graphics/Paint.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
+
+class CanvasPropertyPaint : public VirtualLightRefBase {
+    PREVENT_COPY_AND_ASSIGN(CanvasPropertyPaint);
+public:
+    CanvasPropertyPaint(const SkPaint& initialValue) : value(initialValue) {}
+
+    SkPaint value;
+};
 
 CAR_INTERFACE_IMPL(CanvasProperty, Object, ICanvasProperty);
 AutoPtr<CanvasProperty> CanvasProperty::CreateFloat(
