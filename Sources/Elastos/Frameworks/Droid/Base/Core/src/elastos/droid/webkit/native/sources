@@ -14,10 +14,10 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 LIBRARIES = android_webview/android_webview.lib
-#LIBRARIES += base/base.lib
+LIBRARIES += base/base.lib
 LIBRARIES += components/components.lib
-#LIBRARIES += content/content.lib
-#LIBRARIES += content_public/content_public.lib
+LIBRARIES += content/content.lib
+LIBRARIES += content_public/content_public.lib
 LIBRARIES += net/net.lib
 LIBRARIES += media/media.lib
 LIBRARIES += ui/ui.lib

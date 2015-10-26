@@ -191,10 +191,19 @@
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/gesture
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/android_webview/permission
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/android_webview
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/base
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/base
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/components
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content_public
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/app
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/browser/accessibility
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/browser/crypto
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/browser/framehost
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/browser/input
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/browser/webcontents
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/browser
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content/common
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content_public/browser
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/content_public
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/media
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/net
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/webkit/native/ui/autofill

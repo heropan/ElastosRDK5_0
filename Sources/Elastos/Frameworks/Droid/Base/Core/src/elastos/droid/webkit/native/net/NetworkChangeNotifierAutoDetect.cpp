@@ -17,8 +17,45 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Net {
-
-CAR_INTERFACE_IMPL(NetworkChangeNotifierAutoDetect, BroadcastReceiver, IBroadcastReceiver);
+#ifndef CAR_INTERFACE_IMPL_NCNAD
+#define CAR_INTERFACE_IMPL_NCNAD(ClassName, SupperClassName, InterfaceName)       \
+                                                           \
+    UInt32 ClassName::AddRef()                             \
+    {                                                      \
+        return SupperClassName::AddRef();                        \
+    }                                                      \
+                                                           \
+    UInt32 ClassName::Release()                            \
+    {                                                      \
+        return SupperClassName::Release();                       \
+    }                                                      \
+                                                           \
+    PInterface ClassName::Probe(                           \
+        /* [in] */ REIID riid)                             \
+    {                                                      \
+        if (riid == EIID_IInterface) {                     \
+            return (IInterface*)(InterfaceName*)this;      \
+        }                                                  \
+        else if (riid == EIID_##InterfaceName) {           \
+            return (InterfaceName*)this;                   \
+        }                                                  \
+        return SupperClassName::Probe(riid);               \
+    }                                                      \
+                                                           \
+    ECode ClassName::GetInterfaceID(                       \
+        /* [in] */ IInterface* object,                     \
+        /* [out] */ InterfaceID* iid)                      \
+    {                                                      \
+        VALIDATE_NOT_NULL(iid);                            \
+                                                           \
+        if (object == (IInterface*)(InterfaceName*)this) { \
+            *iid = EIID_##InterfaceName;                   \
+            return NOERROR;                                \
+        }                                                  \
+        return SupperClassName::GetInterfaceID(object, iid); \
+    }
+#endif
+CAR_INTERFACE_IMPL_NCNAD(NetworkChangeNotifierAutoDetect, BroadcastReceiver, IBroadcastReceiver);
 
 //=====================================================================
 //     NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate
