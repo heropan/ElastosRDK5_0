@@ -1,8 +1,10 @@
 
 #include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include <elastos/utility/logging/Logger.h>
 //#include "elastos/droid/widget/CToastHelper.h"
 
 using Elastos::Utility::CHashMap;
+using Elastos::Utility::Logging::Logger;
 using Elastos::IO::ISerializable;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
@@ -106,7 +108,7 @@ Int32 WindowAndroid::ShowCancelableIntent(
     // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
     // return START_INTENT_FAILURE;
 
-    // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
+    // Logger::D(TAG, "Can't show intent as context is not an Activity: " + intent);
     return START_INTENT_FAILURE;
 }
 
