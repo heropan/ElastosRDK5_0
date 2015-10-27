@@ -8,6 +8,8 @@ INCLUDES += $(MAKEDIR)/../../../../inc
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/androidfw
+INCLUDES += $(PREBUILD_INC)/input
+INCLUDES += $(PREBUILD_INC)/utils
 
 C_DEFINES += -DDROID_CORE
 
@@ -24,13 +26,12 @@ SOURCES += FrameStats.cpp
 SOURCES += GestureDetector.cpp
 SOURCES += GraphicBuffer.cpp
 SOURCES += Choreographer.cpp
+SOURCES += InputDevice.cpp
 #SOURCES += CGravity.cpp
-#SOURCES += AbsSavedState.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
 #SOURCES += CAbsSavedStateHelper.cpp
 #SOURCES += ViewBaseSavedState.cpp
 #SOURCES += CViewBaseSavedState.cpp
-#SOURCES += ActionMode.cpp
 #SOURCES += BaseSurfaceHolder.cpp
 #SOURCES += CChoreographerHelper.cpp
 #SOURCES += CCompatibilityInfoHolder.cpp
@@ -41,7 +42,7 @@ SOURCES += DisplayEventReceiver.cpp
 
 #SOURCES += CDragShadowBuilder.cpp
 #SOURCES += NativeInputChannel.cpp
-#SOURCES += CInputChannel.cpp
+SOURCES += InputChannel.cpp
 #SOURCES += CInputChannelHelper.cpp
 #SOURCES += CInputDevice.cpp
 #SOURCES += CInputDeviceHelper.cpp

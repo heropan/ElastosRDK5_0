@@ -1,36 +1,45 @@
 
-#include "elastos/droid/view/CInputDevice.h"
-#include "elastos/droid/view/CKeyCharacterMap.h"
-#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/InputDevice.h"
+// #include "elastos/droid/view/CKeyCharacterMap.h" zhangjingcheng wait.
+// #include "elastos/droid/view/CMotionEvent.h" zhangjingcheng wait.
 #include "elastos/droid/hardware/input/CInputManager.h"
+#include "elastos/droid/hardware/input/InputDeviceIdentifier.h"
+#include "elastos/droid/hardware/input/CInputManagerHelper.h"
+#include <elastos/core/AutoLock.h>
 
-
-using Elastos::Droid::View::CMotionEvent;
+// using Elastos::Droid::View::CMotionEvent; zhangjingcheng wait.
+using Elastos::Core::AutoLock;
 using Elastos::Droid::Hardware::Input::CInputManager;
+using Elastos::Droid::Hardware::Input::InputDeviceIdentifier;
+using Elastos::Droid::Hardware::Input::IInputManagerHelper;
+using Elastos::Droid::Hardware::Input::CInputManagerHelper;
+using Elastos::Droid::Hardware::Input::IInputManager;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CAR_INTERFACE_IMPL(CInputDevice::MotionRange, IMotionRange);
+CAR_INTERFACE_IMPL(InputDevice::MotionRange, Object, IMotionRange);
 
-CInputDevice::MotionRange::MotionRange(
+InputDevice::MotionRange::MotionRange(
     /* [in] */ Int32 axis,
     /* [in] */ Int32 source,
     /* [in] */ Float min,
     /* [in] */ Float max,
     /* [in] */ Float flat,
-    /* [in] */ Float fuzz) :
-    mAxis(axis),
-    mSource(source),
-    mMin(min),
-    mMax(max),
-    mFlat(flat),
-    mFuzz(fuzz)
+    /* [in] */ Float fuzz,
+    /* [in] */ Float resolution)
+    : mAxis(axis)
+    , mSource(source)
+    , mMin(min)
+    , mMax(max)
+    , mFlat(flat)
+    , mFuzz(fuzz)
+    , mResolution(resolution)
 {
 }
 
-ECode CInputDevice::MotionRange::GetAxis(
+ECode InputDevice::MotionRange::GetAxis(
     /* [out] */ Int32* axis)
 {
     VALIDATE_NOT_NULL(axis);
@@ -39,7 +48,7 @@ ECode CInputDevice::MotionRange::GetAxis(
     return NOERROR;
 }
 
-ECode CInputDevice::MotionRange::GetSource(
+ECode InputDevice::MotionRange::GetSource(
     /* [out] */ Int32* source)
 {
     VALIDATE_NOT_NULL(source);
@@ -48,7 +57,15 @@ ECode CInputDevice::MotionRange::GetSource(
     return NOERROR;
 }
 
-ECode CInputDevice::MotionRange::GetMin(
+ECode InputDevice::MotionRange::IsFromSource(
+    /* [in] */ Int32 source,
+    /* [out] */ Boolean* rst)
+{
+    *rst = (mSource & source) == source;
+    return NOERROR;
+}
+
+ECode InputDevice::MotionRange::GetMin(
     /* [out] */ Float* minimum)
 {
     VALIDATE_NOT_NULL(minimum);
@@ -57,7 +74,7 @@ ECode CInputDevice::MotionRange::GetMin(
     return NOERROR;
 }
 
-ECode CInputDevice::MotionRange::GetMax(
+ECode InputDevice::MotionRange::GetMax(
     /* [out] */ Float* maximum)
 {
     VALIDATE_NOT_NULL(maximum);
@@ -66,7 +83,7 @@ ECode CInputDevice::MotionRange::GetMax(
     return NOERROR;
 }
 
-ECode CInputDevice::MotionRange::GetRange(
+ECode InputDevice::MotionRange::GetRange(
     /* [out] */ Float* range)
 {
     VALIDATE_NOT_NULL(range);
@@ -75,7 +92,7 @@ ECode CInputDevice::MotionRange::GetRange(
     return NOERROR;
 }
 
-ECode CInputDevice::MotionRange::GetFlat(
+ECode InputDevice::MotionRange::GetFlat(
     /* [out] */ Float* flat)
 {
     VALIDATE_NOT_NULL(flat);
@@ -84,7 +101,7 @@ ECode CInputDevice::MotionRange::GetFlat(
     return NOERROR;
 }
 
-ECode CInputDevice::MotionRange::GetFuzz(
+ECode InputDevice::MotionRange::GetFuzz(
     /* [out] */ Float* fuzz)
 {
     VALIDATE_NOT_NULL(fuzz);
@@ -93,76 +110,61 @@ ECode CInputDevice::MotionRange::GetFuzz(
     return NOERROR;
 }
 
-CInputDevice::CInputDevice()
+ECode InputDevice::MotionRange::GetResolution(
+    /* [out] */ Float* resolution)
+{
+    VALIDATE_NOT_NULL(resolution);
+    *resolution = mResolution;
+
+    return NOERROR;
+}
+
+InputDevice::InputDevice()
 {
 }
 
-CInputDevice::~CInputDevice()
+InputDevice::~InputDevice()
 {
 }
 
-ECode CInputDevice::constructor()
+ECode InputDevice::constructor()
 {
     return NOERROR;
 }
 
-ECode CInputDevice::constructor(
+ECode InputDevice::constructor(
     /* [in] */ Int32 id,
     /* [in] */ Int32 generation,
+    /* [in] */ Int32 controllerNumber,
     /* [in] */ const String& name,
+    /* [in] */ Int32 vendorId,
+    /* [in] */ Int32 productId,
     /* [in] */ const String& descriptor,
     /* [in] */ Boolean isExternal,
     /* [in] */ Int32 sources,
     /* [in] */ Int32 keyboardType,
     /* [in] */ IKeyCharacterMap* keyCharacterMap,
-    /* [in] */ Boolean hasVibrator)
+    /* [in] */ Boolean hasVibrator,
+    /* [in] */ Boolean hasButtonUnderPad)
 {
     mId = id;
     mGeneration = generation;
+    mControllerNumber = controllerNumber;
     mName = name;
+    mVendorId = vendorId;
+    mProductId = productId;
     mDescriptor = descriptor;
     mIsExternal = isExternal;
     mSources = sources;
     mKeyboardType = keyboardType;
     mKeyCharacterMap = keyCharacterMap;
     mHasVibrator = hasVibrator;
-
+    mHasButtonUnderPad = hasButtonUnderPad;
+    mIdentifier = new InputDeviceIdentifier(descriptor, vendorId, productId);
     return NOERROR;
 }
 
-// ECode CInputDevice::constructor(
-//     /* [in] */ IParcel* in)
-// {
-//     in->ReadInt32(&mId);
-//     in->ReadInt32(&mGeneration);
-//     in->ReadString(&mName);
-//     in->ReadString(&mDescriptor);
-//     in->ReadBoolean(&mIsExternal);
-//     in->ReadInt32(&mSources);
-//     in->ReadInt32(&mKeyboardType);
-//     CKeyCharacterMap::New(in, (IKeyCharacterMap**)&mKeyCharacterMap);
-//     in->ReadBoolean(&mHasVibrator);
-
-//     for (;;) {
-//         Int32 axis;
-//         in->ReadInt32(&axis);
-//         if (axis < 0) {
-//             break;
-//         }
-//         Int32 source;
-//         Float min, max, flat, fuzz;
-//         in->ReadInt32(&source);
-//         in->ReadFloat(&min);
-//         in->ReadFloat(&max);
-//         in->ReadFloat(&flat);
-//         in->ReadFloat(&fuzz);
-//         AddMotionRange(axis, source, min, max, flat, fuzz);
-//     }
-
-//     return NOERROR;
-// }
-
-ECode CInputDevice::GetDevice(
+ECode InputDevice::GetDevice(
     /* [in] */ Int32 id,
     /* [out] */ IInputDevice** device)
 {
@@ -170,14 +172,14 @@ ECode CInputDevice::GetDevice(
     return CInputManager::GetInstance()->GetInputDevice(id, device);
 }
 
-ECode CInputDevice::GetDeviceIds(
+ECode InputDevice::GetDeviceIds(
     /* [out, callee] */ ArrayOf<Int32>** deviceIds)
 {
     VALIDATE_NOT_NULL(deviceIds);
     return CInputManager::GetInstance()->GetInputDeviceIds(deviceIds);
 }
 
-ECode CInputDevice::GetId(
+ECode InputDevice::GetId(
     /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id);
@@ -186,7 +188,22 @@ ECode CInputDevice::GetId(
     return NOERROR;
 }
 
-ECode CInputDevice::GetGeneration(
+ECode InputDevice::GetControllerNumber(
+    /* [out] */ Int32* number)
+{
+    *number = mControllerNumber;
+    return NOERROR;
+}
+
+ECode InputDevice::GetIdentifier(
+    /* [out] */ IInputDeviceIdentifier** identifier)
+{
+    *identifier = mIdentifier;
+    REFCOUNT_ADD(*identifier)
+    return NOERROR;
+}
+
+ECode InputDevice::GetGeneration(
     /* [out] */ Int32* generation)
 {
     VALIDATE_NOT_NULL(generation);
@@ -195,7 +212,21 @@ ECode CInputDevice::GetGeneration(
     return NOERROR;
 }
 
-ECode CInputDevice::GetDescriptor(
+ECode InputDevice::GetVendorId(
+    /* [out] */ Int32* id)
+{
+    *id = mVendorId;
+    return NOERROR;
+}
+
+ECode InputDevice::GetProductId(
+    /* [out] */ Int32* id)
+{
+    *id = mProductId;
+    return NOERROR;
+}
+
+ECode InputDevice::GetDescriptor(
     /* [out] */ String* descriptor)
 {
     VALIDATE_NOT_NULL(descriptor);
@@ -204,7 +235,7 @@ ECode CInputDevice::GetDescriptor(
     return NOERROR;
 }
 
-ECode CInputDevice::IsVirtual(
+ECode InputDevice::IsVirtual(
     /* [out] */ Boolean* isVirtual)
 {
      VALIDATE_NOT_NULL(isVirtual);
@@ -213,7 +244,7 @@ ECode CInputDevice::IsVirtual(
      return NOERROR;
 }
 
-ECode CInputDevice::IsExternal(
+ECode InputDevice::IsExternal(
     /* [out] */ Boolean* isExternal)
 {
     VALIDATE_NOT_NULL(isExternal);
@@ -222,7 +253,7 @@ ECode CInputDevice::IsExternal(
     return NOERROR;
 }
 
-ECode CInputDevice::IsFullKeyboard(
+ECode InputDevice::IsFullKeyboard(
     /* [out] */ Boolean* isFullKeyboard)
 {
     VALIDATE_NOT_NULL(isFullKeyboard);
@@ -232,7 +263,7 @@ ECode CInputDevice::IsFullKeyboard(
     return NOERROR;
 }
 
-ECode CInputDevice::GetName(
+ECode InputDevice::GetName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
@@ -241,7 +272,7 @@ ECode CInputDevice::GetName(
     return NOERROR;
 }
 
-ECode CInputDevice::GetSources(
+ECode InputDevice::GetSources(
     /* [out] */ Int32* sources)
 {
     VALIDATE_NOT_NULL(sources);
@@ -250,7 +281,17 @@ ECode CInputDevice::GetSources(
     return NOERROR;
 }
 
-ECode CInputDevice::GetKeyboardType(
+ECode InputDevice::SupportsSource(
+    /* [in] */ Int32 source,
+    /* [out] */ Boolean* rst)
+{
+    VALIDATE_NOT_NULL(rst);
+    *rst = (mSources & source) == source;
+
+    return NOERROR;
+}
+
+ECode InputDevice::GetKeyboardType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type);
@@ -259,7 +300,7 @@ ECode CInputDevice::GetKeyboardType(
     return NOERROR;
 }
 
-ECode CInputDevice::GetKeyCharacterMap(
+ECode InputDevice::GetKeyCharacterMap(
     /* [out] */ IKeyCharacterMap** keyCharacterMap)
 {
     VALIDATE_NOT_NULL(keyCharacterMap);
@@ -269,16 +310,36 @@ ECode CInputDevice::GetKeyCharacterMap(
     return NOERROR;
 }
 
-ECode CInputDevice::GetMotionRange(
+ECode InputDevice::HasKeys(
+    /* [in] */ ArrayOf<Int32>* keys,
+    /* [out] */ ArrayOf<Boolean>** rsts)
+{
+    AutoPtr<IInputManagerHelper> helper;
+    CInputManagerHelper::AcquireSingleton((IInputManagerHelper**)&helper);
+    AutoPtr<IInputManager> manager;
+    helper->GetInstance((IInputManager**)&manager);
+    AutoPtr<ArrayOf<Int32> > param = ArrayOf<Int32>::Alloc(keys->GetLength() + 1);
+    param->Set(0, mId);
+    param->Copy(1, keys);
+    return manager->DeviceHasKeys(*param, rsts);
+}
+
+ECode InputDevice::GetMotionRange(
     /* [in] */ Int32 axis,
     /* [out] */ IMotionRange** montionRange)
 {
     VALIDATE_NOT_NULL(montionRange);
 
-    List<AutoPtr<MotionRange> >::Iterator iter = mMotionRanges.Begin();
-    for (; iter != mMotionRanges.End(); ++iter) {
-        if ((*iter)->mAxis == axis) {
-            *montionRange = iter->Get();
+    Int32 size;
+    mMotionRanges->GetSize(&size);
+
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> tmp;
+        mMotionRanges->Get(i, (IInterface**)&tmp);
+        AutoPtr<IMotionRange> rangeItf = IMotionRange::Probe(tmp);
+        MotionRange* range = (MotionRange*)(rangeItf.Get());
+        if (range->mAxis == axis) {
+            *montionRange = range;
             REFCOUNT_ADD(*montionRange);
             return NOERROR;
         }
@@ -288,17 +349,23 @@ ECode CInputDevice::GetMotionRange(
     return NOERROR;
 }
 
-ECode CInputDevice::GetMotionRange(
+ECode InputDevice::GetMotionRange(
     /* [in] */ Int32 axis,
     /* [in] */ Int32 source,
     /* [out] */ IMotionRange** montionRange)
 {
     VALIDATE_NOT_NULL(montionRange);
 
-    List<AutoPtr<MotionRange> >::Iterator iter = mMotionRanges.Begin();
-    for (; iter != mMotionRanges.End(); ++iter) {
-        if ((*iter)->mAxis == axis && (*iter)->mSource == source) {
-            *montionRange = iter->Get();
+    Int32 size;
+    mMotionRanges->GetSize(&size);
+
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> tmp;
+        mMotionRanges->Get(i, (IInterface**)&tmp);
+        AutoPtr<IMotionRange> rangeItf = IMotionRange::Probe(tmp);
+        MotionRange* range = (MotionRange*)(rangeItf.Get());
+        if (range->mAxis == axis && range->mSource == source) {
+            *montionRange = range;
             REFCOUNT_ADD(*montionRange);
             return NOERROR;
         }
@@ -308,34 +375,31 @@ ECode CInputDevice::GetMotionRange(
     return NOERROR;
 }
 
-ECode CInputDevice::GetMotionRanges(
-    /* [out] */ IObjectContainer** motionRanges)
+ECode InputDevice::GetMotionRanges(
+    /* [out] */ IList** motionRanges)
 {
     VALIDATE_NOT_NULL(motionRanges);
 
-    CObjectContainer::New(motionRanges);
-    List<AutoPtr<MotionRange> >::Iterator iter = mMotionRanges.Begin();
-    for (; iter != mMotionRanges.End(); ++iter) {
-        (*motionRanges)->Add(iter->Get());
-    }
-
+    *motionRanges = mMotionRanges;
+    REFCOUNT_ADD(*motionRanges)
     return NOERROR;
 }
 
-ECode CInputDevice::AddMotionRange(
+ECode InputDevice::AddMotionRange(
     /* [in] */ Int32 axis,
     /* [in] */ Int32 source,
     /* [in] */ Float min,
     /* [in] */ Float max,
     /* [in] */ Float flat,
-    /* [in] */ Float fuzz)
+    /* [in] */ Float fuzz,
+    /* [in] */ Float resolution)
 {
-    AutoPtr<MotionRange> range = new MotionRange(axis, source, min, max, flat, fuzz);
-    mMotionRanges.PushBack(range);
+    AutoPtr<MotionRange> range = new MotionRange(axis, source, min, max, flat, fuzz, resolution);
+    mMotionRanges->Add((IMotionRange*)range.Get());
     return NOERROR;
 }
 
-ECode CInputDevice::GetVibrator(
+ECode InputDevice::GetVibrator(
     /* [out] */ IVibrator** vibrator)
 {
     VALIDATE_NOT_NULL(vibrator);
@@ -357,23 +421,37 @@ ECode CInputDevice::GetVibrator(
     return NOERROR;
 }
 
-ECode CInputDevice::ReadFromParcel(
+ECode InputDevice::HasButtonUnderPad(
+    /* [in] */ Boolean* rst)
+{
+    *rst = mHasButtonUnderPad;
+    return NOERROR;
+}
+
+ECode InputDevice::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
     in->ReadInt32(&mId);
     in->ReadInt32(&mGeneration);
+    in->ReadInt32(&mControllerNumber);
     in->ReadString(&mName);
+    in->ReadInt32(&mVendorId);
+    in->ReadInt32(&mProductId);
     in->ReadString(&mDescriptor);
     in->ReadBoolean(&mIsExternal);
     in->ReadInt32(&mSources);
     in->ReadInt32(&mKeyboardType);
     if (mKeyCharacterMap != NULL) {
-        IParcelable::Probe(mKeyCharacterMap)->ReadFromParcel(in);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        // IParcelable::Probe(mKeyCharacterMap)->ReadFromParcel(in);
     }
     else {
-        CKeyCharacterMap::New(in, (IKeyCharacterMap**)&mKeyCharacterMap);
+        // CKeyCharacterMap::New((IKeyCharacterMap**)&mKeyCharacterMap); zhangjingcheng wait.
+        // IParcelable::Probe(mKeyCharacterMap)->ReadFromParcel(in);
     }
     in->ReadBoolean(&mHasVibrator);
+    in->ReadBoolean(&mHasButtonUnderPad);
+    mIdentifier = new InputDeviceIdentifier(mDescriptor, mVendorId, mProductId);
 
     for (;;) {
         Int32 axis;
@@ -382,34 +460,44 @@ ECode CInputDevice::ReadFromParcel(
             break;
         }
         Int32 source;
-        Float min, max, flat, fuzz;
+        Float min, max, flat, fuzz, resolution;
         in->ReadInt32(&source);
         in->ReadFloat(&min);
         in->ReadFloat(&max);
         in->ReadFloat(&flat);
         in->ReadFloat(&fuzz);
-        AddMotionRange(axis, source, min, max, flat, fuzz);
+        in->ReadFloat(&resolution);
+        AddMotionRange(axis, source, min, max, flat, fuzz, resolution);
     }
 
     return NOERROR;
 }
 
-ECode CInputDevice::WriteToParcel(
+ECode InputDevice::WriteToParcel(
     /* [in] */ IParcel* out)
 {
     out->WriteInt32(mId);
     out->WriteInt32(mGeneration);
+    out->WriteInt32(mControllerNumber);
     out->WriteString(mName);
+    out->WriteInt32(mVendorId);
+    out->WriteInt32(mProductId);
     out->WriteString(mDescriptor);
     out->WriteBoolean(mIsExternal);
     out->WriteInt32(mSources);
     out->WriteInt32(mKeyboardType);
     IParcelable::Probe(mKeyCharacterMap)->WriteToParcel(out);
     out->WriteBoolean(mHasVibrator);
+    out->WriteBoolean(mHasButtonUnderPad);
 
-    List<AutoPtr<MotionRange> >::Iterator iter = mMotionRanges.Begin();
-    for (; iter != mMotionRanges.End(); ++iter) {
-        MotionRange* range = iter->Get();
+    Int32 size;
+    mMotionRanges->GetSize(&size);
+
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> tmp;
+        mMotionRanges->Get(i, (IInterface**)&tmp);
+        AutoPtr<IMotionRange> rangeItf = IMotionRange::Probe(tmp);
+        MotionRange* range = (MotionRange*)(rangeItf.Get());
         if (range != NULL) {
             out->WriteInt32(range->mAxis);
             out->WriteInt32(range->mSource);
@@ -417,6 +505,7 @@ ECode CInputDevice::WriteToParcel(
             out->WriteFloat(range->mMax);
             out->WriteFloat(range->mFlat);
             out->WriteFloat(range->mFuzz);
+            out->WriteFloat(range->mResolution);
         }
     }
     out->WriteInt32(-1);
@@ -425,7 +514,7 @@ ECode CInputDevice::WriteToParcel(
 }
 
 
-ECode CInputDevice::ToString(
+ECode InputDevice::ToString(
     /* [out] */ String* str)
 {
     StringBuilder description;
@@ -448,7 +537,7 @@ ECode CInputDevice::ToString(
     }
     description += "\n";
     ((description += "  Has Vibrator: ") += "  Has Vibrator: ") += "\n";
-    ((description += "  Sources: 0x") += StringUtils::Int32ToHexString(mSources)) += " (";
+    ((description += "  Sources: 0x") += StringUtils::ToString(mSources, 16)) += " (";
     AppendSourceDescriptionIfApplicable(description, IInputDevice::SOURCE_KEYBOARD, String("keyboard"));
     AppendSourceDescriptionIfApplicable(description, IInputDevice::SOURCE_DPAD, String("dpad"));
     AppendSourceDescriptionIfApplicable(description, IInputDevice::SOURCE_TOUCHSCREEN, String("touchscreen"));
@@ -459,23 +548,28 @@ ECode CInputDevice::ToString(
     AppendSourceDescriptionIfApplicable(description, IInputDevice::SOURCE_JOYSTICK, String("joystick"));
     AppendSourceDescriptionIfApplicable(description, IInputDevice::SOURCE_GAMEPAD, String("gamepad"));
     description += " )\n";
-    List<AutoPtr<MotionRange> >::Iterator itAxes = mMotionRanges.Begin();
-    for(; itAxes != mMotionRanges.End(); itAxes++)
-    {
-        AutoPtr<MotionRange> range = *itAxes;
-        (description += "    ") += CMotionEvent::AxisToString(range->mAxis);
-        (description += ": source=0x") += StringUtils::Int32ToHexString(range->mSource);
+    Int32 size;
+    mMotionRanges->GetSize(&size);
+
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> tmp;
+        mMotionRanges->Get(i, (IInterface**)&tmp);
+        AutoPtr<IMotionRange> rangeItf = IMotionRange::Probe(tmp);
+        MotionRange* range = (MotionRange*)(rangeItf.Get());
+        // (description += "    ") += CMotionEvent::AxisToString(range->mAxis); zhangjingcheng wait.
+        (description += ": source=0x") += StringUtils::ToString(range->mSource, 16);
         (description += " min=") += range->mMin;
         (description += " max=") += range->mMax;
         (description += " flat=") += range->mFlat;
         (description += " fuzz=") += range->mFuzz;
+        (description += " resolution=") += range->mResolution;
         description += "\n";
     }
     *str = description.ToString();
     return NOERROR;
 }
 
-ECode CInputDevice::AppendSourceDescriptionIfApplicable(
+ECode InputDevice::AppendSourceDescriptionIfApplicable(
     /* [in] */ StringBuilder& description,
     /* [in] */ Int32 source,
     /* [in] */ const String& sourceName)
