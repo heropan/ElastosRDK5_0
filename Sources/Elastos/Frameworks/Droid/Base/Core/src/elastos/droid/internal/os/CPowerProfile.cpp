@@ -1,12 +1,13 @@
 
 #include "elastos/droid/internal/os/CPowerProfile.h"
-// #include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CDouble;
@@ -58,13 +59,12 @@ ECode CPowerProfile::ReadPowerValuesFromXml(
 
     ECode ec = NOERROR;
     do {
-        assert(0 && "TODO:XmlUtils is not implemented!");
-        // ec = XmlUtils::BeginDocument(parser, TAG_DEVICE);
+        ec = XmlUtils::BeginDocument(parser, TAG_DEVICE);
         if (FAILED(ec))
             break;
 
         while (TRUE) {
-            // ec = XmlUtils::NextElement(parser);
+            ec = XmlUtils::NextElement(parser);
             if (FAILED(ec))
                 break;
 

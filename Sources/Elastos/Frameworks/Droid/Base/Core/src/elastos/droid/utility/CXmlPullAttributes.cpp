@@ -1,11 +1,11 @@
 #include "elastos/droid/utility/CXmlPullAttributes.h"
-//#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -81,7 +81,7 @@ ECode CXmlPullAttributes:: GetAttributeListValue(
     GetAttributeValue(namespace1, attribute, &value);
     AutoPtr<ICharSequence> cs;
     CString::New(value, (ICharSequence**)&cs);
-    //TODO *index = XmlUtils::ConvertValueToList(cs, options, defaultValue);
+    *index = XmlUtils::ConvertValueToList(cs, *options, defaultValue);
     return NOERROR;
 }
 
@@ -96,7 +96,7 @@ ECode CXmlPullAttributes:: GetAttributeBooleanValue(
     GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToBoolean(cs, defaultValue);;
+    *value = XmlUtils::ConvertValueToBoolean(cs, defaultValue);;
     return NOERROR;
 }
 
@@ -111,7 +111,7 @@ ECode CXmlPullAttributes:: GetAttributeResourceValue(
     GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);;
+    *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);;
     return NOERROR;
 }
 
@@ -126,7 +126,7 @@ ECode CXmlPullAttributes:: GetAttributeIntValue(
     GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);;
+    *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);;
     return NOERROR;
 }
 
@@ -141,7 +141,7 @@ ECode CXmlPullAttributes:: GetAttributeUnsignedIntValue(
     GetAttributeValue(namespace1, attribute, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
+    *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode CXmlPullAttributes:: GetAttributeListValue(
     GetAttributeValue(index, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToList(cs, options, defaultValue);
+    *value = XmlUtils::ConvertValueToList(cs, *options, defaultValue);
     return NOERROR;
 }
 
@@ -185,7 +185,7 @@ ECode CXmlPullAttributes:: GetAttributeBooleanValue(
     GetAttributeValue(index, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToBoolean(cs, defaultValue);
+    *value = XmlUtils::ConvertValueToBoolean(cs, defaultValue);
     return NOERROR;
 }
 
@@ -199,7 +199,7 @@ ECode CXmlPullAttributes:: GetAttributeResourceValue(
     GetAttributeValue(index, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
+    *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
     return NOERROR;
 }
 
@@ -213,7 +213,7 @@ ECode CXmlPullAttributes:: GetAttributeIntValue(
     GetAttributeValue(index, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
+    *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
     return NOERROR;
 }
 
@@ -227,7 +227,7 @@ ECode CXmlPullAttributes:: GetAttributeUnsignedIntValue(
     GetAttributeValue(index, &v);
     AutoPtr<ICharSequence> cs;
     CString::New(v, (ICharSequence**)&cs);
-    //TODO *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
+    *value = XmlUtils::ConvertValueToInt32(cs, defaultValue);
     return NOERROR;
 }
 

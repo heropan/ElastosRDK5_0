@@ -5,7 +5,7 @@
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
-// #include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 // #include "elastos/droid/content/res/CResourcesHelper.h"
 // #include "elastos/droid/R.h"
@@ -32,7 +32,7 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 //using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -218,13 +218,13 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzHelper);
 
     // try {
-    //TODO XmlUtils::BeginDocument(parser, strTimeZones);
+    XmlUtils::BeginDocument(parser, strTimeZones);
 
     List<AutoPtr<ITimeZone> > list;
     String element, code, zoneIdString, tzId, nullStr;
     Int32 nextId;
     while (TRUE) {
-        //TODO XmlUtils::NextElement(parser);
+        XmlUtils::NextElement(parser);
 
         parser->GetName(&element);
         if (element.IsNull() || !(element.Equals(strTimeZones))) {

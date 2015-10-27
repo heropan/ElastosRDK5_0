@@ -30,7 +30,7 @@
 #include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/utility/CBase64.h"
-//#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
 
@@ -55,7 +55,7 @@ using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::Utility::IBase64;
 using Elastos::Droid::Utility::CBase64;
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 
 using Elastos::Core::CString;
 using Elastos::Core::CoreUtils;
@@ -1839,8 +1839,7 @@ ECode PackageParser::ParseSplitApk(
                     return NOERROR;
                 } else {
                     Slogger::W(TAG, "<manifest> has more than one <application>");
-                    assert(0 && "TODO");
-                    // XmlUtils::SkipCurrentTag(parser);
+                    XmlUtils::SkipCurrentTag(xpp);
                     continue;
                 }
             }
@@ -1868,8 +1867,7 @@ ECode PackageParser::ParseSplitApk(
             xpp->GetPositionDescription(&pos);
             Slogger::W(TAG, "Unknown element under <manifest>: %s at %s %s",
                 name.string(), mArchiveSourcePath.string(), pos.string());
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(xpp);
             continue;
         }
     }
@@ -2540,8 +2538,7 @@ ECode PackageParser::ParseBaseApk(
                 }
                 else {
                     Slogger::W(TAG, "<manifest> has more than one <application>");
-                    assert(0 && "TODO");
-                    // XmlUtils::SkipCurrentTag(IXmlPullParser::Probe(parser));
+                    XmlUtils::SkipCurrentTag(IXmlPullParser::Probe(parser));
                     continue;
                 }
             }
@@ -2574,8 +2571,7 @@ ECode PackageParser::ParseBaseApk(
                 mParseError = IPackageManager::INSTALL_PARSE_FAILED_MANIFEST_MALFORMED;
                 return NOERROR;
             }
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         } else if (tagName.Equals("key-sets")) {
             Boolean bval;
@@ -2661,8 +2657,7 @@ ECode PackageParser::ParseBaseApk(
             }
             pkg->mConfigPreferences->PushBack(cPref);
 
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("uses-feature")) {
             AutoPtr<IFeatureInfo> fi;
@@ -2686,8 +2681,7 @@ ECode PackageParser::ParseBaseApk(
                 pkg->mConfigPreferences->PushBack(cPref);
             }
 
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("feature-group")) {
             AutoPtr<IFeatureGroupInfo> group;
@@ -2722,8 +2716,7 @@ ECode PackageParser::ParseBaseApk(
                         innerTagName.string(), mArchiveSourcePath.string(), pos.string());
                 }
 
-                assert(0 && "TODO");
-                // XmlUtils::SkipCurrentTag(parser);
+                XmlUtils::SkipCurrentTag(parser);
             }
 
             if (features != NULL) {
@@ -2876,8 +2869,7 @@ ECode PackageParser::ParseBaseApk(
                 }
             }
 
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("supports-screens")) {
             sa = NULL;
@@ -2921,8 +2913,7 @@ ECode PackageParser::ParseBaseApk(
 
             sa->Recycle();
 
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("protected-broadcast")) {
             sa = NULL;
@@ -2950,8 +2941,7 @@ ECode PackageParser::ParseBaseApk(
                 }
             }
 
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("instrumentation")) {
             if (ParseInstrumentation(pkg, res, parser, attrs, outError) == NULL) {
@@ -2979,8 +2969,7 @@ ECode PackageParser::ParseBaseApk(
 
             sa->Recycle();
 
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("adopt-permissions")) {
             sa = NULL;
@@ -3003,30 +2992,25 @@ ECode PackageParser::ParseBaseApk(
                 pkg->mAdoptPermissions->PushBack(name);
             }
 
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("uses-gl-texture")) {
             // Just skip this tag
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
             continue;
         }
         else if (tagName.Equals("compatible-screens")) {
             // Just skip this tag
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
             continue;
         }
         else if (tagName.Equals("supports-input")) {
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
             continue;
         }
         else if (tagName.Equals("eat-comment")) {
             // Just skip this tag
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
             continue;
         }
         else if (RIGID_PARSER) {
@@ -3041,8 +3025,7 @@ ECode PackageParser::ParseBaseApk(
             parser->GetPositionDescription(&des);
             // Logger::W(TAG, StringBuffer("Unknown element under <manifest>: ") + tagName
             //     + " at " + mArchiveSourcePath + " " + des);
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
             continue;
         }
     }
@@ -3271,8 +3254,7 @@ ECode PackageParser::ParseUsesPermission(
         }
     }
 
-    assert(0 && "TODO");
-    // XmlUtils::SkipCurrentTag(parser);
+    XmlUtils::SkipCurrentTag(IXmlPullParser::Probe(parser));
     *result = TRUE;
     return NOERROR;
 }
@@ -3520,7 +3502,7 @@ ECode PackageParser::ParseKeySets(
                         pos.string(), currentKeySet.string());
                     sa->Recycle();
                     improperSet->Add(curObj);
-                    //XmlUtils::SkipCurrentTag(parser);
+                    XmlUtils::SkipCurrentTag(parser);
                     continue;
                 }
 
@@ -3544,7 +3526,7 @@ ECode PackageParser::ParseKeySets(
             definedKeySetsMap->Get(curObj, (IInterface**)&valObj);
             ISet::Probe(valObj)->Add(keyNameObj);
             sa->Recycle();
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (tagName.Equals("upgrade-key-set")) {
             assert(0 && "TODO");
@@ -3559,7 +3541,7 @@ ECode PackageParser::ParseKeySets(
             AutoPtr<ICharSequence> csq = CoreUtils::Convert(name);
             upgradeSet->Add(TO_IINTERFACE(csq));
             sa->Recycle();
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (RIGID_PARSER) {
             xpp->GetPositionDescription(&pos);
@@ -3575,7 +3557,7 @@ ECode PackageParser::ParseKeySets(
             xpp->GetName(&name);
             Slogger::W(TAG, "Unknown element under <key-sets>: %s at  %s %s",
                 name.string(),mArchiveSourcePath.string(), pos.string());
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
             continue;
         }
     }
@@ -4402,7 +4384,7 @@ Boolean PackageParser::ParseBaseApplication(
                 }
             }
 
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         } else if (tagName.Equals("uses-library")) {
             // Int32 size = ARRAY_SIZE(R::styleable::AndroidManifestUsesLibrary);
@@ -4436,12 +4418,12 @@ Boolean PackageParser::ParseBaseApplication(
                 }
             }
 
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         } else if (tagName.Equals("uses-package")) {
             // Dependencies for app installers; we don't currently try to
             // enforce this.
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         } else {
             if (!RIGID_PARSER) {
@@ -4449,7 +4431,7 @@ Boolean PackageParser::ParseBaseApplication(
                 parser->GetPositionDescription(&pos);
                 Slogger::W(TAG, "Unknown element under <application>: %s at %s %s",
                     tagName.string(), mArchiveSourcePath.string(), pos.string());
-                //XmlUtils::SkipCurrentTag(parser);
+                XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
             else {
@@ -4620,15 +4602,13 @@ ECode PackageParser::ParseSplitApplication(
                 }
             }
 
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         }
         else if (tagName.Equals("uses-package")) {
             // Dependencies for app installers; we don't currently try to
             // enforce m
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         }
         else {
@@ -4637,8 +4617,7 @@ ECode PackageParser::ParseSplitApplication(
                 parser->GetPositionDescription(&des);
                 Slogger::W(TAG, "Unknown element under <application>: %s at %s %s",
                     tagName.string(), mArchiveSourcePath.string(), des.string());
-                assert(0 && "TODO");
-                //XmlUtils::SkipCurrentTag(parser);
+                XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
             else {
@@ -5118,8 +5097,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
                     // Slogger::W(TAG, StringBuffer("Unknown element under <activity>: ") + name
                     //         + " at " + mArchiveSourcePath + " " + des);
                 }
-                assert(0 && "TODO");
-                //XmlUtils::SkipCurrentTag(parser);
+                XmlUtils::SkipCurrentTag(parser);
                 continue;
             } else {
                 if (receiver) {
@@ -5326,8 +5304,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivityAlias(
                 parser->GetPositionDescription(&des);
                 // Slogger::W(TAG, StringBuffer("Unknown element under <activity-alias>: ")
                 //         + name + " at " + mArchiveSourcePath + " " + des);
-                assert(0 && "TODO");
-                //XmlUtils::SkipCurrentTag(parser);
+                XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
             else {
@@ -5611,8 +5588,8 @@ Boolean PackageParser::ParseProviderTags(
                     parser->GetPositionDescription(&des);
                     // Slogger::W(TAG, StringBuffer("Unknown element under <path-permission>: ")
                     //         + name + " at " + mArchiveSourcePath + " " + des);
-                    assert(0 && "TODO");
-                    //XmlUtils::SkipCurrentTag(parser);
+
+                    XmlUtils::SkipCurrentTag(parser);
                     continue;
                 }
                 else {
@@ -5620,8 +5597,8 @@ Boolean PackageParser::ParseProviderTags(
                     return FALSE;
                 }
             }
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+
+            XmlUtils::SkipCurrentTag(parser);
 
         }
         else if (name.Equals("path-permission")) {
@@ -5667,8 +5644,8 @@ Boolean PackageParser::ParseProviderTags(
                     parser->GetPositionDescription(&des);
                     // Logger::W(TAG, StringBuffer("No readPermission or writePermssion for <path-permission>: ")
                     //         + name + " at " + mArchiveSourcePath + " " + des);
-                    assert(0 && "TODO");
-                    //XmlUtils::SkipCurrentTag(parser);
+
+                    XmlUtils::SkipCurrentTag(parser);
                     continue;
                 }
                 else {
@@ -5729,15 +5706,15 @@ Boolean PackageParser::ParseProviderTags(
                     parser->GetPositionDescription(&des);
                     // Slogger::W(TAG, StringBuffer("No path, pathPrefix, or pathPattern for <path-permission>: ")
                     //         + name + " at " + mArchiveSourcePath + " " + des);
-                    assert(0 && "TODO");
-                    //XmlUtils::SkipCurrentTag(parser);
+
+                    XmlUtils::SkipCurrentTag(parser);
                     continue;
                 }
                 (*outError)[0] = "No path, pathPrefix, or pathPattern for <path-permission>";
                 return FALSE;
             }
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+
+            XmlUtils::SkipCurrentTag(parser);
 
         }
         else {
@@ -5746,8 +5723,8 @@ Boolean PackageParser::ParseProviderTags(
                 parser->GetPositionDescription(&des);
                 // Logger::W(TAG, StringBuffer("Unknown element under <provider>: ")
                 //         + name + " at " + mArchiveSourcePath + " " + des);
-                assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+
+            XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
             else {
@@ -5912,8 +5889,8 @@ AutoPtr<PackageParser::Service> PackageParser::ParseService(
                 parser->GetPositionDescription(&des);
                 // Slogger::W(TAG, StringBuffer("Unknown element under <service>: ")
                 //         + name + " at " + mArchiveSourcePath + " " + des);
-                assert(0 && "TODO");
-                //XmlUtils::SkipCurrentTag(parser);
+
+                XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
             else {
@@ -5965,8 +5942,8 @@ Boolean PackageParser::ParseAllMetaData(
                 parser->GetPositionDescription(&des);
                 // Slogger::W(TAG, StringBuffer("Unknown element under ") + tag + ": "
                 //     + name + " at " + mArchiveSourcePath + " "+ des);
-                assert(0 && "TODO");
-                //XmlUtils::SkipCurrentTag(parser);
+
+                XmlUtils::SkipCurrentTag(parser);
                 continue;
             }
             else {
@@ -6073,8 +6050,7 @@ AutoPtr<IBundle> PackageParser::ParseMetaData(
 
     sa->Recycle();
 
-    assert(0 && "TODO");
-    // XmlUtils::SkipCurrentTag(parser);
+    XmlUtils::SkipCurrentTag(parser);
 
     return data;
 }
@@ -6244,8 +6220,7 @@ Boolean PackageParser::ParseIntent(
                 (*outError)[0] = "No value supplied for <android:name>";
                 return FALSE;
             }
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
             outInfo->AddAction(value);
         }
@@ -6256,8 +6231,7 @@ Boolean PackageParser::ParseIntent(
                 (*outError)[0] = "No value supplied for <android:name>";
                 return FALSE;
             }
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
             outInfo->AddCategory(value);
         }
@@ -6349,8 +6323,7 @@ Boolean PackageParser::ParseIntent(
             }
 
             sa->Recycle();
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else if (!RIGID_PARSER) {
             String name;
@@ -6359,8 +6332,7 @@ Boolean PackageParser::ParseIntent(
             parser->GetPositionDescription(&des);
             // Slogger::W(TAG, StringBuffer("Unknown element under <intent-filter>: ")
             //         + name + " at " + (String)mArchiveSourcePath + " " + des);
-            assert(0 && "TODO");
-            //XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else {
             String name;

@@ -829,15 +829,15 @@ ECode HashMap::Put(
     /* [in] */ PInterface key,
     /* [in] */ PInterface value)
 {
-    assert(0 && "TODO");
-    return NOERROR;
+    AutoPtr<IInterface> oldValue;
+    return Put(key, value, (IInterface**)&oldValue);
 }
 
 ECode HashMap::Remove(
     /* [in] */ PInterface key)
 {
-    assert(0 && "TODO");
-    return NOERROR;
+    AutoPtr<IInterface> value;
+    return Remove(key, (IInterface**)&value);
 }
 
 

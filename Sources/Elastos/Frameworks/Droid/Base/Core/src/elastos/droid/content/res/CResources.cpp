@@ -5,7 +5,7 @@
 //#include "elastos/droid/content/pm/CActivityInfo.h"
 //#include "elastos/droid/content/pm/CActivityInfoHelper.h"
 //#include "elastos/droid/graphics/Movie.h"
-//#include "elastos/droid/internal/util/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 //#include "elastos/droid/graphics/drawable/CColorDrawable.h"
 //#include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/os/Build.h"
@@ -16,7 +16,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
 
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Os::Build;
 //using Elastos::Droid::Graphics::Movie;
 //using Elastos::Droid::Graphics::Drawable::CColorDrawable;
@@ -1722,10 +1722,10 @@ ECode CResources::ParseBundleExtras(
         xpp->GetName(&nodeName);
         if (nodeName.Equals("extra")) {
             ParseBundleExtra(nodeName, IAttributeSet::Probe(parser), outBundle);
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(xpp);
         }
         else {
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(xpp);
         }
     }
 

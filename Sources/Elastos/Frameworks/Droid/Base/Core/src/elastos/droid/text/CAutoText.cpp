@@ -1,7 +1,7 @@
 
 #include "elastos/droid/text/CAutoText.h"
 #include "elastos/droid/content/res/CResources.h"
-// #include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -11,7 +11,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
-// using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::R;
 
 namespace Elastos {
@@ -163,14 +163,13 @@ void CAutoText::Init(
     mTrieUsed = TRIE_ROOT + 1;
 
 //    try {
-    assert(0 && "TODO");
-        // XmlUtils::BeginDocument(parser.Get(), String("words"));
+        IXmlPullParser* xpp = IXmlPullParser::Probe(parser);
+        XmlUtils::BeginDocument(xpp, String("words"));
         String odest("");
         Char32 ooff = 0;
 
-        IXmlPullParser* xpp = IXmlPullParser::Probe(parser);
         while (TRUE) {
-            // XmlUtils::NextElement(parser.Get());
+            XmlUtils::NextElement(xpp);
 
             String element;
             xpp->GetName(&element);

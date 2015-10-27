@@ -8,7 +8,7 @@
 #include "elastos/droid/content/CClipDataHelper.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/UserHandle.h"
-//#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 //#include "elastos/droid/graphics/CRect.h"
 //#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/R.h"
@@ -33,7 +33,7 @@ using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Provider::IMediaStore;
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CoreUtils;
@@ -2785,8 +2785,7 @@ ECode Intent::ParseIntent(
             if (!cat.IsNull()) {
                 intent->AddCategory(cat);
             }
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
 
         }
         else if (nodeName.Equals(TAG_EXTRA)) {
@@ -2794,12 +2793,10 @@ ECode Intent::ParseIntent(
                 CBundle::New((IBundle**)&intent->mExtras);
             }
             resources->ParseBundleExtra(TAG_EXTRA, attrs, intent->mExtras);
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
         else {
-            assert(0 && "TODO");
-            // XmlUtils::SkipCurrentTag(parser);
+            XmlUtils::SkipCurrentTag(parser);
         }
     }
 

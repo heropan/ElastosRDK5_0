@@ -2,7 +2,7 @@
 #include "elastos/droid/content/res/XmlBlock.h"
 #include "elastos/droid/content/res/CAssetManager.h"
 #include "elastos/droid/utility/CTypedValue.h"
-//#include "elastos/droid/internal/util/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include <elastos/core/StringUtils.h>
@@ -12,7 +12,7 @@
 
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CTypedValue;
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Utility::EIID_IAttributeSet;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
@@ -659,8 +659,7 @@ ECode XmlBlock::Parser::GetAttributeListValue(
     Int32 v = mHost->NativeGetAttributeData(mParseState, idx);
     if (t == ITypedValue::TYPE_STRING) {
         AutoPtr<ICharSequence> csq = mHost->mStrings->Get(v);
-        assert(0 && "TODO");
-        // *value = XmlUtils::ConvertValueToList(csq, options, defaultValue);
+        *value = XmlUtils::ConvertValueToList(csq, *options, defaultValue);
         return NOERROR;
     }
     *value = v;

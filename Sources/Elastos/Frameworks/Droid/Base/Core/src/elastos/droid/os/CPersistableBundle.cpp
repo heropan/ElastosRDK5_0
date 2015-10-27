@@ -1,9 +1,11 @@
 
 #include "elastos/droid/os/CPersistableBundle.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/utility/CArrayMap.h"
 #include <elastos/core/CoreUtils.h>
 
 using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Internal::Utility::EIID_IXmlUtilsWriteMapCallback;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::EIID_ICloneable;
@@ -189,8 +191,7 @@ ECode CPersistableBundle::SaveToXml(
     /* [in] */ IXmlSerializer* out)
 {
     Unparcel();
-    assert(0 && "TODO");
-    // XmlUtils::WriteMapXml(mMap, out, this);
+    XmlUtils::WriteMapXml(IMap::Probe(mMap), out, this);
     return NOERROR;
 }
 
