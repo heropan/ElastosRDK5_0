@@ -3,14 +3,14 @@
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CIntentFilterAuthorityEntry.h"
 #include "elastos/droid/os/CPatternMatcher.h"
-//#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Os::CPatternMatcher;
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
@@ -1502,8 +1502,7 @@ ECode IntentFilter::ReadFromXml(
         else {
             Logger::W("IntentFilter", String("Unknown tag parsing IntentFilter: ") + tagName);
         }
-        assert(0 && "TODO");
-        //XmlUtils::SkipCurrentTag(parser);
+        XmlUtils::SkipCurrentTag(parser);
     }
     return NOERROR;
 }

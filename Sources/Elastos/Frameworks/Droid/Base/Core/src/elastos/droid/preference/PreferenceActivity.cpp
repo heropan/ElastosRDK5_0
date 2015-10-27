@@ -1,7 +1,7 @@
 
 #include "elastos/droid/preference/PreferenceActivity.h"
 #include "elastos/droid/utility/Xml.h"
-// #include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/utility/XmlUtils.h"
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/text/TextUtils.h"
 #ifdef DROID_CORE

@@ -7,11 +7,18 @@
 #include "Elastos.Droid.Core.h"
 #endif
 
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Net::IUri;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IArrayOf;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::IList;
 using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
 
@@ -119,7 +126,7 @@ public:
         /* [in] */ IMap* val,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out,
-        /* [in] */ WriteMapCallback* callback);
+        /* [in] */ IXmlUtilsWriteMapCallback* callback);
 
     /**
      * Flatten a Map into an XmlSerializer.  The map can later be read back
@@ -139,7 +146,7 @@ public:
     static CARAPI WriteMapXml(
         /* [in] */ IMap* val,
         /* [in] */ IXmlSerializer* out,
-        /* [in] */ WriteMapCallback* callback);
+        /* [in] */ IXmlUtilsWriteMapCallback* callback);
 
     /**
      * Flatten a List into an XmlSerializer.  The list can later be read back
@@ -178,7 +185,7 @@ public:
      * @see #writeValueXml
      */
     static CARAPI WriteByteArrayXml(
-        /* [in] */ IArrayOf* val,
+        /* [in] */ ArrayOf<Byte>* val,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out);
 
@@ -195,8 +202,62 @@ public:
      * @see #writeValueXml
      * @see #readThisIntArrayXml
      */
-    static CARAPI WriteIntArrayXml(
-        /* [in] */ IArrayOf* val,
+    static CARAPI WriteInt32ArrayXml(
+        /* [in] */ ArrayOf<Int32>* val,
+        /* [in] */ const String& name,
+        /* [in] */ IXmlSerializer* out);
+
+    /**
+     * Flatten a Int64[] into an XmlSerializer.  The list can later be read back
+     * with readThisInt64ArrayXml().
+     *
+     * @param val The Int64 array to be flattened.
+     * @param name Name attribute to include with this array's tag, or null for
+     *             none.
+     * @param out XmlSerializer to write the array into.
+     *
+     * @see #writeMapXml
+     * @see #writeValueXml
+     * @see #readThisIntArrayXml
+     */
+    static CARAPI WriteInt64ArrayXml(
+        /* [in] */ ArrayOf<Int64>* val,
+        /* [in] */ const String& name,
+        /* [in] */ IXmlSerializer* out);
+
+    /**
+     * Flatten a double[] into an XmlSerializer.  The list can later be read back
+     * with readThisDoubleArrayXml().
+     *
+     * @param val The double array to be flattened.
+     * @param name Name attribute to include with this array's tag, or null for
+     *             none.
+     * @param out XmlSerializer to write the array into.
+     *
+     * @see #writeMapXml
+     * @see #writeValueXml
+     * @see #readThisIntArrayXml
+     */
+    static CARAPI WriteDoubleArrayXml(
+        /* [in] */ ArrayOf<Double>* val,
+        /* [in] */ const String& name,
+        /* [in] */ IXmlSerializer* out);
+
+    /**
+     * Flatten a String[] into an XmlSerializer.  The list can later be read back
+     * with readThisStringArrayXml().
+     *
+     * @param val The Int64 array to be flattened.
+     * @param name Name attribute to include with this array's tag, or null for
+     *             none.
+     * @param out XmlSerializer to write the array into.
+     *
+     * @see #writeMapXml
+     * @see #writeValueXml
+     * @see #readThisIntArrayXml
+     */
+    static CARAPI WriteStringArrayXml(
+        /* [in] */ ArrayOf<String>* val,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out);
 
@@ -204,7 +265,7 @@ public:
      * Flatten an object's value into an XmlSerializer.  The value can later
      * be read back with readThisValueXml().
      *
-     * Currently supported value types are: NULL, String, Integer, Long,
+     * Currently supported value types are: NULL, String, Integer, Int64,
      * Float, Double Boolean, Map, List.
      *
      * @param v The object to be flattened.
@@ -234,8 +295,9 @@ public:
      * @see #readThisMapXml
      * #see #writeMapXml
      */
-    static CARAPI_(AutoPtr<IMap>) ReadMapXml(
-        /* [in] */ IInputStream* in);
+    static CARAPI ReadMapXml(
+        /* [in] */ IInputStream* in,
+        /* [out] */ IHashMap** map);
 
     /**
      * Read an ArrayList from an InputStream containing XML.  The stream can
@@ -250,8 +312,9 @@ public:
      * @see #readThisListXml
      * @see #writeListXml
      */
-    static CARAPI_(AutoPtr<IArrayOf>) ReadListXml(
-        /* [in] */ IInputStream* in);
+    static CARAPI ReadListXml(
+        /* [in] */ IInputStream* in,
+        /* [out] */ IArrayList** list);
 
     /**
      * Read a HashSet from an InputStream containing XML. The stream can
@@ -268,8 +331,9 @@ public:
      * @see #readThisSetXml
      * @see #writeSetXml
      */
-    static CARAPI_(AutoPtr<ISet>) ReadSetXml(
-        /* [in] */ IInputStream* in);
+    static CARAPI ReadSetXml(
+        /* [in] */ IInputStream* in,
+        /* [out] */ IHashSet** set);
 
     /**
      * Read a HashMap object from an XmlPullParser.  The XML data could
@@ -289,7 +353,29 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
-        /* [out] */ IMap** map);
+        /* [out] */ IHashMap** map);
+
+    /**
+     * Read a HashMap object from an XmlPullParser.  The XML data could
+     * previously have been generated by writeMapXml().  The XmlPullParser
+     * must be positioned <em>after</em> the tag that begins the map.
+     *
+     * @param parser The XmlPullParser from which to read the map data.
+     * @param endTag Name of the tag that will end the map, usually "map".
+     * @param name An array of one string, used to return the name attribute
+     *             of the map's tag.
+     *
+     * @return HashMap The newly generated map.
+     *
+     * @see #readMapXml
+     * @hide
+     */
+    static CARAPI ReadThisMapXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& endTag,
+        /* [in] */ ArrayOf<String>* name,
+        /* [in] */ IXmlUtilsReadMapCallback* callback,
+        /* [out] */ IHashMap** map);
 
     /**
      * Read an ArrayList object from an XmlPullParser.  The XML data could
@@ -309,7 +395,7 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
-        /* [out] */ IArrayOf** array);
+        /* [out] */ IArrayList** list);
 
     /**
      * Read a HashSet object from an XmlPullParser. The XML data could previously
@@ -332,7 +418,7 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
-        /* [out] */ ISet** container);
+        /* [out] */ IHashSet** set);
 
     /**
      * Read an Int32[] object from an XmlPullParser.  The XML data could
@@ -348,11 +434,71 @@ public:
      *
      * @see #readListXml
      */
-    static CARAPI ReadThisIntArrayXml(
+    static CARAPI ReadThisInt32ArrayXml(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
-        /* [out] */ IArrayOf** array);
+        /* [out] */ ArrayOf<Int32>** array);
+
+    /**
+     * Read a Int64[] object from an XmlPullParser.  The XML data could
+     * previously have been generated by writeInt64ArrayXml().  The XmlPullParser
+     * must be positioned <em>after</em> the tag that begins the list.
+     *
+     * @param parser The XmlPullParser from which to read the list data.
+     * @param endTag Name of the tag that will end the list, usually "list".
+     * @param name An array of one string, used to return the name attribute
+     *             of the list's tag.
+     *
+     * @return Returns a newly generated Int64[].
+     *
+     * @see #readListXml
+     */
+    static CARAPI ReadThisInt64ArrayXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& endTag,
+        /* [in] */ ArrayOf<String>* name,
+        /* [out] */ ArrayOf<Int64>** array);
+
+    /**
+     * Read a double[] object from an XmlPullParser.  The XML data could
+     * previously have been generated by writeDoubleArrayXml().  The XmlPullParser
+     * must be positioned <em>after</em> the tag that begins the list.
+     *
+     * @param parser The XmlPullParser from which to read the list data.
+     * @param endTag Name of the tag that will end the list, usually "double-array".
+     * @param name An array of one string, used to return the name attribute
+     *             of the list's tag.
+     *
+     * @return Returns a newly generated double[].
+     *
+     * @see #readListXml
+     */
+    static CARAPI ReadThisDoubleArrayXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& endTag,
+        /* [in] */ ArrayOf<String>* name,
+        /* [out] */ ArrayOf<Double>** array);
+
+    /**
+     * Read a String[] object from an XmlPullParser.  The XML data could
+     * previously have been generated by writeStringArrayXml().  The XmlPullParser
+     * must be positioned <em>after</em> the tag that begins the list.
+     *
+     * @param parser The XmlPullParser from which to read the list data.
+     * @param endTag Name of the tag that will end the list, usually "string-array".
+     * @param name An array of one string, used to return the name attribute
+     *             of the list's tag.
+     *
+     * @return Returns a newly generated String[].
+     *
+     * @see #readListXml
+     */
+    static CARAPI ReadThisStringArrayXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& endTag,
+        /* [in] */ ArrayOf<String>* name,
+        /* [out] */ ArrayOf<String>** array);
 
     /**
      * Read a flattened object from an XmlPullParser.  The XML data could
@@ -386,10 +532,182 @@ public:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ Int32 outerDepth);
 
+    static CARAPI ReadInt32Attribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [in] */ Int32 defaultValue,
+        /* [out] */ Int32* result);
+
+    static CARAPI ReadInt32Attribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ Int32* result);
+
+    static CARAPI WriteInt32Attribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ Int32 value);
+
+    static CARAPI ReadInt64Attribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name, Int64 defaultValue,
+        /* [out] */ Int64* result);
+
+    static CARAPI ReadInt64Attribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ Int64* result);
+
+    static CARAPI WriteInt64Attribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ Int64 value);
+
+    static CARAPI ReadFloatAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ Float* result);
+
+    static CARAPI WriteFloatAttribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ Float value);
+
+    static CARAPI ReadBooleanAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ Boolean* result);
+
+    static CARAPI ReadBooleanAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [in] */ Boolean defaultValue,
+        /* [out] */ Boolean* result);
+
+    static CARAPI WriteBooleanAttribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ Boolean value);
+
+    static CARAPI ReadUriAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ IUri** result);
+
+    static CARAPI WriteUriAttribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ IUri* value);
+
+    static CARAPI ReadStringAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ String* result);
+
+    static CARAPI WriteStringAttribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ String value);
+
+    static CARAPI ReadByteArrayAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out, callee] */ ArrayOf<Byte>** array);
+
+    static CARAPI WriteByteArrayAttribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ ArrayOf<Byte>* value);
+
+    static CARAPI ReadBitmapAttribute(
+        /* [in] */ IXmlPullParser* in,
+        /* [in] */ const String& name,
+        /* [out] */ IBitmap** result);
+
+    static CARAPI WriteBitmapAttribute(
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ const String& name,
+        /* [in] */ IBitmap* value);
+
 private:
+    /**
+     * Flatten an object's value into an XmlSerializer.  The value can later
+     * be read back with readThisValueXml().
+     *
+     * Currently supported value types are: null, String, Integer, Int64,
+     * Float, Double Boolean, Map, List.
+     *
+     * @param v The object to be flattened.
+     * @param name Name attribute to include with this value's tag, or null
+     *             for none.
+     * @param out XmlSerializer to write the object into.
+     * @param callback Handler for Object types not recognized.
+     *
+     * @see #writeMapXml
+     * @see #writeListXml
+     * @see #readValueXml
+     */
+    static CARAPI WriteValueXml(
+        /* [in] */ IInterface* v,
+        /* [in] */ const String& name,
+        /* [in] */ IXmlSerializer* out,
+        /* [in] */ IXmlUtilsWriteMapCallback* callback);
+
+    /**
+     * Read an ArrayList object from an XmlPullParser.  The XML data could
+     * previously have been generated by writeListXml().  The XmlPullParser
+     * must be positioned <em>after</em> the tag that begins the list.
+     *
+     * @param parser The XmlPullParser from which to read the list data.
+     * @param endTag Name of the tag that will end the list, usually "list".
+     * @param name An array of one string, used to return the name attribute
+     *             of the list's tag.
+     *
+     * @return HashMap The newly generated list.
+     *
+     * @see #readListXml
+     */
+    static CARAPI ReadThisListXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& endTag,
+        /* [in] */ ArrayOf<String>* name,
+        /* [in] */ IXmlUtilsReadMapCallback* callback,
+        /* [out] */ IArrayList** list);
+
+    /**
+     * Read a HashSet object from an XmlPullParser. The XML data could previously
+     * have been generated by writeSetXml(). The XmlPullParser must be positioned
+     * <em>after</em> the tag that begins the set.
+     *
+     * @param parser The XmlPullParser from which to read the set data.
+     * @param endTag Name of the tag that will end the set, usually "set".
+     * @param name An array of one string, used to return the name attribute
+     *             of the set's tag.
+     *
+     * @return HashSet The newly generated set.
+     *
+     * @throws XmlPullParserException
+     * @throws java.io.IOException
+     *
+     * @see #readSetXml
+     * @hide
+     */
+    static CARAPI ReadThisSetXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& endTag,
+        /* [in] */ ArrayOf<String>* name,
+        /* [in] */ IXmlUtilsReadMapCallback* callback,
+        /* [out] */ IHashSet** set);
+
     static CARAPI ReadThisValueXml(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ ArrayOf<String>* name,
+        /* [in] */ IXmlUtilsReadMapCallback* callback,
+        /* [out] */ IInterface** ret);
+
+    static CARAPI ReadThisPrimitiveValueXml(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ const String& tagName,
         /* [out] */ IInterface** ret);
 
 private:

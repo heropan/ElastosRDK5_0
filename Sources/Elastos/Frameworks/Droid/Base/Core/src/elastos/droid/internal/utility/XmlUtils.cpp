@@ -1,18 +1,27 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
-#include "elastos/droid/internal/utility/Xml.h"
+#include "elastos/droid/utility/Xml.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include <elastos/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
 
 #ifdef DROID_CORE
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/internal/utility/CFastXmlSerializer.h"
+#include "elastos/droid/utility/CBase64.h"
 #endif
 
-using Elastos::Droid::Utility::CFastXmlSerializer;
-using Elastos::Droid::Utility::IFastXmlSerializer;
+using Elastos::Droid::Graphics::BitmapCompressFormat_PNG;
+using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Utility::IBase64;
+using Elastos::Droid::Utility::CBase64;
+using Elastos::Droid::Utility::Xml;
+using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::IFastXmlSerializer;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CInteger32;
@@ -26,12 +35,22 @@ using Elastos::Core::IFloat;
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
 using Elastos::Core::IByte;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CArrayOf;
-using Elastos::Core::CObjectContainer;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IString;
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::EIID_IDouble;
 using Elastos::Core::EIID_IInteger32;
-using Elastos::Utility::CObjectMap;
-using Elastos::Utility::Etl::List;
+using Elastos::Core::EIID_IInteger64;
+using Elastos::Core::EIID_IString;
+using Elastos::IO::IByteArrayOutputStream;
+using Elastos::IO::CByteArrayOutputStream;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Slogger;
 using Org::Kxml2::IO::CKXmlSerializer;
 
@@ -39,6 +58,27 @@ namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Utility {
+
+template<typename T, typename IT>
+static AutoPtr<ArrayOf<T> > IArrayOfToArray(
+    /* [in] */ IArrayOf* iarray,
+    /* [in] */ T typeDeduceObj1,
+    /* [in] */ IT* typeDeduceObj2)
+{
+    if (iarray == NULL)
+        return NULL;
+    Int32 size;
+    iarray->GetLength(&size);
+    AutoPtr<ArrayOf<T> > array = size > 0 ? ArrayOf<T>::Alloc(size) : NULL;
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> item;
+        iarray->Get(i, (IInterface**)&item);
+        T v;
+        IT::Probe(item)->GetValue(&v);
+        (*array)[i] = v;
+    }
+    return array;
+}
 
 const String XmlUtils::TAG("XmlUtils");
 
@@ -185,12 +225,12 @@ ECode XmlUtils::WriteMapXml(
     /* [in] */ IMap* val,
     /* [in] */ IOutputStream* out) //throws XmlPullParserException, java.io.IOException
 {
-    AutoPtr<IFastXmlSerializer> serializer;
-    CFastXmlSerializer::New((IFastXmlSerializer**)&serializer);
-    FAIL_RETURN(serializer->SetOutput(out, String("utf-8")));
-    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE));
-    FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE));
-    FAIL_RETURN(WriteMapXml(val, String(NULL), serializer));
+    AutoPtr<IXmlSerializer> serializer;
+    CFastXmlSerializer::New((IXmlSerializer**)&serializer);
+    FAIL_RETURN(serializer->SetOutput(out, String("utf-8")))
+    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE))
+    FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE))
+    FAIL_RETURN(WriteMapXml(val, String(NULL), serializer))
     return serializer->EndDocument();
 }
 
@@ -201,10 +241,10 @@ ECode XmlUtils::WriteListXml(
     AutoPtr<IXmlSerializer> serializer;
     Xml::NewSerializer((IXmlSerializer**)&serializer);
     // CKXmlSerializer::New((IXmlSerializer**)&serializer);
-    FAIL_RETURN(serializer->SetOutput(out, String("utf-8")));
-    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE));
-    FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE));
-    FAIL_RETURN(WriteListXml(val, String(NULL), serializer));
+    FAIL_RETURN(serializer->SetOutput(out, String("utf-8")))
+    FAIL_RETURN(serializer->StartDocument(String(NULL), TRUE))
+    FAIL_RETURN(serializer->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE))
+    FAIL_RETURN(WriteListXml(val, String(NULL), serializer))
     return serializer->EndDocument();
 }
 
@@ -220,28 +260,28 @@ ECode XmlUtils::WriteMapXml(
     /* [in] */ IMap* val,
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out,
-    /* [in] */ WriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
+    /* [in] */ IXmlUtilsWriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
 {
     if (val == NULL) {
-        FAIL_RETURN(out->WirteStartTag(String(NULL), String("NULL"))
-        FAIL_RETURN(out->WirteEndTag(String(NULL), String("NULL"))
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
+        FAIL_RETURN(out->WriteEndTag(String(NULL), String("NULL")))
         return NOERROR;
     }
 
-    FAIL_RETURN(out->WirteStartTag(String(NULL), String("map"))
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("map")))
     if (name != NULL) {
-        FAIL_RETURN(out->WirteAttribute(String(NULL), String("name"), name)
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
     }
 
     FAIL_RETURN(WriteMapXml(val, out, callback))
 
-    return out->WirteEndTag(String(NULL), String("map");
+    return out->WriteEndTag(String(NULL), String("map"));
 }
 
 ECode XmlUtils::WriteMapXml(
     /* [in] */ IMap* val,
     /* [in] */ IXmlSerializer* out,
-    /* [in] */ WriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
+    /* [in] */ IXmlUtilsWriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
 {
     if (val == NULL) {
         return NOERROR;
@@ -274,13 +314,13 @@ ECode XmlUtils::WriteListXml(
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
     if (val == NULL) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
         return out->WriteEndTag(String(NULL), String("NULL"));
     }
 
-    FAIL_RETURN(out->WriteStartTag(String(NULL), String("list")));
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("list")))
     if (!name.IsNull()) {
-        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
     }
 
     Int32 N;
@@ -302,13 +342,13 @@ ECode XmlUtils::WriteSetXml(
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
     if (val == NULL) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
         return out->WriteEndTag(String(NULL), String("NULL"));
     }
 
-    FAIL_RETURN(out->WriteStartTag(String(NULL), String("set")));
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("set")))
     if (!name.IsNull()) {
-        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
     }
 
     AutoPtr<IIterator> iter;
@@ -324,76 +364,145 @@ ECode XmlUtils::WriteSetXml(
 }
 
 ECode XmlUtils::WriteByteArrayXml(
-    /* [in] */ IArrayOf* val,
+    /* [in] */ ArrayOf<Byte>* val,
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
     if (val == NULL) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
         return out->WriteEndTag(String(NULL), String("NULL"));
     }
 
-    FAIL_RETURN(out->WriteStartTag(String(NULL), String("byte-array")));
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("byte-array")))
     if (!name.IsNull()) {
-        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
     }
 
-    Int32 N = 0;
-    val->GetLength(&N);
-    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::Int32ToString(N)));
+    Int32 N = val->GetLength();
+    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::ToString(N)))
 
     AutoPtr<StringBuilder> sb = new StringBuilder(N * 2);
     for (Int32 i = 0; i < N; i++) {
-        AutoPtr<IInterface> obj;
-        val->Get(i, (IInterface**)&obj);
-        assert(IByte::Probe(obj) != NULL);
-
-        Byte bv;
-        IByte::Probe(obj)->GetValue(&bv);
-        Int32 b = bv;
+        Int32 b = (*val)[i];
         Int32 h = b >> 4;
-        sb->AppendInt32(h >= 10 ? ('a' + h - 10) : ('0' + h));
+        sb->Append(h >= 10 ? ('a' + h - 10) : ('0' + h));
         h = b & 0xff;
-        sb->AppendInt32(h >= 10 ? ('a' + h - 10) : ('0' + h));
+        sb->Append(h >= 10 ? ('a' + h - 10) : ('0' + h));
     }
 
-    FAIL_RETURN(out->WriteText(sb->ToString()));
+    FAIL_RETURN(out->WriteText(sb->ToString()))
 
     return out->WriteEndTag(String(NULL), String("byte-array"));
 }
 
-ECode XmlUtils::WriteIntArrayXml(
-    /* [in] */ IArrayOf* val,
+ECode XmlUtils::WriteInt32ArrayXml(
+    /* [in] */ ArrayOf<Int32>* val,
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out)//throws XmlPullParserException, java.io.IOException
 {
     if (val == NULL) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
         return out->WriteEndTag(String(NULL), String("NULL"));
     }
 
-    FAIL_RETURN(out->WriteStartTag(String(NULL), String("Int32-array")));
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("Int32-array")))
     if (!name.IsNull()) {
-        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
     }
 
-    Int32 N = 0;
-    val->GetLength(&N);
-    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::Int32ToString(N)));
+    Int32 N = val->GetLength();
+    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::ToString(N)))
 
     for (Int32 i = 0; i < N; i++) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("item")));
-
-        AutoPtr<IInterface> value;
-        val->Get(i, (IInterface**)&value);
-        assert(IInteger32::Probe(value) != NULL);
-        Int32 v = 0;
-        IInteger32::Probe(value)->GetValue(&v);
-        FAIL_RETURN(out->WriteAttribute(String(NULL), String("value"), StringUtils::Int32ToString(v)));
-        FAIL_RETURN(out->WriteEndTag(String(NULL), String("item")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("item")))
+        Int32 v = (*val)[i];
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("value"), StringUtils::ToString(v)))
+        FAIL_RETURN(out->WriteEndTag(String(NULL), String("item")))
     }
 
     return out->WriteEndTag(String(NULL), String("Int32-array"));
+}
+
+ECode XmlUtils::WriteInt64ArrayXml(
+    /* [in] */ ArrayOf<Int64>* val,
+    /* [in] */ const String& name,
+    /* [in] */ IXmlSerializer* out)//throws XmlPullParserException, java.io.IOException
+{
+    if (val == NULL) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
+        return out->WriteEndTag(String(NULL), String("NULL"));
+    }
+
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("Int64-array")))
+    if (!name.IsNull()) {
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
+    }
+
+    Int32 N = val->GetLength();
+    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::ToString(N)))
+
+    for (Int32 i = 0; i < N; i++) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("item")))
+        Int64 v = (*val)[i];
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("value"), StringUtils::ToString(v)))
+        FAIL_RETURN(out->WriteEndTag(String(NULL), String("item")))
+    }
+
+    return out->WriteEndTag(String(NULL), String("Int64-array"));
+}
+
+ECode XmlUtils::WriteDoubleArrayXml(
+    /* [in] */ ArrayOf<Double>* val,
+    /* [in] */ const String& name,
+    /* [in] */ IXmlSerializer* out)//throws XmlPullParserException, java.io.IOException
+{
+    if (val == NULL) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
+        return out->WriteEndTag(String(NULL), String("NULL"));
+    }
+
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("Double-array")))
+    if (!name.IsNull()) {
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
+    }
+
+    Int32 N = val->GetLength();
+    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::ToString(N)))
+
+    for (Int32 i = 0; i < N; i++) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("item")))
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("value"), StringUtils::ToString((*val)[i])))
+        FAIL_RETURN(out->WriteEndTag(String(NULL), String("item")))
+    }
+
+    return out->WriteEndTag(String(NULL), String("Double-array"));
+}
+
+ECode XmlUtils::WriteStringArrayXml(
+    /* [in] */ ArrayOf<String>* val,
+    /* [in] */ const String& name,
+    /* [in] */ IXmlSerializer* out)//throws XmlPullParserException, java.io.IOException
+{
+    if (val == NULL) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
+        return out->WriteEndTag(String(NULL), String("NULL"));
+    }
+
+    FAIL_RETURN(out->WriteStartTag(String(NULL), String("String-array")))
+    if (!name.IsNull()) {
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
+    }
+
+    Int32 N = val->GetLength();
+    FAIL_RETURN(out->WriteAttribute(String(NULL), String("num"), StringUtils::ToString(N)))
+
+    for (Int32 i = 0; i < N; i++) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("item")))
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("value"), (*val)[i]))
+        FAIL_RETURN(out->WriteEndTag(String(NULL), String("item")))
+    }
+
+    return out->WriteEndTag(String(NULL), String("String-array"));
 }
 
 ECode XmlUtils::WriteValueXml(
@@ -401,60 +510,93 @@ ECode XmlUtils::WriteValueXml(
     /* [in] */ const String& name,
     /* [in] */ IXmlSerializer* out) //throws XmlPullParserException, java.io.IOException
 {
+    return WriteValueXml(v, name, out, NULL);
+}
+
+ECode XmlUtils::WriteValueXml(
+    /* [in] */ IInterface* v,
+    /* [in] */ const String& name,
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ IXmlUtilsWriteMapCallback* callback) //throws XmlPullParserException, java.io.IOException
+{
     String typeStr, value;
     if (v == NULL) {
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("NULL")))
         if (!name.IsNull()) {
-            FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+            FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
         }
         return out->WriteEndTag(String(NULL), String("NULL"));
+    }
+    else if (IString::Probe(v) != NULL) {
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("String")))
+        if (!name.IsNull()) {
+            FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
+        }
+        return out->WriteEndTag(String(NULL), String("String"));
     }
     else if (IInteger32::Probe(v) != NULL) {
         typeStr = "Int32";
         Int32 tmp = 0;
         IInteger32::Probe(v)->GetValue(&tmp);
-        value = StringUtils::Int32ToString(tmp);
+        value = StringUtils::ToString(tmp);
     }
     else if (IInteger64::Probe(v) != NULL) {
         typeStr = "Int64";
         Int64 tmp = 0;
         IInteger64::Probe(v)->GetValue(&tmp);
-        value = StringUtils::Int64ToString(tmp);
+        value = StringUtils::ToString(tmp);
     }
     else if (IFloat::Probe(v) != NULL) {
         typeStr = "Float";
         Float tmp;
         IFloat::Probe(v)->GetValue(&tmp);
-        value = StringUtils::FloatToString(tmp);
+        value = StringUtils::ToString(tmp);
     }
     else if (IDouble::Probe(v) != NULL) {
         typeStr = "Double";
         Double tmp = 0;
         IDouble::Probe(v)->GetValue(&tmp);
-        value = StringUtils::DoubleToString(tmp);
+        value = StringUtils::ToString(tmp);
     }
     else if (IBoolean::Probe(v) != NULL) {
         typeStr = "Boolean";
         Boolean tmp = FALSE;
         IBoolean::Probe(v)->GetValue(&tmp);
-        value = StringUtils::BooleanToString(tmp);
+        value = StringUtils::ToString(tmp);
     }
-    //Combine byte[] and int [].
+    //Combine byte[] Int32[] long[] double[] string[]
     else if (IArrayOf::Probe(v) != NULL) {
-        Int32 size = 0;
         AutoPtr<IArrayOf> av = IArrayOf::Probe(v);
-        av->GetLength(&size);
-        if (size > 0) {
-            AutoPtr<IInterface> value;
-            IArrayOf::Probe(v)->Get(0, (IInterface**)&value);
-            //byte []
-            if (IByte::Probe(value) != NULL) {
-                return WriteByteArrayXml(av, name, out);
+        InterfaceID id;
+        av->GetTypeId(&id);
+        if (id == EIID_IByte) {
+            AutoPtr<ArrayOf<Byte> > array = IArrayOfToArray(av, (Byte)0, (IByte*)NULL);
+            return WriteByteArrayXml(array, name, out);
+        }
+        else if (id == EIID_IInteger32) {
+            AutoPtr<ArrayOf<Int32> > array = IArrayOfToArray(av, (Int32)0, (IInteger32*)NULL);
+            return WriteInt32ArrayXml(array, name, out);
+        }
+        else if (id == EIID_IInteger64) {
+            AutoPtr<ArrayOf<Int64> > array = IArrayOfToArray(av, (Int64)0, (IInteger64*)NULL);
+            return WriteInt64ArrayXml(array, name, out);
+        }
+        else if (id == EIID_IDouble) {
+            AutoPtr<ArrayOf<Double> > array = IArrayOfToArray(av, (Double)0, (IDouble*)NULL);
+            return WriteDoubleArrayXml(array, name, out);
+        }
+        else if (id == EIID_IString) {
+            Int32 size;
+            av->GetLength(&size);
+            AutoPtr<ArrayOf<String> > array = size > 0 ? ArrayOf<String>::Alloc(size) : NULL;
+            for (Int32 i = 0; i < size; i++) {
+                AutoPtr<IInterface> item;
+                av->Get(i, (IInterface**)&item);
+                String str;
+                ICharSequence::Probe(item)->ToString(&str);
+                (*array)[i] = str;
             }
-            //int []
-            else {
-                return WriteIntArrayXml(av, name, out);
-            }
+            return WriteStringArrayXml(array, name, out);
         }
 
         return NOERROR;
@@ -462,99 +604,116 @@ ECode XmlUtils::WriteValueXml(
     else if (IMap::Probe(v) != NULL) {
         return WriteMapXml(IMap::Probe(v), name, out);
     }
-    // TODO: Combine list and set' process.
-    else if (IObjectContainer::Probe(v) != NULL) {
-        //Using list's process.
-        return WriteListXml(IObjectContainer::Probe(v), name, out);
-
-        //Using Set's process.
-        //return WriteSetXml(IObjectContainer::Probe(v), name, out);
+    else if (IList::Probe(v) != NULL) {
+        return WriteListXml(IList::Probe(v), name, out);
+    }
+    else if (ISet::Probe(v) != NULL) {
+        return WriteSetXml(ISet::Probe(v), name, out);
     }
     else if (ICharSequence::Probe(v) != NULL) {
         // XXX This is to allow us to at least write something if
         // we encounter styled text...  but it means we will drop all
         // of the styling information. :(
-        FAIL_RETURN(out->WriteStartTag(String(NULL), String("string")));
+        FAIL_RETURN(out->WriteStartTag(String(NULL), String("string")))
         if (!name.IsNull()) {
-            FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+            FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
         }
         String value;
-        FAIL_RETURN(out->WriteText((ICharSequence::Probe(v)->ToString(&value), value)));
+        FAIL_RETURN(out->WriteText((ICharSequence::Probe(v)->ToString(&value), value)))
         return out->WriteEndTag(String(NULL), String("string"));
     }
+    else if (callback != NULL) {
+        callback->WriteUnknownObject(v, name, out);
+    }
     else {
-        // throw new RuntimeException("writeValueXml: unable to write value " + v);
+        Slogger::E(TAG, "WriteValueXml: unable to write value ");
         return E_RUNTIME_EXCEPTION;
     }
 
-    FAIL_RETURN(out->WriteStartTag(String(NULL), typeStr));
+    FAIL_RETURN(out->WriteStartTag(String(NULL), typeStr))
     if (!name.IsNull()) {
-        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name));
+        FAIL_RETURN(out->WriteAttribute(String(NULL), String("name"), name))
     }
     out->WriteAttribute(String(NULL), String("value"), value);
     return out->WriteEndTag(String(NULL), typeStr);
 }
 
-AutoPtr<IMap> XmlUtils::ReadMapXml(
-    /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
+ECode XmlUtils::ReadMapXml(
+    /* [in] */ IInputStream* in,
+    /* [out] */ IHashMap** map)//throws XmlPullParserException, java.io.IOException
 {
-    AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(in, String(NULL));
+    VALIDATE_NOT_NULL(map)
+    AutoPtr<IXmlPullParser> parser;
+    FAIL_RETURN(Xml::NewPullParser((IXmlPullParser**)&parser))
+    parser->SetInput(in, String(NULL));
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
-    ReadValueXml(parser, name, (IInterface**)&obj);
-    return IMap::Probe(obj);
+    FAIL_RETURN(ReadValueXml(parser, name, (IInterface**)&obj))
+    *map = IHashMap::Probe(obj);
+    REFCOUNT_ADD(*map)
+    return NOERROR;
 }
 
-AutoPtr<IArrayOf> XmlUtils::ReadListXml(
-    /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
+ECode XmlUtils::ReadListXml(
+    /* [in] */ IInputStream* in,
+    /* [out] */ IArrayList** list)//throws XmlPullParserException, java.io.IOException
 {
-    AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(in, String(NULL));
+    VALIDATE_NOT_NULL(list)
+    AutoPtr<IXmlPullParser> parser;
+    FAIL_RETURN(Xml::NewPullParser((IXmlPullParser**)&parser))
+    parser->SetInput(in, String(NULL));
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
-    ReadValueXml(parser, name, (IInterface**)&obj);
-    return IArrayOf::Probe(obj);
+    FAIL_RETURN(ReadValueXml(parser, name, (IInterface**)&obj))
+    *list = IArrayList::Probe(obj);
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
-AutoPtr<ISet> XmlUtils::ReadSetXml(
-    /* [in] */ IInputStream* in)//throws XmlPullParserException, java.io.IOException
+ECode XmlUtils::ReadSetXml(
+    /* [in] */ IInputStream* in,
+    /* [out] */ IHashSet** set)//throws XmlPullParserException, java.io.IOException
 {
-    AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
-    parser->SetInputEx(in, String(NULL));
+    VALIDATE_NOT_NULL(set)
+    AutoPtr<IXmlPullParser> parser;
+    FAIL_RETURN(Xml::NewPullParser((IXmlPullParser**)&parser))
+    parser->SetInput(in, String(NULL));
     AutoPtr<ArrayOf<String> > name = ArrayOf<String>::Alloc(1);
     AutoPtr<IInterface> obj;
-    ReadValueXml(parser, name, (IInterface**)&obj);
-    return ISet::Probe(obj);
+    FAIL_RETURN(ReadValueXml(parser, name, (IInterface**)&obj))
+    *set = IHashSet::Probe(obj);
+    REFCOUNT_ADD(*set)
+    return NOERROR;
 }
 
 ECode XmlUtils::ReadThisMapXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ const String& endTag,
     /* [in] */ ArrayOf<String>* name,
-    /* [out] */ IMap** map)//throws XmlPullParserException, java.io.IOException
+    /* [out] */ IHashMap** map)
 {
-    VALIDATE_NOT_NULL(map);
-    CObjectMap::New(map);
+    return ReadThisMapXml(parser, endTag, name, NULL, map);
+}
+
+ECode XmlUtils::ReadThisMapXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& endTag,
+    /* [in] */ ArrayOf<String>* name,
+    /* [in] */ IXmlUtilsReadMapCallback* callback,
+    /* [out] */ IHashMap** map)//throws XmlPullParserException, java.io.IOException
+{
+    VALIDATE_NOT_NULL(map)
+    CHashMap::New(map);
 
     Int32 eventType = 0;
-    parser->GetEventType(&eventType);
+    FAIL_RETURN(parser->GetEventType(&eventType))
     do {
         if (eventType == IXmlPullParser::START_TAG) {
             AutoPtr<IInterface> val;
-            FAIL_RETURN(ReadThisValueXml(parser, name, (IInterface**)&val));
-            if (!(*name)[0].IsNull()) {
-                //System.out.println("Adding to map: " + name + " -> " + val);
-                AutoPtr<ICharSequence> key;
-                CStringWrapper::New((*name)[0], (ICharSequence**)&key);
-                (*map)->Put(key, val);
-            }
-            else {
-                String n;
-                parser->GetName(&n);
-                Slogger::D(TAG, "Map value without name attribute: %s", n.string());
-                return E_XML_PULL_PARSER_EXCEPTION;
-            }
+            FAIL_RETURN(ReadThisValueXml(parser, name, callback, (IInterface**)&val))
+            AutoPtr<ICharSequence> key;
+            CString::New((*name)[0], (ICharSequence**)&key);
+            (*map)->Put(TO_IINTERFACE(key), val);
         }
         else if (eventType == IXmlPullParser::END_TAG) {
             String n;
@@ -562,13 +721,13 @@ ECode XmlUtils::ReadThisMapXml(
             if (n.Equals(endTag)) {
                 return NOERROR;
             }
-            Slogger::D(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+            Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
-        parser->Next(&eventType);
+        FAIL_RETURN(parser->Next(&eventType))
     } while (eventType != IXmlPullParser::END_DOCUMENT);
 
-    Slogger::D(TAG, "Document ended before %s end tag", endTag.string());
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
     return E_XML_PULL_PARSER_EXCEPTION;
 }
 
@@ -576,40 +735,43 @@ ECode XmlUtils::ReadThisListXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ const String& endTag,
     /* [in] */ ArrayOf<String>* name,
-    /* [out] */ IArrayOf** array)//throws XmlPullParserException, java.io.IOException
+    /* [out] */ IArrayList** list)//throws XmlPullParserException, java.io.IOException
 {
-    VALIDATE_NOT_NULL(array);
-    *array = NULL;
+    return ReadThisListXml(parser, endTag, name, NULL, list);
+}
+
+ECode XmlUtils::ReadThisListXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& endTag,
+    /* [in] */ ArrayOf<String>* name,
+    /* [in] */ IXmlUtilsReadMapCallback* callback,
+    /* [out] */ IArrayList** list)//throws XmlPullParserException, java.io.IOException
+{
+    VALIDATE_NOT_NULL(list)
+    CArrayList::New(list);
 
     Int32 eventType = 0;
-    parser->GetEventType(&eventType);
-    List<AutoPtr<IInterface> > list;
+    FAIL_RETURN(parser->GetEventType(&eventType))
     do {
         if (eventType == IXmlPullParser::START_TAG) {
             AutoPtr<IInterface> val;
-            FAIL_RETURN(ReadThisValueXml(parser, name, (IInterface**)&val));
-            list.PushBack(val);
+            FAIL_RETURN(ReadThisValueXml(parser, name, callback, (IInterface**)&val))
+            (*list)->Add(val);
             //System.out.println("Adding to list: " + val);
         }
         else if (eventType == IXmlPullParser::END_TAG) {
             String n;
-            FAIL_RETURN(parser->GetName(&n));
+            FAIL_RETURN(parser->GetName(&n))
             if (n.Equals(endTag)) {
-                Int32 size = list.GetSize();
-                CArrayOf::New(EIID_IInterface, size, array);
-                List<AutoPtr<IInterface> >::Iterator ator = list.Begin();
-                for (Int32 i = 0; ator != list.End() && i < size; ++ator, i++) {
-                    (*array)->Put(i, *ator);
-                }
                 return NOERROR;
             }
-            Slogger::D(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+            Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
-        FAIL_RETURN(parser->Next(&eventType));
+        FAIL_RETURN(parser->Next(&eventType))
     } while (eventType != IXmlPullParser::END_DOCUMENT);
 
-    Slogger::D(TAG, "Document ended before %s end tag", endTag.string());
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
     return E_XML_PULL_PARSER_EXCEPTION;
 }
 
@@ -617,70 +779,82 @@ ECode XmlUtils::ReadThisSetXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ const String& endTag,
     /* [in] */ ArrayOf<String>* name,
-    /* [out] */ ISet** container)//throws XmlPullParserException, java.io.IOException
+    /* [out] */ IHashSet** set)//throws XmlPullParserException, java.io.IOException
 {
-    VALIDATE_NOT_NULL(container);
-    CObjectContainer::New(container);
+    return ReadThisSetXml(parser, endTag, name, NULL, set);
+}
+
+ECode XmlUtils::ReadThisSetXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& endTag,
+    /* [in] */ ArrayOf<String>* name,
+    /* [in] */ IXmlUtilsReadMapCallback* callback,
+    /* [out] */ IHashSet** set)//throws XmlPullParserException, java.io.IOException
+{
+    VALIDATE_NOT_NULL(set)
+    CHashSet::New(set);
 
     Int32 eventType = 0;
-    FAIL_RETURN(parser->GetEventType(&eventType));
+    FAIL_RETURN(parser->GetEventType(&eventType))
     do {
         if (eventType == IXmlPullParser::START_TAG) {
             AutoPtr<IInterface> val;
-            FAIL_RETURN(ReadThisValueXml(parser, name, (IInterface**)&val));
-            (*container)->Add(val);
+            FAIL_RETURN(ReadThisValueXml(parser, name, callback, (IInterface**)&val))
+            (*set)->Add(val);
             //System.out.println("Adding to set: " + val);
         }
         else if (eventType == IXmlPullParser::END_TAG) {
             String n;
-            FAIL_RETURN(parser->GetName(&n));
+            FAIL_RETURN(parser->GetName(&n))
             if (n.Equals(endTag)) {
                 return NOERROR;
             }
-            Slogger::D(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+            Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
-        FAIL_RETURN(parser->Next(&eventType));
+        FAIL_RETURN(parser->Next(&eventType))
     } while (eventType != IXmlPullParser::END_DOCUMENT);
 
-    Slogger::D(TAG, "Document ended before %s end tag", endTag.string());
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
     return E_XML_PULL_PARSER_EXCEPTION;
 }
 
-ECode XmlUtils::ReadThisIntArrayXml(
+ECode XmlUtils::ReadThisInt32ArrayXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ const String& endTag,
     /* [in] */ ArrayOf<String>* name,
-    /* [out] */ IArrayOf** array)//throws XmlPullParserException, java.io.IOException
+    /* [out] */ ArrayOf<Int32>** array)//throws XmlPullParserException, java.io.IOException
 {
-    VALIDATE_NOT_NULL(array);
+    VALIDATE_NOT_NULL(array)
     String value;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("num"), &value));
-    Int32 num = StringUtils::ParseInt32(value);;
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("num"), &value))
+    Int32 num = StringUtils::ParseInt32(value);
 
-    CArrayOf::New(EIID_IInteger32, num, array);
+    Int32 next;
+    FAIL_RETURN(parser->Next(&next))
+
+    *array = ArrayOf<Int32>::Alloc(num);
+    (*array)->AddRef();
     Int32 i = 0;
 
     Int32 eventType = 0;
-    FAIL_RETURN(parser->GetEventType(&eventType));
+    FAIL_RETURN(parser->GetEventType(&eventType))
     do {
         if (eventType == IXmlPullParser::START_TAG) {
             String n;
-            FAIL_RETURN(parser->GetName(&n));
+            FAIL_RETURN(parser->GetName(&n))
             if (n.Equals("item")) {
-                FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
-                AutoPtr<IInteger32> iVal;
-                CInteger32::New(StringUtils::ParseInt32(value), (IInteger32**)&iVal);
-                (*array)->Put(i, iVal);
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+                (*array)->Set(i, StringUtils::ParseInt32(value));
             }
             else {
-                Slogger::D(TAG, "Expected item tag at: %s", n.string());
+                Slogger::E(TAG, "Expected item tag at: %s", n.string());
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
         }
         else if (eventType == IXmlPullParser::END_TAG) {
             String n;
-            FAIL_RETURN(parser->GetName(&n));
+            FAIL_RETURN(parser->GetName(&n))
             if (n.Equals(endTag)) {
                 return NOERROR;
             }
@@ -688,14 +862,177 @@ ECode XmlUtils::ReadThisIntArrayXml(
                 i++;
             }
             else {
-                Slogger::D(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+                Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
         }
-        parser->Next(&eventType);
+        FAIL_RETURN(parser->Next(&eventType))
     } while (eventType != IXmlPullParser::END_DOCUMENT);
 
-    Slogger::D(TAG, "Document ended before %s end tag", endTag.string());
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
+    return E_XML_PULL_PARSER_EXCEPTION;
+}
+
+ECode XmlUtils::ReadThisInt64ArrayXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& endTag,
+    /* [in] */ ArrayOf<String>* name,
+    /* [out] */ ArrayOf<Int64>** array)//throws XmlPullParserException, java.io.IOException
+{
+    VALIDATE_NOT_NULL(array)
+    String value;
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("num"), &value))
+    Int32 num = StringUtils::ParseInt32(value);
+
+    Int32 next;
+    FAIL_RETURN(parser->Next(&next))
+
+    *array = ArrayOf<Int64>::Alloc(num);
+    (*array)->AddRef();
+    Int32 i = 0;
+
+    Int32 eventType = 0;
+    FAIL_RETURN(parser->GetEventType(&eventType))
+    do {
+        if (eventType == IXmlPullParser::START_TAG) {
+            String n;
+            FAIL_RETURN(parser->GetName(&n))
+            if (n.Equals("item")) {
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+                (*array)->Set(i, StringUtils::ParseInt64(value));
+            }
+            else {
+                Slogger::E(TAG, "Expected item tag at: %s", n.string());
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+        }
+        else if (eventType == IXmlPullParser::END_TAG) {
+            String n;
+            FAIL_RETURN(parser->GetName(&n))
+            if (n.Equals(endTag)) {
+                return NOERROR;
+            }
+            else if (n.Equals("item")) {
+                i++;
+            }
+            else {
+                Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+        }
+        FAIL_RETURN(parser->Next(&eventType))
+    } while (eventType != IXmlPullParser::END_DOCUMENT);
+
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
+    return E_XML_PULL_PARSER_EXCEPTION;
+}
+
+ECode XmlUtils::ReadThisDoubleArrayXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& endTag,
+    /* [in] */ ArrayOf<String>* name,
+    /* [out] */ ArrayOf<Double>** array)//throws XmlPullParserException, java.io.IOException
+{
+    VALIDATE_NOT_NULL(array)
+    String value;
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("num"), &value))
+    Int32 num = StringUtils::ParseInt32(value);
+
+    Int32 next;
+    FAIL_RETURN(parser->Next(&next))
+
+    *array = ArrayOf<Double>::Alloc(num);
+    (*array)->AddRef();
+    Int32 i = 0;
+
+    Int32 eventType = 0;
+    FAIL_RETURN(parser->GetEventType(&eventType))
+    do {
+        if (eventType == IXmlPullParser::START_TAG) {
+            String n;
+            FAIL_RETURN(parser->GetName(&n))
+            if (n.Equals("item")) {
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+                (*array)->Set(i, StringUtils::ParseDouble(value));
+            }
+            else {
+                Slogger::E(TAG, "Expected item tag at: %s", n.string());
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+        }
+        else if (eventType == IXmlPullParser::END_TAG) {
+            String n;
+            FAIL_RETURN(parser->GetName(&n))
+            if (n.Equals(endTag)) {
+                return NOERROR;
+            }
+            else if (n.Equals("item")) {
+                i++;
+            }
+            else {
+                Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+        }
+        FAIL_RETURN(parser->Next(&eventType))
+    } while (eventType != IXmlPullParser::END_DOCUMENT);
+
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
+    return E_XML_PULL_PARSER_EXCEPTION;
+}
+
+
+ECode XmlUtils::ReadThisStringArrayXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& endTag,
+    /* [in] */ ArrayOf<String>* name,
+    /* [out] */ ArrayOf<String>** array)//throws XmlPullParserException, java.io.IOException
+{
+    VALIDATE_NOT_NULL(array)
+    String value;
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("num"), &value))
+    Int32 num = StringUtils::ParseInt32(value);
+
+    Int32 next;
+    FAIL_RETURN(parser->Next(&next))
+
+    *array = ArrayOf<String>::Alloc(num);
+    (*array)->AddRef();
+    Int32 i = 0;
+
+    Int32 eventType = 0;
+    FAIL_RETURN(parser->GetEventType(&eventType))
+    do {
+        if (eventType == IXmlPullParser::START_TAG) {
+            String n;
+            FAIL_RETURN(parser->GetName(&n))
+            if (n.Equals("item")) {
+                FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+                (*array)->Set(i, value);
+            }
+            else {
+                Slogger::E(TAG, "Expected item tag at: %s", n.string());
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+        }
+        else if (eventType == IXmlPullParser::END_TAG) {
+            String n;
+            FAIL_RETURN(parser->GetName(&n))
+            if (n.Equals(endTag)) {
+                return NOERROR;
+            }
+            else if (n.Equals("item")) {
+                i++;
+            }
+            else {
+                Slogger::E(TAG, "Expected %s end tag at: %s", endTag.string(), n.string());
+                return E_XML_PULL_PARSER_EXCEPTION;
+            }
+        }
+        FAIL_RETURN(parser->Next(&eventType))
+    } while (eventType != IXmlPullParser::END_DOCUMENT);
+
+    Slogger::E(TAG, "Document ended before %s end tag", endTag.string());
     return E_XML_PULL_PARSER_EXCEPTION;
 }
 
@@ -704,42 +1041,43 @@ ECode XmlUtils::ReadValueXml(
     /* [in] */ ArrayOf<String>* name,
     /* [out] */ IInterface** value) //throws XmlPullParserException, java.io.IOException
 {
-    VALIDATE_NOT_NULL(value);
+    VALIDATE_NOT_NULL(value)
     Int32 eventType = 0;
-    FAIL_RETURN(parser->GetEventType(&eventType));
+    FAIL_RETURN(parser->GetEventType(&eventType))
     do {
         if (eventType == IXmlPullParser::START_TAG) {
-            return ReadThisValueXml(parser, name, value);
+            return ReadThisValueXml(parser, name, NULL, value);
         }
         else if (eventType == IXmlPullParser::END_TAG) {
             String n;
-            FAIL_RETURN(parser->GetName(&n));
-            Slogger::D(TAG, "Unexpected end tag at: %s", n.string());
+            FAIL_RETURN(parser->GetName(&n))
+            Slogger::E(TAG, "Unexpected end tag at: %s", n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
         else if (eventType == IXmlPullParser::TEXT) {
             String n;
-            FAIL_RETURN(parser->GetName(&n));
-            Slogger::D(TAG, "Unexpected text: %s", n.string());
+            FAIL_RETURN(parser->GetName(&n))
+            Slogger::E(TAG, "Unexpected text: %s", n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
-        parser->Next(&eventType);
+        FAIL_RETURN(parser->Next(&eventType))
     } while (eventType != IXmlPullParser::END_DOCUMENT);
 
-    Slogger::D(TAG, "Unexpected end of document");
+    Slogger::E(TAG, "Unexpected end of document");
     return E_XML_PULL_PARSER_EXCEPTION;
 }
 
 ECode XmlUtils::ReadThisValueXml(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ ArrayOf<String>* name,
+    /* [in] */ IXmlUtilsReadMapCallback* callback,
     /* [out] */ IInterface** ret)//throws XmlPullParserException, java.io.IOException
 {
-    VALIDATE_NOT_NULL(ret);
+    VALIDATE_NOT_NULL(ret)
     String valueName;
-    FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("name"), &valueName));
+    FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("name"), &valueName))
     String tagName;
-    FAIL_RETURN(parser->GetName(&tagName));
+    FAIL_RETURN(parser->GetName(&tagName))
 
     //System.out.println("Reading this value tag: " + tagName + ", name=" + valueName);
 
@@ -748,123 +1086,157 @@ ECode XmlUtils::ReadThisValueXml(
     if (tagName.Equals("NULL")) {
         res = NULL;
     }
-    else if (tagName.Equals("string")) {
-        String value = String("");
+    else if (tagName.Equals("String")) {
+        String value("");
         Int32 eventType;
         while ((parser->Next(&eventType), eventType) != IXmlPullParser::END_DOCUMENT) {
             if (eventType == IXmlPullParser::END_TAG) {
                 String n;
-                FAIL_RETURN(parser->GetName(&n));
-                if (n.Equals("string")) {
+                FAIL_RETURN(parser->GetName(&n))
+                if (n.Equals("String")) {
                     (*name)[0] = valueName;
                     //System.out.println("Returning value for " + valueName + ": " + value);
                     AutoPtr<ICharSequence> v;
-                    CStringWrapper::New(value, (ICharSequence**)&v);
+                    CString::New(value, (ICharSequence**)&v);
                     *ret = v;
-                    INTERFACE_ADDREF(*ret);
+                    REFCOUNT_ADD(*ret);
                     return NOERROR;
                 }
 
-                Slogger::D(TAG, "Unexpected end tag in <string>: %s", n.string());
+                Slogger::E(TAG, "Unexpected end tag in <string>: %s", n.string());
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
             else if (eventType == IXmlPullParser::TEXT) {
                 String t;
-                FAIL_RETURN(parser->GetText(&t));
+                FAIL_RETURN(parser->GetText(&t))
                 value += t;
             }
             else if (eventType == IXmlPullParser::START_TAG) {
                 String n;
-                FAIL_RETURN(parser->GetName(&n));
-                Slogger::D(TAG, "Unexpected start tag in <string>: %s", n.string());
+                FAIL_RETURN(parser->GetName(&n))
+                Slogger::E(TAG, "Unexpected start tag in <string>: %s", n.string());
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
         }
 
-        Slogger::D(TAG, "Unexpected end of document in <string>");
+        Slogger::E(TAG, "Unexpected end of document in <string>");
         return E_XML_PULL_PARSER_EXCEPTION;
     }
-    else if (tagName.Equals("Int32")) {
-        String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
-        AutoPtr<IInteger32> iv;
-        CInteger32::New(StringUtils::ParseInt32(value), (IInteger32**)&iv);
-        res = iv;
-    }
-    else if (tagName.Equals("Int64")) {
-        String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
-        AutoPtr<IInteger64> iv;
-        CInteger64::New(StringUtils::ParseInt64(value), (IInteger64**)&iv);
-        res = iv;
-    }
-    else if (tagName.Equals("Float")) {
-        String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
-        AutoPtr<IFloat> fv;
-        CFloat::New(StringUtils::ParseFloat(value), (IFloat**)&fv);
-        res = fv;
-    }
-    else if (tagName.Equals("Double")) {
-        String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
-        AutoPtr<IDouble> dv;
-        CDouble::New(StringUtils::ParseDouble(value), (IDouble**)&dv);
-        res = dv;
-    }
-    else if (tagName.Equals("Boolean")) {
-        String value;
-        FAIL_RETURN(parser->GetAttributeValueEx(String(NULL), String("value"), &value));
-        AutoPtr<IBoolean> bv;
-        CBoolean::New(value.EqualsIgnoreCase("true"), (IBoolean**)&bv);
-        res = bv;
+    else if ((ReadThisPrimitiveValueXml(parser, tagName, (IInterface**)&res), res) != NULL) {
+        // all work already done by readThisPrimitiveValueXml
     }
     else if (tagName.Equals("Int32-array")) {
         Int32 t = 0;
-        FAIL_RETURN(parser->Next(&t));
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<ArrayOf<Int32> > array;
+        FAIL_RETURN(ReadThisInt32ArrayXml(parser, String("Int32-array"), name, (ArrayOf<Int32>**)&array))
         AutoPtr<IArrayOf> av;
-        FAIL_RETURN(ReadThisIntArrayXml(parser, String("Int32-array"), name, (IArrayOf**)&av));
-        (*name)[0] = valueName;
-        //System.out.println("Returning value for " + valueName + ": " + res);
+        CArrayOf::New(EIID_IInteger32, array->GetLength(), (IArrayOf**)&av);
+        for (Int32 i = 0; i < array->GetLength(); i++) {
+            AutoPtr<IInteger32> item;
+            CInteger32::New((*array)[i], (IInteger32**)&item);
+            av->Set(i, TO_IINTERFACE(item));
+        }
         *ret = av;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
+        //System.out.println("Returning value for " + valueName + ": " + res);
+        (*name)[0] = valueName;
+        return NOERROR;
+    }
+    else if (tagName.Equals("Int64-array")) {
+        Int32 t = 0;
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<ArrayOf<Int64> > array;
+        FAIL_RETURN(ReadThisInt64ArrayXml(parser, String("Int64-array"), name, (ArrayOf<Int64>**)&array))
+        AutoPtr<IArrayOf> av;
+        CArrayOf::New(EIID_IInteger64, array->GetLength(), (IArrayOf**)&av);
+        for (Int32 i = 0; i < array->GetLength(); i++) {
+            AutoPtr<IInteger64> item;
+            CInteger64::New((*array)[i], (IInteger64**)&item);
+            av->Set(i, TO_IINTERFACE(item));
+        }
+        *ret = av;
+        REFCOUNT_ADD(*ret);
+        //System.out.println("Returning value for " + valueName + ": " + res);
+        (*name)[0] = valueName;
+        return NOERROR;
+    }
+    else if (tagName.Equals("Double-array")) {
+        Int32 t = 0;
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<ArrayOf<Double> > array;
+        FAIL_RETURN(ReadThisDoubleArrayXml(parser, String("Double-array"), name, (ArrayOf<Double>**)&array))
+        AutoPtr<IArrayOf> av;
+        CArrayOf::New(EIID_IDouble, array->GetLength(), (IArrayOf**)&av);
+        for (Int32 i = 0; i < array->GetLength(); i++) {
+            AutoPtr<IDouble> item;
+            CDouble::New((*array)[i], (IDouble**)&item);
+            av->Set(i, TO_IINTERFACE(item));
+        }
+        *ret = av;
+        REFCOUNT_ADD(*ret);
+        //System.out.println("Returning value for " + valueName + ": " + res);
+        (*name)[0] = valueName;
+        return NOERROR;
+    }
+    else if (tagName.Equals("String-array")) {
+        Int32 t = 0;
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<ArrayOf<String> > array;
+        FAIL_RETURN(ReadThisStringArrayXml(parser, String("String-array"), name, (ArrayOf<String>**)&array))
+        AutoPtr<IArrayOf> av;
+        CArrayOf::New(EIID_IString, array->GetLength(), (IArrayOf**)&av);
+        for (Int32 i = 0; i < array->GetLength(); i++) {
+            AutoPtr<IString> item;
+            CString::New((*array)[i], (IString**)&item);
+            av->Set(i, TO_IINTERFACE(item));
+        }
+        *ret = av;
+        REFCOUNT_ADD(*ret);
+        //System.out.println("Returning value for " + valueName + ": " + res);
+        (*name)[0] = valueName;
         return NOERROR;
     }
     else if (tagName.Equals("map")) {
         Int32 t = 0;
-        FAIL_RETURN(parser->Next(&t));
-        AutoPtr<IMap> mv;
-        FAIL_RETURN(ReadThisMapXml(parser, String("map"), name, (IMap**)&mv));
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<IHashMap> mv;
+        FAIL_RETURN(ReadThisMapXml(parser, String("map"), name, (IHashMap**)&mv))
         (*name)[0] = valueName;
         *ret = mv;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
         //System.out.println("Returning value for " + valueName + ": " + res);
         return NOERROR;
     }
     else if (tagName.Equals("list")) {
         Int32 t = 0;
-        FAIL_RETURN(parser->Next(&t));
-        AutoPtr<IArrayOf> av;
-        FAIL_RETURN(ReadThisListXml(parser, String("list"), name, (IArrayOf**)&av));
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<IArrayList> av;
+        FAIL_RETURN(ReadThisListXml(parser, String("list"), name, (IArrayList**)&av))
         (*name)[0] = valueName;
         //System.out.println("Returning value for " + valueName + ": " + res);
         *ret = av;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
         return NOERROR;
     }
     else if (tagName.Equals("set")) {
         Int32 t = 0;
-        FAIL_RETURN(parser->Next(&t));
-        AutoPtr<ISet> oc;
-        FAIL_RETURN(ReadThisSetXml(parser, String("set"), name, (ISet**)&oc));
+        FAIL_RETURN(parser->Next(&t))
+        AutoPtr<IHashSet> oc;
+        FAIL_RETURN(ReadThisSetXml(parser, String("set"), name, (IHashSet**)&oc))
         (*name)[0] = valueName;
         //System.out.println("Returning value for " + valueName + ": " + res);
         *ret = oc;
-        INTERFACE_ADDREF(*ret);
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
+    }
+    else if (callback != NULL) {
+        FAIL_RETURN(callback->ReadThisUnknownObjectXml(parser, tagName, (IInterface**)&res))
+        (*name)[0] = valueName;
         return NOERROR;
     }
     else {
-        Slogger::D(TAG, "Unknown tag: %s", tagName.string());
+        Slogger::E(TAG, "Unknown tag: %s", tagName.string());
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
@@ -872,31 +1244,85 @@ ECode XmlUtils::ReadThisValueXml(
     Int32 eventType;
     while ((parser->Next(&eventType), eventType) != IXmlPullParser::END_DOCUMENT) {
         String n;
-        FAIL_RETURN(parser->GetName(&n));
+        FAIL_RETURN(parser->GetName(&n))
         if (eventType == IXmlPullParser::END_TAG) {
             if (n.Equals(tagName)) {
                 (*name)[0] = valueName;
                 //System.out.println("Returning value for " + valueName + ": " + res);
                 *ret = res;
-                INTERFACE_ADDREF(*ret);
+                REFCOUNT_ADD(*ret);
                 return NOERROR;
             }
 
-            Slogger::D(TAG, "Unexpected end tag in <%s>: %s", tagName.string(), n.string());
+            Slogger::E(TAG, "Unexpected end tag in <%s>: %s", tagName.string(), n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
         else if (eventType == IXmlPullParser::TEXT) {
-            Slogger::D(TAG, "Unexpected text in <%s>: %s", tagName.string(), n.string());
+            Slogger::E(TAG, "Unexpected text in <%s>: %s", tagName.string(), n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
         else if (eventType == IXmlPullParser::START_TAG) {
-            Slogger::D(TAG, "Unexpected start tag in <%s>: %s", tagName.string(), n.string());
+            Slogger::E(TAG, "Unexpected start tag in <%s>: %s", tagName.string(), n.string());
             return E_XML_PULL_PARSER_EXCEPTION;
         }
     }
 
-    Slogger::D(TAG, "Unexpected end of document in <%s>", tagName.string());
+    Slogger::E(TAG, "Unexpected end of document in <%s>", tagName.string());
     return E_XML_PULL_PARSER_EXCEPTION;
+}
+
+ECode XmlUtils::ReadThisPrimitiveValueXml(
+    /* [in] */ IXmlPullParser* parser,
+    /* [in] */ const String& tagName,
+    /* [out] */ IInterface** ret) //throws XmlPullParserException, java.io.IOException
+{
+    // try {
+    AutoPtr<IInterface> res;
+    if (tagName.Equals("Int32")) {
+        String value;
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+        AutoPtr<IInteger32> iv;
+        CInteger32::New(StringUtils::ParseInt32(value), (IInteger32**)&iv);
+        res = iv;
+    }
+    else if (tagName.Equals("Int64")) {
+        String value;
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+        AutoPtr<IInteger64> iv;
+        CInteger64::New(StringUtils::ParseInt64(value), (IInteger64**)&iv);
+        res = iv;
+    }
+    else if (tagName.Equals("Float")) {
+        String value;
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+        AutoPtr<IFloat> fv;
+        CFloat::New(StringUtils::ParseFloat(value), (IFloat**)&fv);
+        res = fv;
+    }
+    else if (tagName.Equals("Double")) {
+        String value;
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+        AutoPtr<IDouble> dv;
+        CDouble::New(StringUtils::ParseDouble(value), (IDouble**)&dv);
+        res = dv;
+    }
+    else if (tagName.Equals("Boolean")) {
+        String value;
+        FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("value"), &value))
+        AutoPtr<IBoolean> bv;
+        CBoolean::New(value.EqualsIgnoreCase("true"), (IBoolean**)&bv);
+        res = bv;
+    }
+    *ret = res;
+    REFCOUNT_ADD(*ret)
+    return NOERROR;
+
+    // } catch (NullPointerException e) {
+    //     throw new XmlPullParserException("Need value attribute in <" + tagName + ">");
+    // } catch (NumberFormatException e) {
+    //     throw new XmlPullParserException(
+    //             "Not a number in value attribute in <" + tagName + ">");
+    // }
 }
 
 ECode XmlUtils::BeginDocument(
@@ -938,8 +1364,252 @@ Boolean XmlUtils::NextElementWithin(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ Int32 outerDepth)
 {
-    assert(0);
-    return FALSE;
+    for (;;) {
+        Int32 type, depth;
+        FAIL_RETURN(parser->Next(&type))
+        if (type == IXmlPullParser::END_DOCUMENT
+            || (type == IXmlPullParser::END_TAG && (parser->GetDepth(&depth), depth) == outerDepth)) {
+            return FALSE;
+        }
+        if (type == IXmlPullParser::START_TAG
+                && (parser->GetDepth(&depth), depth) == outerDepth + 1) {
+            return TRUE;
+        }
+    }
+}
+
+ECode XmlUtils::ReadInt32Attribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [in] */ Int32 defaultValue,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = StringUtils::ParseInt32(value, 10, defaultValue);
+    return NOERROR;
+}
+
+ECode XmlUtils::ReadInt32Attribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = StringUtils::ParseInt32(value);
+    return NOERROR;
+}
+
+ECode XmlUtils::WriteInt32Attribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ Int32 value)
+{
+    return out->WriteAttribute(String(NULL), name, StringUtils::ToString(value));
+}
+
+ECode XmlUtils::ReadInt64Attribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name, Int64 defaultValue,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = StringUtils::ParseInt64(value, 10, defaultValue);
+    return NOERROR;
+}
+
+ECode XmlUtils::ReadInt64Attribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = StringUtils::ParseInt64(value);
+    return NOERROR;
+}
+
+ECode XmlUtils::WriteInt64Attribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ Int64 value)
+{
+    return out->WriteAttribute(String(NULL), name, StringUtils::ToString(value));
+}
+
+ECode XmlUtils::ReadFloatAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ Float* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = StringUtils::ParseFloat(value);
+    return NOERROR;
+}
+
+ECode XmlUtils::WriteFloatAttribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ Float value)
+{
+    return out->WriteAttribute(String(NULL), name, StringUtils::ToString(value));
+}
+
+ECode XmlUtils::ReadBooleanAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = value.EqualsIgnoreCase("TRUE");
+    return NOERROR;
+}
+
+ECode XmlUtils::ReadBooleanAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [in] */ Boolean defaultValue,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    if (value == NULL) {
+        *result = defaultValue;
+    }
+    else {
+        *result = value.EqualsIgnoreCase("TRUE");
+    }
+    return NOERROR;
+}
+
+ECode XmlUtils::WriteBooleanAttribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ Boolean value)
+{
+    return out->WriteAttribute(String(NULL), name, StringUtils::ToString(value));
+}
+
+ECode XmlUtils::ReadUriAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ IUri** result)
+{
+    VALIDATE_NOT_NULL(result)
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    *result = NULL;
+    return value != NULL ? Uri::Parse(value, result) : NOERROR;
+}
+
+ECode XmlUtils::WriteUriAttribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ IUri* value)
+{
+    if (value != NULL) {
+        String str;
+        IObject::Probe(value)->ToString(&str);
+        return out->WriteAttribute(String(NULL), name, str);
+    }
+    return NOERROR;
+}
+
+ECode XmlUtils::ReadStringAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    return in->GetAttributeValue(String(NULL), name, result);
+}
+
+ECode XmlUtils::WriteStringAttribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ String value)
+{
+    if (value != NULL) {
+        return out->WriteAttribute(String(NULL), name, value);
+    }
+    return NOERROR;
+}
+
+ECode XmlUtils::ReadByteArrayAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out, callee] */ ArrayOf<Byte>** array)
+{
+    VALIDATE_NOT_NULL(array)
+    *array = NULL;
+    String value;
+    FAIL_RETURN(in->GetAttributeValue(String(NULL), name, &value))
+    if (value != NULL) {
+        AutoPtr<IBase64> base64;
+        CBase64::AcquireSingleton((IBase64**)&base64);
+        return base64->Decode(value, IBase64::DEFAULT, array);
+    }
+    return NOERROR;
+}
+
+ECode XmlUtils::WriteByteArrayAttribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ ArrayOf<Byte>* value)
+{
+    if (value != NULL) {
+        AutoPtr<IBase64> base64;
+        CBase64::AcquireSingleton((IBase64**)&base64);
+        String str;
+        base64->EncodeToString(value, IBase64::DEFAULT, &str);
+        return out->WriteAttribute(String(NULL), name, str);
+    }
+    return NOERROR;
+}
+
+ECode XmlUtils::ReadBitmapAttribute(
+    /* [in] */ IXmlPullParser* in,
+    /* [in] */ const String& name,
+    /* [out] */ IBitmap** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    AutoPtr<ArrayOf<Byte> > value;
+    ReadByteArrayAttribute(in, name, (ArrayOf<Byte>**)&value);
+    if (value != NULL) {
+        AutoPtr<IBitmapFactory> factory;
+        CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
+        return factory->DecodeByteArray(value, 0, value->GetLength(), result);
+    }
+    return NOERROR;
+}
+
+ECode XmlUtils::WriteBitmapAttribute(
+    /* [in] */ IXmlSerializer* out,
+    /* [in] */ const String& name,
+    /* [in] */ IBitmap* value)
+{
+    if (value != NULL) {
+        AutoPtr<IByteArrayOutputStream> os;
+        CByteArrayOutputStream::New((IByteArrayOutputStream**)&os);
+        Boolean res;
+        value->Compress(BitmapCompressFormat_PNG, 90, IOutputStream::Probe(os), &res);
+        AutoPtr<ArrayOf<Byte> > array;
+        os->ToByteArray((ArrayOf<Byte>**)&array);
+        return WriteByteArrayAttribute(out, name, array);
+    }
+    return NOERROR;
 }
 
 } // namespace Utility

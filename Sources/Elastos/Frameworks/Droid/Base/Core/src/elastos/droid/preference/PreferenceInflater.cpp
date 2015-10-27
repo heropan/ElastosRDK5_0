@@ -1,14 +1,14 @@
 
 #include "elastos/droid/preference/PreferenceInflater.h"
 #include "elastos/droid/content/Intent.h"
-// #include "elastos/droid/utility/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::Intent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Res::IResources;
-// using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -132,10 +132,10 @@ ECode PreferenceInflater::OnCreateCustomFromTag(
         AutoPtr<IBundle> data;
         parentPreference->GetExtras((IBundle**)&data);
         resource->ParseBundleExtra(EXTRA_TAG_NAME, attrs, data);
-        // if (XmlUtils::SkipCurrentTag(parser) == (ECode)E_IO_EXCEPTION) {
-        //     Slogger::D("PreferenceInflater", "Error parsing preference");
-        //     return E_XML_PULL_PARSER_EXCEPTION;
-        // }
+        if (XmlUtils::SkipCurrentTag(parser) == (ECode)E_IO_EXCEPTION) {
+            Slogger::D("PreferenceInflater", "Error parsing preference");
+            return E_XML_PULL_PARSER_EXCEPTION;
+        }
         *res = TRUE;
         return NOERROR;
     }

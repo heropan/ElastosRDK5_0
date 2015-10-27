@@ -1,13 +1,13 @@
 
 #include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/content/res/CAssetManager.h"
-//#include "elastos/droid/internal/util/XmlUtils.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <stdlib.h>
 
-//using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -272,7 +272,7 @@ ECode CTypedArray::GetBoolean(
         Slogger::W(CResources::TAG, "Converting to boolean: %p", v.Get());
         AutoPtr<ICharSequence> csq;
         v->CoerceToString((ICharSequence**)&csq);
-        // *value = XmlUtils::ConvertValueToBoolean(csq, defValue);
+        *value = XmlUtils::ConvertValueToBoolean(csq, defValue);
         return NOERROR;
     }
     Slogger::W(CResources::TAG, "getBoolean of bad type: 0x%08x", type);
@@ -304,13 +304,12 @@ ECode CTypedArray::GetInt32(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
     AutoPtr<CTypedValue> v = mValue;
     if (GetValueAt(index, v)) {
         Slogger::W(CResources::TAG, "Converting to Int32: %p", v.Get());
         AutoPtr<ICharSequence> csq;
         v->CoerceToString((ICharSequence**)&csq);
-        // *value = XmlUtils::ConvertValueToInt32(csq, defValue);
+        *value = XmlUtils::ConvertValueToInt32(csq, defValue);
         return NOERROR;
     }
     Slogger::W(CResources::TAG, "getInt of bad type: 0x%08x", type);
