@@ -10,7 +10,18 @@ namespace Elastos {
 namespace Droid {
 namespace Sax {
 
-ECode Element::Init(
+CAR_INTERFACE_IMPL(Element, Object, IElement)
+
+Element::Element()
+    : mVisited(FALSE)
+{
+}
+
+Element::~Element()
+{
+}
+
+ECode Element::constructor(
     /* [in] */ IElement* parent,
     /* [in] */ const String& uri,
     /* [in] */ const String& localName,

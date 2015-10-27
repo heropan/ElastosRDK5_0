@@ -18,16 +18,21 @@ namespace Sax {
  * @see RootElement
  */
 class Element
+    , public Object
+    , public IElement
 {
 public:
-    CARAPI Init(
+    CAR_INTERFACE_DECL()
+
+    Element();
+
+    virtual ~Element();
+
+    CARAPI constructor(
         /* [in] */ IElement* parent,
         /* [in] */ const String& uri,
         /* [in] */ const String& localName,
         /* [in] */ Int32 depth);
-
-    virtual CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid) = 0;
 
     /**
      * Gets the child element with the given name. Uses an empty string as the
