@@ -1,11 +1,7 @@
 
 #include "elastos/droid/app/Fragment.h"
-#ifdef DROID_CORE
 #include "elastos/droid/app/CFragmentManagerImpl.h"
 #include "elastos/droid/app/CFragmentManagerImplHelper.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 #include "elastos/droid/app/Activity.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
@@ -36,46 +32,6 @@ public:
         : mHost(host)
     {}
 
-    PInterface Probe(
-    /* [in] */ REIID riid)
-    {
-        if (riid == EIID_IInterface) {
-            return (PInterface)(IFragmentContainer*)this;
-        }
-        else if (riid == EIID_IFragmentContainer) {
-            return (IFragmentContainer*)this;
-        }
-        return NULL;
-    }
-
-    UInt32 AddRef()
-    {
-        return ElRefBase::AddRef();
-    }
-
-    UInt32 Release()
-    {
-        return ElRefBase::Release();
-    }
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface* Object,
-        /* [out] */ InterfaceID* iID)
-    {
-        VALIDATE_NOT_NULL(iID);
-        if (iID == NULL) {
-            return E_INVALID_ARGUMENT;
-        }
-
-        if (Object == (IInterface*)(IFragmentContainer*)this) {
-            *iID = EIID_IFragmentContainer;
-        }
-        else {
-            return E_INVALID_ARGUMENT;
-        }
-        return NOERROR;
-    }
-
     ECode FindViewById(
         /* [in] */ Int32 id,
         /* [out] */ IView** view)
@@ -85,6 +41,14 @@ public:
             return E_ILLEGAL_STATE_EXCEPTION;
         }
         return mHost->mView->FindViewById(id, view);
+    }
+
+    CARAPI HasView(
+        /* [out] */ Boolean* result)
+    {
+        VALIDATE_NOT_NULL(result)
+        *result = (mHost->mView != NULL);
+        return NOERROR;
     }
 
 public:
@@ -112,6 +76,10 @@ FragmentState::ParcelableCreatorFragmentState::NewArray(
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
+
+//===================================================================
+// FragmentState
+//===================================================================
 
 CAR_INTERFACE_IMPL(FragmentState, IParcelable)
 
@@ -225,13 +193,25 @@ ECode FragmentState::WriteToParcel(
     return NOERROR;
 }
 
+//===================================================================
+// FragmentState
+//===================================================================
+
+AutoPtr<ITransition> InitUSE_DEFAULT_TRANSITION()
+{
+    AutoPtr<CTransition> transit;
+    CTransition::NewByFriend((CTransition**)&transit);
+    return (ITransition*)transit.Get();
+}
+
+AutoPtr<ITransition> Fragment::USE_DEFAULT_TRANSITION = InitUSE_DEFAULT_TRANSITION();
+
 HashMap<String, AutoPtr<IClassInfo> > Fragment::sClassMap;
 
 ECode Fragment::Initialize()
 {
     return NOERROR;
 }
-
 
 PInterface Fragment::Probe(
         /* [in] */ REIID riid)
@@ -794,6 +774,11 @@ ECode Fragment::Instantiate(
             AutoPtr<IClassLoader> classLoader;
             context->GetClassLoader((IClassLoader**)&classLoader);
             classLoader->LoadClass(fname, (IClassInfo**)&clazz);
+            if (!Fragment.class.isAssignableFrom(clazz)) {
+                throw new InstantiationException("Trying to instantiate a class " + fname
+                        + " that is not a Fragment", new ClassCastException());
+            }
+
             sClassMap[fname] = clazz;
         }
         else {
@@ -1326,6 +1311,15 @@ ECode Fragment::GetLayoutInflater(
     /* [out] */ ILayoutInflater** inflater)
 {
     VALIDATE_NOT_NULL(inflater);
+
+    // Newer platform versions use the child fragment manager's LayoutInflaterFactory.
+    if (mActivity.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
+        LayoutInflater result = mActivity.getLayoutInflater().cloneInContext(mActivity);
+        getChildFragmentManager(); // Init if needed; use raw implementation below.
+        result.setPrivateFactory(mChildFragmentManager.getLayoutInflaterFactory());
+        return result;
+    }
+
     return mActivity->GetLayoutInflater(inflater);
 }
 
@@ -1343,7 +1337,32 @@ ECode Fragment::OnInflate(
     /* [in] */ IBundle* savedInstanceState)
 {
     OnInflate(attrs, savedInstanceState);
-    mCalled = TRUE;
+    mCalled = true;
+
+    TypedArray a = activity.obtainStyledAttributes(attrs,
+            com.android.internal.R.styleable.Fragment);
+    mEnterTransition = loadTransition(activity, a, mEnterTransition, null,
+            com.android.internal.R.styleable.Fragment_fragmentEnterTransition);
+    mReturnTransition = loadTransition(activity, a, mReturnTransition, USE_DEFAULT_TRANSITION,
+            com.android.internal.R.styleable.Fragment_fragmentReturnTransition);
+    mExitTransition = loadTransition(activity, a, mExitTransition, null,
+            com.android.internal.R.styleable.Fragment_fragmentExitTransition);
+    mReenterTransition = loadTransition(activity, a, mReenterTransition, USE_DEFAULT_TRANSITION,
+            com.android.internal.R.styleable.Fragment_fragmentReenterTransition);
+    mSharedElementEnterTransition = loadTransition(activity, a, mSharedElementEnterTransition,
+            null, com.android.internal.R.styleable.Fragment_fragmentSharedElementEnterTransition);
+    mSharedElementReturnTransition = loadTransition(activity, a, mSharedElementReturnTransition,
+            USE_DEFAULT_TRANSITION,
+            com.android.internal.R.styleable.Fragment_fragmentSharedElementReturnTransition);
+    if (mAllowEnterTransitionOverlap == null) {
+        mAllowEnterTransitionOverlap = a.getBoolean(
+                com.android.internal.R.styleable.Fragment_fragmentAllowEnterTransitionOverlap, true);
+    }
+    if (mAllowReturnTransitionOverlap == null) {
+        mAllowReturnTransitionOverlap = a.getBoolean(
+                com.android.internal.R.styleable.Fragment_fragmentAllowReturnTransitionOverlap, true);
+    }
+    a.recycle();
     return NOERROR;
 }
 
@@ -1509,6 +1528,7 @@ ECode Fragment::InitState()
     mRestored = FALSE;
     mBackStackNesting = 0;
     mFragmentManager = NULL;
+    mChildFragmentManager = NULL;
     mActivity = NULL;
     mFragmentId = 0;
     mContainerId = 0;
@@ -1595,6 +1615,301 @@ ECode Fragment::OnContextItemSelected(
     *selected = FALSE;
     return NOERROR;
 }
+
+//=====================================================
+
+/**
+ * When custom transitions are used with Fragments, the enter transition callback
+ * is called when this Fragment is attached or detached when not popping the back stack.
+ *
+ * @param callback Used to manipulate the shared element transitions on this Fragment
+ *                 when added not as a pop from the back stack.
+ */
+public void setEnterSharedElementCallback(SharedElementCallback callback) {
+    if (callback == null) {
+        callback = SharedElementCallback.NULL_CALLBACK;
+    }
+    mEnterTransitionCallback = callback;
+}
+
+/**
+ * @hide
+ */
+public void setEnterSharedElementTransitionCallback(SharedElementCallback callback) {
+    setEnterSharedElementCallback(callback);
+}
+
+/**
+ * When custom transitions are used with Fragments, the exit transition callback
+ * is called when this Fragment is attached or detached when popping the back stack.
+ *
+ * @param callback Used to manipulate the shared element transitions on this Fragment
+ *                 when added as a pop from the back stack.
+ */
+public void setExitSharedElementCallback(SharedElementCallback callback) {
+    if (callback == null) {
+        callback = SharedElementCallback.NULL_CALLBACK;
+    }
+    mExitTransitionCallback = callback;
+}
+
+/**
+ * @hide
+ */
+public void setExitSharedElementTransitionCallback(SharedElementCallback callback) {
+    setExitSharedElementCallback(callback);
+}
+
+/**
+ * Sets the Transition that will be used to move Views into the initial scene. The entering
+ * Views will be those that are regular Views or ViewGroups that have
+ * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+ * {@link android.transition.Visibility} as entering is governed by changing visibility from
+ * {@link View#INVISIBLE} to {@link View#VISIBLE}. If <code>transition</code> is null,
+ * entering Views will remain unaffected.
+ *
+ * @param transition The Transition to use to move Views into the initial Scene.
+ * @attr ref android.R.styleable#Fragment_fragmentEnterTransition
+ */
+public void setEnterTransition(Transition transition) {
+    mEnterTransition = transition;
+}
+
+/**
+ * Returns the Transition that will be used to move Views into the initial scene. The entering
+ * Views will be those that are regular Views or ViewGroups that have
+ * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+ * {@link android.transition.Visibility} as entering is governed by changing visibility from
+ * {@link View#INVISIBLE} to {@link View#VISIBLE}.
+ *
+ * @return the Transition to use to move Views into the initial Scene.
+ * @attr ref android.R.styleable#Fragment_fragmentEnterTransition
+ */
+public Transition getEnterTransition() {
+    return mEnterTransition;
+}
+
+/**
+ * Sets the Transition that will be used to move Views out of the scene when the Fragment is
+ * preparing to be removed, hidden, or detached because of popping the back stack. The exiting
+ * Views will be those that are regular Views or ViewGroups that have
+ * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+ * {@link android.transition.Visibility} as entering is governed by changing visibility from
+ * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
+ * entering Views will remain unaffected. If nothing is set, the default will be to
+ * use the same value as set in {@link #setEnterTransition(android.transition.Transition)}.
+ *
+ * @param transition The Transition to use to move Views out of the Scene when the Fragment
+ *                   is preparing to close.
+ * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+ */
+public void setReturnTransition(Transition transition) {
+    mReturnTransition = transition;
+}
+
+/**
+ * Returns the Transition that will be used to move Views out of the scene when the Fragment is
+ * preparing to be removed, hidden, or detached because of popping the back stack. The exiting
+ * Views will be those that are regular Views or ViewGroups that have
+ * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+ * {@link android.transition.Visibility} as entering is governed by changing visibility from
+ * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
+ * entering Views will remain unaffected.
+ *
+ * @return the Transition to use to move Views out of the Scene when the Fragment
+ *         is preparing to close.
+ * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+ */
+public Transition getReturnTransition() {
+    return mReturnTransition == USE_DEFAULT_TRANSITION ? getEnterTransition()
+            : mReturnTransition;
+}
+
+/**
+ * Sets the Transition that will be used to move Views out of the scene when the
+ * fragment is removed, hidden, or detached when not popping the back stack.
+ * The exiting Views will be those that are regular Views or ViewGroups that
+ * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+ * {@link android.transition.Visibility} as exiting is governed by changing visibility
+ * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
+ * remain unaffected.
+ *
+ * @param transition The Transition to use to move Views out of the Scene when the Fragment
+ *                   is being closed not due to popping the back stack.
+ * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+ */
+public void setExitTransition(Transition transition) {
+    mExitTransition = transition;
+}
+
+/**
+ * Returns the Transition that will be used to move Views out of the scene when the
+ * fragment is removed, hidden, or detached when not popping the back stack.
+ * The exiting Views will be those that are regular Views or ViewGroups that
+ * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+ * {@link android.transition.Visibility} as exiting is governed by changing visibility
+ * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
+ * remain unaffected.
+ *
+ * @return the Transition to use to move Views out of the Scene when the Fragment
+ *         is being closed not due to popping the back stack.
+ * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+ */
+public Transition getExitTransition() {
+    return mExitTransition;
+}
+
+/**
+ * Sets the Transition that will be used to move Views in to the scene when returning due
+ * to popping a back stack. The entering Views will be those that are regular Views
+ * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
+ * will extend {@link android.transition.Visibility} as exiting is governed by changing
+ * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
+ * the views will remain unaffected. If nothing is set, the default will be to use the same
+ * transition as {@link #setExitTransition(android.transition.Transition)}.
+ *
+ * @param transition The Transition to use to move Views into the scene when reentering from a
+ *                   previously-started Activity.
+ * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
+ */
+public void setReenterTransition(Transition transition) {
+    mReenterTransition = transition;
+}
+
+/**
+ * Returns the Transition that will be used to move Views in to the scene when returning due
+ * to popping a back stack. The entering Views will be those that are regular Views
+ * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
+ * will extend {@link android.transition.Visibility} as exiting is governed by changing
+ * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
+ * the views will remain unaffected. If nothing is set, the default will be to use the same
+ * transition as {@link #setExitTransition(android.transition.Transition)}.
+ *
+ * @return the Transition to use to move Views into the scene when reentering from a
+ *                   previously-started Activity.
+ * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
+ */
+public Transition getReenterTransition() {
+    return mReenterTransition == USE_DEFAULT_TRANSITION ? getExitTransition()
+            : mReenterTransition;
+}
+
+/**
+ * Sets the Transition that will be used for shared elements transferred into the content
+ * Scene. Typical Transitions will affect size and location, such as
+ * {@link android.transition.ChangeBounds}. A null
+ * value will cause transferred shared elements to blink to the final position.
+ *
+ * @param transition The Transition to use for shared elements transferred into the content
+ *                   Scene.
+ * @attr ref android.R.styleable#Fragment_fragmentSharedElementEnterTransition
+ */
+public void setSharedElementEnterTransition(Transition transition) {
+    mSharedElementEnterTransition = transition;
+}
+
+/**
+ * Returns the Transition that will be used for shared elements transferred into the content
+ * Scene. Typical Transitions will affect size and location, such as
+ * {@link android.transition.ChangeBounds}. A null
+ * value will cause transferred shared elements to blink to the final position.
+ *
+ * @return The Transition to use for shared elements transferred into the content
+ *                   Scene.
+ * @attr ref android.R.styleable#Fragment_fragmentSharedElementEnterTransition
+ */
+public Transition getSharedElementEnterTransition() {
+    return mSharedElementEnterTransition;
+}
+
+/**
+ * Sets the Transition that will be used for shared elements transferred back during a
+ * pop of the back stack. This Transition acts in the leaving Fragment.
+ * Typical Transitions will affect size and location, such as
+ * {@link android.transition.ChangeBounds}. A null
+ * value will cause transferred shared elements to blink to the final position.
+ * If no value is set, the default will be to use the same value as
+ * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
+ *
+ * @param transition The Transition to use for shared elements transferred out of the content
+ *                   Scene.
+ * @attr ref android.R.styleable#Fragment_fragmentSharedElementReturnTransition
+ */
+public void setSharedElementReturnTransition(Transition transition) {
+    mSharedElementReturnTransition = transition;
+}
+
+/**
+ * Return the Transition that will be used for shared elements transferred back during a
+ * pop of the back stack. This Transition acts in the leaving Fragment.
+ * Typical Transitions will affect size and location, such as
+ * {@link android.transition.ChangeBounds}. A null
+ * value will cause transferred shared elements to blink to the final position.
+ * If no value is set, the default will be to use the same value as
+ * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
+ *
+ * @return The Transition to use for shared elements transferred out of the content
+ *                   Scene.
+ * @attr ref android.R.styleable#Fragment_fragmentSharedElementReturnTransition
+ */
+public Transition getSharedElementReturnTransition() {
+    return mSharedElementReturnTransition == USE_DEFAULT_TRANSITION ?
+            getSharedElementEnterTransition() : mSharedElementReturnTransition;
+}
+
+/**
+ * Sets whether the the exit transition and enter transition overlap or not.
+ * When true, the enter transition will start as soon as possible. When false, the
+ * enter transition will wait until the exit transition completes before starting.
+ *
+ * @param allow true to start the enter transition when possible or false to
+ *              wait until the exiting transition completes.
+ * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
+ */
+public void setAllowEnterTransitionOverlap(boolean allow) {
+    mAllowEnterTransitionOverlap = allow;
+}
+
+/**
+ * Returns whether the the exit transition and enter transition overlap or not.
+ * When true, the enter transition will start as soon as possible. When false, the
+ * enter transition will wait until the exit transition completes before starting.
+ *
+ * @return true when the enter transition should start as soon as possible or false to
+ * when it should wait until the exiting transition completes.
+ * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
+ */
+public boolean getAllowEnterTransitionOverlap() {
+    return (mAllowEnterTransitionOverlap == null) ? true : mAllowEnterTransitionOverlap;
+}
+
+/**
+ * Sets whether the the return transition and reenter transition overlap or not.
+ * When true, the reenter transition will start as soon as possible. When false, the
+ * reenter transition will wait until the return transition completes before starting.
+ *
+ * @param allow true to start the reenter transition when possible or false to wait until the
+ *              return transition completes.
+ * @attr ref android.R.styleable#Fragment_fragmentAllowReturnTransitionOverlap
+ */
+public void setAllowReturnTransitionOverlap(boolean allow) {
+    mAllowReturnTransitionOverlap = allow;
+}
+
+/**
+ * Returns whether the the return transition and reenter transition overlap or not.
+ * When true, the reenter transition will start as soon as possible. When false, the
+ * reenter transition will wait until the return transition completes before starting.
+ *
+ * @return true to start the reenter transition when possible or false to wait until the
+ *         return transition completes.
+ * @attr ref android.R.styleable#Fragment_fragmentAllowReturnTransitionOverlap
+ */
+public boolean getAllowReturnTransitionOverlap() {
+    return (mAllowReturnTransitionOverlap == null) ? true : mAllowReturnTransitionOverlap;
+}
+
+//=====================================================
 
 ECode Fragment::Dump(
     /* [in] */ const String& prefix,
@@ -2048,6 +2363,29 @@ ECode Fragment::PerformDestroy()
 //                 + " did not call through to super.onDestroy()");
     }
     return NOERROR;
+}
+
+AutoPtr<ITransition> Fragment::LoadTransition(
+    /* [in] */ IContext* context,
+    /* [in] */ ITypedArray* typedArray,
+    /* [in] */ ITransition* currentValue,
+    /* [in] */ ITransition* defaultValue,
+    /* [in] */ Int32 id)
+{
+    if (currentValue != defaultValue) {
+        return currentValue;
+    }
+    int transitionId = typedArray.getResourceId(id, 0);
+    Transition transition = defaultValue;
+    if (transitionId != 0 && transitionId != com.android.internal.R.transition.no_transition) {
+        TransitionInflater inflater = TransitionInflater.from(context);
+        transition = inflater.inflateTransition(transitionId);
+        if (transition instanceof TransitionSet &&
+                ((TransitionSet)transition).getTransitionCount() == 0) {
+            transition = null;
+        }
+    }
+    return transition;
 }
 
 } // namespace App

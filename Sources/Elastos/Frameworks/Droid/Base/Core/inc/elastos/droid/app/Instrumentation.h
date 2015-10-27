@@ -702,8 +702,21 @@ public:
         /* [in] */ IInterface* lastNonConfigurationInstance,
         /* [out] */ IActivity** activity);
 
-    virtual CARAPI CallActivityOnCreate(
-        /* [out] */ IActivity* activity,
+    CARAPI PrePerformCreate(
+        /* [in] */ IActivity* activity);
+
+    CARAPI PostPerformCreate(
+        /* [in] */ IActivity* activity);
+
+    /**
+     * Perform calling of an activity's {@link Activity#onCreate}
+     * method.  The default implementation simply calls through to that method.
+     *
+     * @param activity The activity being created.
+     * @param icicle The previously frozen state (or null) to pass through to onCreate().
+     */
+    CARAPI CallActivityOnCreate(
+        /* [in] */ IActivity* activity,
         /* [in] */ IBundle* icicle);
 
     virtual CARAPI CallActivityOnDestroy(
@@ -712,6 +725,19 @@ public:
     virtual CARAPI CallActivityOnRestoreInstanceState(
         /* [in] */ IActivity* activity,
         /* [in] */ IBundle* savedInstanceState);
+
+    /**
+     * Perform calling of an activity's {@link Activity#onRestoreInstanceState}
+     * method.  The default implementation simply calls through to that method.
+     *
+     * @param activity The activity being restored.
+     * @param savedInstanceState The previously saved state being restored.
+     * @param persistentState The previously persisted state (or null)
+     */
+    CARAPI CallActivityOnRestoreInstanceState(
+        /* [in] */ IActivity* activity,
+        /* [in] */ IBundle* savedInstanceState,
+        /* [in] */ IPersistableBundle* persistentState);
 
     /**
      * Perform calling of an activity's {@link Activity#onPostCreate} method.
@@ -724,6 +750,19 @@ public:
     virtual CARAPI CallActivityOnPostCreate(
         /* [in] */ IActivity* activity,
         /* [in] */ IBundle* icicle);
+
+    /**
+     * Perform calling of an activity's {@link Activity#onPostCreate} method.
+     * The default implementation simply calls through to that method.
+     *
+     * @param activity The activity being created.
+     * @param icicle The previously frozen state (or null) to pass through to
+     *               onPostCreate().
+     */
+    virtual CARAPI CallActivityOnPostCreate(
+        /* [in] */ IActivity* activity,
+        /* [in] */ IBundle* icicle,
+        /* [in] */ IPersistableBundle* persistentState);
 
     virtual CARAPI CallActivityOnNewIntent(
         /* [in] */ IActivity* activity,
@@ -744,6 +783,18 @@ public:
     virtual CARAPI CallActivityOnSaveInstanceState(
         /* [in] */ IActivity* activity,
         /* [in] */ IBundle* outState);
+
+    /**
+     * Perform calling of an activity's {@link Activity#onSaveInstanceState}
+     * method.  The default implementation simply calls through to that method.
+     *  @param activity The activity being saved.
+     * @param outState The bundle to pass to the call.
+     * @param outPersistentState The persistent bundle to pass to the call.
+     */
+    virtual CARAPI CallActivityOnSaveInstanceState(
+        /* [in] */ IActivity* activity,
+        /* [in] */ IBundle* outState,
+        /* [in] */ IPersistableBundle* outPersistentState);
 
     virtual CARAPI CallActivityOnPause(
         /* [in] */ IActivity* activity);
@@ -968,9 +1019,12 @@ private:
     AutoPtr< List<AutoPtr<ActivityWaiter> > > mWaitingActivities;
     AutoPtr< List<AutoPtr<IInstrumentationActivityMonitor> > > mActivityMonitors;
     AutoPtr<IInstrumentationWatcher> mWatcher;
+    AutoPtr<IIUiAutomationConnection> mUiAutomationConnection;
     Boolean mAutomaticPerformanceSnapshots;
    // AutoPtr<IPerformanceCollector> mPerformanceCollector;
     AutoPtr<IBundle> mPerfMetrics;
+
+    AutoPtr<IUiAutomation> mUiAutomation;
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
     AutoPtr<IPrivacySettingsManager> mPrvSvc;

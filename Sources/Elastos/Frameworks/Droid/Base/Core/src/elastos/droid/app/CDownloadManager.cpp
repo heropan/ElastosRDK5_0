@@ -537,12 +537,14 @@ AutoPtr<ArrayOf<String> > CDownloadManager::InitUNDERLYINGCOLUMNS()
     columns->Set(10, IDownloadsImpl::COLUMN_TOTAL_BYTES + " AS " + IDownloadManager::COLUMN_TOTAL_SIZE_BYTES);
     columns->Set(11, IDownloadsImpl::COLUMN_LAST_MODIFICATION + " AS " + IDownloadManager::COLUMN_LAST_MODIFIED_TIMESTAMP);
     columns->Set(12, IDownloadsImpl::COLUMN_CURRENT_BYTES + " AS " + IDownloadManager::COLUMN_BYTES_DOWNLOADED_SO_FAR);
+    columns->Set(13, IDownloads.Impl::COLUMN_ALLOW_WRITE);
+
     /* add the following 'computed' columns to the cursor.
      * they are not 'returned' by the database, but their inclusion
      * eliminates need to have lot of methods in CursorTranslator
      */
-    columns->Set(13, String("'placeholder' AS ") + IDownloadManager::COLUMN_LOCAL_URI);
-    columns->Set(14, String("'placeholder' AS ") + IDownloadManager::COLUMN_REASON);
+    columns->Set(14, String("'placeholder' AS ") + IDownloadManager::COLUMN_LOCAL_URI);
+    columns->Set(15, String("'placeholder' AS ") + IDownloadManager::COLUMN_REASON);
     return columns;
 }
 
@@ -891,6 +893,21 @@ ECode CDownloadManager::AddCompletedDownload(
     /* [in] */ Boolean showNotification,
     /* [out] */ Int64* id)
 {
+    return addCompletedDownload(title, description, isMediaScannerScannable, mimeType, path,
+            length, showNotification, false);
+}
+
+ECode CDownloadManager::AddCompletedDownload(
+    /* [in] */ const String& title,
+    /* [in] */ const String& description,
+    /* [in] */ Boolean isMediaScannerScannable,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& path,
+    /* [in] */ Int64 length,
+    /* [in] */ Boolean showNotification,
+    /* [in] */ Boolean allowWrite,
+    /* [out] */ Int64* id)
+{
     VALIDATE_NOT_NULL(id);
 
     // make sure the input args are non-null/non-zero
@@ -937,6 +954,7 @@ ECode CDownloadManager::AddCompletedDownload(
     CInteger32::New(IDownloadManagerRequest::VISIBILITY_HIDDEN, (IInteger32**)&hidden);
     values->PutInt32(IDownloadsImpl::COLUMN_VISIBILITY, (showNotification) ?
             completion : hidden);
+    values->PutInt32(IDownloadsImpl::COLUMN_ALLOW_WRITE, allowWrite ? 1 : 0);
     AutoPtr<IDownloadsImpl> impl;
     CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
     AutoPtr<IUri> contentUri;
@@ -973,6 +991,16 @@ AutoPtr<IUri> CDownloadManager::GetDownloadUri(
     AutoPtr<IUri> uri;
     cUris->WithAppendedId(mBaseUri, id, (IUri**)&uri);
     return uri;
+}
+
+ECode CDownloadManager::GetDownloadUri(
+    /* [in] */ Int64 id,
+    /* [out] */ IUri** uri)
+{
+    AutoPtr<IUri> uri = GetDownloadUri(id);
+    *result = uri;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 /**

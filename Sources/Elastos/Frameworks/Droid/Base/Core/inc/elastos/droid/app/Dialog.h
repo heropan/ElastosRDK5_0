@@ -41,6 +41,13 @@ namespace Droid {
 namespace App {
 
 class Dialog
+    : public Object
+    , public IDialog
+    , public IDialogInterface
+    , public IWindowCallback
+    , public IKeyEventCallback
+    , public IViewOnCreateContextMenuListener
+    , public IWindowOnWindowDismissedCallback
 {
 private:
     static const Int32 DISMISS = 0x43;
@@ -133,6 +140,8 @@ public:
 
     virtual CARAPI_(Boolean) IsShowing();
 
+    virtual CARAPI Create();
+
     virtual CARAPI Show();
 
     virtual CARAPI Hide();
@@ -151,6 +160,14 @@ public:
 
     virtual CARAPI_(AutoPtr<IView>) GetCurrentFocus();
 
+   /**
+     * Finds a child view with the given identifier. Returns null if the
+     * specified child view does not exist or the dialog has not yet been fully
+     * created (for example, via {@link #show()} or {@link #create()}).
+     *
+     * @param id the identifier of the view to find
+     * @return The view with the given id or null.
+     */
     virtual CARAPI_(AutoPtr<IView>) FindViewById(
         /* [in] */ Int32 id);
 
@@ -242,6 +259,10 @@ public:
     virtual CARAPI OnAttachedToWindow();
 
     virtual CARAPI OnDetachedFromWindow();
+
+    /** @hide */
+    //@Override
+    CARAPI OnWindowDismissed();
 
     virtual CARAPI_(Boolean) DispatchKeyEvent(
         /* [in] */ IKeyEvent* event);
@@ -470,6 +491,7 @@ public:
     AutoPtr<IWindowManager> mWindowManager;
     AutoPtr<IWindow> mWindow;
     AutoPtr<IView> mDecor;
+
     /**
      * This field should be made private, so it is hidden from the SDK.
      * {@hide}
@@ -481,7 +503,7 @@ private:
 
     AutoPtr<IWeakReference> mWeakOwnerActivity;
     // AutoPtr<IActivity> mOwnerActivity;
-    AutoPtr<IActionBarImpl> mActionBar;
+    AutoPtr<IActionBar> mActionBar;
 
     String mCancelAndDismissTaken;
     AutoPtr<IMessage> mCancelMessage;

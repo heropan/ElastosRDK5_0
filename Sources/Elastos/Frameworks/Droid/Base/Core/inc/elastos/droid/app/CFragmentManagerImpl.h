@@ -30,52 +30,9 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class RunnableLocal
-    : public ElRefBase
-    , public IRunnable
-{
-public:
-    PInterface Probe(
-        /* [in]  */ REIID riid)
-    {
-        if (riid == EIID_IInterface) {
-            return (PInterface)this;
-        }
-        else if (riid == EIID_IRunnable) {
-            return (IRunnable*)this;
-        }
-
-        return NULL;
-
-    }
-
-    UInt32 AddRef()
-    {
-        return ElRefBase::AddRef();
-    }
-
-    UInt32 Release()
-    {
-        return ElRefBase::Release();
-    }
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface *Object,
-        /* [out] */ InterfaceID *IID)
-    {
-        VALIDATE_NOT_NULL(IID);
-
-        if (Object == (IInterface*)(IRunnable*)this) {
-            *IID = EIID_IRunnable;
-        }
-        return E_INVALID_ARGUMENT;
-    }
-
-    virtual ECode Run() = 0;
-};
 
 class ExecCommitRunnable
-    : public RunnableLocal
+    : public Runnable
 {
 public:
     ExecCommitRunnable(
@@ -91,7 +48,7 @@ private:
 
 
 class Runnable1
-    : public RunnableLocal
+    : public Runnable
 {
 public:
     Runnable1(
@@ -106,7 +63,7 @@ private:
 };
 
 class Runnable2
-    : public RunnableLocal
+    : public Runnable
 {
 public:
     Runnable2(
@@ -127,7 +84,7 @@ private:
 };
 
 class Runnable3
-    : public RunnableLocal
+    : public Runnable
 {
 public:
     Runnable3(
@@ -180,6 +137,10 @@ private:
 };
 
 CarClass(CFragmentManagerImpl)
+    , public Object
+    , public IFragmentManager
+    , public ILayoutInflaterFactory
+    , public ILayoutInflaterFactory2
 {
 public:
     CFragmentManagerImpl();
@@ -444,6 +405,24 @@ public:
         /* [in] */ Int32 transit,
         /* [in] */ Boolean enter,
         /* [out] */ Int32* index);
+
+    //@Override
+    CARAPI OnCreateView(
+        /* [in] */ IView* parent,
+        /* [in] */ const String& name,
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [out] */ IView** result);
+
+    //@Override
+    CARAPI OnCreateView(
+        /* [in] */ const String& name,
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [out] */ IView** result);
+
+    CARAPI GetLayoutInflaterFactory(
+        /* [out] */ ILayoutInflaterFactory2** fact);
 
 private:
     CARAPI CheckStateLoss();

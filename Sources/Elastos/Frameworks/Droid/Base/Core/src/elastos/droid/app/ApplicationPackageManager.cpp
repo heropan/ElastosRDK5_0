@@ -1164,7 +1164,7 @@ ECode ApplicationPackageManager::GetApplicationLogo(
     VALIDATE_NOT_NULL(logo);
 
     AutoPtr<IApplicationInfo> info;
-    GetApplicationInfo(packageName, 0, (IApplicationInfo**)&info);
+    GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&info);
     return GetApplicationLogo(info, logo);
 }
 
@@ -1175,10 +1175,66 @@ ECode ApplicationPackageManager::GetResourcesForActivity(
      VALIDATE_NOT_NULL(res);
 
      AutoPtr<IActivityInfo> aInfo;
-     GetActivityInfo(activityName, 0, (IActivityInfo**)&aInfo);
+     GetActivityInfo(activityName, sDefaultFlags, (IActivityInfo**)&aInfo);
      AutoPtr<IApplicationInfo> info;
      aInfo->GetApplicationInfo((IApplicationInfo**)&info);
      return GetResourcesForApplication(info, res);
+}
+
+ECode ApplicationPackageManager::GetUserBadgedIcon(
+    /* [in] */ IDrawable* icon,
+    /* [in] */ IUserHandle* user,
+    /* [out] */ IDrawable** drawable)
+{
+    final int badgeResId = getBadgeResIdForUser(user.getIdentifier());
+    if (badgeResId == 0) {
+        return icon;
+    }
+    Drawable badgeIcon = getDrawable("system", badgeResId, null);
+    return getBadgedDrawable(icon, badgeIcon, null, true);
+}
+
+ECode ApplicationPackageManager::GetUserBadgedDrawableForDensity(
+    /* [in] */ IDrawable* drawable,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ IRect* badgeLocation,
+    /* [in] */ Int32 badgeDensity,
+    /* [out] */ IDrawable** drawable)
+{
+    Drawable badgeDrawable = getUserBadgeForDensity(user, badgeDensity);
+    if (badgeDrawable == null) {
+        return drawable;
+    }
+    return getBadgedDrawable(drawable, badgeDrawable, badgeLocation, true);
+}
+
+ECode ApplicationPackageManager::GetUserBadgeForDensity(
+    /* [in] */ IUserHandle* user,
+    /* [in] */ Int32 density,
+    /* [out] */ IDrawable** drawable)
+{
+    UserInfo userInfo = getUserIfProfile(user.getIdentifier());
+    if (userInfo != null && userInfo.isManagedProfile()) {
+        if (density <= 0) {
+            density = mContext.getResources().getDisplayMetrics().densityDpi;
+        }
+        return Resources.getSystem().getDrawableForDensity(
+                com.android.internal.R.drawable.ic_corp_badge, density);
+    }
+    return null;
+}
+
+ECode ApplicationPackageManager::GetUserBadgedLabel(
+    /* [in] */ ICharSequence* label,
+    /* [in] */ IUserHandle* user,
+    /* [out] */ ICharSequence** csq)
+{
+    UserInfo userInfo = getUserIfProfile(user.getIdentifier());
+    if (userInfo != null && userInfo.isManagedProfile()) {
+        return Resources.getSystem().getString(
+                com.android.internal.R.string.managed_profile_label_badge, label);
+    }
+    return label;
 }
 
 ECode ApplicationPackageManager::GetResourcesForApplication(
@@ -1196,23 +1252,30 @@ ECode ApplicationPackageManager::GetResourcesForApplication(
         return sysContent->GetResources(res);
     }
 
-    String resDir;
-    Int32 appUid;
-    app->GetUid(&appUid);
-    if (appUid == Process::MyUid()) {
-        app->GetSourceDir(&resDir);
-    }
-    else {
-        app->GetPublicSourceDir(&resDir);
-    }
-    AutoPtr<IResources> r;
-    mContext->mMainThread->GetTopLevelResources(
-        resDir, IDisplay::DEFAULT_DISPLAY, NULL, mContext->mPackageInfo, (IResources**)&r);
-    if (r != NULL) {
-        *res = r;
-        REFCOUNT_ADD(*res);
-        return NOERROR;
-    }
+    final boolean sameUid = (app.uid == Process.myUid());
+    Resources r = mContext.mMainThread.getTopLevelResources(
+            sameUid ? app.sourceDir : app.publicSourceDir,
+            sameUid ? app.splitSourceDirs : app.splitPublicSourceDirs,
+            app.resourceDirs, app.sharedLibraryFiles, Display.DEFAULT_DISPLAY,
+            null, mContext.mPackageInfo);
+
+    // String resDir;
+    // Int32 appUid;
+    // app->GetUid(&appUid);
+    // if (appUid == Process::MyUid()) {
+    //     app->GetSourceDir(&resDir);
+    // }
+    // else {
+    //     app->GetPublicSourceDir(&resDir);
+    // }
+    // AutoPtr<IResources> r;
+    // mContext->mMainThread->GetTopLevelResources(
+    //     resDir, IDisplay::DEFAULT_DISPLAY, NULL, mContext->mPackageInfo, (IResources**)&r);
+    // if (r != NULL) {
+    //     *res = r;
+    //     REFCOUNT_ADD(*res);
+    //     return NOERROR;
+    // }
 
     Slogger::E("ApplicationPackageManager", "Unable to open [%s]",  resDir.string());
     return E_NAME_NOT_FOUND_EXCEPTION;
@@ -1225,7 +1288,7 @@ ECode ApplicationPackageManager::GetResourcesForApplication(
     VALIDATE_NOT_NULL(res);
 
     AutoPtr<IApplicationInfo> info;
-    GetApplicationInfo(appPackageName, 0, (IApplicationInfo**)&info);
+    GetApplicationInfo(appPackageName, sDefaultFlags, (IApplicationInfo**)&info);
     return GetResourcesForApplication(info, res);
 }
 
@@ -1249,7 +1312,7 @@ ECode ApplicationPackageManager::GetResourcesForApplicationAsUser(
 
     // try {
     AutoPtr<IApplicationInfo> ai;
-    if (FAILED(mPM->GetApplicationInfo(appPackageName, 0, userId, (IApplicationInfo**)&ai))) {
+    if (FAILED(mPM->GetApplicationInfo(appPackageName, sDefaultFlags, userId, (IApplicationInfo**)&ai))) {
         return E_RUNTIME_EXCEPTION;
     }
 
@@ -1470,7 +1533,7 @@ ECode ApplicationPackageManager::GetText(
 
     ECode ec;
     if (appInfo == NULL) {
-        ec = GetApplicationInfo(packageName, 0, (IApplicationInfo**)&appInfo);
+        ec = GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&appInfo);
         if (ec = (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             return NOERROR;
         }
@@ -1517,7 +1580,7 @@ ECode ApplicationPackageManager::GetXml(
     AutoPtr<IApplicationInfo> appInfo = _appInfo;
     if (appInfo == NULL) {
         // try {
-        ECode ec = GetApplicationInfo(packageName, 0, (IApplicationInfo**)&appInfo);
+        ECode ec = GetApplicationInfo(packageName, sDefaultFlags, (IApplicationInfo**)&appInfo);
         if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             *parser = NULL;
             return ec;
@@ -1558,8 +1621,13 @@ ECode ApplicationPackageManager::InstallPackage(
     /* [in] */ Int32 flags,
     /* [in] */ const String& installerPackageName)
 {
+    final VerificationParams verificationParams = new VerificationParams(null, null,
+            null, VerificationParams.NO_UID, null);
+    return InstallCommon(packageURI, new LegacyPackageInstallObserver(observer), flags,
+            installerPackageName, verificationParams, null);
+
     // try {
-    return mPM->InstallPackage(packageURI, observer, flags, installerPackageName);
+    // return mPM->InstallPackage(packageURI, observer, flags, installerPackageName);
     // } catch (RemoteException e) {
     //     // Should never happen!
     // }
@@ -1574,9 +1642,14 @@ ECode ApplicationPackageManager::InstallPackageWithVerification(
     /* [in] */ IManifestDigest* manifestDigest,
     /* [in] */ IContainerEncryptionParams* encryptionParams)
 {
+    final VerificationParams verificationParams = new VerificationParams(verificationURI, null,
+            null, VerificationParams.NO_UID, manifestDigest);
+    installCommon(packageURI, new LegacyPackageInstallObserver(observer), flags,
+            installerPackageName, verificationParams, encryptionParams);
+
     // try {
-    return mPM->InstallPackageWithVerification(packageURI, observer, flags, installerPackageName,
-                verificationURI, manifestDigest, encryptionParams);
+    // return mPM->InstallPackageWithVerification(packageURI, observer, flags, installerPackageName,
+    //             verificationURI, manifestDigest, encryptionParams);
     // } catch (RemoteException e) {
     //     // Should never happen!
     // }
@@ -1590,20 +1663,74 @@ ECode ApplicationPackageManager::InstallPackageWithVerificationAndEncryption(
     /* [in] */ IVerificationParams* verificationParams,
     /* [in] */ IContainerEncryptionParams* encryptionParams)
 {
+    return InstallCommon(packageURI, new LegacyPackageInstallObserver(observer), flags,
+            installerPackageName, verificationParams, encryptionParams);
+
     // try {
-    return mPM->InstallPackageWithVerificationAndEncryption(packageURI, observer, flags,
-                installerPackageName, verificationParams, encryptionParams);
+    // return mPM->InstallPackageWithVerificationAndEncryption(packageURI, observer, flags,
+    //             installerPackageName, verificationParams, encryptionParams);
     // } catch (RemoteException e) {
     //     // Should never happen!
     // }
 }
+
+//====================
+
+
+    @Override
+    public void installPackage(Uri packageURI, PackageInstallObserver observer,
+            int flags, String installerPackageName) {
+        final VerificationParams verificationParams = new VerificationParams(null, null,
+                null, VerificationParams.NO_UID, null);
+        installCommon(packageURI, observer, flags, installerPackageName, verificationParams, null);
+    }
+
+    @Override
+    public void installPackageWithVerification(Uri packageURI,
+            PackageInstallObserver observer, int flags, String installerPackageName,
+            Uri verificationURI, ManifestDigest manifestDigest,
+            ContainerEncryptionParams encryptionParams) {
+        final VerificationParams verificationParams = new VerificationParams(verificationURI, null,
+                null, VerificationParams.NO_UID, manifestDigest);
+        installCommon(packageURI, observer, flags, installerPackageName, verificationParams,
+                encryptionParams);
+    }
+
+    @Override
+    public void installPackageWithVerificationAndEncryption(Uri packageURI,
+            PackageInstallObserver observer, int flags, String installerPackageName,
+            VerificationParams verificationParams, ContainerEncryptionParams encryptionParams) {
+        installCommon(packageURI, observer, flags, installerPackageName, verificationParams,
+                encryptionParams);
+    }
+
+    private void installCommon(Uri packageURI,
+            PackageInstallObserver observer, int flags, String installerPackageName,
+            VerificationParams verificationParams, ContainerEncryptionParams encryptionParams) {
+        if (!"file".equals(packageURI.getScheme())) {
+            throw new UnsupportedOperationException("Only file:// URIs are supported");
+        }
+        if (encryptionParams != null) {
+            throw new UnsupportedOperationException("ContainerEncryptionParams not supported");
+        }
+
+        final String originPath = packageURI.getPath();
+        try {
+            mPM.installPackage(originPath, observer.getBinder(), flags, installerPackageName,
+                    verificationParams, null);
+        } catch (RemoteException ignored) {
+        }
+    }
+
+
+//==============
 
 ECode ApplicationPackageManager::InstallExistingPackage(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    ECode ec = mPM->InstallExistingPackage(packageName, result);
+    ECode ec = mPM->InstallExistingPackageAsUser(packageName, UserHandle::MyUserId(), result);
     if (FAILED(ec)) {
         *result = 0;
         Slogger::W("PackageManager", "Package %s doesn't exist", packageName.string());
@@ -1660,7 +1787,7 @@ ECode ApplicationPackageManager::DeletePackage(
     /* [in] */ IPackageDeleteObserver* observer,
     /* [in] */ Int32 flags)
 {
-    return mPM->DeletePackage(packageName, observer, flags);
+    return mPM->DeletePackage(packageName, observer, UserHandle::MyUserId(), flags);
 }
 
 ECode ApplicationPackageManager::ClearApplicationUserData(
@@ -1753,7 +1880,21 @@ ECode ApplicationPackageManager::ReplacePreferredActivity(
     /* [in] */ ArrayOf<IComponentName*>* set,
     /* [in] */ IComponentName* activity)
 {
-    return mPM->ReplacePreferredActivity(filter, match, set, activity);
+    return mPM->ReplacePreferredActivity(filter, match, set, activity, UserHandle::MyUserId());
+}
+
+ECode ApplicationPackageManager::ReplacePreferredActivityAsUser(
+    /* [in] */ IIntentFilter* filter,
+    /* [in] */ Int32 match,
+    /* [in] */ ArrayOf<IComponentName*>* set,
+    /* [in] */ IComponentName* activity,
+    /* [in] */ Int32 userId)
+{
+    // try {
+    return mPM->ReplacePreferredActivity(filter, match, set, activity, userId);
+    // } catch (RemoteException e) {
+    //     // Should never happen!
+    // }
 }
 
 ECode ApplicationPackageManager::ClearPackagePreferredActivities(
@@ -1775,6 +1916,18 @@ ECode ApplicationPackageManager::GetPreferredActivities(
     }
 
     return NOERROR;
+}
+
+ECode ApplicationPackageManager::GetHomeActivities(
+    /* [in] */ IList* /*<ResolveInfo>*/ outActivities,
+    /* [out] */ IComponentName** cn)
+{
+    // try {
+    return mPM->GetHomeActivities(outActivities, cn);
+    // } catch (RemoteException e) {
+    //     // Should never happen!
+    // }
+    // return null;
 }
 
 ECode ApplicationPackageManager::SetComponentEnabledSetting(
@@ -1809,7 +1962,8 @@ ECode ApplicationPackageManager::SetApplicationEnabledSetting(
 {
     Int32 uid = 0;
     mContext->GetUserId(&uid);
-    return mPM->SetApplicationEnabledSetting(packageName, newState, flags, uid);
+    return mPM->SetApplicationEnabledSetting(
+        packageName, newState, flags, uid, mContext.getOpPackageName());
 }
 
 ECode ApplicationPackageManager::GetApplicationEnabledSetting(
@@ -1827,6 +1981,83 @@ ECode ApplicationPackageManager::GetApplicationEnabledSetting(
     return NOERROR;
 }
 
+//=================
+
+    @Override
+    public boolean setApplicationHiddenSettingAsUser(String packageName, boolean hidden,
+            UserHandle user) {
+        try {
+            return mPM.setApplicationHiddenSettingAsUser(packageName, hidden,
+                    user.getIdentifier());
+        } catch (RemoteException re) {
+            // Should never happen!
+        }
+        return false;
+    }
+
+    @Override
+    public boolean getApplicationHiddenSettingAsUser(String packageName, UserHandle user) {
+        try {
+            return mPM.getApplicationHiddenSettingAsUser(packageName, user.getIdentifier());
+        } catch (RemoteException re) {
+            // Should never happen!
+        }
+        return false;
+    }
+
+    /** @hide */
+    @Override
+    public KeySet getKeySetByAlias(String packageName, String alias) {
+        Preconditions.checkNotNull(packageName);
+        Preconditions.checkNotNull(alias);
+        KeySet ks;
+        try {
+            ks = mPM.getKeySetByAlias(packageName, alias);
+        } catch (RemoteException e) {
+            return null;
+        }
+        return ks;
+    }
+
+    /** @hide */
+    @Override
+    public KeySet getSigningKeySet(String packageName) {
+        Preconditions.checkNotNull(packageName);
+        KeySet ks;
+        try {
+            ks = mPM.getSigningKeySet(packageName);
+        } catch (RemoteException e) {
+            return null;
+        }
+        return ks;
+    }
+
+    /** @hide */
+    @Override
+    public boolean isSignedBy(String packageName, KeySet ks) {
+        Preconditions.checkNotNull(packageName);
+        Preconditions.checkNotNull(ks);
+        try {
+            return mPM.isPackageSignedByKeySet(packageName, ks);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /** @hide */
+    @Override
+    public boolean isSignedByExactly(String packageName, KeySet ks) {
+        Preconditions.checkNotNull(packageName);
+        Preconditions.checkNotNull(ks);
+        try {
+            return mPM.isPackageSignedByKeySetExactly(packageName, ks);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+//=================
+
 ECode ApplicationPackageManager::GetVerifierDeviceIdentity(
     /* [out] */ IVerifierDeviceIdentity** identity)
 {
@@ -1838,6 +2069,153 @@ ECode ApplicationPackageManager::GetVerifierDeviceIdentity(
 
     return NOERROR;
 }
+
+//===============
+
+    @Override
+    public PackageInstaller getPackageInstaller() {
+        synchronized (mLock) {
+            if (mInstaller == null) {
+                try {
+                    mInstaller = new PackageInstaller(mContext, this, mPM.getPackageInstaller(),
+                            mContext.getPackageName(), mContext.getUserId());
+                } catch (RemoteException e) {
+                    throw e.rethrowAsRuntimeException();
+                }
+            }
+            return mInstaller;
+        }
+    }
+
+    @Override
+    public boolean isPackageAvailable(String packageName) {
+        try {
+            return mPM.isPackageAvailable(packageName, mContext.getUserId());
+        } catch (RemoteException e) {
+            throw e.rethrowAsRuntimeException();
+        }
+    }
+
+    /**
+     * @hide
+     */
+    @Override
+    public void addCrossProfileIntentFilter(IntentFilter filter, int sourceUserId, int targetUserId,
+            int flags) {
+        try {
+            mPM.addCrossProfileIntentFilter(filter, mContext.getOpPackageName(),
+                    mContext.getUserId(), sourceUserId, targetUserId, flags);
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+    }
+
+    /**
+     * @hide
+     */
+    @Override
+    public void clearCrossProfileIntentFilters(int sourceUserId) {
+        try {
+            mPM.clearCrossProfileIntentFilters(sourceUserId, mContext.getOpPackageName(),
+                    mContext.getUserId());
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+    }
+
+    /**
+     * @hide
+     */
+    public Drawable loadItemIcon(PackageItemInfo itemInfo, ApplicationInfo appInfo) {
+        if (itemInfo.showUserIcon != UserHandle.USER_NULL) {
+            Bitmap bitmap = getUserManager().getUserIcon(itemInfo.showUserIcon);
+            if (bitmap == null) {
+                return UserIcons.getDefaultUserIcon(itemInfo.showUserIcon, /* light= */ false);
+            }
+            return new BitmapDrawable(bitmap);
+        }
+        Drawable dr = null;
+        if (itemInfo.packageName != null) {
+            dr = getDrawable(itemInfo.packageName, itemInfo.icon, appInfo);
+        }
+        if (dr == null) {
+            dr = itemInfo.loadDefaultIcon(this);
+        }
+        return getUserBadgedIcon(dr, new UserHandle(mContext.getUserId()));
+    }
+
+    private Drawable getBadgedDrawable(Drawable drawable, Drawable badgeDrawable,
+            Rect badgeLocation, boolean tryBadgeInPlace) {
+        final int badgedWidth = drawable.getIntrinsicWidth();
+        final int badgedHeight = drawable.getIntrinsicHeight();
+        final boolean canBadgeInPlace = tryBadgeInPlace
+                && (drawable instanceof BitmapDrawable)
+                && ((BitmapDrawable) drawable).getBitmap().isMutable();
+
+        final Bitmap bitmap;
+        if (canBadgeInPlace) {
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        } else {
+            bitmap = Bitmap.createBitmap(badgedWidth, badgedHeight, Bitmap.Config.ARGB_8888);
+        }
+        Canvas canvas = new Canvas(bitmap);
+
+        if (!canBadgeInPlace) {
+            drawable.setBounds(0, 0, badgedWidth, badgedHeight);
+            drawable.draw(canvas);
+        }
+
+        if (badgeLocation != null) {
+            if (badgeLocation.left < 0 || badgeLocation.top < 0
+                    || badgeLocation.width() > badgedWidth || badgeLocation.height() > badgedHeight) {
+                throw new IllegalArgumentException("Badge location " + badgeLocation
+                        + " not in badged drawable bounds "
+                        + new Rect(0, 0, badgedWidth, badgedHeight));
+            }
+            badgeDrawable.setBounds(0, 0, badgeLocation.width(), badgeLocation.height());
+
+            canvas.save();
+            canvas.translate(badgeLocation.left, badgeLocation.top);
+            badgeDrawable.draw(canvas);
+            canvas.restore();
+        } else {
+            badgeDrawable.setBounds(0, 0, badgedWidth, badgedHeight);
+            badgeDrawable.draw(canvas);
+        }
+
+        if (!canBadgeInPlace) {
+            BitmapDrawable mergedDrawable = new BitmapDrawable(mContext.getResources(), bitmap);
+
+            if (drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                mergedDrawable.setTargetDensity(bitmapDrawable.getBitmap().getDensity());
+            }
+
+            return mergedDrawable;
+        }
+
+        return drawable;
+    }
+
+    private int getBadgeResIdForUser(int userHandle) {
+        // Return the framework-provided badge.
+        UserInfo userInfo = getUserIfProfile(userHandle);
+        if (userInfo != null && userInfo.isManagedProfile()) {
+            return com.android.internal.R.drawable.ic_corp_icon_badge;
+        }
+        return 0;
+    }
+
+    private UserInfo getUserIfProfile(int userHandle) {
+        List<UserInfo> userProfiles = getUserManager().getProfiles(UserHandle.myUserId());
+        for (UserInfo user : userProfiles) {
+            if (user.id == userHandle) {
+                return user;
+            }
+        }
+        return null;
+    }
+//================
 
 ECode ApplicationPackageManager::GetPackageArchiveInfo(
     /* [in] */ const String& archiveFilePath,

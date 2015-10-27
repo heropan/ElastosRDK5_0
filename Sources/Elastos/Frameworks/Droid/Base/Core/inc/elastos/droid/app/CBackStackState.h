@@ -50,6 +50,9 @@ public:
     AutoPtr<ICharSequence> mBreadCrumbTitleText;
     Int32 mBreadCrumbShortTitleRes;
     AutoPtr<ICharSequence> mBreadCrumbShortTitleText;
+
+    AutoPtr<IArrayList> mSharedElementSourceNames; //ArrayList<String>
+    AutoPtr<IArrayList> mSharedElementTargetNames; //ArrayList<String>
 };
 
 /**
@@ -174,6 +177,23 @@ public:
     virtual CARAPI SetTransition(
         /* [in] */ Int32 transition);
 
+    //@Override
+    CARAPI AddSharedElement(
+        /* [in] */ IView* sharedElement,
+        /* [in] */ const String& name);
+
+    /** TODO: remove this */
+    //@Override
+    CARAPI SetSharedElement(
+        /* [in] */ IView* sharedElement,
+        /* [in] */ const String& name);
+
+    /** TODO: remove this */
+    //@Override
+    CARAPI SetSharedElements(
+        /* Pair<View, String>... sharedElements*/
+        ArrayOf<IPair*>* sharedElements);
+
     virtual CARAPI SetTransitionStyle(
         /* [in] */ Int32 styleRes);
 
@@ -206,7 +226,11 @@ public:
     virtual CARAPI Run();
 
     virtual CARAPI PopFromBackStack(
-        /* [in] */ Boolean doStateMove);
+        /* [in] */ Boolean doStateMove,
+        /* [in] */ ITransitionState* state,
+        /* [in] */ ISparseArray* /*<Fragment>*/ firstOutFragments,
+        /* [in] */ ISparseArray* /*<Fragment>*/ lastInFragments,
+        /* [out] */ ITransitionState** result);
 
     virtual CARAPI GetName(
         /* [out] */ String* name);
@@ -242,6 +266,249 @@ private:
         /* [in] */ const String& tag,
         /* [in] */ Int32 opcmd);
 
+    static CARAPI_(void) SetFirstOut(
+        /* [in] */ ISparseArray* fragments, //SparseArray<Fragment>
+        /* [in] */ IFragment* fragment);
+
+    CARAPI_(void) SetLastIn(
+        /* [in] */ ISparseArray* fragments, //SparseArray<Fragment>
+        /* [in] */ IFragment* fragment);
+    /**
+     * Finds the first removed fragment and last added fragments when going forward.
+     * If none of the fragments have transitions, then both lists will be empty.
+     *
+     * @param firstOutFragments The list of first fragments to be removed, keyed on the
+     *                          container ID. This list will be modified by the method.
+     * @param lastInFragments The list of last fragments to be added, keyed on the
+     *                        container ID. This list will be modified by the method.
+     */
+    CARAPI_(void) CalculateFragments(
+        /* [in] */ ISparseArray* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ ISparseArray* lastInFragments); //SparseArray<Fragment>
+
+    /**
+     * Finds the first removed fragment and last added fragments when popping the back stack.
+     * If none of the fragments have transitions, then both lists will be empty.
+     *
+     * @param firstOutFragments The list of first fragments to be removed, keyed on the
+     *                          container ID. This list will be modified by the method.
+     * @param lastInFragments The list of last fragments to be added, keyed on the
+     *                        container ID. This list will be modified by the method.
+     */
+    CARAPI_(void) CalculateBackFragments(
+        /* [in] */ ISparseArray* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ ISparseArray* lastInFragments); //SparseArray<Fragment>
+
+    /**
+     * When custom fragment transitions are used, this sets up the state for each transition
+     * and begins the transition. A different transition is started for each fragment container
+     * and consists of up to 3 different transitions: the exit transition, a shared element
+     * transition and an enter transition.
+     *
+     * <p>The exit transition operates against the leaf nodes of the first fragment
+     * with a view that was removed. If no such fragment was removed, then no exit
+     * transition is executed. The exit transition comes from the outgoing fragment.</p>
+     *
+     * <p>The enter transition operates against the last fragment that was added. If
+     * that fragment does not have a view or no fragment was added, then no enter
+     * transition is executed. The enter transition comes from the incoming fragment.</p>
+     *
+     * <p>The shared element transition operates against all views and comes either
+     * from the outgoing fragment or the incoming fragment, depending on whether this
+     * is going forward or popping the back stack. When going forward, the incoming
+     * fragment's enter shared element transition is used, but when going back, the
+     * outgoing fragment's return shared element transition is used. Shared element
+     * transitions only operate if there is both an incoming and outgoing fragment.</p>
+     *
+     * @param firstOutFragments The list of first fragments to be removed, keyed on the
+     *                          container ID.
+     * @param lastInFragments The list of last fragments to be added, keyed on the
+     *                        container ID.
+     * @param isBack true if this is popping the back stack or false if this is a
+     *               forward operation.
+     * @return The TransitionState used to complete the operation of the transition
+     * in {@link #setNameOverrides(android.app.BackStackRecord.TransitionState, java.util.ArrayList,
+     * java.util.ArrayList)}.
+     */
+    AutoPtr<ITransitionState> BeginTransition(
+        /* [in] */ ISparseArray* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ ISparseArray* lastInFragments, //SparseArray<Fragment>
+        /* [in] */ Boolean isBack);
+
+    static AutoPtr<ITransitionState> CloneTransition(
+        /* [in] */ ITransition* transition);
+
+    static AutoPtr<ITransition> GetEnterTransition(
+        /* [in] */ IFragment* inFragment,
+        /* [in] */ Boolean isBack);
+
+    static AutoPtr<ITransition> GetExitTransition(
+        /* [in] */ IFragment* outFragment,
+        /* [in] */ Boolean isBack);
+
+    static AutoPtr<ITransition> GetSharedElementTransition(
+        /* [in] */ IFragment* inFragment,
+        /* [in] */ IFragment* outFragment,
+        /* [in] */ Boolean isBack);
+
+    static AutoPtr<IArrayList>/*<View>*/ CaptureExitingViews(
+        /* [in] */ ITransition* exitTransition,
+        /* [in] */ IFragment* outFragment,
+        /* [in] */ IArrayMap* namedViews); //  <String, View>
+
+    AutoPtr<IArrayMap>/*<String, View>*/ RemapSharedElements(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ IFragment* outFragment,
+        /* [in] */ Boolean isBack);
+
+    /**
+     * Prepares the enter transition by adding a non-existent view to the transition's target list
+     * and setting it epicenter callback. By adding a non-existent view to the target list,
+     * we can prevent any view from being targeted at the beginning of the transition.
+     * We will add to the views before the end state of the transition is captured so that the
+     * views will appear. At the start of the transition, we clear the list of targets so that
+     * we can restore the state of the transition and use it again.
+     *
+     * <p>The shared element transition maps its shared elements immediately prior to
+     * capturing the state of the Transition.</p>
+     */
+    AutoPtr<IArrayList>/*<View>*/ AddTransitionTargets(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ ITransition* enterTransition,
+        /* [in] */ ITransition* sharedElementTransition,
+        /* [in] */ ITransition* overallTransition,
+        /* [in] */ IView* container,
+        /* [in] */ IFragment* inFragment,
+        /* [in] */ IFragment* outFragment,
+        /* [in] */ IArrayList* /*<View>*/ hiddenFragmentViews,
+        /* [in] */ Boolean isBack,
+        /* [in] */ IArrayList* /*<View>*/ sharedElementTargets);
+
+    void CallSharedElementEnd(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ IFragment* inFragment,
+        /* [in] */ IFragment* outFragment,
+        /* [in] */ Boolean isBack,
+        /* [in] */ IArrayMap* /*<String, View>*/ namedViews);
+
+    void SetEpicenterIn(
+        /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
+        /* [in] */ ITransitionState* state);
+
+    AutoPtr<IArrayMap> /*<String, View>*/ MapSharedElementsIn(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ Boolean isBack,
+        /* [in] */ IFragment* inFragment);
+
+    static AutoPtr<ITransition> MergeTransitions(
+        /* [in] */ ITransition* enterTransition,
+        /* [in] */ ITransition* exitTransition,
+        /* [in] */ ITransition* sharedElementTransition,
+        /* [in] */ IFragment* inFragment,
+        /* [in] */ Boolean isBack) ;
+
+    /**
+     * Configures custom transitions for a specific fragment container.
+     *
+     * @param containerId The container ID of the fragments to configure the transition for.
+     * @param state The Transition State keeping track of the executing transitions.
+     * @param firstOutFragments The list of first fragments to be removed, keyed on the
+     *                          container ID.
+     * @param lastInFragments The list of last fragments to be added, keyed on the
+     *                        container ID.
+     * @param isBack true if this is popping the back stack or false if this is a
+     *               forward operation.
+     */
+    void ConfigureTransitions(int containerId,
+        /* [in] */ ITransitionState* state,
+        /* [in] */ Boolean isBack,
+        /* [in] */ ISparseArray* /*<Fragment>*/ firstOutFragments,
+        /* [in] */ ISparseArray* /*<Fragment>*/ lastInFragments);
+
+    /**
+     * After the transition has started, remove all targets that we added to the transitions
+     * so that the transitions are left in a clean state.
+     */
+    void RemoveTargetedViewsFromTransitions(
+        /* [in] */ IViewGroup* sceneRoot,
+        /* [in] */ IView* nonExistingView,
+        /* [in] */ ITransition* enterTransition,
+        /* [in] */ IArrayList* /*<View>*/ enteringViews,
+        /* [in] */ ITransition* exitTransition,
+        /* [in] */ IArrayList* /*<View>*/ exitingViews,
+        /* [in] */ ITransition* sharedElementTransition,
+        /* [in] */ IArrayList* /*<View>*/ sharedElementTargets,
+        /* [in] */ ITransition* overallTransition,
+        /* [in] */ IArrayList* /*<View>*/ hiddenViews);
+
+    static void RemoveTargets(
+        /* [in] */ ITransition* transition,
+        /* [in] */ IArrayList* /*<View>*/ views);
+
+    static void AddTargets(
+        /* [in] */ ITransition* transition,
+        /* [in] */ IArrayList* /*<View>*/ views);
+
+    /**
+     * Remaps a name-to-View map, substituting different names for keys.
+     *
+     * @param inMap A list of keys found in the map, in the order in toGoInMap
+     * @param toGoInMap A list of keys to use for the new map, in the order of inMap
+     * @param namedViews The current mapping
+     * @return a new Map after it has been mapped with the new names as keys.
+     */
+    static AutoPtr<IArrayMap> /*<String, View>*/ RemapNames(
+        /* [in] */ IArrayList* /* <String> */ inMap,
+        /* [in] */ IArrayList* /* <String> */ toGoInMap,
+        /* [in] */ IArrayMap* /* <String, View> */ namedViews);
+
+    /**
+     * Maps shared elements to views in the entering fragment.
+     *
+     * @param state The transition State as returned from {@link #beginTransition(
+     * android.util.SparseArray, android.util.SparseArray, boolean)}.
+     * @param inFragment The last fragment to be added.
+     * @param isBack true if this is popping the back stack or false if this is a
+     *               forward operation.
+     */
+    ArrayMap<String, View> mapEnteringSharedElements(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ IFragment* inFragment,
+        /* [in] */ Boolean isBack);
+
+    void ExcludeHiddenFragments(
+        /* [in] */ IArrayList* /* <View> */ hiddenFragmentViews,
+        /* [in] */ Int32 containerId,
+        /* [in] */ ITransition* transition);
+
+    static void SetEpicenter(
+        /* [in] */ ITransition* transition,
+        /* [in] */ IView* view);
+
+    void SetSharedElementEpicenter(
+        /* [in] */ ITransition* transition,
+        /* [in] */ ITransitionState* state);
+
+    static void SetNameOverride(
+        /* [in] */ IArrayMap* /*<String, String>*/ overrides,
+        /* [in] */ cosnt String& source,
+        /* [in] */ const String& target);
+
+    static void SetNameOverrides(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ IArrayList* /*<String>*/ sourceNames,
+        /* [in] */ IArrayList* /*<String>*/ targetNames)
+
+    void SetBackNameOverrides(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
+        /* [in] */ Boolean isEnd);
+
+    void SetNameOverrides(
+        /* [in] */ ITransitionState* state,
+        /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
+        /* [in] */ Boolean isEnd);
+
 public:
     static const String TAG;
 
@@ -275,6 +542,9 @@ public:
     AutoPtr<ICharSequence> mBreadCrumbTitleText;
     Int32 mBreadCrumbShortTitleRes;
     AutoPtr<ICharSequence> mBreadCrumbShortTitleText;
+
+    AutoPtr<IArrayList> mSharedElementSourceNames; //ArrayList<String>
+    AutoPtr<IArrayList> mSharedElementTargetNames; //ArrayList<String>
 
     friend class CBackStackState;
 };

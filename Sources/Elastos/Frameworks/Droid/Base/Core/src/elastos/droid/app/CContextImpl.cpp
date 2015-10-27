@@ -144,9 +144,13 @@ ECode CContextImpl::ApplicationContentResolver::AcquireProvider(
     /* [in] */ const String& auth,
     /* [out] */ IIContentProvider** provider)
 {
-    Int32 identifier;
-    mUser->GetIdentifier(&identifier);
-    return mMainThread->AcquireProvider(context, auth, identifier, TRUE, provider);
+    // Int32 identifier;
+    // mUser->GetIdentifier(&identifier);
+    // return mMainThread->AcquireProvider(context, auth, identifier, TRUE, provider);
+
+    return mMainThread.acquireProvider(context,
+            ContentProvider.getAuthorityWithoutUserId(auth),
+            resolveUserIdFromAuthority(auth), true);
 }
 
 ECode CContextImpl::ApplicationContentResolver::AcquireExistingProvider(
@@ -154,9 +158,13 @@ ECode CContextImpl::ApplicationContentResolver::AcquireExistingProvider(
     /* [in] */ const String& auth,
     /* [out] */ IIContentProvider** provider)
 {
-    Int32 identifier = 0;
-    mUser->GetIdentifier(&identifier);
-    return mMainThread->AcquireExistingProvider(context, auth, identifier, TRUE, provider);
+    // Int32 identifier = 0;
+    // mUser->GetIdentifier(&identifier);
+    // return mMainThread->AcquireExistingProvider(context, auth, identifier, TRUE, provider);
+
+    return mMainThread.acquireExistingProvider(context,
+            ContentProvider.getAuthorityWithoutUserId(auth),
+            resolveUserIdFromAuthority(auth), true);
 }
 
 ECode CContextImpl::ApplicationContentResolver::ReleaseProvider(
@@ -171,9 +179,12 @@ ECode CContextImpl::ApplicationContentResolver::AcquireUnstableProvider(
     /* [in] */ const String& auth,
     /* [out] */ IIContentProvider** provider)
 {
-    Int32 identifier = 0;
-    mUser->GetIdentifier(&identifier);
-    return mMainThread->AcquireProvider(c, auth, identifier, FALSE, provider);
+    // Int32 identifier = 0;
+    // mUser->GetIdentifier(&identifier);
+    // return mMainThread->AcquireProvider(c, auth, identifier, FALSE, provider);
+    return mMainThread.acquireProvider(c,
+            ContentProvider.getAuthorityWithoutUserId(auth),
+            resolveUserIdFromAuthority(auth), false);
 }
 
 ECode CContextImpl::ApplicationContentResolver::ReleaseUnstableProvider(
@@ -189,6 +200,22 @@ ECode CContextImpl::ApplicationContentResolver::UnstableProviderDied(
     return mMainThread->HandleUnstableProviderDied(IBinder::Probe(icp), TRUE);
 }
 
+ECode CContextImpl::AppNotRespondingViaProvider(
+    /* [in] */ IIContentProvider* icp)
+{
+    mMainThread->AppNotRespondingViaProvider(icp.asBinder());
+}
+
+/** @hide */
+Int32 CContextImpl::ResolveUserIdFromAuthority(
+    /* [in] */ const String& auth)
+{
+    return ContentProvider.getUserIdFromAuthority(auth, mUser.getIdentifier());
+}
+
+//==================================================================================
+// CContextImpl
+//==================================================================================
 const String CContextImpl::TAG("ContextImpl");
 const Boolean CContextImpl::DEBUG = FALSE;
 HashMap<String, AutoPtr<SharedPreferencesImpl> > CContextImpl::sSharedPrefs;
@@ -474,12 +501,41 @@ ECode CContextImpl::GetPackageName(
     /* [out] */ String* packageName)
 {
     VALIDATE_NOT_NULL(packageName);
-    *packageName = String(NULL);
 
     if (mPackageInfo != NULL) {
         return mPackageInfo->GetPackageName(packageName);
     }
-    return E_RUNTIME_EXCEPTION;
+
+    // No mPackageInfo means this is a Context for the system itself,
+    // and this here is its name.
+    *packageName = String("android");
+    return NOERROR;
+}
+
+ECode CContextImpl::GetBasePackageName(
+    /* [out] */ String* packageName)
+{
+    VALIDATE_NOT_NULL(packageName);
+
+    if (!mBasePackageName.IsNull()) {
+        *packageName = mBasePackageName;
+        return NOERROR
+    }
+
+    return GetPackageName(packageName);
+}
+
+ECode CContextImpl::GetOpPackageName(
+    /* [out] */ String* packageName)
+{
+    VALIDATE_NOT_NULL(packageName);
+
+    if (!mOpPackageName.IsNull()) {
+        *packageName = mOpPackageName;
+        return NOERROR
+    }
+
+    return GetPackageName(packageName);
 }
 
 ECode CContextImpl::GetApplicationInfo(
@@ -532,21 +588,55 @@ ECode CContextImpl::GetSharedPreferences(
 {
     VALIDATE_NOT_NULL(prefs);
 
-    AutoPtr<SharedPreferencesImpl> sp;
-    {
-        AutoLock lock(sSharedPrefsLock);
-        HashMap<String, AutoPtr<SharedPreferencesImpl> >::Iterator ator = sSharedPrefs.Find(name);
-        if (ator == sSharedPrefs.End()) {
-            AutoPtr<IFile> prefsFile;
-            GetSharedPrefsFile(name, (IFile**)&prefsFile);
-            sp = new SharedPreferencesImpl(prefsFile, mode);
-            sSharedPrefs[name] = sp;
-            *prefs = (ISharedPreferences*)sp->Probe(EIID_ISharedPreferences);
-            REFCOUNT_ADD(*prefs);
-            return NOERROR;
+    // AutoPtr<SharedPreferencesImpl> sp;
+    // {
+    //     AutoLock lock(sSharedPrefsLock);
+    //     HashMap<String, AutoPtr<SharedPreferencesImpl> >::Iterator ator = sSharedPrefs.Find(name);
+    //     if (ator == sSharedPrefs.End()) {
+    //         AutoPtr<IFile> prefsFile;
+    //         GetSharedPrefsFile(name, (IFile**)&prefsFile);
+    //         sp = new SharedPreferencesImpl(prefsFile, mode);
+    //         sSharedPrefs[name] = sp;
+    //         *prefs = (ISharedPreferences*)sp->Probe(EIID_ISharedPreferences);
+    //         REFCOUNT_ADD(*prefs);
+    //         return NOERROR;
+    //     }
+    //     sp = ator->mSecond;
+    // }
+
+    SharedPreferencesImpl sp;
+    synchronized (ContextImpl.class) {
+        if (sSharedPrefs == null) {
+            sSharedPrefs = new ArrayMap<String, ArrayMap<String, SharedPreferencesImpl>>();
         }
-        sp = ator->mSecond;
+
+        final String packageName = getPackageName();
+        ArrayMap<String, SharedPreferencesImpl> packagePrefs = sSharedPrefs.get(packageName);
+        if (packagePrefs == null) {
+            packagePrefs = new ArrayMap<String, SharedPreferencesImpl>();
+            sSharedPrefs.put(packageName, packagePrefs);
+        }
+
+        // At least one application in the world actually passes in a null
+        // name.  This happened to work because when we generated the file name
+        // we would stringify it to "null.xml".  Nice.
+        if (mPackageInfo.getApplicationInfo().targetSdkVersion <
+                Build.VERSION_CODES.KITKAT) {
+            if (name == null) {
+                name = "null";
+            }
+        }
+
+        sp = packagePrefs.get(name);
+        if (sp == null) {
+            File prefsFile = getSharedPrefsFile(name);
+            sp = new SharedPreferencesImpl(prefsFile, mode);
+            packagePrefs.put(name, sp);
+            return sp;
+        }
     }
+
+
     AutoPtr<IApplicationInfo> appInfo;
     GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 version;
@@ -620,6 +710,26 @@ ECode CContextImpl::OpenFileOutput(
     return NOERROR;
 }
 
+AutoPtr<IFile> CContextImpl::CreateFilesDirLocked(
+        /* [in] */ IFile* file)
+{
+    if (!file.exists()) {
+        if (!file.mkdirs()) {
+            if (file.exists()) {
+                // spurious failure; probably racing with another process for this app
+                return file;
+            }
+            Log.w(TAG, "Unable to create files subdir " + file.getPath());
+            return null;
+        }
+        FileUtils.setPermissions(
+                file.getPath(),
+                FileUtils.S_IRWXU|FileUtils.S_IRWXG|FileUtils.S_IXOTH,
+                -1, -1);
+    }
+    return file;
+}
+
 ECode CContextImpl::DeleteFile(
     /* [in] */ const String& name,
     /* [out] */ Boolean* succeeded)
@@ -671,65 +781,133 @@ ECode CContextImpl::GetFilesDir(
     return NOERROR;
 }
 
+ECode CContextImpl::GetNoBackupFilesDir(
+    /* [out] */ IFile** filesDir)
+{
+    // synchronized (mSync) {
+    //     if (mNoBackupFilesDir == null) {
+    //         mNoBackupFilesDir = new File(getDataDirFile(), "no_backup");
+    //     }
+    //     return createFilesDirLocked(mNoBackupFilesDir);
+    // }
+}
+
 ECode CContextImpl::GetExternalFilesDir(
     /* [in] */ const String& type,
     /* [out] */ IFile** filesDir)
 {
-    AutoLock lock(mSyncLock);
-    if (mExternalFilesDir == NULL) {
-        String packageName;
-        GetPackageName(&packageName);
-        mExternalFilesDir = Environment::GetExternalStorageAppFilesDirectory(
-                packageName);
+    VALIDATE_NOT_NULL(filesDir)
+    *filesDir = NULL;
+
+    // Operates on primary external storage
+    AutoPtr<ArrayOf<IFile*> > dirs;
+    GetExternalFilesDirs((ArrayOf<IFile*>**)&dirs);
+    if (dirs != NULL && dirs->GetLength() > 0) {
+        *filesDir = (*dirs)[0];
+        REFCOUNT_ADD(*filesDir)
     }
-    Boolean isExist;
-    if (mExternalFilesDir->Exists(&isExist), !isExist) {
-//        try {
-        AutoPtr<IFile> file;
-        CFile::New(Environment::GetExternalStorageElastosDataDir(),
-                String(".nomedia"), (IFile**)&file);
-        Boolean succeeded;
-        file->CreateNewFile(&succeeded);
-//        } catch (IOException e) {
-//        }
-        Boolean isMk;
-        if (mExternalFilesDir->Mkdirs(&isMk), !isMk) {
-            Slogger::W(TAG, "Unable to create external files directory");
-            *filesDir = NULL;
+    return NOERROR;
+}
+
+ECode CContextImpl::GetExternalFilesDirs(
+    /* [in] */ const String& type,
+    /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** filesDirs)
+{
+    synchronized (mSync) {
+        if (mExternalFilesDirs == null) {
+            mExternalFilesDirs = Environment.buildExternalStorageAppFilesDirs(getPackageName());
         }
-    }
-    if (type.IsNull()) {
-        *filesDir = mExternalFilesDir;
-        REFCOUNT_ADD(*filesDir);
-        return NOERROR;
-    }
-    AutoPtr<IFile> dir;
-    CFile::New(mExternalFilesDir, type, (IFile**)&dir);
-    Boolean dirExist;
-    if (dir->Exists(&dirExist), !dirExist) {
-        Boolean dirMks;
-        if (dir->Mkdirs(&dirMks), !dirMks) {
-            Slogger::W(TAG, "Unable to create external media directory %p", dir.Get());
-            *filesDir = NULL;
-            return NOERROR;
+
+        // Splice in requested type, if any
+        File[] dirs = mExternalFilesDirs;
+        if (type != null) {
+            dirs = Environment.buildPaths(dirs, type);
         }
+
+        // Create dirs if needed
+        return ensureDirsExistOrFilter(dirs);
     }
-    *filesDir = dir;
-    REFCOUNT_ADD(*filesDir);
+
+//     AutoLock lock(mSyncLock);
+//     if (mExternalFilesDir == NULL) {
+//         String packageName;
+//         GetPackageName(&packageName);
+//         mExternalFilesDir = Environment::GetExternalStorageAppFilesDirectory(
+//                 packageName);
+//     }
+//     Boolean isExist;
+//     if (mExternalFilesDir->Exists(&isExist), !isExist) {
+// //        try {
+//         AutoPtr<IFile> file;
+//         CFile::New(Environment::GetExternalStorageElastosDataDir(),
+//                 String(".nomedia"), (IFile**)&file);
+//         Boolean succeeded;
+//         file->CreateNewFile(&succeeded);
+// //        } catch (IOException e) {
+// //        }
+//         Boolean isMk;
+//         if (mExternalFilesDir->Mkdirs(&isMk), !isMk) {
+//             Slogger::W(TAG, "Unable to create external files directory");
+//             *filesDir = NULL;
+//         }
+//     }
+//     if (type.IsNull()) {
+//         *filesDir = mExternalFilesDir;
+//         REFCOUNT_ADD(*filesDir);
+//         return NOERROR;
+//     }
+//     AutoPtr<IFile> dir;
+//     CFile::New(mExternalFilesDir, type, (IFile**)&dir);
+//     Boolean dirExist;
+//     if (dir->Exists(&dirExist), !dirExist) {
+//         Boolean dirMks;
+//         if (dir->Mkdirs(&dirMks), !dirMks) {
+//             Slogger::W(TAG, "Unable to create external media directory %p", dir.Get());
+//             *filesDir = NULL;
+//             return NOERROR;
+//         }
+//     }
+//     *filesDir = dir;
+//     REFCOUNT_ADD(*filesDir);
     return NOERROR;
 }
 
 ECode CContextImpl::GetObbDir(
     /* [out] */ IFile** obbDir)
 {
-    AutoLock lock(mSyncLock);
-    if (mObbDir == NULL) {
-        String pkgName;
-        GetPackageName(&pkgName);
-        mObbDir = Environment::GetExternalStorageAppObbDirectory(pkgName);
+    VALIDATE_NOT_NULL(obbDir)
+    *obbDir = NULL;
+
+    // Operates on primary external storage
+    AutoPtr<ArrayOf<IFile*> > dirs;
+    GetObbDirs((ArrayOf<IFile*>**)&dirs);
+    if (dirs != NULL && dirs->GetLength() > 0) {
+        *obbDir = (*dirs)[0];
+        REFCOUNT_ADD(*filesDir)
     }
-    *obbDir = mObbDir;
-    REFCOUNT_ADD(*obbDir);
+    return NOERROR;
+}
+
+ECode CContextImpl::GetObbDirs(
+    /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
+{
+    synchronized (mSync) {
+        if (mExternalObbDirs == null) {
+            mExternalObbDirs = Environment.buildExternalStorageAppObbDirs(getPackageName());
+        }
+
+        // Create dirs if needed
+        return ensureDirsExistOrFilter(mExternalObbDirs);
+    }
+
+    // AutoLock lock(mSyncLock);
+    // if (mObbDir == NULL) {
+    //     String pkgName;
+    //     GetPackageName(&pkgName);
+    //     mObbDir = Environment::GetExternalStorageAppObbDirectory(pkgName);
+    // }
+    // *obbDir = mObbDir;
+    // REFCOUNT_ADD(*obbDir);
     return NOERROR;
 }
 
@@ -743,25 +921,28 @@ ECode CContextImpl::GetCacheDir(
             GetDataDirFile((IFile**)&file);
             CFile::New(file, String("cache"), (IFile**)&mCacheDir);
         }
-        Boolean isExist;
-        if (mCacheDir->Exists(&isExist), !isExist) {
-            Boolean isMk;
-            if(mCacheDir->Mkdirs(&isMk), !isMk) {
-                String aPath;
-                mCacheDir->GetAbsolutePath(&aPath);
-                Slogger::W(TAG, "Unable to create cache directory %s", aPath.string());
-                *cacheDir = NULL;
-                return NOERROR;
-            }
-            String path;
-            mCacheDir->GetPath(&path);
-            FileUtils::SetPermissions(
-                    path,
-                    FileUtils::sS_IRWXU|FileUtils::sS_IRWXG|FileUtils::sS_IXOTH,
-                    -1, -1);
-        }
+
+        return CreateFilesDirLocked(mCacheDir);
     }
     *cacheDir = mCacheDir;
+    REFCOUNT_ADD(*cacheDir);
+    return NOERROR;
+}
+
+ECode CContextImpl::GetCodeCacheDir(
+    /* [out] */ IFile** cacheDir)
+{
+    {
+        AutoLock lock(mSyncLock);
+        if (mCodeCacheDir == NULL) {
+            AutoPtr<IFile> file;
+            GetDataDirFile((IFile**)&file);
+            CFile::New(file, String("code_cache"), (IFile**)&mCodeCacheDir);
+        }
+
+        return CreateFilesDirLocked(mCodeCacheDir);
+    }
+    *cacheDir = mCodeCacheDir;
     REFCOUNT_ADD(*cacheDir);
     return NOERROR;
 }
@@ -769,32 +950,71 @@ ECode CContextImpl::GetCacheDir(
 ECode CContextImpl::GetExternalCacheDir(
     /* [out] */ IFile** externalDir)
 {
-    AutoLock lock(mSyncLock);
-    if (mExternalCacheDir == NULL) {
-        String pkgName;
-        GetPackageName(&pkgName);
-        mExternalCacheDir = Environment::GetExternalStorageAppCacheDirectory(
-                pkgName);
+    VALIDATE_NOT_NULL(obbDir)
+    *obbDir = NULL;
+
+    // Operates on primary external storage
+    AutoPtr<ArrayOf<IFile*> > dirs;
+    GetExternalCacheDirs((ArrayOf<IFile*>**)&dirs);
+    if (dirs != NULL && dirs->GetLength() > 0) {
+        *obbDir = (*dirs)[0];
+        REFCOUNT_ADD(*filesDir)
     }
-    Boolean isExist;
-    if (mExternalCacheDir->Exists(&isExist), !isExist) {
-//        try {
-        AutoPtr<IFile> file;
-        CFile::New(Environment::GetExternalStorageElastosDataDir(),
-                String(".nomedia"), (IFile**)&file);
-        Boolean succeeded;
-        file->CreateNewFile(&succeeded);
-//        } catch (IOException e) {
-//        }
-        Boolean isMk;
-        if (mExternalCacheDir->Mkdirs(&isMk), !isMk) {
-            Slogger::W(TAG, "Unable to create external cache directory");
-            *externalDir = NULL;
-            return NOERROR;
+    return NOERROR;
+}
+
+ECode CContextImpl::GetExternalCacheDirs(
+    /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
+{
+    synchronized (mSync) {
+        if (mExternalCacheDirs == null) {
+            mExternalCacheDirs = Environment.buildExternalStorageAppCacheDirs(getPackageName());
         }
+
+        // Create dirs if needed
+        return EnsureDirsExistOrFilter(mExternalCacheDirs);
     }
+
+//     AutoLock lock(mSyncLock);
+//     if (mExternalCacheDir == NULL) {
+//         String pkgName;
+//         GetPackageName(&pkgName);
+//         mExternalCacheDir = Environment::GetExternalStorageAppCacheDirectory(
+//                 pkgName);
+//     }
+//     Boolean isExist;
+//     if (mExternalCacheDir->Exists(&isExist), !isExist) {
+// //        try {
+//         AutoPtr<IFile> file;
+//         CFile::New(Environment::GetExternalStorageElastosDataDir(),
+//                 String(".nomedia"), (IFile**)&file);
+//         Boolean succeeded;
+//         file->CreateNewFile(&succeeded);
+// //        } catch (IOException e) {
+// //        }
+//         Boolean isMk;
+//         if (mExternalCacheDir->Mkdirs(&isMk), !isMk) {
+//             Slogger::W(TAG, "Unable to create external cache directory");
+//             *externalDir = NULL;
+//             return NOERROR;
+//         }
+//     }
     *externalDir = mExternalCacheDir;
     REFCOUNT_ADD(*externalDir);
+    return NOERROR;
+}
+
+ECode CContextImpl::GetExternalMediaDirs(
+    /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs)
+{
+    synchronized (mSync) {
+        if (mExternalMediaDirs == null) {
+            mExternalMediaDirs = Environment.buildExternalStorageAppMediaDirs(getPackageName());
+        }
+
+        // Create dirs if needed
+        return EnsureDirsExistOrFilter(mExternalMediaDirs);
+    }
     return NOERROR;
 }
 
@@ -1049,14 +1269,15 @@ ECode CContextImpl::StartActivityAsUser(
 //    try {
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
-    String type;
+    String type, packageName;
+    GetBasePackageName(&packageName);
     AutoPtr<IContentResolver> resolver;
     GetContentResolver((IContentResolver**)&resolver);
     intent->ResolveTypeIfNeeded(resolver, &type);
     Int32 id, result;
     user->GetIdentifier(&id);
     ActivityManagerNative::GetDefault()->StartActivityAsUser(
-        appThread, intent, type,
+        appThread, packageName, intent, type,
         NULL, String(NULL), 0, IIntent::FLAG_ACTIVITY_NEW_TASK, String(NULL), NULL, options,
         id, &result);
     return NOERROR;
@@ -1149,7 +1370,8 @@ ECode CContextImpl::StartIntentSender(
 //    try {
     String resolvedType = String(NULL);
     if (fillInIntent != NULL) {
-        fillInIntent->SetAllowFds(FALSE);
+        fillInIntent->MigrateExtraStreamToClipData();
+        fillInIntent->PrepareToLeaveProcess();
         AutoPtr<IContentResolver> contentResolver;
         GetContentResolver((IContentResolver**)&contentResolver);
         fillInIntent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
@@ -1180,7 +1402,7 @@ ECode CContextImpl::SendBroadcast(
     GetContentResolver((IContentResolver**)&contentResolver);
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id;
@@ -1188,7 +1410,8 @@ ECode CContextImpl::SendBroadcast(
     Int32 result;
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, NULL, IActivity::RESULT_OK,
-        String(NULL), NULL, String(NULL), FALSE, FALSE, id, &result);
+        String(NULL), NULL, String(NULL),
+        IAppOpsManager.OP_NONE, FALSE, FALSE, id, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1204,16 +1427,16 @@ ECode CContextImpl::SendBroadcast(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //     try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id;
     GetUserId(&id);
     Int32 result;
     ActivityManagerNative::GetDefault()->BroadcastIntent(
-        appThread, intent, resolvedType, NULL,
-        IActivity::RESULT_OK, String(NULL), NULL, receiverPermission, FALSE, FALSE,
-        id, &result);
+        appThread, intent, resolvedType, NULL, IActivity::RESULT_OK,
+        String(NULL), NULL, receiverPermission,
+        IAppOpsManager::OP_NONE, FALSE, FALSE, id, &result);
 //     } catch (RemoteException e) {
 //     }
     return NOERROR;
@@ -1229,7 +1452,7 @@ ECode CContextImpl::SendOrderedBroadcast(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id;
@@ -1237,8 +1460,8 @@ ECode CContextImpl::SendOrderedBroadcast(
     Int32 result;
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, NULL,
-        IActivity::RESULT_OK, String(NULL), NULL, receiverPermission, TRUE, FALSE,
-        id, &result);
+        IActivity::RESULT_OK, String(NULL), NULL, receiverPermission,
+        IAppOpsManager::OP_NONE, TRUE, FALSE,　id, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1247,6 +1470,20 @@ ECode CContextImpl::SendOrderedBroadcast(
 ECode CContextImpl::SendOrderedBroadcast(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& receiverPermission,
+    /* [in] */ IBroadcastReceiver* resultReceiver,
+    /* [in] */ IHandler* scheduler,
+    /* [in] */ Int32 initialCode,
+    /* [in] */ const String& initialData,
+    /* [in] */ IBundle* initialExtras)
+{
+    return SendOrderedBroadcast(intent, receiverPermission, IAppOpsManager::OP_NONE,
+        resultReceiver, scheduler, initialCode, initialData, initialExtras);
+}
+
+ECode CContextImpl::SendOrderedBroadcast(
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& receiverPermission,
+    /* [in] */ Int32 appOp,
     /* [in] */ IBroadcastReceiver* resultReceiver,
     /* [in] */ IHandler* scheduler,
     /* [in] */ Int32 initialCode,
@@ -1281,7 +1518,7 @@ ECode CContextImpl::SendOrderedBroadcast(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id;
@@ -1289,7 +1526,7 @@ ECode CContextImpl::SendOrderedBroadcast(
     Int32 result;
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, rd,
-        initialCode, initialData, initialExtras, receiverPermission,
+        initialCode, initialData, initialExtras, receiverPermission, appOp,
         TRUE, FALSE, id, &result);
 //    } catch (RemoteException e) {
 //    }
@@ -1305,15 +1542,15 @@ ECode CContextImpl::SendBroadcastAsUser(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-        intent->SetAllowFds(FALSE);
+        intent->PrepareToLeaveProcess();
         AutoPtr<IApplicationThread> appThread;
         mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
         Int32 identifier;
         user->GetIdentifier(&identifier);
         Int32 result;
         ActivityManagerNative::GetDefault()->BroadcastIntent(appThread,
-                intent, resolvedType, NULL, IActivity::RESULT_OK, String(NULL),
-                NULL, String(NULL), FALSE, FALSE, identifier, &result);
+            intent, resolvedType, NULL, IActivity::RESULT_OK, String(NULL),
+            NULL, String(NULL), IAppOpsManager::OP_NONE, FALSE, FALSE, identifier, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1329,7 +1566,7 @@ ECode CContextImpl::SendBroadcastAsUser(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-        intent->SetAllowFds(FALSE);
+        intent->PrepareToLeaveProcess();
         AutoPtr<IApplicationThread> appThread;
         mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
         Int32 identifier = 0;
@@ -1337,8 +1574,8 @@ ECode CContextImpl::SendBroadcastAsUser(
         Int32 result;
         ActivityManagerNative::GetDefault()->BroadcastIntent(
             appThread, intent, resolvedType, NULL,
-            IActivity::RESULT_OK, String(NULL), NULL, receiverPermission, FALSE, FALSE,
-            identifier, &result);
+            IActivity::RESULT_OK, String(NULL), NULL, receiverPermission,
+            IAppOpsManager::OP_NONE, FALSE, FALSE, identifier, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1348,6 +1585,19 @@ ECode CContextImpl::SendOrderedBroadcastAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& receiverPermission,
+    /* [in] */ IBroadcastReceiver* resultReceiver,
+    /* [in] */ IHandler* scheduler,
+    /* [in] */ Int32 initialCode,
+    /* [in] */ const String& initialData,
+    /* [in] */ IBundle* initialExtras)
+{
+}
+
+ECode CContextImpl::SendOrderedBroadcastAsUser(
+    /* [in] */ IIntent* intent,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ const String& receiverPermission,
+    /* [in] */ Int32 appOp,
     /* [in] */ IBroadcastReceiver* resultReceiver,
     /* [in] */ IHandler* scheduler,
     /* [in] */ Int32 initialCode,
@@ -1381,7 +1631,7 @@ ECode CContextImpl::SendOrderedBroadcastAsUser(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 identifier = 0;
@@ -1390,7 +1640,7 @@ ECode CContextImpl::SendOrderedBroadcastAsUser(
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, rd,
         initialCode, initialData, initialExtras, receiverPermission,
-        TRUE, FALSE, identifier, &result);
+        appOp, TRUE, FALSE, identifier, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1405,7 +1655,7 @@ ECode CContextImpl::SendStickyBroadcast(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id = 0;
@@ -1413,8 +1663,8 @@ ECode CContextImpl::SendStickyBroadcast(
     Int32 result;
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, NULL,
-        IActivity::RESULT_OK, String(NULL), NULL, String(NULL), FALSE, TRUE,
-        id, &result);
+        IActivity::RESULT_OK, String(NULL), NULL, String(NULL),
+        IAppOpsManager::OP_NONE, FALSE, TRUE, id, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1456,7 +1706,7 @@ ECode CContextImpl::SendStickyOrderedBroadcast(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id;
@@ -1465,7 +1715,7 @@ ECode CContextImpl::SendStickyOrderedBroadcast(
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, rd,
         initialCode, initialData, initialExtras, String(NULL),
-        TRUE, TRUE, id, &result);
+        IAppOpsManager::OP_NONE, TRUE, TRUE, id, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1487,7 +1737,7 @@ ECode CContextImpl::RemoveStickyBroadcast(
         intent->SetDataAndType(data, resolvedType);
     }
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 id;
@@ -1508,7 +1758,7 @@ ECode CContextImpl::SendStickyBroadcastAsUser(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-        intent->SetAllowFds(FALSE);
+        intent->PrepareToLeaveProcess();
         AutoPtr<IApplicationThread> appThread;
         mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
         Int32 identifier;
@@ -1516,7 +1766,8 @@ ECode CContextImpl::SendStickyBroadcastAsUser(
         Int32 result;
         ActivityManagerNative::GetDefault()->BroadcastIntent(
             appThread, intent, resolvedType, NULL,
-            IActivity::RESULT_OK, String(NULL), NULL, String(NULL), FALSE, TRUE, identifier, &result);
+            IActivity::RESULT_OK, String(NULL), NULL, String(NULL),
+            IAppOpsManager::OP_NONE, FALSE, TRUE, identifier, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1558,7 +1809,7 @@ ECode CContextImpl::SendStickyOrderedBroadcastAsUser(
     String resolvedType;
     intent->ResolveTypeIfNeeded(contentResolver, &resolvedType);
 //    try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     Int32 identifier;
@@ -1567,7 +1818,7 @@ ECode CContextImpl::SendStickyOrderedBroadcastAsUser(
     ActivityManagerNative::GetDefault()->BroadcastIntent(
         appThread, intent, resolvedType, rd,
         initialCode, initialData, initialExtras, String(NULL),
-        TRUE, TRUE, identifier, &result);
+        IAppOpsManager::OP_NONE, TRUE, TRUE, identifier, &result);
 //    } catch (RemoteException e) {
 //    }
     return NOERROR;
@@ -1590,7 +1841,7 @@ ECode CContextImpl::RemoveStickyBroadcastAsUser(
         intent->SetDataAndType(data, resolvedType);
     }
 //    try {
-        intent->SetAllowFds(FALSE);
+        intent->PrepareToLeaveProcess();
         AutoPtr<IApplicationThread> appThread;
         mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
         Int32 identifier;
@@ -1699,12 +1950,28 @@ ECode CContextImpl::UnregisterReceiver(
     }
 }
 
+ECode CContextImpl::ValidateServiceIntent(
+    /* [in] */ IIntent* service)
+{
+    if (service.getComponent() == null && service.getPackage() == null) {
+        if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
+            IllegalArgumentException ex = new IllegalArgumentException(
+                    "Service Intent must be explicit: " + service);
+            throw ex;
+        } else {
+            Log.w(TAG, "Implicit intents with startService are not safe: " + service
+                    + " " + Debug.getCallers(2, 3));
+        }
+    }
+    return NOERROR;
+}
+
 ECode CContextImpl::StartService(
     /* [in] */ IIntent* service,
     /* [out] */ IComponentName** name)
 {
     WarnIfCallingFromSystemProcess();
-    return StartServiceAsUser(service, mUser, name);
+    return StartServiceCommon(service, mUser, name);
 }
 
 ECode CContextImpl::StopService(
@@ -1712,10 +1979,18 @@ ECode CContextImpl::StopService(
     /* [out] */ Boolean* succeeded)
 {
     WarnIfCallingFromSystemProcess();
-    return StopServiceAsUser(service, mUser, succeeded);
+    return StopServiceCommon(service, mUser, succeeded);
 }
 
 ECode CContextImpl::StartServiceAsUser(
+    /* [in] */ IIntent* service,
+    /* [in] */ IUserHandle* user,
+    /* [out] */ IComponentName** name)
+{
+    return StartServiceCommon(service, user, name);
+}
+
+ECode CContextImpl::StartServiceCommon(
     /* [in] */ IIntent* service,
     /* [in] */ IUserHandle* user,
     /* [out] */ IComponentName** name)
@@ -1763,6 +2038,14 @@ ECode CContextImpl::StopServiceAsUser(
     /* [in] */ IUserHandle* user,
     /* [out] */ Boolean* succeeded)
 {
+    return StopServiceCommon(service, user, succeeded);
+}
+
+ECode CContextImpl::StopServiceCommon(
+    /* [in] */ IIntent* service,
+    /* [in] */ IUserHandle* user,
+    /* [out] */ Boolean* succeeded)
+{
     VALIDATE_NOT_NULL(succeeded);
     *succeeded = FALSE;
     VALIDATE_NOT_NULL(user);
@@ -1801,14 +2084,24 @@ ECode CContextImpl::BindService(
     /* [out] */ Boolean* succeeded)
 {
     WarnIfCallingFromSystemProcess();
-    return BindService(service, conn, flags, UserHandle::GetUserId(Process::MyUid()), succeeded);
+    return BindServiceCommon(service, conn, flags, Process::MyUserHandle(), succeeded);
 }
 
-ECode CContextImpl::BindService(
+ECode CContextImpl::BindServiceAsUser(
     /* [in] */ IIntent* service,
     /* [in] */ IServiceConnection* conn,
     /* [in] */ Int32 flags,
-    /* [in] */ Int32 userHandle,
+    /* [in] */ IUserHandle* userHandle,
+    /* [out] */ Boolean* succeeded)
+{
+    return BindServiceCommon(service, conn, flags, userHandle, succeeded);
+}
+
+ECode CContextImpl::BindServiceCommon(
+    /* [in] */ IIntent* service,
+    /* [in] */ IServiceConnection* conn,
+    /* [in] */ Int32 flags,
+    /* [in] */ IUserHandle* user,
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded);
@@ -1830,6 +2123,9 @@ ECode CContextImpl::BindService(
 //        throw new RuntimeException("Not supported in system context");
         return E_RUNTIME_EXCEPTION;
     }
+
+    FAIL_RETURN(ValidateServiceIntent(service))
+
 //    try {
     AutoPtr<IBinder> token = GetActivityToken();
     AutoPtr<IApplicationInfo> appInfo;
@@ -1840,17 +2136,18 @@ ECode CContextImpl::BindService(
            && version < Elastos::Droid::Os::Build::VERSION_CODES::ICE_CREAM_SANDWICH) {
        flags |= BIND_WAIVE_PRIORITY;
     }
-    service->SetAllowFds(FALSE);
+
+    service->PrepareToLeaveProcess();
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     AutoPtr<IContentResolver> cResolver;
     GetContentResolver((IContentResolver**)&cResolver);
     String type;
     service->ResolveTypeIfNeeded(cResolver, &type);
-    Int32 res;
+    Int32 res, id;
+    user->GetIdentifier(&id);
     ActivityManagerNative::GetDefault()->BindService(
-        appThread, GetActivityToken(),
-        service, type, sd, flags, userHandle, &res);
+        appThread, GetActivityToken(), service, type, sd, flags, id, &res);
     if (res < 0) {
         String info;
         service->ToString(&info);
@@ -1907,7 +2204,8 @@ ECode CContextImpl::StartInstrumentation(
     Int32 id;
     GetUserId(&id);
     return ActivityManagerNative::GetDefault()->StartInstrumentation(
-            className, profileFile, 0, arguments, NULL, id, succeeded);
+            className, profileFile, 0, arguments, NULL, NULL, id,
+            NULL /* ABI override */, succeeded);
 //    } catch (RemoteException e) {
 //        // System has crashed, nothing we can do.
 //    }
@@ -2057,10 +2355,6 @@ ECode CContextImpl::GetSystemService(
         AutoPtr<IContext> ctx = GetOuterContext();
         return CDisplayManager::New(ctx, (IDisplayManager**)object);
     }
-    else if (IContext::THROTTLE_SERVICE.Equals(name)) {
-        Slogger::E(TAG, " >>> TODO: Service %s is not ready!", name.string());
-        return E_NOT_IMPLEMENTED;
-    }
     else if (IContext::WIFI_SERVICE.Equals(name)) {
         AutoLock lock(mCacheLock);
 
@@ -2088,6 +2382,25 @@ ECode CContextImpl::GetSystemService(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+    else if (IContext::WIFI_SCANNING_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+//     public Object createService(ContextImpl ctx) {
+//         IBinder b = ServiceManager.getService(WIFI_SCANNING_SERVICE);
+//         IWifiScanner service = IWifiScanner.Stub.asInterface(b);
+//         return new WifiScanner(ctx.getOuterContext(), service);
+//     }});
+        return NOERROR;
+    }
+    else if (IContext::WIFI_RTT_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+//     public Object createService(ContextImpl ctx) {
+//         IBinder b = ServiceManager.getService(WIFI_RTT_SERVICE);
+//         IRttManager service = IRttManager.Stub.asInterface(b);
+//         return new RttManager(ctx.getOuterContext(), service);
+//     }});
+        return NOERROR;
+    }
+
     else if (IContext::NOTIFICATION_SERVICE.Equals(name)) {
         AutoLock lock(mCacheLock);
 
@@ -2100,7 +2413,7 @@ ECode CContextImpl::GetSystemService(
             version,
             R::style::Theme_Dialog,
             R::style::Theme_Holo_Dialog,
-            R::style::Theme_DeviceDefault_Dialog);
+            R::style::Theme_DeviceDefault_Light_Dialog);
         AutoPtr<IContextThemeWrapper> wrapper;
         CContextThemeWrapper::New(ctx, value, (IContextThemeWrapper**)&wrapper);
         *object = new NotificationManager(wrapper, mMainThread->GetHandler());
@@ -2126,6 +2439,44 @@ ECode CContextImpl::GetSystemService(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+
+    else if (IContext::CAPTIONING_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+        // public Object getService(ContextImpl ctx) {
+        //     return new CaptioningManager(ctx);
+        // }});
+        return NOERROR;
+    }
+    else if (IContext::BLUETOOTH_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+        // public Object createService(ContextImpl ctx) {
+        //     return new BluetoothManager(ctx);
+        // }});
+        return NOERROR;
+    }
+    else if (IContext::HDMI_CONTROL_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+        // public Object createStaticService() {
+        //     IBinder b = ServiceManager.getService(HDMI_CONTROL_SERVICE);
+        //     return new HdmiControlManager(IHdmiControlService.Stub.asInterface(b));
+        // }});
+        return NOERROR;
+    }
+    else if (IContext::BATTERY_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+        // public Object createService(ContextImpl ctx) {
+        //     return new BatteryManager();
+        // }});
+        return NOERROR;
+    }
+    else if (IContext::TELECOM_SERVICE.Equals(name)) {
+        assert(0 && "TODO");
+        // public Object createService(ContextImpl ctx) {
+        //     return new TelecomManager(ctx.getOuterContext());
+        // }});
+        return NOERROR;
+    }
+
     else if (IContext::LOCATION_SERVICE.Equals(name)) {
         AutoLock lock(mCacheLock);
         AutoPtr<IILocationManager> locationManager;
@@ -2164,8 +2515,10 @@ ECode CContextImpl::GetSystemService(
         // try {
         AutoPtr<ILooper> looper;
         mMainThread->GetHandler()->GetLooper((ILooper**)&looper);
+        AutoPtr<IContentResolver> cr;
+        GetContentResolver((IContentResolver**)&cr);
         AutoPtr<IStorageManager> sManager;
-        CStorageManager::New(looper, (IStorageManager**)&sManager);
+        CStorageManager::New(cr, looper, (IStorageManager**)&sManager);
         assert(sManager != NULL);
         *object = sManager.Get();
         mServiceCache[name] = *object;
@@ -2321,6 +2674,124 @@ ECode CContextImpl::GetSystemService(
         REFCOUNT_ADD(*object);
         return NOERROR;
     }
+
+
+    // registerService(APP_OPS_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(APP_OPS_SERVICE);
+    //         IAppOpsService service = IAppOpsService.Stub.asInterface(b);
+    //         return new AppOpsManager(ctx, service);
+    //     }});
+
+    // registerService(CAMERA_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         return new CameraManager(ctx);
+    //     }
+    // });
+
+    // registerService(LAUNCHER_APPS_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(LAUNCHER_APPS_SERVICE);
+    //         ILauncherApps service = ILauncherApps.Stub.asInterface(b);
+    //         return new LauncherApps(ctx, service);
+    //     }
+    // });
+
+    // registerService(RESTRICTIONS_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(RESTRICTIONS_SERVICE);
+    //         IRestrictionsManager service = IRestrictionsManager.Stub.asInterface(b);
+    //         return new RestrictionsManager(ctx, service);
+    //     }
+    // });
+    // registerService(PRINT_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder iBinder = ServiceManager.getService(Context.PRINT_SERVICE);
+    //         IPrintManager service = IPrintManager.Stub.asInterface(iBinder);
+    //         return new PrintManager(ctx.getOuterContext(), service, UserHandle.myUserId(),
+    //                 UserHandle.getAppId(Process.myUid()));
+    //     }});
+
+    // registerService(CONSUMER_IR_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         return new ConsumerIrManager(ctx);
+    //     }});
+
+    // registerService(MEDIA_SESSION_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         return new MediaSessionManager(ctx);
+    //     }
+    // });
+
+    // registerService(TRUST_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(TRUST_SERVICE);
+    //         return new TrustManager(b);
+    //     }
+    // });
+
+    // registerService(FINGERPRINT_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder binder = ServiceManager.getService(FINGERPRINT_SERVICE);
+    //         IFingerprintService service = IFingerprintService.Stub.asInterface(binder);
+    //         return new FingerprintManager(ctx.getOuterContext(), service);
+    //     }
+    // });
+
+    // registerService(TV_INPUT_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder iBinder = ServiceManager.getService(TV_INPUT_SERVICE);
+    //         ITvInputManager service = ITvInputManager.Stub.asInterface(iBinder);
+    //         return new TvInputManager(service, UserHandle.myUserId());
+    //     }
+    // });
+
+    // registerService(NETWORK_SCORE_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         return new NetworkScoreManager(ctx);
+    //     }
+    // });
+
+    // registerService(USAGE_STATS_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder iBinder = ServiceManager.getService(USAGE_STATS_SERVICE);
+    //         IUsageStatsManager service = IUsageStatsManager.Stub.asInterface(iBinder);
+    //         return new UsageStatsManager(ctx.getOuterContext(), service);
+    //     }
+    // });
+
+    // registerService(JOB_SCHEDULER_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(JOB_SCHEDULER_SERVICE);
+    //         return new JobSchedulerImpl(IJobScheduler.Stub.asInterface(b));
+    // }});
+
+    // registerService(PERSISTENT_DATA_BLOCK_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(PERSISTENT_DATA_BLOCK_SERVICE);
+    //         IPersistentDataBlockService persistentDataBlockService =
+    //                 IPersistentDataBlockService.Stub.asInterface(b);
+    //         if (persistentDataBlockService != null) {
+    //             return new PersistentDataBlockManager(persistentDataBlockService);
+    //         } else {
+    //             // not supported
+    //             return null;
+    //         }
+    //     }
+    // });
+
+    // registerService(MEDIA_PROJECTION_SERVICE, new ServiceFetcher() {
+    //         public Object createService(ContextImpl ctx) {
+    //             return new MediaProjectionManager(ctx);
+    //         }
+    // });
+
+    // registerService(APPWIDGET_SERVICE, new ServiceFetcher() {
+    //     public Object createService(ContextImpl ctx) {
+    //         IBinder b = ServiceManager.getService(APPWIDGET_SERVICE);
+    //         return new AppWidgetManager(ctx, IAppWidgetService.Stub.asInterface(b));
+    //     }});
+
     return NOERROR;
 }
 
@@ -2488,8 +2959,8 @@ ECode CContextImpl::GrantUriPermission(
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
     return ActivityManagerNative::GetDefault()->GrantUriPermission(
-            appThread, toPackage, uri,
-            modeFlags);
+        appThread, toPackage,
+        ContentProvider::GetUriWithoutUserId(uri), modeFlags, ResolveUserId(uri));
 //    } catch (RemoteException e) {
 //    }
 }
@@ -2501,9 +2972,8 @@ ECode CContextImpl::RevokeUriPermission(
 //     try {
     AutoPtr<IApplicationThread> appThread;
     mMainThread->GetApplicationThread((IApplicationThread**)&appThread);
-    return ActivityManagerNative::GetDefault()->RevokeUriPermission(
-            appThread, uri,
-            modeFlags);
+    return ActivityManagerNative::GetDefault()->RevokeUriPermission(appThread,
+        ContentProvider::GetUriWithoutUserId(uri), modeFlags, ResolveUserId(uri));
 //    } catch (RemoteException e) {
 //    }
 }
@@ -2517,10 +2987,17 @@ ECode CContextImpl::CheckUriPermission(
 {
 //    try {
     return ActivityManagerNative::GetDefault()->CheckUriPermission(
-            uri, pid, uid, modeFlags, result);
+        ContentProvider.getUriWithoutUserId(uri), pid, uid, modeFlags,
+        resolveUserId(uri));
 //    } catch (RemoteException e) {
 //        return PackageManager.PERMISSION_DENIED;
 //    }
+}
+
+Int32 CContextImpl::ResolveUserId(
+    /* [in] */ IUri* uri)
+{
+    return ContentProvider::GetUserIdFromUri(uri, getUserId());
 }
 
 ECode CContextImpl::CheckCallingUriPermission(
@@ -2600,18 +3077,39 @@ ECode CContextImpl::UriModeFlagToString(
     VALIDATE_NOT_NULL(mode);
     *mode = String(NULL);
 
-    switch (uriModeFlags) {
-        case IIntent::FLAG_GRANT_READ_URI_PERMISSION |
-                IIntent::FLAG_GRANT_WRITE_URI_PERMISSION:
-            *mode = String("read and write");
-            return NOERROR;
-        case IIntent::FLAG_GRANT_READ_URI_PERMISSION:
-            *mode = String("read");
-            return NOERROR;
-        case IIntent::FLAG_GRANT_WRITE_URI_PERMISSION:
-            *mode = String("write");
-            return NOERROR;
+    StringBuilder builder = new StringBuilder();
+    if ((uriModeFlags & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0) {
+        builder.append("read and ");
     }
+    if ((uriModeFlags & Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0) {
+        builder.append("write and ");
+    }
+    if ((uriModeFlags & Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION) != 0) {
+        builder.append("persistable and ");
+    }
+    if ((uriModeFlags & Intent.FLAG_GRANT_PREFIX_URI_PERMISSION) != 0) {
+        builder.append("prefix and ");
+    }
+
+    if (builder.length() > 5) {
+        builder.setLength(builder.length() - 5);
+        return builder.toString();
+    } else {
+        throw new IllegalArgumentException("Unknown permission mode flags: " + uriModeFlags);
+    }
+
+    // switch (uriModeFlags) {
+    //     case IIntent::FLAG_GRANT_READ_URI_PERMISSION |
+    //             IIntent::FLAG_GRANT_WRITE_URI_PERMISSION:
+    //         *mode = String("read and write");
+    //         return NOERROR;
+    //     case IIntent::FLAG_GRANT_READ_URI_PERMISSION:
+    //         *mode = String("read");
+    //         return NOERROR;
+    //     case IIntent::FLAG_GRANT_WRITE_URI_PERMISSION:
+    //         *mode = String("write");
+    //         return NOERROR;
+    // }
 //     throw new IllegalArgumentException(
 //             "Unknown permission mode flags: " + uriModeFlags);
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -2714,6 +3212,28 @@ void CContextImpl::WarnIfCallingFromSystemProcess()
     }
 }
 
+ECode CContextImpl::CreateApplicationContext(
+    /* [in] */ IApplicationInfo* application,
+    /* [in] */ Int32 flags,
+    /* [out] */ IContext** ctx)
+{
+    LoadedPkg pi = mMainThread.getPackageInfo(application, mResources.getCompatibilityInfo(),
+            flags | CONTEXT_REGISTER_PACKAGE);
+    if (pi != null) {
+        final boolean restricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
+        ContextImpl c = new ContextImpl(this, mMainThread, pi, mActivityToken,
+                new UserHandle(UserHandle.getUserId(application.uid)), restricted,
+                mDisplay, mOverrideConfiguration);
+        if (c.mResources != null) {
+            return c;
+        }
+    }
+
+    throw new PackageManager.NameNotFoundException(
+            "Application package " + application.packageName + " not found");
+    return NOERROR;
+}
+
 ECode CContextImpl::CreatePackageContext(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 flags,
@@ -2734,36 +3254,56 @@ ECode CContextImpl::CreatePackageContextAsUser(
     VALIDATE_NOT_NULL(ctx);
     *ctx = NULL;
 
-    if (packageName.Equals("system") || packageName.Equals("android")) {
-        AutoPtr<CContextImpl> sysContext;
-        mMainThread->GetSystemContext((IContextImpl**)&sysContext);
-        AutoPtr<CContextImpl> context;
-        CContextImpl::New(sysContext, (IContextImpl**)&context);
-        context->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
-        context->Init(mPackageInfo, NULL, mMainThread, mResources, mBasePackageName, user);
-        *ctx = context;
-        REFCOUNT_ADD(*ctx);
-        return NOERROR;
+    final boolean restricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
+    if (packageName.equals("system") || packageName.equals("android")) {
+        return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
+                user, restricted, mDisplay, mOverrideConfiguration);
     }
 
-    Int32 identifier = 0;
-    user->GetIdentifier(&identifier);
-    AutoPtr<ICompatibilityInfo> comInfo;
-    mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
-    AutoPtr<LoadedPkg> pi =
-        mMainThread->GetPackageInfo(packageName, (CCompatibilityInfo*)comInfo.Get(), flags,
-                identifier);
-    if (pi != NULL) {
-        AutoPtr<CContextImpl> c;
-        CContextImpl::New((IContextImpl**)&c);
-        c->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
-        c->Init(pi, NULL, mMainThread, mResources, mBasePackageName, user);
-        if (c->mResources != NULL) {
-            *ctx = c;
-            REFCOUNT_ADD(*ctx);
-            return NOERROR;
+    LoadedPkg pi = mMainThread.getPackageInfo(packageName, mResources.getCompatibilityInfo(),
+            flags | CONTEXT_REGISTER_PACKAGE, user.getIdentifier());
+    if (pi != null) {
+        ContextImpl c = new ContextImpl(this, mMainThread, pi, mActivityToken,
+                user, restricted, mDisplay, mOverrideConfiguration);
+        if (c.mResources != null) {
+            return c;
         }
     }
+
+    // Should be a better exception.
+    throw new PackageManager.NameNotFoundException(
+            "Application package " + packageName + " not found");
+
+    // if (packageName.Equals("system") || packageName.Equals("android")) {
+    //     AutoPtr<CContextImpl> sysContext;
+    //     mMainThread->GetSystemContext((IContextImpl**)&sysContext);
+    //     AutoPtr<CContextImpl> context;
+    //     CContextImpl::New(sysContext, (IContextImpl**)&context);
+    //     context->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
+    //     context->Init(mPackageInfo, NULL, mMainThread, mResources, mBasePackageName, user);
+    //     *ctx = context;
+    //     REFCOUNT_ADD(*ctx);
+    //     return NOERROR;
+    // }
+
+    // Int32 identifier = 0;
+    // user->GetIdentifier(&identifier);
+    // AutoPtr<ICompatibilityInfo> comInfo;
+    // mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
+    // AutoPtr<LoadedPkg> pi =
+    //     mMainThread->GetPackageInfo(packageName, (CCompatibilityInfo*)comInfo.Get(), flags,
+    //             identifier);
+    // if (pi != NULL) {
+    //     AutoPtr<CContextImpl> c;
+    //     CContextImpl::New((IContextImpl**)&c);
+    //     c->mRestricted = (flags & CONTEXT_RESTRICTED) == CONTEXT_RESTRICTED;
+    //     c->Init(pi, NULL, mMainThread, mResources, mBasePackageName, user);
+    //     if (c->mResources != NULL) {
+    //         *ctx = c;
+    //         REFCOUNT_ADD(*ctx);
+    //         return NOERROR;
+    //     }
+    // }
 
     // Should be a better exception.
 //    throw new PackageManager.NameNotFoundException(
@@ -2784,17 +3324,21 @@ ECode CContextImpl::CreateConfigurationContext(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<CContextImpl> c;
-    CContextImpl::New((IContextImpl**)&c);
-    c->Init(mPackageInfo, NULL, mMainThread);
-    String resDir;
-    mPackageInfo->GetResDir(&resDir);
-    AutoPtr<ICompatibilityInfo> comInfo;
-    mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
-    c->mResources = NULL;
-    mMainThread->GetTopLevelResources(
-            resDir, GetDisplayId(), overrideConfiguration,
-            (CCompatibilityInfo*)comInfo.Get(), (IResources**)&c->mResources);
+    return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
+            mUser, mRestricted, mDisplay, overrideConfiguration);
+
+//     AutoPtr<CContextImpl> c;
+//     CContextImpl::New((IContextImpl**)&c);
+//     c->Init(mPackageInfo, NULL, mMainThread);
+//     String resDir;
+//     mPackageInfo->GetResDir(&resDir);
+//     AutoPtr<ICompatibilityInfo> comInfo;
+//     mResources->GetCompatibilityInfo((ICompatibilityInfo**)&comInfo);
+//     c->mResources = NULL;
+//     mMainThread->GetTopLevelResources(
+//             resDir, GetDisplayId(), overrideConfiguration,
+//             (CCompatibilityInfo*)comInfo.Get(), (IResources**)&c->mResources);
+
     *ctx = c;
     REFCOUNT_ADD(*ctx);
     return NOERROR;
@@ -2813,26 +3357,30 @@ ECode CContextImpl::CreateDisplayContext(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 displayId;
-    display->GetDisplayId(&displayId);
-    AutoPtr<ICompatibilityInfo> ci = CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO;
-    AutoPtr<ICompatibilityInfoHolder> cih;
-    GetCompatibilityInfo(displayId, (ICompatibilityInfoHolder**)&cih);
-    if (cih != NULL) {
-        ci = NULL;
-        cih->Get((ICompatibilityInfo**)&ci);
-    }
+    return new ContextImpl(this, mMainThread, mPackageInfo, mActivityToken,
+            mUser, mRestricted, display, mOverrideConfiguration);
 
-    AutoPtr<CContextImpl> context;
-    CContextImpl::New((IContextImpl**)&context);
-    context->Init(mPackageInfo, NULL, mMainThread);
-    context->mDisplay = display;
-    String resDir;
-    mPackageInfo->GetResDir(&resDir);
-    context->mResources = NULL;
-    mMainThread->GetTopLevelResources(
-            resDir, displayId, NULL, (CCompatibilityInfo*)ci.Get()
-            , (IResources**)&context->mResources);
+    // Int32 displayId;
+    // display->GetDisplayId(&displayId);
+    // AutoPtr<ICompatibilityInfo> ci = CCompatibilityInfo::DEFAULT_COMPATIBILITY_INFO;
+    // AutoPtr<ICompatibilityInfoHolder> cih;
+    // GetCompatibilityInfo(displayId, (ICompatibilityInfoHolder**)&cih);
+    // if (cih != NULL) {
+    //     ci = NULL;
+    //     cih->Get((ICompatibilityInfo**)&ci);
+    // }
+
+    // AutoPtr<CContextImpl> context;
+    // CContextImpl::New((IContextImpl**)&context);
+    // context->Init(mPackageInfo, NULL, mMainThread);
+    // context->mDisplay = display;
+    // String resDir;
+    // mPackageInfo->GetResDir(&resDir);
+    // context->mResources = NULL;
+    // mMainThread->GetTopLevelResources(
+    //         resDir, displayId, NULL, (CCompatibilityInfo*)ci.Get()
+    //         , (IResources**)&context->mResources);
+
     *ctx = context;
     REFCOUNT_ADD(*ctx);
     return NOERROR;
@@ -2855,97 +3403,190 @@ ECode CContextImpl::IsRestricted(
     return NOERROR;
 }
 
-ECode CContextImpl::GetCompatibilityInfo(
+ECode CContextImpl::GetDisplayAdjustments(
     /* [in] */ Int32 displayId,
-    /* [out] */ ICompatibilityInfoHolder** infoHolder)
+    /* [out] */ IDisplayAdjustments** das)
 {
-    VALIDATE_NOT_NULL(infoHolder);
-    *infoHolder = NULL;
-
-    if (displayId == IDisplay::DEFAULT_DISPLAY) {
-        *infoHolder = mPackageInfo->mCompatibilityInfo;
-        REFCOUNT_ADD(*infoHolder);
-    }
-
+    VALIDATE_NOT_NULL(das);
+    *das = mDisplayAdjustments;
+    REFCOUNT_ADD(*das)
     return NOERROR;
 }
 
 AutoPtr<CContextImpl> CContextImpl::CreateSystemContext(
     /* [in] */ IActivityThread* mainThread)
 {
-    AutoPtr<CContextImpl> context;
-    ASSERT_SUCCEEDED(CContextImpl::NewByFriend((CContextImpl**)&context));
-    AutoPtr<IUserHandle> user;
-    Process::MyUserHandle((IUserHandle**)&user);
-    context->Init(CResources::GetSystem(), (CActivityThread*)mainThread, user);
+    // AutoPtr<CContextImpl> context;
+    // ASSERT_SUCCEEDED(CContextImpl::NewByFriend((CContextImpl**)&context));
+    // AutoPtr<IUserHandle> user;
+    // Process::MyUserHandle((IUserHandle**)&user);
+    // context->Init(CResources::GetSystem(), (CActivityThread*)mainThread, user);
+    // return context;
+
+    LoadedPkg packageInfo = new LoadedPkg(mainThread);
+    ContextImpl context = new ContextImpl(null, mainThread,
+            packageInfo, null, null, false, null, null);
+    context.mResources.updateConfiguration(context.mResourcesManager.getConfiguration(),
+            context.mResourcesManager.getDisplayMetricsLocked(Display.DEFAULT_DISPLAY));
     return context;
 }
 
-ECode CContextImpl::Init(
-    /* [in] */ LoadedPkg* packageInfo,
-    /* [in] */ IBinder* activityToken,
-    /* [in] */ CActivityThread* mainThread)
- {
-    AutoPtr<IUserHandle> userHandle;
-    Process::MyUserHandle((IUserHandle**)&userHandle);
-    return Init(packageInfo, activityToken, mainThread, NULL, String(NULL), userHandle);
+AutoPtr<CContextImpl> CContextImpl::CreateActivityContext(
+    /* [in] */ IActivityThread* mainThread,
+     /* [in] */ LoadedPkg* packageInfo,
+     /* [in] */ IBinder* activityToken)
+{
+    if (packageInfo == null) throw new IllegalArgumentException("packageInfo");
+    if (activityToken == null) throw new IllegalArgumentException("activityInfo");
+    return new ContextImpl(null, mainThread,
+            packageInfo, activityToken, null, false, null, null);
 }
 
-ECode CContextImpl::Init(
-    /* [in] */ LoadedPkg* packageInfo,
+ECode CContextImpl::constructor(
+    /* [in]*/ IContextImpl* container,
+    /* [in] */ IActivityThread* mainThread,
+    /* [in] */ LoadedPkg packageInfo,
     /* [in] */ IBinder* activityToken,
-    /* [in] */ CActivityThread* mainThread,
-    /* [in] */ IResources* container,
-    /* [in] */ const String& basePackageName,
-    /* [in] */ IUserHandle* user)
+    /* [in] */ IUserHandle* user,
+    /* [in] */ Boolean restricted,
+    /* [in] */ IDisplay* display,
+    /* [in] */ IConfiguration* overrideConfiguration)
 {
-    mPackageInfo = packageInfo;
-    mBasePackageName = !basePackageName.IsNull() ? basePackageName : packageInfo->mPackageName;
-    mPackageInfo->GetResources(mainThread, (IResources**)&mResources);
-
-    if (mResources != NULL && container != NULL) {
-        AutoPtr<ICompatibilityInfo> ci,rci;
-        Float as, ras;
-        container->GetCompatibilityInfo((ICompatibilityInfo**)&ci);
-        ci->GetApplicationScale(&as);
-        mResources->GetCompatibilityInfo((ICompatibilityInfo**)&rci);
-        rci->GetApplicationScale(&ras);
-        if (as != ras) {
-            if (DEBUG) {
-                AutoPtr<IDisplayMetrics> dm;
-                container->GetDisplayMetrics((IDisplayMetrics**)&dm);
-                String displayMetrics;
-                IObject::Probe(dm.Get())->ToString(&displayMetrics);
-                Slogger::D(TAG, "loaded context has different scaling. Using container's"
-                    " compatiblity info: %s", displayMetrics.string());
-            }
-            String dir;
-            mPackageInfo->GetResDir(&dir);
-            mResources = NULL;
-            mainThread->GetTopLevelResources(dir, IDisplay::DEFAULT_DISPLAY,
-                NULL, (CCompatibilityInfo*)ci.Get(), (IResources**)&mResources);
-        }
-    }
+    mOuterContext = this;
 
     mMainThread = mainThread;
     mActivityToken = activityToken;
-    mContentResolver = new ApplicationContentResolver(this, mainThread, user);
+    mRestricted = restricted;
+
+    if (user == null) {
+        user = Process.myUserHandle();
+    }
     mUser = user;
-    return NOERROR;
+
+    mPackageInfo = packageInfo;
+    mResourcesManager = ResourcesManager.getInstance();
+    mDisplay = display;
+    mOverrideConfiguration = overrideConfiguration;
+
+    final int displayId = getDisplayId();
+    CompatibilityInfo compatInfo = null;
+    if (container != null) {
+        compatInfo = container.getDisplayAdjustments(displayId).getCompatibilityInfo();
+    }
+    if (compatInfo == null && displayId == Display.DEFAULT_DISPLAY) {
+        compatInfo = packageInfo.getCompatibilityInfo();
+    }
+    mDisplayAdjustments.setCompatibilityInfo(compatInfo);
+    mDisplayAdjustments.setActivityToken(activityToken);
+
+    Resources resources = packageInfo.getResources(mainThread);
+    if (resources != null) {
+        if (activityToken != null
+                || displayId != Display.DEFAULT_DISPLAY
+                || overrideConfiguration != null
+                || (compatInfo != null && compatInfo.applicationScale
+                        != resources.getCompatibilityInfo().applicationScale)) {
+            resources = mResourcesManager.getTopLevelResources(packageInfo.getResDir(),
+                    packageInfo.getSplitResDirs(), packageInfo.getOverlayDirs(),
+                    packageInfo.getApplicationInfo().sharedLibraryFiles, displayId,
+                    overrideConfiguration, compatInfo, activityToken);
+        }
+    }
+    mResources = resources;
+
+    if (container != null) {
+        mBasePackageName = container.mBasePackageName;
+        mOpPackageName = container.mOpPackageName;
+    } else {
+        mBasePackageName = packageInfo.mPackageName;
+        ApplicationInfo ainfo = packageInfo.getApplicationInfo();
+        if (ainfo.uid == Process.SYSTEM_UID && ainfo.uid != Process.myUid()) {
+            // Special case: system components allow themselves to be loaded in to other
+            // processes.  For purposes of app ops, we must then consider the context as
+            // belonging to the package of this process, not the system itself, otherwise
+            // the package+uid verifications in app ops will fail.
+            mOpPackageName = ActivityThread.currentPackageName();
+        } else {
+            mOpPackageName = mBasePackageName;
+        }
+    }
+
+    mContentResolver = new ApplicationContentResolver(this, mainThread, user);
 }
 
-ECode CContextImpl::Init(
-    /* [in] */ IResources* resources,
-    /* [in] */ CActivityThread* mainThread,
-    /* [in] */ IUserHandle* user)
+// ECode CContextImpl::constructor(
+//     /* [in] */ LoadedPkg* packageInfo,
+//     /* [in] */ IBinder* activityToken,
+//     /* [in] */ CActivityThread* mainThread)
+//  {
+//     AutoPtr<IUserHandle> userHandle;
+//     Process::MyUserHandle((IUserHandle**)&userHandle);
+//     return Init(packageInfo, activityToken, mainThread, NULL, String(NULL), userHandle);
+// }
+
+// ECode CContextImpl::constructor(
+//     /* [in] */ LoadedPkg* packageInfo,
+//     /* [in] */ IBinder* activityToken,
+//     /* [in] */ CActivityThread* mainThread,
+//     /* [in] */ IResources* container,
+//     /* [in] */ const String& basePackageName,
+//     /* [in] */ IUserHandle* user)
+// {
+//     mPackageInfo = packageInfo;
+//     mBasePackageName = !basePackageName.IsNull() ? basePackageName : packageInfo->mPackageName;
+//     mPackageInfo->GetResources(mainThread, (IResources**)&mResources);
+
+//     if (mResources != NULL && container != NULL) {
+//         AutoPtr<ICompatibilityInfo> ci,rci;
+//         Float as, ras;
+//         container->GetCompatibilityInfo((ICompatibilityInfo**)&ci);
+//         ci->GetApplicationScale(&as);
+//         mResources->GetCompatibilityInfo((ICompatibilityInfo**)&rci);
+//         rci->GetApplicationScale(&ras);
+//         if (as != ras) {
+//             if (DEBUG) {
+//                 AutoPtr<IDisplayMetrics> dm;
+//                 container->GetDisplayMetrics((IDisplayMetrics**)&dm);
+//                 String displayMetrics;
+//                 IObject::Probe(dm.Get())->ToString(&displayMetrics);
+//                 Slogger::D(TAG, "loaded context has different scaling. Using container's"
+//                     " compatiblity info: %s", displayMetrics.string());
+//             }
+//             String dir;
+//             mPackageInfo->GetResDir(&dir);
+//             mResources = NULL;
+//             mainThread->GetTopLevelResources(dir, IDisplay::DEFAULT_DISPLAY,
+//                 NULL, (CCompatibilityInfo*)ci.Get(), (IResources**)&mResources);
+//         }
+//     }
+
+//     mMainThread = mainThread;
+//     mActivityToken = activityToken;
+//     mContentResolver = new ApplicationContentResolver(this, mainThread, user);
+//     mUser = user;
+//     return NOERROR;
+// }
+
+// ECode CContextImpl::constructor(
+//     /* [in] */ IResources* resources,
+//     /* [in] */ CActivityThread* mainThread,
+//     /* [in] */ IUserHandle* user)
+// {
+//     mPackageInfo = NULL;
+//     mBasePackageName = NULL;
+//     mResources = resources;
+//     mMainThread = mainThread;
+//     mContentResolver = new ApplicationContentResolver(this, mainThread, user);
+//     mUser = user;
+//     return NOERROR;
+// }
+
+
+ECode CContextImpl::InstallSystemApplicationInfo(
+    /* [in] */ IApplicationInfo* info,
+    /* [in] */ IClassLoader* classLoader)
 {
-    mPackageInfo = NULL;
-    mBasePackageName = NULL;
-    mResources = resources;
-    mMainThread = mainThread;
-    mContentResolver = new ApplicationContentResolver(this, mainThread, user);
-    mUser = user;
-    return NOERROR;
+    return mPackageInfo->InstallSystemApplicationInfo(info, classLoader);;
 }
 
 ECode CContextImpl::ScheduleFinalCleanup(
@@ -3076,6 +3717,41 @@ ECode CContextImpl::MakeFilename(
     //throw new IllegalArgumentException(
     //        "File " + name + " contains a path separator");
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
+}
+
+/**
+ * Ensure that given directories exist, trying to create them if missing. If
+ * unable to create, they are filtered by replacing with {@code null}.
+ */
+AutoPtr<ArrayOf<IFile*> > CContextImpl::EnsureDirsExistOrFilter(
+    /* [in] */ ArrayOf<IFile*>* dirs)
+{
+    File[] result = new File[dirs.length];
+    for (int i = 0; i < dirs.length; i++) {
+        File dir = dirs[i];
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                // recheck existence in case of cross-process race
+                if (!dir.exists()) {
+                    // Failing to mkdir() may be okay, since we might not have
+                    // enough permissions; ask vold to create on our behalf.
+                    final IMountService mount = IMountService.Stub.asInterface(
+                            ServiceManager.getService("mount"));
+                    int res = -1;
+                    try {
+                        res = mount.mkdirs(getPackageName(), dir.getAbsolutePath());
+                    } catch (RemoteException e) {
+                    }
+                    if (res != 0) {
+                        Log.w(TAG, "Failed to ensure directory: " + dir);
+                        dir = null;
+                    }
+                }
+            }
+        }
+        result[i] = dir;
+    }
+    return result;
 }
 
 } // namespace App

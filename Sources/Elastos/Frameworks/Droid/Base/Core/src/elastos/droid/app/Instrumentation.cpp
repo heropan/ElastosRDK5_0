@@ -3,10 +3,6 @@
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/app/Fragment.h"
-#include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/os/Process.h"
-#include "elastos/droid/os/ServiceManager.h"
-#ifdef DROID_CORE
 #include "elastos/droid/app/CActivityThreadHelper.h"
 #include "elastos/droid/app/CInstrumentationActivityMonitor.h"
 #include "elastos/droid/app/CInstrumentationActivityResult.h"
@@ -16,14 +12,15 @@
 #include "elastos/droid/hardware/input/CInputManagerHelper.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/privacy/CPrivacySettingsManager.h"
 #include "elastos/droid/view/CKeyEvent.h"
 #include "elastos/droid/view/CKeyEventHelper.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/view/CKeyCharacterMapHelper.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -376,7 +373,14 @@ ECode Instrumentation::Finish(
         EndPerformanceSnapshot();
     }
     if (mPerfMetrics != NULL) {
+        if (results == null) {
+            results = new Bundle();
+        }
         results->PutAll(mPerfMetrics);
+    }
+    if (mUiAutomation != null) {
+        mUiAutomation.disconnect();
+        mUiAutomation = null;
     }
     return mThread->FinishInstrumentation(resultCode, results);
 }
@@ -971,10 +975,10 @@ ECode Instrumentation::NewActivity(
     IActivity* actObj = IActivity::Probe(obj);
     AutoPtr<IConfiguration> config;
     CConfiguration::New((IConfiguration**)&config);
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(actObj->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)actObj.Get()
     FAIL_RETURN(act->Attach(
-            context, NULL, (IInstrumentation*)this->Probe(EIID_IInstrumentation), token, application, intent,
-            info, title, parent, id, lastNonConfigurationInstance, config))
+        context, NULL, THIS_PROBE(IInstrumentation), token, 0, application, intent,
+        info, title, parent, id, lastNonConfigurationInstance, config, NULL))
     *activity = actObj;
     REFCOUNT_ADD(*activity)
     return NOERROR;
@@ -997,9 +1001,8 @@ ECode Instrumentation::NewActivity(
     return NOERROR;
 }
 
-ECode Instrumentation::CallActivityOnCreate(
-    /* [in] */ IActivity* activity,
-    /* [in] */ IBundle* icicle)
+ECode Instrumentation::PrePerformCreate(
+    /* [in] */ IActivity* activity)
 {
     if (mWaitingActivities != NULL) {
         AutoLock lock(mSync);
@@ -1018,8 +1021,10 @@ ECode Instrumentation::CallActivityOnCreate(
         }
     }
 
-    activity->PerformCreate(icicle);
 
+ECode Instrumentation::PostPerformCreate(
+    /* [in] */ IActivity* activity)
+{
     if (mActivityMonitors != NULL) {
         AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
@@ -1030,6 +1035,16 @@ ECode Instrumentation::CallActivityOnCreate(
             (*it)->Match(activity, activity, intent, &result);
         }
     }
+    return NOERROR;
+}
+
+ECode Instrumentation::CallActivityOnCreate(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IBundle* icicle)
+{
+    PrePerformCreate(activity);
+    activity->PerformCreate(icicle);
+    PostPerformCreate(activity);
     return NOERROR;
 }
 
@@ -1074,40 +1089,57 @@ ECode Instrumentation::CallActivityOnRestoreInstanceState(
     return activity->PerformRestoreInstanceState(savedInstanceState);
 }
 
+ECode Instrumentation::CallActivityOnRestoreInstanceState(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IBundle* savedInstanceState
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    return activity->PerformRestoreInstanceState(savedInstanceState, persistentState);;
+}
+
 ECode Instrumentation::CallActivityOnPostCreate(
     /* [in] */ IActivity* activity,
     /* [in] */ IBundle* icicle)
 {
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     return act->OnPostCreate(icicle);
+}
+
+ECode Instrumentation::CallActivityOnPostCreate(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IBundle* icicle,
+    /* [in] */ IPersistableBundle* persistentState)
+{
+    AutoPtr<Activity> act = (Activity*)activity;
+    return act->OnPostCreate(icicle, persistentState);
 }
 
 ECode Instrumentation::CallActivityOnNewIntent(
     /* [in] */ IActivity *activity,
     /* [in] */ IIntent *intent)
 {
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     return act->OnNewIntent(intent);
 }
 
 ECode Instrumentation::CallActivityOnStart(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     return act->OnStart();
 }
 
 ECode Instrumentation::CallActivityOnRestart(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     return act->OnRestart();
 }
 
 ECode Instrumentation::CallActivityOnResume(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     act->SetResumed(TRUE);
     act->OnResume();
 
@@ -1127,7 +1159,7 @@ ECode Instrumentation::CallActivityOnResume(
 ECode Instrumentation::CallActivityOnStop(
     /* [in] */ IActivity* activity)
 {
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     return act->OnStop();
 }
 
@@ -1136,6 +1168,14 @@ ECode Instrumentation::CallActivityOnSaveInstanceState(
     /* [in] */ IBundle* outState)
 {
     return activity->PerformSaveInstanceState(outState);
+}
+
+ECode Instrumentation::CallActivityOnSaveInstanceState(
+    /* [in] */ IActivity* activity,
+    /* [in] */ IBundle* outState,
+    /* [in] */ IPersistableBundle* outPersistentState)
+{
+    return activity->PerformSaveInstanceState(outState, outPersistentState);
 }
 
 ECode Instrumentation::CallActivityOnPause(
@@ -1246,82 +1286,6 @@ ECode Instrumentation::ExecStartActivity(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    // BEGIN privacy-added
-    Boolean allowIntent = TRUE;
-    // try{
-    String packageName;
-    who->GetPackageName(&packageName);
-    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: execStartActivity for %s", packageName.string());
-    String action;
-    intent->GetAction(&action);
-    if (!action.IsNull() && (action.Equals(IIntent::ACTION_CALL) || action.Equals(IIntent::ACTION_DIAL))) {
-        allowIntent = FALSE;
-        Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Intent action = Intent.ACTION_CALL or Intent.ACTION_DIAL for "
-                , packageName.string());
-        Boolean isAvailable;
-        if (mPrvSvc == NULL || mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable) {
-            // mPrvSvc = new PrivacySettingsManager(who, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-            AutoPtr<IIPrivacySettingsManager> manager = (IIPrivacySettingsManager*)ServiceManager::GetService(String("privacy")).Get();
-            mPrvSvc = NULL;
-            CPrivacySettingsManager::New(who, manager, (IPrivacySettingsManager**)&mPrvSvc);
-            if (mPrvSvc != NULL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Obtained privacy service");
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Privacy service not obtained");
-            }
-        }
-        else {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Already had privacy service");
-        }
-
-        if (mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable) {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Privacy service not available: rejecting call attempt");
-            allowIntent = FALSE;
-            mPrvSvc->Notification(packageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-        }
-        else {
-            AutoPtr<IPrivacySettings> privacySettings;
-            mPrvSvc->GetSettings(packageName, (IPrivacySettings**)&privacySettings);
-            Byte phoneCallSetting;
-            if (privacySettings == NULL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Call allowed: No settings for package: %s", packageName.string());
-                allowIntent = TRUE;
-                mPrvSvc->Notification(packageName, IPrivacySettings::REAL, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else if (phoneCallSetting == IPrivacySettings::REAL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Call allowed: Settings permit ", packageName.string());
-                allowIntent = TRUE;
-                mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity: Call denied: Settings deny ", packageName.string());
-                // No settings = allowed; any phone call setting but real == disallowed
-
-                allowIntent = FALSE;
-
-                // test if broadcasting works! SM: I don't know what 'test if broadcasting works' means.
-                // Send the notification intent
-                AutoPtr<IContext> tmp = who;
-                // SM: the BLOCKED_PHONE_CALL intent is handled by the privacy service to fake a change in call state
-                AutoPtr<IRunnable> runnable = new BlockPhoneCallRunnable(tmp);
-                AutoPtr<IThread> t;
-                CThread::New(runnable, (IThread**)&t);
-                t->Start();
-                privacySettings->GetPhoneCallSetting(&phoneCallSetting);
-                mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-        }
-    }
-    // } catch(Exception e){
-    //      if(who != null) {
-    //          Log.e(TAG,"PDroid:Instrumentation:execStartActivity: Exception occurred handling intent for ", packageName.string(), e);
-    //      } else {
-    //          Log.e(TAG,"PDroid:Instrumentation:execStartActivity: Exception occurred handling intent for unknown package", e);
-    //      }
-    // }
-    // END privacy-added
-
     AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
     if (mActivityMonitors != NULL) {
         AutoLock lock(mSync);
@@ -1347,18 +1311,8 @@ ECode Instrumentation::ExecStartActivity(
         }
     }
 
-    // BEGIN privacy-added
-    // try{
-    if (!allowIntent) {
-        return CInstrumentationActivityResult::New(requestCode, intent, result);
-    }
-    // } catch(Exception e) {
-    //     Log.e(TAG,"PDroid:Instrumentation:execStartActivity: Exception occurred while trying to create ActivityResult", e);
-    //     return null;
-    // }
-    // END privacy-added
-
-    intent->SetAllowFds(FALSE);
+    intent->MigrateExtraStreamToClipData();
+    intent->PrepareToLeaveProcess();
     Boolean bval;
     intent->MigrateExtraStreamToClipData(&bval);
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
@@ -1366,11 +1320,12 @@ ECode Instrumentation::ExecStartActivity(
     who->GetContentResolver((IContentResolver**)&resolver);
     String type;
     intent->ResolveTypeIfNeeded(resolver, &type);
-    String resultWho;
+    String resultWho, packageName;
+    who->GetBasePackageName(&packageName);
     if (target != NULL) target->GetID(&resultWho);
     Int32 res;
-    am->StartActivity(whoThread, intent, type,
-             token, resultWho, requestCode, 0, String(NULL), NULL, options, &res);
+    am->StartActivity(whoThread, packageName, intent, type,
+         token, resultWho, requestCode, 0, String(NULL), options, &res);
     CheckStartActivityResult(res, intent);
     *result = NULL;
     return NOERROR;
@@ -1402,117 +1357,6 @@ ECode Instrumentation::ExecStartActivitiesAsUser(
 {
     AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
 
-    // BEGIN privacy-added
-    String packageName;
-    who->GetPackageName(&packageName);
-    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: execStartActivitiesAsUser for %s", packageName.string());
-    if (intents != NULL) {
-        Boolean checkPrivacySettings = FALSE;
-
-        // If any intents are Intent.ACTION_CALL or Intent.ACTION_DIAL, need to check permissions
-        for (Int32 i = 0; i < intents->GetLength(); ++i) {
-            AutoPtr<IIntent> intent = (*intents)[i];
-            // try {
-            String action;
-            intent->GetAction(&action);
-            if (!action.IsNull() && (action.Equals(IIntent::ACTION_CALL) || action.Equals(IIntent::ACTION_DIAL))) {
-                checkPrivacySettings = TRUE;
-                break;
-            }
-            // } catch (Exception e) {
-            //     Log.e(TAG,"PDroid:Instrumentation:execStartActivitiesAsUser: Exception occurred when checking intents for ", packageName.string(), e);
-            //     // If an exception occurred, then check the privacy settings as the default action
-            //     checkPrivacySettings = true;
-            // }
-        }
-
-        if (!checkPrivacySettings) {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: No provided intents triggered checking for %s"
-                    , packageName.string());
-        }
-        else {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: One or more intents triggered checking for %s"
-                    , packageName.string());
-
-            Boolean isAvailable;
-            if (mPrvSvc == NULL || (mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable)) {
-                // mPrvSvc = new PrivacySettingsManager(who, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-                AutoPtr<IIPrivacySettingsManager> psm = (IIPrivacySettingsManager*)ServiceManager::GetService(String("privacy")).Get();
-                mPrvSvc = NULL;
-                CPrivacySettingsManager::New(who, psm, (IPrivacySettingsManager**)&mPrvSvc);
-                if (mPrvSvc != NULL) {
-                    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Obtained privacy service");
-                }
-                else {
-                    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Privacy service not obtained");
-                }
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Already had privacy service");
-            }
-
-            Boolean allowCallIntents = FALSE;
-            if (mPrvSvc->IsServiceAvailable(&isAvailable), &isAvailable) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Privacy service not available - assuming permission denied");
-                allowCallIntents = FALSE;
-                mPrvSvc->Notification(packageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else {
-                AutoPtr<IPrivacySettings> privacySettings;
-                mPrvSvc->GetSettings(packageName, (IPrivacySettings**)&privacySettings);
-                Byte phoneCallSetting;
-                if (privacySettings == NULL) {
-                    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Call intents allowed: No settings for package: %s"
-                            , packageName.string());
-                    allowCallIntents = TRUE;
-                    mPrvSvc->Notification(packageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-                }
-                else if (privacySettings->GetPhoneCallSetting(&phoneCallSetting), phoneCallSetting == IPrivacySettings::REAL) {
-                    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Call intents allowed: Settings permit %s"
-                            , packageName.string());
-                    allowCallIntents = TRUE;
-                    mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-                }
-                else {
-                    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivitiesAsUser: Call intents denied: Settings deny %s"
-                            , packageName.string());
-                    allowCallIntents = FALSE;
-                    privacySettings->GetPhoneCallSetting(&phoneCallSetting);
-                    mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-                }
-            }
-
-            // If call intents are not allowed, need to regenerate the
-            // intents list to remove call-related intents
-            if (!allowCallIntents) {
-                AutoPtr< ArrayOf<IIntent*> > filteredIntents = ArrayOf<IIntent*>::Alloc(intents->GetLength());
-                for (Int32 i = 0, j = 0; i < intents->GetLength(); i++) {
-                    // try {
-                    AutoPtr<IIntent> intent = (*intents)[i];
-                    String action;
-                    intent->GetAction(&action);
-                    if (action.IsNull() || !(action.Equals(IIntent::ACTION_CALL) || action.Equals(IIntent::ACTION_DIAL))) {
-                        (*filteredIntents)[j] = intent;
-                        j++;
-                    }
-                    // } catch (Exception e) {
-                    //     Log.e(TAG,"PDroid:Instrumentation:execStartActivitiesAsUser: Exception occurred when checking intent for ", packageName.string(), e);
-                    // }
-                }
-                intents->Copy(filteredIntents);
-
-                // Send the notification intent
-                AutoPtr<IContext> tmp = who;
-                // SM: the BLOCKED_PHONE_CALL intent is handled by the privacy service to fake a change in call state
-                AutoPtr<IRunnable> runnable = (IRunnable*)new BlockPhoneCallRunnable(tmp);
-                AutoPtr<IThread> t;
-                CThread::New(runnable, (IThread**)&t);
-                t->Start();
-            }
-        }
-    }
-    // END privacy-added
-
     if (mActivityMonitors != NULL) {
         AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
@@ -1539,15 +1383,18 @@ ECode Instrumentation::ExecStartActivitiesAsUser(
     Int32 length = intents->GetLength();
     AutoPtr <ArrayOf<String> > resolvedTypes = ArrayOf<String>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        (*intents)[i]->SetAllowFds(FALSE);
+        (*intents)[i]->MigrateExtraStreamToClipData();
+        (*intents)[i]->PrepareToLeaveProcess();
         String type;
         (*intents)[i]->ResolveTypeIfNeeded(resolver, &type);
         (*resolvedTypes)[i] = type;
     }
 
+    String packageName;
+    who->GetPackageName(&packageName);
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     Int32 res;
-    FAIL_RETURN(am->StartActivities(whoThread, intents, resolvedTypes,
+    FAIL_RETURN(am->StartActivities(whoThread, packageName, intents, resolvedTypes,
             token, options, userId, &res))
     return CheckStartActivityResult(res, (*intents)[0]);
 }
@@ -1567,84 +1414,6 @@ ECode Instrumentation::ExecStartActivity(
 
     AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
 
-    // BEGIN privacy-added
-    Boolean allowIntent = TRUE;
-    // try{
-    String packageName;
-    who->GetPackageName(&packageName);
-    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): execStartActivity for %S", packageName.string());
-    String action;
-    intent->GetAction(&action);
-    if (!action.IsNull() && (action.Equals(IIntent::ACTION_CALL) || action.Equals(IIntent::ACTION_DIAL))) {
-        allowIntent = FALSE;
-        Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Intent action = Intent.ACTION_CALL or Intent.ACTION_DIAL for "
-                , packageName.string());
-        Boolean isAvailable;
-        if (mPrvSvc == NULL || (mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable)) {
-            // mPrvSvc = new PrivacySettingsManager(who, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-            AutoPtr<IIPrivacySettingsManager> psm = (IIPrivacySettingsManager*)ServiceManager::GetService(String("privacy")).Get();
-            mPrvSvc = NULL;
-            CPrivacySettingsManager::New(who, psm, (IPrivacySettingsManager**)&mPrvSvc);
-            if (mPrvSvc != NULL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Obtained privacy service");
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Privacy service not obtained");
-            }
-        }
-        else {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Already had privacy service");
-        }
-
-        if (mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable) {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Privacy service not available: rejecting call attempt");
-            allowIntent = FALSE;
-            mPrvSvc->Notification(packageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-        }
-        else {
-            AutoPtr<IPrivacySettings> privacySettings;
-            mPrvSvc->GetSettings(packageName, (IPrivacySettings**)&privacySettings);
-            Byte phoneCallSetting;
-            if (privacySettings == NULL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Call allowed: No settings for package: "
-                        , packageName.string());
-                allowIntent = TRUE;
-                mPrvSvc->Notification(packageName, IPrivacySettings::REAL, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else if (privacySettings->GetPhoneCallSetting(&phoneCallSetting), phoneCallSetting == IPrivacySettings::REAL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Call allowed: Settings permit "
-                        , packageName.string());
-                allowIntent = TRUE;
-                mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with Fragments): Call denied: Settings deny ", packageName.string());
-                // No settings = allowed; any phone call setting but real == disallowed
-
-                // test if broadcasting works! SM: I don't know what 'test if broadcasting works' means.
-                // Send the notification intent
-                AutoPtr<IContext> tmp = who;
-                allowIntent = FALSE;
-                // SM: Why is all of this done? It seems like a weirdly unnecessary bit of code...
-                AutoPtr<IRunnable> runnable = new BlockPhoneCallRunnable(tmp);
-                AutoPtr<IThread> t;
-                CThread::New(runnable, (IThread**)&t);
-                t->Start();
-                privacySettings->GetPhoneCallSetting(&phoneCallSetting);
-                mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-        }
-    }
-    // } catch(Exception e){
-    //      if(who != null) {
-    //          Log.e(TAG,"PDroid:Instrumentation:execStartActivity (with Fragments): Exception occurred handling intent for ", packageName.string(), e);
-    //      } else {
-    //          Log.e(TAG,"PDroid:Instrumentation:execStartActivity (with Fragments): Exception occurred handling intent for unknown package", e);
-    //      }
-    // }
-    // END privacy-added
-
-
     if (mActivityMonitors != NULL) {
         AutoLock lock(mSync);
         if (!mActivityMonitors->IsEmpty()) {
@@ -1673,28 +1442,20 @@ ECode Instrumentation::ExecStartActivity(
         }
     }
 
-    // BEGIN privacy-added
-    // try{
-    if (!allowIntent) return CInstrumentationActivityResult::New(requestCode, intent, activityResult);
-    // } catch(Exception e) {
-    //     Log.e(TAG,"PDroid:Instrumentation:execStartActivity (with Fragments): Exception occurred while trying to create ActivityResult", e);
-    //     return null;
-    // }
-    // END privacy-added
-
-    intent->SetAllowFds(FALSE);
     Boolean bval;
     intent->MigrateExtraStreamToClipData(&bval);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     AutoPtr<IContentResolver> resolver;
     who->GetContentResolver((IContentResolver**)&resolver);
     String type;
     intent->ResolveTypeIfNeeded(resolver, &type);
-    String whoStr;
+    String whoStr, packageName;
     if (target) target->GetWho(&whoStr);
+    who->GetPackageName(&packageName);
     Int32 res;
-    FAIL_RETURN(am->StartActivity(whoThread, intent, type,
-             token, whoStr, requestCode, 0, String(NULL), NULL, options, &res))
+    FAIL_RETURN(am->StartActivity(whoThread, packageName, intent, type,
+             token, whoStr, requestCode, 0, String(NULL), options, &res))
     return CheckStartActivityResult(res, intent);
 }
 
@@ -1714,84 +1475,6 @@ ECode Instrumentation::ExecStartActivity(
 
     AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
 
-    // BEGIN privacy-added
-    Boolean allowIntent = TRUE;
-    // try{
-    String packageName;
-    who->GetPackageName(&packageName);
-    Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): execStartActivity for "
-            , packageName.string());
-    String action;
-    intent->GetAction(&action);
-    if (!action.IsNull() && (action.Equals(IIntent::ACTION_CALL) || action.Equals(IIntent::ACTION_DIAL))) {
-        allowIntent = FALSE;
-        Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Intent action = Intent.ACTION_CALL or Intent.ACTION_DIAL for "
-                , packageName.string());
-        Boolean isAvailable;
-        if (mPrvSvc == NULL || (mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable)) {
-            // mPrvSvc = new PrivacySettingsManager(who, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-            AutoPtr<IIPrivacySettingsManager> psm = (IIPrivacySettingsManager*)ServiceManager::GetService(String("privacy")).Get();
-            mPrvSvc = NULL;
-            CPrivacySettingsManager::New(who, psm, (IPrivacySettingsManager**)&mPrvSvc);
-            if (mPrvSvc != NULL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Obtained privacy service");
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Privacy service not obtained");
-            }
-        }
-        else {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Already had privacy service");
-        }
-
-        if (mPrvSvc->IsServiceAvailable(&isAvailable), !isAvailable) {
-            Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Privacy service not available: rejecting call attempt");
-            allowIntent = FALSE;
-            mPrvSvc->Notification(packageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-        }
-        else {
-            AutoPtr<IPrivacySettings> privacySettings;
-            mPrvSvc->GetSettings(packageName, (IPrivacySettings**)&privacySettings);
-            Byte phoneCallSetting;
-            if (privacySettings == NULL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Call allowed: No settings for package: "
-                        , packageName.string());
-                allowIntent = TRUE;
-                mPrvSvc->Notification(packageName, IPrivacySettings::REAL, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else if (privacySettings->GetPhoneCallSetting(&phoneCallSetting), phoneCallSetting == IPrivacySettings::REAL) {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Call allowed: Settings permit "
-                        , packageName.string());
-                allowIntent = TRUE;
-                mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-            else {
-                Slogger::D(TAG, "PDroid:Instrumentation:execStartActivity (with UserHandle): Call denied: Settings deny ", packageName.string());
-                // No settings = allowed; any phone call setting but real == disallowed
-
-                // test if broadcasting works! SM: I don't know what 'test if broadcasting works' means.
-                // Send the notification intent
-                AutoPtr<IContext> tmp = who;
-                allowIntent = FALSE;
-                // SM: Why is all of this done? It seems like a weirdly unnecessary bit of code...
-                AutoPtr<IRunnable> runnable = new BlockPhoneCallRunnable(tmp);
-                AutoPtr<IThread> t;
-                CThread::New(runnable, (IThread**)&t);
-                t->Start();
-                privacySettings->GetPhoneCallSetting(&phoneCallSetting);
-                mPrvSvc->Notification(packageName, phoneCallSetting, IPrivacySettings::DATA_PHONE_CALL, String(NULL));
-            }
-        }
-    }
-    // } catch(Exception e){
-    //      if(who != null) {
-    //          Log.e(TAG,"PDroid:Instrumentation:execStartActivity (with UserHandle): Exception occurred handling intent for ", packageName.string(), e);
-    //      } else {
-    //          Log.e(TAG,"PDroid:Instrumentation:execStartActivity (with UserHandle): Exception occurred handling intent for unknown package", e);
-    //      }
-    // }
-    // END privacy-added
-
     if (mActivityMonitors != NULL) {
         AutoLock lock(mSync);
         if (!mActivityMonitors->IsEmpty()) {
@@ -1819,15 +1502,6 @@ ECode Instrumentation::ExecStartActivity(
             }
         }
     }
-
-     // BEGIN privacy-added
-    // try{
-    if (!allowIntent) return CInstrumentationActivityResult::New(requestCode, intent, activityResult);
-    // } catch(Exception e) {
-    //     Log.e(TAG,"PDroid:Instrumentation:execStartActivity (with UserHandle): Exception occurred while trying to create ActivityResult", e);
-    //     return null;
-    // }
-    // END privacy-added
 
     intent->SetAllowFds(FALSE);
     Boolean bval;

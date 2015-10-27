@@ -344,6 +344,7 @@ public:
         /* [in] */ const String& path,
         /* [in] */ Int64 length,
         /* [in] */ Boolean showNotification,
+        /* [in] */ Boolean allowWrite,
         /* [out] */ Int64* id);
 
     /**
@@ -351,6 +352,10 @@ public:
      */
     CARAPI_(AutoPtr<IUri>) GetDownloadUri(
         /* [in] */ Int64 id);
+
+    CARAPI GetDownloadUri(
+        /* [in] */ Int64 id,
+        /* [in] */ IUri** uri);
 
     /**
      * Get a parameterized SQL WHERE clause to select a bunch of IDs.
