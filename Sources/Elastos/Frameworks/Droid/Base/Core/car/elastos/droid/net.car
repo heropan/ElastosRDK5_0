@@ -595,6 +595,7 @@ module
         interface INetworkStatsEntry;
     }
 
+    [local]
     class CNetworkStatsHistory {
         constructor(
             [in] Int64 bucketDuration);

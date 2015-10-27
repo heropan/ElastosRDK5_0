@@ -2,20 +2,54 @@
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICEINFO_H__
 
 #include "_Elastos_Droid_AccessibilityService_CAccessibilityServiceInfo.h"
+#include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace AccessibilityService {
 
 CarClass(CAccessibilityServiceInfo)
+    , public Object
+    , public IAccessibilityServiceInfo
+    , public IParcelable
 {
 public:
+    class CapabilityInfo
+        : public Object
+    {
+    public:
+        CapabilityInfo(){}
+
+        CapabilityInfo(
+            /* [in] */ Int32 capability,
+            /* [in] */ Int32 titleResId,
+            /* [in] */ Int32 descResId)
+            : mCapability(capability)
+            , mTitleResId(titleResId)
+            , mDescResId(descResId)
+        {}
+
+        ~CapabilityInfo();
+
+        CARAPI_(String) ToString();
+
+        Int32 mCapability;
+        Int32 mTitleResId;
+        Int32 mDescResId;
+    };
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAccessibilityServiceInfo();
 
     ~CAccessibilityServiceInfo();
@@ -23,8 +57,8 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ IResolveInfo * resolveInfo,
-        /* [in] */ IContext * context);
+        /* [in] */ IResolveInfo* resolveInfo,
+        /* [in] */ IContext* context);
 
     CARAPI SetEventTypes (
         /* [in] */ Int32 types);
@@ -65,6 +99,12 @@ public:
      */
     CARAPI UpdateDynamicallyConfigurableProperties(
         /* [in] */ IAccessibilityServiceInfo* other);
+
+    /**
+     * @hide
+     */
+    CARAPI SetComponentName(
+        /* [in] */ IComponentName* component);
 
     /**
      * The accessibility service id.
@@ -109,6 +149,36 @@ public:
         /* [out] */ Boolean* result);
 
     /**
+     * Returns the bit mask of capabilities this accessibility service has such as
+     * being able to retrieve the active window content, etc.
+     *
+     * @return The capability bit mask.
+     *
+     * @see #CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT
+     * @see #CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION
+     * @see #CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+     * @see #CAPABILITY_FILTER_KEY_EVENTS
+     */
+    CARAPI GetCapabilities(
+        /* [out] */ Int32* capabilities);
+
+    /**
+     * Sets the bit mask of capabilities this accessibility service has such as
+     * being able to retrieve the active window content, etc.
+     *
+     * @param capabilities The capability bit mask.
+     *
+     * @see #CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT
+     * @see #CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION
+     * @see #CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+     * @see #CAPABILITY_FILTER_KEY_EVENTS
+     *
+     * @hide
+     */
+    CARAPI SetCapabilities(
+        /* [in] */ Int32 capabilities);
+
+    /**
      * Gets the non-localized description of the accessibility service.
      * <p>
      *    <strong>Statically set from
@@ -145,6 +215,16 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
+    CARAPI GetHashCode(
+        /* [out] */ Int32* code);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* isEqual);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
+
     /**
      * Returns the string representation of a feedback type. For example,
      * {@link #FEEDBACK_SPOKEN} is represented by the string FEEDBACK_SPOKEN.
@@ -167,6 +247,25 @@ public:
         /* [in] */ Int32 flag,
         /* [out] */ String* str);
 
+    /**
+     * Returns the string representation of a capability. For example,
+     * {@link #CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT} is represented
+     * by the string CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT.
+     *
+     * @param capability The capability.
+     * @return The string representation.
+     */
+    static CARAPI CapabilityToString(
+        /* [in] */ Int32 capability,
+        /* [out] */ String* str);
+
+    /**
+     * @hide
+     * @return The list of {@link CapabilityInfo} objects.
+     */
+    CARAPI GetCapabilityInfos(
+        /* [out] */ IList** infos);
+
 private:
     CARAPI_(void) InitFromParcel(
         /* [in] */ IParcel* parcel);
@@ -186,6 +285,10 @@ private:
     static CARAPI_(void) AppendFlags(
         /* [in] */ StringBuilder* stringBuilder,
         /* [in] */ Int32 flags);
+
+    static CARAPI_(void) AppendCapabilities(
+        /* [in] */ StringBuilder* stringBuilder,
+        /* [in] */ Int32 capabilities);
 
 public:
     static const String TAG_ACCESSIBILITY_SERVICE;
@@ -278,9 +381,9 @@ public:
     String mSettingsActivityName;
 
     /**
-     * Flag whether this accessibility service can retrieve window content.
+     * Bit mask with capabilities of this service.
      */
-    Boolean mCanRetrieveWindowContent;
+    Int32 mCapabilities;
 
     /**
      * Resource id of the description of the accessibility service.

@@ -24,6 +24,7 @@ SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 
+LIBRARIES += accessibilityservice/accessibilityservice.lib
 LIBRARIES += app/app.lib
 LIBRARIES += animation/animation.lib
 LIBRARIES += content/content.lib
@@ -62,7 +63,6 @@ LIBRARIES += utility/utility.lib
 // LIBRARIES += opengl/opengl.lib
 LIBRARIES += webkit/webkit.lib
 // LIBRARIES += privacy/privacy.lib
-// LIBRARIES += accessibilityservice/accessibilityservice.lib
 // LIBRARIES += accounts/accounts.lib
 // LIBRARIES += service/wallpaper/wallpaper.lib
 // LIBRARIES += inputmethods/pinyinIME/pinyin.lib

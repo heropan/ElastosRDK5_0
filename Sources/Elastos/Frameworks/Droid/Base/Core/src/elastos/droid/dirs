@@ -1,4 +1,5 @@
 
+DIRS += accessibilityservice
 DIRS += app
 DIRS += animation
 DIRS += content
@@ -30,7 +31,6 @@ DIRS += utility
 DIRS += webkit
 #DIRS += privacy
 #DIRS += provider
-#DIRS += accessibilityservice
 #DIRS += wifi
 #DIRS += accounts
 #DIRS += telephony

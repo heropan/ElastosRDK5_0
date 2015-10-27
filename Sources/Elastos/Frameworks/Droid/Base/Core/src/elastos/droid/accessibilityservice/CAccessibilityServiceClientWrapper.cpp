@@ -1,29 +1,48 @@
-#include "CAccessibilityServiceClientWrapper.h"
+#include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
-#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
+// #include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
 
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::Os::CHandlerCaller;
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
-using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
+// using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace AccessibilityService {
 
-const Int32 CAccessibilityServiceClientWrapper::DO_SET_SET_CONNECTION = 10;
-const Int32 CAccessibilityServiceClientWrapper::DO_ON_INTERRUPT = 20;
-const Int32 CAccessibilityServiceClientWrapper::DO_ON_ACCESSIBILITY_EVENT = 30;
-const Int32 CAccessibilityServiceClientWrapper::DO_ON_GESTURE = 40;
+const Int32 CAccessibilityServiceClientWrapper::DO_SET_SET_CONNECTION = 1;
+const Int32 CAccessibilityServiceClientWrapper::DO_ON_INTERRUPT = 2;
+const Int32 CAccessibilityServiceClientWrapper::DO_ON_ACCESSIBILITY_EVENT = 3;
+const Int32 CAccessibilityServiceClientWrapper::DO_ON_GESTURE = 4;
+const Int32 CAccessibilityServiceClientWrapper::DO_CLEAR_ACCESSIBILITY_CACHE = 5;
+const Int32 CAccessibilityServiceClientWrapper::DO_ON_KEY_EVENT = 6;
+
+CAR_INTERFACE_IMPL_2(CAccessibilityServiceClientWrapper, Object, IAccessibilityServiceClientWrapper,
+        IAccessibilityServiceClient/*, IHandlerCallerCallback*/)
+
+CAR_OBJECT_IMPL(CAccessibilityServiceClientWrapper)
+
+CAccessibilityServiceClientWrapper::CAccessibilityServiceClientWrapper()
+    : mConnectionId(0)
+{}
+
+CAccessibilityServiceClientWrapper::~CAccessibilityServiceClientWrapper()
+{}
+
+ECode CAccessibilityServiceClientWrapper::constructor()
+{
+    return NOERROR;
+}
 
 ECode CAccessibilityServiceClientWrapper::constructor(
-    /* [in] */ IContext * context,
-    /* [in] */ ILooper * looper,
+    /* [in] */ IContext* context,
+    /* [in] */ ILooper* looper,
     /* [in] */ IAccessibilityServiceCallbacks* callback)
 {
     mCallback = callback;
-    CHandlerCaller::New(context, looper, THIS_PROBE(IHandlerCallerCallback), TRUE, FALSE, (IHandlerCaller**)mCaller);
+    // CHandlerCaller::New(context, looper, THIS_PROBE(IHandlerCallerCallback), TRUE, FALSE, (IHandlerCaller**)mCaller);
     return NOERROR;
 }
 
@@ -32,7 +51,7 @@ ECode CAccessibilityServiceClientWrapper::SetConnection(
     /* [in] */ Int32 connectionId)
 {
     AutoPtr<IMessage> message;
-    mCaller->ObtainMessage(DO_SET_SET_CONNECTION, connectionId, connection, (IMessage**)&message);
+    mCaller->ObtainMessageIO(DO_SET_SET_CONNECTION, connectionId, connection, (IMessage**)&message);
     return mCaller->SendMessage(message);
 }
 
@@ -47,7 +66,7 @@ ECode CAccessibilityServiceClientWrapper::OnAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     AutoPtr<IMessage> message;
-    mCaller->ObtainMessage(DO_ON_ACCESSIBILITY_EVENT, event, (IMessage**)&message);
+    mCaller->ObtainMessageO(DO_ON_ACCESSIBILITY_EVENT, event, (IMessage**)&message);
     return mCaller->SendMessage(message);
 }
 
@@ -55,7 +74,23 @@ ECode CAccessibilityServiceClientWrapper::OnGesture(
     /* [in] */ Int32 gestureId)
 {
     AutoPtr<IMessage> message;
-    mCaller->ObtainMessage(DO_ON_GESTURE, gestureId, (IMessage**)&message);
+    mCaller->ObtainMessageI(DO_ON_GESTURE, gestureId, (IMessage**)&message);
+    return mCaller->SendMessage(message);
+}
+
+ECode CAccessibilityServiceClientWrapper::ClearAccessibilityCache()
+{
+    AutoPtr<IMessage> message;
+    mCaller->ObtainMessage(DO_CLEAR_ACCESSIBILITY_CACHE, (IMessage**)&message);
+    return mCaller->SendMessage(message);
+}
+
+ECode CAccessibilityServiceClientWrapper::OnKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [in] */ Int32 sequence)
+{
+    AutoPtr<IMessage> message;
+    mCaller->ObtainMessageIO(DO_ON_KEY_EVENT, sequence, event, (IMessage**)&message);
     return mCaller->SendMessage(message);
 }
 
@@ -65,56 +100,117 @@ ECode CAccessibilityServiceClientWrapper::ExecuteMessage(
     Int32 what, arg1;
     message->GetWhat(&what);
     message->GetArg1(&arg1);
+    // ECode ec;
 
     switch (what) {
         case DO_ON_ACCESSIBILITY_EVENT : {
             AutoPtr<IInterface> obj;
             message->GetObj((IInterface**)&obj);
-            IAccessibilityEvent* event = IAccessibilityEvent::Probe(obj);
-            if (event != NULL) {
-                AutoPtr<IAccessibilityInteractionClientHelper> helper;
-                CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-                AutoPtr<IAccessibilityInteractionClient> client;
-                helper->GetInstance((IAccessibilityInteractionClient**)&client);
+            assert(0 && "TODO");
+            // IAccessibilityEvent* event = IAccessibilityEvent::Probe(obj);
+            // if (event != NULL) {
+            //     AutoPtr<IAccessibilityInteractionClientHelper> helper;
+            //     CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+            //     AutoPtr<IAccessibilityInteractionClient> client;
+            //     helper->GetInstance((IAccessibilityInteractionClient**)&client);
 
-                client->OnAccessibilityEvent(event);
-                mCallback->OnAccessibilityEvent(event);
-                event->Recycle();
-            }
-            return NOERROR;
+            //     client->OnAccessibilityEvent(event);
+            //     mCallback->OnAccessibilityEvent(event);
+            //     // Make sure the event is recycled.
+            //     // try {
+            //         ec = event->Recycle();
+            //         if (ec != NOERROR) {
+            //             return E_ILLEGAL_STATE_EXCEPTION;
+            //         }
+            //     // } catch (IllegalStateException ise) {
+            //     //             /* ignore - best effort */
+            //     // }
+            // }
+            break;
         }
 
         case DO_ON_INTERRUPT :
             mCallback->OnInterrupt();
-            return NOERROR;
+            break;
 
-        case DO_SET_SET_CONNECTION : {
-            AutoPtr<IAccessibilityInteractionClientHelper> helper;
-            CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-            AutoPtr<IAccessibilityInteractionClient> client;
-            helper->GetInstance((IAccessibilityInteractionClient**)&client);
+        case DO_SET_SET_CONNECTION :
+            assert(0 && "TODO");
+            // {
+            // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+            // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+            // AutoPtr<IAccessibilityInteractionClient> client;
+            // helper->GetInstance((IAccessibilityInteractionClient**)&client);
 
-            const Int32 connectionId = arg1;
-            AutoPtr<IInterface> obj;
-            message->GetObj((IInterface**)&obj);
-            IIAccessibilityServiceConnection* connection = IIAccessibilityServiceConnection::Probe(obj);
+            // mConnectionId = arg1;
+            // AutoPtr<IInterface> obj;
+            // message->GetObj((IInterface**)&obj);
+            // IIAccessibilityServiceConnection* connection = IIAccessibilityServiceConnection::Probe(obj);
 
-            if (connection != NULL) {
-                client->AddConnection(connectionId, connection);
-                mCallback->OnSetConnectionId(connectionId);
-                mCallback->OnServiceConnected();
-            }
-            else {
-                client->RemoveConnection(connectionId);
-                mCallback->OnSetConnectionId(IAccessibilityInteractionClient::NO_ID);
-            }
-            return NOERROR;
-        }
+            // if (connection != NULL) {
+            //     client->AddConnection(mConnectionId, connection);
+            //     mCallback->OnSetConnectionId(mConnectionId);
+            //     mCallback->OnServiceConnected();
+            // }
+            // else {
+            //     client->RemoveConnection(mConnectionId);
+            //     client->ClearCache();
+            //     mCallback->OnSetConnectionId(IAccessibilityInteractionClient::NO_ID);
+            // }
+            break;
+        // }
 
         case DO_ON_GESTURE : {
             Boolean result;
             mCallback->OnGesture(arg1, &result);
-            return NOERROR;
+            break;
+        }
+        case DO_CLEAR_ACCESSIBILITY_CACHE : {
+            assert(0 && "TODO");
+            // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+            // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+            // AutoPtr<IAccessibilityInteractionClient> client;
+            // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+            // client->ClearCache();
+            break;
+        }
+
+        case DO_ON_KEY_EVENT : {
+            AutoPtr<IInterface> obj;
+            message->GetObj((IInterface**)&obj);
+            AutoPtr<IKeyEvent> event = IKeyEvent::Probe(obj);
+            assert(0 && "TODO");
+            // // try {
+            //     AutoPtr<IAccessibilityInteractionClientHelper> helper;
+            //     CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+            //     AutoPtr<IAccessibilityInteractionClient> client;
+            //     helper->GetInstance((IAccessibilityInteractionClient**)&client);
+            //     AutoPtr<IIAccessibilityServiceConnection> connection;
+            //     client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+            //     if (connection != NULL) {
+            //         Boolean result;
+            //         mCallback->OnKeyEvent(event, &result);
+            //         Int32 sequence = arg1;
+            //         // try {
+            //             ec = connection->SetOnKeyEventResult(result, sequence);
+            //         // } catch (RemoteException re) {
+            //                     /* ignore */
+            //             if (ec != NOERROR) {
+            //                 return E_REMOTE_EXCEPTION;
+            //             }
+            //         // }
+            //     }
+            // } finally {
+                    // // Make sure the event is recycled.
+                    // // try {
+                    //     ec = event->Recycle();
+                    // // } catch (IllegalStateException ise) {
+                    //     /* ignore - best effort */
+                    //     if (ec != NOERROR) {
+                    //         return E_ILLEGAL_STATE_EXCEPTION;
+                    //     }
+                    // // }
+            // }
+            break;
         }
 
         default :

@@ -12,4 +12,3 @@ SOURCES = AccessibilityService.cpp
 SOURCES += CAccessibilityServiceClientWrapper.cpp
 SOURCES += CAccessibilityServiceInfo.cpp
 SOURCES += CAccessibilityServiceInfoHelper.cpp
-SOURCES += CUiTestAutomationBridge.cpp

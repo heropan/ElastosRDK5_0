@@ -218,7 +218,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/privacy/surrogate
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/privacy
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/provider
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accessibilityservice
+ Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/accessibilityservice
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethodservice
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database/sqlite
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/database

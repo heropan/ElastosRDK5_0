@@ -6,42 +6,45 @@ module
     merge("accessibilityservice/IAccessibilityServiceClient.car");
     merge("accessibilityservice/AccessibilityService.car");
 
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
+    //interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
+    interface Elastos.Droid.Os.ILooper;
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace AccessibilityService {
-    //     // [deprecated]
-    //     // class CAccessibilityService {
-    //     //     interface IAccessibilityService;
-    //     // }
+    namespace Elastos {
+    namespace Droid {
+    namespace AccessibilityService {
+        [local]
+        class CAccessibilityServiceClientWrapper {
+            constructor();
 
-    //     [local]
-    //     class CAccessibilityServiceClientWrapper {
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] ILooper* looper,
-    //             [in] IAccessibilityServiceCallbacks* cb);
+            constructor(
+                [in] IContext* ctx,
+                [in] ILooper* looper,
+                [in] IAccessibilityServiceCallbacks* cb);
 
-    //         interface IAccessibilityServiceClientWrapper;
-    //         interface IHandlerCallerCallback;
-    //     }
+            interface IAccessibilityServiceClientWrapper;
+            interface IAccessibilityServiceClient;
+            //interface IHandlerCallerCallback;
+        }
 
-    //     [local]
-    //     class CAccessibilityServiceInfo {
-    //         constructor();
+        [local]
+        class CAccessibilityServiceInfo {
+            constructor();
 
-    //         constructor(
-    //             [in] IResolveInfo* resolveInfo,
-    //             [in] IContext* ctx);
+            constructor(
+                [in] IResolveInfo* resolveInfo,
+                [in] IContext* ctx);
 
-    //         interface IAccessibilityServiceInfo;
-    //         interface IParcelable;
-    //     }
+            interface IAccessibilityServiceInfo;
+            interface IParcelable;
+        }
 
-    //     class CAccessibilityServiceInfoHelper {
-    //         interface IAccessibilityServiceInfoHelper;
-    //     }
-    // } //AccessibilityService
-    // } //Droid
-    // } //Elastos
+        singleton class CAccessibilityServiceInfoHelper {
+            interface IAccessibilityServiceInfoHelper;
+        }
+
+    } //AccessibilityService
+    } //Droid
+    } //Elastos
 }

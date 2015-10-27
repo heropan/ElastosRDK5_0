@@ -1,47 +1,98 @@
-#include "CAccessibilityServiceInfo.h"
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/StringUtils.h>
-#include <Elastos.CoreLibrary.h>
+#include "elastos/droid/accessibilityservice/CAccessibilityServiceInfo.h"
 #include "elastos/droid/content/CComponentName.h"
-#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+// #include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Org::Xmlpull::V1::IXmlPullParser;
+using Elastos::Droid::R;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
-using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
-using Elastos::Droid::R;
+// using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
+// using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Math;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::Etl::HashMap;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
 namespace AccessibilityService {
 
-const String CAccessibilityServiceInfo::TAG_ACCESSIBILITY_SERVICE = String("accessibility-service");
+const String CAccessibilityServiceInfo::TAG_ACCESSIBILITY_SERVICE("accessibility-service");
+
+CAR_INTERFACE_IMPL_2(CAccessibilityServiceInfo, Object, IAccessibilityServiceInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CAccessibilityServiceInfo)
+
+// static HashMap<Int32, AutoPtr<CapabilityInfo> > InitsAvailableCapabilityInfos()
+// {
+//     HashMap<Int32, AutoPtr<CapabilityInfo> > availableCapabilityInfos = new HashMap<Int32, AutoPtr<CapabilityInfo> >();
+//     AutoPtr<CapabilityInfo> info = new CapabilityInfo(
+//             CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT,
+//             R::string::capability_title_canRetrieveWindowContent,
+//             R::string::capability_desc_canRetrieveWindowContent);
+//     AutoPtr<IInteger32> obj;
+//     CInteger32::New(IAccessibilityServiceInfo::CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT, (IInteger32**)&obj);
+//     availableCapabilityInfos.Put(obj, info);
+
+//     AutoPtr<CapabilityInfo> info2 = new CapabilityInfo(
+//             CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION,
+//             R::string::capability_title_canRequestTouchExploration,
+//             R::string::capability_desc_canRequestTouchExploration);
+//     obj = NULL;
+//     CInteger32::New(IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION, (IInteger32**)&obj);
+//     availableCapabilityInfos.Put(obj, info2);
+
+//     AutoPtr<CapabilityInfo> info3 = new CapabilityInfo(
+//             CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY,
+//             R::string::capability_title_canRequestEnhancedWebAccessibility,
+//             R::string::capability_desc_canRequestEnhancedWebAccessibility);
+//     obj = NULL;
+//     CInteger32::New(IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY, (IInteger32**)&obj);
+//     availableCapabilityInfos.Put(obj, info3);
+
+//     AutoPtr<CapabilityInfo> info4 = new CapabilityInfo(
+//             CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS,
+//             R::string::capability_title_canRequestFilterKeyEvents,
+//             R::string::capability_desc_canRequestFilterKeyEvents);
+//     obj = NULL;
+//     CInteger32::New(IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS, (IInteger32**)&obj);
+//     availableCapabilityInfos.Put(obj, info4);
+
+//     return availableCapabilityInfos;
+// }
+
+// static const HashMap<Int32, AutoPtr<CapabilityInfo> > CAccessibilityServiceInfo::sAvailableCapabilityInfos = InitsAvailableCapabilityInfos();
 
 CAccessibilityServiceInfo::CAccessibilityServiceInfo()
-    : mEventTypes(-1)
-    , mFeedbackType(-1)
+    : mEventTypes(0)
+    , mFeedbackType(0)
     , mNotificationTimeout(0)
-    , mFlags(-1)
+    , mFlags(0)
     , mId(NULL)
     , mSettingsActivityName(NULL)
-    , mCanRetrieveWindowContent(FALSE)
-    , mDescriptionResId(-1)
+    , mCapabilities(0)
+    , mDescriptionResId(0)
     , mNonLocalizedDescription(NULL)
 {
 }
@@ -62,8 +113,8 @@ ECode CAccessibilityServiceInfo::constructor(
     AutoPtr<IServiceInfo> serviceInfo;
     resolveInfo->GetServiceInfo((IServiceInfo**)&serviceInfo);
     String pkgName, name;
-    serviceInfo->GetPackageName(&pkgName);
-    serviceInfo->GetName(&name);
+    IPackageItemInfo::Probe(serviceInfo)->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(serviceInfo)->GetName(&name);
     AutoPtr<IComponentName> cname;
     CComponentName::New(pkgName, name, (IComponentName**)&cname);
     cname->FlattenToShortString(&mId);
@@ -74,7 +125,7 @@ ECode CAccessibilityServiceInfo::constructor(
     // try {
         AutoPtr<IPackageManager> packageManager;
         context->GetPackageManager((IPackageManager**)&packageManager);
-        serviceInfo->LoadXmlMetaData(packageManager,
+        IPackageItemInfo::Probe(serviceInfo)->LoadXmlMetaData(packageManager,
             IAccessibilityService::SERVICE_META_DATA,
             (IXmlResourceParser**)&parser);
         if (parser == NULL) {
@@ -83,59 +134,73 @@ ECode CAccessibilityServiceInfo::constructor(
 
         Int32 type = 0;
         while (type != IXmlPullParser::END_DOCUMENT && type != IXmlPullParser::START_TAG) {
-            parser->Next(&type);
+            IXmlPullParser::Probe(parser)->Next(&type);
         }
 
         String nodeName;
-        parser->GetName(&nodeName);
+        IXmlPullParser::Probe(parser)->GetName(&nodeName);
         if (!nodeName.Equals(TAG_ACCESSIBILITY_SERVICE)) {
             // throw new XmlPullParserException( "Meta-data does not start with"
             //         + TAG_ACCESSIBILITY_SERVICE + " tag");
             return E_XML_PULL_PARSER_EXCEPTION;
         }
 
-        AutoPtr<IAttributeSet> allAttributes = Xml::AsAttributeSet(parser);
+        AutoPtr<IAttributeSet> allAttributes = Xml::AsAttributeSet(IXmlPullParser::Probe(parser));
 
         AutoPtr<IResources> resources;
         AutoPtr<IApplicationInfo> appInfo;
-        serviceInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
         packageManager->GetResourcesForApplication(appInfo, (IResources**)&resources);
 
         AutoPtr<ITypedArray> asAttributes;
         AutoPtr<ArrayOf<Int32> > vals = ArrayOf<Int32>::Alloc(8);
         for (Int32 i = 0; i < 8; i++) {
-            (*vals)[i] = Elastos::Droid::R::styleable::AccessibilityService[i];
+            (*vals)[i] = R::styleable::AccessibilityService[i];
         }
 
         resources->ObtainAttributes(allAttributes,
                 vals, (ITypedArray**)&asAttributes);
         asAttributes->GetInt32(
-                Elastos::Droid::R::styleable::AccessibilityService_accessibilityEventTypes,
+                R::styleable::AccessibilityService_accessibilityEventTypes,
                 0, &mEventTypes);
         String packageNamez;
         asAttributes->GetString(
-                Elastos::Droid::R::styleable::AccessibilityService_packageNames, &packageNamez);
+                R::styleable::AccessibilityService_packageNames, &packageNamez);
         if (packageNamez != NULL) {
             mPackageNames = NULL;
             AutoPtr< ArrayOf<String> > events;
             StringUtils::Split(packageNamez, String("(\\s)*,(\\s)*"), (ArrayOf<String>**)&mPackageNames);
         }
         asAttributes->GetInt32(
-                Elastos::Droid::R::styleable::AccessibilityService_accessibilityFeedbackType,
+                R::styleable::AccessibilityService_accessibilityFeedbackType,
                 0, &mFeedbackType);
         asAttributes->GetInt32(
-                Elastos::Droid::R::styleable::AccessibilityService_notificationTimeout,
+                R::styleable::AccessibilityService_notificationTimeout,
                 0, (Int32*)&mNotificationTimeout);
         asAttributes->GetInt32(
-                Elastos::Droid::R::styleable::AccessibilityService_accessibilityFlags, 0, &mFlags);
+                R::styleable::AccessibilityService_accessibilityFlags, 0, &mFlags);
         asAttributes->GetString(
-                Elastos::Droid::R::styleable::AccessibilityService_settingsActivity, &mSettingsActivityName);
-        asAttributes->GetBoolean(
-                Elastos::Droid::R::styleable::AccessibilityService_canRetrieveWindowContent,
-                FALSE, &mCanRetrieveWindowContent);
+                R::styleable::AccessibilityService_settingsActivity, &mSettingsActivityName);
+        Boolean res;
+        if (asAttributes->GetBoolean(
+                R::styleable::AccessibilityService_canRetrieveWindowContent, FALSE, &res), res) {
+            mCapabilities |= IAccessibilityServiceInfo::CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT;
+        }
+        // if (asAttributes->GetBoolean(
+        //         R::styleable::AccessibilityService_canRequestTouchExplorationMode, FALSE, &res), res) {
+        //     mCapabilities |= IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION;
+        // }
+        // if (asAttributes->GetBoolean(
+        //         R::styleable::AccessibilityService_canRequestEnhancedWebAccessibility, FALSE, &res), res) {
+        //         mCapabilities |= IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY;
+        // }
+        // if (asAttributes->GetBoolean(
+        //     R::styleable::AccessibilityService_canRequestFilterKeyEvents, FALSE, &res), res) {
+        //     mCapabilities |= IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS;
+        // }
         AutoPtr<ITypedValue> peekedValue;
         asAttributes->PeekValue(
-                Elastos::Droid::R::styleable::AccessibilityService_description,
+                R::styleable::AccessibilityService_description,
                 (ITypedValue**)&peekedValue);
         if (peekedValue != NULL) {
             peekedValue->GetResourceId(&mDescriptionResId);
@@ -159,14 +224,14 @@ ECode CAccessibilityServiceInfo::constructor(
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::SetEventTypes (
+ECode CAccessibilityServiceInfo::SetEventTypes(
     /* [in] */ Int32 types)
 {
     mEventTypes = types;
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::GetEventTypes (
+ECode CAccessibilityServiceInfo::GetEventTypes(
     /* [out] */ Int32* types)
 {
     VALIDATE_NOT_NULL(types);
@@ -174,14 +239,14 @@ ECode CAccessibilityServiceInfo::GetEventTypes (
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::SetPackageNames (
+ECode CAccessibilityServiceInfo::SetPackageNames(
     /* [in] */ ArrayOf<String>* names)
 {
     mPackageNames = names;
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::GetPackageNames (
+ECode CAccessibilityServiceInfo::GetPackageNames(
     /* [out, callee] */ ArrayOf<String>** names)
 {
     VALIDATE_NOT_NULL(names);
@@ -190,14 +255,14 @@ ECode CAccessibilityServiceInfo::GetPackageNames (
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::SetFeedbackType (
+ECode CAccessibilityServiceInfo::SetFeedbackType(
     /* [in] */ Int32 type)
 {
     mFeedbackType = type;
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::GetFeedbackType (
+ECode CAccessibilityServiceInfo::GetFeedbackType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type);
@@ -205,14 +270,14 @@ ECode CAccessibilityServiceInfo::GetFeedbackType (
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::SetNotificationTimeout (
+ECode CAccessibilityServiceInfo::SetNotificationTimeout(
     /* [in] */ Int64 timeout)
 {
     mNotificationTimeout = timeout;
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::GetNotificationTimeout (
+ECode CAccessibilityServiceInfo::GetNotificationTimeout(
     /* [out] */ Int64* timeout)
 {
     VALIDATE_NOT_NULL(timeout);
@@ -220,14 +285,14 @@ ECode CAccessibilityServiceInfo::GetNotificationTimeout (
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::SetFlags (
+ECode CAccessibilityServiceInfo::SetFlags(
     /* [in] */ Int32 flags)
 {
     mFlags = flags;
     return NOERROR;
 }
 
-ECode CAccessibilityServiceInfo::GetFlags (
+ECode CAccessibilityServiceInfo::GetFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags);
@@ -235,13 +300,6 @@ ECode CAccessibilityServiceInfo::GetFlags (
     return NOERROR;
 }
 
-/**
- * Updates the properties that an AccessibilitySerivice can change dynamically.
- *
- * @param other The info from which to update the properties.
- *
- * @hide
- */
 ECode CAccessibilityServiceInfo::UpdateDynamicallyConfigurableProperties(
     /* [in] */ IAccessibilityServiceInfo* other)
 {
@@ -254,13 +312,12 @@ ECode CAccessibilityServiceInfo::UpdateDynamicallyConfigurableProperties(
     return NOERROR;
 }
 
-/**
- * The accessibility service id.
- * <p>
- *   <strong>Generated by the system.</strong>
- * </p>
- * @return The id.
- */
+ECode CAccessibilityServiceInfo::SetComponentName(
+    /* [in] */ IComponentName* component)
+{
+    return component->FlattenToShortString(&mId);
+}
+
 ECode CAccessibilityServiceInfo::GetId(
     /* [out] */ String* str)
 {
@@ -269,13 +326,6 @@ ECode CAccessibilityServiceInfo::GetId(
     return NOERROR;
 }
 
-/**
- * The service {@link ResolveInfo}.
- * <p>
- *   <strong>Generated by the system.</strong>
- * </p>
- * @return The info.
- */
 ECode CAccessibilityServiceInfo::GetResolveInfo(
     /* [out] */ IResolveInfo** info)
 {
@@ -285,14 +335,6 @@ ECode CAccessibilityServiceInfo::GetResolveInfo(
     return NOERROR;
 }
 
-/**
- * The settings activity name.
- * <p>
- *    <strong>lly set from
- *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
- * </p>
- * @return The settings activity name.
- */
 ECode CAccessibilityServiceInfo::GetSettingsActivityName(
     /* [out] */ String* str)
 {
@@ -301,32 +343,30 @@ ECode CAccessibilityServiceInfo::GetSettingsActivityName(
     return NOERROR;
 }
 
-/**
- * Whether this service can retrieve the current window's content.
- * <p>
- *    <strong>lly set from
- *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
- * </p>
- * @return True if window content can be retrieved.
- */
 ECode CAccessibilityServiceInfo::GetCanRetrieveWindowContent(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mCanRetrieveWindowContent;
+    *result = (mCapabilities &
+            IAccessibilityServiceInfo::CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT) != 0;
     return NOERROR;
 }
 
-/**
- * Gets the non-localized description of the accessibility service.
- * <p>
- *    <strong>lly set from
- *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
- * </p>
- * @return The description.
- *
- * @deprecated Use {@link #loadDescription(PackageManager)}.
- */
+ECode CAccessibilityServiceInfo::GetCapabilities(
+    /* [out] */ Int32* capabilities)
+{
+    VALIDATE_NOT_NULL(capabilities);
+    *capabilities = mCapabilities;
+    return NOERROR;
+}
+
+ECode CAccessibilityServiceInfo::SetCapabilities(
+    /* [in] */ Int32 capabilities)
+{
+    mCapabilities = capabilities;
+    return NOERROR;
+}
+
 ECode CAccessibilityServiceInfo::GetDescription(
     /* [out] */ String* str)
 {
@@ -335,14 +375,6 @@ ECode CAccessibilityServiceInfo::GetDescription(
     return NOERROR;
 }
 
-/**
- * The localized description of the accessibility service.
- * <p>
- *    <strong>lly set from
- *    {@link AccessibilityService#SERVICE_META_DATA meta-data}.</strong>
- * </p>
- * @return The localized description.
- */
 ECode CAccessibilityServiceInfo::LoadDescription(
     /* [in] */ IPackageManager* packageManager,
     /* [out] */ String* str)
@@ -356,9 +388,9 @@ ECode CAccessibilityServiceInfo::LoadDescription(
     mResolveInfo->GetServiceInfo((IServiceInfo**)&serviceInfo);
     AutoPtr<ICharSequence> description;
     AutoPtr<IApplicationInfo> appInfo;
-    serviceInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     String pkgName;
-    serviceInfo->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(serviceInfo)->GetPackageName(&pkgName);
     packageManager->GetText(pkgName, mDescriptionResId, appInfo, (ICharSequence**)&description);
     if (description != NULL) {
         String des;
@@ -370,9 +402,6 @@ ECode CAccessibilityServiceInfo::LoadDescription(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
 ECode CAccessibilityServiceInfo::DescribeContents(
     /* [out] */ Int32* val)
 {
@@ -384,13 +413,69 @@ ECode CAccessibilityServiceInfo::DescribeContents(
 ECode CAccessibilityServiceInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(dest)
+
+    dest->WriteInt32(mEventTypes);
+
+    if (NULL != mPackageNames) {
+        dest->WriteInt32(1);
+        dest->WriteArrayOfString(mPackageNames);
+    }
+    else {
+        dest->WriteInt32(0);
+    }
+
+    dest->WriteInt32(mFeedbackType);
+    dest->WriteInt64(mNotificationTimeout);
+    dest->WriteInt32(mFlags);
+    dest->WriteString(mId);
+
+    if (NULL != mResolveInfo) {
+        dest->WriteInt32(1);
+        AutoPtr<IParcelable> parcelable = IParcelable::Probe(mResolveInfo);
+        FAIL_RETURN(parcelable->WriteToParcel(dest))
+    }
+    else {
+        dest->WriteInt32(0);
+    }
+
+    dest->WriteString(mSettingsActivityName);
+    dest->WriteInt32(mCapabilities);
+    dest->WriteInt32(mDescriptionResId);
+    dest->WriteString(mNonLocalizedDescription);
+
+    return NOERROR;
 }
 
 ECode CAccessibilityServiceInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(source)
+
+    Int32 value = 0;
+    source->ReadInt32(&mEventTypes);
+
+    if (source->ReadInt32(&value), value != 0) {
+        source->ReadArrayOfString((ArrayOf<String>**)&mPackageNames);
+    }
+
+    source->ReadInt32(&mFeedbackType);
+    source->ReadInt64(&mNotificationTimeout);
+    source->ReadInt32(&mFlags);
+    source->ReadString(&mId);
+
+    if (source->ReadInt32(&value), value != 0) {
+        AutoPtr<IResolveInfo> resolveInfo;
+        IParcelable::Probe(resolveInfo)->ReadFromParcel(source);
+        mResolveInfo = resolveInfo;
+    }
+
+    source->ReadString(&mSettingsActivityName);
+    source->ReadInt32(&mCapabilities);
+    source->ReadInt32(&mDescriptionResId);
+    source->ReadString(&mNonLocalizedDescription);
+
+    return NOERROR;
 }
 
 void CAccessibilityServiceInfo::InitFromParcel(
@@ -399,17 +484,94 @@ void CAccessibilityServiceInfo::InitFromParcel(
     ReadFromParcel(parcel);
 }
 
+ECode CAccessibilityServiceInfo::GetHashCode(
+    /* [out] */ Int32* code)
+{
+    VALIDATE_NOT_NULL(code)
+    Int32 result;
+    result = 31 * 1 + ((mId == NULL) ? 0 : mId.GetHashCode());
+    *code = result;
+    return NOERROR;
+}
+
+ECode CAccessibilityServiceInfo::Equals(
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* isEqual)
+{
+    VALIDATE_NOT_NULL(isEqual)
+    if (THIS_PROBE(IInterface) == obj) {
+        *isEqual = TRUE;
+        return NOERROR;
+    }
+
+    if (obj == NULL) {
+        *isEqual = FALSE;
+        return NOERROR;
+    }
+
+    if (!IAccessibilityServiceInfo::Probe(obj)) {
+        *isEqual = FALSE;
+        return NOERROR;
+    }
+
+    AutoPtr<CAccessibilityServiceInfo> other =
+    (CAccessibilityServiceInfo*)IAccessibilityServiceInfo::Probe(obj);
+    if (mId == NULL) {
+        if (other->mId != NULL) {
+            *isEqual = FALSE;
+            return NOERROR;
+        }
+    }
+    else if (mId != other->mId) {
+        *isEqual = FALSE;
+        return NOERROR;
+    }
+
+    *isEqual = TRUE;
+    return NOERROR;
+}
+
+ECode CAccessibilityServiceInfo::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+
+    AutoPtr<StringBuilder> stringBuilder = new StringBuilder();
+    AppendEventTypes(stringBuilder, mEventTypes);
+    stringBuilder->Append(", ");
+    AppendPackageNames(stringBuilder, mPackageNames);
+    stringBuilder->Append(", ");
+    AppendFeedbackTypes(stringBuilder, mFeedbackType);
+    stringBuilder->Append(", ");
+    stringBuilder->Append("mNotificationTimeout: ");
+    stringBuilder->Append(mNotificationTimeout);
+    stringBuilder->Append(", ");
+    AppendFlags(stringBuilder, mFlags);
+    stringBuilder->Append(", ");
+    stringBuilder->Append("mId: ");
+    stringBuilder->Append(mId);
+    stringBuilder->Append(", ");
+    stringBuilder->Append("mResolveInfo: ");
+    stringBuilder->Append(mResolveInfo);
+    stringBuilder->Append(", ");
+    stringBuilder->Append("mSettingsActivityName: ");
+    stringBuilder->Append(mSettingsActivityName);
+    stringBuilder->Append(", ");
+    AppendCapabilities(stringBuilder, mCapabilities);
+
+    *str = stringBuilder->ToString();
+    return NOERROR;
+}
+
 void CAccessibilityServiceInfo::AppendFeedbackTypes(
     /* [in] */ StringBuilder* stringBuilder,
     /* [in] */ Int32 feedbackTypes)
 {
-    using Elastos::Core::Math;
-
     (*stringBuilder) += "feedbackTypes:";
     (*stringBuilder) += "[";
 
     while (feedbackTypes != 0) {
-        Int32 feedbackTypeBit = (1 << Math::NumberOfTrailingZeros(feedbackTypes));
+        Int32 feedbackTypeBit = (1 << Elastos::Core::Math::NumberOfTrailingZeros(feedbackTypes));
         String s;
         FeedbackTypeToString(feedbackTypeBit, &s);
         (*stringBuilder) += s;
@@ -443,36 +605,34 @@ void CAccessibilityServiceInfo::AppendEventTypes(
     /* [in] */ StringBuilder* stringBuilder,
     /* [in] */ Int32 eventTypes)
 {
-    using Elastos::Core::Math;
     String info;
-    Int32 eventTypeBit;
-    AutoPtr<IAccessibilityEventHelper> helper;
-    CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
+    assert(0 && "TODO");
+    // Int32 eventTypeBit;
+    // AutoPtr<IAccessibilityEventHelper> helper;
+    // CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
 
-    (*stringBuilder) += "eventTypes:";
-    (*stringBuilder) += "[";
-    while (eventTypes != 0) {
-        eventTypeBit = (1 << Math::NumberOfTrailingZeros(eventTypes));
-        helper->EventTypeToString(eventTypeBit, &info);
-        (*stringBuilder) += info;
-        eventTypes &= ~eventTypeBit;
-        if (eventTypes != 0) {
-            (*stringBuilder) += ", ";
-        }
-    }
-    (*stringBuilder) += "]";
+    // (*stringBuilder) += "eventTypes:";
+    // (*stringBuilder) += "[";
+    // while (eventTypes != 0) {
+    //     eventTypeBit = (1 << Elastos::Core::Math::NumberOfTrailingZeros(eventTypes));
+    //     helper->EventTypeToString(eventTypeBit, &info);
+    //     (*stringBuilder) += info;
+    //     eventTypes &= ~eventTypeBit;
+    //     if (eventTypes != 0) {
+    //         (*stringBuilder) += ", ";
+    //     }
+    // }
+    // (*stringBuilder) += "]";
 }
 
 void CAccessibilityServiceInfo::AppendFlags(
     /* [in] */ StringBuilder* stringBuilder,
     /* [in] */ Int32 flags)
 {
-    using Elastos::Core::Math;
-
     (*stringBuilder) += "flags:";
     (*stringBuilder) += "[";
     while (flags != 0) {
-        Int32 flagBit = (1 << Math::NumberOfTrailingZeros(flags));
+        Int32 flagBit = (1 << Elastos::Core::Math::NumberOfTrailingZeros(flags));
         String s;
         FlagToString(flagBit, &s);
         (*stringBuilder) += s;
@@ -484,24 +644,34 @@ void CAccessibilityServiceInfo::AppendFlags(
     (*stringBuilder) += "]";
 }
 
-/**
- * Returns the string representation of a feedback type. For example,
- * {@link #FEEDBACK_SPOKEN} is represented by the string FEEDBACK_SPOKEN.
- *
- * @param feedbackType The feedback type.
- * @return The string representation.
- */
+void CAccessibilityServiceInfo::AppendCapabilities(
+    /* [in] */ StringBuilder* stringBuilder,
+    /* [in] */ Int32 capabilities)
+{
+    (*stringBuilder) += "capabilities:";
+    (*stringBuilder) += "[";
+    while (capabilities != 0) {
+        Int32 capabilityBit = (1 << Elastos::Core::Math::NumberOfTrailingZeros(capabilities));
+        String s;
+        CapabilityToString(capabilityBit, &s);
+        (*stringBuilder) += s;
+        capabilities &= ~capabilityBit;
+        if (capabilities != 0) {
+            (*stringBuilder) += ", ";
+        }
+    }
+    (*stringBuilder) += "]";
+}
+
 ECode CAccessibilityServiceInfo::FeedbackTypeToString(
     /* [in] */ Int32 feedbackType,
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
 
-    using Elastos::Core::Math;
-
     StringBuilder builder("[");
     while (feedbackType != 0) {
-        Int32 feedbackTypeFlag = 1 << Math::NumberOfTrailingZeros(feedbackType);
+        Int32 feedbackTypeFlag = 1 << Elastos::Core::Math::NumberOfTrailingZeros(feedbackType);
         feedbackType &= ~feedbackTypeFlag;
         switch (feedbackTypeFlag) {
             case IAccessibilityServiceInfo::FEEDBACK_AUDIBLE:
@@ -547,13 +717,6 @@ ECode CAccessibilityServiceInfo::FeedbackTypeToString(
     return NOERROR;
 }
 
-/**
- * Returns the string representation of a flag. For example,
- * {@link #DEFAULT} is represented by the string DEFAULT.
- *
- * @param flag The flag.
- * @return The string representation.
- */
 ECode CAccessibilityServiceInfo::FlagToString(
     /* [in] */ Int32 flag,
     /* [out] */ String* str)
@@ -570,11 +733,95 @@ ECode CAccessibilityServiceInfo::FlagToString(
         case IAccessibilityServiceInfo::FLAG_REQUEST_TOUCH_EXPLORATION_MODE:
             *str = "FLAG_REQUEST_TOUCH_EXPLORATION_MODE";
             break;
+        case IAccessibilityServiceInfo::FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY:
+            *str = "FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY";
+            break;
+        case IAccessibilityServiceInfo::FLAG_REPORT_VIEW_IDS:
+            *str = "FLAG_REPORT_VIEW_IDS";
+            break;
+        case IAccessibilityServiceInfo::FLAG_REQUEST_FILTER_KEY_EVENTS:
+            *str = "FLAG_REQUEST_FILTER_KEY_EVENTS";
+            break;
+        case IAccessibilityServiceInfo::FLAG_RETRIEVE_INTERACTIVE_WINDOWS:
+            *str = "FLAG_RETRIEVE_INTERACTIVE_WINDOWS";
+            break;
         default:
             *str = String(NULL);
             break;
         }
     return NOERROR;
+}
+
+ECode CAccessibilityServiceInfo::CapabilityToString(
+    /* [in] */ Int32 capability,
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+
+    switch (capability) {
+        case IAccessibilityServiceInfo::CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT:
+            *str = "CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT";
+            break;
+        case IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION:
+            *str = "CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION";
+            break;
+        case IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY:
+            *str = "CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY";
+            break;
+        case IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS:
+            *str = "CAPABILITY_CAN_FILTER_KEY_EVENTS";
+            break;
+        default:
+            *str = "UNKNOWN";
+            break;
+        }
+    return NOERROR;
+}
+
+ECode CAccessibilityServiceInfo::GetCapabilityInfos(
+    /* [out] */ IList** infos)
+{
+    VALIDATE_NOT_NULL(infos)
+    *infos = NULL;
+    assert(0 && "TODO");
+
+    // AutoPtr<ICollections> coll;
+    // CCollections::AcquireSingleton((ICollections**)&coll);
+
+    // if (mCapabilities == 0) {
+    //     return coll->GetEmptyList(infos);
+    // }
+    // Int32 capabilities = mCapabilities;
+    // AutoPtr<IList> capabilityInfos;
+    // CArrayList::New((IList**)&capabilityInfos);
+    // while (capabilities != 0) {
+    //     Int32 capabilityBit = 1 << Elastos::Core::Math::NumberOfTrailingZeros(capabilities);
+    //     capabilities &= ~capabilityBit;
+
+    //     AutoPtr<IInteger32> obj;
+    //     CInteger32::New(capabilityBit, (IInteger32**)&obj);
+    //     AutoPtr<CapabilityInfo> capabilityInfo;
+    //     sAvailableCapabilityInfos.Get(obj, (IInterface**)&capabilityInfo);
+
+    //     if (capabilityInfo != NULL) {
+    //         capabilityInfos->Add(capabilityInfo);
+    //     }
+    // }
+    // *infos = capabilityInfos;
+    // REFCOUNT_ADD(*infos);
+    return NOERROR;
+}
+
+String CAccessibilityServiceInfo::CapabilityInfo::ToString()
+{
+    StringBuilder sb("{CapabilityInfo ");
+    sb += mCapability;
+    sb += " / ";
+    sb += mTitleResId;
+    sb += " / ";
+    sb += mDescResId;
+    sb += "}";
+    return sb.ToString();
 }
 
 }

@@ -196,6 +196,7 @@ module
      * @see android.view.accessibility.AccessibilityManager
      *
      * @Involve
+     * interface IComponentCallbacks
      * interface IComponentCallbacks2
      * interface IContext
      * interface IContextWrapper
@@ -464,6 +465,9 @@ module
 
     }
 
+    /**
+     * @hide
+     */
     interface IAccessibilityServiceCallbacks
     {
         OnAccessibilityEvent(
@@ -481,7 +485,7 @@ module
             [out] Boolean* result);
 
         OnKeyEvent(
-            [in] IKeyEvent* event,
+             [in] IKeyEvent* event,
             [out] Boolean* result);
     }
 

@@ -1,11 +1,11 @@
-#include "AccessibilityService.h"
+#include "elastos/droid/accessibilityservice/AccessibilityService.h"
 #include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
-#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
+//#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
 
 using Elastos::Droid::Content::EIID_IContext;
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
-using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
-using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
+// using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +13,10 @@ namespace AccessibilityService {
 
 const String AccessibilityService::TAG("AccessibilityService");
 
-CAR_INTERFACE_IMPL(AccessibilityService::MyAccessibilityServiceCallbacks, IAccessibilityServiceCallbacks)
+CAR_INTERFACE_IMPL_5(AccessibilityService, Object, IAccessibilityService, /*IService,*/ IContextWrapper, IContext
+        , IComponentCallbacks2, IComponentCallbacks)
+
+CAR_INTERFACE_IMPL(AccessibilityService::MyAccessibilityServiceCallbacks, Object, IAccessibilityServiceCallbacks)
 
 AccessibilityService::MyAccessibilityServiceCallbacks::MyAccessibilityServiceCallbacks(
     /* [in] */ AccessibilityService* host)
@@ -48,122 +51,62 @@ ECode AccessibilityService::MyAccessibilityServiceCallbacks::OnGesture(
     /* [in] */ Int32 gestureId,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     return mHost->OnGesture(gestureId, result);
 }
 
-PInterface AccessibilityService::Probe(
-    /* [in] */ REIID riid)
+ECode AccessibilityService::MyAccessibilityServiceCallbacks::OnKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IAccessibilityService*)this;
-    }
-    else if (riid == EIID_IObject) {
-        return (IObject*)this;
-    }
-    if (riid == Elastos::Droid::App::EIID_IService) {
-        return (IService*)(IObject *)this;
-    }
-    else if (riid == Elastos::Droid::Content::EIID_IContextWrapper) {
-       return (IContextWrapper*)(IObject *)this;
-    }
-    else if (riid == Elastos::Droid::Content::EIID_IContext) {
-       return (IContext*)(IObject *)this;
-    }
-    else if (riid == Elastos::Droid::Content::EIID_IComponentCallbacks2) {
-       return (IComponentCallbacks2*)this;
-    }
-    else if (riid == EIID_IAccessibilityService) {
-       return (IAccessibilityService*)this;
-    }
-
-    return NULL;
+    VALIDATE_NOT_NULL(result)
+    return mHost->OnKeyEvent(event, result);
 }
 
-ECode AccessibilityService::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IAccessibilityService *)this) {
-        *pIID = EIID_IAccessibilityService;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
-        return NOERROR;
-    }
-    else if (pObject == (IContextWrapper *)(IObject *)this) {
-        *pIID = Elastos::Droid::Content::EIID_IContextWrapper;
-        return NOERROR;
-    }
-    else if (pObject == (IContext *)(IObject *)this) {
-        *pIID = Elastos::Droid::Content::EIID_IContext;
-        return NOERROR;
-    }
-    else if (pObject == (IComponentCallbacks2 *)(IObject *)this) {
-        *pIID = Elastos::Droid::Content::EIID_IComponentCallbacks2;
-        return NOERROR;
-    }
-    else if (pObject == (IService *)(IObject *)this) {
-        *pIID = Elastos::Droid::App::EIID_IService;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
-/**
- * Callback for {@link android.view.accessibility.AccessibilityEvent}s.
- *
- * @param event An event.
- */
 ECode AccessibilityService::OnAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     return NOERROR;
 }
 
-/**
- * Callback for interrupting the accessibility feedback.
- */
 ECode AccessibilityService::OnInterrupt()
 {
     return NOERROR;
 }
 
-/**
- * Gets the root node in the currently active window if this service
- * can retrieve window content.
- *
- * @return The root node if this service can retrieve window content.
- */
+ECode AccessibilityService::GetWindows(
+    /* [out] */ IList** windows)
+{
+    VALIDATE_NOT_NULL(windows)
+    *windows = NULL;
+    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
+
+    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+    // AutoPtr<IAccessibilityInteractionClient> client;
+    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+
+    // client->GetWindows(mConnectionId, windows);
+
+    return NOERROR;
+}
+
 ECode AccessibilityService::GetRootInActiveWindow(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
+    *info = NULL;
+    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    AutoPtr<IAccessibilityInteractionClient> client;
-    helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    return client->GetRootInActiveWindow(mConnectionId, info);
+    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+    // AutoPtr<IAccessibilityInteractionClient> client;
+    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+
+    // client->GetRootInActiveWindow(mConnectionId, info);
+    return NOERROR;
 }
 
-/**
- * Performs a global action. Such an action can be performed
- * at any moment regardless of the current application or user
- * location in that application. For example going back, going
- * home, opening recents, etc.
- *
- * @param action The action to perform.
- * @return Whether the action was successfully performed.
- *
- * @see #GLOBAL_ACTION_BACK
- * @see #GLOBAL_ACTION_HOME
- * @see #GLOBAL_ACTION_NOTIFICATIONS
- * @see #GLOBAL_ACTION_RECENTS
- */
 ECode AccessibilityService::PerformGlobalAction(
     /* [in] */ Int32 action,
     /* [out] */ Boolean* result)
@@ -171,65 +114,70 @@ ECode AccessibilityService::PerformGlobalAction(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    AutoPtr<IAccessibilityInteractionClient> client;
-    helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    AutoPtr<IIAccessibilityServiceConnection> connection;
-    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    if (connection != NULL) {
-        // try {
-        return connection->PerformGlobalAction(action, result);
-        // } catch (RemoteException re) {
-        //     Log.w(TAG, "Error while calling performGlobalAction", re);
-        // }
-    }
+    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+    // AutoPtr<IAccessibilityInteractionClient> client;
+    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+    // AutoPtr<IIAccessibilityServiceConnection> connection;
+    // client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+
+    // if (connection != NULL) {
+    //     // try {
+    //     return connection->PerformGlobalAction(action, result);
+    //     // } catch (RemoteException re) {
+    //     //     Log.w(TAG, "Error while calling performGlobalAction", re);
+    //     // }
+    // }
     return NOERROR;
 }
 
-/**
- * Gets the an {@link AccessibilityServiceInfo} describing this
- * {@link AccessibilityService}. This method is useful if one wants
- * to change some of the dynamically configurable properties at
- * runtime.
- *
- * @return The accessibility service info.
- *
- * @see AccessibilityNodeInfo
- */
+ECode AccessibilityService::FindFocus(
+    /* [in] */ Int32 focus,
+    /* [out] */ IAccessibilityNodeInfo** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = NULL;
+    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
+
+    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+    // AutoPtr<IAccessibilityInteractionClient> client;
+    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+
+    // client->FindFocus(mConnectionId,
+    //         IAccessibilityNodeInfo::ANY_WINDOW_ID,
+    //         IAccessibilityNodeInfo::ROOT_NODE_ID, focus, ret);
+
+    return NOERROR;
+}
+
 ECode AccessibilityService::GetServiceInfo(
     /* [out] */ IAccessibilityServiceInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
+    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    AutoPtr<IAccessibilityInteractionClient> client;
-    helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    AutoPtr<IIAccessibilityServiceConnection> connection;
-    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+    // AutoPtr<IAccessibilityInteractionClient> client;
+    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+    // AutoPtr<IIAccessibilityServiceConnection> connection;
+    // client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
-    if (connection != NULL) {
-        // try {
-        connection->GetServiceInfo(info);
-        return NOERROR;
-        // } catch (RemoteException re) {
-        //     Log.w(TAG, "Error while getting AccessibilityServiceInfo", re);
-        // }
-    }
+    // if (connection != NULL) {
+    //     // try {
+    //     connection->GetServiceInfo(info);
+    //     return NOERROR;
+    //     // } catch (RemoteException re) {
+    //     //     Log.w(TAG, "Error while getting AccessibilityServiceInfo", re);
+    //     // }
+    // }
     return NOERROR;
 }
 
-/**
- * Sets the {@link AccessibilityServiceInfo} that describes this service.
- * <p>
- * Note: You can call this method any time but the info will be picked up after
- *       the system has bound to this service and when this method is called thereafter.
- *
- * @param info The info.
- */
 ECode AccessibilityService::SetServiceInfo(
     /* [in] */ IAccessibilityServiceInfo* info)
 {
@@ -243,14 +191,16 @@ ECode AccessibilityService::OnBind(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder);
-    AutoPtr<ILooper> looper;
-    Service::GetMainLooper((ILooper**)&looper);
-    AutoPtr<MyAccessibilityServiceCallbacks> callbacks = new MyAccessibilityServiceCallbacks(this);
-    AutoPtr<IAccessibilityServiceClientWrapper> wrapper;
-    CAccessibilityServiceClientWrapper::New(THIS_PROBE(IContext), looper, callbacks,
-        (IAccessibilityServiceClientWrapper**)&wrapper);
-    *binder = IBinder::Probe(wrapper);
-    REFCOUNT_ADD(*binder);
+    *binder = NULL;
+    assert(0 && "TODO");
+    // AutoPtr<ILooper> looper;
+    // Service::GetMainLooper((ILooper**)&looper);
+    // AutoPtr<MyAccessibilityServiceCallbacks> callbacks = new MyAccessibilityServiceCallbacks(this);
+    // AutoPtr<IAccessibilityServiceClientWrapper> wrapper;
+    // CAccessibilityServiceClientWrapper::New(THIS_PROBE(IContext), looper, callbacks,
+    //         (IAccessibilityServiceClientWrapper**)&wrapper);
+    // *binder = IBinder::Probe(wrapper);
+    // REFCOUNT_ADD(*binder);
     return NOERROR;
 }
 
@@ -268,29 +218,35 @@ ECode AccessibilityService::OnGesture(
     return NOERROR;
 }
 
-/**
- * Sets the {@link AccessibilityServiceInfo} for this service if the latter is
- * properly set and there is an {@link IIAccessibilityServiceConnection} to the
- * AccessibilityManagerService.
- */
+ECode AccessibilityService::OnKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
+}
+
 void AccessibilityService::SendServiceInfo()
 {
-    AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    AutoPtr<IAccessibilityInteractionClient> client;
-    helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    AutoPtr<IIAccessibilityServiceConnection> connection;
-    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    if (mInfo != NULL && connection != NULL) {
-        // try {
-        connection->SetServiceInfo(mInfo);
-        mInfo = NULL;
-        client->ClearCache();
-        // } catch (RemoteException re) {
-        //     Log.w(TAG, "Error while setting AccessibilityServiceInfo", re);
-        // }
-    }
+    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
+    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
+    // AutoPtr<IAccessibilityInteractionClient> client;
+    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
+    // AutoPtr<IIAccessibilityServiceConnection> connection;
+    // client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+
+    // if (mInfo != NULL && connection != NULL) {
+    //     // try {
+    //     connection->SetServiceInfo(mInfo);
+    //     mInfo = NULL;
+    //     client->ClearCache();
+    //     // } catch (RemoteException re) {
+    //     //     Log.w(TAG, "Error while setting AccessibilityServiceInfo", re);
+    //     // }
+    // }
 }
 
 }
