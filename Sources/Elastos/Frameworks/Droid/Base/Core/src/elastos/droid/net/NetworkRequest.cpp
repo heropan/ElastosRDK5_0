@@ -37,29 +37,6 @@ ECode NetworkRequest::constructor(
 #endif
 }
 
-ECode NetworkRequest::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode NetworkRequest::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeParcelable(networkCapabilities, flags);
-        dest.writeInt(legacyType);
-        dest.writeInt(requestId);
-
-#endif
-}
-
 ECode NetworkRequest::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

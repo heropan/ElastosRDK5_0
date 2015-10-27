@@ -15,21 +15,6 @@ module
     }}} // Elastos.Droid.Net
 
     //
-    // Elastos.Droid.Wifi
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Wifi {
-
-        interface IWifiInfo {}
-
-        interface IWifiSsid {}
-
-        interface IWifiManager {}
-
-    }}} // Elastos.Droid.Wifi
-
-    //
     // Elastos.Droid.Internal.Utility
     //
     namespace Elastos {

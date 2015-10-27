@@ -224,30 +224,6 @@ ECode LinkAddress::IsGlobalPreferred(
 #endif
 }
 
-ECode LinkAddress::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode LinkAddress::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeByteArray(address.getAddress());
-        dest.writeInt(prefixLength);
-        dest.writeInt(this.flags);
-        dest.writeInt(scope);
-
-#endif
-}
-
 ECode LinkAddress::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

@@ -101,14 +101,6 @@ ECode CPppoeDevInfo::GetConnectMode(
     return NOERROR;
 }
 
-ECode CPppoeDevInfo::DescribeContents(
-    /* [out] */ Int32* content)
-{
-    VALIDATE_NOT_NULL(content);
-    *content = 0;
-    return NOERROR;
-}
-
 ECode CPppoeDevInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

@@ -229,21 +229,6 @@ public:
         /* [out] */ String* result);
 
     /**
-     * Implement the Parcelable interface
-     * @hide
-     */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    /**
-     * Implement the Parcelable interface.
-     * @hide
-     */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    /**
      * Implement the Parcelable interface.
      * @hide
      */

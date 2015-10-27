@@ -82,19 +82,6 @@ module
         IsGlobalPreferred(
             [out] Boolean* result);
 
-        /**
-         * Implement the Parcelable interface.
-         */
-        DescribeContents(
-            [out] Int32* result);
-
-        /**
-         * Implement the Parcelable interface.
-         */
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
-
     }
 
     } // namespace Net

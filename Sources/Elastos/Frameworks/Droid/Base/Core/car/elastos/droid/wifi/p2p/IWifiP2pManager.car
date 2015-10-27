@@ -9,16 +9,28 @@ module
     namespace P2p {
 
     /**
-     * A class representing Wifi Display information for a device
-     * @hide
+     * Interface that WifiP2pService implements
+     *
+     * {@hide}
+     */
+    /**
+     * @Involved
+     * no super interface
      */
     interface IIWifiP2pManager {
         GetMessenger(
-            [out] IMessenger** msg);
+            [out] IMessenger** result);
+
+        GetP2pStateMachineMessenger(
+            [out] IMessenger** result);
+
+        SetMiracastMode(
+            [in] Int32 mode);
+
     }
 
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }

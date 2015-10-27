@@ -141,28 +141,6 @@ ECode IpPrefix::ToString(
 #endif
 }
 
-ECode IpPrefix::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode IpPrefix::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeByteArray(address);
-        dest.writeInt(prefixLength);
-
-#endif
-}
-
 ECode IpPrefix::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

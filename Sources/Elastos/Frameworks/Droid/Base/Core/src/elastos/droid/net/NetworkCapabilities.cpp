@@ -440,31 +440,6 @@ ECode NetworkCapabilities::HashCode(
 #endif
 }
 
-ECode NetworkCapabilities::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode NetworkCapabilities::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeLong(mNetworkCapabilities);
-        dest.writeLong(mTransportTypes);
-        dest.writeInt(mLinkUpBandwidthKbps);
-        dest.writeInt(mLinkDownBandwidthKbps);
-        dest.writeString(mNetworkSpecifier);
-
-#endif
-}
-
 ECode NetworkCapabilities::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

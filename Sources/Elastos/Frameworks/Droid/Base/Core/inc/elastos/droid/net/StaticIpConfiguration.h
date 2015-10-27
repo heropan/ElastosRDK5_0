@@ -83,15 +83,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    /** Implement the Parcelable interface */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    /** Implement the Parcelable interface */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
     // protected
     static CARAPI ReadFromParcel(
         /* [in] */ IStaticIpConfiguration* s,

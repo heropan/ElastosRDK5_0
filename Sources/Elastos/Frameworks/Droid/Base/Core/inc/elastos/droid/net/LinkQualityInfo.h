@@ -30,28 +30,6 @@ public:
     CARAPI constructor();
 
     /**
-     * Implement the Parcelable interface
-     * @hide
-     */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    /**
-     * @hide
-     */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    /**
-     * @hide
-     */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags,
-        /* [in] */ Int32 objectType);
-
-    /**
      * @hide
      */
     CARAPI ReadFromParcel(

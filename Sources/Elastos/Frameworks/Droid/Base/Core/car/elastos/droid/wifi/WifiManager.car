@@ -1,221 +1,44 @@
 
 module
 {
+    interface Elastos.Droid.Wifi.IWifiManagerTxPacketCountListener;
+    interface Elastos.Droid.Wifi.IWifiManagerActionListener;
+    interface Elastos.Droid.Wifi.IWpsInfo;
+    interface Elastos.Droid.Wifi.IWifiManagerWpsCallback;
+    interface Elastos.Droid.Wifi.IWifiManagerWifiLock;
+    interface Elastos.Droid.Wifi.IWifiManagerMulticastLock;
+    // interface Elastos.Droid.Annotation.ISdkConstant;
+// No match parts: import android.annotation.SdkConstant.SdkConstantType;
+    // interface Elastos.Droid.Annotation.ISystemApi;
+    // interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IDhcpInfo;
+    // interface Elastos.Droid.Wifi.IScanSettings;
+    // interface Elastos.Droid.Wifi.IWifiChannel;
+    // interface Elastos.Droid.Os.IBinder;
+    // interface Elastos.Droid.Os.IIBinder;
+    // interface Elastos.Droid.Os.IHandler;
+    // interface Elastos.Droid.Os.IHandlerThread;
+    // interface Elastos.Droid.Os.ILooper;
+    // interface Elastos.Droid.Os.IMessage;
+    // interface Elastos.Droid.Os.IRemoteException;
     interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.Os.IMessenger;
+    // interface Elastos.Droid.Util.ILog;
+    // interface Elastos.Droid.Util.ISparseArray;
+    using interface Elastos.Net.IInetAddress;
+// No match parts: import java.util.concurrent.CountDownLatch;
+    // interface Elastos.Droid.Internal.Util.IAsyncChannel;
+    // interface Elastos.Droid.Internal.Util.IProtocol;
+    using interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {
     namespace Wifi {
 
-        /** Interface for callback invocation on a TX packet count poll action {@hide} */
-        interface ITxPacketCountListener {
-            /**
-             * The operation succeeded
-             * @param count TX packet counter
-             */
-            OnSuccess(
-                [in] Int32 count);
-            /**
-             * The operation failed
-             * @param reason The reason for failure could be one of
-             * {@link #ERROR}, {@link #IN_PROGRESS} or {@link #BUSY}
-             */
-            OnFailure(
-                [in] Int32 reason);
-        }
-
-        /** Interface for callback invocation on an application action {@hide} */
-        interface IWifiManagerActionListener {
-            /** The operation succeeded */
-            OnSuccess();
-            /**
-             * The operation failed
-             * @param reason The reason for failure could be one of
-             * {@link #ERROR}, {@link #IN_PROGRESS} or {@link #BUSY}
-             */
-            OnFailure(
-                [in] Int32 reason);
-        }
-
-        /** Interface for callback invocation on a start WPS action {@hide} */
-        interface IWpsListener {
-            /** WPS start succeeded */
-            OnStartSuccess(
-                [in] String pin);
-
-            /** WPS operation completed succesfully */
-            OnCompletion();
-
-            /**
-             * WPS operation failed
-             * @param reason The reason for failure could be one of
-             * {@link #IN_PROGRESS}, {@link #WPS_OVERLAP_ERROR},{@link #ERROR} or {@link #BUSY}
-             */
-            OnFailure(
-                [in] Int32 reason);
-        }
-
-        /**
-         * Allows an application to keep the Wi-Fi radio awake.
-         * Normally the Wi-Fi radio may turn off when the user has not used the device in a while.
-         * Acquiring a WifiLock will keep the radio on until the lock is released.  Multiple
-         * applications may hold WifiLocks, and the radio will only be allowed to turn off when no
-         * WifiLocks are held in any application.
-         * <p>
-         * Before using a WifiLock, consider carefully if your application requires Wi-Fi access, or
-         * could function over a mobile network, if available.  A program that needs to download large
-         * files should hold a WifiLock to ensure that the download will complete, but a program whose
-         * network usage is occasional or low-bandwidth should not hold a WifiLock to avoid adversely
-         * affecting battery life.
-         * <p>
-         * Note that WifiLocks cannot override the user-level "Wi-Fi Enabled" setting, nor Airplane
-         * Mode.  They simply keep the radio from turning off when Wi-Fi is already on but the device
-         * is idle.
-         * <p>
-         * Any application using a WifiLock must request the {@code android.permission.WAKE_LOCK}
-         * permission in an {@code &lt;uses-permission&gt;} element of the application's manifest.
-         */
-        [deprecated]
-        interface IWifiLock {
-            /**
-             * Locks the Wi-Fi radio on until {@link #release} is called.
-             *
-             * If this WifiLock is reference-counted, each call to {@code acquire} will increment the
-             * reference count, and the radio will remain locked as long as the reference count is
-             * above zero.
-             *
-             * If this WifiLock is not reference-counted, the first call to {@code acquire} will lock
-             * the radio, but subsequent calls will be ignored.  Only one call to {@link #release}
-             * will be required, regardless of the number of times that {@code acquire} is called.
-             */
-            AcquireLock();
-
-            /**
-             * Unlocks the Wi-Fi radio, allowing it to turn off when the device is idle.
-             *
-             * If this WifiLock is reference-counted, each call to {@code release} will decrement the
-             * reference count, and the radio will be unlocked only when the reference count reaches
-             * zero.  If the reference count goes below zero (that is, if {@code release} is called
-             * a greater number of times than {@link #acquire}), an exception is thrown.
-             *
-             * If this WifiLock is not reference-counted, the first call to {@code release} (after
-             * the radio was locked using {@link #acquire}) will unlock the radio, and subsequent
-             * calls will be ignored.
-             */
-            ReleaseLock();
-
-            /**
-             * Controls whether this is a reference-counted or non-reference-counted WifiLock.
-             *
-             * Reference-counted WifiLocks keep track of the number of calls to {@link #acquire} and
-             * {@link #release}, and only allow the radio to sleep when every call to {@link #acquire}
-             * has been balanced with a call to {@link #release}.  Non-reference-counted WifiLocks
-             * lock the radio whenever {@link #acquire} is called and it is unlocked, and unlock the
-             * radio whenever {@link #release} is called and it is locked.
-             *
-             * @param refCounted true if this WifiLock should keep a reference count
-             */
-            SetReferenceCounted(
-                [in] Boolean refCounted);
-
-            /**
-             * Checks whether this WifiLock is currently held.
-             *
-             * @return true if this WifiLock is held, false otherwise
-             */
-            IsHeld(
-                [out] Boolean* held);
-
-            SetWorkSource(
-                [in] IWorkSource* ws);
-        }
-
-
-        interface IMulticastLock {
-            /**
-             * Locks Wifi Multicast on until {@link #release} is called.
-             *
-             * If this MulticastLock is reference-counted each call to
-             * {@code acquire} will increment the reference count, and the
-             * wifi interface will receive multicast packets as long as the
-             * reference count is above zero.
-             *
-             * If this MulticastLock is not reference-counted, the first call to
-             * {@code acquire} will turn on the multicast packets, but subsequent
-             * calls will be ignored.  Only one call to {@link #release} will
-             * be required, regardless of the number of times that {@code acquire}
-             * is called.
-             *
-             * Note that other applications may also lock Wifi Multicast on.
-             * Only they can relinquish their lock.
-             *
-             * Also note that applications cannot leave Multicast locked on.
-             * When an app exits or crashes, any Multicast locks will be released.
-             */
-            AcquireLock();
-
-            /**
-             * Unlocks Wifi Multicast, restoring the filter of packets
-             * not addressed specifically to this device and saving power.
-             *
-             * If this MulticastLock is reference-counted, each call to
-             * {@code release} will decrement the reference count, and the
-             * multicast packets will only stop being received when the reference
-             * count reaches zero.  If the reference count goes below zero (that
-             * is, if {@code release} is called a greater number of times than
-             * {@link #acquire}), an exception is thrown.
-             *
-             * If this MulticastLock is not reference-counted, the first call to
-             * {@code release} (after the radio was multicast locked using
-             * {@link #acquire}) will unlock the multicast, and subsequent calls
-             * will be ignored.
-             *
-             * Note that if any other Wifi Multicast Locks are still outstanding
-             * this {@code release} call will not have an immediate effect.  Only
-             * when all applications have released all their Multicast Locks will
-             * the Multicast filter be turned back on.
-             *
-             * Also note that when an app exits or crashes all of its Multicast
-             * Locks will be automatically released.
-             */
-            ReleaseLock();
-
-            /**
-             * Controls whether this is a reference-counted or non-reference-
-             * counted MulticastLock.
-             *
-             * Reference-counted MulticastLocks keep track of the number of calls
-             * to {@link #acquire} and {@link #release}, and only stop the
-             * reception of multicast packets when every call to {@link #acquire}
-             * has been balanced with a call to {@link #release}.  Non-reference-
-             * counted MulticastLocks allow the reception of multicast packets
-             * whenever {@link #acquire} is called and stop accepting multicast
-             * packets whenever {@link #release} is called.
-             *
-             * @param refCounted true if this MulticastLock should keep a reference
-             * count
-             */
-            SetReferenceCounted(
-                [in] Boolean refCounted);
-
-            /**
-             * Checks whether this MulticastLock is currently held.
-             *
-             * @return true if this MulticastLock is held, false otherwise
-             */
-            IsHeld(
-                [out] Boolean* held);
-        }
-
-
-
     /**
      * This class provides the primary API for managing all aspects of Wi-Fi
      * connectivity. Get an instance of this class by calling
      * {@link android.content.Context#getSystemService(String) Context.getSystemService(Context.WIFI_SERVICE)}.
-
      * It deals with several categories of items:
      * <ul>
      * <li>The list of configured networks. The list can be viewed and updated,
@@ -232,24 +55,29 @@ module
      * perform operations that pertain to network connectivity at an abstract
      * level, use {@link android.net.ConnectivityManager}.
      */
+    /**
+     * @Involved
+     * no super interface
+     */
+    [local]
     interface IWifiManager {
-        // Supplicant error codes:
         /**
          * The error code if there was a problem authenticating.
          */
         const Int32 ERROR_AUTHENTICATING = 1;
 
         /**
-         * Broadcast intent action indicating that Wi-Fi has been enabled, disabled,
-         * enabling, disabling, or unknown. One extra provides this state as an int.
-         * Another extra provides the previous state, if available.
-         *
-         * @see #EXTRA_WIFI_STATE
-         * @see #EXTRA_PREVIOUS_WIFI_STATE
+         * Broadcast intent action indicating whether Wi-Fi scanning is allowed currently
+         * @hide
          */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String WIFI_STATE_CHANGED_ACTION =
-            "android.net.wifi.WIFI_STATE_CHANGED";
+        const String WIFI_SCAN_AVAILABLE = "wifi_scan_available";
+
+        /**
+         * Extra int indicating scan availability, WIFI_STATE_ENABLED and WIFI_STATE_DISABLED
+         * @hide
+         */
+        const String EXTRA_SCAN_AVAILABLE = "scan_enabled";
+
         /**
          * The lookup key for an int that indicates whether Wi-Fi is enabled,
          * disabled, enabling, disabling, or unknown.  Retrieve it with
@@ -262,6 +90,7 @@ module
          * @see #WIFI_STATE_UNKNOWN
          */
         const String EXTRA_WIFI_STATE = "wifi_state";
+
         /**
          * The previous Wi-Fi state.
          *
@@ -277,6 +106,7 @@ module
          * @see #getWifiState()
          */
         const Int32 WIFI_STATE_DISABLING = 0;
+
         /**
          * Wi-Fi is disabled.
          *
@@ -284,6 +114,7 @@ module
          * @see #getWifiState()
          */
         const Int32 WIFI_STATE_DISABLED = 1;
+
         /**
          * Wi-Fi is currently being enabled. The state will change to {@link #WIFI_STATE_ENABLED} if
          * it finishes successfully.
@@ -292,6 +123,7 @@ module
          * @see #getWifiState()
          */
         const Int32 WIFI_STATE_ENABLING = 2;
+
         /**
          * Wi-Fi is enabled.
          *
@@ -299,6 +131,7 @@ module
          * @see #getWifiState()
          */
         const Int32 WIFI_STATE_ENABLED = 3;
+
         /**
          * Wi-Fi is in an unknown state. This state will occur when an error happens while enabling
          * or disabling.
@@ -314,8 +147,7 @@ module
          *
          * @hide
          */
-        const String WIFI_AP_STATE_CHANGED_ACTION =
-            "android.net.wifi.WIFI_AP_STATE_CHANGED";
+        const String WIFI_AP_STATE_CHANGED_ACTION = "android.net.wifi.WIFI_AP_STATE_CHANGED";
 
         /**
          * The lookup key for an int that indicates whether Wi-Fi AP is enabled,
@@ -331,6 +163,7 @@ module
          * @hide
          */
         const String EXTRA_WIFI_AP_STATE = "wifi_state";
+
         /**
          * The previous Wi-Fi state.
          *
@@ -339,6 +172,7 @@ module
          * @hide
          */
         const String EXTRA_PREVIOUS_WIFI_AP_STATE = "previous_wifi_state";
+
         /**
          * Wi-Fi AP is currently being disabled. The state will change to
          * {@link #WIFI_AP_STATE_DISABLED} if it finishes successfully.
@@ -349,6 +183,7 @@ module
          * @hide
          */
         const Int32 WIFI_AP_STATE_DISABLING = 10;
+
         /**
          * Wi-Fi AP is disabled.
          *
@@ -358,6 +193,7 @@ module
          * @hide
          */
         const Int32 WIFI_AP_STATE_DISABLED = 11;
+
         /**
          * Wi-Fi AP is currently being enabled. The state will change to
          * {@link #WIFI_AP_STATE_ENABLED} if it finishes successfully.
@@ -368,6 +204,7 @@ module
          * @hide
          */
         const Int32 WIFI_AP_STATE_ENABLING = 12;
+
         /**
          * Wi-Fi AP is enabled.
          *
@@ -377,6 +214,7 @@ module
          * @hide
          */
         const Int32 WIFI_AP_STATE_ENABLED = 13;
+
         /**
          * Wi-Fi AP is in a failed state. This state will occur when an error occurs during
          * enabling or disabling
@@ -389,42 +227,20 @@ module
         const Int32 WIFI_AP_STATE_FAILED = 14;
 
         /**
-         * Broadcast intent action indicating that a connection to the supplicant has
-         * been established (and it is now possible
-         * to perform Wi-Fi operations) or the connection to the supplicant has been
-         * lost. One extra provides the connection state as a boolean, where {@code true}
-         * means CONNECTED.
-         * @see #EXTRA_SUPPLICANT_CONNECTED
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String SUPPLICANT_CONNECTION_CHANGE_ACTION =
-            "android.net.wifi.supplicant.CONNECTION_CHANGE";
-        /**
          * The lookup key for a boolean that indicates whether a connection to
          * the supplicant daemon has been gained or lost. {@code true} means
          * a connection now exists.
          * Retrieve it with {@link android.content.Intent#getBooleanExtra(String,boolean)}.
          */
         const String EXTRA_SUPPLICANT_CONNECTED = "connected";
-        /**
-         * Broadcast intent action indicating that the state of Wi-Fi connectivity
-         * has changed. One extra provides the new state
-         * in the form of a {@link android.net.NetworkInfo} object. If the new
-         * state is CONNECTED, additional extras may provide the BSSID and WifiInfo of
-         * the access point.
-         * as a {@code String}.
-         * @see #EXTRA_NETWORK_INFO
-         * @see #EXTRA_BSSID
-         * @see #EXTRA_WIFI_INFO
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String NETWORK_STATE_CHANGED_ACTION = "android.net.wifi.STATE_CHANGE";
+
         /**
          * The lookup key for a {@link android.net.NetworkInfo} object associated with the
          * Wi-Fi network. Retrieve with
          * {@link android.content.Intent#getParcelableExtra(String)}.
          */
         const String EXTRA_NETWORK_INFO = "networkInfo";
+
         /**
          * The lookup key for a String giving the BSSID of the access point to which
          * we are connected. Only present when the new state is CONNECTED.
@@ -432,6 +248,7 @@ module
          * {@link android.content.Intent#getStringExtra(String)}.
          */
         const String EXTRA_BSSID = "bssid";
+
         /**
          * The lookup key for a {@link android.net.wifi.WifiInfo} object giving the
          * information about the access point to which we are connected. Only present
@@ -439,18 +256,7 @@ module
          * {@link android.content.Intent#getParcelableExtra(String)}.
          */
         const String EXTRA_WIFI_INFO = "wifiInfo";
-        /**
-         * Broadcast intent action indicating that the state of establishing a connection to
-         * an access point has changed.One extra provides the new
-         * {@link SupplicantState}. Note that the supplicant state is Wi-Fi specific, and
-         * is not generally the most useful thing to look at if you are just interested in
-         * the overall state of connectivity.
-         * @see #EXTRA_NEW_STATE
-         * @see #EXTRA_SUPPLICANT_ERROR
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String SUPPLICANT_STATE_CHANGED_ACTION =
-            "android.net.wifi.supplicant.STATE_CHANGE";
+
         /**
          * The lookup key for a {@link SupplicantState} describing the new state
          * Retrieve with
@@ -475,58 +281,59 @@ module
          * Wi-Fi configurations changed, {@link #EXTRA_WIFI_CONFIGURATION} will not be present.
          * @hide
          */
-        const String CONFIGURED_NETWORKS_CHANGED_ACTION =
-            "android.net.wifi.CONFIGURED_NETWORKS_CHANGE";
+        // @SystemApi
+        const String CONFIGURED_NETWORKS_CHANGED_ACTION = "android.net.wifi.CONFIGURED_NETWORKS_CHANGE";
+
         /**
          * The lookup key for a (@link android.net.wifi.WifiConfiguration} object representing
          * the changed Wi-Fi configuration when the {@link #CONFIGURED_NETWORKS_CHANGED_ACTION}
          * broadcast is sent.
          * @hide
          */
+        // @SystemApi
         const String EXTRA_WIFI_CONFIGURATION = "wifiConfiguration";
+
         /**
          * Multiple network configurations have changed.
          * @see #CONFIGURED_NETWORKS_CHANGED_ACTION
          *
          * @hide
          */
+        // @SystemApi
         const String EXTRA_MULTIPLE_NETWORKS_CHANGED = "multipleChanges";
+
         /**
          * The lookup key for an integer indicating the reason a Wi-Fi network configuration
          * has changed. Only present if {@link #EXTRA_MULTIPLE_NETWORKS_CHANGED} is {@code false}
          * @see #CONFIGURED_NETWORKS_CHANGED_ACTION
          * @hide
          */
+        // @SystemApi
         const String EXTRA_CHANGE_REASON = "changeReason";
+
         /**
          * The configuration is new and was added.
          * @hide
          */
+        // @SystemApi
         const Int32 CHANGE_REASON_ADDED = 0;
+
         /**
          * The configuration was removed and is no longer present in the system's list of
          * configured networks.
          * @hide
          */
+        // @SystemApi
         const Int32 CHANGE_REASON_REMOVED = 1;
+
         /**
          * The configuration has changed as a result of explicit action or because the system
          * took an automated action such as disabling a malfunctioning configuration.
          * @hide
          */
+        // @SystemApi
         const Int32 CHANGE_REASON_CONFIG_CHANGE = 2;
-        /**
-         * An access point scan has completed, and results are available from the supplicant.
-         * Call {@link #getScanResults()} to obtain the results.
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String SCAN_RESULTS_AVAILABLE_ACTION = "android.net.wifi.SCAN_RESULTS";
-        /**
-         * The RSSI (signal strength) has changed.
-         * @see #EXTRA_NEW_RSSI
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String RSSI_CHANGED_ACTION = "android.net.wifi.RSSI_CHANGED";
+
         /**
          * The lookup key for an {@code int} giving the new RSSI in dBm.
          */
@@ -537,8 +344,7 @@ module
          * changed on wifi.
          * @hide
          */
-        const String LINK_CONFIGURATION_CHANGED_ACTION =
-            "android.net.wifi.LINK_CONFIGURATION_CHANGED";
+        const String LINK_CONFIGURATION_CHANGED_ACTION = "android.net.wifi.LINK_CONFIGURATION_CHANGED";
 
         /**
          * The lookup key for a {@link android.net.LinkProperties} object associated with the
@@ -549,26 +355,12 @@ module
         const String EXTRA_LINK_PROPERTIES = "linkProperties";
 
         /**
-         * The lookup key for a {@link android.net.LinkCapabilities} object associated with the
+         * The lookup key for a {@link android.net.NetworkCapabilities} object associated with the
          * Wi-Fi network. Retrieve with
          * {@link android.content.Intent#getParcelableExtra(String)}.
          * @hide
          */
-        const String EXTRA_LINK_CAPABILITIES = "linkCapabilities";
-
-        /**
-         * The network IDs of the configured networks could have changed.
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String NETWORK_IDS_CHANGED_ACTION = "android.net.wifi.NETWORK_IDS_CHANGED";
-
-        /**
-         * Activity Action: Pick a Wi-Fi network to connect to.
-         * <p>Input: Nothing.
-         * <p>Output: Nothing.
-         */
-        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
-        const String ACTION_PICK_WIFI_NETWORK = "android.net.wifi.PICK_WIFI_NETWORK";
+        const String EXTRA_NETWORK_CAPABILITIES = "networkCapabilities";
 
         /**
          * In this Wi-Fi lock mode, Wi-Fi will be kept active,
@@ -578,6 +370,7 @@ module
          * access points but none are in range.
          */
         const Int32 WIFI_MODE_FULL = 1;
+
         /**
          * In this Wi-Fi lock mode, Wi-Fi will be kept active,
          * but the only operation that will be supported is initiation of
@@ -588,6 +381,7 @@ module
          * an application in this mode.
          */
         const Int32 WIFI_MODE_SCAN_ONLY = 2;
+
         /**
          * In this Wi-Fi lock mode, Wi-Fi will be kept active as in mode
          * {@link #WIFI_MODE_FULL} but it operates at high performance
@@ -639,92 +433,117 @@ module
          */
         const Int32 DATA_ACTIVITY_NOTIFICATION = 1;
 
-        //Lowest bit indicates data reception and the second lowest
-        //bit indicates data transmitted
         /** @hide */
-        const Int32 DATA_ACTIVITY_NONE         = 0x00;
-        /** @hide */
-        const Int32 DATA_ACTIVITY_IN           = 0x01;
-        /** @hide */
-        const Int32 DATA_ACTIVITY_OUT          = 0x02;
-        /** @hide */
-        const Int32 DATA_ACTIVITY_INOUT        = 0x03;
-
-        /* TODO: deprecate synchronous API and open up the following API */
-
-        //const Int32 BASE = /*Protocol.BASE_WIFI_MANAGER*/ 0x00025000;
-
-        /* Commands to WifiService */
-        /** @hide */
-        const Int32 CONNECT_NETWORK                 = 0x00025001 /*BASE1 + 1*/;
-        /** @hide */
-        const Int32 CONNECT_NETWORK_FAILED          = 0x00025002 /*BASE1 + 2*/;
-        /** @hide */
-        const Int32 CONNECT_NETWORK_SUCCEEDED       = 0x00025003 /*BASE1 + 3*/;
+        const Int32 DATA_ACTIVITY_NONE = 0x00;
 
         /** @hide */
-        const Int32 FORGET_NETWORK                  = 0x00025004 /*BASE1 + 4*/;
-        /** @hide */
-        const Int32 FORGET_NETWORK_FAILED           = 0x00025005 /*BASE1 + 5*/;
-        /** @hide */
-        const Int32 FORGET_NETWORK_SUCCEEDED        = 0x00025006 /*BASE1 + 6*/;
+        const Int32 DATA_ACTIVITY_IN = 0x01;
 
         /** @hide */
-        const Int32 SAVE_NETWORK                    = 0x00025007 /*BASE1 + 7*/;
-        /** @hide */
-        const Int32 SAVE_NETWORK_FAILED             = 0x00025008 /*BASE1 + 8*/;
-        /** @hide */
-        const Int32 SAVE_NETWORK_SUCCEEDED          = 0x00025009 /*BASE1 + 9*/;
+        const Int32 DATA_ACTIVITY_OUT = 0x02;
 
         /** @hide */
-        const Int32 START_WPS                       = 0x0002500A /*BASE1 + 10*/;
-        /** @hide */
-        const Int32 START_WPS_SUCCEEDED             = 0x0002500B /*BASE1 + 11*/;
-        /** @hide */
-        const Int32 WPS_FAILED                      = 0x0002500C /*BASE1 + 12*/;
-        /** @hide */
-        const Int32 WPS_COMPLETED                   = 0x0002500D /*BASE1 + 13*/;
+        const Int32 DATA_ACTIVITY_INOUT = 0x03;
 
         /** @hide */
-        const Int32 CANCEL_WPS                      = 0x0002500E /*BASE1 + 14*/;
+        const Boolean DEFAULT_POOR_NETWORK_AVOIDANCE_ENABLED = FALSE;
+
+        /* Keep this list in sync with wifi_hal.h */
         /** @hide */
-        const Int32 CANCEL_WPS_FAILED               = 0x0002500F /*BASE1 + 15*/;
+        const Int32 WIFI_FEATURE_INFRA                      = 0x0001;  // Basic infrastructure mode
         /** @hide */
-        const Int32 CANCEL_WPS_SUCCEDED             = 0x00025010 /*BASE1 + 16*/;
+        const Int32 WIFI_FEATURE_INFRA_5G                   = 0x0002;  // Support for 5 GHz Band
+        /** @hide */
+        const Int32 WIFI_FEATURE_PASSPOINT                  = 0x0004;  // Support for GAS/ANQP
+        /** @hide */
+        const Int32 WIFI_FEATURE_P2P                        = 0x0008;  // Wifi-Direct
+        /** @hide */
+        const Int32 WIFI_FEATURE_MOBILE_HOTSPOT             = 0x0010;  // Soft AP
+        /** @hide */
+        const Int32 WIFI_FEATURE_SCANNER                    = 0x0020;  // WifiScanner APIs
+        /** @hide */
+        const Int32 WIFI_FEATURE_NAN                        = 0x0040;  // Neighbor Awareness Networking
+        /** @hide */
+        const Int32 WIFI_FEATURE_D2D_RTT                    = 0x0080;  // Device-to-device RTT
+        /** @hide */
+        const Int32 WIFI_FEATURE_D2AP_RTT                   = 0x0100;  // Device-to-AP RTT
+        /** @hide */
+        const Int32 WIFI_FEATURE_BATCH_SCAN                 = 0x0200;  // Batched Scan (deprecated)
+        /** @hide */
+        const Int32 WIFI_FEATURE_PNO                        = 0x0400;  // Preferred network offload
+        /** @hide */
+        const Int32 WIFI_FEATURE_ADDITIONAL_STA             = 0x0800;  // Support for two STAs
+        /** @hide */
+        const Int32 WIFI_FEATURE_TDLS                       = 0x1000;  // Tunnel directed link setup
+        /** @hide */
+        const Int32 WIFI_FEATURE_TDLS_OFFCHANNEL            = 0x2000;  // Support for TDLS off channel
+        /** @hide */
+        const Int32 WIFI_FEATURE_EPR                        = 0x4000;  // Enhanced power reporting
 
         /** @hide */
-        const Int32 DISABLE_NETWORK                 = 0x00025011 /*BASE1 + 17*/;
+        const Int32 CONNECT_NETWORK                         = 0x00025000 + 1;   // Protocol.BASE_WIFI_MANAGER + 1
         /** @hide */
-        const Int32 DISABLE_NETWORK_FAILED          = 0x00025012 /*BASE1 + 18*/;
+        const Int32 CONNECT_NETWORK_FAILED                  = 0x00025000 + 2;
         /** @hide */
-        const Int32 DISABLE_NETWORK_SUCCEEDED       = 0x00025013 /*BASE1 + 19*/;
+        const Int32 CONNECT_NETWORK_SUCCEEDED               = 0x00025000 + 3;
 
         /** @hide */
-        const Int32 RSSI_PKTCNT_FETCH               = 0x00025014 /*BASE1 + 20*/;
+        const Int32 FORGET_NETWORK                          = 0x00025000 + 4;
         /** @hide */
-        const Int32 RSSI_PKTCNT_FETCH_SUCCEEDED     = 0x00025015 /*BASE1 + 21*/;
+        const Int32 FORGET_NETWORK_FAILED                   = 0x00025000 + 5;
         /** @hide */
-        const Int32 RSSI_PKTCNT_FETCH_FAILED        = 0x00025016 /*BASE1 + 22*/;
+        const Int32 FORGET_NETWORK_SUCCEEDED                = 0x00025000 + 6;
 
-        /* For system use only */
         /** @hide */
-        const Int32 ENABLE_TRAFFIC_STATS_POLL       = 0x0002501F /*BASE1 + 31*/;
+        const Int32 SAVE_NETWORK                            = 0x00025000 + 7;
         /** @hide */
-        const Int32 TRAFFIC_STATS_POLL              = 0x00025020 /*BASE1 + 32*/;
+        const Int32 SAVE_NETWORK_FAILED                     = 0x00025000 + 8;
+        /** @hide */
+        const Int32 SAVE_NETWORK_SUCCEEDED                  = 0x00025000 + 9;
+
+        /** @hide */
+        const Int32 START_WPS                               = 0x00025000 + 10;
+        /** @hide */
+        const Int32 START_WPS_SUCCEEDED                     = 0x00025000 + 11;
+        /** @hide */
+        const Int32 WPS_FAILED                              = 0x00025000 + 12;
+        /** @hide */
+        const Int32 WPS_COMPLETED                           = 0x00025000 + 13;
+
+        /** @hide */
+        const Int32 CANCEL_WPS                              = 0x00025000 + 14;
+        /** @hide */
+        const Int32 CANCEL_WPS_FAILED                       = 0x00025000 + 15;
+        /** @hide */
+        const Int32 CANCEL_WPS_SUCCEDED                     = 0x00025000 + 16;
+
+        /** @hide */
+        const Int32 DISABLE_NETWORK                         = 0x00025000 + 17;
+        /** @hide */
+        const Int32 DISABLE_NETWORK_FAILED                  = 0x00025000 + 18;
+        /** @hide */
+        const Int32 DISABLE_NETWORK_SUCCEEDED               = 0x00025000 + 19;
+
+        /** @hide */
+        const Int32 RSSI_PKTCNT_FETCH                       = 0x00025000 + 20;
+        /** @hide */
+        const Int32 RSSI_PKTCNT_FETCH_SUCCEEDED             = 0x00025000 + 21;
+        /** @hide */
+        const Int32 RSSI_PKTCNT_FETCH_FAILED                = 0x00025000 + 22;
 
         /**
          * Passed with {@link ActionListener#onFailure}.
          * Indicates that the operation failed due to an internal error.
          * @hide
          */
-        const Int32 ERROR                       = 0;
+        const Int32 ERROR = 0;
 
         /**
          * Passed with {@link ActionListener#onFailure}.
          * Indicates that the operation is already in progress
          * @hide
          */
-        const Int32 IN_PROGRESS                 = 1;
+        const Int32 IN_PROGRESS = 1;
 
         /**
          * Passed with {@link ActionListener#onFailure}.
@@ -732,20 +551,36 @@ module
          * unable to service the request
          * @hide
          */
-        const Int32 BUSY                        = 2;
+        const Int32 BUSY = 2;
 
-        /* WPS specific errors */
-        /** WPS overlap detected {@hide} */
-        const Int32 WPS_OVERLAP_ERROR           = 3;
-        /** WEP on WPS is prohibited {@hide} */
-        const Int32 WPS_WEP_PROHIBITED          = 4;
-        /** TKIP only prohibited {@hide} */
-        const Int32 WPS_TKIP_ONLY_PROHIBITED    = 5;
-        /** Authentication failure on WPS {@hide} */
-        const Int32 WPS_AUTH_FAILURE            = 6;
-        /** WPS timed out {@hide} */
-        const Int32 WPS_TIMED_OUT               = 7;
+        /** WPS overlap detected */
+        const Int32 WPS_OVERLAP_ERROR = 3;
 
+        /** WEP on WPS is prohibited */
+        const Int32 WPS_WEP_PROHIBITED = 4;
+
+        /** TKIP only prohibited */
+        const Int32 WPS_TKIP_ONLY_PROHIBITED = 5;
+
+        /** Authentication failure on WPS */
+        const Int32 WPS_AUTH_FAILURE = 6;
+
+        /** WPS timed out */
+        const Int32 WPS_TIMED_OUT = 7;
+
+        /**
+         * Passed with {@link ActionListener#onFailure}.
+         * Indicates that the operation failed due to invalid inputs
+         * @hide
+         */
+        const Int32 INVALID_ARGS = 8;
+
+        /**
+         * Passed with {@link ActionListener#onFailure}.
+         * Indicates that the operation failed due to user permissions.
+         * @hide
+         */
+        const Int32 NOT_AUTHORIZED = 9;
 
         /**
          * Return a list of all the networks configured in the supplicant.
@@ -767,7 +602,17 @@ module
          * when when Wi-Fi is turned off, it can be null.
          */
         GetConfiguredNetworks(
-            [out] IObjectContainer** networks);
+            [out] IList** result);
+
+        /** @hide */
+        // @SystemApi
+        GetPrivilegedConfiguredNetworks(
+            [out] IList** result);
+
+        /** @hide */
+        // @SystemApi
+        GetConnectionStatistics(
+            [out] IWifiConnectionStatistics** result);
 
         /**
          * Add a new network description to the set of configured networks.
@@ -785,7 +630,7 @@ module
          */
         AddNetwork(
             [in] IWifiConfiguration* config,
-            [out] Int32* id);
+            [out] Int32* result);
 
         /**
          * Update the network description of an existing configured network.
@@ -804,7 +649,7 @@ module
          */
         UpdateNetwork(
             [in] IWifiConfiguration* config,
-            [out] Int32* networkId);
+            [out] Int32* result);
 
         /**
          * Remove the specified network from the list of configured networks.
@@ -816,7 +661,7 @@ module
          */
         RemoveNetwork(
             [in] Int32 netId,
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Allow a previously configured network to be associated with. If
@@ -833,7 +678,7 @@ module
         EnableNetwork(
             [in] Int32 netId,
             [in] Boolean disableOthers,
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Disable a configured network. The specified network will not be
@@ -844,7 +689,7 @@ module
          */
         DisableNetwork(
             [in] Int32 netId,
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Disassociate from the currently active access point. This may result
@@ -852,7 +697,7 @@ module
          * @return {@code true} if the operation succeeded
          */
         Disconnect(
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Reconnect to the currently active access point, if we are currently
@@ -861,7 +706,7 @@ module
          * @return {@code true} if the operation succeeded
          */
         Reconnect(
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Reconnect to the currently active access point, even if we are already
@@ -870,7 +715,7 @@ module
          * @return {@code true} if the operation succeeded
          */
         Reassociate(
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Check that the supplicant daemon is responding to requests.
@@ -878,7 +723,121 @@ module
          * it returned the expected response to the PING message.
          */
         PingSupplicant(
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
+
+        /**
+         * Get a list of available channels for customized scan.
+         *
+         * @see {@link WifiChannel}
+         *
+         * @return the channel list, or null if not available
+         * @hide
+         */
+        GetChannelList(
+            [out] IList** result);
+
+        /**
+         * @return true if this adapter supports 5 GHz band
+         */
+        Is5GHzBandSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports passpoint
+         * @hide
+         */
+        IsPasspointSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports WifiP2pManager (Wi-Fi Direct)
+         */
+        IsP2pSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports portable Wi-Fi hotspot
+         * @hide
+         */
+        // @SystemApi
+        IsPortableHotspotSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports WifiScanner APIs
+         * @hide
+         */
+        // @SystemApi
+        IsWifiScannerSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports Neighbour Awareness Network APIs
+         * @hide
+         */
+        IsNanSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports Device-to-device RTT
+         * @hide
+         */
+        // @SystemApi
+        IsDeviceToDeviceRttSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports Device-to-AP RTT
+         */
+        // @SystemApi
+        IsDeviceToApRttSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports offloaded connectivity scan
+         */
+        IsPreferredNetworkOffloadSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports multiple simultaneous connections
+         * @hide
+         */
+        IsAdditionalStaSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports Tunnel Directed Link Setup
+         */
+        IsTdlsSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports Off Channel Tunnel Directed Link Setup
+         * @hide
+         */
+        IsOffChannelTdlsSupported(
+            [out] Boolean* result);
+
+        /**
+         * @return true if this adapter supports advanced power/performance counters
+         */
+        IsEnhancedPowerReportingSupported(
+            [out] Boolean* result);
+
+        /**
+         * Return the record of {@link WifiActivityEnergyInfo} object that
+         * has the activity and energy info. This can be used to ascertain what
+         * the controller has been up to, since the last sample.
+         * @param updateType Type of info, cached vs refreshed.
+         *
+         * @return a record with {@link WifiActivityEnergyInfo} or null if
+         * report is unavailable or unsupported
+         * @hide
+         */
+        GetControllerActivityEnergyInfo(
+            [in] Int32 updateType,
+            [out] IWifiActivityEnergyInfo** result);
 
         /**
          * Request a scan for access points. Returns immediately. The availability
@@ -887,34 +846,149 @@ module
          * @return {@code true} if the operation succeeded, i.e., the scan was initiated
          */
         StartScan(
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
+
+        /** @hide */
+        // @SystemApi
+        StartScan(
+            [in] IWorkSource* workSource,
+            [out] Boolean* result);
 
         /**
-         * Request a scan for access points. Returns immediately. The availability
-         * of the results is made known later by means of an asynchronous event sent
-         * on completion of the scan.
-         * This is a variant of startScan that forces an active scan, even if passive
-         * scans are the current default
-         * @return {@code true} if the operation succeeded, i.e., the scan was initiated
+         * Request a scan for access points in specified channel list. Each channel is specified by its
+         * frequency in MHz, e.g. "5500" (do NOT include "DFS" even though it is). The availability of
+         * the results is made known later in the same way as {@link #startScan}.
+         *
+         * Note:
+         *
+         * 1. Customized scan is for non-connection purposes, i.e. it won't trigger a wifi connection
+         *    even though it finds some known networks.
+         *
+         * 2. Customized scan result may include access points that is not specified in the channel
+         *    list. An app will need to do frequency filtering if it wants to get pure results for the
+         *    channel list it specified.
          *
          * @hide
          */
-        StartScanActive(
-            [out] Boolean* succeeded);
+        StartCustomizedScan(
+            [in] IScanSettings* requested,
+            [out] Boolean* result);
+
+        /** @hide */
+        StartCustomizedScan(
+            [in] IScanSettings* requested,
+            [in] IWorkSource* workSource,
+            [out] Boolean* result);
+
+        /**
+         * Request a batched scan for access points.  To end your requested batched scan,
+         * call stopBatchedScan with the same Settings.
+         *
+         * If there are mulitple requests for batched scans, the more demanding settings will
+         * take precidence.
+         *
+         * @param requested {@link BatchedScanSettings} the scan settings requested.
+         * @return false on known error
+         * @hide
+         */
+        RequestBatchedScan(
+            [in] IBatchedScanSettings* requested,
+            [out] Boolean* result);
+
+        /** @hide */
+        RequestBatchedScan(
+            [in] IBatchedScanSettings* requested,
+            [in] IWorkSource* workSource,
+            [out] Boolean* result);
+
+        /**
+         * Check if the Batched Scan feature is supported.
+         *
+         * @return false if not supported.
+         * @hide
+         */
+        // @SystemApi
+        IsBatchedScanSupported(
+            [out] Boolean* result);
+
+        /**
+         * End a requested batch scan for this applicaiton.  Note that batched scan may
+         * still occur if other apps are using them.
+         *
+         * @param requested {@link BatchedScanSettings} the scan settings you previously requested
+         *        and now wish to stop.  A value of null here will stop all scans requested by the
+         *        calling App.
+         * @hide
+         */
+        StopBatchedScan(
+            [in] IBatchedScanSettings* requested);
+
+        /**
+         * Retrieve the latest batched scan result.  This should be called immediately after
+         * {@link BATCHED_SCAN_RESULTS_AVAILABLE_ACTION} is received.
+         * @hide
+         */
+        // @SystemApi
+        GetBatchedScanResults(
+            [out] IList** result);
+
+        /**
+         * Force a re-reading of batched scan results.  This will attempt
+         * to read more information from the chip, but will do so at the expense
+         * of previous data.  Rate limited to the current scan frequency.
+         *
+         * pollBatchedScan will always wait 1 period from the start of the batch
+         * before trying to read from the chip, so if your #scans/batch == 1 this will
+         * have no effect.
+         *
+         * If you had already waited 1 period before calling, this should have
+         * immediate (though async) effect.
+         *
+         * If you call before that 1 period is up this will set up a timer and fetch
+         * results when the 1 period is up.
+         *
+         * Servicing a pollBatchedScan request (immediate or after timed delay) starts a
+         * new batch, so if you were doing 10 scans/batch and called in the 4th scan, you
+         * would get data in the 4th and then again 10 scans later.
+         * @hide
+         */
+        PollBatchedScan();
+
+        /**
+         * Creates a configuration token describing the network referenced by {@code netId}
+         * of MIME type application/vnd.wfa.wsc. Can be used to configure WiFi networks via NFC.
+         *
+         * @return hex-string encoded configuration token
+         * @hide
+         */
+        GetWpsNfcConfigurationToken(
+            [in] Int32 netId,
+            [out] String* result);
 
         /**
          * Return dynamic information about the current Wi-Fi connection, if any is active.
          * @return the Wi-Fi information, contained in {@link WifiInfo}.
          */
         GetConnectionInfo(
-            [out] IWifiInfo** info);
+            [out] IWifiInfo** result);
 
         /**
          * Return the results of the latest access point scan.
          * @return the list of access points found in the most recent scan.
          */
         GetScanResults(
-            [out] IObjectContainer** results);
+            [out] IList** result);
+
+        /**
+         * Check if scanning is always available.
+         *
+         * If this return {@code true}, apps can issue {@link #startScan} and fetch scan results
+         * even when Wi-Fi is turned off.
+         *
+         * To change this setting, see {@link #ACTION_REQUEST_SCAN_ALWAYS_AVAILABLE}.
+         */
+        IsScanAlwaysAvailable(
+            [out] Boolean* result);
 
         /**
          * Tell the supplicant to persist the current list of configured networks.
@@ -926,7 +1000,7 @@ module
          * @return {@code true} if the operation succeeded
          */
         SaveConfiguration(
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Set the country code.
@@ -962,7 +1036,7 @@ module
          * @hide
          */
         GetFrequencyBand(
-            [out] Int32* state);
+            [out] Int32* result);
 
         /**
          * Check if the chipset supports dual frequency band (2.4 GHz and 5 GHz)
@@ -970,7 +1044,7 @@ module
          * @hide
          */
         IsDualBandSupported(
-            [out] Boolean* supported);
+            [out] Boolean* result);
 
         /**
          * Return the DHCP-assigned addresses from the last successful DHCP request,
@@ -978,7 +1052,7 @@ module
          * @return the DHCP information
          */
         GetDhcpInfo(
-            [out] IDhcpInfo** info);
+            [out] IDhcpInfo** result);
 
         /**
          * Enable or disable Wi-Fi.
@@ -988,7 +1062,7 @@ module
          */
         SetWifiEnabled(
             [in] Boolean enabled,
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Gets the Wi-Fi enabled state.
@@ -998,7 +1072,7 @@ module
          * @see #isWifiEnabled()
          */
         GetWifiState(
-            [out] Int32* state);
+            [out] Int32* result);
 
         /**
          * Return whether Wi-Fi is enabled or disabled.
@@ -1006,7 +1080,7 @@ module
          * @see #getWifiState()
          */
         IsWifiEnabled(
-            [out] Boolean* enabled);
+            [out] Boolean* result);
 
         /**
          * Return TX packet counter, for CTS test of WiFi watchdog.
@@ -1015,7 +1089,7 @@ module
          * @hide for CTS test only
          */
         GetTxPacketCount(
-            [in] ITxPacketCountListener* listener);
+            [in] IWifiManagerTxPacketCountListener* listener);
 
         /**
          * Start AccessPoint mode with the specified
@@ -1032,7 +1106,7 @@ module
         SetWifiApEnabled(
             [in] IWifiConfiguration* wifiConfig,
             [in] Boolean enabled,
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
         /**
          * Gets the Wi-Fi enabled state.
@@ -1044,7 +1118,7 @@ module
          * @hide Dont open yet
          */
         GetWifiApState(
-            [out] Int32* state);
+            [out] Int32* result);
 
         /**
          * Return whether Wi-Fi AP is enabled or disabled.
@@ -1054,7 +1128,7 @@ module
          * @hide Dont open yet
          */
         IsWifiApEnabled(
-            [out] Boolean* enabled);
+            [out] Boolean* result);
 
         /**
          * Gets the Wi-Fi AP Configuration.
@@ -1063,7 +1137,7 @@ module
          * @hide Dont open yet
          */
         GetWifiApConfiguration(
-            [out] IWifiConfiguration** config);
+            [out] IWifiConfiguration** result);
 
         /**
          * Sets the Wi-Fi AP Configuration.
@@ -1073,9 +1147,9 @@ module
          */
         SetWifiApConfiguration(
             [in] IWifiConfiguration* wifiConfig,
-            [out] Boolean* succeeded);
+            [out] Boolean* result);
 
-       /**
+        /**
          * Start the driver and connect to network.
          *
          * This function will over-ride WifiLock and device idle status. For example,
@@ -1089,7 +1163,7 @@ module
          * @hide
          */
         StartWifi(
-            [out] Boolean* succeed);
+            [out] Boolean* result);
 
         /**
          * Disconnect from a network (if any) and stop the driver.
@@ -1103,7 +1177,7 @@ module
          * @hide
          */
         StopWifi(
-            [out] Boolean* succeed);
+            [out] Boolean* result);
 
         /**
          * Add a bssid to the supplicant blacklist
@@ -1115,7 +1189,7 @@ module
          */
         AddToBlacklist(
             [in] String bssid,
-            [out] Boolean* succeed);
+            [out] Boolean* result);
 
         /**
          * Clear the supplicant blacklist
@@ -1126,7 +1200,41 @@ module
          * @hide
          */
         ClearBlacklist(
-            [out] Boolean* succeed);
+            [out] Boolean* result);
+
+        /**
+         * Enable/Disable TDLS on a specific local route.
+         *
+         * <p>
+         * TDLS enables two wireless endpoints to talk to each other directly
+         * without going through the access point that is managing the local
+         * network. It saves bandwidth and improves quality of the link.
+         * </p>
+         * <p>
+         * This API enables/disables the option of using TDLS. If enabled, the
+         * underlying hardware is free to use TDLS or a hop through the access
+         * point. If disabled, existing TDLS session is torn down and
+         * hardware is restricted to use access point for transferring wireless
+         * packets. Default value for all routes is 'disabled', meaning restricted
+         * to use access point for transferring packets.
+         * </p>
+         *
+         * @param remoteIPAddress IP address of the endpoint to setup TDLS with
+         * @param enable true = setup and false = tear down TDLS
+         */
+        SetTdlsEnabled(
+            [in] IInetAddress* remoteIPAddress,
+            [in] Boolean bEnable);
+
+        /**
+         * Similar to {@link #setTdlsEnabled(InetAddress, boolean) }, except
+         * this version allows you to specify remote endpoint with a MAC address.
+         * @param remoteMacAddress MAC address of the remote endpoint such as 00:00:0c:9f:f2:ab
+         * @param enable true = setup and false = tear down TDLS
+         */
+        SetTdlsEnabledWithMacAddress(
+            [in] String remoteMacAddress,
+            [in] Boolean bEnable);
 
         /**
          * Connect to a network with the given configuration. The network also
@@ -1224,11 +1332,10 @@ module
          * @param listener for callbacks on success or failure. Can be null.
          * @throws IllegalStateException if the WifiManager instance needs to be
          * initialized again
-         * @hide
          */
         StartWps(
             [in] IWpsInfo* config,
-            [in] IWpsListener* listener);
+            [in] IWifiManagerWpsCallback* listener);
 
         /**
          * Cancel any ongoing Wi-fi Protected Setup
@@ -1236,10 +1343,9 @@ module
          * @param listener for callbacks on success or failure. Can be null.
          * @throws IllegalStateException if the WifiManager instance needs to be
          * initialized again
-         * @hide
          */
         CancelWps(
-            [in] IWifiManagerActionListener* listener);
+            [in] IWifiManagerWpsCallback* listener);
 
         /**
          * Get a reference to WifiService handler. This is used by a client to establish
@@ -1249,22 +1355,14 @@ module
          * @hide
          */
         GetWifiServiceMessenger(
-            [out] IMessenger** msg);
-
-        /**
-         * Get a reference to WifiStateMachine handler.
-         * @return Messenger pointing to the WifiService handler
-         * @hide
-         */
-        GetWifiStateMachineMessenger(
-            [out] IMessenger** msg);
+            [out] IMessenger** result);
 
         /**
          * Returns the file in which IP and proxy configuration data is stored
          * @hide
          */
         GetConfigFile(
-            [out] String* configfile);
+            [out] String* result);
 
         /**
          * Creates a new WifiLock.
@@ -1284,7 +1382,7 @@ module
         CreateWifiLock(
             [in] Int32 lockType,
             [in] String tag,
-            [out] IWifiLock** lock);
+            [out] IWifiManagerWifiLock** result);
 
         /**
          * Creates a new WifiLock.
@@ -1300,7 +1398,7 @@ module
          */
         CreateWifiLock(
             [in] String tag,
-            [out] IWifiLock** lock);
+            [out] IWifiManagerWifiLock** result);
 
         /**
          * Create a new MulticastLock
@@ -1315,7 +1413,10 @@ module
          *
          * @see MulticastLock
          */
-        //public MulticastLock CreateMulticastLock(String tag);
+        CreateMulticastLock(
+            [in] String tag,
+            [out] IWifiManagerMulticastLock** result);
+
 
         /**
          * Check multicast filter status.
@@ -1325,18 +1426,61 @@ module
          * @hide pending API council approval
          */
         IsMulticastEnabled(
-            [out] Boolean* allowed);
+            [out] Boolean* result);
 
         /**
          * Initialize the multicast filtering to 'on'
          * @hide no intent to publish
          */
         InitializeMulticastFiltering(
-            [out] Boolean* init);
+            [out] Boolean* result);
 
-        /** @hide */
-        CaptivePortalCheckComplete();
+        /**
+         * Set wifi verbose log. Called from developer settings.
+         * @hide
+         */
+        EnableVerboseLogging(
+            [in] Int32 verbose);
+
+        /**
+         * Get the WiFi verbose logging level.This is used by settings
+         * to decide what to show within the picker.
+         * @hide
+         */
+        GetVerboseLoggingLevel(
+            [out] Int32* result);
+
+        /**
+         * Set wifi Aggressive Handover. Called from developer settings.
+         * @hide
+         */
+        EnableAggressiveHandover(
+            [in] Int32 enabled);
+
+        /**
+         * Get the WiFi Handover aggressiveness.This is used by settings
+         * to decide what to show within the picker.
+         * @hide
+         */
+        GetAggressiveHandover(
+            [out] Int32* result);
+
+        /**
+         * Set setting for allowing Scans when traffic is ongoing.
+         * @hide
+         */
+        SetAllowScansWithTraffic(
+            [in] Int32 enabled);
+
+        /**
+         * Get setting for allowing Scans when traffic is ongoing.
+         * @hide
+         */
+        GetAllowScansWithTraffic(
+            [out] Int32* result);
+
     }
+
 
     interface IWifiManagerHelper {
         /**
@@ -1352,7 +1496,7 @@ module
         CalculateSignalLevel(
             [in] Int32 rssi,
             [in] Int32 numLevels,
-            [out] Int32* level);
+            [out] Int32* result);
 
         /**
          * Compares two signal strengths.
@@ -1367,6 +1511,210 @@ module
             [in] Int32 rssiA,
             [in] Int32 rssiB,
             [out] Int32* result);
+
+    }
+
+
+    /**
+     * Interface for callback invocation on an application action
+     * @hide
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IWifiManagerActionListener {
+        /** The operation succeeded */
+        OnSuccess();
+
+        /**
+         * The operation failed
+         * @param reason The reason for failure could be one of
+         * {@link #ERROR}, {@link #IN_PROGRESS} or {@link #BUSY}
+         */
+        OnFailure(
+            [in] Int32 reason);
+
+    }
+
+
+    /** Interface for callback invocation on a start WPS action */
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IWifiManagerWpsCallback {
+        /** WPS start succeeded */
+        OnStarted(
+            [in] String pin);
+
+        /** WPS operation completed succesfully */
+        OnSucceeded();
+
+        /**
+         * WPS operation failed
+         * @param reason The reason for failure could be one of
+         * {@link #WPS_TKIP_ONLY_PROHIBITED}, {@link #WPS_OVERLAP_ERROR},
+         * {@link #WPS_WEP_PROHIBITED}, {@link #WPS_TIMED_OUT} or {@link #WPS_AUTH_FAILURE}
+         * and some generic errors.
+         */
+        OnFailed(
+            [in] Int32 reason);
+
+    }
+
+
+    /** Interface for callback invocation on a TX packet count poll action {@hide} */
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IWifiManagerTxPacketCountListener {
+        /**
+         * The operation succeeded
+         * @param count TX packet counter
+         */
+        OnSuccess(
+            [in] Int32 count);
+
+        /**
+         * The operation failed
+         * @param reason The reason for failure could be one of
+         * {@link #ERROR}, {@link #IN_PROGRESS} or {@link #BUSY}
+         */
+        OnFailure(
+            [in] Int32 reason);
+
+    }
+
+
+    /**
+     * Allows an application to keep the Wi-Fi radio awake.
+     * Normally the Wi-Fi radio may turn off when the user has not used the device in a while.
+     * Acquiring a WifiLock will keep the radio on until the lock is released.  Multiple
+     * applications may hold WifiLocks, and the radio will only be allowed to turn off when no
+     * WifiLocks are held in any application.
+     * <p>
+     * Before using a WifiLock, consider carefully if your application requires Wi-Fi access, or
+     * could function over a mobile network, if available.  A program that needs to download large
+     * files should hold a WifiLock to ensure that the download will complete, but a program whose
+     * network usage is occasional or low-bandwidth should not hold a WifiLock to avoid adversely
+     * affecting battery life.
+     * <p>
+     * Note that WifiLocks cannot override the user-level "Wi-Fi Enabled" setting, nor Airplane
+     * Mode.  They simply keep the radio from turning off when Wi-Fi is already on but the device
+     * is idle.
+     * <p>
+     * Any application using a WifiLock must request the {@code android.permission.WAKE_LOCK}
+     * permission in an {@code &lt;uses-permission&gt;} element of the application's manifest.
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IWifiManagerWifiLock {
+        /**
+         * Locks the Wi-Fi radio on until {@link #release} is called.
+         *
+         * If this WifiLock is reference-counted, each call to {@code acquire} will increment the
+         * reference count, and the radio will remain locked as long as the reference count is
+         * above zero.
+         *
+         * If this WifiLock is not reference-counted, the first call to {@code acquire} will lock
+         * the radio, but subsequent calls will be ignored.  Only one call to {@link #release}
+         * will be required, regardless of the number of times that {@code acquire} is called.
+         */
+        Acquire();
+
+        /**
+         * Controls whether this is a reference-counted or non-reference-counted WifiLock.
+         *
+         * Reference-counted WifiLocks keep track of the number of calls to {@link #acquire} and
+         * {@link #release}, and only allow the radio to sleep when every call to {@link #acquire}
+         * has been balanced with a call to {@link #release}.  Non-reference-counted WifiLocks
+         * lock the radio whenever {@link #acquire} is called and it is unlocked, and unlock the
+         * radio whenever {@link #release} is called and it is locked.
+         *
+         * @param refCounted true if this WifiLock should keep a reference count
+         */
+        SetReferenceCounted(
+            [in] Boolean refCounted);
+
+        /**
+         * Checks whether this WifiLock is currently held.
+         *
+         * @return true if this WifiLock is held, false otherwise
+         */
+        IsHeld(
+            [out] Boolean* result);
+
+        SetWorkSource(
+            [in] IWorkSource* ws);
+
+    }
+
+
+    /**
+     * Allows an application to receive Wifi Multicast packets.
+     * Normally the Wifi stack filters out packets not explicitly
+     * addressed to this device.  Acquring a MulticastLock will
+     * cause the stack to receive packets addressed to multicast
+     * addresses.  Processing these extra packets can cause a noticable
+     * battery drain and should be disabled when not needed.
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IWifiManagerMulticastLock {
+        /**
+         * Locks Wifi Multicast on until {@link #release} is called.
+         *
+         * If this MulticastLock is reference-counted each call to
+         * {@code acquire} will increment the reference count, and the
+         * wifi interface will receive multicast packets as long as the
+         * reference count is above zero.
+         *
+         * If this MulticastLock is not reference-counted, the first call to
+         * {@code acquire} will turn on the multicast packets, but subsequent
+         * calls will be ignored.  Only one call to {@link #release} will
+         * be required, regardless of the number of times that {@code acquire}
+         * is called.
+         *
+         * Note that other applications may also lock Wifi Multicast on.
+         * Only they can relinquish their lock.
+         *
+         * Also note that applications cannot leave Multicast locked on.
+         * When an app exits or crashes, any Multicast locks will be released.
+         */
+        Acquire();
+
+        /**
+         * Controls whether this is a reference-counted or non-reference-
+         * counted MulticastLock.
+         *
+         * Reference-counted MulticastLocks keep track of the number of calls
+         * to {@link #acquire} and {@link #release}, and only stop the
+         * reception of multicast packets when every call to {@link #acquire}
+         * has been balanced with a call to {@link #release}.  Non-reference-
+         * counted MulticastLocks allow the reception of multicast packets
+         * whenever {@link #acquire} is called and stop accepting multicast
+         * packets whenever {@link #release} is called.
+         *
+         * @param refCounted true if this MulticastLock should keep a reference
+         * count
+         */
+        SetReferenceCounted(
+            [in] Boolean refCounted);
+
+        /**
+         * Checks whether this MulticastLock is currently held.
+         *
+         * @return true if this MulticastLock is held, false otherwise
+         */
+        IsHeld(
+            [out] Boolean* result);
+
     }
 
     } // namespace Wifi

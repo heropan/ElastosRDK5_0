@@ -40,15 +40,6 @@ public:
         /* [in] */ IRssiCurve* rssiCurve);
 
     // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* out,
-        /* [in] */ Int32 flags);
-
-    // @Override
     CARAPI Equals(
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* result);

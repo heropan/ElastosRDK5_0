@@ -28,27 +28,6 @@ ECode NetworkMisc::constructor(
 #endif
 }
 
-ECode NetworkMisc::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode NetworkMisc::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeInt(allowBypass ? 1 : 0);
-        out.writeInt(explicitlySelected ? 1 : 0);
-
-#endif
-}
 ECode NetworkMisc::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

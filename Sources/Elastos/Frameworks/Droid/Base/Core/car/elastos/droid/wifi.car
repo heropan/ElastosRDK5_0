@@ -16,14 +16,17 @@ module
     merge("wifi/WifiConfiguration.car");
     merge("wifi/WifiConnectionStatistics.car");
     merge("wifi/WifiEnterpriseConfig.car");
-//    merge("wifi/WpsInfo.car");
-//    merge("wifi/WpsResult.car");
-//    merge("wifi/WifiInfo.car");
-//    merge("wifi/WifiManager.car");
-//    merge("wifi/WifiSsid.car");
-//    merge("wifi/WifiStateTracker.car");
+    merge("wifi/WifiInfo.car");
+    merge("wifi/WifiLinkLayerStats.car");
+    merge("wifi/WifiManager.car");
+    merge("wifi/WifiNetworkConnectionStatistics.car");
+    merge("wifi/WifiScanner.car");
+    merge("wifi/WifiSsid.car");
+    merge("wifi/WpsInfo.car");
+    merge("wifi/WpsResult.car");
 
 //    merge("wifi/p2p/IWifiP2pManager.car");
+
 //    merge("wifi/p2p/WifiP2pConfig.car");
 //    merge("wifi/p2p/WifiP2pDevice.car");
 //    merge("wifi/p2p/WifiP2pDeviceList.car");

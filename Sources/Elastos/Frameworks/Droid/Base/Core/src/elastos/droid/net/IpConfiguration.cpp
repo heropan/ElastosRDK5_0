@@ -188,29 +188,6 @@ ECode IpConfiguration::HashCode(
 #endif
 }
 
-ECode IpConfiguration::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result)
-
-    *result = 0;
-    return NOERROR;
-}
-
-ECode IpConfiguration::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeString(ipAssignment.name());
-        dest.writeString(proxySettings.name());
-        dest.writeParcelable(staticIpConfiguration, flags);
-        dest.writeParcelable(httpProxy, flags);
-
-#endif
-}
-
 ECode IpConfiguration::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

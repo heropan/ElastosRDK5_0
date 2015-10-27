@@ -38,28 +38,6 @@ WifiKey::WifiKey(
 #endif
 }
 
-ECode WifiKey::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode WifiKey::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeString(ssid);
-        out.writeString(bssid);
-
-#endif
-}
-
 ECode WifiKey::Equals(
     /* [in] */ IObject* o,
     /* [out] */ Boolean* result)

@@ -51,30 +51,6 @@ ECode NetworkState::constructor(
 #endif
 }
 
-ECode NetworkState::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result)
-
-    *result = 0;
-    return NOERROR;
-}
-
-ECode NetworkState::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeParcelable(networkInfo, flags);
-        out.writeParcelable(linkProperties, flags);
-        out.writeParcelable(networkCapabilities, flags);
-        out.writeString(subscriberId);
-        out.writeString(networkId);
-
-#endif
-}
-
 ECode NetworkState::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

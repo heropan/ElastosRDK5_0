@@ -85,10 +85,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    /** {@inheritDoc} */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
 private:
     static CARAPI ValidateFlag(
         /* [in] */ const String& flag);

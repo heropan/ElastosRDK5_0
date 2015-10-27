@@ -398,31 +398,6 @@ ECode RouteInfo::GetHashCode(
 #endif
 }
 
-ECode RouteInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode RouteInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeParcelable(mDestination, flags);
-        byte[] gatewayBytes = (mGateway == null) ? null : mGateway.getAddress();
-        dest.writeByteArray(gatewayBytes);
-        dest.writeString(mInterface);
-        dest.writeInt(mType);
-
-#endif
-}
-
 ECode RouteInfo::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

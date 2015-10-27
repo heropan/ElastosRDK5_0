@@ -173,32 +173,6 @@ ECode StaticIpConfiguration::WriteToParcel(
 #endif
 }
 
-ECode StaticIpConfiguration::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode StaticIpConfiguration::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeParcelable(ipAddress, flags);
-        NetworkUtils.parcelInetAddress(dest, gateway, flags);
-        dest.writeInt(dnsServers.size());
-        for (InetAddress dnsServer : dnsServers) {
-            NetworkUtils.parcelInetAddress(dest, dnsServer, flags);
-        }
-
-#endif
-}
-
 ECode StaticIpConfiguration::ReadFromParcel(
     /* [in] */ IStaticIpConfiguration* s,
     /* [in] */ IParcel* in)

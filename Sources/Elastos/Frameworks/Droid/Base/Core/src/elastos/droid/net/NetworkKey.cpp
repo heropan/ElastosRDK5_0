@@ -37,34 +37,6 @@ NetworkKey::NetworkKey(
 #endif
 }
 
-ECode NetworkKey::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode NetworkKey::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeInt(type);
-        switch (type) {
-            case TYPE_WIFI:
-                wifiKey.writeToParcel(out, flags);
-                break;
-            default:
-                throw new IllegalStateException("NetworkKey has unknown type " + type);
-        }
-
-#endif
-}
-
 ECode NetworkKey::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)

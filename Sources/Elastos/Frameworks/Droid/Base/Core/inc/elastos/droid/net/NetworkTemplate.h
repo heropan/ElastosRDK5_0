@@ -92,15 +92,6 @@ public:
         /* [in] */ const String& networkId);
 
     // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    // @Override
     CARAPI ToString(
         /* [out] */ String* result);
 

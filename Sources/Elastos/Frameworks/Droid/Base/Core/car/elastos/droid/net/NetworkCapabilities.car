@@ -338,16 +338,6 @@ module
             [in] INetworkCapabilities* nc,
             [out] Boolean* result);
 
-        DescribeContents(
-            [out] Int32* result);
-
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
-
-        ToString(
-            [out] String* result);
-
     }
 
     } // namespace Net

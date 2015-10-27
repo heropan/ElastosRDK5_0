@@ -40,30 +40,6 @@ RssiCurve::RssiCurve(
 #endif
 }
 
-ECode RssiCurve::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode RssiCurve::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeInt(start);
-        out.writeInt(bucketWidth);
-        out.writeInt(rssiBuckets.length);
-        out.writeByteArray(rssiBuckets);
-
-#endif
-}
-
 ECode RssiCurve::LookupScore(
     /* [in] */ Int32 rssi,
     /* [out] */ Byte* result)

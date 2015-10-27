@@ -29,15 +29,6 @@ module
         GetScanResults(
             [out] IList** result);
 
-        /** Implement the Parcelable interface {@hide} */
-        DescribeContents(
-            [out] Int32* result);
-
-        /** Implement the Parcelable interface {@hide} */
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
-
     }
 
     } // namespace Wifi

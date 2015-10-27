@@ -172,29 +172,6 @@ NetworkTemplate::NetworkTemplate(
 #endif
 }
 
-ECode NetworkTemplate::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeInt(mMatchRule);
-        dest.writeString(mSubscriberId);
-        dest.writeString(mNetworkId);
-
-#endif
-}
-
-ECode NetworkTemplate::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
 ECode NetworkTemplate::ToString(
     /* [out] */ String* result)
 {

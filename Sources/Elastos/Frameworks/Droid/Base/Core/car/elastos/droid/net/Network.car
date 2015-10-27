@@ -93,13 +93,6 @@ module
         BindSocket(
             [in] ISocket* socket);
 
-        // implement the Parcelable interface
-        DescribeContents(
-            [out] Int32* result);
-
-        WriteToParcel(
-            [in] IParcel* dest,
-            [in] Int32 flags);
     }
 
     } // namespace Net

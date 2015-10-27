@@ -40,15 +40,6 @@ public:
     CARAPI GetHardLimitBytes(
         /* [out] */ Int64* result);
 
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* out,
-        /* [in] */ Int32 flags);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

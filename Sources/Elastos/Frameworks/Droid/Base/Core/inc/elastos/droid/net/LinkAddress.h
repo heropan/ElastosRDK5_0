@@ -189,19 +189,6 @@ public:
     /**
      * Implement the Parcelable interface.
      */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    /**
-     * Implement the Parcelable interface.
-     */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    /**
-     * Implement the Parcelable interface.
-     */
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 

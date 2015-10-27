@@ -70,35 +70,6 @@ ECode NetworkPolicy::constructor(
 #endif
 }
 
-ECode NetworkPolicy::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeParcelable(template, flags);
-        dest.writeInt(cycleDay);
-        dest.writeString(cycleTimezone);
-        dest.writeLong(warningBytes);
-        dest.writeLong(limitBytes);
-        dest.writeLong(lastWarningSnooze);
-        dest.writeLong(lastLimitSnooze);
-        dest.writeInt(metered ? 1 : 0);
-        dest.writeInt(inferred ? 1 : 0);
-
-#endif
-}
-
-ECode NetworkPolicy::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
 ECode NetworkPolicy::IsOverWarning(
     /* [in] */ Int64 totalBytes,
     /* [out] */ Boolean* result)

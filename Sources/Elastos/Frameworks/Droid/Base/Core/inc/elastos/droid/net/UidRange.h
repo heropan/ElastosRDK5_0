@@ -45,16 +45,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
-    // implement the Parcelable interface
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

@@ -30,20 +30,6 @@ module
         MakeProxy(
             [out] IProxy** proxy);
 
-        ToString(
-            [out] String* result);
-
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* result);
-
-        Equals(
-            [in] IProxyProperties* o,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* result);
-
     }
 
     } //namespace Net

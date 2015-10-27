@@ -303,16 +303,6 @@ ECode ProxyInfo::Equals(
 #endif
 }
 
-ECode ProxyInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
 ECode ProxyInfo::HashCode(
     /* [out] */ Int32* result)
 {
@@ -321,33 +311,6 @@ ECode ProxyInfo::HashCode(
         return ((null == mHost) ? 0 : mHost.hashCode())
         + ((null == mExclusionList) ? 0 : mExclusionList.hashCode())
         + mPort;
-
-#endif
-}
-
-ECode ProxyInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (!Uri.EMPTY.equals(mPacFileUrl)) {
-            dest.writeByte((byte)1);
-            mPacFileUrl.writeToParcel(dest, 0);
-            dest.writeInt(mPort);
-            return;
-        } else {
-            dest.writeByte((byte)0);
-        }
-        if (mHost != null) {
-            dest.writeByte((byte)1);
-            dest.writeString(mHost);
-            dest.writeInt(mPort);
-        } else {
-            dest.writeByte((byte)0);
-        }
-        dest.writeString(mExclusionList);
-        dest.writeStringArray(mParsedExclusionList);
 
 #endif
 }

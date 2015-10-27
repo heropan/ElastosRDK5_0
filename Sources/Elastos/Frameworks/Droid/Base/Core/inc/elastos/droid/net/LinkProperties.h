@@ -336,12 +336,6 @@ public:
      */
     CARAPI Clear();
 
-    /**
-     * Implement the Parcelable interface
-     */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     // @Override
     CARAPI ToString(
         /* [out] */ String* result);
@@ -577,10 +571,6 @@ public:
     /**
      * Implement the Parcelable interface.
      */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

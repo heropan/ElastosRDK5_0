@@ -263,14 +263,6 @@ ECode CInterfaceConfiguration::ValidateFlag(
 #endif
 }
 
-ECode CInterfaceConfiguration::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result)
-    *result = 0;
-    return NOERROR;
-}
-
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos

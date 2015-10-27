@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.IO.IByteArrayOutputStream;
+
     namespace Elastos {
     namespace Droid {
     namespace Wifi {
@@ -15,33 +17,42 @@ module
      *
      * @hide
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IWifiSsid {
         const String NONE = "<unknown ssid>";
 
+        GetOctets(
+            [out] IByteArrayOutputStream** result);
+
+        /** @hide */
+        IsHidden(
+            [out] Boolean* result);
+
         /** @hide */
         GetOctets(
-            [out, callee] ArrayOf<Byte>* octets);
+            [out, callee] ArrayOf<Byte>* result);
 
         /** @hide */
         GetHexString(
-            [out] String* hexString);
+            [out] String* result);
 
-        ToString(
-            [out] String* value);
     }
 
     interface IWifiSsidHelper {
         CreateFromAsciiEncoded(
             [in] String asciiEncoded,
-            [out] IWifiSsid** wifiSsid);
+            [out] IWifiSsid** result);
 
         CreateFromHex(
             [in] String hexStr,
-            [out] IWifiSsid** wifiSsid);
+            [out] IWifiSsid** result);
+
     }
 
     } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-

@@ -310,10 +310,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

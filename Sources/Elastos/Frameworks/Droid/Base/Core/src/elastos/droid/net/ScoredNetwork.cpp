@@ -36,33 +36,6 @@ ScoredNetwork::ScoredNetwork(
 #endif
 }
 
-ECode ScoredNetwork::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode ScoredNetwork::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        networkKey.writeToParcel(out, flags);
-        if (rssiCurve != null) {
-            out.writeByte((byte) 1);
-            rssiCurve.writeToParcel(out, flags);
-        } else {
-            out.writeByte((byte) 0);
-        }
-
-#endif
-}
-
 ECode ScoredNetwork::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)

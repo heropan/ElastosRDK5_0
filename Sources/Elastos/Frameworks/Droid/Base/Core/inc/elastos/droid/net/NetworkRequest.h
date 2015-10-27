@@ -35,14 +35,6 @@ public:
     CARAPI constructor(
         /* [in] */ INetworkRequest* that);
 
-    // implement the Parcelable interface
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

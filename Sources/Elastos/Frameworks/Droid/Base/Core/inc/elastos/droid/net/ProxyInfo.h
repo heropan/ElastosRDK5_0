@@ -161,26 +161,11 @@ public:
         /* [in] */ IObject* o,
         /* [out] */ Boolean* result);
 
-    /**
-     * Implement the Parcelable interface
-     * @hide
-     */
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     /*
      * generate hashcode based on significant fields
      */
     CARAPI HashCode(
         /* [out] */ Int32* result);
-
-    /**
-     * Implement the Parcelable interface.
-     * @hide
-     */
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);

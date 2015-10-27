@@ -75,15 +75,6 @@ void CDhcpInfo::PutAddress(
 }
 
 /** Implement the Parcelable interface {@hide} */
-ECode CDhcpInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
-    return NOERROR;
-}
-
-/** Implement the Parcelable interface {@hide} */
 ECode CDhcpInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {

@@ -84,28 +84,6 @@ ECode UidRange::ToString(
 #endif
 }
 
-ECode UidRange::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode UidRange::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeInt(start);
-        dest.writeInt(stop);
-
-#endif
-}
-
 ECode UidRange::ReadFromParcel(
         /* [in] */ IParcel* parcel)
 {

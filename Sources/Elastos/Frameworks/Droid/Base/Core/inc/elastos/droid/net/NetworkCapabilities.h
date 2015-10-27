@@ -236,13 +236,6 @@ public:
     CARAPI HashCode(
         /* [out] */ Int32* result);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

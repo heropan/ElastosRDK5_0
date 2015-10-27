@@ -58,15 +58,6 @@ public:
         /* [in] */ Int32 bucketWidth,
         /* [in] */ ArrayOf<Byte>* rssiBuckets);
 
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* out,
-        /* [in] */ Int32 flags);
-
     /**
      * Lookup the score for a given RSSI value.
      *

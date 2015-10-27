@@ -66,29 +66,6 @@ ECode NetworkQuotaInfo::GetHardLimitBytes(
 #endif
 }
 
-ECode NetworkQuotaInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode NetworkQuotaInfo::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeLong(mEstimatedBytes);
-        out.writeLong(mSoftLimitBytes);
-        out.writeLong(mHardLimitBytes);
-
-#endif
-}
-
 ECode NetworkQuotaInfo::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

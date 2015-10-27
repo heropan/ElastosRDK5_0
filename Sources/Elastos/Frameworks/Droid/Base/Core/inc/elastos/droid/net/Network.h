@@ -109,14 +109,6 @@ public:
     CARAPI BindSocket(
         /* [in] */ ISocket* socket);
 
-    // implement the Parcelable interface
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
     // @Override
     CARAPI Equals(
         /* [in] */ IObject* obj,

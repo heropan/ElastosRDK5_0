@@ -40,15 +40,6 @@ public:
         /* [in] */ String bssid);
 
     // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* out,
-        /* [in] */ Int32 flags);
-
-    // @Override
     CARAPI Equals(
         /* [in] */ IObject* o,
         /* [out] */ Boolean* result);

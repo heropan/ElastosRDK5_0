@@ -380,40 +380,6 @@ ECode NetworkInfo::ToString(
 #endif
 }
 
-ECode NetworkInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode NetworkInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized (this) {
-            dest.writeInt(mNetworkType);
-            dest.writeInt(mSubtype);
-            dest.writeString(mTypeName);
-            dest.writeString(mSubtypeName);
-            dest.writeString(mState.name());
-            dest.writeString(mDetailedState.name());
-            dest.writeInt(mIsFailover ? 1 : 0);
-            dest.writeInt(mIsAvailable ? 1 : 0);
-            dest.writeInt(mIsRoaming ? 1 : 0);
-            dest.writeInt(mIsConnectedToProvisioningNetwork ? 1 : 0);
-            dest.writeString(mReason);
-            dest.writeString(mExtraInfo);
-        }
-
-#endif
-}
-
 ECode NetworkInfo::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

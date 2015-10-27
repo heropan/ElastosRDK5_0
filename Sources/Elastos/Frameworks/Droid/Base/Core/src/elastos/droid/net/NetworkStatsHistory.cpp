@@ -189,16 +189,6 @@ ECode NetworkStatsHistory::WriteToStream(
 #endif
 }
 
-ECode NetworkStatsHistory::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
 ECode NetworkStatsHistory::Size(
     /* [out] */ Int32* result)
 {

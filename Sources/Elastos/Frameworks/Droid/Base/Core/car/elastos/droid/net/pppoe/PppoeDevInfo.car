@@ -36,8 +36,6 @@ module
                 [out] Boolean* result);
             GetConnectMode(
                 [out] String* mode);
-            DescribeContents(
-                [out] Int32* content);
         }
 
     } // namespace Pppoe

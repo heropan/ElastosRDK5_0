@@ -48,15 +48,6 @@ public:
     CARAPI constructor(
         /* [in] */ IParcel* in);
 
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     /**
      * Test if given measurement is over {@link #warningBytes}.
      */

@@ -452,7 +452,7 @@ ECode CConnectivityManager::StartUsingNetworkFeature(
     synchronized(sLegacyRequests) {
         if(LEGACY_DBG) {
             String s;
-            netCap->ToString(&s);
+            IObject::Probe(netCap)->ToString(&s);
             Int32 code;
             IObject::Probe(netCap)->GetHashCode(&code);
             // Log.d(TAG, "Looking for legacyRequest for netCap with hash: " + netCap + " (" +

@@ -178,27 +178,6 @@ ECode Network::BindSocket(
 #endif
 }
 
-ECode Network::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
-ECode Network::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeInt(netId);
-
-#endif
-}
-
 ECode Network::Equals(
     /* [in] */ IObject* obj,
     /* [out] */ Boolean* result)

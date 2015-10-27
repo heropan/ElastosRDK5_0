@@ -34,47 +34,6 @@ ECode LinkQualityInfo::constructor()
     return NOERROR;
 }
 
-ECode LinkQualityInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result)
-
-    *result = 0;
-    return NOERROR;
-}
-
-ECode LinkQualityInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        writeToParcel(dest, flags, OBJECT_TYPE_LINK_QUALITY_INFO);
-
-#endif
-}
-
-ECode LinkQualityInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags,
-    /* [in] */ Int32 objectType)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeInt(objectType);
-        dest.writeInt(mNetworkType);
-        dest.writeInt(mNormalizedSignalStrength);
-        dest.writeLong(mPacketCount);
-        dest.writeLong(mPacketErrorCount);
-        dest.writeInt(mTheoreticalTxBandwidth);
-        dest.writeInt(mTheoreticalRxBandwidth);
-        dest.writeInt(mTheoreticalLatency);
-        dest.writeLong(mLastDataSampleTime);
-        dest.writeInt(mDataSampleDuration);
-
-#endif
-}
-
 ECode LinkQualityInfo::InitializeFromParcel(
     /* [in] */ IParcel* in)
 {

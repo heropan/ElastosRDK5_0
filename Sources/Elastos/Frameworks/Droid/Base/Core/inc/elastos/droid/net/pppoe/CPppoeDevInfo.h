@@ -50,9 +50,6 @@ public:
     CARAPI GetConnectMode(
         /* [out] */ String* mode);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* content);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 

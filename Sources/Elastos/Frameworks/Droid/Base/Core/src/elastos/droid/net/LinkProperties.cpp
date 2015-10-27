@@ -479,16 +479,6 @@ ECode LinkProperties::Clear()
 #endif
 }
 
-ECode LinkProperties::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return 0;
-
-#endif
-}
-
 ECode LinkProperties::ToString(
     /* [out] */ String* result)
 {
@@ -888,40 +878,6 @@ ECode LinkProperties::HashCode(
                 + mStackedLinks.hashCode() * 47)
                 + mMtu * 51
                 + ((null == mTcpBufferSizes) ? 0 : mTcpBufferSizes.hashCode());
-
-#endif
-}
-
-ECode LinkProperties::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dest.writeString(getInterfaceName());
-        dest.writeInt(mLinkAddresses.size());
-        for(LinkAddress linkAddress : mLinkAddresses) {
-            dest.writeParcelable(linkAddress, flags);
-        }
-        dest.writeInt(mDnses.size());
-        for(InetAddress d : mDnses) {
-            dest.writeByteArray(d.getAddress());
-        }
-        dest.writeString(mDomains);
-        dest.writeInt(mMtu);
-        dest.writeString(mTcpBufferSizes);
-        dest.writeInt(mRoutes.size());
-        for(RouteInfo route : mRoutes) {
-            dest.writeParcelable(route, flags);
-        }
-        if (mHttpProxy != null) {
-            dest.writeByte((byte)1);
-            dest.writeParcelable(mHttpProxy, flags);
-        } else {
-            dest.writeByte((byte)0);
-        }
-        ArrayList<LinkProperties> stackedLinks = new ArrayList(mStackedLinks.values());
-        dest.writeList(stackedLinks);
 
 #endif
 }

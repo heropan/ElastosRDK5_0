@@ -63,10 +63,6 @@ public:
     CARAPI WriteToStream(
         /* [in] */ IDataOutputStream* out);
 
-    // @Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     CARAPI Size(
         /* [out] */ Int32* result);
 

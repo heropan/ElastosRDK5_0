@@ -886,15 +886,6 @@ ECode NetworkStats::ToString(
 #endif
 }
 
-ECode NetworkStats::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result)
-
-    *result = 0;
-    return NOERROR;
-}
-
 ECode NetworkStats::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
