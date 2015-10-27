@@ -10,6 +10,10 @@ namespace Elastos{
 namespace Droid{
 namespace App{
 
+/**
+ * An object that can apply a rich notification style to a {@link Notification.Builder}
+ * object.
+ */
 class NotificationStyle
 {
 public:
@@ -17,14 +21,17 @@ public:
 
     virtual ~NotificationStyle();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
     CARAPI SetBuilder(
         /* [in] */ INotificationBuilder * builder);
 
-    virtual CARAPI Build(
-        /* [out] */ INotification **notification) = 0;
+    /**
+     * Calls {@link android.app.Notification.Builder#build()} on the Builder this Style is
+     * attached to.
+     *
+     * @return the fully constructed Notification.
+     */
+    CARAPI Build(
+        /* [out] */ INotification** result);
 
 public:
     AutoPtr<ICharSequence> mBigContentTitle;
@@ -50,7 +57,65 @@ protected:
 
     CARAPI_(AutoPtr<IRemoteViews>) GetStandardView(
         /* [in] */ Int32 layoutId);
-};
+
+    /**
+     * Changes the padding of the first line such that the big and small content view have the
+     * same top padding.
+     *
+     * @hide
+     */
+    CARAPI ApplyTopPadding(
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * @hide
+     */
+    CARAPI AddExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    CARAPI RestoreFromExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    AutoPtr<INotification> BuildStyled(
+        /* [in] */ INotification* wip);
+
+    // The following methods are split out so we can re-create notification partially.
+    /**
+     * @hide
+     */
+    CARAPI PopulateTickerView(
+        /* [in] */ INotification* wip);
+
+    /**
+     * @hide
+     */
+    CARAPI PopulateContentView(
+        /* [in] */ INotification* wip);
+
+    /**
+     * @hide
+     */
+    CARAPI PopulateBigContentView(
+        /* [in] */ INotification* wip);
+
+    /**
+     * @hide
+     */
+    CARAPI PopulateHeadsUpContentView(
+        /* [in] */ INotification* wip);
+
+    /**
+     * @hide
+     * @return true if the style positions the progress bar on the second line; false if the
+     *         style hides the progress bar
+     */
+    CARAPI_(Boolean) HasProgress();
 
 } // namespace App
 } // namespace Droid

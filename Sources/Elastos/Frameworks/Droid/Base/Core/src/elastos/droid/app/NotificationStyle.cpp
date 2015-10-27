@@ -57,12 +57,18 @@ AutoPtr<IRemoteViews> NotificationStyle::GetStandardView(
     if (FAILED(CheckBuilder()))
         return NULL;
 
+    // Nasty.
+    AutoPtr<ICharSequence> oldBuilderContentTitle;
+    mBuilder->GetContentTitle((ICharSequence**)&oldBuilderContentTitle);
+
     if (mBigContentTitle != NULL) {
         mBuilder->SetContentTitle(mBigContentTitle);
     }
 
     AutoPtr<IRemoteViews> contentView;
     mBuilder->ApplyStandardTemplateWithActions(layoutId, (IRemoteViews**)&contentView);
+
+    mBuilder->SetContentTitle(oldBuilderContentTitle);
 
     Boolean visiable = TRUE;
     if (mBigContentTitle != NULL) {
@@ -84,16 +90,90 @@ AutoPtr<IRemoteViews> NotificationStyle::GetStandardView(
     }
 
     if (overflowText != NULL) {
-        contentView->SetTextViewText(R::id::text, overflowText);
+        contentView->SetTextViewText(R::id::text, mBuilder->ProcessLegacyText(overflowText));
         contentView->SetViewVisibility(R::id::overflow_divider, IView::VISIBLE);
         contentView->SetViewVisibility(R::id::line3, IView::VISIBLE);
     }
     else {
+        // Clear text in case we use the line to show the profile badge.
+        contentView->SetTextViewText(R::id::text, String(""));
         contentView->SetViewVisibility(R::id::overflow_divider, IView::GONE);
         contentView->SetViewVisibility(R::id::line3, IView::GONE);
     }
 
     return contentView;
+}
+
+ECode NotificationStyle::ApplyTopPadding(
+    /* [in] */ IRemoteViews* contentView)
+{
+    int topPadding = Builder.calculateTopPadding(mBuilder.mContext,
+            mBuilder.mHasThreeLines,
+            mBuilder.mContext.getResources().getConfiguration().fontScale);
+    contentView.setViewPadding(R.id.line1, 0, topPadding, 0, 0);
+}
+
+ECode NotificationStyle::AddExtras(
+    /* [in] */ IBundle* extras)
+{
+    if (mSummaryTextSet) {
+        extras.putCharSequence(EXTRA_SUMMARY_TEXT, mSummaryText);
+    }
+    if (mBigContentTitle != null) {
+        extras.putCharSequence(EXTRA_TITLE_BIG, mBigContentTitle);
+    }
+    extras.putString(EXTRA_TEMPLATE, this.getClass().getName());
+}
+
+ECode NotificationStyle::RestoreFromExtras(
+    /* [in] */ IBundle* extras)
+{
+    if (extras.containsKey(EXTRA_SUMMARY_TEXT)) {
+        mSummaryText = extras.getCharSequence(EXTRA_SUMMARY_TEXT);
+        mSummaryTextSet = true;
+    }
+    if (extras.containsKey(EXTRA_TITLE_BIG)) {
+        mBigContentTitle = extras.getCharSequence(EXTRA_TITLE_BIG);
+    }
+}
+
+AutoPtr<INotification> NotificationStyle::BuildStyled(
+    /* [in] */ INotification* wip)
+{
+    populateTickerView(wip);
+    populateContentView(wip);
+    populateBigContentView(wip);
+    populateHeadsUpContentView(wip);
+    return wip;
+}
+
+ECode NotificationStyle::PopulateTickerView(
+    /* [in] */ INotification* wip)
+{}
+
+ECode NotificationStyle::PopulateContentView(
+    /* [in] */ INotification* wip)
+{}
+
+ECode NotificationStyle::PopulateBigContentView(
+    /* [in] */ INotification* wip)
+{}
+
+ECode NotificationStyle::PopulateHeadsUpContentView(
+    /* [in] */ INotification* wip)
+{}
+
+ECode NotificationStyle::Build(
+    /* [out] */ INotification** result)
+{
+    VALIDATE_NOT_NULL(result)
+    CheckBuilder();
+    return mBuilder->Build();
+}
+
+Boolean HasProgress()
+{
+    return TRUE;
 }
 
 } // namespace App

@@ -133,6 +133,15 @@ ECode CStatusBarManager::SetIconVisibility(
     return NOERROR;
 }
 
+String CStatusBarManager::WindowStateToString(
+    /* [in] */ Int32 state);
+{
+    if (state == WINDOW_STATE_HIDING) return String("WINDOW_STATE_HIDING");
+    if (state == WINDOW_STATE_HIDDEN) return String("WINDOW_STATE_HIDDEN");
+    if (state == WINDOW_STATE_SHOWING) return String("WINDOW_STATE_SHOWING");
+    return String("WINDOW_STATE_UNKNOWN");
+}
+
 }
 }
 }

@@ -987,16 +987,68 @@ public:
         /* [in] */ IUserHandle* user,
         /* [out] */ IInstrumentationActivityResult** activityResult);
 
+    /**
+     * Special version!
+     * @hide
+     */
+    CARAPI ExecStartActivityAsCaller(
+        /* [in] */ IContext* who,
+        /* [in] */ IBinder* contextThread,
+        /* [in] */ IBinder* token,
+        /* [in] */ IActivity* target,
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 requestCode,
+        /* [in] */ IBundle* options,
+        /* [in] */ Int32 userId,
+        /* [out] */ IInstrumentationActivityResult** activityResult);
+
+    /**
+     * Special version!
+     * @hide
+     */
+    CARAPI ExecStartActivityFromAppTask(
+        /* [in] */ IContext* who,
+        /* [in] */ IBinder* contextThread,
+        /* [in] */ IIAppTask* appTask,
+        /* [in] */ IIntent* intent,
+        /* [in] */ IBundle* options,
+        /* [out] */ IInstrumentationActivityResult** activityResult);
+
     virtual CARAPI Init(
         /* [in] */ IActivityThread* thread,
         /* [in] */ IContext* instrContext,
         /* [in] */ IContext* appContext,
         /* [in] */ IComponentName* component,
-        /* [in] */ IInstrumentationWatcher* watcher);
+        /* [in] */ IInstrumentationWatcher* watcher,
+        /* [in] */ IIUiAutomationConnection* uiAutomationConnection);
 
     static CARAPI CheckStartActivityResult(
         /* [in] */ Int32 res,
         /* [in] */ IIntent* intent);
+
+    /**
+     * Gets the {@link UiAutomation} instance.
+     * <p>
+     * <strong>Note:</strong> The APIs exposed via the returned {@link UiAutomation}
+     * work across application boundaries while the APIs exposed by the instrumentation
+     * do not. For example, {@link Instrumentation#sendPointerSync(MotionEvent)} will
+     * not allow you to inject the event in an app different from the instrumentation
+     * target, while {@link UiAutomation#injectInputEvent(android.view.InputEvent, boolean)}
+     * will work regardless of the current application.
+     * </p>
+     * <p>
+     * A typical test case should be using either the {@link UiAutomation} or
+     * {@link Instrumentation} APIs. Using both APIs at the same time is not
+     * a mistake by itself but a client has to be aware of the APIs limitations.
+     * </p>
+     * @return The UI automation instance.
+     *
+     * @see UiAutomation
+     */
+    CARAPI GetUiAutomation(
+        /* [out] */ IUiAutomation** ua);
+
+
 
 private:
     CARAPI_(void) AddValue(

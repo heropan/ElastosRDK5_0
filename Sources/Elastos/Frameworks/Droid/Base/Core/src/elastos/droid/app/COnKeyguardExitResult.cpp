@@ -15,7 +15,11 @@ ECode COnKeyguardExitResult::constructor(
 ECode COnKeyguardExitResult::OnKeyguardExitResult(
     /* [in] */ Boolean success)
 {
-    return mCallback->OnKeyguardExitResult(success);
+    if (mCallback != NULL) {
+        return mCallback->OnKeyguardExitResult(success);
+    }
+
+    return NOERROR;
 }
 
 } // namespace App

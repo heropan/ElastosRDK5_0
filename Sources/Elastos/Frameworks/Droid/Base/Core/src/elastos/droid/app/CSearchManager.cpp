@@ -93,9 +93,13 @@ ECode CSearchManager::StartSearch(
         return StartGlobalSearch(initialQuery, selectInitialQuery, appSearchData, sourceBounds);
     }
 
-    EnsureSearchDialog();
+    UiModeManager uiModeManager = new UiModeManager();
+    // Don't show search dialog on televisions.
+    if (uiModeManager.getCurrentModeType() != Configuration.UI_MODE_TYPE_TELEVISION) {
+        ensureSearchDialog();
 
-    // mSearchDialog.show(initialQuery, selectInitialQuery, launchActivity, appSearchData);
+        mSearchDialog.show(initialQuery, selectInitialQuery, launchActivity, appSearchData);
+    }
     return NOERROR;
 }
 
@@ -381,9 +385,10 @@ ECode CSearchManager::GetSearchablesInGlobalSearch(
  */
 ECode CSearchManager::GetAssistIntent(
     /* [in] */ IContext *context,
+    /* [in] */ Boolean inclContext,
     /* [out] */ IIntent **intent)
 {
-    return GetAssistIntent(context, UserHandle::MyUserId(), intent);
+    return GetAssistIntent(context, inclContext, UserHandle::MyUserId(), intent);
 }
 
 /**
@@ -394,6 +399,7 @@ ECode CSearchManager::GetAssistIntent(
  */
 ECode CSearchManager::GetAssistIntent(
     /* [in] */ IContext *context,
+    /* [in] */ Boolean inclContext,
     /* [in] */ Int32 userHandle,
     /* [out] */ IIntent **intent)
 {
@@ -413,6 +419,16 @@ ECode CSearchManager::GetAssistIntent(
     AutoPtr<IIntent> pIntent;
     CIntent::New(IIntent::ACTION_ASSIST, &pIntent);
     pIntent->SetComponent(comp);
+
+    if (inclContext) {
+        AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+        AutoPtr<IBundle> extras;
+        am->GetAssistContextExtras(0, (IBundle**)&extras);
+        if (extras != NULL) {
+            intent->ReplaceExtras(extras);
+        }
+    }
+
     *intent = pIntent;
     REFCOUNT_ADD(*intent);
     //} catch (RemoteException re) {
@@ -422,7 +438,28 @@ ECode CSearchManager::GetAssistIntent(
     return NOERROR;
 }
 
-void EnsureSearchDialog()
+/**
+ * Launch an assist action for the current top activity.
+ * @hide
+ */
+CARAPI CSearchManager::LaunchAssistAction(
+    /* [in] */ Int32 requestType,
+    /* [in] */ const String& hint,
+    /* [in] */ Int32 userHandle,
+    /* [out] */ Boolean* result)
+{
+    try {
+        if (mService == null) {
+            return false;
+        }
+        return mService.launchAssistAction(requestType, hint, userHandle);
+    } catch (RemoteException re) {
+        Log.e(TAG, "launchAssistAction() failed: " + re);
+        return false;
+    }
+}
+
+void CSearchManager::EnsureSearchDialog()
 {
     if (mSearchDialog == NULL) {
         SearchDialog::New(mContext, this, &mSearchDialog);
@@ -431,7 +468,7 @@ void EnsureSearchDialog()
     }
 }
 
-void StartGlobalSearch(
+void CSearchManager::StartGlobalSearch(
     /* [in] */ const String& initialQuery,
     /* [in] */ Boolean selectInitialQuery,
     /* [in] */ IBundle* appSearchData,

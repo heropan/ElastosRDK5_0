@@ -67,10 +67,28 @@ public:
     CARAPI BigText(
         /* [in] */ ICharSequence* cs);
 
+    CARAPI AddExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    CARAPI RestoreFromExtras(
+        /* [in] */ IBundle* extras);
+
+    CARAPI PopulateBigContentView(
+        /* [in] */ INotification* wip);
+
 private:
     AutoPtr<IRemoteViews> MakeBigContentView();
 
+    Int32 CalculateMaxLines();
+
 private:
+    static const Int32 MAX_LINES;// = 13;
+    static const Int32 LINES_CONSUMED_BY_ACTIONS;// = 3;
+    static const Int32 LINES_CONSUMED_BY_SUMMARY;// = 2;
+
     AutoPtr<ICharSequence> mBigText;
 };
 

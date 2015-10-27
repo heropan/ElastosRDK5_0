@@ -206,6 +206,23 @@ ECode CPendingIntent::GetIntent(
     // }
 }
 
+/**
+ * @hide
+ * Return descriptive tag for this PendingIntent.
+ */
+ECode CPendingIntent::GetTag(
+    /* [in] */ const String& prefix,
+    /* [out] */ String* tag)
+{
+    VALIDATE_NOT_NULL(tag)
+    // try {
+    return ActivityManagerNative::GetDefault()->GetTagForIntentSender(mTarget, prefix, tag);
+    // } catch (RemoteException e) {
+    //     // Should never happen.
+    //     return null;
+    // }
+}
+
 ECode CPendingIntent::GetTarget(
     /* [out] */ IIIntentSender **target)
 {

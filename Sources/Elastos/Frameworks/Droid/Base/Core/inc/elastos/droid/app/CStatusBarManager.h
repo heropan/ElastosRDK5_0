@@ -54,6 +54,10 @@ public:
         /* [in] */ const String& slot,
         /* [in] */ Boolean visible);
 
+    /** @hide */
+    static String WindowStateToString(
+        /* [in] */ Int32 state);
+
 private:
     CARAPI_(AutoPtr<IIStatusBarService>) GetService();
 

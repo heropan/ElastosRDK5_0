@@ -45,9 +45,6 @@ public:
     CARAPI SetBuilder(
         /* [in] */ INotificationBuilder* builder);
 
-    CARAPI Build(
-        /* [out] */ INotification** notification);
-
     /**
      * Overrides ContentTitle in the big form of the template.
      * This defaults to the value passed to setContentTitle().
@@ -73,6 +70,24 @@ public:
     CARAPI BigLargeIcon(
         /* [in] */ IBitmap* b);
 
+    /**
+     * @hide
+     */
+    CARAPI AddExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    CARAPI RestoreFromExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    CARAPI populateBigContentView(
+        /* [in] */ INotification* wip);
+
 private:
     AutoPtr<IRemoteViews> MakeBigContentView();
 
@@ -80,7 +95,6 @@ private:
     AutoPtr<IBitmap> mPicture;
     AutoPtr<IBitmap> mBigLargeIcon;
     Boolean mBigLargeIconSet;// = false;
-
 };
 
 } // namespace App
