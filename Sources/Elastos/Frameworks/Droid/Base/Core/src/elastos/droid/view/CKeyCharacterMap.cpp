@@ -17,6 +17,9 @@ using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Hardware::Input::CInputManager;
 using Elastos::Droid::Hardware::Input::IInputManager;
+using Elastos::Text::INormalizerHelper;
+using Elastos::Text::CNormalizerHelper;
+using Elastos::Text::NormalizerForm_NFC;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Slogger;
@@ -399,9 +402,10 @@ Int32 CKeyCharacterMap::GetDeadChar(
         sDeadKeyBuilder->Reset();
         sDeadKeyBuilder->AppendChar((Char32)c);
         sDeadKeyBuilder->AppendChar((Char32)combining);
-        //String result = Normalizer.normalize(sDeadKeyBuilder, Normalizer.Form.NFC);
+        AutoPtr<INormalizerHelper> helper;
+        CNormalizerHelper::AcquireSingleton((INormalizerHelper**)&helper);
         String result;
-        sDeadKeyBuilder->ToString(&result);
+        helper->Normalize(sDeadKeyBuilder, NormalizerForm_NFC, &result);
         combined = result.GetLength() == 1 ? result.GetChar(0) : 0;
         sDeadKeyCache[combination] = combined;
     }
@@ -428,7 +432,8 @@ ECode CKeyCharacterMap::GetKeyData(
 
     Char32 displayLabel = NativeGetDisplayLabel(keyCode);
     if (displayLabel == 0) {
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
     keyData->mDisplayLabel = displayLabel;
@@ -438,7 +443,8 @@ ECode CKeyCharacterMap::GetKeyData(
     (*keyData->mMeta)[2] = NativeGetCharacter(keyCode, CKeyEvent::META_ALT_ON);
     (*keyData->mMeta)[3] = NativeGetCharacter(keyCode,
             CKeyEvent::META_ALT_ON | CKeyEvent::META_SHIFT_ON);
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
 ECode CKeyCharacterMap::GetEvents(
@@ -446,6 +452,7 @@ ECode CKeyCharacterMap::GetEvents(
     /* [out, callee] */ ArrayOf<IKeyEvent*>** keyEvents)
 {
     VALIDATE_NOT_NULL(keyEvents);
+    VALIDATE_NOT_NULL(chars);
     AutoPtr<ArrayOf<IKeyEvent*> > temp = NativeGetEvents(*chars);
     *keyEvents = temp;
     REFCOUNT_ADD(*keyEvents)
@@ -468,8 +475,10 @@ ECode CKeyCharacterMap::IsPrintingKey(
         case Character::CONTROL:
         case Character::FORMAT:
             *res = FALSE;
+            break;
         default:
             *res = TRUE;
+            break;
     }
 
     return NOERROR;
@@ -494,8 +503,10 @@ ECode CKeyCharacterMap::GetModifierBehavior(
         case FULL:
         case SPECIAL_FUNCTION:
             *behavior = MODIFIER_BEHAVIOR_CHORDED;
+            break;
         default:
             *behavior = MODIFIER_BEHAVIOR_CHORDED_OR_TOGGLED;
+            break;
     }
 
     return NOERROR;

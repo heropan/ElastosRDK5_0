@@ -172,6 +172,6 @@ int CTest::test_getByName(int argc, char* argv[])
     for (int i = 0; i < 20; ++i) {
         String invalid = (*INVALID_IPv4_NUMERIC_ADDRESSES)[i];
         ec = inetAddressHelper->GetByName(invalid,(IInetAddress**)&outAddress);
-        assert(ec == E_LIBCORE_IO_EXCEPTION);
+        assert(ec == E_IO_EXCEPTION);
     }
 }

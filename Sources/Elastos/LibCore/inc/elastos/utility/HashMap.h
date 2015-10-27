@@ -203,7 +203,7 @@ private:
             /* [out] */ Int32* hashCode);
 
     private:
-        AutoPtr<HashMap> mHost;
+        HashMap* mHost;
     };
 
     class _Values
@@ -268,7 +268,7 @@ private:
         CARAPI GetHashCode(
             /* [out] */ Int32* hashCode);
     public:
-        AutoPtr<HashMap> mHost;
+        HashMap* mHost;
     };
 
     class _EntrySet
@@ -332,7 +332,7 @@ private:
             /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
     private:
-        AutoPtr<HashMap> mHost;
+        HashMap* mHost;
     };
 
 public:

@@ -147,7 +147,7 @@ ECode CWindowManagerLayoutParams::CopyFrom(
 
     if (mPrivateFlags != src->mPrivateFlags) {
         mPrivateFlags = src->mPrivateFlags;
-        *changes |= MEMORY_TYPE_CHANGED;
+        *changes |= PRIVATE_FLAGS_CHANGED;
     }
 
     if (mSoftInputMode != src->mSoftInputMode) {

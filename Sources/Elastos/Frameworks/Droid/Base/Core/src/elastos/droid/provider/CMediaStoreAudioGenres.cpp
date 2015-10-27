@@ -2,7 +2,9 @@
 #include "elastos/droid/provider/CMediaStoreAudioGenres.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 
@@ -32,8 +34,12 @@ ECode CMediaStoreAudioGenres::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/audio/genres", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/audio/genres";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreAudioGenres::GetContentUriForAudioId(
@@ -45,8 +51,14 @@ ECode CMediaStoreAudioGenres::GetContentUriForAudioId(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/audio/media/" + audioId + "/genres", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/audio/media/";
+    builder += audioId;
+    builder += "/genres";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 } //namespace Provider

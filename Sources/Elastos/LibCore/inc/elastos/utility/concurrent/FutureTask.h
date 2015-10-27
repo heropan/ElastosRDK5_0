@@ -142,7 +142,7 @@ private:
 
     public:
         AutoPtr<IThread> mThread;
-        AutoPtr<WaitNode> mNext;
+        AutoPtr<IInterface> mNext;
     };
 
 private:
@@ -238,7 +238,7 @@ private:
     /** The thread running the callable; CASed during run() */
     AutoPtr<IThread> mRunner;
     /** Treiber stack of waiting threads */
-    AutoPtr<WaitNode> mWaiters;
+    AutoPtr<IInterface> mWaiters;
 };
 
 } // namespace Concurrent

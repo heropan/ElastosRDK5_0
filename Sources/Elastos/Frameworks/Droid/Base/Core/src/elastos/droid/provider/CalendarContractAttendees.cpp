@@ -2,7 +2,9 @@
 #include "elastos/droid/provider/CalendarContractAttendees.h"
 #include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Net::Uri;
 
@@ -16,8 +18,12 @@ ECode CalendarContractAttendees::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/attendees"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/attendees";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CalendarContractAttendees::Query(

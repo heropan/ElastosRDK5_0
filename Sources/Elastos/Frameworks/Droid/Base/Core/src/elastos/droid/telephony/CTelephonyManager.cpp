@@ -869,28 +869,29 @@ String CTelephonyManager::GetProcCmdLine()
 {
     String cmdline("");
     AutoPtr<IFileInputStream> is;
-    //try {
-    CFileInputStream::New(String("/proc/cmdline"), (IFileInputStream**)&is);
-    AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(2048);
-    Int32 count;
-    if (FAILED(is->ReadBytes(buffer, &count))) {
-        Slogger::D(TAG, "No /proc/cmdline exception= + e");
+    ECode ec = NOERROR;
+    do {
+        ec = CFileInputStream::New(String("/proc/cmdline"), (IFileInputStream**)&is);
+        if (FAILED(ec))
+            break;
+        AutoPtr< ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(2048);
+        Int32 count;
+        if (FAILED(is->ReadBytes(buffer, &count))) {
+            break;
+        }
+        if (count > 0) {
+            cmdline = String((char*)buffer->GetPayload());
+            Slogger::D(TAG, "GetProcCmdLine the cmd line is %s", cmdline.string());
+        }
+    } while (0);
+
+    if (FAILED(ec)) {
+        Slogger::D(TAG, "No /proc/cmdline exception= 0x%08x", ec);
     }
-    if (count > 0) {
-        cmdline = String((char*)buffer->GetPayload());
-        Slogger::D(TAG, "GetProcCmdLine the cmd line is %s", cmdline.string());
-    }
-    is->Close();
-    // } catch (IOException e) {
-    //     Log.d(TAG, "No /proc/cmdline exception=" + e);
-    // } finally {
-    //     if (is != null) {
-    //         try {
-    //             is.close();
-    //         } catch (IOException e) {
-    //         }
-    //     }
-    // }
+
+    if (is != NULL)
+        is->Close();
+
     Slogger::D(TAG, "/proc/cmdline=%s", cmdline.string());
     return cmdline;
 }

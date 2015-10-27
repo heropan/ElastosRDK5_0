@@ -19,36 +19,6 @@ CCursorNative::~CCursorNative()
 {
     JNIEnv* env;
     mJVM->AttachCurrentThread(&env, NULL);
-
-    jobject jObserver = NULL;
-    IContentObserver* contentObserver = NULL;
-    HashMap<IContentObserver*, jobject>::Iterator cIt = mContentObserverMap.Begin();
-    for (; cIt != mContentObserverMap.End();) {
-        contentObserver = cIt->mFirst;
-        contentObserver->Release();
-
-        jObserver = cIt->mSecond;
-        if (jObserver) {
-            env->DeleteGlobalRef(jObserver);
-        }
-
-        mContentObserverMap.Erase(cIt++);
-    }
-
-    IDataSetObserver* dataSetObserver = NULL;
-    HashMap<IDataSetObserver*, jobject>::Iterator dIt = mDataSetObserverMap.Begin();
-    for (; dIt != mDataSetObserverMap.End();) {
-        dataSetObserver = dIt->mFirst;
-        dataSetObserver->Release();
-
-        jObserver = dIt->mSecond;
-        if (jObserver) {
-            env->DeleteGlobalRef(jObserver);
-        }
-
-        mDataSetObserverMap.Erase(dIt++);
-    }
-
     env->DeleteGlobalRef(mJInstance);
 }
 
@@ -104,16 +74,14 @@ ECode CCursorNative::GetColumnIndexOrThrow(
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: GetColumnIndexOrThrow %d", __LINE__);
 
     *columnIndex = env->CallIntMethod(mJInstance, m, jcolumnName);
-    if (env->ExceptionCheck() != 0) {
-        *columnIndex = -1;
-        env->ExceptionClear();
-    }
+    ECode ec = Util::CheckErrorAndLog(env, TAG, "Call GetColumnIndexOrThrow %d", __LINE__);
+    if (FAILED(ec)) *columnIndex = -1;
 
     env->DeleteLocalRef(c);
     env->DeleteLocalRef(jcolumnName);
 
     // LOGGERD(TAG, String("- CCursorNative::GetColumnIndexOrThrow()"));
-    return NOERROR;
+    return ec;
 }
 
 ECode CCursorNative::GetColumnIndex(

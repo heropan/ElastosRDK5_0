@@ -25,10 +25,18 @@ ECode CContactsContractCommonDataKindsEvent::GetTypeResource(
     Int32 _type;
     FAIL_RETURN(type->GetValue(&_type))
     switch (_type) {
-        case TYPE_ANNIVERSARY: *resource = Elastos::Droid::R::string::eventTypeAnniversary; return NOERROR;
-        case TYPE_BIRTHDAY: *resource = Elastos::Droid::R::string::eventTypeBirthday; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::eventTypeOther; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::eventTypeCustom; return NOERROR;
+        case TYPE_ANNIVERSARY:
+            *resource = Elastos::Droid::R::string::eventTypeAnniversary;
+            break;
+        case TYPE_BIRTHDAY:
+            *resource = Elastos::Droid::R::string::eventTypeBirthday;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::eventTypeOther;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::eventTypeCustom;
+            break;
     }
      return NOERROR;
 }

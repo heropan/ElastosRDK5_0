@@ -25,8 +25,11 @@ namespace Media {
 const String Media_Utils::TAG("Media_Utils");
 
 ECode Media_Utils::ThrowExceptionAsNecessary(
-    /* [in] */ android::status_t err)
+    /* [in] */ android::status_t err,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (err >= android::ERROR_DRM_WV_VENDOR_MIN
         && err <= android::ERROR_DRM_WV_VENDOR_MAX) {
         // We'll throw our custom MediaCodec.CryptoException
@@ -39,12 +42,15 @@ ECode Media_Utils::ThrowExceptionAsNecessary(
             return NOERROR;
 
         case -EAGAIN:
+            *result = DEQUEUE_INFO_TRY_AGAIN_LATER;
             return NOERROR; // DEQUEUE_INFO_TRY_AGAIN_LATER;
 
         case android::INFO_FORMAT_CHANGED:
+            *result = DEQUEUE_INFO_OUTPUT_FORMAT_CHANGED;
             return NOERROR; //DEQUEUE_INFO_OUTPUT_FORMAT_CHANGED;
 
         case android::INFO_OUTPUT_BUFFERS_CHANGED:
+            *result = DEQUEUE_INFO_OUTPUT_BUFFERS_CHANGED;
             return NOERROR; //DEQUEUE_INFO_OUTPUT_BUFFERS_CHANGED;
 
         default:

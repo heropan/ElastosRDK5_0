@@ -1881,15 +1881,18 @@ ECode CWifiService::ReleaseMulticastLock()
 
     Int32 uid = Binder::GetCallingUid();
     {
-        AutoLock lock(mMulticastersLock);
+        Mutex::Autolock lock(mMulticastersLock);
 
         mMulticastDisabled++;
         List< AutoPtr<Multicaster> >::ReverseIterator rit;
-        for (rit = mMulticasters.RBegin(); rit != mMulticasters.REnd(); ++rit) {
+        for (rit = mMulticasters.RBegin(); rit != mMulticasters.REnd();) {
             AutoPtr<Multicaster> m = *rit;
             if ((m != NULL) && (m->GetUid() == uid)) {
-                RemoveMulticasterLocked((++rit).GetBase(), uid);
+                List<AutoPtr<Multicaster> >::ReverseIterator tmpRit(rit);
+                RemoveMulticasterLocked((++tmpRit).GetBase(), uid);
             }
+            else
+                ++rit;
         }
     }
     return NOERROR;

@@ -1,9 +1,10 @@
 
 #include "elastos/droid/provider/CMediaStoreVideoMedia.h"
-
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 
@@ -33,8 +34,12 @@ ECode CMediaStoreVideoMedia::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/video/media", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/video/media";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 } //namespace Provider

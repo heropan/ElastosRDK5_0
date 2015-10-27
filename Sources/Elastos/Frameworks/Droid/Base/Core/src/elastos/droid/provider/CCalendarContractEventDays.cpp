@@ -2,7 +2,9 @@
 #include "elastos/droid/provider/CCalendarContractEventDays.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
@@ -22,8 +24,12 @@ ECode CCalendarContractEventDays::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/instances/groupbyday"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/instances/groupbyday";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractEventDays::Query(

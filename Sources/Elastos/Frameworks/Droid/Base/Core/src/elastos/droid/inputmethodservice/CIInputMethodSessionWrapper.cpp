@@ -315,7 +315,7 @@ ECode CIInputMethodSessionWrapper::ToggleSoftInput(
     /* [in] */ Int32 hideFlags)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageII(DO_APP_PRIVATE_COMMAND, showFlags, hideFlags, (IMessage**)&msg);
+    mCaller->ObtainMessageII(DO_TOGGLE_SOFT_INPUT, showFlags, hideFlags, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 

@@ -33,22 +33,30 @@ CAR_INTERFACE_IMPL(WindowState::DeathRecipient, IProxyDeathRecipient);
 
 WindowState::DeathRecipient::DeathRecipient(
     /* [in] */ WindowState* owner)
-    : mOwner(owner)
 {
+    owner->GetWeakReference((IWeakReference**)&mWeakOwner);
 }
 
 ECode WindowState::DeathRecipient::ProxyDied()
 {
-    Slogger::I(TAG, "WindowState:: %p, DeathRecipient::ProxyDied(): ", mOwner);
-    AutoLock lock(&mOwner->mService->mWindowMapLock);
+    AutoPtr<IWindowState> iowner;
+    mWeakOwner->Resolve(EIID_IWindowState, (IInterface**)&iowner);
+    if (iowner == NULL) {
+        return NOERROR;
+    }
 
-    AutoPtr<IBinder> binder = IBinder::Probe(mOwner->mClient);
+    AutoPtr<WindowState> owner = (WindowState*)iowner.Get();
+    Slogger::I(TAG, "WindowState:: %p, DeathRecipient::ProxyDied(): ", owner.Get());
+
+    Autolock lock(&owner->mService->mWindowMapLock);
+
+    AutoPtr<IBinder> binder = IBinder::Probe(owner->mClient);
     AutoPtr<WindowState> win;
-    mOwner->mService->WindowForClientLocked(
-        mOwner->mSession, mOwner->mClient, FALSE, (WindowState**)&win);
+    owner->mService->WindowForClientLocked(
+        owner->mSession, owner->mClient, FALSE, (WindowState**)&win);
     Slogger::I(TAG, "WIN DEATH: %p", win.Get());
     if (win != NULL) {
-        mOwner->mService->RemoveWindowLocked(mOwner->mSession, win);
+        owner->mService->RemoveWindowLocked(owner->mSession, win);
     }
     return NOERROR;
 }

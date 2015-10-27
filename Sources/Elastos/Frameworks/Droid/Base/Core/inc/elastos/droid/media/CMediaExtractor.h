@@ -82,7 +82,7 @@ public:
 CarClass(CMediaExtractor)
 {
 public:
-    constructor();
+    CARAPI constructor();
 
     /**
      * Sets the DataSource object to be used as the data source for this extractor

@@ -54,11 +54,21 @@ ECode CContactsContractCommonDataKindsEmail::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_HOME: *resource = Elastos::Droid::R::string::emailTypeHome; return NOERROR;
-        case TYPE_WORK: *resource = Elastos::Droid::R::string::emailTypeWork; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::emailTypeOther; return NOERROR;
-        case TYPE_MOBILE: *resource = Elastos::Droid::R::string::emailTypeMobile; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::emailTypeCustom; return NOERROR;
+        case TYPE_HOME:
+            *resource = Elastos::Droid::R::string::emailTypeHome;
+            break;
+        case TYPE_WORK:
+            *resource = Elastos::Droid::R::string::emailTypeWork;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::emailTypeOther;
+            break;
+        case TYPE_MOBILE:
+            *resource = Elastos::Droid::R::string::emailTypeMobile;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::emailTypeCustom;
+            break;
     }
     return NOERROR;
 }

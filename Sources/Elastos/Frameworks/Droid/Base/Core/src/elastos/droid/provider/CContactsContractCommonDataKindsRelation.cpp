@@ -22,21 +22,51 @@ ECode CContactsContractCommonDataKindsRelation::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_ASSISTANT: *resource = Elastos::Droid::R::string::relationTypeAssistant; return NOERROR;
-        case TYPE_BROTHER: *resource = Elastos::Droid::R::string::relationTypeBrother; return NOERROR;
-        case TYPE_CHILD: *resource = Elastos::Droid::R::string::relationTypeChild; return NOERROR;
-        case TYPE_DOMESTIC_PARTNER: *resource = Elastos::Droid::R::string::relationTypeDomesticPartner; return NOERROR;
-        case TYPE_FATHER: *resource = Elastos::Droid::R::string::relationTypeFather; return NOERROR;
-        case TYPE_FRIEND: *resource = Elastos::Droid::R::string::relationTypeFriend; return NOERROR;
-        case TYPE_MANAGER: *resource = Elastos::Droid::R::string::relationTypeManager; return NOERROR;
-        case TYPE_MOTHER: *resource = Elastos::Droid::R::string::relationTypeMother; return NOERROR;
-        case TYPE_PARENT: *resource = Elastos::Droid::R::string::relationTypeParent; return NOERROR;
-        case TYPE_PARTNER: *resource = Elastos::Droid::R::string::relationTypePartner; return NOERROR;
-        case TYPE_REFERRED_BY: *resource = Elastos::Droid::R::string::relationTypeReferredBy; return NOERROR;
-        case TYPE_RELATIVE: *resource = Elastos::Droid::R::string::relationTypeRelative; return NOERROR;
-        case TYPE_SISTER: *resource = Elastos::Droid::R::string::relationTypeSister; return NOERROR;
-        case TYPE_SPOUSE: *resource = Elastos::Droid::R::string::relationTypeSpouse; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::orgTypeCustom; return NOERROR;
+        case TYPE_ASSISTANT:
+            *resource = Elastos::Droid::R::string::relationTypeAssistant;
+            break;
+        case TYPE_BROTHER:
+            *resource = Elastos::Droid::R::string::relationTypeBrother;
+            break;
+        case TYPE_CHILD:
+            *resource = Elastos::Droid::R::string::relationTypeChild;
+            break;
+        case TYPE_DOMESTIC_PARTNER:
+            *resource = Elastos::Droid::R::string::relationTypeDomesticPartner;
+            break;
+        case TYPE_FATHER:
+            *resource = Elastos::Droid::R::string::relationTypeFather;
+            break;
+        case TYPE_FRIEND:
+            *resource = Elastos::Droid::R::string::relationTypeFriend;
+            break;
+        case TYPE_MANAGER:
+            *resource = Elastos::Droid::R::string::relationTypeManager;
+            break;
+        case TYPE_MOTHER:
+            *resource = Elastos::Droid::R::string::relationTypeMother;
+            break;
+        case TYPE_PARENT:
+            *resource = Elastos::Droid::R::string::relationTypeParent;
+            break;
+        case TYPE_PARTNER:
+            *resource = Elastos::Droid::R::string::relationTypePartner;
+            break;
+        case TYPE_REFERRED_BY:
+            *resource = Elastos::Droid::R::string::relationTypeReferredBy;
+            break;
+        case TYPE_RELATIVE:
+            *resource = Elastos::Droid::R::string::relationTypeRelative;
+            break;
+        case TYPE_SISTER:
+            *resource = Elastos::Droid::R::string::relationTypeSister;
+            break;
+        case TYPE_SPOUSE:
+            *resource = Elastos::Droid::R::string::relationTypeSpouse;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::orgTypeCustom;
+            break;
     }
      return NOERROR;
 }

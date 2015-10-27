@@ -4,7 +4,9 @@
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/content/CContentValues.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Net::IUriHelper;
@@ -26,8 +28,14 @@ ECode CMediaStoreAudioPlaylistsMembers::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            + "/audio/playlists/" + playlistId + "/members", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/audio/playlists/";
+    builder += playlistId;
+    builder += "/members";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreAudioPlaylistsMembers::MoveItem(

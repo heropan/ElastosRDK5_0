@@ -8338,7 +8338,7 @@ Boolean CWindowManagerService::ComputeScreenConfigurationLocked(
             mH->SendEmptyMessage(H::REPORT_HARD_KEYBOARD_STATUS_CHANGE, &result);
         }
         if (!mHardKeyboardEnabled) {
-            keyboard = IConfiguration::KEYBOARD_NOKEYS;
+            config->SetKeyboard(IConfiguration::KEYBOARD_NOKEYS);
         }
 
         // Let the policy update hidden states.
@@ -8880,7 +8880,7 @@ ECode CWindowManagerService::H::HandleMessage(
             AutoPtr<IInterface> argsObj;
             msg->GetObj((IInterface**)&argsObj);
             SomeArgs* args = (SomeArgs*)argsObj.Get();
-            WindowState* windowState = (WindowState*)args->mArg1.Get();
+            WindowState* windowState = (WindowState*)(IWindowState*)args->mArg1.Get();
             assert(windowState != NULL);
             IRemoteCallback* remoteCallback = IRemoteCallback::Probe(args->mArg2);
             assert(remoteCallback != NULL);
@@ -10201,7 +10201,7 @@ void CWindowManagerService::PerformLayoutLockedInner(
             if ((win->mViewVisibility != IView::GONE && win->mRelayoutCalled)
                     || !win->mHaveFrame || win->mLayoutNeeded) {
                 if (initial) {
-                    Slogger::I(TAG, "Window %p  clearing mContentChanged - initial", this);
+                    // Slogger::I(TAG, "Window %p  clearing mContentChanged - initial", this);
                     win->mContentChanged = FALSE;
                 }
                 win->mLayoutNeeded = FALSE;
@@ -11521,7 +11521,7 @@ ECode CWindowManagerService::WaitForWindowDrawn(
         WindowForClientLocked(NULL, token, TRUE, (WindowState**)&win);
         if (win != NULL) {
             AutoPtr<SomeArgs> args = SomeArgs::Obtain();
-            args->mArg1 = win.Get();
+            args->mArg1 = (IWindowState*)win.Get();
             args->mArg2 = callback;
 
             AutoPtr<IMessage> msg;

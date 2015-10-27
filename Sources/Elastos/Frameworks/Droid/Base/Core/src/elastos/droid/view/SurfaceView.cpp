@@ -1027,13 +1027,12 @@ AutoPtr<ArrayOf<ISurfaceHolderCallback*> > SurfaceView::GetSurfaceCallbacks()
 
     AutoPtr<ArrayOf<ISurfaceHolderCallback*> > callbacks;
     Int32 size = mCallbacks.GetSize();
-    if (size > 0) {
-        callbacks = ArrayOf<ISurfaceHolderCallback*>::Alloc(size);
-        List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter = mCallbacks.Begin();
-        for (Int32 i = 0; iter != mCallbacks.End(); ++iter, ++i) {
-            callbacks->Set(i, *iter);
-        }
+    callbacks = ArrayOf<ISurfaceHolderCallback*>::Alloc(size);
+    List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter = mCallbacks.Begin();
+    for (Int32 i = 0; iter != mCallbacks.End(); ++iter, ++i) {
+        callbacks->Set(i, *iter);
     }
+
     return callbacks;
 }
 

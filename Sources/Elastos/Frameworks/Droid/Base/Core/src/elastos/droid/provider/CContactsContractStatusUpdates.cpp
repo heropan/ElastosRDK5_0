@@ -45,21 +45,21 @@ ECode CContactsContractStatusUpdates::GetPresenceIconResourceId(
     switch (status) {
         case AVAILABLE:
             *id = Elastos::Droid::R::drawable::presence_online;
-            return NOERROR;
+            break;
         case IDLE:
         case AWAY:
             *id = Elastos::Droid::R::drawable::presence_away;
-            return NOERROR;
+            break;
         case DO_NOT_DISTURB:
             *id = Elastos::Droid::R::drawable::presence_busy;
-            return NOERROR;
+            break;
         case INVISIBLE:
             *id = Elastos::Droid::R::drawable::presence_invisible;
-            return NOERROR;
+            break;
         case OFFLINE:
         default:
             *id = Elastos::Droid::R::drawable::presence_offline;
-            return NOERROR;
+            break;
     }
     return NOERROR;
 }

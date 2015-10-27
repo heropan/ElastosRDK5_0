@@ -2,7 +2,9 @@
 #include "elastos/droid/provider/CMediaStoreFiles.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 
@@ -18,8 +20,12 @@ ECode CMediaStoreFiles::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/file", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/file";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreFiles::GetContentUri(
@@ -31,8 +37,13 @@ ECode CMediaStoreFiles::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName
-            + "/file/" + rowId, uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/file/";
+    builder += rowId;
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreFiles::GetMtpObjectsUri(
@@ -43,8 +54,12 @@ ECode CMediaStoreFiles::GetMtpObjectsUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/object", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/object";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreFiles::GetMtpObjectsUri(
@@ -56,8 +71,13 @@ ECode CMediaStoreFiles::GetMtpObjectsUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName
-            + "/object/" + fileId, uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/object/";
+    builder += fileId;
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreFiles::GetMtpReferencesUri(
@@ -69,8 +89,14 @@ ECode CMediaStoreFiles::GetMtpReferencesUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName
-            + "/object/" + fileId + "/references", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/object/";
+    builder += fileId;
+    builder += "/references";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 } //namespace Provider

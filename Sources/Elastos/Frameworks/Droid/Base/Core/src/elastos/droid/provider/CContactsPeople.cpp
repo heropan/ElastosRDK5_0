@@ -6,6 +6,7 @@
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ISystem;
@@ -14,6 +15,7 @@ using Elastos::Core::CArrayOf;
 using Elastos::Core::CByte;
 using Elastos::Core::EIID_IByte;
 using Elastos::Core::CInteger64;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CString;
 using Elastos::IO::IByteArrayInputStream;
@@ -121,14 +123,18 @@ ECode CContactsPeople::TryGetMyContactsGroupId(
 {
     VALIDATE_NOT_NULL(id);
 
-    AutoPtr<ICursor> groupsCursor;
     AutoPtr<IContactsGroups> helper;
     CContactsGroups::AcquireSingleton((IContactsGroups**)&helper);
     AutoPtr<IUri> uri;
-    helper->GetCONTENT_URI((IUri**)&uri);
-    resolver->Query(uri, GROUPS_PROJECTION,
-        IContactsGroupsColumns::SYSTEM_ID + String("='") + IContactsGroups::GROUP_MY_CONTACTS + String("'"),
-        NULL, String(NULL), (ICursor**)&groupsCursor);
+    helper->GetCONTENTURI((IUri**)&uri);
+    StringBuilder builder;
+    builder += IContactsGroupsColumns::SYSTEM_ID;
+    builder += "='";
+    builder += IContactsGroups::GROUP_MY_CONTACTS;
+    builder += "'";
+    String selection = builder.ToString();
+    AutoPtr<ICursor> groupsCursor;
+    resolver->Query(uri, GROUPS_PROJECTION, selection, NULL, String(NULL), (ICursor**)&groupsCursor);
     if (groupsCursor != NULL) {
         //try {
         Boolean result;

@@ -255,6 +255,8 @@ ECode Animation::Clone(
     animation->mFillAfter = mFillAfter;
     animation->mFillEnabled = mFillEnabled;
     animation->mStartTime = mStartTime;
+    animation->mStartOffset = mStartOffset;
+    animation->mDuration = mDuration;
     animation->mRepeatCount = mRepeatCount;
     animation->mRepeated = mRepeated;
     animation->mRepeatMode = mRepeatMode;

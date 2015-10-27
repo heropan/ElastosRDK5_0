@@ -1,7 +1,9 @@
 
 #include "elastos/droid/provider/CCalendarContractCalendarCache.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
@@ -17,8 +19,12 @@ ECode CCalendarContractCalendarCache::GetURI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/properties"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/properties";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 } //Provider

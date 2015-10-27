@@ -7,6 +7,7 @@
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/provider/CMediaStoreImagesThumbnails.h"
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -15,6 +16,7 @@ using Elastos::IO::CFileInputStream;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Graphics::IMatrix;
@@ -158,13 +160,13 @@ AutoPtr<IBitmap> CMediaStoreImagesMedia::StoreThumbnail(
     CContentValues::New(4, (IContentValues**)&values);
     AutoPtr<IInteger32> iKind, iId, iHeight, iWidth;
     CInteger32::New(kind, (IInteger32**)&iKind);
-    values->PutInt32(IMediaStoreImagesThumbnails::KIND,     iKind);
+    values->PutInt32(IMediaStoreImagesThumbnails::KIND, iKind);
     CInteger32::New((Int32)id, (IInteger32**)&iId);
     values->PutInt32(IMediaStoreImagesThumbnails::IMAGE_ID, iId);
     CInteger32::New((thumb->GetHeight(&h), h), (IInteger32**)&iHeight);
-    values->PutInt32(IMediaStoreImagesThumbnails::HEIGHT,   iHeight);
+    values->PutInt32(IMediaStoreImagesThumbnails::HEIGHT, iHeight);
     CInteger32::New((thumb->GetWidth(&w), w), (IInteger32**)&iWidth);
-    values->PutInt32(IMediaStoreImagesThumbnails::WIDTH,    iWidth);
+    values->PutInt32(IMediaStoreImagesThumbnails::WIDTH, iWidth);
 
     AutoPtr<IUri> url;
     AutoPtr<IMediaStoreImagesThumbnails> helper;
@@ -271,8 +273,12 @@ ECode CMediaStoreImagesMedia::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/images/media", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/images/media";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 } //namespace Provider

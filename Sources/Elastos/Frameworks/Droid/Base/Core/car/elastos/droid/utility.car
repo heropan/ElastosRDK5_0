@@ -251,23 +251,6 @@ module
 
 */
     } // namespace Utility
-
-/*    namespace Internal {
-    namespace Utility {
-
-        class CIndentingPrintWriter {
-            constructor(
-                [in] IWriter* writer,
-                [in] String indent);
-
-            interface IIndentingPrintWriter;
-            interface ICloseable;
-            interface IFlushable;
-        }
-
-    } // namespace Utility
-    } // namespace Internal
-*/
     } // namespace Droid
     } // namespace Elastos
 }

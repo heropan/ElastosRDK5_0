@@ -77,6 +77,7 @@ static NativeThread* AllocThread(Int32 stackSize);
 static void SetThreadSelf(NativeThread* thread);
 static void AssignThreadId(NativeThread* thread);
 static void* ThreadEntry(void* arg);
+static void* InternalThreadStart(void* arg);
 static void ThreadExitCheck(void* arg);
 static Boolean PrepareThread(NativeThread* thread);
 static Monitor* NativeCreateMonitor(NativeObject* obj);
@@ -997,6 +998,153 @@ static void* ThreadEntry(void* arg)
 }
 
 /*
+ * Create an internal VM thread, for things like JDWP and finalizers.
+ *
+ * The easiest way to do this is create a new thread and then use the
+ * JNI AttachCurrentThread implementation.
+ *
+ * This does not return until after the new thread has begun executing.
+ */
+Boolean NativeCreateInternalThread(
+    /* [in] */ pthread_t* handle,
+    /* [in] */ const char* name,
+    /* [in] */ InternalThreadStartFunc func,
+    /* [in] */ void* funcArg)
+{
+    InternalStartArgs* args;
+    AutoPtr<IThreadGroup> systemGroup;
+    pthread_attr_t threadAttr;
+    volatile NativeThread* newThread = NULL;
+    volatile Int32 createStatus = 0;
+
+    systemGroup = NativeGetSystemThreadGroup();
+    if (systemGroup == NULL) {
+        return FALSE;
+    }
+
+    args = (InternalStartArgs*)malloc(sizeof(*args));
+    args->mFunc = func;
+    args->mFuncArg = funcArg;
+    args->mName = strdup(name);     // storage will be owned by new thread
+    args->mGroup = reinterpret_cast<Int32>(systemGroup.Get());
+    args->mIsDaemon = TRUE;
+    args->mThread = &newThread;
+    args->mCreateStatus = &createStatus;
+
+    pthread_attr_init(&threadAttr);
+    //pthread_attr_setdetachstate(&threadAttr, PTHREAD_CREATE_DETACHED);
+
+    if (pthread_create(handle, &threadAttr, InternalThreadStart,
+            args) != 0) {
+        // ALOGE("internal thread creation failed");
+        free(args->mName);
+        free(args);
+        return FALSE;
+    }
+
+    /*
+     * Wait for the child to start.  This gives us an opportunity to make
+     * sure that the thread started correctly, and allows our caller to
+     * assume that the thread has started running.
+     *
+     * Because we aren't holding a lock across the thread creation, it's
+     * possible that the child will already have completed its
+     * initialization.  Because the child only adjusts "createStatus" while
+     * holding the thread list lock, the initial condition on the "while"
+     * loop will correctly avoid the wait if this occurs.
+     *
+     * It's also possible that we'll have to wait for the thread to finish
+     * being created, and as part of allocating a Thread object it might
+     * need to initiate a GC.  We switch to VMWAIT while we pause.
+     */
+    NativeThread* self = NativeThreadSelf();
+    NativeThreadStatus oldStatus = NativeChangeStatus(self, NTHREAD_VMWAIT);
+    NativeLockThreadList(self);
+    while (createStatus == 0) {
+        pthread_cond_wait(&gCore.mThreadStartCond, &gCore.mThreadListLock);
+    }
+
+    if (newThread == NULL) {
+        // ALOGW("internal thread create failed (createStatus=%d)", createStatus);
+        assert(createStatus < 0);
+        /* don't free pArgs -- if pthread_create succeeded, child owns it */
+        NativeUnlockThreadList();
+        NativeChangeStatus(self, oldStatus);
+        return FALSE;
+    }
+
+    /* thread could be in any state now (except early init states) */
+    //assert(newThread->status == THREAD_RUNNING);
+
+    NativeUnlockThreadList();
+    NativeChangeStatus(self, oldStatus);
+
+    return TRUE;
+}
+
+/*
+ * pthread entry function for internally-created threads.
+ *
+ * We are expected to free "arg" and its contents.  If we're a daemon
+ * thread, and we get cancelled abruptly when the VM shuts down, the
+ * storage won't be freed.  If this becomes a concern we can make a copy
+ * on the stack.
+ */
+static void* InternalThreadStart(void* arg)
+{
+    InternalStartArgs* args = (InternalStartArgs*)arg;
+    NativeAttachArgs nativeArgs;
+
+    // jniArgs.version = JNI_VERSION_1_2;
+    nativeArgs.mName = args->mName;
+    nativeArgs.mGroup = args->mGroup;
+
+    SetThreadName(args->mName);
+
+    /* use local jniArgs as stack top */
+    AutoPtr<IThread> thread;
+    if (SUCCEEDED(NativeAttachCurrentThread(&nativeArgs, args->mIsDaemon, (IThread**)&thread))) {
+        /*
+         * Tell the parent of our success.
+         *
+         * threadListLock is the mutex for threadStartCond.
+         */
+        NativeLockThreadList(NativeThreadSelf());
+        *args->mCreateStatus = 1;
+        *args->mThread = NativeThreadSelf();
+        pthread_cond_broadcast(&gCore.mThreadStartCond);
+        NativeUnlockThreadList();
+
+        // LOG_THREAD("threadid=%d: internal '%s'",
+        //     dvmThreadSelf()->threadId, pArgs->name);
+
+        /* execute */
+        (*args->mFunc)(args->mFuncArg);
+
+        /* detach ourselves */
+        NativeDetachCurrentThread();
+    }
+    else {
+        /*
+         * Tell the parent of our failure.  We don't have a Thread struct,
+         * so we can't be suspended, so we don't need to enter a critical
+         * section.
+         */
+        NativeLockThreadList(NativeThreadSelf());
+        *args->mCreateStatus = -1;
+        assert(*args->mThread == NULL);
+        pthread_cond_broadcast(&gCore.mThreadStartCond);
+        NativeUnlockThreadList();
+
+        assert(*args->mThread == NULL);
+    }
+
+    free(args->mName);
+    free(args);
+    return NULL;
+}
+
+/*
  * Attach the current thread to the VM.
  *
  * Used for internally-created threads and JNI's AttachCurrentThread.
@@ -1120,7 +1268,7 @@ ECode NativeAttachCurrentThread(
      * provides values for priority and daemon (which are normally inherited
      * from the current thread).
      */
-    ec = CThread::NewByFriend((IThreadGroup*)reinterpret_cast<ThreadGroup*>(args->mGroup)->Probe(EIID_IThreadGroup),
+    ec = CThread::NewByFriend(reinterpret_cast<ThreadGroup*>(args->mGroup),
             threadNameStr, os_getThreadPriorityFromSystem(), isDaemon, (CThread**)&threadObj);
     if (FAILED(ec)) {
     //     LOGE("exception thrown while constructing attached thread object\n");
@@ -1544,6 +1692,11 @@ NativeThreadStatus NativeChangeStatus(
     }
 
     return oldStatus;
+}
+
+AutoPtr<IThreadGroup> NativeGetSystemThreadGroup()
+{
+    return CThreadGroup::GetSystemThreadGroup();
 }
 
 AutoPtr<IThreadGroup> NativeGetMainThreadGroup()

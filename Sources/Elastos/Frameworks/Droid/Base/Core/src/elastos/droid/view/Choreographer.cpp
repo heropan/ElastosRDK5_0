@@ -430,8 +430,8 @@ void Choreographer::PostCallbackDelayedInternal(
     }
     else {
         AutoPtr<IMessage> msg;
-        mHandler->ObtainMessage(MSG_DO_SCHEDULE_CALLBACK,
-            callbackType, 0, action, (IMessage**)&msg);
+        mHandler->ObtainMessage(MSG_DO_SCHEDULE_CALLBACK, action, (IMessage**)&msg);
+        msg->SetArg1(callbackType);
         msg->SetAsynchronous(TRUE);
         Boolean result;
         mHandler->SendMessageAtTime(msg, dueTime, &result);

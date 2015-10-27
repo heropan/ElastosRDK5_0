@@ -2,7 +2,9 @@
 #include "elastos/droid/provider/CMediaStoreAudio.h"
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/database/DatabaseUtils.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Database::DatabaseUtils;
 
@@ -15,9 +17,9 @@ ECode CMediaStoreAudio::KeyFor(
     /* [out] */ String* keyvalue)
 {
     String name = cname;
-    if (name != NULL)  {
+    if (name != NULL) {
         Boolean sortfirst = FALSE;
-        if (!name.Equals(IMediaStore::UNKNOWN_STRING)) {
+        if (name.Equals(IMediaStore::UNKNOWN_STRING)) {
             *keyvalue = String("\001");
             return NOERROR;
         }
@@ -41,7 +43,10 @@ ECode CMediaStoreAudio::KeyFor(
             name.EndWith(", a") || name.EndWith(",a")) {
             name = name.Substring(0, name.LastIndexOf(','));
         }
-        name = name.Replace(Char32("[\\[\\]\\(\\)\"'.,?!]"), Char32("")).Trim();
+
+        String result;
+        StringUtils::ReplaceAll(name, String("[\\[\\]\\(\\)\"'.,?!]"), String(""), &result);
+        name = result.Trim();
         if (name.GetLength() > 0) {
             // Insert a separator between the characters to avoid
             // matches on a partial character. If we ever change
@@ -53,7 +58,7 @@ ECode CMediaStoreAudio::KeyFor(
                 b += name[i];
                 b += '.';
             }
-            b.ToString(&name);
+            name = b.ToString();
             String key = DatabaseUtils::GetCollationKey(name);
             if (sortfirst) {
                 key = String("\001") + key;

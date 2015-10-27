@@ -323,19 +323,21 @@ void FutureTask::HandlePossibleCancellationInterrupt(
 void FutureTask::FinishCompletion()
 {
     // assert state > COMPLETING;
-    for (AutoPtr<WaitNode> q; (q = mWaiters) != NULL;) {
-        if (CompareAndSwapObject((volatile int32_t*)&mWaiters, q->Probe(EIID_IInterface), NULL)) {
+    for (AutoPtr<IInterface> q; (q = mWaiters) != NULL;) {
+        if (CompareAndSwapObject((volatile int32_t*)&mWaiters, q, NULL)) {
+            REFCOUNT_RELEASE(q)
             for (;;) {
-                AutoPtr<IThread> t = q->mThread;
+                WaitNode* qNode = (WaitNode*)IObject::Probe(q);
+                AutoPtr<IThread> t = qNode->mThread;
                 if (t != NULL) {
-                    q->mThread = NULL;
+                    qNode->mThread = NULL;
                     LockSupport::Unpark(t);
                 }
-                AutoPtr<WaitNode> next = q->mNext;
+                AutoPtr<IInterface> next = qNode->mNext;
                 if (next == NULL) {
                     break;
                 }
-                q->mNext = NULL; // unlink to help gc
+                qNode->mNext = NULL; // unlink to help gc
                 q = next;
             }
             break;
@@ -376,7 +378,8 @@ ECode FutureTask::AwaitDone(
             if (q != NULL) {
                 q->mThread = NULL;
             }
-            return s;
+            *state = s;
+            return NOERROR;
         }
         else if (s == COMPLETING) { // cannot time out yet
             Thread::Yield();
@@ -386,7 +389,9 @@ ECode FutureTask::AwaitDone(
         }
         else if (!queued) {
             queued = CompareAndSwapObject((volatile int32_t*)&mWaiters,
-                    (q->mNext = mWaiters)->Probe(EIID_IInterface), q->Probe(EIID_IInterface));
+                    (q->mNext = mWaiters), q->Probe(EIID_IInterface));
+            if (queued)
+                REFCOUNT_RELEASE(q->mNext)
         }
         else if (timed) {
             Int64 now;
@@ -414,19 +419,24 @@ void FutureTask::RemoveWaiter(
         node->mThread = NULL;
 RETRY:
         for (;;) {          // restart on removeWaiter race
-            for (AutoPtr<WaitNode> pred, q = mWaiters, s; q != NULL; q = s) {
-                s = q->mNext;
-                if (q->mThread != NULL) {
+            for (AutoPtr<IInterface> pred, q = mWaiters, s; q != NULL; q = s) {
+                WaitNode* qNode = (WaitNode*)IObject::Probe(q);
+                s = qNode->mNext;
+                Boolean result = FALSE;
+                if (qNode->mThread != NULL) {
                     pred = q;
                 }
                 else if (pred != NULL) {
-                    pred->mNext = s;
-                    if (pred->mThread == NULL) // check for race
+                    WaitNode* predNode = (WaitNode*)IObject::Probe(pred);
+                    predNode->mNext = s;
+                    if (predNode->mThread == NULL) // check for race
                         goto RETRY;
                 }
-                else if (!CompareAndSwapObject((volatile int32_t*)&mWaiters, q->Probe(EIID_IInterface), s->Probe(EIID_IInterface))) {
+                else if (!(result = CompareAndSwapObject((volatile int32_t*)&mWaiters, q, s))) {
                     goto RETRY;
                 }
+                if (result)
+                    REFCOUNT_RELEASE(q);
             }
             break;
         }

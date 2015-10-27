@@ -9,7 +9,7 @@ module
     //==========================================================================
     // Elastos Net exception codes (Family: 0x2B)
     const E_BIND_EXCEPTION                                  = 0xAB010000;
-    const E_CONNNECT_EXCEPTION                              = 0xAB020000;
+    const E_CONNECT_EXCEPTION                               = 0xAB020000;
     const E_HTTP_RETRY_EXCEPTION                            = 0xAB030000;
     const E_MALFORMED_URL_EXCEPTION                         = 0xAB040000;
     const E_NO_ROUTE_TO_HOST_EXCEPTION                      = 0xAB050000;

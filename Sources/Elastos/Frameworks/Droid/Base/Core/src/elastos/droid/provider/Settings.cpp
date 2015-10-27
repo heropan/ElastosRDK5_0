@@ -307,8 +307,13 @@ const AutoPtr< ArrayOf<String> > Settings::System::VOLUME_SETTINGS = InitVOLUMES
 
 static AutoPtr<IUri> InitSystemCONTENTURI()
 {
+    StringBuilder builder;
+    builder += "content://";
+    builder += ISettings::AUTHORITY;
+    builder += "/system";
+    String str = builder.ToString();
     AutoPtr<IUri> uri;
-    Uri::Parse(String("content://") + ISettings::AUTHORITY + String("/system"), (IUri**)&uri);
+    Uri::Parse(str, (IUri**)&uri);
     return uri;
 }
 const AutoPtr<IUri> Settings::System::CONTENT_URI = InitSystemCONTENTURI();
@@ -1038,7 +1043,12 @@ String Settings::System::FindNameByKey(
 static AutoPtr<IUri> InitSecureCONTENTURI()
 {
     AutoPtr<IUri> uri;
-    Uri::Parse(String("content://") + ISettings::AUTHORITY + String("/secure"), (IUri**)&uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ISettings::AUTHORITY;
+    builder += "/secure";
+    String str = builder.ToString();
+    Uri::Parse(str, (IUri**)&uri);
     return uri;
 }
 const AutoPtr<IUri> Settings::Secure::CONTENT_URI = InitSecureCONTENTURI();

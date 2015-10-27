@@ -19,6 +19,7 @@ using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::EIID_IPackageDataObserver;
+using Elastos::Droid::Content::Pm::IIPackageManager;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IFileObserver;
@@ -30,6 +31,7 @@ using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::ISettings;
 using Elastos::Droid::Provider::ISettingsGlobal;
@@ -218,17 +220,15 @@ void CDeviceStorageMonitorService::ClearCache()
         mClearCacheObserver = new CachePackageDataObserver(this);
     }
     mClearingCache = TRUE;
-    //try {
+
     if (localLOGV)
         Slogger::I(TAG, "Clearing cache");
-//TODO    IPackageManager.Stub.asInterface(ServiceManager.getService("package")).
-//          freeStorageAndNotify(mMemCacheTrimToThreshold, mClearCacheObserver);
-
-    //} catch (RemoteException e) {
-    //    Slog.w(TAG, "Failed to get handle for PackageManger Exception: "+e);
-    //    mClearingCache = false;
-    //    mClearSucceeded = false;
-    //}
+    AutoPtr<IIPackageManager> pm = IIPackageManager::Probe(ServiceManager::GetService(String("package")));
+    if (FAILED(pm->FreeStorageAndNotify(mMemCacheTrimToThreshold, mClearCacheObserver))) {
+        Slogger::W(TAG, "Failed to get handle for PackageManger Exception: ");
+        mClearingCache = FALSE;
+        mClearSucceeded = FALSE;
+    }
 }
 
 void CDeviceStorageMonitorService::CheckMemory(

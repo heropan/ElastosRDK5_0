@@ -1171,7 +1171,7 @@ Boolean ActiveServices::ScheduleServiceRestartLocked(
     Boolean result;
     mAm->mHandler->PostAtTime(r->mRestarter, r->mNextRestartTime, &result);
     r->mNextRestartTime = SystemClock::GetUptimeMillis() + r->mRestartDelay;
-    Slogger::W(TAG, "Scheduling restart of crashed service %s in %dms"
+    Slogger::W(TAG, "Scheduling restart of crashed service %s in %lldms"
             , r->mShortName.string(), r->mRestartDelay);
 //     EventLog.writeEvent(EventLogTags.AM_SCHEDULE_SERVICE_RESTART,
 //             r.userId, r.shortName, r.restartDelay);

@@ -7,8 +7,10 @@
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/content/CContentValues.h"
 #include <elastos/coredef.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
@@ -201,9 +203,14 @@ ECode CCalls::AddCall(
             AutoPtr<ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(2);
             (*selectionArgs)[0] = StringUtils::ToString(pId);
             (*selectionArgs)[1] = normalizedPhoneNumber;
-            FAIL_RETURN(resolver->Query(uri, projection,
-                IContactsContractRawContactsColumns::CONTACT_ID + String(" =? AND ") + IContactsContractCommonDataKindsPhone::NORMALIZED_NUMBER + String(" =?"),
-                selectionArgs, String(NULL), (ICursor**)&cursor))
+
+            StringBuilder builder;
+            builder += IContactsContractRawContactsColumns::CONTACT_ID;
+            builder += " =? AND ";
+            builder += IContactsContractCommonDataKindsPhone::NORMALIZED_NUMBER;
+            builder += " =?";
+            String selection = builder.ToString();
+            FAIL_RETURN(resolver->Query(uri, projection, selection, selectionArgs, String(NULL), (ICursor**)&cursor))
         }
         else {
             String pNumber;
@@ -274,13 +281,15 @@ ECode CCalls::GetLastOutgoingCall(
     //try {
     AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
     (*projection)[0] = ICalls::NUMBER;
-    FAIL_GOTO(resolver->Query(
-        CONTENT_URI,
-        projection,
-        String(TYPE) + String(" = ") + ICalls::OUTGOING_TYPE,
-        NULL,
-        String(ICalls::DEFAULT_SORT_ORDER) + String(" LIMIT 1"),
-        (ICursor**)&c), EXIT)
+
+    StringBuilder builder;
+    builder += TYPE;
+    builder += " = ";
+    builder += ICalls::OUTGOING_TYPE;
+    String selection = builder.ToString();
+
+    FAIL_GOTO(resolver->Query(CONTENT_URI, projection, selection, NULL,
+            String(ICalls::DEFAULT_SORT_ORDER) + String(" LIMIT 1"), (ICursor**)&c), EXIT)
     Boolean isFIrst;
     if (c == NULL || (c->MoveToFirst(&isFIrst), !isFIrst)) {
         *call = String("");
@@ -303,9 +312,15 @@ ECode CCalls::RemoveExpiredEntries(
     AutoPtr<IContentResolver> resolver;
     FAIL_RETURN(context->GetContentResolver((IContentResolver**)&resolver))
     Int32 num;
-    return resolver->Delete(CONTENT_URI, String("_id IN ") +
-            String("(SELECT _id FROM calls ORDER BY ") + ICalls::DEFAULT_SORT_ORDER
-            + String(" LIMIT -1 OFFSET 500)"), NULL, &num);
+
+    StringBuilder builder;
+    builder += "_id IN ";
+    builder += "(SELECT _id FROM calls ORDER BY ";
+    builder += ICalls::DEFAULT_SORT_ORDER;
+    builder += " LIMIT -1 OFFSET 500)";
+    String where = builder.ToString();
+
+    return resolver->Delete(CONTENT_URI, where, NULL, &num);
 }
 
 } //Provider

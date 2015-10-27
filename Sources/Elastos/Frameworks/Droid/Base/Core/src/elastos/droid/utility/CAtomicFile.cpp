@@ -256,13 +256,21 @@ ECode CAtomicFile::ReadFully(
 
     AutoPtr<ArrayOf<Byte> > newData;
     while (TRUE) {
-        IInputStream::Probe(stream)->Read(data, pos,data->GetLength() - pos, &amt);
+        ECode ec = IInputStream::Probe(stream)->Read(data, pos,data->GetLength() - pos, &amt);
+        if (FAILED(ec)) {
+            ICloseable::Probe(stream)->Close();
+            return ec;
+        }
+
         //Log.i("foo", "Read " + amt + " bytes at " + pos
         //        + " of avail " + data.length);
         if (amt <= 0) {
             //Log.i("foo", "**** FINISHED READING: pos=" + pos
             //        + " len=" + data.length);
-            goto _EXIT_;
+            ICloseable::Probe(stream)->Close();
+            *result = data;
+            REFCOUNT_ADD(*result);
+            return NOERROR;
         }
 
         pos += amt;
@@ -274,12 +282,6 @@ ECode CAtomicFile::ReadFully(
         }
     }
 
-    *result = data;
-    REFCOUNT_ADD(*result);
-_EXIT_:
-    //} finally {
-        ICloseable::Probe(stream)->Close();
-    //}
     return NOERROR;
 }
 

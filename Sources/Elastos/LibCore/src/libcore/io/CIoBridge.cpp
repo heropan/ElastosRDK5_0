@@ -98,7 +98,7 @@ ECode CIoBridge::_Bind(
         NetworkInterface::GetByInetAddress(inetAddress, (INetworkInterface**)&nif);
         if (nif == NULL) {
             // throw new SocketException("Can't bind to a link-local address without a scope id: " + inetAddress);
-            return E_LIBCORE_SOCKET_EXCEPTION;
+            return E_SOCKET_EXCEPTION;
         }
         // try {
         String hostname;
@@ -488,7 +488,7 @@ ECode CIoBridge::GetSocketOptionErrno(
     }
     default:
         // throw new SocketException("Unknown socket option: " + option);
-        return E_LIBCORE_SOCKET_EXCEPTION;
+        return E_SOCKET_EXCEPTION;
     }
 }
 
@@ -524,7 +524,7 @@ ECode CIoBridge::SetSocketOptionErrno(
     switch (option) {
     case ISocketOptions::_IP_MULTICAST_IF:
         // throw new UnsupportedOperationException("Use IP_MULTICAST_IF2 on Android");
-        return E_LIBCORE_UNSUPPORTED_OPERATION_EXCEPTION;
+        return E_UNSUPPORTED_OPERATION_EXCEPTION;
     case ISocketOptions::_IP_MULTICAST_IF2:
     {
         // Although IPv6 was cleaned up to use int, IPv4 uses an ip_mreqn containing an int.
@@ -692,7 +692,7 @@ ECode CIoBridge::SetSocketOptionErrno(
     }
     default:
         // throw new SocketException("Unknown socket option: " + option);
-        return E_LIBCORE_SOCKET_EXCEPTION;
+        return E_SOCKET_EXCEPTION;
     }
 }
 
@@ -744,7 +744,7 @@ FILE_NOT_FOUND:
         CIoUtils::AcquireSingletonByFriend((CIoUtils**)&utils);
         utils->Close(*fd); //TODO::
     }
-    return E_LIBCORE_FILE_NOT_FOUND_EXCEPTION;
+    return E_FILE_NOT_FOUND_EXCEPTION;
 }
 
 ECode CIoBridge::_Read(

@@ -10,7 +10,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
-//using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
+using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 
 namespace Elastos {
 namespace Droid {
@@ -898,15 +898,15 @@ Int32 CKeyEvent::NormalizeMetaState(
     if ((metaState & (META_META_LEFT_ON | META_META_RIGHT_ON)) != 0) {
         metaState |= META_META_ON;
     }
-    // if ((metaState & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) {
-    //     metaState |= META_CAPS_LOCK_ON;
-    // }
-    // if ((metaState & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) {
-    //     metaState |= META_ALT_ON;
-    // }
-    // if ((metaState & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) {
-    //     metaState |= META_SYM_ON;
-    // }
+    if ((metaState & IMetaKeyKeyListener::META_CAP_LOCKED) != 0) {
+        metaState |= META_CAPS_LOCK_ON;
+    }
+    if ((metaState & IMetaKeyKeyListener::META_ALT_LOCKED) != 0) {
+        metaState |= META_ALT_ON;
+    }
+    if ((metaState & IMetaKeyKeyListener::META_SYM_LOCKED) != 0) {
+        metaState |= META_SYM_ON;
+    }
     return metaState & META_ALL_MASK;
 }
 

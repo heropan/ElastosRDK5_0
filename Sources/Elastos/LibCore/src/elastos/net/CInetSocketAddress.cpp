@@ -45,7 +45,7 @@ ECode CInetSocketAddress::constructor(
     else {
         mAddr = address;
     }
-    mAddr->GetHostName(&mHostname);
+    mHostname = NULL;
     mPort = port;
 
     return NOERROR;

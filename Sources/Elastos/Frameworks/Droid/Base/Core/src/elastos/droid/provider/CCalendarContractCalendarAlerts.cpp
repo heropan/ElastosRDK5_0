@@ -9,8 +9,10 @@
 #include "elastos/droid/app/CPendingIntentHelper.h"
 #include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
@@ -60,16 +62,24 @@ ECode CCalendarContractCalendarAlerts::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/calendar_alerts"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/calendar_alerts";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractCalendarAlerts::GetCONTENT_URIBYINSTANCE(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/calendar_alerts/by_instance"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/calendar_alerts/by_instance";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractCalendarAlerts::Insert(
@@ -138,7 +148,11 @@ ECode CCalendarContractCalendarAlerts::FindNextAlarmTime(
 {
     VALIDATE_NOT_NULL(alarm);
 
-    String selection = String(ALARM_TIME) + String(">=") + millis;
+    StringBuilder builder;
+    builder += ALARM_TIME;
+    builder += ">=";
+    builder += millis;
+    String selection = builder.ToString();
     // TODO: construct an explicit SQL query so that we can add
     // "LIMIT 1" to the end and get just one result.
     AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);

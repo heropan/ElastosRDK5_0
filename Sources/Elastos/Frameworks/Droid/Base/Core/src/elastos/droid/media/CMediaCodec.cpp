@@ -132,14 +132,21 @@ ECode CMediaCodec::NativeConfigure(
     /* [in] */ IMediaCrypto* crypto,
     /* [in] */ Int32 flags)
 {
+    if (mCodec == NULL) {
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
     android::sp<android::AMessage> format;
-    FAIL_RETURN(Media_Utils::ConvertKeyValueArraysToMessage(keys, values, &format));
+    ECode ec = Media_Utils::ConvertKeyValueArraysToMessage(keys, values, &format);
+    if(ec != NOERROR) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     android::sp<android::ISurfaceTexture> surfaceTexture;
     if (surface != NULL) {
         Handle32 tempsurface;
         surface->GetSurface(&tempsurface);
-        android::sp<android::ISurface> surface( (android::ISurface*)  tempsurface);
+        android::sp<android::Surface> surface = reinterpret_cast<android::Surface*>(tempsurface);
         if (surface != NULL) {
             surfaceTexture = surface->getSurfaceTexture();
         }
@@ -163,7 +170,8 @@ ECode CMediaCodec::NativeConfigure(
     }
 
     android::status_t err = mCodec->configure(format, mSurfaceTextureClient, mycrypto, flags);
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::Start()
@@ -172,7 +180,8 @@ ECode CMediaCodec::Start()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     android::status_t err = mCodec->start();
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::Stop()
@@ -183,7 +192,8 @@ ECode CMediaCodec::Stop()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     android::status_t err = mCodec->stop();
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::Flush()
@@ -192,7 +202,8 @@ ECode CMediaCodec::Flush()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     android::status_t err = mCodec->flush();
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::QueueInputBuffer(
@@ -208,7 +219,8 @@ ECode CMediaCodec::QueueInputBuffer(
     android::AString errorDetailMsg;
     android::status_t err = mCodec->queueInputBuffer(
             index, offset, size, timestampUs, flags, &errorDetailMsg);
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::QueueSecureInputBuffer(
@@ -322,7 +334,8 @@ ECode CMediaCodec::QueueSecureInputBuffer(
         subSamples = NULL;
     }
 
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::DequeueInputBuffer(
@@ -342,7 +355,7 @@ ECode CMediaCodec::DequeueInputBuffer(
         *result = index;
     }
 
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    return Media_Utils::ThrowExceptionAsNecessary(err, result);
 }
 
 ECode CMediaCodec::DequeueOutputBuffer(
@@ -355,6 +368,7 @@ ECode CMediaCodec::DequeueOutputBuffer(
     VALIDATE_NOT_NULL(info);
 
     if (mCodec == NULL) {
+        *result = 0;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
@@ -366,9 +380,10 @@ ECode CMediaCodec::DequeueOutputBuffer(
     if (err == android::OK) {
         info->Set(offset, size, timeUs, flags);
         *result = index;
+        return NOERROR;
     }
 
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    return Media_Utils::ThrowExceptionAsNecessary(err, result);
 }
 
 ECode CMediaCodec::ReleaseOutputBuffer(
@@ -382,14 +397,14 @@ ECode CMediaCodec::ReleaseOutputBuffer(
     android::status_t err = render
         ? mCodec->renderOutputBufferAndRelease(index)
         : mCodec->releaseOutputBuffer(index);
-    return Media_Utils::ThrowExceptionAsNecessary(err);
+    Int32 result;
+    return Media_Utils::ThrowExceptionAsNecessary(err, &result);
 }
 
 ECode CMediaCodec::GetOutputFormat(
     /* [out] */ IMediaFormat** result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = NULL;
 
     if (mCodec == NULL) {
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -398,7 +413,9 @@ ECode CMediaCodec::GetOutputFormat(
     android::sp<android::AMessage> msg;
     android::status_t err = mCodec->getOutputFormat(&msg);
     if (err != android::OK) {
-        return Media_Utils::ThrowExceptionAsNecessary(err);
+        *result = NULL;
+        Int32 result;
+        return Media_Utils::ThrowExceptionAsNecessary(err, &result);
     }
 
     AutoPtr<IObjectStringMap> tempmap;
@@ -410,11 +427,6 @@ ECode CMediaCodec::GetInputBuffers(
     /* [out] */ ArrayOf<IByteBuffer*>** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    if (mCodec == NULL) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
 
     AutoPtr<ArrayOf<IByteBuffer*> > temp;
     GetBuffers(TRUE /* input */, (ArrayOf<IByteBuffer*>**)&temp);
@@ -427,11 +439,6 @@ ECode CMediaCodec::GetOutputBuffers(
     /* [out] */ ArrayOf<IByteBuffer*>** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    if (mCodec == NULL) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
 
     AutoPtr<ArrayOf<IByteBuffer*> > temp;
     GetBuffers(FALSE /* input */, (ArrayOf<IByteBuffer*>**)&temp);
@@ -483,10 +490,9 @@ ECode CMediaCodec::GetBuffers(
 
     if (err != android::OK) {
         Slogger::E(TAG, "get buffer error");
-        return Media_Utils::ThrowExceptionAsNecessary(err);
+        Int32 status;
+        return Media_Utils::ThrowExceptionAsNecessary(err, &status);
     }
-
-    AutoPtr<ArrayOf<IByteBuffer*> > bufArray = ArrayOf<IByteBuffer*>::Alloc(buffers.size());
 
     AutoPtr<IByteOrderHelper> helper;
     CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper );
@@ -496,14 +502,16 @@ ECode CMediaCodec::GetBuffers(
     AutoPtr<IByteBufferHelper> bbhelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bbhelper);
 
+    AutoPtr<ArrayOf<IByteBuffer*> > bufArray = ArrayOf<IByteBuffer*>::Alloc(buffers.size());
+
     for (Int32 i = 0; i < buffers.size(); ++i) {
         const android::sp<android::ABuffer> &buffer = buffers.itemAt(i);
 
         AutoPtr<IByteBuffer> bytebuffer;
-        // bbhelper->AllocateDirect(buffer->capacity() , (IByteBuffer**)&bytebuffer);
+        bbhelper->AllocateDirect(buffer->capacity() , (IByteBuffer**)&bytebuffer);
 
-        ArrayOf<Byte> bytes((Byte*)buffer->base(), buffer->capacity());
-        bbhelper->WrapArray(&bytes , (IByteBuffer**)&bytebuffer);
+        // ArrayOf<Byte> bytes((Byte*)buffer->base(), buffer->capacity());
+        // bbhelper->WrapArray(&bytes , (IByteBuffer**)&bytebuffer);
         bytebuffer->SetOrder(nativeByteOrderObj);
 
         bufArray->Set(i, bytebuffer);

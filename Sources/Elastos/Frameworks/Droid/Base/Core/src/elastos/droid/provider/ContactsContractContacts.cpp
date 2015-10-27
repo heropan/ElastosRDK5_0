@@ -102,7 +102,7 @@ ECode ContactsContractContacts::GetCONTENT_STREQUENT_FILTER_URI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_STREQUENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("filter"), uri);
 }
 

@@ -76,7 +76,6 @@ using Elastos::IO::ISerializable;
 using Elastos::Security::IPublicKey;
 using Elastos::Utility::Logging::Logger;
 
-
 using Libcore::ICU::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 
@@ -85,19 +84,39 @@ namespace Elastos {
 namespace Droid {
 namespace JavaProxy {
 
+static jclass sIllegalArgumentExceptionClass = NULL;
+static jclass sUnsupportedOperationExceptionClass = NULL;
+static jclass sSQLiteExceptionClass = NULL;
+
+static void InitJavaExceptionClass(
+    /* [in] */ JNIEnv* env)
+{
+    if (sIllegalArgumentExceptionClass == NULL) {
+        sIllegalArgumentExceptionClass = (jclass)env->NewGlobalRef(
+                env->FindClass("java/lang/IllegalArgumentException"));
+    }
+    if (sUnsupportedOperationExceptionClass == NULL) {
+        sUnsupportedOperationExceptionClass = (jclass)env->NewGlobalRef(
+                env->FindClass("java/lang/UnsupportedOperationException"));
+    }
+    if (sSQLiteExceptionClass == NULL) {
+        sSQLiteExceptionClass = (jclass)env->NewGlobalRef(
+                env->FindClass("android/database/SQLException"));
+    }
+}
+
 static ECode JavaException2ECode(
     /* [in] */ JNIEnv* env,
     /* [in] */ jthrowable exception)
 {
-    static jclass sIllegalArgumentExceptionClass = (jclass)env->NewGlobalRef(
-            env->FindClass("java/lang/IllegalArgumentException"));
-    static jclass sUnsupportedOperationExceptionClass = (jclass)env->NewGlobalRef(
-            env->FindClass("java/lang/UnsupportedOperationException"));
     if (env->IsInstanceOf(exception, sIllegalArgumentExceptionClass)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     else if (env->IsInstanceOf(exception, sUnsupportedOperationExceptionClass)) {
         return E_UNSUPPORTED_OPERATION_EXCEPTION;
+    }
+    else if (env->IsInstanceOf(exception, sSQLiteExceptionClass)) {
+        return E_SQLITE_EXCEPTION;
     }
     // TODO:
     return E_FAIL;
@@ -106,7 +125,9 @@ static ECode JavaException2ECode(
 ECode Util::CheckErrorAndLog(
     /* [in] */ JNIEnv* env,
     /* [in] */ const char* errlog,
-    /* [in] */ int line) {
+    /* [in] */ int line)
+{
+    InitJavaExceptionClass(env);
     if (env->ExceptionCheck() != 0) {
         LOGGERE(LOG_TAG, errlog, line);
         env->ExceptionDescribe();
@@ -122,7 +143,9 @@ ECode Util::CheckErrorAndLog(
     /* [in] */ JNIEnv* env,
     /* [in] */ const CString& tag,
     /* [in] */ const CString& errlog,
-    /* [in] */ int line) {
+    /* [in] */ int line)
+{
+    InitJavaExceptionClass(env);
     if (env->ExceptionCheck() != 0) {
         LOGGERE(tag, errlog, line);
         env->ExceptionDescribe();
@@ -139,7 +162,9 @@ ECode Util::CheckErrorAndLog(
     /* [in] */ const char* errlog,
     /* [in] */ const char* paramname,
     /* [in] */ const char* tag,
-    /* [in] */ Int32 line){
+    /* [in] */ Int32 line)
+{
+    InitJavaExceptionClass(env);
     if (env->ExceptionCheck() != 0) {
         LOGGERE("Util", errlog, paramname, tag, line);
         env->ExceptionDescribe();
@@ -152,8 +177,9 @@ ECode Util::CheckErrorAndLog(
 }
 
 String Util::GetJavaToStringResult(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ jobject obj) {
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject obj)
+{
     jclass c = env->FindClass("java/lang/Object");
     CheckErrorAndLog(env, "GetJavaToStringResult", "FindClass: Object", __LINE__);
 
@@ -172,7 +198,8 @@ String Util::GetJavaToStringResult(
 
 jstring Util::ToJavaString(
     /* [in] */ JNIEnv* env,
-    /* [in] */ const String& str) {
+    /* [in] */ const String& str)
+{
     if (env == NULL) {
         LOGGERE("ToJavaString", "Invalid arguments!");
         return NULL;
@@ -189,7 +216,8 @@ jstring Util::ToJavaString(
 
 jobjectArray Util::ToJavaStringArray(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ArrayOf<String>* strArray) {
+    /* [in] */ ArrayOf<String>* strArray)
+{
     if (env == NULL || strArray == NULL) {
         LOGGERW("ToJavaStringArray", "Invalid arguments!");
         return NULL;
@@ -218,7 +246,8 @@ jobjectArray Util::ToJavaStringArray(
 
 jbyteArray Util::ToJavaByteArray(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ArrayOf<Byte>* byteArray){
+    /* [in] */ ArrayOf<Byte>* byteArray)
+{
 
     if (env == NULL || byteArray == NULL) {
         LOGGERW("Util", "ToJavaByteArray() Invalid arguments!");
@@ -240,7 +269,8 @@ jbyteArray Util::ToJavaByteArray(
 
 jcharArray Util::ToJavaCharArray(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ArrayOf<Char32>* charArray){
+    /* [in] */ ArrayOf<Char32>* charArray)
+{
 
     if (env == NULL || charArray == NULL) {
         LOGGERW("Util", "ToJavaCharArray() Invalid arguments!");
@@ -262,7 +292,8 @@ jcharArray Util::ToJavaCharArray(
 
 jintArray Util::ToJavaIntArray(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ArrayOf<Int32>* intArray) {
+    /* [in] */ ArrayOf<Int32>* intArray)
+{
     if (env == NULL || intArray == NULL) {
         LOGGERW("Util", "ToJavaIntArray() Invalid arguments!");
         return NULL;
@@ -282,8 +313,9 @@ jintArray Util::ToJavaIntArray(
 }
 
 jlongArray Util::ToJavaLongArray(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ ArrayOf<Int64>* lArray) {
+    /* [in] */ JNIEnv* env,
+    /* [in] */ ArrayOf<Int64>* lArray)
+{
     if (env == NULL || lArray == NULL) {
         LOGGERW("Util", "ToJavaLongArray() Invalid arguments!");
         return NULL;
@@ -305,7 +337,8 @@ jlongArray Util::ToJavaLongArray(
 bool Util::GetElInt32Array(
     /* [in] */ JNIEnv* env,
     /* [in] */ jintArray jiArr,
-    /* [out] */ ArrayOf<Int32>** iArr) {
+    /* [out] */ ArrayOf<Int32>** iArr)
+{
     if (env == NULL || jiArr == NULL || iArr == NULL) {
         LOGGERE("Util", "GetElInt32Array() Invalid arguments!");
         *iArr = NULL;
@@ -331,7 +364,8 @@ bool Util::GetElInt32Array(
 bool Util::GetElInt64Array(
     /* [in] */ JNIEnv* env,
     /* [in] */ jlongArray jlArr,
-    /* [out] */ ArrayOf<Int64>** lArr) {
+    /* [out] */ ArrayOf<Int64>** lArr)
+{
     if (env == NULL || jlArr == NULL || lArr == NULL) {
         LOGGERE("Util", "GetElInt64Array() Invalid arguments!");
         *lArr = NULL;
@@ -365,7 +399,7 @@ bool Util::GetElByteArray(
     }
 
     jint size = env->GetArrayLength(jarray);
-   Util::CheckErrorAndLog(env, "GetElByteArray", "GetArrayLength:(): %d!\n", __LINE__);
+    Util::CheckErrorAndLog(env, "GetElByteArray", "GetArrayLength:(): %d!\n", __LINE__);
 
     jbyte* jpayload = (jbyte*)malloc(size);
     env->GetByteArrayRegion(jarray, 0, size, jpayload);
@@ -382,7 +416,8 @@ bool Util::GetElByteArray(
 bool Util::GetElStringArray(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobjectArray jarr,
-    /* [out] */ ArrayOf<String>** strArray) {
+    /* [out] */ ArrayOf<String>** strArray)
+{
     if (env == NULL || jarr == NULL || strArray == NULL) {
         ALOGE("GetElStringArray() Invalid arguments!");
         return false;
@@ -407,7 +442,8 @@ bool Util::GetElStringArray(
 
 jobject Util::ToJavaComponentName(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IComponentName* componentName) {
+    /* [in] */ IComponentName* componentName)
+{
     if (env == NULL || componentName == NULL) {
         LOGGERE("ToJavaComponentName", "Invalid arguments!");
         return NULL;
@@ -440,7 +476,8 @@ jobject Util::ToJavaComponentName(
 
 jobject Util::ToJavaIntent(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IIntent* intent) {
+    /* [in] */ IIntent* intent)
+{
     if (env == NULL || intent == NULL) {
         LOGGERE("ToJavaIntent", "Invalid arguments!");
         return NULL;
@@ -617,7 +654,8 @@ jobject Util::ToJavaIntent(
 
 jobject Util::ToJavaApplicationInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IApplicationInfo* appInfo) {
+    /* [in] */ IApplicationInfo* appInfo)
+{
     if (env == NULL || appInfo == NULL) {
         LOGGERE("ToJavaApplicationInfo", "Invalid arguments!");
         return NULL;
@@ -961,7 +999,8 @@ jobject Util::ToJavaApplicationInfo(
 
 jobject Util::ToJavaActivityInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IActivityInfo* actInfo) {
+    /* [in] */ IActivityInfo* actInfo)
+{
     if (env == NULL || actInfo == NULL) {
         LOGGERE("ToJavaActivityInfo", "Invalid arguments!");
         return NULL;
@@ -1086,7 +1125,8 @@ jobject Util::ToJavaActivityInfo(
 
 jobject Util::ToJavaBundle(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IBundle* bundle) {
+    /* [in] */ IBundle* bundle)
+{
     if (env == NULL || bundle == NULL) {
         LOGGERE("ToJavaBundle", "Invalid arguments!");
         return NULL;
@@ -1245,6 +1285,30 @@ jobject Util::ToJavaBundle(
                             env->CallVoidMethod(jBundle, m, jKey, jarr);
                             env->DeleteLocalRef(jarr);
                             Logger::D("ToJavaBundle", "ToJavaBundle() int array set into bundle for key:%s", keyStr.string());
+                        }
+                        else if(IByte::Probe(firstItem) != NULL){
+                            jbyteArray jarr = env->NewByteArray(size);
+                            CheckErrorAndLog(env, "ToJavaBundle", "NewByteArray failed  %d", __LINE__);
+
+                            for(Int32 i = 0; i < size; ++i){
+                                AutoPtr<IInterface> elem;
+                                array->Get(i, (IInterface**)&elem);
+                                if (IByte::Probe(elem) != NULL) {
+                                    Byte bv;
+                                    IByte::Probe(elem)->GetValue(&bv);
+                                    env->SetByteArrayRegion(jarr, i, 1, (jbyte*)&bv);
+                                    CheckErrorAndLog(env, "Util", "ToJavaBundle, SetByteArrayRegion: failed, %d", __LINE__);
+                                }
+                            }
+
+                            jmethodID m = env->GetMethodID(bundleKlass, "putByteArray", "(Ljava/lang/String;[B)V");
+                            Util::CheckErrorAndLog(env, "ToJavaBundle", "Fail GetMethodID: putByteArray %d", __LINE__);
+                            env->CallVoidMethod(jBundle, m, jKey, jarr);
+                            env->DeleteLocalRef(jarr);
+                            Logger::D("ToJavaBundle", "ToJavaBundle() int array set into bundle for key:%s", keyStr.string());
+                        }
+                        else {
+                            LOGGERE("ToJavaBundle", "ArrayOf item is not implemented!!!");
                         }
                     } else {
                         LOGGERE("ToJavaBundle", "ToJavaBundle()  ArrayOf item is Unknown!");
@@ -1431,7 +1495,7 @@ jobject Util::ToJavaBundle(
 
                         ClassID clsid;
                         object->GetClassID(&clsid);
-                        if (ECLSID_CString == clsid) {
+                        if (ECLSID_CStringWrapper == clsid) {
                             AutoPtr<ICharSequence> csitem = ICharSequence::Probe(item);
                             String sitem;
                             csitem->ToString(&sitem);
@@ -1537,10 +1601,10 @@ jobject Util::ToJavaBundle(
 }
 
 Boolean Util::GetElBitmap(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ jobject jbitmap,
-        /* [out] */ IBitmap** bitmap){
-
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject jbitmap,
+    /* [out] */ IBitmap** bitmap)
+{
     if(bitmap == NULL){
         Logger::E("GetElBitmap", "GetElBitmap() INVALID params");
         return FALSE;
@@ -1638,7 +1702,8 @@ Boolean Util::GetElBitmap(
     return TRUE;
 }
 
-jobject Util::ToJavaBitmap(JNIEnv* env, IBitmap* bitmap){
+jobject Util::ToJavaBitmap(JNIEnv* env, IBitmap* bitmap)
+{
     if(env == NULL || bitmap == NULL){
         Logger::E("Util", "ToJavaBitmap() INVALID params");
         return NULL;
@@ -1729,7 +1794,8 @@ jobject Util::ToJavaBitmap(JNIEnv* env, IBitmap* bitmap){
 
 jobject Util::ToJavaConfiguration(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IConfiguration* configuration) {
+    /* [in] */ IConfiguration* configuration)
+{
     if (env == NULL || configuration == NULL) {
         LOGGERE("ToJavaConfiguration", "Invalid arguments!");
         return NULL;
@@ -1802,7 +1868,7 @@ jobject Util::ToJavaConfiguration(
     }
 
     Boolean tempBool;
-    configuration->IsUserSetLocale(&tempBool);
+    configuration->GetUserSetLocale(&tempBool);
     f = env->GetFieldID(configKlass, "userSetLocale", "Z");
     Util::CheckErrorAndLog(env, "ToJavaConfiguration", "Fail GetFieldID: userSetLocale %d", __LINE__);
 
@@ -1935,7 +2001,8 @@ jobject Util::ToJavaConfiguration(
 
 jobject Util::ToJavaLocale(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ILocale* locale) {
+    /* [in] */ ILocale* locale)
+{
     if (env == NULL || locale == NULL) {
         LOGGERE("ToJavaLocale", "Invalid arguments!");
         return NULL;
@@ -2031,7 +2098,8 @@ jobject Util::ToJavaLocale(
 
 jobject Util::ToJavaRect(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IRect* rect) {
+    /* [in] */ IRect* rect)
+{
     if (env == NULL || rect == NULL) {
         LOGGERE("ToJavaRect", "Invalid arguments!");
         return NULL;
@@ -2064,7 +2132,8 @@ jobject Util::ToJavaRect(
 
 jobject Util::ToJavaProviderInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IProviderInfo* providerInfo){
+    /* [in] */ IProviderInfo* providerInfo)
+{
     if (env == NULL || providerInfo == NULL) {
         LOGGERE("ToJavaProviderInfo", "Invalid arguments!");
         return NULL;
@@ -2363,7 +2432,8 @@ jobject Util::ToJavaProviderInfo(
 
 String Util::GetElString(
     /* [in] */ JNIEnv* env,
-    /* [in] */ jstring jstr) {
+    /* [in] */ jstring jstr)
+{
     if (env == NULL || jstr == NULL) {
         return String(NULL);
     }
@@ -2379,7 +2449,8 @@ String Util::GetElString(
 Boolean Util::GetElCharSequence(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jcs,
-    /* [out] */ ICharSequence** elCs) {
+    /* [out] */ ICharSequence** elCs)
+{
     if (env == NULL || elCs == NULL) {
         LOGGERD(LOG_TAG, "GetElCharSequence: Invalid argumenet!");
         *elCs = NULL;
@@ -2413,7 +2484,8 @@ Boolean Util::GetElCharSequence(
 Boolean Util::GetElApplicationInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jappInfo,
-    /* [out] */ IApplicationInfo** appInfo) {
+    /* [out] */ IApplicationInfo** appInfo)
+{
     if (env == NULL || jappInfo == NULL || appInfo == NULL) {
         LOGGERE("GetElApplicationInfo", "Invalid arguments!");
         return FALSE;
@@ -3008,8 +3080,8 @@ Boolean Util::GetElUri(
 Boolean Util::GetElComponentName(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jcomponentName,
-    /* [out] */ IComponentName** elcomponentName) {
-
+    /* [out] */ IComponentName** elcomponentName)
+{
     if (elcomponentName == NULL) {
         LOGGERE("GetElComponentName", "Invalid argumenet!");
         return FALSE;
@@ -3054,7 +3126,8 @@ Boolean Util::GetElComponentName(
 Boolean Util::GetElIntent(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jintent,
-    /* [out] */ IIntent** elIntent) {
+    /* [out] */ IIntent** elIntent)
+{
     if (elIntent == NULL) {
         LOGGERE("GetElIntent", "Invalid argumenet!");
         return FALSE;
@@ -3282,7 +3355,8 @@ Boolean Util::GetElIntent(
 Boolean Util::GetElBundle(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jbundle,
-    /* [out] */ IBundle** bundle) {
+    /* [out] */ IBundle** bundle)
+{
     if (env == NULL || jbundle == NULL || bundle == NULL) {
         LOGGERE("GetElBundle", "Invalid arguments!");
         return FALSE;
@@ -3299,7 +3373,8 @@ Boolean Util::GetElBundle(
 Boolean Util::GetElBundle(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jbundle,
-    /* [in] */ IBundle* bundle) {
+    /* [in] */ IBundle* bundle)
+{
     if (env == NULL || jbundle == NULL || bundle == NULL) {
         LOGGERE("GetElBundle", "Invalid arguments!");
         return FALSE;
@@ -3755,7 +3830,8 @@ Boolean Util::GetElProviderInfo(
 
 jobject Util::ToJavaUri(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IUri* uri) {
+    /* [in] */ IUri* uri)
+{
     if (env == NULL || uri == NULL) {
         LOGGERE("ToJavaUri", "Invalid arguments!");
         return NULL;
@@ -4075,7 +4151,8 @@ jobject Util::ToJavaUri(
 
 jobject Util::ToJavaClipData(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IClipData* clipData) {
+    /* [in] */ IClipData* clipData)
+{
     if (env == NULL || clipData == NULL) {
         LOGGERE("ToJavaClipData", "Invalid arguments!");
         return NULL;
@@ -4143,7 +4220,8 @@ jobject Util::ToJavaClipData(
 
 jobject Util::ToJavaClipDescription(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IClipDescription* clipDesc) {
+    /* [in] */ IClipDescription* clipDesc)
+{
     if (env == NULL || clipDesc == NULL) {
         ALOGE("ToJavaClipDescription() Invalid arguments!");
         return NULL;
@@ -4187,7 +4265,8 @@ jobject Util::ToJavaClipDescription(
 
 jobject Util::ToJavaClipDataItem(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IClipDataItem* item) {
+    /* [in] */ IClipDataItem* item)
+{
     if (env == NULL || item == NULL) {
         ALOGE("ToJavaClipDataItem() Invalid arguments!");
         return NULL;
@@ -4239,7 +4318,8 @@ jobject Util::ToJavaClipDataItem(
 
 jobject Util::ToJavaInputBindResult(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IInputBindResult* result) {
+    /* [in] */ IInputBindResult* result)
+{
     if (env == NULL || result == NULL) {
         LOGGERE("ToJavaInputBindResult()", "Invalid arguments!");
         return NULL;
@@ -4285,9 +4365,10 @@ jobject Util::ToJavaInputBindResult(
 }
 
 Boolean Util::GetElRect(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ jobject jrect,
-        /* [out] */ IRect** elRect) {
+    /* [in] */ JNIEnv* env,
+    /* [in] */ jobject jrect,
+    /* [out] */ IRect** elRect)
+{
     if (elRect == NULL) {
         LOGGERE("GetElRect()", "Invalid argumenet!");
         return FALSE;
@@ -4336,7 +4417,8 @@ Boolean Util::GetElRect(
 
 jobject Util::ToJavaKeyEvent(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IKeyEvent* keyEvent) {
+    /* [in] */ IKeyEvent* keyEvent)
+{
     if (env == NULL || keyEvent == NULL) {
         LOGGERE("ToJavaKeyEvent()", "Invalid arguments!");
         return NULL;
@@ -4433,7 +4515,8 @@ void Util::SetComponentInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jclass parentClass,
     /* [in] */ jobject jparent,
-    /* [in] */ IComponentInfo* comInfo) {
+    /* [in] */ IComponentInfo* comInfo)
+{
     if (env == NULL || parentClass == NULL || jparent == NULL || comInfo == NULL) {
         LOGGERE("SetComponentInfo()", "Invalid arguments!");
         return;
@@ -4498,7 +4581,8 @@ void Util::SetPackageItemInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jclass parentClass,
     /* [in] */ jobject jparent,
-    /* [in] */ IPackageItemInfo* pkgInfo) {
+    /* [in] */ IPackageItemInfo* pkgInfo)
+{
     if (env == NULL || parentClass == NULL || jparent == NULL || pkgInfo == NULL) {
         LOGGERE("SetPackageItemInfo()", "Invalid arguments!");
         return;
@@ -4582,9 +4666,10 @@ void Util::SetPackageItemInfo(
     }
 }
 
-jobject  Util::ToJavaServiceInfo(
+jobject Util::ToJavaServiceInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IServiceInfo* sInfo) {
+    /* [in] */ IServiceInfo* sInfo)
+{
     if (env == NULL || sInfo == NULL) {
         LOGGERE("ToJavaServiceInfo()", "Invalid arguments!");
         return NULL;
@@ -4629,9 +4714,10 @@ jobject  Util::ToJavaServiceInfo(
     return jsInfo;
 }
 
-jobject  Util::ToJavaCompatibilityInfo(
+jobject Util::ToJavaCompatibilityInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ICompatibilityInfo* cInfo){
+    /* [in] */ ICompatibilityInfo* cInfo)
+{
     if (env == NULL || cInfo == NULL) {
         LOGGERE("ToJavaCompatibilityInfo()", "Invalid arguments!");
         return NULL;
@@ -4704,7 +4790,8 @@ jobject  Util::ToJavaCompatibilityInfo(
     return jcInfo;
 }
 
-jint Util::GetJavaIntegerField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, jint defaultInt, const char* tag){
+jint Util::GetJavaIntegerField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, jint defaultInt, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaIntegerField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4731,7 +4818,8 @@ jint Util::GetJavaIntegerField(JNIEnv* env, jclass klass, jobject jobj, const ch
 }
 
 
-jfloat Util::GetJavafloatField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+jfloat Util::GetJavafloatField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(LOG_TAG, "%s: GetJavafloatField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0.0f;
@@ -4744,20 +4832,22 @@ jfloat Util::GetJavafloatField(JNIEnv* env, jclass klass, jobject jobj, const ch
     return value;
 }
 
-jdouble Util::GetJavadoubleField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+jdouble Util::GetJavadoubleField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(LOG_TAG, "%s: GetJavadoubleField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0.0;
     }
 
-    jfieldID field = env->GetFieldID(klass, fieldName, "D")
-;    CheckErrorAndLog(env, "%s: Fail get double field id:%s  : %d!\n", tag, fieldName, __LINE__);
+    jfieldID field = env->GetFieldID(klass, fieldName, "D");
+    CheckErrorAndLog(env, "%s: Fail get double field id:%s  : %d!\n", tag, fieldName, __LINE__);
     jdouble value = env->GetDoubleField(jobj, field);
     CheckErrorAndLog(env, "%s: Fail get double field: %s : %d!\n", tag, fieldName, __LINE__);
     return value;
 }
 
-jshort Util::GetJavaShortField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+jshort Util::GetJavaShortField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(LOG_TAG, "%s: GetJavabyteField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0;
@@ -4770,7 +4860,8 @@ jshort Util::GetJavaShortField(JNIEnv* env, jclass klass, jobject jobj, const ch
     return jvalue;
 }
 
-jchar Util::GetJavaCharField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+jchar Util::GetJavaCharField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE(LOG_TAG, "%s: GetJavabyteField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return 0;
@@ -4783,7 +4874,8 @@ jchar Util::GetJavaCharField(JNIEnv* env, jclass klass, jobject jobj, const char
     return jvalue;
 }
 
-jint Util::GetJavaIntField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+jint Util::GetJavaIntField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaIntField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4794,7 +4886,8 @@ jint Util::GetJavaIntField(JNIEnv* env, jclass klass, jobject jobj, const char* 
     return intValue;
 }
 
-jlong Util::GetJavalongField(JNIEnv* env, jobject jobj, const char* fieldName, const char* tag){
+jlong Util::GetJavalongField(JNIEnv* env, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavalongField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4810,7 +4903,8 @@ jlong Util::GetJavalongField(JNIEnv* env, jobject jobj, const char* fieldName, c
 }
 
 /**get byte field of java object*/
-jbyte Util::GetJavabyteField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+jbyte Util::GetJavabyteField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavabyteField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4821,7 +4915,8 @@ jbyte Util::GetJavabyteField(JNIEnv* env, jclass klass, jobject jobj, const char
     return byteValue;
 }
 
-jboolean Util::GetJavaBoolField(JNIEnv* env, jobject jobj, const char* fieldName, const char* tag){
+jboolean Util::GetJavaBoolField(JNIEnv* env, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaBoolField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
         return JNI_FALSE;
@@ -4838,7 +4933,8 @@ jboolean Util::GetJavaBoolField(JNIEnv* env, jobject jobj, const char* fieldName
 }
 
 
-String Util::GetJavaStringField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag){
+String Util::GetJavaStringField(JNIEnv* env, jclass klass, jobject jobj, const char* fieldName, const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: GetJavaStringField() invalid param while get field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4858,7 +4954,8 @@ bool Util::SetJavaIntegerField(
     /* [in] */ jobject jobj,
     /* [in] */ Int32 intvalue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavaIntegerField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4884,7 +4981,8 @@ bool Util::SetJavaIntField(
     /* [in] */ jobject jobj,
     /* [in] */ Int32 intvalue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavaIntField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4901,7 +4999,8 @@ bool Util::SetJavabyteField(
     /* [in] */ jobject jobj,
     /* [in] */ Byte bytevalue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavabyteField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -4918,7 +5017,8 @@ bool Util::SetJavalongField(
     /* [in] */ jobject jobj,
     /* [in] */ Int64 longvalue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("%s: SetJavalongField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
@@ -4937,7 +5037,8 @@ bool Util::SetJavaBoolField(
     /* [in] */ jobject jobj,
     /* [in] */ Boolean boolValue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavaBoolField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
@@ -4955,7 +5056,8 @@ bool Util::SetJavafloatField(
     /* [in] */ jobject jobj,
     /* [in] */ Float floatValue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavafloatField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
@@ -4974,7 +5076,8 @@ bool Util::SetJavadoubleField(
     /* [in] */ jobject jobj,
     /* [in] */ Double doubleValue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavadoubleField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
         return false;
@@ -4993,7 +5096,8 @@ bool Util::SetJavaStringField(
     /* [in] */ jobject jobj,
     /* [in] */ const String& strValue,
     /* [in] */ const char* fieldName,
-    /* [in] */ const char* tag){
+    /* [in] */ const char* tag)
+{
     if(env == NULL || klass == NULL || jobj == NULL || fieldName == NULL){
         LOGGERE("Util", "%s: SetJavaStringField() invalid param while set field:%s  : %d!\n", tag, fieldName, __LINE__);
     }
@@ -5040,7 +5144,8 @@ String Util::GetClassName(JNIEnv* env, jobject obj)
 
 jobject Util::ToJavaMessage(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IMessage* msg) {
+    /* [in] */ IMessage* msg)
+{
     if (env == NULL || msg == NULL) {
         LOGGERE("ToJavaMessage()", "Invalid arguments!");
         return NULL;
@@ -5157,7 +5262,8 @@ jobject Util::ToJavaMessage(
 
 jobject Util::ToJavaIntentReceiver(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IIntentReceiver* receiver) {
+    /* [in] */ IIntentReceiver* receiver)
+{
     if (env == NULL || receiver == NULL) {
         LOGGERE("ToJavaIntentReceiver()", "Invalid arguments!");
         return NULL;
@@ -5177,7 +5283,8 @@ jobject Util::ToJavaIntentReceiver(
     return jreceiver;
 }
 
-jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location){
+jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location)
+{
     jclass locationKlass = env->FindClass("android/location/Location");
     CheckErrorAndLog(env, "ToJavaLocation", "Error FindClass: Location : %d!\n", __LINE__);
 
@@ -5254,7 +5361,8 @@ jobject Util::ToJavaLocation(JNIEnv* env, ILocation* location){
 
 jobject Util::ToJavaInputBinding(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IInputBinding* binding) {
+    /* [in] */ IInputBinding* binding)
+{
     if (env == NULL || binding == NULL) {
         LOGGERE("ToJavaInputBinding()", "Invalid arguments!");
         return NULL;
@@ -5316,7 +5424,8 @@ jobject Util::ToJavaInputBinding(
 
 jobject Util::ToJavaEditorInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IEditorInfo* info) {
+    /* [in] */ IEditorInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaEditorInfo()", "Invalid arguments!");
         return NULL;
@@ -5504,7 +5613,8 @@ jobject Util::ToJavaParcelFileDescriptor(
 
 jobject Util::ToJavaNetworkInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ INetworkInfo* info) {
+    /* [in] */ INetworkInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaNetworkInfo", "Invalid argumenet!");
         return NULL;
@@ -5699,7 +5809,8 @@ jobject Util::ToJavaNetworkInfo(
 
 jobject Util::ToJavaWifiInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiInfo* info) {
+    /* [in] */ IWifiInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaWifiInfo", "Invalid argumenet!");
         return NULL;
@@ -5811,7 +5922,8 @@ jobject Util::ToJavaWifiInfo(
 
 jobject Util::ToJavaInetAddress(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IInetAddress* address) {
+    /* [in] */ IInetAddress* address)
+{
     if (env == NULL || address == NULL) {
         LOGGERE("GetJavaInetAddress", "Invalid argumenet!");
         return NULL;
@@ -5852,7 +5964,8 @@ jobject Util::ToJavaInetAddress(
     /* [in] */ JNIEnv* env,
     /* [in] */ Int32 family,
     /* [in] */ Int32 ipaddress,
-    /* [in] */ const String& hostName) {
+    /* [in] */ const String& hostName)
+{
     if (env == NULL || ipaddress == 0) {
         LOGGERE("ToJavaInetAddress", "Invalid argumenet!");
         return NULL;
@@ -5895,7 +6008,8 @@ jobject Util::ToJavaInetAddress(
 
 jobject Util::ToJavaWifiSsid(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiSsid* wiSsid) {
+    /* [in] */ IWifiSsid* wiSsid)
+{
     if (env == NULL || wiSsid == NULL) {
         LOGGERE("ToJavaWifiSsid", "Invalid argumenet!");
         return NULL;
@@ -5953,7 +6067,8 @@ jobject Util::ToJavaWifiSsid(
 
 jobject Util::ToJavaSupplicantState(
     /* [in] */ JNIEnv* env,
-    /* [in] */ SupplicantState state) {
+    /* [in] */ SupplicantState state)
+{
     if (env == NULL) {
         LOGGERE("ToJavaSupplicantState", "Invalid argumenet!");
         return NULL;
@@ -5967,55 +6082,55 @@ jobject Util::ToJavaSupplicantState(
     jfieldID f = NULL;
 
     switch(state) {
-        case Elastos::Droid::Wifi::SupplicantState_DISCONNECTED: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_DISCONNECTED: {
             f = env->GetStaticFieldID(supsKlass, "DISCONNECTED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_INTERFACE_DISABLED: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_INTERFACE_DISABLED: {
             f = env->GetStaticFieldID(supsKlass, "INTERFACE_DISABLED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_INACTIVE: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_INACTIVE: {
             f = env->GetStaticFieldID(supsKlass, "INACTIVE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_SCANNING: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_SCANNING: {
             f = env->GetStaticFieldID(supsKlass, "SCANNING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_AUTHENTICATING: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_AUTHENTICATING: {
             f = env->GetStaticFieldID(supsKlass, "AUTHENTICATING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_ASSOCIATING: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_ASSOCIATING: {
             f = env->GetStaticFieldID(supsKlass, "ASSOCIATING", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_ASSOCIATED: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_ASSOCIATED: {
             f = env->GetStaticFieldID(supsKlass, "ASSOCIATED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_FOUR_WAY_HANDSHAKE: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_FOUR_WAY_HANDSHAKE: {
             f = env->GetStaticFieldID(supsKlass, "FOUR_WAY_HANDSHAKE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_GROUP_HANDSHAKE: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_GROUP_HANDSHAKE: {
             f = env->GetStaticFieldID(supsKlass, "GROUP_HANDSHAKE", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_COMPLETED: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_COMPLETED: {
             f = env->GetStaticFieldID(supsKlass, "COMPLETED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_DORMANT: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_DORMANT: {
             f = env->GetStaticFieldID(supsKlass, "DORMANT", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_UNINITIALIZED: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_UNINITIALIZED: {
             f = env->GetStaticFieldID(supsKlass, "UNINITIALIZED", "Landroid/net/wifi/SupplicantState;");
             break;
         }
-        case Elastos::Droid::Wifi::SupplicantState_INVALID: {
+        case Elastos::Droid::Net::Wifi::SupplicantState_INVALID: {
             f = env->GetStaticFieldID(supsKlass, "INVALID", "Landroid/net/wifi/SupplicantState;");
             break;
         }
@@ -6032,8 +6147,8 @@ jobject Util::ToJavaSupplicantState(
 }
 
 jobject Util::ToJavaSupplicantState(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ ISupplicantState* state)
+    /* [in] */ JNIEnv* env,
+    /* [in] */ ISupplicantState* state)
 {
     if (env == NULL || state == NULL) {
         LOGGERE("ToJavaSupplicantState", "Invalid argumenet!");
@@ -6047,7 +6162,8 @@ jobject Util::ToJavaSupplicantState(
 
 jobject Util::ToJavaLinkProperties(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ILinkProperties* properties) {
+    /* [in] */ ILinkProperties* properties)
+{
     if (env == NULL || properties == NULL) {
         LOGGERE("ToJavaLinkProperties", "Invalid argumenet!");
         return NULL;
@@ -6196,7 +6312,8 @@ jobject Util::ToJavaLinkProperties(
 
 jobject Util::ToJavaRouteInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IRouteInfo* info) {
+    /* [in] */ IRouteInfo* info)
+{
     if(env == NULL || info == NULL){
         LOGGERE("ToJavaRouteInfo()", "Invalid argumenet!");
         return NULL;
@@ -6231,7 +6348,8 @@ jobject Util::ToJavaRouteInfo(
 
 jobject Util::ToJavaLinkAddress(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ILinkAddress* info) {
+    /* [in] */ ILinkAddress* info)
+{
     if (env == NULL || info == NULL) {
         ALOGE("ToJavaLinkAddress() Invalid argumenet!");
         return NULL;
@@ -6262,7 +6380,8 @@ jobject Util::ToJavaLinkAddress(
 
 jobject Util::ToJavaProxyProperties(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IProxyProperties* pproperties) {
+    /* [in] */ IProxyProperties* pproperties)
+{
     if(env == NULL || pproperties == NULL){
         LOGGERE("ToJavaProxyProperties()", "Invalid argumenet!");
         return NULL;
@@ -6365,7 +6484,8 @@ Boolean Util::GetElPackageInfoLite(
     return TRUE;
 }
 
-Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** remoteview){
+Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** remoteview)
+{
     if (remoteview) *remoteview = NULL;
 
     if (env == NULL || jremoteview == NULL || remoteview == NULL) {
@@ -6773,7 +6893,8 @@ Boolean Util::GetElRemoteViews(JNIEnv* env, jobject jremoteview, IRemoteViews** 
     return TRUE;
 }
 
-jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj){
+jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj)
+{
     if (env == NULL || obj == NULL) {
         LOGGERE("Util::ToJavaRemoteViews:", " Invalid argumenet!");
         return NULL;
@@ -7362,7 +7483,8 @@ jobject Util::ToJavaRemoteViews(JNIEnv* env, IRemoteViews* obj){
     return jremoteview;
 }
 
-jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* obj){
+jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* obj)
+{
     if (env == NULL || obj == NULL) {
         LOGGERW(LOG_TAG, "ToJavaAppWidgetProviderInfo: Invalid argumenet!");
         return NULL;
@@ -7457,7 +7579,8 @@ jobject Util::ToJavaAppWidgetProviderInfo(JNIEnv* env, IAppWidgetProviderInfo* o
 Boolean Util::GetElPendingIntent(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jpintent,
-    /* [out] */ IPendingIntent** pintent) {
+    /* [out] */ IPendingIntent** pintent)
+{
     if (env == NULL || jpintent == NULL || pintent == NULL) {
         LOGGERD(LOG_TAG, "GetElPendingIntent: Invalid argumenet!");
         return FALSE;
@@ -7496,7 +7619,8 @@ Boolean Util::GetElPendingIntent(
     return TRUE;
 }
 
-jobject Util::ToJavaPendingIntent(JNIEnv* env, IPendingIntent* pendingIntent){
+jobject Util::ToJavaPendingIntent(JNIEnv* env, IPendingIntent* pendingIntent)
+{
     if (env == NULL || pendingIntent == NULL) {
         LOGGERE("Util", "ToJavaPendingIntent: Invalid argumenet!");
         return NULL;
@@ -7529,7 +7653,8 @@ jobject Util::ToJavaPendingIntent(JNIEnv* env, IPendingIntent* pendingIntent){
 
 jobject Util::ToJavaIIntentSender(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IIIntentSender* isender) {
+    /* [in] */ IIIntentSender* isender)
+{
     if (env == NULL || isender == NULL) {
         LOGGERE("Util", "GetJavaIIentSender: Invalid argumenet!");
         return NULL;
@@ -7551,7 +7676,8 @@ jobject Util::ToJavaIIntentSender(
 
 jobject Util::ToJavaExtractedText(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IExtractedText* ert) {
+    /* [in] */ IExtractedText* ert)
+{
     if(env == NULL || ert == NULL){
         LOGGERE("ToJavaExtractedText()", "Invalid argumenet!");
         return NULL;
@@ -7605,7 +7731,8 @@ jobject Util::ToJavaExtractedText(
 
 jobject Util::ToJavaExtractedTextRequest(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IExtractedTextRequest* ertr) {
+    /* [in] */ IExtractedTextRequest* ertr)
+{
     if(env == NULL || ertr == NULL){
         LOGGERE("ToJavaExtractedTextRequest()", "Invalid argumenet!");
         return NULL;
@@ -7638,7 +7765,8 @@ jobject Util::ToJavaExtractedTextRequest(
 
 jobject Util::ToJavaCompletionInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ICompletionInfo* completion) {
+    /* [in] */ ICompletionInfo* completion)
+{
     if(env == NULL || completion == NULL){
         LOGGERE("ToJavaCompletionInfo()", "Invalid argumenet!");
         return NULL;
@@ -7684,7 +7812,8 @@ jobject Util::ToJavaCompletionInfo(
 
 jobject Util::ToJavaCorrectionInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ICorrectionInfo* correction) {
+    /* [in] */ ICorrectionInfo* correction)
+{
     if(env == NULL || correction == NULL){
         LOGGERE("ToJavaCorrectionInfo()", "Invalid argumenet!");
         return NULL;
@@ -7728,7 +7857,8 @@ jobject Util::ToJavaCorrectionInfo(
 
 jobject Util::ToJavaStorageVolume(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IStorageVolume* volume) {
+    /* [in] */ IStorageVolume* volume)
+{
     if(env == NULL || volume == NULL){
         LOGGERE("ToJavaStorageVolume()", "Invalid argumenet!");
         return NULL;
@@ -7797,7 +7927,8 @@ jobject Util::ToJavaStorageVolume(
 
 jobject Util::ToJavaUserHandle(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IUserHandle* handle) {
+    /* [in] */ IUserHandle* handle)
+{
     if(env == NULL || handle == NULL){
         LOGGERE("ToJavaUserHandle()", "Invalid argumenet!");
         return NULL;
@@ -7821,7 +7952,8 @@ jobject Util::ToJavaUserHandle(
 Boolean Util::GetElFileDescriptor(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jfDescptor,
-    /* [out] */ IFileDescriptor** fDescptor) {
+    /* [out] */ IFileDescriptor** fDescptor)
+{
     if (env == NULL || jfDescptor == NULL || fDescptor == NULL) {
         LOGGERE("GetElFileDescriptor()", "Invalid argumenet!");
         return FALSE;
@@ -7847,7 +7979,8 @@ Boolean Util::GetElFileDescriptor(
 Boolean Util::GetElParcelFileDescriptor(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jpFDescptor,
-    /* [out] */ IParcelFileDescriptor** pFDescptor) {
+    /* [out] */ IParcelFileDescriptor** pFDescptor)
+{
     if (env == NULL || jpFDescptor == NULL || pFDescptor == NULL) {
         LOGGERE("GetElParcelFileDescriptor()", "Invalid argumenet!");
         return FALSE;
@@ -7881,7 +8014,8 @@ Boolean Util::GetElParcelFileDescriptor(
 Boolean Util::GetElAssetFileDescriptor(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jaFDescptor,
-    /* [out] */ IAssetFileDescriptor** aFDescptor) {
+    /* [out] */ IAssetFileDescriptor** aFDescptor)
+{
     if (env == NULL || jaFDescptor == NULL || aFDescptor == NULL) {
         LOGGERE("GetElAssetFileDescriptor()", "Invalid argumenet!");
         return FALSE;
@@ -7918,7 +8052,8 @@ Boolean Util::GetElAssetFileDescriptor(
 Boolean Util::GetElObbInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jobbInfo,
-    /* [out] */ IObbInfo** obbInfo) {
+    /* [out] */ IObbInfo** obbInfo)
+{
     if (env == NULL || jobbInfo == NULL || obbInfo == NULL) {
         LOGGERE("GetElObbInfo()", "Invalid argumenet!");
         *obbInfo = NULL;
@@ -8198,7 +8333,8 @@ jobject Util::ToJavaContentValues(
 
 jobject Util::ToJavaDragEvent(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IDragEvent* event) {
+    /* [in] */ IDragEvent* event)
+{
     if (env == NULL || event == NULL) {
         LOGGERE("ToJavaDragEvent", "Invalid arguments!");
         return NULL;
@@ -8302,7 +8438,8 @@ jobject Util::ToJavaMotionEvent(
 
 jobject Util::ToJavaPackageStats(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IPackageStats* stats) {
+    /* [in] */ IPackageStats* stats)
+{
     if (env == NULL || stats == NULL) {
         LOGGERE("ToJavaPackageStats", "Invalid arguments!");
         return NULL;
@@ -8358,7 +8495,8 @@ jobject Util::ToJavaPackageStats(
 
 jobject Util::ToJavaHashMap(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IObjectStringMap* map) {
+    /* [in] */ IObjectStringMap* map)
+{
     if (env == NULL || map == NULL) {
         LOGGERE("ToJavaHashMap", "Invalid arguments!");
         return NULL;
@@ -8440,7 +8578,8 @@ jobject Util::ToJavaHashMap(
 
 jobject Util::ToJavaVpnProfile(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IVpnProfile* profile) {
+    /* [in] */ IVpnProfile* profile)
+{
     if (env == NULL || profile == NULL) {
         LOGGERE("ToJavaVpnProfile", "Invalid arguments!");
         return NULL;
@@ -8518,7 +8657,8 @@ jobject Util::ToJavaVpnProfile(
 
 jobject Util::ToJavaDebugMemoryInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IDebugMemoryInfo* info) {
+    /* [in] */ IDebugMemoryInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaDebugMemoryInfo", "Invalid arguments!");
         return NULL;
@@ -8594,7 +8734,8 @@ jobject Util::ToJavaDebugMemoryInfo(
 Boolean Util::GetElDebugMemoryInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jinfo,
-    /* [out] */ IDebugMemoryInfo** info) {
+    /* [out] */ IDebugMemoryInfo** info)
+{
     if (env == NULL || jinfo == NULL || info == NULL) {
         LOGGERE("GetElDebugMemoryInfo", "Invalid arguments!");
         return FALSE;
@@ -8610,7 +8751,8 @@ Boolean Util::GetElDebugMemoryInfo(
 Boolean Util::GetElDebugMemoryInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jinfo,
-    /* [in] */ IDebugMemoryInfo* info) {
+    /* [in] */ IDebugMemoryInfo* info)
+{
     if (env == NULL || jinfo == NULL || info == NULL) {
         LOGGERE("GetElDebugMemoryInfo", "Invalid arguments!");
         return FALSE;
@@ -8661,7 +8803,8 @@ Boolean Util::GetElDebugMemoryInfo(
 
 jobject Util::ToJavaProviderRequest(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IProviderRequest* request) {
+    /* [in] */ IProviderRequest* request)
+{
     if (env == NULL || request == NULL) {
         LOGGERE("ToJavaProviderRequest", "Invalid arguments!");
         return NULL;
@@ -8734,7 +8877,8 @@ jobject Util::ToJavaProviderRequest(
 
 jobject Util::ToJavaLocationRequest(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ILocationRequest* request) {
+    /* [in] */ ILocationRequest* request)
+{
     if (env == NULL || request == NULL) {
         LOGGERE("ToJavaLocationRequest", "Invalid arguments!");
         return NULL;
@@ -8858,7 +9002,8 @@ Boolean Util::GetElProviderProperties(
 
 jobject Util::ToJavaCharArrayBuffer(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ICharArrayBuffer* buffer) {
+    /* [in] */ ICharArrayBuffer* buffer)
+{
     if (env == NULL || buffer == NULL) {
         LOGGERE("ToJavaCharArrayBuffer", "Invalid arguments!");
         return NULL;
@@ -8893,7 +9038,8 @@ jobject Util::ToJavaCharArrayBuffer(
 
 jobject Util::ToJavaWifiP2pInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiP2pInfo* info) {
+    /* [in] */ IWifiP2pInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaWifiP2pInfo", "Invalid arguments!");
         return NULL;
@@ -8935,7 +9081,8 @@ jobject Util::ToJavaWifiP2pInfo(
 
 jobject Util::ToJavaWifiP2pDevice(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiP2pDevice* dev) {
+    /* [in] */ IWifiP2pDevice* dev)
+{
     if (env == NULL || dev == NULL) {
         LOGGERE("ToJavaWifiP2pDevice", "Invalid arguments!");
         return NULL;
@@ -8998,7 +9145,8 @@ jobject Util::ToJavaWifiP2pDevice(
 
 jobject Util::ToJavaWifiP2pWfdInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiP2pWfdInfo* info) {
+    /* [in] */ IWifiP2pWfdInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaWifiP2pWfdInfo", "Invalid arguments!");
         return NULL;
@@ -9037,7 +9185,8 @@ jobject Util::ToJavaWifiP2pWfdInfo(
 
 jobject Util::ToJavaWifiP2pDeviceList(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiP2pDeviceList* info) {
+    /* [in] */ IWifiP2pDeviceList* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaWifiP2pDeviceList", "Invalid arguments!");
         return NULL;
@@ -9096,7 +9245,8 @@ jobject Util::ToJavaWifiP2pDeviceList(
 
 jobject Util::ToJavaWifiP2pGroup(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiP2pGroup* group) {
+    /* [in] */ IWifiP2pGroup* group)
+{
     if (env == NULL || group == NULL) {
         LOGGERE("ToJavaWifiP2pGroup", "Invalid arguments!");
         return NULL;
@@ -9181,7 +9331,8 @@ jobject Util::ToJavaWifiP2pGroup(
 
 jobject Util::ToJavaWifiConfiguration(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IWifiConfiguration* config) {
+    /* [in] */ IWifiConfiguration* config)
+{
     if (env == NULL || config == NULL) {
         LOGGERE("ToJavaWifiConfiguration", "Invalid arguments!");
         return NULL;
@@ -9351,10 +9502,10 @@ jobject Util::ToJavaWifiConfiguration(
     jclass ipaClass = env->FindClass("android/net/wifi/WifiConfiguration$IpAssignment");
     Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass IpAssignment %d", __LINE__);
 
-    Elastos::Droid::Wifi::IpAssignment ipAssignment;
+    Elastos::Droid::Net::Wifi::IpAssignment ipAssignment;
     config->GetIpAssignment(&ipAssignment);
     switch(ipAssignment) {
-        case Elastos::Droid::Wifi::IpAssignment_STATIC: {
+        case Elastos::Droid::Net::Wifi::IpAssignment_STATIC: {
             jfieldID f = env->GetStaticFieldID(ipaClass, "STATIC", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
 
@@ -9370,7 +9521,7 @@ jobject Util::ToJavaWifiConfiguration(
             env->DeleteLocalRef(jSTATIC);
             break;
         }
-        case Elastos::Droid::Wifi::IpAssignment_DHCP: {
+        case Elastos::Droid::Net::Wifi::IpAssignment_DHCP: {
             jfieldID f = env->GetStaticFieldID(ipaClass, "DHCP", "Landroid/net/wifi/WifiConfiguration$IpAssignment;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: DHCP : %d!\n", __LINE__);
 
@@ -9407,10 +9558,10 @@ jobject Util::ToJavaWifiConfiguration(
     jclass psClass = env->FindClass("android/net/wifi/WifiConfiguration$ProxySettings");
     Util::CheckErrorAndLog(env, "ToJavaWifiConfiguration", "Fail FindClass ProxySettings %d", __LINE__);
 
-    Elastos::Droid::Wifi::ProxySettings proxySettings;
+    Elastos::Droid::Net::Wifi::ProxySettings proxySettings;
     config->GetIpAssignment(&proxySettings);
     switch(proxySettings) {
-        case Elastos::Droid::Wifi::ProxySettings_NONE: {
+        case Elastos::Droid::Net::Wifi::ProxySettings_NONE: {
             jfieldID f = env->GetStaticFieldID(psClass, "NONE", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: NONE : %d!\n", __LINE__);
 
@@ -9426,7 +9577,7 @@ jobject Util::ToJavaWifiConfiguration(
             env->DeleteLocalRef(jNONE);
             break;
         }
-        case Elastos::Droid::Wifi::ProxySettings_STATIC: {
+        case Elastos::Droid::Net::Wifi::ProxySettings_STATIC: {
             jfieldID f = env->GetStaticFieldID(psClass, "STATIC", "Landroid/net/wifi/WifiConfiguration$ProxySettings;");
             CheckErrorAndLog(env,"ToJavaWifiConfiguration", "GetStaticFieldID: STATIC : %d!\n", __LINE__);
 
@@ -9481,8 +9632,9 @@ jobject Util::ToJavaWifiConfiguration(
 }
 
 jobject Util::ToJavaWifiDisplayStatus(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ IWifiDisplayStatus* status) {
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IWifiDisplayStatus* status)
+{
     if (env == NULL || status == NULL) {
         LOGGERE("ToJavaWifiDisplayStatus", "Invalid arguments!");
         return NULL;
@@ -9564,8 +9716,9 @@ jobject Util::ToJavaWifiDisplayStatus(
 }
 
 jobject Util::ToJavaWifiDisplay(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ IWifiDisplay* display) {
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IWifiDisplay* display)
+{
     if (env == NULL || display == NULL) {
         LOGGERE("ToJavaWifiDisplay", "Invalid arguments!");
         return NULL;
@@ -9601,7 +9754,8 @@ jobject Util::ToJavaWifiDisplay(
 
 jobject Util::ToJavaBitSet(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IBitSet* bitSet) {
+    /* [in] */ IBitSet* bitSet)
+{
     if (env == NULL || bitSet == NULL) {
         LOGGERE("ToJavaBitSet", "Invalid arguments!");
         return NULL;
@@ -9640,7 +9794,8 @@ jobject Util::ToJavaBitSet(
 
 jobject Util::ToJavaContainerEncryptionParams(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IContainerEncryptionParams* params) {
+    /* [in] */ IContainerEncryptionParams* params)
+{
     if (env == NULL || params == NULL) {
         LOGGERE("ToJavaContainerEncryptionParams", "Invalid arguments!");
         return NULL;
@@ -9729,7 +9884,8 @@ jobject Util::ToJavaContainerEncryptionParams(
 
 jobject Util::ToJavaIvParameterSpec(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IIvParameterSpec* spec) {
+    /* [in] */ IIvParameterSpec* spec)
+{
     if (env == NULL || spec == NULL) {
         LOGGERE("ToJavaIvParameterSpec", "Invalid arguments!");
         return NULL;
@@ -9758,8 +9914,9 @@ jobject Util::ToJavaIvParameterSpec(
 }
 
 jobject Util::ToJavaAudioRoutesInfo(
-        /* [in] */ JNIEnv* env,
-        /* [in] */ IAudioRoutesInfo* event) {
+    /* [in] */ JNIEnv* env,
+    /* [in] */ IAudioRoutesInfo* event)
+{
     if (env == NULL || event == NULL) {
         ALOGE("Util::ToJavaAudioRoutesInfo() invalid param!");
         return NULL;
@@ -9804,7 +9961,8 @@ jobject Util::ToJavaAudioRoutesInfo(
 Boolean Util::GetElClipData(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jclip,
-    /* [out] */ IClipData** clip) {
+    /* [out] */ IClipData** clip)
+{
     if (env == NULL || jclip == NULL || clip == NULL) {
         LOGGERE("GetElClipData", "Invalid argumenet!");
         *clip = NULL;
@@ -9947,7 +10105,8 @@ Boolean Util::GetElClipData(
 Boolean Util::GetElClipDataItem(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jitem,
-    /* [out] */ IClipDataItem** item) {
+    /* [out] */ IClipDataItem** item)
+{
     if (env == NULL || jitem == NULL || item == NULL) {
         LOGGERE("GetElClipDataItem", "Invalid argumenet!");
         *item = NULL;
@@ -10024,7 +10183,8 @@ Boolean Util::GetElClipDataItem(
 Boolean Util::GetElClipDescription(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jclipDesc,
-    /* [out] */ IClipDescription** clipDesc) {
+    /* [out] */ IClipDescription** clipDesc)
+{
     if (env == NULL || jclipDesc == NULL || clipDesc == NULL) {
         LOGGERE("GetElClipDescription", "Invalid argumenet!");
         *clipDesc = NULL;
@@ -10085,7 +10245,8 @@ Boolean Util::GetElClipDescription(
 jobject Util::ElByteArrayToJavaObject(
     /* [in] */ JNIEnv* env,
     /* [in] */ ArrayOf<Byte>* obj,
-    /* [in] */ const String& path) {
+    /* [in] */ const String& path)
+{
     if (env == NULL || obj == NULL) {
         LOGGERE("ElByteArrayToJavaObject", "Invalid argumenet!");
         return NULL;
@@ -10165,7 +10326,8 @@ jobject Util::ElByteArrayToJavaObject(
 
 jobject Util::ToJavaParcelable(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IParcelable* parcelable) {
+    /* [in] */ IParcelable* parcelable)
+{
     if (env == NULL || parcelable == NULL) {
         LOGGERE("ToJavaParcelable", "Invalid argumenet!");
         return NULL;
@@ -10257,7 +10419,8 @@ jobject Util::ToJavaParcelable(
 
 jobject Util::ToJavaContentProviderOperation(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IContentProviderOperation* operation) {
+    /* [in] */ IContentProviderOperation* operation)
+{
     if (env == NULL || operation == NULL) {
         ALOGE("Util::ToJavaContentProviderOperation() invalid param!");
         return NULL;
@@ -10341,7 +10504,7 @@ jobject Util::ToJavaContentProviderOperation(
 
     if ((parcel->ReadInt32(&tempInt), tempInt) != 0) {
         parcel->ReadInt32(&tempInt);
-        Util::SetJavaIntField(env, cpobklass, jbuilder, tempInt, "mExpectedCount", "ToJavaContentProviderOperation");
+        Util::SetJavaIntegerField(env, cpobklass, jbuilder, tempInt, "mExpectedCount", "ToJavaContentProviderOperation");
     }
 
     if ((parcel->ReadInt32(&tempInt), tempInt) != 0) {
@@ -10418,9 +10581,10 @@ jobject Util::ToJavaContentProviderOperation(
 Boolean Util::GetElContentProviderResult(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jresult,
-    /* [out] */ IContentProviderResult** result) {
+    /* [out] */ IContentProviderResult** result)
+{
     if (env == NULL || jresult == NULL || result == NULL) {
-        ALOGE("Util::GetElContentProviderResult() invalid param!");
+        LOGGERE("GetElContentProviderResult", "Util::GetElContentProviderResult() invalid param!");
         return FALSE;
     }
 
@@ -10447,7 +10611,7 @@ Boolean Util::GetElContentProviderResult(
 
         env->DeleteLocalRef(juri);
     } else {
-        Int32 count = Util::GetJavaIntegerField(env, cprKlass, jresult, "mNativePtr", 0, "GetElContentProviderResult");
+        Int32 count = Util::GetJavaIntegerField(env, cprKlass, jresult, "count", 0, "GetElContentProviderResult");
 
         if(NOERROR != CContentProviderResult::New(count, result)) {
             LOGGERE("GetElContentProviderResult", "GetElContentProviderResult new CContentProviderResult fail!");
@@ -10462,7 +10626,8 @@ Boolean Util::GetElContentProviderResult(
 
 jobject Util::ToJavaSuggestionsInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ISuggestionsInfo* info) {
+    /* [in] */ ISuggestionsInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaSuggestionsInfo", "Invalid arguments!");
         return NULL;
@@ -10517,7 +10682,8 @@ jobject Util::ToJavaSuggestionsInfo(
 
 jobject Util::ToJavaSentenceSuggestionsInfo(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ISentenceSuggestionsInfo* info) {
+    /* [in] */ ISentenceSuggestionsInfo* info)
+{
     if (env == NULL || info == NULL) {
         LOGGERE("ToJavaSentenceSuggestionsInfo", "Invalid arguments!");
         return NULL;
@@ -10585,7 +10751,8 @@ jobject Util::ToJavaSentenceSuggestionsInfo(
 
 jobject Util::ToJavaMessenger(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IMessenger* msgr) {
+    /* [in] */ IMessenger* msgr)
+{
     if (env == NULL || msgr == NULL) {
         LOGGERE("ToJavaMessenger", "Invalid arguments!");
         return NULL;
@@ -10624,7 +10791,8 @@ jobject Util::ToJavaMessenger(
 Boolean Util::GetElVerifierInfo(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jinfo,
-    /* [out] */ IVerifierInfo** info) {
+    /* [out] */ IVerifierInfo** info)
+{
     if (env == NULL || jinfo == NULL || info == NULL) {
         ALOGE("Util::GetElVerifierInfo() invalid param!");
         return FALSE;
@@ -10663,7 +10831,8 @@ Boolean Util::GetElVerifierInfo(
 Boolean Util::GetElPublicKey(
     /* [in] */ JNIEnv* env,
     /* [in] */ jobject jkey,
-    /* [out] */ IPublicKey** key) {
+    /* [out] */ IPublicKey** key)
+{
     if (env == NULL || jkey == NULL || key == NULL) {
         ALOGE("Util::GetElPublicKey() invalid param!");
         return FALSE;
@@ -10676,7 +10845,8 @@ Boolean Util::GetElPublicKey(
 
 jobject Util::ToJavaRestoreSet(
     /* [in] */ JNIEnv* env,
-    /* [in] */ IRestoreSet* rs) {
+    /* [in] */ IRestoreSet* rs)
+{
     if (env == NULL || rs == NULL) {
         LOGGERE("ToJavaRestoreSet", "Invalid arguments!");
         return NULL;
@@ -10710,7 +10880,8 @@ jobject Util::ToJavaRestoreSet(
 
 jobject Util::ToJavaCountry(
     /* [in] */ JNIEnv* env,
-    /* [in] */ ICountry* country) {
+    /* [in] */ ICountry* country)
+{
     if (env == NULL || country == NULL) {
         LOGGERE("ToJavaCountry", "Invalid arguments!");
         return NULL;

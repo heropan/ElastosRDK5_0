@@ -10,8 +10,8 @@ namespace Impl {
 AutoPtr< ArrayOf<String> > sInit()
 {
     AutoPtr< ArrayOf<String> > prefixs = ArrayOf<String>::Alloc(2);
-    (*prefixs)[0] = "android.widget.";
-    (*prefixs)[0] = "android.webkit.";
+    (*prefixs)[0] = "Elastos.Droid.Widget.";
+    (*prefixs)[1] = "Elastos.Droid.Webkit.";
     return prefixs;
 }
 

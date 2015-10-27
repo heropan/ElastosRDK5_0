@@ -72,6 +72,15 @@ android::status_t JavaDataSourceBridge::getSize(
 //                  CMediaExtractor
 //==========================================================================
 const String CMediaExtractor::TAG("CMediaExtractor");
+
+Boolean NativeInit()
+{
+    android::DataSource::RegisterDefaultSniffers();
+    return TRUE;
+}
+
+const Boolean CMediaExtractor::INIT = NativeInit();
+
 android::sp<android::NuMediaExtractor> CMediaExtractor::mImpl;
 
 android::sp<android::NuMediaExtractor> CMediaExtractor::SetMediaExtractor(
@@ -89,8 +98,7 @@ android::sp<android::NuMediaExtractor> CMediaExtractor::GetMediaExtractor()
 
 ECode CMediaExtractor::constructor()
 {
-    NativeSetup();
-    return NOERROR;
+    return NativeSetup();
 }
 
 ECode CMediaExtractor::SetDataSource(
@@ -582,12 +590,6 @@ ECode CMediaExtractor::HasCacheReachedEndOfStream(
     }
 
     *result = eos;
-    return NOERROR;
-}
-
-ECode CMediaExtractor::NativeInit()
-{
-    android::DataSource::RegisterDefaultSniffers();
     return NOERROR;
 }
 

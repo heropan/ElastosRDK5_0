@@ -728,7 +728,7 @@ ECode CActivityOptions::Update(
 
         case IActivityOptions::ANIM_SCALE_UP:
             otherOptions->GetStartX(&mStartX);
-            otherOptions->GetStartX(&mStartY);
+            otherOptions->GetStartY(&mStartY);
             otherOptions->GetWidth(&mWidth);
             otherOptions->GetHeight(&mHeight);
             if (mAnimationStartedListener != NULL) {

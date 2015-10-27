@@ -22,10 +22,18 @@ ECode CContactsContractCommonDataKindsSipAddress::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_HOME: *resource = Elastos::Droid::R::string::sipAddressTypeHome; return NOERROR;
-        case TYPE_WORK: *resource = Elastos::Droid::R::string::sipAddressTypeWork; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::sipAddressTypeOther; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::sipAddressTypeCustom; return NOERROR;
+        case TYPE_HOME:
+            *resource = Elastos::Droid::R::string::sipAddressTypeHome;
+            break;
+        case TYPE_WORK:
+            *resource = Elastos::Droid::R::string::sipAddressTypeWork;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::sipAddressTypeOther;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::sipAddressTypeCustom;
+            break;
     }
      return NOERROR;
 }

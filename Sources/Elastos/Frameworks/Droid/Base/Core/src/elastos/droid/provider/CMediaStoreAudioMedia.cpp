@@ -3,7 +3,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/os/Environment.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::Environment;
 using Elastos::Droid::Net::IUriHelper;
@@ -35,8 +37,12 @@ ECode CMediaStoreAudioMedia::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/audio/media", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/audio/media";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 ECode CMediaStoreAudioMedia::GetContentUriForPath(

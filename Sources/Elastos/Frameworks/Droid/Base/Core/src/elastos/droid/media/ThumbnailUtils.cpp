@@ -119,7 +119,7 @@ AutoPtr<IBitmap> ThumbnailUtils::CreateImageThumbnail(
         //     Log.e(TAG, "Unable to decode file " + filePath + ". OutOfMemoryError.", oom);
         // } finally {
 _EXIT_:
-        if (ec == (ECode)E_IO_EXCEPTION || ec == E_OUT_OF_MEMORY_ERROR) {
+        if (ec == (ECode)E_IO_EXCEPTION || ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
             Slogger::E(TAG, "Unable to decode file %s", filePath.string());
         }
         // try {
@@ -177,7 +177,6 @@ _EXIT_:
 
     if (retriever) {
         retriever->ReleaseResources();
-        retriever = NULL;
     }
 
     if (FAILED(ec)) {

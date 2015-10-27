@@ -25,8 +25,12 @@ module
     merge("utility/VirtualRefBasePtr.car");
     merge("utility/WithFramework.car");
 
+    using interface Elastos.Core.IAppendable;
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IFlushable;
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IWriter;
+    using interface Elastos.IO.IPrintWriter;
     using interface Org.Xmlpull.V1.IXmlSerializer;
 
     namespace Elastos {
@@ -69,6 +73,11 @@ module
             [in] Int32 wrapLength);
 
         interface IIndentingPrintWriter;
+        interface IPrintWriter;
+        interface IWriter;
+        interface IAppendable;
+        interface ICloseable;
+        interface IFlushable;
     }
 
     class CJournaledFile {

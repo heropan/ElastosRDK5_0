@@ -114,32 +114,83 @@ ECode CDownloadsImpl::StatusToString(
     VALIDATE_NOT_NULL(value);
 
     switch (status) {
-        case STATUS_PENDING: *value = String("PENDING"); return NOERROR;
-        case STATUS_RUNNING: *value = String("RUNNING"); return NOERROR;
-        case STATUS_PAUSED_BY_APP: *value = String("PAUSED_BY_APP"); return NOERROR;
-        case STATUS_WAITING_TO_RETRY: *value = String("WAITING_TO_RETRY"); return NOERROR;
-        case STATUS_WAITING_FOR_NETWORK: *value = String("WAITING_FOR_NETWORK"); return NOERROR;
-        case STATUS_QUEUED_FOR_WIFI: *value = String("QUEUED_FOR_WIFI"); return NOERROR;
-        case STATUS_INSUFFICIENT_SPACE_ERROR: *value = String("INSUFFICIENT_SPACE_ERROR"); return NOERROR;
-        case STATUS_DEVICE_NOT_FOUND_ERROR: *value = String("DEVICE_NOT_FOUND_ERROR"); return NOERROR;
-        case STATUS_SUCCESS: *value = String("SUCCESS"); return NOERROR;
-        case STATUS_BAD_REQUEST: *value = String("BAD_REQUEST"); return NOERROR;
-        case STATUS_NOT_ACCEPTABLE: *value = String("NOT_ACCEPTABLE"); return NOERROR;
-        case STATUS_LENGTH_REQUIRED: *value = String("LENGTH_REQUIRED"); return NOERROR;
-        case STATUS_PRECONDITION_FAILED: *value = String("PRECONDITION_FAILED"); return NOERROR;
-        case STATUS_FILE_ALREADY_EXISTS_ERROR: *value = String("FILE_ALREADY_EXISTS_ERROR"); return NOERROR;
-        case STATUS_CANNOT_RESUME: *value = String("CANNOT_RESUME"); return NOERROR;
-        case STATUS_CANCELED: *value = String("CANCELED"); return NOERROR;
-        case STATUS_UNKNOWN_ERROR: *value = String("UNKNOWN_ERROR"); return NOERROR;
-        case STATUS_FILE_ERROR: *value = String("FILE_ERROR"); return NOERROR;
-        case STATUS_UNHANDLED_REDIRECT: *value = String("UNHANDLED_REDIRECT"); return NOERROR;
-        case STATUS_UNHANDLED_HTTP_CODE: *value = String("UNHANDLED_HTTP_CODE"); return NOERROR;
-        case STATUS_HTTP_DATA_ERROR: *value = String("HTTP_DATA_ERROR"); return NOERROR;
-        case STATUS_HTTP_EXCEPTION: *value = String("HTTP_EXCEPTION"); return NOERROR;
-        case STATUS_TOO_MANY_REDIRECTS: *value = String("TOO_MANY_REDIRECTS"); return NOERROR;
-        case STATUS_BLOCKED: *value = String("BLOCKED"); return NOERROR;
-        default: *value = StringUtils::ToString(status); return NOERROR;
+        case STATUS_PENDING:
+            *value = String("PENDING");
+            break;
+        case STATUS_RUNNING:
+            *value = String("RUNNING");
+            break;
+        case STATUS_PAUSED_BY_APP:
+            *value = String("PAUSED_BY_APP");
+            break;
+        case STATUS_WAITING_TO_RETRY:
+            *value = String("WAITING_TO_RETRY");
+            break;
+        case STATUS_WAITING_FOR_NETWORK:
+            *value = String("WAITING_FOR_NETWORK");
+            break;
+        case STATUS_QUEUED_FOR_WIFI:
+            *value = String("QUEUED_FOR_WIFI");
+            break;
+        case STATUS_INSUFFICIENT_SPACE_ERROR:
+            *value = String("INSUFFICIENT_SPACE_ERROR");
+            break;
+        case STATUS_DEVICE_NOT_FOUND_ERROR:
+            *value = String("DEVICE_NOT_FOUND_ERROR");
+            break;
+        case STATUS_SUCCESS:
+            *value = String("SUCCESS");
+            break;
+        case STATUS_BAD_REQUEST:
+            *value = String("BAD_REQUEST");
+            break;
+        case STATUS_NOT_ACCEPTABLE:
+            *value = String("NOT_ACCEPTABLE");
+            break;
+        case STATUS_LENGTH_REQUIRED:
+            *value = String("LENGTH_REQUIRED");
+            break;
+        case STATUS_PRECONDITION_FAILED:
+            *value = String("PRECONDITION_FAILED");
+            break;
+        case STATUS_FILE_ALREADY_EXISTS_ERROR:
+            *value = String("FILE_ALREADY_EXISTS_ERROR");
+            break;
+        case STATUS_CANNOT_RESUME:
+            *value = String("CANNOT_RESUME");
+            break;
+        case STATUS_CANCELED:
+            *value = String("CANCELED");
+            break;
+        case STATUS_UNKNOWN_ERROR:
+            *value = String("UNKNOWN_ERROR");
+            break;
+        case STATUS_FILE_ERROR:
+            *value = String("FILE_ERROR");
+            break;
+        case STATUS_UNHANDLED_REDIRECT:
+            *value = String("UNHANDLED_REDIRECT");
+            break;
+        case STATUS_UNHANDLED_HTTP_CODE:
+            *value = String("UNHANDLED_HTTP_CODE");
+            break;
+        case STATUS_HTTP_DATA_ERROR:
+            *value = String("HTTP_DATA_ERROR");
+            break;
+        case STATUS_HTTP_EXCEPTION:
+            *value = String("HTTP_EXCEPTION");
+            break;
+        case STATUS_TOO_MANY_REDIRECTS:
+            *value = String("TOO_MANY_REDIRECTS");
+            break;
+        case STATUS_BLOCKED:
+            *value = String("BLOCKED");
+            break;
+        default:
+            *value = StringUtils::Int32ToString(status);
+            break;
     }
+    return NOERROR;
 }
 
 }

@@ -231,6 +231,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                 bitmap = GetMiniThumbFromFile(c, baseUri, cr, options);
             }
         } else {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
             //throw new IllegalArgumentException("Unsupported kind: " + kind);
         }
 
@@ -248,10 +249,11 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
             String str;
             ub->ToString(&str);
 
-            StringUtils::ReplaceFirst(str, String("thumbnails"), String("media"),&str);
+            String result;
+            StringUtils::ReplaceFirst(str, String("thumbnails"), String("media"), &result);
             AutoPtr<IUriHelper> helper;
             CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-            helper->Parse(str, (IUri**)&uri);
+            helper->Parse(result, (IUri**)&uri);
 
             if (filePath == NULL) {
                 if (c != NULL) {
@@ -269,10 +271,9 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                 c->GetString(1, &filePath);
             }
             if (isVideo) {
-//TODO: Need ThumbnailUtils
-                // bitmap = ThumbnailUtils::CreateVideoThumbnail(filePath, kind);
+                bitmap = ThumbnailUtils::CreateVideoThumbnail(filePath, kind);
             } else {
-                // bitmap = ThumbnailUtils::CreateImageThumbnail(filePath, kind);
+                bitmap = ThumbnailUtils::CreateImageThumbnail(filePath, kind);
             }
         }
     //} catch (SQLiteException ex) {

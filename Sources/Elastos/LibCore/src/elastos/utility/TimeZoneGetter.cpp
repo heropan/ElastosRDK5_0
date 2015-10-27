@@ -1,8 +1,6 @@
 
 #include "TimeZoneGetter.h"
-#include "CSystem.h"
-
-using Elastos::Core::ISystem;
+#include <cutils/properties.h>
 
 namespace Elastos {
 namespace Utility {
@@ -14,14 +12,14 @@ ECode TimeZoneGetter::DefaultTimeZoneGetter::GetId(
 {
     VALIDATE_NOT_NULL(id);
 
-    AutoPtr<ISystem> system;
-    AutoPtr<Elastos::Core::CSystem> cs;
-    Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
+    char buf[PROP_VALUE_MAX + 1];
 
-    system->GetEnv(String("persist.sys.timezone"), id);
-    if ((*id).IsNull()) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    int len = property_get("persist.sys.timezone", buf, "");
+    if (len >= 0) {
+        *id = String(buf);
+    }
+    else {
+        *id = String("");
     }
 
     return NOERROR;

@@ -54,7 +54,7 @@ private:
         CARAPI ProxyDied();
 
     private:
-        WindowState* mOwner;
+        AutoPtr<IWeakReference> mWeakOwner;
     };
 
 public:
@@ -656,5 +656,11 @@ private:
 } // Server
 } // Droid
 } // Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Server::Wm::WindowState*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif //__ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__

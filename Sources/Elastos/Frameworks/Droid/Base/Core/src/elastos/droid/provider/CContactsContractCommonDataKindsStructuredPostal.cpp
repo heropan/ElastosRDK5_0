@@ -34,10 +34,18 @@ ECode CContactsContractCommonDataKindsStructuredPostal::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_HOME: *resource = Elastos::Droid::R::string::postalTypeHome; return NOERROR;
-        case TYPE_WORK: *resource = Elastos::Droid::R::string::postalTypeWork; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::postalTypeOther; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::postalTypeCustom; return NOERROR;
+        case TYPE_HOME:
+            *resource = Elastos::Droid::R::string::postalTypeHome;
+            break;
+        case TYPE_WORK:
+            *resource = Elastos::Droid::R::string::postalTypeWork;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::postalTypeOther;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::postalTypeCustom;
+            break;
     }
     return NOERROR;
 }

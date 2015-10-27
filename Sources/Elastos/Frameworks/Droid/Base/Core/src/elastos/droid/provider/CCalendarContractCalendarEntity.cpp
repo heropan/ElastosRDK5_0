@@ -5,7 +5,9 @@
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CEntity.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::CEntity;
 using Elastos::Droid::Content::IContentValues;
@@ -147,8 +149,12 @@ ECode CCalendarContractCalendarEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/calendar_entities"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/calendar_entities";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 

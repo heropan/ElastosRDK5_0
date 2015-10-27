@@ -2,9 +2,11 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/view/inputmethod/CEditorInfo.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Text::IInputType;
+using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -41,17 +43,19 @@ ECode CEditorInfo::ReadFromParcel(
     source->ReadInt32(&mInputType);
     source->ReadInt32(&mImeOptions);
     source->ReadString(&mPrivateImeOptions);
-    // res.actionLabel = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
+    TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mActionLabel);
     source->ReadInt32(&mActionId);
     source->ReadInt32(&mInitialSelStart);
     source->ReadInt32(&mInitialSelEnd);
     source->ReadInt32(&mInitialCapsMode);
-    // res.hintText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
-    // res.label = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
+    TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mHintText);
+    TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mLabel);
     source->ReadString(&mPackageName);
     source->ReadInt32(&mFieldId);
     source->ReadString(&mFieldName);
-    // dest.writeBundle(extras);
+    AutoPtr<IInterface> obj;
+    source->ReadInterfacePtr((Handle32*)&obj);
+    mExtras = IBundle::Probe(obj);
     return NOERROR;
 }
 
@@ -61,17 +65,17 @@ ECode CEditorInfo::WriteToParcel(
     dest->WriteInt32(mInputType);
     dest->WriteInt32(mImeOptions);
     dest->WriteString(mPrivateImeOptions);
-    // TextUtils.writeToParcel(actionLabel, dest, flags);
+    TextUtils::WriteToParcel(mActionLabel, dest);
     dest->WriteInt32(mActionId);
     dest->WriteInt32(mInitialSelStart);
     dest->WriteInt32(mInitialSelEnd);
     dest->WriteInt32(mInitialCapsMode);
-    // TextUtils.writeToParcel(hintText, dest, flags);
-    // TextUtils.writeToParcel(label, dest, flags);
+    TextUtils::WriteToParcel(mHintText, dest);
+    TextUtils::WriteToParcel(mLabel, dest);
     dest->WriteString(mPackageName);
     dest->WriteInt32(mFieldId);
     dest->WriteString(mFieldName);
-    // dest.writeBundle(extras);
+    dest->WriteInterfacePtr(mExtras);
     return NOERROR;
 }
 

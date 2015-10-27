@@ -56,7 +56,7 @@ ECode CMediaContainerServiceNative::CopyResourceToContainer(
     jclass c = env->FindClass("com/android/internal/app/IMediaContainerService");
     Util::CheckErrorAndLog(env, TAG, "Fail FindClass: IMediaContainerService %d", __LINE__);
 
-    jmethodID m = env->GetMethodID(c, "copyResourceToContainer", "(Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZ)Ljava/lang/String;`");
+    jmethodID m = env->GetMethodID(c, "copyResourceToContainer", "(Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZ)Ljava/lang/String;");
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: copyResourceToContainer %d", __LINE__);
 
     jstring jpkgLite = (jstring)env->CallObjectMethod(mJInstance, m, jpackageURI, jcontainerId, jkey, jresFileName, jpublicResFileName,  (jboolean)isExternal, (jboolean)isForwardLocked);

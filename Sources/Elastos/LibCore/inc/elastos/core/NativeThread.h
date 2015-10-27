@@ -216,7 +216,7 @@ typedef struct NativeThread
 #endif
 
     /* base time for per-thread CPU timing (used by method profiling) */
-    Boolean  mCpuClockBaseSet;
+    Boolean mCpuClockBaseSet;
     UInt64 mCpuClockBase;
 
     /* memory allocation profiling state */
@@ -231,6 +231,23 @@ typedef struct NativeThread
     // const u2*   currentPc2;
 // #endif
 } NativeThread;
+
+/* start point for an internal thread; mimics pthread args */
+typedef void* (*InternalThreadStartFunc)(void* arg);
+
+/* args for internal thread creation */
+struct InternalStartArgs
+{
+    /* inputs */
+    InternalThreadStartFunc mFunc;
+    void* mFuncArg;
+    char* mName;
+    Int32 mGroup;
+    Boolean mIsDaemon;
+    /* result */
+    volatile NativeThread** mThread;
+    volatile Int32* mCreateStatus;
+};
 
 /* utility function to get the tid */
 ELAPI_(pid_t) NativeGetSysThreadId();
@@ -337,6 +354,20 @@ ELAPI_(Boolean) NativeCreateThread(
     /* [in] */ Int32 threadObj,
     /* [in] */ Int32 reqStackSize);
 
+/*
+ * Create an internal VM thread, for things like JDWP and finalizers.
+ *
+ * The easiest way to do this is create a new thread and then use the
+ * JNI AttachCurrentThread implementation.
+ *
+ * This does not return until after the new thread has begun executing.
+ */
+ELAPI_(Boolean) NativeCreateInternalThread(
+    /* [in] */ pthread_t* handle,
+    /* [in] */ const char* name,
+    /* [in] */ InternalThreadStartFunc func,
+    /* [in] */ void* funcArg);
+
 ELAPI NativeAttachCurrentThread(
     /* [in] */ const NativeAttachArgs* args,
     /* [in] */ Boolean isDaemon,
@@ -348,6 +379,7 @@ ELAPI_(void) NativeDetachCurrentThread();
  * Get the "main" or "system" thread group.
  */
 ELAPI_(AutoPtr<IThreadGroup>) NativeGetMainThreadGroup();
+ELAPI_(AutoPtr<IThreadGroup>) NativeGetSystemThreadGroup();
 
 /*
  * Given a VMThread object, return the associated Thread*.

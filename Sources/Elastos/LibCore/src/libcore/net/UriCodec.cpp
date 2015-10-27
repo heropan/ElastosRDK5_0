@@ -305,7 +305,7 @@ ECode UriCodec::Decode(
             AutoPtr<ArrayOf<Byte> > bytes;
             out->ToByteArray((ArrayOf<Byte>**)&bytes);
             //result.append(new String(out.toByteArray(), charset);
-            result.Append(String((char*)bytes->GetPayload()));
+            result.Append(String((char*)bytes->GetPayload(), bytes->GetLength()));
             out->Reset();
         }
         else {

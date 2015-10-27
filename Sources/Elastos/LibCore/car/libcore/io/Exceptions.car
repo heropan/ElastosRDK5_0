@@ -8,11 +8,6 @@ module
 
     //==========================================================================
     // Platform exception codes (Family: 0x2A)
-    const E_LIBCORE_IO_EXCEPTION                       = 0xAA010000;
-    const E_LIBCORE_FILE_NOT_FOUND_EXCEPTION           = 0xAA020000;
-    const E_LIBCORE_SOCKET_EXCEPTION                   = 0xAA030000;
-    const E_LIBCORE_CONNECT_EXCEPTION                  = 0xAA040000;
-    const E_LIBCORE_UNSUPPORTED_OPERATION_EXCEPTION    = 0xAA050000;
-    const E_ERRNO_EXCEPTION                            = 0xAA060000;
-    const E_GAI_EXCEPTION                              = 0xAA070000;
+    const E_ERRNO_EXCEPTION                            = 0xAA010000;
+    const E_GAI_EXCEPTION                              = 0xAA020000;
 }

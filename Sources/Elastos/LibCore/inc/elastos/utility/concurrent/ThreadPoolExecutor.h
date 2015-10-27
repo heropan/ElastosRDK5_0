@@ -157,6 +157,7 @@ private:
         /** Delegates main run loop to outer runWorker  */
         CARAPI Run()
         {
+            AutoPtr<ThreadPoolExecutor> owner = mOwner;
             return mOwner->RunWorker(this);
         }
 

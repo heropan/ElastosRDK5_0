@@ -2,9 +2,11 @@
 #include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include "elastos/droid/provider/ContactsContractContacts.h"
 #include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/coredef.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Net::IUriBuilder;
@@ -55,7 +57,12 @@ ECode CContactsContractContactsAggregationSuggestionsBuilder::Build(
 
     Int32 count = mKinds->GetSize();
     for (Int32 i = 0; i < count; i++) {
-        FAIL_RETURN(builder->AppendQueryParameter(String("query"), String((*mKinds)[i]) + String(":") + String((*mValues)[i])))
+        StringBuilder build;
+        build += (*mKinds)[i];
+        build += ":";
+        build += (*mValues)[i];
+        String str = build.ToString();
+        FAIL_RETURN(builder->AppendQueryParameter(String("query"), str))
     }
 
     return builder->Build((IUri**)&uri);

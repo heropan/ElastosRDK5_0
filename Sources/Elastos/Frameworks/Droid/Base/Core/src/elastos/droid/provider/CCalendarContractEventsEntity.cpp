@@ -8,8 +8,10 @@
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CEntity.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -378,8 +380,12 @@ ECode CCalendarContractEventsEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/event_entities"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/event_entities";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 

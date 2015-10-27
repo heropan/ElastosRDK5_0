@@ -22,9 +22,15 @@ ECode CContactsContractCommonDataKindsOrganization::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_WORK: *resource = Elastos::Droid::R::string::orgTypeWork; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::orgTypeOther; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::orgTypeCustom; return NOERROR;
+        case TYPE_WORK:
+            *resource = Elastos::Droid::R::string::orgTypeWork;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::orgTypeOther;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::orgTypeCustom;
+            break;
     }
     return NOERROR;
 }

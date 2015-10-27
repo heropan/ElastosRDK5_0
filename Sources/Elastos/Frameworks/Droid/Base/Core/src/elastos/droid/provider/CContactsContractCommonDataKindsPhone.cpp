@@ -71,27 +71,69 @@ ECode CContactsContractCommonDataKindsPhone::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_HOME: *resource = Elastos::Droid::R::string::phoneTypeHome; return NOERROR;
-        case TYPE_MOBILE: *resource = Elastos::Droid::R::string::phoneTypeMobile; return NOERROR;
-        case TYPE_WORK: *resource = Elastos::Droid::R::string::phoneTypeWork; return NOERROR;
-        case TYPE_FAX_WORK: *resource = Elastos::Droid::R::string::phoneTypeFaxWork; return NOERROR;
-        case TYPE_FAX_HOME: *resource = Elastos::Droid::R::string::phoneTypeFaxHome; return NOERROR;
-        case TYPE_PAGER: *resource = Elastos::Droid::R::string::phoneTypePager; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::phoneTypeOther; return NOERROR;
-        case TYPE_CALLBACK: *resource = Elastos::Droid::R::string::phoneTypeCallback; return NOERROR;
-        case TYPE_CAR: *resource = Elastos::Droid::R::string::phoneTypeCar; return NOERROR;
-        case TYPE_COMPANY_MAIN: *resource = Elastos::Droid::R::string::phoneTypeCompanyMain; return NOERROR;
-        case TYPE_ISDN: *resource = Elastos::Droid::R::string::phoneTypeIsdn; return NOERROR;
-        case TYPE_MAIN: *resource = Elastos::Droid::R::string::phoneTypeMain; return NOERROR;
-        case TYPE_OTHER_FAX: *resource = Elastos::Droid::R::string::phoneTypeOtherFax; return NOERROR;
-        case TYPE_RADIO: *resource = Elastos::Droid::R::string::phoneTypeRadio; return NOERROR;
-        case TYPE_TELEX: *resource = Elastos::Droid::R::string::phoneTypeTelex; return NOERROR;
-        case TYPE_TTY_TDD: *resource = Elastos::Droid::R::string::phoneTypeTtyTdd; return NOERROR;
-        case TYPE_WORK_MOBILE: *resource = Elastos::Droid::R::string::phoneTypeWorkMobile; return NOERROR;
-        case TYPE_WORK_PAGER: *resource = Elastos::Droid::R::string::phoneTypeWorkPager; return NOERROR;
-        case TYPE_ASSISTANT: *resource = Elastos::Droid::R::string::phoneTypeAssistant; return NOERROR;
-        case TYPE_MMS: *resource = Elastos::Droid::R::string::phoneTypeMms; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::phoneTypeCustom; return NOERROR;
+        case TYPE_HOME:
+            *resource = Elastos::Droid::R::string::phoneTypeHome;
+            break;
+        case TYPE_MOBILE:
+            *resource = Elastos::Droid::R::string::phoneTypeMobile;
+            break;
+        case TYPE_WORK:
+            *resource = Elastos::Droid::R::string::phoneTypeWork;
+            break;
+        case TYPE_FAX_WORK:
+            *resource = Elastos::Droid::R::string::phoneTypeFaxWork;
+            break;
+        case TYPE_FAX_HOME:
+            *resource = Elastos::Droid::R::string::phoneTypeFaxHome;
+            break;
+        case TYPE_PAGER:
+            *resource = Elastos::Droid::R::string::phoneTypePager;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::phoneTypeOther;
+            break;
+        case TYPE_CALLBACK:
+            *resource = Elastos::Droid::R::string::phoneTypeCallback;
+            break;
+        case TYPE_CAR:
+            *resource = Elastos::Droid::R::string::phoneTypeCar;
+            break;
+        case TYPE_COMPANY_MAIN:
+            *resource = Elastos::Droid::R::string::phoneTypeCompanyMain;
+            break;
+        case TYPE_ISDN:
+            *resource = Elastos::Droid::R::string::phoneTypeIsdn;
+            break;
+        case TYPE_MAIN:
+            *resource = Elastos::Droid::R::string::phoneTypeMain;
+            break;
+        case TYPE_OTHER_FAX:
+            *resource = Elastos::Droid::R::string::phoneTypeOtherFax;
+            break;
+        case TYPE_RADIO:
+            *resource = Elastos::Droid::R::string::phoneTypeRadio;
+            break;
+        case TYPE_TELEX:
+            *resource = Elastos::Droid::R::string::phoneTypeTelex;
+            break;
+        case TYPE_TTY_TDD:
+            *resource = Elastos::Droid::R::string::phoneTypeTtyTdd;
+            break;
+        case TYPE_WORK_MOBILE:
+            *resource = Elastos::Droid::R::string::phoneTypeWorkMobile;
+            break;
+        case TYPE_WORK_PAGER:
+            *resource = Elastos::Droid::R::string::phoneTypeWorkPager;
+            break;
+        case TYPE_ASSISTANT:
+            *resource = Elastos::Droid::R::string::phoneTypeAssistant;
+            break;
+        case TYPE_MMS:
+            *resource = Elastos::Droid::R::string::phoneTypeMms;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::phoneTypeCustom;
+            break;
     }
      return NOERROR;
 }

@@ -11,7 +11,7 @@ ECode FileReader::constructor(
     /* [in] */ IFile* file)
 {
     AutoPtr<IInputStream> is;
-    CFileInputStream::New(file, (IInputStream**)&is);
+    FAIL_RETURN(CFileInputStream::New(file, (IInputStream**)&is))
     return InputStreamReader::constructor(is);
 }
 
@@ -27,7 +27,7 @@ ECode FileReader::constructor(
     /* [in] */ const String& file)
 {
     AutoPtr<IInputStream> is;
-    CFileInputStream::New(file, (IInputStream**)&is);
+    FAIL_RETURN(CFileInputStream::New(file, (IInputStream**)&is))
     return InputStreamReader::constructor(is);
 }
 

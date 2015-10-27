@@ -12315,8 +12315,8 @@ String CPackageManagerService::GetEncryptKey()
 //         Slog.e(TAG, "Failed to retrieve encryption keys with exception: " + ioe);
 //         return null;
 //     }
-    assert(0);
-    return String(NULL);
+    Slogger::E(TAG, "TODO:CPackageManagerService::GetEncryptKey is not implemented!");
+    return String("4eb26b94a3996346c363db11b14f5f2b");
 }
 
 String CPackageManagerService::GetTempContainerId()

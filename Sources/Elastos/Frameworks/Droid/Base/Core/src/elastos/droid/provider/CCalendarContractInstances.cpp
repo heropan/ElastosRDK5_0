@@ -2,7 +2,9 @@
 #include "elastos/droid/provider/CCalendarContractInstances.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
@@ -31,32 +33,48 @@ ECode CCalendarContractInstances::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/instances/when"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/instances/when";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractInstances::GetCONTENTBYDAYURI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/instances/whenbyday"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/instances/whenbyday";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractInstances::GetCONTENTSEARCHURI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/instances/search"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/instances/search";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractInstances::GetCONTENTSEARCHBYDAYURI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/instances/searchbyday"), uri);
+    StringBuilder builder;
+    builder += "content://";
+    builder += ICalendarContract::AUTHORITY;
+    builder += "/instances/searchbyday";
+    String str = builder.ToString();
+    return Uri::Parse(str, uri);
 }
 
 ECode CCalendarContractInstances::Query(

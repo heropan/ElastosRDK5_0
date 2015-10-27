@@ -42,7 +42,8 @@ public:
         /* [out] */ android::sp<android::AMessage> * out);
 
     static CARAPI ThrowExceptionAsNecessary(
-        /* [in] */ android::status_t err);
+        /* [in] */ android::status_t err,
+        /* [out] */ Int32* result);
 private:
     static const String TAG;
 };

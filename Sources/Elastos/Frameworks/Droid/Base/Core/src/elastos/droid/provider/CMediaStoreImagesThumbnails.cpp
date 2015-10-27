@@ -3,7 +3,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/provider/CMediaStoreInternalThumbnails.h"
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 
@@ -44,7 +46,11 @@ ECode CMediaStoreImagesThumbnails::QueryMiniThumbnails(
     /* [out] */ ICursor** cursor)
 {
     VALIDATE_NOT_NULL(cursor);
-    return cr->Query(uri, projection, String("kind = ") + kind,
+    StringBuilder builder;
+    builder += "kind = ";
+    builder += kind;
+    String selection = builder.ToString();
+    return cr->Query(uri, projection, selection,
             NULL, IMediaStoreImagesThumbnails::DEFAULT_SORT_ORDER, cursor);
 }
 
@@ -58,9 +64,16 @@ ECode CMediaStoreImagesThumbnails::QueryMiniThumbnail(
     VALIDATE_NOT_NULL(cursor);
     AutoPtr<IUri> uri;
     GetEXTERNAL_CONTENT_URI((IUri**)&uri);
-    return cr->Query(uri, projection,
-            IMediaStoreImagesThumbnails::IMAGE_ID + " = " + origId + " AND " + IMediaStoreImagesThumbnails::KIND + " = " +
-            kind, NULL, String(NULL), cursor);
+    StringBuilder builder;
+    builder += IMediaStoreImagesThumbnails::IMAGE_ID;
+    builder += " = ";
+    builder += origId;
+    builder += " AND ";
+    builder += IMediaStoreImagesThumbnails::KIND;
+    builder += " = ";
+    builder += kind;
+    String selection = builder.ToString();
+    return cr->Query(uri, projection, selection, NULL, String(NULL), cursor);
 }
 
 ECode CMediaStoreImagesThumbnails::CancelThumbnailRequest(
@@ -131,8 +144,12 @@ ECode CMediaStoreImagesThumbnails::GetContentUri(
 
     AutoPtr<IUriHelper> helper;
     CUriHelper::AcquireSingleton((IUriHelper**)&helper);
-    return helper->Parse(IMediaStore::CONTENT_AUTHORITY_SLASH + volumeName +
-            "/images/thumbnails", uri);
+    StringBuilder builder;
+    builder += IMediaStore::CONTENT_AUTHORITY_SLASH;
+    builder += volumeName;
+    builder += "/images/thumbnails";
+    String str = builder.ToString();
+    return helper->Parse(str, uri);
 }
 
 

@@ -1016,7 +1016,7 @@ AutoPtr<IBundle> CSettingsProvider::LookupValue(
     /* [in] */ SettingsCache* cache,
     /* [in] */ const String& key)
 {
-    if (cache == NULL) {
+    if (cache == NULL || key.IsNull()) {
         AutoPtr<IUserHandleHelper> helper;
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
         Int32 userId;

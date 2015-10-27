@@ -1,6 +1,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/inputmethod/CExtractedText.h"
+#include "elastos/droid/text/TextUtils.h"
+
+using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -133,15 +136,27 @@ ECode CExtractedText::SetStartOffset(
 ECode CExtractedText::ReadFromParcel(
     /* [in] */ IParcel *source)
 {
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&mText);
+    source->ReadInt32(&mStartOffset);
+    source->ReadInt32(&mPartialStartOffset);
+    source->ReadInt32(&mPartialEndOffset);
+    source->ReadInt32(&mSelectionStart);
+    source->ReadInt32(&mSelectionEnd);
+    source->ReadInt32(&mFlags);
+    return NOERROR;
 }
 
 ECode CExtractedText::WriteToParcel(
     /* [in] */ IParcel *dest)
 {
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    TextUtils::WriteToParcel(mText, dest);
+    dest->WriteInt32(mStartOffset);
+    dest->WriteInt32(mPartialStartOffset);
+    dest->WriteInt32(mPartialEndOffset);
+    dest->WriteInt32(mSelectionStart);
+    dest->WriteInt32(mSelectionEnd);
+    dest->WriteInt32(mFlags);
+    return NOERROR;
 }
 
 } // namespace InputMethod

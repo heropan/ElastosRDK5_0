@@ -9,7 +9,7 @@
 #include <utils/Log.h>
 #include <utils/threads.h>
 #include <skia/core/SkBitmap.h>
-//TODO #include <private/media/VideoFrame.h>
+#include <private/media/VideoFrame.h>
 
 using namespace Elastos::Core;
 using Elastos::Utility::Logging::Slogger;
@@ -116,7 +116,7 @@ CMediaMetadataRetriever::~CMediaMetadataRetriever()
 
 ECode CMediaMetadataRetriever::constructor()
 {
-    return NativeSetup();;
+    return NativeSetup();
 }
 
 android::MediaMetadataRetriever* CMediaMetadataRetriever::GetRetriever()
@@ -415,76 +415,75 @@ ECode CMediaMetadataRetriever::NativeGetFrameAtTime(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    assert(0 && "TODO");
     // Call native method to retrieve a video frame
-    // android::VideoFrame *videoFrame = NULL;
-    // android::sp<android::IMemory> frameMemory = retriever->getFrameAtTime(timeUs, option);
-    // if (frameMemory != 0) {  // cast the shared structure to a VideoFrame object
-    //     android::videoFrame = static_cast<android::VideoFrame *>(frameMemory->pointer());
-    // }
-    // if (videoFrame == NULL) {
-    //     Slogger::E(TAG, "getFrameAtTime: videoFrame is a NULL pointer");
-    //     return NOERROR;
-    // }
+    android::VideoFrame* videoFrame = NULL;
+    android::sp<android::IMemory> frameMemory = retriever->getFrameAtTime(timeUs, option);
+    if (frameMemory != 0) {  // cast the shared structure to a VideoFrame object
+        videoFrame = static_cast<android::VideoFrame *>(frameMemory->pointer());
+    }
+    if (videoFrame == NULL) {
+        Slogger::E(TAG, "getFrameAtTime: videoFrame is a NULL pointer");
+        return NOERROR;
+    }
 
-    // Slogger::V(TAG, "Dimension = %dx%d and bytes = %d",
-    //     videoFrame->mDisplayWidth,
-    //     videoFrame->mDisplayHeight,
-    //     videoFrame->mSize);
+    Slogger::V(TAG, "Dimension = %dx%d and bytes = %d",
+            videoFrame->mDisplayWidth,
+            videoFrame->mDisplayHeight,
+            videoFrame->mSize);
 
     BitmapConfig config = CBitmap::NativeToConfig(SkBitmap::kRGB_565_Config);
 
     size_t width, height;
-    Boolean swapWidthAndHeight = false;
-    // if (videoFrame->mRotationAngle == 90 || videoFrame->mRotationAngle == 270) {
-    //     width = videoFrame->mHeight;
-    //     height = videoFrame->mWidth;
-    //     swapWidthAndHeight = true;
-    // }
-    // else {
-    //     width = videoFrame->mWidth;
-    //     height = videoFrame->mHeight;
-    // }
+    Boolean swapWidthAndHeight = FALSE;
+    if (videoFrame->mRotationAngle == 90 || videoFrame->mRotationAngle == 270) {
+        width = videoFrame->mHeight;
+        height = videoFrame->mWidth;
+        swapWidthAndHeight = TRUE;
+    }
+    else {
+        width = videoFrame->mWidth;
+        height = videoFrame->mHeight;
+    }
 
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
     AutoPtr<IBitmap> jBitmap;
-    bitmapFactory->CreateBitmap(width, height, config, (IBitmap**)&jBitmap);
+    bitmapFactory->CreateBitmapEx3(width, height, config, (IBitmap**)&jBitmap);
 
     Handle32 nativeBitmap;
     jBitmap->GetNativeBitmap(&nativeBitmap);
 
     SkBitmap *bitmap = (SkBitmap *)nativeBitmap;
-    // bitmap->lockPixels();
-    // rotate((uint16_t*)bitmap->getPixels(),
-    //        (uint16_t*)((char*)videoFrame + sizeof(VideoFrame)),
-    //        videoFrame->mWidth,
-    //        videoFrame->mHeight,
-    //        videoFrame->mRotationAngle);
-    // bitmap->unlockPixels();
+    bitmap->lockPixels();
+    rotate((uint16_t*)bitmap->getPixels(),
+           (uint16_t*)((char*)videoFrame + sizeof(android::VideoFrame)),
+           videoFrame->mWidth,
+           videoFrame->mHeight,
+           videoFrame->mRotationAngle);
+    bitmap->unlockPixels();
 
-    // if (videoFrame->mDisplayWidth  != videoFrame->mWidth ||
-    //     videoFrame->mDisplayHeight != videoFrame->mHeight) {
-    //     size_t displayWidth = videoFrame->mDisplayWidth;
-    //     size_t displayHeight = videoFrame->mDisplayHeight;
-    //     if (swapWidthAndHeight) {
-    //         displayWidth = videoFrame->mDisplayHeight;
-    //         displayHeight = videoFrame->mDisplayWidth;
-    //     }
-    //     Slogger::V(TAG, "Bitmap dimension is scaled from %dx%d to %dx%d",
-    //         width, height, displayWidth, displayHeight);
+    if (videoFrame->mDisplayWidth  != videoFrame->mWidth ||
+        videoFrame->mDisplayHeight != videoFrame->mHeight) {
+        size_t displayWidth = videoFrame->mDisplayWidth;
+        size_t displayHeight = videoFrame->mDisplayHeight;
+        if (swapWidthAndHeight) {
+            displayWidth = videoFrame->mDisplayHeight;
+            displayHeight = videoFrame->mDisplayWidth;
+        }
+        Slogger::V(TAG, "Bitmap dimension is scaled from %dx%d to %dx%d",
+                width, height, displayWidth, displayHeight);
 
-    //     AutoPtr<IBitmap> scaledBitmap;
-    //     bitmapFactory->CreateScaledBitmap(
-    //         jBitmap, displayWidth, displayHeight, TRUE, (IBitmap**)&scaledBitmap);
+        AutoPtr<IBitmap> scaledBitmap;
+        bitmapFactory->CreateScaledBitmap(
+                jBitmap, displayWidth, displayHeight, TRUE, (IBitmap**)&scaledBitmap);
 
-    //     *result = scaledBitmap;
-    //     REFCOUNT_ADD(*result);
-    //     return NOERROR;
-    // }
+        *result = scaledBitmap;
+        INTERFACE_ADDREF(*result);
+        return NOERROR;
+    }
 
     *result = jBitmap;
-    REFCOUNT_ADD(*result);
+    INTERFACE_ADDREF(*result);
     return NOERROR;
 }
 

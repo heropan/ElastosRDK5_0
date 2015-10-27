@@ -22,10 +22,18 @@ ECode CContactsContractCommonDataKindsIm::GetTypeLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case TYPE_HOME: *resource = Elastos::Droid::R::string::imTypeHome; return NOERROR;
-        case TYPE_WORK: *resource = Elastos::Droid::R::string::imTypeWork; return NOERROR;
-        case TYPE_OTHER: *resource = Elastos::Droid::R::string::imTypeOther; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::imTypeCustom; return NOERROR;
+        case TYPE_HOME:
+            *resource = Elastos::Droid::R::string::imTypeHome;
+            break;
+        case TYPE_WORK:
+            *resource = Elastos::Droid::R::string::imTypeWork;
+            break;
+        case TYPE_OTHER:
+            *resource = Elastos::Droid::R::string::imTypeOther;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::imTypeCustom;
+            break;
     }
      return NOERROR;
 }
@@ -57,16 +65,36 @@ ECode CContactsContractCommonDataKindsIm::GetProtocolLabelResource(
     VALIDATE_NOT_NULL(resource);
 
     switch (type) {
-        case PROTOCOL_AIM: *resource = Elastos::Droid::R::string::imProtocolAim; return NOERROR;
-        case PROTOCOL_MSN: *resource = Elastos::Droid::R::string::imProtocolMsn; return NOERROR;
-        case PROTOCOL_YAHOO: *resource = Elastos::Droid::R::string::imProtocolYahoo; return NOERROR;
-        case PROTOCOL_SKYPE: *resource = Elastos::Droid::R::string::imProtocolSkype; return NOERROR;
-        case PROTOCOL_QQ: *resource = Elastos::Droid::R::string::imProtocolQq; return NOERROR;
-        case PROTOCOL_GOOGLE_TALK: *resource = Elastos::Droid::R::string::imProtocolGoogleTalk; return NOERROR;
-        case PROTOCOL_ICQ: *resource = Elastos::Droid::R::string::imProtocolIcq; return NOERROR;
-        case PROTOCOL_JABBER: *resource = Elastos::Droid::R::string::imProtocolJabber; return NOERROR;
-        case PROTOCOL_NETMEETING: *resource = Elastos::Droid::R::string::imProtocolNetMeeting; return NOERROR;
-        default: *resource = Elastos::Droid::R::string::imProtocolCustom; return NOERROR;
+        case PROTOCOL_AIM:
+            *resource = Elastos::Droid::R::string::imProtocolAim;
+            break;
+        case PROTOCOL_MSN:
+            *resource = Elastos::Droid::R::string::imProtocolMsn;
+            break;
+        case PROTOCOL_YAHOO:
+            *resource = Elastos::Droid::R::string::imProtocolYahoo;
+            break;
+        case PROTOCOL_SKYPE:
+            *resource = Elastos::Droid::R::string::imProtocolSkype;
+            break;
+        case PROTOCOL_QQ:
+            *resource = Elastos::Droid::R::string::imProtocolQq;
+            break;
+        case PROTOCOL_GOOGLE_TALK:
+            *resource = Elastos::Droid::R::string::imProtocolGoogleTalk;
+            break;
+        case PROTOCOL_ICQ:
+            *resource = Elastos::Droid::R::string::imProtocolIcq;
+            break;
+        case PROTOCOL_JABBER:
+            *resource = Elastos::Droid::R::string::imProtocolJabber;
+            break;
+        case PROTOCOL_NETMEETING:
+            *resource = Elastos::Droid::R::string::imProtocolNetMeeting;
+            break;
+        default:
+            *resource = Elastos::Droid::R::string::imProtocolCustom;
+            break;
     }
     return NOERROR;
 }

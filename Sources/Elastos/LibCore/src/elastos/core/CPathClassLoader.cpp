@@ -30,26 +30,27 @@ ECode CPathClassLoader::LoadClass(
         return E_INVALID_ARGUMENT;
     }
 
-    String sname;
-    String name = className.Substring(className.LastIndexOf('.') + 1);
-    if (name.GetChar(0) == 'C' && name.GetChar(1) <= 'Z') {
-        sname = name;
-    } else {
-        sname = String("C") + name;
-    }
+    String sname("C");
+    sname += className.Substring(className.LastIndexOf('.') + 1);
     // ALOGD("CPathClassLoader::LoadClass: %s, className: %s mPath : %s\n",
     //     sname.string(), className.string(), mPath.string());
+    ECode ec = NOERROR;
     AutoPtr<IModuleInfo> moduleInfo;
-    if (sname == "CFragmentOne") {
-        FAIL_RETURN(CReflector::AcquireModuleInfo(String("FragmentDemo.eco"), (IModuleInfo**)&moduleInfo));
+    if (sname.Equals("CFragmentOne")) {
+        ec = CReflector::AcquireModuleInfo(String("FragmentDemo.eco"), (IModuleInfo**)&moduleInfo);
+        if (FAILED(ec)) {
+            return E_CLASS_NOT_FOUND_EXCEPTION;
+        }
     }
     else {
-        FAIL_RETURN(CReflector::AcquireModuleInfo(mPath, (IModuleInfo**)&moduleInfo));
+        ec = CReflector::AcquireModuleInfo(mPath, (IModuleInfo**)&moduleInfo);
+        if (FAILED(ec)) {
+            return E_CLASS_NOT_FOUND_EXCEPTION;
+        }
     }
 
-    FAIL_RETURN(moduleInfo->GetClassInfo(sname, klass));
-    (*klass)->SetClassLoader((IClassLoader*)this);
-    return NOERROR;
+    ec = moduleInfo->GetClassInfo(sname, klass);
+    return FAILED(ec) ? E_CLASS_NOT_FOUND_EXCEPTION : NOERROR;
 }
 
 } // namespace Core

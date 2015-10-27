@@ -1170,7 +1170,7 @@ AutoPtr<IPackageInfo> PackageParser::GeneratePackageInfo(
                 infos = ArrayOf<IProviderInfo*>::Alloc(N);
             }
             else {
-                Int32 num;
+                Int32 num = 0;
                 List< AutoPtr<Provider> >::Iterator it;
                 for (it = p->mProviders.Begin(); it != p->mProviders.End(); ++it) {
                     Boolean enabled;

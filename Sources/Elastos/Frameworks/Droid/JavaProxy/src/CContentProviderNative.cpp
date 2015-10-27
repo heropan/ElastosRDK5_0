@@ -585,7 +585,7 @@ ECode CContentProviderNative::OpenAssetFile(
     Util::CheckErrorAndLog(env, TAG, "FindClass: IContentProvider %d", __LINE__);
 
     jmethodID m = env->GetMethodID(c, "openAssetFile",
-        "(Landroid/net/Uri;Ljava/lang/String;)Landroid/os/ParcelFileDescriptor;");
+        "(Landroid/net/Uri;Ljava/lang/String;)Landroid/content/res/AssetFileDescriptor;");
     Util::CheckErrorAndLog(env, TAG, "GetMethodID: openAssetFile Line: %d", __LINE__);
 
     jobject jfileDescriptor = env->CallObjectMethod(mJInstance, m, juri, jmode);
@@ -664,13 +664,14 @@ ECode CContentProviderNative::ApplyBatch(
         jint jcount = env->GetArrayLength(jproviderResults);
         if (jcount > 0) {
             *providerResults = ArrayOf<IContentProviderResult*>::Alloc((Int32)jcount);
+            ARRAYOF_ADDREF(*providerResults);
             if (*providerResults  != NULL) {
                 for (Int32 i = 0; i < jcount; i++) {
                     jobject jproviderResult = env->GetObjectArrayElement(jproviderResults, i);
                     Util::CheckErrorAndLog(env, "GetElProviderInfo", "Fail GetObjectArrayElement: PatternMatcher %d", __LINE__);
 
                     AutoPtr<IContentProviderResult> providerResult;
-                    if (!Util::GetElContentProviderResult(env, jproviderResult, (IContentProviderResult**)&providerResult)) {
+                    if (Util::GetElContentProviderResult(env, jproviderResult, (IContentProviderResult**)&providerResult)) {
                         (*providerResults)->Set(i, providerResult);
                     } else {
                         LOGGERE(TAG, "ApplyBatch() GetElContentProviderResult fail!");
@@ -683,6 +684,7 @@ ECode CContentProviderNative::ApplyBatch(
             }
         } else {
             *providerResults = ArrayOf<IContentProviderResult*>::Alloc(0);
+            ARRAYOF_ADDREF(*providerResults);
         }
 
         env->DeleteLocalRef(jproviderResults);

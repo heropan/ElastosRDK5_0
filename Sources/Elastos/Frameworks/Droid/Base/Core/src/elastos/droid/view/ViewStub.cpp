@@ -207,7 +207,7 @@ ECode ViewStub::Inflate(
         }
         else {
             Slogger::E("ViewStub", "ViewStub must have a valid layoutResource");
-            return E_ILLEGAL_STATE_EXCEPTION;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
     else {

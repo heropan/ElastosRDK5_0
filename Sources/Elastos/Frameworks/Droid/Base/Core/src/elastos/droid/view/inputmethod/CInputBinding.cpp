@@ -1,6 +1,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/inputmethod/CInputBinding.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -117,7 +120,19 @@ ECode CInputBinding::DescribeContents(
 ECode CInputBinding::ToString(
     /* [out] */ String* str)
 {
-    assert(0);
+    StringBuilder builder;
+    builder += "InputBinding{";
+    String str1;
+    mConnectionToken->ToString(&str1);
+    builder += str1;
+    builder += " / uid ";
+    builder += mUid;
+    builder += " / pid ";
+    builder += mPid;
+    builder += "}";
+
+    *str = builder.ToString();
+
     return NOERROR;
 }
 

@@ -52,13 +52,13 @@ ECode CServiceNative::ReadFromParcel(
     Handle32 parcel;
     source->GetElementPayload(&parcel);
     mibinder = ((android::Parcel*)parcel)->readStrongBinder();
-    LOGGERD(TAG, "CServiceNative::ReadFromParcel(), mibinder = %p", mibinder.get());
+    // LOGGERD(TAG, "CServiceNative::ReadFromParcel(), mibinder = %p", mibinder.get());
     return NOERROR;
 }
 
 ECode CServiceNative::GetRemoteInstance(JNIEnv* env, Handle32* obj)
 {
-    LOGGERD(TAG, "+ CServiceNative::GetRemoteInstance()");
+    // LOGGERD(TAG, "+ CServiceNative::GetRemoteInstance()");
 
     if(mibinder.get() == NULL) {
         LOGGERE(TAG, "CServiceNative::GetRemoteInstance(), binder is NULL");
@@ -76,7 +76,7 @@ ECode CServiceNative::GetRemoteInstance(JNIEnv* env, Handle32* obj)
     env->DeleteLocalRef(binderClass);
     *obj = (Handle32)jbinder;
 
-    LOGGERD(TAG, "- CServiceNative::GetRemoteInstance()");
+    // LOGGERD(TAG, "- CServiceNative::GetRemoteInstance()");
     return NOERROR;
 }
 
