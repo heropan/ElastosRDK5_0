@@ -387,6 +387,28 @@ public:
         /* [in] */ const String& packageName,
         /* [out] */ IDrawable** logo);
 
+    CARAPI GetUserBadgedIcon(
+        /* [in] */ IDrawable* icon,
+        /* [in] */ IUserHandle* user,
+        /* [out] */ IDrawable** drawable);
+
+    CARAPI GetUserBadgedDrawableForDensity(
+        /* [in] */ IDrawable* drawable,
+        /* [in] */ IUserHandle* user,
+        /* [in] */ IRect* badgeLocation,
+        /* [in] */ Int32 badgeDensity,
+        /* [out] */ IDrawable** drawable);
+
+    CARAPI GetUserBadgeForDensity(
+        /* [in] */ IUserHandle* user,
+        /* [in] */ Int32 density,
+        /* [out] */ IDrawable** drawable);
+
+    CARAPI GetUserBadgedLabel(
+        /* [in] */ ICharSequence* label,
+        /* [in] */ IUserHandle* user,
+        /* [out] */ ICharSequence** csq);
+
     CARAPI GetResourcesForActivity(
         /* [in] */ IComponentName* activityName,
         /* [out] */ IResources** res);
@@ -534,6 +556,13 @@ public:
         /* [in] */ ArrayOf<IComponentName*>* set,
         /* [in] */ IComponentName* activity);
 
+    CARAPI ReplacePreferredActivityAsUser(
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ Int32 match,
+        /* [in] */ ArrayOf<IComponentName*>* set,
+        /* [in] */ IComponentName* activity,
+        /* [in] */ Int32 userId);
+
     CARAPI ClearPackagePreferredActivities(
         /* [in] */ const String& packageName);
 
@@ -542,6 +571,10 @@ public:
         /* [in] */ IObjectContainer* outActivities,
         /* [in] */ const String& packageName,
         /* [out] */ Int32* num);
+
+    CARAPI GetHomeActivities(
+        /* [in] */ IList* /*<ResolveInfo>*/ outActivities,
+        /* [out] */ IComponentName** cn);
 
     CARAPI SetComponentEnabledSetting(
         /* [in] */ IComponentName* componentName,

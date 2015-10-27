@@ -920,6 +920,7 @@ ECode CFragmentManagerImpl::MoveToState(
                                 f->SetActivity(NULL);
                                 f->SetParentFragment(NULL);
                                 f->SetFragmentManager(NULL);
+                                f->SetChildFragmentManager(NULL);
                             }
                         }
                     }
@@ -1140,7 +1141,7 @@ ECode CFragmentManagerImpl::HideFragment(
         fragment->GetView((IView**)&view);
         if (view != NULL) {
             AutoPtr<IAnimator> anim;
-            LoadAnimator(fragment, transition, TRUE,
+            LoadAnimator(fragment, transition, FALSE,
                     transitionStyle, (IAnimator**)&anim);
             if (anim != NULL) {
                 anim->SetTarget(view);
@@ -1391,7 +1392,7 @@ ECode CFragmentManagerImpl::EnqueueAction(
     }
     {
         AutoLock lock(mThisLock);
-        if (mActivity == NULL) {
+        if (mDestroyed || mActivity == NULL) {
 //             throw new IllegalStateException("Activity has been destroyed");
             return E_ILLEGAL_STATE_EXCEPTION;
         }
@@ -1577,7 +1578,11 @@ ECode CFragmentManagerImpl::PopBackStackState(
             return NOERROR;
         }
         List<AutoPtr<IBackStackRecord> >::Iterator bss = mBackStack.Erase(--mBackStack.End());
-        (*bss)->PopFromBackStack(TRUE);
+
+        SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
+        SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
+        bss.calculateBackFragments(firstOutFragments, lastInFragments);
+        bss.popFromBackStack(true, null, firstOutFragments, lastInFragments);
         ReportBackStackChanged();
     }
     else {
@@ -1633,10 +1638,23 @@ ECode CFragmentManagerImpl::PopBackStackState(
             rIt = List<AutoPtr<IBackStackRecord> >::ReverseIterator(mBackStack.Erase(--(rIt.GetBase())));
         }
         Int32 LAST = states.GetSize()-1;
-        for (Int32 i = 0; i <= LAST; i++) {
-            if (DEBUG) Logger::V(TAG, "Popping back stack state: %p", states[i].Get());
-            states[i]->PopFromBackStack(i == LAST);
+        // for (Int32 i = 0; i <= LAST; i++) {
+        //     if (DEBUG) Logger::V(TAG, "Popping back stack state: %p", states[i].Get());
+        //     states[i]->PopFromBackStack(i == LAST);
+        // }
+
+        SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
+        SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
+        for (int i=0; i<=LAST; i++) {
+            states.get(i).calculateBackFragments(firstOutFragments, lastInFragments);
         }
+        BackStackRecord.TransitionState state = null;
+        for (int i=0; i<=LAST; i++) {
+            if (DEBUG) Log.v(TAG, "Popping back stack state: " + states.get(i));
+            state = states.get(i).popFromBackStack(i == LAST, state,
+                    firstOutFragments, lastInFragments);
+        }
+
         ReportBackStackChanged();
     }
     *result = TRUE;
@@ -1915,6 +1933,8 @@ ECode CFragmentManagerImpl::RestoreAllState(
                 fs->mSavedFragmentState->GetSparseParcelableArray(
                         IFragmentManagerImpl::VIEW_STATE_TAG, (IObjectInt32Map**)&map);
                 f->SetSavedViewState(map);
+
+                f.mSavedFragmentState = fs.mSavedFragmentState;
             }
         }
     }
@@ -2001,8 +2021,9 @@ ECode CFragmentManagerImpl::RestoreAllState(
                     i, ((BackStackRecord*)bse.Get())->mIndex, bse.Get());
                 // TODO
                 // LogWriter logw = new LogWriter(Log.VERBOSE, TAG);
-                // PrintWriter pw = new PrintWriter(logw);
-                // bse.dump("  ", pw, FALSE);
+                // PrintWriter pw = new FastPrintWriter(logw, false, 1024);
+                // bse.dump("  ", pw, false);
+                // pw.flush();
             }
             mBackStack.PushBack(bse);
             if (((BackStackRecord*)bse.Get())->mIndex >= 0) {
@@ -2313,6 +2334,120 @@ ECode CFragmentManagerImpl::TransitToStyleIndex(
             break;
     }
     *index = animAttr;
+    return NOERROR;
+}
+
+//@Override
+ECode CFragmentManagerImpl::OnCreateView(
+    /* [in] */ IView* parent,
+    /* [in] */ const String& name,
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [out] */ IView** result)
+{
+    if (!"fragment".equals(name)) {
+        return null;
+    }
+
+    String fname = attrs.getAttributeValue(null, "class");
+    TypedArray a =
+            context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.Fragment);
+    if (fname == null) {
+        fname = a.getString(com.android.internal.R.styleable.Fragment_name);
+    }
+    int id = a.getResourceId(com.android.internal.R.styleable.Fragment_id, View.NO_ID);
+    String tag = a.getString(com.android.internal.R.styleable.Fragment_tag);
+    a.recycle();
+
+    int containerId = parent != null ? parent.getId() : 0;
+    if (containerId == View.NO_ID && id == View.NO_ID && tag == null) {
+        throw new IllegalArgumentException(attrs.getPositionDescription()
+                + ": Must specify unique android:id, android:tag, or have a parent with"
+                + " an id for " + fname);
+    }
+
+    // If we restored from a previous state, we may already have
+    // instantiated this fragment from the state and should use
+    // that instance instead of making a new one.
+    Fragment fragment = id != View.NO_ID ? findFragmentById(id) : null;
+    if (fragment == null && tag != null) {
+        fragment = findFragmentByTag(tag);
+    }
+    if (fragment == null && containerId != View.NO_ID) {
+        fragment = findFragmentById(containerId);
+    }
+
+    if (FragmentManagerImpl.DEBUG) Log.v(TAG, "onCreateView: id=0x"
+            + Integer.toHexString(id) + " fname=" + fname
+            + " existing=" + fragment);
+    if (fragment == null) {
+        fragment = Fragment.instantiate(context, fname);
+        fragment.mFromLayout = true;
+        fragment.mFragmentId = id != 0 ? id : containerId;
+        fragment.mContainerId = containerId;
+        fragment.mTag = tag;
+        fragment.mInLayout = true;
+        fragment.mFragmentManager = this;
+        fragment.onInflate(mActivity, attrs, fragment.mSavedFragmentState);
+        addFragment(fragment, true);
+    } else if (fragment.mInLayout) {
+        // A fragment already exists and it is not one we restored from
+        // previous state.
+        throw new IllegalArgumentException(attrs.getPositionDescription()
+                + ": Duplicate id 0x" + Integer.toHexString(id)
+                + ", tag " + tag + ", or parent id 0x" + Integer.toHexString(containerId)
+                + " with another fragment for " + fname);
+    } else {
+        // This fragment was retained from a previous instance; get it
+        // going now.
+        fragment.mInLayout = true;
+        // If this fragment is newly instantiated (either right now, or
+        // from last saved state), then give it the attributes to
+        // initialize itself.
+        if (!fragment.mRetaining) {
+            fragment.onInflate(mActivity, attrs, fragment.mSavedFragmentState);
+        }
+    }
+
+    // If we haven't finished entering the CREATED state ourselves yet,
+    // push the inflated child fragment along.
+    if (mCurState < Fragment.CREATED && fragment.mFromLayout) {
+        moveToState(fragment, Fragment.CREATED, 0, 0, false);
+    } else {
+        moveToState(fragment);
+    }
+
+    if (fragment.mView == null) {
+        throw new IllegalStateException("Fragment " + fname
+                + " did not create a view.");
+    }
+    if (id != 0) {
+        fragment.mView.setId(id);
+    }
+    if (fragment.mView.getTag() == null) {
+        fragment.mView.setTag(tag);
+    }
+    return fragment.mView;
+}
+
+//@Override
+ECode CFragmentManagerImpl::OnCreateView(
+    /* [in] */ const String& name,
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [out] */ IView** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    return NOERROR;
+}
+
+ECode CFragmentManagerImpl::GetLayoutInflaterFactory(
+    /* [out] */ ILayoutInflaterFactory2** fact)
+{
+    VALIDATE_NOT_NULL(fact)
+    *fact = THIS_PROBE(ILayoutInflaterFactory2);
+    REFCOUNT_ADD(*fact)
     return NOERROR;
 }
 

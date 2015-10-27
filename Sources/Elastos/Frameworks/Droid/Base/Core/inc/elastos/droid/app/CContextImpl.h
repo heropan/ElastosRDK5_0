@@ -94,6 +94,13 @@ private:
         CARAPI UnstableProviderDied(
             /* [in] */ IIContentProvider* icp);
 
+        CARAPI AppNotRespondingViaProvider(
+            /* [in] */ IIContentProvider* icp);
+
+        /** @hide */
+        Int32 ResolveUserIdFromAuthority(
+            /* [in] */ const String& auth);
+
     private:
         AutoPtr<CActivityThread> mMainThread;
         AutoPtr<IUserHandle> mUser;
@@ -185,6 +192,12 @@ public:
     CARAPI GetPackageName(
         /* [out] */ String* packageName);
 
+    CARAPI GetBasePackageName(
+        /* [out] */ String* packageName);
+
+    CARAPI GetOpPackageName(
+        /* [out] */ String* packageName);
+
     CARAPI GetApplicationInfo(
         /* [out] */ IApplicationInfo** info);
 
@@ -223,18 +236,37 @@ public:
     CARAPI GetFilesDir(
         /* [out] */ IFile** filesDir);
 
+    CARAPI GetNoBackupFilesDir(
+        /* [out] */ IFile** filesDir);
+
     CARAPI GetExternalFilesDir(
         /* [in] */ const String& type,
         /* [out] */ IFile** filesDir);
 
+    CARAPI GetExternalFilesDirs(
+        /* [in] */ const String& type,
+        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** filesDirs);
+
     CARAPI GetObbDir(
         /* [out] */ IFile** obbDir);
+
+    CARAPI GetObbDirs(
+        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs);
 
     CARAPI GetCacheDir(
         /* [out] */ IFile** cacheDir);
 
+    CARAPI GetCodeCacheDir(
+        /* [out] */ IFile** cacheDir);
+
     CARAPI GetExternalCacheDir(
         /* [out] */ IFile** externalDir);
+
+    CARAPI GetExternalCacheDirs(
+        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs);
+
+    CARAPI GetExternalMediaDirs(
+        /* [out, callee] */ AutoPtr<ArrayOf<IFile*>** dirs);
 
     CARAPI GetFileList(
         /* [out, callee] */ ArrayOf<String>** fileList);
@@ -355,6 +387,16 @@ public:
         /* [in] */ const String& initialData,
         /* [in] */ IBundle* initialExtras);
 
+    CARAPI SendOrderedBroadcast(
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp,
+        /* [in] */ IBroadcastReceiver* resultReceiver,
+        /* [in] */ IHandler* scheduler,
+        /* [in] */ Int32 initialCode,
+        /* [in] */ const String& initialData,
+        /* [in] */ IBundle* initialExtras);
+
     CARAPI SendBroadcastAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
@@ -363,6 +405,17 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& receiverPermission);
+
+    CARAPI SendOrderedBroadcastAsUser(
+        /* [in] */ IIntent* intent,
+        /* [in] */ IUserHandle* user,
+        /* [in] */ const String& receiverPermission,
+        /* [in] */ Int32 appOp,
+        /* [in] */ IBroadcastReceiver* resultReceiver,
+        /* [in] */ IHandler* scheduler,
+        /* [in] */ Int32 initialCode,
+        /* [in] */ const String& initialData,
+        /* [in] */ IBundle* initialExtras);
 
     CARAPI SendOrderedBroadcastAsUser(
         /* [in] */ IIntent* intent,
@@ -452,11 +505,11 @@ public:
         /* [in] */ Int32 flags,
         /* [out] */ Boolean* succeeded);
 
-    CARAPI BindService(
+    CARAPI BindServiceAsUser(
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 userHandle,
+        /* [in] */ IUserHandle* userHandle,
         /* [out] */ Boolean* succeeded);
 
     CARAPI UnbindService(
@@ -564,6 +617,11 @@ public:
         /* [in] */ Int32 modeFlags,
         /* [in] */ const String& message);
 
+    CARAPI CreateApplicationContext(
+        /* [in] */ IApplicationInfo* application,
+        /* [in] */ Int32 flags,
+        /* [out] */ IContext** ctx);
+
     CARAPI CreatePackageContext(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 flags,
@@ -586,30 +644,32 @@ public:
     CARAPI IsRestricted(
         /* [out] */ Boolean* isRestricted);
 
-    CARAPI GetCompatibilityInfo(
+    CARAPI GetDisplayAdjustments(
         /* [in] */ Int32 displayId,
-        /* [out] */ ICompatibilityInfoHolder** infoHolder);
+        /* [out] */ IDisplayAdjustments** das);
 
     static CARAPI_(AutoPtr<CContextImpl>) CreateSystemContext(
         /* [in] */ IActivityThread* mainThread);
 
-    CARAPI Init(
-        /* [in] */ LoadedPkg* packageInfo,
-        /* [in] */ IBinder* activityToken,
-        /* [in] */ CActivityThread* mainThread);
+    static CARAPI_(AutoPtr<CContextImpl>) CreateActivityContext(
+        /* [in] */ IActivityThread* mainThread,
+         /* [in] */ LoadedPkg* packageInfo,
+         /* [in] */ IBinder* activityToken);
 
-    CARAPI Init(
-        /* [in] */ LoadedPkg* packageInfo,
+    /* private */
+    CARAPI constructor(
+        /* [in]*/ IContextImpl* container,
+        /* [in] */ IActivityThread* mainThread,
+        /* [in] */ LoadedPkg packageInfo,
         /* [in] */ IBinder* activityToken,
-        /* [in] */ CActivityThread* mainThread,
-        /* [in] */ IResources* container,
-        /* [in] */ const String& basePackageName,
-        /* [in] */ IUserHandle* user);
+        /* [in] */ IUserHandle* user,
+        /* [in] */ Boolean restricted,
+        /* [in] */ IDisplay* display,
+        /* [in] */ IConfiguration* overrideConfiguration);
 
-    CARAPI Init(
-        /* [in] */ IResources* resources,
-        /* [in] */ CActivityThread* mainThread,
-        /* [in] */ IUserHandle* user);
+    CARAPI InstallSystemApplicationInfo(
+        /* [in] */ IApplicationInfo* info,
+        /* [in] */ IClassLoader* classLoader);
 
     CARAPI ScheduleFinalCleanup(
         /* [in] */ const String& who,
@@ -669,6 +729,11 @@ private:
         /* [in] */ IUri* uri,
         /* [in] */ const String& message);
 
+    /**
+     * Logs a warning if the system process directly called a method such as
+     * {@link #startService(Intent)} instead of {@link #startServiceAsUser(Intent, UserHandle)}.
+     * The "AsUser" variants allow us to properly enforce the user's restrictions.
+     */
     CARAPI_(void) WarnIfCallingFromSystemProcess();
 
     CARAPI_(Int32) GetDisplayId();
@@ -685,10 +750,36 @@ private:
         /* [in] */ const String& name,
         /* [out] */ IFile** file);
 
-public:
-    /*package*/ AutoPtr<LoadedPkg> mPackageInfo;
-    /*package*/ AutoPtr<CActivityThread> mMainThread;
+    /**
+     * Ensure that given directories exist, trying to create them if missing. If
+     * unable to create, they are filtered by replacing with {@code null}.
+     */
+    AutoPtr<ArrayOf<IFile*> > EnsureDirsExistOrFilter(
+        /* [in] */ ArrayOf<IFile*>* dirs);
 
+    // Common-path handling of app data dir creation
+    static AutoPtr<IFile> CreateFilesDirLocked(
+        /* [in] */ IFile* file);
+
+    CARAPI ValidateServiceIntent(
+        /* [in] */ IIntent* service);
+
+    CARAPI StartServiceCommon(
+        /* [in] */ IIntent* service,
+        /* [in] */ IUserHandle* user,
+        /* [out] */ IComponentName** name);
+
+    CARAPI StopServiceCommon(
+        /* [in] */ IIntent* service,
+        /* [in] */ IUserHandle* user,
+        /* [out] */ Boolean* succeeded);
+
+    CARAPI BindServiceCommon(
+        /* [in] */ IIntent* service,
+        /* [in] */ IServiceConnection* conn,
+        /* [in] */ Int32 flags,
+        /* [in] */ IUserHandle* userHandle,
+        /* [out] */ Boolean* succeeded);
 private:
     const static String TAG;
     const static Boolean DEBUG;
@@ -696,39 +787,69 @@ private:
     static HashMap<String, AutoPtr<SharedPreferencesImpl> > sSharedPrefs;
     static Object sSharedPrefsLock;
 
+public:
+    AutoPtr<CActivityThread> mMainThread;
+    AutoPtr<LoadedPkg> mPackageInfo;
+
+private:
+    AutoPtr<IBinder> mActivityToken;
+
+    AutoPtr<IUserHandle> mUser;
+
+    AutoPtr<ApplicationContentResolver> mContentResolver;
+
     String mBasePackageName;
+    String mOpPackageName;
+
+    AutoPtr<IResourcesManager> mResourcesManager;
     AutoPtr<IResources> mResources;
+    AutoPtr<IDisplay> mDisplay; // may be null if default display
+    AutoPtr<IDisplayAdjustments> mDisplayAdjustments;
+    AutoPtr<IConfiguration> mOverrideConfiguration;;
+
+    Boolean mRestricted;
+
     // mOuterContext maybe is this, IActivity, IService or IApplication
     // IActivity, IService, IApplication has this's reference
     //
     AutoPtr<IWeakReference> mOuterContext; // IContext*
 
-    AutoPtr<IBinder> mActivityToken;
-    AutoPtr<ApplicationContentResolver> mContentResolver;
     Int32 mThemeResource;
     AutoPtr<IResourcesTheme> mTheme;
     AutoPtr<IPackageManager> mPackageManager;
-    AutoPtr<IDisplay> mDisplay; // may be null if default display
     AutoPtr<IContext> mReceiverRestrictedContext;
-    Boolean mRestricted;
-    AutoPtr<IUserHandle> mUser;
 
-    AutoPtr<IInterface> mSync;
+    Object mSync;
 
+    //@GuardedBy("mSync")
     AutoPtr<IFile> mDatabasesDir;
+    //@GuardedBy("mSync")
     AutoPtr<IFile> mPreferencesDir;
+    //@GuardedBy("mSync")
     AutoPtr<IFile> mFilesDir;
+    //@GuardedBy("mSync")
+    AutoPtr<IFile> mNoBackupFilesDir;
+    //@GuardedBy("mSync")
     AutoPtr<IFile> mCacheDir;
-    AutoPtr<IFile> mObbDir;
-    AutoPtr<IFile> mExternalFilesDir;
-    AutoPtr<IFile> mExternalCacheDir;
+    //@GuardedBy("mSync")
+    AutoPtr<IFile> mCodeCacheDir;
+
+    //@GuardedBy("mSync")
+    AutoPtr<ArrayOf<IFile*> > mExternalObbDirs;
+    //@GuardedBy("mSync")
+    AutoPtr<ArrayOf<IFile*> > mExternalFilesDirs;
+    //@GuardedBy("mSync")
+    AutoPtr<ArrayOf<IFile*> > mExternalCacheDirs;
+    //@GuardedBy("mSync")
+    AutoPtr<ArrayOf<IFile*> > mExternalMediaDirs;
 
     static AutoPtr< ArrayOf<String> > EMPTY_FILE_LIST;
 
+    // The system service cache for the system services that are
+    // cached per-ContextImpl.  Package-scoped to avoid accessor
+    // methods.
     HashMap< String, AutoPtr<IInterface> > mServiceCache;
     Object mCacheLock;
-
-    Object mSyncLock;
 
     static AutoPtr<IWallpaperManager> sWallpaperManager;
 };

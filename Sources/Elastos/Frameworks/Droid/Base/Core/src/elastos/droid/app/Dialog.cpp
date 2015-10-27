@@ -1,21 +1,19 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/app/CActionBarImpl.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Handler.h"
-#include "elastos/droid/R.h"
-#include <elastos/utility/logging/Slogger.h>
-#ifdef DROID_CORE
-#include "elastos/droid/impl/CPolicyManager.h"
-#include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CMessageHelper.h"
-#include "elastos/droid/app/CActionBarImpl.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/impl/CPolicyManager.h"
+#include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/CContextThemeWrapper.h"
-#include "elastos/droid/impl/CPolicyManager.h"
-#endif
+#include "elastos/droid/utility/CTypedValue.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CString;
@@ -227,6 +225,7 @@ ECode Dialog::Init(
     pm->MakeNewWindow(mContext, (IWindow**)&mWindow);
 
     mWindow->SetCallback(THIS_PROBE(IWindowCallback));
+    mWindow->SetOnWindowDismissedCallback(THIS_PROBE(IWindowOnWindowDismissedCallback));
     mWindow->SetWindowManager(mWindowManager, NULL, String(NULL));
     mWindow->SetGravity(IGravity::CENTER);
 
@@ -330,6 +329,20 @@ Boolean Dialog::IsShowing()
 }
 
 /**
+ * Forces immediate creation of the dialog.
+ * <p>
+ * Note that you should not override this method to perform dialog creation.
+ * Rather, override {@link #onCreate(Bundle)}.
+ */
+ECode Dialog::Create()
+{
+    if (!mCreated) {
+        return DispatchOnCreate(NULL);
+    }
+    return NOERROR;
+}
+
+/**
  * Start the dialog and display it on screen.  The window is placed in the
  * application layer and opaque.  Note that you should not override this
  * method to do initialization when the dialog is shown, instead implement
@@ -361,8 +374,11 @@ ECode Dialog::Show()
 
     Boolean hasFeature;
     mWindow->HasFeature(IWindow::FEATURE_ACTION_BAR, &hasFeature);
-    if (mActionBar == NULL && hasFeature) {
-        CActionBarImpl::New(THIS_PROBE(IDialog), (IActionBarImpl**)&mActionBar);
+        AutoPtr<IApplicationInfo> info;
+        mContext->GetApplicationInfo((IApplicationInfo**)&info);
+        mWindow.setDefaultIcon(info.icon);
+        mWindow.setDefaultLogo(info.logo);
+        mActionBar = new WindowDecorActionBar(this);
     }
 
     AutoPtr<IWindowManagerLayoutParams> l;
@@ -435,7 +451,7 @@ void Dialog::DismissDialog()
         return;
     }
 
-    mWindowManager->RemoveView(mDecor);
+    mWindowManager->RemoveViewImmediate(mDecor);
     if (mActionMode != NULL) {
         mActionMode->Finish();
     }
@@ -907,6 +923,11 @@ ECode Dialog::OnAttachedToWindow()
 ECode Dialog::OnDetachedFromWindow()
 {
     return NOERROR;
+}
+
+ECode Dialog::OnWindowDismissed()
+{
+    return Dismiss();
 }
 
 /**

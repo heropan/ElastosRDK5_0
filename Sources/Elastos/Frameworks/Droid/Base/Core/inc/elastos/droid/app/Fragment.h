@@ -667,7 +667,16 @@ public:
 
     virtual CARAPI PerformDestroy();
 
+    static AutoPtr<ITransition> LoadTransition(
+        /* [in] */ IContext* context,
+        /* [in] */ ITypedArray* typedArray,
+        /* [in] */ ITransition* currentValue,
+        /* [in] */ ITransition* defaultValue,
+        /* [in] */ Int32 id);
+
 public:
+    static const AutoPtr<ITransition> USE_DEFAULT_TRANSITION;// = new TransitionSet();;
+
     Int32 mState;
 
     // Non-null if the fragment's view hierarchy is currently animating away,
@@ -791,6 +800,19 @@ public:
     AutoPtr<ILoaderManagerImpl> mLoaderManager;
     Boolean mLoadersStarted;
     Boolean mCheckedForLoaderManager;
+
+    AutoPtr<ITransition> mEnterTransition;// = null;
+    AutoPtr<ITransition> mReturnTransition;// = USE_DEFAULT_TRANSITION;
+    AutoPtr<ITransition> mExitTransition;// = null;
+    AutoPtr<ITransition> mReenterTransition;// = USE_DEFAULT_TRANSITION;
+    AutoPtr<ITransition> mSharedElementEnterTransition;// = null;
+    AutoPtr<ITransition> mSharedElementReturnTransition;// = USE_DEFAULT_TRANSITION;
+    Boolean mAllowReturnTransitionOverlap;
+    Boolean mAllowEnterTransitionOverlap;
+
+    AutoPtr<ISharedElementCallback> mEnterTransitionCallback;// = SharedElementCallback.NULL_CALLBACK;
+    AutoPtr<ISharedElementCallback> mExitTransitionCallback;// = SharedElementCallback.NULL_CALLBACK;
+
 
 private:
    static HashMap<String, AutoPtr<IClassInfo> > sClassMap;

@@ -84,9 +84,25 @@ ECode CDownloadManagerRequest::SetDestinationInExternalFilesDir(
     /* [in] */ const String& dirType,
     /* [in] */ const String& subPath)
 {
-    AutoPtr<IFile> dir;
-    context->GetExternalFilesDir(dirType, (IFile**)&dir);
-    SetDestinationFromBase(dir, subPath);
+    // AutoPtr<IFile> dir;
+    // context->GetExternalFilesDir(dirType, (IFile**)&dir);
+    // SetDestinationFromBase(dir, subPath);
+    final File file = context.getExternalFilesDir(dirType);
+    if (file == null) {
+        throw new IllegalStateException("Failed to get external storage files directory");
+    } else if (file.exists()) {
+        if (!file.isDirectory()) {
+            throw new IllegalStateException(file.getAbsolutePath() +
+                    " already exists and is not a directory");
+        }
+    } else {
+        if (!file.mkdirs()) {
+            throw new IllegalStateException("Unable to create directory: "+
+                    file.getAbsolutePath());
+        }
+    }
+    setDestinationFromBase(file, subPath);
+    return this;
     return NOERROR;
 }
 
@@ -94,34 +110,51 @@ ECode CDownloadManagerRequest::SetDestinationInExternalPublicDir(
     /* [in] */ const String& dirType,
     /* [in] */ const String& subPath)
 {
-    AutoPtr<IEnvironment> env;
-    CEnvironment::AcquireSingleton((IEnvironment**)&env);
-    AutoPtr<IFile> file;
-    env->GetExternalStoragePublicDirectory(dirType, (IFile**)&file);
-    Boolean exists;
-    if (file->Exists(&exists), exists) {
-        Boolean isDir;
-        if (file->IsDirectory(&isDir), !isDir) {
-            // throw new IllegalStateException(file.getAbsolutePath() +
-            //         " already exists and is not a directory");
-            String path;
-            file->GetAbsolutePath(&path);
-            Slogger::E("CDownloadManagerRequest", "%s already exists and is not a directory", path.string());
-            return E_ILLEGAL_STATE_EXCEPTION;
+    File file = Environment.getExternalStoragePublicDirectory(dirType);
+    if (file == null) {
+        throw new IllegalStateException("Failed to get external storage public directory");
+    } else if (file.exists()) {
+        if (!file.isDirectory()) {
+            throw new IllegalStateException(file.getAbsolutePath() +
+                    " already exists and is not a directory");
         }
     } else {
-        Boolean mkdir;
-        if (file->Mkdir(&mkdir), !mkdir) {
-            // throw new IllegalStateException("Unable to create directory: "+
-            //         file.getAbsolutePath());
-            String path;
-            file->GetAbsolutePath(&path);
-            Slogger::E("CDownloadManagerRequest", "Unable to create directory: %s", path.string());
-            return E_ILLEGAL_STATE_EXCEPTION;
+        if (!file.mkdirs()) {
+            throw new IllegalStateException("Unable to create directory: "+
+                    file.getAbsolutePath());
         }
     }
-    SetDestinationFromBase(file, subPath);
-    return NOERROR;
+    setDestinationFromBase(file, subPath);
+    return this;
+
+    // AutoPtr<IEnvironment> env;
+    // CEnvironment::AcquireSingleton((IEnvironment**)&env);
+    // AutoPtr<IFile> file;
+    // env->GetExternalStoragePublicDirectory(dirType, (IFile**)&file);
+    // Boolean exists;
+    // if (file->Exists(&exists), exists) {
+    //     Boolean isDir;
+    //     if (file->IsDirectory(&isDir), !isDir) {
+    //         // throw new IllegalStateException(file.getAbsolutePath() +
+    //         //         " already exists and is not a directory");
+    //         String path;
+    //         file->GetAbsolutePath(&path);
+    //         Slogger::E("CDownloadManagerRequest", "%s already exists and is not a directory", path.string());
+    //         return E_ILLEGAL_STATE_EXCEPTION;
+    //     }
+    // } else {
+    //     Boolean mkdir;
+    //     if (file->Mkdir(&mkdir), !mkdir) {
+    //         // throw new IllegalStateException("Unable to create directory: "+
+    //         //         file.getAbsolutePath());
+    //         String path;
+    //         file->GetAbsolutePath(&path);
+    //         Slogger::E("CDownloadManagerRequest", "Unable to create directory: %s", path.string());
+    //         return E_ILLEGAL_STATE_EXCEPTION;
+    //     }
+    // }
+    // SetDestinationFromBase(file, subPath);
+    // return NOERROR;
 }
 
 ECode CDownloadManagerRequest::SetDestinationFromBase(

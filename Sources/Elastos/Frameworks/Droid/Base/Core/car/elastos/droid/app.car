@@ -794,10 +794,12 @@ module
 //             [in] Boolean cancelable,
 //             [in] IDialogInterfaceOnCancelListener* cancelListener);
 
-//         interface IDialog;
-//         interface IWindowCallback;
-//         interface IViewOnCreateContextMenuListener;
-//         interface IKeyEventCallback;
+            //interface IDialog
+            //interface IDialogInterface
+            //interface IWindowCallback
+            //interface IKeyEventCallback
+            //interface IViewOnCreateContextMenuListener
+            //interface IWindowOnWindowDismissedCallback
 //     }
 
 //     [local]
