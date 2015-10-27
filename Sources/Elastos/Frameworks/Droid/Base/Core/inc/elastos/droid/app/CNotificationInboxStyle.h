@@ -72,6 +72,18 @@ public:
     CARAPI AddLine(
         /* [in] */ ICharSequence* cs);
 
+    CARAPI AddExtras(
+        /* [in] */ IBundle* extras);
+
+    CARAPI RestoreFromExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    CARAPI PopulateBigContentView(
+        /* [in] */ INotification* wip);
+
 private:
     AutoPtr<IRemoteViews> MakeBigContentView();
 

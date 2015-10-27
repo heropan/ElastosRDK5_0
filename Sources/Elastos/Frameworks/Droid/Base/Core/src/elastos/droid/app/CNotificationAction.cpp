@@ -24,13 +24,30 @@ ECode CNotificationAction::constructor()
 }
 
 ECode CNotificationAction::constructor(
-    /* [in] */ Int32 icon_,
-    /* [in] */ ICharSequence* title_,
-    /* [in] */ IPendingIntent* intent_)
+    /* [in] */ Int32 icon,
+    /* [in] */ ICharSequence* title,
+    /* [in] */ IPendingIntent* intent)
 {
-    mIcon = icon_;
-    mTitle = title_;
-    mActionIntent = intent_;
+    AutoPtr<IBundle> bundle;
+    CBundle::New((IBundle**)&bundle);
+    return constructor(icon, title, intent, bundle, NULL);
+}
+
+ECode CNotificationAction::constructor(
+    /* [in] */ Int32 icon,
+    /* [in] */ ICharSequence* title,
+    /* [in] */ IPendingIntent* intent,
+    /* [in] */ IBundle* extras,
+    /* [in] */ ArrayOf<IRemoteInput*>* remoteInputs)
+{
+    mIcon = icon;
+    mTitle = title;
+    mActionIntent = intent;
+    mExtras = extras;
+    if (mExtras == NULL) {
+        CBundle::New((IBundle**)&mExtras);
+    }
+    mRemoteInputs = remoteInputs;
     return NOERROR;
 }
 
@@ -47,6 +64,9 @@ ECode CNotificationAction::WriteToParcel(
     } else {
         out->WriteInt32(0);
     }
+
+    out.writeBundle(mExtras);
+    out.writeTypedArray(mRemoteInputs, flags);
     return NOERROR;
 }
 
@@ -66,6 +86,27 @@ ECode CNotificationAction::ReadFromParcel(
         assert(parcleable);
         parcleable->ReadFromParcel(in);
     }
+
+    mExtras = in.readBundle();
+    mRemoteInputs = in.createTypedArray(RemoteInput.CREATOR);
+    return NOERROR;
+}
+
+CARAPI CNotificationAction::GetExtras(
+    /* [out] */ IBundle** extras)
+{
+    VALIDATE_NOT_NULL(extras)
+    *extras = mExtras;
+    REFCOUNT_ADD(*extras)
+    return NOERROR;
+}
+
+CARAPI CNotificationAction::GetRemoteInputs(
+    /* [out, callee] */ ArrayOf<IRemoteInput*>** inputs)
+{
+    VALIDATE_NOT_NULL(inputs)
+    *inputs = mRemoteInputs;
+    REFCOUNT_ADD(*inputs)
     return NOERROR;
 }
 
@@ -78,6 +119,13 @@ ECode CNotificationAction::Clone(
     // mTitle->ToString(&(*action->mTitle));
     // *action->mActionIntent = mActionIntent;
     // return NOERROR;
+
+    return new Action(
+            icon,
+            title,
+            actionIntent, // safe to alias
+            new Bundle(mExtras),
+            getRemoteInputs());
     return E_NOT_IMPLEMENTED;
 }
 

@@ -101,6 +101,17 @@ public:
      */
     CARAPI CancelAll();
 
+    /**
+     * @hide
+     */
+    AutoPtr<IComponentName> GetEffectsSuppressor();
+
+    /**
+     * @hide
+     */
+    Boolean MatchesCallFilter(
+        /* [in] */ IBundle* extras);
+
 private:
     static const String TAG;
     static const Boolean DEBUG;

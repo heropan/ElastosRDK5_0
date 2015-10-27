@@ -225,6 +225,7 @@ public:
      */
     CARAPI GetAssistIntent(
         /* [in] */ IContext* context,
+        /* [in] */ Boolean inclContext,
         /* [out] */ IIntent** intent);
 
     /**
@@ -235,8 +236,15 @@ public:
      */
     CARAPI GetAssistIntent(
         /* [in] */ IContext* context,
+        /* [in] */ Boolean inclContext,
         /* [in] */ Int32 userHandle,
         /* [out] */ IIntent** intent);
+
+    CARAPI LaunchAssistAction(
+        /* [in] */ Int32 requestType,
+        /* [in] */ const String& hint,
+        /* [in] */ Int32 userHandle,
+        /* [out] */ Boolean* result);
 
 public:
     /**

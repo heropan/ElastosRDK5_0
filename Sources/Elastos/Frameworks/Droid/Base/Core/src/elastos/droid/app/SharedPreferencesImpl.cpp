@@ -265,13 +265,16 @@ AutoPtr<SharedPreferencesImpl::MemoryCommitResult> SharedPreferencesImpl::Editor
                 String k = it->mFirst;
                 AutoPtr<IInterface> v = it->mSecond;
                 HashMap<String, AutoPtr<IInterface> >::Iterator itr = mHost->mMap->Find(k);
-                if (v == this) {  // magic value for a removal mutation
+                // "this" is the magic value for a removal mutation. In addition,
+                // setting a value to "null" for a given key is specified to be
+                // equivalent to calling remove on that key.
+                if (v == this || v == NULL) {
                     if (itr == mHost->mMap->End()) {
                         continue;
                     }
                     mHost->mMap->Erase(itr);
-                } else {
-                    // Boolean isSame = FALSE;
+                }
+                else {
                     if (itr != mHost->mMap->End()) {
                         AutoPtr<IInterface> existingValue = itr->mSecond;
                         if (existingValue != NULL && existingValue == v) {
@@ -464,11 +467,7 @@ void SharedPreferencesImpl::LoadFromDiskLocked()
         ECode ec = NOERROR;
         String path;
         mFile->GetPath(&path);
-        AutoPtr<ILibcore> libcore;
-        CLibcore::AcquireSingleton((ILibcore**)&libcore);
-        AutoPtr<IOs> os;
-        libcore->GetOs((IOs**)&os);
-        ec = os->Stat(path, (IStructStat**)&stat);
+        ec = Os::Stat(path, (IStructStat**)&stat);
         if (FAILED(ec)) {
             break;
         }
@@ -562,11 +561,8 @@ Boolean SharedPreferencesImpl::HasFileChangedUnexpectedly()
     policy->OnReadFromDisk();
     String path;
     mFile->GetPath(&path);
-    AutoPtr<ILibcore> libcore;
-    CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    AutoPtr<IOs> os;
-    libcore->GetOs((IOs**)&os);
-    ECode ec = os->Stat(path, (IStructStat**)&stat);
+
+    ECode ec = Os::Stat(path, (IStructStat**)&stat);
     if(FAILED(ec)) {
         return TRUE;
     }
@@ -929,17 +925,13 @@ void SharedPreferencesImpl::WriteToFile(
     Boolean isSync = FALSE, isDeleteFile = FALSE;
     String path;
     AutoPtr<IStructStat> stat;
-    AutoPtr<ILibcore> libcore;
-    AutoPtr<IOs> os;
     FAIL_GOTO(XmlUtils::WriteMapXml(map, str), failed);
     FileUtils::Sync(str, &isSync);
     FAIL_GOTO(str->Close(), failed);
     FAIL_GOTO(mFile->GetPath(&path), failed);
     CContextImpl::SetFilePermissionsFromMode(path, mMode, 0);
 
-    CLibcore::AcquireSingleton((ILibcore**)&libcore);
-    FAIL_GOTO(libcore->GetOs((IOs**)&os), failed);
-    FAIL_GOTO(os->Stat(path, (IStructStat**)&stat), failed);
+    FAIL_GOTO(Os::Stat(path, (IStructStat**)&stat), failed);
     {
         AutoLock lock(this);
         stat->GetMtime(&mStatTimestamp);

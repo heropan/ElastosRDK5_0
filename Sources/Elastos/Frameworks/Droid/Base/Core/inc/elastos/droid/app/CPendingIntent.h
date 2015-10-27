@@ -93,6 +93,10 @@ public:
     CARAPI GetIntent(
         /* [out] */ IIntent** intent);
 
+    CARAPI GetTag(
+        /* [in] */ const String& prefix,
+        /* [out] */ String* tag);
+
     CARAPI GetTarget(
         /* [out] */ IIIntentSender** target);
 

@@ -346,21 +346,22 @@ public:
         /* [in] */ IActivityThread* mainActivityThread,
         /* [in] */ IClassLoader* baseLoader,
         /* [in] */ Boolean securityViolation,
-        /* [in] */ Boolean includeCode);
+        /* [in] */ Boolean includeCode,
+        /* [in] */ Boolean registerPackage);
 
     LoadedPkg(
-        /* [in] */ CActivityThread* activityThread,
-        /* [in] */ const String& name,
-        /* [in] */ IContext* systemContext,
-        /* [in] */ IApplicationInfo* info,
-        /* [in] */ ICompatibilityInfo* compatInfo);
+        /* [in] */ CActivityThread* activityThread);
 
     ~LoadedPkg();
 
     CAR_INTERFACE_DECL();
 
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
+    CARAPI_(void) InstallSystemApplicationInfo(
+        /* [in] */ IApplicationInfo* info,
+        /* [in] */ IClassLoader* classLoader);
+
+    AutoPtr<IApplicationInfo> AdjustNativeLibraryPaths(
+        /* [in] */ IApplicationInfo* info)
 
     CARAPI_(AutoPtr<IApplication>) GetApplication();
 
@@ -371,6 +372,9 @@ public:
         /* [out] */ IApplicationInfo** info);
 
     CARAPI_(Boolean) IsSecurityViolation();
+
+    CARAPI IsSecurityViolation(
+        /* [out] */ Boolean* bval);
 
     CARAPI GetClassLoader(
         /* [out] */ IClassLoader** loader);
@@ -383,6 +387,15 @@ public:
 
     CARAPI GetResDir(
         /* [out] */ String* resDir);
+
+    CARAPI GetSplitAppDirs(
+        /* [out, callee] */ ArrayOf<String>** dirs);
+
+    CARAPI GetSplitResDirs(
+        /* [out, callee] */ ArrayOf<String>** dirs);
+
+    CARAPI GetOverlayDirs(
+        /* [out, callee] */ ArrayOf<String>** dirs);
 
     CARAPI GetDataDir(
         /* [out] */ String* dataDir);
@@ -433,20 +446,47 @@ public:
         /* [in] */ IServiceConnection* c,
         /* [out] */ IIServiceConnection** result);
 
+private:
+    /**
+     * Setup value for Thread.getContextClassLoader(). If the
+     * package will not run in in a VM with other packages, we set
+     * the Java context ClassLoader to the
+     * PackageInfo.getClassLoader value. However, if this VM can
+     * contain multiple packages, we intead set the Java context
+     * ClassLoader to a proxy that will warn about the use of Java
+     * context ClassLoaders and then fall through to use the
+     * system ClassLoader.
+     *
+     * <p> Note that this is similar to but not the same as the
+     * android.content.Context.getClassLoader(). While both
+     * context class loaders are typically set to the
+     * PathClassLoader used to load the package archive in the
+     * single application per VM case, a single Android process
+     * may contain several Contexts executing on one thread with
+     * their own logical ClassLoaders while the Java context
+     * ClassLoader is a thread local. This is why in the case when
+     * we have multiple packages per VM we do not set the Java
+     * context ClassLoader to an arbitrary but instead warn the
+     * user to set their own if we detect that they are using a
+     * Java library that expects it to be set.
+     */
+    CARAPI_(void) InitializeJavaContextClassLoader();
+
 public:
     String mPackageName;
     AutoPtr<IResources> mResources;
-    AutoPtr<ICompatibilityInfoHolder> mCompatibilityInfo;
 
 private:
     static const String TAG;
-    Object mLock;
 
     // CActivityThread has this's reference
     CActivityThread* mActivityThread;
     AutoPtr<IApplicationInfo> mApplicationInfo;
     String mAppDir;
     String mResDir;
+    AutoPtr<ArrayOf<String> > mSplitAppDirs;
+    AutoPtr<ArrayOf<String> > mSplitResDirs;
+    AutoPtr<ArrayOf<String> > mOverlayDirs;
     AutoPtr<ArrayOf<String> > mSharedLibraries;
     String mDataDir;
     String mLibDir;
@@ -454,6 +494,8 @@ private:
     AutoPtr<IClassLoader> mBaseClassLoader;
     Boolean mSecurityViolation;
     Boolean mIncludeCode;
+    Boolean mRegisterPackage;
+    AutoPtr<IDisplayAdjustments> mDisplayAdjustments;// = new DisplayAdjustments();
     AutoPtr<IClassLoader> mClassLoader;
     AutoPtr<IApplication> mApplication;
 

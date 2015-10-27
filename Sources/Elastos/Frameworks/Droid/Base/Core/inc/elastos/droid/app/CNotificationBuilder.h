@@ -34,6 +34,17 @@ public:
     CARAPI constructor(
         /* [in] */ IContext * context);
 
+private:
+    /**
+     * Creates a Builder for rebuilding the given Notification.
+     * <p>
+     * Call {@link #rebuild()} to retrieve the rebuilt version of 'n'.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ INotification* n);
+
+public:
     /**
      * Add a timestamp pertaining to the notification (usually the time the event occurred).
      * It will be shown in the notification content view by default; use
@@ -246,6 +257,20 @@ public:
         /* [in] */ Int32 streamType);
 
     /**
+     * Set the sound to play, along with specific {@link AudioAttributes audio attributes} to
+     * use during playback.
+     *
+     * <p>
+     * A notification that is noisy is more likely to be presented as a heads-up notification.
+     * </p>
+     *
+     * @see Notification#sound
+     */
+    CARAPI SetSound(
+    /* [in] */ IUri *sound,
+    /* [in] */ IAudioAttributes* audioAttributes);
+
+    /**
      * Set the vibration pattern to use.
      *
 
@@ -313,6 +338,15 @@ public:
         /* [in] */ Boolean autoCancel);
 
     /**
+     * Set whether or not this notification should not bridge to other devices.
+     *
+     * <p>Some notifications can be bridged to other devices for remote display.
+     * This hint can be set to recommend this notification not be bridged.
+     */
+    CARAPI SetLocalOnly(
+        /* [in] */ Boolean localOnly);
+
+    /**
      * Set which notification properties will be inherited from system defaults.
      * <p>
      * The value should be one or more of the following fields combined with
@@ -333,14 +367,86 @@ public:
         /* [in] */ Int32 pri);
 
     /**
-     * @hide
+     * Set the notification category.
      *
-     * Add a kind (category) to this notification. Optional.
-     *
-     * @see Notification#kind
+     * @see Notification#category
      */
-    CARAPI AddKind(
-        /* [in] */ const String & k);
+    CARAPI SetCategory(
+        /* [in] */ const String& category);
+
+    /**
+     * Add a person that is relevant to this notification.
+     *
+     * <P>
+     * Depending on user preferences, this annotation may allow the notification to pass
+     * through interruption filters, and to appear more prominently in the user interface.
+     * </P>
+     *
+     * <P>
+     * The person should be specified by the {@code String} representation of a
+     * {@link android.provider.ContactsContract.Contacts#CONTENT_LOOKUP_URI}.
+     * </P>
+     *
+     * <P>The system will also attempt to resolve {@code mailto:} and {@code tel:} schema
+     * URIs.  The path part of these URIs must exist in the contacts database, in the
+     * appropriate column, or the reference will be discarded as invalid. Telephone schema
+     * URIs will be resolved by {@link android.provider.ContactsContract.PhoneLookup}.
+     * </P>
+     *
+     * @param uri A URI for the person.
+     * @see Notification#EXTRA_PEOPLE
+     */
+    CARAPI AddPerson(
+        /* [in] */ const String& person);
+
+    /**
+     * Set this notification to be part of a group of notifications sharing the same key.
+     * Grouped notifications may display in a cluster or stack on devices which
+     * support such rendering.
+     *
+     * <p>To make this notification the summary for its group, also call
+     * {@link #setGroupSummary}. A sort order can be specified for group members by using
+     * {@link #setSortKey}.
+     * @param groupKey The group key of the group.
+     * @return this object for method chaining
+     */
+    CARAPI SetGroup(
+        /* [in] */ const String& groupKey);
+
+    /**
+     * Set this notification to be the group summary for a group of notifications.
+     * Grouped notifications may display in a cluster or stack on devices which
+     * support such rendering. Requires a group key also be set using {@link #setGroup}.
+     * @param isGroupSummary Whether this notification should be a group summary.
+     * @return this object for method chaining
+     */
+    CARAPI SetGroupSummary(
+        /* [in] */ Boolean isGroupSummary);
+
+    /**
+     * Set a sort key that orders this notification among other notifications from the
+     * same package. This can be useful if an external sort was already applied and an app
+     * would like to preserve this. Notifications will be sorted lexicographically using this
+     * value, although providing different priorities in addition to providing sort key may
+     * cause this value to be ignored.
+     *
+     * <p>This sort key can also be used to order members of a notification group. See
+     * {@link #setGroup}.
+     *
+     * @see String#compareTo(String)
+     */
+     CARAPI SetSortKey(
+        /* [in] */ const String& groupKey);
+
+    /**
+     * Merge additional metadata into this notification.
+     *
+     * <p>Values within the Bundle will replace existing extras values in this Builder.
+     *
+     * @see Notification#extras
+     */
+    CARAPI AddExtras(
+        /* [in] */ IBundle* extras);
 
     /**
      * Add metadata to this notification.
@@ -353,7 +459,20 @@ public:
      * @hide
      */
     CARAPI SetExtras(
-        /* [in] */ IBundle * bag);
+        /* [in] */ IBundle* extras);
+
+    /**
+     * Get the current metadata Bundle used by this notification Builder.
+     *
+     * <p>The returned Bundle is shared with this Builder.
+     *
+     * <p>The current contents of this Bundle are copied into the Notification each time
+     * {@link #build()} is called.
+     *
+     * @see Notification#extras
+     */
+    CARAPI GetExtras(
+        /* [out] */ IBundle** extras);
 
     /**
      * Add an action to this notification. Actions are typically displayed by
@@ -369,12 +488,72 @@ public:
         /* [in] */ IPendingIntent * intent);
 
     /**
+     * Add an action to this notification. Actions are typically displayed by
+     * the system as a button adjacent to the notification content.
+     * <p>
+     * Every action must have an icon (32dp square and matching the
+     * <a href="{@docRoot}design/style/iconography.html#action-bar">Holo
+     * Dark action bar</a> visual style), a textual label, and a {@link PendingIntent}.
+     * <p>
+     * A notification in its expanded form can display up to 3 actions, from left to right in
+     * the order they were added. Actions will not be displayed when the notification is
+     * collapsed, however, so be sure that any essential functions may be accessed by the user
+     * in some other way (for example, in the Activity pointed to by {@link #contentIntent}).
+     *
+     * @param action The action to add.
+     */
+    CARAPI AddAction(
+        /* [in] */ INotificationAction* action);
+
+    /**
      * Add a rich notification style to be applied at build time.
      *
      * @param style Object responsible for modifying the notification style.
      */
     CARAPI SetStyle(
         /* [in] */ INotificationStyle * style);
+
+    /**
+     * Specify the value of {@link #visibility}.
+     *
+     * @param visibility One of {@link #VISIBILITY_PRIVATE} (the default),
+     * {@link #VISIBILITY_SECRET}, or {@link #VISIBILITY_PUBLIC}.
+     *
+     * @return The same Builder.
+     */
+    CARAPI SetVisibility(
+        /* [in] */ Int32 visibility);
+
+    /**
+     * Supply a replacement Notification whose contents should be shown in insecure contexts
+     * (i.e. atop the secure lockscreen). See {@link #visibility} and {@link #VISIBILITY_PUBLIC}.
+     * @param n A replacement notification, presumably with some or all info redacted.
+     * @return The same Builder.
+     */
+    CARAPI SetPublicVersion(
+        /* [in] */ INotification* n);
+
+    /**
+     * Apply an extender to this notification builder. Extenders may be used to add
+     * metadata or change options on this builder.
+     */
+    CARAPI Extend(
+        /* [in] */ IExtender* extender);
+
+    /**
+     * Sets {@link Notification#color}.
+     *
+     * @param argb The accent color to use
+     *
+     * @return The same Builder.
+     */
+    CARAPI SetColor(
+        /* [in] */ Int32 argb);
+
+    static Int32 CalculateTopPadding(
+        /* [in] */ IContext* ctx,
+        /* [in] */ Boolean* hasThreeLines,
+        /* [in] */ Float fontScale);
 
     /**
      * @deprecated Use {@link #build()} instead.
@@ -396,6 +575,66 @@ public:
     CARAPI BuildUnstyled(
         /* [out] */ INotification **notification);
 
+    /**
+     * Capture, in the provided bundle, semantic information used in the construction of
+     * this Notification object.
+     * @hide
+     */
+    CARAPI PopulateExtras(
+        /* [in] */ IBundle* extras);
+
+    /**
+     * @hide
+     */
+    static CARAPI StripForDelivery(
+        /* [in] */ INotification* n);
+
+    /**
+     * @hide
+     */
+    AutoPtr<INotification> Rebuild(
+        /* [in] */ IContext* context,
+        /* [in] */ INotification* n);
+
+    /**
+     * Rebuilds the notification passed in to the rebuild-constructor
+     * {@link #Builder(Context, Notification)}.
+     *
+     * <p>
+     * Throws IllegalStateException when invoked on a Builder that isn't in rebuild mode.
+     *
+     * @hide
+     */
+    CARAPI Rebuild(
+        /* [out] */ INotification** result);
+
+    // static Class<? extends Style> GetNotificationStyleClass(
+    //     /* [in] */ const String& templateClass) {
+    //     Class<? extends Style>[] classes = new Class[]{
+    //             BigTextStyle.class, BigPictureStyle.class, InboxStyle.class, MediaStyle.class};
+    //     for (Class<? extends Style> innerClass : classes) {
+    //         if (templateClass.equals(innerClass.getName())) {
+    //             return innerClass;
+    //         }
+    //     }
+    //     return null;
+    // }
+
+    CARAPI SetBuilderContentView(
+        /* [in] */ INotification* n,
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI SetBuilderBigContentView(
+        /* [in] */ INotification* n,
+        /* [in] */ IRemoteViews* bigContentView);
+
+    CARAPI SetBuilderHeadsUpContentView(
+        /* [in] */ INotification* n,
+        /* [in] */ IRemoteViews* headsUpContentView);
+
+    CARAPI RestoreFromNotification(
+        /* [in] */ INotification* n)
+
     CARAPI GetSubText(
         /* [out] */ ICharSequence** text);
 
@@ -406,8 +645,48 @@ public:
         /* [in] */ Int32 layoutId,
         /* [out] */ IRemoteViews** remoteViews);
 
+    /**
+     * Apply this Builder to an existing {@link Notification} object.
+     *
+     * @hide
+     */
+    AutoPtr<INotification> BuildInto(
+        /* [in] */ INotification* n)
+    {
+        build().cloneInto(n, true);
+        return n;
+    }
+
+private:
+    /**
+     * The ApplicationInfo of the package that created the notification, used to create
+     * a context to rebuild the notification via a Builder.
+     * @hide
+     */
+    static const String EXTRA_REBUILD_CONTEXT_APPLICATION_INFO;
+        // = "android.rebuild.applicationInfo";
+
+    // Whether to enable stripping (at post time) & rebuilding (at listener receive time) of
+    // memory intensive resources.
+    const static Boolean STRIP_AND_REBUILD;// = true;
+
+    Int32 GetBaseLayoutResource();
+
+    Int32 GetBigBaseLayoutResource();
+
+    Int32 GetBigPictureLayoutResource();
+
+    Int32 GetBigTextLayoutResource();
+
+    Int32 GetInboxLayoutResource();
+
+    Int32 GetActionLayoutResource();
+
+    Int32 GetActionTombstoneLayoutResource();
+
 public:
     const static Int32 MAX_ACTION_BUTTONS;
+    const static Float LARGE_TEXT_SCALE;// = 1.3f;
     const static Boolean DBG;
 
     AutoPtr<IContext> mContext;
@@ -429,6 +708,7 @@ public:
     AutoPtr<IBitmap> mLargeIcon;
     AutoPtr<IUri> mSound;
     Int32 mAudioStreamType;
+    AutoPtr<IAudioAttributes> mAudioAttributes;
     AutoPtr<ArrayOf<Int64> > mVibrate;
     Int32 mLedArgb;
     Int32 mLedOnMs;
@@ -438,7 +718,9 @@ public:
     Int32 mProgressMax;
     Int32 mProgress;
     Boolean mProgressIndeterminate;
-    List<String> mKindList;
+    String mCategory;
+    String mGroupKey;
+    String mSortKey;
     AutoPtr<IBundle> mExtras;
     Int32 mPriority;
     List<AutoPtr<INotificationAction> > mActions;
@@ -446,14 +728,82 @@ public:
     AutoPtr<INotificationStyle> mStyle;
     Boolean mShowWhen;
 
+    Int32 mVisibility;// = VISIBILITY_PRIVATE;
+    AutoPtr<INotification> mPublicVersion;// = null;
+    AutoPtr<INotificationColorUtil> mColorUtil;
+    List<String> mPeople;   // ArrayList<String>
+    Int32 mColor;// = COLOR_DEFAULT;
+
+    /**
+     * The user that built the notification originally.
+     */
+    Int32 mOriginatingUserId;
+
+    /**
+     * Contains extras related to rebuilding during the build phase.
+     */
+    AutoPtr<IBundle> mRebuildBundle;// = new Bundle();
+    /**
+     * Contains the notification to rebuild when this Builder is in "rebuild" mode.
+     * Null otherwise.
+     */
+    AutoPtr<INotification> mRebuildNotification;// = null;
+
+    /**
+     * Whether the build notification has three lines. This is used to make the top padding for
+     * both the contracted and expanded layout consistent.
+     *
+     * <p>
+     * This field is only valid during the build phase.
+     */
+    Boolean mHasThreeLines;
+
 private:
     CARAPI_(void) SetFlag(
         /* [in] */ Int32 mask,
         /* [in] */ Boolean value);
 
+    CARAPI_(AutoPtr<IDrawable>) GetProfileBadgeDrawable();
+
+    CARAPI_(AutoPtr<IBitmap>) GetProfileBadge();
+
+    CARAPI_(Boolean) AddProfileBadge(
+        /* [in] */ IRemoteViews* contentView,
+        /* [in] */ Int32 resId);
+
+    CARAPI ShrinkLine3Text(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI UnshrinkLine3Text(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI ResetStandardTemplate(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI_(AutoPtr<IRemoteViews>) ApplyStandardTemplate(
+        /* [in] */ Int32 resId)
+
     CARAPI_(AutoPtr<IRemoteViews>) ApplyStandardTemplate(
         /* [in] */ Int32 resId,
-        /* [in] */ Boolean fitIn1U);
+        /* [in] */ Boolean hasProgress);
+
+    /**
+     * @return true if the built notification will show the time or the chronometer; false
+     *         otherwise
+     */
+    CARAPI_(Boolean) ShowsTimeOrChronometer();
+
+    /**
+     * Logic to find out whether the notification is going to have three lines in the contracted
+     * layout. This is used to adjust the top padding.
+     *
+     * @return true if the notification is going to have three lines; false if the notification
+     *         is going to have one or two lines
+     */
+    CARAPI_(Boolean) HasThreeLines();
+
+    CARAPI ResetStandardTemplateWithActions(
+        /* [in] */ IRemoteViews* big);
 
     CARAPI_(AutoPtr<IRemoteViews>) MakeContentView();
 
@@ -461,9 +811,58 @@ private:
 
     CARAPI_(AutoPtr<IRemoteViews>) MakeBigContentView();
 
+    CARAPI_(AutoPtr<IRemoteViews>) MakeHeadsUpContentView();
+
     CARAPI_(AutoPtr<IRemoteViews>) GenerateActionButton(
         /* [in] */ INotificationAction * action);
-};
+    /**
+     * @return Whether we are currently building a notification from a legacy (an app that
+     *         doesn't create material notifications by itself) app.
+     */
+    CARAPI_(Boolean) IsLegacy();
+
+    CARAPI ProcessLegacyAction(
+        /* [in] */ INotificaitonAction* action,
+        /* [in] */ IRemoteViews* button);
+
+    CARAPI_(AutoPtr<ICharSequence> ProcessLegacyText(
+        /* [in] */ ICharSequence* charSequence);
+
+    /**
+     * Apply any necessary background to smallIcons being used in the largeIcon spot.
+     */
+    CARAPI ProcessSmallIconAsLarge(
+        /* [in] */ Int32 largeIconId,
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Apply any necessary background to a largeIcon if it's a fake smallIcon (that is,
+     * if it's grayscale).
+     */
+    // TODO: also check bounds, transparency, that sort of thing.
+    CARAPI ProcessLargeLegacyIcon(
+        /* [in] */ IBitmap* largeIcon,
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Add a colored circle behind the largeIcon slot.
+     */
+    CARAPI ApplyLargeIconBackground(
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI RemoveLargeIconBackground(
+        /* [in] */ IRemoteViews* contentView);
+
+    /**
+     * Recolor small icons when used in the R.id.right_icon slot.
+     */
+    CARAPI ProcessSmallRightIcon(
+        /* [in] */ Int32 smallIconDrawableId,
+        /* [in] */ IRemoteViews* contentView);
+
+    CARAPI_(Int32) SanitizeColor();
+
+    CARAPI_(Int32) ResolveColor();
 
 } // namespace App
 } // namespace Droid

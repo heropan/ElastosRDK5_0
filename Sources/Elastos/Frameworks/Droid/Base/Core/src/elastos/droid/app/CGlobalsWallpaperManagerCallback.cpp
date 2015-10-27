@@ -49,15 +49,17 @@ ECode CGlobalsWallpaperManagerCallback::OnWallpaperChanged()
      * to null so if the user requests the wallpaper again then we'll
      * fetch it.
      */
-    Boolean result;
-    return mHandler->SendEmptyMessage(MSG_CLEAR_WALLPAPER, &result);
+    synchronized (this) {
+        mWallpaper = NULL;
+        mDefaultWallpaper = NULL;
+    }
 }
 
 AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::PeekWallpaperBitmap(
     /* [in] */ IContext* context,
     /* [in] */ Boolean returnDefault)
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     if (mWallpaper != NULL) {
         return mWallpaper;
     }
@@ -84,7 +86,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::PeekWallpaperBitmap(
 
 void CGlobalsWallpaperManagerCallback::ForgetLoadedWallpaper()
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     mWallpaper = NULL;
     mDefaultWallpaper = NULL;
 }
@@ -92,15 +94,17 @@ void CGlobalsWallpaperManagerCallback::ForgetLoadedWallpaper()
 AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
     /* [in] */ IContext* context)
 {
+    if (mService == null) {
+        Logger::W("GlobalsWallpaperManagerCallback", "WallpaperService not running");
+        return NULL;
+    }
+
     // try {
     AutoPtr<IBundle> params;
     AutoPtr<IParcelFileDescriptor> fd;
     ASSERT_SUCCEEDED(mService->GetWallpaper((IWallpaperManagerCallback*)this,
         (IBundle**)&params, (IParcelFileDescriptor**)&fd));
     if (fd != NULL) {
-        Int32 width, height;
-        params->GetInt32(String("width"), 0, &width);
-        params->GetInt32(String("height"), 0, &height);
 
         // try {
         AutoPtr<IBitmapFactoryOptions> options;
@@ -112,7 +116,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
         AutoPtr<IBitmap> bm;
         ASSERT_SUCCEEDED(factory->DecodeFileDescriptor(desc, NULL, options, (IBitmap**)&bm));
         fd->Close();
-        return CWallpaperManager::GenerateBitmap(context, bm, width, height);
+        return bm;
         // } catch (OutOfMemoryError e) {
         //     Log.w(TAG, "Can't decode file", e);
         // } finally {
@@ -132,17 +136,8 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetCurrentWallpaperLocked(
 AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetDefaultWallpaperLocked(
     /* [in] */ IContext* context)
 {
-    // try {
-    AutoPtr<IInputStream> is;
-    AutoPtr<IResources> res;
-    ASSERT_SUCCEEDED(context->GetResources((IResources**)&res));
-    ASSERT_SUCCEEDED(res->OpenRawResource(R::drawable::default_wallpaper,
-            (IInputStream**)&is));
+    InputStream is = OpenDefaultWallpaper(context);
     if (is != NULL) {
-        Int32 width, height;
-        mService->GetWidthHint(&width);
-        mService->GetHeightHint(&height);
-
         // try {
         AutoPtr<IBitmapFactoryOptions> options;
         ASSERT_SUCCEEDED(CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options));
@@ -151,12 +146,11 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetDefaultWallpaperLocked(
         AutoPtr<IBitmap> bm;
         ECode ec = factory->DecodeStream(is, NULL, options, (IBitmap**)&bm);
         if (ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
-            Slogger::W(String("GlobalsWallpaperManagerCallback"), "Can't decode stream");
-            is->Close();
+            Slogger::W("GlobalsWallpaperManagerCallback", "Can't decode stream");
         }
-        AutoPtr<IBitmap> result = CWallpaperManager::GenerateBitmap(context, bm, width, height);
+
         is->Close();
-        return result;
+        return bm;
         // } catch (OutOfMemoryError e) {
         //     Log.w(TAG, "Can't decode stream", e);
         // } finally {
@@ -167,15 +161,12 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetDefaultWallpaperLocked(
         //     }
         // }
     }
-    // } catch (RemoteException e) {
-    //     // Ignore
-    // }
     return NULL;
 }
 
 void CGlobalsWallpaperManagerCallback::HandleClearWallpaper()
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     mWallpaper = NULL;
     mDefaultWallpaper = NULL;
 }
@@ -184,7 +175,6 @@ ECode CGlobalsWallpaperManagerCallback::constructor(
     /* [in] */ ILooper* looper)
 {
     mService = (IIWallpaperManager*)ServiceManager::GetService(IContext::WALLPAPER_SERVICE).Get();
-    mHandler = new MyHandler(this);
     return NOERROR;
 }
 

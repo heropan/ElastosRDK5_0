@@ -59,8 +59,6 @@ private:
     AutoPtr<IIWallpaperManager> mService;
     AutoPtr<IBitmap> mWallpaper;
     AutoPtr<IBitmap> mDefaultWallpaper;
-    AutoPtr<IHandler> mHandler;
-    Object mLock;
 
     friend class CWallpaperManager;
 };

@@ -1503,21 +1503,143 @@ ECode Instrumentation::ExecStartActivity(
         }
     }
 
-    intent->SetAllowFds(FALSE);
     Boolean bval;
     intent->MigrateExtraStreamToClipData(&bval);
+    intent->PrepareToLeaveProcess();
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     AutoPtr<IContentResolver> resolver;
     who->GetContentResolver((IContentResolver**)&resolver);
-    String type;
+    String type, packageName;
+    who->GetBasePackageName(&packageName);
     intent->ResolveTypeIfNeeded(resolver, &type);
     String resultWho;
     if (target != NULL) target->GetID(&resultWho);
     Int32 userId;
     user->GetIdentifier(&userId);
     Int32 res;
-    FAIL_RETURN(am->StartActivityAsUser(whoThread, intent, type,
-             token, resultWho, requestCode, 0, String(NULL), NULL, options, userId, &res))
+    FAIL_RETURN(am->StartActivityAsUser(whoThread, packageName, intent, type,
+             token, resultWho, requestCode, 0, String(NULL), options, userId, &res))
+    return CheckStartActivityResult(res, intent);
+}
+
+ECode Instrumentation::ExecStartActivityAsCaller(
+    /* [in] */ IContext* who,
+    /* [in] */ IBinder* contextThread,
+    /* [in] */ IBinder* token,
+    /* [in] */ IActivity* target,
+    /* [in] */ IIntent* intent,
+    /* [in] */ Int32 requestCode,
+    /* [in] */ IBundle* options,
+    /* [in] */ Int32 userId,
+    /* [out] */ IInstrumentationActivityResult** activityResult)
+{
+    VALIDATE_NOT_NULL(activityResult)
+    *activityResult = NULL;
+
+    AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
+
+    if (mActivityMonitors != NULL) {
+        AutoLock lock(mSync);
+        if (!mActivityMonitors->IsEmpty()) {
+            List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
+            for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
+                AutoPtr<IInstrumentationActivityMonitor> am = *it;
+                Boolean match;
+                am->Match(who, NULL, intent, &match);
+                if (match) {
+                    Int32 time;
+                    am->GetHits(&time);
+                    am->SetHits(++time);
+                    Boolean isBlock;
+                    am->IsBlocking(&isBlock);
+                    if (isBlock) {
+                        if(requestCode >= 0 ) {
+                            return am->GetResult(activityResult);
+                        }
+                        else {
+                            return NOERROR;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    Boolean bval;
+    intent->MigrateExtraStreamToClipData(&bval);
+    intent->PrepareToLeaveProcess();
+    AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+    AutoPtr<IContentResolver> resolver;
+    who->GetContentResolver((IContentResolver**)&resolver);
+    String type, packageName;
+    who->GetBasePackageName(&packageName);
+    intent->ResolveTypeIfNeeded(resolver, &type);
+    String resultWho;
+    if (target != NULL) target->GetID(&resultWho);
+    Int32 res;
+    FAIL_RETURN(am->StartActivityAsCaller(whoThread, packageName, intent, type,
+             token, resultWho, requestCode, 0, String(NULL), options, userId, &res))
+    return CheckStartActivityResult(res, intent);
+}
+
+ECode Instrumentation::ExecStartActivityFromAppTask(
+    /* [in] */ IContext* who,
+    /* [in] */ IBinder* contextThread,
+    /* [in] */ IIAppTask* appTask,
+    /* [in] */ IIntent* intent,
+    /* [in] */ IBundle* options,
+    /* [out] */ IInstrumentationActivityResult** activityResult)
+{
+    VALIDATE_NOT_NULL(activityResult)
+    *activityResult = NULL;
+
+    AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
+
+    if (mActivityMonitors != NULL) {
+        AutoLock lock(mSync);
+        if (!mActivityMonitors->IsEmpty()) {
+            List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
+            for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
+                AutoPtr<IInstrumentationActivityMonitor> am = *it;
+                Boolean match;
+                am->Match(who, NULL, intent, &match);
+                if (match) {
+                    Int32 time;
+                    am->GetHits(&time);
+                    am->SetHits(++time);
+                    Boolean isBlock;
+                    am->IsBlocking(&isBlock);
+                    if (isBlock) {
+                        if(requestCode >= 0 ) {
+                            return am->GetResult(activityResult);
+                        }
+                        else {
+                            return NOERROR;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    Boolean bval;
+    intent->MigrateExtraStreamToClipData(&bval);
+    intent->PrepareToLeaveProcess();
+
+
+    AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+    AutoPtr<IContentResolver> resolver;
+    who->GetContentResolver((IContentResolver**)&resolver);
+    String type, packageName;
+    who->GetBasePackageName(&packageName);
+    intent->ResolveTypeIfNeeded(resolver, &type);
+    String resultWho;
+    if (target != NULL) target->GetID(&resultWho);
+    Int32 res;
+    FAIL_RETURN(appTask->StartActivity(IBinder::Probe(whoThread), packageName,
+        intent, type, options, userId, &res))
     return CheckStartActivityResult(res, intent);
 }
 
@@ -1526,7 +1648,8 @@ ECode Instrumentation::Init(
     /* [in] */ IContext* instrContext,
     /* [in] */ IContext* appContext,
     /* [in] */ IComponentName* component,
-    /* [in] */ IInstrumentationWatcher* watcher)
+    /* [in] */ IInstrumentationWatcher* watcher,
+    /* [in] */ IIUiAutomationConnection* uiAutomationConnection)
 {
     mThread = thread;
     AutoPtr<ILooper> looper;
@@ -1536,6 +1659,7 @@ ECode Instrumentation::Init(
     mAppContext = appContext;
     mComponent = component;
     mWatcher = watcher;
+    mUiAutomationConnection = uiAutomationConnection;
     return NOERROR;
 }
 
@@ -1565,12 +1689,12 @@ ECode Instrumentation::CheckStartActivityResult(
             }
             //throw new ActivityNotFoundException(
             //        "No Activity found to handle " + intent);
-            Slogger::E(TAG, "No Activity found to handle %p", intent);
+            Slogger::E(TAG, "No Activity found to handle %s", Object::ToString(intent).string());
             return E_ACTIVITY_NOT_FOUND_EXCEPTION;
         case IActivityManager::START_PERMISSION_DENIED:
             //throw new SecurityException("Not allowed to start activity "
             //         + intent);
-            Slogger::E(TAG, "Not allowed to start activity %p", intent);
+            Slogger::E(TAG, "Not allowed to start activity %s", Object::ToString(intent).string());
             return E_SECURITY_EXCEPTION;
         case IActivityManager::START_FORWARD_AND_REQUEST_CONFLICT:
             // throw new AndroidRuntimeException(
@@ -1582,10 +1706,15 @@ ECode Instrumentation::CheckStartActivityResult(
             //        "PendingIntent is not an activity");
             Slogger::E(TAG, "PendingIntent is not an activity");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        case IActivityManager::START_NOT_VOICE_COMPATIBLE:
+            // throw new SecurityException(
+            //         "Starting under voice control not allowed for: " + intent);
+            Slogger::E(TAG, "Starting under voice control not allowed for: %s", Object::ToString(intent).string());
+            return E_SECURITY_EXCEPTION;
         default:
             //throw new AndroidRuntimeException("Unknown error code "
             //        + res + " when starting " + intent);
-            Slogger::E(TAG, "Unknown error code %d when starting %p", res, intent);
+            Slogger::E(TAG, "Unknown error code %d when starting %s", res, Object::ToString(intent).string());
             return E_RUNTIME_EXCEPTION;
     }
     return NOERROR;
@@ -1593,17 +1722,31 @@ ECode Instrumentation::CheckStartActivityResult(
 
 ECode Instrumentation::ValidateNotAppThread()
 {
-    AutoPtr<IActivityThreadHelper> helper;
-    CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
-    AutoPtr<IActivityThread> at;
-    if (helper->GetCurrentActivityThread((IActivityThread**)&at), at != NULL) {
-//         throw new RuntimeException(
-//             "This method can not be called from the main application thread");
+    if (looper::GetMyLooper() == Looper::GetMainLooper()) {
         Slogger::E(TAG, "This method can not be called from the main application thread");
         return E_RUNTIME_EXCEPTION;
     }
+
     return NOERROR;
 }
+
+ECode Instrumentation::GetUiAutomation(
+    /* [out] */ IUiAutomation** ua)
+{
+    VALIDATE_NOT_NULL(ua)
+    *ua = NULL;
+    if (mUiAutomationConnection != NULL) {
+        if (mUiAutomation == NULL) {
+            mUiAutomation = new UiAutomation(getTargetContext().getMainLooper(),
+                    mUiAutomationConnection);
+            mUiAutomation->Connect();
+        }
+        *ua = mUiAutomation;
+        REFCOUNT_ADD(*ua)
+    }
+    return NOERROR;
+}
+
 
 } // namespace App
 } // namespace Droid

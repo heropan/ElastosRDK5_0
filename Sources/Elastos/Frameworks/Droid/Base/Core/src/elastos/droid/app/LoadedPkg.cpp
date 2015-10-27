@@ -148,51 +148,6 @@ ECode LoadedPkg::ReceiverDispatcher::Args::Run()
     return NOERROR;
 }
 
-PInterface LoadedPkg::ReceiverDispatcher::Args::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IPendingResult*)this;
-    }
-    else if (riid == EIID_IPendingResult) {
-        return (IPendingResult*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 LoadedPkg::ReceiverDispatcher::Args::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 LoadedPkg::ReceiverDispatcher::Args::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode LoadedPkg::ReceiverDispatcher::Args::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IPendingResult*)this) {
-        *pIID = EIID_IPendingResult;
-    }
-    else if (pObject == (IInterface*)(IRunnable*)this) {
-        *pIID = EIID_IRunnable;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
 ECode LoadedPkg::ReceiverDispatcher::Args::SetResultCode(
     /* [in] */ Int32 code)
 {
@@ -516,7 +471,7 @@ ECode LoadedPkg::ServiceDispatcher::Validate(
 
 void LoadedPkg::ServiceDispatcher::DoForget()
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
 
     HashMap<AutoPtr<IComponentName>, AutoPtr<ConnectionInfo> >::Iterator it;
     for (it = mActiveConnections.Begin(); it != mActiveConnections.End(); ++it) {
@@ -569,7 +524,7 @@ ECode LoadedPkg::ServiceDispatcher::DoConnected(
     AutoPtr<ConnectionInfo> info;
 
     {
-        AutoLock lock(mLock);
+        AutoLock lock(this);
 
         if (mForgotten) {
             // We unbound before receiving the connection; ignore
@@ -629,7 +584,7 @@ ECode LoadedPkg::ServiceDispatcher::Death(
     AutoPtr<ConnectionInfo> old;
 
     {
-        AutoLock lock(mLock);
+        AutoLock lock(this);
         mDied = true;
 
         HashMap<AutoPtr<IComponentName>, AutoPtr<ConnectionInfo> >::Iterator it;
@@ -677,22 +632,37 @@ AutoPtr<IApplication> LoadedPkg::GetApplication()
     return mApplication;
 }
 
+LoadedPkg::LoadedPkg()
+    : mSecurityViolation(FALSE)
+    , mIncludeCode(FALSE)
+    , mRegisterPackage(FALSE)
+    , mClientCount(FALSE)
+{
+    mDisplayAdjustments = new DisplayAdjustments();
+}
+
 LoadedPkg::LoadedPkg(
     /* [in] */ CActivityThread* activityThread,
-    /* [in] */ IApplicationInfo* aInfo,
+    /* [in] */ IApplicationInfo* inAInfo,
     /* [in] */ ICompatibilityInfo* compatInfo,
     /* [in] */ IActivityThread* mainThread,
     /* [in] */ IClassLoader* baseLoader,
     /* [in] */ Boolean securityViolation,
-    /* [in] */ Boolean includeCode)
+    /* [in] */ Boolean includeCode,
+    /* [in] */ Boolean registerPackage)
 {
+    Int32 myUid = Process::MyUid();
+    AutoPtr<IApplicationInfo> aInfo = AdjustNativeLibraryPaths(inAInfo);
+
     mActivityThread = activityThread;
     mApplicationInfo = aInfo;
     CApplicationInfo* info = (CApplicationInfo*)aInfo;
     mPackageName = info->mPackageName;
     mAppDir = info->mSourceDir;
-    Int32 myUid = Process::MyUid();
     mResDir = info->mUid == myUid ? info->mSourceDir : info->mPublicSourceDir;
+    mSplitAppDirs = info->mSplitSourceDirs;
+    mSplitResDirs = info->mUid == myUid ? info->mSplitSourceDirs : info->mSplitPublicSourceDirs;
+    mOverlayDirs = info->mResourceDirs;
     if (!CUserHandle::IsSameUser(info->mUid, myUid) && !Process::IsIsolated()) {
         info->mDataDir = PackageManager::GetDataDirForUser(CUserHandle::GetUserId(myUid),
              mPackageName);
@@ -711,52 +681,23 @@ LoadedPkg::LoadedPkg(
     mBaseClassLoader = baseLoader;
     mSecurityViolation = securityViolation;
     mIncludeCode = includeCode;
-    CCompatibilityInfoHolder::New((ICompatibilityInfoHolder**)&mCompatibilityInfo);
-    mCompatibilityInfo->Set(compatInfo);
-
-    mResDir = info->mSourceDir;
-    mSecurityViolation = securityViolation;
-    mIncludeCode = includeCode;
-
-    if (mAppDir.IsNull()) {
-        if (CActivityThread::sSystemContext == NULL) {
-            CActivityThread::sSystemContext = CContextImpl::CreateSystemContext(mainThread);
-            AutoPtr<IResources> resources;
-            CActivityThread::sSystemContext->GetResources((IResources**)&resources);
-            AutoPtr<IConfiguration> config;
-            mainThread->GetConfiguration((IConfiguration**)&config);
-            AutoPtr<IDisplayMetrics> metrics;
-            ((CActivityThread*)mainThread)->GetDisplayMetricsLocked(IDisplay::DEFAULT_DISPLAY,
-                    compatInfo, (IDisplayMetrics**)&metrics);
-            resources->UpdateConfiguration(config, metrics);
-//            Slogger::I(TAG, "Created system resources %s: %s", "resources", "configuration");
-//                    + sSystemContext.getResources() + ": "
-//                    + sSystemContext.getResources().getConfiguration());
-        }
-        CActivityThread::sSystemContext->GetClassLoader((IClassLoader**)&mClassLoader);
-        CActivityThread::sSystemContext->GetResources((IResources**)&mResources);
-    }
-
-    mClientCount = 0;
+    mRegisterPackage = registerPackage;
+    mDisplayAdjustments->SetCompatibilityInfo(compatInfo);
 }
 
 LoadedPkg::LoadedPkg(
-    /* [in] */ CActivityThread* activityThread,
-    /* [in] */ const String& name,
-    /* [in] */ IContext* systemContext,
-    /* [in] */ IApplicationInfo* aInfo,
-    /* [in] */ ICompatibilityInfo* compatInfo)
+    /* [in] */ CActivityThread* activityThread)
 {
     mActivityThread = activityThread;
-    mApplicationInfo = aInfo;
-    if (aInfo == NULL) {
-        CApplicationInfo::New((IApplicationInfo**)&mApplicationInfo);
-    }
-    mApplicationInfo->SetPackageName(name);
-    mApplicationInfo->SetProcessName(name);
-    mPackageName = name;
+    CApplicationInfo::New((IApplicationInfo**)&mApplicationInfo);
+    String pkgName("android");
+    mApplicationInfo->SetPackageName(pkgName);
+    mPackageName = pkgName;
     mAppDir = NULL;
     mResDir = NULL;
+    mSplitAppDirs = NULL;
+    mSplitResDirs = NULL;
+    mOverlayDirs = NULL;
     mSharedLibraries = NULL;
     mDataDir = NULL;
     mDataDirFile = NULL;
@@ -764,13 +705,9 @@ LoadedPkg::LoadedPkg(
     mBaseClassLoader = NULL;
     mSecurityViolation = FALSE;
     mIncludeCode = TRUE;
+    mRegisterPackage = FALSE;
     systemContext->GetClassLoader((IClassLoader**)&mClassLoader);
     systemContext->GetResources((IResources**)&mResources);
-
-    CCompatibilityInfoHolder::New((ICompatibilityInfoHolder**)&mCompatibilityInfo);
-    mCompatibilityInfo->Set(compatInfo);
-
-    mClientCount = 0;
 }
 
 LoadedPkg::~LoadedPkg()
@@ -782,52 +719,43 @@ LoadedPkg::~LoadedPkg()
     mUnboundServices.Clear();
 }
 
-UInt32 LoadedPkg::AddRef()
+/**
+ * Sets application info about the system package.
+ */
+void LoadedPkg::InstallSystemApplicationInfo(
+    /* [in] */ IApplicationInfo* info,
+    /* [in] */ IClassLoader* classLoader)
 {
-    return ElRefBase::AddRef();
+    String pkgName;
+    info->GetPackageName(&pkgName);
+    assert(pkgName.Equals("android"));
+    mApplicationInfo = info;
+    mClassLoader = classLoader;
 }
 
-UInt32 LoadedPkg::Release()
+AutoPtr<IApplicationInfo> LoadedPkg::AdjustNativeLibraryPaths(
+    /* [in] */ IApplicationInfo* aInfo)
 {
-    return ElRefBase::Release();
-}
+    // If we're dealing with a multi-arch application that has both
+    // 32 and 64 bit shared libraries, we might need to choose the secondary
+    // depending on what the current runtime's instruction set is.
+    CApplicationInfo* info = (CApplicationInfo*)aInfo;
+    if (info->mPrimaryCpuAbi != NULL && info->mSecondaryCpuAbi != NULL) {
+        assert(0 && "TODO");
+        // final String runtimeIsa = VMRuntime.getRuntime().vmInstructionSet();
+        // final String secondaryIsa = VMRuntime.getInstructionSet(info.secondaryCpuAbi);
 
-PInterface LoadedPkg::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IWeakReferenceSource*)this;
+        // // If the runtimeIsa is the same as the primary isa, then we do nothing.
+        // // Everything will be set up correctly because info.nativeLibraryDir will
+        // // correspond to the right ISA.
+        // if (runtimeIsa.equals(secondaryIsa)) {
+        //     final ApplicationInfo modified = new ApplicationInfo(info);
+        //     modified.nativeLibraryDir = modified.secondaryNativeLibraryDir;
+        //     return modified;
+        // }
     }
-    else if (riid == EIID_IWeakReference) {
-        return (IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_LoadedPkg) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return NULL;
-}
 
-ECode LoadedPkg::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(IWeakReferenceSource*)this) {
-        *iid = EIID_IWeakReference;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode LoadedPkg::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
+    return aInfo;
 }
 
 ECode LoadedPkg::GetPackageName(
@@ -852,63 +780,33 @@ Boolean LoadedPkg::IsSecurityViolation()
     return mSecurityViolation;
 }
 
-//private static String[] getLibrariesFor(String packageName) {
-//    ApplicationInfo ai = null;
-//    try {
-//        ai = ActivityThread.getPackageManager().getApplicationInfo(packageName,
-//                PackageManager.GET_SHARED_LIBRARY_FILES, UserHandle.myUserId());
-//    } catch (RemoteException e) {
-//        throw new AssertionError(e);
-//    }
-//
-//    if (ai == null) {
-//        return null;
-//    }
-//
-//    return ai.sharedLibraryFiles;
-//}
-//private static String combineLibs(String[] list1, String[] list2) {
-//    StringBuilder result = new StringBuilder(300);
-//    boolean first = true;
-//
-//    if (list1 != null) {
-//        for (String s : list1) {
-//            if (first) {
-//                first = false;
-//            } else {
-//                result.append(':');
-//            }
-//            result.append(s);
-//        }
-//    }
-//
-//    // Only need to check for duplicates if list1 was non-empty.
-//    boolean dupCheck = !first;
-//
-//    if (list2 != null) {
-//        for (String s : list2) {
-//            if (dupCheck && ArrayUtils.contains(list1, s)) {
-//                continue;
-//            }
-//
-//            if (first) {
-//                first = false;
-//            } else {
-//                result.append(':');
-//            }
-//            result.append(s);
-//        }
-//    }
-//
-//    return result.toString();
-//}
+ECode LoadedPkg::IsSecurityViolation(
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+    *bval = mSecurityViolation;
+    return NOERROR;
+}
+
+ECode LoadedPkg::GetCompatibilityInfo(
+    /* [out] */ ICompatibilityInfo** info)
+{
+    return mDisplayAdjustments->GetCompatibilityInfo(info);
+}
+
+ECode LoadedPkg::SetCompatibilityInfo(
+    /* [in] */ ICompatibilityInfo* compatInfo)
+{
+    return mDisplayAdjustments->SetCompatibilityInfo(compatInfo);
+}
+
 
 ECode LoadedPkg::GetClassLoader(
     /* [out] */ IClassLoader** loader)
 {
     VALIDATE_NOT_NULL(loader);
 
-    AutoLock lock(mLock);
+    AutoLock lock(this);
 
     if (mClassLoader != NULL) {
         *loader = mClassLoader;
@@ -916,9 +814,36 @@ ECode LoadedPkg::GetClassLoader(
         return NOERROR;
     }
 
+
     // if (mIncludeCode && !mPackageName.equals("android")) {
-    //     String zip = mAppDir;
-    //     String libraryPath = mLibDir;
+    //     // Avoid the binder call when the package is the current application package.
+    //     // The activity manager will perform ensure that dexopt is performed before
+    //     // spinning up the process.
+    //     if (!Objects.equals(mPackageName, ActivityThread.currentPackageName())) {
+    //         final String isa = VMRuntime.getRuntime().vmInstructionSet();
+    //         try {
+    //             ActivityThread.getPackageManager().performDexOptIfNeeded(mPackageName, isa);
+    //         } catch (RemoteException re) {
+    //             // Ignored.
+    //         }
+    //     }
+
+    //     final ArrayList<String> zipPaths = new ArrayList<>();
+    //     final ArrayList<String> libPaths = new ArrayList<>();
+
+    //     if (mRegisterPackage) {
+    //         try {
+    //             ActivityManagerNative.getDefault().addPackageDependency(mPackageName);
+    //         } catch (RemoteException e) {
+    //         }
+    //     }
+
+    //     zipPaths.add(mAppDir);
+    //     if (mSplitAppDirs != null) {
+    //         Collections.addAll(zipPaths, mSplitAppDirs);
+    //     }
+
+    //     libPaths.add(mLibDir);
 
     //     /*
     //      * The following is a bit of a hack to inject
@@ -929,34 +854,55 @@ ECode LoadedPkg::GetClassLoader(
     //      * concatenation of both apps' shared library lists.
     //      */
 
-    //     String instrumentationAppDir =
-    //             mActivityThread.mInstrumentationAppDir;
-    //     String instrumentationAppLibraryDir =
-    //             mActivityThread.mInstrumentationAppLibraryDir;
-    //     String instrumentationAppPackage =
-    //             mActivityThread.mInstrumentationAppPackage;
-    //     String instrumentedAppDir =
-    //             mActivityThread.mInstrumentedAppDir;
-    //     String instrumentedAppLibraryDir =
-    //             mActivityThread.mInstrumentedAppLibraryDir;
+    //     String instrumentationPackageName = mActivityThread.mInstrumentationPackageName;
+    //     String instrumentationAppDir = mActivityThread.mInstrumentationAppDir;
+    //     String[] instrumentationSplitAppDirs = mActivityThread.mInstrumentationSplitAppDirs;
+    //     String instrumentationLibDir = mActivityThread.mInstrumentationLibDir;
+
+    //     String instrumentedAppDir = mActivityThread.mInstrumentedAppDir;
+    //     String[] instrumentedSplitAppDirs = mActivityThread.mInstrumentedSplitAppDirs;
+    //     String instrumentedLibDir = mActivityThread.mInstrumentedLibDir;
     //     String[] instrumentationLibs = null;
 
     //     if (mAppDir.equals(instrumentationAppDir)
     //             || mAppDir.equals(instrumentedAppDir)) {
-    //         zip = instrumentationAppDir + ":" + instrumentedAppDir;
-    //         libraryPath = instrumentationAppLibraryDir + ":" + instrumentedAppLibraryDir;
-    //         if (! instrumentedAppDir.equals(instrumentationAppDir)) {
-    //             instrumentationLibs =
-    //                 getLibrariesFor(instrumentationAppPackage);
+    //         zipPaths.clear();
+    //         zipPaths.add(instrumentationAppDir);
+    //         if (instrumentationSplitAppDirs != null) {
+    //             Collections.addAll(zipPaths, instrumentationSplitAppDirs);
+    //         }
+    //         zipPaths.add(instrumentedAppDir);
+    //         if (instrumentedSplitAppDirs != null) {
+    //             Collections.addAll(zipPaths, instrumentedSplitAppDirs);
+    //         }
+
+    //         libPaths.clear();
+    //         libPaths.add(instrumentationLibDir);
+    //         libPaths.add(instrumentedLibDir);
+
+    //         if (!instrumentedAppDir.equals(instrumentationAppDir)) {
+    //             instrumentationLibs = getLibrariesFor(instrumentationPackageName);
     //         }
     //     }
 
-    //     if ((mSharedLibraries != null) ||
-    //             (instrumentationLibs != null)) {
-    //         zip =
-    //             combineLibs(mSharedLibraries, instrumentationLibs)
-    //             + ':' + zip;
+    //     if (mSharedLibraries != null) {
+    //         for (String lib : mSharedLibraries) {
+    //             if (!zipPaths.contains(lib)) {
+    //                 zipPaths.add(0, lib);
+    //             }
+    //         }
     //     }
+
+    //     if (instrumentationLibs != null) {
+    //         for (String lib : instrumentationLibs) {
+    //             if (!zipPaths.contains(lib)) {
+    //                 zipPaths.add(0, lib);
+    //             }
+    //         }
+    //     }
+
+    //     final String zip = TextUtils.join(File.pathSeparator, zipPaths);
+    //     final String lib = TextUtils.join(File.pathSeparator, libPaths);
 
     //     /*
     //      * With all the combination done (if necessary, actually
@@ -964,16 +910,14 @@ ECode LoadedPkg::GetClassLoader(
     //      */
 
     //     if (ActivityThread.localLOGV)
-    //         Slog.v(ActivityThread.TAG, "Class path: " + zip + ", JNI path: " + libraryPath);
+    //         Slog.v(ActivityThread.TAG, "Class path: " + zip + ", JNI path: " + lib);
 
     //     // Temporarily disable logging of disk reads on the Looper thread
     //     // as this is early and necessary.
     //     StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
 
-    //     mClassLoader =
-    //         ApplicationLoaders.getDefault().getClassLoader(
-    //             zip, libraryPath, mBaseClassLoader);
-    //     initializeJavaContextClassLoader();
+    //     mClassLoader = ApplicationLoaders.getDefault().getClassLoader(zip, lib,
+    //             mBaseClassLoader);
 
     //     StrictMode.setThreadPolicy(oldPolicy);
     // } else {
@@ -983,11 +927,51 @@ ECode LoadedPkg::GetClassLoader(
     //         mClassLoader = mBaseClassLoader;
     //     }
     // }
+    // return mClassLoader;
 //TODO:
-    ASSERT_SUCCEEDED(CPathClassLoader::New(String("Elastos.Droid.Core.eco"), (IClassLoader**)&mClassLoader));
+    ASSERT_SUCCEEDED(CPathClassLoader::New(
+        String("Elastos.Droid.Core.eco"), (IClassLoader**)&mClassLoader));
     *loader = mClassLoader;
     REFCOUNT_ADD(*loader);
     return NOERROR;
+}
+
+void LoadedPkg::InitializeJavaContextClassLoader()
+{
+    // IPackageManager pm = ActivityThread.getPackageManager();
+    // android.content.pm.PackageInfo pi;
+    // try {
+    //     pi = pm.getPackageInfo(mPackageName, 0, UserHandle.myUserId());
+    // } catch (RemoteException e) {
+    //     throw new IllegalStateException("Unable to get package info for "
+    //             + mPackageName + "; is system dying?", e);
+    // }
+    // if (pi == null) {
+    //     throw new IllegalStateException("Unable to get package info for "
+    //             + mPackageName + "; is package not installed?");
+    // }
+    /*
+     * Two possible indications that this package could be
+     * sharing its virtual machine with other packages:
+     *
+     * 1.) the sharedUserId attribute is set in the manifest,
+     *     indicating a request to share a VM with other
+     *     packages with the same sharedUserId.
+     *
+     * 2.) the application element of the manifest has an
+     *     attribute specifying a non-default process name,
+     *     indicating the desire to run in another packages VM.
+     */
+    // boolean sharedUserIdSet = (pi.sharedUserId != null);
+    // boolean processNameNotDefault =
+    //     (pi.applicationInfo != null &&
+    //      !mPackageName.equals(pi.applicationInfo.processName));
+    // boolean sharable = (sharedUserIdSet || processNameNotDefault);
+    // ClassLoader contextClassLoader =
+    //     (sharable)
+    //     ? new WarningContextClassLoader()
+    //     : mClassLoader;
+    // Thread.currentThread().setContextClassLoader(contextClassLoader);
 }
 
 ECode LoadedPkg::GetAppDir(
@@ -1011,6 +995,33 @@ ECode LoadedPkg::GetResDir(
 {
     VALIDATE_NOT_NULL(resDir);
     *resDir = mResDir;
+    return NOERROR;
+}
+
+ECode LoadedPkg::GetSplitAppDirs(
+    /* [out, callee] */ ArrayOf<String>** dirs)
+{
+    VALIDATE_NOT_NULL(dirs)
+    *dirs = mSplitAppDirs;
+    REFCOUNT_ADD(*dirs)
+    return NOERROR;
+}
+
+ECode LoadedPkg::GetSplitResDirs(
+    /* [out, callee] */ ArrayOf<String>** dirs)
+{
+    VALIDATE_NOT_NULL(dirs)
+    *dirs = mSplitResDirs;
+    REFCOUNT_ADD(*dirs)
+    return NOERROR;
+}
+
+ECode LoadedPkg::GetOverlayDirs(
+    /* [out, callee] */ ArrayOf<String>** dirs)
+{
+    VALIDATE_NOT_NULL(dirs)
+    *dirs = mOverlayDirs;
+    REFCOUNT_ADD(*dirs)
     return NOERROR;
 }
 
@@ -1044,12 +1055,15 @@ ECode LoadedPkg::GetResources(
     /* [in] */ IActivityThread* mainThread,
     /* [out] */ IResources** res)
 {
-    VALIDATE_NOT_NULL(mainThread);
     VALIDATE_NOT_NULL(res);
+    *res = NULL;
+    VALIDATE_NOT_NULL(mainThread);
 
     if (mResources == NULL) {
-        ((CActivityThread*)mainThread)->GetTopLevelResources(mResDir,
-                IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
+        CApplicationInfo* cai = (CApplicationInfo*)mApplicationInfo.Get();
+        ((CActivityThread*)mainThread)->GetTopLevelResources(
+            mResDir, mSplitResDirs, mOverlayDirs, cai->mSharedLibraryFiles,
+            IDisplay::DEFAULT_DISPLAY, NULL, this, (IResources**)&mResources);
     }
     *res = mResources.Get();
     REFCOUNT_ADD(*res);
@@ -1078,9 +1092,11 @@ ECode LoadedPkg::MakeApplication(
         //    try {
         AutoPtr<IClassLoader> cl;
         GetClassLoader((IClassLoader**)&cl);
-        AutoPtr<CContextImpl> appContext;
-        CContextImpl::NewByFriend((CContextImpl**)&appContext);
-        appContext->Init(this, NULL, (CActivityThread*)mActivityThread);
+        if (!mPackageName.Equals("android")) {
+            InitializeJavaContextClassLoader();
+        }
+
+        AutoPtr<CContextImpl> appContext = ContextImpl::CreateAppContext(mActivityThread, this);
         ECode ec = mActivityThread->mInstrumentation->NewApplication(
                 cl, appClass, appContext.Get(), (IApplication**)&app);
         if (FAILED(ec)) {
@@ -1171,10 +1187,57 @@ ECode LoadedPkg::MakeApplication(
 //        }
     }
 
+    assert(0 && "TODO");
+    // Rewrite the R 'constants' for all library apks.
+    // SparseArray<String> packageIdentifiers = getAssets(mActivityThread)
+    //         .getAssignedPackageIdentifiers();
+    // final int N = packageIdentifiers.size();
+    // for (int i = 0; i < N; i++) {
+    //     final int id = packageIdentifiers.keyAt(i);
+    //     if (id == 0x01 || id == 0x7f) {
+    //         continue;
+    //     }
+
+    //     rewriteRValues(getClassLoader(), packageIdentifiers.valueAt(i), id);
+    // }
+
     *result = app;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
+
+// private void rewriteRValues(ClassLoader cl, String packageName, int id) {
+//     final Class<?> rClazz;
+//     try {
+//         rClazz = cl.loadClass(packageName + ".R");
+//     } catch (ClassNotFoundException e) {
+//         // This is not necessarily an error, as some packages do not ship with resources
+//         // (or they do not need rewriting).
+//         Log.i(TAG, "No resource references to update in package " + packageName);
+//         return;
+//     }
+
+//     final Method callback;
+//     try {
+//         callback = rClazz.getMethod("onResourcesLoaded", int.class);
+//     } catch (NoSuchMethodException e) {
+//         // No rewriting to be done.
+//         return;
+//     }
+
+//     Throwable cause;
+//     try {
+//         callback.invoke(null, id);
+//         return;
+//     } catch (IllegalAccessException e) {
+//         cause = e;
+//     } catch (InvocationTargetException e) {
+//         cause = e.getCause();
+//     }
+
+//     throw new RuntimeException("Failed to rewrite resource references for " + packageName,
+//             cause);
+// }
 
 ECode LoadedPkg::RemoveContextRegistrations(
     /* [in] */ IContext* context,

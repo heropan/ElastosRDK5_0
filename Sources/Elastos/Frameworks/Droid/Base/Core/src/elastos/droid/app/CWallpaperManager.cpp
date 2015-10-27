@@ -44,6 +44,11 @@ Boolean CWallpaperManager::DEBUG = FALSE;
 Mutex CWallpaperManager::sSync;
 AutoPtr<CGlobalsWallpaperManagerCallback> CWallpaperManager::sGlobals;
 
+/** {@hide} */
+const String CWallpaperManager::PROP_WALLPAPER("ro.config.wallpaper");
+/** {@hide} */
+const String CWallpaperManager::PROP_WALLPAPER_COMPONENT("ro.config.wallpaper_component");
+
 CWallpaperManager::CWallpaperManager()
     : mWallpaperXStep(-1)
     , mWallpaperYStep(-1)
@@ -94,6 +99,172 @@ ECode CWallpaperManager::GetDrawable(
     }
     *drawable = NULL;
     return NOERROR;
+}
+
+ECode CWallpaperManager::GetBuiltInDrawable(
+    /* [out] */ IDrawable** drawable)
+{
+    return GetBuiltInDrawable(0, 0, false, 0, 0, drawable);
+}
+
+ECode CWallpaperManager::GetBuiltInDrawable(
+    /* [in] */ Int32 outWidth,
+    /* [in] */ Int32 outHeight,
+    /* [in] */ Boolean scaleToFit,
+    /* [in] */ Float horizontalAlignment,
+    /* [in] */ Float verticalAlignment
+    /* [out] */ IDrawable** drawable)
+{
+    if (sGlobals.mService == null) {
+        Log.w(TAG, "WallpaperService not running");
+        return null;
+    }
+    Resources resources = mContext.getResources();
+    horizontalAlignment = Math.max(0, Math.min(1, horizontalAlignment));
+    verticalAlignment = Math.max(0, Math.min(1, verticalAlignment));
+
+    InputStream is = new BufferedInputStream(openDefaultWallpaper(mContext));
+
+    if (is == null) {
+        Log.e(TAG, "default wallpaper input stream is null");
+        return null;
+    } else {
+        if (outWidth <= 0 || outHeight <= 0) {
+            Bitmap fullSize = BitmapFactory.decodeStream(is, null, null);
+            return new BitmapDrawable(resources, fullSize);
+        } else {
+            int inWidth;
+            int inHeight;
+            {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(is, null, options);
+                if (options.outWidth != 0 && options.outHeight != 0) {
+                    inWidth = options.outWidth;
+                    inHeight = options.outHeight;
+                } else {
+                    Log.e(TAG, "default wallpaper dimensions are 0");
+                    return null;
+                }
+            }
+
+            is = new BufferedInputStream(openDefaultWallpaper(mContext));
+
+            RectF cropRectF;
+
+            outWidth = Math.min(inWidth, outWidth);
+            outHeight = Math.min(inHeight, outHeight);
+            if (scaleToFit) {
+                cropRectF = getMaxCropRect(inWidth, inHeight, outWidth, outHeight,
+                    horizontalAlignment, verticalAlignment);
+            } else {
+                float left = (inWidth - outWidth) * horizontalAlignment;
+                float right = left + outWidth;
+                float top = (inHeight - outHeight) * verticalAlignment;
+                float bottom = top + outHeight;
+                cropRectF = new RectF(left, top, right, bottom);
+            }
+            Rect roundedTrueCrop = new Rect();
+            cropRectF.roundOut(roundedTrueCrop);
+
+            if (roundedTrueCrop.width() <= 0 || roundedTrueCrop.height() <= 0) {
+                Log.w(TAG, "crop has bad values for full size image");
+                return null;
+            }
+
+            // See how much we're reducing the size of the image
+            int scaleDownSampleSize = Math.min(roundedTrueCrop.width() / outWidth,
+                    roundedTrueCrop.height() / outHeight);
+
+            // Attempt to open a region decoder
+            BitmapRegionDecoder decoder = null;
+            try {
+                decoder = BitmapRegionDecoder.newInstance(is, true);
+            } catch (IOException e) {
+                Log.w(TAG, "cannot open region decoder for default wallpaper");
+            }
+
+            Bitmap crop = null;
+            if (decoder != null) {
+                // Do region decoding to get crop bitmap
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                if (scaleDownSampleSize > 1) {
+                    options.inSampleSize = scaleDownSampleSize;
+                }
+                crop = decoder.decodeRegion(roundedTrueCrop, options);
+                decoder.recycle();
+            }
+
+            if (crop == null) {
+                // BitmapRegionDecoder has failed, try to crop in-memory
+                is = new BufferedInputStream(openDefaultWallpaper(mContext));
+                Bitmap fullSize = null;
+                if (is != null) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    if (scaleDownSampleSize > 1) {
+                        options.inSampleSize = scaleDownSampleSize;
+                    }
+                    fullSize = BitmapFactory.decodeStream(is, null, options);
+                }
+                if (fullSize != null) {
+                    crop = Bitmap.createBitmap(fullSize, roundedTrueCrop.left,
+                            roundedTrueCrop.top, roundedTrueCrop.width(),
+                            roundedTrueCrop.height());
+                }
+            }
+
+            if (crop == null) {
+                Log.w(TAG, "cannot decode default wallpaper");
+                return null;
+            }
+
+            // Scale down if necessary
+            if (outWidth > 0 && outHeight > 0 &&
+                    (crop.getWidth() != outWidth || crop.getHeight() != outHeight)) {
+                Matrix m = new Matrix();
+                RectF cropRect = new RectF(0, 0, crop.getWidth(), crop.getHeight());
+                RectF returnRect = new RectF(0, 0, outWidth, outHeight);
+                m.setRectToRect(cropRect, returnRect, Matrix.ScaleToFit.FILL);
+                Bitmap tmp = Bitmap.createBitmap((int) returnRect.width(),
+                        (int) returnRect.height(), Bitmap.Config.ARGB_8888);
+                if (tmp != null) {
+                    Canvas c = new Canvas(tmp);
+                    Paint p = new Paint();
+                    p.setFilterBitmap(true);
+                    c.drawBitmap(crop, m, p);
+                    crop = tmp;
+                }
+            }
+
+            return new BitmapDrawable(resources, crop);
+        }
+    }
+}
+
+static AutoPtr<IRectF> GetMaxCropRect(
+    /* [in] */ Int32 inWidth,
+    /* [in] */ Int32 inHeight,
+    /* [in] */ Int32 outWidth,
+    /* [in] */ Int32 outHeight,
+    /* [in] */ Float horizontalAlignment,
+    /* [in] */ Float verticalAlignment)
+{
+    RectF cropRect = new RectF();
+    // Get a crop rect that will fit this
+    if (inWidth / (float) inHeight > outWidth / (float) outHeight) {
+         cropRect.top = 0;
+         cropRect.bottom = inHeight;
+         float cropWidth = outWidth * (inHeight / (float) outHeight);
+         cropRect.left = (inWidth - cropWidth) * horizontalAlignment;
+         cropRect.right = cropRect.left + cropWidth;
+    } else {
+        cropRect.left = 0;
+        cropRect.right = inWidth;
+        float cropHeight = outHeight * (inWidth / (float) outWidth);
+        cropRect.top = (inHeight - cropHeight) * verticalAlignment;
+        cropRect.bottom = cropRect.top + cropHeight;
+    }
+    return cropRect;
 }
 
 ECode CWallpaperManager::PeekDrawable(
@@ -179,6 +350,53 @@ ECode CWallpaperManager::GetWallpaperInfo(
     // } catch (RemoteException e) {
     //     return null;
     // }
+}
+
+ECode CWallpaperManager::GetCropAndSetWallpaperIntent(
+    /* [in] */ IUri* imageUri,
+    /* [out] */ IIntent** intent)
+{
+    if (imageUri == NULL) {
+        throw new IllegalArgumentException("Image URI must not be null");
+    }
+
+    if (!ContentResolver.SCHEME_CONTENT.equals(imageUri.getScheme())) {
+        throw new IllegalArgumentException("Image URI must be of the "
+                + ContentResolver.SCHEME_CONTENT + " scheme type");
+    }
+
+    final PackageManager packageManager = mContext.getPackageManager();
+    Intent cropAndSetWallpaperIntent =
+            new Intent(ACTION_CROP_AND_SET_WALLPAPER, imageUri);
+    cropAndSetWallpaperIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+    // Find out if the default HOME activity supports CROP_AND_SET_WALLPAPER
+    Intent homeIntent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
+    ResolveInfo resolvedHome = packageManager.resolveActivity(homeIntent,
+            PackageManager.MATCH_DEFAULT_ONLY);
+    if (resolvedHome != null) {
+        cropAndSetWallpaperIntent.setPackage(resolvedHome.activityInfo.packageName);
+
+        List<ResolveInfo> cropAppList = packageManager.queryIntentActivities(
+                cropAndSetWallpaperIntent, 0);
+        if (cropAppList.size() > 0) {
+            return cropAndSetWallpaperIntent;
+        }
+    }
+
+    // fallback crop activity
+    cropAndSetWallpaperIntent.setPackage("com.android.wallpapercropper");
+    List<ResolveInfo> cropAppList = packageManager.queryIntentActivities(
+            cropAndSetWallpaperIntent, 0);
+    if (cropAppList.size() > 0) {
+        return cropAndSetWallpaperIntent;
+    }
+
+    // If the URI is not of the right type, or for some reason the system wallpaper
+    // cropper doesn't exist, return null
+    // throw new IllegalArgumentException("Cannot use passed URI to set wallpaper; " +
+    //     "check that the type returned by ContentProvider matches image/*");
+    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 ECode CWallpaperManager::SetResource(
@@ -361,6 +579,36 @@ ECode CWallpaperManager::SuggestDesiredDimensions(
     /* [in] */ Int32 minimumHeight)
 {
     // try {
+    /**
+     * The framework makes no attempt to limit the window size
+     * to the maximum texture size. Any window larger than this
+     * cannot be composited.
+     *
+     * Read maximum texture size from system property and scale down
+     * minimumWidth and minimumHeight accordingly.
+     */
+    int maximumTextureSize;
+    try {
+        maximumTextureSize = SystemProperties.getInt("sys.max_texture_size", 0);
+    } catch (Exception e) {
+        maximumTextureSize = 0;
+    }
+
+    if (maximumTextureSize > 0) {
+        if ((minimumWidth > maximumTextureSize) ||
+            (minimumHeight > maximumTextureSize)) {
+            float aspect = (float)minimumHeight / (float)minimumWidth;
+            if (minimumWidth > minimumHeight) {
+                minimumWidth = maximumTextureSize;
+                minimumHeight = (int)((minimumWidth * aspect) + 0.5);
+            } else {
+                minimumHeight = maximumTextureSize;
+                minimumWidth = (int)((minimumHeight / aspect) + 0.5);
+            }
+        }
+    }
+
+
     if (sGlobals->mService == NULL) {
         Slogger::W(TAG, "WallpaperService not running");
         return NOERROR;
@@ -373,6 +621,36 @@ ECode CWallpaperManager::SuggestDesiredDimensions(
     // }
 }
 
+ECode CWallpaperManager::SetDisplayPadding(
+    /* [in] */ IRect* padding)
+{
+    try {
+        if (sGlobals.mService == null) {
+            Log.w(TAG, "WallpaperService not running");
+        } else {
+            sGlobals.mService.setDisplayPadding(padding);
+        }
+    } catch (RemoteException e) {
+        // Ignore
+    }
+    return NOERROR;
+}
+
+ECode CWallpaperManager::SetDisplayOffset(
+    /* [in] */ IBinder* windowToken,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y)
+{
+    try {
+        //Log.v(TAG, "Sending new wallpaper display offsets from app...");
+        WindowManagerGlobal.getWindowSession().setWallpaperDisplayOffset(
+                windowToken, x, y);
+        //Log.v(TAG, "...app returning after sending display offset!");
+    } catch (RemoteException e) {
+        // Ignore.
+    }
+}
+
 ECode CWallpaperManager::SetWallpaperOffsets(
     /* [in] */ IBinder* windowToken,
     /* [in] */ Float xOffset,
@@ -380,9 +658,7 @@ ECode CWallpaperManager::SetWallpaperOffsets(
 {
     // try {
     //Log.v(TAG, "Sending new wallpaper offsets from app...");
-    AutoPtr<ILooper> looper;
-    mContext->GetMainLooper((ILooper**)&looper);
-    return CWindowManagerGlobal::GetWindowSession(looper)->SetWallpaperPosition(
+    return CWindowManagerGlobal::GetWindowSession()->SetWallpaperPosition(
             windowToken, xOffset, yOffset, mWallpaperXStep, mWallpaperYStep);
     //Log.v(TAG, "...app returning after sending offsets!");
     // } catch (RemoteException e) {
@@ -409,10 +685,8 @@ ECode CWallpaperManager::SendWallpaperCommand(
 {
     // try {
     //Log.v(TAG, "Sending new wallpaper offsets from app...");
-    AutoPtr<ILooper> looper;
-    mContext->GetMainLooper((ILooper**)&looper);
     AutoPtr<IBundle> b;
-    return CWindowManagerGlobal::GetWindowSession(looper)->SendWallpaperCommand(
+    return CWindowManagerGlobal::GetWindowSession()->SendWallpaperCommand(
             windowToken, action, x, y, z, extras, FALSE, (IBundle**)&b);
     //Log.v(TAG, "...app returning after sending offsets!");
     // } catch (RemoteException e) {
@@ -424,9 +698,7 @@ ECode CWallpaperManager::ClearWallpaperOffsets(
     /* [in] */ IBinder* windowToken)
 {
     // try {
-    AutoPtr<ILooper> looper;
-    mContext->GetMainLooper((ILooper**)&looper);
-    return CWindowManagerGlobal::GetWindowSession(looper)->SetWallpaperPosition(
+    return CWindowManagerGlobal::GetWindowSession()->SetWallpaperPosition(
             windowToken, -1, -1, -1, -1);
     // } catch (RemoteException e) {
     //     // Ignore.
@@ -435,100 +707,54 @@ ECode CWallpaperManager::ClearWallpaperOffsets(
 
 ECode CWallpaperManager::Clear()
 {
-    SetResource(R::drawable::default_wallpaper);
-    return NOERROR;
+    return SetStream(OpenDefaultWallpaper(mContext));
 }
 
-AutoPtr<IBitmap> CWallpaperManager::GenerateBitmap(
-    /* [in] */ IContext* context,
-    /* [in] */ IBitmap* bm,
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
+AutoPtr<IInputStream> CWallpaperManager::OpenDefaultWallpaper(
+    /* [in] */ IContext* context)
 {
-    if (bm == NULL) {
-        return NULL;
-    }
-
-    AutoPtr<IWindowManager> wm;
-    ASSERT_SUCCEEDED(context->GetSystemService(IContext::WINDOW_SERVICE,
-            (IInterface**)&wm));
-    AutoPtr<IDisplayMetrics> metrics;
-    ASSERT_SUCCEEDED(CDisplayMetrics::New((IDisplayMetrics**)&metrics));
-    AutoPtr<IDisplay> display;
-    ASSERT_SUCCEEDED(wm->GetDefaultDisplay((IDisplay**)&display));
-    ASSERT_SUCCEEDED(display->GetMetrics(metrics));
-    Int32 dpi;
-    metrics->GetNoncompatDensityDpi(&dpi);
-    bm->SetDensity(dpi);
-
-    Int32 w, h;
-    if (width <= 0 || height <= 0
-            || ((bm->GetWidth(&w), w == width)
-                    && (bm->GetHeight(&h), h == height))) {
-        return bm;
-    }
-
-    // This is the final bitmap we want to return.
-    // try {
-    AutoPtr<IBitmapFactory> factory;
-    ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-    AutoPtr<IBitmap> newbm;
-    ECode ec = factory->CreateBitmap(width, height,
-            Elastos::Droid::Graphics::BitmapConfig_ARGB_8888, (IBitmap**)&newbm);
-    if (ec == (ECode)E_OUT_OF_MEMORY_ERROR) {
-        Slogger::W(TAG, "Can't generate default bitmap");
-        return bm;
-    }
-    newbm->SetDensity(dpi);
-
-    AutoPtr<ICanvas> c;
-    ASSERT_SUCCEEDED(CCanvas::New(newbm, (ICanvas**)&c));
-    AutoPtr<IRect> targetRect;
-    ASSERT_SUCCEEDED(CRect::New((IRect**)&targetRect));
-    Int32 targetRight, targetBottom;
-    bm->GetWidth(&targetRight);
-    bm->GetHeight(&targetBottom);
-    targetRect->SetRight(targetRight);
-    targetRect->SetBottom(targetBottom);
-
-    Int32 deltaw = width - targetRight;
-    Int32 deltah = height - targetBottom;
-
-    if (deltaw > 0 || deltah > 0) {
-        // We need to scale up so it covers the entire area.
-        Float scale;
-        if (deltaw > deltah) {
-            scale = width / (Float)targetRight;
+    String path = SystemProperties::Get(PROP_WALLPAPER);
+    if (!TextUtils::IsEmpty(path)) {
+        AutoPtr<IFile> file;
+        CFile::New(path, (IFile**)&file);
+        Boolean exist;
+        if (file->Exists(&exist), exist) {
+            // try {
+        AutoPtr<IInputStream> is;
+        CFileInputStream::New(file, (IInputStream**)&is);
+        return is;
+            // } catch (IOException e) {
+            //     // Ignored, fall back to platform default below
+            // }
         }
-        else {
-            scale = height / (Float)targetBottom;
+    }
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<IInputStream> is;
+    res->OpenRawResource(R::drawable::default_wallpaper, (IInputStream**)&is);
+    return is;
+}
+
+AutoPtr<IComponentName> CWallpaperManager::GetDefaultWallpaperComponent(
+    /* [in] */ IContext* context)
+{
+    String flat = SystemProperties::Get(PROP_WALLPAPER_COMPONENT);
+    if (!TextUtils::IsEmpty(flat)) {
+        AutoPtr<IComponentName> cn = ComponentName::UnflattenFromString(flat);
+        if (cn != NULL) {
+            return cn;
         }
-        targetRight = (Int32)(Float)targetRight * scale;
-        targetBottom = (Int32)(Float)targetBottom * scale;
-        targetRect->SetRight(targetRight);
-        targetRect->SetBottom(targetBottom);
-        deltaw = width - targetRight;
-        deltah = height - targetBottom;
     }
 
-    targetRect->Offset(deltaw/2, deltah/2);
+    context->GetString(R::string::default_wallpaper_component, &flat);
+    if (!TextUtils::IsEmpty(flat)) {
+        AutoPtr<IComponentName> cn = ComponentName::UnflattenFromString(flat);
+        if (cn != NULL) {
+            return cn;
+        }
+    }
 
-    AutoPtr<IPaint> paint;
-    ASSERT_SUCCEEDED(CPaint::New((IPaint**)&paint));
-    paint->SetFilterBitmap(TRUE);
-    AutoPtr<IPorterDuffXfermode> mode;
-    ASSERT_SUCCEEDED(CPorterDuffXfermode::New(Elastos::Droid::Graphics::PorterDuffMode_SRC,
-            (IPorterDuffXfermode**)&mode));
-    paint->SetXfermode((IXfermode*)mode.Get());
-    c->DrawBitmap(bm, NULL, targetRect, paint);
-
-    bm->Recycle();
-    c->SetBitmap(NULL);
-    return newbm;
-    // } catch (OutOfMemoryError e) {
-    //     Log.w(TAG, "Can't generate default bitmap", e);
-    //     return bm;
-    // }
+    return NULL;
 }
 
 ECode CWallpaperManager::constructor(

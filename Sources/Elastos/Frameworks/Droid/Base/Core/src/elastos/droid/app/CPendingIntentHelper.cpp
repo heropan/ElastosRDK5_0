@@ -92,7 +92,8 @@ ECode CPendingIntentHelper::GetActivity(
         intent->ResolveTypeIfNeeded(cr,&resolvedType);
     }
     //try {
-    intent->SetAllowFds(FALSE);
+    intent->MigrateExtraStreamToClipData();
+    intent->PrepareToLeaveProcess();
 
     AutoPtr<ArrayOf<IIntent*> > intents = ArrayOf<IIntent*>::Alloc(1);
     intents->Set(0, intent);
@@ -148,7 +149,9 @@ ECode CPendingIntentHelper::GetActivityAsUser(
     }
 
     //try {
-    intent->SetAllowFds(FALSE);
+    intent->MigrateExtraStreamToClipData();
+    intent->PrepareToLeaveProcess();
+
     AutoPtr<IIIntentSender> target;
     Int32 id;
     user->GetIdentifier(&id);
@@ -288,7 +291,8 @@ ECode CPendingIntentHelper::GetActivities(
     context->GetContentResolver((IContentResolver**)&cr);
     AutoPtr<ArrayOf<String> > resolvedTypes = ArrayOf<String>::Alloc(intents->GetLength());
     for (Int32 i = 0; i < intents->GetLength(); i++) {
-        (*intents)[i]->SetAllowFds(FALSE);
+        (*intents)[i]->MigrateExtraStreamToClipData();
+        (*intents)[i]->PrepareToLeaveProcess();
         (*intents)[i]->ResolveTypeIfNeeded(cr.Get(), &((*resolvedTypes)[i]));
     }
 
@@ -334,7 +338,8 @@ ECode CPendingIntentHelper::GetActivitiesAsUser(
     context->GetContentResolver((IContentResolver**)&cr);
     AutoPtr<ArrayOf<String> > resolvedTypes = ArrayOf<String>::Alloc(intents->GetLength());
     for (Int32 i = 0; i < intents->GetLength(); i++) {
-        (*intents)[i]->SetAllowFds(FALSE);
+        (*intents)[i]->MigrateExtraStreamToClipData();
+        (*intents)[i]->PrepareToLeaveProcess();
         (*intents)[i]->ResolveTypeIfNeeded(cr, &(*resolvedTypes)[i]);
     }
     //try {
@@ -415,7 +420,7 @@ ECode CPendingIntentHelper::GetBroadcastAsUser(
     }
 
     //try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
     Int32 id;
     userHandle->GetIdentifier(&id);
     AutoPtr<IIIntentSender> target;
@@ -477,7 +482,7 @@ ECode CPendingIntentHelper::GetService(
         intent->ResolveTypeIfNeeded(cr,&resolvedType);
     }
     //try {
-    intent->SetAllowFds(FALSE);
+    intent->PrepareToLeaveProcess();
 
     AutoPtr<ArrayOf<IIntent*> > intents = ArrayOf<IIntent*>::Alloc(1);
     intents->Set(0, intent);

@@ -80,7 +80,13 @@ ECode NotificationManager::Notify(
         AutoPtr<IUri> newSound;
         sound->GetCanonicalUri((IUri**)&newSound);
         notification->SetSound(newSound);
+        if (StrictMode.vmFileUriExposureEnabled()) {
+            notification.sound.checkFileUriExposed("Notification.sound");
+        }
     }
+
+    Notification stripped = notification.clone();
+    Builder.stripForDelivery(stripped);
 
     Int32 userId = 0;
     AutoPtr<IUserHandleHelper> handleHelper;
@@ -89,7 +95,7 @@ ECode NotificationManager::Notify(
 
     AutoPtr<ArrayOf<Int32> > idOut;
     FAIL_RETURN(service->EnqueueNotificationWithTag(
-            pkgName, tag, id, notification, (ArrayOf<Int32>**)&idOut, userId));
+            pkgName, pkgName, tag, id, stripped, (ArrayOf<Int32>**)&idOut, userId));
     if (idOut == NULL || idOut->GetLength() == 0 || id != (*idOut)[0]) {
         Slogger::W(TAG, "notify: id corrupted: sent %d, got back %d",
             id, (idOut && idOut->GetLength() > 0) ? (*idOut)[0] : -1);
@@ -112,6 +118,9 @@ ECode NotificationManager::NotifyAsUser(
         AutoPtr<IUri> newSound;
         sound->GetCanonicalUri((IUri**)&newSound);
         notification->SetSound(newSound);
+        if (StrictMode.vmFileUriExposureEnabled()) {
+            notification.sound.checkFileUriExposed("Notification.sound");
+        }
     }
 
     if (localLOGV) {
@@ -120,12 +129,15 @@ ECode NotificationManager::NotifyAsUser(
         Slogger::V(TAG, "%s: notify(%d, %s)", pkgName.string(), id, notificationStr.string());
     }
 
+    Notification stripped = notification.clone();
+    Builder.stripForDelivery(stripped);
+
     Int32 identifier;
     user->GetIdentifier(&identifier);
 
     AutoPtr<ArrayOf<Int32> > idOut;
     FAIL_RETURN(service->EnqueueNotificationWithTag(
-            pkgName, tag, id, notification, (ArrayOf<Int32>**)&idOut, identifier));
+            pkgName, pkgName, tag, id, stripped, (ArrayOf<Int32>**)&idOut, identifier));
     if (idOut == NULL || idOut->GetLength() == 0 || id != (*idOut)[0]) {
         Slogger::W(TAG, "notify: id corrupted: sent %d, got back %d",
             id, (idOut && idOut->GetLength() > 0) ? (*idOut)[0] : -1);
@@ -179,6 +191,27 @@ ECode NotificationManager::CancelAll()
     FAIL_RETURN(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&handleHelper));
     FAIL_RETURN(handleHelper->GetMyUserId(&userId));
     return service->CancelAllNotifications(cap, userId);
+}
+
+AutoPtr<IComponentName> NotificationManager::GetEffectsSuppressor()
+{
+    INotificationManager service = getService();
+    try {
+        return service.getEffectsSuppressor();
+    } catch (RemoteException e) {
+        return null;
+    }
+}
+
+Boolean NotificationManager::MatchesCallFilter(
+    /* [in] */ IBundle* extras)
+{
+    INotificationManager service = getService();
+    try {
+        return service.matchesCallFilter(extras);
+    } catch (RemoteException e) {
+        return false;
+    }
 }
 
 }

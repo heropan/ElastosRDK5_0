@@ -63,6 +63,42 @@ public:
         /* [out] */ IDrawable** drawable);
 
     /**
+     * Returns a drawable for the system built-in static wallpaper .
+     *
+     */
+    ECode GetBuiltInDrawable(
+        /* [out] */ IDrawable** drawable);
+
+    /**
+     * Returns a drawable for the system built-in static wallpaper. Based on the parameters, the
+     * drawable can be cropped and scaled
+     *
+     * @param outWidth The width of the returned drawable
+     * @param outWidth The height of the returned drawable
+     * @param scaleToFit If true, scale the wallpaper down rather than just cropping it
+     * @param horizontalAlignment A float value between 0 and 1 specifying where to crop the image;
+     *        0 for left-aligned, 0.5 for horizontal center-aligned, and 1 for right-aligned
+     * @param verticalAlignment A float value between 0 and 1 specifying where to crop the image;
+     *        0 for top-aligned, 0.5 for vertical center-aligned, and 1 for bottom-aligned
+     *
+     */
+    ECode GetBuiltInDrawable(
+        /* [in] */ Int32 outWidth,
+        /* [in] */ Int32 outHeight,
+        /* [in] */ Boolean scaleToFit,
+        /* [in] */ Float horizontalAlignment,
+        /* [in] */ Float verticalAlignment
+        /* [out] */ IDrawable** drawable);
+
+    static AutoPtr<IRectF> GetMaxCropRect(
+        /* [in] */ Int32 inWidth,
+        /* [in] */ Int32 inHeight,
+        /* [in] */ Int32 outWidth,
+        /* [in] */ Int32 outHeight,
+        /* [in] */ Float horizontalAlignment,
+        /* [in] */ Float verticalAlignment);
+
+    /**
      * Retrieve the current system wallpaper; if there is no wallpaper set,
      * a null pointer is returned. This is returned as an
      * abstract Drawable that you can install in a View to display whatever
@@ -123,6 +159,23 @@ public:
      */
     CARAPI GetWallpaperInfo(
         /* [out] */ IWallpaperInfo** info);
+
+  /**
+     * Gets an Intent that will launch an activity that crops the given
+     * image and sets the device's wallpaper. If there is a default HOME activity
+     * that supports cropping wallpapers, it will be preferred as the default.
+     * Use this method instead of directly creating a {@link #ACTION_CROP_AND_SET_WALLPAPER}
+     * intent.
+     *
+     * @param imageUri The image URI that will be set in the intent. The must be a content
+     *                 URI and its provider must resolve its type to "image/*"
+     *
+     * @throws IllegalArgumentException if the URI is not a content URI or its MIME type is
+     *         not "image/*"
+     */
+    CARAPI GetCropAndSetWallpaperIntent(
+        /* [in] */ IUri* imageUri,
+        /* [out] */ IIntent** intent);
 
     /**
      * Change the current system wallpaper to the bitmap in the given resource.
@@ -242,6 +295,31 @@ public:
         /* [in] */ Int32 minimumHeight);
 
     /**
+     * Specify extra padding that the wallpaper should have outside of the display.
+     * That is, the given padding supplies additional pixels the wallpaper should extend
+     * outside of the display itself.
+     * @param padding The number of pixels the wallpaper should extend beyond the display,
+     * on its left, top, right, and bottom sides.
+     * @hide
+     */
+    CARAPI SetDisplayPadding(
+        /* [in] */ IRect* padding);
+
+    /**
+     * Apply a raw offset to the wallpaper window.  Should only be used in
+     * combination with {@link #setDisplayPadding(android.graphics.Rect)} when you
+     * have ensured that the wallpaper will extend outside of the display area so that
+     * it can be moved without leaving part of the display uncovered.
+     * @param x The offset, in pixels, to apply to the left edge.
+     * @param y The offset, in pixels, to apply to the top edge.
+     * @hide
+     */
+    CARAPI SetDisplayOffset(
+        /* [in] */ IBinder* windowToken,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
+    /**
      * Set the position of the current wallpaper within any larger space, when
      * that wallpaper is visible behind the given window.  The X and Y offsets
      * are floating point numbers ranging from 0 to 1, representing where the
@@ -318,11 +396,22 @@ public:
      */
     CARAPI Clear();
 
-    static CARAPI_(AutoPtr<IBitmap>) GenerateBitmap(
-        /* [in] */ IContext* context,
-        /* [in] */ IBitmap* bm,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
+    /**
+     * Open stream representing the default static image wallpaper.
+     *
+     * @hide
+     */
+    static AutoPtr<IInputStream> OpenDefaultWallpaper(
+        /* [in] */ IContext* context);
+
+    /**
+     * Return {@link ComponentName} of the default live wallpaper, or
+     * {@code null} if none is defined.
+     *
+     * @hide
+     */
+    static AutoPtr<IComponentName> GetDefaultWallpaperComponent(
+        /* [in] */ IContext* context);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -338,6 +427,13 @@ private:
     static Boolean DEBUG;
     Float mWallpaperXStep;
     Float mWallpaperYStep;
+
+    /** {@hide} */
+    static const String PROP_WALLPAPER;// = "ro.config.wallpaper";
+    /** {@hide} */
+    static const String PROP_WALLPAPER_COMPONENT;// = "ro.config.wallpaper_component";
+
+
     AutoPtr<IContext> mContext;
     static Object sSync;
     static AutoPtr<CGlobalsWallpaperManagerCallback> sGlobals;
