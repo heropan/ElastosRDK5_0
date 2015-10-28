@@ -212,10 +212,35 @@ Boolean Gravity::IsVertical(
     return gravity > 0 && (gravity & IGravity::VERTICAL_GRAVITY_MASK) != 0;
 }
 
+ECode Gravity::IsVertical(
+    /* [in] */ Int32 gravity,
+    /* [out] */ Boolean* rst)
+{
+    *rst = IsVertical(gravity);
+    return NOERROR;
+}
+
 Boolean Gravity::IsHorizontal(
     /* [in] */ Int32 gravity)
 {
     return gravity > 0 && (gravity & IGravity::RELATIVE_HORIZONTAL_GRAVITY_MASK) != 0;
+}
+
+ECode Gravity::IsHorizontal(
+    /* [in] */ Int32 gravity,
+    /* [out] */ Boolean* rst)
+{
+    *rst = IsHorizontal(gravity);
+    return NOERROR;
+}
+
+ECode Gravity::GetAbsoluteGravity(
+    /* [in] */ Int32 gravity,
+    /* [in] */ Int32 layoutDirection,
+    /* [out] */ Int32* rst)
+{
+    *rst = GetAbsoluteGravity(gravity, layoutDirection);
+    return NOERROR;
 }
 
 Int32 Gravity::GetAbsoluteGravity(

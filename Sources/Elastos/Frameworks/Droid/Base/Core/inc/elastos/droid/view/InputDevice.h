@@ -1,33 +1,40 @@
 
-#ifndef __ELASTOS_DROID_VIEW_CINPUTDEVICE_H__
-#define __ELASTOS_DROID_VIEW_CINPUTDEVICE_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTDEVICE_H__
+#define __ELASTOS_DROID_VIEW_INPUTDEVICE_H__
 
-#include "_Elastos_Droid_View_CInputDevice.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::Etl::List;
+using Elastos::Core::Object;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::IList;
 using Elastos::Droid::Os::IVibrator;
+using Elastos::Droid::Hardware::Input::IInputDeviceIdentifier;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CInputDevice)
+class InputDevice
+    : public Object
+    , public IInputDevice
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
     /**
      * Provides information about the range of values for a particular {@link MotionEvent} axis.
      *
      * @see InputDevice#getMotionRange(int)
      */
-    class MotionRange : public ElRefBase, public IMotionRange
+    class MotionRange
+        : public Object
+        , public IMotionRange
     {
-        friend class CInputDevice;
+        friend class InputDevice;
     private:
         MotionRange(
             /* [in] */ Int32 axis,
@@ -35,10 +42,11 @@ public:
             /* [in] */ Float min,
             /* [in] */ Float max,
             /* [in] */ Float flat,
-            /* [in] */ Float fuzz);
+            /* [in] */ Float fuzz,
+            /* [in] */ Float resolution);
 
     public:
-        CAR_INTERFACE_DECL();
+        CAR_INTERFACE_DECL()
 
         /**
          * Gets the axis id.
@@ -53,6 +61,19 @@ public:
          */
         CARAPI GetSource(
             /* [out] */ Int32* source);
+
+
+        /**
+         * Determines whether the event is from the given source.
+         *
+         * @param source The input source to check against. This can be a specific device type,
+         * such as {@link InputDevice#SOURCE_TOUCH_NAVIGATION}, or a more generic device class,
+         * such as {@link InputDevice#SOURCE_CLASS_POINTER}.
+         * @return Whether the event is from the given source.
+         */
+        CARAPI IsFromSource(
+            /* [in] */ Int32 source,
+            /* [out] */ Boolean* rst);
 
         /**
          * Gets the minimum value for the coordinate.
@@ -93,6 +114,13 @@ public:
         CARAPI GetFuzz(
             /* [out] */ Float* fuzz);
 
+        /**
+         * Gets the resolution for input device measurements with respect to this axis.
+         * @return The resolution in units per millimeter, or units per radian for rotational axes.
+         */
+        CARAPI GetResolution(
+            /* [out] */ Float* resolution);
+
     private:
         Int32 mAxis;
         Int32 mSource;
@@ -100,6 +128,7 @@ public:
         Float mMax;
         Float mFlat;
         Float mFuzz;
+        Float mResolution;
     };
 
 public:
@@ -120,25 +149,26 @@ public:
         /* [out, callee] */ ArrayOf<Int32>** deviceIds);
 
 public:
-    CInputDevice();
+    InputDevice();
 
-    ~CInputDevice();
+    ~InputDevice();
 
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Int32 id,
         /* [in] */ Int32 generation,
+        /* [in] */ Int32 controllerNumber,
         /* [in] */ const String& name,
+        /* [in] */ Int32 vendorId,
+        /* [in] */ Int32 productId,
         /* [in] */ const String& descriptor,
         /* [in] */ Boolean isExternal,
         /* [in] */ Int32 sources,
         /* [in] */ Int32 keyboardType,
         /* [in] */ IKeyCharacterMap* keyCharacterMap,
-        /* [in] */ Boolean hasVibrator);
-
-    // CARAPI constructor(
-    //     /* [in] */ IParcel* in);
+        /* [in] */ Boolean hasVibrator,
+        /* [in] */ Boolean hasButtonUnderPad);
 
     /**
      * Gets the input device id.
@@ -156,6 +186,35 @@ public:
         /* [out] */ Int32* id);
 
     /**
+     * The controller number for a given input device.
+     * <p>
+     * Each gamepad or joystick is given a unique, positive controller number when initially
+     * configured by the system. This number may change due to events such as device disconnects /
+     * reconnects or user initiated reassignment. Any change in number will trigger an event that
+     * can be observed by registering an {@link InputManager.InputDeviceListener}.
+     * </p>
+     * <p>
+     * All input devices which are not gamepads or joysticks will be assigned a controller number
+     * of 0.
+     * </p>
+     *
+     * @return The controller number of the device.
+     */
+    CARAPI GetControllerNumber(
+        /* [out] */ Int32* number);
+
+    /**
+     * The set of identifying information for type of input device. This
+     * information can be used by the system to configure appropriate settings
+     * for the device.
+     *
+     * @return The identifier object for this device
+     * @hide
+     */
+    CARAPI GetIdentifier(
+        /* [out] */ IInputDeviceIdentifier** identifier);
+
+    /**
      * Gets a generation number for this input device.
      * The generation number is incremented whenever the device is reconfigured and its
      * properties may have changed.
@@ -166,6 +225,31 @@ public:
      */
     CARAPI GetGeneration(
         /* [out] */ Int32* generation);
+
+    /**
+     * Gets the vendor id for the given device, if available.
+     * <p>
+     * A vendor id uniquely identifies the company who manufactured the device. A value of 0 will
+     * be assigned where a vendor id is not available.
+     * </p>
+     *
+     * @return The vendor id of a given device
+     */
+    CARAPI GetVendorId(
+        /* [out] */ Int32* id);
+
+    /**
+     * Gets the product id for the given device, if available.
+     * <p>
+     * A product id uniquely identifies which product within the address space of a given vendor,
+     * identified by the device's vendor id. A value of 0 will be assigned where a product id is
+     * not available.
+     * </p>
+     *
+     * @return The product id of a given device
+     */
+    CARAPI GetProductId(
+        /* [out] */ Int32* id);
 
     /**
      * Gets the input device descriptor, which is a stable identifier for an input device.
@@ -243,6 +327,18 @@ public:
         /* [out] */ Int32* sources);
 
     /**
+     * Determines whether the input device supports the given source or sources.
+     *
+     * @param source The input source or sources to check against. This can be a generic device
+     * type such as {@link InputDevice#SOURCE_MOUSE}, a more generic device class, such as
+     * {@link InputDevice#SOURCE_CLASS_POINTER}, or a combination of sources bitwise ORed together.
+     * @return Whether the device can produce all of the given sources.
+     */
+    CARAPI SupportsSource(
+        /* [in] */ Int32 source,
+        /* [out] */ Boolean* rst);
+
+    /**
      * Gets the keyboard type.
      * @return The keyboard type.
      */
@@ -255,6 +351,16 @@ public:
      */
     CARAPI GetKeyCharacterMap(
         /* [out] */ IKeyCharacterMap** keyCharacterMap);
+
+    /**
+     * Gets whether the device is capable of producing the list of keycodes.
+     * @param keys The list of android keycodes to check for.
+     * @return An array of booleans where each member specifies whether the device is capable of
+     * generating the keycode given by the corresponding value at the same index in the keys array.
+     */
+    CARAPI HasKeys(
+        /* [in] */ ArrayOf<Int32>* keys,
+        /* [out] */ ArrayOf<Boolean>** rsts);
 
     /**
      * Gets information about the range of values for a particular {@link MotionEvent} axis.
@@ -302,7 +408,7 @@ public:
      * @see #getMotionRange(int, int)
      */
     CARAPI GetMotionRanges(
-        /* [out] */ IObjectContainer** motionRanges);
+        /* [out] */ IList** motionRanges);
 
     /**
      * Gets the vibrator service associated with the device, if there is one.
@@ -319,6 +425,14 @@ public:
     CARAPI GetVibrator(
         /* [out] */ IVibrator** vibrator);
 
+    /**
+     * Reports whether the device has a button under its touchpad
+     * @return Whether the device has a button under its touchpad
+     * @hide
+     */
+    CARAPI HasButtonUnderPad(
+        /* [in] */ Boolean* rst);
+
     CARAPI ReadFromParcel(
         /* [in] */ IParcel *source);
 
@@ -334,7 +448,8 @@ public:
         /* [in] */ Float min,
         /* [in] */ Float max,
         /* [in] */ Float flat,
-        /* [in] */ Float fuzz);
+        /* [in] */ Float fuzz,
+        /* [in] */ Float resolution);
 
 private:
     CARAPI AppendSourceDescriptionIfApplicable(
@@ -345,14 +460,19 @@ private:
 private:
     Int32 mId;
     Int32 mGeneration;
+    Int32 mControllerNumber;
     String mName;
+    Int32 mVendorId;
+    Int32 mProductId;
     String mDescriptor;
+    AutoPtr<IInputDeviceIdentifier> mIdentifier;
     Boolean mIsExternal;
     Int32 mSources;
     Int32 mKeyboardType;
     AutoPtr<IKeyCharacterMap> mKeyCharacterMap;
     Boolean mHasVibrator;
-    List<AutoPtr<MotionRange> > mMotionRanges;
+    Boolean mHasButtonUnderPad;
+    AutoPtr<IList> mMotionRanges;
     Object mMotionRangesLock;
 
     AutoPtr<IVibrator> mVibrator; // guarded by mMotionRanges during initialization
@@ -362,4 +482,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__ELASTOS_DROID_VIEW_CINPUTDEVICE_H__
+#endif //__ELASTOS_DROID_VIEW_INPUTDEVICE_H__

@@ -1,15 +1,19 @@
 
-#ifndef __ELASTOS_DROID_VIEW_CINPUTCHANNEL_H__
-#define __ELASTOS_DROID_VIEW_CINPUTCHANNEL_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTCHANNEL_H__
+#define __ELASTOS_DROID_VIEW_INPUTCHANNEL_H__
 
-#include "_Elastos_Droid_View_CInputChannel.h"
-#include "elastos/droid/view/NativeInputChannel.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-CarClass(CInputChannel)
+class InputChannel
+    : public Object
+    , public IInputChannel
+    , public IParcelable
 {
 private:
     static const char* TAG;
@@ -17,21 +21,22 @@ private:
     static const Boolean DEBUG = FALSE;
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates an uninitialized input channel.
      * It can be initialized by reading from a Parcel or by transferring the state of
      * another input channel into this one.
      */
-    CInputChannel();
+    InputChannel();
 
-    ~CInputChannel();
+    ~InputChannel();
 
     CARAPI constructor();
 
     static CARAPI OpenInputChannelPair(
         /* [in] */ const String& name,
-        /* [out] */ CInputChannel** inputChannel0,
-        /* [out] */ CInputChannel** inputChannel1);
+        /* [out] */ ArrayOf<IInputChannel*>** icp);
 
     /**
      * Gets the name of the input channel.
@@ -50,17 +55,40 @@ public:
     CARAPI TransferTo(
         /* [in] */ IInputChannel* outParameter);
 
-    CARAPI GetNativeInputChannel(
-        /* [out] */ Handle32* nativeInputChannel);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel *source);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel *dest);
 
+    CARAPI Dup(
+        /* [out] */ IInputChannel** target);
+
 private:
-    NativeInputChannel* mNative; // used by native code
+    static CARAPI NativeOpenInputChannelPair(
+        /* [in] */ const String& name,
+        /* [out] */ ArrayOf<IInputChannel*>** icp);
+
+    CARAPI NativeDispose(
+        /* [in] */ Boolean finalized);
+
+    CARAPI NativeTransferTo(
+        /* [in] */ IInputChannel* other);
+
+    CARAPI NativeReadFromParcel(
+        /* [in] */ IParcel* parcel);
+
+    CARAPI NativeWriteToParcel(
+        /* [in] */ IParcel* parcel);
+
+    CARAPI NativeDup(
+        /* [in] */ IInputChannel* target);
+
+    CARAPI NativeGetName(
+        /* [out] */ String* name);
+
+private:
+    Handle64 mNative; // used by native code
 };
 
 } // namespace View
