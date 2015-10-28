@@ -9,6 +9,11 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 SOURCES = CBatteryMeterView.cpp
+SOURCES += CBitmapHelper.cpp
+SOURCES += CBootReceiver.cpp
+SOURCES += CDessertCase.cpp
+SOURCES += CDessertCaseDream.cpp
+SOURCES += CDessertCaseView.cpp
 //SOURCES += SystemUIR.cpp
 //SOURCES += CExpandHelper.cpp
 //SOURCES += CViewScaller.cpp
