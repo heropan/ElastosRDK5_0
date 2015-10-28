@@ -149,6 +149,26 @@ private:
         /* [in] */ Int64 nativeUsbMidiDeviceAndroid,
         /* [in] */ Int32 endpointNumber,
         /* [in] */ ArrayOf<Byte>* data);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaUsbMidiDeviceAndroidCallback_Init();
+
+private:
+    static CARAPI_(void) RegisterSelf(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativePointer);
+
+    static CARAPI_(void) Send(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 endpointNumber,
+        /* [in] */ ArrayOf<Byte>* bs);
+
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetDescriptors(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) Close(
+        /* [in] */ IInterface* obj);
 private:
     /**
      * A connection handle for this device.

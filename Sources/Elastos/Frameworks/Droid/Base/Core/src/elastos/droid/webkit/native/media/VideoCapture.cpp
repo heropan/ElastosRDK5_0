@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/VideoCapture.h"
+#include "elastos/droid/webkit/native/media/api/VideoCapture_dec.h"
 #include "elastos/droid/webkit/native/media/ImageFormat.h"
 //TODO #include "elastos/droid/hardware/CHardwareCamera.h"
 #include "elastos/droid/hardware/CHardwareCameraHelper.h"
@@ -409,6 +410,7 @@ void VideoCapture::NativeOnFrameAvailable(
     /* [in] */ Int32 length,
     /* [in] */ Int32 rotation)
 {
+    Elastos_VideoCapture_nativeOnFrameAvailable(THIS_PROBE(IInterface), (Handle32)nativeVideoCaptureDeviceAndroid, data,length, rotation);
 }
 
 AutoPtr<IParameters> VideoCapture::GetCameraParameters(
@@ -443,6 +445,105 @@ AutoPtr<ICameraInfo> VideoCapture::GetCameraInfo(
     // }
 
     return cameraInfo;
+}
+//callback function definition
+Boolean VideoCapture::Allocate(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 frameRate)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::Allocate, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->Allocate(width, height, frameRate);
+}
+
+Int32 VideoCapture::StartCapture(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::StartCapture, mObj is NULL");
+        return -1;
+    }
+    return mObj->StartCapture();
+}
+
+Int32 VideoCapture::StopCapture(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::StopCapture, mObj is NULL");
+        return 0;
+    }
+    return mObj->StopCapture();
+}
+
+void VideoCapture::Deallocate(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::Deallocate, mObj is NULL");
+        return;
+    }
+    mObj->Deallocate();
+}
+
+Int32 VideoCapture::QueryWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::QueryWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->QueryWidth();
+}
+
+Int32 VideoCapture::QueryHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::QueryHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->QueryHeight();
+}
+
+Int32 VideoCapture::QueryFrameRate(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::QueryFrameRate, mObj is NULL");
+        return 0;
+    }
+    return mObj->QueryFrameRate();
+}
+
+Int32 VideoCapture::GetColorspace(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCapture> mObj = (VideoCapture*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCapture::GetColorspace, mObj is NULL");
+        return AndroidImageFormatList::ANDROID_IMAGEFORMAT_UNKNOWN;
+    }
+    return mObj->GetColorspace();
 }
 
 } // namespace Media

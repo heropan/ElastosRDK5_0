@@ -472,6 +472,40 @@ private:
         /* [in] */ const String& keySystem,
         /* [in] */ IByteBuffer* uuid);
 
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaMediaDrmBridgeCallback_Init();
+private:
+    static CARAPI_(Boolean) SetSecurityLevel(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& securityLevel);
+
+    static CARAPI_(AutoPtr<IInterface>) GetMediaCrypto(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ResetDeviceCredentials(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ReleaseResources(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) CreateSession(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 sessionId,
+        /* [in] */ ArrayOf<Byte>* initData,
+        /* [in] */ const String& mime);
+
+    static CARAPI_(void) ReleaseSession(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 sessionId);
+
+    static CARAPI_(void) UpdateSession(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 sessionId,
+        /* [in] */ ArrayOf<Byte>* key);
+
+    static CARAPI_(String) GetSecurityLevel(
+        /* [in] */ IInterface* obj);
 private:
     // Implementation Notes:
     // - A media crypto session (mMediaCryptoSession) is opened after MediaDrm

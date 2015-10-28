@@ -98,6 +98,17 @@ private:
         /* [in] */ Int64 nativeUsbMidiDeviceFactoryAndroid,
         /* [in] */ ArrayOf<IInterface*>* devices);
 
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaUsbMidiDeviceFactoryAndroidCallback_Init();
+
+private:
+    static CARAPI_(Boolean) EnumerateDevices(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(void) Close(
+        /* [in] */ IInterface* obj);
 private:
     /**
      * The UsbManager of this system.

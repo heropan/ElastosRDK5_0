@@ -48,6 +48,19 @@ private:
         /* [in] */ Int32 inputChannelCount,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int64 durationMicroseconds);
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaWebAudioMediaCodecBridgeCallback_Init();
+
+private:
+    static CARAPI_(String) CreateTempFile(
+        /* [in] */ IInterface* ctx);
+
+    static CARAPI_(Boolean) DecodeAudioFile(
+        /* [in] */ IInterface* ctx,
+        /* [in] */ Int64 nativeMediaCodecBridge,
+        /* [in] */ Int32 inputFD,
+        /* [in] */ Int64 dataSize);
 };
 
 } // namespace Media

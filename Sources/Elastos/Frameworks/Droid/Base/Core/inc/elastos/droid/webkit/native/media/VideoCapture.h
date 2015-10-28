@@ -117,6 +117,38 @@ protected:
     static CARAPI_(AutoPtr<IParameters>) GetCameraParameters(
         /* [in] */ IHardwareCamera* camera);
 
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaVideoCaptureCallback_Init();
+
+private:
+    static CARAPI_(Boolean) Allocate(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 frameRate);
+
+    static CARAPI_(Int32) StartCapture(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) StopCapture(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) Deallocate(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) QueryWidth(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) QueryHeight(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) QueryFrameRate(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetColorspace(
+        /* [in] */ IInterface* obj);
+
 protected:
     AutoPtr<IHardwareCamera> mCamera;
     AutoPtr<CaptureFormat> mCaptureFormat;

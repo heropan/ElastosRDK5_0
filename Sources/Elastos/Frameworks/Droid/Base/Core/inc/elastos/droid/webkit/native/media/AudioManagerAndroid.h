@@ -35,7 +35,7 @@ namespace Media {
 class AudioManagerAndroid
     : public Object
 {
-private:
+public:
     /**
      * NonThreadSafe is a helper class used to help verify that methods of a
      * class are called from the same thread.
@@ -43,6 +43,7 @@ private:
      * Is only utilized when DEBUG is set to true.
      */
     class NonThreadSafe
+    : public Object
     {
     public:
         NonThreadSafe();
@@ -72,6 +73,12 @@ private:
         //@CalledByNative("AudioDeviceName")
         CARAPI_(String) Name();
 
+    //callback functions declare
+    public:
+        static CARAPI_(String) Id(
+            /* [in] */ IInterface* obj);
+        static CARAPI_(String) Name(
+            /* [in] */ IInterface* obj);
     private:
         const Int32 mId;
         const String mName;
@@ -156,7 +163,7 @@ private:
     static CARAPI_(Boolean) RunningOnJellyBeanMR2OrHigher();
 
     /** Construction */
-    //@CalledByNative
+    //@CalledByNative AudioManagerAndroid
     static CARAPI_(AutoPtr<AudioManagerAndroid>) CreateAudioManagerAndroid(
         /* [in] */ IContext* context,
         /* [in] */ Int64 nativeAudioManagerAndroid);
@@ -207,7 +214,7 @@ private:
      * and android.Manifest.permission.RECORD_AUDIO.
      */
     //@CalledByNative
-    CARAPI_(AutoPtr< ArrayOf<AutoPtr<IInterface> > >) GetAudioInputDeviceNames();
+    CARAPI_(AutoPtr< ArrayOf<IInterface*> >) GetAudioInputDeviceNames();
 
     //@CalledByNative
     CARAPI_(Int32) GetNativeOutputSampleRate();
@@ -386,6 +393,30 @@ private:
         /* [in] */ Int64 nativeAudioManagerAndroid,
         /* [in] */ Boolean muted);
 
+// begin the callback function declare
+public:
+    static void* ElaAudioManagerAndroidCallback_Init();
+    static CARAPI_(void) Init(
+        /* [in] */ IInterface* obj);
+    static CARAPI_(void) Close(
+        /* [in] */ IInterface* obj);
+    static CARAPI_(void) SetCommunicationAudioModeOn(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean on);
+    static CARAPI_(Boolean) SetDevice(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& deviceId);
+    static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) GetAudioInputDeviceNames(
+        /* [in] */ IInterface* obj);
+    static CARAPI_(Int32) GetNativeOutputSampleRate(
+        /* [in] */ IInterface* obj);
+    static CARAPI_(Boolean) IsAudioLowLatencySupported(
+        /* [in] */ IInterface* obj);
+    static CARAPI_(Int32) GetAudioLowLatencyOutputFrameSize(
+        /* [in] */ IInterface* obj);
+    static CARAPI_(AutoPtr<IInterface>) CreateAudioManagerAndroid(
+        /* [in] */ IInterface* context,
+        /* [in} */ Int64 nativeAudioManagerAndroid);
 private:
     static const String TAG;
 
@@ -493,6 +524,7 @@ private:
     // Broadcast receiver for Bluetooth SCO broadcasts.
     // Utilized to detect if BT SCO streaming is on or off.
     AutoPtr<IBroadcastReceiver> mBluetoothScoReceiver;
+
 };
 
 } // namespace Media

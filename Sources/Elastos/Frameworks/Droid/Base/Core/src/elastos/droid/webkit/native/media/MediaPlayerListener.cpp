@@ -1,7 +1,10 @@
 #include "elastos/droid/webkit/native/media/MediaPlayerListener.h"
+#include "elastos/droid/webkit/native/media/api/MediaPlayerListener_dec.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Media::IMediaPlayer;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -181,6 +184,7 @@ void MediaPlayerListener::NativeOnMediaError(
     /* [in] */ Int64 nativeMediaPlayerListener,
     /* [in] */ Int32 errorType)
 {
+    Elastos_MediaPlayerListener_nativeOnMediaError(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener, errorType);
 }
 
 void MediaPlayerListener::NativeOnVideoSizeChanged(
@@ -188,33 +192,64 @@ void MediaPlayerListener::NativeOnVideoSizeChanged(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
+    Elastos_MediaPlayerListener_nativeOnVideoSizeChanged(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener, width, height);
 }
 
 void MediaPlayerListener::NativeOnBufferingUpdate(
     /* [in] */ Int64 nativeMediaPlayerListener,
     /* [in] */ Int32 percent)
 {
+    Elastos_MediaPlayerListener_nativeOnBufferingUpdate(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener, percent);
 }
 
 void MediaPlayerListener::NativeOnMediaPrepared(
     /* [in] */ Int64 nativeMediaPlayerListener)
 {
+    Elastos_MediaPlayerListener_nativeOnMediaPrepared(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
 }
 
 void MediaPlayerListener::NativeOnPlaybackComplete(
     /* [in] */ Int64 nativeMediaPlayerListener)
 {
+    Elastos_MediaPlayerListener_nativeOnPlaybackComplete(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
 }
 
 void MediaPlayerListener::NativeOnSeekComplete(
     /* [in] */ Int64 nativeMediaPlayerListener)
 {
+    Elastos_MediaPlayerListener_nativeOnSeekComplete(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
 }
 
 void MediaPlayerListener::NativeOnMediaInterrupted(
     /* [in] */ Int64 nativeMediaPlayerListener)
 {
+    Elastos_MediaPlayerListener_nativeOnMediaInterrupted(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerListener);
 }
+
+//callback function definition
+void MediaPlayerListener::ReleaseResources(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerListener> mObj = (MediaPlayerListener*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("MediaPlayerListener", "MediaPlayerListener::ReleaseResources, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseResources();
+}
+
+AutoPtr<IInterface> MediaPlayerListener::Create(
+    /* [in] */ Int64 nativeMediaPlayerListener,
+    /* [in] */ IInterface* context,
+    /* [in] */ IInterface* mediaPlayerBridge)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    AutoPtr<MediaPlayerBridge> m = (MediaPlayerBridge*)(IObject::Probe(mediaPlayerBridge));
+    return MediaPlayerListener::Create(nativeMediaPlayerListener, c, m);
+}
+
+
 
 } // namespace Media
 } // namespace Webkit

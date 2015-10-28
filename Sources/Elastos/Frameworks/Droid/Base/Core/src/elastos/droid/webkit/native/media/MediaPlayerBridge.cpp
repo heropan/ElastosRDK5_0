@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/MediaPlayerBridge.h"
+#include "elastos/droid/webkit/native/media/api/MediaPlayerBridge_dec.h"
 
 #include "elastos/droid/os/CParcelFileDescriptorHelper.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -185,6 +186,42 @@ Boolean MediaPlayerBridge::AllowedOperations::CanSeekForward()
 Boolean MediaPlayerBridge::AllowedOperations::CanSeekBackward()
 {
     return mCanSeekBackward;
+}
+
+Boolean MediaPlayerBridge::AllowedOperations::CanPause(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge::AllowedOperations> mObj = (MediaPlayerBridge::AllowedOperations*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::AllowedOperations::CanPause, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->CanPause();
+}
+
+Boolean MediaPlayerBridge::AllowedOperations::CanSeekForward(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge::AllowedOperations> mObj = (MediaPlayerBridge::AllowedOperations*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::AllowedOperations::CanSeekForward, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->CanSeekForward();
+}
+
+Boolean MediaPlayerBridge::AllowedOperations::CanSeekBackward(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge::AllowedOperations> mObj = (MediaPlayerBridge::AllowedOperations*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::AllowedOperations::CanSeekBackward, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->CanSeekBackward();
 }
 
 //===============================================================
@@ -567,8 +604,229 @@ void MediaPlayerBridge::NativeOnDidSetDataUriDataSource(
     /* [in] */ Int64 nativeMediaPlayerBridge,
     /* [in] */ Boolean success)
 {
+    Elastos_MediaPlayerBridge_nativeOnDidSetDataUriDataSource(THIS_PROBE(IInterface), (Handle32)nativeMediaPlayerBridge, success);
 }
 
+void MediaPlayerBridge::Destroy(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::Destroy, mObj is NULL");
+        return;
+    }
+    mObj->Destroy();
+}
+
+void MediaPlayerBridge::SetSurface(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* surface)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::SetSurface, mObj is NULL");
+        return;
+    }
+    AutoPtr<ISurface> s = ISurface::Probe(surface);
+    mObj->SetSurface(s);
+}
+
+Boolean MediaPlayerBridge::PrepareAsync(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::PrepareAsync, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->PrepareAsync();
+}
+
+Boolean MediaPlayerBridge::IsPlaying(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::IsPlaying, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->IsPlaying();
+}
+
+Int32 MediaPlayerBridge::GetVideoWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::GetVideoWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetVideoWidth();
+}
+
+Int32 MediaPlayerBridge::GetVideoHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::GetVideoHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetVideoHeight();
+}
+
+Int32 MediaPlayerBridge::GetCurrentPosition(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::GetCurrentPosition, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetCurrentPosition();
+}
+
+Int32 MediaPlayerBridge::GetDuration(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::GetDuration, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDuration();
+}
+
+void MediaPlayerBridge::ReleaseResources(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::ReleaseResources, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseReSources();
+}
+
+void MediaPlayerBridge::SetVolume(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Double volume)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::SetVolume, mObj is NULL");
+        return;
+    }
+    mObj->SetVolume(volume);
+}
+
+void MediaPlayerBridge::Start(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::Start, mObj is NULL");
+        return;
+    }
+    mObj->Start();
+}
+
+void MediaPlayerBridge::Pause(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::Pause, mObj is NULL");
+        return;
+    }
+    mObj->Pause();
+}
+
+void MediaPlayerBridge::SeekTo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 msec)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::SeekTo, mObj is NULL");
+        return;
+    }
+    mObj->SeekTo(msec);
+}
+
+Boolean MediaPlayerBridge::SetDataSource(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& url,
+    /* [in] */ const String& cookies,
+    /* [in] */ const String& userAgent,
+    /* [in] */ Boolean hideUrlLog)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::SetDataSource, mObj is NULL");
+        return FALSE;
+    }
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return mObj->SetDataSource(c, url, cookies, userAgent, hideUrlLog);
+}
+
+Boolean MediaPlayerBridge::SetDataSourceFromFd(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 fd,
+    /* [in] */ Int64 offset,
+    /* [in] */ Int64 length)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::SetDataSourceFromFd, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->SetDataSourceFromFd(fd, offset, length);
+}
+
+Boolean MediaPlayerBridge::SetDataUriDataSource(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& url)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::SetDataUriDataSource, mObj is NULL");
+        return FALSE;
+    }
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return mObj->SetDataUriDataSource(c, url);
+}
+
+AutoPtr<IInterface> MediaPlayerBridge::GetAllowedOperations(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaPlayerBridge> mObj = (MediaPlayerBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaPlayerBridge::GetAllowedOperations, mObj is NULL");
+        return NULL;
+    }
+    AutoPtr<MediaPlayerBridge::AllowedOperations> ao= mObj->GetAllowedOperations();
+    return ao->Probe(EIID_IInterface);
+}
 } // namespace Media
 } // namespace Webkit
 } // namespace Droid

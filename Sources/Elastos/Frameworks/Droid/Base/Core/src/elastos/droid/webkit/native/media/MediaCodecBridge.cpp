@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/MediaCodecBridge.h"
+#include "elastos/droid/webkit/native/media/api/MediaCodecBridge_dec.h"
 
 //TODO #include "elastos/droid/media/CMediaCodecListHelper.h"
 //TODO #include "elastos/droid/media/CMediaCodecHelper.h"
@@ -86,6 +87,31 @@ Int32 MediaCodecBridge::DequeueInputResult::Index()
     return mIndex;
 }
 
+//callback function definition
+Int32 MediaCodecBridge::DequeueInputResult::Status(
+            /* [in] */IInterface* obj)
+{
+    AutoPtr<DequeueInputResult> mObj = (DequeueInputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueInputResult::Status, mObj is NULL");
+        return 0;//TODO what kind of value is OK
+    }
+    return mObj->Status();
+}
+
+Int32 MediaCodecBridge::DequeueInputResult::Index(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<DequeueInputResult> mObj = (DequeueInputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueInputResult::Index, mObj is NULL");
+        return -1;//TODO what kind of value is OK
+    }
+    return mObj->Index();
+}
+
 //===============================================================
 //                MediaCodecBridge::CodecInfo
 //===============================================================
@@ -118,6 +144,41 @@ Int32 MediaCodecBridge::CodecInfo::Direction()
     return mDirection;
 }
 
+String MediaCodecBridge::CodecInfo::CodecType(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<CodecInfo> mObj = (CodecInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::CodecInfo::CodecType, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->CodecType();
+}
+
+String MediaCodecBridge::CodecInfo::CodecName(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<CodecInfo> mObj = (CodecInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::CodecInfo::CodecName, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->CodecName();
+}
+
+Int32 MediaCodecBridge::CodecInfo::Direction(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<CodecInfo> mObj = (CodecInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::CodecInfo::Direction, mObj is NULL");
+        return 0;//TODO if this is OK
+    }
+    return mObj->Direction();
+}
 //===============================================================
 //            MediaCodecBridge::DequeueOutputResult
 //===============================================================
@@ -172,6 +233,78 @@ Int64 MediaCodecBridge::DequeueOutputResult::PresentationTimeMicroseconds()
 Int32 MediaCodecBridge::DequeueOutputResult::NumBytes()
 {
     return mNumBytes;
+}
+
+Int32 MediaCodecBridge::DequeueOutputResult::Status(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DequeueOutputResult> mObj = (DequeueOutputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputResult::Status, mObj is NULL");
+        return 0;
+    }
+    return mObj->Status();
+}
+
+Int32 MediaCodecBridge::DequeueOutputResult::Index(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DequeueOutputResult> mObj = (DequeueOutputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputResult::Index, mObj is NULL");
+        return 0;
+    }
+    return mObj->Index();
+}
+
+Int32 MediaCodecBridge::DequeueOutputResult::Flags(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DequeueOutputResult> mObj = (DequeueOutputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputResult::Flags, mObj is NULL");
+        return 0;
+    }
+    return mObj->Flags();
+}
+
+Int32 MediaCodecBridge::DequeueOutputResult::Offset(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DequeueOutputResult> mObj = (DequeueOutputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputResult::Offset, mObj is NULL");
+        return 0;
+    }
+    return mObj->Offset();
+}
+
+Int64 MediaCodecBridge::DequeueOutputResult::PresentationTimeMicroseconds(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DequeueOutputResult> mObj = (DequeueOutputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputResult::PresentationTimeMicroseconds, mObj is NULL");
+        return 0;
+    }
+    return mObj->PresentationTimeMicroseconds();
+}
+
+Int32 MediaCodecBridge::DequeueOutputResult::NumBytes(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DequeueOutputResult> mObj = (DequeueOutputResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputResult::NumBytes, mObj is NULL");
+        return 0;
+    }
+    return mObj->NumBytes();
 }
 
 //===============================================================
@@ -321,7 +454,7 @@ String MediaCodecBridge::GetDecoderNameForMime(
 
 //@CalledByNative
 AutoPtr<IInterface> MediaCodecBridge::Create(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Boolean isSecure,
     /* [in] */ Int32 direction)
 {
@@ -745,7 +878,7 @@ Boolean MediaCodecBridge::ConfigureVideo(
 
 //@CalledByNative
 AutoPtr<IInterface> MediaCodecBridge::CreateAudioFormat(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channelCount)
 {
@@ -758,7 +891,7 @@ AutoPtr<IInterface> MediaCodecBridge::CreateAudioFormat(
 
 //@CalledByNative
 AutoPtr<IInterface> MediaCodecBridge::CreateVideoDecoderFormat(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
@@ -771,7 +904,7 @@ AutoPtr<IInterface> MediaCodecBridge::CreateVideoDecoderFormat(
 
 //@CalledByNative
 AutoPtr<IInterface> MediaCodecBridge::CreateVideoEncoderFormat(
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 bitRate,

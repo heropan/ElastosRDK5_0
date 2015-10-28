@@ -85,6 +85,15 @@ protected:
         //@CalledByNative("AllowedOperations")
         CARAPI_(Boolean) CanSeekBackward();
 
+        static CARAPI_(Boolean) CanPause(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(Boolean) CanSeekForward(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(Boolean) CanSeekBackward(
+            /* [in] */ IInterface* obj);
+
     private:
         const Boolean mCanPause;
         const Boolean mCanSeekForward;
@@ -194,6 +203,73 @@ private:
         /* [in] */ Int64 nativeMediaPlayerBridge,
         /* [in] */ Boolean success);
 
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaMediaPlayerBridgeCallback_Init();
+private:
+    static CARAPI_(void) Destroy(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) SetSurface(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* surface);
+
+    static CARAPI_(Boolean) PrepareAsync(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) IsPlaying(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetVideoWidth(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetVideoHeight(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetCurrentPosition(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetDuration(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ReleaseResources(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) SetVolume(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Double volume);
+
+    static CARAPI_(void) Start(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) Pause(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) SeekTo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 msec);
+
+    static CARAPI_(Boolean) SetDataSource(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& url,
+        /* [in] */ const String& cookies,
+        /* [in] */ const String& userAgent,
+        /* [in] */ Boolean hideUrlLog);
+
+    static CARAPI_(Boolean) SetDataSourceFromFd(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 fd,
+        /* [in] */ Int64 offset,
+        /* [in] */ Int64 length);
+
+    static CARAPI_(Boolean) SetDataUriDataSource(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& url);
+
+    static CARAPI_(AutoPtr<IInterface>) GetAllowedOperations(
+        /* [in] */ IInterface* obj);
 private:
     static const String TAG;
 

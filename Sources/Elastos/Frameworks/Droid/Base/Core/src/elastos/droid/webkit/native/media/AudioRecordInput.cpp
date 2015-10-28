@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/AudioRecordInput.h"
+#include "elastos/droid/webkit/native/media/api/AudioRecordInput_dec.h"
 
 //TODO #include "elastos/droid/media/CAudioRecord.h"
 //TODO #include "elastos/droid/media/CAudioRecordHelper.h"
@@ -151,8 +152,8 @@ AudioRecordInput::AudioRecordInput(
     NativeCacheDirectBufferAddress(mNativeAudioRecordInputStream, mBuffer);
 }
 
-//@CalledByNative
-AutoPtr<AudioRecordInput> AudioRecordInput::CreateAudioRecordInput(
+//@CalledByNative return AudioRecordInput
+AutoPtr<IInterface> AudioRecordInput::CreateAudioRecordInput(
     /* [in] */ Int64 nativeAudioRecordInputStream,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channels,
@@ -162,7 +163,7 @@ AutoPtr<AudioRecordInput> AudioRecordInput::CreateAudioRecordInput(
 {
     AutoPtr<AudioRecordInput> ret = new AudioRecordInput(nativeAudioRecordInputStream, sampleRate, channels,
                                 bitsPerSample, bytesPerBuffer, usePlatformAEC);
-    return ret;
+    return TO_IINTERFACE(ret);
 }
 
 //@SuppressLint("NewApi")
@@ -332,6 +333,7 @@ void AudioRecordInput::NativeCacheDirectBufferAddress(
     /* [in] */ Int64 nativeAudioRecordInputStream,
     /* [in] */ IByteBuffer* buffer)
 {
+    Elastos_AudioRecordInput_nativeCacheDirectBufferAddress(THIS_PROBE(IInterface), (Handle32)nativeAudioRecordInputStream, TO_IINTERFACE(buffer));
 }
 
 void AudioRecordInput::NativeOnData(
@@ -339,6 +341,55 @@ void AudioRecordInput::NativeOnData(
     /* [in] */ Int32 size,
     /* [in] */ Int32 hardwareDelayBytes)
 {
+    Elastos_AudioRecordInput_nativeOnData(THIS_PROBE(IInterface), (Handle32)nativeAudioRecordInputStream, size, hardwareDelayBytes);
+}
+
+Boolean AudioRecordInput::Open(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == ariObj)
+    {
+        Logger::E(TAG, "AudioRecordInput::Open, ariObj is NULL");
+        return FALSE;
+    }
+    return ariObj->Open();
+}
+
+void AudioRecordInput::Start(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == ariObj)
+    {
+        Logger::E(TAG, "AudioRecordInput::Start, ariObj is NULL");
+        return;
+    }
+    ariObj->Start();
+}
+
+void AudioRecordInput::Stop(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == ariObj)
+    {
+        Logger::E(TAG, "AudioRecordInput::Stop, ariObj is NULL");
+        return;
+    }
+    ariObj->Stop();
+}
+
+void AudioRecordInput::Close(
+    /* [in] */IInterface* obj)
+{
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == ariObj)
+    {
+        Logger::E(TAG, "AudioRecordInput::Close, ariObj is NULL");
+        return;
+    }
+    ariObj->Close();
 }
 
 } // namespace Media

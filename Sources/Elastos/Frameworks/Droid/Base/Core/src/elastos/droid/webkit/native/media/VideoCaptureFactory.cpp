@@ -209,6 +209,49 @@ AutoPtr<ICameraInfo> VideoCaptureFactory::ChromiumCameraInfo::GetCameraInfo(
     return cameraInfo;
 }
 
+Int32 VideoCaptureFactory::ChromiumCameraInfo::GetNumberOfCameras(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return GetNumberOfCameras(c);
+}
+
+Int32 VideoCaptureFactory::ChromiumCameraInfo::GetId(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCaptureFactory::ChromiumCameraInfo> mObj = (VideoCaptureFactory::ChromiumCameraInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCaptureFactory::ChromiumCameraInfo::GetId, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetId();
+}
+
+String VideoCaptureFactory::ChromiumCameraInfo::GetDeviceName(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCaptureFactory::ChromiumCameraInfo> mObj = (VideoCaptureFactory::ChromiumCameraInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCaptureFactory::ChromiumCameraInfo::GetDeviceName, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetDeviceName();
+}
+
+Int32 VideoCaptureFactory::ChromiumCameraInfo::GetOrientation(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VideoCaptureFactory::ChromiumCameraInfo> mObj = (VideoCaptureFactory::ChromiumCameraInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "VideoCaptureFactory::ChromiumCameraInfo::GetOrientation, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetOrientation();
+}
+
 //===============================================================
 //                      VideoCaptureFactory
 //===============================================================
@@ -238,7 +281,7 @@ AutoPtr<IInterface> VideoCaptureFactory::CreateVideoCapture(
 }
 
 //@CalledByNative
-AutoPtr<ArrayOf<AutoPtr<IInterface> > > VideoCaptureFactory::GetDeviceSupportedFormats(
+AutoPtr<ArrayOf<IInterface*> > VideoCaptureFactory::GetDeviceSupportedFormats(
     /* [in] */ Int32 id)
 {
     AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > cf =
@@ -247,10 +290,10 @@ AutoPtr<ArrayOf<AutoPtr<IInterface> > > VideoCaptureFactory::GetDeviceSupportedF
                     ChromiumCameraInfo::ToSpecialCameraId(id)) :
             VideoCaptureAndroid::GetDeviceSupportedFormats(id);
     Int32 n = cf->GetLength();
-    AutoPtr<ArrayOf<AutoPtr<IInterface> > > result = ArrayOf<AutoPtr<IInterface> >::Alloc(n);
+    AutoPtr<ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(n);
     for(Int32 i = 0; i < n; ++i)
     {
-        (*result)[i] = ((*cf)[i])->Probe(EIID_IInterface);
+        result->Set(i, ((*cf)[i])->Probe(EIID_IInterface));
     }
     return result;
 }
@@ -281,6 +324,63 @@ Int32 VideoCaptureFactory::GetCaptureFormatPixelFormat(
     /* [in] */ VideoCapture::CaptureFormat* format)
 {
     return format->GetPixelFormat();
+}
+//callback function definition
+AutoPtr<IInterface> VideoCaptureFactory::CreateVideoCapture(
+    /* [in] */ IInterface* context,
+    /* [in] */ Int32 id,
+    /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return CreateVideoCapture(c, id, nativeVideoCaptureDeviceAndroid);
+}
+
+Int32 VideoCaptureFactory::GetCaptureFormatWidth(
+    /* [in] */ IInterface* format)
+{
+    AutoPtr<VideoCapture::CaptureFormat> f = (VideoCapture::CaptureFormat*)(IObject::Probe(format));
+    if (NULL == f)
+    {
+        Logger::E("VideoCaptureFactory", "VideoCaptureFactory::GetCaptureFormatWidth, mObj is NULL");
+        return 0;
+    }
+    return VideoCaptureFactory::GetCaptureFormatWidth(f);
+}
+
+Int32 VideoCaptureFactory::GetCaptureFormatHeight(
+    /* [in] */ IInterface* format)
+{
+    AutoPtr<VideoCapture::CaptureFormat> f = (VideoCapture::CaptureFormat*)(IObject::Probe(format));
+    if (NULL == f)
+    {
+        Logger::E("VideoCaptureFactory", "VideoCaptureFactory::GetCaptureFormatHeight, mObj is NULL");
+        return 0;
+    }
+    return VideoCaptureFactory::GetCaptureFormatHeight(f);
+}
+
+Int32 VideoCaptureFactory::GetCaptureFormatFramerate(
+    /* [in] */ IInterface* format)
+{
+    AutoPtr<VideoCapture::CaptureFormat> f = (VideoCapture::CaptureFormat*)(IObject::Probe(format));
+    if (NULL == f)
+    {
+        Logger::E("VideoCaptureFactory", "VideoCaptureFactory::GetCaptureFormatFramerate, mObj is NULL");
+        return 0;
+    }
+    return VideoCaptureFactory::GetCaptureFormatFramerate(f);
+}
+
+Int32 VideoCaptureFactory::GetCaptureFormatPixelFormat(
+    /* [in] */ IInterface* format)
+{
+    AutoPtr<VideoCapture::CaptureFormat> f = (VideoCapture::CaptureFormat*)(IObject::Probe(format));
+    if (NULL == f)
+    {
+        Logger::E("VideoCaptureFactory", "VideoCaptureFactory::GetCaptureFormatPixelFormat, mObj is NULL");
+        return 0;
+    }
+    return VideoCaptureFactory::GetCaptureFormatPixelFormat(f);
 }
 
 } // namespace Media

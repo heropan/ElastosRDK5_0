@@ -118,6 +118,20 @@ private:
     CARAPI_(void) NativeOnMediaInterrupted(
         /* [in] */ Int64 nativeMediaPlayerListener);
 
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaMediaPlayerListenerCallback_Init();
+
+private:
+    static CARAPI_(void) ReleaseResources(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ Int64 nativeMediaPlayerListener,
+        /* [in] */ IInterface* context,
+        /* [in] */ IInterface* mediaPlayerBridge);
+
+
 public:
     // These values are copied from android media player.
     static const Int32 MEDIA_ERROR_MALFORMED = -1007;

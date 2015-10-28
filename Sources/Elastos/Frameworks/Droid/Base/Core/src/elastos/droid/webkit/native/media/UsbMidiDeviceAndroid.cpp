@@ -1,10 +1,12 @@
 #include "elastos/droid/webkit/native/media/UsbMidiDeviceAndroid.h"
+#include "elastos/droid/webkit/native/media/api/UsbMidiDeviceAndroid_dec.h"
 
 //TODO #include "elastos/io/CByteBufferHelper.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/hardware/usb/CUsbRequest.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Hardware::Usb::IUsbConstants;
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
@@ -27,6 +29,7 @@ using Elastos::IO::CByteBufferHelper;
 using Elastos::Core::IThread;
 using Elastos::Core::EIID_IThread;
 using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -393,6 +396,59 @@ void UsbMidiDeviceAndroid::NativeOnData(
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* data)
 {
+    Elastos_UsbMidiDeviceAndroid_nativeOnData((Handle32)nativeUsbMidiDeviceAndroid, endpointNumber, data);
+}
+
+//callback function definition
+void UsbMidiDeviceAndroid::RegisterSelf(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativePointer)
+{
+    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::RegisterSelf, mObj is NULL");
+        return;
+    }
+    mObj->RegisterSelf(nativePointer);
+}
+
+void UsbMidiDeviceAndroid::Send(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 endpointNumber,
+    /* [in] */ ArrayOf<Byte>* bs)
+{
+    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::Send, mObj is NULL");
+        return;
+    }
+    mObj->Send(endpointNumber, bs);
+}
+
+AutoPtr<ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::GetDescriptors, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetDescriptors();
+}
+
+void UsbMidiDeviceAndroid::Close(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::Close, mObj is NULL");
+        return;
+    }
+    mObj->Close();
 }
 
 } // namespace Media

@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/MediaDrmBridge.h"
+#include "elastos/droid/webkit/native/media/api/MediaDrmBridge_dec.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/CHandler.h"
@@ -1310,6 +1311,7 @@ void MediaDrmBridge::AddKeySystemUuidMapping(
 void MediaDrmBridge::NativeOnMediaCryptoReady(
     /* [in] */ Int64 nativeMediaDrmBridge)
 {
+    Elastos_MediaDrmBridge_nativeOnMediaCryptoReady(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge);
 }
 
 void MediaDrmBridge::NativeOnSessionCreated(
@@ -1317,6 +1319,7 @@ void MediaDrmBridge::NativeOnSessionCreated(
     /* [in] */ Int32 sessionId,
     /* [in] */ const String& webSessionId)
 {
+    Elastos_MediaDrmBridge_nativeOnSessionCreated(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId, webSessionId);
 }
 
 void MediaDrmBridge::NativeOnSessionMessage(
@@ -1325,37 +1328,148 @@ void MediaDrmBridge::NativeOnSessionMessage(
     /* [in] */ ArrayOf<Byte>* message,
     /* [in] */ const String& destinationUrl)
 {
+    Elastos_MediaDrmBridge_nativeOnSessionMessage(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId, message, destinationUrl);
 }
 
 void MediaDrmBridge::NativeOnSessionReady(
     /* [in] */ Int64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId)
 {
+    Elastos_MediaDrmBridge_nativeOnSessionReady(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId);
 }
 
 void MediaDrmBridge::NativeOnSessionClosed(
     /* [in] */ Int64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId)
 {
+    Elastos_MediaDrmBridge_nativeOnSessionClosed(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId);
 }
 
 void MediaDrmBridge::NativeOnSessionError(
     /* [in] */ Int64 nativeMediaDrmBridge,
     /* [in] */ Int32 sessionId)
 {
+    Elastos_MediaDrmBridge_nativeOnSessionError(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, sessionId);
 }
 
 void MediaDrmBridge::NativeOnResetDeviceCredentialsCompleted(
     /* [in] */ Int64 nativeMediaDrmBridge,
     /* [in] */ Boolean success)
 {
+    Elastos_MediaDrmBridge_nativeOnResetDeviceCredentialsCompleted(THIS_PROBE(IInterface), (Handle32)nativeMediaDrmBridge, success);
 }
 
 void MediaDrmBridge::NativeAddKeySystemUuidMapping(
     /* [in] */ const String& keySystem,
     /* [in] */ IByteBuffer* uuid)
 {
+    Elastos_MediaDrmBridge_nativeAddKeySystemUuidMapping(keySystem, uuid->Probe(EIID_IInterface));
 }
+
+//callback function definition
+Boolean MediaDrmBridge::SetSecurityLevel(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& securityLevel)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::SetSecurityLevel, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->SetSecurityLevel(securityLevel);
+}
+
+AutoPtr<IInterface> MediaDrmBridge::GetMediaCrypto(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::GetMediaCrypto, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetMediaCrypto();
+}
+
+void MediaDrmBridge::ResetDeviceCredentials(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::ResetDeviceCredentials, mObj is NULL");
+        return;
+    }
+    mObj->ResetDeviceCredentials();
+}
+
+void MediaDrmBridge::ReleaseResources(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::ReleaseResources, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseResources();
+}
+
+void MediaDrmBridge::CreateSession(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 sessionId,
+    /* [in] */ ArrayOf<Byte>* initData,
+    /* [in] */ const String& mime)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::CreateSession, mObj is NULL");
+        return;
+    }
+    mObj->CreateSession(sessionId, initData, mime);
+}
+
+void MediaDrmBridge::ReleaseSession(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 sessionId)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::ReleaseSession, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseSession(sessionId);
+}
+
+void MediaDrmBridge::UpdateSession(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 sessionId,
+    /* [in] */ ArrayOf<Byte>* key)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::UpdateSession, mObj is NULL");
+        return;
+    }
+    mObj->UpdateSession(sessionId, key);
+}
+
+String MediaDrmBridge::GetSecurityLevel(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaDrmBridge> mObj = (MediaDrmBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaDrmBridge::GetSecurityLevel, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetSecurityLevel();
+}
+
 
 } // namespace Media
 } // namespace Webkit

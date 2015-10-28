@@ -88,6 +88,19 @@ public:
             /* [in] */ Int32 id);
 
     private:
+        static CARAPI_(Int32) GetNumberOfCameras(
+            /* [in] */ IInterface* appContext);
+
+        static CARAPI_(Int32) GetId(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(String) GetDeviceName(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(Int32) GetOrientation(
+            /* [in] */ IInterface* obj);
+
+    private:
         // Special devices have more cameras than usual. Those devices are
         // identified by model & device. Currently only the Tango is supported.
         // Note that these devices have no Camera.CameraInfo.
@@ -112,7 +125,7 @@ public:
 
     //@CalledByNative
     //static CARAPI_(AutoPtr<ArrayOf<VideoCapture::CaptureFormat> >) GetDeviceSupportedFormats(
-    static CARAPI_(AutoPtr<ArrayOf<AutoPtr<IInterface> > >) GetDeviceSupportedFormats(
+    static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) GetDeviceSupportedFormats(
         /* [in] */ Int32 id);
 
     //@CalledByNative
@@ -130,6 +143,27 @@ public:
     //@CalledByNative
     static CARAPI_(Int32) GetCaptureFormatPixelFormat(
         /* [in] */ VideoCapture::CaptureFormat* format);
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaVideoCaptureFactoryCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<IInterface>) CreateVideoCapture(
+        /* [in] */ IInterface* context,
+        /* [in] */ Int32 id,
+        /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
+
+    static CARAPI_(Int32) GetCaptureFormatWidth(
+        /* [in] */ IInterface* format);
+
+    static CARAPI_(Int32) GetCaptureFormatHeight(
+        /* [in] */ IInterface* format);
+
+    static CARAPI_(Int32) GetCaptureFormatFramerate(
+        /* [in] */ IInterface* format);
+
+    static CARAPI_(Int32) GetCaptureFormatPixelFormat(
+        /* [in] */ IInterface* format);
 };
 
 } // namespace Media

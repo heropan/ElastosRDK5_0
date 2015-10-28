@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/AudioManagerAndroid.h"
+#include "elastos/droid/webkit/native/media/api/AudioManagerAndroid_dec.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/CHandlerThread.h"
@@ -26,6 +27,7 @@
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Media::IAudioFormat;
 using Elastos::Droid::Media::IAudioRecord;
 using Elastos::Droid::Media::IAudioManager;
@@ -110,6 +112,31 @@ String AudioManagerAndroid::AudioDeviceName::Id()
 String AudioManagerAndroid::AudioDeviceName::Name()
 {
     return mName;
+}
+
+//callback definition
+String AudioManagerAndroid::AudioDeviceName::Id(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioDeviceName> amaObj = (AudioDeviceName*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::AudioDeviceName::Id, amaObj is NULL");
+        return String(NULL);
+    }
+    return amaObj->Id();
+}
+
+String AudioManagerAndroid::AudioDeviceName::Name(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioDeviceName> amaObj = (AudioDeviceName*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::AudioDeviceName::Id, amaObj is NULL");
+        return String(NULL);
+    }
+    return amaObj->Name();
 }
 
 //===============================================================
@@ -480,7 +507,7 @@ Boolean AudioManagerAndroid::RunningOnJellyBeanMR2OrHigher()
 }
 
 /** Construction */
-//@CalledByNative
+//@CalledByNative return AudioManagerAndroid
 AutoPtr<AudioManagerAndroid> AudioManagerAndroid::CreateAudioManagerAndroid(
     /* [in] */ IContext* context,
     /* [in] */ Int64 nativeAudioManagerAndroid)
@@ -708,7 +735,7 @@ Boolean AudioManagerAndroid::SetDevice(
  * and android.Manifest.permission.RECORD_AUDIO.
  */
 //@CalledByNative
-AutoPtr< ArrayOf<AutoPtr<IInterface> > > AudioManagerAndroid::GetAudioInputDeviceNames()
+AutoPtr< ArrayOf<IInterface*> > AudioManagerAndroid::GetAudioInputDeviceNames()
 {
     if (DEBUG) Logd(String("getAudioInputDeviceNames"));
     if (!mIsInitialized)
@@ -725,12 +752,12 @@ AutoPtr< ArrayOf<AutoPtr<IInterface> > > AudioManagerAndroid::GetAudioInputDevic
         devices = mAudioDevices->Clone();
     }
     //TODO List<String> list;// = new ArrayList<String>();
-    AutoPtr< ArrayOf<AutoPtr<IInterface> > > array = ArrayOf<AutoPtr<IInterface> >::Alloc(GetNumOfAudioDevices(devices));
+    AutoPtr< ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(GetNumOfAudioDevices(devices));
     Int32 i = 0;
     for (Int32 id = 0; id < DEVICE_COUNT; ++id) {
         if ((*devices)[id]) {
             AutoPtr<AudioDeviceName> dn = new AudioDeviceName(id, (*DEVICE_NAMES)[id]);
-            (*array)[i] = dn->Probe(EIID_IInterface);
+            array->Set(i, dn->Probe(EIID_IInterface));
             //TODO list.Pushback(DEVICE_NAMES[id]);
             i++;
         }
@@ -1383,6 +1410,119 @@ void AudioManagerAndroid::NativeSetMute(
     /* [in] */ Int64 nativeAudioManagerAndroid,
     /* [in] */ Boolean muted)
 {
+    AutoPtr<IInterface> iAudioManagerAndroid = this->Probe(EIID_IInterface);
+    Elastos_AudioManagerAndroid_nativeSetMute(iAudioManagerAndroid, nativeAudioManagerAndroid, muted);
+}
+
+//begin callback functions definition
+void AudioManagerAndroid::Init(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::Init, amaObj is NULL");
+        return;
+    }
+    amaObj->Init();
+}
+
+void AudioManagerAndroid::Close(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::Close, amaObj is NULL");
+        return;
+    }
+    amaObj->Close();
+}
+
+void AudioManagerAndroid::SetCommunicationAudioModeOn(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean on)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::SetCommunicationAudioModeOn, amaObj is NULL");
+        return;
+    }
+    amaObj->SetCommunicationAudioModeOn(on);
+}
+
+Boolean AudioManagerAndroid::SetDevice(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& deviceId)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::SetDevice, amaObj is NULL");
+        return FALSE;
+    }
+    return amaObj->SetDevice(deviceId);
+}
+AutoPtr<ArrayOf<IInterface*> > AudioManagerAndroid::GetAudioInputDeviceNames(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::GetAudioInputDeviceNames, amaObj is NULL");
+        return NULL;
+    }
+    return amaObj->GetAudioInputDeviceNames();
+}
+
+Int32 AudioManagerAndroid::GetNativeOutputSampleRate(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::GetNativeOutputSampleRate, amaObj is NULL");
+        return DEFAULT_SAMPLING_RATE;
+    }
+    return amaObj->GetNativeOutputSampleRate();
+}
+
+Boolean AudioManagerAndroid::IsAudioLowLatencySupported(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::IsAudioLowLatencySupported, amaObj is NULL");
+        return FALSE;
+    }
+    return amaObj->IsAudioLowLatencySupported();
+}
+
+Int32 AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    if (NULL == amaObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize, amaObj is NULL");
+        return DEFAULT_FRAME_PER_BUFFER;
+    }
+    return amaObj->GetAudioLowLatencyOutputFrameSize();
+}
+
+AutoPtr<IInterface> AudioManagerAndroid::CreateAudioManagerAndroid(
+    /* [in] */ IInterface* context,
+    /* [in} */ Int64 nativeAudioManagerAndroid)
+{
+    AutoPtr<IContext> cObj = (IContext*)(context->Probe(EIID_IContext));
+    if (NULL == cObj)
+    {
+        Logger::E(TAG, "AudioManagerAndroid::CreateAudioManagerAndroid, amaObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(CreateAudioManagerAndroid(cObj, nativeAudioManagerAndroid));
 }
 
 } // namespace Media

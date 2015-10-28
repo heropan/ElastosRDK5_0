@@ -58,8 +58,8 @@ private:
         /* [in] */ Int32 bytesPerBuffer,
         /* [in] */ Boolean usePlatformAEC);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<AudioRecordInput>) CreateAudioRecordInput(
+    //@CalledByNative return AudioRecordInput
+    static CARAPI_(AutoPtr<IInterface>) CreateAudioRecordInput(
         /* [in] */ Int64 nativeAudioRecordInputStream,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 channels,
@@ -89,6 +89,19 @@ private:
         /* [in] */ Int64 nativeAudioRecordInputStream,
         /* [in] */ Int32 size,
         /* [in] */ Int32 hardwareDelayBytes);
+
+//callback declare
+public:
+    static CARAPI_(void*) ElaAudioRecordInputCallback_Init();
+
+    static CARAPI_(Boolean) Open(
+        /* [in] */IInterface* obj);
+    static CARAPI_(void) Start(
+        /* [in] */IInterface* obj);
+    static CARAPI_(void) Stop(
+        /* [in] */IInterface* obj);
+    static CARAPI_(void) Close(
+        /* [in] */IInterface* obj);
 
 private:
     static const String TAG;

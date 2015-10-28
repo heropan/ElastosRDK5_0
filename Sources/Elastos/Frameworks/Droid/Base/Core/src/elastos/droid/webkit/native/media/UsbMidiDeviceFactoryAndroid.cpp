@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/UsbMidiDeviceFactoryAndroid.h"
+#include "elastos/droid/webkit/native/media/api/UsbMidiDeviceFactoryAndroid_dec.h"
 #include "elastos/droid/webkit/native/media/UsbMidiDeviceAndroid.h"
 
 #include "elastos/droid/content/CIntentFilter.h"
@@ -7,6 +8,7 @@
 
 //TODO #include <elastos/utility/CHashSet.h>
 //TODO #include <elastos/utility/CArrayList.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IIntentFilter;
@@ -25,6 +27,7 @@ using Elastos::Utility::IMap;
 //TODO using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -223,6 +226,34 @@ void UsbMidiDeviceFactoryAndroid::NativeOnUsbMidiDeviceRequestDone(
     /* [in] */ Int64 nativeUsbMidiDeviceFactoryAndroid,
     /* [in] */ ArrayOf<IInterface*>* devices)
 {
+    Elastos_UsbMidiDeviceFactoryAndroid_nativeOnUsbMidiDeviceRequestDone((Handle32)nativeUsbMidiDeviceFactoryAndroid, devices);
+}
+
+//callback function definition
+Boolean UsbMidiDeviceFactoryAndroid::EnumerateDevices(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<UsbMidiDeviceFactoryAndroid> mObj = (UsbMidiDeviceFactoryAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("UsbMidiDeviceFactoryAndroid", "UsbMidiDeviceFactoryAndroid::EnumerateDevices, mObj is NULL");
+        return FALSE;
+    }
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return mObj->EnumerateDevices(c);
+}
+
+void UsbMidiDeviceFactoryAndroid::Close(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<UsbMidiDeviceFactoryAndroid> mObj = (UsbMidiDeviceFactoryAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("UsbMidiDeviceFactoryAndroid", "UsbMidiDeviceFactoryAndroid::Close, mObj is NULL");
+        return;
+    }
+    mObj->Close();
 }
 
 } // namespace Media

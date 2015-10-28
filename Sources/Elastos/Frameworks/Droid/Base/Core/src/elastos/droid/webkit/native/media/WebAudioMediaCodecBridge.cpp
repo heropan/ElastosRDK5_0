@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/media/WebAudioMediaCodecBridge.h"
+#include "elastos/droid/webkit/native/media/api/WebAudioMediaCodecBridge_dec.h"
 
 #include "elastos/droid/os/CParcelFileDescriptorHelper.h"
 //TODO #include "elastos/droid/media/CMediaExtractor.h"
@@ -279,6 +280,7 @@ void WebAudioMediaCodecBridge::NativeOnChunkDecoded(
     /* [in] */ Int32 inputChannelCount,
     /* [in] */ Int32 outputChannelCount)
 {
+    Elastos_WebAudioMediaCodecBridge_nativeOnChunkDecoded((Handle32)nativeWebAudioMediaCodecBridge, TO_IINTERFACE(buf), size, inputChannelCount, outputChannelCount);
 }
 
 void WebAudioMediaCodecBridge::NativeInitializeDestination(
@@ -287,6 +289,24 @@ void WebAudioMediaCodecBridge::NativeInitializeDestination(
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int64 durationMicroseconds)
 {
+    Elastos_WebAudioMediaCodecBridge_nativeInitializeDestination((Handle32)nativeWebAudioMediaCodecBridge, inputChannelCount, sampleRate, durationMicroseconds);
+}
+//callback function definition
+String WebAudioMediaCodecBridge::CreateTempFile(
+    /* [in] */ IInterface* ctx)
+{
+    AutoPtr<IContext> c = IContext::Probe(ctx);
+    return WebAudioMediaCodecBridge::CreateTempFile(c);
+}
+
+Boolean WebAudioMediaCodecBridge::DecodeAudioFile(
+    /* [in] */ IInterface* ctx,
+    /* [in] */ Int64 nativeMediaCodecBridge,
+    /* [in] */ Int32 inputFD,
+    /* [in] */ Int64 dataSize)
+{
+    AutoPtr<IContext> c = IContext::Probe(ctx);
+    return WebAudioMediaCodecBridge::DecodeAudioFile(c, nativeMediaCodecBridge, inputFD, dataSize);
 }
 
 } // namespace Media
