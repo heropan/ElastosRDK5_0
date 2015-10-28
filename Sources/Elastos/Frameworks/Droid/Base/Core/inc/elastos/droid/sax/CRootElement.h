@@ -3,7 +3,7 @@
 
 #include "_Elastos_Droid_Sax_CRootElement.h"
 #include "elastos/droid/sax/Element.h"
-#include <elastos/core/StringBuilder.h>
+#include "elastos/core/StringBuilder.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IStringBuilder;
@@ -63,31 +63,32 @@ namespace Sax {
  * Entry ID: bob
  * </pre>
  */
-CarClass(CRootElement) , public Element
+CarClass(CRootElement)
+    , public Element
 {
 public:
+
+    /*
+    * in Java, class Handler extends DefaultHandler, the DefaultHandler is defined here:
+    * #include "org/xml/sax/helpers/DefaultHandler.h"
+    */
     class Handler
-        : public ElRefBase
+        : public Object
+        , public ElRefBase
         , public IEntityResolver
         , public IDTDHandler
         , public IContentHandler
         , public IErrorHandler
     {
     public:
+
+        CAR_INTERFACE_DECL()
+
         Handler()
             : mDepth(-1)
         {}
 
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        virtual ~Handler();
 
         //@Override
         CARAPI SetDocumentLocator(
@@ -392,6 +393,14 @@ public:
     };
 
 public:
+    CAR_OBJECT_DECL();
+
+    CRootElement()
+        : mHandler(new Handler())
+    {}
+
+    virtual ~CRootElement();
+
     /**
      * Constructs a new root element with the given name.
      *
@@ -410,13 +419,6 @@ public:
      */
     CARAPI constructor(
         /* [in] */ const String& localName);
-
-    CRootElement()
-        : mHandler(new Handler())
-    {}
-
-    CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
 
     /**
      * Gets the SAX {@code ContentHandler}. Pass this to your SAX parser.

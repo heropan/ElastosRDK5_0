@@ -18,7 +18,7 @@ namespace Sax {
  * @see RootElement
  */
 class Element
-    , public Object
+    : public Object
     , public IElement
 {
 public:
