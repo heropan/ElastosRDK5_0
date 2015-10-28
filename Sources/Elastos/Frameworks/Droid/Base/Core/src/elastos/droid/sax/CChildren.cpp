@@ -5,88 +5,15 @@ namespace Elastos {
 namespace Droid {
 namespace Sax {
 
-CAR_INTERFACE_IMPL(CChildren::Child, IElement);
-
-ECode CChildren::Child::GetChild(
-    /* [in] */ const String& localName,
-    /* [out] */ IElement** result)
-{
-    return Element::GetChild(localName, result);
-}
-
-ECode CChildren::Child::GetChild(
-    /* [in] */ const String& uri,
-    /* [in] */ const String& localName,
-    /* [out] */ IElement** result)
-{
-    return Element::GetChild(uri, localName, result);
-}
-
-ECode CChildren::Child::RequireChild(
-    /* [in] */ const String& localName,
-    /* [out] */ IElement** result)
-{
-    return Element::RequireChild(localName, result);
-}
-
-ECode CChildren::Child::RequireChild(
-    /* [in] */ const String& uri,
-    /* [in] */ const String& localName,
-    /* [out] */ IElement** result)
-{
-    return Element::RequireChild(uri, localName, result);
-}
-
-ECode CChildren::Child::SetElementListener(
-    /* [in] */ IInterface* elementListener)
-{
-    return Element::SetElementListener(elementListener);
-}
-
-ECode CChildren::Child::SetTextElementListener(
-    /* [in] */ IInterface* elementListener)
-{
-    return Element::SetTextElementListener(elementListener);
-}
-
-ECode CChildren::Child::SetStartElementListener(
-    /* [in] */ IStartElementListener* startElementListener)
-{
-    return Element::SetStartElementListener(startElementListener);
-}
-
-ECode CChildren::Child::SetEndElementListener(
-    /* [in] */ IEndElementListener* endElementListener)
-{
-    return Element::SetEndElementListener(endElementListener);
-}
-
-ECode CChildren::Child::SetEndTextElementListener(
-    /* [in] */ IEndTextElementListener* endTextElementListener)
-{
-    return Element::SetEndTextElementListener(endTextElementListener);
-}
-
-ECode CChildren::Child::ToString(
-    /* [out] */ String* str)
-{
-    return Element::ToString(str);
-}
-
-ECode CChildren::Child::ResetRequiredChildren()
-{
-    return Element::ResetRequiredChildren();
-}
-
-ECode CChildren::Child::CheckRequiredChildren(
-    /* [in] */ ILocator* locator)
-{
-    return Element::CheckRequiredChildren(locator);
-}
+CAR_OBJECT_IMPL(CChildren)
 
 CChildren::CChildren()
 {
     mChildren = ArrayOf<AutoPtr<Child> >::Alloc(16);
+}
+
+CChildren::~CChildren()
+{
 }
 
 ECode CChildren::GetOrCreate(

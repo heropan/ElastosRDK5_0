@@ -5,60 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Sax {
 
-UInt32 CRootElement::Handler::AddRef()
+CAR_INTERFACE_IMPL(CRootElement::Handler, Object, IEntityResolver, IDTDHandler, IContentHandler, IErrorHandler)
+
+CRootElement::Handler::~Handler()
 {
-    return ElRefBase::AddRef();
-}
-
-UInt32 CRootElement::Handler::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CRootElement::Handler::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IEntityResolver) {
-        return (PInterface)(IEntityResolver*)this;
-    }
-    else if (riid == EIID_IDTDHandler) {
-        return (PInterface)(IDTDHandler*)this;
-    }
-    else if (riid == EIID_IContentHandler) {
-        return (PInterface)(IContentHandler*)this;
-    }
-    else if (riid == EIID_IErrorHandler) {
-        return (PInterface)(IErrorHandler*)this;
-    }
-
-    return NULL;
-}
-
-ECode CRootElement::Handler::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface*)(IEntityResolver*)this) {
-        *pIID = EIID_IEntityResolver;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface*)(IDTDHandler*)this) {
-        *pIID = EIID_IDTDHandler;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface*)(IContentHandler*)this) {
-        *pIID = EIID_IContentHandler;
-        return NOERROR;
-    }
-
-    else if (pObject == (IInterface*)(IErrorHandler*)this) {
-        *pIID = EIID_IErrorHandler;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
 }
 
 ECode CRootElement::Handler::SetDocumentLocator(
@@ -288,6 +238,10 @@ ECode CRootElement::Handler::FatalError(
     /* [in] */ ECode exception)
 {
     return exception;
+}
+
+CRootElement::~CRootElement()
+{
 }
 
 ECode CRootElement::constructor(
