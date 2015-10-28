@@ -779,13 +779,6 @@ module
             [in] IBundle* resultExtras);
     }
 
-    /**
-     * @Involve
-     * interface IIntentReceiver
-     */
-    interface IPendingIntentFinishedDispatcher {
-    }
-
     } // namespace App
     } // namespace Droid
     } // namespace Elastos

@@ -1,6 +1,6 @@
 
 #include "elastos/droid/app/CPendingIntent.h"
-#include "elastos/droid/app/CFinishedDispatcher.h"
+#include "elastos/droid/app/CPendingIntentFinishedDispatcher.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/CUserHandle.h"
@@ -30,6 +30,10 @@ namespace App{
 //============================================================================
 //              CPendingIntent
 //============================================================================
+CAR_INTERFACE_IMPL_2(CPendingIntent, Object, IPendingIntent, IParcelable)
+
+CAR_OBJECT_IMPL(CPendingIntent)
+
 ECode CPendingIntent::GetIntentSender(
     /* [out] */ IIntentSender** intentSender)
 {
@@ -100,7 +104,7 @@ ECode CPendingIntent::Send(
 
     AutoPtr<IIntentReceiver> receiver;
     if (onFinished != NULL) {
-        FAIL_RETURN(CFinishedDispatcher::New(this, onFinished, handler, (IIntentReceiver **)&receiver));
+        FAIL_RETURN(CPendingIntentFinishedDispatcher::New(this, onFinished, handler, (IIntentReceiver **)&receiver));
     }
 
     Int32 res;
@@ -312,8 +316,8 @@ ECode CPendingIntent::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
-    StringBuilder sb("CPendingIntent: target: 0X");
-    sb += StringUtils::Int32ToHexString((Int32)(mTarget.Get()), TRUE);
+    StringBuilder sb("CPendingIntent: target: ");
+    sb += Object::ToString(mTarget);
     *info = sb.ToString();
     return NOERROR;
 }

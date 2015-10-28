@@ -36,6 +36,10 @@ public:
 
 protected:
     static Boolean sSystemReady;
+
+private:
+    ActivityManagerNative();
+    ActivityManagerNative(const ActivityManagerNative&);
 };
 
 } // namespace App

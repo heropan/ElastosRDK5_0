@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CActionKeyInfo, Object, IActionKeyInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CActionKeyInfo)
+
 CActionKeyInfo::CActionKeyInfo()
     : mKeyCode(0)
 {}

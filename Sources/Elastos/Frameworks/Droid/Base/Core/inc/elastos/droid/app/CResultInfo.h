@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CRESULTINFO_H__
 
 #include "_Elastos_Droid_App_CResultInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
 
@@ -11,8 +12,19 @@ namespace Droid {
 namespace App {
 
 CarClass(CResultInfo)
+    , public Object
+    , public IResultInfo
+    , public IParcelable
 {
 public:
+    CResultInfo();
+
+    virtual ~CResultInfo();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(

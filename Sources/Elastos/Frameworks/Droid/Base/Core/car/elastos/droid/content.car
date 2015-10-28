@@ -156,6 +156,7 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IIIntentSender;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Content.Pm.IPackageManager;
@@ -710,6 +711,12 @@ module
 
         class CIntentSender {
             constructor();
+
+            constructor(
+                [in] IIIntentSender* intentSender);
+
+            constructor(
+                [in] IBinder* target);
 
             interface IIntentSender;
             interface IParcelable;

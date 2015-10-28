@@ -1370,7 +1370,7 @@ ECode CContextImpl::StartIntentSender(
 //    try {
     String resolvedType = String(NULL);
     if (fillInIntent != NULL) {
-        fillInIntent->MigrateExtraStreamToClipData();
+        fillInIntent->MigrateExtraStreamToClipData(&bval);
         fillInIntent->PrepareToLeaveProcess();
         AutoPtr<IContentResolver> contentResolver;
         GetContentResolver((IContentResolver**)&contentResolver);

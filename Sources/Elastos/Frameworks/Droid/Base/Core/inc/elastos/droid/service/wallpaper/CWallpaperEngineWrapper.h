@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERENGINEWRAPPER_H__
 
 #include "_Elastos_Droid_Service_Wallpaper_CWallpaperEngineWrapper.h"
-#include "service/wallpaper/WallpaperService.h"
+#include "elastos/droid/service/wallpaper/WallpaperService.h"
 
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::Os::IHandlerCaller;

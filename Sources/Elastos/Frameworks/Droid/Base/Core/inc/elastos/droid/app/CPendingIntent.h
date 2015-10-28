@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_CPendingIntent.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IUserHandle;
@@ -21,8 +21,15 @@ namespace Droid {
 namespace App {
 
 CarClass(CPendingIntent)
+    , public Object
+    , public IPendingIntent
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(

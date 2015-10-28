@@ -210,6 +210,7 @@ module
             [in] String resultData,
             [in] IBundle* map,
             [in] String requiredPermission,
+            [in] Int32 appOp,
             [in] Boolean serialized,
             [in] Boolean sticky,
             [in] Int32 userId,
@@ -1021,6 +1022,13 @@ module
 
         NotifyEnterAnimationComplete(
             [in] IBinder* token);
+
+        /*
+         * Private non-Binder interfaces
+         * /* package */
+         */
+        TestIsSystemReady(
+            [out] Boolean* ready);
     }
 
     /** Information you can retrieve about a particular application. */

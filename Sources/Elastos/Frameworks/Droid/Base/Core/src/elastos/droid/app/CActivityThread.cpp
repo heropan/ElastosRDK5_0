@@ -1,6 +1,4 @@
 
-//#include <unistd.h>
-//#include <new>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/app/LoadedPkg.h"
@@ -31,11 +29,11 @@
 #include "elastos/droid/view/CWindowManagerGlobal.h"
 #include "elastos/droid/utility/CParcelableObjectContainer.h"
 #include "elastos/droid/database/sqlite/CSQLiteDatabaseHelper.h"
-#include <elastos/core/Thread.h>
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Thread.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
-#include "elastos/droid/R.h"
 #include <unistd.h>
 
 using Elastos::Core::ISystem;

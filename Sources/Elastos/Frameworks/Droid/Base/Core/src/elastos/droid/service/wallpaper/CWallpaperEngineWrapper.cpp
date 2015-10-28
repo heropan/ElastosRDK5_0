@@ -1,5 +1,5 @@
 
-#include "service/wallpaper/CWallpaperEngineWrapper.h"
+#include "elastos/droid/service/wallpaper/CWallpaperEngineWrapper.h"
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 

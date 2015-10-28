@@ -1,4 +1,4 @@
-#include "elastos/droid/app/CFinishedDispatcher.h"
+#include "elastos/droid/app/CPendingIntentFinishedDispatcher.h"
 #include "unistd.h"
 
 namespace Elastos {
@@ -8,10 +8,15 @@ namespace App {
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Content::EIID_IIntentReceiver;
 
-CFinishedDispatcher::CFinishedDispatcher()
+CAR_INTERFACE_IMPL(CPendingIntentFinishedDispatcher, Runnable, IIntentReceiver)
+
+CAR_OBJECT_IMPL(CPendingIntentFinishedDispatcher)
+
+CPendingIntentFinishedDispatcher::CPendingIntentFinishedDispatcher()
+    : mResultCode(0)
 {}
 
-CFinishedDispatcher::~CFinishedDispatcher()
+CPendingIntentFinishedDispatcher::~CPendingIntentFinishedDispatcher()
 {
     mWho = NULL;
     mHandler = NULL;
@@ -19,18 +24,18 @@ CFinishedDispatcher::~CFinishedDispatcher()
     mResultExtras = NULL;
 }
 
-ECode CFinishedDispatcher::constructor(
+ECode CPendingIntentFinishedDispatcher::constructor(
     /* [in] */ IPendingIntent* pi,
     /* [in] */ IPendingIntentOnFinished* who,
     /* [in] */ IHandler* handler)
 {
-    mPendingIntent=pi;
-    mWho=who;
-    mHandler=handler;
+    mPendingIntent = pi;
+    mWho = who;
+    mHandler = handler;
     return NOERROR;
 }
 
-ECode CFinishedDispatcher::PerformReceive(
+ECode CPendingIntentFinishedDispatcher::PerformReceive(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 resultCode,
     /* [in] */ const String&  data,
@@ -53,12 +58,12 @@ ECode CFinishedDispatcher::PerformReceive(
     return NOERROR;
 }
 
-ECode CFinishedDispatcher::Run()
+ECode CPendingIntentFinishedDispatcher::Run()
 {
     return mWho->OnSendFinished(mPendingIntent, mIntent, mResultCode, mResultData, mResultExtras);
 }
 
-ECode CFinishedDispatcher::ToString(
+ECode CPendingIntentFinishedDispatcher::ToString(
     /* [out] */ String* str)
 {
     return NOERROR;

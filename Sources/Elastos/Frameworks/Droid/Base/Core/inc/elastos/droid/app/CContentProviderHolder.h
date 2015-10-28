@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_CCONTENTPROVIDERHOLDER_H__
 
 #include "_Elastos_Droid_App_CContentProviderHolder.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +14,15 @@ using Elastos::Droid::Content::Pm::IProviderInfo;
 
 
 CarClass(CContentProviderHolder)
+    , public Object
+    , public IContentProviderHolder
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CContentProviderHolder();
 
     CARAPI constructor();

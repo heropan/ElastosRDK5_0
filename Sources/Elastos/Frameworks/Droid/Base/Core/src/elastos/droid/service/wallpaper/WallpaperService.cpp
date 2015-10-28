@@ -1,5 +1,5 @@
 
-#include "service/wallpaper/WallpaperService.h"
+#include "elastos/droid/service/wallpaper/WallpaperService.h"
 #ifdef DROID_CORE
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/res/CConfiguration.h"
@@ -8,8 +8,8 @@
 #include "elastos/droid/view/CInputChannel.h"
 #include "elastos/droid/view/CWindowManagerGlobal.h"
 #include "elastos/droid/graphics/CRect.h"
-#include "service/wallpaper/CWallpaperServiceEngineWindow.h"
-#include "service/wallpaper/CWallpaperServiceWrapper.h"
+#include "elastos/droid/service/wallpaper/CWallpaperServiceEngineWindow.h"
+#include "elastos/droid/service/wallpaper/CWallpaperServiceWrapper.h"
 #include "elastos/droid/os/CLooperHelper.h"
 #endif
 #include "elastos/droid/R.h"

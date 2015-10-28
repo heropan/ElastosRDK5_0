@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSERVICEENGINEWINDOW_H__
 
 #include "_Elastos_Droid_Service_Wallpaper_CWallpaperServiceEngineWindow.h"
-#include "service/wallpaper/WallpaperService.h"
+#include "elastos/droid/service/wallpaper/WallpaperService.h"
 #include "elastos/droid/view/BaseIWindow.h"
 
 using Elastos::Droid::Internal::View::BaseIWindow;

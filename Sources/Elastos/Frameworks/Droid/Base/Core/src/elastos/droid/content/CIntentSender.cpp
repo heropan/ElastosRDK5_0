@@ -23,7 +23,6 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-
 //============================================================================
 //              CIntentSender::FinishedDispatcher
 //============================================================================

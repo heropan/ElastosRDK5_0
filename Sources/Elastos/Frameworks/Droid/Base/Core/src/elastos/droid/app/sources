@@ -9,12 +9,24 @@ INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
 
 #SOURCES += ActionBar.cpp
+SOURCES += CActionKeyInfo.cpp
 
+SOURCES += ActivityManagerNative.cpp
 SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 
+#SOURCES += CContentProviderHolder.cpp
+
+SOURCES += CPendingIntent.cpp
+SOURCES += CPendingIntentFinishedDispatcher.cpp
+SOURCES += CPendingIntentHelper.cpp
+
+SOURCES += CResultInfo.cpp
+
+
+
+
 #SOURCES = Activity.cpp
-#SOURCES += ActivityManagerNative.cpp
 #SOURCES += AlertDialog.cpp
 #SOURCES += AppGlobals.cpp
 #SOURCES += ApplicationPackageManager.cpp
@@ -46,7 +58,7 @@ SOURCES += CActivityOptionsHelper.cpp
 #SOURCES += CApplicationThread.cpp
 #SOURCES += Application.cpp
 #SOURCES += CApplication.cpp
-#SOURCES += CContentProviderHolder.cpp
+
 #SOURCES += CContextImpl.cpp
 #SOURCES += ReceiverRestrictedContext.cpp
 #SOURCES += CDialog.cpp
@@ -73,13 +85,10 @@ SOURCES += CActivityOptionsHelper.cpp
 #SOURCES += CNotificationInboxStyle.cpp
 #SOURCES += NotificationManager.cpp
 #SOURCES += COnActivityPausedListener.cpp
-#SOURCES += CFinishedDispatcher.cpp
-#SOURCES += CPendingIntent.cpp
-#SOURCES += CPendingIntentHelper.cpp
+
 #SOURCES += CPermissionController.cpp
 #SOURCES += CPresentation.cpp
 #SOURCES += Presentation.cpp
-#SOURCES += CResultInfo.cpp
 #SOURCES += CSearchManager.cpp
 #SOURCES += CStatusBarManager.cpp
 #SOURCES += CTaskStackBuilder.cpp
@@ -120,7 +129,6 @@ SOURCES += CActivityOptionsHelper.cpp
 #SOURCES += CWallpaperManager.cpp
 #SOURCES += CWallpaperManagerHelper.cpp
 #SOURCES += CProgressDialog.cpp
-#SOURCES += CActionKeyInfo.cpp
 #SOURCES += CSearchableInfo.cpp
 #SOURCES += CSearchableInfoHelper.cpp
 #SOURCES += SharedPreferencesImpl.cpp

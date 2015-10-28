@@ -1311,7 +1311,7 @@ ECode Instrumentation::ExecStartActivity(
         }
     }
 
-    intent->MigrateExtraStreamToClipData();
+    intent->MigrateExtraStreamToClipData(&bval);
     intent->PrepareToLeaveProcess();
     Boolean bval;
     intent->MigrateExtraStreamToClipData(&bval);
@@ -1383,7 +1383,7 @@ ECode Instrumentation::ExecStartActivitiesAsUser(
     Int32 length = intents->GetLength();
     AutoPtr <ArrayOf<String> > resolvedTypes = ArrayOf<String>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        (*intents)[i]->MigrateExtraStreamToClipData();
+        (*intents)[i]->MigrateExtraStreamToClipData(&bval);
         (*intents)[i]->PrepareToLeaveProcess();
         String type;
         (*intents)[i]->ResolveTypeIfNeeded(resolver, &type);

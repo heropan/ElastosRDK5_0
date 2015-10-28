@@ -4,7 +4,7 @@
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/pm/CResolveInfo.h"
 #include "elastos/droid/utility/Xml.h"
-#include "service/wallpaper/WallpaperService.h"
+#include "elastos/droid/service/wallpaper/WallpaperService.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 

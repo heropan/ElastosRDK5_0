@@ -20,7 +20,7 @@
 #include <linux/netlink.h>
 #include <elastos/core/StringBuilder.h>
 
-#include "service/wallpaper/CWallpaperSettingsActivity.h"
+#include "elastos/droid/service/wallpaper/CWallpaperSettingsActivity.h"
 #include "elastos/droid/content/CResourcesTheme.h"
 
 

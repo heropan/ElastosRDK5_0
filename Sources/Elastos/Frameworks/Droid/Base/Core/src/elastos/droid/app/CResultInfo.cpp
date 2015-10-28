@@ -9,6 +9,18 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CResultInfo, Object, IResultInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CResultInfo)
+
+CResultInfo::CResultInfo()
+    : mRequestCode(0)
+    , mResultCode(0)
+{}
+
+CResultInfo::~CResultInfo()
+{}
+
 ECode CResultInfo::constructor()
 {
     return NOERROR;

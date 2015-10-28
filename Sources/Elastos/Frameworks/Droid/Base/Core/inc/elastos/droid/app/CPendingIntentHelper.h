@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CPENDINGINTENTHELPER_H__
 
 #include "_Elastos_Droid_App_CPendingIntentHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -14,8 +15,14 @@ namespace Droid {
 namespace App {
 
 CarClass(CPendingIntentHelper)
+   , public Singleton
+   , public IPendingIntentHelper
 {
 public:
+   CAR_INTERFACE_DECL()
+
+   CAR_SINGLETON_DECL()
+
      /**
       * Retrieve a PendingIntent that will start a new activity, like calling
       * {@link Context#startActivity(Intent) Context.startActivity(Intent)}.

@@ -121,29 +121,30 @@ module
     merge("app/backup/SharedPreferencesBackupHelper.car");
     merge("app/backup/WallpaperBackupHelper.car");
 
+    using interface Elastos.Core.IRunnable;
+
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IIIntentSender;
+    interface Elastos.Droid.Content.IIntentSender;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntentReceiver;
+    interface Elastos.Droid.Utility.IAttributeSet;
 
 //     using interface Elastos.Core.IClassLoader;
 //     using interface Elastos.Core.ICharSequence;
-//     using interface Elastos.Core.IRunnable;
-//     interface Elastos.Droid.Os.IHandler;
-//     interface Elastos.Droid.Os.IBinder;
 //     interface Elastos.Droid.Os.ILooper;
 //     interface Elastos.Droid.Os.IParcelFileDescriptor;
 //     interface Elastos.Droid.Os.IRemoteCallback;
 //     interface Elastos.Droid.Content.Pm.IResolveInfo;
 //     interface Elastos.Droid.Content.Pm.IProviderInfo;
-//     interface Elastos.Droid.Content.IIntent;
 //     interface Elastos.Droid.Content.IIntentFilter;
-//     interface Elastos.Droid.Content.IIntentSender;
-//     interface Elastos.Droid.Content.IIIntentSender;
 //     interface Elastos.Droid.Content.IContentResolver;
-//     interface Elastos.Droid.Content.IContext;
 //     interface Elastos.Droid.Content.IDialogInterface;
-//     interface Elastos.Droid.Content.IIIntentSender;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
-//     interface Elastos.Droid.Content.IIntentReceiver;
 //     interface Elastos.Droid.Content.IComponentName;
 //     interface Elastos.Droid.Graphics.IBitmap;
 //     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
@@ -156,7 +157,6 @@ module
 //     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
 //     interface Elastos.Droid.View.IViewGroupLayoutParams;
 //     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
-//     interface Elastos.Droid.Utility.IAttributeSet;
 //     interface Elastos.Droid.App.IFragmentManagerHelper;
 //     interface Elastos.Droid.App.IFragmentManagerImplHelper;
 //     interface Elastos.Droid.App.IFragmentManagerImpl;
@@ -378,17 +378,17 @@ module
 //         interface IActivityNonConfigurationInstances;
 //     }
 
-//     [local]
-//     class CActionKeyInfo{
-//         constructor();
+    [local]
+    class CActionKeyInfo{
+        constructor();
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-//         interface IActionKeyInfo;
-//         interface IParcelable;
-//     }
+        interface IActionKeyInfo;
+        interface IParcelable;
+    }
 
 //     [local]
 //     class CSearchableInfo{
@@ -484,33 +484,32 @@ module
 //         interface IUiModeManager;
 //     }
 
-//     class CFinishedDispatcher {
-//         constructor(
-//             [in] IPendingIntent* pi,
-//             [in] IPendingIntentOnFinished* who,
-//             [in] IHandler* handler);
+    class CPendingIntent {
+        constructor();
 
-//         interface IPendingIntentFinishedDispatcher;
-//         interface IIntentReceiver;
-//         interface IRunnable;
-//     }
+        constructor(
+            [in] IIIntentSender* intentSender);
 
-//     class CPendingIntent {
-//         constructor();
+        constructor(
+            [in] IBinder* target);
 
-//         constructor(
-//             [in] IIIntentSender* target1);
+        interface IPendingIntent;
+        interface IParcelable;
+    }
 
-//         constructor(
-//             [in] IBinder* target2);
+    class CPendingIntentFinishedDispatcher {
+        constructor(
+            [in] IPendingIntent* pi,
+            [in] IPendingIntentOnFinished* who,
+            [in] IHandler* handler);
 
-//         interface IPendingIntent;
-//         interface IParcelable;
-//     }
+        interface IIntentReceiver;
+        interface IRunnable;
+    }
 
-//     singleton class CPendingIntentHelper{
-//         interface IPendingIntentHelper;
-//     }
+    singleton class CPendingIntentHelper{
+        interface IPendingIntentHelper;
+    }
 
 //     class CApplicationErrorReport {
 //         constructor();
@@ -568,18 +567,18 @@ module
 //         interface IKeyEventCallback;
 //     }
 
-//     class CResultInfo {
-//         constructor();
+    class CResultInfo {
+        constructor();
 
-//         constructor(
-//             [in] String resultWho,
-//             [in] Int32 requestCode,
-//             [in] Int32 resultCode,
-//             [in] IIntent* data);
+        constructor(
+            [in] String resultWho,
+            [in] Int32 requestCode,
+            [in] Int32 resultCode,
+            [in] IIntent* data);
 
-//         interface IResultInfo;
-//         interface IParcelable;
-//     }
+        interface IResultInfo;
+        interface IParcelable;
+    }
 
 //     class CActivityThread {
 //         constructor();

@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CContentProviderHolder, Object, IContentProviderHolder, IParcelable)
+
+CAR_OBJECT_IMPL(CContentProviderHolder)
+
 CContentProviderHolder::CContentProviderHolder()
     : mNoReleaseNeeded(FALSE)
 {

@@ -1,7 +1,7 @@
 
-#include "service/wallpaper/CWallpaperServiceWrapper.h"
-#include "service/wallpaper/WallpaperService.h"
-#include "service/wallpaper/CWallpaperEngineWrapper.h"
+#include "elastos/droid/service/wallpaper/CWallpaperServiceWrapper.h"
+#include "elastos/droid/service/wallpaper/WallpaperService.h"
+#include "elastos/droid/service/wallpaper/CWallpaperEngineWrapper.h"
 
 namespace Elastos {
 namespace Droid {

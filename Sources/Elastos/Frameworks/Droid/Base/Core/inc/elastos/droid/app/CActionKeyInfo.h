@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_CACITONKEYINFO_H__
 
 #include "_Elastos_Droid_App_CActionKeyInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -10,8 +11,15 @@ namespace Droid {
 namespace App {
 
 CarClass(CActionKeyInfo)
+    , public Object
+    , public IActionKeyInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActionKeyInfo();
 
     CARAPI constructor();
