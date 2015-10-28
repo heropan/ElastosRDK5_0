@@ -26,7 +26,8 @@ class ContentViewCore;
   * Java peer of the native class of the same name.
   */
 // @JNINamespace("web_contents_delegate_android")
-class WebContentsDelegateAndroid : public Object
+class WebContentsDelegateAndroid
+    : public Object
 {
 public:
     virtual CARAPI_(Int32) GetMostRecentProgress();

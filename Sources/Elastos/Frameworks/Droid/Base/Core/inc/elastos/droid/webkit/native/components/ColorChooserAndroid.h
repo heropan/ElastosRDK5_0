@@ -36,10 +36,12 @@ namespace Components {
   * native color_chooser_android.cc
   */
 // @JNINamespace("web_contents_delegate_android")
-class ColorChooserAndroid : public Object
+class ColorChooserAndroid
+    : public Object
 {
 public:
-    class InnerOnColorChangedListener : public OnColorChangedListener
+    class InnerOnColorChangedListener
+        : public OnColorChangedListener
     {
     public:
         InnerOnColorChangedListener(

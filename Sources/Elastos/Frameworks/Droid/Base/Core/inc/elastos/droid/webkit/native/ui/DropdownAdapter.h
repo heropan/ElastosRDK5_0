@@ -43,7 +43,8 @@ class DropdownItem;
 /**
   * Dropdown item adapter for DropdownPopupWindow.
   */
-class DropdownAdapter : public Object
+class DropdownAdapter
+    : public Object
     // TODO : public ArrayAdapter
 {
 public:

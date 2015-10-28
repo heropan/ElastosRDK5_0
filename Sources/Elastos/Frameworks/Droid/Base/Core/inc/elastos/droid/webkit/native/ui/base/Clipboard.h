@@ -32,7 +32,8 @@ namespace Base {
   * clipboard.
   */
 // @JNINamespace("ui")
-class Clipboard : public Object
+class Clipboard
+    : public Object
 {
 public:
     /**

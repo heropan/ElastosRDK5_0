@@ -20,7 +20,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/android_webview/AwSettings.h"
 //#include "elastos/droid/webkit/WebSettings.h"
-//#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
 
 // package com.android.webview.chromium;
 // import android.util.Log;
@@ -34,8 +33,6 @@
 
 //using Elastos::Droid::Webkit::WebSettings;
 //using Elastos::Droid::Webkit::RenderPriority;
-//using Elastos::Droid::Webkit::AndroidWebview::AwSettings;
-
 using Elastos::Droid::Webkit::AndroidWebview::AwSettings;
 
 namespace Elastos {
@@ -52,7 +49,7 @@ public:
     ContentSettingsAdapter(
         /* [in] */ AwSettings* awSettings);
 
-    // virtual CARAPI_(AutoPtr<AwSettings>) GetAwSettings();
+    virtual CARAPI_(AutoPtr<AwSettings>) GetAwSettings();
 
     // @Override
     // @Deprecated
@@ -474,7 +471,7 @@ public:
 
 private:
     static const String LOGTAG;
-    //AutoPtr<AwSettings> mAwSettings;
+    AutoPtr<AwSettings> mAwSettings;
 };
 
 } // namespace Chromium

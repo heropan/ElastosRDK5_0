@@ -36,13 +36,15 @@ namespace Ui {
   * approximation of a vertical sync starting point; see also http://crbug.com/156397.
   */
 // @SuppressLint("NewApi")
-class VSyncMonitor : public Object
+class VSyncMonitor
+    : public Object
 {
 public:
     /**
       * VSync listener class
       */
-    class Listener : public Object
+    class Listener
+        : public Object
     {
     public:
         /**

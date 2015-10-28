@@ -45,10 +45,12 @@ namespace Base {
   * The window base class that has the minimum functionality.
   */
 // @JNINamespace("ui")
-class WindowAndroid : public Object
+class WindowAndroid
+    : public Object
 {
 public:
-    class InnerVSyncMonitorListener : public VSyncMonitor::Listener
+    class InnerVSyncMonitorListener
+        : public VSyncMonitor::Listener
     {
     public:
         InnerVSyncMonitorListener(
@@ -66,7 +68,8 @@ public:
     /**
       * An interface that intent callback objects have to implement.
       */
-    class IntentCallback : public Object
+    class IntentCallback
+        : public Object
     {
     public:
         /**

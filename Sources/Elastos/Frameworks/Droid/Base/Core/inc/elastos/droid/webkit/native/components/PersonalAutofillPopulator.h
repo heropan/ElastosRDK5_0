@@ -33,13 +33,15 @@ namespace Components {
   * Requires permissions: READ_CONTACTS and READ_PROFILE.
   */
 // @JNINamespace("autofill")
-class PersonalAutofillPopulator : public Object
+class PersonalAutofillPopulator
+    : public Object
 {
 private:
     /**
       * SQL query definitions for obtaining specific profile information.
       */
-    class ProfileQuery : public Object
+    class ProfileQuery
+        : public Object
     {
     public:
         virtual CARAPI_(AutoPtr< ArrayOf<String> >) Projection() = 0;
@@ -53,7 +55,8 @@ private:
         static AutoPtr<IUri> mProfileDataUri;
     };
 
-    class EmailProfileQuery : public ProfileQuery
+    class EmailProfileQuery
+        : public ProfileQuery
     {
     public:
         // @Override
@@ -66,7 +69,8 @@ private:
         static const Int32 EMAIL_ADDRESS = 0;
     };
 
-    class PhoneProfileQuery : public ProfileQuery
+    class PhoneProfileQuery
+        : public ProfileQuery
     {
     public:
         // @Override
@@ -79,7 +83,8 @@ private:
         static const Int32 NUMBER = 0;
     };
 
-    class AddressProfileQuery : public ProfileQuery
+    class AddressProfileQuery
+        : public ProfileQuery
     {
     public:
         // @Override
@@ -98,7 +103,8 @@ private:
         static const Int32 COUNTRY = 6;
     };
 
-    class NameProfileQuery : public ProfileQuery
+    class NameProfileQuery
+        : public ProfileQuery
     {
     public:
         // @Override

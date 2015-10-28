@@ -16,7 +16,8 @@ namespace Droid {
 namespace Webkit {
 namespace Components {
 
-class InterceptNavigationDelegate : public Object
+class InterceptNavigationDelegate
+    : public Object
 {
 public:
     /**

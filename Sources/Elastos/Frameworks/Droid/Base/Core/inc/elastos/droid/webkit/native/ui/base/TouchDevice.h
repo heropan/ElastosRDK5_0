@@ -25,7 +25,8 @@ namespace Base {
   * Simple proxy to let us query the touch device from C++
   */
 // @JNINamespace("ui")
-class TouchDevice : public Object
+class TouchDevice
+    : public Object
 {
 private:
     /**

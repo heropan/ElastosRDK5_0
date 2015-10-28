@@ -165,7 +165,8 @@ class WebViewChromium
     //, public IWebViewProviderViewDelegate
 {
 private:
-    class WebViewChromiumRunQueue : public Object
+    class WebViewChromiumRunQueue 
+        : public Object
     {
     private:
         class InnerDrainQueueRunnable
@@ -255,19 +256,20 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
-        InnerContextWrapper(
-            /* [in] */ WebViewChromium* owner);
+        InnerContextWrapper();
 
         // @Override
         CARAPI_(AutoPtr<IClassLoader>) GetClassLoader();
 
         // @Override
-        CARAPI GetSystemService(
-            /* [in] */ const String& name,
-            /* [out] */ IInterface** object);
+        //CARAPI GetSystemService(
+        //    /* [in] */ const String& name,
+        //    /* [out] */ IInterface** object);
 
-    private:
-        WebViewChromium* mOwner;
+        // @Override
+        // just overwrite for compile
+        CARAPI GetBaseContext(
+            /* [out] */ IContext** context);
     };
 
     class InnerThreadViolationRunnable
@@ -1992,8 +1994,8 @@ private:
         WebViewChromium* mOwner;
     };
 
-    // AwContents.NativeGLDelegate implementation --------------------------------------
-    class WebViewNativeGLDelegate : public AwContents::NativeGLDelegate
+    class WebViewNativeGLDelegate
+        : public AwContents::NativeGLDelegate
     {
     public:
         WebViewNativeGLDelegate(
@@ -2012,8 +2014,8 @@ private:
         WebViewChromium* mOwner;
     };
 
-    // AwContents.InternalAccessDelegate implementation --------------------------------------
-    class InternalAccessAdapter : public AwContents::InternalAccessDelegate
+    class InternalAccessAdapter 
+        : public AwContents::InternalAccessDelegate
     {
     public:
         InternalAccessAdapter(
@@ -2401,7 +2403,7 @@ public:
 
     // @Override
     CARAPI AddJavascriptInterface(
-        /* [in] */ const Object* obj,
+        /* [in] */ Object* obj,
         /* [in] */ const String& interfaceName);
 
     // @Override
@@ -2726,7 +2728,7 @@ private:
         /* [in] */ const String& encoding);
 
     CARAPI LoadUrlOnUiThread(
-        /* [in] */ IInterface/*LoadUrlParams*/* loadUrlParams);
+        /* [in] */ LoadUrlParams* loadUrlParams);
 
     /**
      * Returns true if the supplied {@link WebChromeClient} supports fullscreen.

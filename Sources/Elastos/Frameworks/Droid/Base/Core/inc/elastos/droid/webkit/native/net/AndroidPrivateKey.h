@@ -23,7 +23,8 @@ namespace Net {
   * Abstract private key that bundles the PrivateKey and AndroidKeyStore that it belongs to.
   */
 // @JNINamespace("net::android")
-class AndroidPrivateKey : public Object
+class AndroidPrivateKey
+    : public Object
 {
 public:
     /** @return AndroidKeyStore that handles this key. */

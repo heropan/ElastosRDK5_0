@@ -1,7 +1,7 @@
 
 #include "elastos/droid/webkit/native/net/X509Util.h"
 #include "elastos/core/IntegralToString.h"
-//#include "elastos/core/AutoLock.h"
+#include "elastos/core/AutoLock.h"
 //#include "elastos/security/cert/CCertificateFactoryHelper.h"
 //#include "elastos/security/CKeyStoreHelper.h"
 //#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
@@ -15,7 +15,7 @@ using Elastos::Core::IntegralToString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-//using Elastos::Core::AutoLock;
+using Elastos::Core::AutoLock;
 using Elastos::IO::IInputStream;
 using Elastos::IO::CFile;
 using Elastosx::Net::Ssl::ITrustManager;
@@ -230,7 +230,7 @@ ECode X509Util::ClearTestRootCertificates()
 
     assert(0);
     EnsureInitialized();
-    //--Object::AutoLock lock(sLock);
+    AutoLock lock(sLock);
     //try {
         sTestKeyStore->Load(NULL, NULL);
         ReloadTestTrustManager();
@@ -422,7 +422,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
     //}
 
-    //--Object::AutoLock lock(sLock);
+    AutoLock lock(sLock);
     // If no trust manager was found, fail without crashing on the null pointer.
     if (sDefaultTrustManager == NULL) {
         AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_FAILED);

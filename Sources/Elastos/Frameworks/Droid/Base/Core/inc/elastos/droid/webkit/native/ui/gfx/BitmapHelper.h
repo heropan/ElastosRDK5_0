@@ -28,7 +28,8 @@ namespace Gfx {
   * Helper class to decode and sample down bitmap resources.
   */
 // @JNINamespace("gfx")
-class BitmapHelper : public Object
+class BitmapHelper
+    : public Object
 {
 private:
     // @CalledByNative

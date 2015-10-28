@@ -49,7 +49,8 @@ public:
     /**
       * The callback used to indicate the user has clicked on a suggestion.
       */
-    class OnColorSuggestionClickListener : public Object
+    class OnColorSuggestionClickListener
+        : public Object
     {
     public:
         /**

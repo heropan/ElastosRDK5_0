@@ -35,7 +35,8 @@ namespace Ui {
   *
   * Mirrors a "color_picker_advanced_component" layout.
   */
-class ColorPickerAdvancedComponent : public Object
+class ColorPickerAdvancedComponent
+    : public Object
 {
 public:
     /**

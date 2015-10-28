@@ -28,7 +28,8 @@ namespace Base {
   * This class provides the locale related methods for the native library.
   */
 // @JNINamespace("l10n_util")
-class LocalizationUtils : public Object
+class LocalizationUtils
+    : public Object
 {
 public:
     /**

@@ -11,7 +11,8 @@ namespace Droid {
 namespace Webkit {
 namespace Net {
 
-class PrivateKeyType : public Object
+class PrivateKeyType
+    : public Object
 {
 public:
     static const Int32 RSA = 0;

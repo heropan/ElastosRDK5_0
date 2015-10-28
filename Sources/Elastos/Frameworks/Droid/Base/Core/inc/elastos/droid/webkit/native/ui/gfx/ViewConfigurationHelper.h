@@ -35,7 +35,8 @@ namespace Gfx {
   *
   */
 // @JNINamespace("gfx")
-class ViewConfigurationHelper : public Object
+class ViewConfigurationHelper
+    : public Object
 {
 public:
     class InnerComponentCallbacks

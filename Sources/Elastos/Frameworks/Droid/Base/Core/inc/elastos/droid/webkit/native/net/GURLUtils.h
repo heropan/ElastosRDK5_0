@@ -19,7 +19,8 @@ namespace Net {
   * Class to access the GURL library from java.
   */
 // @JNINamespace("net")
-class GURLUtils : public Object
+class GURLUtils
+    : public Object
 {
 public:
     /**

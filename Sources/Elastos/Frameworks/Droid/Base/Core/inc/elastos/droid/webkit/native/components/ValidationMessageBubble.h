@@ -40,7 +40,8 @@ namespace Components {
 /**
   * This class is an implementation of validation message bubble UI.
   */
-class ValidationMessageBubble : public Object
+class ValidationMessageBubble
+    : public Object
 {
 private:
     ValidationMessageBubble(

@@ -1,5 +1,8 @@
 
 #include "elastos/droid/webkit/webview/chromium/WebHistoryItemChromium.h"
+#include "elastos/core/AutoLock.h"
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -77,6 +80,7 @@ ECode WebHistoryItemChromium::GetFavicon(
     // return mFavicon;
 
     *bitMap = mFavicon;
+    REFCOUNT_ADD(*bitMap);
     return NOERROR;
 }
 
@@ -84,12 +88,13 @@ ECode WebHistoryItemChromium::GetFavicon(
 ECode WebHistoryItemChromium::Clone(
     /* [out] */ WebHistoryItemChromium** chromium)
 {
-    //Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(chromium);
     // ==================before translated======================
     // return new WebHistoryItemChromium(mUrl, mOriginalUrl, mTitle, mFavicon);
 
     *chromium = new WebHistoryItemChromium(mUrl, mOriginalUrl, mTitle, mFavicon);
+    REFCOUNT_ADD(*chromium);
     return NOERROR;
 }
 

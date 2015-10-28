@@ -36,10 +36,12 @@ namespace Net {
 /**
   * Simple implementation of the AndroidKeyStore for use with an in-process Java KeyStore.
   */
-class DefaultAndroidKeyStore : public AndroidKeyStore
+class DefaultAndroidKeyStore
+    : public AndroidKeyStore
 {
 private:
-    class DefaultAndroidPrivateKey : public AndroidPrivateKey
+    class DefaultAndroidPrivateKey
+        : public AndroidPrivateKey
     {
     public:
         DefaultAndroidPrivateKey(

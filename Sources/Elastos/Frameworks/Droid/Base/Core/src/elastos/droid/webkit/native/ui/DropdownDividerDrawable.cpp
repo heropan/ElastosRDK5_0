@@ -101,6 +101,7 @@ ECode DropdownDividerDrawable::GetOpacity(
     /* [out] */ Int32* opacity)
 {
     assert(0);
+    *opacity = 0;
     return NOERROR;
 }
 

@@ -33,14 +33,16 @@ namespace Ui {
   * Utility functions for common Android UI tasks.
   * This class is not supposed to be instantiated.
   */
-class UiUtils : public Object
+class UiUtils
+    : public Object
 {
 public:
     /**
       * A delegate that can be implemented to override whether or not keyboard detection will be
       * used.
       */
-    class KeyboardShowingDelegate : public Object
+    class KeyboardShowingDelegate
+        : public Object
     {
     public:
         /**

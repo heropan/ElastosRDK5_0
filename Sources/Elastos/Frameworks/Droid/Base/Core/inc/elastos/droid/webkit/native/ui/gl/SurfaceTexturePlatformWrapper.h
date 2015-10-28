@@ -27,7 +27,8 @@ namespace Gl {
   * provide a stable JNI API.
   */
 // @JNINamespace("gfx")
-class SurfaceTexturePlatformWrapper : public Object
+class SurfaceTexturePlatformWrapper
+    : public Object
 {
 private:
     // @CalledByNative
