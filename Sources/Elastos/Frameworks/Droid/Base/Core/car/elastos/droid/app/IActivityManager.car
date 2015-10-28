@@ -1025,8 +1025,9 @@ module
 
         /*
          * Private non-Binder interfaces
-         * /* package */
+         *
          */
+        /* package */
         TestIsSystemReady(
             [out] Boolean* ready);
     }
