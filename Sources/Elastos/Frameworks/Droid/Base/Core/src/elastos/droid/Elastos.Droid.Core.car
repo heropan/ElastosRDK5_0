@@ -28,7 +28,6 @@ module
     merge("../../../car/elastos/droid/provider.car");
     merge("../../../car/elastos/droid/inputmethods.car");
     merge("../../../car/elastos/droid/transition.car");
-    merge("../../../car/elastos/droid/systemui.car");
     merge("../../../car/elastos/droid/opengl.car");
     merge("../../../car/elastos/droid/wifi.car");
 
@@ -63,6 +62,8 @@ module
     //merge("../../../car/elastos/droid/webkit.car");
     //merge("../../../car/elastos/droid/privacy.car");
     merge("../../../car/elastos/droid/service.car");
+
+    merge("../../../car/elastos/droid/systemui.car");
     merge("../../../car/elastos/droid/appwidget.car");
     //merge("../../../car/elastos/droid/swextend.car");
     //merge("../../../car/elastos/droid/telephony.car");
