@@ -12,13 +12,16 @@ public final class Manifest {
         /**  Allows an application to access all multi-user external storage @hide 
          */
         public static final String ACCESS_ALL_EXTERNAL_STORAGE="android.permission.ACCESS_ALL_EXTERNAL_STORAGE";
-        /**  Allow an application to read and write the cache partition.
+        /**   Allow an application to read and write the cache partition.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String ACCESS_CACHE_FILESYSTEM="android.permission.ACCESS_CACHE_FILESYSTEM";
-        /**  Allows read/write access to the "properties" table in the checkin
-         database, to change values that get uploaded. 
+        /**   Allows read/write access to the "properties" table in the checkin
+         database, to change values that get uploaded.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String ACCESS_CHECKIN_PROPERTIES="android.permission.ACCESS_CHECKIN_PROPERTIES";
         /**  Allows an app to access approximate location derived from network location
          sources such as cell towers and Wi-Fi. 
@@ -32,25 +35,51 @@ public final class Manifest {
     
          */
         public static final String ACCESS_CONTENT_PROVIDERS_EXTERNALLY="android.permission.ACCESS_CONTENT_PROVIDERS_EXTERNALLY";
+        /**   Allows an application to provision and access DRM certificates
+         @hide This is not a third-party API (intended for system apps). 
+         */
+        @android.annotation.SystemApi
+        public static final String ACCESS_DRM_CERTIFICATES="android.permission.ACCESS_DRM_CERTIFICATES";
         /**  Allows an app to access precise location from location sources such
          as GPS, cell towers, and Wi-Fi. 
          */
         public static final String ACCESS_FINE_LOCATION="android.permission.ACCESS_FINE_LOCATION";
+        /**  Allows an application to use InputFlinger's low level features.
+         @hide 
+         */
+        public static final String ACCESS_INPUT_FLINGER="android.permission.ACCESS_INPUT_FLINGER";
+        /**  Allows access to keyguard secure storage.  Only allowed for system processes.
+        @hide 
+         */
+        public static final String ACCESS_KEYGUARD_SECURE_STORAGE="android.permission.ACCESS_KEYGUARD_SECURE_STORAGE";
         /**  Allows an application to access extra location provider commands 
          */
         public static final String ACCESS_LOCATION_EXTRA_COMMANDS="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS";
         /**  Allows an application to create mock location providers for testing 
          */
         public static final String ACCESS_MOCK_LOCATION="android.permission.ACCESS_MOCK_LOCATION";
-        /**  Allows an application to access the MTP USB kernel driver.
+        /**   Allows an application to access the MTP USB kernel driver.
          For use only by the device side MTP implementation.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String ACCESS_MTP="android.permission.ACCESS_MTP";
+        /**   Allows an application to listen for network condition observations.
+         @hide This is not a third-party API (intended for system apps). 
+         */
+        @android.annotation.SystemApi
+        public static final String ACCESS_NETWORK_CONDITIONS="android.permission.ACCESS_NETWORK_CONDITIONS";
         /**  Allows applications to access information about networks 
          */
         public static final String ACCESS_NETWORK_STATE="android.permission.ACCESS_NETWORK_STATE";
-        /**  Allows an application to use SurfaceFlinger's low level features 
+        /**   Allows an application to read the current set of notifications, including
+         any metadata and intents attached.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String ACCESS_NOTIFICATIONS="android.permission.ACCESS_NOTIFICATIONS";
+        /**  Allows an application to use SurfaceFlinger's low level features.
+    <p>Not for use by third-party applications. 
          */
         public static final String ACCESS_SURFACE_FLINGER="android.permission.ACCESS_SURFACE_FLINGER";
         /**  Allows applications to access information about Wi-Fi networks 
@@ -59,16 +88,18 @@ public final class Manifest {
         /**  @hide 
          */
         public static final String ACCESS_WIMAX_STATE="android.permission.ACCESS_WIMAX_STATE";
-        /**  Allows applications to call into AccountAuthenticators. Only
-         the system can get this permission. 
+        /**   Allows applications to call into AccountAuthenticators.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String ACCOUNT_MANAGER="android.permission.ACCOUNT_MANAGER";
         /**  Allows an application to add voicemails into the system. 
          */
         public static final String ADD_VOICEMAIL="com.android.voicemail.permission.ADD_VOICEMAIL";
-        /**  Allows an application to use any media decoder when decoding for playback
+        /**   Allows an application to use any media decoder when decoding for playback
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String ALLOW_ANY_CODEC_FOR_PLAYBACK="android.permission.ALLOW_ANY_CODEC_FOR_PLAYBACK";
         /**  Allows access to ASEC non-destructive API calls
          @hide  
@@ -94,58 +125,128 @@ public final class Manifest {
          the AccountManager 
          */
         public static final String AUTHENTICATE_ACCOUNTS="android.permission.AUTHENTICATE_ACCOUNTS";
-        /**  Allows an application to control the backup and restore process
+        /**   Allows an application to control the backup and restore process.
+    <p>Not for use by third-party applications.
          @hide pending API council 
          */
+        @android.annotation.SystemApi
         public static final String BACKUP="android.permission.BACKUP";
-        /**  Allows an application to collect battery statistics 
+        /**   Allows an application to collect battery statistics 
          */
+        @android.annotation.SystemApi
         public static final String BATTERY_STATS="android.permission.BATTERY_STATS";
         /**  Must be required by an {@link android.accessibilityservice.AccessibilityService},
          to ensure that only the system can bind to it. 
          */
         public static final String BIND_ACCESSIBILITY_SERVICE="android.permission.BIND_ACCESSIBILITY_SERVICE";
-        /**  Allows an application to tell the AppWidget service which application
+        /**   Allows an application to tell the AppWidget service which application
          can access AppWidget's data.  The normal user flow is that a user
          picks an AppWidget to go into a particular host, thereby giving that
          host application access to the private data from the AppWidget app.
          An application that has this permission should honor that contract.
-         Very few applications should need to use this permission. 
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String BIND_APPWIDGET="android.permission.BIND_APPWIDGET";
+        /**   Must be required by a {@link
+         android.service.notification.ConditionProviderService},
+         to ensure that only the system can bind to it.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String BIND_CONDITION_PROVIDER_SERVICE="android.permission.BIND_CONDITION_PROVIDER_SERVICE";
+        /**   Allows an application to bind to ConnectionService implementations.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String BIND_CONNECTION_SERVICE="android.permission.BIND_CONNECTION_SERVICE";
         /**  Must be required by device administration receiver, to ensure that only the
          system can interact with it. 
          */
         public static final String BIND_DEVICE_ADMIN="android.permission.BIND_DEVICE_ADMIN";
-        /**  Allows an application to execute contacts directory search.
-         This should only be used by ContactsProvider. 
- @hide 
+        /**   @hide Allows an application to execute contacts directory search.
+         This should only be used by ContactsProvider.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String BIND_DIRECTORY_SEARCH="android.permission.BIND_DIRECTORY_SEARCH";
+        /**  Must be required by an {@link android.service.dreams.DreamService},
+         to ensure that only the system can bind to it. 
+         */
+        public static final String BIND_DREAM_SERVICE="android.permission.BIND_DREAM_SERVICE";
+        /**   Allows an application to bind to InCallService implementations.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String BIND_INCALL_SERVICE="android.permission.BIND_INCALL_SERVICE";
         /**  Must be required by an {@link android.inputmethodservice.InputMethodService},
          to ensure that only the system can bind to it. 
          */
         public static final String BIND_INPUT_METHOD="android.permission.BIND_INPUT_METHOD";
-        /**  Private permission, to restrict who can bring up a dialog to add a new
+        /**  Allows the system to bind to an application's task services
+         @hide 
+         */
+        public static final String BIND_JOB_SERVICE="android.permission.BIND_JOB_SERVICE";
+        /**   Private permission, to restrict who can bring up a dialog to add a new
          keyguard widget
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String BIND_KEYGUARD_APPWIDGET="android.permission.BIND_KEYGUARD_APPWIDGET";
+        /**  Must be required by a {@link android.nfc.cardemulation.HostApduService}
+         or {@link android.nfc.cardemulation.OffHostApduService} to ensure that only
+         the system can bind to it. 
+         */
+        public static final String BIND_NFC_SERVICE="android.permission.BIND_NFC_SERVICE";
+        /**  Must be required by an {@link
+         android.service.notification.NotificationListenerService},
+         to ensure that only the system can bind to it. 
+         */
+        public static final String BIND_NOTIFICATION_LISTENER_SERVICE="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
         /**  Must be required by package verifier receiver, to ensure that only the
          system can interact with it.
          @hide
     
          */
         public static final String BIND_PACKAGE_VERIFIER="android.permission.BIND_PACKAGE_VERIFIER";
-        /**  Must be required by a {@link android.widget.RemoteViewsService},
+        /**  Must be required by a {@link android.printservice.PrintService},
          to ensure that only the system can bind to it. 
          */
+        public static final String BIND_PRINT_SERVICE="android.permission.BIND_PRINT_SERVICE";
+        /**  Must be required by the PrintSpooler to ensure that only the system can bind to it.
+         @hide 
+         */
+        public static final String BIND_PRINT_SPOOLER_SERVICE="android.permission.BIND_PRINT_SPOOLER_SERVICE";
+        /**   Must be required by a {@link android.widget.RemoteViewsService},
+         to ensure that only the system can bind to it. 
+         */
+        @android.annotation.SystemApi
         public static final String BIND_REMOTEVIEWS="android.permission.BIND_REMOTEVIEWS";
+        /**  Must be required by a {@link com.android.media.remotedisplay.RemoteDisplayProvider},
+         to ensure that only the system can bind to it.
+         @hide 
+         */
+        public static final String BIND_REMOTE_DISPLAY="android.permission.BIND_REMOTE_DISPLAY";
         /**  Must be required by a TextService (e.g. SpellCheckerService)
          to ensure that only the system can bind to it. 
          */
         public static final String BIND_TEXT_SERVICE="android.permission.BIND_TEXT_SERVICE";
-        /**  Must be required by an {@link android.net.VpnService},
+        /**   Must be required by an {@link
+        android.service.trust.TrustAgentService},
+        to ensure that only the system can bind to it.
+        @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String BIND_TRUST_AGENT="android.permission.BIND_TRUST_AGENT";
+        /**  Must be required by a {@link android.media.tv.TvInputService}
+         to ensure that only the system can bind to it. 
+         */
+        public static final String BIND_TV_INPUT="android.permission.BIND_TV_INPUT";
+        /**  Must be required by a {@link android.service.voice.VoiceInteractionService},
+         to ensure that only the system can bind to it. 
+         */
+        public static final String BIND_VOICE_INTERACTION="android.permission.BIND_VOICE_INTERACTION";
+        /**  Must be required by a {@link android.net.VpnService},
          to ensure that only the system can bind to it. 
          */
         public static final String BIND_VPN_SERVICE="android.permission.BIND_VPN_SERVICE";
@@ -159,19 +260,42 @@ public final class Manifest {
         /**  Allows applications to discover and pair bluetooth devices 
          */
         public static final String BLUETOOTH_ADMIN="android.permission.BLUETOOTH_ADMIN";
+        /**  Control access to email providers exclusively for Bluetooth
+         @hide
+    
+         */
+        public static final String BLUETOOTH_MAP="android.permission.BLUETOOTH_MAP";
+        /**   Allows applications to pair bluetooth devices without user interaction, and to
+         allow or disallow phonebook access or message access.
+         This is not available to third party applications. 
+         */
+        @android.annotation.SystemApi
+        public static final String BLUETOOTH_PRIVILEGED="android.permission.BLUETOOTH_PRIVILEGED";
         /**  Allows bluetooth stack to access files
          @hide This should only be used by Bluetooth apk.
     
          */
         public static final String BLUETOOTH_STACK="android.permission.BLUETOOTH_STACK";
-        /**  Required to be able to disable the device (very dangerous!). 
+        /**  Allows an application to access data from sensors that the user uses to
+         measure what is happening inside his/her body, such as heart rate. 
+         */
+        public static final String BODY_SENSORS="android.permission.BODY_SENSORS";
+        /**  Required to be able to disable the device (very dangerous!).
+    <p>Not for use by third-party applications.. 
          */
         public static final String BRICK="android.permission.BRICK";
         /**  Allows an application to broadcast a notification that an application
-         package has been removed. 
+         package has been removed.
+         <p>Not for use by third-party applications. 
          */
         public static final String BROADCAST_PACKAGE_REMOVED="android.permission.BROADCAST_PACKAGE_REMOVED";
-        /**  Allows an application to broadcast an SMS receipt notification 
+        /**   Allows an application to broadcast a SCORE_NETWORKS request.
+         <p>Not for use by third-party applications. @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String BROADCAST_SCORE_NETWORKS="android.permission.BROADCAST_SCORE_NETWORKS";
+        /**  Allows an application to broadcast an SMS receipt notification.
+    <p>Not for use by third-party applications. 
          */
         public static final String BROADCAST_SMS="android.permission.BROADCAST_SMS";
         /**  Allows an application to broadcast sticky intents.  These are
@@ -180,7 +304,8 @@ public final class Manifest {
          to wait for the next broadcast. 
          */
         public static final String BROADCAST_STICKY="android.permission.BROADCAST_STICKY";
-        /**  Allows an application to broadcast a WAP PUSH receipt notification 
+        /**  Allows an application to broadcast a WAP PUSH receipt notification.
+    <p>Not for use by third-party applications. 
          */
         public static final String BROADCAST_WAP_PUSH="android.permission.BROADCAST_WAP_PUSH";
         /**  C2DM permission.
@@ -193,10 +318,12 @@ public final class Manifest {
          being placed. 
          */
         public static final String CALL_PHONE="android.permission.CALL_PHONE";
-        /**  Allows an application to call any phone number, including emergency
+        /**   Allows an application to call any phone number, including emergency
          numbers, without going through the Dialer user interface for the user
-         to confirm the call being placed. 
+         to confirm the call being placed.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String CALL_PRIVILEGED="android.permission.CALL_PRIVILEGED";
         /**  Required to be able to access the camera device.
          <p>This will automatically enforce the <a
@@ -207,19 +334,55 @@ public final class Manifest {
          install on devices that don't support all camera features.</p> 
          */
         public static final String CAMERA="android.permission.CAMERA";
-        /**  Allows applications to change the background data setting
+        /**   Allows disabling the transmit-indicator LED that is normally on when
+         a camera is in use by an application.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String CAMERA_DISABLE_TRANSMIT_LED="android.permission.CAMERA_DISABLE_TRANSMIT_LED";
+        /**   Allows an application to capture audio for hotword detection.
+         <p>Not for use by third-party applications.</p>
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String CAPTURE_AUDIO_HOTWORD="android.permission.CAPTURE_AUDIO_HOTWORD";
+        /**   Allows an application to capture audio output.
+         <p>Not for use by third-party applications.</p> 
+         */
+        @android.annotation.SystemApi
+        public static final String CAPTURE_AUDIO_OUTPUT="android.permission.CAPTURE_AUDIO_OUTPUT";
+        /**   Allows an application to capture secure video output.
+         <p>Not for use by third-party applications.</p> 
+         */
+        @android.annotation.SystemApi
+        public static final String CAPTURE_SECURE_VIDEO_OUTPUT="android.permission.CAPTURE_SECURE_VIDEO_OUTPUT";
+        /**   Allows to capture a frame of TV input hardware such as
+         built-in tuners and HDMI-in's.
+         @hide <p>Not for use by third-party applications.
+    
+         */
+        @android.annotation.SystemApi
+        public static final String CAPTURE_TV_INPUT="android.permission.CAPTURE_TV_INPUT";
+        /**   Allows an application to capture video output.
+         <p>Not for use by third-party applications.</p> 
+         */
+        @android.annotation.SystemApi
+        public static final String CAPTURE_VIDEO_OUTPUT="android.permission.CAPTURE_VIDEO_OUTPUT";
+        /**  Allows applications to change the background data setting.
+    <p>Not for use by third-party applications.
          @hide pending API council 
          */
         public static final String CHANGE_BACKGROUND_DATA_SETTING="android.permission.CHANGE_BACKGROUND_DATA_SETTING";
-        /**  Allows an application to change whether an application component (other than its own) is
-         enabled or not. 
+        /**   Allows an application to change whether an application component (other than its own) is
+         enabled or not.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String CHANGE_COMPONENT_ENABLED_STATE="android.permission.CHANGE_COMPONENT_ENABLED_STATE";
-        /**  Allows an application to modify the current configuration, such
-         as locale. 
- Allows an application to modify the current configuration, such
+        /**   Allows an application to modify the current configuration, such
          as locale. 
          */
+        @android.annotation.SystemApi
         public static final String CHANGE_CONFIGURATION="android.permission.CHANGE_CONFIGURATION";
         /**  Allows applications to change network connectivity state 
          */
@@ -237,7 +400,8 @@ public final class Manifest {
          applications on the device.  
          */
         public static final String CLEAR_APP_CACHE="android.permission.CLEAR_APP_CACHE";
-        /**  Allows an application to clear user data 
+        /**  Allows an application to clear user data.
+    <p>Not for use by third-party applications. 
          */
         public static final String CLEAR_APP_USER_DATA="android.permission.CLEAR_APP_USER_DATA";
         /**  Allows an application to configure and connect to Wifi displays
@@ -249,13 +413,25 @@ public final class Manifest {
          @hide 
          */
         public static final String CONFIRM_FULL_BACKUP="android.permission.CONFIRM_FULL_BACKUP";
-        /**  Allows an internal user to use privileged ConnectivityManager APIs.
+        /**   Allows an internal user to use privileged ConnectivityManager APIs.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String CONNECTIVITY_INTERNAL="android.permission.CONNECTIVITY_INTERNAL";
+        /**   Allows an application to control the in-call experience.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String CONTROL_INCALL_EXPERIENCE="android.permission.CONTROL_INCALL_EXPERIENCE";
+        /**  Allows an application to control keyguard.  Only allowed for system processes.
         @hide 
          */
-        public static final String CONNECTIVITY_INTERNAL="android.permission.CONNECTIVITY_INTERNAL";
-        /**  Allows enabling/disabling location update notifications from
-         the radio. Not for use by normal applications. 
+        public static final String CONTROL_KEYGUARD="android.permission.CONTROL_KEYGUARD";
+        /**   Allows enabling/disabling location update notifications from
+         the radio.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String CONTROL_LOCATION_UPDATES="android.permission.CONTROL_LOCATION_UPDATES";
         /**  Allows an application to control low-level features of Wifi displays
          such as opening an RTSP socket.  This permission should only be used
@@ -270,35 +446,45 @@ public final class Manifest {
          @hide 
          */
         public static final String COPY_PROTECTED_DATA="android.permission.COPY_PROTECTED_DATA";
-        /**  Internal permission protecting access to the encryption methods
+        /**   Internal permission protecting access to the encryption methods
         @hide
     
          */
+        @android.annotation.SystemApi
         public static final String CRYPT_KEEPER="android.permission.CRYPT_KEEPER";
-        /**  Allows an application to delete cache files. 
+        /**   Allows an application to delete cache files.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String DELETE_CACHE_FILES="android.permission.DELETE_CACHE_FILES";
-        /**  Allows an application to delete packages. 
+        /**   Allows an application to delete packages.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String DELETE_PACKAGES="android.permission.DELETE_PACKAGES";
-        /**  Allows low-level access to power management 
+        /**  Allows low-level access to power management.
+   <p>Not for use by third-party applications. 
          */
         public static final String DEVICE_POWER="android.permission.DEVICE_POWER";
-        /**  Allows applications to RW to diagnostic resources. 
+        /**   Allows applications to RW to diagnostic resources.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String DIAGNOSTIC="android.permission.DIAGNOSTIC";
         /**  Allows applications to disable the keyguard 
          */
         public static final String DISABLE_KEYGUARD="android.permission.DISABLE_KEYGUARD";
-        /**  Allows an application to retrieve state dump information from system
-         services. 
+        /**   Allows an application to retrieve state dump information from system services.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String DUMP="android.permission.DUMP";
         /**  Allows an application to expand or collapse the status bar. 
          */
         public static final String EXPAND_STATUS_BAR="android.permission.EXPAND_STATUS_BAR";
         /**  Run as a manufacturer test application, running as the root user.
-         Only available when the device is running in manufacturer test mode. 
+         Only available when the device is running in manufacturer test mode.
+         <p>Not for use by third-party applications. 
          */
         public static final String FACTORY_TEST="android.permission.FACTORY_TEST";
         /**  @hide Allows an application to register an input filter which filters the stream
@@ -309,14 +495,19 @@ public final class Manifest {
          */
         public static final String FLASHLIGHT="android.permission.FLASHLIGHT";
         /**  Allows an application to force a BACK operation on whatever is the
-         top activity. 
+         top activity.
+         <p>Not for use by third-party applications. 
          */
         public static final String FORCE_BACK="android.permission.FORCE_BACK";
-        /**  Allows an application to call
+        /**   Allows an application to call
         {@link android.app.ActivityManager#forceStopPackage}.
         @hide 
          */
+        @android.annotation.SystemApi
         public static final String FORCE_STOP_PACKAGES="android.permission.FORCE_STOP_PACKAGES";
+        /**  @hide Allows an application to collect frame statistics 
+         */
+        public static final String FRAME_STATS="android.permission.FRAME_STATS";
         /**  @hide Allows the application to temporarily freeze the screen for a
          full-screen transition. 
          */
@@ -324,6 +515,10 @@ public final class Manifest {
         /**  Allows access to the list of accounts in the Accounts Service 
          */
         public static final String GET_ACCOUNTS="android.permission.GET_ACCOUNTS";
+        /**   @hide Allows an application to collect battery statistics 
+         */
+        @android.annotation.SystemApi
+        public static final String GET_APP_OPS_STATS="android.permission.GET_APP_OPS_STATS";
         /**  Allows an application to get full detailed information about
          recently running tasks, with full fidelity to the real state.
          @hide 
@@ -332,11 +527,16 @@ public final class Manifest {
         /**  Allows an application to find out the space used by any package. 
          */
         public static final String GET_PACKAGE_SIZE="android.permission.GET_PACKAGE_SIZE";
-        /**  Allows an application to get information about the currently
-         or recently running tasks. 
+        /**  @deprecated No longer enforced. 
          */
+        @Deprecated
         public static final String GET_TASKS="android.permission.GET_TASKS";
-        /**  This permission can be used on content providers to allow the global
+        /**  Allows an application to retrieve private information about
+         the current top activity, such as any assist context it can provide.
+         <p>Not for use by third-party applications. 
+         */
+        public static final String GET_TOP_ACTIVITY_INFO="android.permission.GET_TOP_ACTIVITY_INFO";
+        /**   This permission can be used on content providers to allow the global
          search system to access their data.  Typically it used when the
          provider has some permissions protecting it (which global search
          would not be expected to hold), and added as a read-only permission
@@ -345,6 +545,7 @@ public final class Manifest {
          it is used by applications to protect themselves from everyone else
          besides global search. 
          */
+        @android.annotation.SystemApi
         public static final String GLOBAL_SEARCH="android.permission.GLOBAL_SEARCH";
         /**  Internal permission protecting access to the global search
          system: ensures that only the system can access the provider
@@ -358,26 +559,41 @@ public final class Manifest {
         /**  @hide Allows an application to grant or revoke specific permissions. 
          */
         public static final String GRANT_REVOKE_PERMISSIONS="android.permission.GRANT_REVOKE_PERMISSIONS";
-        /**  Allows access to hardware peripherals.  Intended only for hardware testing 
+        /**  Allows access to hardware peripherals.  Intended only for hardware testing.
+    <p>Not for use by third-party applications. 
          */
         public static final String HARDWARE_TEST="android.permission.HARDWARE_TEST";
+        /**   @hide Allows HDMI-CEC service to access device and configuration files.
+         This should only be used by HDMI-CEC service.
+    
+         */
+        @android.annotation.SystemApi
+        public static final String HDMI_CEC="android.permission.HDMI_CEC";
         /**  Allows an application to inject user events (keys, touch, trackball)
          into the event stream and deliver them to ANY window.  Without this
          permission, you can only deliver events to windows in your own process.
-         Very few applications should need to use this permission. 
+         <p>Not for use by third-party applications. 
          */
         public static final String INJECT_EVENTS="android.permission.INJECT_EVENTS";
-        /**  Allows an application to install a location provider into the Location Manager 
+        /**   Allows an application to install a location provider into the Location Manager.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String INSTALL_LOCATION_PROVIDER="android.permission.INSTALL_LOCATION_PROVIDER";
-        /**  Allows an application to install packages. 
+        /**   Allows an application to install packages.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String INSTALL_PACKAGES="android.permission.INSTALL_PACKAGES";
-        /**  @hide Allows an application to call APIs that allow it to do interactions
+        /**  Allows an application to install a shortcut in Launcher 
+         */
+        public static final String INSTALL_SHORTCUT="com.android.launcher.permission.INSTALL_SHORTCUT";
+        /**   @hide Allows an application to call APIs that allow it to do interactions
          across the users on the device, using singleton services and
          user-targeted broadcasts.  This permission is not available to
          third party applications. 
          */
+        @android.annotation.SystemApi
         public static final String INTERACT_ACROSS_USERS="android.permission.INTERACT_ACROSS_USERS";
         /**  @hide Fuller form of {@link android.Manifest.permission#INTERACT_ACROSS_USERS}
          that removes restrictions on where broadcasts can be sent and allows other
@@ -385,67 +601,146 @@ public final class Manifest {
          */
         public static final String INTERACT_ACROSS_USERS_FULL="android.permission.INTERACT_ACROSS_USERS_FULL";
         /**  Allows an application to open windows that are for use by parts
-         of the system user interface.  Not for use by third party apps. 
+         of the system user interface.
+         <p>Not for use by third-party applications. 
          */
         public static final String INTERNAL_SYSTEM_WINDOW="android.permission.INTERNAL_SYSTEM_WINDOW";
         /**  Allows applications to open network sockets. 
          */
         public static final String INTERNET="android.permission.INTERNET";
+        /**   Allows an application to call into a carrier setup flow. It is up to the
+         carrier setup application to enforce that this permission is required
+         @hide This is not a third-party API (intended for OEMs and system apps). 
+         */
+        @android.annotation.SystemApi
+        public static final String INVOKE_CARRIER_SETUP="android.permission.INVOKE_CARRIER_SETUP";
         /**  Allows an application to call
         {@link android.app.ActivityManager#killBackgroundProcesses}. 
          */
         public static final String KILL_BACKGROUND_PROCESSES="android.permission.KILL_BACKGROUND_PROCESSES";
-        /**  @hide Allows an application to magnify the content of a display. 
+        /**  Allows an application to launch the trust agent settings activity.
+        @hide 
          */
-        public static final String MAGNIFY_DISPLAY="android.permission.MAGNIFY_DISPLAY";
+        public static final String LAUNCH_TRUST_AGENT_SETTINGS="android.permission.LAUNCH_TRUST_AGENT_SETTINGS";
+        /**   Allows an application to use location features in hardware,
+         such as the geofencing api.
+         <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
+        public static final String LOCATION_HARDWARE="android.permission.LOCATION_HARDWARE";
+        /**   Allows access to the loop radio (Android@Home mesh network) device.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String LOOP_RADIO="android.permission.LOOP_RADIO";
         /**  Allows an application to manage the list of accounts in the AccountManager 
          */
         public static final String MANAGE_ACCOUNTS="android.permission.MANAGE_ACCOUNTS";
+        /**   @hide Allows an application to create/manage/remove stacks 
+         */
+        @android.annotation.SystemApi
+        public static final String MANAGE_ACTIVITY_STACKS="android.permission.MANAGE_ACTIVITY_STACKS";
         /**  Allows an application to manage (create, destroy,
-         Z-order) application tokens in the window manager.  This is only
-         for use by the system. 
+         Z-order) application tokens in the window manager.
+         <p>Not for use by third-party applications. 
          */
         public static final String MANAGE_APP_TOKENS="android.permission.MANAGE_APP_TOKENS";
+        /**   Allows an application to install and/or uninstall CA certificates on
+         behalf of the user.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String MANAGE_CA_CERTIFICATES="android.permission.MANAGE_CA_CERTIFICATES";
+        /**   Required to add or remove another application as a device admin.
+         <p>Not for use by third-party applications.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String MANAGE_DEVICE_ADMINS="android.permission.MANAGE_DEVICE_ADMINS";
+        /**  Allows an application to manage access to documents, usually as part
+         of a document picker. 
+         */
+        public static final String MANAGE_DOCUMENTS="android.permission.MANAGE_DOCUMENTS";
+        /**  Api Allows an application to manage media projection sessions.
+         @hide This is not a third-party API (intended for system apps). 
+         */
+        public static final String MANAGE_MEDIA_PROJECTION="android.permission.MANAGE_MEDIA_PROJECTION";
         /**  Allows an application to manage network policies (such as warning and disable
          limits) and to define application-specific rules. @hide 
          */
         public static final String MANAGE_NETWORK_POLICY="android.permission.MANAGE_NETWORK_POLICY";
-        /**  Allows an application to manage preferences and permissions for USB devices
+        /**   Allows an application to manage preferences and permissions for USB devices
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String MANAGE_USB="android.permission.MANAGE_USB";
-        /**  @hide Allows an application to call APIs that allow it to query and manage
+        /**   @hide Allows an application to call APIs that allow it to query and manage
          users on the device. This permission is not available to
          third party applications. 
          */
+        @android.annotation.SystemApi
         public static final String MANAGE_USERS="android.permission.MANAGE_USERS";
+        /**  Must be required by hotword enrollment application,
+         to ensure that only the system can interact with it.
+         @hide <p>Not for use by third-party applications.</p> 
+         */
+        public static final String MANAGE_VOICE_KEYPHRASES="android.permission.MANAGE_VOICE_KEYPHRASES";
+        /**   Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
         public static final String MASTER_CLEAR="android.permission.MASTER_CLEAR";
-        /**  Internal permission allowing an application to query/set which
+        /**   Allows an application to know what content is playing and control its playback.
+         <p>Not for use by third-party applications due to privacy of media consumption</p>  
+         */
+        @android.annotation.SystemApi
+        public static final String MEDIA_CONTENT_CONTROL="android.permission.MEDIA_CONTENT_CONTROL";
+        /**   Internal permission allowing an application to query/set which
          applications can bind AppWidgets.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String MODIFY_APPWIDGET_BIND_PERMISSIONS="android.permission.MODIFY_APPWIDGET_BIND_PERMISSIONS";
+        /**   Allows an application to modify audio routing and override policy decisions.
+         <p>Not for use by third-party applications.</p>
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String MODIFY_AUDIO_ROUTING="android.permission.MODIFY_AUDIO_ROUTING";
         /**  Allows an application to modify global audio settings 
          */
         public static final String MODIFY_AUDIO_SETTINGS="android.permission.MODIFY_AUDIO_SETTINGS";
-        /**  Allows an application to account its network traffic against other UIDs. Used
+        /**   Allows an application to account its network traffic against other UIDs. Used
          by system services like download manager and media server. Not for use by
          third party apps. @hide 
          */
+        @android.annotation.SystemApi
         public static final String MODIFY_NETWORK_ACCOUNTING="android.permission.MODIFY_NETWORK_ACCOUNTING";
-        /**  Allows modification of the telephony state - power on, mmi, etc.
-         Does not include placing calls. 
-         */
-        public static final String MODIFY_PHONE_STATE="android.permission.MODIFY_PHONE_STATE";
-        /**  Allows formatting file systems for removable storage. 
-         */
-        public static final String MOUNT_FORMAT_FILESYSTEMS="android.permission.MOUNT_FORMAT_FILESYSTEMS";
-        /**  Allows mounting and unmounting file systems for removable storage. 
-         */
-        public static final String MOUNT_UNMOUNT_FILESYSTEMS="android.permission.MOUNT_UNMOUNT_FILESYSTEMS";
-        /**  Allows an application to move location of installed package.
+        /**   Allows an application to modify parental controls
+         <p>Not for use by third-party applications.
          @hide 
          */
+        @android.annotation.SystemApi
+        public static final String MODIFY_PARENTAL_CONTROLS="android.permission.MODIFY_PARENTAL_CONTROLS";
+        /**   Allows modification of the telephony state - power on, mmi, etc.
+         Does not include placing calls.
+         <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
+        public static final String MODIFY_PHONE_STATE="android.permission.MODIFY_PHONE_STATE";
+        /**   Allows formatting file systems for removable storage.
+    <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
+        public static final String MOUNT_FORMAT_FILESYSTEMS="android.permission.MOUNT_FORMAT_FILESYSTEMS";
+        /**   Allows mounting and unmounting file systems for removable storage.
+    <p>Not for use by third-party applications.
+         */
+        @android.annotation.SystemApi
+        public static final String MOUNT_UNMOUNT_FILESYSTEMS="android.permission.MOUNT_UNMOUNT_FILESYSTEMS";
+        /**   Allows an application to move location of installed package.
+         @hide 
+         */
+        @android.annotation.SystemApi
         public static final String MOVE_PACKAGE="android.permission.MOVE_PACKAGE";
         /**  Allows access to configure network interfaces, configure/use IPSec, etc.
          @hide 
@@ -457,27 +752,45 @@ public final class Manifest {
         /**  Allows applications to perform I/O operations over NFC 
          */
         public static final String NFC="android.permission.NFC";
-        /**  Allows an application to collect component usage
+        /**  Allows sending and receiving handover transfer status from Wifi and Bluetooth
+         @hide
+    
+         */
+        public static final String NFC_HANDOVER_STATUS="android.permission.NFC_HANDOVER_STATUS";
+        /**  @hide Allows enabling/disabling OEM unlock
+   <p>Not for use by third-party applications. 
+         */
+        public static final String OEM_UNLOCK_STATE="android.permission.OEM_UNLOCK_STATE";
+        /**   Allows an application to collect component usage
          statistics @hide 
          */
+        @android.annotation.SystemApi
         public static final String PACKAGE_USAGE_STATS="android.permission.PACKAGE_USAGE_STATS";
-        /**  @hide Package verifier needs to have this permission before the PackageManager will
+        /**   @hide Package verifier needs to have this permission before the PackageManager will
          trust it to verify packages.
     
          */
+        @android.annotation.SystemApi
         public static final String PACKAGE_VERIFICATION_AGENT="android.permission.PACKAGE_VERIFICATION_AGENT";
-        /**  Allows an application to perform CDMA OTA provisioning @hide 
+        /**   Allows an application to perform CDMA OTA provisioning @hide 
          */
+        @android.annotation.SystemApi
         public static final String PERFORM_CDMA_PROVISIONING="android.permission.PERFORM_CDMA_PROVISIONING";
         /**  @deprecated This functionality will be removed in the future; please do
          not use. Allow an application to make its activities persistent. 
          */
         @Deprecated
         public static final String PERSISTENT_ACTIVITY="android.permission.PERSISTENT_ACTIVITY";
-        /**  Allows an application to monitor, modify, or abort outgoing
-         calls. 
+        /**  Allows an application to see the number being dialed during an outgoing
+         call with the option to redirect the call to a different number or
+         abort the call altogether. 
          */
         public static final String PROCESS_OUTGOING_CALLS="android.permission.PROCESS_OUTGOING_CALLS";
+        /**   Allows an application to provide a trust agent.
+         @hide For security reasons, this is a platform-only permission. 
+         */
+        @android.annotation.SystemApi
+        public static final String PROVIDE_TRUST_AGENT="android.permission.PROVIDE_TRUST_AGENT";
         /**  Allows an application to read the user's calendar data. 
          */
         public static final String READ_CALENDAR="android.permission.READ_CALENDAR";
@@ -509,22 +822,23 @@ public final class Manifest {
         /**  Allows an application to read the user's contacts data. 
          */
         public static final String READ_CONTACTS="android.permission.READ_CONTACTS";
-        /**  Allows applications to read dream settings and dream state.
+        /**   Allows applications to read dream settings and dream state.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String READ_DREAM_STATE="android.permission.READ_DREAM_STATE";
         /**  Allows an application to read from external storage.
          <p>Any app that declares the {@link #WRITE_EXTERNAL_STORAGE} permission is implicitly
          granted this permission.</p>
-         <p>Currently, this permission is not enforced and all apps still have access to read from
-         external storage without this permission. That will change in a future release and apps
-         will require this permission to read from external storage. So if your
-         app reads from the external storage, you should add this permission to your app now
-         to ensure that it continues to work on future versions of Android.</p>
-         <p>You can test your app with the permission enforced by either running your app on the
-         Android Emulator when running Android 4.1 or higher, or enabling <em>Protect USB
+         <p>This permission is enforced starting in API level 19.  Before API level 19, this
+         permission is not enforced and all apps still have access to read from external storage.
+         You can test your app with the permission enforced by enabling <em>Protect USB
          storage</em> under Developer options in the Settings app on a device running Android 4.1 or
          higher.</p>
+         <p>Also starting in API level 19, this permission is <em>not</em> required to
+         read/write files in your application-specific directories returned by
+         {@link android.content.Context#getExternalFilesDir} and
+         {@link android.content.Context#getExternalCacheDir}.
          <p class="note"><strong>Note:</strong> If <em>both</em> your <a
          href="{@docRoot}guide/topics/manifest/uses-sdk-element.html#min">{@code
          minSdkVersion}</a> and <a
@@ -535,28 +849,38 @@ public final class Manifest {
          targetSdkVersion}</a> is 4 or higher.
          */
         public static final String READ_EXTERNAL_STORAGE="android.permission.READ_EXTERNAL_STORAGE";
-        /**  Allows an application to take screen shots and more generally
-         get access to the frame buffer data 
+        /**   Allows an application to take screen shots and more generally
+         get access to the frame buffer data.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String READ_FRAME_BUFFER="android.permission.READ_FRAME_BUFFER";
         /**  Allows an application to read (but not write) the user's
         browsing history and bookmarks. 
          */
         public static final String READ_HISTORY_BOOKMARKS="com.android.browser.permission.READ_HISTORY_BOOKMARKS";
         /**  Allows an application to retrieve the current state of keys and
-         switches.  This is only for use by the system.
+         switches.
+         <p>Not for use by third-party applications.
          @deprecated The API that used this permission has been removed. 
          */
         @Deprecated
         public static final String READ_INPUT_STATE="android.permission.READ_INPUT_STATE";
-        /**  Allows an application to read the low-level system log files.
-         Log entries can contain the user's private information,
-         which is why this permission is not available to normal apps. 
+        /**   Allows an application to read install sessions
+         @hide This is not a third-party API (intended for system apps). 
          */
+        @android.annotation.SystemApi
+        public static final String READ_INSTALL_SESSIONS="android.permission.READ_INSTALL_SESSIONS";
+        /**   Allows an application to read the low-level system log files.
+    <p>Not for use by third-party applications, because
+    Log entries can contain the user's private information. 
+         */
+        @android.annotation.SystemApi
         public static final String READ_LOGS="android.permission.READ_LOGS";
-        /**  Allows an application to read historical network usage for
+        /**   Allows an application to read historical network usage for
          specific networks and applications. @hide 
          */
+        @android.annotation.SystemApi
         public static final String READ_NETWORK_USAGE_HISTORY="android.permission.READ_NETWORK_USAGE_HISTORY";
         /**  Allows read only access to phone state.
          <p class="note"><strong>Note:</strong> If <em>both</em> your <a
@@ -569,18 +893,31 @@ public final class Manifest {
          targetSdkVersion}</a> is 4 or higher. 
          */
         public static final String READ_PHONE_STATE="android.permission.READ_PHONE_STATE";
-        /**  Allows read access to privileged phone state.
+        /**  Allows read only access to precise phone state.
+         @hide Pending API council approval 
+         */
+        public static final String READ_PRECISE_PHONE_STATE="android.permission.READ_PRECISE_PHONE_STATE";
+        /**   Allows read access to privileged phone state.
          @hide Used internally. 
          */
+        @android.annotation.SystemApi
         public static final String READ_PRIVILEGED_PHONE_STATE="android.permission.READ_PRIVILEGED_PHONE_STATE";
         /**  Allows an application to read the user's personal profile data. 
          */
         public static final String READ_PROFILE="android.permission.READ_PROFILE";
+        /**   Internal permission to allows an application to read indexable data.
+        @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String READ_SEARCH_INDEXABLES="android.permission.READ_SEARCH_INDEXABLES";
         /**  Allows an application to read SMS messages. 
          */
         public static final String READ_SMS="android.permission.READ_SMS";
-        /**  Allows an application to read from the user's social stream. 
+        /**  Allows an application to read from the user's social stream.
+       @deprecated This functionality will be unsupported in the future; cursors returned
+       will be empty. Please do not use. 
          */
+        @Deprecated
         public static final String READ_SOCIAL_STREAM="android.permission.READ_SOCIAL_STREAM";
         /**  Allows applications to read the sync settings 
          */
@@ -593,9 +930,37 @@ public final class Manifest {
          the Settings app. 
          */
         public static final String READ_USER_DICTIONARY="android.permission.READ_USER_DICTIONARY";
-        /**  Required to be able to reboot the device. 
+        /**  Allows an application to read voicemails in the system. 
          */
+        public static final String READ_VOICEMAIL="com.android.voicemail.permission.READ_VOICEMAIL";
+        /**   @hide Allows applications to read Wi-Fi credential.
+         <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
+        public static final String READ_WIFI_CREDENTIAL="android.permission.READ_WIFI_CREDENTIAL";
+        /**  New version of GET_TASKS that apps can request, since GET_TASKS doesn't really
+         give access to task information.  We need this new one because there are
+         many existing apps that use add libraries and such that have validation
+         code to ensure the app has requested the GET_TASKS permission by seeing
+         if it has been granted the permission...  if it hasn't, it kills the app
+         with a message about being upset.  So we need to have it continue to look
+         like the app is getting that permission, even though it will never be
+         checked, and new privileged apps can now request this one for real access.
+         @hide
+          
+         */
+        @android.annotation.SystemApi
+        public static final String REAL_GET_TASKS="android.permission.REAL_GET_TASKS";
+        /**   Required to be able to reboot the device.
+    <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
         public static final String REBOOT="android.permission.REBOOT";
+        /**  Allows an application to monitor incoming Bluetooth MAP messages, to record
+         or perform processing on them. 
+ @hide 
+         */
+        public static final String RECEIVE_BLUETOOTH_MAP="android.permission.RECEIVE_BLUETOOTH_MAP";
         /**  Allows an application to receive the
          {@link android.content.Intent#ACTION_BOOT_COMPLETED} that is
          broadcast after the system finishes booting.  If you don't
@@ -609,13 +974,16 @@ public final class Manifest {
          to the user. 
          */
         public static final String RECEIVE_BOOT_COMPLETED="android.permission.RECEIVE_BOOT_COMPLETED";
-        /**  @hide 
+        /**   @hide 
          */
+        @android.annotation.SystemApi
         public static final String RECEIVE_DATA_ACTIVITY_CHANGE="android.permission.RECEIVE_DATA_ACTIVITY_CHANGE";
-        /**  Allows an application to receive emergency cell broadcast messages,
-         to record or display them to the user. Reserved for system apps.
+        /**   Allows an application to receive emergency cell broadcast messages,
+         to record or display them to the user.
+         <p>Not for use by third-party applications.
          @hide Pending API council approval 
          */
+        @android.annotation.SystemApi
         public static final String RECEIVE_EMERGENCY_BROADCAST="android.permission.RECEIVE_EMERGENCY_BROADCAST";
         /**  Allows an application to monitor incoming MMS messages, to record
          or perform processing on them. 
@@ -631,9 +999,20 @@ public final class Manifest {
         /**  Allows an application to record audio 
          */
         public static final String RECORD_AUDIO="android.permission.RECORD_AUDIO";
+        /**   Allows an application to do certain operations needed for
+         interacting with the recovery (system update) system.
+         @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String RECOVERY="android.permission.RECOVERY";
         /**  Allows registration for remote audio playback. @hide 
          */
         public static final String REMOTE_AUDIO_PLAYBACK="android.permission.REMOTE_AUDIO_PLAYBACK";
+        /**   Allows an application to remove DRM certificates
+         @hide This is not a third-party API (intended for system apps). 
+         */
+        @android.annotation.SystemApi
+        public static final String REMOVE_DRM_CERTIFICATES="android.permission.REMOVE_DRM_CERTIFICATES";
         /**  @hide Allows an application to change to remove/kill tasks 
          */
         public static final String REMOVE_TASKS="android.permission.REMOVE_TASKS";
@@ -645,55 +1024,76 @@ public final class Manifest {
          */
         @Deprecated
         public static final String RESTART_PACKAGES="android.permission.RESTART_PACKAGES";
-        /**  @hide Allows an application to retrieve the content of the active window
+        /**   @hide Allows an application to retrieve the content of the active window
          An active window is the window that has fired an accessibility event. 
          */
+        @android.annotation.SystemApi
         public static final String RETRIEVE_WINDOW_CONTENT="android.permission.RETRIEVE_WINDOW_CONTENT";
-        /**  @hide Allows an application to retrieve info for a window from the window manager. 
+        /**  @hide Allows an application to retrieve the window token from the accessibility manager. 
          */
-        public static final String RETRIEVE_WINDOW_INFO="android.permission.RETRIEVE_WINDOW_INFO";
+        public static final String RETRIEVE_WINDOW_TOKEN="android.permission.RETRIEVE_WINDOW_TOKEN";
+        /**  Allows applications to act as network scorers. @hide 
+ TODO: Change protection level to normal when unhiding this API. 
+         */
+        @android.annotation.SystemApi
+        public static final String SCORE_NETWORKS="android.permission.SCORE_NETWORKS";
+        /**   Allows an application (Phone) to send a request to other applications
+         to handle the respond-via-message action during incoming calls.
+         <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
+        public static final String SEND_RESPOND_VIA_MESSAGE="android.permission.SEND_RESPOND_VIA_MESSAGE";
         /**  Allows an application to send SMS messages. 
          */
         public static final String SEND_SMS="android.permission.SEND_SMS";
-        /**  Allows an application to send SMS messages via the Messaging app with no user
-         input or confirmation.
+        /**   Allows applications to access serial ports via the SerialManager.
          @hide 
          */
-        public static final String SEND_SMS_NO_CONFIRMATION="android.permission.SEND_SMS_NO_CONFIRMATION";
-        /**  Allows applications to access serial ports via the SerialManager.
-         @hide 
-         */
+        @android.annotation.SystemApi
         public static final String SERIAL_PORT="android.permission.SERIAL_PORT";
         /**  Allows an application to watch and control how activities are
          started globally in the system.  Only for is in debugging
-         (usually the monkey command). 
+         (usually the monkey command).
+         <p>Not for use by third-party applications. 
          */
         public static final String SET_ACTIVITY_WATCHER="android.permission.SET_ACTIVITY_WATCHER";
         /**  Allows an application to broadcast an Intent to set an alarm for the
          user. 
          */
         public static final String SET_ALARM="com.android.alarm.permission.SET_ALARM";
-        /**  Allows an application to control whether activities are immediately
-         finished when put in the background. 
+        /**   Allows an application to control whether activities are immediately
+         finished when put in the background.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String SET_ALWAYS_FINISH="android.permission.SET_ALWAYS_FINISH";
-        /**  Modify the global animation scaling factor. 
+        /**   Modify the global animation scaling factor.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String SET_ANIMATION_SCALE="android.permission.SET_ANIMATION_SCALE";
-        /**  Configure an application for debugging. 
+        /**   Configure an application for debugging.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String SET_DEBUG_APP="android.permission.SET_DEBUG_APP";
+        /**  Allows low-level access to setting input device calibration.
+         <p>Not for use by normal applications.
+         @hide 
+         */
+        public static final String SET_INPUT_CALIBRATION="android.permission.SET_INPUT_CALIBRATION";
         /**  Allows low-level access to setting the keyboard layout.
-         Not for use by normal applications.
+         <p>Not for use by third-party applications.
          @hide 
          */
         public static final String SET_KEYBOARD_LAYOUT="android.permission.SET_KEYBOARD_LAYOUT";
         /**  Allows low-level access to setting the orientation (actually
-         rotation) of the screen.  Not for use by normal applications. 
+         rotation) of the screen.
+         <p>Not for use by third-party applications. 
          */
         public static final String SET_ORIENTATION="android.permission.SET_ORIENTATION";
         /**  Allows low-level access to setting the pointer speed.
-         Not for use by normal applications. 
+         <p>Not for use by third-party applications. 
          */
         public static final String SET_POINTER_SPEED="android.permission.SET_POINTER_SPEED";
         /**  @deprecated No longer useful, see
@@ -702,16 +1102,20 @@ public final class Manifest {
          */
         @Deprecated
         public static final String SET_PREFERRED_APPLICATIONS="android.permission.SET_PREFERRED_APPLICATIONS";
-        /**  Allows an application to set the maximum number of (not needed)
-         application processes that can be running. 
+        /**   Allows an application to set the maximum number of (not needed)
+         application processes that can be running.
+         <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String SET_PROCESS_LIMIT="android.permission.SET_PROCESS_LIMIT";
-        /**  @hide Change the screen compatibility mode of applications 
- @hide Change the screen compatibility mode of applications 
+        /**   @hide Change the screen compatibility mode of applications 
          */
+        @android.annotation.SystemApi
         public static final String SET_SCREEN_COMPATIBILITY="android.permission.SET_SCREEN_COMPATIBILITY";
-        /**  Allows applications to set the system time 
+        /**   Allows applications to set the system time.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String SET_TIME="android.permission.SET_TIME";
         /**  Allows applications to set the system time zone 
          */
@@ -719,40 +1123,51 @@ public final class Manifest {
         /**  Allows applications to set the wallpaper 
          */
         public static final String SET_WALLPAPER="android.permission.SET_WALLPAPER";
-        /**  Allows applications to set a live wallpaper.
+        /**   Allows applications to set a live wallpaper.
          @hide XXX Change to signature once the picker is moved to its
          own apk as Ghod Intended. 
          */
+        @android.annotation.SystemApi
         public static final String SET_WALLPAPER_COMPONENT="android.permission.SET_WALLPAPER_COMPONENT";
         /**  Allows applications to set the wallpaper hints 
          */
         public static final String SET_WALLPAPER_HINTS="android.permission.SET_WALLPAPER_HINTS";
-        /**  Allows an application to call the activity manager shutdown() API
+        /**   Allows an application to call the activity manager shutdown() API
          to put the higher-level system there into a shutdown state.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String SHUTDOWN="android.permission.SHUTDOWN";
-        /**  Allow an application to request that a signal be sent to all persistent processes 
+        /**   Allow an application to request that a signal be sent to all persistent processes.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String SIGNAL_PERSISTENT_PROCESSES="android.permission.SIGNAL_PERSISTENT_PROCESSES";
         /**  Allows an application to start any activity, regardless of permission
          protection or exported state. @hide 
          */
         public static final String START_ANY_ACTIVITY="android.permission.START_ANY_ACTIVITY";
-        /**  Allows an application to open, close, or disable the status bar
-         and its icons. 
+        /**  Allows an application to start a task from a ActivityManager#RecentTaskInfo.
+         @hide 
          */
+        public static final String START_TASKS_FROM_RECENTS="android.permission.START_TASKS_FROM_RECENTS";
+        /**   Allows an application to open, close, or disable the status bar
+         and its icons.
+         <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
         public static final String STATUS_BAR="android.permission.STATUS_BAR";
         /**  Allows an application to be the status bar.  Currently used only by SystemUI.apk
     @hide 
          */
         public static final String STATUS_BAR_SERVICE="android.permission.STATUS_BAR_SERVICE";
-        /**  Allows an application to tell the activity manager to temporarily
+        /**   Allows an application to tell the activity manager to temporarily
          stop application switches, putting it into a special mode that
          prevents applications from immediately switching away from some
          critical UI such as the home screen.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String STOP_APP_SWITCHES="android.permission.STOP_APP_SWITCHES";
         /**  Allows an application to allow access the subscribed feeds
          ContentProvider. 
@@ -769,15 +1184,44 @@ public final class Manifest {
         /**  @hide Allows an application to temporary enable accessibility on the device. 
          */
         public static final String TEMPORARY_ENABLE_ACCESSIBILITY="android.permission.TEMPORARY_ENABLE_ACCESSIBILITY";
-        /**  Allows an application to update device statistics. Not for
-         use by third party apps. 
+        /**  Allows using the device's IR transmitter, if available 
          */
+        public static final String TRANSMIT_IR="android.permission.TRANSMIT_IR";
+        /**  Allows an application to listen to trust changes.  Only allowed for system processes.
+        @hide 
+         */
+        public static final String TRUST_LISTENER="android.permission.TRUST_LISTENER";
+        /**   Allows TvInputService to access underlying TV input hardware such as
+         built-in tuners and HDMI-in's.
+         @hide This should only be used by OEM's TvInputService's.
+    
+         */
+        @android.annotation.SystemApi
+        public static final String TV_INPUT_HARDWARE="android.permission.TV_INPUT_HARDWARE";
+        /**  Allows an application to uninstall a shortcut in Launcher 
+         */
+        public static final String UNINSTALL_SHORTCUT="com.android.launcher.permission.UNINSTALL_SHORTCUT";
+        /**   Allows an application to update application operation statistics. Not for
+         use by third party apps. @hide 
+         */
+        @android.annotation.SystemApi
+        public static final String UPDATE_APP_OPS_STATS="android.permission.UPDATE_APP_OPS_STATS";
+        /**   Allows an application to update device statistics.
+    <p>Not for use by third-party applications. 
+         */
+        @android.annotation.SystemApi
         public static final String UPDATE_DEVICE_STATS="android.permission.UPDATE_DEVICE_STATS";
-        /**  Allows an application to hold an UpdateLock, recommending that a headless
+        /**   Allows an application to hold an UpdateLock, recommending that a headless
          OTA reboot *not* occur while the lock is held.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String UPDATE_LOCK="android.permission.UPDATE_LOCK";
+        /**  Allows access to the PowerManager.userActivity function.
+   <p>Not for use by third-party applications. @hide  
+         */
+        @android.annotation.SystemApi
+        public static final String USER_ACTIVITY="android.permission.USER_ACTIVITY";
         /**  Allows an application to request authtokens from the AccountManager 
          */
         public static final String USE_CREDENTIALS="android.permission.USE_CREDENTIALS";
@@ -791,8 +1235,10 @@ public final class Manifest {
          from dimming 
          */
         public static final String WAKE_LOCK="android.permission.WAKE_LOCK";
-        /**  Allows applications to write the apn settings 
+        /**   Allows applications to write the apn settings.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String WRITE_APN_SETTINGS="android.permission.WRITE_APN_SETTINGS";
         /**  Allows an application to write (but not read) the user's
          calendar data. 
@@ -815,9 +1261,10 @@ public final class Manifest {
          contacts data. 
          */
         public static final String WRITE_CONTACTS="android.permission.WRITE_CONTACTS";
-        /**  Allows applications to write dream settings, and start or stop dreaming.
+        /**   Allows applications to write dream settings, and start or stop dreaming.
          @hide 
          */
+        @android.annotation.SystemApi
         public static final String WRITE_DREAM_STATE="android.permission.WRITE_DREAM_STATE";
         /**  Allows an application to write to external storage.
          <p class="note"><strong>Note:</strong> If <em>both</em> your <a
@@ -827,26 +1274,35 @@ public final class Manifest {
          targetSdkVersion}</a> values are set to 3 or lower, the system implicitly
          grants your app this permission. If you don't need this permission, be sure your <a
          href="{@docRoot}guide/topics/manifest/uses-sdk-element.html#target">{@code
-         targetSdkVersion}</a> is 4 or higher. 
+         targetSdkVersion}</a> is 4 or higher.
+         <p>Starting in API level 19, this permission is <em>not</em> required to
+         read/write files in your application-specific directories returned by
+         {@link android.content.Context#getExternalFilesDir} and
+         {@link android.content.Context#getExternalCacheDir}. 
          */
         public static final String WRITE_EXTERNAL_STORAGE="android.permission.WRITE_EXTERNAL_STORAGE";
-        /**  Allows an application to modify the Google service map. 
+        /**   Allows an application to modify the Google service map.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String WRITE_GSERVICES="android.permission.WRITE_GSERVICES";
         /**  Allows an application to write (but not read) the user's
         browsing history and bookmarks. 
          */
         public static final String WRITE_HISTORY_BOOKMARKS="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS";
-        /**  Allows an application to write to internal media storage
+        /**   Allows an application to write to internal media storage
          @hide  
          */
+        @android.annotation.SystemApi
         public static final String WRITE_MEDIA_STORAGE="android.permission.WRITE_MEDIA_STORAGE";
         /**  Allows an application to write (but not read) the user's
          personal profile data. 
          */
         public static final String WRITE_PROFILE="android.permission.WRITE_PROFILE";
-        /**  Allows an application to read or write the secure system settings. 
+        /**   Allows an application to read or write the secure system settings.
+    <p>Not for use by third-party applications. 
          */
+        @android.annotation.SystemApi
         public static final String WRITE_SECURE_SETTINGS="android.permission.WRITE_SECURE_SETTINGS";
         /**  Allows an application to read or write the system settings. 
          */
@@ -855,8 +1311,11 @@ public final class Manifest {
          */
         public static final String WRITE_SMS="android.permission.WRITE_SMS";
         /**  Allows an application to write (but not read) the user's
-         social stream data. 
+         social stream data.
+         @deprecated This functionality will be unsupported in the future; cursors returned
+         will be empty. Please do not use. 
          */
+        @Deprecated
         public static final String WRITE_SOCIAL_STREAM="android.permission.WRITE_SOCIAL_STREAM";
         /**  Allows applications to write the sync settings 
          */
@@ -864,8 +1323,14 @@ public final class Manifest {
         /**  Allows an application to write to the user dictionary. 
          */
         public static final String WRITE_USER_DICTIONARY="android.permission.WRITE_USER_DICTIONARY";
+        /**  Allows an application to modify and remove existing voicemails in the system 
+         */
+        public static final String WRITE_VOICEMAIL="com.android.voicemail.permission.WRITE_VOICEMAIL";
     }
     public static final class permission_group {
+        /**  Used for permissions that allow requesting certain accessibility features. 
+         */
+        public static final String ACCESSIBILITY_FEATURES="android.permission-group.ACCESSIBILITY_FEATURES";
         /**  Permissions for direct access to the accounts managed
          by the Account Manager. 
          */
@@ -880,10 +1345,7 @@ public final class Manifest {
          running apps, or killing background processes. 
          */
         public static final String APP_INFO="android.permission-group.APP_INFO";
-        /**  ==================================================== 
- Permissions related to changing audio settings   
- ==================================================== 
- Used for permissions that provide direct access to speaker settings
+        /**  Used for permissions that provide direct access to speaker settings
          the device. 
          */
         public static final String AUDIO_SETTINGS="android.permission-group.AUDIO_SETTINGS";
@@ -907,12 +1369,12 @@ public final class Manifest {
          */
         public static final String COST_MONEY="android.permission-group.COST_MONEY";
         /**  Group of permissions that are related to development features.  These
-         are not permissions that should appear in normal applications; they
+         are not permissions that should appear in third-party applications; they
          protect APIs that are intended only to be used for development
          purposes. 
          */
         public static final String DEVELOPMENT_TOOLS="android.permission-group.DEVELOPMENT_TOOLS";
-        /**  Used for permissions that provide access to the user voicemail box. 
+        /**  Used for permissions that provide access to device alarms. 
          */
         public static final String DEVICE_ALARMS="android.permission-group.DEVICE_ALARMS";
         /**  Group of permissions that allow manipulation of how
@@ -950,7 +1412,7 @@ public final class Manifest {
          distinct permissions). 
          */
         public static final String PERSONAL_INFO="android.permission-group.PERSONAL_INFO";
-        /**  Used for permissions that are associated with accessing and modifyign
+        /**  Used for permissions that are associated with accessing and modifying
          telephony state: placing calls, intercepting outgoing calls, reading
          and modifying the phone state. 
          */
@@ -964,19 +1426,13 @@ public final class Manifest {
          expressed as two distinct permissions). 
          */
         public static final String SOCIAL_INFO="android.permission-group.SOCIAL_INFO";
-        /**  ==================================================== 
- Permissions related to changing status bar   
- ==================================================== 
- Used for permissions that change the status bar 
+        /**  Used for permissions that change the status bar 
          */
         public static final String STATUS_BAR="android.permission-group.STATUS_BAR";
         /**  Group of permissions that are related to SD card access. 
          */
         public static final String STORAGE="android.permission-group.STORAGE";
-        /**  ==================================================== 
- Permissions related to accessing sync settings   
- ==================================================== 
- Used for permissions that access the sync settings or sync
+        /**  Used for permissions that access the sync settings or sync
          related information. 
          */
         public static final String SYNC_SETTINGS="android.permission-group.SYNC_SETTINGS";
