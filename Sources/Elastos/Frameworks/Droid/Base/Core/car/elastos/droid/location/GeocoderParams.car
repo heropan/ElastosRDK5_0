@@ -16,6 +16,7 @@ module
      * future expansion of the IGeocodeProvider interface.
      *
      * @hide
+     * @ Involve interface IParcelable
      */
     interface IGeocoderParams {
 

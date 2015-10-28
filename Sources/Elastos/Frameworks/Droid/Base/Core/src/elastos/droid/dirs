@@ -19,11 +19,10 @@ DIRS += systemui
 DIRS += text
 DIRS += transition
 DIRS += utility
-
+DIRS += location
 
 #DIRS += impl
 #DIRS += bluetooth
-#DIRS += location
 #DIRS += speech
 #DIRS += widget
 #DIRS += gesture

@@ -10,6 +10,10 @@ module
      *
      * @hide
      */
+    /**
+     * @Involve interface IParcelable
+     *
+     */
     interface ICountry {
         /**
          * The country code came from the mobile network

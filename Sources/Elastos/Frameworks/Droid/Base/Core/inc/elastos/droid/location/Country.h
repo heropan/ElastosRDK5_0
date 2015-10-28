@@ -14,8 +14,13 @@ namespace Location {
  * @hide
  */
 class Country
+    : public Object
+    , public ICountry
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     Country() {}
 
     /**
@@ -35,6 +40,15 @@ public:
         /* [in] */ const Int32 source);
 
     Country(
+        /* [in] */ ICountry* country);
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ const String& countryIso,
+        /* [in] */ const Int32 source);
+
+    CARAPI constructor(
         /* [in] */ ICountry* country);
 
     /**

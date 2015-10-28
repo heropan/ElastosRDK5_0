@@ -8,6 +8,10 @@ module
     namespace Droid {
     namespace Location {
 
+    /**
+       * @Involve interface IParcelable
+       */
+
     interface IAddress {
         /**
          * Returns the Locale associated with this address.
