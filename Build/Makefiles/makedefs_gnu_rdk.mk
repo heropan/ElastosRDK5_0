@@ -293,17 +293,17 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
     DEF_FILE_NAME := $(patsubst %.def,%,$(filter %.def,$(SOURCES)))
   endif
 
-  ifneq "$(findstring .def,$(SOURCES)))" ""
-    DEF_FLAGS := -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym
-   endif
+  ifneq "$(findstring .def,$(SOURCES))" ""
+    DEF_FLAGS := -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym  -Wl,--version-script,__$(DEF_FILE_NAME).vs
+  endif
 
     ifeq "$(XDK_TARGET_PLATFORM)" "linux"
         DLL_FLAGS := $(32B_FLAG) $(DLL_FLAGS) -shared -Wl,-fPIC,--no-undefined,--no-undefined-version
         ifeq "$(EXPORT_ALL_SYMBOLS)" ""
-            DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
+            DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
         else
-            DLL_DBGINFO_FLAGS := $(DLL_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
-            DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
+            DLL_DBGINFO_FLAGS := $(DLL_FLAGS)
+            DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
         endif
           GCC_SYSROOT=$(XDK_SYSROOT_PATH)
           GCC_LIB_PATH=$(shell $(CC) -print-file-name=)
@@ -324,10 +324,10 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
     ifeq "$(XDK_TARGET_PLATFORM)" "android"
          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--no-undefined,--no-undefined-version
           ifeq "$(EXPORT_ALL_SYMBOLS)" ""
-              DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
+              DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
           else
-              DLL_DBGINFO_FLAGS := $(DLL_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
-              DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS) -Wl,--version-script,__$(DEF_FILE_NAME).vs
+              DLL_DBGINFO_FLAGS := $(DLL_FLAGS)
+              DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
           endif
 
           GCC_SYSROOT=$(PREBUILD_PATH)
@@ -340,7 +340,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           ECX_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
 
           DLL_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
-          DLL_CRT_END=$(GCC_LIB_PATH)/libgcc.a
+          DLL_CRT_END=
       endif
 endif # elf
 

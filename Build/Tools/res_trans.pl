@@ -55,9 +55,15 @@ if ($SourcesType eq "ecx") {
         $TARGET_NAME=~s/(\w+).rc/$1/;
         $REC_NAME=$TARGET_NAME;
     } else {
-        $TARGET_NAME=$R_filename;
-        $TARGET_NAME=~s/(\w+).def/$1/;
-        $REC_NAME=$TARGET_NAME;
+        if ($SourcesType eq "def") {
+            $TARGET_NAME=$R_filename;
+            $TARGET_NAME=~s/(\w+).car/$1/;
+            $REC_NAME=$TARGET_NAME;
+        } else {
+            $TARGET_NAME=$R_filename;
+            $TARGET_NAME=~s/(\w+).def/$1/;
+            $REC_NAME=$TARGET_NAME;
+        }
     }
 
     foreach $line(@array_file){

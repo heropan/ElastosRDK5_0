@@ -41,7 +41,7 @@
  *   monitor.wasSignaled();
  */
 
-class AsynchronousCloseMonitor
+class ECO_PUBLIC AsynchronousCloseMonitor
 {
 public:
     AsynchronousCloseMonitor(
@@ -64,8 +64,8 @@ private:
     Boolean mSignaled;
 
     // Disallow copy and assignment.
-    AsynchronousCloseMonitor(const AsynchronousCloseMonitor&);
-    void operator=(const AsynchronousCloseMonitor&);
+    ECO_LOCAL AsynchronousCloseMonitor(const AsynchronousCloseMonitor&);
+    ECO_LOCAL void operator=(const AsynchronousCloseMonitor&);
 };
 
 #endif  // __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__

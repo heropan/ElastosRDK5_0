@@ -7,13 +7,7 @@
 
 #include <elatypes.h>
 
-#ifdef _UNDEFDLLEXP
-#define DLLEXP
-#else
-#define DLLEXP __declspec(dllimport)
-#endif
-
-EXTERN_C DLLEXP const _ELASTOS EMuid ECLSID_ClassInfo;
+EXTERN_C const _ELASTOS EMuid ECLSID_ClassInfo;
 // { 0x4CDBF5FC,0xD030,0x4583,{ 0xAE,0xCD,0xA2,0x6E,0x95,0xB3,0x02,0x6F }
 
 typedef _ELASTOS UInt32  CIBaseType;

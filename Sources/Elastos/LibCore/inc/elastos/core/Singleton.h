@@ -8,7 +8,7 @@
 namespace Elastos {
 namespace Core {
 
-class Singleton : public Object
+class ECO_PUBLIC Singleton : public Object
 {
 public:
     Singleton();

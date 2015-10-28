@@ -10,24 +10,24 @@
 #include <stdio.h>
 
 extern "C" {
-    _ELASTOS PCarQuintet __cdecl _CarQuintet_Init(_ELASTOS PCarQuintet pCq,
+    ECO_PUBLIC _ELASTOS PCarQuintet __cdecl _CarQuintet_Init(_ELASTOS PCarQuintet pCq,
             _ELASTOS PVoid pBuf, _ELASTOS Int32 size, _ELASTOS Int32 used,
             _ELASTOS CarQuintetFlags flags);
-    _ELASTOS PCarQuintet __cdecl _CarQuintet_Alloc(_ELASTOS Int32 size);
-    void __cdecl _CarQuintet_Free(_ELASTOS PCarQuintet pCq);
-    _ELASTOS PCarQuintet __cdecl _CarQuintet_Clone(const _ELASTOS PCarQuintet pCq);
-    void __cdecl _CarQuintet_AddRef(const _ELASTOS PCarQuintet pCq);
-    _ELASTOS Int32 __cdecl _CarQuintet_Release(_ELASTOS PCarQuintet pCq);
+    ECO_PUBLIC _ELASTOS PCarQuintet __cdecl _CarQuintet_Alloc(_ELASTOS Int32 size);
+    ECO_PUBLIC void __cdecl _CarQuintet_Free(_ELASTOS PCarQuintet pCq);
+    ECO_PUBLIC _ELASTOS PCarQuintet __cdecl _CarQuintet_Clone(const _ELASTOS PCarQuintet pCq);
+    ECO_PUBLIC void __cdecl _CarQuintet_AddRef(const _ELASTOS PCarQuintet pCq);
+    ECO_PUBLIC _ELASTOS Int32 __cdecl _CarQuintet_Release(_ELASTOS PCarQuintet pCq);
 
-    _ELASTOS Int32 __cdecl _ArrayOf_Copy(_ELASTOS PCarQuintet pcqDst,
+    ECO_PUBLIC _ELASTOS Int32 __cdecl _ArrayOf_Copy(_ELASTOS PCarQuintet pcqDst,
             const _ELASTOS CarQuintet* pcqSrc);
-    _ELASTOS Int32 __cdecl _ArrayOf_CopyEx(_ELASTOS PCarQuintet pCq,
+    ECO_PUBLIC _ELASTOS Int32 __cdecl _ArrayOf_CopyEx(_ELASTOS PCarQuintet pCq,
             const _ELASTOS Byte* p, _ELASTOS Int32 n);
-    _ELASTOS PCarQuintet __cdecl _ArrayOf_Alloc(_ELASTOS Int32 size,
+    ECO_PUBLIC _ELASTOS PCarQuintet __cdecl _ArrayOf_Alloc(_ELASTOS Int32 size,
             _ELASTOS CarQuintetFlags flags);
-    _ELASTOS PCarQuintet __cdecl _ArrayOf_Alloc_Box(_ELASTOS PVoid pBuf,
+    ECO_PUBLIC _ELASTOS PCarQuintet __cdecl _ArrayOf_Alloc_Box(_ELASTOS PVoid pBuf,
             _ELASTOS Int32 size, _ELASTOS CarQuintetFlags flags);
-    _ELASTOS Int32 __cdecl _ArrayOf_Replace(_ELASTOS PCarQuintet pCq,
+    ECO_PUBLIC _ELASTOS Int32 __cdecl _ArrayOf_Replace(_ELASTOS PCarQuintet pCq,
             _ELASTOS Int32 offset, const _ELASTOS Byte* p, _ELASTOS Int32 n);
 }
 

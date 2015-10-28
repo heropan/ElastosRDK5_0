@@ -10,14 +10,8 @@ extern "C" {
 typedef interface IClassObject IClassObject;
 typedef interface IClassObject* PClassObject;
 
-#ifdef _UNDEFDLLEXP
-#define DLLEXP
-#else
-#define DLLEXP __declspec(dllimport)
-#endif
-
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IClassObject;
-EXTERN_C DLLEXP const _ELASTOS ClassID ECLSID_CClassObject;
+EXTERN_C const _ELASTOS InterfaceID EIID_IClassObject;
+EXTERN_C const _ELASTOS ClassID ECLSID_CClassObject;
 
 CAR_INTERFACE("00000001-0000-0000-C000-000000000046")
 IClassObject : public IInterface

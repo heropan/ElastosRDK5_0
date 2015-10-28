@@ -58,14 +58,14 @@ enum {
 struct NativeThread;
 class ThreadGroup;
 
-class Thread
+class ECO_PUBLIC Thread
     : public Object
     , public IThread
     , public IRunnable
 {
 private:
     /** Park states */
-    class ParkState
+    class ECO_LOCAL ParkState
     {
     public:
         /** park state indicating unparked */
@@ -899,24 +899,24 @@ private:
      * @see java.lang.SecurityException
      * @see java.lang.SecurityManager
      */
-    CARAPI Create(
+    ECO_LOCAL CARAPI Create(
         /* [in] */ IThreadGroup* group,
         /* [in] */ IRunnable* runnable,
         /* [in] */ const String& threadName,
         /* [in] */ Int64 stackSize);
 
-    static CARAPI_(AutoPtr<IThread>) NativeGetCurrentThread();
+    ECO_LOCAL static CARAPI_(AutoPtr<IThread>) NativeGetCurrentThread();
 
-    CARAPI_(Int32) NativeGetState();
+    ECO_LOCAL CARAPI_(Int32) NativeGetState();
 
     /*
      * void interrupt()
      *
      * Interrupt a thread that is waiting (or is about to wait) on a monitor.
      */
-    CARAPI_(void) NativeInterrupt();
+    ECO_LOCAL CARAPI_(void) NativeInterrupt();
 
-    CARAPI_(Boolean) NativeIsInterrupted();
+    ECO_LOCAL CARAPI_(Boolean) NativeIsInterrupted();
 
     /**
      * Set the action to be executed when interruption, which is probably be
@@ -930,7 +930,7 @@ private:
      * @param action the action to be executed when interruption
      */
     //@SuppressWarnings("unused")
-    CARAPI_(void) SetInterruptAction(
+    ECO_LOCAL CARAPI_(void) SetInterruptAction(
         /* [in] */ IRunnable* action);
 
     /*
@@ -938,7 +938,7 @@ private:
      *
      * The name of the target thread has changed.  We may need to alert DDMS.
      */
-    CARAPI_(void) NativeNameChanged(
+    ECO_LOCAL CARAPI_(void) NativeNameChanged(
         /* [in] */ const String& threadName);
 
     /*
@@ -948,20 +948,20 @@ private:
      * from Thread.MIN_PRIORITY to Thread.MAX_PRIORITY (1-10), with "normal"
      * threads at Thread.NORM_PRIORITY (5).
      */
-    CARAPI_(void) NativeSetPriority(
+    ECO_LOCAL CARAPI_(void) NativeSetPriority(
         /* [in] */ Int32 priority);
 
     /**
      * Stops the Thread, passing it a Throwable (which might be ThreadDeath).
      */
     //@SuppressWarnings("ThrowableInstanceNeverThrown")
-    CARAPI_(void) NativeStop();
+    ECO_LOCAL CARAPI_(void) NativeStop();
 
     /**
      * Suspends the Thread.
      */
     //@SuppressWarnings("ThrowableInstanceNeverThrown")
-    CARAPI_(void) NativeSuspend();
+    ECO_LOCAL CARAPI_(void) NativeSuspend();
 
 public:
     static const ThreadState STATE_MAP[];
@@ -999,7 +999,7 @@ protected:
     Boolean mHasBeenStarted;
 
 private:
-    static const Int32 NANOS_PER_MILLI;
+    ECO_LOCAL static const Int32 NANOS_PER_MILLI;
 
     /**
      * Holds the thread's ID. We simply count upwards, so
@@ -1024,7 +1024,7 @@ private:
     /**
      * Holds the default handler for uncaught exceptions, in case there is one.
      */
-    static AutoPtr<IThreadUncaughtExceptionHandler> sDefaultUncaughtHandler;
+    ECO_LOCAL static AutoPtr<IThreadUncaughtExceptionHandler> sDefaultUncaughtHandler;
 
     /** the park state of the thread */
     Int32 mParkState;

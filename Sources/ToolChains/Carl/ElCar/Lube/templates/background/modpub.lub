@@ -53,7 +53,7 @@ $   END IF
 $END DO
 extern CIClassInfo *g_${MacroRewrite(name)}_classInfo;
 
-EXTERN_C CARAPI DllGetClassObject(
+EXTERN_C ECO_PUBLIC CARAPI DllGetClassObject(
     REMuid clsid, _ELASTOS REIID riid, IInterface **ppObj)
 {
     ECode ec = NOERROR;

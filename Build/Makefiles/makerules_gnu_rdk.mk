@@ -62,13 +62,13 @@ endif
 
 %$(OBJ_SUFFIX): $(MAKEDIR)/%.cpp
 	@echo Compiling $< ...
-	@echo $(CXX) $(CPP_FLAGS) $(C_FLAGS) $(DEPEND_FLAGS) -o $@ $< $(BLACKHOLE)
-	$(CXX) $(CPP_FLAGS) $(C_FLAGS) $(DEPEND_FLAGS) -o $@ $<
+	@echo $(CXX) $(CPP_FLAGS) -fvisibility=hidden $(C_FLAGS) $(DEPEND_FLAGS) -o $@ $< $(BLACKHOLE)
+	$(CXX) $(CPP_FLAGS) $(C_FLAGS) $(DEPEND_FLAGS) -fvisibility=hidden -o $@ $<
 
 %$(OBJ_SUFFIX): %.cpp
 	@echo Compiling mirror directory $< ...
-	@echo $(CXX) $(CPP_FLAGS) $(C_FLAGS) $(DEPEND_FLAGS) -o $@ $< $(BLACKHOLE)
-	$(CXX) $(CPP_FLAGS) $(C_FLAGS) $(DEPEND_FLAGS) -o $@ $<
+	@echo $(CXX) $(CPP_FLAGS) -fvisibility=hidden $(C_FLAGS) $(DEPEND_FLAGS) -o $@ $< $(BLACKHOLE)
+	$(CXX) $(CPP_FLAGS) $(C_FLAGS) $(DEPEND_FLAGS) -fvisibility=hidden -o $@ $<
 
 %.lbo: $(MAKEDIR)/%.lub
 	@echo Compiling $< ...

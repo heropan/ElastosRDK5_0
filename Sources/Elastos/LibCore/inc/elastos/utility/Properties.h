@@ -15,7 +15,7 @@ using Elastos::Core::IStringBuilder;
 namespace Elastos {
 namespace Utility {
 
-class Properties
+class ECO_PUBLIC Properties
     : public HashTable
     , public IProperties
 {
@@ -85,19 +85,19 @@ protected:
         /* [in] */ Properties* properties);
 
 private:
-    CARAPI_(void) DumpString(
+    ECO_LOCAL CARAPI_(void) DumpString(
         /* [in] */ IStringBuilder* buffer,
         /* [in] */ const String& string,
         /* [in] */ Boolean key);
 
-    CARAPI ListToAppendable(
+    ECO_LOCAL CARAPI ListToAppendable(
         /* [in] */ IAppendable* out);
 
-    CARAPI SelectProperties(
+    ECO_LOCAL CARAPI SelectProperties(
         /* [in] */ IMap* selectProperties,
         /* [in] */ Boolean isStringOnly);
 
-    CARAPI_(String) SubstitutePredefinedEntries(
+    ECO_LOCAL CARAPI_(String) SubstitutePredefinedEntries(
         /* [in] */ const String& s);
 
 protected:
@@ -108,15 +108,15 @@ protected:
     AutoPtr<Properties> mDefaults;
 
 private:
-    const static String PROP_DTD_NAME;
-    const static String PROP_DTD;
+    ECO_LOCAL static const String PROP_DTD_NAME;
+    ECO_LOCAL static const String PROP_DTD;
 
-    const static Int32 NONE;
-    const static Int32 SLASH;
-    const static Int32 UNICODE;
-    const static Int32 CONTINUE;
-    const static Int32 KEY_DONE;
-    const static Int32 IGNORE;
+    ECO_LOCAL static const Int32 NONE;
+    ECO_LOCAL static const Int32 SLASH;
+    ECO_LOCAL static const Int32 UNICODE;
+    ECO_LOCAL static const Int32 CONTINUE;
+    ECO_LOCAL static const Int32 KEY_DONE;
+    ECO_LOCAL static const Int32 IGNORE;
 
     // private transient DocumentBuilder builder = null;
 };

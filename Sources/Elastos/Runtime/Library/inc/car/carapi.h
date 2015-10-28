@@ -9,6 +9,8 @@
 #ifndef __CARAPI_H__
 #define __CARAPI_H__
 
+#include <elatypes.h>
+
 extern "C" {
 
 struct CarMultiQI
@@ -35,70 +37,70 @@ typedef struct CarMultiQI CarMultiQI, *PMULTIQI;
                                         (dw == RGM_DEFAULT) || \
                                         (dw == RGM_DIFF_MACHINE)))
 
-ELAPI _CObject_CreateInstance(
+ELAPI ECO_PUBLIC _CObject_CreateInstance(
     /* [in] */ _ELASTOS RClassID rclsid,
     /* [in] */ PRegime regime,
     /* [in] */ _ELASTOS REIID riid,
     /* [out] */ PInterface* object);
 
-ELAPI _CObject_CreateInstanceEx(
+ELAPI ECO_PUBLIC _CObject_CreateInstanceEx(
     /* [in] */ _ELASTOS RClassID rclsid,
     /* [in] */ PRegime regime,
     /* [in] */ _ELASTOS UInt32 cmq,
     /* [out] */ PMULTIQI results);
 
-ELAPI _CObject_AcquireClassFactory(
+ELAPI ECO_PUBLIC _CObject_AcquireClassFactory(
     /* [in] */ _ELASTOS RClassID rclsid,
     /* [in] */ PRegime regime,
     /* [in] */ _ELASTOS REIID iid,
     /* [out] */ PInterface* object);
 
-ELAPI_(_ELASTOS Boolean) _CObject_Compare(
+ELAPI_(_ELASTOS Boolean) ECO_PUBLIC _CObject_Compare(
     /* [in] */ PInterface objectA,
     /* [in] */ PInterface objectB);
 
-ELAPI _CObject_AttachAspect(
+ELAPI ECO_PUBLIC _CObject_AttachAspect(
     /* [in] */ PInterface aggregator,
     /* [in] */ _ELASTOS RClassID aspectClsid);
 
-ELAPI _CObject_DetachAspect(
+ELAPI ECO_PUBLIC _CObject_DetachAspect(
     /* [in] */ PInterface aggregator,
     /* [in] */ _ELASTOS RClassID aspectClsid);
 
-ELAPI _CObject_EnterRegime(
+ELAPI ECO_PUBLIC _CObject_EnterRegime(
     /* [in] */ PInterface object,
     /* [in] */ PRegime regime);
 
-ELAPI _CObject_LeaveRegime(
+ELAPI ECO_PUBLIC _CObject_LeaveRegime(
     /* [in] */ PInterface object,
     /* [in] */ PRegime regime);
 
 typedef interface ICallbackSink *PCALLBACKSINK;
 typedef interface ICallbackRendezvous* PCallbackRendezvous;
 
-ELAPI _CObject_AcquireCallbackSink(
+ELAPI ECO_PUBLIC _CObject_AcquireCallbackSink(
     /* [in] */ PInterface object,
     /* [out] */ PCALLBACKSINK* callbackSink);
 
-ELAPI _CObject_AddCallback(
+ELAPI ECO_PUBLIC _CObject_AddCallback(
     /* [in] */ PInterface serverObj,
     /* [in] */ _ELASTOS Int32 event,
     /* [in] */ _ELASTOS EventHandler delegate);
 
-ELAPI _CObject_RemoveCallback(
+ELAPI ECO_PUBLIC _CObject_RemoveCallback(
     /* [in] */ PInterface serverObj,
     /* [in] */ _ELASTOS Int32 event,
     /* [in] */ _ELASTOS EventHandler delegate);
 
-ELAPI _CObject_RemoveAllCallbacks(
+ELAPI ECO_PUBLIC _CObject_RemoveAllCallbacks(
     /* [in] */ PInterface serverObj);
 
-ELAPI _CObject_AcquireCallbackRendezvous(
+ELAPI ECO_PUBLIC _CObject_AcquireCallbackRendezvous(
     /* [in] */ PInterface serverObj,
     /* [in] */ _ELASTOS Int32 event,
     /* [out] */ PCallbackRendezvous* callbackRendezvous);
 
-ELAPI_(_ELASTOS Boolean) _CModule_CanUnloadAllModules();
+ELAPI_(_ELASTOS Boolean) ECO_PUBLIC _CModule_CanUnloadAllModules();
 
 }
 // extern "C"

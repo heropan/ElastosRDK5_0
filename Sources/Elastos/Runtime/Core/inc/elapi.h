@@ -18,7 +18,7 @@
   *   @{
   */
 #include <eltypes.h>
-#ifdef _UNDEFDLLEXP
+#ifdef _CAR_RUNTIME
 #define _NO_INCLIST
 #include <elasys_server.h>
 #else
@@ -27,85 +27,85 @@
 #include <callback.h>
 #include <carapi.h>
 
-ELAPI _CReflector_AcquireModuleInfo(
+ELAPI ECO_PUBLIC _CReflector_AcquireModuleInfo(
     /* [in] */ const _ELASTOS String& name,
     /* [out] */ IModuleInfo **piModuleInfo);
 
-ELAPI _CReflector_AcquireIntrinsicTypeInfo(
+ELAPI ECO_PUBLIC _CReflector_AcquireIntrinsicTypeInfo(
     /* [in] */ CarDataType intrinsicType,
     /* [out] */ IDataTypeInfo **ppIntrinsicTypeInfo);
 
-ELAPI _CReflector_AcquireEnumInfo(
+ELAPI ECO_PUBLIC _CReflector_AcquireEnumInfo(
     /* [in] */ const _ELASTOS String& name,
     /* [in] */ _ELASTOS ArrayOf<_ELASTOS String> *pItemNames,
     /* [in] */ _ELASTOS ArrayOf<_ELASTOS Int32> *pItemValues,
     /* [out] */ IEnumInfo **ppEnumInfo);
 
-ELAPI _CReflector_AcquireStructInfo(
+ELAPI ECO_PUBLIC _CReflector_AcquireStructInfo(
     /* [in] */ const _ELASTOS String& name,
     /* [in] */ _ELASTOS ArrayOf<_ELASTOS String> *pFieldNames,
     /* [in] */ _ELASTOS ArrayOf<IDataTypeInfo *> *pFieldTypeInfos,
     /* [out] */ IStructInfo **ppStructInfo);
 
-ELAPI _CReflector_AcquireCppVectorInfo(
+ELAPI ECO_PUBLIC _CReflector_AcquireCppVectorInfo(
     /* [in] */ IDataTypeInfo *pElementTypeInfo,
     /* [in] */ _ELASTOS Int32 length,
     /* [out] */ ICppVectorInfo **ppCppVectorInfo);
 
-ELAPI _CReflector_AcquireCarArrayInfo(
+ELAPI ECO_PUBLIC _CReflector_AcquireCarArrayInfo(
     /* [in] */ CarDataType quintetType,
     /* [in] */ IDataTypeInfo *pElementTypeInfo,
     /* [out] */ ICarArrayInfo **ppCarArrayInfo);
 
-ELAPI _CObject_ReflectModuleInfo(
+ELAPI ECO_PUBLIC _CObject_ReflectModuleInfo(
     /* [in] */ PInterface pObj,
     /* [out] */ IModuleInfo **piModuleInfo);
 
-ELAPI _CObject_ReflectClassInfo(
+ELAPI ECO_PUBLIC _CObject_ReflectClassInfo(
     /* [in] */ PInterface pObj,
     /* [out] */ IClassInfo **piClassInfo);
 
-ELAPI _CObject_ReflectInterfaceInfo(
+ELAPI ECO_PUBLIC _CObject_ReflectInterfaceInfo(
     /* [in] */ PInterface pObj,
     /* [out] */ IInterfaceInfo **piInterfaceInfo);
 
-ELAPI_(_ELASTOS Boolean) _Impl_CheckHelperInfoFlag(
+ELAPI_(_ELASTOS Boolean) ECO_PUBLIC _Impl_CheckHelperInfoFlag(
     /* [in] */ _ELASTOS UInt32 flag);
 
-ELAPI_(void) _Impl_SetHelperInfoFlag(
+ELAPI_(void) ECO_PUBLIC _Impl_SetHelperInfoFlag(
     /* [in] */ _ELASTOS UInt32 flag,
     /* [in] */ _ELASTOS Boolean value);
 
-ELAPI _Impl_EnterProtectedZone();
+ELAPI ECO_PUBLIC _Impl_EnterProtectedZone();
 
-ELAPI _Impl_LeaveProtectedZone();
+ELAPI ECO_PUBLIC _Impl_LeaveProtectedZone();
 
-ELAPI _Impl_InsideProtectedZone();
+ELAPI ECO_PUBLIC _Impl_InsideProtectedZone();
 
 // callback helper api for making parameters
-ELAPI _Impl_CheckClsId(
+ELAPI ECO_PUBLIC _Impl_CheckClsId(
     /* [in] */ PInterface pServerObj,
     /* [in] */ const _ELASTOS ClassID* pClassID,
     /* [out] */ PInterface *ppServerObj);
 
-ELAPI _Impl_AcquireCallbackHandler(
+ELAPI ECO_PUBLIC _Impl_AcquireCallbackHandler(
     /* [in] */ PInterface pServerObj,
     /* [in] */ _ELASTOS REIID iid,
     /* [out] */  PInterface *ppHandler);
 
-ELAPI _CCallbackParcel_New(
+ELAPI ECO_PUBLIC _CCallbackParcel_New(
     /* [out] */ IParcel **ppObj);
 
-ELAPI _CParcel_New(
+ELAPI ECO_PUBLIC _CParcel_New(
     /* [out] */ IParcel **ppObj);
 
-ELAPI _CObject_MarshalInterface(
+ELAPI ECO_PUBLIC _CObject_MarshalInterface(
     /* [in] */ IInterface *pObj,
     /* [in] */ MarshalType type,
     /* [out] */ void **ppBuf,
     /* [out] */ _ELASTOS Int32 *pSize);
 
-ELAPI _CObject_UnmarshalInterface(
+ELAPI ECO_PUBLIC _CObject_UnmarshalInterface(
     /* [in] */ void *pBuf,
     /* [in] */ MarshalType type,
     /* [in] */ UnmarshalFlag flag,

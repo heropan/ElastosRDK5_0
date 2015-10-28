@@ -38,19 +38,13 @@ typedef enum AggregateType
     AggrType_AspectDetached,
 } AggregateType, AggrType;
 
-#ifdef _UNDEFDLLEXP
-#define DLLEXP
-#else
-#define DLLEXP __declspec(dllimport)
-#endif
-
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IInterface;
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IObject;
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IAspect;
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IProxy;
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IProxyDeathRecipient;
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IWeakReference;
-EXTERN_C DLLEXP const _ELASTOS InterfaceID EIID_IWeakReferenceSource;
+EXTERN_C const _ELASTOS InterfaceID EIID_IInterface;
+EXTERN_C const _ELASTOS InterfaceID EIID_IObject;
+EXTERN_C const _ELASTOS InterfaceID EIID_IAspect;
+EXTERN_C const _ELASTOS InterfaceID EIID_IProxy;
+EXTERN_C const _ELASTOS InterfaceID EIID_IProxyDeathRecipient;
+EXTERN_C const _ELASTOS InterfaceID EIID_IWeakReference;
+EXTERN_C const _ELASTOS InterfaceID EIID_IWeakReferenceSource;
 
 #define BASE_INTERFACE_METHOD_COUNT 4
 

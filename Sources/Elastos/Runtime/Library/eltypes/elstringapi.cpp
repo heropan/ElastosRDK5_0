@@ -12,8 +12,8 @@ _ELASTOS_NAMESPACE_USING
 
 extern "C"
 {
-    SharedBuffer* gElEmptyStringBuf = NULL;
-    char* gElEmptyString = NULL;
+    ECO_PUBLIC SharedBuffer* gElEmptyStringBuf = NULL;
+    ECO_PUBLIC char* gElEmptyString = NULL;
 }
 
 static void InitString()
@@ -50,13 +50,13 @@ static LibUtilsFirstStatics gFirstStatics;
 
 extern "C" {
 
-Char32 __cdecl _String_ToLowerCase(
+ECO_PUBLIC Char32 __cdecl _String_ToLowerCase(
     /* [in] */ Char32 ch)
 {
     return u_tolower(ch);
 }
 
-Char32 __cdecl _String_ToUpperCase(
+ECO_PUBLIC Char32 __cdecl _String_ToUpperCase(
     /* [in] */ Char32 ch)
 {
     return u_toupper(ch);

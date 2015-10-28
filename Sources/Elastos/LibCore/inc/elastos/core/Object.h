@@ -21,7 +21,7 @@ namespace Core {
 //====================================================================
 // Object
 //====================================================================
-class Object
+class ECO_PUBLIC Object
     : public ElRefBase
     , public IObject
     , public ISynchronize

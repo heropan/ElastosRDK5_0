@@ -167,6 +167,14 @@ _ELASTOS_NAMESPACE_END
 #define EXTERN_C_BEGIN      EXTERN_C {
 #define EXTERN_C_END        }
 
+#if __GNUC__ >= 4
+#define ECO_PUBLIC __attribute__ ((visibility ("default")))
+#define ECO_LOCAL  __attribute__ ((visibility ("hidden")))
+#else
+#define ECO_PUBLIC
+#define ECO_LOCAL
+#endif
+
 //---- CAR_INLINE ----
 #ifdef _GNUC
 #define CAR_INLINE inline

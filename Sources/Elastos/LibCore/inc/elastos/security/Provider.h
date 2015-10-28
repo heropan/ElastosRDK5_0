@@ -18,7 +18,7 @@ namespace Security {
  * {@code Provider} is the abstract superclass for all security providers in the
  * Java security infrastructure.
  */
-class Provider
+class ECO_PUBLIC Provider
     : public Properties
     , public IProvider
 {
@@ -241,14 +241,14 @@ protected:
         /* [in] */ IProviderService* s);
 
 private:
-    CARAPI_(void) MyPutAll(
+    ECO_LOCAL CARAPI_(void) MyPutAll(
         /* [in] */ IMap* t);
 
     /**
      * Returns true if this provider has the same value as is given for the
      * given attribute
      */
-    CARAPI_(Boolean) CheckAttribute(
+    ECO_LOCAL CARAPI_(Boolean) CheckAttribute(
         /* [in] */ const String& servAlg,
         /* [in] */ const String& attribute,
         /* [in] */ const String& val);
@@ -256,43 +256,43 @@ private:
     /**
      * Add Service information to the provider's properties.
      */
-    CARAPI_(void) ServiceInfoToProperties(
+    ECO_LOCAL CARAPI_(void) ServiceInfoToProperties(
         /* [in] */ IProviderService* s);
 
     /**
      * Remove Service information from the provider's properties.
      */
-    CARAPI_(void) ServiceInfoFromProperties(
+    ECO_LOCAL CARAPI_(void) ServiceInfoFromProperties(
         /* [in] */ IProviderService* s);
 
     // Remove property information from provider Services
-    CARAPI_(void) RemoveFromPropertyServiceTable(
+    ECO_LOCAL CARAPI_(void) RemoveFromPropertyServiceTable(
         /* [in] */ IInterface* key);
 
     // Update provider Services if the properties was changed
-    CARAPI_(void) UpdatePropertyServiceTable();
+    ECO_LOCAL CARAPI_(void) UpdatePropertyServiceTable();
 
-    CARAPI_(void) ServicesChanged();
+    ECO_LOCAL CARAPI_(void) ServicesChanged();
 
     /**
      * These attributes should be placed in each Provider object:
      * Provider.id name, Provider.id version, Provider.id info,
      * Provider.id className
      */
-    CARAPI_(void) PutProviderInfo();
+    ECO_LOCAL CARAPI_(void) PutProviderInfo();
 
     /**
      * Returns the property with the specified key in the provider properties.
      * The name is not case-sensitive.
      */
-    CARAPI_(String) GetPropertyIgnoreCase(
+    ECO_LOCAL CARAPI_(String) GetPropertyIgnoreCase(
         /* [in] */ const String& key);
 
-    static CARAPI_(String) Key(
+    ECO_LOCAL static CARAPI_(String) Key(
         /* [in] */ const String& type,
         /* [in] */ const String& algorithm);
 
-    CARAPI ReadObject(
+    ECO_LOCAL CARAPI ReadObject(
         /* [in] */ IObjectInputStream* in);
 
 private:

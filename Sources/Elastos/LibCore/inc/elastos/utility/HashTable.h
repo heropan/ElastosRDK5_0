@@ -22,7 +22,7 @@ namespace Utility {
  * @param <V> the type of mapped values
  * @see HashMap
  */
-class HashTable
+class ECO_PUBLIC HashTable
     : public Object
     , public IHashTable
     , public IDictionary
@@ -37,7 +37,7 @@ private:
      * to it, which would cause considerable bloat.  Moreover, the RI
      * behaves the same way.
      */
-    class HashtableEntry
+    class ECO_LOCAL HashtableEntry
         : public Object
         , public IMapEntry
     {
@@ -77,7 +77,7 @@ private:
         AutoPtr<HashtableEntry> mNext;
     };
 
-    class HashIterator
+    class ECO_LOCAL HashIterator
         : public Object
     {
     public:
@@ -103,7 +103,7 @@ private:
         AutoPtr<HashTable> mHost;
     };
 
-    class KeyIterator
+    class ECO_LOCAL KeyIterator
         : public HashIterator
         , public IIterator
     {
@@ -122,7 +122,7 @@ private:
         CARAPI Remove();
     };
 
-    class ValueIterator
+    class ECO_LOCAL ValueIterator
         : public HashIterator
         , public IIterator
     {
@@ -141,7 +141,7 @@ private:
         CARAPI Remove();
     };
 
-    class EntryIterator
+    class ECO_LOCAL EntryIterator
         : public HashIterator
         , public IIterator
     {
@@ -160,7 +160,7 @@ private:
         CARAPI Remove();
     };
 
-    class KeyEnumeration
+    class ECO_LOCAL KeyEnumeration
         : public HashIterator
         , public IEnumeration
     {
@@ -177,7 +177,7 @@ private:
             /* [out] */ IInterface ** inter);
     };
 
-    class ValueEnumeration
+    class ECO_LOCAL ValueEnumeration
         : public HashIterator
         , public IEnumeration
     {
@@ -194,7 +194,7 @@ private:
             /* [out] */ IInterface ** inter);
     };
 
-    class _KeySet
+    class ECO_LOCAL _KeySet
         : public AbstractSet
     {
     public:
@@ -261,7 +261,7 @@ private:
         AutoPtr<HashTable> mHost;
     };
 
-    class _Values
+    class ECO_LOCAL _Values
         : public AbstractCollection
     {
     public:
@@ -328,7 +328,7 @@ private:
         AutoPtr<HashTable> mHost;;
     };
 
-    class _EntrySet
+    class ECO_LOCAL _EntrySet
         : public AbstractSet
     {
     public:
@@ -669,7 +669,7 @@ private:
      * suitable for use by constructors and pseudo-constructors (i.e., clone,
      * readObject).
      */
-    CARAPI ConstructorPutAll(
+    ECO_LOCAL CARAPI ConstructorPutAll(
         /* [in] */ IMap* map);
 
     /**
@@ -677,7 +677,7 @@ private:
      * not round the result up to a power of two; the caller must do this!
      * The returned value will be between 0 and MAXIMUM_CAPACITY (inclusive).
      */
-    static CARAPI_(Int32) CapacityForInitSize(
+    ECO_LOCAL static CARAPI_(Int32) CapacityForInitSize(
         /* [in] */ Int32 size);
 
     /**
@@ -686,7 +686,7 @@ private:
      * (i.e., clone, readObject). In particular, this method does not check to
      * ensure that capacity is sufficient, and does not increment modCount.
      */
-    CARAPI ConstructorPut(
+    ECO_LOCAL CARAPI ConstructorPut(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -700,14 +700,14 @@ private:
      *
      *  <p>This method is called only by putAll.
      */
-    CARAPI EnsureCapacity(
+    ECO_LOCAL CARAPI EnsureCapacity(
         /* [in] */ Int32 numMappings);
 
     /**
      * Allocate a table of the given capacity and set the threshold accordingly.
      * @param newCapacity must be a power of two
      */
-    CARAPI_(AutoPtr<ArrayOf<HashtableEntry*> >) MakeTable(
+    ECO_LOCAL CARAPI_(AutoPtr<ArrayOf<HashtableEntry*> >) MakeTable(
         /* [in] */ Int32 newCapacity);
 
     /**
@@ -716,12 +716,12 @@ private:
      * MAXIMUM_CAPACITY, this method is a no-op. Returns the table, which
      * will be new unless we were already at MAXIMUM_CAPACITY.
      */
-    CARAPI_(AutoPtr<ArrayOf<HashtableEntry*> >) DoubleCapacity();
+    ECO_LOCAL CARAPI_(AutoPtr<ArrayOf<HashtableEntry*> >) DoubleCapacity();
 
     /**
      * Returns true if this map contains the specified mapping.
      */
-    CARAPI_(Boolean) ContainsMapping(
+    ECO_LOCAL CARAPI_(Boolean) ContainsMapping(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -729,7 +729,7 @@ private:
      * Removes the mapping from key to value and returns true if this mapping
      * exists; otherwise, returns does nothing and returns false.
      */
-    CARAPI_(Boolean) RemoveMapping(
+    ECO_LOCAL CARAPI_(Boolean) RemoveMapping(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -739,7 +739,7 @@ private:
      * uses power-of-two length hash tables, that otherwise encounter collisions
      * for hashCodes that do not differ in lower or upper bits.
      */
-    static CARAPI_(Int32) SecondaryHash(
+    ECO_LOCAL static CARAPI_(Int32) SecondaryHash(
         /* [in] */ Int32 h);
 
     /**
@@ -749,13 +749,13 @@ private:
      * returns Integer.MIN_VALUE. If the argument is zero, the method returns
      * zero.
      */
-    static CARAPI_(Int32) RoundUpToPowerOfTwo(
+    ECO_LOCAL static CARAPI_(Int32) RoundUpToPowerOfTwo(
         /* [in] */ Int32 i);
 
-    CARAPI WriteObject(
+    ECO_LOCAL CARAPI WriteObject(
         /* [in] */ IObjectOutputStream* stream);
 
-    CARAPI ReadObject(
+    ECO_LOCAL CARAPI ReadObject(
         /* [in] */ IObjectInputStream* stream);
 
 private:
@@ -763,12 +763,12 @@ private:
      * Min capacity (other than zero) for a Hashtable. Must be a power of two
      * greater than 1 (and less than 1 << 30).
      */
-    static const Int32 MINIMUM_CAPACITY = 4;
+    ECO_LOCAL static const Int32 MINIMUM_CAPACITY = 4;
 
     /**
      * Max capacity for a Hashtable. Must be a power of two >= MINIMUM_CAPACITY.
      */
-    static const Int32 MAXIMUM_CAPACITY = 1 << 30;
+    ECO_LOCAL static const Int32 MAXIMUM_CAPACITY = 1 << 30;
 
     /**
      * An empty table shared by all zero-capacity maps (typically from default
@@ -776,7 +776,7 @@ private:
      * is set to half the minimum, so that the first resize will create a
      * minimum-sized table.
      */
-    static const AutoPtr<ArrayOf<HashtableEntry*> > EMPTY_TABLE; // = new HashtableEntry[MINIMUM_CAPACITY >>> 1];
+    ECO_LOCAL static const AutoPtr<ArrayOf<HashtableEntry*> > EMPTY_TABLE; // = new HashtableEntry[MINIMUM_CAPACITY >>> 1];
 
     /**
      * The default load factor. Note that this implementation ignores the
@@ -788,17 +788,17 @@ private:
      * .75 is hardwired into the program, which uses cheap shifts in place of
      * expensive division.
      */
-    static const Float DEFAULT_LOAD_FACTOR = 0.75F;
+    ECO_LOCAL static const Float DEFAULT_LOAD_FACTOR = 0.75F;
 
     /**
      * A rough estimate of the number of characters per entry, for use
      * when creating a string buffer in the toString method.
      */
-    static const Int32 CHARS_PER_ENTRY = 15;
+    ECO_LOCAL static const Int32 CHARS_PER_ENTRY = 15;
 
-    static const Int64 sSerialVersionUID = 1421746759512286392LL;
+    ECO_LOCAL static const Int64 sSerialVersionUID = 1421746759512286392LL;
 
-    static const AutoPtr<ArrayOf<IObjectStreamField*> > sSerialPersistentFields; // = {
+    ECO_LOCAL static const AutoPtr<ArrayOf<IObjectStreamField*> > sSerialPersistentFields; // = {
     //     new ObjectStreamField("threshold", int.class),
     //     new ObjectStreamField("loadFactor", float.class),
     // };

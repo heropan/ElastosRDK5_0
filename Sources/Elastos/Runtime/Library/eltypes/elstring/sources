@@ -5,7 +5,7 @@
 TARGET_NAME= elstring
 TARGET_TYPE= lib
 
-C_DEFINES+=-D_UNDEFDLLEXP
+C_DEFINES+=-D_CAR_RUNTIME
 
 SOURCES = elsharedbuf.cpp
 SOURCES += elstring.cpp

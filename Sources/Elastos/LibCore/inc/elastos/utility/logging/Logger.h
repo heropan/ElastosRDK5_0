@@ -17,7 +17,7 @@ namespace Elastos {
 namespace Utility {
 namespace Logging {
 
-class Logger
+class ECO_PUBLIC Logger
 {
 public:
     /*!
@@ -129,8 +129,8 @@ public:
     static CARAPI PrintlnImpl(Int32 bufID, Int32 priority, const char * tag, const char *fmt, ...);
 
 private:
-    Logger();
-    Logger(const Logger&);
+    ECO_LOCAL Logger();
+    ECO_LOCAL Logger(const Logger&);
 };
 
 } // Logging

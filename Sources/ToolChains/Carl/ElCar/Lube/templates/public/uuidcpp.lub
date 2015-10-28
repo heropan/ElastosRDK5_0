@@ -10,7 +10,7 @@ $
 #define c_p${name}Uunm ${uunm}
 $   WITH all classes DO
 
-EXTERN_C const _ELASTOS ClassID ECLSID_${name} = {
+EXTERN_C ECO_PUBLIC const _ELASTOS ClassID ECLSID_${name} = {
     ${uuid},
     (char *)c_p${module.name}Uunm,
     0x${module.carcode} };
@@ -18,7 +18,7 @@ $   END DO ;; all classes
 $
 $   WITH all interfaces DO
 
-EXTERN_C const _ELASTOS InterfaceID EIID_${name} = \
+EXTERN_C ECO_PUBLIC const _ELASTOS InterfaceID EIID_${name} = \
     ${iid};
 $   END DO ;; all interfaces
 $

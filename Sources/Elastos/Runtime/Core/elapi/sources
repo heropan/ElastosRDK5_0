@@ -5,7 +5,7 @@
 TARGET_NAME= elapi
 TARGET_TYPE= lib
 
-C_DEFINES= -D_UNDEFDLLEXP
+C_DEFINES= -D_CAR_RUNTIME
 
 INCLUDES += $(MAKEDIR)/../inc;
 INCLUDES += $(MAKEDIR)/../../Library/inc/elasys;
