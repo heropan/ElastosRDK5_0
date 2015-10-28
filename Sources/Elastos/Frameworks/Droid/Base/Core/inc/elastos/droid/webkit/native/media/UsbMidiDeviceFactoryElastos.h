@@ -29,8 +29,8 @@ namespace Media {
  * usb_midi_device_factory_android.h. Refer to that class for general comments.
  */
 //@JNINamespace("media")
-class UsbMidiDeviceFactoryAndroid
-:public Object
+class UsbMidiDeviceFactoryElastos
+    : public Object
 {
 private:
     class InnerBroadcastReceiver
@@ -38,14 +38,14 @@ private:
     {
     public:
         InnerBroadcastReceiver(
-            /* [in] */ UsbMidiDeviceFactoryAndroid* owner);
+            /* [in] */ UsbMidiDeviceFactoryElastos* owner);
 
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
 
     private:
-        UsbMidiDeviceFactoryAndroid* mOwner;
+        UsbMidiDeviceFactoryElastos* mOwner;
     };
 
 public:
@@ -53,14 +53,14 @@ public:
      * Constructs a UsbMidiDeviceAndroid.
      * @param natviePointer The native pointer to which the created factory is associated.
      */
-    UsbMidiDeviceFactoryAndroid(
+    UsbMidiDeviceFactoryElastos(
         /* [in] */ Int64 nativePointer);
 
     /**
      * Constructs a UsbMidiDeviceAndroid.
      * @param nativePointer The native pointer to which the created factory is associated.
      */
-    //@CalledByNative return UsbMidiDeviceFactoryAndroid
+    //@CalledByNative return UsbMidiDeviceFactoryElastos
     static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativePointer);
 
@@ -95,12 +95,12 @@ private:
         /* [in] */ IIntent* intent);
 
     static CARAPI_(void) NativeOnUsbMidiDeviceRequestDone(
-        /* [in] */ Int64 nativeUsbMidiDeviceFactoryAndroid,
+        /* [in] */ Int64 nativeUsbMidiDeviceFactoryElastos,
         /* [in] */ ArrayOf<IInterface*>* devices);
 
 //callback function declaration
 public:
-    static CARAPI_(void*) ElaUsbMidiDeviceFactoryAndroidCallback_Init();
+    static CARAPI_(void*) ElaUsbMidiDeviceFactoryElastosCallback_Init();
 
 private:
     static CARAPI_(Boolean) EnumerateDevices(

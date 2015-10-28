@@ -1,5 +1,5 @@
-#include "elastos/droid/webkit/native/media/AudioManagerAndroid.h"
-#include "elastos/droid/webkit/native/media/api/AudioManagerAndroid_dec.h"
+#include "elastos/droid/webkit/native/media/AudioManagerElastos.h"
+#include "elastos/droid/webkit/native/media/api/AudioManagerElastos_dec.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/CHandlerThread.h"
@@ -61,10 +61,10 @@ namespace Webkit {
 namespace Media {
 
 //===============================================================
-//             AudioManagerAndroid::NonThreadSafe
+//             AudioManagerElastos::NonThreadSafe
 //===============================================================
 
-AudioManagerAndroid::NonThreadSafe::NonThreadSafe()
+AudioManagerElastos::NonThreadSafe::NonThreadSafe()
 {
     if (DEBUG) {
         Thread::GetCurrentThread()->GetId(&mThreadId);
@@ -79,7 +79,7 @@ AudioManagerAndroid::NonThreadSafe::NonThreadSafe()
  * Checks if the method is called on the valid thread.
  * Assigns the current thread if no thread was assigned.
  */
-Boolean AudioManagerAndroid::NonThreadSafe::CalledOnValidThread() const
+Boolean AudioManagerElastos::NonThreadSafe::CalledOnValidThread() const
 {
     if (DEBUG) {
         Int64 id;
@@ -91,10 +91,10 @@ Boolean AudioManagerAndroid::NonThreadSafe::CalledOnValidThread() const
 }
 
 //===============================================================
-//             AudioManagerAndroid::AudioDeviceName
+//             AudioManagerElastos::AudioDeviceName
 //===============================================================
 
-AudioManagerAndroid::AudioDeviceName::AudioDeviceName(
+AudioManagerElastos::AudioDeviceName::AudioDeviceName(
     /* [in] */ Int32 id,
     /* [in] */ const String& name)
     : mId(id)
@@ -103,59 +103,59 @@ AudioManagerAndroid::AudioDeviceName::AudioDeviceName(
 }
 
 //@CalledByNative("AudioDeviceName")
-String AudioManagerAndroid::AudioDeviceName::Id()
+String AudioManagerElastos::AudioDeviceName::Id()
 {
     return IntegralToString::ToString(mId);
 }
 
 //@CalledByNative("AudioDeviceName")
-String AudioManagerAndroid::AudioDeviceName::Name()
+String AudioManagerElastos::AudioDeviceName::Name()
 {
     return mName;
 }
 
 //callback definition
-String AudioManagerAndroid::AudioDeviceName::Id(
+String AudioManagerElastos::AudioDeviceName::Id(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioDeviceName> amaObj = (AudioDeviceName*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioDeviceName> amaObj = (AudioDeviceName*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::AudioDeviceName::Id, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::AudioDeviceName::Id, amaObj is NULL");
         return String(NULL);
     }
     return amaObj->Id();
 }
 
-String AudioManagerAndroid::AudioDeviceName::Name(
+String AudioManagerElastos::AudioDeviceName::Name(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioDeviceName> amaObj = (AudioDeviceName*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioDeviceName> amaObj = (AudioDeviceName*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::AudioDeviceName::Id, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::AudioDeviceName::Id, amaObj is NULL");
         return String(NULL);
     }
     return amaObj->Name();
 }
 
 //===============================================================
-//      AudioManagerAndroid::WiredHeadsetBroadcastReceiver
+//      AudioManagerElastos::WiredHeadsetBroadcastReceiver
 //===============================================================
 
-const Int32 AudioManagerAndroid::WiredHeadsetBroadcastReceiver::STATE_UNPLUGGED;
-const Int32 AudioManagerAndroid::WiredHeadsetBroadcastReceiver::STATE_PLUGGED;
-const Int32 AudioManagerAndroid::WiredHeadsetBroadcastReceiver::HAS_NO_MIC;
-const Int32 AudioManagerAndroid::WiredHeadsetBroadcastReceiver::HAS_MIC;
+const Int32 AudioManagerElastos::WiredHeadsetBroadcastReceiver::STATE_UNPLUGGED;
+const Int32 AudioManagerElastos::WiredHeadsetBroadcastReceiver::STATE_PLUGGED;
+const Int32 AudioManagerElastos::WiredHeadsetBroadcastReceiver::HAS_NO_MIC;
+const Int32 AudioManagerElastos::WiredHeadsetBroadcastReceiver::HAS_MIC;
 
-AudioManagerAndroid::WiredHeadsetBroadcastReceiver::WiredHeadsetBroadcastReceiver(
-    /* [in] */ AudioManagerAndroid* owner)
+AudioManagerElastos::WiredHeadsetBroadcastReceiver::WiredHeadsetBroadcastReceiver(
+    /* [in] */ AudioManagerElastos* owner)
     : mOwner(owner)
 {
 }
 
 //@Override
-ECode AudioManagerAndroid::WiredHeadsetBroadcastReceiver::OnReceive(
+ECode AudioManagerElastos::WiredHeadsetBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -211,17 +211,17 @@ ECode AudioManagerAndroid::WiredHeadsetBroadcastReceiver::OnReceive(
 }
 
 //=========================================================================
-//         AudioManagerAndroid::BluetoothHeadsetBroadcastReceiver
+//         AudioManagerElastos::BluetoothHeadsetBroadcastReceiver
 //=========================================================================
 
-AudioManagerAndroid::BluetoothHeadsetBroadcastReceiver::BluetoothHeadsetBroadcastReceiver(
-    /* [in] */ AudioManagerAndroid* owner)
+AudioManagerElastos::BluetoothHeadsetBroadcastReceiver::BluetoothHeadsetBroadcastReceiver(
+    /* [in] */ AudioManagerElastos* owner)
     : mOwner(owner)
 {
 }
 
 //@Override
-ECode AudioManagerAndroid::BluetoothHeadsetBroadcastReceiver::OnReceive(
+ECode AudioManagerElastos::BluetoothHeadsetBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -286,17 +286,17 @@ ECode AudioManagerAndroid::BluetoothHeadsetBroadcastReceiver::OnReceive(
 }
 
 //===========================================================================
-//         AudioManagerAndroid::BluetoothScoIntentBroadcastReceiver
+//         AudioManagerElastos::BluetoothScoIntentBroadcastReceiver
 //===========================================================================
 
-AudioManagerAndroid::BluetoothScoIntentBroadcastReceiver::BluetoothScoIntentBroadcastReceiver(
-    /* [in] */ AudioManagerAndroid* owner)
+AudioManagerElastos::BluetoothScoIntentBroadcastReceiver::BluetoothScoIntentBroadcastReceiver(
+    /* [in] */ AudioManagerElastos* owner)
     : mOwner(owner)
 {
 }
 
 //@Override
-ECode AudioManagerAndroid::BluetoothScoIntentBroadcastReceiver::OnReceive(
+ECode AudioManagerElastos::BluetoothScoIntentBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -340,16 +340,16 @@ ECode AudioManagerAndroid::BluetoothScoIntentBroadcastReceiver::OnReceive(
 
 
 //===============================================================
-//           AudioManagerAndroid::InnerContentObserver
+//           AudioManagerElastos::InnerContentObserver
 //===============================================================
 
-AudioManagerAndroid::InnerContentObserver::InnerContentObserver(
-    /* [in] */ AudioManagerAndroid* owner)
+AudioManagerElastos::InnerContentObserver::InnerContentObserver(
+    /* [in] */ AudioManagerElastos* owner)
     : mOwner(owner)
 {
 }
 
-ECode AudioManagerAndroid::InnerContentObserver::OnChange(
+ECode AudioManagerElastos::InnerContentObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
     if (DEBUG) Logger::D(TAG, "SettingsObserver.onChange: %d", selfChange);
@@ -373,13 +373,13 @@ ECode AudioManagerAndroid::InnerContentObserver::OnChange(
         IAudioManager::STREAM_VOICE_CALL,
         &volume);
     if (DEBUG) Logger::D(TAG, "nativeSetMute: %d", (volume == 0));
-    mOwner->NativeSetMute(mOwner->mNativeAudioManagerAndroid, (volume == 0));
+    mOwner->NativeSetMute(mOwner->mNativeAudioManagerElastos, (volume == 0));
 
     return NOERROR;
 }
 
 //===============================================================
-//                    AudioManagerAndroid
+//                    AudioManagerElastos
 //===============================================================
 
 template<typename T>
@@ -394,8 +394,8 @@ static AutoPtr< ArrayOf<T> > ArrayOf_Init(T array[])
     return retArray;
 }
 
-const String AudioManagerAndroid::TAG("AudioManagerAndroid");
-const Boolean AudioManagerAndroid::DEBUG = FALSE;
+const String AudioManagerElastos::TAG("AudioManagerElastos");
+const Boolean AudioManagerElastos::DEBUG = FALSE;
 
 static String models[] = {
     String("GT-I9300"),  // Galaxy S3
@@ -408,16 +408,16 @@ static String models[] = {
     String("SM-T310"),   // Galaxy Tab 3 8.0 (WiFi)
 };
 //TODO
-const AutoPtr< ArrayOf<String> > AudioManagerAndroid::SUPPORTED_AEC_MODELS = ArrayOf_Init(models);
+const AutoPtr< ArrayOf<String> > AudioManagerElastos::SUPPORTED_AEC_MODELS = ArrayOf_Init(models);
 
 // Supported audio device types.
-const Int32 AudioManagerAndroid::DEVICE_DEFAULT;
-const Int32 AudioManagerAndroid::DEVICE_INVALID;
-const Int32 AudioManagerAndroid::DEVICE_SPEAKERPHONE;
-const Int32 AudioManagerAndroid::DEVICE_WIRED_HEADSET;
-const Int32 AudioManagerAndroid::DEVICE_EARPIECE;
-const Int32 AudioManagerAndroid::DEVICE_BLUETOOTH_HEADSET;
-const Int32 AudioManagerAndroid::DEVICE_COUNT;
+const Int32 AudioManagerElastos::DEVICE_DEFAULT;
+const Int32 AudioManagerElastos::DEVICE_INVALID;
+const Int32 AudioManagerElastos::DEVICE_SPEAKERPHONE;
+const Int32 AudioManagerElastos::DEVICE_WIRED_HEADSET;
+const Int32 AudioManagerElastos::DEVICE_EARPIECE;
+const Int32 AudioManagerElastos::DEVICE_BLUETOOTH_HEADSET;
+const Int32 AudioManagerElastos::DEVICE_COUNT;
 
 // Maps audio device types to string values. This map must be in sync
 // with the device types above.
@@ -432,35 +432,35 @@ static String names[] = {
 };
 
 //TODO
-const AutoPtr< ArrayOf<String> > AudioManagerAndroid::DEVICE_NAMES = ArrayOf_Init(names);
+const AutoPtr< ArrayOf<String> > AudioManagerElastos::DEVICE_NAMES = ArrayOf_Init(names);
 
-Int32 AudioManagerAndroid::devices[4] = {
-    AudioManagerAndroid::DEVICE_SPEAKERPHONE,
-    AudioManagerAndroid::DEVICE_WIRED_HEADSET,
-    AudioManagerAndroid::DEVICE_EARPIECE,
-    AudioManagerAndroid::DEVICE_BLUETOOTH_HEADSET,
+Int32 AudioManagerElastos::devices[4] = {
+    AudioManagerElastos::DEVICE_SPEAKERPHONE,
+    AudioManagerElastos::DEVICE_WIRED_HEADSET,
+    AudioManagerElastos::DEVICE_EARPIECE,
+    AudioManagerElastos::DEVICE_BLUETOOTH_HEADSET,
 };
 
 // List of valid device types.
 //TODO
-const AutoPtr< ArrayOf<Int32> > AudioManagerAndroid::VALID_DEVICES = ArrayOf_Init(devices);
+const AutoPtr< ArrayOf<Int32> > AudioManagerElastos::VALID_DEVICES = ArrayOf_Init(devices);
 
 // Bluetooth audio SCO states. Example of valid state sequence:
 // SCO_INVALID -> SCO_TURNING_ON -> SCO_ON -> SCO_TURNING_OFF -> SCO_OFF.
-const Int32 AudioManagerAndroid::STATE_BLUETOOTH_SCO_INVALID;
-const Int32 AudioManagerAndroid::STATE_BLUETOOTH_SCO_OFF;
-const Int32 AudioManagerAndroid::STATE_BLUETOOTH_SCO_ON;
-const Int32 AudioManagerAndroid::STATE_BLUETOOTH_SCO_TURNING_ON;
-const Int32 AudioManagerAndroid::STATE_BLUETOOTH_SCO_TURNING_OFF;
+const Int32 AudioManagerElastos::STATE_BLUETOOTH_SCO_INVALID;
+const Int32 AudioManagerElastos::STATE_BLUETOOTH_SCO_OFF;
+const Int32 AudioManagerElastos::STATE_BLUETOOTH_SCO_ON;
+const Int32 AudioManagerElastos::STATE_BLUETOOTH_SCO_TURNING_ON;
+const Int32 AudioManagerElastos::STATE_BLUETOOTH_SCO_TURNING_OFF;
 
 // Use 44.1kHz as the default sampling rate.
-const Int32 AudioManagerAndroid::DEFAULT_SAMPLING_RATE;
+const Int32 AudioManagerElastos::DEFAULT_SAMPLING_RATE;
 // Randomly picked up frame size which is close to return value on N4.
 // Return this value when getProperty(PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
 // fails.
-const Int32 AudioManagerAndroid::DEFAULT_FRAME_PER_BUFFER;
+const Int32 AudioManagerElastos::DEFAULT_FRAME_PER_BUFFER;
 
-AutoPtr< ArrayOf<Boolean> > AudioManagerAndroid::mAudioDevices_Init()
+AutoPtr< ArrayOf<Boolean> > AudioManagerElastos::mAudioDevices_Init()
 {
     AutoPtr< ArrayOf<Boolean> > array = ArrayOf<Boolean>::Alloc(DEVICE_COUNT);
     for (Int32 i = 0; i < DEVICE_COUNT; ++i) {
@@ -470,11 +470,11 @@ AutoPtr< ArrayOf<Boolean> > AudioManagerAndroid::mAudioDevices_Init()
     return array;
 }
 
-AudioManagerAndroid::AudioManagerAndroid(
+AudioManagerElastos::AudioManagerElastos(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeAudioManagerAndroid)
+    /* [in] */ Int64 nativeAudioManagerElastos)
     : mContext(context)
-    , mNativeAudioManagerAndroid(nativeAudioManagerAndroid)
+    , mNativeAudioManagerElastos(nativeAudioManagerElastos)
     , mHasModifyAudioSettingsPermission(FALSE)
     , mHasRecordAudioPermission(FALSE)
     , mHasBluetoothPermission(FALSE)
@@ -491,28 +491,28 @@ AudioManagerAndroid::AudioManagerAndroid(
     mContext->GetContentResolver((IContentResolver**)&mContentResolver);
 }
 
-Boolean AudioManagerAndroid::RunningOnJellyBeanOrHigher()
+Boolean AudioManagerElastos::RunningOnJellyBeanOrHigher()
 {
     return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN;
 }
 
-Boolean AudioManagerAndroid::RunningOnJellyBeanMR1OrHigher()
+Boolean AudioManagerElastos::RunningOnJellyBeanMR1OrHigher()
 {
     return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR1;
 }
 
-Boolean AudioManagerAndroid::RunningOnJellyBeanMR2OrHigher()
+Boolean AudioManagerElastos::RunningOnJellyBeanMR2OrHigher()
 {
     return Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN_MR2;
 }
 
 /** Construction */
-//@CalledByNative return AudioManagerAndroid
-AutoPtr<AudioManagerAndroid> AudioManagerAndroid::CreateAudioManagerAndroid(
+//@CalledByNative return AudioManagerElastos
+AutoPtr<AudioManagerElastos> AudioManagerElastos::CreateAudioManagerElastos(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeAudioManagerAndroid)
+    /* [in] */ Int64 nativeAudioManagerElastos)
 {
-    AutoPtr<AudioManagerAndroid> ret(new AudioManagerAndroid(context, nativeAudioManagerAndroid));
+    AutoPtr<AudioManagerElastos> ret(new AudioManagerElastos(context, nativeAudioManagerElastos));
     return ret;
 }
 
@@ -522,7 +522,7 @@ AutoPtr<AudioManagerAndroid> AudioManagerAndroid::CreateAudioManagerAndroid(
  * for broadcast intents related to wired headset and Bluetooth devices.
  */
 //@CalledByNative
-void AudioManagerAndroid::Init()
+void AudioManagerElastos::Init()
 {
     CheckIfCalledOnValidThread();
 
@@ -576,7 +576,7 @@ void AudioManagerAndroid::Init()
  * the stored state (stored in {@link #init()}).
  */
 //@CalledByNative
-void AudioManagerAndroid::Close()
+void AudioManagerElastos::Close()
 {
     CheckIfCalledOnValidThread();
     if (DEBUG) Logd(String("close"));
@@ -597,7 +597,7 @@ void AudioManagerAndroid::Close()
  * Required permission: android.Manifest.permission.MODIFY_AUDIO_SETTINGS.
  */
 //@CalledByNative
-void AudioManagerAndroid::SetCommunicationAudioModeOn(Boolean on)
+void AudioManagerElastos::SetCommunicationAudioModeOn(Boolean on)
 {
     if (DEBUG) {
         Logger::D(TAG,"setCommunicationAudioModeOn(%d)", on);
@@ -679,7 +679,7 @@ void AudioManagerAndroid::SetCommunicationAudioModeOn(Boolean on)
  * and android.Manifest.permission.RECORD_AUDIO.
  */
 //@CalledByNative
-Boolean AudioManagerAndroid::SetDevice(
+Boolean AudioManagerElastos::SetDevice(
     /* [in] */ const String& deviceId)
 {
     if (DEBUG) Logger::D(TAG,"setDevice: %s", deviceId.string());
@@ -735,7 +735,7 @@ Boolean AudioManagerAndroid::SetDevice(
  * and android.Manifest.permission.RECORD_AUDIO.
  */
 //@CalledByNative
-AutoPtr< ArrayOf<IInterface*> > AudioManagerAndroid::GetAudioInputDeviceNames()
+AutoPtr< ArrayOf<IInterface*> > AudioManagerElastos::GetAudioInputDeviceNames()
 {
     if (DEBUG) Logd(String("getAudioInputDeviceNames"));
     if (!mIsInitialized)
@@ -757,7 +757,7 @@ AutoPtr< ArrayOf<IInterface*> > AudioManagerAndroid::GetAudioInputDeviceNames()
     for (Int32 id = 0; id < DEVICE_COUNT; ++id) {
         if ((*devices)[id]) {
             AutoPtr<AudioDeviceName> dn = new AudioDeviceName(id, (*DEVICE_NAMES)[id]);
-            array->Set(i, dn->Probe(EIID_IInterface));
+            array->Set(i, TO_IINTERFACE(dn));
             //TODO list.Pushback(DEVICE_NAMES[id]);
             i++;
         }
@@ -769,7 +769,7 @@ AutoPtr< ArrayOf<IInterface*> > AudioManagerAndroid::GetAudioInputDeviceNames()
 }
 
 //@CalledByNative
-Int32 AudioManagerAndroid::GetNativeOutputSampleRate()
+Int32 AudioManagerElastos::GetNativeOutputSampleRate()
 {
     if (RunningOnJellyBeanMR1OrHigher()) {
         String sampleRateString;
@@ -794,7 +794,7 @@ Int32 AudioManagerAndroid::GetNativeOutputSampleRate()
 * @param channels number of channels
 */
 //@CalledByNative
-Int32 AudioManagerAndroid::GetMinInputFrameSize(
+Int32 AudioManagerElastos::GetMinInputFrameSize(
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channels)
 {
@@ -826,7 +826,7 @@ Int32 AudioManagerAndroid::GetMinInputFrameSize(
 * @param channels number of channels
 */
 //@CalledByNative
-Int32 AudioManagerAndroid::GetMinOutputFrameSize(
+Int32 AudioManagerElastos::GetMinOutputFrameSize(
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 channels)
 {
@@ -850,7 +850,7 @@ Int32 AudioManagerAndroid::GetMinOutputFrameSize(
 }
 
 //@CalledByNative
-Boolean AudioManagerAndroid::IsAudioLowLatencySupported()
+Boolean AudioManagerElastos::IsAudioLowLatencySupported()
 {
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
@@ -860,7 +860,7 @@ Boolean AudioManagerAndroid::IsAudioLowLatencySupported()
 }
 
 //@CalledByNative
-Int32 AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize()
+Int32 AudioManagerElastos::GetAudioLowLatencyOutputFrameSize()
 {
     String framesPerBuffer;
     mAudioManager->GetProperty(IAudioManager::PROPERTY_OUTPUT_FRAMES_PER_BUFFER, &framesPerBuffer);
@@ -873,7 +873,7 @@ Int32 AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize()
 }
 
 //@CalledByNative
-Boolean AudioManagerAndroid::ShouldUseAcousticEchoCanceler()
+Boolean AudioManagerElastos::ShouldUseAcousticEchoCanceler()
 {
     // AcousticEchoCanceler was added in API level 16 (Jelly Bean).
     if (!RunningOnJellyBeanOrHigher()) {
@@ -903,7 +903,7 @@ Boolean AudioManagerAndroid::ShouldUseAcousticEchoCanceler()
  * Helper method for debugging purposes. Ensures that method is
  * called on same thread as this object was created on.
  */
-void AudioManagerAndroid::CheckIfCalledOnValidThread()
+void AudioManagerElastos::CheckIfCalledOnValidThread()
 {
     if (DEBUG && !mNonThreadSafe.CalledOnValidThread()) {
         // throw new IllegalStateException("Method is not called on valid thread");
@@ -915,7 +915,7 @@ void AudioManagerAndroid::CheckIfCalledOnValidThread()
  * Register for BT intents if we have the BLUETOOTH permission.
  * Also extends the list of available devices with a BT device if one exists.
  */
-void AudioManagerAndroid::RegisterBluetoothIntentsIfNeeded()
+void AudioManagerElastos::RegisterBluetoothIntentsIfNeeded()
 {
     // Check if this process has the BLUETOOTH permission or not.
     mHasBluetoothPermission = HasPermission(
@@ -940,7 +940,7 @@ void AudioManagerAndroid::RegisterBluetoothIntentsIfNeeded()
 }
 
 /** Unregister for BT intents if a registration has been made. */
-void AudioManagerAndroid::UnregisterBluetoothIntentsIfNeeded()
+void AudioManagerElastos::UnregisterBluetoothIntentsIfNeeded()
 {
     if (mHasBluetoothPermission) {
         mAudioManager->StopBluetoothSco();
@@ -950,7 +950,7 @@ void AudioManagerAndroid::UnregisterBluetoothIntentsIfNeeded()
 }
 
 /** Sets the speaker phone mode. */
-void AudioManagerAndroid::SetSpeakerphoneOn(
+void AudioManagerElastos::SetSpeakerphoneOn(
     /* [in] */ Boolean on)
 {
     Boolean wasOn;
@@ -963,7 +963,7 @@ void AudioManagerAndroid::SetSpeakerphoneOn(
 }
 
 /** Sets the microphone mute state. */
-void AudioManagerAndroid::SetMicrophoneMute(
+void AudioManagerElastos::SetMicrophoneMute(
     /* [in] */ Boolean on)
 {
     Boolean wasMuted;
@@ -976,7 +976,7 @@ void AudioManagerAndroid::SetMicrophoneMute(
 }
 
 /** Gets  the current microphone mute state. */
-Boolean AudioManagerAndroid::IsMicrophoneMute()
+Boolean AudioManagerElastos::IsMicrophoneMute()
 {
     Boolean result = FALSE;
     mAudioManager->IsMicrophoneMute(&result);
@@ -984,7 +984,7 @@ Boolean AudioManagerAndroid::IsMicrophoneMute()
 }
 
 /** Gets the current earpiece state. */
-Boolean AudioManagerAndroid::HasEarpiece()
+Boolean AudioManagerElastos::HasEarpiece()
 {
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
@@ -1002,7 +1002,7 @@ Boolean AudioManagerAndroid::HasEarpiece()
  * wired headset.
  */
 //@Deprecated
-Boolean AudioManagerAndroid::HasWiredHeadset()
+Boolean AudioManagerElastos::HasWiredHeadset()
 {
     Boolean result = FALSE;
     mAudioManager->IsWiredHeadsetOn(&result);
@@ -1010,7 +1010,7 @@ Boolean AudioManagerAndroid::HasWiredHeadset()
 }
 
 /** Checks if the process has as specified permission or not. */
-Boolean AudioManagerAndroid::HasPermission(
+Boolean AudioManagerElastos::HasPermission(
     /* [in] */ const String& permission)
 {
     Int32 result;
@@ -1027,7 +1027,7 @@ Boolean AudioManagerAndroid::HasPermission(
  * android.bluetooth.BluetoothAdapter.getProfileConnectionState() requires
  * the BLUETOOTH permission.
  */
-Boolean AudioManagerAndroid::HasBluetoothHeadset()
+Boolean AudioManagerElastos::HasBluetoothHeadset()
 {
     if (!mHasBluetoothPermission) {
         Logger::W(TAG, "hasBluetoothHeadset() requires BLUETOOTH permission");
@@ -1080,7 +1080,7 @@ Boolean AudioManagerAndroid::HasBluetoothHeadset()
  * plugged in or unplugged. The received intent will have an extra
  * 'state' value where 0 means unplugged, and 1 means plugged.
  */
-void AudioManagerAndroid::RegisterForWiredHeadsetIntentBroadcast()
+void AudioManagerElastos::RegisterForWiredHeadsetIntentBroadcast()
 {
     AutoPtr<IIntentFilter> filter;
     AutoPtr<IIntent> intent;
@@ -1096,7 +1096,7 @@ void AudioManagerAndroid::RegisterForWiredHeadsetIntentBroadcast()
 }
 
 /** Unregister receiver for broadcasted ACTION_HEADSET_PLUG intent. */
-void AudioManagerAndroid::UnregisterForWiredHeadsetIntentBroadcast()
+void AudioManagerElastos::UnregisterForWiredHeadsetIntentBroadcast()
 {
     mContext->UnregisterReceiver(mWiredHeadsetReceiver);
     mWiredHeadsetReceiver = NULL;
@@ -1108,7 +1108,7 @@ void AudioManagerAndroid::UnregisterForWiredHeadsetIntentBroadcast()
  * adapter. Example: triggers when the BT device is turned on or off.
  * BLUETOOTH permission is required to receive this one.
  */
-void AudioManagerAndroid::RegisterForBluetoothHeadsetIntentBroadcast()
+void AudioManagerElastos::RegisterForBluetoothHeadsetIntentBroadcast()
 {
     AutoPtr<IIntentFilter> filter;
     AutoPtr<IIntent> intent;
@@ -1122,7 +1122,7 @@ void AudioManagerAndroid::RegisterForBluetoothHeadsetIntentBroadcast()
     mContext->RegisterReceiver(mBluetoothHeadsetReceiver, filter, (IIntent**)&intent);
 }
 
-void AudioManagerAndroid::UnregisterForBluetoothHeadsetIntentBroadcast()
+void AudioManagerElastos::UnregisterForBluetoothHeadsetIntentBroadcast()
 {
     mContext->UnregisterReceiver(mBluetoothHeadsetReceiver);
     mBluetoothHeadsetReceiver = NULL;
@@ -1132,7 +1132,7 @@ void AudioManagerAndroid::UnregisterForBluetoothHeadsetIntentBroadcast()
  * Registers receiver for the broadcasted intent related the existence
  * of a BT SCO channel. Indicates if BT SCO streaming is on or off.
  */
-void AudioManagerAndroid::RegisterForBluetoothScoIntentBroadcast()
+void AudioManagerElastos::RegisterForBluetoothScoIntentBroadcast()
 {
     AutoPtr<IIntentFilter> filter;
     AutoPtr<IIntent> intent;
@@ -1146,14 +1146,14 @@ void AudioManagerAndroid::RegisterForBluetoothScoIntentBroadcast()
     mContext->RegisterReceiver(mBluetoothScoReceiver, filter, (IIntent**)&intent);
 }
 
-void AudioManagerAndroid::UnregisterForBluetoothScoIntentBroadcast()
+void AudioManagerElastos::UnregisterForBluetoothScoIntentBroadcast()
 {
     mContext->UnregisterReceiver(mBluetoothScoReceiver);
     mBluetoothScoReceiver = NULL;
 }
 
 /** Enables BT audio using the SCO audio channel. */
-void AudioManagerAndroid::StartBluetoothSco()
+void AudioManagerElastos::StartBluetoothSco()
 {
     if (!mHasBluetoothPermission) {
         return;
@@ -1180,7 +1180,7 @@ void AudioManagerAndroid::StartBluetoothSco()
 }
 
 /** Disables BT audio using the SCO audio channel. */
-void AudioManagerAndroid::StopBluetoothSco()
+void AudioManagerElastos::StopBluetoothSco()
 {
     if (!mHasBluetoothPermission) {
         return;
@@ -1210,7 +1210,7 @@ void AudioManagerAndroid::StopBluetoothSco()
  *
  * @param device Specifies the selected audio device.
  */
-void AudioManagerAndroid::SetAudioDevice(
+void AudioManagerElastos::SetAudioDevice(
     /* [in] */ Int32 device)
 {
     if (DEBUG) Logger::D(TAG, "setAudioDevice(device=%d", device);
@@ -1249,7 +1249,7 @@ void AudioManagerAndroid::SetAudioDevice(
  * The "most unique" device will be selected; Wired headset first,
  * then Bluetooth and last the speaker phone.
  */
-Int32 AudioManagerAndroid::SelectDefaultDevice(
+Int32 AudioManagerElastos::SelectDefaultDevice(
     /* [in] */ ArrayOf<Boolean>* devices)
 {
     if ((*devices)[DEVICE_WIRED_HEADSET]) {
@@ -1265,7 +1265,7 @@ Int32 AudioManagerAndroid::SelectDefaultDevice(
 }
 
 /** Returns true if setDevice() has been called with a valid device id. */
-Boolean AudioManagerAndroid::DeviceHasBeenRequested()
+Boolean AudioManagerElastos::DeviceHasBeenRequested()
 {
     AutoLock lock(&mLock);
     return (mRequestedAudioDevice != DEVICE_INVALID);
@@ -1276,7 +1276,7 @@ Boolean AudioManagerAndroid::DeviceHasBeenRequested()
  * information about if a specific device has been selected or if
  * the default device is selected.
  */
-void AudioManagerAndroid::UpdateDeviceActivation()
+void AudioManagerElastos::UpdateDeviceActivation()
 {
     AutoPtr< ArrayOf<Boolean> > devices;
     Int32 requested = DEVICE_INVALID;
@@ -1307,7 +1307,7 @@ void AudioManagerAndroid::UpdateDeviceActivation()
 }
 
 /** Returns number of available devices */
-Int32 AudioManagerAndroid::GetNumOfAudioDevices(
+Int32 AudioManagerElastos::GetNumOfAudioDevices(
     /* [in] */ ArrayOf<Boolean>* devices)
 {
     Int32 count = 0;
@@ -1325,7 +1325,7 @@ Int32 AudioManagerAndroid::GetNumOfAudioDevices(
  * been a change in the state.
  * TODO(henrika): add support for state change listener.
  */
-void AudioManagerAndroid::ReportUpdate()
+void AudioManagerElastos::ReportUpdate()
 {
     AutoLock lock(&mLock);
     List<String> devices;// = new ArrayList<String>();
@@ -1343,7 +1343,7 @@ void AudioManagerAndroid::ReportUpdate()
 }
 
 /** Information about the current build, taken from system properties. */
-void AudioManagerAndroid::LogDeviceInfo()
+void AudioManagerElastos::LogDeviceInfo()
 {
     Logger::D(TAG,"Android SDK: %d, Release: %s, Brand: %s, CPU_ABI:%s, Device:%s, \
             Id:%s, Hardware:%s, Manufacturer:%s, Model:%s, Product:%s",
@@ -1353,28 +1353,28 @@ void AudioManagerAndroid::LogDeviceInfo()
 }
 
 /** Trivial helper method for debug logging */
-void AudioManagerAndroid::Logd(
+void AudioManagerElastos::Logd(
     /* [in] */ const String& msg)
 {
     Logger::D(TAG, msg.string());
 }
 
 /** Trivial helper method for error logging */
-void AudioManagerAndroid::Loge(
+void AudioManagerElastos::Loge(
     /* [in] */ const String& msg)
 {
     Logger::E(TAG, msg.string());
 }
 
 /** Start thread which observes volume changes on the voice stream. */
-void AudioManagerAndroid::StartObservingVolumeChanges()
+void AudioManagerElastos::StartObservingVolumeChanges()
 {
     if (DEBUG) Logd(String("startObservingVolumeChanges"));
     if (mSettingsObserverThread != NULL)
         return;
 
     CHandlerThread::New(String("SettingsObserver"), (IHandlerThread**)&mSettingsObserverThread);
-    AutoPtr<IThread> thread = (IThread*)mSettingsObserverThread->Probe(EIID_IThread);
+    AutoPtr<IThread> thread = IThread::Probe(mSettingsObserverThread);
     thread->Start();
 
     mSettingsObserver = new InnerContentObserver(this);
@@ -1386,7 +1386,7 @@ void AudioManagerAndroid::StartObservingVolumeChanges()
 }
 
 /** Quit observer thread and stop listening for volume changes. */
-void AudioManagerAndroid::StopObservingVolumeChanges()
+void AudioManagerElastos::StopObservingVolumeChanges()
 {
     if (DEBUG) Logd(String("stopObservingVolumeChanges"));
     if (mSettingsObserverThread == NULL)
@@ -1398,7 +1398,7 @@ void AudioManagerAndroid::StopObservingVolumeChanges()
     Boolean result;
     mSettingsObserverThread->Quit(&result);
     // try {
-    AutoPtr<IThread> thread = (IThread*)mSettingsObserverThread->Probe(EIID_IThread);
+    AutoPtr<IThread> thread = IThread::Probe(mSettingsObserverThread);
     thread->Join();
     // } catch (InterruptedException e) {
     //     Log.e(TAG, "Thread.join() exception: ", e);
@@ -1406,123 +1406,123 @@ void AudioManagerAndroid::StopObservingVolumeChanges()
     mSettingsObserverThread = NULL;
 }
 
-void AudioManagerAndroid::NativeSetMute(
-    /* [in] */ Int64 nativeAudioManagerAndroid,
+void AudioManagerElastos::NativeSetMute(
+    /* [in] */ Int64 nativeAudioManagerElastos,
     /* [in] */ Boolean muted)
 {
-    AutoPtr<IInterface> iAudioManagerAndroid = this->Probe(EIID_IInterface);
-    Elastos_AudioManagerAndroid_nativeSetMute(iAudioManagerAndroid, nativeAudioManagerAndroid, muted);
+    AutoPtr<IInterface> iAudioManagerElastos = THIS_PROBE(IInterface);
+    Elastos_AudioManagerAndroid_nativeSetMute(iAudioManagerElastos, nativeAudioManagerElastos, muted);
 }
 
 //begin callback functions definition
-void AudioManagerAndroid::Init(
+void AudioManagerElastos::Init(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::Init, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::Init, amaObj is NULL");
         return;
     }
     amaObj->Init();
 }
 
-void AudioManagerAndroid::Close(
+void AudioManagerElastos::Close(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::Close, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::Close, amaObj is NULL");
         return;
     }
     amaObj->Close();
 }
 
-void AudioManagerAndroid::SetCommunicationAudioModeOn(
+void AudioManagerElastos::SetCommunicationAudioModeOn(
     /* [in] */ IInterface* obj,
     /* [in] */ Boolean on)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::SetCommunicationAudioModeOn, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::SetCommunicationAudioModeOn, amaObj is NULL");
         return;
     }
     amaObj->SetCommunicationAudioModeOn(on);
 }
 
-Boolean AudioManagerAndroid::SetDevice(
+Boolean AudioManagerElastos::SetDevice(
     /* [in] */ IInterface* obj,
     /* [in] */ const String& deviceId)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::SetDevice, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::SetDevice, amaObj is NULL");
         return FALSE;
     }
     return amaObj->SetDevice(deviceId);
 }
-AutoPtr<ArrayOf<IInterface*> > AudioManagerAndroid::GetAudioInputDeviceNames(
+AutoPtr<ArrayOf<IInterface*> > AudioManagerElastos::GetAudioInputDeviceNames(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::GetAudioInputDeviceNames, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::GetAudioInputDeviceNames, amaObj is NULL");
         return NULL;
     }
     return amaObj->GetAudioInputDeviceNames();
 }
 
-Int32 AudioManagerAndroid::GetNativeOutputSampleRate(
+Int32 AudioManagerElastos::GetNativeOutputSampleRate(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::GetNativeOutputSampleRate, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::GetNativeOutputSampleRate, amaObj is NULL");
         return DEFAULT_SAMPLING_RATE;
     }
     return amaObj->GetNativeOutputSampleRate();
 }
 
-Boolean AudioManagerAndroid::IsAudioLowLatencySupported(
+Boolean AudioManagerElastos::IsAudioLowLatencySupported(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::IsAudioLowLatencySupported, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::IsAudioLowLatencySupported, amaObj is NULL");
         return FALSE;
     }
     return amaObj->IsAudioLowLatencySupported();
 }
 
-Int32 AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize(
+Int32 AudioManagerElastos::GetAudioLowLatencyOutputFrameSize(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<AudioManagerAndroid> amaObj = (AudioManagerAndroid*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioManagerElastos> amaObj = (AudioManagerElastos*)(IObject::Probe(obj));
     if (NULL == amaObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::GetAudioLowLatencyOutputFrameSize, amaObj is NULL");
         return DEFAULT_FRAME_PER_BUFFER;
     }
     return amaObj->GetAudioLowLatencyOutputFrameSize();
 }
 
-AutoPtr<IInterface> AudioManagerAndroid::CreateAudioManagerAndroid(
+AutoPtr<IInterface> AudioManagerElastos::CreateAudioManagerElastos(
     /* [in] */ IInterface* context,
-    /* [in} */ Int64 nativeAudioManagerAndroid)
+    /* [in} */ Int64 nativeAudioManagerElastos)
 {
-    AutoPtr<IContext> cObj = (IContext*)(context->Probe(EIID_IContext));
+    AutoPtr<IContext> cObj = (IContext*)(IContext::Probe(context));
     if (NULL == cObj)
     {
-        Logger::E(TAG, "AudioManagerAndroid::CreateAudioManagerAndroid, amaObj is NULL");
+        Logger::E(TAG, "AudioManagerElastos::CreateAudioManagerElastos, amaObj is NULL");
         return NULL;
     }
-    return TO_IINTERFACE(CreateAudioManagerAndroid(cObj, nativeAudioManagerAndroid));
+    return TO_IINTERFACE(CreateAudioManagerElastos(cObj, nativeAudioManagerElastos));
 }
 
 } // namespace Media

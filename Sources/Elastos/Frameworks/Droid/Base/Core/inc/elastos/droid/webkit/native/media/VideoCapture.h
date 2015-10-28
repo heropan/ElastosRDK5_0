@@ -55,6 +55,7 @@ public:
 
 public:
     CAR_INTERFACE_DECL();
+
     VideoCapture(
         /* [in] */ IContext* context,
         /* [in] */ Int32 id,

@@ -28,11 +28,11 @@ namespace Media {
  */
 //@JNINamespace("media")
 class MediaCodecBridge
-:public Object
+    : public Object
 {
 public:
     class DequeueInputResult
-    :public Object
+        : public Object
     {
     public:
         DequeueInputResult(
@@ -60,7 +60,7 @@ public:
      * This class represents supported android codec information.
      */
     class CodecInfo
-    :public Object
+        : public Object
     {
     public:
         CodecInfo(
@@ -93,7 +93,7 @@ public:
     };
 
     class DequeueOutputResult
-    :public Object
+        : public Object
     {
     public:
         DequeueOutputResult(
@@ -326,118 +326,120 @@ private:
 //callback function declaration
 public:
     static CARAPI_(void*) ElaMediaCodecBridgeCallback_Init();
+
 private:
     static CARAPI_(void) ReleaseResource(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Boolean) Start(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(AutoPtr<IInterface>) DequeueInputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int64 timeoutUs);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 timeoutUs);
 
     static CARAPI_(Int32) Flush(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(void) Stop(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Int32) GetOutputHeight(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Int32) GetOutputWidth(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(AutoPtr<IInterface>) GetInputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 index);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 index);
 
     static CARAPI_(AutoPtr<IInterface>) GetOutputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 index);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 index);
 
     static CARAPI_(Int32) GetInputBuffersCount(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Int32) GetOutputBuffersCount(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Int32) GetOutputBuffersCapacity(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Boolean) GetOutputBuffers(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Int32) QueueInputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 index,
-        /* [in] */Int32 offset,
-        /* [in] */Int32 size,
-        /* [in] */Int64 presentationTimeUs,
-        /* [in] */Int32 flags);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 size,
+        /* [in] */ Int64 presentationTimeUs,
+        /* [in] */ Int32 flags);
 
     static CARAPI_(void) SetVideoBitrate(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 bps);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 bps);
 
     static CARAPI_(void) RequestKeyFrameSoon(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
 
     static CARAPI_(Int32) QueueSecureInputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 index,
-        /* [in] */Int32 offset,
-        /* [in] */ArrayOf<Byte>* iv,
-        /* [in] */ArrayOf<Byte>* keyId,
-        /* [in] */ArrayOf<Int32>* numBytesOfClearData,
-        /* [in] */ArrayOf<Int32>* numBytesOfEncryptedData,
-        /* [in] */Int32 numSubSamples,
-        /* [in] */Int64 presentationTimeUs);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 offset,
+        /* [in] */ ArrayOf<Byte>* iv,
+        /* [in] */ ArrayOf<Byte>* keyId,
+        /* [in] */ ArrayOf<Int32>* numBytesOfClearData,
+        /* [in] */ ArrayOf<Int32>* numBytesOfEncryptedData,
+        /* [in] */ Int32 numSubSamples,
+        /* [in] */ Int64 presentationTimeUs);
 
     static CARAPI_(void) ReleaseOutputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 index,
-        /* [in] */Boolean render);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 index,
+        /* [in] */ Boolean render);
 
     static CARAPI_(AutoPtr<IInterface>) DequeueOutputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */Int64 timeoutUs);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 timeoutUs);
 
     static CARAPI_(Boolean) ConfigureVideo(
-        /* [in] */IInterface* obj,
-        /* [in] */IInterface* format,
-        /* [in] */IInterface* surface,
-        /* [in] */IInterface* crypto,
-        /* [in] */Int32 flags);
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* format,
+        /* [in] */ IInterface* surface,
+        /* [in] */ IInterface* crypto,
+        /* [in] */ Int32 flags);
 
     static CARAPI_(Boolean) IsAdaptivePlaybackSupported(
-        /* [in] */IInterface* obj,
-        /* [in] */Int32 width,
-        /* [in] */Int32 height);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height);
 
     static CARAPI_(void) SetCodecSpecificData(
-        /* [in] */IInterface* format,
-        /* [in] */Int32 index,
-        /* [in] */ArrayOf<Byte>* bytes);
+        /* [in] */ IInterface* format,
+        /* [in] */ Int32 index,
+        /* [in] */ ArrayOf<Byte>* bytes);
 
     static CARAPI_(void) SetFrameHasADTSHeader(
-        /* [in] */IInterface* format);
+        /* [in] */ IInterface* format);
 
     static CARAPI_(Boolean) ConfigureAudio(
-        /* [in] */IInterface* obj,
-        /* [in] */IInterface* format,
-        /* [in] */IInterface* crypto,
-        /* [in] */Int32 flags,
-        /* [in] */Boolean playAudio);
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* format,
+        /* [in] */ IInterface* crypto,
+        /* [in] */ Int32 flags,
+        /* [in] */ Boolean playAudio);
 
     static CARAPI_(Int64) PlayOutputBuffer(
-        /* [in] */IInterface* obj,
-        /* [in] */ArrayOf<Byte>* buf);
+        /* [in] */ IInterface* obj,
+        /* [in] */ ArrayOf<Byte>* buf);
 
     static CARAPI_(void) SetVolume(
-        /* [in] */IInterface* obj,
-        /* [in] */Double volume);
+        /* [in] */ IInterface* obj,
+        /* [in] */ Double volume);
+
 private:
     static const String TAG;
 

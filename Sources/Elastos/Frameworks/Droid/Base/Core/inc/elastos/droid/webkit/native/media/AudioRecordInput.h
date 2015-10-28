@@ -24,7 +24,7 @@ namespace Media {
 // that class for general comments.
 //@JNINamespace("media")
 class AudioRecordInput
-:public Object
+    : public Object
 {
 private:
     class AudioRecordThread
@@ -95,11 +95,14 @@ public:
     static CARAPI_(void*) ElaAudioRecordInputCallback_Init();
 
     static CARAPI_(Boolean) Open(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
+
     static CARAPI_(void) Start(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
+
     static CARAPI_(void) Stop(
-        /* [in] */IInterface* obj);
+        /* [in] */ IInterface* obj);
+
     static CARAPI_(void) Close(
         /* [in] */IInterface* obj);
 

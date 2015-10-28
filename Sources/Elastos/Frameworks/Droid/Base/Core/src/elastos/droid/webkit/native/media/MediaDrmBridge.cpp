@@ -682,7 +682,7 @@ AutoPtr<IInterface> MediaDrmBridge::Create(
     //     Log.e(TAG, "Failed to create MediaDrmBridge", e);
     // }
 
-    AutoPtr<IInterface> result = mediaDrmBridge->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(mediaDrmBridge);
     return result;
 }
 
@@ -840,7 +840,7 @@ void MediaDrmBridge::SavePendingCreateSessionData(
 {
     Logger::D(TAG, "savePendingCreateSessionData()");
     AutoPtr<PendingCreateSessionData> data = new PendingCreateSessionData(sessionId, initData, mime);
-    AutoPtr<IInterface> sessionData = data->Probe(EIID_IInterface);
+    AutoPtr<IInterface> sessionData = TO_IINTERFACE(data);
     AutoPtr<IDeque> deque = IDeque::Probe(mPendingCreateSessionDataQueue);
     Boolean result;
     deque->Offer(sessionData, &result);
@@ -1363,7 +1363,7 @@ void MediaDrmBridge::NativeAddKeySystemUuidMapping(
     /* [in] */ const String& keySystem,
     /* [in] */ IByteBuffer* uuid)
 {
-    Elastos_MediaDrmBridge_nativeAddKeySystemUuidMapping(keySystem, uuid->Probe(EIID_IInterface));
+    Elastos_MediaDrmBridge_nativeAddKeySystemUuidMapping(keySystem, TO_IINTERFACE(uuid));
 }
 
 //callback function definition

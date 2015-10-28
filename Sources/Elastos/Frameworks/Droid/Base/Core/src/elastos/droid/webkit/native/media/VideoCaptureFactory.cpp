@@ -1,5 +1,5 @@
 #include "elastos/droid/webkit/native/media/VideoCaptureFactory.h"
-#include "elastos/droid/webkit/native/media/VideoCaptureAndroid.h"
+#include "elastos/droid/webkit/native/media/VideoCaptureElastos.h"
 #include "elastos/droid/webkit/native/media/VideoCaptureTango.h"
 
 //TODO #include "elastos/droid/hardware/CHardwareCamera.h"
@@ -142,7 +142,7 @@ AutoPtr<IInterface> VideoCaptureFactory::ChromiumCameraInfo::GetAt(
     /* [in] */ Int32 index)
 {
     AutoPtr<ChromiumCameraInfo> info = new ChromiumCameraInfo(index);
-    AutoPtr<IInterface> result = info->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(info);
     return result;
 }
 
@@ -261,21 +261,21 @@ Int32 VideoCaptureFactory::ChromiumCameraInfo::GetOrientation(
 AutoPtr<IInterface> VideoCaptureFactory::CreateVideoCapture(
     /* [in] */ IContext* context,
     /* [in] */ Int32 id,
-    /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
+    /* [in] */ Int64 nativeVideoCaptureDeviceElastos)
 {
   AutoPtr<VideoCapture> vc;
   AutoPtr<IInterface> result;
   if (ChromiumCameraInfo::IsSpecialCamera(id)) {
       vc = new VideoCaptureTango(context, ChromiumCameraInfo::ToSpecialCameraId(id),
-              nativeVideoCaptureDeviceAndroid);
+              nativeVideoCaptureDeviceElastos);
   }
   else {
-      vc = new VideoCaptureAndroid(context, id,
-              nativeVideoCaptureDeviceAndroid);
+      vc = new VideoCaptureElastos(context, id,
+              nativeVideoCaptureDeviceElastos);
   }
   if (vc.Get())
   {
-      result = vc->Probe(EIID_IInterface);
+      result = TO_IINTERFACE(vc);
   }
   return result;
 }
@@ -288,12 +288,12 @@ AutoPtr<ArrayOf<IInterface*> > VideoCaptureFactory::GetDeviceSupportedFormats(
     ChromiumCameraInfo::IsSpecialCamera(id) ?
             VideoCaptureTango::GetDeviceSupportedFormats(
                     ChromiumCameraInfo::ToSpecialCameraId(id)) :
-            VideoCaptureAndroid::GetDeviceSupportedFormats(id);
+            VideoCaptureElastos::GetDeviceSupportedFormats(id);
     Int32 n = cf->GetLength();
     AutoPtr<ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(n);
     for(Int32 i = 0; i < n; ++i)
     {
-        result->Set(i, ((*cf)[i])->Probe(EIID_IInterface));
+        result->Set(i, TO_IINTERFACE((*cf)[i]));
     }
     return result;
 }
@@ -329,10 +329,10 @@ Int32 VideoCaptureFactory::GetCaptureFormatPixelFormat(
 AutoPtr<IInterface> VideoCaptureFactory::CreateVideoCapture(
     /* [in] */ IInterface* context,
     /* [in] */ Int32 id,
-    /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
+    /* [in] */ Int64 nativeVideoCaptureDeviceElastos)
 {
     AutoPtr<IContext> c = IContext::Probe(context);
-    return CreateVideoCapture(c, id, nativeVideoCaptureDeviceAndroid);
+    return CreateVideoCapture(c, id, nativeVideoCaptureDeviceElastos);
 }
 
 Int32 VideoCaptureFactory::GetCaptureFormatWidth(

@@ -8,17 +8,17 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = AudioManagerAndroid.cpp
+SOURCES = AudioManagerElastos.cpp
 SOURCES += VideoCapture.cpp
 SOURCES += VideoCaptureFactory.cpp
 SOURCES += VideoCaptureTango.cpp
-SOURCES += VideoCaptureAndroid.cpp
+SOURCES += VideoCaptureElastos.cpp
 SOURCES += AudioRecordInput.cpp
 SOURCES += MediaCodecBridge.cpp
 SOURCES += WebAudioMediaCodecBridge.cpp
 SOURCES += MediaDrmBridge.cpp
 SOURCES += MediaPlayerListener.cpp
 SOURCES += MediaPlayerBridge.cpp
-SOURCES += UsbMidiDeviceAndroid.cpp
-SOURCES += UsbMidiDeviceFactoryAndroid.cpp
+SOURCES += UsbMidiDeviceElastos.cpp
+SOURCES += UsbMidiDeviceFactoryElastos.cpp
 SOURCES += ImageFormat.cpp

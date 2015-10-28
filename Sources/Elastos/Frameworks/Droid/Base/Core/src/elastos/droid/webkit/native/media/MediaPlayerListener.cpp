@@ -173,7 +173,7 @@ AutoPtr<IInterface> MediaPlayerListener::Create(
             IAudioManager::AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
             &result);
 
-    AutoPtr<IInterface> iListener = listener->Probe(EIID_IInterface);
+    AutoPtr<IInterface> iListener = TO_IINTERFACE(listener);
     return iListener;
 }
 

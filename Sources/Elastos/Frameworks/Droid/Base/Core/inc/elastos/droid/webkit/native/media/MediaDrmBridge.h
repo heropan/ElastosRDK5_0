@@ -38,14 +38,14 @@ namespace Media {
  */
 //@JNINamespace("media")
 class MediaDrmBridge
-:public Object
+    : public Object
 {
 private:
     /**
      *  This class contains data needed to call createSession().
      */
     class PendingCreateSessionData
-    :public Object
+        : public Object
     {
     public:
         PendingCreateSessionData(
@@ -86,7 +86,8 @@ private:
         MediaDrmBridge* mOwner;
     };
 
-    class PostRequestTask : public AsyncTask
+    class PostRequestTask
+        : public AsyncTask
     {
     public:
         PostRequestTask(
@@ -209,6 +210,7 @@ private:
     {
     public:
         CAR_INTERFACE_DECL();
+
         OnSessionErrorRunnable(
             /* [in] */ MediaDrmBridge* owner,
             /* [in] */ Int32 sessionId);
@@ -475,6 +477,7 @@ private:
 //callback function declaration
 public:
     static CARAPI_(void*) ElaMediaDrmBridgeCallback_Init();
+
 private:
     static CARAPI_(Boolean) SetSecurityLevel(
         /* [in] */ IInterface* obj,
@@ -506,6 +509,7 @@ private:
 
     static CARAPI_(String) GetSecurityLevel(
         /* [in] */ IInterface* obj);
+
 private:
     // Implementation Notes:
     // - A media crypto session (mMediaCryptoSession) is opened after MediaDrm

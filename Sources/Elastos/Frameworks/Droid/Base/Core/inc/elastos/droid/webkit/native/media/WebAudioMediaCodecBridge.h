@@ -16,7 +16,7 @@ namespace Media {
 
 //@JNINamespace("media")
 class WebAudioMediaCodecBridge
-:public Object
+    : public Object
 {
 public:
     static const String TAG;

@@ -29,19 +29,19 @@ struct ElaUsbMidiDeviceFactoryAndroidCallback
     void (*elastos_UsbMidiDeviceFactoryAndroid_close)(IInterface* obj);
 };
 
-void* UsbMidiDeviceFactoryAndroid::ElaUsbMidiDeviceFactoryAndroidCallback_Init()
+void* UsbMidiDeviceFactoryElastos::ElaUsbMidiDeviceFactoryElastosCallback_Init()
 {
     static ElaUsbMidiDeviceFactoryAndroidCallback sElaUsbMidiDeviceFactoryAndroidCallback;
 
-    sElaUsbMidiDeviceFactoryAndroidCallback.elastos_UsbMidiDeviceFactoryAndroid_create = &UsbMidiDeviceFactoryAndroid::Create;
-    sElaUsbMidiDeviceFactoryAndroidCallback.elastos_UsbMidiDeviceFactoryAndroid_enumerateDevices = &UsbMidiDeviceFactoryAndroid::EnumerateDevices;
-    sElaUsbMidiDeviceFactoryAndroidCallback.elastos_UsbMidiDeviceFactoryAndroid_close = &UsbMidiDeviceFactoryAndroid::Close;
+    sElaUsbMidiDeviceFactoryAndroidCallback.elastos_UsbMidiDeviceFactoryAndroid_create = &UsbMidiDeviceFactoryElastos::Create;
+    sElaUsbMidiDeviceFactoryAndroidCallback.elastos_UsbMidiDeviceFactoryAndroid_enumerateDevices = &UsbMidiDeviceFactoryElastos::EnumerateDevices;
+    sElaUsbMidiDeviceFactoryAndroidCallback.elastos_UsbMidiDeviceFactoryAndroid_close = &UsbMidiDeviceFactoryElastos::Close;
 
     Elastos_UsbMidiDeviceFactoryAndroid_InitCallback((Handle32)&sElaUsbMidiDeviceFactoryAndroidCallback);
     return &sElaUsbMidiDeviceFactoryAndroidCallback;
 }
 
-static void* sPElaUsbMidiDeviceFactoryAndroidCallback = UsbMidiDeviceFactoryAndroid::ElaUsbMidiDeviceFactoryAndroidCallback_Init();
+static void* sPElaUsbMidiDeviceFactoryAndroidCallback = UsbMidiDeviceFactoryElastos::ElaUsbMidiDeviceFactoryElastosCallback_Init();
 
 } // namespace Media
 } // namespace Webkit

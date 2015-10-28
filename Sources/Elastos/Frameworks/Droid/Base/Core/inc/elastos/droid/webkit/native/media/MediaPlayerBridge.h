@@ -34,7 +34,7 @@ namespace Media {
 */
 //@JNINamespace("media")
 class MediaPlayerBridge
-:public Object
+    : public Object
 {
 private:
     class LoadDataUriTask
@@ -68,7 +68,7 @@ private:
 
 protected:
     class AllowedOperations
-    :public Object
+        : public Object
     {
     public:
         AllowedOperations(
@@ -270,6 +270,7 @@ private:
 
     static CARAPI_(AutoPtr<IInterface>) GetAllowedOperations(
         /* [in] */ IInterface* obj);
+
 private:
     static const String TAG;
 

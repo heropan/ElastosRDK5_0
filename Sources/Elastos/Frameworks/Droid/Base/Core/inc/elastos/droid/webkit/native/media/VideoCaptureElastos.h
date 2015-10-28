@@ -27,7 +27,8 @@ namespace Media {
  * Java-allocated buffers. It also includes class BuggyDeviceHack to deal with
  * troublesome devices.
  **/
-class VideoCaptureAndroid : public VideoCapture
+class VideoCaptureElastos
+    : public VideoCapture
 {
 private:
     // Some devices don't support YV12 format correctly, even with JELLY_BEAN or
@@ -36,10 +37,11 @@ private:
     // under a given one: for those, the resolution is swapped with a known
     // good. Both are supposed to be temporary hacks.
     class BuggyDeviceHack
+        : public Object
     {
     public:
         class IdAndSizes
-        :public Object
+        : public Object
         {
         public:
             IdAndSizes(
@@ -68,7 +70,7 @@ private:
     };
 
 public:
-    VideoCaptureAndroid(
+    VideoCaptureElastos(
         /* [in] */ IContext* context,
         /* [in] */ Int32 id,
         /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
@@ -111,6 +113,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Media::VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes, IInterface);
+DEFINE_CONVERSION_FOR(Elastos::Droid::Webkit::Media::VideoCaptureElastos::BuggyDeviceHack::IdAndSizes, IInterface);
 
 #endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__

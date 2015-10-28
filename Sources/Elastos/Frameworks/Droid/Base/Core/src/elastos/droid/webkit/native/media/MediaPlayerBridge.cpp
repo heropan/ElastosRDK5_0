@@ -246,7 +246,7 @@ AutoPtr<IInterface> MediaPlayerBridge::Create(
     /* [in] */ Int64 nativeMediaPlayerBridge)
 {
     AutoPtr<MediaPlayerBridge> mpb = new MediaPlayerBridge(nativeMediaPlayerBridge);
-    AutoPtr<IInterface> result = mpb->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(mpb);
     return result;
 }
 
@@ -825,7 +825,7 @@ AutoPtr<IInterface> MediaPlayerBridge::GetAllowedOperations(
         return NULL;
     }
     AutoPtr<MediaPlayerBridge::AllowedOperations> ao= mObj->GetAllowedOperations();
-    return ao->Probe(EIID_IInterface);
+    return TO_IINTERFACE(ao);
 }
 } // namespace Media
 } // namespace Webkit

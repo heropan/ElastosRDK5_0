@@ -40,29 +40,29 @@ struct ElaAudioManagerAndroidCallback
     Boolean (*elastos_AudioManagerAndroid_shouldUseAcousticEchoCanceler)();
 };
 
-void* AudioManagerAndroid::ElaAudioManagerAndroidCallback_Init()
+void* AudioManagerElastos::ElaAudioManagerElastosCallback_Init()
 {
     static ElaAudioManagerAndroidCallback sElaAudioManagerAndroidCallback;
-    sElaAudioManagerAndroidCallback.elastos_AudioDeviceName_id = &AudioManagerAndroid::AudioDeviceName::Id;
-    sElaAudioManagerAndroidCallback.elastos_AudioDeviceName_name = &AudioManagerAndroid::AudioDeviceName::Name;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_createAudioManagerAndroid = &AudioManagerAndroid::CreateAudioManagerAndroid;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_init = &AudioManagerAndroid::Init;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_close = &AudioManagerAndroid::Close;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_setCommunicationAudioModeOn = &AudioManagerAndroid::SetCommunicationAudioModeOn;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_setDevice = &AudioManagerAndroid::SetDevice;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getAudioInputDeviceNames = &AudioManagerAndroid::GetAudioInputDeviceNames;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getNativeOutputSampleRate = &AudioManagerAndroid::GetNativeOutputSampleRate;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getMinInputFrameSize = &AudioManagerAndroid::GetMinInputFrameSize;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getMinOutputFrameSize = &AudioManagerAndroid::GetMinOutputFrameSize;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_isAudioLowLatencySupported = &AudioManagerAndroid::IsAudioLowLatencySupported;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getAudioLowLatencyOutputFrameSize = &AudioManagerAndroid::GetAudioLowLatencyOutputFrameSize;
-    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_shouldUseAcousticEchoCanceler = &AudioManagerAndroid::ShouldUseAcousticEchoCanceler;
+    sElaAudioManagerAndroidCallback.elastos_AudioDeviceName_id = &AudioManagerElastos::AudioDeviceName::Id;
+    sElaAudioManagerAndroidCallback.elastos_AudioDeviceName_name = &AudioManagerElastos::AudioDeviceName::Name;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_createAudioManagerAndroid = &AudioManagerElastos::CreateAudioManagerElastos;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_init = &AudioManagerElastos::Init;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_close = &AudioManagerElastos::Close;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_setCommunicationAudioModeOn = &AudioManagerElastos::SetCommunicationAudioModeOn;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_setDevice = &AudioManagerElastos::SetDevice;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getAudioInputDeviceNames = &AudioManagerElastos::GetAudioInputDeviceNames;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getNativeOutputSampleRate = &AudioManagerElastos::GetNativeOutputSampleRate;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getMinInputFrameSize = &AudioManagerElastos::GetMinInputFrameSize;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getMinOutputFrameSize = &AudioManagerElastos::GetMinOutputFrameSize;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_isAudioLowLatencySupported = &AudioManagerElastos::IsAudioLowLatencySupported;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_getAudioLowLatencyOutputFrameSize = &AudioManagerElastos::GetAudioLowLatencyOutputFrameSize;
+    sElaAudioManagerAndroidCallback.elastos_AudioManagerAndroid_shouldUseAcousticEchoCanceler = &AudioManagerElastos::ShouldUseAcousticEchoCanceler;
 
     Elastos_AudioManagerAndroid_InitCallback((Handle32)&sElaAudioManagerAndroidCallback);
     return &sElaAudioManagerAndroidCallback;
 }
 
-static void* sPElaAudioManagerAndroidCallback = AudioManagerAndroid::ElaAudioManagerAndroidCallback_Init();
+static void* sPElaAudioManagerAndroidCallback = AudioManagerElastos::ElaAudioManagerElastosCallback_Init();
 
 } // namespace Media
 } // namespace Webkit

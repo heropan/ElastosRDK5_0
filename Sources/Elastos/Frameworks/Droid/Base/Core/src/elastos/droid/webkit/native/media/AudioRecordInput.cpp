@@ -347,7 +347,7 @@ void AudioRecordInput::NativeOnData(
 Boolean AudioRecordInput::Open(
     /* [in] */IInterface* obj)
 {
-    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)IObject::Probe(obj);
     if (NULL == ariObj)
     {
         Logger::E(TAG, "AudioRecordInput::Open, ariObj is NULL");
@@ -359,7 +359,7 @@ Boolean AudioRecordInput::Open(
 void AudioRecordInput::Start(
     /* [in] */IInterface* obj)
 {
-    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)IObject::Probe(obj);
     if (NULL == ariObj)
     {
         Logger::E(TAG, "AudioRecordInput::Start, ariObj is NULL");
@@ -371,7 +371,7 @@ void AudioRecordInput::Start(
 void AudioRecordInput::Stop(
     /* [in] */IInterface* obj)
 {
-    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject::Probe(obj));
     if (NULL == ariObj)
     {
         Logger::E(TAG, "AudioRecordInput::Stop, ariObj is NULL");
@@ -383,7 +383,7 @@ void AudioRecordInput::Stop(
 void AudioRecordInput::Close(
     /* [in] */IInterface* obj)
 {
-    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject*)(obj->Probe(EIID_IObject));
+    AutoPtr<AudioRecordInput> ariObj = (AudioRecordInput*)(IObject::Probe(obj));
     if (NULL == ariObj)
     {
         Logger::E(TAG, "AudioRecordInput::Close, ariObj is NULL");

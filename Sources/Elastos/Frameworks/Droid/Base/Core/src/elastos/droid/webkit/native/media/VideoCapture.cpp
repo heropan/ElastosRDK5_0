@@ -265,8 +265,7 @@ Int32 VideoCapture::StartCapture()
         return -1;
     }
 
-    AutoPtr<ILock> lock;
-    mPreviewBufferLock->Probe(EIID_ILock);
+    AutoPtr<ILock> lock = ILock::Probe(mPreviewBufferLock);
     lock->Lock();
     //try {
         if (mIsRunning) {
@@ -296,8 +295,7 @@ Int32 VideoCapture::StopCapture()
         return 0;
     }
 
-    AutoPtr<ILock> lock;
-    mPreviewBufferLock->Probe(EIID_ILock);
+    AutoPtr<ILock> lock = ILock::Probe(mPreviewBufferLock);
     lock->Lock();
     //try {
         if (!mIsRunning) {

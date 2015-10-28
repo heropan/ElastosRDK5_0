@@ -32,10 +32,11 @@ namespace Media {
  **/
 //@JNINamespace("media")
 class VideoCaptureFactory
+    : public Object
 {
 public:
     class CamParams
-    : public Object
+        : public Object
     {
     public:
         CamParams(
@@ -52,7 +53,7 @@ public:
     };
 
     class ChromiumCameraInfo
-        :public Object
+        : public Object
     {
     public:
         ChromiumCameraInfo(
@@ -121,7 +122,7 @@ public:
     static CARAPI_(AutoPtr<IInterface>) CreateVideoCapture(
         /* [in] */ IContext* context,
         /* [in] */ Int32 id,
-        /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
+        /* [in] */ Int64 nativeVideoCaptureDeviceElastos);
 
     //@CalledByNative
     //static CARAPI_(AutoPtr<ArrayOf<VideoCapture::CaptureFormat> >) GetDeviceSupportedFormats(
@@ -151,7 +152,7 @@ private:
     static CARAPI_(AutoPtr<IInterface>) CreateVideoCapture(
         /* [in] */ IInterface* context,
         /* [in] */ Int32 id,
-        /* [in] */ Int64 nativeVideoCaptureDeviceAndroid);
+        /* [in] */ Int64 nativeVideoCaptureDeviceElastos);
 
     static CARAPI_(Int32) GetCaptureFormatWidth(
         /* [in] */ IInterface* format);

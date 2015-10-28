@@ -32,7 +32,7 @@ namespace Webkit {
 namespace Media {
 
 //@JNINamespace("media")
-class AudioManagerAndroid
+class AudioManagerElastos
     : public Object
 {
 public:
@@ -43,7 +43,7 @@ public:
      * Is only utilized when DEBUG is set to true.
      */
     class NonThreadSafe
-    : public Object
+        : public Object
     {
     public:
         NonThreadSafe();
@@ -77,6 +77,7 @@ public:
     public:
         static CARAPI_(String) Id(
             /* [in] */ IInterface* obj);
+
         static CARAPI_(String) Name(
             /* [in] */ IInterface* obj);
     private:
@@ -89,7 +90,7 @@ public:
     {
     public:
         WiredHeadsetBroadcastReceiver(
-            /* [in] */ AudioManagerAndroid* owner);
+            /* [in] */ AudioManagerElastos* owner);
 
         //@Override
         CARAPI OnReceive(
@@ -97,7 +98,7 @@ public:
             /* [in] */ IIntent* intent);
 
     private:
-        AudioManagerAndroid* mOwner;
+        AudioManagerElastos* mOwner;
 
         static const Int32 STATE_UNPLUGGED = 0;
         static const Int32 STATE_PLUGGED = 1;
@@ -110,7 +111,7 @@ public:
     {
     public:
         BluetoothHeadsetBroadcastReceiver(
-            /* [in] */ AudioManagerAndroid* owner);
+            /* [in] */ AudioManagerElastos* owner);
 
         //@Override
         CARAPI OnReceive(
@@ -118,7 +119,7 @@ public:
             /* [in] */ IIntent* intent);
 
     private:
-        AudioManagerAndroid* mOwner;
+        AudioManagerElastos* mOwner;
     };
 
     class BluetoothScoIntentBroadcastReceiver
@@ -126,7 +127,7 @@ public:
     {
     public:
         BluetoothScoIntentBroadcastReceiver(
-            /* [in] */ AudioManagerAndroid* owner);
+            /* [in] */ AudioManagerElastos* owner);
 
         //@Override
         CARAPI OnReceive(
@@ -134,7 +135,7 @@ public:
             /* [in] */ IIntent* intent);
 
     private:
-        AudioManagerAndroid* mOwner;
+        AudioManagerElastos* mOwner;
     };
 
     class InnerContentObserver
@@ -142,19 +143,19 @@ public:
     {
     public:
         InnerContentObserver(
-            /* [in] */ AudioManagerAndroid* owner);
+            /* [in] */ AudioManagerElastos* owner);
 
         ECode OnChange(
             /* [in] */ Boolean selfChange);
 
     private:
-        AudioManagerAndroid* mOwner;
+        AudioManagerElastos* mOwner;
     };
 
 private:
-    AudioManagerAndroid(
+    AudioManagerElastos(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeAudioManagerAndroid);
+        /* [in] */ Int64 nativeAudioManagerElastos);
 
     static CARAPI_(Boolean) RunningOnJellyBeanOrHigher();
 
@@ -163,10 +164,10 @@ private:
     static CARAPI_(Boolean) RunningOnJellyBeanMR2OrHigher();
 
     /** Construction */
-    //@CalledByNative AudioManagerAndroid
-    static CARAPI_(AutoPtr<AudioManagerAndroid>) CreateAudioManagerAndroid(
+    //@CalledByNative AudioManagerElastos
+    static CARAPI_(AutoPtr<AudioManagerElastos>) CreateAudioManagerElastos(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeAudioManagerAndroid);
+        /* [in] */ Int64 nativeAudioManagerElastos);
 
     /**
      * Saves the initial speakerphone and microphone state.
@@ -390,33 +391,43 @@ private:
     CARAPI_(void) StopObservingVolumeChanges();
 
     CARAPI_(void) NativeSetMute(
-        /* [in] */ Int64 nativeAudioManagerAndroid,
+        /* [in] */ Int64 nativeAudioManagerElastos,
         /* [in] */ Boolean muted);
 
 // begin the callback function declare
 public:
-    static void* ElaAudioManagerAndroidCallback_Init();
+    static CARAPI_(void*) ElaAudioManagerElastosCallback_Init();
+
     static CARAPI_(void) Init(
         /* [in] */ IInterface* obj);
+
     static CARAPI_(void) Close(
         /* [in] */ IInterface* obj);
+
     static CARAPI_(void) SetCommunicationAudioModeOn(
         /* [in] */ IInterface* obj,
         /* [in] */ Boolean on);
+
     static CARAPI_(Boolean) SetDevice(
         /* [in] */ IInterface* obj,
         /* [in] */ const String& deviceId);
+
     static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) GetAudioInputDeviceNames(
         /* [in] */ IInterface* obj);
+
     static CARAPI_(Int32) GetNativeOutputSampleRate(
         /* [in] */ IInterface* obj);
+
     static CARAPI_(Boolean) IsAudioLowLatencySupported(
         /* [in] */ IInterface* obj);
+
     static CARAPI_(Int32) GetAudioLowLatencyOutputFrameSize(
         /* [in] */ IInterface* obj);
-    static CARAPI_(AutoPtr<IInterface>) CreateAudioManagerAndroid(
+
+    static CARAPI_(AutoPtr<IInterface>) CreateAudioManagerElastos(
         /* [in] */ IInterface* context,
-        /* [in} */ Int64 nativeAudioManagerAndroid);
+        /* [in} */ Int64 nativeAudioManagerElastos);
+
 private:
     static const String TAG;
 
@@ -469,7 +480,7 @@ private:
 
     const AutoPtr<IAudioManager> mAudioManager;
     const AutoPtr<IContext> mContext;
-    const Int64 mNativeAudioManagerAndroid;
+    const Int64 mNativeAudioManagerElastos;
 
     // Enabled during initialization if MODIFY_AUDIO_SETTINGS permission is
     // granted. Required to shift system-wide audio settings.

@@ -1,4 +1,4 @@
-#include "elastos/droid/webkit/native/media/VideoCaptureAndroid.h"
+#include "elastos/droid/webkit/native/media/VideoCaptureElastos.h"
 #include "elastos/droid/webkit/native/media/ImageFormat.h"
 
 //TODO #include "elastos/droid/graphics/CImageFormat.h"
@@ -36,10 +36,10 @@ namespace Webkit {
 namespace Media {
 
 //===============================================================
-//       VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes
+//       VideoCaptureElastos::BuggyDeviceHack::IdAndSizes
 //===============================================================
 
-VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes::IdAndSizes(
+VideoCaptureElastos::BuggyDeviceHack::IdAndSizes::IdAndSizes(
     /* [in] */ const String& model,
     /* [in] */ const String& device,
     /* [in] */ Int32 minWidth,
@@ -52,10 +52,10 @@ VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes::IdAndSizes(
 }
 
 //===============================================================
-//              VideoCaptureAndroid::BuggyDeviceHack
+//              VideoCaptureElastos::BuggyDeviceHack
 //===============================================================
 
-AutoPtr<ArrayOf<VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes*> > VideoCaptureAndroid::s_CAPTURESIZE_BUGGY_DEVICE_LIST_Init()
+AutoPtr<ArrayOf<VideoCaptureElastos::BuggyDeviceHack::IdAndSizes*> > VideoCaptureElastos::s_CAPTURESIZE_BUGGY_DEVICE_LIST_Init()
 {
     AutoPtr<BuggyDeviceHack::IdAndSizes> idAndSizes = new BuggyDeviceHack::IdAndSizes(String("Nexus 7"), String("flo"), 640, 480);
     AutoPtr<ArrayOf<BuggyDeviceHack::IdAndSizes*> > array = ArrayOf<BuggyDeviceHack::IdAndSizes*>::Alloc(1);
@@ -71,10 +71,10 @@ static AutoPtr< ArrayOf<String> > s_COLORSPACE_BUGGY_DEVICE_LIST_Init()
     return array;
 }
 
-const AutoPtr<ArrayOf<VideoCaptureAndroid::BuggyDeviceHack::IdAndSizes*> > VideoCaptureAndroid::BuggyDeviceHack::s_CAPTURESIZE_BUGGY_DEVICE_LIST = s_CAPTURESIZE_BUGGY_DEVICE_LIST_Init();
-const AutoPtr< ArrayOf<String> > VideoCaptureAndroid::BuggyDeviceHack::s_COLORSPACE_BUGGY_DEVICE_LIST = s_COLORSPACE_BUGGY_DEVICE_LIST_Init();
+const AutoPtr<ArrayOf<VideoCaptureElastos::BuggyDeviceHack::IdAndSizes*> > VideoCaptureElastos::BuggyDeviceHack::s_CAPTURESIZE_BUGGY_DEVICE_LIST = s_CAPTURESIZE_BUGGY_DEVICE_LIST_Init();
+const AutoPtr< ArrayOf<String> > VideoCaptureElastos::BuggyDeviceHack::s_COLORSPACE_BUGGY_DEVICE_LIST = s_COLORSPACE_BUGGY_DEVICE_LIST_Init();
 
-void VideoCaptureAndroid::BuggyDeviceHack::ApplyMinDimensions(
+void VideoCaptureElastos::BuggyDeviceHack::ApplyMinDimensions(
     /* [in] */ CaptureFormat* format)
 {
     // NOTE: this can discard requested aspect ratio considerations.
@@ -91,7 +91,7 @@ void VideoCaptureAndroid::BuggyDeviceHack::ApplyMinDimensions(
     }
 }
 
-Int32 VideoCaptureAndroid::BuggyDeviceHack::GetImageFormat()
+Int32 VideoCaptureElastos::BuggyDeviceHack::GetImageFormat()
 {
     if (Build::VERSION::SDK_INT < Build::VERSION_CODES::JELLY_BEAN) {
         return IImageFormat::NV21;
@@ -109,13 +109,13 @@ Int32 VideoCaptureAndroid::BuggyDeviceHack::GetImageFormat()
 }
 
 //===============================================================
-//                    VideoCaptureAndroid
+//                    VideoCaptureElastos
 //===============================================================
 
-const Int32 VideoCaptureAndroid::NUM_CAPTURE_BUFFERS;
-const String VideoCaptureAndroid::TAG("VideoCaptureAndroid");
+const Int32 VideoCaptureElastos::NUM_CAPTURE_BUFFERS;
+const String VideoCaptureElastos::TAG("VideoCaptureElastos");
 
-VideoCaptureAndroid::VideoCaptureAndroid(
+VideoCaptureElastos::VideoCaptureElastos(
     /* [in] */ IContext* context,
     /* [in] */ Int32 id,
     /* [in] */ Int64 nativeVideoCaptureDeviceAndroid)
@@ -124,7 +124,7 @@ VideoCaptureAndroid::VideoCaptureAndroid(
 {
 }
 
-AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureAndroid::GetDeviceSupportedFormats(
+AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureElastos::GetDeviceSupportedFormats(
     /* [in] */ Int32 id)
 {
     AutoPtr<IHardwareCamera> camera;
@@ -253,7 +253,7 @@ AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureAndroid::GetDeviceSu
 
 
 //@Override
-void VideoCaptureAndroid::SetCaptureParameters(
+void VideoCaptureElastos::SetCaptureParameters(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 frameRate,
@@ -267,7 +267,7 @@ void VideoCaptureAndroid::SetCaptureParameters(
 }
 
 //@Override
-void VideoCaptureAndroid::AllocateBuffers()
+void VideoCaptureElastos::AllocateBuffers()
 {
     AutoPtr<IImageFormat> format;
     //TODO CImageFormat::AcquireSingleton((IImageFormat**)&format);
@@ -282,20 +282,19 @@ void VideoCaptureAndroid::AllocateBuffers()
 }
 
 //@Override
-void VideoCaptureAndroid::SetPreviewCallback(
+void VideoCaptureElastos::SetPreviewCallback(
     /* [in] */ IPreviewCallback* cb)
 {
     mCamera->SetPreviewCallbackWithBuffer(cb);
 }
 
 //@Override
-ECode VideoCaptureAndroid::OnPreviewFrame(
+ECode VideoCaptureElastos::OnPreviewFrame(
     /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ IHardwareCamera* camera)
 {
     //mPreviewBufferLock.lock();
-    AutoPtr<ILock> lock;
-    mPreviewBufferLock->Probe(EIID_ILock);
+    AutoPtr<ILock> lock = ILock::Probe(mPreviewBufferLock);
     lock->Lock();
     // try {
         if (!mIsRunning) {

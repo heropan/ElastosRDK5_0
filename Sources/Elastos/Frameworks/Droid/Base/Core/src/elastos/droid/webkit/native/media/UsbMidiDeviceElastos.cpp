@@ -1,5 +1,5 @@
-#include "elastos/droid/webkit/native/media/UsbMidiDeviceAndroid.h"
-#include "elastos/droid/webkit/native/media/api/UsbMidiDeviceAndroid_dec.h"
+#include "elastos/droid/webkit/native/media/UsbMidiDeviceElastos.h"
+#include "elastos/droid/webkit/native/media/api/UsbMidiDeviceElastos_dec.h"
 
 //TODO #include "elastos/io/CByteBufferHelper.h"
 #include "elastos/droid/os/Build.h"
@@ -37,16 +37,16 @@ namespace Webkit {
 namespace Media {
 
 //===============================================================
-//             UsbMidiDeviceAndroid::InnerThread
+//             UsbMidiDeviceElastos::InnerThread
 //===============================================================
 
-UsbMidiDeviceAndroid::InnerThread::InnerThread(
-    /* [in] */ UsbMidiDeviceAndroid* owner)
+UsbMidiDeviceElastos::InnerThread::InnerThread(
+    /* [in] */ UsbMidiDeviceElastos* owner)
     : mOwner(owner)
 {
 }
 
-ECode UsbMidiDeviceAndroid::InnerThread::Run()
+ECode UsbMidiDeviceElastos::InnerThread::Run()
 {
     while (TRUE) {
         AutoPtr<IUsbRequest> request;
@@ -87,12 +87,12 @@ ECode UsbMidiDeviceAndroid::InnerThread::Run()
 }
 
 //===============================================================
-//            UsbMidiDeviceAndroid::InnerRunnable
+//            UsbMidiDeviceElastos::InnerRunnable
 //===============================================================
-CAR_INTERFACE_IMPL(UsbMidiDeviceAndroid::InnerRunnable, Object, IRunnable);
+CAR_INTERFACE_IMPL(UsbMidiDeviceElastos::InnerRunnable, Object, IRunnable);
 
-UsbMidiDeviceAndroid::InnerRunnable::InnerRunnable(
-    /* [in] */ UsbMidiDeviceAndroid* owner,
+UsbMidiDeviceElastos::InnerRunnable::InnerRunnable(
+    /* [in] */ UsbMidiDeviceElastos* owner,
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* bs)
     : mOwner(owner)
@@ -101,7 +101,7 @@ UsbMidiDeviceAndroid::InnerRunnable::InnerRunnable(
 {
 }
 
-ECode UsbMidiDeviceAndroid::InnerRunnable::Run()
+ECode UsbMidiDeviceElastos::InnerRunnable::Run()
 {
     if (mOwner->mIsClosed) {
         return NOERROR;
@@ -113,20 +113,20 @@ ECode UsbMidiDeviceAndroid::InnerRunnable::Run()
 }
 
 //===============================================================
-//                    UsbMidiDeviceAndroid
+//                    UsbMidiDeviceElastos
 //===============================================================
 
 /**
  * Audio interface subclass code for MIDI.
  */
-const Int32 UsbMidiDeviceAndroid::MIDI_SUBCLASS;
+const Int32 UsbMidiDeviceElastos::MIDI_SUBCLASS;
 
 /**
- * Constructs a UsbMidiDeviceAndroid.
+ * Constructs a UsbMidiDeviceElastos.
  * @param manager
  * @param device The USB device which this object is assocated with.
  */
-UsbMidiDeviceAndroid::UsbMidiDeviceAndroid(
+UsbMidiDeviceElastos::UsbMidiDeviceElastos(
     /* [in] */ IUsbManager* manager,
     /* [in] */ IUsbDevice* device)
     : mIsClosed(FALSE)
@@ -180,7 +180,7 @@ UsbMidiDeviceAndroid::UsbMidiDeviceAndroid(
 /**
  * Starts listening for input endpoints.
  */
-void UsbMidiDeviceAndroid::StartListen(
+void UsbMidiDeviceElastos::StartListen(
     /* [in] */ IUsbDevice* device)
 {
     //final Map<UsbEndpoint, ByteBuffer> bufferForEndpoints =
@@ -241,7 +241,7 @@ void UsbMidiDeviceAndroid::StartListen(
 /**
  * Posts a data input event to the main thread.
  */
-void UsbMidiDeviceAndroid::PostOnDataEvent(
+void UsbMidiDeviceElastos::PostOnDataEvent(
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* bs)
 {
@@ -254,7 +254,7 @@ void UsbMidiDeviceAndroid::PostOnDataEvent(
  * Register the own native pointer.
  */
 //@CalledByNative
-void UsbMidiDeviceAndroid::RegisterSelf(
+void UsbMidiDeviceElastos::RegisterSelf(
     /* [in] */ Int64 nativePointer)
 {
     mNativePointer = nativePointer;
@@ -267,7 +267,7 @@ void UsbMidiDeviceAndroid::RegisterSelf(
  */
 //@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 //@CalledByNative
-void UsbMidiDeviceAndroid::Send(
+void UsbMidiDeviceElastos::Send(
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* bs)
 {
@@ -323,7 +323,7 @@ void UsbMidiDeviceAndroid::Send(
  * Returns true if |bulkTransfer| should be used in |send|.
  * See comments in |send|.
  */
-Boolean UsbMidiDeviceAndroid::ShouldUseBulkTransfer()
+Boolean UsbMidiDeviceElastos::ShouldUseBulkTransfer()
 {
     return mHasInputThread;
 }
@@ -333,7 +333,7 @@ Boolean UsbMidiDeviceAndroid::ShouldUseBulkTransfer()
  * @return The descriptors bytes of this device.
  */
 //@CalledByNative
-AutoPtr<ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors()
+AutoPtr<ArrayOf<Byte> > UsbMidiDeviceElastos::GetDescriptors()
 {
     AutoPtr<ArrayOf<Byte> > array;
     if (mConnection == NULL) {
@@ -350,7 +350,7 @@ AutoPtr<ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors()
  * Closes the device connection.
  */
 //@CalledByNative
-void UsbMidiDeviceAndroid::Close()
+void UsbMidiDeviceElastos::Close()
 {
     mEndpointMap->Clear();
     HashMap<AutoPtr<IUsbEndpoint>, AutoPtr<IUsbRequest> >::Iterator iter =
@@ -372,7 +372,7 @@ void UsbMidiDeviceAndroid::Close()
  * Since the Android API doesn't provide us the length,
  * we calculate it manually.
  */
-Int32 UsbMidiDeviceAndroid::GetInputDataLength(
+Int32 UsbMidiDeviceElastos::GetInputDataLength(
     /* [in] */ IByteBuffer* buffer)
 {
     Int32 position;
@@ -391,61 +391,61 @@ Int32 UsbMidiDeviceAndroid::GetInputDataLength(
     return position;
 }
 
-void UsbMidiDeviceAndroid::NativeOnData(
-    /* [in] */ Int64 nativeUsbMidiDeviceAndroid,
+void UsbMidiDeviceElastos::NativeOnData(
+    /* [in] */ Int64 nativeUsbMidiDeviceElastos,
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    Elastos_UsbMidiDeviceAndroid_nativeOnData((Handle32)nativeUsbMidiDeviceAndroid, endpointNumber, data);
+    Elastos_UsbMidiDeviceAndroid_nativeOnData((Handle32)nativeUsbMidiDeviceElastos, endpointNumber, data);
 }
 
 //callback function definition
-void UsbMidiDeviceAndroid::RegisterSelf(
+void UsbMidiDeviceElastos::RegisterSelf(
     /* [in] */ IInterface* obj,
     /* [in] */ Int64 nativePointer)
 {
-    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    AutoPtr<UsbMidiDeviceElastos> mObj = (UsbMidiDeviceElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::RegisterSelf, mObj is NULL");
+        Logger::E("UsbMidiDeviceElastos", "UsbMidiDeviceElastos::RegisterSelf, mObj is NULL");
         return;
     }
     mObj->RegisterSelf(nativePointer);
 }
 
-void UsbMidiDeviceAndroid::Send(
+void UsbMidiDeviceElastos::Send(
     /* [in] */ IInterface* obj,
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* bs)
 {
-    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    AutoPtr<UsbMidiDeviceElastos> mObj = (UsbMidiDeviceElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::Send, mObj is NULL");
+        Logger::E("UsbMidiDeviceElastos", "UsbMidiDeviceElastos::Send, mObj is NULL");
         return;
     }
     mObj->Send(endpointNumber, bs);
 }
 
-AutoPtr<ArrayOf<Byte> > UsbMidiDeviceAndroid::GetDescriptors(
+AutoPtr<ArrayOf<Byte> > UsbMidiDeviceElastos::GetDescriptors(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    AutoPtr<UsbMidiDeviceElastos> mObj = (UsbMidiDeviceElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::GetDescriptors, mObj is NULL");
+        Logger::E("UsbMidiDeviceElastos", "UsbMidiDeviceElastos::GetDescriptors, mObj is NULL");
         return NULL;
     }
     return mObj->GetDescriptors();
 }
 
-void UsbMidiDeviceAndroid::Close(
+void UsbMidiDeviceElastos::Close(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<UsbMidiDeviceAndroid> mObj = (UsbMidiDeviceAndroid*)(IObject::Probe(obj));
+    AutoPtr<UsbMidiDeviceElastos> mObj = (UsbMidiDeviceElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Logger::E("UsbMidiDeviceAndroid", "UsbMidiDeviceAndroid::Close, mObj is NULL");
+        Logger::E("UsbMidiDeviceElastos", "UsbMidiDeviceElastos::Close, mObj is NULL");
         return;
     }
     mObj->Close();

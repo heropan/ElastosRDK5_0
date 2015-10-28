@@ -35,8 +35,8 @@ namespace Media {
  * Refer to that class for general comments.
  */
 //@JNINamespace("media")
-class UsbMidiDeviceAndroid
-:public Object
+class UsbMidiDeviceElastos
+    : public Object
 {
 private:
     class InnerThread
@@ -44,12 +44,12 @@ private:
     {
     public:
         InnerThread(
-            /* [in] */ UsbMidiDeviceAndroid* owner);
+            /* [in] */ UsbMidiDeviceElastos* owner);
 
         CARAPI Run();
 
     private:
-        UsbMidiDeviceAndroid* mOwner;
+        UsbMidiDeviceElastos* mOwner;
     };
 
     class InnerRunnable
@@ -59,14 +59,14 @@ private:
     public:
         CAR_INTERFACE_DECL();
         InnerRunnable(
-            /* [in] */ UsbMidiDeviceAndroid* owner,
+            /* [in] */ UsbMidiDeviceElastos* owner,
             /* [in] */ Int32 endpointNumber,
             /* [in] */ ArrayOf<Byte>* bs);
 
         CARAPI Run();
 
     private:
-        UsbMidiDeviceAndroid* mOwner;
+        UsbMidiDeviceElastos* mOwner;
         Int32 mEndpointNumber;
         AutoPtr<ArrayOf<Byte> > mBs;
     };
@@ -78,11 +78,11 @@ public:
     static const Int32 MIDI_SUBCLASS = 3;
 
     /**
-     * Constructs a UsbMidiDeviceAndroid.
+     * Constructs a UsbMidiDeviceElastos.
      * @param manager
      * @param device The USB device which this object is assocated with.
      */
-    UsbMidiDeviceAndroid(
+    UsbMidiDeviceElastos(
         /* [in] */ IUsbManager* manager,
         /* [in] */ IUsbDevice* device);
 
@@ -146,13 +146,13 @@ private:
         /* [in] */ IByteBuffer* buffer);
 
     static CARAPI_(void) NativeOnData(
-        /* [in] */ Int64 nativeUsbMidiDeviceAndroid,
+        /* [in] */ Int64 nativeUsbMidiDeviceElastos,
         /* [in] */ Int32 endpointNumber,
         /* [in] */ ArrayOf<Byte>* data);
 
 //callback function declaration
 public:
-    static CARAPI_(void*) ElaUsbMidiDeviceAndroidCallback_Init();
+    static CARAPI_(void*) ElaUsbMidiDeviceElastosCallback_Init();
 
 private:
     static CARAPI_(void) RegisterSelf(

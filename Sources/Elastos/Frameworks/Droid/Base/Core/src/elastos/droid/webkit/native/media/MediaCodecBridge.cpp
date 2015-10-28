@@ -396,7 +396,7 @@ AutoPtr<ArrayOf<IInterface*> > MediaCodecBridge::GetCodecsInfo()
             if (!haveKey) {
                 AutoPtr<MediaCodecBridge::CodecInfo> codecInfo(
                         new MediaCodecBridge::CodecInfo((*supportedTypes)[j], codecString, direction));
-                AutoPtr<IInterface> iCodecInfo = codecInfo->Probe(EIID_IInterface);
+                AutoPtr<IInterface> iCodecInfo = TO_IINTERFACE(codecInfo);
                 map->Put(typeString, iCodecInfo);
             }
         }
@@ -508,7 +508,7 @@ AutoPtr<IInterface> MediaCodecBridge::Create(
     }
 
     AutoPtr<MediaCodecBridge> mcb = new MediaCodecBridge(mediaCodec, mime, adaptivePlaybackSupported);
-    AutoPtr<IInterface> ret = mcb->Probe(EIID_IInterface);
+    AutoPtr<IInterface> ret = TO_IINTERFACE(mcb);
     return ret;
 }
 

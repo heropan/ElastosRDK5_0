@@ -30,20 +30,20 @@ struct ElaUsbMidiDeviceAndroidCallback
     void (*elastos_UsbMidiDeviceAndroid_close)(IInterface* obj);
 };
 
-void* UsbMidiDeviceAndroid::ElaUsbMidiDeviceAndroidCallback_Init()
+void* UsbMidiDeviceElastos::ElaUsbMidiDeviceElastosCallback_Init()
 {
     static ElaUsbMidiDeviceAndroidCallback sElaUsbMidiDeviceAndroidCallback;
 
-    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_registerSelf = &UsbMidiDeviceAndroid::RegisterSelf;
-    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_send = &UsbMidiDeviceAndroid::Send;
-    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_getDescriptors = &UsbMidiDeviceAndroid::GetDescriptors;
-    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_close = &UsbMidiDeviceAndroid::Close;
+    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_registerSelf = &UsbMidiDeviceElastos::RegisterSelf;
+    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_send = &UsbMidiDeviceElastos::Send;
+    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_getDescriptors = &UsbMidiDeviceElastos::GetDescriptors;
+    sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_close = &UsbMidiDeviceElastos::Close;
 
     Elastos_UsbMidiDeviceAndroid_InitCallback((Handle32)&sElaUsbMidiDeviceAndroidCallback);
     return &sElaUsbMidiDeviceAndroidCallback;
 }
 
-static void* sPElaUsbMidiDeviceAndroidCallback = UsbMidiDeviceAndroid::ElaUsbMidiDeviceAndroidCallback_Init();
+static void* sPElaUsbMidiDeviceAndroidCallback = UsbMidiDeviceElastos::ElaUsbMidiDeviceElastosCallback_Init();
 
 } // namespace Media
 } // namespace Webkit

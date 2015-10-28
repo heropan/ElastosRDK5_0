@@ -1,6 +1,6 @@
-#include "elastos/droid/webkit/native/media/UsbMidiDeviceFactoryAndroid.h"
-#include "elastos/droid/webkit/native/media/api/UsbMidiDeviceFactoryAndroid_dec.h"
-#include "elastos/droid/webkit/native/media/UsbMidiDeviceAndroid.h"
+#include "elastos/droid/webkit/native/media/UsbMidiDeviceFactoryElastos.h"
+#include "elastos/droid/webkit/native/media/api/UsbMidiDeviceFactoryElastos_dec.h"
+#include "elastos/droid/webkit/native/media/UsbMidiDeviceElastos.h"
 
 #include "elastos/droid/content/CIntentFilter.h"
 //TODO #include "elastos/droid/app/CPendingIntentHelper.h"
@@ -35,16 +35,16 @@ namespace Webkit {
 namespace Media {
 
 //===========================================================================
-//            UsbMidiDeviceFactoryAndroid::InnerBroadcastReceiver
+//            UsbMidiDeviceFactoryElastos::InnerBroadcastReceiver
 //===========================================================================
 
-UsbMidiDeviceFactoryAndroid::InnerBroadcastReceiver::InnerBroadcastReceiver(
-    /* [in] */ UsbMidiDeviceFactoryAndroid* owner)
+UsbMidiDeviceFactoryElastos::InnerBroadcastReceiver::InnerBroadcastReceiver(
+    /* [in] */ UsbMidiDeviceFactoryElastos* owner)
     : mOwner(owner)
 {
 }
 
-ECode UsbMidiDeviceFactoryAndroid::InnerBroadcastReceiver::OnReceive(
+ECode UsbMidiDeviceFactoryElastos::InnerBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -61,16 +61,16 @@ ECode UsbMidiDeviceFactoryAndroid::InnerBroadcastReceiver::OnReceive(
 }
 
 //===============================================================
-//                  UsbMidiDeviceFactoryAndroid
+//                  UsbMidiDeviceFactoryElastos
 //===============================================================
 
-const String UsbMidiDeviceFactoryAndroid::ACTION_USB_PERMISSION("org.chromium.media.USB_PERMISSION");
+const String UsbMidiDeviceFactoryElastos::ACTION_USB_PERMISSION("org.chromium.media.USB_PERMISSION");
 
 /**
- * Constructs a UsbMidiDeviceAndroid.
+ * Constructs a UsbMidiDeviceElastos.
  * @param natviePointer The native pointer to which the created factory is associated.
  */
-UsbMidiDeviceFactoryAndroid::UsbMidiDeviceFactoryAndroid(
+UsbMidiDeviceFactoryElastos::UsbMidiDeviceFactoryElastos(
     /* [in] */ Int64 nativePointer)
     : mNativePointer(nativePointer)
 {
@@ -78,15 +78,15 @@ UsbMidiDeviceFactoryAndroid::UsbMidiDeviceFactoryAndroid(
 }
 
 /**
- * Constructs a UsbMidiDeviceAndroid.
+ * Constructs a UsbMidiDeviceElastos.
  * @param nativePointer The native pointer to which the created factory is associated.
  */
-//@CalledByNative return UsbMidiDeviceFactoryAndroid
-AutoPtr<IInterface> UsbMidiDeviceFactoryAndroid::Create(
+//@CalledByNative return UsbMidiDeviceFactoryElastos
+AutoPtr<IInterface> UsbMidiDeviceFactoryElastos::Create(
     /* [in] */ Int64 nativePointer)
 {
-    AutoPtr<UsbMidiDeviceFactoryAndroid> usbmdFactory = new UsbMidiDeviceFactoryAndroid(nativePointer);
-    AutoPtr<IInterface> ret = usbmdFactory->Probe(EIID_IInterface);
+    AutoPtr<UsbMidiDeviceFactoryElastos> usbmdFactory = new UsbMidiDeviceFactoryElastos(nativePointer);
+    AutoPtr<IInterface> ret = TO_IINTERFACE(usbmdFactory);
     return ret;
 }
 
@@ -100,7 +100,7 @@ AutoPtr<IInterface> UsbMidiDeviceFactoryAndroid::Create(
  * @return true if some permission requests are in progress.
  */
 //@CalledByNative
-Boolean UsbMidiDeviceFactoryAndroid::EnumerateDevices(
+Boolean UsbMidiDeviceFactoryElastos::EnumerateDevices(
     /* [in] */ IContext* context)
 {
     context->GetSystemService(IContext::USB_SERVICE, (IInterface**)&mUsbManager);
@@ -138,7 +138,7 @@ Boolean UsbMidiDeviceFactoryAndroid::EnumerateDevices(
             iface->GetInterfaceClass(&interfaceClass);
             iface->GetInterfaceSubclass(&interfaceSubclass);
             if (interfaceClass  == IUsbConstants::_USB_CLASS_AUDIO &&
-                interfaceSubclass == UsbMidiDeviceAndroid::MIDI_SUBCLASS) {
+                interfaceSubclass == UsbMidiDeviceElastos::MIDI_SUBCLASS) {
                 found = true;
             }
         }
@@ -170,7 +170,7 @@ Boolean UsbMidiDeviceFactoryAndroid::EnumerateDevices(
  * If all permission requests are responded, this function calls
  * nativeOnUsbMidiDeviceRequestDone with the accessible USB-MIDI devices.
  */
-void UsbMidiDeviceFactoryAndroid::OnRequestDone(
+void UsbMidiDeviceFactoryElastos::OnRequestDone(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -195,8 +195,8 @@ void UsbMidiDeviceFactoryAndroid::OnRequestDone(
 
     if (device != NULL) {
         // Now we can add the device.
-        AutoPtr<UsbMidiDeviceAndroid> uda = new UsbMidiDeviceAndroid(mUsbManager, device);
-        AutoPtr<IInterface> iuda = uda->Probe(EIID_IInterface);
+        AutoPtr<UsbMidiDeviceElastos> uda = new UsbMidiDeviceElastos(mUsbManager, device);
+        AutoPtr<IInterface> iuda = TO_IINTERFACE(uda);
         mDevices->Add(iuda);
     }
 
@@ -217,40 +217,40 @@ void UsbMidiDeviceFactoryAndroid::OnRequestDone(
  * Disconnects the native object.
  */
 //@CalledByNative
-void UsbMidiDeviceFactoryAndroid::Close()
+void UsbMidiDeviceFactoryElastos::Close()
 {
     mNativePointer = 0;
 }
 
-void UsbMidiDeviceFactoryAndroid::NativeOnUsbMidiDeviceRequestDone(
-    /* [in] */ Int64 nativeUsbMidiDeviceFactoryAndroid,
+void UsbMidiDeviceFactoryElastos::NativeOnUsbMidiDeviceRequestDone(
+    /* [in] */ Int64 nativeUsbMidiDeviceFactoryElastos,
     /* [in] */ ArrayOf<IInterface*>* devices)
 {
-    Elastos_UsbMidiDeviceFactoryAndroid_nativeOnUsbMidiDeviceRequestDone((Handle32)nativeUsbMidiDeviceFactoryAndroid, devices);
+    Elastos_UsbMidiDeviceFactoryAndroid_nativeOnUsbMidiDeviceRequestDone((Handle32)nativeUsbMidiDeviceFactoryElastos, devices);
 }
 
 //callback function definition
-Boolean UsbMidiDeviceFactoryAndroid::EnumerateDevices(
+Boolean UsbMidiDeviceFactoryElastos::EnumerateDevices(
     /* [in] */ IInterface* obj,
     /* [in] */ IInterface* context)
 {
-    AutoPtr<UsbMidiDeviceFactoryAndroid> mObj = (UsbMidiDeviceFactoryAndroid*)(IObject::Probe(obj));
+    AutoPtr<UsbMidiDeviceFactoryElastos> mObj = (UsbMidiDeviceFactoryElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Logger::E("UsbMidiDeviceFactoryAndroid", "UsbMidiDeviceFactoryAndroid::EnumerateDevices, mObj is NULL");
+        Logger::E("UsbMidiDeviceFactoryElastos", "UsbMidiDeviceFactoryElastos::EnumerateDevices, mObj is NULL");
         return FALSE;
     }
     AutoPtr<IContext> c = IContext::Probe(context);
     return mObj->EnumerateDevices(c);
 }
 
-void UsbMidiDeviceFactoryAndroid::Close(
+void UsbMidiDeviceFactoryElastos::Close(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<UsbMidiDeviceFactoryAndroid> mObj = (UsbMidiDeviceFactoryAndroid*)(IObject::Probe(obj));
+    AutoPtr<UsbMidiDeviceFactoryElastos> mObj = (UsbMidiDeviceFactoryElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Logger::E("UsbMidiDeviceFactoryAndroid", "UsbMidiDeviceFactoryAndroid::Close, mObj is NULL");
+        Logger::E("UsbMidiDeviceFactoryElastos", "UsbMidiDeviceFactoryElastos::Close, mObj is NULL");
         return;
     }
     mObj->Close();
