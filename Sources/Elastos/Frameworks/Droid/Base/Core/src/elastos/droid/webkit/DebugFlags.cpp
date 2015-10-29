@@ -24,6 +24,7 @@ const Boolean DebugFlags::WEB_VIEW = FALSE;
 const Boolean DebugFlags::WEB_VIEW_CORE = FALSE;
 const Boolean DebugFlags::MEASURE_PAGE_SWAP_FPS = FALSE;
 const Boolean DebugFlags::TRACE_API = FALSE;
+const Boolean DebugFlags::TRACE_CALLBACK = FALSE;
 
 } // namespace Webkit
 } // namepsace Droid

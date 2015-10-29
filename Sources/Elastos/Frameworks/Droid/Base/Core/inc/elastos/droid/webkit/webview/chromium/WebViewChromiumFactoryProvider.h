@@ -119,14 +119,10 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
-        InnerSyncATraceStateRunnable(
-            /* [in] */ WebViewChromiumFactoryProvider* owner);
+        InnerSyncATraceStateRunnable();
 
         // @Override
         CARAPI Run();
-
-    private:
-        WebViewChromiumFactoryProvider* mOwner;
     };
 
     class InnerStartChromiumLockedRunnable
@@ -151,6 +147,8 @@ private:
         //, public IWebViewFactoryProvider::IStatics
     {
     public:
+        //CAR_INTERFACE_DECL()
+
         InnerWebViewFactoryProviderStatics(
             /* [in] */ WebViewChromiumFactoryProvider* owner);
 
@@ -178,7 +176,7 @@ private:
         CARAPI EnableSlowWholeDocumentDraw();
 
         // @Override
-        CARAPI_(AutoPtr< ArrayOf< AutoPtr<IUri> > >) ParseFileChooserResult(
+        CARAPI_(AutoPtr< ArrayOf<IUri*> >) ParseFileChooserResult(
             /* [in] */ Int32 resultCode,
             /* [in] */ IIntent* intent);
 

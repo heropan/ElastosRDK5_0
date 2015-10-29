@@ -1,5 +1,71 @@
 
 #include "elastos/droid/webkit/webview/chromium/WebViewChromiumFactoryProvider.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/Thread.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/os/CLooperHelper.h"
+//#include "elastos/droid/app/CActivityManagerHelper.h"
+//#include "elastos/droid/app/CActivityThreadHelper.h"
+//#include "elastos/droid/webkit/WebViewFactory.h"
+#include "elastos/droid/webkit/native/content/browser/ContentViewStatics.h"
+#include "elastos/droid/webkit/native/content/browser/ResourceExtractor.h"
+#include "elastos/droid/webkit/native/content/app/ContentMain.h"
+#include "elastos/droid/webkit/native/base/MemoryPressureListener.h"
+#include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include "elastos/droid/webkit/native/base/PathUtils.h"
+#include "elastos/droid/webkit/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/native/base/CommandLine.h"
+#include "elastos/droid/webkit/native/base/PathService.h"
+#include "elastos/droid/webkit/native/android_webview/AwSettings.h"
+#include "elastos/droid/webkit/native/android_webview/AwContentsStatics.h"
+#include "elastos/droid/webkit/native/android_webview/AwBrowserProcess.h"
+#include "elastos/droid/webkit/native/android_webview/AwResource.h"
+#include "elastos/droid/webkit/webview/chromium/WebViewChromium.h"
+#include "elastos/droid/webkit/webview/chromium/FileChooserParamsAdapter.h"
+#include "elastos/droid/webkit/webview/chromium/GraphicsUtils.h"
+#include "elastos/droid/webkit/webview/chromium/ResourceRewriter.h"
+
+using Elastos::Core::AutoLock;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::Thread;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::FileUtils;
+using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::IStrictMode;
+using Elastos::Droid::Os::IStrictModeThreadPolicy;
+using Elastos::Droid::App::IActivityManagerHelper;
+//using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::IActivityThreadHelper;
+//using Elastos::Droid::App::CActivityThreadHelper;
+using Elastos::Droid::App::IApplication;
+using Elastos::Droid::Content::IComponentCallbacks2;
+using Elastos::Droid::Content::ISharedPreferencesEditor;
+//using Elastos::Droid::Webkit::WebViewFactory;
+using Elastos::Droid::Webkit::Base::MemoryPressureListener;
+using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Droid::Webkit::Base::PathUtils;
+using Elastos::Droid::Webkit::Base::TraceEvent;
+using Elastos::Droid::Webkit::Base::CommandLine;
+using Elastos::Droid::Webkit::Base::PathService;
+using Elastos::Droid::Webkit::Content::Browser::ContentViewStatics;
+using Elastos::Droid::Webkit::Content::Browser::ResourceExtractor;
+using Elastos::Droid::Webkit::Content::App::ContentMain;
+using Elastos::Droid::Webkit::AndroidWebview::AwSettings;
+using Elastos::Droid::Webkit::AndroidWebview::AwContentsStatics;
+using Elastos::Droid::Webkit::AndroidWebview::AwBrowserProcess;
+using Elastos::Droid::Webkit::AndroidWebview::AwResource;
+using Elastos::Droid::Webkit::Webview::Chromium::WebViewChromium;
+using Elastos::Droid::Webkit::Webview::Chromium::FileChooserParamsAdapter;
+using Elastos::Droid::Webkit::Webview::Chromium::ResourceRewriter;
 
 namespace Elastos {
 namespace Droid {
@@ -10,25 +76,25 @@ namespace Chromium {
 //=====================================================================
 //    WebViewChromiumFactoryProvider::InnerSyncATraceStateRunnable
 //=====================================================================
-WebViewChromiumFactoryProvider::InnerSyncATraceStateRunnable::InnerSyncATraceStateRunnable(
-    /* [in] */ WebViewChromiumFactoryProvider* owner)
-    : mOwner(owner)
+CAR_INTERFACE_IMPL(WebViewChromiumFactoryProvider::InnerSyncATraceStateRunnable, Object, IRunnable)
+
+WebViewChromiumFactoryProvider::InnerSyncATraceStateRunnable::InnerSyncATraceStateRunnable()
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode WebViewChromiumFactoryProvider::InnerSyncATraceStateRunnable::Run()
 {
     // ==================before translated======================
     // syncATraceState();
-    assert(0);
-    return NOERROR;
+
+    return WebViewChromiumFactoryProvider::SyncATraceState();
 }
 
 //=====================================================================
 //  WebViewChromiumFactoryProvider::InnerStartChromiumLockedRunnable
 //=====================================================================
+CAR_INTERFACE_IMPL(WebViewChromiumFactoryProvider::InnerStartChromiumLockedRunnable, Object, IRunnable)
+
 WebViewChromiumFactoryProvider::InnerStartChromiumLockedRunnable::InnerStartChromiumLockedRunnable(
     /* [in] */ WebViewChromiumFactoryProvider* owner)
     : mOwner(owner)
@@ -43,13 +109,17 @@ ECode WebViewChromiumFactoryProvider::InnerStartChromiumLockedRunnable::Run()
     // synchronized (mLock) {
     //     startChromiumLocked();
     // }
-    assert(0);
-    return NOERROR;
+
+    assert(NULL == mOwner);
+    AutoLock lock(mOwner->mLock);
+    return mOwner->StartChromiumLocked();
 }
 
 //=====================================================================
 // WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics
 //=====================================================================
+//CAR_INTERFACE_IMPL(WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics, Object, IWebViewFactoryProvider::IStatics)
+
 WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::InnerWebViewFactoryProviderStatics(
     /* [in] */ WebViewChromiumFactoryProvider* owner)
     : mOwner(owner)
@@ -63,8 +133,9 @@ String WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::FindA
 {
     // ==================before translated======================
     // return ContentViewStatics.findAddress(addr);
-    assert(0);
-    return String("");
+
+    assert(NULL == mOwner);
+    return ContentViewStatics::FindAddress(addr);
 }
 
 String WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::GetDefaultUserAgent(
@@ -72,8 +143,9 @@ String WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::GetDe
 {
     // ==================before translated======================
     // return AwSettings.getDefaultUserAgent();
-    assert(0);
-    return String("");
+
+    assert(NULL == mOwner);
+    return AwSettings::GetDefaultUserAgent();
 }
 
 ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::SetWebContentsDebuggingEnabled(
@@ -85,7 +157,12 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::SetWeb
     //     WebViewChromiumFactoryProvider.this.
     //             setWebContentsDebuggingEnabled(enable);
     // }
-    assert(0);
+
+    assert(NULL == mOwner);
+    // Web Contents debugging is always enabled on debug builds.
+    if (!Build::IS_DEBUGGABLE) {
+        mOwner->SetWebContentsDebuggingEnabled(enable);
+    }
     return NOERROR;
 }
 
@@ -95,7 +172,9 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::ClearC
     VALIDATE_NOT_NULL(onCleared);
     // ==================before translated======================
     // AwContentsStatics.clearClientCertPreferences(onCleared);
-    assert(0);
+
+    assert(NULL == mOwner);
+    AwContentsStatics::ClearClientCertPreferences(onCleared);
     return NOERROR;
 }
 
@@ -106,7 +185,15 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::FreeMe
     //     MemoryPressureListener.maybeNotifyMemoryPresure(
     //             ComponentCallbacks2.TRIM_MEMORY_COMPLETE);
     // }
-    assert(0);
+
+    assert(NULL == mOwner);
+    AutoPtr<IActivityManagerHelper> helper;
+    //CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
+    Boolean isRunningInTest = FALSE;
+    helper->IsRunningInTestHarness(&isRunningInTest);
+    if (isRunningInTest) {
+        MemoryPressureListener::MaybeNotifyMemoryPresure(IComponentCallbacks2::TRIM_MEMORY_COMPLETE);
+    }
     return NOERROR;
 }
 
@@ -114,19 +201,20 @@ ECode WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::Enable
 {
     // ==================before translated======================
     // WebViewChromium.enableSlowWholeDocumentDraw();
-    assert(0);
-    return NOERROR;
+
+    assert(NULL == mOwner);
+    return WebViewChromium::EnableSlowWholeDocumentDraw();
 }
 
-AutoPtr< ArrayOf< AutoPtr<IUri> > > WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::ParseFileChooserResult(
+AutoPtr< ArrayOf<IUri*> > WebViewChromiumFactoryProvider::InnerWebViewFactoryProviderStatics::ParseFileChooserResult(
     /* [in] */ Int32 resultCode,
     /* [in] */ IIntent* intent)
 {
     // ==================before translated======================
     // return FileChooserParamsAdapter.parseFileChooserResult(resultCode, intent);
-    assert(0);
-    AutoPtr< ArrayOf< AutoPtr<IUri> > > empty;
-    return empty;
+
+    assert(NULL == mOwner);
+    return FileChooserParamsAdapter::ParseFileChooserResult(resultCode, intent);
 }
 
 //=====================================================================
@@ -172,14 +260,64 @@ WebViewChromiumFactoryProvider::WebViewChromiumFactoryProvider()
     // }
     //
     // // Now safe to use WebView data directory.
+
+    ThreadUtils::SetWillOverrideUiThread();
+    // Load chromium library.
+    //Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "AwBrowserProcess.loadLibrary()");
+    AwBrowserProcess::LoadLibrary();
+    //Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+    // Load glue-layer support library.
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    system->LoadLibrary(String("webviewchromium_plat_support"));
+
+    // TODO: temporary try/catch while framework builds catch up with WebView builds.
+    // Remove this.
+    // try {
+        // Use shared preference to check for package downgrade.
+        AutoPtr<IActivityThreadHelper> helper;
+        //CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
+
+        AutoPtr<IApplication> app;
+        helper->GetCurrentApplication((IApplication**)&app);
+
+        AutoPtr<IContext> appContext = IContext::Probe(app);
+        appContext->GetSharedPreferences(CHROMIUM_PREFS_NAME, IContext::MODE_PRIVATE, (ISharedPreferences**)&mWebViewPrefs);
+
+        Int32 lastVersion = 0;
+        mWebViewPrefs->GetInt32(VERSION_CODE_PREF, 0, &lastVersion);
+        Int32 currentVersion = 0;// class has no this func: WebViewFactory::GetLoadedPackageInfo().versionCode;
+        if (lastVersion > currentVersion) {
+            // The WebView package has been downgraded since we last ran in this application.
+            // Delete the WebView data directory's contents.
+            String dataDir = PathUtils::GetDataDirectory(appContext);
+            //Logger::I(TAG, "WebView package downgraded from " + lastVersion + " to " + currentVersion + "; deleting contents of " + dataDir);
+
+            AutoPtr<IFile> file;
+            CFile::New(dataDir, (IFile**)&file);
+            FileUtils::DeleteContents(file);
+        }
+
+        if (lastVersion != currentVersion) {
+            AutoPtr<ISharedPreferencesEditor> edit;
+            mWebViewPrefs->Edit((ISharedPreferencesEditor**)&edit);
+            edit->PutInt32(VERSION_CODE_PREF, currentVersion);
+            edit->Apply();
+        }
+    // } catch (NoSuchMethodError e) {
+    //    Logger::W(TAG, "Not doing version downgrade check as framework is too old.");
+    // }
+
+    // Now safe to use WebView data directory.
 }
 
 Boolean WebViewChromiumFactoryProvider::HasStarted()
 {
     // ==================before translated======================
     // return mStarted;
-    assert(0);
-    return FALSE;
+
+    return mStarted;
 }
 
 ECode WebViewChromiumFactoryProvider::StartYourEngines(
@@ -190,7 +328,10 @@ ECode WebViewChromiumFactoryProvider::StartYourEngines(
     //     ensureChromiumStartedLocked(onMainThread);
     //
     // }
+
     assert(0);
+    AutoLock lock(mLock);
+    EnsureChromiumStartedLocked(onMainThread);
     return NOERROR;
 }
 
@@ -200,9 +341,10 @@ AutoPtr<AwBrowserContext> WebViewChromiumFactoryProvider::GetBrowserContext()
     // synchronized (mLock) {
     //     return getBrowserContextLocked();
     // }
+
     assert(0);
-    AutoPtr<AwBrowserContext> empty;
-    return empty;
+    AutoLock lock(mLock);
+    return GetBrowserContextLocked();;
 }
 
 AutoPtr<IInterface/*IWebViewFactoryProvider::IStatics*/> WebViewChromiumFactoryProvider::GetStatics()
@@ -261,9 +403,17 @@ AutoPtr<IInterface/*IWebViewFactoryProvider::IStatics*/> WebViewChromiumFactoryP
     //     }
     // }
     // return mStaticMethods;
+
     assert(0);
-    AutoPtr<IInterface/*IWebViewFactoryProvider::IStatics*/> empty;
-    return empty;
+    AutoLock lock(mLock);
+    if (NULL == mStaticMethods) {
+        // TODO: Optimization potential: most these methods only need the native library
+        // loaded and initialized, not the entire browser process started.
+        // See also http://b/7009882
+        EnsureChromiumStartedLocked(TRUE);
+        //mStaticMethods = new InnerWebViewFactoryProviderStatics(this);
+    }
+    return mStaticMethods;
 }
 
 AutoPtr<IInterface/*IWebViewProvider*/> WebViewChromiumFactoryProvider::CreateWebView(
@@ -280,9 +430,19 @@ AutoPtr<IInterface/*IWebViewProvider*/> WebViewChromiumFactoryProvider::CreateWe
     // }
     //
     // return wvc;
+
     assert(0);
-    AutoPtr<IInterface/*IWebViewProvider*/> empty;
-    return empty;
+    AutoPtr<IInterface> thisInterface = this->Probe(EIID_IInterface);
+    AutoPtr<WebViewChromium> wvc;// = new WebViewChromium(thisInterface, webView, privateAccess);
+    AutoLock lock(mLock);
+    if (mWebViewsToStart != NULL) {
+        AutoPtr<IWeakReference> wr;
+        wvc->GetWeakReference((IWeakReference**)&wr);
+        mWebViewsToStart->Add(wr);
+    }
+
+    AutoPtr<IInterface/*IWebViewProvider*/> result;// = (IWebViewProvider*)wvc;
+    return result;
 }
 
 AutoPtr<IInterface/*IGeolocationPermissions*/> WebViewChromiumFactoryProvider::GetGeolocationPermissions()
@@ -296,9 +456,16 @@ AutoPtr<IInterface/*IGeolocationPermissions*/> WebViewChromiumFactoryProvider::G
     //     }
     // }
     // return mGeolocationPermissions;
+
     assert(0);
-    AutoPtr<IInterface/*IGeolocationPermissions*/> empty;
-    return empty;
+    AutoLock lock(mLock);
+    if (NULL == mGeolocationPermissions) {
+        EnsureChromiumStartedLocked(TRUE);
+        mGeolocationPermissions = new GeolocationPermissionsAdapter(GetBrowserContextLocked()->GetGeolocationPermissions());
+    }
+
+    AutoPtr<IInterface/*IGeolocationPermissions*/> result;// = (IGeolocationPermissions*)mGeolocationPermissions;
+    return result;
 }
 
 AutoPtr<IInterface/*ICookieManager*/> WebViewChromiumFactoryProvider::GetCookieManager()
@@ -317,9 +484,29 @@ AutoPtr<IInterface/*ICookieManager*/> WebViewChromiumFactoryProvider::GetCookieM
     //     }
     // }
     // return mCookieManager;
+
     assert(0);
-    AutoPtr<IInterface/*ICookieManager*/> empty;
-    return empty;
+    AutoLock lock(mLock);
+    if (NULL == mCookieManager) {
+        if (!mStarted) {
+            // We can use CookieManager without starting Chromium; the native code
+            // will bring up just the parts it needs to make this work on a temporary
+            // basis until Chromium is started for real. The temporary cookie manager
+            // needs the application context to have been set.
+            AutoPtr<IActivityThreadHelper> helper;
+            //CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
+            AutoPtr<IApplication> app;
+            helper->GetCurrentApplication((IApplication**)&app);
+            AutoPtr<IContext> appContext = IContext::Probe(app);
+            ContentMain::InitApplicationContext(appContext);
+        }
+
+        AutoPtr<AwCookieManager> cookieManager = new AwCookieManager();
+        mCookieManager = new CookieManagerAdapter(cookieManager);
+    }
+
+    AutoPtr<IInterface/*ICookieManager*/> result;// = (ICookieManager*)mCookieManager;
+    return result;
 }
 
 AutoPtr<IInterface/*IWebIconDatabase*/> WebViewChromiumFactoryProvider::GetWebIconDatabase()
@@ -332,9 +519,16 @@ AutoPtr<IInterface/*IWebIconDatabase*/> WebViewChromiumFactoryProvider::GetWebIc
     //     }
     // }
     // return mWebIconDatabase;
+
     assert(0);
-    AutoPtr<IInterface/*IWebIconDatabase*/> empty;
-    return empty;
+    AutoLock lock(mLock);
+    if (NULL == mWebIconDatabase) {
+        EnsureChromiumStartedLocked(TRUE);
+        mWebIconDatabase = new WebIconDatabaseAdapter();
+    }
+
+    AutoPtr<IInterface/*IWebIconDatabase*/> result;// = (IWebIconDatabase*)mWebIconDatabase;
+    return result;
 }
 
 AutoPtr<IInterface/*IWebStorage*/> WebViewChromiumFactoryProvider::GetWebStorage()
@@ -347,9 +541,16 @@ AutoPtr<IInterface/*IWebStorage*/> WebViewChromiumFactoryProvider::GetWebStorage
     //     }
     // }
     // return mWebStorage;
+
     assert(0);
-    AutoPtr<IInterface/*IWebStorage*/> empty;
-    return empty;
+    AutoLock lock(mLock);
+    if (NULL == mWebStorage) {
+        EnsureChromiumStartedLocked(TRUE);
+        mWebStorage = new WebStorageAdapter(AwQuotaManagerBridge::GetInstance());
+    }
+
+    AutoPtr<IInterface/*IWebStorage*/> result;// = (IWebStorage*)mWebStorage;
+    return result;
 }
 
 AutoPtr<IInterface/*IWebIconDatabase*/> WebViewChromiumFactoryProvider::GetWebViewDatabase(
@@ -366,9 +567,19 @@ AutoPtr<IInterface/*IWebIconDatabase*/> WebViewChromiumFactoryProvider::GetWebVi
     //     }
     // }
     // return mWebViewDatabase;
+
     assert(0);
-    AutoPtr<IInterface/*IWebIconDatabase*/> empty;
-    return empty;
+    AutoLock lock(mLock);
+    if (NULL == mWebViewDatabase) {
+        EnsureChromiumStartedLocked(TRUE);
+        AutoPtr<AwBrowserContext> browserContext = GetBrowserContextLocked();
+        mWebViewDatabase = new WebViewDatabaseAdapter(
+            browserContext->GetFormDatabase(),
+            browserContext->GetHttpAuthDatabase(context));
+    }
+
+    AutoPtr<IInterface/*IWebIconDatabase*/> result;// = (IWebIconDatabase*)mWebStorage;
+    return result;
 }
 
 ECode WebViewChromiumFactoryProvider::InitPlatSupportLibrary()
@@ -377,7 +588,11 @@ ECode WebViewChromiumFactoryProvider::InitPlatSupportLibrary()
     // DrawGLFunctor.setChromiumAwDrawGLFunction(AwContents.getAwDrawGLFunction());
     // AwContents.setAwDrawSWFunctionTable(GraphicsUtils.getDrawSWFunctionTable());
     // AwContents.setAwDrawGLFunctionTable(GraphicsUtils.getDrawGLFunctionTable());
+
     assert(0);
+    DrawGLFunctor::SetChromiumAwDrawGLFunction(AwContents::GetAwDrawGLFunction());
+    AwContents::SetAwDrawSWFunctionTable(GraphicsUtils::GetDrawSWFunctionTable());
+    AwContents::SetAwDrawGLFunctionTable(GraphicsUtils::GetDrawGLFunctionTable());
     return NOERROR;
 }
 
@@ -391,8 +606,11 @@ ECode WebViewChromiumFactoryProvider::InitTraceEvent()
     //         syncATraceState();
     //     }
     // });
+
     assert(0);
-    return NOERROR;
+    SyncATraceState();
+    AutoPtr<IRunnable> runnable = new InnerSyncATraceStateRunnable();
+    return SystemProperties::AddChangeCallback(runnable);
 }
 
 ECode WebViewChromiumFactoryProvider::SyncATraceState()
@@ -400,7 +618,11 @@ ECode WebViewChromiumFactoryProvider::SyncATraceState()
     // ==================before translated======================
     // long enabledFlags = SystemProperties.getLong("debug.atrace.tags.enableflags", 0);
     // TraceEvent.setATraceEnabled((enabledFlags & Trace.TRACE_TAG_WEBVIEW) != 0);
+
     assert(0);
+    Int64 enabledFlags = 0;
+    SystemProperties::GetInt64(String("debug.atrace.tags.enableflags"), 0, &enabledFlags);
+    TraceEvent::SetATraceEnabled((enabledFlags /*& Trace.TRACE_TAG_WEBVIEW*/) != 0);
     return NOERROR;
 }
 
@@ -443,7 +665,45 @@ ECode WebViewChromiumFactoryProvider::EnsureChromiumStartedLocked(
     //         // Keep trying... eventually the UI thread will process the task we sent it.
     //     }
     // }
+
     assert(0);
+    assert(-1/*Thread::HoldsLock(mLock)*/);
+
+    if (mStarted) {  // Early-out for the common case.
+        return NOERROR;
+    }
+
+    AutoPtr<ILooper> looper;
+    AutoPtr<ILooperHelper> looperHelper;
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
+    if (!onMainThread) {
+        looperHelper->GetMyLooper((ILooper**)&looper);
+    }
+    else {
+        looperHelper->GetMainLooper((ILooper**)&looper);
+    }
+
+    //Logger::V(TAG, "Binding Chromium to " + (Looper.getMainLooper().equals(looper) ? "main":"background") + " looper " + looper);
+    ThreadUtils::SetUiThread(looper);
+
+    if (ThreadUtils::RunningOnUiThread()) {
+        StartChromiumLocked();
+        return NOERROR;
+    }
+
+    // We must post to the UI thread to cover the case that the user has invoked Chromium
+    // startup by using the (thread-safe) CookieManager rather than creating a WebView.
+    AutoPtr<IRunnable> runnable = new InnerStartChromiumLockedRunnable(this);
+    ThreadUtils::PostOnUiThread(runnable);
+    while (!mStarted) {
+        //try {
+            // Important: wait() releases |mLock| the UI thread can take it :-)
+            mLock->Wait();
+        //} catch (InterruptedException e) {
+            // Keep trying... eventually the UI thread will process the task we sent it.
+        //}
+    }
+
     return NOERROR;
 }
 
@@ -520,7 +780,94 @@ ECode WebViewChromiumFactoryProvider::StartChromiumLocked()
     // }
     // mWebViewsToStart.clear();
     // mWebViewsToStart = null;
+
     assert(0);
+    assert(-1/*Thread::HoldsLock(mLock) && ThreadUtils::RunningOnUiThread()*/);
+
+    // The post-condition of this method is everything is ready, so notify now to cover all
+    // return paths. (Other threads will not wake-up until we release |mLock|, whatever).
+    //mLock->NotifyAll();
+
+    if (mStarted) {
+        return NOERROR;
+    }
+
+    if (Build::IS_DEBUGGABLE) {
+        // Suppress the StrictMode violation as this codepath is only hit on debugglable builds.
+        AutoPtr<IStrictMode> strictMode;
+        //CStrictMode::AcquireSingleton((IStrictMode**)&strictMode);
+        AutoPtr<IStrictModeThreadPolicy> oldPolicy;
+        strictMode->AllowThreadDiskReads((IStrictModeThreadPolicy**)&oldPolicy);
+        CommandLine::InitFromFile(COMMAND_LINE_FILE);
+        strictMode->SetThreadPolicy(oldPolicy);
+    }
+    else {
+        CommandLine::Init(NULL);
+    }
+
+    AutoPtr<CommandLine> cl = CommandLine::GetInstance();
+    // TODO: currently in a relase build the DCHECKs only log. We either need to insall
+    // a report handler with SetLogReportHandler to make them assert, or else compile
+    // them out of the build altogether (b/8284203). Either way, so long they're
+    // compiled in, we may as unconditionally enable them here.
+    cl->AppendSwitch(String("enable-dcheck"));
+
+    // TODO: Remove when GL is supported by default in the upstream code.
+    if (!cl->HasSwitch(String("disable-webview-gl-mode"))) {
+        cl->AppendSwitch(String("testing-webview-gl-mode"));
+    }
+
+    // We don't need to extract any paks because for WebView, they are
+    // in the system image.
+    AutoPtr< ArrayOf<String> > pakesToExtract = ArrayOf<String>::Alloc(1);
+    pakesToExtract->Set(0, String(""));
+    ResourceExtractor::SetMandatoryPaksToExtract(pakesToExtract);
+
+    //try {
+        //--LibraryLoader::EnsureInitialized();
+    //} catch(ProcessInitException e) {
+    //    throw new RuntimeException("Error initializing WebView library", e);
+    //}
+
+    PathService::Override(PathService::DIR_MODULE, String("/system/lib/"));
+    // TODO: DIR_RESOURCE_PAKS_ANDROID needs to live somewhere sensible,
+    // inlined here for simplicity setting up the HTMLViewer demo. Unfortunately
+    // it can't go into base.PathService, as the native constant it refers to
+    // lives in the ui/ layer. See ui/base/ui_base_paths.h
+    const Int32 DIR_RESOURCE_PAKS_ANDROID = 3003;
+    PathService::Override(DIR_RESOURCE_PAKS_ANDROID, String("/system/framework/webview/paks"));
+
+    // Make sure that ResourceProvider is initialized before starting the browser process.
+    AutoPtr<IActivityThreadHelper> helper;
+    //CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
+    AutoPtr<IApplication> app;
+    helper->GetCurrentApplication((IApplication**)&app);
+    AutoPtr<IContext> appContext = IContext::Probe(app);
+    SetUpResources(appContext);
+    InitPlatSupportLibrary();
+    AwBrowserProcess::Start(appContext);
+
+    if (Build::IS_DEBUGGABLE) {
+        SetWebContentsDebuggingEnabled(TRUE);
+    }
+
+    InitTraceEvent();
+    mStarted = TRUE;
+
+    Int32 webviewsSize = 0;
+    mWebViewsToStart->GetSize(&webviewsSize);
+    for (Int32 idx=0; idx<webviewsSize; ++idx) {
+        AutoPtr<IInterface> item;
+        mWebViewsToStart->Get(idx, (IInterface**)&item);
+        AutoPtr<IWeakReference> wrItem = IWeakReference::Probe(item);
+        AutoPtr<WebViewChromium> w = (WebViewChromium*)wrItem.Get();
+        if (w != NULL) {
+            w->StartYourEngine();
+        }
+    }
+
+    mWebViewsToStart->Clear();
+    mWebViewsToStart = NULL;
     return NOERROR;
 }
 
@@ -533,9 +880,14 @@ AutoPtr<AwBrowserContext> WebViewChromiumFactoryProvider::GetBrowserContextLocke
     //     mBrowserContext = new AwBrowserContext(mWebViewPrefs);
     // }
     // return mBrowserContext;
+
     assert(0);
-    AutoPtr<AwBrowserContext> empty;
-    return empty;
+    assert(-1/*Thread::HoldsLock(mLock)*/);
+    assert(mStarted);
+    if (NULL == mBrowserContext) {
+        mBrowserContext = new AwBrowserContext(mWebViewPrefs);
+    }
+    return mBrowserContext;
 }
 
 ECode WebViewChromiumFactoryProvider::SetWebContentsDebuggingEnabled(
@@ -551,7 +903,26 @@ ECode WebViewChromiumFactoryProvider::SetWebContentsDebuggingEnabled(
     //     mDevToolsServer = new AwDevToolsServer();
     // }
     // mDevToolsServer.setRemoteDebuggingEnabled(enable);
+
     assert(0);
+    AutoPtr<ILooper> looper;
+    AutoPtr<ILooperHelper> helper;
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
+    helper->GetMyLooper((ILooper**)&looper);
+
+    AutoPtr<ILooper> uiLooper = ThreadUtils::GetUiThreadLooper();
+    AutoPtr<IInterface> looperInterface = looper->Probe(EIID_IInterface);
+    AutoPtr<IInterface> uiLooperInterface = uiLooper->Probe(EIID_IInterface);
+    if (looperInterface != uiLooperInterface) {
+        //throw new RuntimeException("Toggling of Web Contents Debugging must be done on the UI thread");
+    }
+    if (NULL == mDevToolsServer) {
+        if (!enable)
+            return NOERROR;
+        mDevToolsServer = new AwDevToolsServer();
+    }
+
+    mDevToolsServer->SetRemoteDebuggingEnabled(enable);
     return NOERROR;
 }
 
@@ -567,7 +938,15 @@ ECode WebViewChromiumFactoryProvider::SetUpResources(
     //         android.R.raw.nodomain);
     // AwResource.setConfigKeySystemUuidMapping(
     //         android.R.array.config_keySystemUuidMapping);
+
     assert(0);
+    ResourceRewriter::RewriteRValues(ctx);
+
+    AutoPtr<IResources> res;
+    ctx->GetResources((IResources**)&res);
+    AwResource::SetResources(res);
+    AwResource::SetErrorPageResources(-1/*android::R::raw::loaderror*/, -1/*android::R::raw::nodomain*/);
+    AwResource::SetConfigKeySystemUuidMapping(-1/*android::R::array::config_keySystemUuidMapping*/);
     return NOERROR;
 }
 

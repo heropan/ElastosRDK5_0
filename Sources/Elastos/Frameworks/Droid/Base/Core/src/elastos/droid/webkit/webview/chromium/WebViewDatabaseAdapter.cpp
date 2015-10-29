@@ -13,6 +13,8 @@ namespace Chromium {
 WebViewDatabaseAdapter::WebViewDatabaseAdapter(
     /* [in] */ AwFormDatabase* formDatabase,
     /* [in] */ HttpAuthDatabase* httpAuthDatabase)
+    : mFormDatabase(formDatabase)
+    , mHttpAuthDatabase(httpAuthDatabase)
 {
     // ==================before translated======================
     // mFormDatabase = formDatabase;
@@ -24,7 +26,7 @@ Boolean WebViewDatabaseAdapter::HasUsernamePassword()
     // ==================before translated======================
     // // This is a deprecated API: intentional no-op.
     // return false;
-    assert(0);
+
     return FALSE;
 }
 
@@ -32,7 +34,7 @@ ECode WebViewDatabaseAdapter::ClearUsernamePassword()
 {
     // ==================before translated======================
     // // This is a deprecated API: intentional no-op.
-    assert(0);
+
     return NOERROR;
 }
 
@@ -40,15 +42,16 @@ Boolean WebViewDatabaseAdapter::HasHttpAuthUsernamePassword()
 {
     // ==================before translated======================
     // return mHttpAuthDatabase.hasHttpAuthUsernamePassword();
-    assert(0);
-    return FALSE;
+
+    return mHttpAuthDatabase->HasHttpAuthUsernamePassword();
 }
 
 ECode WebViewDatabaseAdapter::ClearHttpAuthUsernamePassword()
 {
     // ==================before translated======================
     // mHttpAuthDatabase.clearHttpAuthUsernamePassword();
-    assert(0);
+
+    mHttpAuthDatabase->ClearHttpAuthUsernamePassword();
     return NOERROR;
 }
 
@@ -56,15 +59,16 @@ Boolean WebViewDatabaseAdapter::HasFormData()
 {
     // ==================before translated======================
     // return mFormDatabase.hasFormData();
-    assert(0);
-    return FALSE;
+
+    return mFormDatabase->HasFormData();
 }
 
 ECode WebViewDatabaseAdapter::ClearFormData()
 {
     // ==================before translated======================
     // mFormDatabase.clearFormData();
-    assert(0);
+
+    mFormDatabase->ClearFormData();
     return NOERROR;
 }
 

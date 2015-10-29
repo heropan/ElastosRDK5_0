@@ -39,6 +39,7 @@ public:
     static const Boolean WEB_VIEW_CORE;
     static const Boolean MEASURE_PAGE_SWAP_FPS;
     static const Boolean TRACE_API;
+    static const Boolean TRACE_CALLBACK;
 };
 
 } // namespace Webkit
