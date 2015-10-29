@@ -9,8 +9,8 @@ module
     namespace Droid {
     namespace Net {
 
+    [local]
     interface IDhcpStateMachineHelper {
-
         MakeDhcpStateMachine(
             [in] IContext* context,
             [in] IStateMachine* controller,

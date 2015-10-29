@@ -2,7 +2,9 @@
 #define __ELASTOS_DROID_INTERNAL_UTILITY_STATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/utility/IState.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Os::IMessage;
 
 namespace Elastos {
 namespace Droid {
@@ -15,64 +17,31 @@ namespace Utility {
  * The class for implementing states in a StateMachine
  */
 class State
-    : public ElRefBase
+    : public Object
     , public IState
 {
 public:
-    PInterface Probe(
-        /* [in] */ REIID riid)
-    {
-        if ( riid == EIID_IInterface) {
-            return (IInterface*)(IState *)this;
-        }
-        // else if ( riid == EIID_IState) {
-        //     return (IState *)this;
-        // }
-        return NULL;
-    }
-
-    UInt32 AddRef()
-    {
-        return ElRefBase::AddRef();
-    }
-
-    UInt32 Release()
-    {
-        return ElRefBase::Release();
-    }
-
-    ECode GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid)
-    {
-        assert(0);
-        return E_NOT_IMPLEMENTED;
-    }
+    CAR_INTERFACE_DECL()
 
     /* (non-Javadoc)
      * @see com.android.internal.util.IState#enter()
      */
     // @Override
-    virtual CARAPI Enter() { return NOERROR; }
+    CARAPI Enter();
 
     /* (non-Javadoc)
      * @see com.android.internal.util.IState#exit()
      */
     // @Override
-    virtual CARAPI Exit() { return NOERROR; }
+    CARAPI Exit();
 
     /* (non-Javadoc)
      * @see com.android.internal.util.IState#processMessage(android.os.Message)
      */
     // @Override
-    virtual CARAPI ProcessMessage(
+    CARAPI ProcessMessage(
         /* [in] */ IMessage* msg,
-        /* [out] */ Boolean* result)
-    {
-        VALIDATE_NOT_NULL(result);
-        *result = FALSE;
-        return NOERROR;
-    }
+        /* [out] */ Boolean* result);
 
     /**
      * Name of State for debugging purposes.
@@ -87,23 +56,11 @@ public:
      * @see com.android.internal.util.IState#processMessage(android.os.Message)
      */
     // @Override
-    virtual CARAPI GetName(
-        /* [out] */ String* name)
-    {
-        // String name = getClass().getName();
-        // int lastDollar = name.lastIndexOf('$');
-        // return name.substring(lastDollar + 1);
-        *name = "State";
-        return NOERROR;
-    }
+    CARAPI GetName(
+        /* [out] */ String* name);
 
-    virtual CARAPI_(String) GetName()
-    {
-        // String name = getClass().getName();
-        // int lastDollar = name.lastIndexOf('$');
-        // return name.substring(lastDollar + 1);
-        return String("State");
-    }
+    virtual CARAPI_(String) GetName() = 0;
+
 protected:
     State() {}
 };
@@ -113,8 +70,9 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
+#ifndef HASH_EQUALTO_FUNC_FOR_AUTOPTR_STATE
 #define HASH_EQUALTO_FUNC_FOR_AUTOPTR_STATE
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Internal::Utility::State)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Internal::Utility::State)
 #endif
 
 #endif //__ELASTOS_DROID_INTERNAL_UTILITY_STATE_H__

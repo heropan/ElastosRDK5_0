@@ -17,4 +17,6 @@ SOURCES += CFileRotator.cpp
 SOURCES += CIndentingPrintWriter.cpp
 SOURCES += CJournaledFile.cpp
 SOURCES += GrowingArrayUtils.cpp
+SOURCES += State.cpp
+SOURCES += StateMachine.cpp
 SOURCES += XmlUtils.cpp

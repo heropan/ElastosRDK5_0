@@ -1,89 +1,196 @@
 
-#include "ext/frameworkdef.h"
-#include "util/StateMachine.h"
+#include "elastos/droid/internal/utility/StateMachine.h"
 #ifdef DROID_CORE
-#include "os/CHandlerThread.h"
+#include "elastos/droid/os/CHandlerThread.h"
+#include "elastos/droid/os/CMessageHelper.h"
 #endif
-#include <elastos/Logger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Core::AutoLock;
+using Elastos::Core::IThread;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::IFlushable;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::CCalendarHelper;
+using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::CVector;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Utility {
 
-const String StateMachine::TAG("StateMachine");
-
 //====================================================
 // StateMachine::LogRec
 //====================================================
+
+CAR_INTERFACE_IMPL(StateMachine::LogRec, Object, IStateMachineLogRec)
+
 StateMachine::LogRec::LogRec(
+    /* [in] */ StateMachine* sm,
     /* [in] */ IMessage* msg,
     /* [in] */ const String& info,
-    /* [in] */ State* state,
-    /* [in] */ State* orgState)
+    /* [in] */ IState* state,
+    /* [in] */ IState* orgState,
+    /* [in] */ IState* transToState)
     : mTime(0)
     , mWhat(0)
 {
-    Update(msg, info, state, orgState);
+    Update(sm, msg, info, state, orgState, transToState);
 }
 
 void StateMachine::LogRec::Update(
+    /* [in] */ StateMachine* sm,
     /* [in] */ IMessage* msg,
     /* [in] */ const String& info,
-    /* [in] */ State* state,
-    /* [in] */ State* orgState)
+    /* [in] */ IState* state,
+    /* [in] */ IState* orgState,
+    /* [in] */ IState* dstState)
 {
+    mSm = sm;
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     system->GetCurrentTimeMillis(&mTime);
-    if (msg != NULL) msg->GetWhat(&mWhat);
+    if (msg != NULL)
+        msg->GetWhat(&mWhat);
     mInfo = info;
     mState = state;
     mOrgState = orgState;
+    mDstState = dstState;
 }
 
+Int64 StateMachine::LogRec::GetTime()
+{
+    return mTime;
+}
+
+Int64 StateMachine::LogRec::GetWhat()
+{
+    return mWhat;
+}
+
+String StateMachine::LogRec::GetInfo()
+{
+    return mInfo;
+}
+
+AutoPtr<IState> StateMachine::LogRec::GetState()
+{
+    return mState;
+}
+
+AutoPtr<IState> StateMachine::LogRec::GetDestState()
+{
+    return mDstState;
+}
+
+AutoPtr<IState> StateMachine::LogRec::GetOriginalState()
+{
+    return mOrgState;
+}
+
+ECode StateMachine::LogRec::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    StringBuilder sb;
+    sb.Append("time=");
+    AutoPtr<ICalendarHelper> ch;
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&ch);
+    AutoPtr<ICalendar> c;
+    ch->GetInstance((ICalendar**)&c);
+    c->SetTimeInMillis(mTime);
+    // sb.Append(String.format("%tm-%td %tH:%tM:%tS.%tL", c, c, c, c, c, c));
+    sb.Append(" processed=");
+    sb.Append(mState == NULL ? "<null>" : ((State*)mState.Get())->GetName());
+    sb.Append(" org=");
+    sb.Append(mOrgState == NULL ? "<null>" : ((State*)mOrgState.Get())->GetName());
+    sb.Append(" dest=");
+    sb.Append(mDstState == NULL ? "<null>" : ((State*)mDstState.Get())->GetName());
+    sb.Append(" what=");
+    String what = mSm != NULL ? mSm->GetWhatToString(mWhat) : String("");
+    if (what.IsNullOrEmpty()) {
+        sb.Append(mWhat);
+        sb.Append("(0x");
+        sb.Append(StringUtils::ToString(mWhat, 16));
+        sb.Append(")");
+    }
+    else {
+        sb.Append(what);
+    }
+    if (!mInfo.IsNullOrEmpty()) {
+        sb.Append(" ");
+        sb.Append(mInfo);
+    }
+    *str = sb.ToString();
+    return NOERROR;
+}
 
 //====================================================
 // StateMachine::LogRecords
 //====================================================
+
+StateMachine::LogRecords::LogRecords()
+    : mMaxSize(DEFAULT_SIZE)
+    , mOldestIndex(0)
+    , mCount(0)
+    , mLogOnlyTransitions(FALSE)
+{}
+
 void StateMachine::LogRecords::SetSize(
     /* [in] */ Int32 maxSize)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(this);
 
     mMaxSize = maxSize;
     mCount = 0;
-    mLogRecords.Clear();
+    mLogRecVector.Clear();
+}
+
+void StateMachine::LogRecords::SetLogOnlyTransitions(
+    /* [in] */ Boolean enable)
+{
+    mLogOnlyTransitions = enable;
+}
+
+Boolean StateMachine::LogRecords::LogOnlyTransitions()
+{
+    return mLogOnlyTransitions;
 }
 
 Int32 StateMachine::LogRecords::GetSize()
 {
-    Mutex::Autolock lock(mLock);
-    return mLogRecords.GetSize();
+    AutoLock lock(this);
+    return mLogRecVector.GetSize();
 }
 
 Int32 StateMachine::LogRecords::Count()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(this);
     return mCount;
 }
 
 void StateMachine::LogRecords::Cleanup()
 {
-    Mutex::Autolock lock(mLock);
-    mLogRecords.Clear();
+    AutoLock lock(this);
+    mLogRecVector.Clear();
 }
 
 AutoPtr<StateMachine::LogRec> StateMachine::LogRecords::Get(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(this);
     Int32 nextIndex = mOldestIndex + index;
     if (nextIndex >= mMaxSize) {
         nextIndex -= mMaxSize;
@@ -92,29 +199,31 @@ AutoPtr<StateMachine::LogRec> StateMachine::LogRecords::Get(
         return NULL;
     }
     else {
-        return mLogRecords[nextIndex];
+        return mLogRecVector[nextIndex];
     }
 }
 
 void StateMachine::LogRecords::Add(
+    /* [in] */ StateMachine* sm,
     /* [in] */ IMessage* msg,
     /* [in] */ const String& messageInfo,
-    /* [in] */ State* state,
-    /* [in] */ State* orgState)
+    /* [in] */ IState* state,
+    /* [in] */ IState* orgState,
+    /* [in] */ IState* transToState)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(this);
     mCount += 1;
-    if (mLogRecords.GetSize() < mMaxSize) {
-        AutoPtr<LogRec> pmi = new LogRec(msg, messageInfo, state, orgState);
-        mLogRecords.PushBack(pmi);
+    if (mLogRecVector.GetSize() < mMaxSize) {
+        AutoPtr<LogRec> pmi = new LogRec(sm, msg, messageInfo, state, orgState, transToState);
+        mLogRecVector.PushBack(pmi);
     }
     else {
-        AutoPtr<LogRec> pmi = mLogRecords[mOldestIndex];
+        AutoPtr<LogRec> pmi = mLogRecVector[mOldestIndex];
         mOldestIndex += 1;
         if (mOldestIndex >= mMaxSize) {
             mOldestIndex = 0;
         }
-        pmi->Update(msg, messageInfo, state, orgState);
+        pmi->Update(sm, msg, messageInfo, state, orgState, transToState);
     }
 }
 
@@ -123,15 +232,59 @@ void StateMachine::LogRecords::Add(
 // StateMachine::SmHandler
 //====================================================
 
-const AutoPtr<IInterface> StateMachine::SmHandler::sSmHandlerObj = new StateMachine::SmHandler::Object();
+StateMachine::SmHandler::StateInfo::StateInfo()
+    : mActive(FALSE)
+{}
+
+/**
+ * Convert StateInfo to string
+ */
+String StateMachine::SmHandler::StateInfo::ToString()
+{
+    StringBuilder sb("state=");
+    sb += mState->GetName();
+    sb += ",active=";
+    sb += mActive;
+    sb += ",parent=";
+    sb += (mParentStateInfo == NULL) ? "null"
+        : mParentStateInfo->mState->GetName();
+    return sb.ToString();
+}
+
+StateMachine::SmHandler::HaltingState::HaltingState(
+    /* [in] */ SmHandler* owner)
+    : mOwner(owner)
+{}
+
+ECode StateMachine::SmHandler::HaltingState::ProcessMessage(
+    /* [in] */ IMessage* msg,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    mOwner->mSm->HaltedProcessMessage(msg);
+    *result = TRUE;
+    return NOERROR;
+}
+
+ECode StateMachine::SmHandler::QuittingState::ProcessMessage(
+    /* [in] */ IMessage* msg,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NOT_HANDLED;
+    return NOERROR;
+}
+
+const AutoPtr<IInterface> StateMachine::SmHandler::sSmHandlerObj = (IObject*)new Object();
 
 StateMachine::SmHandler::SmHandler(
     /* [in] */ ILooper* looper,
     /* [in] */ StateMachine* sm)
-    : HandlerBase(looper)
+    : Handler(looper)
+    , mHasQuit(FALSE)
     , mDbg(FALSE)
-    , mIsConstructionCompleted(FALSE)
     , mLogRecords(new LogRecords())
+    , mIsConstructionCompleted(FALSE)
     , mStateStackTopIndex(-1)
     , mHaltingState(new HaltingState(this))
     , mQuittingState(new QuittingState())
@@ -146,71 +299,114 @@ StateMachine::SmHandler::SmHandler(
 ECode StateMachine::SmHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    // if (mDbg) Log.d(TAG, "handleMessage: E msg.what=" + msg.what);
-    /** Save the current message */
-    mMsg = msg;
+    if (!mHasQuit) {
+        /** Save the current message */
+        mMsg = msg;
 
-    Int32 what;
-    mMsg->GetWhat(&what);
+        Int32 what;
+        mMsg->GetWhat(&what);
+        if (mDbg) {
+            StringBuilder sb("handleMessage: E msg.what=");
+            sb += what;
+            mSm->Log(sb.ToString());
+        }
 
-    AutoPtr<IInterface> obj;
-    if (mIsConstructionCompleted) {
-        /** Normal path */
-        ProcessMsg(msg);
+        AutoPtr<IInterface> obj;
+        /** State that processed the message */
+        AutoPtr<State> msgProcessedState;
+        if (mIsConstructionCompleted) {
+            /** Normal path */
+            msgProcessedState = ProcessMsg(msg);
+        }
+        else if (!mIsConstructionCompleted && (what == SM_INIT_CMD) &&
+            (mMsg->GetObj((IInterface**)&obj), obj == sSmHandlerObj)) {
+            /** Initial one time path. */
+            mIsConstructionCompleted = TRUE;
+            InvokeEnterMethods(0);
+        }
+        else {
+            // throw new RuntimeException("StateMachine.handleMessage: " +
+            //             "The start method not called, received msg: " + msg);
+            return E_RUNTIME_EXCEPTION;
+        }
+        PerformTransitions(msgProcessedState, msg);
+        // We need to check if mSm == null here as we could be quitting.
+        if (mDbg && mSm != NULL)
+            mSm->Log(String("handleMessage: X"));
     }
-    else if (!mIsConstructionCompleted && (what == SM_INIT_CMD) &&
-        (mMsg->GetObj((IInterface**)&obj), obj == sSmHandlerObj)) {
-        /** Initial one time path. */
-        mIsConstructionCompleted = TRUE;
-        InvokeEnterMethods(0);
-    }
-    else {
-        // throw new RuntimeException("StateMachine.handleMessage: " +
-        //             "The start method not called, received msg: " + msg);
-        return E_RUNTIME_EXCEPTION;
-    }
-    PerformTransitions();
 
-    // if (mDbg) Log.d(TAG, "handleMessage: X");
     return NOERROR;
 }
 
-void StateMachine::SmHandler::PerformTransitions()
+void StateMachine::SmHandler::PerformTransitions(
+    /* [in] */ State* msgProcessedState,
+    /* [in] */ IMessage* msg)
 {
     /**
      * If transitionTo has been called, exit and then enter
      * the appropriate states. We loop on this to allow
      * enter and exit methods to use transitionTo.
      */
-    AutoPtr<State> destState;
-    while (mDestState != NULL) {
-        // if (mDbg) Log.d(TAG, "handleMessage: new destination call exit");
+    AutoPtr<State> orgState = (*mStateStack)[mStateStackTopIndex]->mState;
 
+    /**
+     * Record whether message needs to be logged before we transition and
+     * and we won't log special messages SM_INIT_CMD or SM_QUIT_CMD which
+     * always set msg.obj to the handler.
+     */
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+    Boolean recordLogMsg = mSm->RecordLogRec(mMsg) && (obj != sSmHandlerObj);
+
+    if (mLogRecords->LogOnlyTransitions()) {
+        /** Record only if there is a transition */
+        if (mDestState != NULL) {
+            mLogRecords->Add(mSm, mMsg, mSm->GetLogRecString(mMsg), msgProcessedState,
+                    orgState, mDestState);
+        }
+    }
+    else if (recordLogMsg) {
+        /** Record message */
+        mLogRecords->Add(mSm, mMsg, mSm->GetLogRecString(mMsg), msgProcessedState, orgState,
+                mDestState);
+    }
+
+    AutoPtr<State> destState = mDestState;
+    if (destState != NULL) {
         /**
-         * Save mDestState locally and set to null
-         * to know if enter/exit use transitionTo.
+         * Process the transitions including transitions in the enter/exit methods
          */
-        destState = mDestState;
+        while (TRUE) {
+            if (mDbg) mSm->Log(String("handleMessage: new destination call exit"));
+
+            /**
+             * Determine the states to exit and enter and return the
+             * common ancestor state of the enter/exit states. Then
+             * invoke the exit methods then the enter methods.
+             */
+            AutoPtr<StateInfo> commonStateInfo = SetupTempStateStackWithStatesToEnter(destState);
+            InvokeExitMethods(commonStateInfo);
+            Int32 stateStackEnteringIndex = MoveTempStateStackToStateStack();
+            InvokeEnterMethods(stateStackEnteringIndex);
+
+            /**
+             * Since we have transitioned to a new state we need to have
+             * any deferred messages moved to the front of the message queue
+             * so they will be processed before any other messages in the
+             * message queue.
+             */
+            MoveDeferredMessageAtFrontOfQueue();
+
+            if (destState != mDestState) {
+                // A new mDestState so continue looping
+                destState = mDestState;
+            }
+            else {
+                // No change in mDestState so we're done
+                break;
+            }
+        }
         mDestState = NULL;
-
-        /**
-         * Determine the states to exit and enter and return the
-         * common ancestor state of the enter/exit states. Then
-         * invoke the exit methods then the enter methods.
-         */
-        AutoPtr<StateInfo> commonStateInfo = SetupTempStateStackWithStatesToEnter(destState);
-        InvokeExitMethods(commonStateInfo);
-        Int32 stateStackEnteringIndex = MoveTempStateStackToStateStack();
-        InvokeEnterMethods(stateStackEnteringIndex);
-
-
-        /**
-         * Since we have transitioned to a new state we need to have
-         * any deferred messages moved to the front of the message queue
-         * so they will be processed before any other messages in the
-         * message queue.
-         */
-        MoveDeferredMessageAtFrontOfQueue();
     }
 
     /**
@@ -256,11 +452,12 @@ void StateMachine::SmHandler::CleanupAfterQuitting()
     mInitialState = NULL;
     mDestState = NULL;
     mDeferredMessages.Clear();
+    mHasQuit = TRUE;
 }
 
 void StateMachine::SmHandler::CompleteConstruction()
 {
-    if (mDbg) Logger::D(TAG, "completeConstruction: E");
+    if (mDbg) mSm->Log(String("completeConstruction: E"));
 
     /**
      * Determine the maximum depth of the state hierarchy
@@ -278,25 +475,30 @@ void StateMachine::SmHandler::CompleteConstruction()
             maxDepth = depth;
         }
     }
-    if (mDbg) Logger::D(TAG, "completeConstruction: maxDepth=%d", maxDepth);
+    if (mDbg) {
+        StringBuilder sb("completeConstruction: maxDepth=%d");
+        sb += maxDepth;
+        mSm->Log(sb.ToString());
+    }
 
     mStateStack = ArrayOf<StateInfo*>::Alloc(maxDepth);
     mTempStateStack = ArrayOf<StateInfo*>::Alloc(maxDepth);
     SetupInitialStateStack();
 
     /** Sending SM_INIT_CMD message to invoke enter methods asynchronously */
-    AutoPtr<IMessage> msg = mSm->ObtainMessage(SM_INIT_CMD, sSmHandlerObj);
+    AutoPtr<IMessage> msg;
+    mSm->ObtainMessage(SM_INIT_CMD, sSmHandlerObj, (IMessage**)&msg);
     mSm->SendMessageAtFrontOfQueue(msg);
 
-    if (mDbg) Logger::D(TAG, "completeConstruction: X");
+    if (mDbg) mSm->Log(String("completeConstruction: X"));
 }
 
-void StateMachine::SmHandler::ProcessMsg(
+AutoPtr<State> StateMachine::SmHandler::ProcessMsg(
     /* [in] */ IMessage* msg)
 {
     AutoPtr<StateInfo> curStateInfo = (*mStateStack)[mStateStackTopIndex];
     if (mDbg) {
-        // Log.d(TAG, "processMsg: " + curStateInfo.state.getName());
+        mSm->Log(String("processMsg: ") + curStateInfo->mState->GetName());
     }
 
     if (IsQuit(msg)) {
@@ -317,24 +519,11 @@ void StateMachine::SmHandler::ProcessMsg(
                 break;
             }
             if (mDbg) {
-                // Log.d(TAG, "processMsg: " + curStateInfo.state.getName());
-            }
-        }
-
-        /**
-         * Record that we processed the message
-         */
-        if (mSm->RecordLogRec(msg)) {
-            if (curStateInfo != NULL) {
-                AutoPtr<State> orgState = (*mStateStack)[mStateStackTopIndex]->mState;
-                mLogRecords->Add(msg, mSm->GetLogRecString(msg), curStateInfo->mState,
-                        orgState);
-            }
-            else {
-                mLogRecords->Add(msg, mSm->GetLogRecString(msg), NULL, NULL);
+                mSm->Log(String("processMsg: ") + curStateInfo->mState->GetName());
             }
         }
     }
+    return (curStateInfo != NULL) ? curStateInfo->mState : NULL;
 }
 
 void StateMachine::SmHandler::InvokeExitMethods(
@@ -343,7 +532,7 @@ void StateMachine::SmHandler::InvokeExitMethods(
     while ((mStateStackTopIndex >= 0) &&
             ((*mStateStack)[mStateStackTopIndex] != commonStateInfo)) {
         AutoPtr<State> curState = (*mStateStack)[mStateStackTopIndex]->mState;
-        // if (mDbg) Log.d(TAG, "invokeExitMethods: " + curState.getName());
+        if (mDbg) mSm->Log(String("invokeExitMethods: ") + curState->GetName());
         curState->Exit();
         (*mStateStack)[mStateStackTopIndex]->mActive = FALSE;
         mStateStackTopIndex -= 1;
@@ -355,9 +544,7 @@ void StateMachine::SmHandler::InvokeEnterMethods(
 {
     for (Int32 i = stateStackEnteringIndex; i <= mStateStackTopIndex; i++) {
         if (mDbg) {
-            String name;
-            (*mStateStack)[i]->mState->GetName(&name);
-            Logger::D(TAG, "invokeEnterMethods: %s", name.string());
+            mSm->Log(String("invokeEnterMethods: ") + (*mStateStack)[i]->mState->GetName());
         }
         (*mStateStack)[i]->mState->Enter();
         (*mStateStack)[i]->mActive = TRUE;
@@ -375,7 +562,13 @@ void StateMachine::SmHandler::MoveDeferredMessageAtFrontOfQueue()
     List< AutoPtr<IMessage> >::ReverseIterator rit;
     for (rit = mDeferredMessages.RBegin(); rit != mDeferredMessages.REnd(); ++rit) {
         AutoPtr<IMessage> curMsg = *rit;
-        // if (mDbg) Log.d(TAG, "moveDeferredMessageAtFrontOfQueue; what=" + curMsg.what);
+        if (mDbg) {
+            Int32 what;
+            curMsg->GetWhat(&what);
+            StringBuilder sb("moveDeferredMessageAtFrontOfQueue; what=");
+            sb += what;
+            mSm->Log(sb.ToString());
+        }
         mSm->SendMessageAtFrontOfQueue(curMsg);
     }
     mDeferredMessages.Clear();
@@ -387,7 +580,13 @@ Int32 StateMachine::SmHandler::MoveTempStateStackToStateStack()
     Int32 i = mTempStateStackCount - 1;
     Int32 j = startingIndex;
     while (i >= 0) {
-        if (mDbg) Logger::D(TAG, "moveTempStackToStateStack: i=%d,j=%d", i, j);
+        if (mDbg) {
+            StringBuilder sb("moveTempStackToStateStack: i=");
+            sb += i;
+            sb += ",j=";
+            sb += j;
+            mSm->Log(sb.ToString());
+        }
         mStateStack->Set(j, (*mTempStateStack)[i]);
         j += 1;
         i -= 1;
@@ -395,9 +594,13 @@ Int32 StateMachine::SmHandler::MoveTempStateStackToStateStack()
 
     mStateStackTopIndex = j - 1;
     if (mDbg) {
-        // Log.d(TAG, "moveTempStackToStateStack: X mStateStackTop="
-        //       + mStateStackTopIndex + ",startingIndex=" + startingIndex
-        //       + ",Top=" + mStateStack[mStateStackTopIndex].state.getName());
+        StringBuilder sb("moveTempStackToStateStack: X mStateStackTop=");
+        sb += mStateStackTopIndex;
+        sb += ",startingIndex=";
+        sb += startingIndex;
+        sb += ",Top=";
+        sb += (*mStateStack)[mStateStackTopIndex]->mState->GetName();
+        mSm->Log(sb.ToString());
     }
     return startingIndex;
 }
@@ -424,8 +627,11 @@ StateMachine::SmHandler::SetupTempStateStackWithStatesToEnter(
     } while ((curStateInfo != NULL) && !curStateInfo->mActive);
 
     if (mDbg) {
-        // Log.d(TAG, "setupTempStateStackWithStatesToEnter: X mTempStateStackCount="
-        //       + mTempStateStackCount + ",curStateInfo: " + curStateInfo);
+        StringBuilder sb("setupTempStateStackWithStatesToEnter: X mTempStateStackCount=");
+        sb += mTempStateStackCount;
+        sb += ",curStateInfo ";
+        sb += curStateInfo->ToString();
+        mSm->Log(sb.ToString());
     }
     return curStateInfo;
 }
@@ -433,10 +639,8 @@ StateMachine::SmHandler::SetupTempStateStackWithStatesToEnter(
 void StateMachine::SmHandler::SetupInitialStateStack()
 {
     if (mDbg) {
-        String name;
-        mInitialState->GetName(&name);
-        Logger::D(TAG, "setupInitialStateStack: E mInitialState= %s",
-            name.string());
+        mSm->Log(String("setupInitialStateStack: E mInitialState= ")
+            + mInitialState->GetName());
     }
 
     AutoPtr<StateInfo> curStateInfo;
@@ -455,14 +659,27 @@ void StateMachine::SmHandler::SetupInitialStateStack()
     MoveTempStateStackToStateStack();
 }
 
+AutoPtr<IMessage> StateMachine::SmHandler::GetCurrentMessage()
+{
+    return mMsg;
+}
+
+AutoPtr<IState> StateMachine::SmHandler::GetCurrentState()
+{
+    return (*mStateStack)[mStateStackTopIndex]->mState;
+}
+
 ECode StateMachine::SmHandler::AddState(
     /* [in] */ State* state,
     /* [in] */ State* parent,
     /* [out] */ StateInfo** info)
 {
     if (mDbg) {
-        // Log.d(TAG, "addStateInternal: E state=" + state.getName()
-        //         + ",parent=" + ((parent == null) ? "" : parent.getName()));
+        StringBuilder sb("addStateInternal: E state=");
+        sb += state->GetName();
+        sb += ",parent=";
+        sb += (parent == NULL) ? "" : parent->GetName();
+        mSm->Log(sb.ToString());
     }
     AutoPtr<StateInfo> parentStateInfo;
     if (parent != NULL) {
@@ -496,16 +713,16 @@ ECode StateMachine::SmHandler::AddState(
     stateInfo->mState = state;
     stateInfo->mParentStateInfo = parentStateInfo;
     stateInfo->mActive = FALSE;
-    // if (mDbg) Log.d(TAG, "addStateInternal: X stateInfo: " + stateInfo);
+    if (mDbg) mSm->Log(String("addStateInternal: X stateInfo: ") + stateInfo->ToString());
     *info = stateInfo;
-    INTERFACE_ADDREF(*info);
+    REFCOUNT_ADD(*info);
     return NOERROR;
 }
 
 void StateMachine::SmHandler::SetInitialState(
     /* [in] */ State* initialState)
 {
-    // if (mDbg) Log.d(TAG, "setInitialState: initialState=" + initialState.getName());
+    if (mDbg) mSm->Log(String("setInitialState: initialState=") + initialState->GetName());
     mInitialState = initialState;
 }
 
@@ -513,16 +730,23 @@ void StateMachine::SmHandler::TransitionTo(
     /* [in] */ IState* destState)
 {
     mDestState = (State*)destState;
-    // if (mDbg) Log.d(TAG, "transitionTo: destState=" + mDestState.getName());
+    if (mDbg) mSm->Log(String("transitionTo: destState=") + mDestState->GetName());
 }
 
 void StateMachine::SmHandler::DeferMessage(
     /* [in] */ IMessage* msg)
 {
-    // if (mDbg) Log.d(TAG, "deferMessage: msg=" + msg.what);
+    if (mDbg) {
+        Int32 what;
+        msg->GetWhat(&what);
+        StringBuilder sb("deferMessage: msg=");
+        sb += what;
+        mSm->Log(sb.ToString());
+    }
 
     /* Copy the "msg" to "newMsg" as "msg" will be recycled */
-    AutoPtr<IMessage> newMsg = mSm->ObtainMessage();
+    AutoPtr<IMessage> newMsg;
+    mSm->ObtainMessage((IMessage**)&newMsg);
     newMsg->CopyFrom(msg);
 
     mDeferredMessages.PushBack(newMsg);
@@ -530,15 +754,17 @@ void StateMachine::SmHandler::DeferMessage(
 
 void StateMachine::SmHandler::Quit()
 {
-    if (mDbg) Logger::D(TAG, "quit:");
-    AutoPtr<IMessage> msg = mSm->ObtainMessage(SM_QUIT_CMD, sSmHandlerObj);
+    if (mDbg) mSm->Log(String("quit:"));
+    AutoPtr<IMessage> msg;
+    mSm->ObtainMessage(SM_QUIT_CMD, sSmHandlerObj, (IMessage**)&msg);
     mSm->SendMessage(msg);
 }
 
 void StateMachine::SmHandler::QuitNow()
 {
-    if (mDbg) Logger::D(TAG, "abort:");
-    AutoPtr<IMessage> msg = mSm->ObtainMessage(SM_QUIT_CMD, sSmHandlerObj);
+    if (mDbg) mSm->Log(String("abort:"));
+    AutoPtr<IMessage> msg;
+    mSm->ObtainMessage(SM_QUIT_CMD, sSmHandlerObj, (IMessage**)&msg);
     mSm->SendMessageAtFrontOfQueue(msg);
 }
 
@@ -552,15 +778,28 @@ Boolean StateMachine::SmHandler::IsQuit(
     return (what == SM_QUIT_CMD) && (obj == sSmHandlerObj);
 }
 
+Boolean StateMachine::SmHandler::IsDbg()
+{
+    return mDbg;
+}
+
+void StateMachine::SmHandler::SetDbg(
+    /* [in] */ Boolean dbg)
+{
+    mDbg = dbg;
+}
 
 //====================================================
 // StateMachine
 //====================================================
+
+CAR_INTERFACE_IMPL(StateMachine, Object, IStateMachine)
+
 StateMachine::StateMachine(
     /* [in] */ const String& name)
 {
     CHandlerThread::New(name, (IHandlerThread**)&mSmThread);
-    mSmThread->Start();
+    IThread::Probe(mSmThread)->Start();
     AutoPtr<ILooper> looper;
     mSmThread->GetLooper((ILooper**)&looper);
 
@@ -571,6 +810,15 @@ StateMachine::StateMachine(
     /* [in] */ const String& name,
     /* [in] */ ILooper* looper)
 {
+    InitStateMachine(name, looper);
+}
+
+StateMachine::StateMachine(
+    /* [in] */ const String& name,
+    /* [in] */ IHandler* handler)
+{
+    AutoPtr<ILooper> looper;
+    handler->GetLooper((ILooper**)&looper);
     InitStateMachine(name, looper);
 }
 
@@ -597,208 +845,659 @@ ECode StateMachine::AddState(
     return mSmHandler->AddState(state, NULL, (SmHandler::StateInfo**)&sinfo);
 }
 
+void StateMachine::SetInitialState(
+    /* [in] */ State* initialState)
+{
+    mSmHandler->SetInitialState(initialState);
+}
+
+AutoPtr<IMessage> StateMachine::GetCurrentMessage()
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL)
+        return NULL;
+    return smh->GetCurrentMessage();
+}
+
+AutoPtr<IState> StateMachine::GetCurrentState()
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL)
+        return NULL;
+    return smh->GetCurrentState();
+}
+
+void StateMachine::TransitionTo(
+    /* [in] */ IState* destState)
+{
+    mSmHandler->TransitionTo(destState);
+}
+
+void StateMachine::TransitionToHaltingState()
+{
+    mSmHandler->TransitionTo(mSmHandler->mHaltingState);
+}
+
+void StateMachine::DeferMessage(
+    /* [in] */ IMessage* msg)
+{
+    mSmHandler->DeferMessage(msg);
+}
+
 void StateMachine::UnhandledMessage(
     /* [in] */ IMessage* msg)
 {
-    // if (mSmHandler.mDbg) Log.e(TAG, mName + " - unhandledMessage: msg.what=" + msg.what);
+    if (mSmHandler->mDbg) {
+        Int32 what;
+        msg->GetWhat(&what);
+        StringBuilder sb(" - unhandledMessage: msg.what=");
+        sb += what;
+        Loge(sb.ToString());
+    }
 }
 
-AutoPtr<IMessage> StateMachine::ObtainMessage()
+void StateMachine::HaltedProcessMessage(
+    /* [in] */ IMessage* msg)
 {
-    return ObtainMessage(0);
 }
 
-AutoPtr<IMessage> StateMachine::ObtainMessage(
+void StateMachine::OnHalting()
+{
+}
+
+
+void StateMachine::OnQuitting()
+{
+}
+
+ECode StateMachine::GetName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+    *name = mName;
+    return NOERROR;
+}
+
+ECode StateMachine::SetLogRecSize(
+    /* [in] */ Int32 maxSize)
+{
+    mSmHandler->mLogRecords->SetSize(maxSize);
+    return NOERROR;
+}
+
+ECode StateMachine::SetLogOnlyTransitions(
+    /* [in] */ Boolean enable)
+{
+    mSmHandler->mLogRecords->SetLogOnlyTransitions(enable);
+    return NOERROR;
+}
+
+ECode StateMachine::GetLogRecSize(
+    /* [out] */ Int32* size)
+{
+    VALIDATE_NOT_NULL(size)
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) {
+        *size = 0;
+        return NOERROR;
+    }
+    *size = smh->mLogRecords->GetSize();
+    return NOERROR;
+}
+
+ECode StateMachine::GetLogRecCount(
+    /* [out] */ Int32* count)
+{
+    VALIDATE_NOT_NULL(count)
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) {
+        *count = 0;
+        return NOERROR;
+    }
+    *count = smh->mLogRecords->Count();
+    return NOERROR;
+}
+
+ECode StateMachine::GetLogRec(
+    /* [in] */ Int32 index,
+    /* [out] */ IStateMachineLogRec** logRec)
+{
+    VALIDATE_NOT_NULL(logRec)
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) {
+        *logRec = NULL;
+        return NOERROR;
+    }
+    *logRec = smh->mLogRecords->Get(index);
+    REFCOUNT_ADD(*logRec)
+    return NOERROR;
+}
+
+ECode StateMachine::CopyLogRecs(
+    /* [out] */ ICollection** collection)
+{
+    VALIDATE_NOT_NULL(collection)
+    CVector::New(collection);
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh != NULL) {
+        Vector<AutoPtr<LogRec> >::Iterator iter = smh->mLogRecords->mLogRecVector.Begin();
+        for (; iter != smh->mLogRecords->mLogRecVector.End(); ++iter) {
+            (*collection)->Add(TO_IINTERFACE(*iter));
+        }
+    }
+    return NOERROR;
+}
+
+void StateMachine::AddLogRec(
+    /* [in] */ const String& string)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+    smh->mLogRecords->Add(this, smh->GetCurrentMessage(), string, smh->GetCurrentState(),
+        (*smh->mStateStack)[smh->mStateStackTopIndex]->mState, smh->mDestState);
+}
+
+Boolean StateMachine::RecordLogRec(
+    /* [in] */ IMessage* msg)
+{
+    return TRUE;
+}
+
+String StateMachine::GetLogRecString(
+    /* [in] */ IMessage* msg)
+{
+    return String("");
+}
+
+String StateMachine::GetWhatToString(
     /* [in] */ Int32 what)
 {
-    return ObtainMessage(what, NULL);
+    return String(NULL);
 }
 
-AutoPtr<IMessage> StateMachine::ObtainMessage(
+ECode StateMachine::GetHandler(
+    /* [out] */ IHandler** handler)
+{
+    VALIDATE_NOT_NULL(handler)
+    *handler = mSmHandler;
+    REFCOUNT_ADD(*handler)
+    return NOERROR;
+}
+
+ECode StateMachine::ObtainMessage(
+    /* [out] */ IMessage** msg)
+{
+    return ObtainMessage(0, msg);
+}
+
+ECode StateMachine::ObtainMessage(
+    /* [in] */ Int32 what,
+    /* [out] */ IMessage** msg)
+{
+    return ObtainMessage(what, (IInterface*)NULL, msg);
+}
+
+ECode StateMachine::ObtainMessage(
+    /* [in] */ Int32 what,
+    /* [in] */ IInterface* obj,
+    /* [out] */ IMessage** msg)
+{
+    return ObtainMessage(what, 0, 0, obj, msg);
+}
+
+ECode StateMachine::ObtainMessage(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [out] */ IMessage** msg)
+{
+    return ObtainMessage(what, arg1, 0, NULL, msg);
+}
+
+ECode StateMachine::ObtainMessage(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2,
+    /* [out] */ IMessage** msg)
+{
+    return ObtainMessage(what, arg1, arg2, NULL, msg);
+}
+
+ECode StateMachine::ObtainMessage(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2,
+    /* [in] */ IInterface* obj,
+    /* [out] */ IMessage** msg)
+{
+    VALIDATE_NOT_NULL(msg)
+    AutoPtr<IMessageHelper> helper;
+    CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
+    return helper->Obtain(mSmHandler, what, arg1, arg2, obj, msg);
+}
+
+ECode StateMachine::SendMessage(
+    /* [in] */ Int32 what)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessage(msg, &result);
+}
+
+ECode StateMachine::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
 {
-    return ObtainMessage(what, 0, 0, obj);
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, obj, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessage(msg, &result);
 }
 
-AutoPtr<IMessage> StateMachine::ObtainMessage(
+ECode StateMachine::SendMessage(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, arg1, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessage(msg, &result);
+}
+
+ECode StateMachine::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2)
 {
-    return ObtainMessage(what, arg1, arg2, NULL);
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, arg1, arg2, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessage(msg, &result);
 }
 
-AutoPtr<IMessage> StateMachine::ObtainMessage(
+ECode StateMachine::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
     /* [in] */ IInterface* obj)
 {
-    if (mSmHandler == NULL) return NULL;
-
-    AutoPtr<IMessage> m;
-    mSmHandler->ObtainMessageEx3(what, arg1, arg2, obj, (IMessage**)&m);
-    return m;
-}
-
-void StateMachine::SendMessage(
-    /* [in] */ Int32 what)
-{
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
-
-    Boolean result;
-    mSmHandler->SendEmptyMessage(what, &result);
-}
-
-void StateMachine::SendMessage(
-    /* [in] */ Int32 what,
-    /* [in] */ IInterface* obj)
-{
-    // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessageEx(what, obj, (IMessage**)&msg);
+    ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
     Boolean result;
-    mSmHandler->SendMessage(msg, &result);
+    return smh->SendMessage(msg, &result);
 }
 
-void StateMachine::SendMessage(
+ECode StateMachine::SendMessage(
     /* [in] */ IMessage* msg)
 {
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
     Boolean result;
-    mSmHandler->SendMessage(msg, &result);
+    return smh->SendMessage(msg, &result);
 }
 
-void StateMachine::SendMessageDelayed(
+ECode StateMachine::SendMessageDelayed(
     /* [in] */ Int32 what,
     /* [in] */ Int64 delayMillis)
 {
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
+    AutoPtr<IMessage> msg;
+    smh->ObtainMessage(what, (IMessage**)&msg);
     Boolean result;
-    mSmHandler->SendEmptyMessageDelayed(what, delayMillis, &result);
+    return smh->SendMessageDelayed(msg, delayMillis, &result);
 }
 
-void StateMachine::SendMessageDelayed(
+ECode StateMachine::SendMessageDelayed(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj,
     /* [in] */ Int64 delayMillis)
 {
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessageEx(what, obj, (IMessage**)&msg);
+    smh->ObtainMessage(what, obj, (IMessage**)&msg);
     Boolean result;
-    mSmHandler->SendMessageDelayed(msg, delayMillis, &result);
+    return smh->SendMessageDelayed(msg, delayMillis, &result);
 }
 
-void StateMachine::SendMessageDelayed(
+ECode StateMachine::SendMessageDelayed(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int64 delayMillis)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, arg1, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessageDelayed(msg, delayMillis, &result);
+}
+
+ECode StateMachine::SendMessageDelayed(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2,
+    /* [in] */ Int64 delayMillis)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, arg1, arg2, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessageDelayed(msg, delayMillis, &result);
+}
+
+ECode StateMachine::SendMessageDelayed(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2,
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 delayMillis)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
+
+    AutoPtr<IMessage> msg;
+    ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
+    Boolean result;
+    return smh->SendMessageDelayed(msg, delayMillis, &result);
+}
+
+ECode StateMachine::SendMessageDelayed(
     /* [in] */ IMessage* msg,
     /* [in] */ Int64 delayMillis)
 {
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
     Boolean result;
-    mSmHandler->SendMessageDelayed(msg, delayMillis, &result);
+    return smh->SendMessageDelayed(msg, delayMillis, &result);
+}
+
+void StateMachine::SendMessageAtFrontOfQueue(
+    /* [in] */ Int32 what)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
+    AutoPtr<IMessage> msg;
+    smh->ObtainMessage(what, (IMessage**)&msg);
+    Boolean result;
+    smh->SendMessageAtFrontOfQueue(msg, &result);
 }
 
 void StateMachine::SendMessageAtFrontOfQueue(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
 {
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessageEx(what, obj, (IMessage**)&msg);
+    smh->ObtainMessage(what, obj, (IMessage**)&msg);
     Boolean result;
-    mSmHandler->SendMessageAtFrontOfQueue(msg, &result);
+    smh->SendMessageAtFrontOfQueue(msg, &result);
 }
 
 void StateMachine::SendMessageAtFrontOfQueue(
-    /* [in] */ Int32 what)
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1)
 {
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
     AutoPtr<IMessage> msg;
-    mSmHandler->ObtainMessage(what, (IMessage**)&msg);
+    smh->ObtainMessage(what, arg1, 0, (IMessage**)&msg);
     Boolean result;
-    mSmHandler->SendMessageAtFrontOfQueue(msg, &result);
+    smh->SendMessageAtFrontOfQueue(msg, &result);
+}
+
+void StateMachine::SendMessageAtFrontOfQueue(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
+    AutoPtr<IMessage> msg;
+    smh->ObtainMessage(what, arg1, arg2, (IMessage**)&msg);
+    Boolean result;
+    smh->SendMessageAtFrontOfQueue(msg, &result);
+}
+
+void StateMachine::SendMessageAtFrontOfQueue(
+    /* [in] */ Int32 what,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2,
+    /* [in] */ IInterface* obj)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
+    AutoPtr<IMessage> msg;
+    smh->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&msg);
+    Boolean result;
+    smh->SendMessageAtFrontOfQueue(msg, &result);
 }
 
 void StateMachine::SendMessageAtFrontOfQueue(
     /* [in] */ IMessage* msg)
 {
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
     Boolean result;
-    mSmHandler->SendMessageAtFrontOfQueue(msg, &result);
+    smh->SendMessageAtFrontOfQueue(msg, &result);
 }
 
 void StateMachine::RemoveMessages(
     /* [in] */ Int32 what)
 {
-    mSmHandler->RemoveMessages(what);
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
+
+    smh->RemoveMessages(what);
+}
+
+/**
+ * Validate that the message was sent by
+ * {@link StateMachine#quit} or {@link StateMachine#quitNow}.
+ * */
+Boolean StateMachine::IsQuit(
+    /* [in] */ IMessage* msg)
+{
+    // mSmHandler can be null if the state machine has quit.
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) {
+        Int32 what;
+        msg->GetWhat(&what);
+        return what == SM_QUIT_CMD;
+    }
+
+    return smh->IsQuit(msg);
 }
 
 void StateMachine::Quit()
 {
     // mSmHandler can be null if the state machine is already stopped.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
 
-    mSmHandler->Quit();
+    smh->Quit();
 }
 
 void StateMachine::QuitNow()
 {
     // mSmHandler can be null if the state machine is already stopped.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return;
 
-    mSmHandler->QuitNow();
+    smh->QuitNow();
 }
 
-Boolean StateMachine::IsDbg()
+ECode StateMachine::IsDbg(
+    /* [out] */ Boolean* isDbg)
 {
+    VALIDATE_NOT_NULL(isDbg)
+    *isDbg = FALSE;
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return FALSE;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
-    return mSmHandler->IsDbg();
+    *isDbg = smh->IsDbg();
+    return NOERROR;
 }
 
-void StateMachine::SetDbg(
+ECode StateMachine::SetDbg(
     /* [in] */ Boolean dbg)
 {
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
-    mSmHandler->SetDbg(dbg);
+    smh->SetDbg(dbg);
+    return NOERROR;
 }
 
-void StateMachine::Start()
+ECode StateMachine::Start()
 {
     // mSmHandler can be null if the state machine has quit.
-    if (mSmHandler == NULL) return;
+    AutoPtr<SmHandler> smh = mSmHandler;
+    if (smh == NULL) return NOERROR;
 
     /** Send the complete construction message */
-    mSmHandler->CompleteConstruction();
+    smh->CompleteConstruction();
+    return NOERROR;
 }
 
-void StateMachine::Dump(
+ECode StateMachine::Dump(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    // pw.println(getName() + ":");
-    // pw.println(" total records=" + getLogRecCount());
-    // for (int i=0; i < getLogRecSize(); i++) {
-    //     pw.printf(" rec[%d]: %s\n", i, getLogRec(i).toString(this));
-    //     pw.flush();
-    // }
-    // pw.println("curState=" + getCurrentState().getName());
+    String name;
+    GetName(&name);
+    pw->Println(name + ":");
+    Int32 count;
+    GetLogRecCount(&count);
+    StringBuilder sb(" total records=");
+    sb += count;
+    pw->Println(sb.ToString());
+    Int32 size;
+    GetLogRecSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IStateMachineLogRec> logRec;
+        String str, strLogRec;
+        IObject::Probe(logRec)->ToString(&strLogRec);
+        str.AppendFormat(" rec[%d]: %s\n", i, strLogRec.string());
+        pw->Print(str);
+        IFlushable::Probe(pw)->Flush();
+    }
+    pw->Println(String("curState=") + ((State*)GetCurrentState().Get())->GetName());
+    return NOERROR;
 }
 
+void StateMachine::LogAndAddLogRec(
+    /* [in] */ const String& s)
+{
+    AddLogRec(s);
+    Log(s);
+}
+
+void StateMachine::Log(
+    /* [in] */ const String& s)
+{
+    Logger::D(mName, s);
+}
+
+void StateMachine::Logd(
+    /* [in] */ const String& s)
+{
+    Logger::D(mName, s);
+}
+
+void StateMachine::Logv(
+    /* [in] */ const String& s)
+{
+    Logger::V(mName, s);
+}
+
+void StateMachine::Logi(
+    /* [in] */ const String& s)
+{
+    Logger::I(mName, s);
+}
+
+void StateMachine::Logw(
+    /* [in] */ const String& s)
+{
+    Logger::W(mName, s);
+}
+
+void StateMachine::Loge(
+    /* [in] */ const String& s)
+{
+    Logger::E(mName, s);
+}
+
+/**
+ * Log with error attribute
+ *
+ * @param s is string log
+ * @param e is a Throwable which logs additional information.
+ */
+// void StateMachine::Loge(
+//     /* [in] */ const String& s,
+//     Throwable e) {
+//     Log.e(mger::Ame, s, e);
+// }
 
 } // namespace Utility
 } // namespace Internal

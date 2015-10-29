@@ -11,6 +11,7 @@ module
     merge("utility/FastXmlSerializer.car");
     merge("utility/FileRotator.car");
     merge("utility/HexDump.car");
+    merge("utility/IState.car");
     merge("utility/IndentingPrintWriter.car");
     merge("utility/JournaledFile.car");
     merge("utility/MemInfoReader.car");
@@ -20,6 +21,7 @@ module
     merge("utility/ProcFileReader.car");
     merge("utility/Protocol.car");
     merge("utility/SizedInputStream.car");
+    merge("utility/StateMachine.car");
     merge("utility/TypedProperties.car");
     merge("utility/UserIcons.car");
     merge("utility/VirtualRefBasePtr.car");

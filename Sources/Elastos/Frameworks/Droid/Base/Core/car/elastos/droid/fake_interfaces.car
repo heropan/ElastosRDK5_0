@@ -15,20 +15,6 @@ module
     }}} // Elastos.Droid.Net
 
     //
-    // Elastos.Droid.Internal.Utility
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Internal {
-    namespace Utility {
-
-        interface IStateMachine {}
-
-        interface IState {}
-
-    }}}} // Elastos.Droid.Internal.Utility
-
-    //
     // Elastos.Droid.Collect
     //
     namespace Elastos {

@@ -2,36 +2,38 @@
 #ifndef __STATEMACHINE_H__
 #define __STATEMACHINE_H__
 
-#include "ext/frameworkdef.h"
-#include "os/HandlerBase.h"
-#include "util/State.h"
-#include <elastos/Mutex.h>
-#include <elastos/HashMap.h>
-#include <elastos/List.h>
-#include <elastos/Vector.h>
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/internal/utility/State.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/Vector.h>
 
-using Elastos::Utility::HashMap;
-using Elastos::Utility::List;
-using Elastos::Utility::Vector;
-using Elastos::Core::Threading::Mutex;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandlerThread;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::Vector;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Utility {
 
-class StateMachine : public ElRefBase
+class StateMachine
+    : public Object
+    , public IStateMachine
 {
 public:
     /**
      * StateMachine logging record.
      * {@hide}
      */
-    class LogRec : public ElRefBase
+    class LogRec
+        : public Object
+        , public IStateMachineLogRec
     {
     public:
         /**
@@ -43,10 +45,14 @@ public:
          * did not processes the message.
          */
         LogRec(
+            /* [in] */ StateMachine* sm,
             /* [in] */ IMessage* msg,
             /* [in] */ const String& info,
-            /* [in] */ State* state,
-            /* [in] */ State* orgState);
+            /* [in] */ IState* state,
+            /* [in] */ IState* orgState,
+            /* [in] */ IState* transToState);
+
+        CAR_INTERFACE_DECL()
 
         /**
          * Update the information in the record.
@@ -55,48 +61,57 @@ public:
          * did not processes the message.
          */
         CARAPI_(void) Update(
+            /* [in] */ StateMachine* sm,
             /* [in] */ IMessage* msg,
             /* [in] */ const String& info,
-            /* [in] */ State* state,
-            /* [in] */ State* orgState);
+            /* [in] */ IState* state,
+            /* [in] */ IState* orgState,
+            /* [in] */ IState* dstState);
 
         /**
          * @return time stamp
          */
-        CARAPI_(Int64) GetTime() { return mTime; }
+        CARAPI_(Int64) GetTime();
 
         /**
          * @return msg.what
          */
-        CARAPI_(Int64) GetWhat() { return mWhat; }
+        CARAPI_(Int64) GetWhat();
 
         /**
          * @return the command that was executing
          */
-        CARAPI_(String) GetInfo() { return mInfo; }
+        CARAPI_(String) GetInfo();
 
         /**
          * @return the state that handled this message
          */
-        CARAPI_(AutoPtr<State>) GetState() { return mState; }
+        CARAPI_(AutoPtr<IState>) GetState();
+
+        /**
+         * @return the state destination state if a transition is occurring or null if none.
+         */
+        CARAPI_(AutoPtr<IState>) GetDestState();
 
         /**
          * @return the original state that received the message.
          */
-        CARAPI_(AutoPtr<State>) GetOriginalState() { return mOrgState; }
+        CARAPI_(AutoPtr<IState>) GetOriginalState();
 
         /**
          * @return as string
          */
-        CARAPI_(String) ToString(
-            /* [in] */ StateMachine* sm);
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     private:
+        AutoPtr<StateMachine> mSm;
         Int64 mTime;
         Int32 mWhat;
         String mInfo;
-        AutoPtr<State> mState;
-        AutoPtr<State> mOrgState;
+        AutoPtr<IState> mState;
+        AutoPtr<IState> mOrgState;
+        AutoPtr<IState> mDstState;
     };
 
 private:
@@ -111,9 +126,15 @@ private:
      * the last setSize, get which returns a record and
      * add which adds a record.
      */
-    class LogRecords : public ElRefBase
+    class LogRecords : public Object
     {
+        friend class StateMachine;
     public:
+        /**
+         * private constructor use add
+         */
+        LogRecords();
+
         /**
          * Set size of messages to maintain and clears all current records.
          *
@@ -121,6 +142,11 @@ private:
         */
         CARAPI_(void) SetSize(
             /* [in] */ Int32 maxSize);
+
+        CARAPI_(void) SetLogOnlyTransitions(
+            /* [in] */ Boolean enable);
+
+        CARAPI_(Boolean) LogOnlyTransitions();
 
         /**
          * @return the number of recent records.
@@ -155,58 +181,41 @@ private:
          * did not processes the message.
          */
         CARAPI_(void) Add(
+            /* [in] */ StateMachine* sm,
             /* [in] */ IMessage* msg,
             /* [in] */ const String& messageInfo,
-            /* [in] */ State* state,
-            /* [in] */ State* orgState);
-
-    public:
-        /**
-         * private constructor use add
-         */
-        LogRecords()
-            : mMaxSize(DEFAULT_SIZE)
-            , mOldestIndex(0)
-            , mCount(0)
-        {}
+            /* [in] */ IState* state,
+            /* [in] */ IState* orgState,
+            /* [in] */ IState* transToState);
 
     private:
         static const Int32 DEFAULT_SIZE = 20;
 
-        Vector< AutoPtr<LogRec> > mLogRecords;
+        Vector< AutoPtr<LogRec> > mLogRecVector;
         Int32 mMaxSize;
         Int32 mOldestIndex;
         Int32 mCount;
-        Mutex mLock;
+        Boolean mLogOnlyTransitions;
     };
 
     class SmHandler
-        : public HandlerBase
+        : public Handler
     {
         friend class StateMachine;
-
     private:
         /**
          * Information about a state.
          * Used to maintain the hierarchy.
          */
-        class StateInfo : public ElRefBase
+        class StateInfo : public Object
         {
         public:
-            StateInfo()
-                : mActive(FALSE)
-            {}
+            StateInfo();
 
             /**
              * Convert StateInfo to string
              */
-            CARAPI_(String) ToString()
-            {
-                // return "state=" + state.getName() + ",active=" + active
-                //         + ",parent=" + ((parentStateInfo == null) ?
-                //                         "null" : parentStateInfo.state.getName());
-                return String(NULL);
-            }
+            CARAPI_(String) ToString();
 
         public:
             /** The state */
@@ -226,18 +235,16 @@ private:
         {
         public:
             HaltingState(
-                /* [in] */ SmHandler* owner)
-                : mOwner(owner)
-            {}
+                /* [in] */ SmHandler* owner);
 
             // @Override
             CARAPI ProcessMessage(
                 /* [in] */ IMessage* msg,
-                /* [out] */ Boolean* result)
+                /* [out] */ Boolean* result);
+
+            CARAPI_(String) GetName()
             {
-                mOwner->mSm->HaltedProcessMessage(msg);
-                *result = TRUE;
-                return NOERROR;
+                return String("HaltingState");
             }
 
         private:
@@ -252,43 +259,11 @@ private:
             // @Override
             CARAPI ProcessMessage(
                 /* [in] */ IMessage* msg,
-                /* [out] */ Boolean* result)
-            {
-                *result = NOT_HANDLED;
-                return NOERROR;
-            }
-        };
+                /* [out] */ Boolean* result);
 
-        class Object
-            : public ElRefBase
-            , public IInterface
-        {
-        public:
-            CARAPI_(PInterface) Probe(
-                /* [in] */ REIID riid)
+            CARAPI_(String) GetName()
             {
-                if (riid == EIID_IInterface) {
-                    return (PInterface)this;
-                }
-
-                return NULL;
-            }
-
-            CARAPI_(UInt32) AddRef()
-            {
-                return ElRefBase::AddRef();
-            }
-
-            CARAPI_(UInt32) Release()
-            {
-                return ElRefBase::Release();
-            }
-
-            CARAPI GetInterfaceID(
-                /* [in] */ IInterface* pObject,
-                /* [in] */ InterfaceID* pIID)
-            {
-                return E_NOT_IMPLEMENTED;
+                return String("QuittingState");
             }
         };
 
@@ -316,7 +291,9 @@ private:
         /**
          * Do any transitions
          */
-        CARAPI_(void) PerformTransitions();
+        CARAPI_(void) PerformTransitions(
+            /* [in] */ State* msgProcessedState,
+            /* [in] */ IMessage* msg);
 
         /**
          * Cleanup all the static variables and the looper after the SM has been quit.
@@ -333,7 +310,7 @@ private:
          * it, call the states parent and so on. If it is never handled then
          * call the state machines unhandledMessage method.
          */
-        CARAPI_(void) ProcessMsg(
+        CARAPI_(AutoPtr<State>) ProcessMsg(
             /* [in] */ IMessage* msg);
 
         /**
@@ -385,18 +362,12 @@ private:
         /**
          * @return current message
          */
-        CARAPI_(AutoPtr<IMessage>) GetCurrentMessage()
-        {
-            return mMsg;
-        }
+        CARAPI_(AutoPtr<IMessage>) GetCurrentMessage();
 
         /**
          * @return current state
          */
-        CARAPI_(AutoPtr<IState>) GetCurrentState()
-        {
-            return (*mStateStack)[mStateStackTopIndex]->mState;
-        }
+        CARAPI_(AutoPtr<IState>) GetCurrentState();
 
         /**
          * Add a new state to the state machine. Bottom up addition
@@ -435,19 +406,16 @@ private:
             /* [in] */ IMessage* msg);
 
         /** @see StateMachine#isDbg() */
-        CARAPI_(Boolean) IsDbg()
-        {
-            return mDbg;
-        }
+        CARAPI_(Boolean) IsDbg();
 
         /** @see StateMachine#setDbg(boolean) */
         CARAPI_(void) SetDbg(
-            /* [in] */ Boolean dbg)
-        {
-            mDbg = dbg;
-        }
+            /* [in] */ Boolean dbg);
 
     private:
+        /** true if StateMachine has quit */
+        Boolean mHasQuit;
+
         /** The debug flag */
         Boolean mDbg;
 
@@ -500,113 +468,211 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * @return the name
      */
-    CARAPI_(String) GetName()
-    {
-        return mName;
-    }
+    CARAPI GetName(
+        /* [out] */ String* name);
 
     /**
      * Set number of log records to maintain and clears all current records.
      *
      * @param maxSize number of messages to maintain at anyone time.
      */
-    CARAPI_(void) SetLogRecSize(
-        /* [in] */ Int32 maxSize)
-    {
-        mSmHandler->mLogRecords->SetSize(maxSize);
-    }
+    CARAPI SetLogRecSize(
+        /* [in] */ Int32 maxSize);
+
+    /**
+     * Set to log only messages that cause a state transition
+     *
+     * @param enable {@code true} to enable, {@code false} to disable
+     */
+    CARAPI SetLogOnlyTransitions(
+        /* [in] */ Boolean enable);
 
     /**
      * @return number of log records
      */
-    CARAPI_(Int32) GetLogRecSize()
-    {
-        return mSmHandler->mLogRecords->GetSize();
-    }
+    CARAPI GetLogRecSize(
+        /* [out] */ Int32* size);
 
     /**
      * @return the total number of records processed
      */
-    CARAPI_(Int32) GetLogRecCount()
-    {
-        return mSmHandler->mLogRecords->Count();
-    }
+    CARAPI GetLogRecCount(
+        /* [out] */ Int32* count);
 
     /**
      * @return a log record
      */
-    CARAPI_(AutoPtr<LogRec>) GetLogRec(
-        /* [in] */ Int32 index)
-    {
-        return mSmHandler->mLogRecords->Get(index);
-    }
+    CARAPI GetLogRec(
+        /* [in] */ Int32 index,
+        /* [out] */ IStateMachineLogRec** logRec);
+
+    /**
+     * @return a copy of LogRecs as a collection
+     */
+    CARAPI CopyLogRecs(
+        /* [out] */ ICollection** collection);
 
     /**
      * @return Handler
      */
-    CARAPI_(AutoPtr<IHandler>) GetHandler()
-    {
-        return mSmHandler;
-    }
+    CARAPI GetHandler(
+        /* [out] */ IHandler** handler);
 
     /**
-     * Get a message and set Message.target = this.
+     * Get a message and set Message.target state machine handler,
+     * what, arg1, arg2 and obj
      *
-     * @return message or null if SM has quit
+     * Note: The handler can be null if the state machine has quit,
+     * which means target will be null and may cause a AndroidRuntimeException
+     * in MessageQueue#enqueMessage if sent directly or if sent using
+     * StateMachine#sendMessage the message will just be ignored.
+     *
+     * @return  A Message object from the global pool
      */
-    CARAPI_(AutoPtr<IMessage>) ObtainMessage();
+    CARAPI ObtainMessage(
+        /* [out] */ IMessage** msg);
 
     /**
-     * Get a message and set Message.target = this and what
+     * Get a message and set Message.target state machine handler,
+     * what, arg1, arg2 and obj
      *
-     * @param what is the assigned to Message.what.
-     * @return message or null if SM has quit
-     */
-    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
-        /* [in] */ Int32 what);
-
-    /**
-     * Get a message and set Message.target = this,
-     * what and obj.
+     * Note: The handler can be null if the state machine has quit,
+     * which means target will be null and may cause a AndroidRuntimeException
+     * in MessageQueue#enqueMessage if sent directly or if sent using
+     * StateMachine#sendMessage the message will just be ignored.
      *
-     * @param what is the assigned to Message.what.
-     * @param obj is assigned to Message.obj.
-     * @return message or null if SM has quit
+     * @param what  is assigned to Message.what
+     * @return  A Message object from the global pool
      */
-    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
-        /* [in] */ IInterface* obj);
+        /* [out] */ IMessage** msg);
 
     /**
-     * Get a message and set Message.target = this,
-     * what, arg1 and arg2
+     * Get a message and set Message.target state machine handler,
+     * what, arg1, arg2 and obj
+     *
+     * Note: The handler can be null if the state machine has quit,
+     * which means target will be null and may cause a AndroidRuntimeException
+     * in MessageQueue#enqueMessage if sent directly or if sent using
+     * StateMachine#sendMessage the message will just be ignored.
+     *
+     * @param what  is assigned to Message.what
+     * @param obj is assigned to Message.obj
+     * @return  A Message object from the global pool
+     */
+    CARAPI ObtainMessage(
+        /* [in] */ Int32 what,
+        /* [in] */ IInterface* obj,
+        /* [out] */ IMessage** msg);
+
+    /**
+     * Get a message and set Message.target state machine handler,
+     * what, arg1, arg2 and obj
+     *
+     * Note: The handler can be null if the state machine has quit,
+     * which means target will be null and may cause a AndroidRuntimeException
+     * in MessageQueue#enqueMessage if sent directly or if sent using
+     * StateMachine#sendMessage the message will just be ignored.
+     *
+     * @param what  is assigned to Message.what
+     * @param arg1  is assigned to Message.arg1
+     * @return  A Message object from the global pool
+     */
+    CARAPI ObtainMessage(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [out] */ IMessage** msg);
+
+    /**
+     * Get a message and set Message.target state machine handler,
+     * what, arg1, arg2 and obj
+     *
+     * Note: The handler can be null if the state machine has quit,
+     * which means target will be null and may cause a AndroidRuntimeException
+     * in MessageQueue#enqueMessage if sent directly or if sent using
+     * StateMachine#sendMessage the message will just be ignored.
      *
      * @param what  is assigned to Message.what
      * @param arg1  is assigned to Message.arg1
      * @param arg2  is assigned to Message.arg2
-     * @return  A Message object from the global pool or null if
-     *          SM has quit
+     * @return  A Message object from the global pool
      */
-    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
-        /* [in] */ Int32 arg2);
+        /* [in] */ Int32 arg2,
+        /* [out] */ IMessage** msg);
 
     /**
-     * Get a message and set Message.target = this,
+     * Get a message and set Message.target state machine handler,
      * what, arg1, arg2 and obj
+     *
+     * Note: The handler can be null if the state machine has quit,
+     * which means target will be null and may cause a AndroidRuntimeException
+     * in MessageQueue#enqueMessage if sent directly or if sent using
+     * StateMachine#sendMessage the message will just be ignored.
      *
      * @param what  is assigned to Message.what
      * @param arg1  is assigned to Message.arg1
      * @param arg2  is assigned to Message.arg2
      * @param obj is assigned to Message.obj
-     * @return  A Message object from the global pool or null if
-     *          SM has quit
+     * @return  A Message object from the global pool
      */
-    CARAPI_(AutoPtr<IMessage>) ObtainMessage(
+    CARAPI ObtainMessage(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2,
+        /* [in] */ IInterface* obj,
+        /* [out] */ IMessage** msg);
+
+    /**
+     * Enqueue a message to this state machine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessage(
+        /* [in] */ Int32 what);
+
+    /**
+     * Enqueue a message to this state machine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessage(
+        /* [in] */ Int32 what,
+        /* [in] */ IInterface* obj);
+
+    /**
+     * Enqueue a message to this state machine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessage(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1);
+
+    /**
+     * Enqueue a message to this state machine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessage(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2);
+
+    /**
+     * Enqueue a message to this state machine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -614,62 +680,91 @@ public:
 
     /**
      * Enqueue a message to this state machine.
+     *
+     * Message is ignored if state machine has quit.
      */
-    CARAPI_(void) SendMessage(
-        /* [in] */ Int32 what);
-
-    /**
-     * Enqueue a message to this state machine.
-     */
-    CARAPI_(void) SendMessage(
-        /* [in] */ Int32 what,
-        /* [in] */ IInterface* obj);
-
-    /**
-     * Enqueue a message to this state machine.
-     */
-    CARAPI_(void) SendMessage(
+    CARAPI SendMessage(
         /* [in] */ IMessage* msg);
 
     /**
      * Enqueue a message to this state machine after a delay.
+     *
+     * Message is ignored if state machine has quit.
      */
-    CARAPI_(void) SendMessageDelayed(
+    CARAPI SendMessageDelayed(
         /* [in] */ Int32 what,
         /* [in] */ Int64 delayMillis);
 
     /**
      * Enqueue a message to this state machine after a delay.
+     *
+     * Message is ignored if state machine has quit.
      */
-    CARAPI_(void) SendMessageDelayed(
+    CARAPI SendMessageDelayed(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj,
         /* [in] */ Int64 delayMillis);
 
     /**
      * Enqueue a message to this state machine after a delay.
+     *
+     * Message is ignored if state machine has quit.
      */
-    CARAPI_(void) SendMessageDelayed(
+    CARAPI SendMessageDelayed(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int64 delayMillis);
+
+    /**
+     * Enqueue a message to this state machine after a delay.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessageDelayed(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2,
+        /* [in] */ Int64 delayMillis);
+
+    /**
+     * Enqueue a message to this state machine after a delay.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessageDelayed(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2,
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 delayMillis);
+
+    /**
+     * Enqueue a message to this state machine after a delay.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI SendMessageDelayed(
         /* [in] */ IMessage* msg,
         /* [in] */ Int64 delayMillis);
 
     /**
      * @return if debugging is enabled
      */
-    virtual CARAPI_(Boolean) IsDbg();
+    CARAPI IsDbg(
+        /* [out] */ Boolean* isDbg);
 
     /**
      * Set debug enable/disabled.
      *
      * @param dbg is true to enable debugging.
      */
-    virtual CARAPI_(void) SetDbg(
+    CARAPI SetDbg(
         /* [in] */ Boolean dbg);
 
     /**
      * Start the state machine.
      */
-    virtual CARAPI_(void) Start();
+    CARAPI Start();
 
     /**
      * Dump the current state.
@@ -678,7 +773,7 @@ public:
      * @param pw
      * @param args
      */
-    virtual CARAPI_(void) Dump(
+    CARAPI Dump(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* pw,
         /* [in] */ ArrayOf<String>* args);
@@ -703,6 +798,20 @@ protected:
         /* [in] */ const String& name,
         /* [in] */ ILooper* looper);
 
+    StateMachine(
+        /* [in] */ const String& name,
+        /* [in] */ IHandler* handler);
+
+    /**
+     * Initialize.
+     *
+     * @param looper for this state machine
+     * @param name of the state machine
+     */
+    CARAPI_(void) InitStateMachine(
+        /* [in] */ const String& name,
+        /* [in] */ ILooper* looper);
+
     /**
      * Add a new state to the state machine
      * @param state the state to add
@@ -711,22 +820,6 @@ protected:
     CARAPI AddState(
         /* [in] */ State* state,
         /* [in] */ State* parent);
-
-    /**
-     * @return current message
-     */
-    CARAPI_(AutoPtr<IMessage>) GetCurrentMessage()
-    {
-        return mSmHandler->GetCurrentMessage();
-    }
-
-    /**
-     * @return current state
-     */
-    CARAPI_(AutoPtr<IState>) GetCurrentState()
-    {
-        return mSmHandler->GetCurrentState();
-    }
 
     /**
      * Add a new state to the state machine, parent will be null
@@ -742,10 +835,17 @@ protected:
      * @param initialState is the state which will receive the first message.
      */
     CARAPI_(void) SetInitialState(
-        /* [in] */ State* initialState)
-    {
-        mSmHandler->SetInitialState(initialState);
-    }
+        /* [in] */ State* initialState);
+
+    /**
+     * @return current message
+     */
+    CARAPI_(AutoPtr<IMessage>) GetCurrentMessage();
+
+    /**
+     * @return current state
+     */
+    CARAPI_(AutoPtr<IState>) GetCurrentState();
 
     /**
      * transition to destination state. Upon returning
@@ -762,10 +862,7 @@ protected:
      * @param destState will be the state that receives the next message.
      */
     CARAPI_(void) TransitionTo(
-        /* [in] */ IState* destState)
-    {
-        mSmHandler->TransitionTo(destState);
-    }
+        /* [in] */ IState* destState);
 
     /**
      * transition to halt state. Upon returning
@@ -774,10 +871,7 @@ protected:
      * for all subsequent messages haltedProcessMessage
      * will be called.
      */
-    CARAPI_(void) TransitionToHaltingState()
-    {
-        mSmHandler->TransitionTo(mSmHandler->mHaltingState);
-    }
+    CARAPI_(void) TransitionToHaltingState();
 
     /**
      * Defer this message until next state transition.
@@ -789,10 +883,7 @@ protected:
      * @param msg is deferred until the next transition.
      */
     CARAPI_(void) DeferMessage(
-        /* [in] */ IMessage* msg)
-    {
-        mSmHandler->DeferMessage(msg);
-    }
+        /* [in] */ IMessage* msg);
 
     /**
      * Called when message wasn't handled
@@ -807,15 +898,14 @@ protected:
      * transitionToHalting is called.
      */
     virtual CARAPI_(void) HaltedProcessMessage(
-        /* [in] */ IMessage* msg)
-    {}
+        /* [in] */ IMessage* msg);
 
     /**
      * This will be called once after handling a message that called
      * transitionToHalting. All subsequent messages will invoke
      * {@link StateMachine#haltedProcessMessage(Message)}
      */
-    virtual CARAPI_(void) OnHalting() {}
+    virtual CARAPI_(void) OnHalting();
 
     /**
      * This will be called once after a quit message that was NOT handled by
@@ -823,7 +913,7 @@ protected:
      * ignored. In addition, if this StateMachine created the thread, the thread will
      * be stopped after this method returns.
      */
-    virtual CARAPI_(void) OnQuitting() {}
+    virtual CARAPI_(void) OnQuitting();
 
     /**
      * Add the string to LogRecords.
@@ -831,30 +921,13 @@ protected:
      * @param string
      */
     virtual CARAPI_(void) AddLogRec(
-        /* [in] */ const String& string)
-    {
-        mSmHandler->mLogRecords->Add(NULL, string, NULL, NULL);
-    }
-
-    /**
-     * Add the string and state to LogRecords
-     *
-     * @param string
-     * @param state current state
-     */
-    virtual CARAPI_(void) AddLogRec(
-        /* [in] */ const String& string,
-        /* [in] */ State* state)
-    {
-        mSmHandler->mLogRecords->Add(NULL, string, state, NULL);
-    }
+        /* [in] */ const String& string);
 
     /**
      * @return true if msg should be saved in the log, default is true.
      */
     virtual CARAPI_(Boolean) RecordLogRec(
-        /* [in] */ IMessage* msg)
-    { return TRUE; }
+        /* [in] */ IMessage* msg);
 
     /**
      * Return a string to be logged by LogRec, default
@@ -864,19 +937,28 @@ protected:
      * @return information to be logged as a String
      */
     virtual CARAPI_(String) GetLogRecString(
-        /* [in] */ IMessage* msg)
-    { return String(""); }
+        /* [in] */ IMessage* msg);
 
     /**
      * @return the string for msg.what
      */
     virtual CARAPI_(String) GetWhatToString(
-        /* [in] */ Int32 what)
-    { return String(NULL); }
+        /* [in] */ Int32 what);
 
     /**
      * Enqueue a message to the front of the queue for this state machine.
      * Protected, may only be called by instances of StateMachine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI_(void) SendMessageAtFrontOfQueue(
+        /* [in] */ Int32 what);
+
+    /**
+     * Enqueue a message to the front of the queue for this state machine.
+     * Protected, may only be called by instances of StateMachine.
+     *
+     * Message is ignored if state machine has quit.
      */
     CARAPI_(void) SendMessageAtFrontOfQueue(
         /* [in] */ Int32 what,
@@ -885,13 +967,41 @@ protected:
     /**
      * Enqueue a message to the front of the queue for this state machine.
      * Protected, may only be called by instances of StateMachine.
+     *
+     * Message is ignored if state machine has quit.
      */
     CARAPI_(void) SendMessageAtFrontOfQueue(
-        /* [in] */ Int32 what);
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1);
 
     /**
      * Enqueue a message to the front of the queue for this state machine.
      * Protected, may only be called by instances of StateMachine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI_(void) SendMessageAtFrontOfQueue(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2);
+
+    /**
+     * Enqueue a message to the front of the queue for this state machine.
+     * Protected, may only be called by instances of StateMachine.
+     *
+     * Message is ignored if state machine has quit.
+     */
+    CARAPI_(void) SendMessageAtFrontOfQueue(
+        /* [in] */ Int32 what,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2,
+        /* [in] */ IInterface* obj);
+
+    /**
+     * Enqueue a message to the front of the queue for this state machine.
+     * Protected, may only be called by instances of StateMachine.
+     *
+     * Message is ignored if state machine has quit.
      */
     CARAPI_(void) SendMessageAtFrontOfQueue(
         /* [in] */ IMessage* msg);
@@ -904,6 +1014,13 @@ protected:
         /* [in] */ Int32 what);
 
     /**
+     * Validate that the message was sent by
+     * {@link StateMachine#quit} or {@link StateMachine#quitNow}.
+     * */
+    CARAPI_(Boolean) IsQuit(
+        /* [in] */ IMessage* msg);
+
+    /**
      * Quit the state machine after all currently queued up messages are processed.
      */
     CARAPI_(void) Quit();
@@ -913,34 +1030,59 @@ protected:
      */
     CARAPI_(void) QuitNow();
 
-protected:
     /**
-     * Initialize.
+     * Log with debug and add to the LogRecords.
      *
-     * @param looper for this state machine
-     * @param name of the state machine
+     * @param s is string log
      */
-    CARAPI_(void) InitStateMachine(
-        /* [in] */ const String& name,
-        /* [in] */ ILooper* looper);
-
-public:
-    /**
-     * Convenience constant that maybe returned by processMessage
-     * to indicate the the message was processed and is not to be
-     * processed by parent states
-     */
-    static const Boolean HANDLED = TRUE;
+    CARAPI_(void) LogAndAddLogRec(
+        /* [in] */ const String& s);
 
     /**
-     * Convenience constant that maybe returned by processMessage
-     * to indicate the the message was NOT processed and is to be
-     * processed by parent states
+     * Log with debug
+     *
+     * @param s is string log
      */
-    static const Boolean NOT_HANDLED = FALSE;
+    CARAPI_(void) Log(
+        /* [in] */ const String& s);
+    /**
+     * Log with debug attribute
+     *
+     * @param s is string log
+     */
+    CARAPI_(void) Logd(
+        /* [in] */ const String& s);
+    /**
+     * Log with verbose attribute
+     *
+     * @param s is string log
+     */
+    CARAPI_(void) Logv(
+        /* [in] */ const String& s);
+    /**
+     * Log with info attribute
+     *
+     * @param s is string log
+     */
+    CARAPI_(void) Logi(
+        /* [in] */ const String& s);
+    /**
+     * Log with warning attribute
+     *
+     * @param s is string log
+     */
+    CARAPI_(void) Logw(
+        /* [in] */ const String& s);
+    /**
+     * Log with error attribute
+     *
+     * @param s is string log
+     */
+    CARAPI_(void) Loge(
+        /* [in] */ const String& s);
 
 private:
-    static const String TAG;
+    // Name of the state machine and used as logging tag
     String mName;
 
     /** Message.what value when quitting */
@@ -957,5 +1099,11 @@ private:
 } // namespace Internal
 } // namespace Droid
 } // namespace Elastos
+
+template <>
+struct Conversion<Elastos::Droid::Internal::Utility::StateMachine::SmHandler::StateInfo*, IInterface*>
+{
+    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
+};
 
 #endif //__STATEMACHINE_H__
