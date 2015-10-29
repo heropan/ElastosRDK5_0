@@ -12,7 +12,8 @@ namespace Webkit {
 namespace Ui {
 namespace Gfx {
 
-class BitmapFormat : public Object
+class BitmapFormat
+    : public Object
 {
 public:
     static const Int32 FORMAT_NO_CONFIG = 0;

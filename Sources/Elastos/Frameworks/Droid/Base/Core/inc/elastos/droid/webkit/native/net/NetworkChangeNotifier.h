@@ -39,21 +39,24 @@ namespace Net {
   * WARNING: This class is not thread-safe.
   */
 // @JNINamespace("net")
-class NetworkChangeNotifier : public Object
+class NetworkChangeNotifier
+    : public Object
 {
 public:
     /**
       * Alerted when the connection type of the network changes.
       * The alert is fired on the UI thread.
       */
-    class ConnectionTypeObserver : public Object
+    class ConnectionTypeObserver
+        : public Object
     {
     public:
         virtual CARAPI OnConnectionTypeChanged(
             /* [in] */ Int32 connectionType) = 0;
     };
 
-    class InnerNetworkChangeNotifierAutoDetectObserver : public NetworkChangeNotifierAutoDetect::Observer
+    class InnerNetworkChangeNotifierAutoDetectObserver
+        : public NetworkChangeNotifierAutoDetect::Observer
     {
     public:
         InnerNetworkChangeNotifierAutoDetectObserver(

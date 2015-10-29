@@ -22,7 +22,8 @@ class AndroidPrivateKey;
   * Specifies all the dependencies from the native OpenSSL engine on an Android KeyStore.
   */
 // @JNINamespace("net::android")
-class AndroidKeyStore : public Object
+class AndroidKeyStore
+    : public Object
 {
 public:
     /**

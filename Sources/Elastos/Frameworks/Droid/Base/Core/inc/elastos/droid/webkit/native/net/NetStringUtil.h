@@ -28,7 +28,8 @@ namespace Net {
   * icu.
   */
 // @JNINamespace("net::android")
-class NetStringUtil : public Object
+class NetStringUtil
+    : public Object
 {
 private:
     /**

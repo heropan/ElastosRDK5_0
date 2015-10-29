@@ -39,7 +39,8 @@ namespace Net {
 /**
   * This class implements net utilities required by the net component.
   */
-class AndroidNetworkLibrary : public Object
+class AndroidNetworkLibrary
+    : public Object
 {
 public:
     /**

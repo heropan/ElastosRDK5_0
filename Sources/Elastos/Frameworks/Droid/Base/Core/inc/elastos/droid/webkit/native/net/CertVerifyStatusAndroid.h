@@ -11,7 +11,8 @@ namespace Droid {
 namespace Webkit {
 namespace Net {
 
-class CertVerifyStatusAndroid : public Object
+class CertVerifyStatusAndroid
+    : public Object
 {
 public:
     static const Int32 VERIFY_OK = 0;

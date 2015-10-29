@@ -47,10 +47,12 @@ namespace Base {
   * a set of accepted file types. The path of the selected file is passed to the native dialog.
   */
 // @JNINamespace("ui")
-class SelectFileDialog : public WindowAndroid::IntentCallback
+class SelectFileDialog
+    : public WindowAndroid::IntentCallback
 {
 private:
-    class GetDisplayNameTask : public AsyncTask
+    class GetDisplayNameTask
+        : public AsyncTask
     {
     public:
         GetDisplayNameTask(

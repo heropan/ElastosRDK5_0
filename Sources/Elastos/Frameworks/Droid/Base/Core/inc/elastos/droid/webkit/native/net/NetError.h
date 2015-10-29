@@ -11,7 +11,8 @@ namespace Droid {
 namespace Webkit {
 namespace Net {
 
-class NetError : public Object
+class NetError
+    : public Object
 {
 public:
     static const Int32 ERR_IO_PENDING = -1;

@@ -33,7 +33,8 @@ namespace Base {
   * It should only be used where access to Android Views is needed from the C++ code.
   */
 // @JNINamespace("ui")
-class ViewAndroid : public Object
+class ViewAndroid
+    : public Object
 {
 public:
     /**

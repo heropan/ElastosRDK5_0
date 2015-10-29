@@ -27,7 +27,8 @@ namespace Net {
   * The result of a certification verification.
   */
 // @JNINamespace("net::android")
-class AndroidCertVerifyResult : public Object
+class AndroidCertVerifyResult
+    : public Object
 {
 public:
     AndroidCertVerifyResult(

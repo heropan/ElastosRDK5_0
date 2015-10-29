@@ -43,7 +43,8 @@ namespace Chromium {
 // and then drawn and detached from the view tree any number of times (using requestDrawGL and
 // detach respectively). Then when finished with, it can be explicitly released by calling
 // destroy() or will clean itself up as required via finalizer / CleanupReference.
-class DrawGLFunctor : public Object
+class DrawGLFunctor 
+    : public Object
 {
 public:
     // Holds the core resources of the class, everything required to correctly cleanup.

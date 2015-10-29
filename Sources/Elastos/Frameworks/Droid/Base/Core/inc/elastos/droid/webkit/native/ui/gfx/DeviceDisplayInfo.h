@@ -39,7 +39,8 @@ namespace Gfx {
   * regarding the main display.
   */
 // @JNINamespace("gfx")
-class DeviceDisplayInfo : public Object
+class DeviceDisplayInfo
+    : public Object
 {
 public:
     /**

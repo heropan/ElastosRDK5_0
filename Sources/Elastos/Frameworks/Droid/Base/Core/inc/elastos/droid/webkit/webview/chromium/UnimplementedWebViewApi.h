@@ -29,7 +29,8 @@ namespace Webview {
 namespace Chromium {
 
 // TODO: remove this when all WebView APIs have been implemented.
-class UnimplementedWebViewApi : public Object
+class UnimplementedWebViewApi 
+    : public Object
 {
 private:
     class UnimplementedWebViewApiException

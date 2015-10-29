@@ -72,7 +72,8 @@ namespace Net {
   * Utility functions for verifying X.509 certificates.
   */
 // @JNINamespace("net")
-class X509Util : public Object
+class X509Util
+    : public Object
 {
 private:
     /**
@@ -80,7 +81,8 @@ private:
       * X509TrustManagerExtensions to support platforms before the latter was
       * added.
       */
-    class X509TrustManagerImplementation : public Object
+    class X509TrustManagerImplementation
+        : public Object
     {
     public:
         virtual CARAPI_(AutoPtr<IList>) CheckServerTrusted(
@@ -90,7 +92,8 @@ private:
     };
 
 public:
-    class TrustStorageListener : public BroadcastReceiver
+    class TrustStorageListener
+        : public BroadcastReceiver
     {
     public:
         // @Override
@@ -99,7 +102,8 @@ public:
             /* [in] */ IIntent* intent);
     };
 
-    class X509TrustManagerIceCreamSandwich : public X509TrustManagerImplementation
+    class X509TrustManagerIceCreamSandwich
+        : public X509TrustManagerImplementation
     {
     public:
         X509TrustManagerIceCreamSandwich(
@@ -115,7 +119,8 @@ public:
         const AutoPtr<IX509TrustManager> mTrustManager;
     };
 
-    class X509TrustManagerJellyBean : public X509TrustManagerImplementation
+    class X509TrustManagerJellyBean
+        : public X509TrustManagerImplementation
     {
     public:
         // @SuppressLint("NewApi")

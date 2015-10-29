@@ -25,10 +25,12 @@ namespace Net {
   * Provides a remoted implementation of AndroidKeyStore where all calls are forwarded via
   * binder to an external process.
   */
-class RemoteAndroidKeyStore : public AndroidKeyStore
+class RemoteAndroidKeyStore
+    : public AndroidKeyStore
 {
 private:
-    class RemotePrivateKey : public AndroidPrivateKey
+    class RemotePrivateKey
+        : public AndroidPrivateKey
     {
     public:
         RemotePrivateKey(

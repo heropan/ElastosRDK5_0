@@ -87,6 +87,7 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
     }
 
     *result = dispalyNames->Probe(EIID_IInterface);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

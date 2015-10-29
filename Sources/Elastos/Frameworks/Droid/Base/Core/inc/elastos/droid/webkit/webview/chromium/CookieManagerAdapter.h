@@ -42,7 +42,8 @@ namespace Droid {
 namespace Webkit {
 namespace Chromium {
 
-class CookieManagerAdapter //: public CookieManager
+class CookieManagerAdapter 
+    //: public CookieManager
 {
 public:
     CookieManagerAdapter(

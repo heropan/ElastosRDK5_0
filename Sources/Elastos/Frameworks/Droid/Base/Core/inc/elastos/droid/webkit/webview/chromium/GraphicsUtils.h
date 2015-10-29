@@ -28,6 +28,7 @@ namespace Webview {
 namespace Chromium {
 
 class GraphicsUtils
+    : public Object
 {
 public:
     static CARAPI_(Int64) GetDrawSWFunctionTable();

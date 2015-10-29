@@ -36,17 +36,20 @@ namespace Net {
   * proxy change notifications from Android.
   */
 // @JNINamespace("net")
-class ProxyChangeListener : public Object
+class ProxyChangeListener
+    : public Object
 {
 public:
-    class Delegate : public Object
+    class Delegate
+        : public Object
     {
     public:
         virtual CARAPI ProxySettingsChanged() = 0;
     };
 
 private:
-    class ProxyConfig : public Object
+    class ProxyConfig
+        : public Object
     {
     public:
         ProxyConfig(
@@ -58,7 +61,8 @@ private:
         const Int32 mPort;
     };
 
-    class ProxyReceiver : public BroadcastReceiver
+    class ProxyReceiver
+        : public BroadcastReceiver
     {
     public:
         ProxyReceiver(

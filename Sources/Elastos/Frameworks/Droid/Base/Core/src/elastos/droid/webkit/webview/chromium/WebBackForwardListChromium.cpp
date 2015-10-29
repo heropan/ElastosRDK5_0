@@ -1,7 +1,9 @@
 
 #include "elastos/droid/webkit/webview/chromium/WebBackForwardListChromium.h"
+#include "elastos/core/AutoLock.h"
 #include "elastos/droid/webkit/webview/chromium/WebHistoryItemChromium.h"
 
+using Elastos::Core::AutoLock;
 using Elastos::Utility::CArrayList;
 using Elastos::Droid::Webkit::Webview::Chromium::WebHistoryItemChromium;
 
@@ -40,7 +42,7 @@ ECode WebBackForwardListChromium::GetCurrentItem(
     /* [out] */ IInterface/*IWebHistoryItem*/** item)
 
 {
-    //Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(item);
     // ==================before translated======================
     // if (getSize() == 0) {
@@ -66,7 +68,7 @@ ECode WebBackForwardListChromium::GetCurrentItem(
 ECode WebBackForwardListChromium::GetCurrentIndex(
     /* [out] */ Int32* index)
 {
-    //Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(index);
     // ==================before translated======================
     // return mCurrentIndex;
@@ -80,7 +82,7 @@ ECode WebBackForwardListChromium::GetItemAtIndex(
     /* [in] */ Int32 index,
     /* [out] */ IInterface/*IWebHistoryItem*/** item)
 {
-    //Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(item);
     // ==================before translated======================
     // if (index < 0 || index >= getSize()) {
@@ -98,6 +100,7 @@ ECode WebBackForwardListChromium::GetItemAtIndex(
         AutoPtr<IInterface> interfaceTmp;
         mHistroryItemList->Get(index, (IInterface**)&interfaceTmp);
         //*item = IWebHistoryItem::Probe(interfaceTmps);
+        REFCOUNT_ADD(*item);
     }
     return NOERROR;
 }
@@ -106,7 +109,7 @@ ECode WebBackForwardListChromium::GetItemAtIndex(
 CARAPI WebBackForwardListChromium::GetSize(
     /* [out] */ Int32* size)
 {
-    //Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(size);
     // ==================before translated======================
     // return mHistroryItemList.size();
@@ -119,7 +122,7 @@ CARAPI WebBackForwardListChromium::GetSize(
 ECode WebBackForwardListChromium::Clone(
     /* [out] */ WebBackForwardListChromium** chromium)
 {
-    //Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(chromium);
     // ==================before translated======================
     // List<WebHistoryItemChromium> list =
@@ -148,6 +151,7 @@ ECode WebBackForwardListChromium::Clone(
     }
 
     *chromium = new WebBackForwardListChromium(list, mCurrentIndex);
+    REFCOUNT_ADD(*chromium);
     return NOERROR;
 }
 

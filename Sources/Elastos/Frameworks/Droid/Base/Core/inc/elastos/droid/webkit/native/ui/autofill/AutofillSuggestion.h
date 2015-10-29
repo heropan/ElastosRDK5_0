@@ -22,7 +22,8 @@ namespace Autofill {
 /**
   * Autofill suggestion container used to store information needed for each Autofill popup entry.
   */
-class AutofillSuggestion : public DropdownItem
+class AutofillSuggestion
+    : public DropdownItem
 {
 public:
     /**

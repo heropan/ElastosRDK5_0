@@ -27,7 +27,8 @@ namespace Droid {
 namespace Webkit {
 namespace Ui {
 
-class DropdownDividerDrawable : public Drawable
+class DropdownDividerDrawable
+    : public Drawable
 {
 public:
     DropdownDividerDrawable();

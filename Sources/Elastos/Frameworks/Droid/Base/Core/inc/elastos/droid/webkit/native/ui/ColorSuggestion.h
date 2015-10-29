@@ -18,7 +18,8 @@ namespace Ui {
   * Color suggestion container used to store information for each color button that will be shown in
   * the simple color picker.
   */
-class ColorSuggestion : public Object
+class ColorSuggestion
+    : public Object
 {
 public:
     /**

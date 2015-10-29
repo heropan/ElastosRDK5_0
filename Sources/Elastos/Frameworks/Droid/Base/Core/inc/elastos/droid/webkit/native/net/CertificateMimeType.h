@@ -11,7 +11,8 @@ namespace Droid {
 namespace Webkit {
 namespace Net {
 
-class CertificateMimeType : public Object
+class CertificateMimeType
+    : public Object
 {
 public:
     static const Int32 UNKNOWN = 0;

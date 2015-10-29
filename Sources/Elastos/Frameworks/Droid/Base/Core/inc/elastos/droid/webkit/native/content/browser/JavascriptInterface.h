@@ -29,6 +29,7 @@ namespace Browser {
 // @Retention(RetentionPolicy.RUNTIME)
 // @Target({ElementType.METHOD})
 class JavascriptInterface
+    : public Object
 {
 };
 

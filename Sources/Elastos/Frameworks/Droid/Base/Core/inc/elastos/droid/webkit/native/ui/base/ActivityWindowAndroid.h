@@ -32,7 +32,8 @@ namespace Base {
   * Activity Instance.
   * Only instantiate this class when you need the implemented features.
   */
-class ActivityWindowAndroid : public WindowAndroid
+class ActivityWindowAndroid
+    : public WindowAndroid
 {
 public:
     ActivityWindowAndroid(

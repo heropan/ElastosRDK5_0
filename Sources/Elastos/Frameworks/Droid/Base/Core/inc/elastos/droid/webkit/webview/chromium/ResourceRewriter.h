@@ -38,6 +38,7 @@ namespace Chromium {
   * this code).
   */
 class ResourceRewriter
+    : public Object
 {
 public:
     static CARAPI RewriteRValues(

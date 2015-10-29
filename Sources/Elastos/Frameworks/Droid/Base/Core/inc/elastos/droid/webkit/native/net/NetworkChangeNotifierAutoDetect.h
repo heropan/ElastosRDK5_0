@@ -29,7 +29,7 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IntentFilter;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Webkit::Base::ApplicationStatus;
-using Elastos::Droid::Wifi::IWifiManager;
+using Elastos::Droid::Net::Wifi::IWifiManager;
 
 namespace Elastos {
 namespace Droid {
@@ -49,7 +49,8 @@ public:
     CAR_INTERFACE_DECL();
 
     /** Queries the ConnectivityManager for information about the current connection. */
-    class ConnectivityManagerDelegate : public Object
+    class ConnectivityManagerDelegate
+        : public Object
     {
     public:
         ConnectivityManagerDelegate(
@@ -71,7 +72,8 @@ public:
     };
 
     /** Queries the WifiManager for SSID of the current Wifi connection. */
-    class WifiManagerDelegate : public Object
+    class WifiManagerDelegate
+        : public Object
     {
     public:
         WifiManagerDelegate(
@@ -89,7 +91,8 @@ public:
     /**
       * Observer notified on the UI thread whenever a new connection type was detected.
       */
-    class Observer : public Object
+    class Observer
+        : public Object
     {
     public:
         virtual CARAPI OnConnectionTypeChanged(
@@ -97,7 +100,8 @@ public:
     };
 
 private:
-    class NetworkConnectivityIntentFilter : public IntentFilter
+    class NetworkConnectivityIntentFilter
+        : public IntentFilter
     {
     public:
         NetworkConnectivityIntentFilter();

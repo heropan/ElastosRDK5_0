@@ -51,7 +51,8 @@ public:
     /**
       * An interface to handle the touch interaction with an AutofillPopup object.
       */
-    class AutofillPopupDelegate : public Object
+    class AutofillPopupDelegate
+        : public Object
     {
     public:
         /**

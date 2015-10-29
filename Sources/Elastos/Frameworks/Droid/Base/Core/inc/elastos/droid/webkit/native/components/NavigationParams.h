@@ -15,7 +15,8 @@ namespace Droid {
 namespace Webkit {
 namespace Components {
 
-class NavigationParams : public Object
+class NavigationParams
+    : public Object
 {
 public:
     NavigationParams(

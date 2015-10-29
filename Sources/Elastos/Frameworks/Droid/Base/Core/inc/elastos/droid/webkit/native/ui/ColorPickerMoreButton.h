@@ -30,7 +30,8 @@ namespace Ui {
 /**
   * Simple class that draws a white border around a button, purely for a UI change.
   */
-class ColorPickerMoreButton //: public Button
+class ColorPickerMoreButton
+    //: public Button
 {
 public:
     ColorPickerMoreButton(

@@ -38,7 +38,8 @@ namespace Ui {
 /**
   * The dropdown list popup window.
   */
-class DropdownPopupWindow : public Object
+class DropdownPopupWindow
+    : public Object
     //: public ListPopupWindow
 {
 public:
