@@ -5,9 +5,6 @@
 #include "_Elastos_Droid_Text_Method_CDateTimeKeyListener.h"
 #include "elastos/droid/text/method/DateTimeKeyListener.h"
 
-
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {

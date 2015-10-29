@@ -16,33 +16,7 @@ CarClass(CQwertyKeyListener)
     , public QwertyKeyListener
 {
 public:
-    IBaseKeyListener_METHODS_DECL()
-    IKeyListener_METHODS_DECL()
-
-    static CARAPI_(AutoPtr<IQwertyKeyListener>) GetInstance(
-        /* [in] */ Boolean autotext,
-        /* [in] */ Capitalize cap);
-
-    /**
-     * Gets an instance of the listener suitable for use with full keyboards.
-     * Disables auto-capitalization, auto-text and long-press initiated on-screen
-     * character pickers.
-     */
-    static CARAPI_(AutoPtr<IQwertyKeyListener>) GetInstanceForFullKeyboard();
-
-    CARAPI constructor(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autoText);
-
-    CARAPI constructor(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext,
-        /* [in] */ Boolean fullKeyboard);
-
-private:
-    static const Int32 CAPITALIZELENGTH;// = 4;
-    static AutoPtr<IQwertyKeyListener> sInstance[/*CAPITALIZELENGTH * 2*/8];
-    static AutoPtr<IQwertyKeyListener> sFullKeyboardInstance;
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Method

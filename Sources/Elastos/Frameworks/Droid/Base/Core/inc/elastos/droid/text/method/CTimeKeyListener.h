@@ -5,9 +5,6 @@
 #include "_Elastos_Droid_Text_Method_CTimeKeyListener.h"
 #include "elastos/droid/text/method/TimeKeyListener.h"
 
-
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -17,14 +14,7 @@ CarClass(CTimeKeyListener)
     , public TimeKeyListener
 {
 public:
-    IBaseKeyListener_METHODS_DECL()
-    IKeyListener_METHODS_DECL()
-    IInputFilter_METHODS_DECL()
-
-    static CARAPI_(AutoPtr<ITimeKeyListener>) GetInstance();
-
-private:
-    static AutoPtr<ITimeKeyListener> sInstance;
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Method

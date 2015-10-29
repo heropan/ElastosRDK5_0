@@ -5,29 +5,80 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-const Char32 TimeKeyListener::CHARACTERS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':' };
-
-Int32 TimeKeyListener::GetInputType()
+static AutoPtr<ArrayOf<Char32> > InitCHARACTERS()
 {
-    return IInputType::TYPE_CLASS_DATETIME | IInputType::TYPE_DATETIME_VARIATION_TIME;
+    Char32 ch[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':' };
+    AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(ARRAY_SIZE(ch));
+    array->Copy(ch, ARRAY_SIZE(ch));
+    return array;
+}
+
+AutoPtr<ITimeKeyListener> TimeKeyListener::sInstance;
+
+const AutoPtr<ArrayOf<Char32> > TimeKeyListener::CHARACTERS = InitCHARACTERS();
+
+TimeKeyListener::TimeKeyListener()
+{}
+
+TimeKeyListener::~TimeKeyListener()
+{}
+
+CAR_INTERFACE_IMPL(TimeKeyListener, Object, ITimeKeyListener);
+
+ECode TimeKeyListener::GetInstance(
+    /* [out] */ ITimeKeyListener** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    if (sInstance != NULL)
+    {
+        *ret = sInstance;
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
+    }
+
+    sInstance = new TimeKeyListener();
+    return NOERROR;
+}
+
+ECode TimeKeyListener::GetInputType(
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    *ret = IInputType::TYPE_CLASS_DATETIME | IInputType::TYPE_DATETIME_VARIATION_TIME;
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<Char32> > TimeKeyListener::GetAcceptedChars()
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(14);
-    for(Int32 i=0; i<14; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    return CHARACTERS;
 }
 
-AutoPtr< ArrayOf<Char32> > TimeKeyListener::GetCHARACTERS()
+ECode TimeKeyListener::GetCHARACTERS(
+    /* [out] */ ArrayOf<Char32>** ret)
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(14);
-    for(Int32 i=0; i<14; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    VALIDATE_NOT_NULL(ret)
+    *ret = InitCHARACTERS();
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
+}
+
+//override
+ECode TimeKeyListener::OnKeyUp(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
+{
+    return MetaKeyKeyListener::OnKeyUp(view, content, keyCode, event, ret);
+}
+
+CARAPI TimeKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
+{
+    return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
 }
 
 } // namespace Method

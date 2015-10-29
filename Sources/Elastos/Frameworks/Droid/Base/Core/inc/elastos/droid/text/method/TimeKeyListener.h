@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_TimeKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_TimeKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_TIMEKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_TIMEKEYLISTENER_H__
 
 #include "elastos/droid/text/method/NumberKeyListener.h"
 
@@ -15,15 +15,38 @@ namespace Method {
  * with hardware keyboards.  Software input methods have no obligation to trigger
  * the methods in this class.
  */
-class TimeKeyListener : public NumberKeyListener
+class TimeKeyListener
+    : public NumberKeyListener
+    , public ITimeKeyListener
 {
 public:
-    CARAPI_(Int32) GetInputType();
+    TimeKeyListener();
 
-    static CARAPI_(AutoPtr< ArrayOf<Char32> >) GetCHARACTERS();
+    virtual ~TimeKeyListener();
 
-    //static CARAPI_(AutoPtr<ITimeKeyListener>) GetInstance();
+    CAR_INTERFACE_DECL()
 
+    static CARAPI GetInstance(
+        /* [out] */ ITimeKeyListener** ret);
+
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
+
+    static CARAPI GetCHARACTERS(
+        /* [out] */ ArrayOf<Char32>** ret);
+
+    //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
+
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
 protected:
     //@Override
     CARAPI_(AutoPtr< ArrayOf<Char32> >) GetAcceptedChars();
@@ -35,10 +58,10 @@ public:
      * @see KeyEvent#getMatch
      * @see #getAcceptedChars
      */
-    static const Char32 CHARACTERS[];// = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':' };
+    static const AutoPtr<ArrayOf<Char32> > CHARACTERS;// = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'm', 'p', ':' };
 
 private:
-    //static AutoPtr<ITimeKeyListener> sInstance;
+    static AutoPtr<ITimeKeyListener> sInstance;
 };
 
 } // namespace Method
@@ -46,4 +69,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_TimeKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_TIMEKEYLISTENER_H__

@@ -3,8 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CDIALERKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CDialerKeyListenerHelper.h"
-
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -16,9 +15,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CDialerKeyListenerHelper)
+    , public Singleton
+    , public IDialerKeyListenerHelper
 {
 public:
-    IBaseKeyListenerHelper_METHODS_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetCHARACTERS(
         /* [out, callee] */ ArrayOf<Char32>** ret);

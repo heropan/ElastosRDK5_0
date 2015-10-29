@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/method/CDialerKeyListenerHelper.h"
-#include "elastos/droid/text/method/CDialerKeyListener.h"
+#include "elastos/droid/text/method/DialerKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,26 +8,20 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CDialerKeyListenerHelper, CDialerKeyListener, CDialerKeyListener)
+CAR_INTERFACE_IMPL(CDialerKeyListenerHelper, Singleton, IDialerKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CDialerKeyListenerHelper)
 
 ECode CDialerKeyListenerHelper::GetCHARACTERS(
     /* [out, callee] */ ArrayOf<Char32>** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr< ArrayOf<Char32> > o = CDialerKeyListener::GetCHARACTERS();
-    *ret = o;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DialerKeyListener::GetCHARACTERS(ret);
 }
 
 ECode CDialerKeyListenerHelper::GetInstance(
     /* [out] */ IDialerKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDialerKeyListener> dkl = CDialerKeyListener::GetInstance();
-    *ret = dkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DialerKeyListener::GetInstance(ret);
 }
 
 } // namespace Method

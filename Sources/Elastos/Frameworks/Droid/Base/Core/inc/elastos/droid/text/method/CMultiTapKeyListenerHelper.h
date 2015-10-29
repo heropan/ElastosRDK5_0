@@ -3,7 +3,8 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CMultiTapKeyListenerHelper.h"
-
+#include "elastos/droid/text/method/MultiTapKeyListener.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Text::ISpannable;
@@ -17,9 +18,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CMultiTapKeyListenerHelper)
+    , public IMultiTapKeyListenerHelper
+    , public Singleton
 {
 public:
-    IBaseKeyListenerHelper_METHODS_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetInstance(
         /* [in] */ Boolean autotext,

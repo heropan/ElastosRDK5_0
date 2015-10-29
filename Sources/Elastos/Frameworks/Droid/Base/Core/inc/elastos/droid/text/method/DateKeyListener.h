@@ -32,7 +32,7 @@ public:
     static CARAPI GetCHARACTERS(
         /* [out] */ ArrayOf<Char32>** array);
 
-     //override
+    //override
     CARAPI OnKeyUp(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,

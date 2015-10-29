@@ -1,8 +1,9 @@
 #include "elastos/droid/text/method/DialerKeyListener.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
-#include "elastos/droid/view/CKeyCharacterMap.h"
+// assert(0 && "TODO");
+// #include "elastos/droid/view/CKeyCharacterMap.h"
 
-using Elastos::Droid::View::CKeyCharacterMap;
+// using Elastos::Droid::View::CKeyCharacterMap;
 using Elastos::Droid::View::IKeyData;
 
 namespace Elastos {
@@ -10,38 +11,71 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-const Char32 DialerKeyListener::CHARACTERS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '*', '+', '-', '(', ')', ',', '/', 'N', '.', ' ', ';' };
+AutoPtr<IDialerKeyListener> DialerKeyListener::sInstance;
+
+static AutoPtr<ArrayOf<Char32> > InitCHARACTERS()
+{
+    Char32 ch[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '*', '+', '-', '(', ')', ',', '/', 'N', '.', ' ', ';' };
+    AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(ARRAY_SIZE(ch));
+    array->Copy(ch, ARRAY_SIZE(ch));
+    return array;
+}
+
+const AutoPtr<ArrayOf<Char32> > DialerKeyListener::CHARACTERS = InitCHARACTERS();
+
+DialerKeyListener::DialerKeyListener()
+{}
+
+DialerKeyListener::~DialerKeyListener()
+{}
+
+CAR_INTERFACE_IMPL(DialerKeyListener, Object, IDialerKeyListener)
 
 AutoPtr< ArrayOf<Char32> > DialerKeyListener::GetAcceptedChars()
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(22);
-    for(Int32 i=0; i<22; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    return CHARACTERS;
 }
 
-AutoPtr< ArrayOf<Char32> > DialerKeyListener::GetCHARACTERS()
+ECode DialerKeyListener::GetCHARACTERS(
+    /* [out] */ ArrayOf<Char32>** ret)
 {
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(22);
-    for(Int32 i=0; i<22; i++){
-        (*charactersR)[i]=CHARACTERS[i];
-    }
-    return charactersR;
+    VALIDATE_NOT_NULL(ret)
+    *ret = InitCHARACTERS();
+    REFCOUNT_ADD(*ret)
+    return NOERROR;
 }
 
-Int32 DialerKeyListener::GetInputType()
+ECode DialerKeyListener::OnKeyUp(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
-    return IInputType::TYPE_CLASS_PHONE;
+    return MetaKeyKeyListener::OnKeyUp(view, content, keyCode, event, ret);
+}
+
+ECode DialerKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
+{
+    return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
+}
+
+ECode DialerKeyListener::GetInputType(
+    /* [out] */ Int32* ret)
+{
+    *ret = IInputType::TYPE_CLASS_PHONE;
+    return NOERROR;
 }
 
 Int32 DialerKeyListener::Lookup(
     /* [in] */ IKeyEvent* event,
     /* [in] */ ISpannable* content)
 {
-    Int32 metaState;
-    event->GetMetaState(&metaState);
-    Int32 meta = metaState | GetMetaState(content);
+    Int32 meta;
+    GetMetaState(ICharSequence::Probe(content), event, &meta);
     Char32 num;
     event->GetNumber(&num);
     Int32 number = (Int32)num;
@@ -68,7 +102,7 @@ Int32 DialerKeyListener::Lookup(
          * or vice versa.
          */
 
-        if (meta != 0) {
+        if (meta != 0) {/*
             //Java:    KeyData kd = new KeyData();
             AutoPtr<CKeyCharacterMap::KeyData> kd;
             kd = new CKeyCharacterMap::KeyData();
@@ -82,7 +116,7 @@ Int32 DialerKeyListener::Lookup(
                     }
                 }
             }
-        }
+        */}
 
         /*
          * Otherwise, use the number associated with the key, since
@@ -92,6 +126,21 @@ Int32 DialerKeyListener::Lookup(
 
         return number;
     }
+}
+
+ECode DialerKeyListener::GetInstance(
+    /* [out] */ IDialerKeyListener** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    if (sInstance != NULL)
+    {
+        *ret = sInstance;
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
+    }
+
+    sInstance = new DialerKeyListener();
+    return NOERROR;
 }
 
 

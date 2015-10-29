@@ -5,9 +5,6 @@
 #include "_Elastos_Droid_Text_Method_CDialerKeyListener.h"
 #include "elastos/droid/text/method/DialerKeyListener.h"
 
-
-
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -16,15 +13,7 @@ namespace Method {
 CarClass(CDialerKeyListener)
     , public DialerKeyListener
 {
-public:
-    IBaseKeyListener_METHODS_DECL()
-    IKeyListener_METHODS_DECL()
-    IInputFilter_METHODS_DECL()
-
-    static CARAPI_(AutoPtr<IDialerKeyListener>) GetInstance();
-
-private:
-    static AutoPtr<IDialerKeyListener> sInstance;
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Method

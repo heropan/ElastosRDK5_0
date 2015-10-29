@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_DigitsKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_DigitsKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_DIGITSKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_DIGITSKEYLISTENER_H__
 
 #include "elastos/droid/text/method/NumberKeyListener.h"
 
@@ -9,6 +9,7 @@ namespace Text {
 namespace Method {
 
 extern "C" const InterfaceID EIID_DigitsKeyListener;
+
 /**
  * For digits-only text entry
  * <p></p>
@@ -16,7 +17,9 @@ extern "C" const InterfaceID EIID_DigitsKeyListener;
  * with hardware keyboards.  Software input methods have no obligation to trigger
  * the methods in this class.
  */
-class DigitsKeyListener : public NumberKeyListener
+class DigitsKeyListener
+    : public NumberKeyListener
+    , public IDigitsKeyListener
 {
 public:
     /**
@@ -26,40 +29,56 @@ public:
 
     virtual ~DigitsKeyListener();
 
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor();
+
     /**
      * Allocates a DigitsKeyListener that accepts the digits 0 through 9,
      * plus the minus sign (only at the beginning) and/or decimal point
      * (only one per field) if specified.
      */
-    constructor(
+    CARAPI constructor(
         /* [in] */ Boolean sign,
         /* [in] */ Boolean decimal);
 
-    static CARAPI_(AutoPtr<IDigitsKeyListener>) GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ IDigitsKeyListener** ret);
 
-    static CARAPI_(AutoPtr<IDigitsKeyListener>) GetInstance(
+    static CARAPI GetInstance(
         /* [in] */ Boolean sign,
-        /* [in] */ Boolean decimal);
+        /* [in] */ Boolean decimal,
+        /* [out] */ IDigitsKeyListener** ret);
 
-    static CARAPI_(AutoPtr<IDigitsKeyListener>) GetInstance(
-        /* [in] */ const String& accepted);
+    static CARAPI GetInstance(
+        /* [in] */ const String& accepted,
+        /* [out] */ IDigitsKeyListener** ret);
 
-    CARAPI_(void) constructor();
-
-    CARAPI_(void) constructor(
-        /* [in] */ Boolean sign,
-        /* [in] */ Boolean decimal);
-
-    CARAPI_(Int32) GetInputType();
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
 
     //@Override
-    CARAPI_(AutoPtr<ICharSequence>) Filter(
+    CARAPI Filter(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ ISpanned* dest,
         /* [in] */ Int32 dstart,
-        /* [in] */ Int32 dend);
+        /* [in] */ Int32 dend,
+        /* [out] */ ICharSequence** ret);
+
+    //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
+
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
 
 protected:
     //@Override
@@ -103,4 +122,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_DigitsKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_DIGITSKEYLISTENER_H__

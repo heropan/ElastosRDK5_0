@@ -1,10 +1,10 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_MultiTapKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_MultiTapKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_MULTITAPKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_MULTITAPKEYLISTENER_H__
 
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/os/HandlerRunnable.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::HandlerRunnable;
@@ -24,7 +24,9 @@ namespace Method {
  * with hardware keyboards.  Software input methods have no obligation to trigger
  * the methods in this class.
  */
-class MultiTapKeyListener : public BaseKeyListener
+class MultiTapKeyListener
+    : public BaseKeyListener
+    , public IMultiTapKeyListener
 {
 private:
     class Timeout
@@ -33,6 +35,7 @@ private:
     public:
         friend class MultiTapKeyListener;
     public:
+        CAR_INTERFACE_DECL()
 
         Timeout(
             /* [in] */ IEditable* buffer);
@@ -45,21 +48,32 @@ private:
     };
 
 public:
-    MultiTapKeyListener(
+    friend class TextKeyListener;
+
+    MultiTapKeyListener();
+
+    virtual ~MultiTapKeyListener();
+
+    CAR_INTERFACE_DECL()
+
+    constructor(
         /* [in] */ Capitalize cap,
         /* [in] */ Boolean autotext);
 
-    CARAPI_(void) Init(
+    static CARAPI GetInstance(
+        /* [in] */ Boolean autotext,
         /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext);
+        /* [out] */ IMultiTapKeyListener** ret);
 
-    CARAPI_(Int32) GetInputType();
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
 
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     CARAPI OnSpanChanged(
         /* [in] */ ISpannable* buf,
@@ -81,9 +95,21 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
+    //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
+
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
+
 protected:
     static HashMap<Int32, String> InitStaticRecs();
-    MultiTapKeyListener();
 
 private:
     static CARAPI_(void) RemoveTimeouts(
@@ -94,6 +120,12 @@ protected://private
     static HashMap<Int32, String> sRecs;
     Capitalize mCapitalize;
     Boolean mAutoText;
+
+private:
+    static AutoPtr< ArrayOf< IMultiTapKeyListener* > > sInstance;// = new MultiTapKeyListener[4];
+
+public:
+    static const Int32 CAPITALIZELENGTH = 4;
 };
 
 } // namespace Method
@@ -101,4 +133,4 @@ protected://private
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_MultiTapKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_MULTITAPKEYLISTENER_H__

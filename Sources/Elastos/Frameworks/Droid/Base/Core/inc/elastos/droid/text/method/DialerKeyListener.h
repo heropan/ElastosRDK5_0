@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_DialerKeyListener_H__
-#define __ELASTOS_DROID_TEXT_METHOD_DialerKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_DIALERKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_DIALERKEYLISTENER_H__
 
 #include "elastos/droid/text/method/NumberKeyListener.h"
 
@@ -15,14 +15,38 @@ namespace Method {
  * with hardware keyboards.  Software input methods have no obligation to trigger
  * the methods in this class.
  */
-class DialerKeyListener : public NumberKeyListener
+class DialerKeyListener
+    : public NumberKeyListener
+    , public IDialerKeyListener
 {
 public:
-    //static AutoPtr<IDialerKeyListener> GetInstance();
+    DialerKeyListener();
 
-    CARAPI_(Int32) GetInputType();
+    virtual ~DialerKeyListener();
 
-    static CARAPI_(AutoPtr< ArrayOf<Char32> >) GetCHARACTERS();
+    CAR_INTERFACE_DECL()
+
+    static CARAPI GetInstance(
+        /* [out] */ IDialerKeyListener** ret);
+
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
+
+    static CARAPI GetCHARACTERS(
+        /* [out] */ ArrayOf<Char32>** ret);
+
+    //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
+
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
 
 protected:
     //@Override
@@ -43,7 +67,10 @@ public:
      * @see KeyEvent#getMatch
      * @see #getAcceptedChars
      */
-    static const Char32 CHARACTERS[];// = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '*', '+', '-', '(', ')', ',', '/', 'N', '.', ' ', ';' };
+    static const AutoPtr<ArrayOf<Char32> > CHARACTERS;// = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '*', '+', '-', '(', ')', ',', '/', 'N', '.', ' ', ';' };
+
+private:
+    static AutoPtr<IDialerKeyListener> sInstance;
 };
 
 } // namespace Method
@@ -51,4 +78,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_DialerKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_DIALERKEYLISTENER_H__

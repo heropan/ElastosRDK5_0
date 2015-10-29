@@ -2,12 +2,14 @@
 #include "elastos/droid/text/method/QwertyKeyListener.h"
 #include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
+#include "elastos/droid/text/method/CQwertyKeyListener.h"
 #include "elastos/droid/text/SpannableStringInternal.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/CAutoText.h"
-#include "elastos/droid/view/CKeyCharacterMap.h"
-#include "elastos/droid/view/CKeyEvent.h"
+// assert(0 && "TODO")
+// #include "elastos/droid/view/CKeyCharacterMap.h"
+// #include "elastos/droid/view/CKeyEvent.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
@@ -17,8 +19,9 @@
 using namespace Elastos::Core;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Text::Selection;
-using Elastos::Droid::View::CKeyCharacterMap;
-using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::Text::INoCopySpan;
+// using Elastos::Droid::View::CKeyCharacterMap; //assert(0 && "TODO");
+// using Elastos::Droid::View::CKeyEvent;
 
 namespace Elastos {
 namespace Droid {
@@ -28,8 +31,15 @@ namespace Method {
 const InterfaceID EIID_Replaced =
     {0xa40b81a, 0x803b, 0x4e5f, {0xb6, 0xde, 0x49, 0x87, 0x24, 0x49, 0xab, 0x50}};
 
+const Int32 QwertyKeyListener::CAPITALIZELENGTH = 4;
+
+AutoPtr<ArrayOf<IQwertyKeyListener*> > QwertyKeyListener::sInstance =
+    ArrayOf<IQwertyKeyListener*>::Alloc(QwertyKeyListener::CAPITALIZELENGTH * 2);
+
+AutoPtr<IQwertyKeyListener> QwertyKeyListener::sFullKeyboardInstance;
+
 QwertyKeyListener::Replaced::Replaced(
-    /* [in] */ ArrayOf<Char8>* text)
+    /* [in] */ ArrayOf<Char32>* text)
 {
     mText = text;
 }
@@ -38,48 +48,7 @@ QwertyKeyListener::Replaced::~Replaced()
 {
 }
 
-PInterface QwertyKeyListener::Replaced::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(INoCopySpan*)this;
-    }
-    else if (riid == EIID_INoCopySpan) {
-        return (INoCopySpan*)this;
-    }
-    else if (riid == EIID_Replaced) {
-        return reinterpret_cast<PInterface>(this);
-    }
-
-    return NULL;
-}
-
-UInt32 QwertyKeyListener::Replaced::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 QwertyKeyListener::Replaced::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode QwertyKeyListener::Replaced::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == reinterpret_cast<PInterface>(this)) {
-        *pIID = EIID_Replaced;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(QwertyKeyListener::Replaced, Object, INoCopySpan)
 
 static Boolean InitStaticPICKER_SETS()
 {
@@ -113,7 +82,7 @@ static Boolean InitStaticPICKER_SETS()
     QwertyKeyListener::PICKER_SETS['u'] = String("\u00F9\u00FA\u00FB\u00FC\u016F\u016B");
     QwertyKeyListener::PICKER_SETS['y'] = String("\u00FD\u00FF");
     QwertyKeyListener::PICKER_SETS['z'] = String("\u017A\u017C\u017E");
-    QwertyKeyListener::PICKER_SETS[CKeyCharacterMap::PICKER_DIALOG_INPUT] = String("\u2026\u00A5\u2022\u00AE\u00A9\u00B1[]{}\\|");
+    // QwertyKeyListener::PICKER_SETS[CKeyCharacterMap::PICKER_DIALOG_INPUT] = String("\u2026\u00A5\u2022\u00AE\u00A9\u00B1[]{}\\|");
     QwertyKeyListener::PICKER_SETS['/'] = String("\\");
 
     // From packages/inputmethods/LatinIME/res/xml/kbd_symbols.xml
@@ -151,29 +120,19 @@ Boolean QwertyKeyListener::sInitPickerSet = InitStaticPICKER_SETS();
 QwertyKeyListener::QwertyKeyListener()
 {}
 
-QwertyKeyListener::QwertyKeyListener(
+QwertyKeyListener::~QwertyKeyListener()
+{}
+
+CAR_INTERFACE_IMPL_4(QwertyKeyListener, Object, IQwertyKeyListener, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener)
+
+ECode QwertyKeyListener::constructor(
     /* [in] */ Capitalize cap,
     /* [in] */ Boolean autotext)
 {
-    Init(cap, autotext);
+    return constructor(cap, autotext, FALSE);
 }
 
-QwertyKeyListener::QwertyKeyListener(
-    /* [in] */ Capitalize cap,
-    /* [in] */ Boolean autotext,
-    /* [in] */ Boolean fullKeyboard)
-{
-    Init(cap, autotext, fullKeyboard);
-}
-
-void QwertyKeyListener::Init(
-    /* [in] */ Capitalize cap,
-    /* [in] */ Boolean autotext)
-{
-    Init(cap, autotext, FALSE);
-}
-
-void QwertyKeyListener::Init(
+ECode QwertyKeyListener::constructor(
     /* [in] */ Capitalize cap,
     /* [in] */ Boolean autotext,
     /* [in] */ Boolean fullKeyboard)
@@ -181,80 +140,121 @@ void QwertyKeyListener::Init(
     mAutoCap = cap;
     mAutoText = autotext;
     mFullKeyboard = fullKeyboard;
+    return NOERROR;
 }
 
-Int32 QwertyKeyListener::GetInputType()
+ECode QwertyKeyListener::GetInstance(
+    /* [in] */ Boolean autoText,
+    /* [in] */ Capitalize cap,
+    /* [out] */ IQwertyKeyListener** ret)
 {
-    return MakeTextContentType(mAutoCap, mAutoText);
+    VALIDATE_NOT_NULL(ret)
+    Int32 off = cap * 2 + (autoText ? 1 : 0);
+
+    if ((*sInstance)[off] == NULL) {
+        AutoPtr<QwertyKeyListener> listener = new QwertyKeyListener;
+        listener->constructor(cap, autoText);
+        sInstance->Set(off, listener);
+    }
+
+    *ret = (*sInstance)[off];
+    REFCOUNT_ADD(*ret)
+    return NOERROR;
 }
 
-Boolean QwertyKeyListener::OnKeyDown(
+ECode QwertyKeyListener::GetInstanceForFullKeyboard(
+    /* [out] */ IQwertyKeyListener** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    if (sFullKeyboardInstance == NULL) {
+        AutoPtr<QwertyKeyListener> qkl = new QwertyKeyListener();
+        qkl->constructor(Capitalize_NONE, FALSE, TRUE);
+        sFullKeyboardInstance = (IQwertyKeyListener*)(qkl.Get());
+    }
+    *ret = sFullKeyboardInstance;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
+}
+
+ECode QwertyKeyListener::GetInputType(
+    /* [out] */ Int32* ret)
+{
+    return MakeTextContentType(mAutoCap, mAutoText, ret);
+}
+
+ECode QwertyKeyListener::OnKeyDown(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     Int32 selStart, selEnd;
     Int32 pref = 0;
 
     if (view != NULL) {
         AutoPtr<IContext> context;
         view->GetContext((IContext**)&context);
-        AutoPtr<ITextKeyListener> obj = CTextKeyListener::GetInstance();
-        CTextKeyListener* listener = (CTextKeyListener*)obj.Get();
-        pref = listener->GetPrefs(context);
+        AutoPtr<ITextKeyListener> listener;
+        TextKeyListener::GetInstance((ITextKeyListener**)&listener);
+        ((TextKeyListener*)listener.Get())->GetPrefs(context, &pref);
     }
 
     {
-        Int32 a = Selection::GetSelectionStart(content);
-        Int32 b = Selection::GetSelectionEnd(content);
+        Int32 a = Selection::GetSelectionStart(ICharSequence::Probe(content));
+        Int32 b = Selection::GetSelectionEnd(ICharSequence::Probe(content));
 
         selStart = Elastos::Core::Math::Min(a, b);
         selEnd = Elastos::Core::Math::Max(a, b);
 
         if (selStart < 0 || selEnd < 0) {
             selStart = selEnd = 0;
-            Selection::SetSelection(content, 0, 0);
+            Selection::SetSelection(ISpannable::Probe(content), 0, 0);
         }
     }
     Int32 activeStart;
-    ISpannable::Probe(content)->GetSpanStart(
+    ISpanned::Probe(content)->GetSpanStart(
         TextKeyListener::ACTIVE, &activeStart);
     Int32 activeEnd;
-    ISpannable::Probe(content)->GetSpanEnd(
+    ISpanned::Probe(content)->GetSpanEnd(
         TextKeyListener::ACTIVE, &activeEnd);
 
     // QWERTY keyboard normal case
 
-    Int32 eMetaState;
     Int32 i;
-    event->GetUnicodeChar(THIS_PROBE(IMetaKeyKeyListener)->GetMetaState(ICharSequence::Probe(content), event, &i));
+    Int32 eMetaState;
+    MetaKeyKeyListener::GetMetaState(ICharSequence::Probe(content), event, &eMetaState);
+    event->GetUnicodeChar(eMetaState, &i);
 
     if (!mFullKeyboard) {
         Int32 count;
         event->GetRepeatCount(&count);
         if (count > 0 && selStart == selEnd && selStart > 0) {
             Char32 c;
-            content->GetCharAt(selStart - 1, &c);
+            ICharSequence::Probe(content)->GetCharAt(selStart - 1, &c);
 
             if ((c == i || c == Character::ToUpperCase(i)) && view != NULL) {
                 if (ShowCharacterPicker(view, content, c, FALSE, count)) {
-                    ResetMetaState(content);
-                    return TRUE;
+                    ResetMetaState(ISpannable::Probe(content));
+                    *ret = TRUE;
+                    return NOERROR;
                 }
             }
         }
     }
 
-    if (i == CKeyCharacterMap::PICKER_DIALOG_INPUT) {
+    assert(0 && "TODO"); //CKeyCharacterMap
+    /*if (i == CKeyCharacterMap::PICKER_DIALOG_INPUT) {
         if (view != NULL) {
             ShowCharacterPicker(view, content,
                 CKeyCharacterMap::PICKER_DIALOG_INPUT, TRUE, 1);
         }
         ResetMetaState(content);
-        return TRUE;
-    }
-    if (i == CKeyCharacterMap::HEX_INPUT) {
+        *ret = TRUE;
+        return NOERROR;
+    }*/
+/*    if (i == CKeyCharacterMap::HEX_INPUT) {
         Int32 start;
 
         if (selStart == selEnd) {
@@ -278,29 +278,30 @@ Boolean QwertyKeyListener::OnKeyDown(
 
         if (ch >= 0) {
             selStart = start;
-            Selection::SetSelection(content, selStart, selEnd);
+            Selection::SetSelection(ISpannable::Probe(content), selStart, selEnd);
             i = ch;
         }
         else {
             i = 0;
         }
-    }
+    }*/
     Boolean bHasNoModifiers, bHasModifiers;
     if (i != 0) {
         Boolean dead = FALSE;
 
-        if ((i & CKeyCharacterMap::COMBINING_ACCENT) != 0) {
+/*        if ((i & CKeyCharacterMap::COMBINING_ACCENT) != 0) {
             dead = TRUE;
             i = i & CKeyCharacterMap::COMBINING_ACCENT_MASK;
-        }
+        }*/
 
         if (activeStart == selStart && activeEnd == selEnd) {
             Boolean replace = FALSE;
 
             if (selEnd - selStart - 1 == 0) {
                 Char32 accent;
-                content->GetCharAt(selStart, &accent);
-                Int32 composed = CKeyEvent::GetDeadChar(accent, i);
+                ICharSequence::Probe(content)->GetCharAt(selStart, &accent);
+                assert(0 && "TODO");
+                Int32 composed /*= CKeyEvent::GetDeadChar(accent, i)*/;
 
                 if (composed != 0) {
                     i = composed;
@@ -310,40 +311,41 @@ Boolean QwertyKeyListener::OnKeyDown(
             }
 
             if (!replace) {
-                Selection::SetSelection(content, selEnd);
-                content->RemoveSpan(TextKeyListener::ACTIVE);
+                Selection::SetSelection(ISpannable::Probe(content), selEnd);
+                ISpannable::Probe(content)->RemoveSpan(TextKeyListener::ACTIVE);
                 selStart = selEnd;
             }
         }
+        Boolean bTmp = FALSE;
         if ((pref & TextKeyListener::AUTO_CAP) != 0 &&
             Character::IsLowerCase(i) &&
-            TextKeyListener::ShouldCap(mAutoCap, content, selStart)) {
+            (TextKeyListener::ShouldCap(mAutoCap, ICharSequence::Probe(content), selStart, &bTmp), bTmp)) {
             Int32 where;
-            content->GetSpanEnd(TextKeyListener::CAPPED, &where);
+            ISpanned::Probe(content)->GetSpanEnd(TextKeyListener::CAPPED, &where);
             Int32 flags;
-            content->GetSpanFlags(TextKeyListener::CAPPED, &flags);
+            ISpanned::Probe(content)->GetSpanFlags(TextKeyListener::CAPPED, &flags);
 
             if (where == selStart && (((flags >> 16) & 0xFFFF) == i)) {
-                content->RemoveSpan(TextKeyListener::CAPPED);
+                ISpannable::Probe(content)->RemoveSpan(TextKeyListener::CAPPED);
             }
             else {
                 flags = i << 16;
                 i = Character::ToUpperCase(i);
 
                 if (selStart == 0)
-                    content->SetSpan(TextKeyListener::CAPPED, 0, 0,
+                    ISpannable::Probe(content)->SetSpan(TextKeyListener::CAPPED, 0, 0,
                                     ISpanned::SPAN_MARK_MARK | flags);
                 else
-                    content->SetSpan(TextKeyListener::CAPPED,
+                    ISpannable::Probe(content)->SetSpan(TextKeyListener::CAPPED,
                                     selStart - 1, selStart,
                                     ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE |
                                     flags);
             }
         }
         if (selStart != selEnd) {
-            Selection::SetSelection(content, selEnd);
+            Selection::SetSelection(ISpannable::Probe(content), selEnd);
         }
-        content->SetSpan(OLD_SEL_START, selStart, selStart,
+        ISpannable::Probe(content)->SetSpan(OLD_SEL_START, selStart, selStart,
                         ISpanned::SPAN_MARK_MARK);
 
         String str("");
@@ -353,20 +355,20 @@ Boolean QwertyKeyListener::OnKeyDown(
         content->Replace(selStart, selEnd, cs);
 
         Int32 oldStart;
-        content->GetSpanStart(OLD_SEL_START, &oldStart);
-        selEnd = Selection::GetSelectionEnd(content);
+        ISpanned::Probe(content)->GetSpanStart(OLD_SEL_START, &oldStart);
+        selEnd = Selection::GetSelectionEnd(ICharSequence::Probe(content));
         if (oldStart < selEnd) {
-            content->SetSpan(TextKeyListener::LAST_TYPED,
+            ISpannable::Probe(content)->SetSpan(TextKeyListener::LAST_TYPED,
                             oldStart, selEnd,
                             ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
             if (dead) {
-                Selection::SetSelection(content, oldStart, selEnd);
-                content->SetSpan(TextKeyListener::ACTIVE, oldStart, selEnd,
+                Selection::SetSelection(ISpannable::Probe(content), oldStart, selEnd);
+                ISpannable::Probe(content)->SetSpan(TextKeyListener::ACTIVE, oldStart, selEnd,
                     ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
 
-        AdjustMetaAfterKeypress(content);
+        AdjustMetaAfterKeypress(ISpannable::Probe(content));
 
         // potentially do autotext replacement if the character
         // that was typed was an autotext terminator
@@ -376,34 +378,34 @@ Boolean QwertyKeyListener::OnKeyDown(
             (i == ' ' || i == '\t' || i == '\n' ||
              i == ',' || i == '.' || i == '!' || i == '?' ||
              i == '"' || Character::GetType(i) == Character::END_PUNCTUATION) &&
-             (content->GetSpanEnd(TextKeyListener::INHIBIT_REPLACEMENT, &end), end)
+             (ISpanned::Probe(content)->GetSpanEnd(TextKeyListener::INHIBIT_REPLACEMENT, &end), end)
              != oldStart) {
             Int32 x;
 
             for (x = oldStart; x > 0; x--) {
                 Char32 c;
-                content->GetCharAt(x - 1, &c);
+                ICharSequence::Probe(content)->GetCharAt(x - 1, &c);
                 if (c != '\'' && !Character::IsLetter(c)) {
                     break;
                 }
             }
 
-            String rep = GetReplacement(content, x, oldStart, view);
+            String rep = GetReplacement(ICharSequence::Probe(content), x, oldStart, view);
 
             if (!rep.IsNull()) {
                 AutoPtr<ArrayOf<IInterface*> > repl;
                 Int32 len;
-                content->GetLength(&len);
-                content->GetSpans(0, len, EIID_Replaced, (ArrayOf<IInterface*>**)&repl);
+                ICharSequence::Probe(content)->GetLength(&len);
+                ISpanned::Probe(content)->GetSpans(0, len, EIID_Replaced, (ArrayOf<IInterface*>**)&repl);
                 for (Int32 a = 0; a < repl->GetLength(); a++)
-                    content->RemoveSpan((*repl)[a]);
+                    ISpannable::Probe(content)->RemoveSpan((*repl)[a]);
 
-                AutoPtr<ArrayOf<Char8> > orig = ArrayOf<Char8>::Alloc((oldStart - x) * 4);
+                AutoPtr<ArrayOf<Char32> > orig = ArrayOf<Char32>::Alloc((oldStart - x) * 4);
                 //TODO
-                TextUtils::GetChars(content, x, oldStart, (ArrayOf<Char32>*)orig.Get(), 0);
+                TextUtils::GetChars(ICharSequence::Probe(content), x, oldStart, (ArrayOf<Char32>*)orig.Get(), 0);
 
                 AutoPtr<Replaced> r = new Replaced(orig);
-                content->SetSpan(r, x, oldStart,
+                ISpannable::Probe(content)->SetSpan((INoCopySpan*)r, x, oldStart,
                                 ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 AutoPtr<ICharSequence> cs;
                 CString::New(rep, (ICharSequence**)&cs);
@@ -414,18 +416,18 @@ Boolean QwertyKeyListener::OnKeyDown(
         // Replace two spaces by a period and a space.
 
         if ((pref & TextKeyListener::AUTO_PERIOD) != 0 && mAutoText) {
-            selEnd = Selection::GetSelectionEnd(content);
+            selEnd = Selection::GetSelectionEnd(ICharSequence::Probe(content));
             if (selEnd - 3 >= 0) {
                 Char32 ch;
-                if ((content->GetCharAt(selEnd - 1, &ch), ch) == ' ' &&
-                    (content->GetCharAt(selEnd - 2, &ch), ch) == ' ') {
+                if ((ICharSequence::Probe(content)->GetCharAt(selEnd - 1, &ch), ch) == ' ' &&
+                    (ICharSequence::Probe(content)->GetCharAt(selEnd - 2, &ch), ch) == ' ') {
                     Char32 c;
-                    content->GetCharAt(selEnd - 3, &c);
+                    ICharSequence::Probe(content)->GetCharAt(selEnd - 3, &c);
 
                     for (Int32 j = selEnd - 3; j > 0; j--) {
                         if (c == '"' ||
                             Character::GetType(c) == Character::END_PUNCTUATION) {
-                            content->GetCharAt(j - 1, &c);
+                            ICharSequence::Probe(content)->GetCharAt(j - 1, &c);
                         }
                         else {
                             break;
@@ -441,7 +443,8 @@ Boolean QwertyKeyListener::OnKeyDown(
             }
         }
 
-        return TRUE;
+        *ret = TRUE;
+        return NOERROR;
     }
     else if (keyCode == IKeyEvent::KEYCODE_DEL
         && (event->HasNoModifiers(&bHasNoModifiers), bHasNoModifiers) || (event->HasModifiers(IKeyEvent::META_ALT_ON, &bHasModifiers), bHasModifiers)
@@ -456,57 +459,59 @@ Boolean QwertyKeyListener::OnKeyDown(
         // case this behavior would be confusing)
 
         Int32 end;
-        content->GetSpanEnd(TextKeyListener::LAST_TYPED, &end);
+        ISpanned::Probe(content)->GetSpanEnd(TextKeyListener::LAST_TYPED, &end);
         if (end == selStart) {
             Char32 c;
-            if ((content->GetCharAt(selStart - 1, &c), c) != '\n')
+            if ((ICharSequence::Probe(content)->GetCharAt(selStart - 1, &c), c) != '\n')
                 consider = 2;
         }
 
         AutoPtr<ArrayOf<IInterface*> > repl = NULL;
-        content->GetSpans(
+        ISpanned::Probe(content)->GetSpans(
             selStart - consider, selStart, EIID_Replaced, (ArrayOf<IInterface*>**)&repl);
 
         if (repl->GetLength() > 0) {
             Int32 st;
-            content->GetSpanStart((*repl)[0], &st);
+            ISpanned::Probe(content)->GetSpanStart((*repl)[0], &st);
             Int32 en;
-            content->GetSpanEnd((*repl)[0], &en);
-            String old(((Replaced*)(*repl)[0])->mText->GetPayload());
+            ISpanned::Probe(content)->GetSpanEnd((*repl)[0], &en);
+            Replaced* replaced = (Replaced*)IObject::Probe((*repl)[0]);
+            String old(*(replaced->mText));
 
-            content->RemoveSpan((*repl)[0]);
+            ISpannable::Probe(content)->RemoveSpan((*repl)[0]);
 
             // only cancel the autocomplete if the cursor is at the end of
             // the replaced span (or after it, because the user is
             // backspacing over the space after the word, not the word
             // itself).
             if (selStart >= en) {
-                content->SetSpan(TextKeyListener::INHIBIT_REPLACEMENT,
+                ISpannable::Probe(content)->SetSpan(TextKeyListener::INHIBIT_REPLACEMENT,
                                 en, en, ISpanned::SPAN_POINT_POINT);
                 AutoPtr<ICharSequence> oldCs;
                 CString::New(old, (ICharSequence**)&oldCs);
                 content->Replace(st, en, oldCs);
 
-                content->GetSpanStart(TextKeyListener::INHIBIT_REPLACEMENT, &en);
+                ISpanned::Probe(content)->GetSpanStart(TextKeyListener::INHIBIT_REPLACEMENT, &en);
                 if (en - 1 >= 0) {
-                    content->SetSpan(
+                    ISpannable::Probe(content)->SetSpan(
                         TextKeyListener::INHIBIT_REPLACEMENT,
                         en - 1, en, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 else {
-                    content->RemoveSpan(TextKeyListener::INHIBIT_REPLACEMENT);
+                    ISpannable::Probe(content)->RemoveSpan(TextKeyListener::INHIBIT_REPLACEMENT);
                 }
-                AdjustMetaAfterKeypress(content);
+                AdjustMetaAfterKeypress(ISpannable::Probe(content));
             }
             else {
-                AdjustMetaAfterKeypress(content);
-                return BaseKeyListener::OnKeyDown(view, content, keyCode, event);
+                AdjustMetaAfterKeypress(ISpannable::Probe(content));
+                return BaseKeyListener::OnKeyDown(view, content, keyCode, event, ret);
             }
 
-            return TRUE;
+            *ret = TRUE;
+            return NOERROR;
         }
     }
-    return BaseKeyListener::OnKeyDown(view, content, keyCode, event);
+    return BaseKeyListener::OnKeyDown(view, content, keyCode, event, ret);
 }
 
 String QwertyKeyListener::GetReplacement(
@@ -577,7 +582,7 @@ String QwertyKeyListener::GetReplacement(
  * @param end the end of the replaced region; the location of the cursor
  * @param original the text to be restored if the user presses DEL
  */
-void QwertyKeyListener::MarkAsReplaced(
+ECode QwertyKeyListener::MarkAsReplaced(
     /* [in] */ ISpannable* content,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -585,19 +590,20 @@ void QwertyKeyListener::MarkAsReplaced(
 {
     AutoPtr<ArrayOf<IInterface*> > repl;
     Int32 len;
-    content->GetLength(&len);
-    content->GetSpans(0, len, EIID_Replaced, (ArrayOf<IInterface*>**)&repl);
+    ICharSequence::Probe(content)->GetLength(&len);
+    ISpanned::Probe(content)->GetSpans(0, len, EIID_Replaced, (ArrayOf<IInterface*>**)&repl);
     for (Int32 a = 0; a < repl->GetLength(); a++) {
         content->RemoveSpan((*repl)[a]);
     }
 
     len = original.GetByteLength();
-    AutoPtr<ArrayOf<Char8> > orig = ArrayOf<Char8>::Alloc(len);
+    AutoPtr<ArrayOf<Char32> > orig = ArrayOf<Char32>::Alloc(len);
     memcpy(orig->GetPayload(), original.string(), len);
 
-    AutoPtr<Replaced> r = new Replaced(orig);
-    content->SetSpan(r, start, end,
+    AutoPtr<Replaced> r = new Replaced(orig.Get());
+    content->SetSpan((INoCopySpan*)r, start, end,
                     ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    return NOERROR;
 }
 
 Boolean QwertyKeyListener::ShowCharacterPicker(
@@ -628,6 +634,23 @@ String QwertyKeyListener::ToTitleCase(
     return src.ToUpperCase(0, 1);
 }
 
+ECode QwertyKeyListener::OnKeyUp(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
+{
+    return MetaKeyKeyListener::OnKeyUp(view, content, keyCode, event, ret);
+}
+
+ECode QwertyKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
+{
+    return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
+}
 
 } // namespace Method
 } // namespace Text

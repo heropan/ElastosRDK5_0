@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/method/CTextKeyListenerHelper.h"
-#include "elastos/droid/text/method/CTextKeyListener.h"
+#include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -21,7 +21,6 @@ ECode CTextKeyListenerHelper::Clear(
 ECode CTextKeyListenerHelper::GetInstance(
     /* [out] */ ITextKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
     return TextKeyListener::GetInstance(ret);
 }
 
@@ -30,7 +29,6 @@ ECode CTextKeyListenerHelper::GetInstance(
     /* [in] */ Capitalize cap,
     /* [out] */ ITextKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
     return TextKeyListener::GetInstance(autotext, cap, ret);
 }
 
@@ -40,7 +38,6 @@ ECode CTextKeyListenerHelper::ShouldCap(
     /* [in] */ Int32 off,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret);
     return TextKeyListener::ShouldCap(cap, cs, off, ret);
 }
 

@@ -5,8 +5,6 @@
 #include "_Elastos_Droid_Text_Method_CMultiTapKeyListener.h"
 #include "elastos/droid/text/method/MultiTapKeyListener.h"
 
-
-
 using Elastos::Droid::Text::Method::Capitalize;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::View::IView;
@@ -17,47 +15,10 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CarClass(CMultiTapKeyListener), public MultiTapKeyListener
+CarClass(CMultiTapKeyListener)
+    , public MultiTapKeyListener
 {
-public:
-    IBaseKeyListener_METHODS_DECL()
-    IKeyListener_METHODS_DECL()
-
-    CARAPI OnSpanAdded(
-        /* [in] */ ISpannable* text,
-        /* [in] */ IInterface* what,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
-
-    CARAPI OnSpanRemoved(
-        /* [in] */ ISpannable* text,
-        /* [in] */ IInterface* what,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
-
-    CARAPI OnSpanChanged(
-        /* [in] */ ISpannable* text,
-        /* [in] */ IInterface* what,
-        /* [in] */ Int32 ostart,
-        /* [in] */ Int32 oend,
-        /* [in] */ Int32 nstart,
-        /* [in] */ Int32 nend);
-
-    CARAPI constructor(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext);
-
-    /**
-     * Returns a new or existing instance with the specified capitalization
-     * and correction properties.
-     */
-    static AutoPtr<IMultiTapKeyListener> GetInstance(
-        /* [in] */ Boolean autotext,
-        /* [in] */ Capitalize cap);
-
-private:
-    static const Int32 CAPITALIZELENGTH = 4;
-    static AutoPtr< IMultiTapKeyListener > sInstance[CAPITALIZELENGTH*2];// = new MultiTapKeyListener[Capitalize.values().length * 2];
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Method

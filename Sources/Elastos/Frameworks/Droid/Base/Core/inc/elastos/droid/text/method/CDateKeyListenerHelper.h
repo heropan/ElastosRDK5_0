@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Text_Method_CDateKeyListenerHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -16,7 +16,7 @@ namespace Text {
 namespace Method {
 
 CarClass(CDateKeyListenerHelper)
-    , public Object
+    , public Singleton
     , public IDateKeyListenerHelper
 {
 public:

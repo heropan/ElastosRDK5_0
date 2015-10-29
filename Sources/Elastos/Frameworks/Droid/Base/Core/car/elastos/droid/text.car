@@ -246,39 +246,39 @@ module
         interface IDateTimeKeyListenerHelper;
     }
 
-    // class CDialerKeyListener{
-    //     interface IDialerKeyListener;
-    //     interface IInputFilter;
-    //     interface IKeyListener;
-    // }
+    class CDialerKeyListener{
+        interface IDialerKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
 
-    // singleton class CDialerKeyListenerHelper{
-    //     interface IDialerKeyListenerHelper;
-    // }
+    singleton class CDialerKeyListenerHelper{
+        interface IDialerKeyListenerHelper;
+    }
 
-    // class CDigitsKeyListener{
-    //     /**
-    //      * Allocates a DigitsKeyListener that accepts the digits 0 through 9.
-    //      */
-    //     constructor();
+    class CDigitsKeyListener{
+        /**
+         * Allocates a DigitsKeyListener that accepts the digits 0 through 9.
+         */
+        constructor();
 
-    //     /**
-    //      * Allocates a DigitsKeyListener that accepts the digits 0 through 9,
-    //      * plus the minus sign (only at the beginning) and/or decimal point
-    //      * (only one per field) if specified.
-    //      */
-    //     constructor(
-    //         [in] Boolean sign,
-    //         [in] Boolean decimal);
+        /**
+         * Allocates a DigitsKeyListener that accepts the digits 0 through 9,
+         * plus the minus sign (only at the beginning) and/or decimal point
+         * (only one per field) if specified.
+         */
+        constructor(
+            [in] Boolean sign,
+            [in] Boolean decimal);
 
-    //     interface IDigitsKeyListener;
-    //     interface IInputFilter;
-    //     interface IKeyListener;
-    // }
+        interface IDigitsKeyListener;
+        interface IInputFilter;
+        interface IKeyListener;
+    }
 
-    // singleton class CDigitsKeyListenerHelper{
-    //     interface IDigitsKeyListenerHelper;
-    // }
+    singleton class CDigitsKeyListenerHelper{
+        interface IDigitsKeyListenerHelper;
+    }
 
     // class CLinkMovementMethod{
     //     interface ILinkMovementMethod;
@@ -289,19 +289,19 @@ module
     //     interface ILinkMovementMethodHelper;
     // }
 
-    // class CMultiTapKeyListener{
-    //     constructor(
-    //         [in] Capitalize cap,
-    //         [in] Boolean autotext);
+    class CMultiTapKeyListener{
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autotext);
 
-    //     interface IMultiTapKeyListener;
-    //     interface IKeyListener;
-    //     interface ISpanWatcher;
-    // }
+        interface IMultiTapKeyListener;
+        interface IKeyListener;
+        interface ISpanWatcher;
+    }
 
-    // singleton class CMultiTapKeyListenerHelper{
-    //     interface IMultiTapKeyListenerHelper;
-    // }
+    singleton class CMultiTapKeyListenerHelper{
+        interface IMultiTapKeyListenerHelper;
+    }
 
     // class CHideReturnsTransformationMethod{
     //     interface IHideReturnsTransformationMethod;
@@ -321,23 +321,23 @@ module
     //     interface IPasswordTransformationMethodHelper;
     // }
 
-    // class CQwertyKeyListener{
-    //     interface IQwertyKeyListener;
-    //     interface IKeyListener;
+    class CQwertyKeyListener{
+        interface IQwertyKeyListener;
+        interface IKeyListener;
 
-    //     constructor(
-    //         [in] Capitalize cap,
-    //         [in] Boolean autoText);
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autoText);
 
-    //     constructor(
-    //         [in] Capitalize cap,
-    //         [in] Boolean autotext,
-    //         [in] Boolean fullKeyboard);
-    // }
+        constructor(
+            [in] Capitalize cap,
+            [in] Boolean autotext,
+            [in] Boolean fullKeyboard);
+    }
 
-    // singleton class CQwertyKeyListenerHelper{
-    //     interface IQwertyKeyListenerHelper;
-    // }
+    singleton class CQwertyKeyListenerHelper{
+        interface IQwertyKeyListenerHelper;
+    }
 
     // class CScrollingMovementMethod{
     //     interface IScrollingMovementMethod;
@@ -378,15 +378,15 @@ module
         interface ITextKeyListenerHelper;
     }
 
-    // class CTimeKeyListener{
-    //     interface ITimeKeyListener;
-    //     interface IKeyListener;
-    //     interface IInputFilter;
-    // }
+    class CTimeKeyListener{
+        interface ITimeKeyListener;
+        interface IKeyListener;
+        interface IInputFilter;
+    }
 
-    // singleton class CTimeKeyListenerHelper{
-    //    interface ITimeKeyListenerHelper;
-    // }
+    singleton class CTimeKeyListenerHelper{
+        interface ITimeKeyListenerHelper;
+    }
 
     // singleton class CTouch{
     //     interface ITouch;

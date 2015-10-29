@@ -7,28 +7,22 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CQwertyKeyListenerHelper, CQwertyKeyListener, CQwertyKeyListener)
+CAR_INTERFACE_IMPL(CQwertyKeyListenerHelper, Singleton, IQwertyKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CQwertyKeyListenerHelper)
 
 ECode CQwertyKeyListenerHelper::GetInstance(
     /* [in] */ Boolean autoText,
     /* [in] */ Capitalize cap,
     /* [out] */ IQwertyKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IQwertyKeyListener> qkl = CQwertyKeyListener::GetInstance(autoText, cap);
-    *ret = qkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return QwertyKeyListener::GetInstance(autoText, cap, ret);
 }
 
 ECode CQwertyKeyListenerHelper::GetInstanceForFullKeyboard(
     /* [out] */ IQwertyKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IQwertyKeyListener> qkl = CQwertyKeyListener::GetInstanceForFullKeyboard();
-    *ret = qkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return QwertyKeyListener::GetInstanceForFullKeyboard(ret);
 }
 
 ECode CQwertyKeyListenerHelper::MarkAsReplaced(
@@ -37,8 +31,7 @@ ECode CQwertyKeyListenerHelper::MarkAsReplaced(
     /* [in] */ Int32 end,
     /* [in] */ const String& original)
 {
-    CQwertyKeyListener::MarkAsReplaced(content, start, end, original);
-    return NOERROR;
+    return QwertyKeyListener::MarkAsReplaced(content, start, end, original);
 }
 
 } // namespace Method

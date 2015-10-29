@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/method/CTimeKeyListenerHelper.h"
-#include "elastos/droid/text/method/CTimeKeyListener.h"
+#include "elastos/droid/text/method/TimeKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,26 +8,20 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CTimeKeyListenerHelper, CTimeKeyListener, CTimeKeyListener)
+CAR_INTERFACE_IMPL(CTimeKeyListenerHelper, Singleton, ITimeKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CTimeKeyListenerHelper)
 
 ECode CTimeKeyListenerHelper::GetInstance(
     /* [out] */ ITimeKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<ITimeKeyListener> tkl = CTimeKeyListener::GetInstance();
-    *ret = tkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return TimeKeyListener::GetInstance(ret);
 }
 
 ECode CTimeKeyListenerHelper::GetCHARACTERS(
     /* [out, callee] */ ArrayOf<Char32>** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr< ArrayOf<Char32> > o = CTimeKeyListener::GetCHARACTERS();
-    *ret = o;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return TimeKeyListener::GetCHARACTERS(ret);
 }
 
 } // namespace Method

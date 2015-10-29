@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CTIMEKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CTimeKeyListenerHelper.h"
-
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/text/method/TimeKeyListener.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -16,9 +16,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CTimeKeyListenerHelper)
+    , public Singleton
+    , public ITimeKeyListenerHelper
 {
 public:
-    IBaseKeyListenerHelper_METHODS_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetInstance(
         /* [out] */ ITimeKeyListener** ret);

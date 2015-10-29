@@ -1,6 +1,6 @@
 
 #include "elastos/droid/text/method/CDigitsKeyListenerHelper.h"
-#include "elastos/droid/text/method/CDigitsKeyListener.h"
+#include "elastos/droid/text/method/DigitsKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,16 +8,14 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-IBaseKeyListenerHelper_METHODS_IMPL(CDigitsKeyListenerHelper, CDigitsKeyListener, CDigitsKeyListener)
+CAR_INTERFACE_IMPL(CDigitsKeyListenerHelper, Singleton, IDigitsKeyListenerHelper)
+
+CAR_SINGLETON_IMPL(CDigitsKeyListenerHelper)
 
 ECode CDigitsKeyListenerHelper::GetInstance(
     /* [out] */ IDigitsKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDigitsKeyListener> dkl = CDigitsKeyListener::GetInstance();
-    *ret = dkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DigitsKeyListener::GetInstance(ret);
 }
 
 ECode CDigitsKeyListenerHelper::GetInstance(
@@ -25,22 +23,14 @@ ECode CDigitsKeyListenerHelper::GetInstance(
     /* [in] */ Boolean decimal,
     /* [out] */ IDigitsKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDigitsKeyListener> dkl = CDigitsKeyListener::GetInstance(sign, decimal);
-    *ret = dkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DigitsKeyListener::GetInstance(sign, decimal, ret);
 }
 
 ECode CDigitsKeyListenerHelper::GetInstance(
     /* [in] */ const String& accepted,
     /* [out] */ IDigitsKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDigitsKeyListener> dkl = CDigitsKeyListener::GetInstance(accepted);
-    *ret = dkl;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return DigitsKeyListener::GetInstance(accepted, ret);
 }
 
 } // namespace Method

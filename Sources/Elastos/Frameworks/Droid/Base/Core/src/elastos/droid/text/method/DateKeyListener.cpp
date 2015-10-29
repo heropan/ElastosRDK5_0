@@ -48,7 +48,7 @@ ECode DateKeyListener::GetCHARACTERS(
     return NOERROR;
 }
 
- //override
+//override
 ECode DateKeyListener::OnKeyUp(
     /* [in] */ IView* view,
     /* [in] */ IEditable* content,

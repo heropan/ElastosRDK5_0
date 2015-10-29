@@ -3,8 +3,7 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CQWERTYKEYLISTENERHELPER_H__
 
 #include "_Elastos_Droid_Text_Method_CQwertyKeyListenerHelper.h"
-
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
@@ -16,9 +15,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CQwertyKeyListenerHelper)
+    , public IQwertyKeyListenerHelper
+    , public Singleton
 {
 public:
-    IBaseKeyListenerHelper_METHODS_DECL()
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetInstance(
         /* [in] */ Boolean autoText,

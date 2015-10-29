@@ -42,12 +42,14 @@ DigitsKeyListener::DigitsKeyListener()
 DigitsKeyListener::~DigitsKeyListener()
 {}
 
-void DigitsKeyListener::constructor()
+CAR_INTERFACE_IMPL_6(DigitsKeyListener, Object, IDigitsKeyListener, INumberKeyListener, IBaseKeyListener, IInputFilter, IMetaKeyKeyListener, IKeyListener)
+
+ECode DigitsKeyListener::constructor()
 {
-    constructor(FALSE, FALSE);
+    return constructor(FALSE, FALSE);
 }
 
-void DigitsKeyListener::constructor(
+ECode DigitsKeyListener::constructor(
     /* [in] */ Boolean sign,
     /* [in] */ Boolean decimal)
 {
@@ -56,7 +58,7 @@ void DigitsKeyListener::constructor(
 
     Int32 kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
     if( 0>kind && kind>3 ) {
-        return;
+        return E_NOT_IMPLEMENTED;
     }
     Int32 acceptedLen = 10;
     if(kind == 3) {
@@ -68,43 +70,60 @@ void DigitsKeyListener::constructor(
 
     AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(acceptedLen);
     for(Int32 i=0; i<acceptedLen; i++){
-        (*charactersR)[i]=CHARACTERS[kind][i];
+        (*charactersR)[i] = CHARACTERS[kind][i];
     }
     mAccepted = charactersR;
+    return NOERROR;
 }
 
-AutoPtr<IDigitsKeyListener> DigitsKeyListener::GetInstance()
+ECode DigitsKeyListener::GetInstance(
+    /* [out] */ IDigitsKeyListener** ret)
 {
-    return GetInstance(FALSE, FALSE);
+    VALIDATE_NOT_NULL(ret)
+    return GetInstance(FALSE, FALSE, ret);
 }
 
-AutoPtr<IDigitsKeyListener> DigitsKeyListener::GetInstance(
+ECode DigitsKeyListener::GetInstance(
     /* [in] */ Boolean sign,
-    /* [in] */ Boolean decimal)
+    /* [in] */ Boolean decimal,
+    /* [out] */ IDigitsKeyListener** ret)
 {
+    VALIDATE_NOT_NULL(ret)
     Int32 kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
-    if (sInstance[kind] != NULL) return (*sInstance)[kind];
+    if (sInstance[kind] != NULL)
+    {
+       *ret = (*sInstance)[kind];
+       REFCOUNT_ADD(*ret);
+       return NOERROR;
+    }
 
     AutoPtr<IDigitsKeyListener> instance;
     CDigitsKeyListener::New(sign, decimal, (IDigitsKeyListener**)&instance);
     sInstance->Set(kind, instance);
-    return (*sInstance)[kind];
+    *ret = (*sInstance)[kind];
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
-AutoPtr<IDigitsKeyListener> DigitsKeyListener::GetInstance(
-    /* [in] */ const String& accepted)
+ECode DigitsKeyListener::GetInstance(
+    /* [in] */ const String& accepted,
+    /* [out] */ IDigitsKeyListener** ret)
 {
-    AutoPtr<IDigitsKeyListener> dim;
-    CDigitsKeyListener::New((IDigitsKeyListener**)&dim);
-    DigitsKeyListener* digits = (DigitsKeyListener*)dim->Probe(EIID_DigitsKeyListener);
-    digits->mAccepted = ArrayOf<Char32>::Alloc(accepted.GetLength());
-    digits->mAccepted = accepted.GetChars(0, accepted.GetLength());
+    VALIDATE_NOT_NULL(ret);
+    AutoPtr<DigitsKeyListener> dim = new DigitsKeyListener;
+    dim->constructor();
 
-    return dim;
+    dim->mAccepted = ArrayOf<Char32>::Alloc(accepted.GetLength());
+    dim->mAccepted = accepted.GetChars(0, accepted.GetLength());
+    *ret = dim;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
-Int32 DigitsKeyListener::GetInputType()
+ECode DigitsKeyListener::GetInputType(
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     Int32 contentType = IInputType::TYPE_CLASS_NUMBER;
     if (mSign) {
         contentType |= IInputType::TYPE_NUMBER_FLAG_SIGNED;
@@ -112,21 +131,27 @@ Int32 DigitsKeyListener::GetInputType()
     if (mDecimal) {
             contentType |= IInputType::TYPE_NUMBER_FLAG_DECIMAL;
     }
-    return contentType;
+    *ret = contentType;
+    return NOERROR;
 }
 
-AutoPtr<ICharSequence> DigitsKeyListener::Filter(
+ECode DigitsKeyListener::Filter(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ISpanned* dest,
     /* [in] */ Int32 dstart,
-    /* [in] */ Int32 dend)
+    /* [in] */ Int32 dend,
+    /* [out] */ ICharSequence** ret)
 {
-    AutoPtr<ICharSequence> out = NumberKeyListener::Filter(source, start, end, dest, dstart, dend);
+    VALIDATE_NOT_NULL(ret);
+    AutoPtr<ICharSequence> out;
+    NumberKeyListener::Filter(source, start, end, dest, dstart, dend, (ICharSequence**)&out);
 
     if (mSign == FALSE && mDecimal == FALSE) {
-        return out;
+        *ret = out;
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
     }
 
     if (out != NULL) {
@@ -138,14 +163,14 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
     Int32 sign = -1;
     Int32 decimal = -1;
     Int32 dlen;
-    dest->GetLength(&dlen);
+    ICharSequence::Probe(dest)->GetLength(&dlen);
     /*
      * Find out if the existing text has a sign or decimal point characters.
      */
 
     for (Int32 i = 0; i < dstart; i++) {
         Char32 c;
-        dest->GetCharAt(i, &c);
+        ICharSequence::Probe(dest)->GetCharAt(i, &c);
 
         if (IsSignChar(c)) {
             sign = i;
@@ -156,10 +181,11 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
     }
     for (Int32 i = dend; i < dlen; i++) {
         Char32 c;
-        dest->GetCharAt(i, &c);
+        ICharSequence::Probe(dest)->GetCharAt(i, &c);
 
         if (IsSignChar(c)) {
-            return NULL;    // Nothing can be inserted in front of a '-'.
+            *ret = NULL;
+            return NOERROR;    // Nothing can be inserted in front of a '-'.
         }
         else if (IsDecimalPointChar(c)) {
             decimal = i;
@@ -201,25 +227,31 @@ AutoPtr<ICharSequence> DigitsKeyListener::Filter(
 
         if (strip) {
             if (end == start + 1) {
-                return NULL;  // Only one character, and it was stripped.
+                *ret = NULL;
+                return NOERROR;  // Only one character, and it was stripped.
             }
 
             if (stripped == NULL) {
                 CSpannableStringBuilder::New(source, start, end, (ISpannableStringBuilder**)&stripped);
             }
 
-            stripped->Delete(i - start, i + 1 - start);
+            IEditable::Probe(stripped)->Delete(i - start, i + 1 - start);
         }
     }
 
     if (stripped != NULL) {
-        return stripped;
+        *ret = ICharSequence::Probe(stripped);
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
     }
     else if (out != NULL) {
-        return out;
+        *ret = out;
+        REFCOUNT_ADD(*ret);
+        return NOERROR;
     }
     else {
-        return NULL;
+        *ret = NULL;
+        return NOERROR;
     }
 }
 
@@ -234,6 +266,25 @@ Boolean DigitsKeyListener::IsDecimalPointChar(
     /* [in] */ const Char32 c)
 {
     return c == '.';
+}
+
+ //override
+ECode DigitsKeyListener::OnKeyUp(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
+{
+    return MetaKeyKeyListener::OnKeyUp(view, content, keyCode, event, ret);
+}
+
+CARAPI DigitsKeyListener::ClearMetaKeyState(
+    /* [in] */ IView* view,
+    /* [in] */ IEditable* content,
+    /* [in] */ Int32 states)
+{
+    return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
 }
 
 

@@ -15,71 +15,83 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-class QwertyKeyListener : public BaseKeyListener
+class QwertyKeyListener
+    : public BaseKeyListener
+    , public IQwertyKeyListener
 {
 protected:
-    class Replaced : public ElRefBase, public INoCopySpan
+    class Replaced
+        : public Object
+        , public INoCopySpan
     {
     public:
         Replaced(
-            /* [in] */ ArrayOf<Char8>* text);
+            /* [in] */ ArrayOf<Char32>* text);
 
         ~Replaced();
 
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [out] */ InterfaceID* pIID);
+        CAR_INTERFACE_DECL()
 
     public:
-        AutoPtr<ArrayOf<Char8> > mText;
+        AutoPtr<ArrayOf<Char32> > mText;
     };
 
 public:
     friend class TextKeyListener;
+
+    CAR_INTERFACE_DECL()
+
     QwertyKeyListener();
 
-    QwertyKeyListener(
+    virtual ~QwertyKeyListener();
+
+    CARAPI constructor(
         /* [in] */ Capitalize cap,
         /* [in] */ Boolean autotext);
 
-    CARAPI_(Int32) GetInputType();
+    CARAPI constructor(
+        /* [in] */ Capitalize cap,
+        /* [in] */ Boolean autotext,
+        /* [in] */ Boolean fullKeyboard);
 
-    CARAPI_(Boolean) OnKeyDown(
+    static CARAPI GetInstance(
+        /* [in] */ Boolean autoText,
+        /* [in] */ Capitalize cap,
+        /* [out] */ IQwertyKeyListener** ret);
+
+    static CARAPI GetInstanceForFullKeyboard(
+        /* [out] */ IQwertyKeyListener** ret);
+
+    CARAPI GetInputType(
+        /* [out] */ Int32* ret);
+
+    CARAPI OnKeyDown(
         /* [in] */ IView* view,
         /* [in] */ IEditable* content,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    static CARAPI_(void) MarkAsReplaced(
+    static CARAPI MarkAsReplaced(
         /* [in] */ ISpannable* content,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ const String& original);
 
-protected:
-    QwertyKeyListener(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext,
-        /* [in] */ Boolean fullKeyboard);
+    //override
+    CARAPI OnKeyUp(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
-    CARAPI_(void) Init(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext);
-
-    CARAPI_(void) Init(
-        /* [in] */ Capitalize cap,
-        /* [in] */ Boolean autotext,
-        /* [in] */ Boolean fullKeyboard);
+    CARAPI ClearMetaKeyState(
+        /* [in] */ IView* view,
+        /* [in] */ IEditable* content,
+        /* [in] */ Int32 states);
 
 private:
-
     CARAPI_(String) GetReplacement(
         /* [in] */ ICharSequence* src,
         /* [in] */ Int32 start,
@@ -100,10 +112,13 @@ public:
     static HashMap<Char32, String> PICKER_SETS;
     static Boolean sInitPickerSet;
 
-protected://private:
+private://private:
     Capitalize mAutoCap;
     Boolean mAutoText;
     Boolean mFullKeyboard;
+    static const Int32 CAPITALIZELENGTH;// = 4;
+    static AutoPtr<ArrayOf<IQwertyKeyListener*> > sInstance;
+    static AutoPtr<IQwertyKeyListener> sFullKeyboardInstance;
 };
 
 } // namespace Method
