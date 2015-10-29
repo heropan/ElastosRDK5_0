@@ -1,110 +1,123 @@
 
 #include "elastos/droid/location/CountryDetector.h"
+#include "elastos/droid/os/CHandler.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Droid::Os::CHandler;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
+//CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable
+CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable::CountryDetectorListenerTransportRunnnable(
+    /* [in] */ ICountry* country,
+    /* [in] */ CountryDetectorListenerTransport* host)
+    : mCountry(country)
+    , mHost(host)
+{}
 
+ECode CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable::Run()
+{
+    mHost->mListener->OnCountryDetected(mCountry);
+    return NOERROR;
+}
+
+//CountryDetector::CountryDetectorListenerTransport
+CAR_INTERFACE_IMPL_2(CountryDetector::CountryDetectorListenerTransport, Object, ICountryDetectorListenerTransport, IICountryListener)
+
+CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransport(
+    /* [in] */ ICountryListener* listener,
+    /* [in] */ ILooper* looper)
+        : mListener(listener)
+{
+    if (looper != NULL) {
+        CHandler::New(looper, (IHandler**)&mHandler);
+    } else {
+        CHandler::New((IHandler**)&mHandler);
+    }
+}
+
+ECode CountryDetector::CountryDetectorListenerTransport::OnCountryDetected(
+    /* [in] */ ICountry* country)
+{
+    AutoPtr<CountryDetectorListenerTransportRunnnable> r = new CountryDetectorListenerTransportRunnnable(country, this);
+    Boolean result = FALSE;
+    mHandler->Post(IRunnable::Probe(r), &result);
+    return NOERROR;
+}
+
+//CountryDetector
 const String CountryDetector::TAG("CountryDetector");
 
-/**
- * @hide - hide this constructor because it has a parameter of type
- *       ICountryDetector, which is a system private class. The right way to
- *       create an instance of this class is using the factory
- *       Context.getSystemService.
- */
+CAR_INTERFACE_IMPL(CountryDetector, Object, ICountryDetector)
+
+CountryDetector::CountryDetector()
+{}
+
 CountryDetector::CountryDetector(
-    /* [in] */ ICountryDetector* service)
+    /* [in] */ IICountryDetector* service)
 {
     Init(service);
 }
 
-/**
- * Start detecting the country that the user is in.
- *
- * @return the country if it is available immediately, otherwise null will
- *         be returned.
- */
+ECode CountryDetector::constructor(
+    /* [in] */ IICountryDetector* service)
+{
+    return Init(service);
+}
+
 ECode CountryDetector::DetectCountry(
     /* [out] */ ICountry** country)
 {
     VALIDATE_NOT_NULL(country);
-
-    //try {
-    //    return mService.detectCountry();
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "detectCountry: RemoteException", e);
-    //    return null;
-    //}
-
     return mService->DetectCountry(country);
 }
 
-/**
- * Add a listener to receive the notification when the country is detected
- * or changed.
- *
- * @param listener will be called when the country is detected or changed.
- * @param looper a Looper object whose message queue will be used to
- *        implement the callback mechanism. If looper is null then the
- *        callbacks will be called on the main thread.
- */
-#if 0
+
 ECode CountryDetector::AddCountryListener(
     /* [in] */ ICountryListener* listener,
-    /* [in] */ IApartment* looper)
+    /* [in] */ ILooper* looper)
 {
-/*
-    {
-        Object::AutoLock lock(mListenersLock);
-        if (!mListeners.containsKey(listener)) {
-            ListenerTransport transport = new ListenerTransport(listener, looper);
-            try {
-                mService.addCountryListener(transport);
-                mListeners.put(listener, transport);
-            } catch (RemoteException e) {
-                Log.e(TAG, "addCountryListener: RemoteException", e);
-            }
-        }
-    }
-*/
-}
-#endif
+    AutoLock lock(mListenersLock);
 
-/**
- * Remove the listener
- */
+    HashMap<AutoPtr<ICountryListener>, AutoPtr<ICountryDetectorListenerTransport> >::Iterator iter
+            = mListeners.Find(listener);
+    if (iter == mListeners.End()) {
+        AutoPtr<CountryDetectorListenerTransport> transport = new CountryDetectorListenerTransport(listener, looper);
+        mService->AddCountryListener(IICountryListener::Probe(transport));
+        mListeners[listener] = ICountryDetectorListenerTransport::Probe(transport);
+    } else {
+        return E_REMOTE_EXCEPTION;
+    }
+    return NOERROR;
+}
+
+
 ECode CountryDetector::RemoveCountryListener(
     /* [in] */ ICountryListener* listener)
 {
-/*
-    synchronized (mListeners) {
-        ListenerTransport transport = mListeners.get(listener);
-        if (transport != null) {
-            try {
-                mListeners.remove(listener);
-                mService.removeCountryListener(transport);
-            } catch (RemoteException e) {
-                Log.e(TAG, "removeCountryListener: RemoteException", e);
-            }
-        }
+    AutoLock lock(mListenersLock);
+
+    HashMap<AutoPtr<ICountryListener>, AutoPtr<ICountryDetectorListenerTransport> >::Iterator iter
+            = mListeners.Find(listener);
+    AutoPtr<ICountryDetectorListenerTransport> transport;
+    if (iter != mListeners.End()) {
+        transport = iter->mSecond;
+        mListeners.Erase(listener);
+        mService->RemoveCountryListener(IICountryListener::Probe(transport));
     }
-*/
-    return E_NOT_IMPLEMENTED;
+    else {
+        return E_REMOTE_EXCEPTION;
+    }
+    return NOERROR;
 }
 
-/**
- * @hide - hide this constructor because it has a parameter of type
- *       ICountryDetector, which is a system private class. The right way to
- *       create an instance of this class is using the factory
- *       Context.getSystemService.
- */
 ECode CountryDetector::Init(
-    /* [in] */ ICountryDetector* service)
+    /* [in] */ IICountryDetector* service)
 {
     mService = service;
-//    mListeners = new HashMap<CountryListener, ListenerTransport>();
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 } // namespace Location

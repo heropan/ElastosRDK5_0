@@ -11,6 +11,7 @@ module
      * <p>Currently only circular geofences are supported and they do not support altitude changes.
      *
      * @hide
+     * @Involve interface IParcelable
      */
     interface IGeofence {
         /** @hide */

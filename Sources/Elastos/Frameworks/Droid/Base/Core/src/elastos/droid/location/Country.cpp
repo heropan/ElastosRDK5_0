@@ -11,6 +11,7 @@ using Elastos::Droid::Os::SystemClock;
 namespace Elastos {
 namespace Droid {
 namespace Location {
+CAR_INTERFACE_IMPL_2(Country, Object, ICountry, IParcelable)
 
 Country::Country(
     /* [in] */ const String& countryIso,
@@ -31,6 +32,24 @@ Country::Country(
     /* [in] */ ICountry* country)
 {
     Init(country);
+}
+
+ECode Country::constructor()
+{
+    return NOERROR;
+}
+
+ECode Country::constructor(
+    /* [in] */ const String& countryIso,
+    /* [in] */ const Int32 source)
+{
+    return Init(countryIso, source);
+}
+
+ECode Country::constructor(
+    /* [in] */ ICountry* country)
+{
+    return Init(country);
 }
 
 /**
@@ -133,14 +152,14 @@ ECode Country::ToString(
 {
     VALIDATE_NOT_NULL(strOut);
     //return "Country {ISO=" + mCountryIso + ", source=" + mSource + ", time=" + mTimestamp + "}";
-    StringBuilder sbc("Country {ISO=");
-    sbc.AppendString(mCountryIso);
-    sbc.AppendCStr(", source=");
-    sbc.AppendInt32(mSource);
-    sbc.AppendCStr(", time=");
-    sbc.AppendInt64(mTimestamp);
-    sbc.AppendCStr("}");
-    sbc.ToString(strOut);
+    // StringBuilder sbc("Country {ISO=");
+    // sbc.AppendString(mCountryIso);
+    // sbc.AppendCStr(", source=");
+    // sbc.AppendInt32(mSource);
+    // sbc.AppendCStr(", time=");
+    // sbc.AppendInt64(mTimestamp);
+    // sbc.AppendCStr("}");
+    // sbc.ToString(strOut);
 
     return NOERROR;
 }

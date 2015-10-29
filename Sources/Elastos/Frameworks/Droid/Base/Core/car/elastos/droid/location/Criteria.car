@@ -5,6 +5,9 @@ module
     namespace Droid {
     namespace Location {
 
+    /**
+      * @Involve interface IParcelable
+      */
     interface ICriteria {
 
         /**

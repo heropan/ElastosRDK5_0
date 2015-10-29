@@ -6,10 +6,12 @@ module
     merge("location/CountryListener.car");
     merge("location/CountryDetector.car");
     merge("location/Criteria.car");
+    merge("location/FusedBatchOptions.car");
     merge("location/ElLocationManagerProxy.car");
     merge("location/Geocoder.car");
     merge("location/GeocoderParams.car");
     merge("location/Geofence.car");
+    merge("location/GpsClock.car");
     merge("location/GpsSatellite.car");
     merge("location/GpsStatus.car");
     merge("location/ICountryDetector.car");
@@ -27,97 +29,100 @@ module
     merge("location/LocationRequest.car");
     merge("location/ProviderProperties.car");
 
-//    using interface Elastos.Utility.ILocale;
-//    interface Elastos.Droid.Content.IContext;
-//    interface Elastos.Droid.Os.IBinder;
-//    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Utility.ILocale;
+    interface Elastos.Droid.Content.IContext;
 
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Location {
+    namespace Elastos {
+    namespace Droid {
+    namespace Location {
 
-//        class CAddress {
-//            constructor();
+        [deprecated]
+        class CAddress {
+            constructor(
+                [in] ILocale* locale);
 
-//            constructor(
-//                [in] ILocale* locale);
+            interface IAddress;
+            interface IParcelable;
+        }
 
-//            interface IAddress;
-//            interface IParcelable;
-//        }
+        class CCountry {
+            constructor();
 
-//        class CCountry {
-//            constructor();
+            constructor(
+                [in] String countryIso,
+                [in] Int32 source);
 
-//            constructor(
-//                [in] String countryIso,
-//                [in] Int32 source);
+            constructor(
+                [in] ICountry* country);
 
-//            constructor(
-//                [in] ICountry* country);
+            interface ICountry;
+            interface IParcelable;
+        }
 
-//            interface ICountry;
-//            interface IParcelable;
-//        }
+        class CCountryDetector {
+            constructor(
+                [in] IICountryDetector* service);
 
-//        class CCountryDetector {
-//            constructor(
-//                [in] ICountryDetector* service);
+            interface ICountryDetector;
+        }
 
-//            interface ICountryDetector;
-//        }
+        class CCriteria {
+            constructor();
 
-//        class CCriteria {
-//            constructor();
+            constructor(
+                [in] ICriteria* criteria);
 
-//            constructor(
-//                [in] ICriteria* criteria);
+            interface ICriteria;
+            interface IParcelable;
+        }
 
-//            interface ICriteria;
-//            interface IParcelable;
-//        }
+        class CFusedBatchOptions {
+            constructor();
 
-//        [deprecated, local]
-//        class CGeocoder {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] ILocale* locale);
+            interface IFusedBatchOptions;
+            interface IParcelable;
+        }
 
-//            constructor(
-//                [in] IContext* ctx);
+        [deprecated, local]
+        class CGeocoder {
+            constructor(
+                [in] IContext* ctx,
+                [in] ILocale* locale);
 
-//            interface IGeocoder;
-//        }
+            constructor(
+                [in] IContext* ctx);
 
-//        singleton class CGeocoderHelper {
-//            constructor();
+            interface IGeocoder;
+        }
 
-//            interface IGeocoderHelper;
-//        }
+        singleton class CGeocoderHelper {
 
-//        [deprecated, local]
-//        class CGeocoderParams {
-//            constructor();
+            interface IGeocoderHelper;
+        }
 
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] ILocale* locale);
+        [deprecated, local]
+        class CGeocoderParams {
+            constructor();
 
-//            interface IGeocoderParams;
-//            interface IParcelable;
-//        }
+            constructor(
+                [in] IContext* ctx,
+                [in] ILocale* locale);
 
-//        class CGeofence {
-//            constructor();
+            interface IGeocoderParams;
+            interface IParcelable;
+        }
 
-//            constructor(
-//                [in] Double latitude,
-//                [in] Double longitude,
-//                [in] Float radius);
+        singleton class CGeofenceHelper {
 
-//            interface IGeofence;
-//            interface IParcelable;
-//        }
+            interface IGeofenceHelper;
+        }
+
+        class CGpsClock {
+            constructor();
+
+            interface IGpsClock;
+            interface IParcelable;
+        }
 
 //        class CGpsSatellite {
 //            constructor(
@@ -244,8 +249,8 @@ module
 //            interface IGpsNiResponse;
 //        }
 
-//    } // namespace Location
-//    } // namepsace Droid
-//    } // namespace Elastos
+    } // namespace Location
+    } // namepsace Droid
+    } // namespace Elastos
 
 }

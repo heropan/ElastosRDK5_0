@@ -65,6 +65,13 @@ module
             [in] ICountryListener* listener);
     }
 
+    /*
+     * @Involve interface IICountryListener
+     */
+    interface ICountryDetectorListenerTransport {
+
+    }
+
     }//namespace Location
     }//namespace Droid
     }//namespace Elastos

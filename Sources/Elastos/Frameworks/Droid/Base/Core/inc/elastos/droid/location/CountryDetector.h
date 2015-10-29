@@ -3,11 +3,16 @@
 #define __ELASTOS_DROID_LOCATION_COUNTRYDETECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Location::ICountryListener;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Runnable;
 
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener);
 
 namespace Elastos {
 namespace Droid {
@@ -39,10 +44,55 @@ namespace Location {
  *
  * @hide
  */
-class CountryDetector {
-public:
-    CountryDetector() {}
+class CountryDetector
+    : public Object
+    , public ICountryDetector
+{
+private:
+    /**
+     * The class to wrap the ICountryListener.Stub and CountryListener objects
+     * together. The CountryListener will be notified through the specific
+     * looper once the country changed and detected.
+     */
+    class CountryDetectorListenerTransport
+        : public Object
+        , public ICountryDetectorListenerTransport
+        , public IICountryListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
+        CountryDetectorListenerTransport(
+            /* [in] */ ICountryListener* listener,
+            /* [in] */ ILooper* looper);
+
+        CARAPI OnCountryDetected(
+            /* [in] */ ICountry* country);
+
+        class CountryDetectorListenerTransportRunnnable
+            : public Runnable
+        {
+        public:
+            CountryDetectorListenerTransportRunnnable(
+                /* [in] */ ICountry* country,
+                /* [in] */ CountryDetectorListenerTransport* host);
+
+            CARAPI Run();
+
+        private:
+            AutoPtr<ICountry> mCountry;
+            AutoPtr<CountryDetectorListenerTransport> mHost;
+        };
+
+    private:
+        AutoPtr<ICountryListener> mListener;
+        AutoPtr<IHandler> mHandler;
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    CountryDetector();
     /**
      * @hide - hide this constructor because it has a parameter of type
      *       ICountryDetector, which is a system private class. The right way to
@@ -50,7 +100,10 @@ public:
      *       Context.getSystemService.
      */
     CountryDetector(
-        /* [in] */ ICountryDetector* service);
+        /* [in] */ IICountryDetector* service);
+
+    CARAPI constructor(
+        /* [in] */ IICountryDetector* service);
 
     /**
      * Start detecting the country that the user is in.
@@ -70,9 +123,9 @@ public:
      *        implement the callback mechanism. If looper is null then the
      *        callbacks will be called on the main thread.
      */
-//    virtual CARAPI AddCountryListener(
-//        /* [in] */ ICountryListener* listener,
-//        /* [in] */ IApartment* looper);
+   virtual CARAPI AddCountryListener(
+       /* [in] */ ICountryListener* listener,
+       /* [in] */ ILooper* looper);
 
     /**
      * Remove the listener
@@ -88,42 +141,12 @@ protected:
      *       Context.getSystemService.
      */
     virtual CARAPI Init(
-        /* [in] */ ICountryDetector* service);
+        /* [in] */ IICountryDetector* service);
 
 private:
-    /**
-     * The class to wrap the ICountryListener.Stub and CountryListener objects
-     * together. The CountryListener will be notified through the specific
-     * looper once the country changed and detected.
-     */
-/*    private final static class ListenerTransport extends ICountryListener.Stub {
-
-        private final CountryListener mListener;
-
-        private final Handler mHandler;
-
-        public ListenerTransport(CountryListener listener, Looper looper) {
-            mListener = listener;
-            if (looper != null) {
-                mHandler = new Handler(looper);
-            } else {
-                mHandler = new Handler();
-            }
-        }
-
-        public void onCountryDetected(final Country country) {
-            mHandler.post(new Runnable() {
-                public void run() {
-                    mListener.onCountryDetected(country);
-                }
-            });
-        }
-    };
-*/
-    static const String TAG;// = "CountryDetector";
-    AutoPtr<ICountryDetector> mService;
-//    HashMap<AutoPtr<ICountryListener>, AutoPtr<ListenerTransport> > mListeners;
-
+    static const String TAG;
+    AutoPtr<IICountryDetector> mService;
+    HashMap<AutoPtr<ICountryListener>, AutoPtr<ICountryDetectorListenerTransport> > mListeners;
     Object mListenersLock;
 };
 
