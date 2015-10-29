@@ -10,15 +10,15 @@ INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../../../inc;
 
-VPATH := $(MAKEDIR)/../../../../../../src/elastos/io
+#VPATH := $(MAKEDIR)/../../../../../../src/elastos/io
 
 SOURCES = AbstractMessageParser.cpp
 SOURCES += AbstractMessageWriter.cpp
 SOURCES += AbstractSessionInputBuffer.cpp
 SOURCES += AbstractSessionOutputBuffer.cpp
-SOURCES += InputStream.cpp
+#SOURCES += InputStream.cpp
 SOURCES += ChunkedInputStream.cpp
-SOURCES += OutputStream.cpp
+#SOURCES += OutputStream.cpp
 SOURCES += ChunkedOutputStream.cpp
 SOURCES += ContentLengthOutputStream.cpp
 SOURCES += ContentLengthInputStream.cpp

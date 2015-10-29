@@ -41,11 +41,11 @@ protected:
     CARAPI SetLength(
         /* [in] */ Int32 length);
 
-    CARAPI_(Int32) GetLength();
+    ECO_PUBLIC CARAPI_(Int32) GetLength();
 
-    CARAPI_(Int32) GetByteCount();
+    ECO_PUBLIC CARAPI_(Int32) GetByteCount();
 
-    CARAPI_(Int32) GetCapacity();
+    ECO_PUBLIC CARAPI_(Int32) GetCapacity();
 
     CARAPI EnsureCapacity(
         /* [in] */ Int32 min);

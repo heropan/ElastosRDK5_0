@@ -33,8 +33,6 @@ class SocketHttpServerConnection
 public:
     SocketHttpServerConnection();
 
-    virtual ~SocketHttpServerConnection() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI IsOpen(

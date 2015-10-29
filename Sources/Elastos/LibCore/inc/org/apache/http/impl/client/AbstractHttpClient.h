@@ -55,8 +55,6 @@ class AbstractHttpClient
     , public IHttpClient
 {
 public:
-    virtual ~AbstractHttpClient() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI GetParams(

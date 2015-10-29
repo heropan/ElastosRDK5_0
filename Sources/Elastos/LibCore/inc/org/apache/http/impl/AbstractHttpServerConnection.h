@@ -44,8 +44,6 @@ class AbstractHttpServerConnection
 public:
     AbstractHttpServerConnection();
 
-    virtual ~AbstractHttpServerConnection() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI ReceiveRequestHeader(

@@ -12,19 +12,20 @@ namespace Parsers {
 class FilePathToURI
 {
 public:
-    static String Filepath2URI(
-        /* [in] */ String path);
+    static CARAPI_(String) Filepath2URI(
+        /* [in] */ const String& path);
 
 private:
-    static Boolean Init();
+    static CARAPI_(Boolean) Init();
 
+private:
     // which ASCII characters need to be escaped
     static Boolean gNeedEscaping[128];
     // the first hex character if a character needs to be escaped
-    static char gAfterEscaping1[128];
+    static Char32 gAfterEscaping1[128];
     // the second hex character if a character needs to be escaped
-    static char gAfterEscaping2[128];
-    static char gHexChs[HEXCHS_NUM];
+    static Char32 gAfterEscaping2[128];
+    static Char32 gHexChs[HEXCHS_NUM];
 
     static Boolean sIsInitStatic;
 };

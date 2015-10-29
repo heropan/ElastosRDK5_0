@@ -433,7 +433,7 @@ public:
      *         this is a system preference node.
      */
     virtual CARAPI IsUserNode(
-        /* [out] */ Boolean* isUserNode);
+        /* [out] */ Boolean* isUserNode) = 0;
 
     /**
      * Returns all preference keys stored in this node or an empty array if no

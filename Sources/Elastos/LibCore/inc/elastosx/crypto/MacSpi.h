@@ -102,7 +102,7 @@ public:
      * used to start the next MAC computation with the same parameters or
      * initialized with different parameters.
      */
-    virtual CARAPI EngineReset();
+    virtual CARAPI EngineReset() = 0;
 
     CARAPI Clone(
         /* [out] */ IInterface** result);

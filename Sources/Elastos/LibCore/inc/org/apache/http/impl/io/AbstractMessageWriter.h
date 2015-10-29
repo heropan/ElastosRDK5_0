@@ -28,8 +28,6 @@ public:
         /* [in] */ ILineFormatter* formatter,
         /* [in] */ IHttpParams* params);
 
-    virtual ~AbstractMessageWriter() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI Write(

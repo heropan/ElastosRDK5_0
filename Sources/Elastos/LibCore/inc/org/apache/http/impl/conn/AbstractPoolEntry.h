@@ -46,8 +46,6 @@ class AbstractPooledConnAdapter;
 class AbstractPoolEntry : public Object
 {
 public:
-    virtual ~AbstractPoolEntry() = 0;
-
     /**
      * Returns the state object associated with this pool entry.
      *

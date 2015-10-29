@@ -6,15 +6,13 @@
 #else
 #include "Elastos.CoreLibrary.h"
 #endif
-#include <elastos.h>
-#include <elstring.h>
 
 using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Core {
 
-class StringUtils
+class ECO_PUBLIC StringUtils
 {
 public:
     // From String without error code
@@ -254,8 +252,8 @@ public:
         /* [in] */ ArrayOf<IInterface*>* args);
 
 private:
-    StringUtils();
-    ~StringUtils();
+    ECO_LOCAL StringUtils();
+    ECO_LOCAL ~StringUtils();
 };
 
 } // namespace Core

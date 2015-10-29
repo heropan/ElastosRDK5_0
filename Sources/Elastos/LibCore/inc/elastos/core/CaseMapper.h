@@ -14,7 +14,7 @@ namespace Core {
 /**
  * Performs case operations as described by http://unicode.org/reports/tr21/tr21-5.html.
  */
-class CaseMapper
+class ECO_PUBLIC CaseMapper
 {
 public:
     /**
@@ -41,7 +41,7 @@ private:
      * sequence, and 'index' is not followed by a sequence consisting of an ignorable sequence and
      * then a cased letter.
      */
-    static CARAPI_(Boolean) IsFinalSigma(
+    ECO_LOCAL static CARAPI_(Boolean) IsFinalSigma(
         /* [in] */ ArrayOf<Char32>* value,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
@@ -54,28 +54,28 @@ private:
      * are used, the third character in the table is \u0000.
      * @return the index into the upperValues table, or -1
      */
-    static CARAPI_(Int32) UpperIndex(
+    ECO_LOCAL static CARAPI_(Int32) UpperIndex(
         /* [in] */ Int32 ch);
 
-    static AutoPtr<ITransliterator> GetEL_UPPER();
+    ECO_LOCAL static AutoPtr<ITransliterator> GetEL_UPPER();
 
 private:
-    CaseMapper();
-    CaseMapper(const CaseMapper&);
+    ECO_LOCAL CaseMapper();
+    ECO_LOCAL CaseMapper(const CaseMapper&);
 
 public:
     static pthread_key_t sTlsKey;
 
 private:
-    static pthread_once_t sTlsKeyOnce;
+    ECO_LOCAL static pthread_once_t sTlsKeyOnce;
     // static final ThreadLocal<Transliterator> EL_UPPER
 
-    static const Char32 sUpperValues[306];
-    static const Char32 sUpperValues2[173];
+    ECO_LOCAL static const Char32 sUpperValues[306];
+    ECO_LOCAL static const Char32 sUpperValues2[173];
 
-    static const Char32 LATIN_CAPITAL_I_WITH_DOT;// = '\u0130';
-    static const Char32 GREEK_CAPITAL_SIGMA;// = '\u03a3';
-    static const Char32 GREEK_SMALL_FINAL_SIGMA;// = '\u03c2';
+    ECO_LOCAL static const Char32 LATIN_CAPITAL_I_WITH_DOT;// = '\u0130';
+    ECO_LOCAL static const Char32 GREEK_CAPITAL_SIGMA;// = '\u03a3';
+    ECO_LOCAL static const Char32 GREEK_SMALL_FINAL_SIGMA;// = '\u03c2';
 };
 
 } // namespace Core

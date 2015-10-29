@@ -11,12 +11,17 @@
 #include "org/apache/http/message/CParserCursor.h"
 #include "org/apache/http/message/CBufferedHeader.h"
 #include "org/apache/http/utility/CCharArrayBuffer.h"
+#include "elastos/utility/CArrayList.h"
+#include "elastos/utility/CLocaleHelper.h"
 #include "elastos/utility/logging/Logger.h"
 
 using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::IIterator;
-using Elastos::Utility::CList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHeaderElement;
 using Org::Apache::Http::IFormattedHeader;
 using Org::Apache::Http::Cookie::ICookieAttributeHandler;
@@ -51,6 +56,7 @@ static AutoPtr< ArrayOf<String> > InitDatePatterns()
     (*patterns)[11] = String("EEE,dd-MMM-yy HH:mm:ss z");
     (*patterns)[12] = String("EEE,dd-MMM-yyyy HH:mm:ss z");
     (*patterns)[12] = String("EEE, dd-MM-yyyy HH:mm:ss z");
+    return patterns;
 }
 const AutoPtr< ArrayOf<String> > BrowserCompatSpec::DATE_PATTERNS = InitDatePatterns();
 
@@ -106,8 +112,12 @@ ECode BrowserCompatSpec::Parse(
     }
     String headervalue;
     header->GetValue(&headervalue);
+    // AutoPtr<ILocaleHelper> helper;
+    // CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+    // AutoPtr<ILocale> ENGLISH;
+    // helper->GetENGLISH((ILocale**)&ENGLISH);
     Boolean isNetscapeCookie = FALSE;
-    Int32 i1 = headervalue.ToLowerCase(ILocale::ENGLISH).IndexOf("expires=");
+    Int32 i1 = headervalue.ToLowerCase(/*ENGLISH*/).IndexOf("expires=");
     if (i1 != -1) {
         i1 += String("expires=").GetLength();
         Int32 i2 = headervalue.IndexOf(';', i1);
@@ -115,8 +125,9 @@ ECode BrowserCompatSpec::Parse(
             i2 = headervalue.GetLength();
         }
         // try {
-        DateUtils::ParseDate(headervalue.Substring(i1, i2), mDatepatterns);
-        isNetscapeCookie = TRUE;
+        AutoPtr<IDate> date;
+        ECode ec = DateUtils::ParseDate(headervalue.Substring(i1, i2), mDatepatterns, (IDate**)&date);
+        if (SUCCEEDED(ec)) isNetscapeCookie = TRUE;
         // } catch (DateParseException e) {
         //     // Does not look like a valid expiry date
         // }
@@ -149,19 +160,19 @@ ECode BrowserCompatSpec::Parse(
             CParserCursor::New(0, len, (IParserCursor**)&cursor);
         }
         AutoPtr<IHeaderElement> ele;
-        parser->ParseHeader((IHeaderElement**)&ele);
+        parser->ParseHeader(buffer, cursor, (IHeaderElement**)&ele);
         elems = ArrayOf<IHeaderElement*>::Alloc(1);
         elems->Set(0, ele);
     }
     else {
-        header->Getelements((ArrayOf<IHeaderElement*>**)&elems);
+        header->GetElements((ArrayOf<IHeaderElement*>**)&elems);
     }
     return Parse(elems, origin, cookies);
 }
 
 ECode BrowserCompatSpec::FormatCookies(
     /* [in] */ IList* cookies,
-    /* [out] */ IList** headers)
+    /* [out] */ IList** _headers)
 {
     VALIDATE_NOT_NULL(_headers)
     *_headers = NULL;
@@ -204,9 +215,9 @@ ECode BrowserCompatSpec::FormatCookies(
         i++;
     }
     AutoPtr<IList> headers;
-    CList::New(1, (IList**)&headers);
-    AutoPtr<IBufferedHeader> header;
-    CBufferedHeader::New(buffer, (IBufferedHeader**)&header);
+    CArrayList::New(1, (IList**)&headers);
+    AutoPtr<IHeader> header;
+    CBufferedHeader::New(buffer, (IHeader**)&header);
     headers->Add(header);
     *_headers = headers;
     REFCOUNT_ADD(*_headers)

@@ -22,8 +22,6 @@ class AbstractCookieSpec
 public:
     AbstractCookieSpec();
 
-    virtual ~AbstractCookieSpec() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI RegisterAttribHandler(

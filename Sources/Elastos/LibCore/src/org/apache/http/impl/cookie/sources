@@ -22,6 +22,7 @@ SOURCES += BasicPathHandler.cpp
 SOURCES += BasicSecureHandler.cpp
 SOURCES += BestMatchSpec.cpp
 SOURCES += BestMatchSpecFactory.cpp
+SOURCES += BrowserCompatSpec.cpp
 SOURCES += BrowserCompatSpecFactory.cpp
 SOURCES += CookieSpecBase.cpp
 SOURCES += DateUtils.cpp

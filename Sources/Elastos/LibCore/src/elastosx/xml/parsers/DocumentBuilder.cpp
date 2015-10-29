@@ -1,6 +1,6 @@
 #include "DocumentBuilder.h"
 #include "CInputSource.h"
-#include "FilePathToURI.h"
+#include "elastosx/xml/parsers/FilePathToURI.h"
 #include "utility/logging/Slogger.h"
 
 using Org::Xml::Sax::CInputSource;

@@ -2,16 +2,16 @@
 #ifndef __ELASTOS_CORE_STRING_TO_REAL_H__
 #define __ELASTOS_CORE_STRING_TO_REAL_H__
 
-#include <elastos.h>
-#include <elstring.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Core {
 
-class StringToReal
+class StringToReal : public Object
 {
 private:
-    class StringExponentPair : public ElRefBase {
+    class StringExponentPair : public Object
+    {
     public:
         String mStr;
         Int64 mE;
@@ -41,7 +41,7 @@ public:
      * @see #valueOf(String)
      * @since 1.2
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ Float* result);
 
@@ -58,7 +58,7 @@ public:
      * @exception NumberFormatException
      *                if the String doesn't represent a double
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ Double* result);
 
@@ -69,7 +69,7 @@ public:
      * represents and multiplying by 10 raised to the power of the of the
      * exponent. Returns the closest double value to the real number, or Double.longBitsToDouble(-1).
      */
-    static Double ParseDblImpl(
+    ECO_PUBLIC static Double ParseDblImpl(
         /* [in] */ const String& s,
         /* [in] */ Int32 e);
 
@@ -80,7 +80,7 @@ public:
      * represents and multiplying by 10 raised to the power of the of the
      * exponent. Returns the closest float value to the real number, or Float.intBitsToFloat(-1).
      */
-    static Float ParseFltImpl(
+    ECO_PUBLIC static Float ParseFltImpl(
         /* [in] */ const String& s,
         /* [in] */ Int32 e);
 
@@ -91,14 +91,14 @@ public:
      * taking the positive integer the String represents and multiplying by 10
      * raised to the power of the of the exponent.
      */
-    static CARAPI InitialParse(
+    ECO_PUBLIC static CARAPI InitialParse(
         /* [in] */ const String& s,
         /* [in] */ Int32 length,
         /* [in] */ Boolean isDouble,
         /* [out] */ StringExponentPair** pair);
 
     // Parses "+Nan", "NaN", "-Nan", "+Infinity", "Infinity", and "-Infinity", case-insensitively.
-    static CARAPI ParseName(
+    ECO_PUBLIC static CARAPI ParseName(
         /* [in] */ const String& name,
         /* [in] */ Boolean isDouble,
         /* [out] */ Float* result);

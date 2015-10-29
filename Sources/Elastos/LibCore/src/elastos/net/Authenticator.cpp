@@ -6,6 +6,7 @@ namespace Elastos {
 namespace Net {
 
 AutoPtr<Authenticator> Authenticator::sThisAuthenticator;
+Object Authenticator::sLock;
 
 CAR_INTERFACE_IMPL(Authenticator, Object, IAuthenticator)
 

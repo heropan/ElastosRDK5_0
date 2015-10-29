@@ -62,8 +62,6 @@ class AbstractClientConnAdapter
     , public IConnectionReleaseTrigger
 {
 public:
-    virtual ~AbstractClientConnAdapter() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI IsOpen(

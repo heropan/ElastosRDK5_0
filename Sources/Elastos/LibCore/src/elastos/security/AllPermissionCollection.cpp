@@ -13,6 +13,7 @@ ECode AllPermissionCollection::Add(
 ECode AllPermissionCollection::GetElements(
     /* [out] */ IEnumeration **elems)
 {
+    *elems = NULL;
     return NOERROR;
 }
 

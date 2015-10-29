@@ -19,8 +19,6 @@ class AbstractCookieAttributeHandler
     , public ICookieAttributeHandler
 {
 public:
-    virtual ~AbstractCookieAttributeHandler() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI Validate(

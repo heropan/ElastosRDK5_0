@@ -24,7 +24,7 @@ namespace Core {
  * <p>
  * <a href="http://www.netlib.org/fdlibm/">http://www.netlib.org/fdlibm/</a>
  */
-class StrictMath
+class ECO_PUBLIC StrictMath
 {
 public:
     /**
@@ -948,25 +948,25 @@ public:
 
 private:
 
-    static CARAPI_(Double) NativeNextAfter(
+    ECO_LOCAL static CARAPI_(Double) NativeNextAfter(
         /* [in] */ Double x,
         /* [in] */ Double y);
 
     // Shifts integer bits as Float, if the digits is positive, left-shift; if
     // not, shift to right and calculate its carry.
-    static CARAPI_(Int32) ShiftInt32Bits(
+    ECO_LOCAL static CARAPI_(Int32) ShiftInt32Bits(
         /* [in] */ Int32 bits,
         /* [in] */ Int32 digits);
 
     // Shifts Int64 bits as Double, if the digits is positive, left-shift; if
     // not, shift to right and calculate its carry.
-    static CARAPI_(Int64) ShiftInt64Bits(
+    ECO_LOCAL static CARAPI_(Int64) ShiftInt64Bits(
         /* [in] */ Int64 bits,
         /* [in] */ Int64 digits);
 
 private:
-    StrictMath();
-    StrictMath(const StrictMath&);
+    ECO_LOCAL StrictMath();
+    ECO_LOCAL StrictMath(const StrictMath&);
 };
 
 } // namespace Core

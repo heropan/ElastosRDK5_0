@@ -177,41 +177,6 @@ open(R_FILE, $R_filename) || die "ERROR:can not open file $R_filename\n";
 @array_file = <R_FILE>;
 close(R_FILE);
 
-$W_filename="$TARGET_MAME\_dllmain.c";
-open(W_FILE, ">$W_filename") || die "ERROR:can not open file $W_filename\n";
-select W_FILE;
-
-print "#define DLL_PROCESS_ATTACH 1\n";
-print "#define DLL_PROCESS_DETACH 0\n\n";
-print "int _DllMainCRTStartup(\n";
-print "    void* hDllHandle,\n";
-print "    unsigned int dwReason,\n";
-print "    void* preserved);\n\n";
-print "#ifdef _linux \n";
-print "static __attribute((constructor)) void DllInitialize(void)\n";
-print "{\n";
-print "    _DllMainCRTStartup((void*)&DllInitialize, DLL_PROCESS_ATTACH, 0);\n";
-print "}\n\n";
-print "static __attribute((destructor)) void DllDestory(void)\n";
-print "{\n";
-print "    _DllMainCRTStartup((void*)&DllInitialize, DLL_PROCESS_DETACH, 0);\n";
-print "}\n\n";
-print "#endif \n\n";
-print "#ifndef _USE_MY_DLLMAIN_\n";
-print "#ifndef _win32\n";
-print "#define __stdcall\n";
-print "#endif\n";
-print "extern int __stdcall DllMain(\n";
-print "    void* hDllHandle,\n";
-print "    unsigned int dwReason,\n";
-print "    void* preserved)\n";
-print "{\n";
-print "    return 1;\n";
-print "}\n";
-print "#endif // _USE_MY_DLLMAIN_\n\n";
-
-close(W_FILE);
-
 ################################################################################
 #EXP C
 open(R_FILE, $R_filename) || die "ERROR:can not open file $R_filename\n";

@@ -28,8 +28,6 @@ class AbstractAuthenticationHandler
 public:
     AbstractAuthenticationHandler() {}
 
-    virtual ~AbstractAuthenticationHandler() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI SelectScheme(

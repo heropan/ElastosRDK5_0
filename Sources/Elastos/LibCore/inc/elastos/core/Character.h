@@ -87,7 +87,7 @@ namespace Core {
  *
  * @since 1.0
  */
-class Character
+class ECO_PUBLIC Character
     : public Object
     , public ISerializable
     , public IComparable
@@ -950,9 +950,9 @@ public:
         static const AutoPtr<UnicodeBlock> SUPPLEMENTARY_PRIVATE_USE_AREA_B;
 
     private:
-        static void InitBlocks();
+        ECO_LOCAL static void InitBlocks();
 
-        static AutoPtr<ArrayOf<UnicodeBlock*> > BLOCKS;// BLOCKS[126]
+        ECO_LOCAL static AutoPtr<ArrayOf<UnicodeBlock*> > BLOCKS;// BLOCKS[126]
     };
 
 public:
@@ -1613,93 +1613,93 @@ public:
 
 private:
     // prohibit 'new' operator
-    void* operator new(size_t cb);
+    ECO_LOCAL void* operator new(size_t cb);
 
-    Character() {}
+    ECO_LOCAL Character() {}
 
-    Character& operator= (const Character& c) { return *this; }
+    ECO_LOCAL Character& operator= (const Character& c) { return *this; }
 
-    Character(const Character& c) {}
+    ECO_LOCAL Character(const Character& c) {}
 
-    static CARAPI_(Int32) ForNameImpl(
+    ECO_LOCAL static CARAPI_(Int32) ForNameImpl(
         /* [in] */ const String& blockName);
 
-    static CARAPI_(Int32) OfImpl(
+    ECO_LOCAL static CARAPI_(Int32) OfImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Int32) DigitImpl(
+    ECO_LOCAL static CARAPI_(Int32) DigitImpl(
         /* [in] */ Int32 codePoint,
         /* [in] */ Int32 radix);
 
-    static CARAPI_(Int32) GetNumericValueImpl(
+    ECO_LOCAL static CARAPI_(Int32) GetNumericValueImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Int32) GetTypeImpl(
+    ECO_LOCAL static CARAPI_(Int32) GetTypeImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Byte) GetDirectionalityImpl(
+    ECO_LOCAL static CARAPI_(Byte) GetDirectionalityImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsMirroredImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsMirroredImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsDefinedImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsDefinedImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsDigitImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsDigitImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsIdentifierIgnorableImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsIdentifierIgnorableImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsLetterImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsLetterImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsLetterOrDigitImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsLetterOrDigitImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsLowerCaseImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsLowerCaseImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsSpaceCharImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsSpaceCharImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsTitleCaseImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsTitleCaseImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsUnicodeIdentifierPartImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsUnicodeIdentifierPartImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsUnicodeIdentifierStartImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsUnicodeIdentifierStartImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsUpperCaseImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsUpperCaseImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Boolean) IsWhitespaceImpl(
+    ECO_LOCAL static CARAPI_(Boolean) IsWhitespaceImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Int32) ToLowerCaseImpl(
+    ECO_LOCAL static CARAPI_(Int32) ToLowerCaseImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Int32) ToTitleCaseImpl(
+    ECO_LOCAL static CARAPI_(Int32) ToTitleCaseImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Int32) ToUpperCaseImpl(
+    ECO_LOCAL static CARAPI_(Int32) ToUpperCaseImpl(
         /* [in] */ Int32 codePoint);
 
-    static CARAPI_(Int32) GetCharAt(
+    ECO_LOCAL static CARAPI_(Int32) GetCharAt(
         /* [in] */ const char* src,
         /* [in] */ Int32 srcLen,
         /* [in] */ Int32 index,
         /* [out] */ Int32* nextIndex);
 
-    static CARAPI_(Int32) GetCharAtInternal(
+    ECO_LOCAL static CARAPI_(Int32) GetCharAtInternal(
         /* [in] */ const char* cur,
         /* [out] */ Int32* numRead);
 
     // Write out the source character to <dstP>.
-    static CARAPI_(void) WriteUTFBytesToBuffer(
+    ECO_LOCAL static CARAPI_(void) WriteUTFBytesToBuffer(
         /* [in] */ Byte* dstP,
         /* [in] */ Char32 srcChar,
         /* [in] */ Int32 bytes);
@@ -2079,7 +2079,7 @@ public:
     static const Int32 SIZE;
 
 private:
-    static const Byte DIRECTIONALITY[];
+    ECO_LOCAL static const Byte DIRECTIONALITY[];
 };
 
 } // namespace Core

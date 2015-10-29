@@ -12,6 +12,9 @@ namespace Http {
 namespace Impl {
 namespace Cookie {
 
+RFC2109VersionHandler::RFC2109VersionHandler()
+{}
+
 ECode RFC2109VersionHandler::Parse(
     /* [in] */ ISetCookie* cookie,
     /* [in] */ const String& value)

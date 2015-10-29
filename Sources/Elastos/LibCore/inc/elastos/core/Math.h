@@ -17,7 +17,7 @@ namespace Core {
  * @brief Provides constants and static methods for trigonometric, logarithmic,
  * and other common mathematical functions.
  */
-class Math
+class ECO_PUBLIC Math
 {
 public:
 
@@ -255,7 +255,7 @@ private:
      * online, Figure 5-18 (http://www.hackersdelight.org/revisions.pdf)
      * The entries whose value is -1 are never referenced.
      */
-    static const Int32 IntegerNtzTable[];
+    ECO_LOCAL static const Int32 IntegerNtzTable[];
 
 public:
     static CARAPI_(Boolean) Constrain(Int32 amount, Int32 low, Int32 high);
@@ -1490,11 +1490,11 @@ public:
         /* [in] */ Double float2);
 
 private:
-    static CARAPI_(Double) NativeNextAfter(
+    ECO_LOCAL static CARAPI_(Double) NativeNextAfter(
         /* [in] */ Double x,
         /* [in] */ Double y);
 
-    static CARAPI_(Float) NativeNextAfter(
+    ECO_LOCAL static CARAPI_(Float) NativeNextAfter(
         /* [in] */ Float x,
         /* [in] */ Float y);
 
@@ -1502,7 +1502,7 @@ private:
      * @brief Shifts integer bits as Float, if the digits is positive, left-shift; if
      * not, shift to right and calculate its carry.
      */
-    static CARAPI_(Int32) ShiftInt32Bits(
+    ECO_LOCAL static CARAPI_(Int32) ShiftInt32Bits(
         /* [in] */ Int32 bits,
         /* [in] */ Int32 digits);
 
@@ -1510,16 +1510,16 @@ private:
      * @brief Shifts Int64 bits as Double, if the digits is positive, left-shift; if
      * not, shift to right and calculate its carry.
      */
-    static CARAPI_(Int64) ShiftInt64Bits(
+    ECO_LOCAL static CARAPI_(Int64) ShiftInt64Bits(
         /* [in] */ Int64 bits,
         /* [in] */ Int64 digits);
 
 private:
-    Math();
-    Math(const Math&);
+    ECO_LOCAL Math();
+    ECO_LOCAL Math(const Math&);
 
 private:
-    static AutoPtr<IRandom> mRandom;
+    ECO_LOCAL static AutoPtr<IRandom> mRandom;
 };
 
 } // namespace Core

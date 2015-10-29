@@ -24,8 +24,6 @@ class AbstractSessionOutputBuffer
 public:
     AbstractSessionOutputBuffer();
 
-    virtual ~AbstractSessionOutputBuffer() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI Flush();

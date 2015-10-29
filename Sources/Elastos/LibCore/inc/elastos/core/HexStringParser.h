@@ -14,14 +14,14 @@ public:
     /*
      * Parses the hex string to a double number.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& hexString,
         /* [out] */ Double* result);
 
     /*
      * Parses the hex string to a float number.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& hexString,
         /* [out] */ Float* result);
 
@@ -40,46 +40,46 @@ private:
     /*
      * Parses the sign field.
      */
-     void ParseHexSign(
+    CARAPI_(void) ParseHexSign(
         /* [in] */ const String& signStr);
 
     /*
      * Parses the exponent field.
      */
-     void ParseExponent(
+    CARAPI_(void) ParseExponent(
         /* [in] */ const String& signStr);
 
     /*
      * Parses the mantissa field.
      */
-     void ParseMantissa(
+    CARAPI_(void) ParseMantissa(
         /* [in] */ const String& signStr);
 
-    void SetInfinite();
+    CARAPI_(void) SetInfinite();
 
-    void SetZero();
+    CARAPI_(void) SetZero();
 
     /*
      * Sets the exponent variable to Long.MAX_VALUE or -Long.MAX_VALUE if
      * overflow or underflow happens.
      */
-    void CheckedAddExponent(
+    CARAPI_(void) CheckedAddExponent(
         /* [in] */ Int64 offset);
 
-    void ProcessNormalNumber();
+    CARAPI_(void) ProcessNormalNumber();
 
-    void ProcessSubNormalNumber();
+    CARAPI_(void) ProcessSubNormalNumber();
 
     /*
      * Adjusts the mantissa to desired width for further analysis.
      */
-    void FitMantissaInDesiredWidth(
+    CARAPI_(void) FitMantissaInDesiredWidth(
         /* [in] */ Int32 desiredWidth);
 
     /*
      * Stores the discarded bits to abandonedNumber.
      */
-    void DiscardTrailingBits(
+    CARAPI_(void) DiscardTrailingBits(
         /* [in] */ Int64 num);
 
     /*
@@ -87,12 +87,12 @@ private:
      * If the value is exactly halfway between two infinitely precise results,
      * then it should be rounded up to the nearest infinitely precise even.
      */
-    void Round();
+    CARAPI_(void) Round();
 
     /*
      * Returns the normalized significand after removing the leading zeros.
      */
-    String GetNormalizedSignificand(
+    CARAPI_(String) GetNormalizedSignificand(
         /* [in] */ const String& strIntegerPart,
         /* [in] */ const String& strDecimalPart);
 
@@ -102,11 +102,11 @@ private:
      * characters "0x1." followed by a lowercase hexadecimal representation of
      * the rest of the significand as a fraction.
      */
-    Int32 GetOffset(
+    CARAPI_(Int32) GetOffset(
         /* [in] */ const String& strIntegerPart,
         /* [in] */ const String& strDecimalPart);
 
-    Int32 CountBitsLength(
+    CARAPI_(Int32) CountBitsLength(
         /* [in] */ Int64 value);
 
 private:

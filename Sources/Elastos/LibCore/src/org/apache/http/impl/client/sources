@@ -23,6 +23,7 @@ SOURCES += DefaultProxyAuthenticationHandler.cpp
 SOURCES += DefaultRedirectHandler.cpp
 SOURCES += DefaultRequestDirector.cpp
 SOURCES += DefaultTargetAuthenticationHandler.cpp
+SOURCES += DefaultUserTokenHandler.cpp
 SOURCES += RequestWrapper.cpp
 SOURCES += EntityEnclosingRequestWrapper.cpp
 SOURCES += RedirectLocations.cpp

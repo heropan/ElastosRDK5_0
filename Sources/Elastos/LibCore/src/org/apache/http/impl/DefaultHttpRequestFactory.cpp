@@ -22,7 +22,7 @@ static AutoPtr< ArrayOf<String> > InitCommonMethods()
     (*array)[0] = String("GET");
     return array;
 }
-static const AutoPtr< ArrayOf<String> > RFC2616_COMMON_METHODS = InitCommonMethods();
+const AutoPtr< ArrayOf<String> > DefaultHttpRequestFactory::RFC2616_COMMON_METHODS = InitCommonMethods();
 
 static AutoPtr< ArrayOf<String> > InitEntityEncMethods()
 {
@@ -31,7 +31,7 @@ static AutoPtr< ArrayOf<String> > InitEntityEncMethods()
     (*array)[1] = String("PUT");
     return array;
 }
-static const AutoPtr< ArrayOf<String> > RFC2616_ENTITY_ENC_METHODS = InitEntityEncMethods();
+const AutoPtr< ArrayOf<String> > DefaultHttpRequestFactory::RFC2616_ENTITY_ENC_METHODS = InitEntityEncMethods();
 
 static AutoPtr< ArrayOf<String> > InitSpecialMethods()
 {
@@ -42,7 +42,7 @@ static AutoPtr< ArrayOf<String> > InitSpecialMethods()
     (*array)[3] = String("TRACE");
     return array;
 }
-static const AutoPtr< ArrayOf<String> > RFC2616_SPECIAL_METHODS = InitSpecialMethods();
+const AutoPtr< ArrayOf<String> > DefaultHttpRequestFactory::RFC2616_SPECIAL_METHODS = InitSpecialMethods();
 
 DefaultHttpRequestFactory::DefaultHttpRequestFactory()
 {}

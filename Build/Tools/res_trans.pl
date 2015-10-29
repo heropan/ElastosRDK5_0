@@ -4,6 +4,43 @@ $R_filename=$ARGV[0];
 $SourcesType=$ARGV[1];
 $Sources=$ARGV[2];
 
+################################################################################
+#DLL
+$W_filename="\_\_dllmain.cpp";
+open(W_FILE, ">$W_filename") || die "ERROR:can not open file $W_filename\n";
+select W_FILE;
+
+print "#define DLL_PROCESS_ATTACH 1\n";
+print "#define DLL_PROCESS_DETACH 0\n\n";
+print "extern \"C\" int _DllMainCRTStartup(\n";
+print "    void* hDllHandle,\n";
+print "    unsigned int dwReason,\n";
+print "    void* preserved);\n\n";
+print "#ifdef _linux \n";
+print "static __attribute((constructor)) void DllInitialize(void)\n";
+print "{\n";
+print "    _DllMainCRTStartup((void*)&DllInitialize, DLL_PROCESS_ATTACH, 0);\n";
+print "}\n\n";
+print "static __attribute((destructor)) void DllDestory(void)\n";
+print "{\n";
+print "    _DllMainCRTStartup((void*)&DllInitialize, DLL_PROCESS_DETACH, 0);\n";
+print "}\n\n";
+print "#endif \n\n";
+print "#ifndef _USE_MY_DLLMAIN_\n";
+print "#ifndef _win32\n";
+print "#define __stdcall\n";
+print "#endif\n";
+print "extern \"C\" int __stdcall DllMain(\n";
+print "    void* hDllHandle,\n";
+print "    unsigned int dwReason,\n";
+print "    void* preserved)\n";
+print "{\n";
+print "    return 1;\n";
+print "}\n";
+print "#endif // _USE_MY_DLLMAIN_\n\n";
+
+close(W_FILE);
+
 if ($SourcesType eq "ecx") {
     $BUILD_DATE=time();
     $CAR_CODE=0;

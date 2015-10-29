@@ -322,7 +322,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           endif
     endif
     ifeq "$(XDK_TARGET_PLATFORM)" "android"
-         DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--no-undefined,--no-undefined-version
+          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--no-gc-sections -Wl,--no-undefined,--no-undefined-version -Wl,--whole-archive
           ifeq "$(EXPORT_ALL_SYMBOLS)" ""
               DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
           else
@@ -457,10 +457,10 @@ ifeq "$(XDK_TARGET_CPU)" "arm"
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "android"
 #    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fpermissive $(C_FLAGS)
-    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -Wno-unused-local-typedefs $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -funwind-tables -fstack-protector -Wno-unused-local-typedefs $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -funwind-tables -fstack-protector $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "jil"
     C_FLAGS:= -mthumb -mthumb-interwork $(C_FLAGS)
@@ -557,7 +557,6 @@ ifneq "$(LIBRARIES)" ""
   LIBRARIES:= $(filter-out \,$(LIBRARIES))
 endif
 
-
 .LIBPATTERNS = lib%.so lib%.a
 
 ifneq "$(ELASTOS_LIBS)" ""
@@ -593,7 +592,7 @@ ifneq "$(SOURCES)" ""
     OBJECTS := $(OBJECTS:.def=.exp)
     OBJECTS := $(OBJECTS:.car=.rsc)
     OBJECTS := $(strip $(OBJECTS))        # remove multiple spaces
-    RESSECTION = __section.o
+    RESSECTION = __section.o __dllmain.o
   endif
 endif
 

@@ -35,7 +35,7 @@ ECode Permission::NewPermissionCollection(
     /* [out] */ IPermissionCollection **coll)
 {
     VALIDATE_NOT_NULL(coll)
-    *coll = new AllPermissionCollection;
+    *coll = new AllPermissionCollection();
     REFCOUNT_ADD(*coll)
     return NOERROR;
 }

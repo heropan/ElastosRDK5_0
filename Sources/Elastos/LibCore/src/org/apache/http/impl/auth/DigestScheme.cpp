@@ -68,8 +68,8 @@ static AutoPtr< ArrayOf<Char32> > InitHEXADECIMAL()
     (*array)[15] = 'f';
     return array;
 }
-static const AutoPtr< ArrayOf<Char32> > HEXADECIMAL = InitHEXADECIMAL();
-static const String NC("00000001"); //nonce-count is always 1
+const AutoPtr< ArrayOf<Char32> > DigestScheme::HEXADECIMAL = InitHEXADECIMAL();
+const String DigestScheme::NC("00000001"); //nonce-count is always 1
 const Int32 DigestScheme::QOP_MISSING;
 const Int32 DigestScheme::QOP_AUTH_INT;
 const Int32 DigestScheme::QOP_AUTH;

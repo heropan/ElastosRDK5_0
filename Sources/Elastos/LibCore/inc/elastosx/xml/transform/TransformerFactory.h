@@ -195,7 +195,7 @@ public:
      * @return The URIResolver that was set with setURIResolver.
      */
     virtual CARAPI GetURIResolver(
-        /* [out] */ IURIResolver** urir);
+        /* [out] */ IURIResolver** urir) = 0;
 
     //======= CONFIGURATION METHODS =======
 
@@ -272,7 +272,7 @@ public:
      */
     virtual CARAPI SetAttribute(
         /* [in] */ const String& name,
-        /* [in] */ IObject* value) = 0;
+        /* [in] */ IInterface* value) = 0;
 
     /**
      * Allows the user to retrieve specific attributes on the underlying
@@ -285,7 +285,7 @@ public:
      */
     virtual CARAPI GetAttribute(
         /* [in] */ const String& name,
-        /* [out] */ IObject** attr);
+        /* [out] */ IInterface** attr) = 0;
 
     /**
      * Set the error event listener for the TransformerFactory, which
@@ -297,7 +297,7 @@ public:
      * @param listener The new error listener.
      */
     virtual CARAPI SetErrorListener(
-        /* [in] */ IErrorListener* listener);
+        /* [in] */ IErrorListener* listener) = 0;
 
     /**
      * Get the error event handler for the TransformerFactory.
@@ -305,7 +305,7 @@ public:
      * @return The current error handler, which should never be null.
      */
     virtual CARAPI GetErrorListener(
-        /* [out] */ IErrorListener** el);
+        /* [out] */ IErrorListener** el) = 0;
 };
 
 } // namespace Transform

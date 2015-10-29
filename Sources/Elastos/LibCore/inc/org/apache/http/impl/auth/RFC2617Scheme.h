@@ -24,8 +24,6 @@ class RFC2617Scheme : public AuthSchemeBase
 public:
     RFC2617Scheme();
 
-    virtual ~RFC2617Scheme() = 0;
-
     /**
      * Returns authentication parameter with the given name, if available.
      *

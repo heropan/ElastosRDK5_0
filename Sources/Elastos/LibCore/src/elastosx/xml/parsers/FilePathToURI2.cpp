@@ -17,12 +17,12 @@ namespace Parsers {
 Boolean FilePathToURI::gNeedEscaping[128];
 
 // the first hex character if a character needs to be escaped
-char FilePathToURI::gAfterEscaping1[128];
+Char32 FilePathToURI::gAfterEscaping1[128];
 
 // the second hex character if a character needs to be escaped
-char FilePathToURI::gAfterEscaping2[128];
+Char32 FilePathToURI::gAfterEscaping2[128];
 
-char FilePathToURI::gHexChs[HEXCHS_NUM] = {'0', '1', '2', '3', '4', '5', '6', '7',
+Char32 FilePathToURI::gHexChs[HEXCHS_NUM] = {'0', '1', '2', '3', '4', '5', '6', '7',
              '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
 Boolean FilePathToURI::Init()
@@ -35,10 +35,10 @@ Boolean FilePathToURI::Init()
     gNeedEscaping[0x7f] = TRUE;
     gAfterEscaping1[0x7f] = '7';
     gAfterEscaping2[0x7f] = 'F';
-    char escChs[ESCCHS_NUM] = {' ', '<', '>', '#', '%', '"', '{', '}',
+    Char32 escChs[ESCCHS_NUM] = {' ', '<', '>', '#', '%', '"', '{', '}',
                      '|', '\\', '^', '~', '[', ']', '`'};
     Int32 len = ESCCHS_NUM;
-    char ch;
+    Char32 ch;
     for (Int32 i = 0; i < len; i++) {
         ch = escChs[i];
         Int32 tmp = ch;
@@ -52,14 +52,13 @@ Boolean FilePathToURI::Init()
 Boolean FilePathToURI::sIsInitStatic = Init();
 
 String FilePathToURI::Filepath2URI(
-    /* [in] */ String path)
+    /* [in] */ const String& _path)
 {
     // return null if path is null.
-    if (path == NULL)
-        return path;
+    if (_path.IsNull()) return _path;
 
-    char separator = File::sSeparatorChar;
-    path = path.Replace(separator, '/');
+    Char32 separator = File::sSeparatorChar;
+    String path = _path.Replace(separator, '/');
 
     Int32 len = path.GetLength(), ch;
     StringBuilder buffer(len*3);

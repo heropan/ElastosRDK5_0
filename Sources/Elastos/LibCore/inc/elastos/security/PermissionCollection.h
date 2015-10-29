@@ -18,16 +18,6 @@ class PermissionCollection
 public:
     CAR_INTERFACE_DECL();
 
-    virtual CARAPI Add(
-        /* [in] */ IPermission *permission) = 0;
-
-    virtual CARAPI GetElements(
-        /* [out] */ IEnumeration **elems) = 0;
-
-    virtual CARAPI Implies(
-        /* [in] */ IPermission *permission,
-        /* [out] */ Boolean *ret) = 0;
-
     virtual CARAPI IsReadOnly(
         /* [out] */ Boolean *ret);
 

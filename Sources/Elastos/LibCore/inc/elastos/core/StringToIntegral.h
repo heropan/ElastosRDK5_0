@@ -2,15 +2,13 @@
 #ifndef __ELASTOS_CORE_STRING_TO_INTEGRAL_H__
 #define __ELASTOS_CORE_STRING_TO_INTEGRAL_H__
 
-#include <elastos.h>
-#include <elstring.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Core {
 
-class StringToIntegral
+class StringToIntegral : public Object
 {
-
 public:
     //=============================================================================
     //             Int16
@@ -28,7 +26,7 @@ public:
      * @throws NumberFormatException
      *             if {@code string} cannot be parsed as a short value.
      */
-    static CARAPI Decode(
+    ECO_PUBLIC static CARAPI Decode(
         /* [in] */ const String& string,
         /* [out] */ Int16* result);
 
@@ -42,7 +40,7 @@ public:
      * @throws NumberFormatException
      *             if {@code string} cannot be parsed as a short value.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ Int16* result);
 
@@ -61,7 +59,7 @@ public:
      *             {@code radix < Character.MIN_RADIX ||
      *             radix > Character.MAX_RADIX}.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ Int32 radix,
         /* [out] */ Int16* result);
@@ -82,7 +80,7 @@ public:
      * @throws NumberFormatException
      *             if {@code string} cannot be parsed as an integer value.
      */
-    static CARAPI Decode(
+    ECO_PUBLIC static CARAPI Decode(
         /* [in] */ const String& string,
         /* [out] */ Int32* result);
 
@@ -96,7 +94,7 @@ public:
      * @throws NumberFormatException
      *             if {@code string} cannot be parsed as an integer value.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ Int32* result);
 
@@ -115,7 +113,7 @@ public:
      *             or {@code radix < Character.MIN_RADIX ||
      *             radix > Character.MAX_RADIX}.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ Int32 radix,
         /* [out] */ Int32* result);
@@ -135,7 +133,7 @@ public:
      * @throws NumberFormatException
      *             if {@code string} cannot be parsed as a long value.
      */
-    static CARAPI Decode(
+    ECO_PUBLIC static CARAPI Decode(
         /* [in] */ const String& string,
         /* [out] */ Int64* result);
 
@@ -149,7 +147,7 @@ public:
      * @throws NumberFormatException
      *             if {@code string} cannot be parsed as a long value.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [out] */ Int64* result);
 
@@ -168,12 +166,12 @@ public:
      *             {@code radix < Character.MIN_RADIX ||
      *             radix > Character.MAX_RADIX}.
      */
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ Int32 radix,
         /* [out] */ Int64* result);
 
-    static CARAPI Parse(
+    ECO_PUBLIC static CARAPI Parse(
         /* [in] */ const String& string,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 radix,

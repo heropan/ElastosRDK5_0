@@ -1,14 +1,15 @@
 
-#include "DefaultUserTokenHandler.h"
-#include <elastos/Logger.h>
+#include "org/apache/http/impl/client/DefaultUserTokenHandler.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
-using Elasotsx::Net::Ssl::ISSLSession;
+using Elastosx::Net::Ssl::ISSLSession;
 using Org::Apache::Http::Auth::IAuthScheme;
 using Org::Apache::Http::Auth::ICredentials;
+using Org::Apache::Http::Client::EIID_IUserTokenHandler;
 using Org::Apache::Http::Client::Protocol::IClientContext;
 using Org::Apache::Http::Conn::IManagedClientConnection;
-using Org::Apache::Http::Protocol::IExecutionContext
+using Org::Apache::Http::Protocol::IExecutionContext;
 
 namespace Org {
 namespace Apache {
@@ -16,7 +17,7 @@ namespace Http {
 namespace Impl {
 namespace Client {
 
-CAR_INTERFACE_DECL(DefaultUserTokenHandler, Object, IUserTokenHandler)
+CAR_INTERFACE_IMPL(DefaultUserTokenHandler, Object, IUserTokenHandler)
 
 ECode DefaultUserTokenHandler::GetUserToken(
     /* [in] */ IHttpContext* context,
@@ -40,10 +41,10 @@ ECode DefaultUserTokenHandler::GetUserToken(
 
     if (userPrincipal == NULL) {
         AutoPtr<IInterface> connAttr;
-        context->GetAttribute(IExecutionContext::TARGET_AUTH_STATE, (IInterface**)&attr);
+        context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IInterface**)&attr);
         AutoPtr<IManagedClientConnection> conn = IManagedClientConnection::Probe(connAttr);
         Boolean isOpen;
-        if (conn->IsOpen(&isOpen), isOpen) {
+        if (IHttpConnection::Probe(conn)->IsOpen(&isOpen), isOpen) {
             AutoPtr<ISSLSession> sslsession;
             conn->GetSSLSession((ISSLSession**)&sslsession);
             if (sslsession != NULL) {

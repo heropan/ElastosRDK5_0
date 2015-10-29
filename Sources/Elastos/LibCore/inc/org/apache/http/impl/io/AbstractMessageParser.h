@@ -33,8 +33,6 @@ public:
         /* [in] */ ILineParser* parser,
         /* [in] */ IHttpParams* params);
 
-    virtual ~AbstractMessageParser() = 0;
-
     CAR_INTERFACE_DECL()
 
     /**

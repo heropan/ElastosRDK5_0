@@ -30,8 +30,6 @@ class AuthSchemeBase
 public:
     AuthSchemeBase();
 
-    virtual ~AuthSchemeBase() = 0;
-
     CAR_INTERFACE_DECL()
 
     CARAPI ProcessChallenge(

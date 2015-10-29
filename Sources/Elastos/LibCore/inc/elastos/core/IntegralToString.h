@@ -2,8 +2,7 @@
 #ifndef __ELASTOS_CORE_INTEGRAL_TO_STRING_H__
 #define __ELASTOS_CORE_INTEGRAL_TO_STRING_H__
 
-#include <elastos.h>
-#include <elstring.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Core {
@@ -28,37 +27,37 @@ class StringBuilder;
  *
  * @hide
  */
-class IntegralToString
+class IntegralToString : public Object
 {
 public:
     /**
      * Equivalent to Integer.toString(i, radix).
      */
-    static CARAPI_(String) ToString(Int32 i, Int32 radix = 10);
+    ECO_PUBLIC static CARAPI_(String) ToString(Int32 i, Int32 radix = 10);
 
     /**
      * Equivalent to Long.toString(v, radix).
      */
-    static CARAPI_(String) ToString(Int64 v, Int32 radix = 10);
+    ECO_PUBLIC static CARAPI_(String) ToString(Int64 v, Int32 radix = 10);
 
-    static CARAPI_(String) ToBinaryString(Int32 i);
+    ECO_PUBLIC static CARAPI_(String) ToBinaryString(Int32 i);
 
-    static CARAPI_(String) ToBinaryString(Int64 v);
+    ECO_PUBLIC static CARAPI_(String) ToBinaryString(Int64 v);
 
-    static CARAPI_(StringBuilder&) AppendByteAsHex(
+    ECO_PUBLIC static CARAPI_(StringBuilder&) AppendByteAsHex(
             StringBuilder& sb, Byte b, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) ToHexString(Byte b, Boolean upperCase = TRUE);
+    ECO_PUBLIC static CARAPI_(String) ToHexString(Byte b, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) ToHexString(ArrayOf<Byte>& bytes, Boolean upperCase = TRUE);
+    ECO_PUBLIC static CARAPI_(String) ToHexString(ArrayOf<Byte>& bytes, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) ToHexString(Int32 i, Boolean upperCase = TRUE, Int32 minWidth = 0);
+    ECO_PUBLIC static CARAPI_(String) ToHexString(Int32 i, Boolean upperCase = TRUE, Int32 minWidth = 0);
 
-    static CARAPI_(String) ToHexString(Int64 v, Boolean upperCase = TRUE);
+    ECO_PUBLIC static CARAPI_(String) ToHexString(Int64 v, Boolean upperCase = TRUE);
 
-    static CARAPI_(String) ToOctalString(Int32 i);
+    ECO_PUBLIC static CARAPI_(String) ToOctalString(Int32 i);
 
-    static CARAPI_(String) ToOctalString(Int64 v);
+    ECO_PUBLIC static CARAPI_(String) ToOctalString(Int64 v);
 
 private:
     /**

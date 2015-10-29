@@ -22,11 +22,15 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 #INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
 #INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 
+SOURCES += AllPermissionCollection.cpp
+SOURCES += BasicPermission.cpp
 SOURCES += CMessageDigestHelper.cpp
 SOURCES += CProviderService.cpp
 SOURCES += CSecurity.cpp
 SOURCES += MessageDigest.cpp
 SOURCES += MessageDigestSpi.cpp
+SOURCES += Permission.cpp
+SOURCES += PermissionCollection.cpp
 SOURCES += Provider.cpp
 SOURCES += Signature.cpp
 SOURCES += SignatureSpi.cpp

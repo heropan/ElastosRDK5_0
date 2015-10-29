@@ -96,7 +96,7 @@ public:
         /* [in] */ BasicPoolEntry* entry,
         /* [in] */ Boolean reusable,
         /* [in] */ Int64 validDuration,
-        /* [in] */ ITimeUnit* timeUnit);
+        /* [in] */ ITimeUnit* timeUnit) = 0;
 
     CARAPI HandleReference(
         /* [in] */ IInterface* ref);
@@ -129,8 +129,6 @@ public:
 
 protected:
     AbstractConnPool();
-
-    virtual ~AbstractConnPool() = 0;
 
     /**
      * Handles cleaning up for a lost pool entry with the given route.

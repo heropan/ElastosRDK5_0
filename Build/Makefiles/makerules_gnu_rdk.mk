@@ -146,7 +146,9 @@ ifeq "$(TARGET_TYPE)" "dll"
 	fi
 	-mv __section.cpp __section0.cpp;
 endif
-	$(CC) $(C_DEFINES) -c -fno-builtin -o __$*_dllmain.o __$*_dllmain.c
+	if [ -e "__dllmain.cpp" ]; then \
+		$(CC) $(C_DEFINES) -c -fno-builtin -o __dllmain.o __dllmain.cpp; \
+	fi
 	$(CC) $(C_DEFINES) -c -fno-builtin -o $*.def __$*_exp.c
 #	$(CC) $(C_DEFINES) -fPIC -c -fno-builtin -o __$*_dllmain.o __$*_dllmain.c
 #	$(CC) $(C_DEFINES) -fPIC -c -fno-builtin -o $*.def __$*_exp.c
@@ -170,7 +172,6 @@ ifneq "$(filter %.res,$(OBJECTS))" ""
 	echo "g_pDllResource     DATA">> __$*.def
 endif
 endif
-	perl $(XDK_TOOLS)/def_trans.pl __$*.def
 ifeq "$(TARGET_TYPE)" "dso"
 	perl $(XDK_TOOLS)/res_trans.pl __$*.def "def" "$(SOURCES)"
 	if [ -e "__section.cpp" ]; then \
@@ -192,7 +193,7 @@ ifeq "$(TARGET_TYPE)" "dll"
 	fi
 	-mv __section.cpp __section0.cpp;
 endif
-	$(CC) $(C_DEFINES) -c -fno-builtin -o __$*_dllmain.o __$*_dllmain.c
+	$(CC) $(C_DEFINES) -c -fno-builtin -o __dllmain.o __dllmain.cpp
 	$(CC) $(C_DEFINES) -c -fno-builtin -o $*.def __$*_exp.c
 	touch $*.exp
 endif
@@ -350,6 +351,10 @@ ifeq "$(TARGET_TYPE)" "eco"
 	if [ -e "__section.cpp" ]; then \
 		$(CXX) $(CPP_FLAGS) $(C_FLAGS) -o __section.o __section.cpp; \
 		$(MV) __section.cpp __section0.cpp; \
+	fi
+	if [ -e "__dllmain.cpp" ]; then \
+		$(CXX) $(CPP_FLAGS) $(C_FLAGS) -o __dllmain.o __dllmain.cpp; \
+		$(MV) __dllmain.cpp __dllmain0.cpp; \
 	fi
 	$(CC) $(C_FLAGS) -o $@ __$*.cpp
 endif

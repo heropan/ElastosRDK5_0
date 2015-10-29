@@ -2,24 +2,23 @@
 #ifndef __ELASTOS_CORE_REAL_TO_STRING_H__
 #define __ELASTOS_CORE_REAL_TO_STRING_H__
 
-#include <elastos.h>
-#include <elstring.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Core {
 
 class StringBuilder;
 
-class RealToString
+class RealToString : public Object
 {
 public:
-    static RealToString* GetInstance();
+    ECO_PUBLIC static RealToString* GetInstance();
 
-    CARAPI_(String) ToString(Double d);
-    CARAPI_(String) Convert(Double inputNumber);
+    ECO_PUBLIC CARAPI_(String) ToString(Double d);
+    ECO_PUBLIC CARAPI_(String) Convert(Double inputNumber);
 
-    CARAPI_(String) ToString(Float f);
-    CARAPI_(String) Convert(Float inputNumber);
+    ECO_PUBLIC CARAPI_(String) ToString(Float f);
+    ECO_PUBLIC CARAPI_(String) Convert(Float inputNumber);
 
 private:
     RealToString();

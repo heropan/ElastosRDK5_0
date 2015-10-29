@@ -13,10 +13,12 @@ SOURCES += Dog.cpp
 SOURCES += helloCar.cpp
 SOURCES += CAnimalHelper.cpp
 SOURCES += CMyThread.cpp
+#SOURCES += dllmain.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += unsed/unused.lib
 LIBRARIES += -llog -lcutils

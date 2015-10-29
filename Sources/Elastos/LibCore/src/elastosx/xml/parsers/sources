@@ -17,10 +17,10 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/namespace
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/parsers
 INCLUDES += $(MAKEDIR)/../../../../inc/org/xml/sax
 
-SOURCES = FilePathToURI.cpp
+SOURCES += CSAXParserFactoryHelper.cpp
+SOURCES += CDocumentBuilderFactoryHelper.cpp
 SOURCES += DocumentBuilder.cpp
 SOURCES += DocumentBuilderFactory.cpp
+SOURCES += FilePathToURI2.cpp
 SOURCES += SAXParser.cpp
 SOURCES += SAXParserFactory.cpp
-SOURCES += CDocumentBuilderFactoryHelper.cpp
-SOURCES += CSAXParserFactoryHelper.cpp
