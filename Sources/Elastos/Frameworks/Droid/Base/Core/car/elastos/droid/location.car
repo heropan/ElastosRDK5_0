@@ -12,6 +12,7 @@ module
     merge("location/GeocoderParams.car");
     merge("location/Geofence.car");
     merge("location/GpsClock.car");
+    merge("location/GpsMeasurement.car");
     merge("location/GpsSatellite.car");
     merge("location/GpsStatus.car");
     merge("location/ICountryDetector.car");
@@ -121,6 +122,13 @@ module
             constructor();
 
             interface IGpsClock;
+            interface IParcelable;
+        }
+
+        class CGpsMeasurement {
+            constructor();
+
+            interface IGpsMeasurement;
             interface IParcelable;
         }
 

@@ -6,6 +6,7 @@
 #include "elastos/droid/location/CGeocoder.h"
 #include "elastos/droid/location/CGeocoderParams.h"
 #include "elastos/droid/location/CGpsClock.h"
+#include "elastos/droid/location/CGpsMeasurement.h"
 
 namespace Elastos {
 namespace Droid {
@@ -19,6 +20,7 @@ CAR_OBJECT_IMPL(CFusedBatchOptions)
 CAR_OBJECT_IMPL(CGeocoder)
 CAR_OBJECT_IMPL(CGeocoderParams)
 CAR_OBJECT_IMPL(CGpsClock)
+CAR_OBJECT_IMPL(CGpsMeasurement)
 } // Location
 } // Droid
 } // Elastos
