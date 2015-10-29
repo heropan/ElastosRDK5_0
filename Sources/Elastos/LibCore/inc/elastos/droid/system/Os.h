@@ -25,7 +25,7 @@ namespace Elastos {
 namespace Droid {
 namespace System {
 
-class Os
+class ECO_PUBLIC Os
 {
 public:
     static CARAPI Accept(
@@ -581,8 +581,8 @@ public:
         /* [out] */ Int32* result);
 
 private:
-    Os();
-    Os(const Os &);
+    ECO_LOCAL Os();
+    ECO_LOCAL Os(const Os &);
 };
 
 }// namespace System

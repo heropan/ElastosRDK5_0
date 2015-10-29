@@ -11,7 +11,7 @@ using Elastos::Core::ISynchronize;
 namespace Elastos {
 namespace IO {
 
-class Writer
+class ECO_PUBLIC Writer
     : public Object
     , public IWriter
     , public IAppendable

@@ -11,7 +11,7 @@ namespace Ssl {
 /**
  * The abstract factory implementation to create {@code SSLSocket}s.
  */
-class SSLSocketFactory
+class ECO_PUBLIC SSLSocketFactory
     : public SocketFactory
     , public ISSLSocketFactory
 {
@@ -80,11 +80,11 @@ private:
     // FIXME EXPORT CONTROL
 
     // The default SSL socket factory
-    static AutoPtr<ISocketFactory> sDefaultSocketFactory;
+    ECO_LOCAL static AutoPtr<ISocketFactory> sDefaultSocketFactory;
 
-    static Int32 sLastCacheVersion;
+    ECO_LOCAL static Int32 sLastCacheVersion;
 
-    static Object sLock;
+    ECO_LOCAL static Object sLock;
 };
 
 } // namespace Ssl

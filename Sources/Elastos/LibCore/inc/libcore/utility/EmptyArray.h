@@ -9,7 +9,7 @@ using Elastos::Core::IStackTraceElement;
 namespace Libcore {
 namespace Utility {
 
-class EmptyArray
+class ECO_PUBLIC EmptyArray
 {
 public:
     static const AutoPtr<ArrayOf<Boolean> > BOOLEAN;
@@ -26,8 +26,8 @@ public:
     static const AutoPtr<ArrayOf<IStackTraceElement*> > STACK_TRACE_ELEMENT;
 
 private:
-    EmptyArray();
-    EmptyArray(const EmptyArray&);
+    ECO_LOCAL EmptyArray();
+    ECO_LOCAL EmptyArray(const EmptyArray&);
 };
 
 } // namespace Utility

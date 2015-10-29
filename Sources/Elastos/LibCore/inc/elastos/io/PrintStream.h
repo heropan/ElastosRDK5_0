@@ -11,7 +11,7 @@ using Elastos::Utility::ILocale;
 namespace Elastos {
 namespace IO {
 
-class PrintStream
+class ECO_PUBLIC PrintStream
     : public FilterOutputStream
     , public IPrintStream
     , public IAppendable
@@ -159,10 +159,10 @@ protected:
     CARAPI SetError();
 
 private:
-    CARAPI Newline();
+    ECO_LOCAL CARAPI Newline();
 
 private:
-    static const String sLineSeparator;
+    ECO_LOCAL static const String sLineSeparator;
 
     /**
      * indicates whether or not this PrintStream has incurred an error.

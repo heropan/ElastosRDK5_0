@@ -34,7 +34,7 @@ namespace IO {
  * @see BufferedOutputStream
  * @see FileInputStream
  */
-class FileOutputStream
+class ECO_PUBLIC FileOutputStream
     : public OutputStream
     , public IFileOutputStream
 {

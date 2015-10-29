@@ -7,7 +7,7 @@
 namespace Elastos {
 namespace IO {
 
-class FilterOutputStream
+class ECO_PUBLIC FilterOutputStream
     : public OutputStream
     , public IFilterOutputStream
 {

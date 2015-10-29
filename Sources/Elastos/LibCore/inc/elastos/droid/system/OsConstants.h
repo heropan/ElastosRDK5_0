@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace System {
 
-class OsConstants
+class ECO_PUBLIC OsConstants
 {
 public:
     const static Int32 _AF_INET;

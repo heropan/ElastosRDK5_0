@@ -9,7 +9,7 @@ using Elastos::Utility::IIterable;
 namespace Elastos {
 namespace Utility {
 
-class AbstractCollection
+class ECO_PUBLIC AbstractCollection
     : public Object
     , public ICollection
     , public IIterable

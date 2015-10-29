@@ -7,7 +7,7 @@
 namespace Elastos {
 namespace Utility {
 
-class Observable
+class ECO_PUBLIC Observable
     : public Object
     , public IObservable
 {

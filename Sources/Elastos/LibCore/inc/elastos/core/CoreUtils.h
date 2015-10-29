@@ -21,7 +21,7 @@ using Elastos::Core::CArrayOf;
 namespace Elastos {
 namespace Core {
 
-class CoreUtils
+class ECO_PUBLIC CoreUtils
 {
 public:
     static CARAPI_(AutoPtr<IByte>) ConvertByte(
@@ -100,7 +100,7 @@ public:
 
 private:
     template<typename T1, typename T2>
-    static CARAPI_(AutoPtr<IArrayOf>) ConvertImpl(
+    ECO_LOCAL static CARAPI_(AutoPtr<IArrayOf>) ConvertImpl(
         /* [in] */ ArrayOf<T1>* arr)
     {
         if (arr) {
@@ -119,9 +119,10 @@ private:
         }
         return NULL;
     }
+
 private:
-    CoreUtils();
-    ~CoreUtils();
+    ECO_LOCAL CoreUtils();
+    ECO_LOCAL ~CoreUtils();
 };
 
 } // namespace Core

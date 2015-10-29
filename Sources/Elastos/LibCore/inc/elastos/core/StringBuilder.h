@@ -28,7 +28,7 @@ class StringBuffer;
  * @see String#format
  * @since 1.5
  */
-class StringBuilder
+class ECO_PUBLIC StringBuilder
     : public AbstractStringBuilder
     , public IStringBuilder
 {
@@ -857,8 +857,8 @@ public:
     StringBuilder& operator+=(IInterface*);
 
 private:
-    StringBuilder(const StringBuilder&);
-    StringBuilder& operator=(const StringBuilder&);
+    ECO_LOCAL StringBuilder(const StringBuilder&);
+    ECO_LOCAL StringBuilder& operator=(const StringBuilder&);
 };
 
 } // namespace Core

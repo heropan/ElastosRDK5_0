@@ -18,7 +18,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Int32>* a);
 
     /**
@@ -34,7 +34,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Int32>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -44,7 +44,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Int64>* a);
 
     /**
@@ -60,7 +60,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Int64>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -70,7 +70,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Int16>* a);
 
     /**
@@ -86,7 +86,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Int16>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -96,7 +96,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Char32>* a);
 
     /**
@@ -112,7 +112,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Char32>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -122,7 +122,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Byte>* a);
 
     /**
@@ -138,7 +138,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Byte>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -156,7 +156,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Float>* a);
 
     /**
@@ -180,7 +180,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Float>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);
@@ -198,7 +198,7 @@ public:
      *
      * @param a the array to be sorted
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Double>* a);
 
     /**
@@ -222,7 +222,7 @@ public:
      * @throws ArrayIndexOutOfBoundsException
      *     if {@code fromIndex < 0} or {@code toIndex > a.length}
      */
-    static CARAPI Sort(
+    ECO_PUBLIC static CARAPI Sort(
         /* [in] */ ArrayOf<Double>* a,
         /* [in] */ Int32 fromIndex,
         /* [in] */ Int32 toIndex);

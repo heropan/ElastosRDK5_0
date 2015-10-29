@@ -592,7 +592,7 @@ ifneq "$(SOURCES)" ""
     OBJECTS := $(OBJECTS:.def=.exp)
     OBJECTS := $(OBJECTS:.car=.rsc)
     OBJECTS := $(strip $(OBJECTS))        # remove multiple spaces
-    RESSECTION = __section.o __dllmain.o
+    RESSECTION = __section.o
   endif
 endif
 

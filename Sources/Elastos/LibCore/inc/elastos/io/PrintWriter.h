@@ -9,7 +9,7 @@ using Elastos::Utility::ILocale;
 namespace Elastos {
 namespace IO {
 
-class PrintWriter
+class ECO_PUBLIC PrintWriter
     : public Writer
     , public IPrintWriter
 {
@@ -165,7 +165,7 @@ protected:
     CARAPI_(void) SetError();
 
 private:
-    CARAPI DoWrite(
+    ECO_LOCAL CARAPI DoWrite(
         /* [in] */ Int32 offset,
         /* [in] */ Int32 count,
         /* [in] */ ArrayOf<Char32>* buf);

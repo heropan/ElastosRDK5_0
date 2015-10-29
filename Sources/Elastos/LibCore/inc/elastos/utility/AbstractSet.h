@@ -16,7 +16,7 @@ namespace Utility {
  *
  * @since 1.2
  */
-class AbstractSet
+class ECO_PUBLIC AbstractSet
     : public AbstractCollection
     , public ISet
 {

@@ -7,7 +7,7 @@
 namespace Elastos {
 namespace IO {
 
-class InputStream
+class ECO_PUBLIC InputStream
     : public Object
     , public IInputStream
     , public ICloseable

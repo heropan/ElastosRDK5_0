@@ -16,7 +16,7 @@ namespace IO {
  *
  * @see FilterOutputStream
  */
-class FilterInputStream
+class ECO_PUBLIC FilterInputStream
     : public InputStream
     , public IFilterInputStream
 {

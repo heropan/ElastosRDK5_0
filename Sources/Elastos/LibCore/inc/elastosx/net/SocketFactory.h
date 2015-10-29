@@ -15,7 +15,7 @@ namespace Net {
  * This abstract class defines methods to create sockets. It can be subclassed
  * to create specific socket types with additional socket-level functionality.
  */
-class SocketFactory
+class ECO_PUBLIC SocketFactory
     : public Object
     , public ISocketFactory
 {
@@ -135,9 +135,9 @@ protected:
     virtual ~SocketFactory();
 
 private:
-    static AutoPtr<ISocketFactory> sDefaultFactory;
+    ECO_LOCAL static AutoPtr<ISocketFactory> sDefaultFactory;
 
-    static Object sLock;
+    ECO_LOCAL static Object sLock;
 };
 
 } // namespace Net

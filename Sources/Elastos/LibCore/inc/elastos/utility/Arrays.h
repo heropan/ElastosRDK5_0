@@ -18,7 +18,7 @@ using Elastos::Core::IArrayOf;
 namespace Elastos {
 namespace Utility {
 
-class Arrays
+class ECO_PUBLIC Arrays
 {
 private:
     // class ArrayList
@@ -629,48 +629,48 @@ public:
         /* [in] */ Int32 count);
 
 private:
-    static CARAPI_(AutoPtr<IList>) CreateArrayList(
+    ECO_LOCAL static CARAPI_(AutoPtr<IList>) CreateArrayList(
         /* [in] */ Int32 length);
 
-    static CARAPI CheckBinarySearchBounds(
+    ECO_LOCAL static CARAPI CheckBinarySearchBounds(
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
         /* [in] */ Int32 length);
 
     template<typename T>
-    static CARAPI DeepToString(
+    ECO_LOCAL static CARAPI DeepToString(
         /* [in] */ T * obj,
         /* [in] */ ArrayOf<T*> * origArrays,
         /* [in] */ StringBuilder& sb);
 
     template<typename T>
-    static CARAPI_(Boolean) DeepToStringContains(
+    ECO_LOCAL static CARAPI_(Boolean) DeepToStringContains(
         /* [in] */ ArrayOf<T *> * origArray,
         /* [in] */ T * obj);
 
     template<typename T>
-    static CARAPI DeepToString(
+    ECO_LOCAL static CARAPI DeepToString(
         /* [in] */ T * obj,
         /* [in] */ IArrayOf * origArrays,
         /* [in] */ StringBuilder& sb);
 
     template<typename T>
-    static CARAPI_(Boolean) DeepToStringContains(
+    ECO_LOCAL static CARAPI_(Boolean) DeepToStringContains(
         /* [in] */ IArrayOf * origArray,
         /* [in] */ T * obj);
 
-    static CARAPI DeepToString(
+    ECO_LOCAL static CARAPI DeepToString(
         /* [in] */ IInterface * obj,
         /* [in] */ IArrayOf * origArray,
         /* [in] */ StringBuilder& sb);
 
-    static CARAPI_(Boolean) DeepToStringContains(
+    ECO_LOCAL static CARAPI_(Boolean) DeepToStringContains(
         /* [in] */ IArrayOf * origArray,
         /* [in] */ IInterface * obj);
 
 private:
-    Arrays();
-    Arrays(const Arrays&);
+    ECO_LOCAL Arrays();
+    ECO_LOCAL Arrays(const Arrays&);
 };
 
 //=========================================================================

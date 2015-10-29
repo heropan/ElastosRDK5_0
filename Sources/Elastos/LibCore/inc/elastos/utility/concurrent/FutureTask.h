@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-class FutureTask
+class ECO_PUBLIC FutureTask
     : public Object
     , public IRunnableFuture
     , public IRunnable
@@ -131,7 +131,7 @@ private:
      * stack.  See other classes such as Phaser and SynchronousQueue
      * for more detailed explanation.
      */
-    class WaitNode
+    class ECO_LOCAL WaitNode
         : public Object
     {
     public:
@@ -151,7 +151,7 @@ private:
      *
      * @param s completed state value
      */
-    CARAPI Report(
+    ECO_LOCAL CARAPI Report(
         /* [in] */ Int32 s,
         /* [out] */ IInterface** result);
 
@@ -159,14 +159,14 @@ private:
      * Ensures that any interrupt from a possible cancel(true) is only
      * delivered to a task while in run or runAndReset.
      */
-    CARAPI_(void) HandlePossibleCancellationInterrupt(
+    ECO_LOCAL CARAPI_(void) HandlePossibleCancellationInterrupt(
         /* [in] */ Int32 s);
 
     /**
      * Removes and signals all waiting threads, invokes done(), and
      * nulls out callable.
      */
-    CARAPI_(void) FinishCompletion();
+    ECO_LOCAL CARAPI_(void) FinishCompletion();
 
     /**
      * Awaits completion or aborts on interrupt or timeout.
@@ -175,7 +175,7 @@ private:
      * @param nanos time to wait, if timed
      * @return state upon completion
      */
-    CARAPI AwaitDone(
+    ECO_LOCAL CARAPI AwaitDone(
         /* [in] */ Boolean timed,
         /* [in] */ Int64 nanos,
         /* [out] */ Int32* state);
@@ -190,7 +190,7 @@ private:
      * expect lists to be long enough to outweigh higher-overhead
      * schemes.
      */
-    CARAPI_(void) RemoveWaiter(
+    ECO_LOCAL CARAPI_(void) RemoveWaiter(
         /* [in] */ WaitNode* node);
 
 private:
@@ -223,13 +223,13 @@ private:
      * NEW -> INTERRUPTING -> INTERRUPTED
      */
     Int32 mState;
-    static const Int32 NEW;
-    static const Int32 COMPLETING;
-    static const Int32 NORMAL;
-    static const Int32 EXCEPTIONAL;
-    static const Int32 CANCELLED;
-    static const Int32 INTERRUPTING;
-    static const Int32 INTERRUPTED;
+    ECO_LOCAL static const Int32 NEW;
+    ECO_LOCAL static const Int32 COMPLETING;
+    ECO_LOCAL static const Int32 NORMAL;
+    ECO_LOCAL static const Int32 EXCEPTIONAL;
+    ECO_LOCAL static const Int32 CANCELLED;
+    ECO_LOCAL static const Int32 INTERRUPTING;
+    ECO_LOCAL static const Int32 INTERRUPTED;
 
     /** The underlying callable; nulled out after running */
     AutoPtr<ICallable> mCallable;
