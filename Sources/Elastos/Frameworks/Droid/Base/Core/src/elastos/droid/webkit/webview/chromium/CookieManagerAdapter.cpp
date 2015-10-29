@@ -7,6 +7,7 @@
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
+namespace Webview {
 namespace Chromium {
 
 //=====================================================================
@@ -262,6 +263,7 @@ String CookieManagerAdapter::FixupUrl(
 }
 
 } // namespace Chromium
+} // namespace Webview
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

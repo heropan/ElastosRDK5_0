@@ -21,3 +21,5 @@ SOURCES += WebHistoryItemChromium.cpp
 SOURCES += WebIconDatabaseAdapter.cpp
 SOURCES += WebStorageAdapter.cpp
 SOURCES += WebViewChromium.cpp
+SOURCES += WebViewChromiumFactoryProvider.cpp
+SOURCES += WebViewDatabaseAdapter.cpp
