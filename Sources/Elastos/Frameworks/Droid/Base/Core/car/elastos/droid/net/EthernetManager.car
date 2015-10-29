@@ -15,7 +15,7 @@ module
      */
     /**
      * @Involved
-     * interface ;
+     * no super interface
      */
     interface IEthernetManager {
         /**

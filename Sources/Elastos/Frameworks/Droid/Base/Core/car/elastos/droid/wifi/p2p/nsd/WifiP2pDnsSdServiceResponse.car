@@ -1,8 +1,7 @@
 
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
-    interface Elastos.Droid.Net.Wifi.P2p.IWifiP2pDevice;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Droid {
@@ -16,8 +15,9 @@ module
      * @hide
      */
     /**
-     * @Involve
-     * interface IWifiP2pServiceResponse
+     * @Involved
+     * interface IParcelable;
+     * interface IWifiP2pServiceResponse;
      */
     interface IWifiP2pDnsSdServiceResponse {
         /**
@@ -25,60 +25,41 @@ module
          * @return DNS name.
          */
         GetDnsQueryName(
-            [out] String* dnsQueryName);
+            [out] String* result);
 
         /**
          * Return query DNS type.
          * @return DNS type.
          */
         GetDnsType(
-            [out] Int32* dnsType);
+            [out] Int32* result);
 
         /**
          * Return bonjour version number.
          * @return version number.
          */
         GetVersion(
-            [out] Int32* versionNumber);
+            [out] Int32* result);
 
         /**
          * Return instance name.
          * @return
          */
         GetInstanceName(
-            [out] String* instanceName);
+            [out] String* result);
 
         /**
          * Return TXT record data.
          * @return TXT record data.
          */
         GetTxtRecord(
-            [out] IObjectStringMap** txtRecord);
+            [out] IMap** result);
+
     }
 
-    [deprecated]
-    interface IWifiP2pDnsSdServiceResponseHelper {
-        /**
-         * Creates DnsSd service response.
-         *  This is only called from WifiP2pServiceResponse
-         *
-         * @param status status code.
-         * @param dev source device.
-         * @param data DnsSd response data.
-         * @return DnsSd service response data.
-         * @hide
-         */
-        NewInstance(
-            [in] Int32 status,
-            [in] Int32 transId,
-            [in] IWifiP2pDevice* dev,
-            [in] ArrayOf<Byte>* data,
-            [out] IWifiP2pDnsSdServiceResponse** instance);
-    }
-
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }

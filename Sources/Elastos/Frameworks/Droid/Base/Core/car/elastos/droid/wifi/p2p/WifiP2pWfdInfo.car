@@ -10,45 +10,52 @@ module
      * A class representing Wifi Display information for a device
      * @hide
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IWifiP2pWfdInfo {
-        const Int32 WFD_SOURCE              = 0;
-        const Int32 PRIMARY_SINK            = 1;
-        const Int32 SECONDARY_SINK          = 2;
-        const Int32 SOURCE_OR_PRIMARY_SINK  = 3;
+        const Int32 WFD_SOURCE = 0;
+
+        const Int32 PRIMARY_SINK = 1;
+
+        const Int32 SECONDARY_SINK = 2;
+
+        const Int32 SOURCE_OR_PRIMARY_SINK = 3;
 
         IsWfdEnabled(
-            [out] Boolean* isWfdEnabled);
+            [out] Boolean* result);
 
         SetWfdEnabled(
             [in] Boolean enabled);
 
         GetDeviceType(
-            [out] Int32* deviceType);
+            [out] Int32* result);
 
         SetDeviceType(
             [in] Int32 deviceType,
             [out] Boolean* result);
 
         IsCoupledSinkSupportedAtSource(
-            [out] Boolean* isCoupledSinkSupportedAtSource);
+            [out] Boolean* result);
 
         SetCoupledSinkSupportAtSource(
             [in] Boolean enabled);
 
         IsCoupledSinkSupportedAtSink(
-            [out] Boolean* isCoupledSinkSupportedAtSink);
+            [out] Boolean* result);
 
         SetCoupledSinkSupportAtSink(
             [in] Boolean enabled);
 
         IsSessionAvailable(
-            [out] Boolean* isSessionAvailable);
+            [out] Boolean* result);
 
         SetSessionAvailable(
             [in] Boolean enabled);
 
         GetControlPort(
-            [out] Int32* controlPort);
+            [out] Int32* result);
 
         SetControlPort(
             [in] Int32 port);
@@ -57,17 +64,15 @@ module
             [in] Int32 maxThroughput);
 
         GetMaxThroughput(
-            [out] Int32* maxThroughput);
+            [out] Int32* result);
 
         GetDeviceInfoHex(
-            [out] String* deviceInfoHex);
+            [out] String* result);
 
-        ToString(
-            [out] String* string);
     }
 
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }

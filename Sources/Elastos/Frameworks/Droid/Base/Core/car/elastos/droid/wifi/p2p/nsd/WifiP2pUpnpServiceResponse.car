@@ -1,7 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.Net.Wifi.P2p.IWifiP2pDevice;
+    using interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {
@@ -15,8 +15,9 @@ module
      * @hide
      */
     /**
-     * @Involve
-     * interface IWifiP2pServiceResponse
+     * @Involved
+     * interface IParcelable;
+     * interface IWifiP2pServiceResponse;
      */
     interface IWifiP2pUpnpServiceResponse {
         /**
@@ -26,7 +27,7 @@ module
          * @see WifiP2pUpnpServiceInfo#VERSION_1_0
          */
         GetVersion(
-            [out] Int32* versionNumber);
+            [out] Int32* result);
 
         /**
          * Return Unique Service Name strings.
@@ -43,34 +44,13 @@ module
          * </ul>
          */
         GetUniqueServiceNames(
-            [out, callee] ArrayOf<String>* uniqueServiceNames);
+            [out] IList** result);
+
     }
 
-    [deprecated]
-    interface IWifiP2pUpnpServiceResponseHelper {
-        /**
-         * Create upnp service response.
-         *
-         * <pre>This is only used in{@link WifiP2pServiceResponse}
-         *
-         * @param status status code.
-         * @param transId transaction id.
-         * @param device source device.
-         * @param data UPnP response data.
-         * @return UPnP service response data.
-         * @hide
-         */
-        NewInstance(
-            [in] Int32 status,
-            [in] Int32 transId,
-            [in] IWifiP2pDevice* dev,
-            [in] ArrayOf<Byte>* data,
-            [out] IWifiP2pUpnpServiceResponse** instance);
-    }
-
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }

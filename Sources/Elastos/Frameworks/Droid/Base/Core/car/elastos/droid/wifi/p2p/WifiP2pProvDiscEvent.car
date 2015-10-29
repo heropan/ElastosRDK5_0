@@ -7,39 +7,48 @@ module
     namespace P2p {
 
     /**
-     * A class representing Wifi Display information for a device
+     * A class representing a Wi-Fi p2p provisional discovery request/response
+     * See {@link #WifiP2pProvDiscEvent} for supported types
+     *
      * @hide
      */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IWifiP2pProvDiscEvent {
-        const Int32 PBC_REQ    = 1;
-        const Int32 PBC_RSP    = 2;
-        const Int32 ENTER_PIN  = 3;
-        const Int32 SHOW_PIN   = 4;
+        const Int32 PBC_REQ = 1;
 
+        const Int32 PBC_RSP = 2;
+
+        const Int32 ENTER_PIN = 3;
+
+        const Int32 SHOW_PIN = 4;
+
+        /* One of PBC_REQ, PBC_RSP, ENTER_PIN or SHOW_PIN */
         GetEvent(
-            [out] Int32* event);
+            [out] Int32* result);
 
         SetEvent(
             [in] Int32 event);
 
         GetDevice(
-            [out] IWifiP2pDevice** device);
+            [out] IWifiP2pDevice** result);
 
         SetDevice(
             [in] IWifiP2pDevice* device);
 
+        /* Valid when event = SHOW_PIN */
         GetPin(
-            [out] String* pin);
+            [out] String* result);
 
         SetPin(
             [in] String pin);
 
-        ToString(
-            [out] String* string);
     }
 
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }

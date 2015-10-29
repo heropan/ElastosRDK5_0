@@ -1,7 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.Net.Wifi.P2p.IWifiP2pWfdInfo;
+    interface Elastos.Droid.Wifi.P2p.IWifiP2pWfdInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -11,20 +11,29 @@ module
     /**
      * A class representing a Wi-Fi p2p device
      *
+     * Note that the operations are not thread safe
      * {@see WifiP2pManager}
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IWifiP2pDevice {
-        const Int32 CONNECTED   = 0;
-        const Int32 INVITED     = 1;
-        const Int32 FAILED      = 2;
-        const Int32 AVAILABLE   = 3;
+        const Int32 CONNECTED = 0;
+
+        const Int32 INVITED = 1;
+
+        const Int32 FAILED = 2;
+
+        const Int32 AVAILABLE = 3;
+
         const Int32 UNAVAILABLE = 4;
 
         /**
          * The device name is a user friendly string to identify a Wi-Fi p2p device
          */
         GetDeviceName(
-            [out] String* deviceName);
+            [out] String* result);
 
         SetDeviceName(
             [in] String deviceName);
@@ -33,7 +42,7 @@ module
          * The device MAC address uniquely identifies a Wi-Fi p2p device
          */
         GetDeviceAddress(
-            [out] String* deviceAddress);
+            [out] String* result);
 
         SetDeviceAddress(
             [in] String deviceAddress);
@@ -45,7 +54,7 @@ module
          * for the full list of standard device types supported.
          */
         GetPrimaryDeviceType(
-            [out] String* primaryDeviceType);
+            [out] String* result);
 
         SetPrimaryDeviceType(
             [in] String primaryDeviceType);
@@ -55,7 +64,7 @@ module
          * addition to the primary device type.
          */
         GetSecondaryDeviceType(
-            [out] String* secondaryDeviceType);
+            [out] String* result);
 
         SetSecondaryDeviceType(
             [in] String secondaryDeviceType);
@@ -65,7 +74,7 @@ module
          * @hide
          */
         GetWpsConfigMethodsSupported(
-            [out] Int32* wpsConfigMethodsSupported);
+            [out] Int32* result);
 
         SetWpsConfigMethodsSupported(
             [in] Int32 wpsConfigMethodsSupported);
@@ -75,7 +84,7 @@ module
          * @hide
          */
         GetDeviceCapability(
-            [out] Int32* deviceCapability);
+            [out] Int32* result);
 
         SetDeviceCapability(
             [in] Int32 deviceCapability);
@@ -85,72 +94,75 @@ module
          * @hide
          */
         GetGroupCapability(
-            [out] Int32* groupCapability);
+            [out] Int32* result);
 
         SetGroupCapability(
             [in] Int32 groupCapability);
 
         /** Device connection status */
         GetStatus(
-            [out] Int32* status);
+            [out] Int32* result);
 
         SetStatus(
             [in] Int32 status);
 
         /** @hide */
         GetWfdInfo(
-            [out] IWifiP2pWfdInfo** wfdInfo);
+            [out] IWifiP2pWfdInfo** result);
 
         SetWfdInfo(
             [in] IWifiP2pWfdInfo* wfdInfo);
 
         /** Returns true if WPS push button configuration is supported */
         WpsPbcSupported(
-            [out] Boolean* supported);
+            [out] Boolean* result);
 
         /** Returns true if WPS keypad configuration is supported */
         WpsKeypadSupported(
-            [out] Boolean* supported);
+            [out] Boolean* result);
 
         /** Returns true if WPS display configuration is supported */
         WpsDisplaySupported(
-            [out] Boolean* supported);
+            [out] Boolean* result);
 
         /** Returns true if the device is capable of service discovery */
         IsServiceDiscoveryCapable(
-            [out] Boolean* capable);
+            [out] Boolean* result);
 
         /** Returns true if the device is capable of invitation {@hide}*/
         IsInvitationCapable(
-            [out] Boolean* capable);
+            [out] Boolean* result);
 
         /** Returns true if the device reaches the limit. {@hide}*/
         IsDeviceLimit(
-            [out] Boolean* isDeviceLimit);
+            [out] Boolean* result);
 
         /** Returns true if the device is a group owner */
         IsGroupOwner(
-            [out] Boolean* isGroupOwner);
+            [out] Boolean* result);
 
         /** Returns true if the group reaches the limit. {@hide}*/
         IsGroupLimit(
-            [out] Boolean* isGroupLimit);
+            [out] Boolean* result);
 
-        /** @hide */
+        /**
+         * Update device details. This will be throw an exception if the device address
+         * does not match.
+         * @param device to be updated
+         * @throws IllegalArgumentException if the device is null or device address does not match
+         * @hide
+         */
         Update(
             [in] IWifiP2pDevice* device);
 
-        // @Override
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
+        /** Updates details obtained from supplicant @hide */
+        UpdateSupplicantDetails(
+            [in] IWifiP2pDevice* device);
 
-        ToString(
-            [out] String* string);
     }
 
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }

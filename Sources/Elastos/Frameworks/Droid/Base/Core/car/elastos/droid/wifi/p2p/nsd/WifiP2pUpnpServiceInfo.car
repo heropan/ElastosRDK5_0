@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Wifi {
@@ -17,8 +19,9 @@ module
      * {@see WifiP2pDnsSdServiceInfo}
      */
     /**
-     * @Involve
-     * interface IWifiP2pServiceInfo
+     * @Involved
+     * interface IParcelable;
+     * interface IWifiP2pServiceInfo;
      */
     interface IWifiP2pUpnpServiceInfo {
         /**
@@ -29,9 +32,9 @@ module
          * @hide
          */
         const Int32 VERSION_1_0 = 0x10;
+
     }
 
-    [deprecated]
     interface IWifiP2pUpnpServiceInfoHelper {
         /**
          * Create UPnP service information object.
@@ -54,16 +57,15 @@ module
         NewInstance(
             [in] String uuid,
             [in] String device,
-            [in] ArrayOf<String>* services,
-            [out] IWifiP2pUpnpServiceInfo** instance);
+            [in] IList* services,
+            [out] IWifiP2pUpnpServiceInfo** result);
+
     }
 
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-
-
 
