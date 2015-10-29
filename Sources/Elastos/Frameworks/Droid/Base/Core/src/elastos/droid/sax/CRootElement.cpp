@@ -5,7 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Sax {
 
-CAR_INTERFACE_IMPL(CRootElement::Handler, Object, IEntityResolver, IDTDHandler, IContentHandler, IErrorHandler)
+CAR_INTERFACE_IMPL_4(CRootElement::Handler, Object, IEntityResolver, IDTDHandler, IContentHandler, IErrorHandler);
+CAR_INTERFACE_IMPL(CRootElement, Object, IRootElement);
 
 CRootElement::Handler::~Handler()
 {
@@ -101,7 +102,7 @@ ECode CRootElement::Handler::Characters(
     /* [in] */ Int32 length)
 {
     if (mBodyBuilder != NULL) {
-        mBodyBuilder->AppendChars(buffer, start, length);
+        mBodyBuilder->Append(buffer, start, length);
     }
     return NOERROR;
 }
@@ -126,7 +127,7 @@ ECode CRootElement::Handler::EndElement(
         // Invoke end text element listener.
         if (mBodyBuilder != NULL) {
             String body;
-            mBodyBuilder->ToString(&body);
+            body = Object::ToString(mBodyBuilder);
             mBodyBuilder = NULL;
 
             // We can assume that this listener is present.
@@ -248,19 +249,13 @@ ECode CRootElement::constructor(
     /* [in] */ const String& uri,
     /* [in] */ const String& localName)
 {
-    return Element::Init(NULL, uri, localName, 0);
+    return Element::constructor(NULL, uri, localName, 0);
 }
 
 ECode CRootElement::constructor(
     /* [in] */ const String& localName)
 {
     return constructor(String(""), localName);
-}
-
-PInterface CRootElement::Probe(
-    /* [in]  */ REIID riid)
-{
-    return _CRootElement::Probe(riid);
 }
 
 ECode CRootElement::GetContentHandler(
@@ -305,13 +300,13 @@ ECode CRootElement::RequireChild(
 }
 
 ECode CRootElement::SetElementListener(
-    /* [in] */ IInterface* elementListener)
+    /* [in] */ IElementListener* elementListener)
 {
     return Element::SetElementListener(elementListener);
 }
 
 ECode CRootElement::SetTextElementListener(
-    /* [in] */ IInterface* elementListener)
+    /* [in] */ ITextElementListener* elementListener)
 {
     return Element::SetTextElementListener(elementListener);
 }

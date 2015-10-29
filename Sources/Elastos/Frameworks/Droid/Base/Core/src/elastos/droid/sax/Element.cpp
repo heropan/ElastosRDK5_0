@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Sax {
 
-CAR_INTERFACE_IMPL(Element, Object, IElement)
+CAR_INTERFACE_IMPL(Element, Object, IElement);
 
 Element::Element()
     : mVisited(FALSE)
@@ -98,14 +98,14 @@ ECode Element::RequireChild(
 }
 
 ECode Element::SetElementListener(
-    /* [in] */ IInterface* elementListener)
+    /* [in] */ IElementListener* elementListener)
 {
     FAIL_RETURN(SetStartElementListener((IStartElementListener*)elementListener->Probe(EIID_IStartElementListener)))
     return SetEndElementListener((IEndElementListener*)elementListener->Probe(EIID_IEndElementListener));
 }
 
 ECode Element::SetTextElementListener(
-    /* [in] */ IInterface* elementListener)
+    /* [in] */ ITextElementListener* elementListener)
 {
     FAIL_RETURN(SetStartElementListener((IStartElementListener*)elementListener->Probe(EIID_IStartElementListener)))
     return SetEndTextElementListener((IEndTextElementListener*)elementListener->Probe(EIID_IEndTextElementListener));

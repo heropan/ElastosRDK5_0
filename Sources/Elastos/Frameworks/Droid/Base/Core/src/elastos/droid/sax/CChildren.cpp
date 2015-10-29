@@ -5,11 +5,17 @@ namespace Elastos {
 namespace Droid {
 namespace Sax {
 
-CAR_OBJECT_IMPL(CChildren)
+CAR_OBJECT_IMPL(CChildren);
+//CAR_OBJECT_IMPL(CChildren::Child)
+
+CChildren::Child::~Child()
+{
+}
+
 
 CChildren::CChildren()
 {
-    mChildren = ArrayOf<AutoPtr<Child> >::Alloc(16);
+    mChildren = ArrayOf<Child*>::Alloc(16);
 }
 
 CChildren::~CChildren()

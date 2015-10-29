@@ -9,52 +9,53 @@ module
     merge("sax/RootElement.car");
     merge("sax/Children.car");
 
-//    interface Elastos.Droid.Sax.IChildren;
-//    interface Elastos.Droid.Sax.IElement;
-//    interface Elastos.Droid.Sax.IRootElement;
+   	interface Elastos.Droid.Sax.IChildren;
+   	interface Elastos.Droid.Sax.IElement;
+   	interface Elastos.Droid.Sax.IRootElement;
 
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Sax {
+    namespace Elastos {
+    namespace Droid {
+    namespace Sax {
 
-//    class CChildren {
-//        interface IChildren;
-//    }
+    class CChildren {
+        interface IChildren;
+    }
 
-//    class CElement {
-//        constructor(
-//            [in] IElement* parent,
-//            [in] String uri,
-//            [in] String localName,
-//            [in] Int32 depth);
+    class CElement {
+        constructor(
+            [in] IElement* parent,
+            [in] String uri,
+            [in] String localName,
+            [in] Int32 depth);
 
-//        interface IElement;
-//    }
+        interface IElement;
+    }
 
-//    class CRootElement {
-//        /**
-//         * Constructs a new root element with the given name.
-//         *
-//         * @param uri the namespace
-//         * @param localName the local name
-//         */
-//        constructor(
-//            [in] String uri,
-//            [in] String localName);
+    class CRootElement {
+        /**
+         * Constructs a new root element with the given name.
+         *
+         * @param uri the namespace
+         * @param localName the local name
+		 */
+        constructor(
+            [in] String uri,
+            [in] String localName);
 
-//        /**
-//         * Constructs a new root element with the given name. Uses an empty string
-//         * as the namespace.
-//         *
-//         * @param localName the local name
-//         */
-//        constructor(
-//            [in] String localName);
+        /**
+         * Constructs a new root element with the given name. Uses an empty string
+         * as the namespace.
+         *
+         * @param localName the local name
+         */
 
-//        interface IRootElement;
-//    }
+        constructor(
+            [in] String localName);
 
-//    } // namespace Sax
-//    } // namespace Droid
-//    } // namespace Elastos
+        interface IRootElement;
+    }
+
+    }  // namespace Sax
+    }  // namespace Droid
+    }  // namespace Elastos
 }

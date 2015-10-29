@@ -41,6 +41,7 @@ LIBRARIES += mtp/mtp.lib
 LIBRARIES += net/net.lib
 LIBRARIES += os/os.lib
 LIBRARIES += preference/preference.lib
+LIBRARIES += sax/sax.lib
 LIBRARIES += service/media/media.lib
 LIBRARIES += systemui/systemui.lib
 LIBRARIES += text/text.lib
@@ -68,7 +69,6 @@ LIBRARIES += webkit/webkit.lib
 // LIBRARIES += inputmethods/pinyinIME/pinyin.lib
 // LIBRARIES += swextend/gpio/gpio.lib
 // LIBRARIES += telephony/telephony.lib
-// LIBRARIES += sax/sax.lib
 
 LIBRARIES += $(XDK_USER_LIB)/DroidRuntime.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

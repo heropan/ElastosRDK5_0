@@ -22,7 +22,7 @@ class Element
     , public IElement
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     Element();
 
@@ -74,13 +74,13 @@ public:
      * Sets start and end element listeners at the same time.
      */
     CARAPI SetElementListener(
-        /* [in] */ IInterface* elementListener);
+        /* [in] */ IElementListener* elementListener);
 
     /**
      * Sets start and end text element listeners at the same time.
      */
     CARAPI SetTextElementListener(
-        /* [in] */ IInterface* elementListener);
+        /* [in] */ ITextElementListener* elementListener);
 
     /**
      * Sets a listener for the start of this element.

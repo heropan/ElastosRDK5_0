@@ -13,6 +13,7 @@ namespace Sax {
  * measurably better performance.
  */
 CarClass(CChildren)
+    , public Object
 {
 public:
     class Child
@@ -27,12 +28,9 @@ public:
             /* [in] */ Int32 hash)
             : mHash(hash)
         {
-            Element::Init(parent, uri, localName, depth);
+            Element::constructor(parent, uri, localName, depth);
         }
 
-        CAR_OBJECT_DECL();
-
-        Child();
         virtual ~Child();
 
     public:
@@ -41,6 +39,9 @@ public:
     };
 
 public:
+
+    CAR_OBJECT_DECL();
+
     CChildren();
     virtual ~CChildren();
 
@@ -62,11 +63,13 @@ public:
         /* [out] */ IElement** result);
 
 public:
-    AutoPtr<ArrayOf<AutoPtr<Child> > > mChildren;
+    AutoPtr<ArrayOf<Child*> > mChildren;
 };
 
 } // namespace Os
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Sax::CChildren::Child, IInterface);
 
 #endif //__ELASTOS_DROID_SAX_CCHILDRENT_H__

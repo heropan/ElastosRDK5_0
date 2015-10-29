@@ -15,10 +15,13 @@ namespace Sax {
  * @see RootElement
  */
 CarClass(CElement)
-    , public Element;
+    , public Element
 {
 public:
-    CAR_OBJECT_DECL()
+    CAR_OBJECT_DECL();
+
+    CElement();
+    virtual ~CElement();
 };
 
 } // namespace Os

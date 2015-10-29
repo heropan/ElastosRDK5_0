@@ -74,7 +74,6 @@ public:
     */
     class Handler
         : public Object
-        , public ElRefBase
         , public IEntityResolver
         , public IDTDHandler
         , public IContentHandler
@@ -393,7 +392,7 @@ public:
     };
 
 public:
-    CAR_OBJECT_DECL();
+    CAR_INTERFACE_DECL();
 
     CRootElement()
         : mHandler(new Handler())
@@ -462,13 +461,13 @@ public:
      * Sets start and end element listeners at the same time.
      */
     CARAPI SetElementListener(
-        /* [in] */ IInterface* elementListener);
+        /* [in] */ IElementListener* elementListener);
 
     /**
      * Sets start and end text element listeners at the same time.
      */
     CARAPI SetTextElementListener(
-        /* [in] */ IInterface* elementListener);
+        /* [in] */ ITextElementListener* elementListener);
 
     /**
      * Sets a listener for the start of this element.
