@@ -2,14 +2,12 @@
 #ifndef __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 #define __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/Pools.h"
 #include "elastos/droid/utility/Config.h"
+#include "elastos/droid/utility/Pools.h"
 
-using Elastos::Droid::Utility::IPool;
-using Elastos::Droid::Utility::IPoolable;
-using Elastos::Droid::Utility::IPoolableManager;
-using Elastos::Droid::Utility::EIID_IPoolable;
-using Elastos::Droid::Utility::EIID_IPoolableManager;
+using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IVelocityTracker;
 using Elastos::Droid::View::EIID_IVelocityTracker;
@@ -27,16 +25,18 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class VelocityTrackerState;
+//class VelocityTrackerState;
 
 extern "C" const InterfaceID EIID_VelocityTracker;
 
 class VelocityTracker
-    : public IVelocityTracker
-    , public ElRefBase
+    : public Object
+    , public IVelocityTracker
 {
 public:
-    class Estimator : public ElRefBase{
+    class Estimator
+        : public Object
+    {
         friend class VelocityTracker;
     private:
         //Must match VelocityTracker::Estimator::MAX_DEGREE
@@ -71,87 +71,68 @@ public:
          * @param time The time point in seconds, 0 is the last recorded time.
          * @return The estimated X coordinate.
          */
-        CARAPI_(Float) EstimateX(Float time);
+        CARAPI_(Float) EstimateX(
+            /* [in]  */ Float time);
 
         /**
          * Gets an estimate of the Y position of the pointer at the specified time point.
          * @param time The time point in seconds, 0 is the last recorded time.
          * @return The estimated Y coordinate.
          */
-        CARAPI_(Float) EstimateY(Float time);
+        CARAPI_(Float) EstimateY(
+            /* [in]  */ Float time);
 
         /**
          * Gets the X coefficient with the specified index.
          * @param index The index of the coefficient to return.
          * @return The X coefficient, or 0 if the index is greater than the degree.
          */
-        CARAPI_(Float) GetXCoeff(Int32 index);
+        CARAPI_(Float) GetXCoeff(
+            /* [in]  */ Int32 index);
 
         /**
          * Gets the Y coefficient with the specified index.
          * @param index The index of the coefficient to return.
          * @return The Y coefficient, or 0 if the index is greater than the degree.
          */
-        CARAPI_(Float) GetYCoeff(Int32 index);
+        CARAPI_(Float) GetYCoeff(
+            /* [in]  */ Int32 index);
 
     private:
-        CARAPI_(Float) Estimate(Float time, ArrayOf<Float>* c);
+        CARAPI_(Float) Estimate(
+            /* [in]  */ Float time,
+            /* [in]  */ ArrayOf<Float>* c);
     };
-
-    private:
-        class VelocityTrackerPoolableManager : public ElRefBase, public IPoolableManager
-        {
-        public:
-            CARAPI_(PInterface) Probe(
-                /* [in]  */ REIID riid);
-
-            CARAPI_(UInt32) AddRef();
-
-            CARAPI_(UInt32) Release();
-
-            CARAPI GetInterfaceID(
-                /* [in] */ IInterface *pObject,
-                /* [out] */ InterfaceID *pIID);
-
-            CARAPI NewInstance(
-                /* [out] */ IPoolable** element);
-
-            CARAPI OnAcquired(
-                /* [in] */ IPoolable* element);
-
-            CARAPI OnReleased(
-                /* [in] */ IPoolable* element);
-        };
 
 private:
 
-    static CARAPI_(AutoPtr<VelocityTrackerState>) NativeInitialize(
-        /* [in] */ const String& strategy);
+    // static CARAPI_(AutoPtr<VelocityTrackerState>) NativeInitialize(
+    //     /* [in] */ const String& strategy);
 
-    static CARAPI_(void) NativeClear(
-        /* [in] */ VelocityTrackerState* ptr);
+    // static CARAPI_(void) NativeClear(
+    //     /* [in] */ VelocityTrackerState* ptr);
 
-    static CARAPI_(void) NativeAddMovement(
-        /* [in] */ VelocityTrackerState* ptr,
-        /* [in] */ IMotionEvent* event);
+    // static CARAPI_(void) NativeAddMovement(
+    //     /* [in] */ VelocityTrackerState* ptr,
+    //     /* [in] */ IMotionEvent* event);
 
-    static CARAPI_(void) NativeComputeCurrentVelocity(
-        /* [in] */ VelocityTrackerState* ptr,
-        /* [in] */ Int32 units,
-        /* [in] */ Float maxVelocity);
+    // static CARAPI_(void) NativeComputeCurrentVelocity(
+    //     /* [in] */ VelocityTrackerState* ptr,
+    //     /* [in] */ Int32 units,
+    //     /* [in] */ Float maxVelocity);
 
-    static CARAPI_(Float) NativeGetXVelocity(
-        /* [in] */ VelocityTrackerState* ptr,
-        /* [in] */ Int32 id);
+    // static CARAPI_(Float) NativeGetXVelocity(
+    //     /* [in] */ VelocityTrackerState* ptr,
+    //     /* [in] */ Int32 id);
 
-    static CARAPI_(Float) NativeGetYVelocity(
-        /* [in] */ VelocityTrackerState* ptr,
-        /* [in] */ Int32 id);
+    // static CARAPI_(Float) NativeGetYVelocity(
+    //     /* [in] */ VelocityTrackerState* ptr,
+    //     /* [in] */ Int32 id);
 
-    static CARAPI_(Boolean) NativeGetEstimator(
-        /* [in] */ VelocityTrackerState* ptr,
-        /* [in] */ Int32 id,
-        /* [in] */ Estimator* outEstimator);
+    // static CARAPI_(Boolean) NativeGetEstimator(
+    //     /* [in] */ VelocityTrackerState* ptr,
+    //     /* [in] */ Int32 id,
+    //     /* [in] */ Estimator* outEstimator);
 
 public:
 
@@ -180,48 +161,13 @@ public:
                     /* [in] */ const String& strategy);
 
 public:
-
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CAR_INTERFACE_DECL()
 
     /**
      * Return a VelocityTracker object back to be re-used by others.  You must
      * not touch the object after calling this function.
      */
-
     CARAPI Recycle();
-
-    /**
-     * @hide
-     */
-    CARAPI SetNextPoolable(
-        /* [in] */ IPoolable* element);
-
-    /**
-     * @hide
-     */
-    CARAPI GetNextPoolable(
-        /* [out] */ IPoolable** element);
-
-    /**
-     * @hide
-     */
-    CARAPI IsPooled(
-        /* [out] */ Boolean* isPooled);
-
-    /**
-     * @hide
-     */
-    CARAPI SetPooled(
-        /* [in] */ Boolean isPooled);
 
     CARAPI Clear();
 
@@ -259,25 +205,19 @@ private:
         /* [in] */ const String& strategy);
 
 public:
-
     ~VelocityTracker();
 
 private:
-
     static const Int32 ACTIVE_POINTER_ID = -1;
-    static AutoPtr<IPool> sPool;
+    static AutoPtr<Pools::SynchronizedPool<IVelocityTracker> > sPool;
 
 private:
-
-    AutoPtr<VelocityTrackerState> mPtr;
+//    AutoPtr<VelocityTrackerState> mPtr;
     String mStrategy;
-    AutoPtr<VelocityTracker> mNext;
-    Boolean mIsPooled;
 };
-
-
 
 } // namespace View
 } // namespace Droid
 } // namespace Elastos
+
 #endif //__ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__

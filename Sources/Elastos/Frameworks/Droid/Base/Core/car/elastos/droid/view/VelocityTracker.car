@@ -16,10 +16,6 @@ module
      * {@link #computeCurrentVelocity(int)} and then call {@link #getXVelocity(int)}
      * and {@link #getYVelocity(int)} to retrieve the velocity for each pointer id.
      */
-    /**
-     * @Involve
-     * interface Elastos.Droid.Utility.IPoolable
-     */
     interface IVelocityTracker {
         Recycle();
 
