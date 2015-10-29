@@ -29,7 +29,7 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IntentFilter;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Webkit::Base::ApplicationStatus;
-using Elastos::Droid::Net::Wifi::IWifiManager;
+using Elastos::Droid::Wifi::IWifiManager;
 
 namespace Elastos {
 namespace Droid {

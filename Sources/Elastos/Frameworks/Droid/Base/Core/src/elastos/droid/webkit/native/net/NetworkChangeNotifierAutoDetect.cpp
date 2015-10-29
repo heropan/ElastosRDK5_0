@@ -5,7 +5,7 @@
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"
 
 using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::Wifi::IWifiInfo;
+using Elastos::Droid::Wifi::IWifiInfo;
 using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Content::IIntent;

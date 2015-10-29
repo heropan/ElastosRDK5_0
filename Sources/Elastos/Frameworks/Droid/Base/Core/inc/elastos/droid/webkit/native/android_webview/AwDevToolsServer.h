@@ -14,6 +14,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwDevToolsServer
+    : public Object
 {
 public:
     AwDevToolsServer();

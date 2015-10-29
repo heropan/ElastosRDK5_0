@@ -40,10 +40,11 @@ class WebView;
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
+namespace Webview {
 namespace Chromium {
 
-class CookieManagerAdapter 
-    //: public CookieManager
+class CookieManagerAdapter
+    : public Object// CookieManager
 {
 public:
     CookieManagerAdapter(
@@ -143,6 +144,7 @@ private:
 };
 
 } // namespace Chromium
+} // namespace Webview
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
