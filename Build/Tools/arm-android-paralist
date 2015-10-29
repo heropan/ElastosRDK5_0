@@ -241,7 +241,7 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/opengl/gles
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethods/pinyinIME
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/swextend/gpio
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid
 - Elastos/Frameworks/Droid/Base/Core
 #- Elastos/Frameworks/Droid/Base/Services/Server/src Elastos.Droid.Server.car

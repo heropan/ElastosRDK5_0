@@ -60,7 +60,7 @@ ECode Element::GetChild(
         FAIL_RETURN(CChildren::New((IChildren**)&mChildren))
     }
 
-    return mChildren->GetOrCreate((IElement*)this->Probe(EIID_IElement), uri, localName, result);
+    return mChildren->GetOrCreate(IElement::Probe(this), uri, localName, result);
 }
 
 ECode Element::RequireChild(
@@ -100,15 +100,15 @@ ECode Element::RequireChild(
 ECode Element::SetElementListener(
     /* [in] */ IElementListener* elementListener)
 {
-    FAIL_RETURN(SetStartElementListener((IStartElementListener*)elementListener->Probe(EIID_IStartElementListener)))
-    return SetEndElementListener((IEndElementListener*)elementListener->Probe(EIID_IEndElementListener));
+    SetStartElementListener(IStartElementListener::Probe(elementListener));
+    return SetEndElementListener(IEndElementListener::Probe(elementListener));
 }
 
 ECode Element::SetTextElementListener(
     /* [in] */ ITextElementListener* elementListener)
 {
-    FAIL_RETURN(SetStartElementListener((IStartElementListener*)elementListener->Probe(EIID_IStartElementListener)))
-    return SetEndTextElementListener((IEndTextElementListener*)elementListener->Probe(EIID_IEndTextElementListener));
+    SetStartElementListener(IStartElementListener::Probe(elementListener));
+    return SetEndTextElementListener(IEndTextElementListener::Probe(elementListener));
 }
 
 ECode Element::SetStartElementListener(
