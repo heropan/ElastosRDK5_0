@@ -1,8 +1,9 @@
 
 #include "elastos/droid/view/VelocityTracker.h"
-#include "elastos/droid/view/VelocityTrackerState.h"
-#include <elastos/core/Math.h>
+//#include "elastos/droid/view/VelocityTrackerState.h"
 #include "elastos/droid/utility/Pools.h"
+
+#include <elastos/core/Math.h>
 #include <elastos/core/StringBuffer.h>
 #include <stdio.h>
 
@@ -19,8 +20,8 @@ extern "C" const InterfaceID EIID_VelocityTracker =
 
 const Int32 VelocityTracker::ACTIVE_POINTER_ID;
 const Int32 VelocityTracker::Estimator::MAX_DEGREE;
-AutoPtr<IPool> VelocityTracker::sPool = Pools::AcquireSynchronizedPool(
-                Pools::AcquireFinitePool(new VelocityTrackerPoolableManager(), 2));
+AutoPtr<Pools::SynchronizedPool<IVelocityTracker> > VelocityTracker::sPool =
+        new Pools::SynchronizedPool<IVelocityTracker>(2);
 
 //========================================================================================
 //              VelocityTracker::Estimator
@@ -31,27 +32,33 @@ VelocityTracker::Estimator::Estimator()
     mYCoeff = ArrayOf<Float>::Alloc(MAX_DEGREE + 1);
 }
 
-Float VelocityTracker::Estimator::EstimateX(Float time)
+Float VelocityTracker::Estimator::EstimateX(
+    /* [in] */ Float time)
 {
     return Estimate(time, mXCoeff);
 }
 
-Float VelocityTracker::Estimator::EstimateY(Float time)
+Float VelocityTracker::Estimator::EstimateY(
+    /* [in] */ Float time)
 {
     return Estimate(time, mYCoeff);
 }
 
-Float VelocityTracker::Estimator::GetXCoeff(Int32 index)
+Float VelocityTracker::Estimator::GetXCoeff(
+    /* [in] */ Int32 index)
 {
     return index <= mDegree ? (*mXCoeff)[index] : 0.0f;
 }
 
-Float VelocityTracker::Estimator::GetYCoeff(Int32 index)
+Float VelocityTracker::Estimator::GetYCoeff(
+    /* [in] */ Int32 index)
 {
     return index <= mDegree ? (*mYCoeff)[index] : 0.0f;
 }
 
-Float VelocityTracker::Estimator::Estimate(Float time, ArrayOf<Float>* c)
+Float VelocityTracker::Estimator::Estimate(
+    /* [in] */ Float time,
+    /* [in] */ ArrayOf<Float>* c)
 {
     Float a = 0;
     Float scale = 1;
@@ -63,165 +70,81 @@ Float VelocityTracker::Estimator::Estimate(Float time, ArrayOf<Float>* c)
 }
 
 //========================================================================================
-//              VelocityTracker::VelocityTrackerPoolableManager
+//              VelocityTracker::
 //========================================================================================
-CAR_INTERFACE_IMPL(VelocityTracker::VelocityTrackerPoolableManager, IPoolableManager)
+// Zhangyu JNI TODO
+// AutoPtr<VelocityTrackerState> VelocityTracker::NativeInitialize(
+//     /* [in] */ const String& strategy)
+// {
+//     AutoPtr<VelocityTrackerState> temp = new VelocityTrackerState(strategy.string());
+//     return temp;
+// }
 
-ECode VelocityTracker::VelocityTrackerPoolableManager::NewInstance(
-    /* [out] */ IPoolable** element)
-{
-    VALIDATE_NOT_NULL(element);
-    AutoPtr<VelocityTracker> vt = new VelocityTracker(String(NULL));
-    *element = (IPoolable*)(vt->Probe(EIID_IPoolable));
-    if (*element == NULL) {
-        return E_OUT_OF_MEMORY_ERROR;
-    }
-    REFCOUNT_ADD(*element);
-    return NOERROR;
-}
+// void VelocityTracker::NativeClear(
+//     /* [in] */ VelocityTrackerState* state)
+// {
+//     if (state)
+//         state->Clear();
+// }
 
-ECode VelocityTracker::VelocityTrackerPoolableManager::OnAcquired(
-    /* [in] */ IPoolable* element)
-{
-    return NOERROR;
-}
+// void VelocityTracker::NativeAddMovement(
+//     /* [in] */ VelocityTrackerState* state,
+//     /* [in] */ IMotionEvent* event)
+// {
+//     state->AddMovement(event);
+// }
 
-ECode VelocityTracker::VelocityTrackerPoolableManager::OnReleased(
-    /* [in] */ IPoolable* element)
-{
-    if (element) {
-        AutoPtr<VelocityTracker> vt = reinterpret_cast<VelocityTracker*>(element->Probe(EIID_VelocityTracker));
-        if (vt) {
-            vt->Clear();
-        }
-    }
+// void VelocityTracker::NativeComputeCurrentVelocity(
+//     /* [in] */ VelocityTrackerState* state,
+//     /* [in] */ Int32 units,
+//     /* [in] */ Float maxVelocity)
+// {
+//     state->ComputeCurrentVelocity(units, maxVelocity);
+// }
 
-    return NOERROR;
-}
+// Float VelocityTracker::NativeGetXVelocity(
+//     /* [in] */ VelocityTrackerState* state,
+//     /* [in] */ Int32 id)
+// {
+//     Float vx;
+//     state->GetVelocity(id, &vx, NULL);
+//     return vx;
+// }
 
-AutoPtr<VelocityTrackerState> VelocityTracker::NativeInitialize(
-    /* [in] */ const String& strategy)
-{
-    AutoPtr<VelocityTrackerState> temp = new VelocityTrackerState(strategy.string());
-    return temp;
-}
+// Float VelocityTracker::NativeGetYVelocity(
+//     /* [in] */ VelocityTrackerState* state,
+//     /* [in] */ Int32 id)
+// {
+//     Float vy;
+//     state->GetVelocity(id, NULL, &vy);
+//     return vy;
+// }
 
-void VelocityTracker::NativeClear(
-    /* [in] */ VelocityTrackerState* state)
-{
-    if (state)
-        state->Clear();
-}
+// Boolean VelocityTracker::NativeGetEstimator(
+//     /* [in] */ VelocityTrackerState* state,
+//     /* [in] */ Int32 id,
+//     /* [in] */ Estimator* outEstimator)
+// {
+//     android::VelocityTracker::Estimator estimator;
+//     Boolean result = state->GetEstimator(id, &estimator);
 
-void VelocityTracker::NativeAddMovement(
-    /* [in] */ VelocityTrackerState* state,
-    /* [in] */ IMotionEvent* event)
-{
-    state->AddMovement(event);
-}
+//     for(Int32 i=0; i < VelocityTracker::Estimator::MAX_DEGREE + 1; i++) {
+//         (*(outEstimator->mXCoeff))[i] = estimator.xCoeff[i];
+//         (*(outEstimator->mYCoeff))[i] = estimator.yCoeff[i];
+//     }
 
-void VelocityTracker::NativeComputeCurrentVelocity(
-    /* [in] */ VelocityTrackerState* state,
-    /* [in] */ Int32 units,
-    /* [in] */ Float maxVelocity)
-{
-    state->ComputeCurrentVelocity(units, maxVelocity);
-}
+//     outEstimator->mDegree = estimator.degree;
+//     outEstimator->mConfidence = estimator.confidence;
 
-Float VelocityTracker::NativeGetXVelocity(
-    /* [in] */ VelocityTrackerState* state,
-    /* [in] */ Int32 id)
-{
-    Float vx;
-    state->GetVelocity(id, &vx, NULL);
-    return vx;
-}
+//     return result;
+// }
 
-Float VelocityTracker::NativeGetYVelocity(
-    /* [in] */ VelocityTrackerState* state,
-    /* [in] */ Int32 id)
-{
-    Float vy;
-    state->GetVelocity(id, NULL, &vy);
-    return vy;
-}
-
-Boolean VelocityTracker::NativeGetEstimator(
-    /* [in] */ VelocityTrackerState* state,
-    /* [in] */ Int32 id,
-    /* [in] */ Estimator* outEstimator)
-{
-    android::VelocityTracker::Estimator estimator;
-    Boolean result = state->GetEstimator(id, &estimator);
-
-    for(Int32 i=0; i < VelocityTracker::Estimator::MAX_DEGREE + 1; i++) {
-        (*(outEstimator->mXCoeff))[i] = estimator.xCoeff[i];
-        (*(outEstimator->mYCoeff))[i] = estimator.yCoeff[i];
-    }
-
-    outEstimator->mDegree = estimator.degree;
-    outEstimator->mConfidence = estimator.confidence;
-
-    return result;
-}
-
-PInterface VelocityTracker::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)this;
-    }
-    else if (riid == EIID_IPoolable) {
-        return (IPoolable*)(IVelocityTracker*)this;
-    }
-    else if (riid == EIID_VelocityTracker) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    else if (riid == EIID_IVelocityTracker) {
-        return (IVelocityTracker*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 VelocityTracker::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 VelocityTracker::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode VelocityTracker::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IPoolable*)this) {
-        *pIID = EIID_IPoolable;
-    }
-    else if (pObject == (IInterface*)(IVelocityTracker*)this) {
-        *pIID = EIID_IVelocityTracker;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(VelocityTracker, Object, IVelocityTracker)
 
 AutoPtr<VelocityTracker> VelocityTracker::Obtain()
 {
-    AutoPtr<VelocityTracker> element;
-    AutoPtr<IPoolable> temp;
-    sPool->Acquire((IPoolable**)&temp);
-    if(temp != NULL) {
-        element = reinterpret_cast<VelocityTracker*>(temp->Probe(EIID_VelocityTracker));
-    }
-
-    return element;
+    AutoPtr<IVelocityTracker> instance = sPool->AcquireItem();
+    return (instance != NULL) ? (VelocityTracker*)instance.Get() : new VelocityTracker(String(NULL));
 }
 
 AutoPtr<VelocityTracker> VelocityTracker::Obtain(
@@ -237,70 +160,32 @@ AutoPtr<VelocityTracker> VelocityTracker::Obtain(
 ECode VelocityTracker::Recycle()
 {
     if (mStrategy.IsNull()) {
-        AutoPtr<IPoolable> poolable = THIS_PROBE(IPoolable);
-        if (poolable) {
-            sPool->ReleaseElement(poolable);
-        }
+        Clear();
+        sPool->ReleaseItem(this);
     }
 
-    return NOERROR;
-}
-
-ECode VelocityTracker::SetNextPoolable(
-    /* [in] */ IPoolable* element)
-{
-    if (element) {
-        mNext = reinterpret_cast<VelocityTracker*>(element->Probe(EIID_VelocityTracker));
-    }
-    else {
-        mNext = NULL;
-    }
-
-    return NOERROR;
-}
-
-ECode VelocityTracker::GetNextPoolable(
-    /* [out] */ IPoolable** element)
-{
-    VALIDATE_NOT_NULL(element);
-    *element = THIS_PROBE(IPoolable);
-    REFCOUNT_ADD(*element);
-    return NOERROR;
-}
-
-ECode VelocityTracker::IsPooled(
-    /* [out] */ Boolean* isPooled)
-{
-    VALIDATE_NOT_NULL(isPooled);
-    *isPooled = mIsPooled;
-    return NOERROR;
-}
-
-ECode VelocityTracker::SetPooled(
-    /* [in] */ Boolean isPooled)
-{
-    mIsPooled = isPooled;
     return NOERROR;
 }
 
 VelocityTracker::VelocityTracker(
     /* [in] */ const String& strategy)
-   : mPtr(NativeInitialize(strategy))
-   , mIsPooled(FALSE)
+//   : mPtr(NativeInitialize(strategy))     // Zhangyu JNI TODO
 {
     mStrategy = strategy;
 }
 
 VelocityTracker::~VelocityTracker()
 {
-    if (mPtr != NULL) {
-        mPtr = NULL;
-    }
+    // Zhangyu JNI TODO
+    // if (mPtr != NULL) {
+    //     mPtr = NULL;
+    // }
 }
 
 ECode VelocityTracker::Clear()
 {
-    NativeClear(mPtr);
+    // Zhangyu JNI TODO
+//    NativeClear(mPtr);
     return NOERROR;
 }
 
@@ -310,8 +195,8 @@ ECode VelocityTracker::AddMovement(
     if(ev == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    NativeAddMovement(mPtr, ev);
+    // Zhangyu JNI TODO
+//    NativeAddMovement(mPtr, ev);
     return NOERROR;
 }
 
@@ -325,7 +210,8 @@ ECode VelocityTracker::ComputeCurrentVelocity(
     /* [in] */ Int32 units,
     /* [in] */ Float maxVelocity)
 {
-    NativeComputeCurrentVelocity(mPtr, units, maxVelocity);
+    // Zhangyu JNI TODO
+//    NativeComputeCurrentVelocity(mPtr, units, maxVelocity);
     return NOERROR;
 }
 
@@ -334,7 +220,8 @@ ECode VelocityTracker::GetXVelocity(
 {
     VALIDATE_NOT_NULL(x);
 
-    *x = NativeGetXVelocity(mPtr, ACTIVE_POINTER_ID);
+// Zhangyu JNI TODO
+//    *x = NativeGetXVelocity(mPtr, ACTIVE_POINTER_ID);
     return NOERROR;
 }
 
@@ -343,7 +230,8 @@ ECode VelocityTracker::GetYVelocity(
 {
     VALIDATE_NOT_NULL(y);
 
-    *y = NativeGetYVelocity(mPtr, ACTIVE_POINTER_ID);
+// Zhangyu JNI TODO
+//    *y = NativeGetYVelocity(mPtr, ACTIVE_POINTER_ID);
     return NOERROR;
 }
 
@@ -353,7 +241,8 @@ ECode VelocityTracker::GetXVelocity(
 {
     VALIDATE_NOT_NULL(x);
 
-    *x = NativeGetXVelocity(mPtr, id);
+// Zhangyu JNI TODO
+//    *x = NativeGetXVelocity(mPtr, id);
     return NOERROR;
 }
 
@@ -363,7 +252,8 @@ ECode VelocityTracker::GetYVelocity(
 {
     VALIDATE_NOT_NULL(y);
 
-    *y = NativeGetYVelocity(mPtr, id);
+// Zhangyu JNI TODO
+//    *y = NativeGetYVelocity(mPtr, id);
     return NOERROR;
 }
 
@@ -379,7 +269,8 @@ ECode VelocityTracker::GetEstimator(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    *result = NativeGetEstimator(mPtr, id, outEstimatorObj);
+// Zhangyu JNI TODO
+//    *result = NativeGetEstimator(mPtr, id, outEstimatorObj);
     return NOERROR;
 }
 
