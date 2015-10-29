@@ -25,27 +25,26 @@ module
     merge("wifi/WpsInfo.car");
     merge("wifi/WpsResult.car");
 
-//    merge("wifi/p2p/IWifiP2pManager.car");
+    merge("wifi/p2p/IWifiP2pManager.car");
+    merge("wifi/p2p/WifiP2pConfig.car");
+    merge("wifi/p2p/WifiP2pDevice.car");
+    merge("wifi/p2p/WifiP2pDeviceList.car");
+    merge("wifi/p2p/WifiP2pGroup.car");
+    merge("wifi/p2p/WifiP2pGroupList.car");
+    merge("wifi/p2p/WifiP2pInfo.car");
+    merge("wifi/p2p/WifiP2pManager.car");
+    merge("wifi/p2p/WifiP2pProvDiscEvent.car");
+    merge("wifi/p2p/WifiP2pWfdInfo.car");
 
-//    merge("wifi/p2p/WifiP2pConfig.car");
-//    merge("wifi/p2p/WifiP2pDevice.car");
-//    merge("wifi/p2p/WifiP2pDeviceList.car");
-//    merge("wifi/p2p/WifiP2pGroup.car");
-//    merge("wifi/p2p/WifiP2pGroupList.car");
-//    merge("wifi/p2p/WifiP2pInfo.car");
-//    merge("wifi/p2p/WifiP2pManager.car");
-//    merge("wifi/p2p/WifiP2pProvDiscEvent.car");
-//    merge("wifi/p2p/WifiP2pService.car");
-//    merge("wifi/p2p/WifiP2pWfdInfo.car");
-//    merge("wifi/p2p/nsd/WifiP2pServiceInfo.car");
-//    merge("wifi/p2p/nsd/WifiP2pServiceRequest.car");
-//    merge("wifi/p2p/nsd/WifiP2pServiceResponse.car");
-//    merge("wifi/p2p/nsd/WifiP2pDnsSdServiceInfo.car");
-//    merge("wifi/p2p/nsd/WifiP2pDnsSdServiceRequest.car");
-//    merge("wifi/p2p/nsd/WifiP2pDnsSdServiceResponse.car");
-//    merge("wifi/p2p/nsd/WifiP2pUpnpServiceInfo.car");
-//    merge("wifi/p2p/nsd/WifiP2pUpnpServiceRequest.car");
-//    merge("wifi/p2p/nsd/WifiP2pUpnpServiceResponse.car");
+    merge("wifi/p2p/nsd/WifiP2pServiceInfo.car");
+    merge("wifi/p2p/nsd/WifiP2pServiceRequest.car");
+    merge("wifi/p2p/nsd/WifiP2pServiceResponse.car");
+    merge("wifi/p2p/nsd/WifiP2pDnsSdServiceInfo.car");
+    merge("wifi/p2p/nsd/WifiP2pDnsSdServiceRequest.car");
+    merge("wifi/p2p/nsd/WifiP2pDnsSdServiceResponse.car");
+    merge("wifi/p2p/nsd/WifiP2pUpnpServiceInfo.car");
+    merge("wifi/p2p/nsd/WifiP2pUpnpServiceRequest.car");
+    merge("wifi/p2p/nsd/WifiP2pUpnpServiceResponse.car");
 
     // interface Elastos.Droid.Content.IContext;
     // interface Elastos.Droid.Os.ILooper;

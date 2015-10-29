@@ -16,8 +16,9 @@ module
      * {@see WifiP2pDnsSdServiceRequest}
      */
     /**
-     * @Involve
-     * interface IWifiP2pServiceRequest
+     * @Involved
+     * interface IParcelable;
+     * interface IWifiP2pServiceRequest;
      */
     interface IWifiP2pUpnpServiceRequest {
     }
@@ -29,7 +30,7 @@ module
          * @return service request for UPnP.
          */
         NewInstance(
-            [out] IWifiP2pUpnpServiceRequest** instance);
+            [out] IWifiP2pUpnpServiceRequest** result);
 
         /**
          * Create a service discovery request to search specified UPnP services.
@@ -47,15 +48,14 @@ module
          */
         NewInstance(
             [in] String st,
-            [out] IWifiP2pUpnpServiceRequest** instance);
+            [out] IWifiP2pUpnpServiceRequest** result);
+
     }
 
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-
-
 

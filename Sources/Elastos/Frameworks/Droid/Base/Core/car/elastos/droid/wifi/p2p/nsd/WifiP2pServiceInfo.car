@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Wifi {
@@ -8,32 +10,37 @@ module
     namespace Nsd {
 
     /**
-     * Describes information about a detected access point. In addition
-     * to the attributes described here, the supplicant keeps track of
-     * {@code quality}, {@code noise}, and {@code maxbitrate} attributes,
-     * but does not currently report them to external clients.
+     * A class for storing service information that is advertised
+     * over a Wi-Fi peer-to-peer setup
+     *
+     * @see WifiP2pUpnpServiceInfo
+     * @see WifiP2pDnsSdServiceInfo
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
      */
     interface IWifiP2pServiceInfo {
         /**
          * All service protocol types.
          */
-        const Int32 SERVICE_TYPE_ALL             = 0;
+        const Int32 SERVICE_TYPE_ALL = 0;
 
         /**
          * DNS based service discovery protocol.
          */
-        const Int32 SERVICE_TYPE_BONJOUR         = 1;
+        const Int32 SERVICE_TYPE_BONJOUR = 1;
 
         /**
          * UPnP protocol.
          */
-        const Int32 SERVICE_TYPE_UPNP            = 2;
+        const Int32 SERVICE_TYPE_UPNP = 2;
 
         /**
          * WS-Discovery protocol
          * @hide
          */
-        const Int32 SERVICE_TYPE_WS_DISCOVERY    = 3;
+        const Int32 SERVICE_TYPE_WS_DISCOVERY = 3;
 
         /**
          * Vendor Specific protocol
@@ -41,28 +48,19 @@ module
         const Int32 SERVICE_TYPE_VENDOR_SPECIFIC = 255;
 
         /**
-         * Return the list of the query string for wpa_supplicant.
-         *
-         * @return the list of the query string for wpa_supplicant.
-         * @hide
-         */
+        * Return the list of the query string for wpa_supplicant.
+        *
+        * @return the list of the query string for wpa_supplicant.
+        * @hide
+        */
         GetSupplicantQueryList(
-            [out, callee] ArrayOf<String>* list);
+            [out] IList** result);
 
-        // @Override
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
-
-        // @Override
-        GetHashCode(
-            [out] Int32* hashCode);
     }
 
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-

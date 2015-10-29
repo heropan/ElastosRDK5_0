@@ -16,8 +16,9 @@ module
      * {@see WifiP2pUpnpServiceRequest}
      */
     /**
-     * @Involve
-     * interface IWifiP2pServiceRequest
+     * @Involved
+     * interface IParcelable;
+     * interface IWifiP2pServiceRequest;
      */
     interface IWifiP2pDnsSdServiceRequest {
     }
@@ -29,7 +30,7 @@ module
          * @return service request for Bonjour.
          */
         NewInstance(
-            [out] IWifiP2pDnsSdServiceRequest** instance);
+            [out] IWifiP2pDnsSdServiceRequest** result);
 
         /**
          * Create a service discovery to search for Bonjour services with the specified
@@ -43,7 +44,7 @@ module
          */
         NewInstance(
             [in] String serviceType,
-            [out] IWifiP2pDnsSdServiceRequest** instance);
+            [out] IWifiP2pDnsSdServiceRequest** result);
 
         /**
          * Create a service discovery request to get the TXT data from the specified
@@ -60,16 +61,13 @@ module
         NewInstance(
             [in] String instanceName,
             [in] String serviceType,
-            [out] IWifiP2pDnsSdServiceRequest** instance);
+            [out] IWifiP2pDnsSdServiceRequest** result);
+
     }
 
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-
-
-
-

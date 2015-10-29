@@ -22,6 +22,10 @@ module
      * {@see WifiP2pUpnpServiceRequest}
      * {@see WifiP2pDnsSdServiceRequest}
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IWifiP2pServiceRequest {
         /**
          * Return transaction id.
@@ -30,7 +34,7 @@ module
          * @hide
          */
         GetTransactionId(
-            [out] Int32* transactionId);
+            [out] Int32* result);
 
         /**
          * Set transaction id.
@@ -55,16 +59,8 @@ module
          * @hide
          */
         GetSupplicantQuery(
-            [out] String* supplicantQuery);
+            [out] String* result);
 
-        // @Override
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
-
-        // @Override
-        GetHashCode(
-            [out] Int32* hashCode);
     }
 
     interface IWifiP2pServiceRequestHelper {
@@ -83,7 +79,7 @@ module
         NewInstance(
             [in] Int32 protocolType,
             [in] String queryData,
-            [out] IWifiP2pServiceRequest** instance);
+            [out] IWifiP2pServiceRequest** result);
 
         /**
          * Create a service discovery request.
@@ -98,14 +94,14 @@ module
          */
         NewInstance(
             [in] Int32 protocolType,
-            [out] IWifiP2pServiceRequest** instance);
+            [out] IWifiP2pServiceRequest** result);
+
     }
 
-    } // namespace nsd
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace Nsd
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-
 

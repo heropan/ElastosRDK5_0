@@ -127,7 +127,8 @@ module
      */
     /**
      * @Involved
-     * interface ;
+     * interface IResponseCache;
+     * interface ICloseable;
      */
     interface IHttpResponseCache {
         /**

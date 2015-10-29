@@ -13,7 +13,7 @@ module
      */
     /**
      * @Involved
-     * interface ;
+     * no super interface
      */
     [deprecated]
     interface IINetworkScoreService {

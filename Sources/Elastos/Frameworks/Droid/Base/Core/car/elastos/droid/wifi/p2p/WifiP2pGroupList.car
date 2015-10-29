@@ -1,23 +1,22 @@
 
 module
 {
-    interface Elastos.Droid.Net.Wifi.P2p.IWifiP2pGroup;
+    using interface Elastos.Utility.ICollection;
 
     namespace Elastos {
     namespace Droid {
     namespace Wifi {
     namespace P2p {
 
-    interface IGroupDeleteListener {
-        OnDeleteGroup(
-            [in] Int32 netId);
-    }
-
     /**
      * A class representing a Wi-Fi P2p group list
      *
      * {@see WifiP2pManager}
      * @hide
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
      */
     interface IWifiP2pGroupList {
         /**
@@ -26,12 +25,13 @@ module
          * @return the list of p2p group.
          */
         GetGroupList(
-            [out, callee] ArrayOf<IWifiP2pGroup*>* list);
+            [out] ICollection** result);
 
         /**
          * Add the specified group to this group list.
          *
          * @param group
+         * @hide
          */
         Add(
             [in] IWifiP2pGroup* group);
@@ -40,23 +40,17 @@ module
          * Remove the group with the specified network id from this group list.
          *
          * @param netId
+         * @hide
          */
         Remove(
             [in] Int32 netId);
 
         /**
-         * Remove the group with the specified device address from this group list.
-         *
-         * @param deviceAddress
-         */
-        Remove(
-            [in] String deviceAddress);
-
-        /**
          * Clear the group.
+         * @hide
          */
         Clear(
-            [out] Boolean* ret);
+            [out] Boolean* result);
 
         /**
          * Return the network id of the group owner profile with the specified p2p device
@@ -66,10 +60,11 @@ module
          *
          * @param deviceAddress p2p device address.
          * @return the network id. if not found, return -1.
+         * @hide
          */
         GetNetworkId(
             [in] String deviceAddress,
-            [out] Int32* networkId);
+            [out] Int32* result);
 
         /**
          * Return the network id of the group with the specified p2p device address
@@ -78,21 +73,23 @@ module
          * @param deviceAddress p2p device address.
          * @param ssid ssid.
          * @return the network id. if not found, return -1.
+         * @hide
          */
         GetNetworkId(
             [in] String deviceAddress,
             [in] String ssid,
-            [out] Int32* networkId);
+            [out] Int32* result);
 
         /**
          * Return the group owner address of the group with the specified network id
          *
          * @param netId network id.
          * @return the address. if not found, return null.
+         * @hide
          */
         GetOwnerAddr(
             [in] Int32 netId,
-            [out] String* addr);
+            [out] String* result);
 
         /**
          * Return true if this group list contains the specified network id.
@@ -101,18 +98,26 @@ module
          *
          * @param netId network id.
          * @return true if the specified network id is present in this group list.
+         * @hide
          */
         Contains(
             [in] Int32 netId,
-            [out] Boolean* ret);
+            [out] Boolean* result);
 
-        ToString(
-            [out] String* string);
     }
 
-    } // namespace p2p
-    } // namespace wifi
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IWifiP2pGroupListGroupDeleteListener {
+        OnDeleteGroup(
+            [in] Int32 netId);
+
+    }
+
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-

@@ -13,36 +13,36 @@ module
      *
      * {@see WifiP2pManager}
      */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IWifiP2pInfo {
         /** Indicates if a p2p group has been successfully formed */
         GetGroupFormed(
-            [out] Boolean* formed);
+            [out] Boolean* result);
 
         SetGroupFormed(
-            [in] Boolean formed);
+            [in] Boolean groupFormed);
 
         /** Indicates if the current device is the group owner */
-        IsGroupOwner(
-            [out] Boolean* isGroupOwner);
+        GetIsGroupOwner(
+            [out] Boolean* result);
 
         SetIsGroupOwner(
             [in] Boolean isGroupOwner);
 
         /** Group owner address */
         GetGroupOwnerAddress(
-            [out] IInetAddress** address);
+            [out] IInetAddress** result);
 
         SetGroupOwnerAddress(
-            [in] IInetAddress* address);
+            [in] IInetAddress* groupOwnerAddress);
 
-        ToString(
-            [out] String* string);
     }
 
-    } // namespace p2p
-    } // namespace wifi
+    } // namespace P2p
+    } // namespace Wifi
     } // namespace Droid
     } // namespace Elastos
 }
-
-
