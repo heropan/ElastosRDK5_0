@@ -473,6 +473,13 @@ ECode CArrayMap::GetValueAt(
 
 ECode CArrayMap::SetValueAt(
     /* [in] */ Int32 index,
+    /* [in] */ IInterface* value)
+{
+    return SetValueAt(index, value, NULL);
+}
+
+ECode CArrayMap::SetValueAt(
+    /* [in] */ Int32 index,
     /* [in] */ IInterface* value,
     /* [out] */ IInterface** oldValue)
 {

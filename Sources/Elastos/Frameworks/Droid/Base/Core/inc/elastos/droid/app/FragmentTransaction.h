@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
-#define __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
+#ifndef __ELASTOS_DROID_APP_FRAGMENT_TRANSACTION_H__
+#define __ELASTOS_DROID_APP_FRAGMENT_TRANSACTION_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
@@ -329,4 +329,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
+#endif // __ELASTOS_DROID_APP_FRAGMENT_TRANSACTION_H__

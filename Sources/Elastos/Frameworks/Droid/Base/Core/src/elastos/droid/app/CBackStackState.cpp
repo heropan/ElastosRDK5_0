@@ -4,6 +4,7 @@
 #include "elastos/droid/app/FragmentManagerImpl.h"
 // #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/transition/CTransitionManager.h"
 #include "elastos/droid/transition/CTransitionSet.h"
 #include "elastos/droid/utility/CArrayMap.h"
@@ -16,7 +17,9 @@
 using Elastos::Droid::Transition::CTransitionManager;
 using Elastos::Droid::Transition::ITransitionSet;
 using Elastos::Droid::Transition::CTransitionSet;
+using Elastos::Droid::Transition::EIID_IEpicenterCallback;
 using Elastos::Droid::App::IFragmentTransaction;
+using Elastos::Droid::Graphics::CRect;
 //using Elastos::Droid::Widget::CView;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::EIID_IOnPreDrawListener;
@@ -25,6 +28,7 @@ using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::IInteger32;
 using Elastos::IO::CPrintWriter;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ISet;
@@ -1516,17 +1520,19 @@ AutoPtr<ITransition> MergeTransitions(
         if (sharedElementTransition != NULL) {
             transitionSet->AddTransition(sharedElementTransition);
         }
-        transition = transitionSet;
+        transition = ITransition::Probe(transitionSet);
     }
     else {
         // First do exit, then enter, but allow shared element transition to happen
         // during both.
         AutoPtr<ITransition> staggered;
         if (exitTransition != NULL && enterTransition != NULL) {
-            CTransitionSet::New((ITransitionSet**)&staggered);
-            staggered->AddTransition(exitTransition);
-            staggered->AddTransition(enterTransition);
-            staggered->SetOrdering(ITransitionSet::ORDERING_SEQUENTIAL);
+            AutoPtr<ITransitionSet> ts;
+            CTransitionSet::New((ITransitionSet**)&ts);
+            ts->AddTransition(exitTransition);
+            ts->AddTransition(enterTransition);
+            ts->SetOrdering(ITransitionSet::ORDERING_SEQUENTIAL);
+            staggered = ITransition::Probe(ts);
         }
         else if (exitTransition != NULL) {
             staggered = exitTransition;
@@ -1542,7 +1548,7 @@ AutoPtr<ITransition> MergeTransitions(
                 together->AddTransition(staggered);
             }
             together->AddTransition(sharedElementTransition);
-            transition = together;
+            transition = ITransition::Probe(together);
         }
         else {
             transition = staggered;
@@ -1561,12 +1567,13 @@ void BackStackRecord::ConfigureTransitions(Int32 containerId,
     mManager->mContainer->FindViewById(containerId, (IView**)&view);
     AutoPtr<IViewGroup> sceneRoot = IViewGroup::Probe(view);
     if (sceneRoot != NULL) {
+        AutoPtr<IInteger32> idObj = CoreUtils::Convert(containerId);
         AutoPtr<IInterface> obj;
-        lastInFragments->Get(containerId, (IInterface**)&obj);
+        lastInFragments->Get(idObj, (IInterface**)&obj);
         AutoPtr<IFragment> inFragment = IFragment::Probe(obj);
 
         obj = NULL;
-        firstOutFragments->Get(containerId, (IInterface**)&obj);
+        firstOutFragments->Get(idObj, (IInterface**)&obj);
         AutoPtr<IFragment> outFragment = IFragment::Probe(obj);
 
         AutoPtr<ITransition> enterTransition = GetEnterTransition(inFragment, isBack);
@@ -1579,7 +1586,9 @@ void BackStackRecord::ConfigureTransitions(Int32 containerId,
             return; // no transitions!
         }
         if (enterTransition != NULL) {
-            enterTransition->AddTarget(state.nonExistentView);
+            AutoPtr<IView> view;
+            state->GetNonExistentView((IView**)&view);
+            enterTransition->AddTarget(view);
         }
 
         AutoPtr<IArrayMap> namedViews;//ArrayMap<String, View> = NULL;
@@ -1623,8 +1632,9 @@ void BackStackRecord::ConfigureTransitions(Int32 containerId,
             // fragment->mEnterTransitionCallback->OnSharedElementStart(names, views, NULL);
         }
 
+        Boolean empty;
         AutoPtr<IArrayList> exitingViews = CaptureExitingViews(exitTransition, outFragment, namedViews);
-        if (exitingViews == NULL || exitingViews.isEmpty()) {
+        if (exitingViews == NULL || (exitingViews->IsEmpty(&empty), empty)) {
             exitTransition = NULL;
         }
 
@@ -1651,7 +1661,7 @@ void BackStackRecord::ConfigureTransitions(Int32 containerId,
             AutoPtr<IArrayList> hiddenFragments, enteringViews;
             CArrayList::New((IArrayList**)&hiddenFragments);
             enteringViews = AddTransitionTargets(state, enterTransition,
-                sharedElementTransition, transition, sceneRoot, inFragment, outFragment,
+                sharedElementTransition, transition, IView::Probe(sceneRoot), inFragment, outFragment,
                 hiddenFragments, isBack, sharedElementTargets);
 
             CBackStackRecordTransitionState* stateObj = (CBackStackRecordTransitionState*)state;
@@ -1707,7 +1717,7 @@ ECode BackStackRecord::RemoveTargetsOnPreDrawListener::OnPreDraw(
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IViewTreeObserver> vto;
-    mSceneRoot->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    IView::Probe(mSceneRoot)->GetViewTreeObserver((IViewTreeObserver**)&vto);
 
     vto->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
     if (mEnterTransition != NULL) {
@@ -1746,7 +1756,7 @@ void BackStackRecord::RemoveTargetedViewsFromTransitions(
 {
     if (overallTransition != NULL) {
         AutoPtr<IViewTreeObserver> vto;
-        sceneRoot->GetViewTreeObserver((IViewTreeObserver**)&vto);
+        IView::Probe(sceneRoot)->GetViewTreeObserver((IViewTreeObserver**)&vto);
         AutoPtr<IOnPreDrawListener> listener = new RemoveTargetsOnPreDrawListener(
             this, sceneRoot, nonExistingView, enterTransition, enteringViews,
             exitTransition, exitingViews, sharedElementTransition, sharedElementTargets,
@@ -1817,19 +1827,20 @@ AutoPtr<IArrayMap> /*<String, View>*/ BackStackRecord::MapEnteringSharedElements
     /* [in] */ Boolean isBack)
  {
     AutoPtr<IArrayMap> namedViews; //ArrayMap<String, View>
-    CArrayMap::New((IArrayMap**)&remappedViews);
+    CArrayMap::New((IArrayMap**)&namedViews);
 
     AutoPtr<IView> root;
     inFragment->GetView((IView**)&root);
     if (root != NULL) {
         if (mSharedElementSourceNames != NULL) {
-            root->FindNamedViews(namedViews);
+            root->FindNamedViews(IMap::Probe(namedViews));
             if (isBack) {
                 AutoPtr<IArrayMap> old = namedViews;
                 namedViews = RemapNames(mSharedElementSourceNames,
                         mSharedElementTargetNames, old);
             } else {
-                namedViews->RetainAll(ICollection::Probe(mSharedElementTargetNames));
+                Boolean result;
+                namedViews->RetainAll(ICollection::Probe(mSharedElementTargetNames), &result);
             }
         }
     }
@@ -1918,7 +1929,7 @@ ECode BackStackRecord::SharedElementEpicenterCallback::OnGetEpicenter(
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IView> view;
-    if (mEpicenter == NULL && (state->GetEnteringEpicenterView((IView**)&view), view != NULL)) {
+    if (mEpicenter == NULL && (mState->GetEnteringEpicenterView((IView**)&view), view != NULL)) {
         CRect::New((IRect**)&mEpicenter);
         view->GetBoundsOnScreen(mEpicenter);
     }
@@ -2072,9 +2083,10 @@ void BackStackRecord::SetNameOverride(
     /* [in] */ const String& target)
 {
     if (!source.IsNull() && !target.IsNull() && !source.Equals(target)) {
+        IMap* map = IMap::Probe(overrides);
         AutoPtr<ICharSequence> targetObj = CoreUtils::Convert(target);
         Int32 size;
-        overrides->GetSize(&size);
+        map->GetSize(&size);
         for (Int32 index = 0; index < size; index++) {
             AutoPtr<IInterface> obj;
             overrides->GetValueAt(index, (IInterface**)&obj);
@@ -2085,7 +2097,7 @@ void BackStackRecord::SetNameOverride(
             }
         }
         AutoPtr<ICharSequence> sourceObj = CoreUtils::Convert(source);
-        overrides->Put(sourceObj, targetObj);
+        map->Put(sourceObj, targetObj);
     }
 }
 
@@ -2095,10 +2107,11 @@ void BackStackRecord::SetNameOverride(
     /* [in] */ ICharSequence* target)
 {
     if (source != NULL && target != NULL && !Object::Equals(source, target)) {
+        IMap* map = IMap::Probe(overrides);
         IInterface* src = TO_IINTERFACE(source);
         IInterface* tgt = TO_IINTERFACE(target);
         Int32 size;
-        overrides->GetSize(&size);
+        map->GetSize(&size);
         for (Int32 index = 0; index < size; index++) {
             AutoPtr<IInterface> obj;
             overrides->GetValueAt(index, (IInterface**)&obj);
@@ -2108,7 +2121,8 @@ void BackStackRecord::SetNameOverride(
                 return;
             }
         }
-        overrides->Put(src, tgt);
+        map->Put(src, tgt);
+    }
 }
 
 void BackStackRecord::SetNameOverrides(
@@ -2126,7 +2140,8 @@ void BackStackRecord::SetNameOverrides(
             sourceNames->Get(i, (IInterface**)&srcObj);
             targetNames->Get(i, (IInterface**)&tgtObj);
 
-            SetNameOverride(nameOverrides, srcObj, tgtObj);
+            SetNameOverride(nameOverrides,
+                ICharSequence::Probe(srcObj), ICharSequence::Probe(tgtObj));
         }
     }
 }
@@ -2134,22 +2149,22 @@ void BackStackRecord::SetNameOverrides(
 void BackStackRecord::SetBackNameOverrides(
     /* [in] */ IBackStackRecordTransitionState* state,
     /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
-    /* [in] */ Boolean isEnd))
+    /* [in] */ Boolean isEnd)
 {
     AutoPtr<IArrayMap> nameOverrides;
     state->GetNameOverrides((IArrayMap**)&nameOverrides);
     Int32 count;
     mSharedElementTargetNames->GetSize(&count);
+    IMap* map = IMap::Probe(namedViews);
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IInterface> srcObj, tgtObj;
+        AutoPtr<IInterface> srcObj, tgtObj, viewObj;
         mSharedElementSourceNames->Get(i, (IInterface**)&srcObj);
         mSharedElementTargetNames->Get(i, (IInterface**)&tgtObj);
 
-        AutoPtr<IView> view;
-        IMap::Probe(namedViews)->Get(tgtObj, (IView**)&view);
-        if (view != NULL) {
+        map->Get(tgtObj, (IInterface**)&viewObj);
+        if (viewObj != NULL) {
             String target;
-            view->GetTransitionName(&target);
+            IView::Probe(viewObj)->GetTransitionName(&target);
             if (isEnd) {
                 SetNameOverride(nameOverrides, ICharSequence::Probe(srcObj), CoreUtils::Convert(target));
             } else {
@@ -2164,14 +2179,15 @@ void BackStackRecord::SetNameOverrides(
     /* [in] */ IArrayMap* namedViews,
     /* [in] */ Boolean isEnd)
 {
+    IMap* map = IMap::Probe(namedViews);
     AutoPtr<IArrayMap> nameOverrides;
     state->GetNameOverrides((IArrayMap**)&nameOverrides);
     Int32 count;
-    namedViews->GetSize(&count);
+    map->GetSize(&count);
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IInterface> srcObj, viewObj;
-        namedViews->GetKeyAt(i, (IInterface**)&srcObj);
-        namedViews->GetValueAt(i, (IInterface**)&viewObj);
+        nameOverrides->GetKeyAt(i, (IInterface**)&srcObj);
+        nameOverrides->GetValueAt(i, (IInterface**)&viewObj);
         String target;
         IView::Probe(viewObj)->GetTransitionName(&target);
 

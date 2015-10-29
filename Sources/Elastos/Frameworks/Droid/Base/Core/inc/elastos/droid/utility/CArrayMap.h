@@ -186,6 +186,10 @@ public:
         /* [in] */ IInterface* value,
         /* [out] */ IInterface** oldValue);
 
+    CARAPI SetValueAt(
+        /* [in] */ Int32 index,
+        /* [in] */ IInterface* value);
+
     /**
      * Return true if the array map contains no items.
      */

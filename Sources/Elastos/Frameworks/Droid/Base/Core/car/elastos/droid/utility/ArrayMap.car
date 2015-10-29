@@ -84,6 +84,10 @@ module
             [in] IInterface* value,
             [out] IInterface** outface);
 
+        SetValueAt(
+            [in] Int32 index,
+            [in] IInterface* value);
+
         /**
          * Special fast path for appending items to the end of the array without validation.
          * The array must already be large enough to contain the item.

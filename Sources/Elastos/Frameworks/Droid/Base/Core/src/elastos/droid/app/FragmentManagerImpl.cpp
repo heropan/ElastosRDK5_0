@@ -18,7 +18,6 @@ using Elastos::Droid::R;
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::CObjectInt32Map;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Looper;
@@ -1606,91 +1605,92 @@ ECode FragmentManagerImpl::PopBackStackState(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (name.IsNull() && id < 0 && (flags&POP_BACK_STACK_INCLUSIVE) == 0) {
-        if (mBackStack.IsEmpty()) {
-            *result = FALSE;
-            return NOERROR;
-        }
-        List<AutoPtr<IBackStackRecord> >::Iterator bss = mBackStack.Erase(--mBackStack.End());
+    assert(0 && "TODO");
+    // if (name.IsNull() && id < 0 && (flags&POP_BACK_STACK_INCLUSIVE) == 0) {
+    //     if (mBackStack.IsEmpty()) {
+    //         *result = FALSE;
+    //         return NOERROR;
+    //     }
+    //     List<AutoPtr<IBackStackRecord> >::Iterator bss = mBackStack.Erase(--mBackStack.End());
 
-        SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
-        SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
-        bss.calculateBackFragments(firstOutFragments, lastInFragments);
-        bss.popFromBackStack(true, null, firstOutFragments, lastInFragments);
-        ReportBackStackChanged();
-    }
-    else {
-        List<AutoPtr<IBackStackRecord> >::ReverseIterator index;
-        if (!name.IsNull() || id >= 0) {
-            // If a name or ID is specified, look for that place in
-            // the stack.
-            index = mBackStack.RBegin();
-            while (*index != NULL && index != mBackStack.REnd()) {
-                AutoPtr<IBackStackRecord> bss = *index;
-                String bssName;
-                bss->GetName(&bssName);
-                if (!name.IsNull() && name.Equals(bssName)) {
-                    break;
-                }
-                Int32 bssIndex;
-                bss->GetId(&bssIndex);
-                if (id >= 0 && id == bssIndex) {
-                    break;
-                }
-                ++index;
-            }
-            if (*index == NULL) {
-                *result = FALSE;
-                return NOERROR;
-            }
-            if ((flags&POP_BACK_STACK_INCLUSIVE) != 0) {
-                index++;
-                // Consume all following entries that match.
-                while (index != mBackStack.REnd()) {
-                    AutoPtr<IBackStackRecord> bss = *index;
-                    String bssName;
-                    Int32 bssIndex;
-                    bss->GetName(&bssName);
-                    bss->GetId(&bssIndex);
-                    if ((!name.IsNull() && name.Equals(bssName))
-                            || (id >= 0 && id == bssIndex)) {
-                        index++;
-                        continue;
-                    }
-                    break;
-                }
-            }
-        }
-        if (index == mBackStack.RBegin()) {
-            *result = FALSE;
-            return NOERROR;
-        }
-        List<AutoPtr<IBackStackRecord> > states;
-        List<AutoPtr<IBackStackRecord> >::ReverseIterator rIt;
-        for (rIt = mBackStack.RBegin(); rIt != mBackStack.REnd();) {
-            states.PushBack(*rIt);
-            rIt = List<AutoPtr<IBackStackRecord> >::ReverseIterator(mBackStack.Erase(--(rIt.GetBase())));
-        }
-        Int32 LAST = states.GetSize()-1;
-        // for (Int32 i = 0; i <= LAST; i++) {
-        //     if (DEBUG) Logger::V(TAG, "Popping back stack state: %p", states[i].Get());
-        //     states[i]->PopFromBackStack(i == LAST);
-        // }
+    //     SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
+    //     SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
+    //     bss.calculateBackFragments(firstOutFragments, lastInFragments);
+    //     bss.popFromBackStack(true, null, firstOutFragments, lastInFragments);
+    //     ReportBackStackChanged();
+    // }
+    // else {
+    //     List<AutoPtr<IBackStackRecord> >::ReverseIterator index;
+    //     if (!name.IsNull() || id >= 0) {
+    //         // If a name or ID is specified, look for that place in
+    //         // the stack.
+    //         index = mBackStack.RBegin();
+    //         while (*index != NULL && index != mBackStack.REnd()) {
+    //             AutoPtr<IBackStackRecord> bss = *index;
+    //             String bssName;
+    //             bss->GetName(&bssName);
+    //             if (!name.IsNull() && name.Equals(bssName)) {
+    //                 break;
+    //             }
+    //             Int32 bssIndex;
+    //             bss->GetId(&bssIndex);
+    //             if (id >= 0 && id == bssIndex) {
+    //                 break;
+    //             }
+    //             ++index;
+    //         }
+    //         if (*index == NULL) {
+    //             *result = FALSE;
+    //             return NOERROR;
+    //         }
+    //         if ((flags&POP_BACK_STACK_INCLUSIVE) != 0) {
+    //             index++;
+    //             // Consume all following entries that match.
+    //             while (index != mBackStack.REnd()) {
+    //                 AutoPtr<IBackStackRecord> bss = *index;
+    //                 String bssName;
+    //                 Int32 bssIndex;
+    //                 bss->GetName(&bssName);
+    //                 bss->GetId(&bssIndex);
+    //                 if ((!name.IsNull() && name.Equals(bssName))
+    //                         || (id >= 0 && id == bssIndex)) {
+    //                     index++;
+    //                     continue;
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     if (index == mBackStack.RBegin()) {
+    //         *result = FALSE;
+    //         return NOERROR;
+    //     }
+    //     List<AutoPtr<IBackStackRecord> > states;
+    //     List<AutoPtr<IBackStackRecord> >::ReverseIterator rIt;
+    //     for (rIt = mBackStack.RBegin(); rIt != mBackStack.REnd();) {
+    //         states.PushBack(*rIt);
+    //         rIt = List<AutoPtr<IBackStackRecord> >::ReverseIterator(mBackStack.Erase(--(rIt.GetBase())));
+    //     }
+    //     Int32 LAST = states.GetSize()-1;
+    //     // for (Int32 i = 0; i <= LAST; i++) {
+    //     //     if (DEBUG) Logger::V(TAG, "Popping back stack state: %p", states[i].Get());
+    //     //     states[i]->PopFromBackStack(i == LAST);
+    //     // }
 
-        SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
-        SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
-        for (int i=0; i<=LAST; i++) {
-            states.get(i).calculateBackFragments(firstOutFragments, lastInFragments);
-        }
-        BackStackRecord.TransitionState state = null;
-        for (int i=0; i<=LAST; i++) {
-            if (DEBUG) Log.v(TAG, "Popping back stack state: " + states.get(i));
-            state = states.get(i).popFromBackStack(i == LAST, state,
-                    firstOutFragments, lastInFragments);
-        }
+    //     SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
+    //     SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
+    //     for (int i=0; i<=LAST; i++) {
+    //         states.get(i).calculateBackFragments(firstOutFragments, lastInFragments);
+    //     }
+    //     BackStackRecord.TransitionState state = null;
+    //     for (int i=0; i<=LAST; i++) {
+    //         if (DEBUG) Log.v(TAG, "Popping back stack state: " + states.get(i));
+    //         state = states.get(i).popFromBackStack(i == LAST, state,
+    //                 firstOutFragments, lastInFragments);
+    //     }
 
-        ReportBackStackChanged();
-    }
+    //     ReportBackStackChanged();
+    // }
     *result = TRUE;
     return NOERROR;
 }
@@ -1734,25 +1734,26 @@ ECode FragmentManagerImpl::RetainNonConfig(
 ECode FragmentManagerImpl::SaveFragmentViewState(
     /* [in] */ IFragment* f)
 {
-    AutoPtr<IView> view;
-    f->GetView((IView**)&view);
-    if (view == NULL) {
-        return NOERROR;
-    }
-    if (mStateArray == NULL) {
-        CObjectInt32Map::New((IObjectInt32Map**)&mStateArray);
-    }
-    else {
-        mStateArray = NULL;
-    }
+    assert(0 && "TODO");
+    // AutoPtr<IView> view;
+    // f->GetView((IView**)&view);
+    // if (view == NULL) {
+    //     return NOERROR;
+    // }
+    // if (mStateArray == NULL) {
+    //     CObjectInt32Map::New((IObjectInt32Map**)&mStateArray);
+    // }
+    // else {
+    //     mStateArray = NULL;
+    // }
 
-    view->SaveHierarchyState(mStateArray);
-    Int32 size;
-    mStateArray->GetSize(&size);
-    if (size > 0) {
-        f->SetSavedViewState(mStateArray);
-        mStateArray = NULL;
-    }
+    // view->SaveHierarchyState(mStateArray);
+    // Int32 size;
+    // mStateArray->GetSize(&size);
+    // if (size > 0) {
+    //     f->SetSavedViewState(mStateArray);
+    //     mStateArray = NULL;
+    // }
     return NOERROR;
 }
 

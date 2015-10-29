@@ -6,9 +6,6 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/app/FragmentTransaction.h"
 
-using Elastos::Droid::App::IFragmentManagerImpl;
-using Elastos::Droid::App::IFragmentManagerBackStackEntry;
-using Elastos::Droid::App::IBackStackRecord;
 using Elastos::Droid::Transition::ITransition;
 using Elastos::Droid::Transition::IEpicenterCallback;
 using Elastos::Droid::Graphics::IRect;
@@ -182,14 +179,14 @@ private:
     };
 
 
-    class SharedElementEpicenter
+    class SharedElementEpicenterCallback
         : public Object
         , public IEpicenterCallback
     {
     public:
         CAR_INTERFACE_DECL()
 
-        SharedElementEpicenter(
+        SharedElementEpicenterCallback(
             /* [in] */ IBackStackRecordTransitionState* state);
 
         CARAPI OnGetEpicenter(

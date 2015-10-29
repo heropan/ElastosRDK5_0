@@ -420,7 +420,7 @@ AutoPtr<IArrayList> CParcel::CreateStringArrayList(
     /* [in] */ IParcel* source)
 {
     Int32 N;
-    source->ReadInt32(&n);
+    source->ReadInt32(&N);
     if (N < 0) {
         return NULL;
     }
