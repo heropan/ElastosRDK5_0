@@ -43,6 +43,28 @@ CarClass(CActivityOptions)
     , public Object
     , public IActivityOptions
 {
+private:
+    class AnimationStartedListener
+        : public Object
+        , public IRemoteCallback
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        AnimationStartedListener(
+            /* [in] */ IHandler* handler,
+            /* [in] */ IActivityOptionsOnAnimationStartedListener* listener);
+
+        CARAPI SendResult(
+            /* [in] */ IBundle* data);
+
+        CARAPI ToString(
+            /* [out]*/ String* str);
+
+    private:
+        AutoPtr<IHandler> mHandler;
+        AutoPtr<IActivityOptionsOnAnimationStartedListener> mListener;
+    };
 public:
     CAR_INTERFACE_DECL()
 

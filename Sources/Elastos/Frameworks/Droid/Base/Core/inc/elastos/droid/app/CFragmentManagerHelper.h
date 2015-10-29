@@ -9,8 +9,14 @@ namespace Droid {
 namespace App {
 
 CarClass(CFragmentManagerHelper)
+    , public Singleton
+    , public IFragmentManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI EnableDebugLogging(
         /* [in] */ Boolean enabled);
 };

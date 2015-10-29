@@ -285,8 +285,7 @@ ECode CChangeBounds::CreateAnimator(
                     AutoPtr<IViewGroup> parent = IViewGroup::Probe(vp);
                     parent->SuppressLayout(TRUE);
                     AutoPtr<ITransitionListener> transitionListener = new TransitionListenerAdapter_1(parent);
-                    AutoPtr<ITransition> res;
-                    AddListener(transitionListener, (ITransition**)&res);
+                    AddListener(transitionListener);
                 }
                 *result = anim;
                 REFCOUNT_ADD(*result)
@@ -339,8 +338,7 @@ ECode CChangeBounds::CreateAnimator(
                     AutoPtr<IViewGroup> parent = IViewGroup::Probe(vp);
                     parent->SuppressLayout(TRUE);
                     AutoPtr<ITransitionListener> transitionListener = new TransitionListenerAdapter_1(parent);
-                    AutoPtr<ITransition> res;
-                    AddListener(transitionListener, (ITransition**)&res);
+                    AddListener(transitionListener);
                 }
                 anim->AddListener(new AnimatorListenerAdapter_2(view));
                 *result = anim;

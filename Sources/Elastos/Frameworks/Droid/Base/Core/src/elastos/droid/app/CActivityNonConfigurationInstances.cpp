@@ -7,10 +7,13 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CActivityNonConfigurationInstances, Object, IActivityNonConfigurationInstances)
+
+CAR_OBJECT_IMPL(CActivityNonConfigurationInstances)
 
 ECode CActivityNonConfigurationInstances::constructor()
 {
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CActivityNonConfigurationInstances::constructor(
@@ -22,7 +25,7 @@ ECode CActivityNonConfigurationInstances::constructor(
     mActivity = activity;
     mChildren = children;
     mFragments = fragments;
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 ECode CActivityNonConfigurationInstances::SetActivity(

@@ -1,18 +1,45 @@
 
 #include "elastos/droid/app/CBackStackState.h"
+#include "elastos/droid/app/CBackStackRecordTransitionState.h"
+#include "elastos/droid/app/FragmentManagerImpl.h"
+// #include "elastos/droid/app/Fragment.h"
+#include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/transition/CTransitionManager.h"
+#include "elastos/droid/transition/CTransitionSet.h"
+#include "elastos/droid/utility/CArrayMap.h"
+// #include "elastos/droid/widget/CView.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/CoreUtils.h>
 
-using Elastos::IO::CPrintWriter;
+using Elastos::Droid::Transition::CTransitionManager;
+using Elastos::Droid::Transition::ITransitionSet;
+using Elastos::Droid::Transition::CTransitionSet;
+using Elastos::Droid::App::IFragmentTransaction;
+//using Elastos::Droid::Widget::CView;
+using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Droid::View::EIID_IOnPreDrawListener;
+using Elastos::Droid::Utility::CArrayMap;
+
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Core::CoreUtils;
+using Elastos::IO::CPrintWriter;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IMap;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::App::IFragmentTransaction;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
+
+CAR_INTERFACE_IMPL_2(CBackStackState, Object, IBackStackState, IParcelable)
+
+CAR_OBJECT_IMPL(CBackStackState)
 
 CBackStackState::CBackStackState()
     : mTransition(0)
@@ -20,6 +47,9 @@ CBackStackState::CBackStackState()
     , mIndex(0)
     , mBreadCrumbTitleRes(0)
     , mBreadCrumbShortTitleRes(0)
+{}
+
+CBackStackState::~CBackStackState()
 {}
 
 ECode CBackStackState::constructor()
@@ -34,8 +64,12 @@ ECode CBackStackState::constructor(
     Int32 numRemoved = 0;
     AutoPtr<BackStackRecord> bseObj = (BackStackRecord*)bse;
     AutoPtr<BackStackRecord::Op> op = bseObj->mHead;
+    Int32 size;
     while (op != NULL) {
-        numRemoved += op->mRemoved.GetSize();
+        if (op->mRemoved != NULL) {
+            op->mRemoved->GetSize(&size);
+            numRemoved += size;
+        }
         op = op->mNext;
     }
     mOps = ArrayOf<Int32>::Alloc(bseObj->mNumOp * 7 + numRemoved);
@@ -47,6 +81,7 @@ ECode CBackStackState::constructor(
 
     op = bseObj->mHead;
     Int32 pos = 0;
+    Boolean hasNext;
     while (op != NULL) {
         Int32 index = -1;
         if (op->mFragment != NULL) op->mFragment->GetIndex(&index);
@@ -56,12 +91,22 @@ ECode CBackStackState::constructor(
         (*mOps)[pos++] = op->mExitAnim;
         (*mOps)[pos++] = op->mPopEnterAnim;
         (*mOps)[pos++] = op->mPopExitAnim;
-        (*mOps)[pos++] = op->mRemoved.GetSize();
-        List< AutoPtr<IFragment> >::Iterator it;
-        for (it = op->mRemoved.Begin(); it != op->mRemoved.End(); ++it) {
-            (*it)->GetIndex(&index);
-            (*mOps)[pos++] = index;
+        if (op->mRemoved != NULL) {
+            op->mRemoved->GetSize(&size);
+            (*mOps)[pos++] = size;
+            AutoPtr<IIterator> it;
+            op->mRemoved->GetIterator((IIterator**)&it);
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                IFragment::Probe(obj)->GetIndex(&index);
+                (*mOps)[pos++] = index;
+            }
         }
+        else {
+            (*mOps)[pos++] = 0;
+        }
+
         op = op->mNext;
     }
     mTransition = bseObj->mTransition;
@@ -83,15 +128,15 @@ ECode CBackStackState::Instantiate(
 {
     VALIDATE_NOT_NULL(record);
 
-    AutoPtr<CFragmentManagerImpl> fmObj = (CFragmentManagerImpl*)fm;
+    AutoPtr<FragmentManagerImpl> fmObj = (FragmentManagerImpl*)fm;
     AutoPtr<BackStackRecord> bse = new BackStackRecord(fm);
     Int32 pos = 0;
     Int32 num = 0;
     while (pos < mOps->GetLength()) {
         AutoPtr<BackStackRecord::Op> op = new BackStackRecord::Op();
         op->mCmd = (*mOps)[pos++];
-        if (CFragmentManagerImpl::DEBUG) {
-            Logger::V(CFragmentManagerImpl::TAG,
+        if (FragmentManagerImpl::DEBUG) {
+            Logger::V(FragmentManagerImpl::TAG,
                 "Instantiate %p op #%d base fragment #%d", bse.Get(), num, (*mOps)[pos]);
         }
         Int32 findex = (*mOps)[pos++];
@@ -108,13 +153,14 @@ ECode CBackStackState::Instantiate(
         op->mPopExitAnim = (*mOps)[pos++];
         Int32 N = (*mOps)[pos++];
         if (N > 0) {
+            CArrayList::New(N, (IArrayList**)&op->mRemoved);
             for (Int32 i = 0; i < N; i++) {
-                if (CFragmentManagerImpl::DEBUG) {
-                    Logger::V(CFragmentManagerImpl::TAG,
+                if (FragmentManagerImpl::DEBUG) {
+                    Logger::V(FragmentManagerImpl::TAG,
                         "Instantiate %p set remove fragment #%d", bse.Get(), (*mOps)[pos]);
                 }
                 AutoPtr<IFragment> r = fmObj->mActive[(*mOps)[pos++]];
-                op->mRemoved.PushBack(r);
+                op->mRemoved->Add(TO_IINTERFACE(r));
             }
         }
         bse->AddOp(op);
@@ -169,13 +215,15 @@ ECode CBackStackState::ReadFromParcel(
     AutoPtr<IInterface> obj_2;
     source->ReadInterfacePtr((Handle32*)&obj_2);
     mBreadCrumbShortTitleText = obj_2 != NULL ? ICharSequence::Probe(obj_2) : NULL;
-    mSharedElementSourceNames = source.createStringArrayList();
-    mSharedElementTargetNames = source.createStringArrayList();
+    mSharedElementSourceNames = Elastos::Droid::Os::CParcel::CreateStringArrayList(source);
+    mSharedElementTargetNames = Elastos::Droid::Os::CParcel::CreateStringArrayList(source);
     return NOERROR;
 }
 
-
-const String BackStackRecord::TAG = IFragmentManagerImpl::TAG;
+//===================================================================
+// BackStackRecord
+//===================================================================
+const String BackStackRecord::TAG("BackStackRecord");
 const Int32 BackStackRecord::OP_NULL = 0;
 const Int32 BackStackRecord::OP_ADD = 1;
 const Int32 BackStackRecord::OP_REPLACE = 2;
@@ -187,7 +235,7 @@ const Int32 BackStackRecord::OP_ATTACH = 7;
 
 BackStackRecord::BackStackRecord(
     /* [in] */ IFragmentManagerImpl* manager)
-    : mManager((CFragmentManagerImpl*)manager)
+    : mManager((FragmentManagerImpl*)manager)
     , mNumOp(0)
     , mEnterAnim(0)
     , mExitAnim(0)
@@ -203,61 +251,12 @@ BackStackRecord::BackStackRecord(
     , mBreadCrumbShortTitleRes(0)
 {}
 
-PInterface BackStackRecord::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IBackStackRecord*)this;
-    }
-    else if (riid == EIID_IBackStackRecord) {
-        return (IBackStackRecord*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    else if (riid == EIID_IFragmentManagerBackStackEntry) {
-        return (IFragmentManagerBackStackEntry*)this;
-    }
-    return NULL;
-}
-
-UInt32 BackStackRecord::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 BackStackRecord::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode BackStackRecord::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IBackStackRecord *)this) {
-        *pIID = EIID_IBackStackRecord;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IRunnable *)this) {
-        *pIID = EIID_IRunnable;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IFragmentManagerBackStackEntry *)this) {
-        *pIID = EIID_IFragmentManagerBackStackEntry;
-        return NOERROR;
-    }
-    return E_INVALID_ARGUMENT;
-}
-
 ECode BackStackRecord::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb("BackStackEntry{");
-    sb += StringUtils::Int32ToHexString((Int32)this);
+    sb += StringUtils::ToHexString((Int32)this);
     if (mIndex >= 0) {
         sb += " #";
         sb += mIndex;
@@ -287,43 +286,43 @@ void BackStackRecord::Dump(
     /* [in] */ Boolean full)
 {
     if (full) {
-        writer->PrintString(prefix); writer->PrintString(String("mName=")); writer->PrintString(mName);
-                writer->PrintString(String(" mIndex=")); writer->PrintInt32(mIndex);
-                writer->PrintString(String(" mCommitted=")); writer->PrintBooleanln(mCommitted);
+        writer->Print(prefix); writer->Print(String("mName=")); writer->Print(mName);
+                writer->Print(String(" mIndex=")); writer->Print(mIndex);
+                writer->Print(String(" mCommitted=")); writer->Print(mCommitted);
         if (mTransition != IFragmentTransaction::TRANSIT_NONE) {
-            writer->PrintString(prefix); writer->PrintString(String("mTransition=#"));
-                    writer->PrintString(StringUtils::Int32ToHexString(mTransition));
-                    writer->PrintString(String(" mTransitionStyle=#"));
-                    writer->PrintStringln(StringUtils::Int32ToHexString(mTransitionStyle));
+            writer->Print(prefix); writer->Print(String("mTransition=#"));
+                    writer->Print(StringUtils::ToHexString(mTransition));
+                    writer->Print(String(" mTransitionStyle=#"));
+                    writer->Println(StringUtils::ToHexString(mTransitionStyle));
         }
         if (mEnterAnim != 0 || mExitAnim != 0) {
-            writer->PrintString(prefix); writer->PrintString(String("mEnterAnim=#"));
-                    writer->PrintString(StringUtils::Int32ToHexString(mEnterAnim));
-                    writer->PrintString(String(" mExitAnim=#"));
-                    writer->PrintStringln(StringUtils::Int32ToHexString(mExitAnim));
+            writer->Print(prefix); writer->Print(String("mEnterAnim=#"));
+                    writer->Print(StringUtils::ToHexString(mEnterAnim));
+                    writer->Print(String(" mExitAnim=#"));
+                    writer->Println(StringUtils::ToHexString(mExitAnim));
         }
         if (mPopEnterAnim != 0 || mPopExitAnim != 0) {
-            writer->PrintString(prefix); writer->PrintString(String("mPopEnterAnim=#"));
-                    writer->PrintString(StringUtils::Int32ToHexString(mPopEnterAnim));
-                    writer->PrintString(String(" mPopExitAnim=#"));
-                    writer->PrintStringln(StringUtils::Int32ToHexString(mPopExitAnim));
+            writer->Print(prefix); writer->Print(String("mPopEnterAnim=#"));
+                    writer->Print(StringUtils::ToHexString(mPopEnterAnim));
+                    writer->Print(String(" mPopExitAnim=#"));
+                    writer->Println(StringUtils::ToHexString(mPopExitAnim));
         }
         if (mBreadCrumbTitleRes != 0 || mBreadCrumbTitleText != NULL) {
-            writer->PrintString(prefix); writer->PrintString(String("mBreadCrumbTitleRes=#"));
-                    writer->PrintString(StringUtils::Int32ToHexString(mBreadCrumbTitleRes));
-                    writer->PrintString(String(" mBreadCrumbTitleText="));
-                    writer->PrintObjectln(mBreadCrumbTitleText);
+            writer->Print(prefix); writer->Print(String("mBreadCrumbTitleRes=#"));
+                    writer->Print(StringUtils::ToHexString(mBreadCrumbTitleRes));
+                    writer->Print(String(" mBreadCrumbTitleText="));
+                    writer->Println(mBreadCrumbTitleText);
         }
         if (mBreadCrumbShortTitleRes != 0 || mBreadCrumbShortTitleText != NULL) {
-            writer->PrintString(prefix); writer->PrintString(String("mBreadCrumbShortTitleRes=#"));
-                    writer->PrintString(StringUtils::Int32ToHexString(mBreadCrumbShortTitleRes));
-                    writer->PrintString(String(" mBreadCrumbShortTitleText="));
-                    writer->PrintObjectln(mBreadCrumbShortTitleText);
+            writer->Print(prefix); writer->Print(String("mBreadCrumbShortTitleRes=#"));
+                    writer->Print(StringUtils::ToHexString(mBreadCrumbShortTitleRes));
+                    writer->Print(String(" mBreadCrumbShortTitleText="));
+                    writer->Println(mBreadCrumbShortTitleText);
         }
     }
 
     if (mHead != NULL) {
-        writer->PrintString(prefix); writer->PrintStringln(String("Operations:"));
+        writer->Print(prefix); writer->Println(String("Operations:"));
         String innerPrefix = prefix + "    ";
         AutoPtr<Op> op = mHead;
         Int32 num = 0;
@@ -340,37 +339,42 @@ void BackStackRecord::Dump(
                 case OP_ATTACH: cmdStr="ATTACH"; break;
                 default: StringBuilder sb("cmd="); sb.Append(op->mCmd); cmdStr = sb.ToString(); break;
             }
-            writer->PrintString(prefix); writer->PrintString(String("  Op #")); writer->PrintInt32(num);
-                    writer->PrintString(String(": ")); writer->PrintString(cmdStr);
-                    writer->PrintString(String(" ")); writer->PrintObjectln(op->mFragment);
+            writer->Print(prefix); writer->Print(String("  Op #")); writer->Print(num);
+                    writer->Print(String(": ")); writer->Print(cmdStr);
+                    writer->Print(String(" ")); writer->Println(op->mFragment);
             if (full) {
                 if (op->mEnterAnim != 0 || op->mExitAnim != 0) {
-                    writer->PrintString(innerPrefix); writer->PrintString(String("mEnterAnim=#"));
-                            writer->PrintString(StringUtils::Int32ToHexString(op->mEnterAnim));
-                            writer->PrintString(String(" mExitAnim=#"));
-                            writer->PrintStringln(StringUtils::Int32ToHexString(op->mExitAnim));
+                    writer->Print(innerPrefix); writer->Print(String("mEnterAnim=#"));
+                            writer->Print(StringUtils::ToHexString(op->mEnterAnim));
+                            writer->Print(String(" mExitAnim=#"));
+                            writer->Println(StringUtils::ToHexString(op->mExitAnim));
                 }
                 if (op->mPopEnterAnim != 0 || op->mPopExitAnim != 0) {
-                    writer->PrintString(innerPrefix); writer->PrintString(String("mPopEnterAnim=#"));
-                            writer->PrintString(StringUtils::Int32ToHexString(op->mPopEnterAnim));
-                            writer->PrintString(String(" mPopExitAnim=#"));
-                            writer->PrintStringln(StringUtils::Int32ToHexString(op->mPopExitAnim));
+                    writer->Print(innerPrefix); writer->Print(String("mPopEnterAnim=#"));
+                            writer->Print(StringUtils::ToHexString(op->mPopEnterAnim));
+                            writer->Print(String(" mPopExitAnim=#"));
+                            writer->Println(StringUtils::ToHexString(op->mPopExitAnim));
                 }
             }
-            if (op->mRemoved.IsEmpty() == FALSE) {
-                for (Int32 i = 0; i < op->mRemoved.GetSize(); i++) {
-                    writer->PrintString(innerPrefix);
-                    if (op->mRemoved.GetSize() == 1) {
-                        writer->PrintString(String("mRemoved: "));
+            if (op->mRemoved != NULL) {
+                Int32 size;
+                op->mRemoved->GetSize(&size);
+                for (Int32 i = 0; i < size; ++i) {
+                    AutoPtr<IInterface> obj;
+                    op->mRemoved->Get(i, (IInterface**)&obj);
+
+                    writer->Print(innerPrefix);
+                    if (size == 1) {
+                        writer->Print(String("mRemoved: "));
                     }
                     else {
                         if (i == 0) {
-                            writer->PrintStringln(String("mRemoved:"));
+                            writer->Println(String("mRemoved:"));
                         }
-                        writer->PrintString(innerPrefix); writer->PrintString(String("  #")); writer->PrintInt32(i);
-                                writer->PrintString(String(": "));
+                        writer->Print(innerPrefix); writer->Print(String("  #"));
+                        writer->Print(i); writer->Print(String(": "));
                     }
-                    writer->PrintObjectln(op->mRemoved[i]);
+                    writer->Println(obj);
                 }
             }
             op = op->mNext;
@@ -408,7 +412,7 @@ ECode BackStackRecord::GetBreadCrumbTitle(
 {
     VALIDATE_NOT_NULL(title);
     if (mBreadCrumbTitleRes != 0) {
-        return mManager->mActivity->GetText(mBreadCrumbTitleRes, title);
+        return IContext::Probe(mManager->mActivity)->GetText(mBreadCrumbTitleRes, title);
     }
     *title = mBreadCrumbTitleText;
     REFCOUNT_ADD(*title);
@@ -420,7 +424,7 @@ ECode BackStackRecord::GetBreadCrumbShortTitle(
 {
     VALIDATE_NOT_NULL(shortTitle);
     if (mBreadCrumbShortTitleRes != 0) {
-        return mManager->mActivity->GetText(mBreadCrumbShortTitleRes, shortTitle);
+        return IContext::Probe(mManager->mActivity)->GetText(mBreadCrumbShortTitleRes, shortTitle);
     }
     *shortTitle = mBreadCrumbShortTitleText;
     REFCOUNT_ADD(*shortTitle);
@@ -474,7 +478,7 @@ ECode BackStackRecord::DoAddOp(
     /* [in] */ const String& tag,
     /* [in] */ Int32 opcmd)
 {
-    fragment->SetFragmentManager(mManager);
+    fragment->SetFragmentManager((IFragmentManagerImpl*)mManager.Get());
 
     if (!tag.IsNull()) {
         String memTag;
@@ -610,69 +614,79 @@ ECode BackStackRecord::SetTransition(
     return NOERROR;
 }
 
-//@Override
 ECode BackStackRecord::AddSharedElement(
     /* [in] */ IView* sharedElement,
     /* [in] */ const String& name)
 {
-    String transitionName = sharedElement.getTransitionName();
-    if (transitionName == null) {
-        throw new IllegalArgumentException("Unique transitionNames are required for all" +
-                " sharedElements");
+    String transitionName;
+    sharedElement->GetTransitionName(&transitionName);
+    if (transitionName.IsNull()) {
+        Logger::E(TAG, "Unique transitionNames are required for all sharedElements");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (mSharedElementSourceNames == null) {
-        mSharedElementSourceNames = new ArrayList<String>();
-        mSharedElementTargetNames = new ArrayList<String>();
+    if (mSharedElementSourceNames == NULL) {
+        CArrayList::New((IArrayList**)&mSharedElementSourceNames);
+        CArrayList::New((IArrayList**)&mSharedElementTargetNames);
     }
-    mSharedElementSourceNames.add(transitionName);
-    mSharedElementTargetNames.add(name);
-    return this;
+    mSharedElementSourceNames->Add(CoreUtils::Convert(transitionName));
+    mSharedElementTargetNames->Add(CoreUtils::Convert(name));
+    return NOERROR;
 }
 
-/** TODO: remove this */
-//@Override
 ECode BackStackRecord::SetSharedElement(
     /* [in] */ IView* sharedElement,
     /* [in] */ const String& name)
 {
-    String transitionName = sharedElement.getTransitionName();
-    if (transitionName == null) {
-        throw new IllegalArgumentException("Unique transitionNames are required for all" +
-                " sharedElements");
+    String transitionName;
+    sharedElement->GetTransitionName(&transitionName);
+    if (transitionName == NULL) {
+        Logger::E(TAG, "Unique transitionNames are required for all sharedElements");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mSharedElementSourceNames = new ArrayList<String>(1);
-    mSharedElementSourceNames.add(transitionName);
 
-    mSharedElementTargetNames = new ArrayList<String>(1);
-    mSharedElementTargetNames.add(name);
-    return this;
+    mSharedElementSourceNames = NULL;
+    mSharedElementTargetNames = NULL;
+    CArrayList::New(1, (IArrayList**)&mSharedElementSourceNames);
+    CArrayList::New(1, (IArrayList**)&mSharedElementTargetNames);
+
+    mSharedElementSourceNames->Add(CoreUtils::Convert(transitionName));
+    mSharedElementTargetNames->Add(CoreUtils::Convert(name));
+    return NOERROR;
 }
 
-/** TODO: remove this */
-//@Override
 ECode BackStackRecord::SetSharedElements(
-    /* Pair<View, String>... sharedElements*/
-    ArrayOf<IPair*>* sharedElements)
+    /* [in] */ ArrayOf<IPair*>* sharedElements)//* Pair<View, String>... sharedElements*/
 {
-    if (sharedElements == null || sharedElements.length == 0) {
-        mSharedElementSourceNames = null;
-        mSharedElementTargetNames = null;
-    } else {
-        ArrayList<String> sourceNames = new ArrayList<String>(sharedElements.length);
-        ArrayList<String> targetNames = new ArrayList<String>(sharedElements.length);
-        for (int i = 0; i < sharedElements.length; i++) {
-            String transitionName = sharedElements[i].first.getTransitionName();
-            if (transitionName == null) {
-                throw new IllegalArgumentException("Unique transitionNames are required for all"
-                        + " sharedElements");
+    if (sharedElements == NULL || sharedElements->GetLength() == 0) {
+        mSharedElementSourceNames = NULL;
+        mSharedElementTargetNames = NULL;
+    }
+    else {
+        Int32 length = sharedElements->GetLength();
+        AutoPtr<IArrayList> sourceNames, targetNames;
+        CArrayList::New(length, (IArrayList**)&sourceNames);
+        CArrayList::New(length, (IArrayList**)&targetNames);
+
+        for (Int32 i = 0; i < length; i++) {
+            IPair* pair = (*sharedElements)[i];
+            AutoPtr<IInterface> first, second;
+            pair->GetFirst((IInterface**)&first);
+            pair->GetSecond((IInterface**)&second);
+
+            String transitionName;
+            IView::Probe(first)->GetTransitionName(&transitionName);
+            if (transitionName.IsNull()) {
+                Logger::E(TAG, "Unique transitionNames are required for all sharedElements");
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
-            sourceNames.add(transitionName);
-            targetNames.add(sharedElements[i].second);
+
+            sourceNames->Add(CoreUtils::Convert(transitionName));
+            targetNames->Add(second);
         }
         mSharedElementSourceNames = sourceNames;
         mSharedElementTargetNames = targetNames;
     }
-    return this;
+    return NOERROR;
 }
 
 ECode BackStackRecord::SetTransitionStyle(
@@ -752,7 +766,7 @@ void BackStackRecord::BumpBackStackNesting(
     if (!mAddToBackStack) {
         return;
     }
-    if (CFragmentManagerImpl::DEBUG) {
+    if (FragmentManagerImpl::DEBUG) {
         Logger::V(TAG, "Bump nesting in %p by %d", this, amt);
     }
     AutoPtr<Op> op = mHead;
@@ -762,21 +776,28 @@ void BackStackRecord::BumpBackStackNesting(
             op->mFragment->GetBackStackNesting(&newNesting);
             newNesting += amt;
             op->mFragment->SetBackStackNesting(newNesting);
-            if (CFragmentManagerImpl::DEBUG) {
+            if (FragmentManagerImpl::DEBUG) {
                 Logger::V(TAG, "Bump nesting of %p to %d", op->mFragment.Get(), newNesting);
             }
         }
-        List< AutoPtr<IFragment> >::ReverseIterator rit;
-        for (rit = op->mRemoved.RBegin(); rit != op->mRemoved.REnd(); ++rit) {
-            AutoPtr<IFragment> r = *rit;
-            Int32 newNesting;
-            r->GetBackStackNesting(&newNesting);
-            newNesting += amt;
-            r->SetBackStackNesting(newNesting);
-            if (CFragmentManagerImpl::DEBUG) {
-                Logger::V(TAG, "Bump nesting of %p to %d", r.Get(), newNesting);
+
+        if (op->mRemoved != NULL) {
+            Int32 size;
+            op->mRemoved->GetSize(&size);
+            for (Int32 i = size - 1; i >= 0; i--) {
+                AutoPtr<IInterface> obj;
+                op->mRemoved->Get(i, (IInterface**)&obj);
+                IFragment* r = IFragment::Probe(obj);
+                Int32 newNesting;
+                r->GetBackStackNesting(&newNesting);
+                newNesting += amt;
+                r->SetBackStackNesting(newNesting);
+                if (FragmentManagerImpl::DEBUG) {
+                    Logger::V(TAG, "Bump nesting of %s to %d", Object::ToString(r).string(), newNesting);
+                }
             }
         }
+
         op = op->mNext;
     }
 }
@@ -802,7 +823,7 @@ Int32 BackStackRecord::CommitInternal(
 {
     if (mCommitted) return E_ILLEGAL_STATE_EXCEPTION;//throw new IllegalStateException("commit already called");
 
-    if (CFragmentManagerImpl::DEBUG) {
+    if (FragmentManagerImpl::DEBUG) {
         Logger::V(TAG, "Commit: %p", this);
 //        LogWriter logw/* = new LogWriter(Logger::VERBOSE, TAG)*/;
 //        AutoPtr<IPrintWriter> pw;
@@ -823,7 +844,7 @@ Int32 BackStackRecord::CommitInternal(
 
 ECode BackStackRecord::Run()
 {
-    if (CFragmentManagerImpl::DEBUG) Logger::V(TAG, "Run: %p", this);
+    if (FragmentManagerImpl::DEBUG) Logger::V(TAG, "Run: %p", this);
 
     if (mAddToBackStack) {
         if (mIndex < 0) {
@@ -834,10 +855,12 @@ ECode BackStackRecord::Run()
 
     BumpBackStackNesting(1);
 
-    SparseArray<Fragment> firstOutFragments = new SparseArray<Fragment>();
-    SparseArray<Fragment> lastInFragments = new SparseArray<Fragment>();
-    calculateFragments(firstOutFragments, lastInFragments);
-    beginTransition(firstOutFragments, lastInFragments, false);
+    AutoPtr<IHashMap> firstOutFragments, lastInFragments; //SparseArray<Fragment>
+    CHashMap::New((IHashMap**)&firstOutFragments);
+    CHashMap::New((IHashMap**)&lastInFragments);
+
+    CalculateFragments(firstOutFragments, lastInFragments);
+    BeginTransition(firstOutFragments, lastInFragments, FALSE);
 
     AutoPtr<Op> op = mHead;
     while (op != NULL) {
@@ -846,13 +869,15 @@ ECode BackStackRecord::Run()
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mEnterAnim);
                 mManager->AddFragment(f, FALSE);
-            } break;
+            }
+            break;
+
             case OP_REPLACE: {
                 AutoPtr<IFragment> f = op->mFragment;
                 List<AutoPtr<IFragment> >::Iterator it;
                 for (it = mManager->mAdded.Begin(); it != mManager->mAdded.End(); ++it) {
                     AutoPtr<IFragment> old = *it;
-                    if (CFragmentManagerImpl::DEBUG) {
+                    if (FragmentManagerImpl::DEBUG) {
                         Logger::V(TAG, "OP_REPLACE: adding=%p old=%p", f.Get(), old.Get());
                     }
                     Int32 oldId, fId;
@@ -861,14 +886,18 @@ ECode BackStackRecord::Run()
                             op->mFragment = f = NULL;
                         }
                         else {
-                            op->mRemoved.PushBack(old);
+                            if (op->mRemoved == NULL) {
+                                CArrayList::New((IArrayList**)&op->mRemoved);
+                            }
+
+                            op->mRemoved->Add(old);
                             old->SetNextAnim(op->mExitAnim);
                             if (mAddToBackStack) {
                                 Int32 oldNesting;
                                 old->GetBackStackNesting(&oldNesting);
                                 oldNesting += 1;
                                 old->SetBackStackNesting(oldNesting);
-                                if (CFragmentManagerImpl::DEBUG) {
+                                if (FragmentManagerImpl::DEBUG) {
                                     Logger::V(TAG, "Bump nesting of %p to %d", old.Get(), oldNesting);
                                 }
                             }
@@ -880,34 +909,45 @@ ECode BackStackRecord::Run()
                     f->SetNextAnim(op->mEnterAnim);
                     mManager->AddFragment(f, FALSE);
                 }
-            } break;
+            }
+            break;
+
             case OP_REMOVE: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mExitAnim);
                 mManager->RemoveFragment(f, mTransition, mTransitionStyle);
-            } break;
+            }
+            break;
+
             case OP_HIDE: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mExitAnim);
                 mManager->HideFragment(f, mTransition, mTransitionStyle);
-            } break;
+            }
+            break;
+
             case OP_SHOW: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mEnterAnim);
                 mManager->ShowFragment(f, mTransition, mTransitionStyle);
             } break;
+
             case OP_DETACH: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mExitAnim);
                 mManager->DetachFragment(f, mTransition, mTransitionStyle);
-            } break;
+            }
+            break;
+
             case OP_ATTACH: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mEnterAnim);
                 mManager->AttachFragment(f, mTransition, mTransitionStyle);
-            } break;
+            }
+            break;
+
             default: {
-                //throw new IllegalArgumentException("Unknown cmd: " + op.cmd);
+                //throw new IllegalArgumentException("Unknown cmd: " + op->cmd);
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         }
@@ -915,8 +955,7 @@ ECode BackStackRecord::Run()
         op = op->mNext;
     }
 
-    mManager->MoveToState(mManager->mCurState, mTransition,
-            mTransitionStyle, TRUE);
+    mManager->MoveToState(mManager->mCurState, mTransition, mTransitionStyle, TRUE);
 
     if (mAddToBackStack) {
         mManager->AddBackStackState(THIS_PROBE(IBackStackRecord));
@@ -925,682 +964,991 @@ ECode BackStackRecord::Run()
     return NOERROR;
 }
 
-//=======================
-
-private static void setFirstOut(SparseArray<Fragment> fragments, Fragment fragment) {
-    if (fragment != null) {
-        int containerId = fragment.mContainerId;
-        if (containerId != 0 && !fragment.isHidden() && fragment.isAdded() &&
-                fragment.getView() != null && fragments.get(containerId) == null) {
-            fragments.put(containerId, fragment);
+void BackStackRecord::SetFirstOut(
+    /* [in] */ IHashMap* fragments, //SparseArray<Fragment>
+    /* [in] */ IFragment* fragment)
+{
+    if (fragment != NULL) {
+        Int32 containerId;
+        fragment->GetContainerId(&containerId);
+        Boolean hidden, added;
+        fragment->IsHidden(&hidden);
+        fragment->IsAdded(&added);
+        AutoPtr<IView> view;
+        fragment->GetView((IView**)&view);
+        if (containerId != 0 && !hidden && added && view != NULL) {
+            AutoPtr<IInteger32> ikey = CoreUtils::Convert(containerId);
+            IInterface* key = TO_IINTERFACE(ikey);
+            AutoPtr<IInterface> value;
+            fragments->Get(key, (IInterface**)&value);
+            if (value == NULL) {
+                fragments->Put(key, TO_IINTERFACE(fragment));
+            }
         }
     }
 }
 
-private void setLastIn(SparseArray<Fragment> fragments, Fragment fragment) {
-    if (fragment != null) {
-        int containerId = fragment.mContainerId;
+void BackStackRecord::SetLastIn(
+    /* [in] */ IHashMap* fragments, //SparseArray<Fragment>
+    /* [in] */ IFragment* fragment)
+{
+    if (fragment != NULL) {
+        Int32 containerId;
+        fragment->GetContainerId(&containerId);
         if (containerId != 0) {
-            fragments.put(containerId, fragment);
+            AutoPtr<IInteger32> ikey = CoreUtils::Convert(containerId);
+            IInterface* key = TO_IINTERFACE(ikey);
+            fragments->Put(key, TO_IINTERFACE(fragment));
         }
     }
 }
 
-/**
- * Finds the first removed fragment and last added fragments when going forward.
- * If none of the fragments have transitions, then both lists will be empty.
- *
- * @param firstOutFragments The list of first fragments to be removed, keyed on the
- *                          container ID. This list will be modified by the method.
- * @param lastInFragments The list of last fragments to be added, keyed on the
- *                        container ID. This list will be modified by the method.
- */
-private void calculateFragments(SparseArray<Fragment> firstOutFragments,
-        SparseArray<Fragment> lastInFragments) {
-    if (!mManager.mContainer.hasView()) {
+void BackStackRecord::CalculateFragments(
+    /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+    /* [in] */ IHashMap* lastInFragments)   //SparseArray<Fragment>
+{
+    Boolean bval;
+    mManager->mContainer->HasView(&bval);
+    if (!bval) {
         return; // nothing to see, so no transitions
     }
-    Op op = mHead;
-    while (op != null) {
-        switch (op.cmd) {
+    AutoPtr<Op> op = mHead;
+    while (op != NULL) {
+        switch (op->mCmd) {
             case OP_ADD:
-                setLastIn(lastInFragments, op.fragment);
+                SetLastIn(lastInFragments, op->mFragment);
                 break;
+
             case OP_REPLACE: {
-                Fragment f = op.fragment;
-                if (mManager.mAdded != null) {
-                    for (int i = 0; i < mManager.mAdded.size(); i++) {
-                        Fragment old = mManager.mAdded.get(i);
-                        if (f == null || old.mContainerId == f.mContainerId) {
+                AutoPtr<IFragment> f = op->mFragment;
+                if (mManager->mAdded.GetSize() > 0) {
+                    List<AutoPtr<IFragment> >::Iterator it;
+                    for (it = mManager->mAdded.Begin(); it != mManager->mAdded.End(); ++it) {
+                        AutoPtr<IFragment> old = *it;
+                        Int32 oid = 0, id = 0;
+                        if (old) old->GetContainerId(&oid);
+                        if (f) f->GetContainerId(&id);
+                        if (f == NULL || oid == id) {
                             if (old == f) {
-                                f = null;
-                            } else {
-                                setFirstOut(firstOutFragments, old);
+                                f = NULL;
+                            }
+                            else {
+                                SetFirstOut(firstOutFragments, old);
                             }
                         }
                     }
                 }
-                setLastIn(lastInFragments, f);
+                SetLastIn(lastInFragments, f);
                 break;
             }
             case OP_REMOVE:
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
+
             case OP_HIDE:
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
+
             case OP_SHOW:
-                setLastIn(lastInFragments, op.fragment);
+
+                SetLastIn(lastInFragments, op->mFragment);
                 break;
+
             case OP_DETACH:
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
+
             case OP_ATTACH:
-                setLastIn(lastInFragments, op.fragment);
+                SetLastIn(lastInFragments, op->mFragment);
                 break;
         }
 
-        op = op.next;
+        op = op->mNext;
     }
 }
 
-/**
- * Finds the first removed fragment and last added fragments when popping the back stack.
- * If none of the fragments have transitions, then both lists will be empty.
- *
- * @param firstOutFragments The list of first fragments to be removed, keyed on the
- *                          container ID. This list will be modified by the method.
- * @param lastInFragments The list of last fragments to be added, keyed on the
- *                        container ID. This list will be modified by the method.
- */
-public void calculateBackFragments(SparseArray<Fragment> firstOutFragments,
-        SparseArray<Fragment> lastInFragments) {
-    if (!mManager.mContainer.hasView()) {
+void BackStackRecord::CalculateBackFragments(
+    /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+    /* [in] */ IHashMap* lastInFragments)  //SparseArray<Fragment>
+{
+    Boolean bval;
+    mManager->mContainer->HasView(&bval);
+    if (!bval) {
         return; // nothing to see, so no transitions
     }
-    Op op = mHead;
-    while (op != null) {
-        switch (op.cmd) {
+
+    AutoPtr<Op> op = mHead;
+    while (op != NULL) {
+        switch (op->mCmd) {
             case OP_ADD:
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
+
             case OP_REPLACE:
-                if (op.removed != null) {
-                    for (int i = op.removed.size() - 1; i >= 0; i--) {
-                        setLastIn(lastInFragments, op.removed.get(i));
+                if (op->mRemoved != NULL) {
+                    Int32 size;
+                    op->mRemoved->GetSize(&size);
+                    for (Int32 i = size - 1; i >= 0; i--) {
+                        AutoPtr<IInterface> obj;
+                        op->mRemoved->Get(i, (IInterface**)&obj);
+                        IFragment* r = IFragment::Probe(obj);
+                        SetLastIn(lastInFragments, r);
                     }
                 }
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
+
             case OP_REMOVE:
-                setLastIn(lastInFragments, op.fragment);
+                SetLastIn(lastInFragments, op->mFragment);
                 break;
+
             case OP_HIDE:
-                setLastIn(lastInFragments, op.fragment);
+                SetLastIn(lastInFragments, op->mFragment);
                 break;
+
             case OP_SHOW:
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
+
             case OP_DETACH:
-                setLastIn(lastInFragments, op.fragment);
+                SetLastIn(lastInFragments, op->mFragment);
                 break;
+
             case OP_ATTACH:
-                setFirstOut(firstOutFragments, op.fragment);
+                SetFirstOut(firstOutFragments, op->mFragment);
                 break;
         }
 
-        op = op.next;
+        op = op->mNext;
     }
 }
 
-/**
- * When custom fragment transitions are used, this sets up the state for each transition
- * and begins the transition. A different transition is started for each fragment container
- * and consists of up to 3 different transitions: the exit transition, a shared element
- * transition and an enter transition.
- *
- * <p>The exit transition operates against the leaf nodes of the first fragment
- * with a view that was removed. If no such fragment was removed, then no exit
- * transition is executed. The exit transition comes from the outgoing fragment.</p>
- *
- * <p>The enter transition operates against the last fragment that was added. If
- * that fragment does not have a view or no fragment was added, then no enter
- * transition is executed. The enter transition comes from the incoming fragment.</p>
- *
- * <p>The shared element transition operates against all views and comes either
- * from the outgoing fragment or the incoming fragment, depending on whether this
- * is going forward or popping the back stack. When going forward, the incoming
- * fragment's enter shared element transition is used, but when going back, the
- * outgoing fragment's return shared element transition is used. Shared element
- * transitions only operate if there is both an incoming and outgoing fragment.</p>
- *
- * @param firstOutFragments The list of first fragments to be removed, keyed on the
- *                          container ID.
- * @param lastInFragments The list of last fragments to be added, keyed on the
- *                        container ID.
- * @param isBack true if this is popping the back stack or false if this is a
- *               forward operation.
- * @return The TransitionState used to complete the operation of the transition
- * in {@link #setNameOverrides(android.app.BackStackRecord.TransitionState, java.util.ArrayList,
- * java.util.ArrayList)}.
- */
-private TransitionState beginTransition(SparseArray<Fragment> firstOutFragments,
-        SparseArray<Fragment> lastInFragments, boolean isBack) {
-    TransitionState state = new TransitionState();
+AutoPtr<IBackStackRecordTransitionState> BackStackRecord::BeginTransition(
+    /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+    /* [in] */ IHashMap* lastInFragments,   //SparseArray<Fragment>
+    /* [in] */ Boolean isBack)
+{
+    AutoPtr<IBackStackRecordTransitionState> state;
+    CBackStackRecordTransitionState::New((IBackStackRecordTransitionState**)&state);
 
     // Adding a non-existent target view makes sure that the transitions don't target
     // any views by default. They'll only target the views we tell add. If we don't
     // add any, then no views will be targeted.
-    state.nonExistentView = new View(mManager.mActivity);
+    AutoPtr<IView> view;
+    assert(0 && "TODO");
+    // CView::New(mManager->mActivity, (IView**)&view);
+    state->SetNonExistentView(view);
+
+    Boolean hasNext;
+    Int32 containerId;
 
     // Go over all leaving fragments.
-    for (int i = 0; i < firstOutFragments.size(); i++) {
-        int containerId = firstOutFragments.keyAt(i);
-        configureTransitions(containerId, state, isBack, firstOutFragments,
-                lastInFragments);
+    AutoPtr<ISet> fkeyset;
+    firstOutFragments->GetKeySet((ISet**)&fkeyset);
+    AutoPtr<IIterator> fit;
+    fkeyset->GetIterator((IIterator**)&fit);
+    while (fit->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> ko;
+        fit->GetNext((IInterface**)&ko);
+        IInteger32::Probe(ko)->GetValue(&containerId);
+        ConfigureTransitions(containerId, state, isBack, firstOutFragments, lastInFragments);
+
     }
 
     // Now go over all entering fragments that didn't have a leaving fragment.
-    for (int i = 0; i < lastInFragments.size(); i++) {
-        int containerId = lastInFragments.keyAt(i);
-        if (firstOutFragments.get(containerId) == null) {
-            configureTransitions(containerId, state, isBack, firstOutFragments,
-                    lastInFragments);
+    AutoPtr<ISet> lkeyset;
+    lastInFragments->GetKeySet((ISet**)&lkeyset);
+    AutoPtr<IIterator> lit;
+    lkeyset->GetIterator((IIterator**)&lit);
+    while (lit->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> ko;
+        lit->GetNext((IInterface**)&ko);
+        AutoPtr<IInterface> value;
+        firstOutFragments->Get(ko, (IInterface**)&value);
+        if (value == NULL) {
+            IInteger32::Probe(ko)->GetValue(&containerId);
+            ConfigureTransitions(containerId, state, isBack, firstOutFragments, lastInFragments);
         }
     }
     return state;
 }
 
-private static Transition cloneTransition(Transition transition) {
-    if (transition != null) {
-        transition = transition.clone();
+AutoPtr<ITransition> BackStackRecord::CloneTransition(
+    /* [in] */ ITransition* transition)
+{
+    AutoPtr<IInterface> result;
+    if (transition != NULL) {
+        ICloneable::Probe(transition)->Clone((IInterface**)&result);
     }
-    return transition;
+    return ITransition::Probe(result);
 }
 
-private static Transition getEnterTransition(Fragment inFragment, boolean isBack) {
-    if (inFragment == null) {
-        return null;
+AutoPtr<ITransition> BackStackRecord::GetEnterTransition(
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ Boolean isBack)
+{
+    if (inFragment == NULL) {
+        return NULL;
     }
-    return cloneTransition(isBack ? inFragment.getReenterTransition() :
-            inFragment.getEnterTransition());
+    AutoPtr<ITransition> ts;
+    if (isBack) {
+        inFragment->GetReenterTransition((ITransition**)&ts);
+    }
+    else {
+        inFragment->GetEnterTransition((ITransition**)&ts);
+    }
+    return CloneTransition(ts);
 }
 
-private static Transition getExitTransition(Fragment outFragment, boolean isBack) {
-    if (outFragment == null) {
-        return null;
+AutoPtr<ITransition> BackStackRecord::GetExitTransition(
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ Boolean isBack)
+{
+    if (outFragment == NULL) {
+        return NULL;
     }
-    return cloneTransition(isBack ? outFragment.getReturnTransition() :
-            outFragment.getExitTransition());
+    AutoPtr<ITransition> ts;
+    if (isBack) {
+        outFragment->GetReturnTransition((ITransition**)&ts);
+    }
+    else {
+        outFragment->GetExitTransition((ITransition**)&ts);
+    }
+    return CloneTransition(ts);
 }
 
-private static Transition getSharedElementTransition(Fragment inFragment, Fragment outFragment,
-        boolean isBack) {
-    if (inFragment == null || outFragment == null) {
-        return null;
+AutoPtr<ITransition> BackStackRecord::GetSharedElementTransition(
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ Boolean isBack)
+{
+    if (inFragment == NULL || outFragment == NULL) {
+        return NULL;
     }
-    return cloneTransition(isBack ? outFragment.getSharedElementReturnTransition() :
-            inFragment.getSharedElementEnterTransition());
+    AutoPtr<ITransition> ts;
+    if (isBack) {
+        outFragment->GetSharedElementReturnTransition((ITransition**)&ts);
+    }
+    else {
+        inFragment->GetSharedElementReturnTransition((ITransition**)&ts);
+    }
+    return CloneTransition(ts);
 }
 
-private static ArrayList<View> captureExitingViews(Transition exitTransition,
-        Fragment outFragment, ArrayMap<String, View> namedViews) {
-    ArrayList<View> viewList = null;
-    if (exitTransition != null) {
-        viewList = new ArrayList<View>();
-        View root = outFragment.getView();
-        root.captureTransitioningViews(viewList);
-        if (namedViews != null) {
-            viewList.removeAll(namedViews.values());
+AutoPtr<IArrayList> BackStackRecord::CaptureExitingViews(
+    /* [in] */ ITransition* exitTransition,
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ IArrayMap* namedViews)
+{
+    AutoPtr<IArrayList>  viewList;
+    if (exitTransition != NULL) {
+        CArrayList::New((IArrayList**)&viewList);
+        AutoPtr<IView> root;
+        outFragment->GetView((IView**)&root);
+        root->CaptureTransitioningViews(IList::Probe(viewList));
+        if (namedViews != NULL) {
+            viewList->RemoveAll(ICollection::Probe(viewList));
         }
-        addTargets(exitTransition, viewList);
+
+        AddTargets(exitTransition, viewList);
     }
     return viewList;
 }
 
-private ArrayMap<String, View> remapSharedElements(TransitionState state, Fragment outFragment,
-        boolean isBack) {
-    ArrayMap<String, View> namedViews = new ArrayMap<String, View>();
-    if (mSharedElementSourceNames != null) {
-        outFragment.getView().findNamedViews(namedViews);
+AutoPtr<IArrayMap> BackStackRecord::RemapSharedElements(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ Boolean isBack)
+{
+    //ArrayMap<String, View>
+    AutoPtr<IArrayMap> namedViews;
+    CArrayMap::New((IArrayMap**)&namedViews);
+
+    if (mSharedElementSourceNames != NULL) {
+        AutoPtr<IView> view;
+        outFragment->GetView((IView**)&view);
+        view->FindNamedViews(IMap::Probe(namedViews));
         if (isBack) {
-            namedViews.retainAll(mSharedElementTargetNames);
-        } else {
-            namedViews = remapNames(mSharedElementSourceNames, mSharedElementTargetNames,
-                    namedViews);
+            Boolean result;
+            namedViews->RetainAll(ICollection::Probe(mSharedElementTargetNames), &result);
+        }
+        else {
+            AutoPtr<IArrayMap> old = namedViews;
+            namedViews = RemapNames(mSharedElementSourceNames, mSharedElementTargetNames, old);
         }
     }
 
-    if (isBack) {
-        outFragment.mEnterTransitionCallback.onMapSharedElements(
-                mSharedElementTargetNames, namedViews);
-        setBackNameOverrides(state, namedViews, false);
-    } else {
-        outFragment.mExitTransitionCallback.onMapSharedElements(
-                mSharedElementTargetNames, namedViews);
-        setNameOverrides(state, namedViews, false);
-    }
+    assert(0 && "TODO");
+    // Fragment* of = (Fragment*)outFragment;
+    // if (isBack) {
+    //     of->mEnterTransitionCallback->OnMapSharedElements(
+    //         IList::Probe(mSharedElementTargetNames), IMap::Probe(namedViews));
+    //     SetBackNameOverrides(state, namedViews, FALSE);
+    // }
+    // else {
+    //     of->mExitTransitionCallback->OnMapSharedElements(
+    //         IList::Probe(mSharedElementTargetNames), IMap::Probe(namedViews));
+    //     SetNameOverrides(state, namedViews, FALSE);
+    // }
 
     return namedViews;
 }
 
-/**
- * Prepares the enter transition by adding a non-existent view to the transition's target list
- * and setting it epicenter callback. By adding a non-existent view to the target list,
- * we can prevent any view from being targeted at the beginning of the transition.
- * We will add to the views before the end state of the transition is captured so that the
- * views will appear. At the start of the transition, we clear the list of targets so that
- * we can restore the state of the transition and use it again.
- *
- * <p>The shared element transition maps its shared elements immediately prior to
- * capturing the final state of the Transition.</p>
- */
-private ArrayList<View> addTransitionTargets(final TransitionState state,
-        final Transition enterTransition, final Transition sharedElementTransition,
-        final Transition overallTransition, final View container,
-        final Fragment inFragment, final Fragment outFragment,
-        final ArrayList<View> hiddenFragmentViews, final boolean isBack,
-        final ArrayList<View> sharedElementTargets) {
-    if (enterTransition == null && sharedElementTransition == null &&
-            overallTransition == null) {
-        return null;
+//==========================================================================
+
+CAR_INTERFACE_IMPL(BackStackRecord::AddTargetsOnPreDrawListener, Object, IOnPreDrawListener)
+
+BackStackRecord::AddTargetsOnPreDrawListener::AddTargetsOnPreDrawListener(
+    /* [in] */ BackStackRecord* host,
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ ITransition* enterTransition,
+    /* [in] */ ITransition* sharedElementTransition,
+    /* [in] */ ITransition* overallTransition,
+    /* [in] */ IView* container,
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ IArrayList* /*<View>*/ hiddenFragmentViews,
+    /* [in] */ Boolean isBack,
+    /* [in] */ IArrayList* /*<View>*/ sharedElementTargets,
+    /* [in] */ IArrayList* /*<View>*/ enteringViews)
+    : mHost(host)
+    , mState(state)
+    , mEnterTransition(enterTransition)
+    , mSharedElementTransition(sharedElementTransition)
+    , mOverallTransition(overallTransition)
+    , mContainer(container)
+    , mInFragment(inFragment)
+    , mOutFragment(outFragment)
+    , mHiddenFragmentViews(hiddenFragmentViews)
+    , mIsBack(isBack)
+    , mSharedElementTargets(sharedElementTargets)
+    , mEnteringViews(enteringViews)
+{}
+
+ECode BackStackRecord::AddTargetsOnPreDrawListener::OnPreDraw(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IViewTreeObserver> vto;
+    mContainer->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    vto->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
+
+    // Don't include any newly-hidden fragments in the transition->
+    Int32 id;
+    mInFragment->GetContainerId(&id);
+    mHost->ExcludeHiddenFragments(mHiddenFragmentViews, id, mOverallTransition);
+
+    AutoPtr<IArrayMap> namedViews;//ArrayMap<String, View> namedViews = NULL;
+    if (mSharedElementTransition != NULL) {
+        namedViews = mHost->MapSharedElementsIn(mState, mIsBack, mInFragment);
+        mHost->RemoveTargets(mSharedElementTransition, mSharedElementTargets);
+        mSharedElementTargets->Clear();
+        Boolean empty;
+        IMap::Probe(namedViews)->IsEmpty(&empty);
+        if (empty) {
+            AutoPtr<IView> view;
+            mState->GetNonExistentView((IView**)&view);
+            mSharedElementTargets->Add(TO_IINTERFACE(view));
+        }
+        else {
+            AutoPtr<ICollection> values;
+            IMap::Probe(namedViews)->GetValues((ICollection**)&values);
+            mSharedElementTargets->AddAll(values);
+        }
+
+        mHost->AddTargets(mSharedElementTransition, mSharedElementTargets);
+
+        mHost->SetEpicenterIn(namedViews, mState);
+
+        mHost->CallSharedElementEnd(mState, mInFragment, mOutFragment, mIsBack, namedViews);
     }
-    final ArrayList<View> enteringViews = new ArrayList<View>();
-    container.getViewTreeObserver().addOnPreDrawListener(
-            new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    container.getViewTreeObserver().removeOnPreDrawListener(this);
 
-                    // Don't include any newly-hidden fragments in the transition.
-                    excludeHiddenFragments(hiddenFragmentViews, inFragment.mContainerId,
-                            overallTransition);
+    if (mEnterTransition != NULL) {
+        AutoPtr<IView> view;
+        mInFragment->GetView((IView**)&view);
+        if (view != NULL) {
+            view->CaptureTransitioningViews(IList::Probe(mEnteringViews));
+            if (namedViews != NULL) {
+                AutoPtr<ICollection> values;
+                IMap::Probe(namedViews)->GetValues((ICollection**)&values);
+                mEnteringViews->RemoveAll(values);
+            }
+            mHost->AddTargets(mEnterTransition, mEnteringViews);
+        }
+        mHost->SetSharedElementEpicenter(mEnterTransition, mState);
+    }
 
-                    ArrayMap<String, View> namedViews = null;
-                    if (sharedElementTransition != null) {
-                        namedViews = mapSharedElementsIn(state, isBack, inFragment);
-                        removeTargets(sharedElementTransition, sharedElementTargets);
-                        sharedElementTargets.clear();
-                        if (namedViews.isEmpty()) {
-                            sharedElementTargets.add(state.nonExistentView);
-                        } else {
-                            sharedElementTargets.addAll(namedViews.values());
-                        }
+    *result = TRUE;
+    return NOERROR;
+}
+//==========================================================================
 
-                        addTargets(sharedElementTransition, sharedElementTargets);
+AutoPtr<IArrayList>/*<View>*/ BackStackRecord::AddTransitionTargets(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ ITransition* enterTransition,
+    /* [in] */ ITransition* sharedElementTransition,
+    /* [in] */ ITransition* overallTransition,
+    /* [in] */ IView* container,
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ IArrayList* /*<View>*/ hiddenFragmentViews,
+    /* [in] */ Boolean isBack,
+    /* [in] */ IArrayList* /*<View>*/ sharedElementTargets)
+{
+    if (enterTransition == NULL
+        && sharedElementTransition == NULL
+        && overallTransition == NULL) {
+        return NULL;
+    }
 
-                        setEpicenterIn(namedViews, state);
-
-                        callSharedElementEnd(state, inFragment, outFragment, isBack,
-                                namedViews);
-                    }
-
-                    if (enterTransition != null) {
-                        View view = inFragment.getView();
-                        if (view != null) {
-                            view.captureTransitioningViews(enteringViews);
-                            if (namedViews != null) {
-                                enteringViews.removeAll(namedViews.values());
-                            }
-                            addTargets(enterTransition, enteringViews);
-                        }
-                        setSharedElementEpicenter(enterTransition, state);
-                    }
-                    return true;
-                }
-            });
+    AutoPtr<IArrayList> enteringViews;
+    CArrayList::New((IArrayList**)&enteringViews);
+    AutoPtr<IViewTreeObserver> vto;
+    container->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    AutoPtr<IOnPreDrawListener> listener = new AddTargetsOnPreDrawListener(
+        this, state, enterTransition, sharedElementTransition, overallTransition, container,
+        inFragment, outFragment, hiddenFragmentViews, isBack, sharedElementTargets, enteringViews);
+    vto->AddOnPreDrawListener(listener);
     return enteringViews;
 }
 
-private void callSharedElementEnd(TransitionState state, Fragment inFragment,
-        Fragment outFragment, boolean isBack, ArrayMap<String, View> namedViews) {
-    SharedElementCallback sharedElementCallback = isBack ?
-            outFragment.mEnterTransitionCallback :
-            inFragment.mEnterTransitionCallback;
-    ArrayList<String> names = new ArrayList<String>(namedViews.keySet());
-    ArrayList<View> views = new ArrayList<View>(namedViews.values());
-    sharedElementCallback.onSharedElementEnd(names, views, null);
+void BackStackRecord::CallSharedElementEnd(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ IFragment* outFragment,
+    /* [in] */ Boolean isBack,
+    /* [in] */ IArrayMap* /*<String, View>*/ namedViews)
+{
+    AutoPtr<ISet> keyset;
+    AutoPtr<ICollection> values;
+    IMap::Probe(namedViews)->GetKeySet((ISet**)&keyset);
+    IMap::Probe(namedViews)->GetValues((ICollection**)&values);
+
+    AutoPtr<IArrayList> names, views;
+    CArrayList::New(ICollection::Probe(keyset), (IArrayList**)&names);
+    CArrayList::New(values, (IArrayList**)&views);
+
+    assert(0 && "TODO");
+    // Fragment* fragment = NULL;
+    // if (isBack) {
+    //     fragment = (Fragment*)outFragment;
+    // }
+    // else {
+    //     inFragment = (Fragment*)outFragment;
+    // }
+    // fragment->mSharedElementCallback->OnSharedElementEnd(names, views, NULL);
 }
 
-private void setEpicenterIn(ArrayMap<String, View> namedViews, TransitionState state) {
-    if (mSharedElementTargetNames != null && !namedViews.isEmpty()) {
-        // now we know the epicenter of the entering transition.
-        View epicenter = namedViews
-                .get(mSharedElementTargetNames.get(0));
-        if (epicenter != null) {
-            state.enteringEpicenterView = epicenter;
+void BackStackRecord::SetEpicenterIn(
+    /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
+    /* [in] */ IBackStackRecordTransitionState* state)
+{
+    Boolean bval;
+    IMap::Probe(namedViews)->IsEmpty(&bval);
+    if (mSharedElementTargetNames != NULL && bval) {
+        AutoPtr<IInterface> first, value;
+        mSharedElementTargetNames->Get(0, (IInterface**)&first);
+        IMap::Probe(namedViews)->Get(first, (IInterface**)&value);
+        // now we know the epicenter of the entering transition->
+        AutoPtr<IView> epicenter = IView::Probe(value);
+        if (epicenter != NULL) {
+            state->SetEnteringEpicenterView(epicenter);
         }
     }
 }
 
-private ArrayMap<String, View> mapSharedElementsIn(TransitionState state,
-        boolean isBack, Fragment inFragment) {
+AutoPtr<IArrayMap> /*<String, View>*/ BackStackRecord::MapSharedElementsIn(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ Boolean isBack,
+    /* [in] */ IFragment* inFragment)
+{
     // Now map the shared elements in the incoming fragment
-    ArrayMap<String, View> namedViews = mapEnteringSharedElements(state, inFragment, isBack);
+    AutoPtr<IArrayMap> namedViews = MapEnteringSharedElements(state, inFragment, isBack);
 
-    // remap shared elements and set the name mapping used
-    // in the shared element transition.
-    if (isBack) {
-        inFragment.mExitTransitionCallback.onMapSharedElements(
-                mSharedElementTargetNames, namedViews);
-        setBackNameOverrides(state, namedViews, true);
-    } else {
-        inFragment.mEnterTransitionCallback.onMapSharedElements(
-                mSharedElementTargetNames, namedViews);
-        setNameOverrides(state, namedViews, true);
-    }
+    assert(0 && "TODO");
+    // Fragment* fragment = (Fragment*)inFragment;
+    // // remap shared elements and set the name mapping used
+    // // in the shared element transition->
+    // if (isBack) {
+    //     fragment->mExitTransitionCallback->OnMapSharedElements(
+    //         IList::Probe(mSharedElementTargetNames), IMap::Probe(namedViews));
+    //     SetBackNameOverrides(state, namedViews, TRUE);
+    // }
+    // else {
+    //     fragment->mEnterTransitionCallback->OnMapSharedElements(
+    //         IList::Probe(mSharedElementTargetNames), IMap::Probe(namedViews));
+    //     SetNameOverrides(state, namedViews, TRUE);
+    // }
     return namedViews;
 }
 
-private static Transition mergeTransitions(Transition enterTransition,
-        Transition exitTransition, Transition sharedElementTransition, Fragment inFragment,
-        boolean isBack) {
-    boolean overlap = true;
-    if (enterTransition != null && exitTransition != null) {
-        overlap = isBack ? inFragment.getAllowReturnTransitionOverlap() :
-                inFragment.getAllowEnterTransitionOverlap();
+AutoPtr<ITransition> MergeTransitions(
+    /* [in] */ ITransition* enterTransition,
+    /* [in] */ ITransition* exitTransition,
+    /* [in] */ ITransition* sharedElementTransition,
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ Boolean isBack)
+{
+    Boolean overlap = TRUE;
+    if (enterTransition != NULL && exitTransition != NULL) {
+        if (isBack)
+            inFragment->GetAllowReturnTransitionOverlap(&overlap);
+        else
+            inFragment->GetAllowEnterTransitionOverlap(&overlap);
     }
 
     // Wrap the transitions. Explicit targets like in enter and exit will cause the
     // views to be targeted regardless of excluded views. If that happens, then the
-    // excluded fragments views (hidden fragments) will still be in the transition.
+    // excluded fragments views (hidden fragments) will still be in the transition->
 
-    Transition transition;
+    AutoPtr<ITransition> transition;
     if (overlap) {
         // Regular transition -- do it all together
-        TransitionSet transitionSet = new TransitionSet();
-        if (enterTransition != null) {
-            transitionSet.addTransition(enterTransition);
+        AutoPtr<ITransitionSet> transitionSet;
+        CTransitionSet::New((ITransitionSet**)&transitionSet);
+        if (enterTransition != NULL) {
+            transitionSet->AddTransition(enterTransition);
         }
-        if (exitTransition != null) {
-            transitionSet.addTransition(exitTransition);
+        if (exitTransition != NULL) {
+            transitionSet->AddTransition(exitTransition);
         }
-        if (sharedElementTransition != null) {
-            transitionSet.addTransition(sharedElementTransition);
+        if (sharedElementTransition != NULL) {
+            transitionSet->AddTransition(sharedElementTransition);
         }
         transition = transitionSet;
-    } else {
+    }
+    else {
         // First do exit, then enter, but allow shared element transition to happen
         // during both.
-        Transition staggered = null;
-        if (exitTransition != null && enterTransition != null) {
-            staggered = new TransitionSet()
-                    .addTransition(exitTransition)
-                    .addTransition(enterTransition)
-                    .setOrdering(TransitionSet.ORDERING_SEQUENTIAL);
-        } else if (exitTransition != null) {
+        AutoPtr<ITransition> staggered;
+        if (exitTransition != NULL && enterTransition != NULL) {
+            CTransitionSet::New((ITransitionSet**)&staggered);
+            staggered->AddTransition(exitTransition);
+            staggered->AddTransition(enterTransition);
+            staggered->SetOrdering(ITransitionSet::ORDERING_SEQUENTIAL);
+        }
+        else if (exitTransition != NULL) {
             staggered = exitTransition;
-        } else if (enterTransition != null) {
+        }
+        else if (enterTransition != NULL) {
             staggered = enterTransition;
         }
-        if (sharedElementTransition != null) {
-            TransitionSet together = new TransitionSet();
-            if (staggered != null) {
-                together.addTransition(staggered);
+
+        if (sharedElementTransition != NULL) {
+            AutoPtr<ITransitionSet> together;
+            CTransitionSet::New((ITransitionSet**)&together);
+            if (staggered != NULL) {
+                together->AddTransition(staggered);
             }
-            together.addTransition(sharedElementTransition);
+            together->AddTransition(sharedElementTransition);
             transition = together;
-        } else {
+        }
+        else {
             transition = staggered;
         }
     }
     return transition;
 }
 
-/**
- * Configures custom transitions for a specific fragment container.
- *
- * @param containerId The container ID of the fragments to configure the transition for.
- * @param state The Transition State keeping track of the executing transitions.
- * @param firstOutFragments The list of first fragments to be removed, keyed on the
- *                          container ID.
- * @param lastInFragments The list of last fragments to be added, keyed on the
- *                        container ID.
- * @param isBack true if this is popping the back stack or false if this is a
- *               forward operation.
- */
-private void configureTransitions(int containerId, TransitionState state, boolean isBack,
-        SparseArray<Fragment> firstOutFragments, SparseArray<Fragment> lastInFragments) {
-    ViewGroup sceneRoot = (ViewGroup) mManager.mContainer.findViewById(containerId);
-    if (sceneRoot != null) {
-        Fragment inFragment = lastInFragments.get(containerId);
-        Fragment outFragment = firstOutFragments.get(containerId);
+void BackStackRecord::ConfigureTransitions(Int32 containerId,
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ Boolean isBack,
+    /* [in] */ IHashMap* /*<Fragment>*/ firstOutFragments,
+    /* [in] */ IHashMap* /*<Fragment>*/ lastInFragments)
+{
+    AutoPtr<IView> view;
+    mManager->mContainer->FindViewById(containerId, (IView**)&view);
+    AutoPtr<IViewGroup> sceneRoot = IViewGroup::Probe(view);
+    if (sceneRoot != NULL) {
+        AutoPtr<IInterface> obj;
+        lastInFragments->Get(containerId, (IInterface**)&obj);
+        AutoPtr<IFragment> inFragment = IFragment::Probe(obj);
 
-        Transition enterTransition = getEnterTransition(inFragment, isBack);
-        Transition sharedElementTransition = getSharedElementTransition(inFragment, outFragment,
+        obj = NULL;
+        firstOutFragments->Get(containerId, (IInterface**)&obj);
+        AutoPtr<IFragment> outFragment = IFragment::Probe(obj);
+
+        AutoPtr<ITransition> enterTransition = GetEnterTransition(inFragment, isBack);
+        AutoPtr<ITransition> sharedElementTransition = GetSharedElementTransition(inFragment, outFragment,
                 isBack);
-        Transition exitTransition = getExitTransition(outFragment, isBack);
+        AutoPtr<ITransition> exitTransition = GetExitTransition(outFragment, isBack);
 
-        if (enterTransition == null && sharedElementTransition == null &&
-                exitTransition == null) {
+        if (enterTransition == NULL && sharedElementTransition == NULL
+            && exitTransition == NULL) {
             return; // no transitions!
         }
-        if (enterTransition != null) {
-            enterTransition.addTarget(state.nonExistentView);
+        if (enterTransition != NULL) {
+            enterTransition->AddTarget(state.nonExistentView);
         }
-        ArrayMap<String, View> namedViews = null;
-        ArrayList<View> sharedElementTargets = new ArrayList<View>();
-        if (sharedElementTransition != null) {
-            namedViews = remapSharedElements(state, outFragment, isBack);
-            if (namedViews.isEmpty()) {
-                sharedElementTargets.add(state.nonExistentView);
-            } else {
-                sharedElementTargets.addAll(namedViews.values());
+
+        AutoPtr<IArrayMap> namedViews;//ArrayMap<String, View> = NULL;
+        AutoPtr<IArrayList> sharedElementTargets; // = new ArrayList<View>();
+        CArrayList::New((IArrayList**)&sharedElementTargets);
+
+        if (sharedElementTransition != NULL) {
+            namedViews = RemapSharedElements(state, outFragment, isBack);
+            Boolean bval;
+            IMap::Probe(namedViews)->IsEmpty(&bval);
+            if (bval) {
+                AutoPtr<IView> view;
+                state->GetNonExistentView((IView**)&view);
+                sharedElementTargets->Add(view);
             }
-            addTargets(sharedElementTransition, sharedElementTargets);
+            else {
+                AutoPtr<ICollection> views;
+                IMap::Probe(namedViews)->GetValues((ICollection**)&views);
+                sharedElementTargets->AddAll(views);
+            }
+            AddTargets(sharedElementTransition, sharedElementTargets);
 
-            // Notify the start of the transition.
-            SharedElementCallback callback = isBack ?
-                    outFragment.mEnterTransitionCallback :
-                    inFragment.mEnterTransitionCallback;
-            ArrayList<String> names = new ArrayList<String>(namedViews.keySet());
-            ArrayList<View> views = new ArrayList<View>(namedViews.values());
-            callback.onSharedElementStart(names, views, null);
+            // Notify the start of the transition->
+            AutoPtr<ISet> keyset;
+            AutoPtr<ICollection> values;
+            IMap::Probe(namedViews)->GetKeySet((ISet**)&keyset);
+            IMap::Probe(namedViews)->GetValues((ICollection**)&values);
+
+            AutoPtr<IArrayList> names, views;
+            CArrayList::New(ICollection::Probe(keyset), (IArrayList**)&names);
+            CArrayList::New(values, (IArrayList**)&views);
+
+            assert(0 && "TODO");
+            // Fragment* fragment = NULL;
+            // if (isBack) {
+            //     fragment = outFragment;
+            // }
+            // else {
+            //     fragment = inFragment;
+            // }
+            // fragment->mEnterTransitionCallback->OnSharedElementStart(names, views, NULL);
         }
 
-        ArrayList<View> exitingViews = captureExitingViews(exitTransition, outFragment,
-                namedViews);
-        if (exitingViews == null || exitingViews.isEmpty()) {
-            exitTransition = null;
+        AutoPtr<IArrayList> exitingViews = CaptureExitingViews(exitTransition, outFragment, namedViews);
+        if (exitingViews == NULL || exitingViews.isEmpty()) {
+            exitTransition = NULL;
         }
 
         // Set the epicenter of the exit transition
-        if (mSharedElementTargetNames != null && namedViews != null) {
-            View epicenterView = namedViews.get(mSharedElementTargetNames.get(0));
-            if (epicenterView != null) {
-                if (exitTransition != null) {
-                    setEpicenter(exitTransition, epicenterView);
+        if (mSharedElementTargetNames != NULL && namedViews != NULL) {
+            AutoPtr<IInterface> key, value;
+            mSharedElementTargetNames->Get(0, (IInterface**)&key);
+            IMap::Probe(namedViews)->Get(key, (IInterface**)&value);
+            AutoPtr<IView> epicenterView = IView::Probe(value);
+            if (epicenterView != NULL) {
+                if (exitTransition != NULL) {
+                    SetEpicenter(exitTransition, epicenterView);
                 }
-                if (sharedElementTransition != null) {
-                    setEpicenter(sharedElementTransition, epicenterView);
+                if (sharedElementTransition != NULL) {
+                    SetEpicenter(sharedElementTransition, epicenterView);
                 }
             }
         }
 
-        Transition transition = mergeTransitions(enterTransition, exitTransition,
+        AutoPtr<ITransition> transition = MergeTransitions(enterTransition, exitTransition,
                 sharedElementTransition, inFragment, isBack);
 
-        if (transition != null) {
-            ArrayList<View> hiddenFragments = new ArrayList<View>();
-            ArrayList<View> enteringViews = addTransitionTargets(state, enterTransition,
-                    sharedElementTransition, transition, sceneRoot, inFragment, outFragment,
-                    hiddenFragments, isBack, sharedElementTargets);
+        if (transition != NULL) {
+            AutoPtr<IArrayList> hiddenFragments, enteringViews;
+            CArrayList::New((IArrayList**)&hiddenFragments);
+            enteringViews = AddTransitionTargets(state, enterTransition,
+                sharedElementTransition, transition, sceneRoot, inFragment, outFragment,
+                hiddenFragments, isBack, sharedElementTargets);
 
-            transition.setNameOverrides(state.nameOverrides);
-            // We want to exclude hidden views later, so we need a non-null list in the
+            CBackStackRecordTransitionState* stateObj = (CBackStackRecordTransitionState*)state;
+            transition->SetNameOverrides(stateObj->mNameOverrides);
+            // We want to exclude hidden views later, so we need a non-NULL list in the
             // transition now.
-            transition.excludeTarget(state.nonExistentView, true);
+            transition->ExcludeTarget(stateObj->mNonExistentView, TRUE);
             // Now exclude all currently hidden fragments.
-            excludeHiddenFragments(hiddenFragments, containerId, transition);
-            TransitionManager.beginDelayedTransition(sceneRoot, transition);
+            ExcludeHiddenFragments(hiddenFragments, containerId, transition);
+            CTransitionManager::BeginDelayedTransition(sceneRoot, transition);
             // Remove the view targeting after the transition starts
-            removeTargetedViewsFromTransitions(sceneRoot, state.nonExistentView,
-                    enterTransition, enteringViews, exitTransition, exitingViews,
-                    sharedElementTransition, sharedElementTargets, transition, hiddenFragments);
+            RemoveTargetedViewsFromTransitions(sceneRoot, stateObj->mNonExistentView,
+                enterTransition, enteringViews, exitTransition, exitingViews,
+                sharedElementTransition, sharedElementTargets, transition, hiddenFragments);
         }
     }
 }
 
-/**
- * After the transition has started, remove all targets that we added to the transitions
- * so that the transitions are left in a clean state.
- */
-private void removeTargetedViewsFromTransitions(
-        final ViewGroup sceneRoot, final View nonExistingView,
-        final Transition enterTransition, final ArrayList<View> enteringViews,
-        final Transition exitTransition, final ArrayList<View> exitingViews,
-        final Transition sharedElementTransition, final ArrayList<View> sharedElementTargets,
-        final Transition overallTransition, final ArrayList<View> hiddenViews) {
-    if (overallTransition != null) {
-        sceneRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                sceneRoot.getViewTreeObserver().removeOnPreDrawListener(this);
-                if (enterTransition != null) {
-                    enterTransition.removeTarget(nonExistingView);
-                    removeTargets(enterTransition, enteringViews);
-                }
-                if (exitTransition != null) {
-                    removeTargets(exitTransition, exitingViews);
-                }
-                if (sharedElementTransition != null) {
-                    removeTargets(sharedElementTransition, sharedElementTargets);
-                }
-                int numViews = hiddenViews.size();
-                for (int i = 0; i < numViews; i++) {
-                    overallTransition.excludeTarget(hiddenViews.get(i), false);
-                }
-                overallTransition.excludeTarget(nonExistingView, false);
-                return true;
-            }
-        });
+//=================================================================================
+// BackStackRecord::RemoveTargetsOnPreDrawListener
+//=================================================================================
+
+CAR_INTERFACE_IMPL(BackStackRecord::RemoveTargetsOnPreDrawListener, Object, IOnPreDrawListener)
+
+BackStackRecord::RemoveTargetsOnPreDrawListener::RemoveTargetsOnPreDrawListener(
+    /* [in] */ BackStackRecord* host,
+    /* [in] */ IViewGroup* sceneRoot,
+    /* [in] */ IView* nonExistingView,
+    /* [in] */ ITransition* enterTransition,
+    /* [in] */ IArrayList* /*<View>*/ enteringViews,
+    /* [in] */ ITransition* exitTransition,
+    /* [in] */ IArrayList* /*<View>*/ exitingViews,
+    /* [in] */ ITransition* sharedElementTransition,
+    /* [in] */ IArrayList* /*<View>*/ sharedElementTargets,
+    /* [in] */ ITransition* overallTransition,
+    /* [in] */ IArrayList* /*<View>*/ hiddenViews)
+    : mHost(host)
+    , mSceneRoot(sceneRoot)
+    , mNonExistingView(nonExistingView)
+    , mEnterTransition(enterTransition)
+    , mEnteringViews(enteringViews)
+    , mExitTransition(exitTransition)
+    , mExitingViews(exitingViews)
+    , mSharedElementTransition(sharedElementTransition)
+    , mSharedElementTargets(sharedElementTargets)
+    , mOverallTransition(overallTransition)
+    , mHiddenViews(hiddenViews)
+{
+}
+
+ECode BackStackRecord::RemoveTargetsOnPreDrawListener::OnPreDraw(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<IViewTreeObserver> vto;
+    mSceneRoot->GetViewTreeObserver((IViewTreeObserver**)&vto);
+
+    vto->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
+    if (mEnterTransition != NULL) {
+        mEnterTransition->RemoveTarget(mNonExistingView);
+        mHost->RemoveTargets(mEnterTransition, mEnteringViews);
+    }
+    if (mExitTransition != NULL) {
+        mHost->RemoveTargets(mExitTransition, mExitingViews);
+    }
+    if (mSharedElementTransition != NULL) {
+        mHost->RemoveTargets(mSharedElementTransition, mSharedElementTargets);
+    }
+    Int32 numViews;
+    mHiddenViews->GetSize(&numViews);
+    for (Int32 i = 0; i < numViews; i++) {
+        AutoPtr<IInterface> obj;
+        mHiddenViews->Get(i, (IInterface**)&obj);
+        mOverallTransition->ExcludeTarget(IView::Probe(obj), FALSE);
+    }
+    mOverallTransition->ExcludeTarget(mNonExistingView, FALSE);
+    *result = TRUE;
+    return NOERROR;
+}
+
+void BackStackRecord::RemoveTargetedViewsFromTransitions(
+    /* [in] */ IViewGroup* sceneRoot,
+    /* [in] */ IView* nonExistingView,
+    /* [in] */ ITransition* enterTransition,
+    /* [in] */ IArrayList* /*<View>*/ enteringViews,
+    /* [in] */ ITransition* exitTransition,
+    /* [in] */ IArrayList* /*<View>*/ exitingViews,
+    /* [in] */ ITransition* sharedElementTransition,
+    /* [in] */ IArrayList* /*<View>*/ sharedElementTargets,
+    /* [in] */ ITransition* overallTransition,
+    /* [in] */ IArrayList* /*<View>*/ hiddenViews)
+{
+    if (overallTransition != NULL) {
+        AutoPtr<IViewTreeObserver> vto;
+        sceneRoot->GetViewTreeObserver((IViewTreeObserver**)&vto);
+        AutoPtr<IOnPreDrawListener> listener = new RemoveTargetsOnPreDrawListener(
+            this, sceneRoot, nonExistingView, enterTransition, enteringViews,
+            exitTransition, exitingViews, sharedElementTransition, sharedElementTargets,
+            overallTransition, hiddenViews);
+
+        vto->AddOnPreDrawListener(listener);
     }
 }
 
-private static void removeTargets(Transition transition, ArrayList<View> views) {
-    int numViews = views.size();
-    for (int i = 0; i < numViews; i++) {
-        transition.removeTarget(views.get(i));
+void BackStackRecord::RemoveTargets(
+    /* [in] */ ITransition* transition,
+    /* [in] */ IArrayList* /*<View>*/ views)
+{
+    Int32 numViews;
+    views->GetSize(&numViews);
+    for (Int32 i = 0; i < numViews; i++) {
+        AutoPtr<IInterface> obj;
+        views->Get(i, (IInterface**)&obj);
+        transition->RemoveTarget(IView::Probe(obj));
     }
 }
 
-private static void addTargets(Transition transition, ArrayList<View> views) {
-    int numViews = views.size();
-    for (int i = 0; i < numViews; i++) {
-        transition.addTarget(views.get(i));
+void BackStackRecord::AddTargets(
+    /* [in] */ ITransition* transition,
+    /* [in] */ IArrayList* /*<View>*/ views)
+{
+    Int32 numViews;
+    views->GetSize(&numViews);
+    for (Int32 i = 0; i < numViews; i++) {
+        AutoPtr<IInterface> obj;
+        views->Get(i, (IInterface**)&obj);
+        transition->AddTarget(IView::Probe(obj));
     }
 }
 
-/**
- * Remaps a name-to-View map, substituting different names for keys.
- *
- * @param inMap A list of keys found in the map, in the order in toGoInMap
- * @param toGoInMap A list of keys to use for the new map, in the order of inMap
- * @param namedViews The current mapping
- * @return a new Map after it has been mapped with the new names as keys.
- */
-private static ArrayMap<String, View> remapNames(ArrayList<String> inMap,
-        ArrayList<String> toGoInMap, ArrayMap<String, View> namedViews) {
-    ArrayMap<String, View> remappedViews = new ArrayMap<String, View>();
-    if (!namedViews.isEmpty()) {
-        int numKeys = inMap.size();
-        for (int i = 0; i < numKeys; i++) {
-            View view = namedViews.get(inMap.get(i));
+AutoPtr<IArrayMap> /*<String, View>*/ BackStackRecord::RemapNames(
+    /* [in] */ IArrayList* /* <String> */ inMap,
+    /* [in] */ IArrayList* /* <String> */ toGoInMap,
+    /* [in] */ IArrayMap* /* <String, View> */ namedViews)
+{
+    AutoPtr<IArrayMap> remappedViews;
+    CArrayMap::New((IArrayMap**)&remappedViews);
 
-            if (view != null) {
-                remappedViews.put(toGoInMap.get(i), view);
+    Boolean empty;
+    IMap::Probe(namedViews)->IsEmpty(&empty);
+    if (!empty) {
+        Int32 numKeys;
+        inMap->GetSize(&numKeys);
+        for (Int32 i = 0; i < numKeys; i++) {
+            AutoPtr<IInterface> key, value;
+            inMap->Get(i, (IInterface**)&key);
+            IMap::Probe(namedViews)->Get(key, (IInterface**)&value);
+            AutoPtr<IView> view = IView::Probe(value);
+
+            if (view != NULL) {
+                AutoPtr<IInterface> toKey;
+                toGoInMap->Get(i, (IInterface**)&toKey);
+                IMap::Probe(remappedViews)->Put(toKey, view);
             }
         }
     }
     return remappedViews;
 }
 
-/**
- * Maps shared elements to views in the entering fragment.
- *
- * @param state The transition State as returned from {@link #beginTransition(
- * android.util.SparseArray, android.util.SparseArray, boolean)}.
- * @param inFragment The last fragment to be added.
- * @param isBack true if this is popping the back stack or false if this is a
- *               forward operation.
- */
-private ArrayMap<String, View> mapEnteringSharedElements(TransitionState state,
-        Fragment inFragment, boolean isBack) {
-    ArrayMap<String, View> namedViews = new ArrayMap<String, View>();
-    View root = inFragment.getView();
-    if (root != null) {
-        if (mSharedElementSourceNames != null) {
-            root.findNamedViews(namedViews);
+AutoPtr<IArrayMap> /*<String, View>*/ BackStackRecord::MapEnteringSharedElements(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ IFragment* inFragment,
+    /* [in] */ Boolean isBack)
+ {
+    AutoPtr<IArrayMap> namedViews; //ArrayMap<String, View>
+    CArrayMap::New((IArrayMap**)&remappedViews);
+
+    AutoPtr<IView> root;
+    inFragment->GetView((IView**)&root);
+    if (root != NULL) {
+        if (mSharedElementSourceNames != NULL) {
+            root->FindNamedViews(namedViews);
             if (isBack) {
-                namedViews = remapNames(mSharedElementSourceNames,
-                        mSharedElementTargetNames, namedViews);
+                AutoPtr<IArrayMap> old = namedViews;
+                namedViews = RemapNames(mSharedElementSourceNames,
+                        mSharedElementTargetNames, old);
             } else {
-                namedViews.retainAll(mSharedElementTargetNames);
+                namedViews->RetainAll(ICollection::Probe(mSharedElementTargetNames));
             }
         }
     }
     return namedViews;
 }
 
-private void excludeHiddenFragments(final ArrayList<View> hiddenFragmentViews, int containerId,
-        Transition transition) {
-    if (mManager.mAdded != null) {
-        for (int i = 0; i < mManager.mAdded.size(); i++) {
-            Fragment fragment = mManager.mAdded.get(i);
-            if (fragment.mView != null && fragment.mContainer != null &&
-                    fragment.mContainerId == containerId) {
-                if (fragment.mHidden) {
-                    if (!hiddenFragmentViews.contains(fragment.mView)) {
-                        transition.excludeTarget(fragment.mView, true);
-                        hiddenFragmentViews.add(fragment.mView);
-                    }
-                } else {
-                    transition.excludeTarget(fragment.mView, false);
-                    hiddenFragmentViews.remove(fragment.mView);
-                }
-            }
-        }
+void BackStackRecord::ExcludeHiddenFragments(
+    /* [in] */ IArrayList* /* <View> */ hiddenFragmentViews,
+    /* [in] */ Int32 containerId,
+    /* [in] */ ITransition* transition)
+{
+    assert(0 && "TODO");
+    // if (mManager->mAdded != NULL) {
+    //     Int32 size;
+    //     mManager->mAdded->GetSize(&size);
+    //     for (Int32 i = 0; i < size; i++) {
+    //         AutoPtr<IInterface> obj;
+    //         mManager->mAdded->Get(i, (IInterface**)&obj);
+    //         Fragment* fragment = (Fragment*)IFragment::Probe(obj);
+    //         if (fragment->mView != NULL && fragment->mContainer != NULL
+    //             && fragment->mContainerId == containerId) {
+    //             AutoPtr<IView> view;
+    //             fragment->GetView((IView**)&view);
+    //             IInterface* viewObj = TO_IINTERFACE(view);
+    //             if (fragment->mHidden) {
+    //                 Boolean contains;
+    //                 hiddenFragmentViews->Contains(viewObj, &contains);
+    //                 if (!contains) {
+    //                     transition->ExcludeTarget(view, TRUE);
+    //                     hiddenFragmentViews->Add(viewObj);
+    //                 }
+    //             } else {
+    //                 transition->ExcludeTarget(view, FALSE);
+    //                 hiddenFragmentViews->Remove(viewObj);
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+//=========================================================================
+CAR_INTERFACE_IMPL(BackStackRecord::EpicenterCallback, Object, IEpicenterCallback)
+
+BackStackRecord::EpicenterCallback::EpicenterCallback(
+    /* [in] */ IRect* epicenter)
+    : mEpicenter(epicenter)
+{}
+
+ECode BackStackRecord::EpicenterCallback::OnGetEpicenter(
+    /* [in] */ ITransition* transition,
+    /* [out] */ IRect** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mEpicenter;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+//=========================================================================
+
+void BackStackRecord::SetEpicenter(
+    /* [in] */ ITransition* transition,
+    /* [in] */ IView* view)
+{
+    AutoPtr<IRect> epicenter;
+    CRect::New((IRect**)&epicenter);
+    view->GetBoundsOnScreen(epicenter);
+
+    AutoPtr<IEpicenterCallback> cb = new EpicenterCallback(epicenter);
+    transition->SetEpicenterCallback(cb);
+}
+
+//=========================================================================
+CAR_INTERFACE_IMPL(BackStackRecord::SharedElementEpicenterCallback, Object, IEpicenterCallback)
+
+BackStackRecord::SharedElementEpicenterCallback::SharedElementEpicenterCallback(
+    /* [in] */ IBackStackRecordTransitionState* state)
+    : mState(state)
+{
+}
+
+ECode BackStackRecord::SharedElementEpicenterCallback::OnGetEpicenter(
+    /* [in] */ ITransition* transition,
+    /* [out] */ IRect** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IView> view;
+    if (mEpicenter == NULL && (state->GetEnteringEpicenterView((IView**)&view), view != NULL)) {
+        CRect::New((IRect**)&mEpicenter);
+        view->GetBoundsOnScreen(mEpicenter);
     }
+
+    *result = mEpicenter;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
-private static void setEpicenter(Transition transition, View view) {
-    final Rect epicenter = new Rect();
-    view.getBoundsOnScreen(epicenter);
+//=========================================================================
 
-    transition.setEpicenterCallback(new Transition.EpicenterCallback() {
-        @Override
-        public Rect onGetEpicenter(Transition transition) {
-            return epicenter;
-        }
-    });
+void BackStackRecord::SetSharedElementEpicenter(
+    /* [in] */ ITransition* transition,
+    /* [in] */ IBackStackRecordTransitionState* state)
+{
+    AutoPtr<IEpicenterCallback> cb = new SharedElementEpicenterCallback(state);
+    transition->SetEpicenterCallback(cb);
 }
-
-private void setSharedElementEpicenter(Transition transition, final TransitionState state) {
-    transition.setEpicenterCallback(new Transition.EpicenterCallback() {
-        private Rect mEpicenter;
-
-        @Override
-        public Rect onGetEpicenter(Transition transition) {
-            if (mEpicenter == null && state.enteringEpicenterView != null) {
-                mEpicenter = new Rect();
-                state.enteringEpicenterView.getBoundsOnScreen(mEpicenter);
-            }
-            return mEpicenter;
-        }
-    });
-}
-
-
-//=======================
 
 ECode BackStackRecord::PopFromBackStack(
-        /* [in] */ Boolean doStateMove,
-        /* [in] */ ITransitionState* state,
-        /* [in] */ ISparseArray* /*<Fragment>*/ firstOutFragments,
-        /* [in] */ ISparseArray* /*<Fragment>*/ lastInFragments,
-        /* [out] */ ITransitionState** result)
+    /* [in] */ Boolean doStateMove,
+    /* [in] */ IBackStackRecordTransitionState* inState,
+    /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+    /* [in] */ IHashMap* lastInFragments, //SparseArray<Fragment>
+    /* [out] */ IBackStackRecordTransitionState** result)
 {
-    if (CFragmentManagerImpl::DEBUG) {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    if (FragmentManagerImpl::DEBUG) {
         Logger::V(TAG, "PopFromBackStack: %p", this);
 //        LogWriter logw/* = new LogWriter(Logger::VERBOSE, TAG)*/;
        //  AutoPtr<IPrintWriter> pw;
@@ -1608,12 +1956,16 @@ ECode BackStackRecord::PopFromBackStack(
        //  Dump(String("  "), NULL, pw, NULL);
     }
 
-    if (state == null) {
-        if (firstOutFragments.size() != 0 || lastInFragments.size() != 0) {
-            state = beginTransition(firstOutFragments, lastInFragments, true);
+    AutoPtr<IBackStackRecordTransitionState> state = inState;
+    if (state == NULL) {
+        Int32 fsize, lsize;
+        firstOutFragments->GetSize(&fsize);
+        lastInFragments->GetSize(&lsize);
+        if (fsize != 0 || lsize != 0) {
+            state = BeginTransition(firstOutFragments, lastInFragments, TRUE);
         }
     } else if (!doStateMove) {
-        setNameOverrides(state, mSharedElementTargetNames, mSharedElementSourceNames);
+        SetNameOverrides(state, mSharedElementTargetNames, mSharedElementSourceNames);
     }
 
     BumpBackStackNesting(-1);
@@ -1625,61 +1977,71 @@ ECode BackStackRecord::PopFromBackStack(
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mPopExitAnim);
                 Int32 newTransition;
-                CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
-                mManager->RemoveFragment(f,
-                        newTransition, mTransitionStyle);
+                FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+                mManager->RemoveFragment(f, newTransition, mTransitionStyle);
             } break;
+
             case OP_REPLACE: {
                 AutoPtr<IFragment> f = op->mFragment;
                 if (f != NULL) {
                     f->SetNextAnim(op->mPopExitAnim);
                     Int32 newTransition;
-                    CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
-                    mManager->RemoveFragment(f,
-                            newTransition, mTransitionStyle);
+                    FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+                    mManager->RemoveFragment(f, newTransition, mTransitionStyle);
                 }
-                List< AutoPtr<IFragment> >::Iterator it;
-                for (it = op->mRemoved.Begin(); it != op->mRemoved.End(); ++it) {
-                    AutoPtr<IFragment> old = *it;
-                    old->SetNextAnim(op->mPopEnterAnim);
-                    mManager->AddFragment(old, FALSE);
+                if (op->mRemoved != NULL) {
+                    Int32 size;
+                    op->mRemoved->GetSize(&size);
+                    for (Int32 i = 0; i < size; i++) {
+                        AutoPtr<IInterface> obj;
+                        op->mRemoved->Get(i, (IInterface**)&obj);
+                        IFragment* old = IFragment::Probe(obj);
+                        old->SetNextAnim(op->mPopEnterAnim);
+                        mManager->AddFragment(old, FALSE);
+                    }
                 }
             } break;
+
             case OP_REMOVE: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mPopEnterAnim);
                 mManager->AddFragment(f, FALSE);
             } break;
+
             case OP_HIDE: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mPopEnterAnim);
                 Int32 newTransition;
-                CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+                FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
                 mManager->ShowFragment(f, newTransition, mTransitionStyle);
             } break;
+
             case OP_SHOW: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mPopExitAnim);
                 Int32 newTransition;
-                CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+                FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
                 mManager->HideFragment(f, newTransition, mTransitionStyle);
             } break;
+
             case OP_DETACH: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mPopEnterAnim);
                 Int32 newTransition;
-                CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+                FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
                 mManager->AttachFragment(f, newTransition, mTransitionStyle);
             } break;
+
             case OP_ATTACH: {
                 AutoPtr<IFragment> f = op->mFragment;
                 f->SetNextAnim(op->mPopExitAnim);
                 Int32 newTransition;
-                CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+                FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
                 mManager->DetachFragment(f, newTransition, mTransitionStyle);
             } break;
+
             default: {
-                //throw new IllegalArgumentException("Unknown cmd: " + op.cmd);
+                //throw new IllegalArgumentException("Unknown cmd: " + op->cmd);
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         }
@@ -1689,77 +2051,137 @@ ECode BackStackRecord::PopFromBackStack(
 
     if (doStateMove) {
         Int32 newTransition;
-        CFragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
+        FragmentManagerImpl::ReverseTransit(mTransition, &newTransition);
         mManager->MoveToState(mManager->mCurState, newTransition, mTransitionStyle, TRUE);
-        state = null;
+        state = NULL;
     }
 
     if (mIndex >= 0) {
         mManager->FreeBackStackIndex(mIndex);
         mIndex = -1;
     }
-    return state;
+
+    *result = state;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
-//===========================
+void BackStackRecord::SetNameOverride(
+    /* [in] */ IArrayMap* /*<String, String>*/ overrides,
+    /* [in] */ const String& source,
+    /* [in] */ const String& target)
+{
+    if (!source.IsNull() && !target.IsNull() && !source.Equals(target)) {
+        AutoPtr<ICharSequence> targetObj = CoreUtils::Convert(target);
+        Int32 size;
+        overrides->GetSize(&size);
+        for (Int32 index = 0; index < size; index++) {
+            AutoPtr<IInterface> obj;
+            overrides->GetValueAt(index, (IInterface**)&obj);
 
-private static void setNameOverride(ArrayMap<String, String> overrides,
-        String source, String target) {
-    if (source != null && target != null && !source.equals(target)) {
-        for (int index = 0; index < overrides.size(); index++) {
-            if (source.equals(overrides.valueAt(index))) {
-                overrides.setValueAt(index, target);
+            if (source.Equals(Object::ToString(obj))) {
+                overrides->SetValueAt(index, targetObj);
                 return;
             }
         }
-        overrides.put(source, target);
+        AutoPtr<ICharSequence> sourceObj = CoreUtils::Convert(source);
+        overrides->Put(sourceObj, targetObj);
     }
 }
 
-private static void setNameOverrides(TransitionState state, ArrayList<String> sourceNames,
-        ArrayList<String> targetNames) {
-    if (sourceNames != null) {
-        for (int i = 0; i < sourceNames.size(); i++) {
-            String source = sourceNames.get(i);
-            String target = targetNames.get(i);
-            setNameOverride(state.nameOverrides, source, target);
+void BackStackRecord::SetNameOverride(
+    /* [in] */ IArrayMap* /*<String, String>*/ overrides,
+    /* [in] */ ICharSequence* source,
+    /* [in] */ ICharSequence* target)
+{
+    if (source != NULL && target != NULL && !Object::Equals(source, target)) {
+        IInterface* src = TO_IINTERFACE(source);
+        IInterface* tgt = TO_IINTERFACE(target);
+        Int32 size;
+        overrides->GetSize(&size);
+        for (Int32 index = 0; index < size; index++) {
+            AutoPtr<IInterface> obj;
+            overrides->GetValueAt(index, (IInterface**)&obj);
+
+            if (Object::Equals(src, obj)) {
+                overrides->SetValueAt(index, tgt);
+                return;
+            }
+        }
+        overrides->Put(src, tgt);
+}
+
+void BackStackRecord::SetNameOverrides(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ IArrayList* /*<String>*/ sourceNames,
+    /* [in] */ IArrayList* /*<String>*/ targetNames)
+{
+    if (sourceNames != NULL) {
+        Int32 size;
+        sourceNames->GetSize(&size);
+        AutoPtr<IArrayMap> nameOverrides;
+        state->GetNameOverrides((IArrayMap**)&nameOverrides);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> srcObj, tgtObj;
+            sourceNames->Get(i, (IInterface**)&srcObj);
+            targetNames->Get(i, (IInterface**)&tgtObj);
+
+            SetNameOverride(nameOverrides, srcObj, tgtObj);
         }
     }
 }
 
-private void setBackNameOverrides(TransitionState state, ArrayMap<String, View> namedViews,
-        boolean isEnd) {
-    int count = mSharedElementTargetNames.size();
-    for (int i = 0; i < count; i++) {
-        String source = mSharedElementSourceNames.get(i);
-        String originalTarget = mSharedElementTargetNames.get(i);
-        View view = namedViews.get(originalTarget);
-        if (view != null) {
-            String target = view.getTransitionName();
+void BackStackRecord::SetBackNameOverrides(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
+    /* [in] */ Boolean isEnd))
+{
+    AutoPtr<IArrayMap> nameOverrides;
+    state->GetNameOverrides((IArrayMap**)&nameOverrides);
+    Int32 count;
+    mSharedElementTargetNames->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> srcObj, tgtObj;
+        mSharedElementSourceNames->Get(i, (IInterface**)&srcObj);
+        mSharedElementTargetNames->Get(i, (IInterface**)&tgtObj);
+
+        AutoPtr<IView> view;
+        IMap::Probe(namedViews)->Get(tgtObj, (IView**)&view);
+        if (view != NULL) {
+            String target;
+            view->GetTransitionName(&target);
             if (isEnd) {
-                setNameOverride(state.nameOverrides, source, target);
+                SetNameOverride(nameOverrides, ICharSequence::Probe(srcObj), CoreUtils::Convert(target));
             } else {
-                setNameOverride(state.nameOverrides, target, source);
+                SetNameOverride(nameOverrides, CoreUtils::Convert(target), ICharSequence::Probe(srcObj));
             }
         }
     }
 }
 
-private void setNameOverrides(TransitionState state, ArrayMap<String, View> namedViews,
-        boolean isEnd) {
-    int count = namedViews.size();
-    for (int i = 0; i < count; i++) {
-        String source = namedViews.keyAt(i);
-        String target = namedViews.valueAt(i).getTransitionName();
+void BackStackRecord::SetNameOverrides(
+    /* [in] */ IBackStackRecordTransitionState* state,
+    /* [in] */ IArrayMap* namedViews,
+    /* [in] */ Boolean isEnd)
+{
+    AutoPtr<IArrayMap> nameOverrides;
+    state->GetNameOverrides((IArrayMap**)&nameOverrides);
+    Int32 count;
+    namedViews->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> srcObj, viewObj;
+        namedViews->GetKeyAt(i, (IInterface**)&srcObj);
+        namedViews->GetValueAt(i, (IInterface**)&viewObj);
+        String target;
+        IView::Probe(viewObj)->GetTransitionName(&target);
+
         if (isEnd) {
-            setNameOverride(state.nameOverrides, source, target);
+            SetNameOverride(nameOverrides, ICharSequence::Probe(srcObj), CoreUtils::Convert(target));
         } else {
-            setNameOverride(state.nameOverrides, target, source);
+            SetNameOverride(nameOverrides, CoreUtils::Convert(target), ICharSequence::Probe(srcObj));
         }
     }
 }
-//===========================
 
 ECode BackStackRecord::GetName(
     /* [out] */ String* name)

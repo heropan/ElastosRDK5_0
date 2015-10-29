@@ -122,9 +122,8 @@ void CTransitionManager::ChangeScene(
         AutoPtr<Transition> ct = (Transition*)transition;
         AutoPtr<IInterface> clone;
         ct->Clone((IInterface**)&clone);
-        AutoPtr<ITransition> res;
         transitionClone = ITransition::Probe(clone);
-        transitionClone->SetSceneRoot(sceneRoot, (ITransition**)&res);
+        transitionClone->SetSceneRoot(sceneRoot);
     }
 
     AutoPtr<IScene> oldScene = CScene::GetCurrentScene(IView::Probe(sceneRoot));
@@ -325,8 +324,7 @@ ECode CTransitionManager::MultiListener::OnPreDraw(
     }
     currentTransitions->Add(mTransition);
     AutoPtr<TransitionListenerAdapterOverride> p = new TransitionListenerAdapterOverride(mSceneRoot, runningTransitions);
-    AutoPtr<ITransition> res;
-    mTransition->AddListener(ITransitionListener::Probe(p), (ITransition**)&res);
+    mTransition->AddListener(ITransitionListener::Probe(p));
     mTransition->CaptureValues(mSceneRoot, FALSE);
     if (previousRunningTransitions != NULL) {
         Int32 size = 0;

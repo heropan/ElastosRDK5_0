@@ -3,23 +3,59 @@
 
 #include "_Elastos_Droid_App_CTaskStackBuilder.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IComponentName;
+using Elastos::Utility::Etl::List;
 
 
 namespace Elastos{
 namespace Droid{
 namespace App{
 
+/**
+ * Utility class for constructing synthetic back stacks for cross-task navigation
+ * on Android 3.0 and newer.
+ *
+ * <p>In API level 11 (Android 3.0/Honeycomb) the recommended conventions for
+ * app navigation using the back key changed. The back key's behavior is local
+ * to the current task and does not capture navigation across different tasks.
+ * Navigating across tasks and easily reaching the previous task is accomplished
+ * through the "recents" UI, accessible through the software-provided Recents key
+ * on the navigation or system bar. On devices with the older hardware button configuration
+ * the recents UI can be accessed with a long press on the Home key.</p>
+ *
+ * <p>When crossing from one task stack to another post-Android 3.0,
+ * the application should synthesize a back stack/history for the new task so that
+ * the user may navigate out of the new task and back to the Launcher by repeated
+ * presses of the back key. Back key presses should not navigate across task stacks.</p>
+ *
+ * <p>TaskStackBuilder provides a way to obey the correct conventions
+ * around cross-task navigation.</p>
+ *
+ * <div class="special reference">
+ * <h3>About Navigation</h3>
+ * For more detailed information about tasks, the back stack, and navigation design guidelines,
+ * please read
+ * <a href="{@docRoot}guide/topics/fundamentals/tasks-and-back-stack.html">Tasks and Back Stack</a>
+ * from the developer guide and <a href="{@docRoot}design/patterns/navigation.html">Navigation</a>
+ * from the design guide.
+ * </div>
+ */
 CarClass(CTaskStackBuilder)
+    , public Object
+    , public ITaskStackBuilder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CTaskStackBuilder();
 
     ~CTaskStackBuilder();
@@ -27,7 +63,14 @@ public:
     CARAPI constructor(
         /* [in] */ IContext * context);
 
-    CARAPI SetContext(
+    /**
+     * Return a new TaskStackBuilder for launching a fresh task stack consisting
+     * of a series of activities.
+     *
+     * @param context The context that will launch the new task stack or generate a PendingIntent
+     * @return A new TaskStackBuilder
+     */
+    static CARAPI_(AutoPtr<ITaskStackBuilder>) Create(
         /* [in] */ IContext * context);
 
     /**

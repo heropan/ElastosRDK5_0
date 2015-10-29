@@ -63,15 +63,13 @@ public:
         /* [in] */ IAttributeSet* attrs);
 
     CARAPI SetOrdering(
-        /* [in] */ Int32 ordering,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ Int32 ordering);
 
     CARAPI GetOrdering(
         /* [out] */ Int32* result);
 
     CARAPI AddTransition(
-        /* [in] */ ITransition* transition,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ ITransition* transition);
 
     CARAPI GetTransitionCount(
         /* [out] */ Int32* result);
@@ -81,67 +79,54 @@ public:
         /* [out] */ ITransition** result);
 
     CARAPI SetDuration(
-        /* [in] */ Int64 duration,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ Int64 duration);
 
     CARAPI SetStartDelay(
-        /* [in] */ Int64 startDelay,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ Int64 startDelay);
 
     CARAPI SetInterpolator(
-        /* [in] */ ITimeInterpolator* interpolator,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ ITimeInterpolator* interpolator);
 
     CARAPI AddTarget(
-        /* [in] */ IView* target,
-        /* [out] */ ITransition** result);
+        /* [in] */ IView* target);
 
     CARAPI AddTarget(
-        /* [in] */ Int32 targetId,
-        /* [out] */ ITransition** result);
+        /* [in] */ Int32 targetId);
 
     CARAPI AddTarget(
-        /* [in] */ String targetName,
-        /* [out] */ ITransition** result);
+        /* [in] */ String targetName);
 
     // CARAPI AddTarget(
     //     /* [in] */ Class targetType,
     //     /* [out] */ ITransitionSet** result);
 
     CARAPI AddListener(
-        /* [in] */ ITransitionListener* listener,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ ITransitionListener* listener);
 
     CARAPI RemoveTarget(
-        /* [in] */ Int32 targetId,
-        /* [out] */ ITransition** result);
+        /* [in] */ Int32 targetId);
 
     CARAPI RemoveTarget(
-        /* [in] */ IView* target,
-        /* [out] */ ITransition** result);
+        /* [in] */ IView* target);
 
     // CARAPI RemoveTarget(
     //     /* [in] */ Class target,
     //     /* [out] */ ITransition** result);
 
     CARAPI RemoveTarget(
-        /* [in] */ String target,
-        /* [out] */ ITransition** result);
+        /* [in] */ String target);
 
     CARAPI ExcludeTarget(
         /* [in] */ IView* target,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     CARAPI ExcludeTarget(
         /* [in] */ String targetName,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     CARAPI ExcludeTarget(
         /* [in] */ Int32 targetId,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     // CARAPI ExcludeTarget(
     //     /* [in] */ Class type,
@@ -149,8 +134,7 @@ public:
     //     /* [out] */ ITransition** result);
 
     CARAPI RemoveListener(
-        /* [in] */ ITransitionListener* listener,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ ITransitionListener* listener);
 
     CARAPI SetPathMotion(
         /* [in] */ IPathMotion* pathMotion);
@@ -161,8 +145,7 @@ public:
         /* [in] */ Boolean isStartValue);
 
     CARAPI RemoveTransition(
-        /* [in] */ ITransition* transition,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ ITransition* transition);
 
     CARAPI CaptureStartValues(
         /* [in] */ ITransitionValues* transitionValues);
@@ -182,8 +165,7 @@ public:
         /* [in] */ IView* sceneRoot);
 
     CARAPI SetSceneRoot(
-        /* [in] */ IViewGroup* sceneRoot,
-        /* [out] */ ITransitionSet** result);
+        /* [in] */ IViewGroup* sceneRoot);
 
     CARAPI SetCanRemoveViews(
         /* [in] */ Boolean canRemoveViews);

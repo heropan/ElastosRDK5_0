@@ -1242,6 +1242,7 @@ AutoPtr<IActivityThread> CActivityThread::GetCurrentActivityThread()
 
 String CActivityThread::GetCurrentPackageName()
 {
+    assert(0 && "TODO");
     AutoPtr<IActivityThread> am = GetCurrentActivityThread();
     // return (am != null && am.mBoundApplication != null)
     //     ? am.mBoundApplication.appInfo.packageName : null;
@@ -1250,6 +1251,7 @@ String CActivityThread::GetCurrentPackageName()
 
 String CActivityThread::GetCurrentProcessName()
 {
+    assert(0 && "TODO");
     AutoPtr<IActivityThread> am = GetCurrentActivityThread();
     // return (am != null && am.mBoundApplication != null)
     return String(NULL);
@@ -1257,6 +1259,7 @@ String CActivityThread::GetCurrentProcessName()
 
 AutoPtr<IApplication> CActivityThread::GetCurrentApplication()
 {
+    assert(0 && "TODO");
     AutoPtr<IActivityThread> am = GetCurrentActivityThread();
     // return am != null ? am.mInitialApplication : null;
     return NULL;

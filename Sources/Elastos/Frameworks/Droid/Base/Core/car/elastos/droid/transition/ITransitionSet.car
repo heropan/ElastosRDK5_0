@@ -60,8 +60,7 @@ module
          * @return This transitionSet object.
          */
         SetOrdering(
-            [in] Int32 ordering,
-            [out] ITransitionSet** result);
+            [in] Int32 ordering);
 
         /**
          * Returns the ordering of this TransitionSet. By default, the value is
@@ -89,8 +88,7 @@ module
          * @return This transitionSet object.
          */
         AddTransition(
-            [in] ITransition* transition,
-            [out] ITransitionSet** result);
+            [in] ITransition* transition);
 
         /**
          * Returns the number of child transitions in the TransitionSet.
@@ -120,8 +118,7 @@ module
          * @return This transitionSet object.
          */
         RemoveTransition(
-            [in] ITransition* transition,
-            [out] ITransitionSet** result);
+            [in] ITransition* transition);
     }
 
     } // Transition

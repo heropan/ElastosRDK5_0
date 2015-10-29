@@ -232,8 +232,7 @@ AutoPtr<ITransition> TransitionInflater::CreateTransitionFromXml(
                 CreateTransitionFromXml(parser, attrs, transition);
             }
             if (transitionSet != NULL) {
-                AutoPtr<ITransitionSet> res;
-                transitionSet->AddTransition(transition, (ITransitionSet**)&res);
+                transitionSet->AddTransition(transition);
                 transition = NULL;
             }
             else if (parent != NULL) {
@@ -312,8 +311,7 @@ void TransitionInflater::GetTargetIds(
 //            a->GetResourceId(R.styleable.TransitionTarget_targetId, 0, &id);
             String transitionName;
             if (id != 0) {
-                AutoPtr<ITransition> res;
-                transition->AddTarget(id, (ITransition**)&res);
+                transition->AddTarget(id);
             }
             // else if ((a->GetResourceId(R.styleable.TransitionTarget_excludeId, 0, &id), id) != 0) {
             //     transition->ExcludeTarget(id, TRUE);

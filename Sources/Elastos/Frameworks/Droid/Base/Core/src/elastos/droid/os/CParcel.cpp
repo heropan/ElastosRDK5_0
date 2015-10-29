@@ -1,11 +1,14 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/CParcel.h"
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
+using Elastos::Core::CoreUtils;
 using Elastos::IO::CFileDescriptor;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -411,6 +414,26 @@ void CParcel::SetFileDescriptorOfFD(
 {
     assert(fileDescriptor != NULL);
     fileDescriptor->SetDescriptor(value);
+}
+
+AutoPtr<IArrayList> CParcel::CreateStringArrayList(
+    /* [in] */ IParcel* source)
+{
+    Int32 N;
+    source->ReadInt32(&n);
+    if (N < 0) {
+        return NULL;
+    }
+
+    AutoPtr<IArrayList> l;
+    CArrayList::New(N, (IArrayList**)&l);
+    String str;
+    while (N > 0) {
+        source->ReadString(&str);
+        l->Add(CoreUtils::Convert(str));
+        N--;
+    }
+    return l;
 }
 
 } // namespace Os

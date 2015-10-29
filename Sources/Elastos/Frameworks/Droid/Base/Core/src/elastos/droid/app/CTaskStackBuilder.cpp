@@ -1,10 +1,10 @@
-#include "CTaskStackBuilder.h"
+#include "elastos/droid/app/CTaskStackBuilder.h"
+#include "elastos/droid/app/CPendingIntentHelper.h"
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentHelper.h"
 #include "elastos/droid/content/CComponentName.h"
-#include "elastos/droid/app/CPendingIntentHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -16,12 +16,17 @@ using Elastos::Droid::Content::CIntentHelper;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 
 namespace Elastos{
 namespace Droid{
 namespace App{
 
 const String CTaskStackBuilder::TAG("TaskStackBuilder");
+
+CAR_INTERFACE_IMPL(CTaskStackBuilder, Object, ITaskStackBuilder)
+
+CAR_OBJECT_IMPL(CTaskStackBuilder)
 
 CTaskStackBuilder::CTaskStackBuilder()
 {
@@ -34,14 +39,16 @@ CTaskStackBuilder::~CTaskStackBuilder()
 ECode CTaskStackBuilder::constructor(
     /* [in] */ IContext *context)
 {
-    return SetContext(context);
-}
-
-ECode CTaskStackBuilder::SetContext(
-    /* [in] */ IContext * context)
-{
     mSourceContext = context;
     return NOERROR;
+}
+
+AutoPtr<ITaskStackBuilder> CTaskStackBuilder::Create(
+    /* [in] */ IContext* context)
+{
+    AutoPtr<CTaskStackBuilder> cb;
+    CTaskStackBuilder::NewByFriend(context, (CTaskStackBuilder**)&cb);
+    return (ITaskStackBuilder*)cb.Get();
 }
 
 ECode CTaskStackBuilder::AddNextIntent(
@@ -106,10 +113,10 @@ ECode CTaskStackBuilder::AddParentStack(
             info->GetParentActivityName(&parentActivity);
             AutoPtr<IIntentHelper> helper;
             CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
-
+            IPackageItemInfo* pii = IPackageItemInfo::Probe(info);
             while (!parentActivity.IsNull()) {
                 AutoPtr<IComponentName> target;
-                info->GetPackageName(&packagename);
+                pii->GetPackageName(&packagename);
                 CComponentName::New(packagename, parentActivity, (IComponentName**)&target);
 
                 info = NULL;

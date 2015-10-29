@@ -78,7 +78,6 @@ module
     merge("app/WallpaperInfo.car");
     merge("app/WallpaperManager.car");
 
-    //
     // merge("app/IBatteryStats.car");
     // merge("app/IUsageStats.car");
     // merge("app/PermissionController.car");
@@ -89,7 +88,6 @@ module
     // merge("app/LocalePicker.car");
     // merge("app/ReceiverRestrictedContext.car");
     // merge("app/IMediaContainerService.car");
-    // merge("app/BackStackState.car");
 
     merge("app/admin/DeviceAdminInfo.car");
     merge("app/admin/DeviceAdminReceiver.car");
@@ -126,20 +124,21 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IRemoteCallback;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIIntentSender;
     interface Elastos.Droid.Content.IIntentSender;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntentReceiver;
+    interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Utility.IAttributeSet;
 
 //     using interface Elastos.Core.IClassLoader;
 //     using interface Elastos.Core.ICharSequence;
 //     interface Elastos.Droid.Os.ILooper;
 //     interface Elastos.Droid.Os.IParcelFileDescriptor;
-//     interface Elastos.Droid.Os.IRemoteCallback;
+//
 //     interface Elastos.Droid.Content.Pm.IResolveInfo;
-//     interface Elastos.Droid.Content.Pm.IProviderInfo;
 //     interface Elastos.Droid.Content.IIntentFilter;
 //     interface Elastos.Droid.Content.IContentResolver;
 //     interface Elastos.Droid.Content.IDialogInterface;
@@ -369,11 +368,12 @@ module
 //     class CActivityNonConfigurationInstances {
 //         constructor();
 
-//         constructor(
-//             [in] IInterface* activity,
-//             [in] IObjectStringMap* children,
-//             [in] IObjectContainer* fragments,
-//             [in] IObjectStringMap* loaders);
+//        constructor(
+//            [in] IInterface* activity,
+//            [in] IHashMap* children,
+//            [in] IArrayList* fragments,
+//            [in] IArrayMap* loaders,
+//            [in] IVoiceInteractor* vi);
 
 //         interface IActivityNonConfigurationInstances;
 //     }
@@ -730,15 +730,15 @@ module
 //         interface IKeyEventCallback;
 //     }
 
-//     class CContentProviderHolder {
-//         constructor();
+    class CContentProviderHolder {
+        constructor();
 
-//         constructor(
-//             [in] IProviderInfo* info);
+        constructor(
+            [in] IProviderInfo* info);
 
-//         interface IContentProviderHolder;
-//         interface IParcelable;
-//     }
+        interface IContentProviderHolder;
+        interface IParcelable;
+    }
 
 //     class CActivityManagerWaitResult {
 //         constructor();
@@ -886,9 +886,9 @@ module
 //         interface IWallpaperManagerHelper;
 //     }
 
-//     singleton class CFragmentManagerHelper {
-//         interface IFragmentManagerHelper;
-//     }
+    singleton class CFragmentManagerHelper {
+        interface IFragmentManagerHelper;
+    }
 
 //     class CFragmentManagerImpl {
 //         interface IFragmentManagerImpl;
@@ -911,14 +911,14 @@ module
         interface IActivityOptionsHelper;
     }
 
-//     class CActivityOptionsAnimationStartedListener {
-//         constructor(
-//             [in] IHandler* handler,
-//             [in] IActivityOptionsOnAnimationStartedListener* listener);
+    class CActivityOptionsAnimationStartedListener {
+        constructor(
+            [in] IHandler* handler,
+            [in] IActivityOptionsOnAnimationStartedListener* listener);
 
-//         interface IRemoteCallback;
-//         interface IBinder;
-//     }
+        interface IRemoteCallback;
+        interface IBinder;
+    }
 
 // //    class CPendingIntent {
 // //        constructor();
@@ -941,13 +941,16 @@ module
 //         interface IStatusBarManager;
 //     }
 
-//     class CTaskStackBuilder {
-//         interface ITaskStackBuilder;
-//     }
+    class CTaskStackBuilder {
+        constructor(
+            [in] IContext * context);
 
-//     singleton class CTaskStackBuilderHelper {
-//         interface ITaskStackBuilderHelper;
-//     }
+        interface ITaskStackBuilder;
+    }
+
+    singleton class CTaskStackBuilderHelper {
+        interface ITaskStackBuilderHelper;
+    }
 
 //     class CInnerReceiver {
 //         constructor(
@@ -998,17 +1001,21 @@ module
 //         interface IOnKeyguardExitResult;
 //     }
 
-//     [local]
-//     class CBackStackState {
-//         constructor();
+    [local]
+    class CBackStackState {
+        constructor();
 
-//         constructor(
-//             [in] IFragmentManagerImpl* fm,
-//             [in] IBackStackRecord* bse);
+        constructor(
+            [in] IFragmentManagerImpl* fm,
+            [in] IBackStackRecord* bse);
 
-//         interface IBackStackState;
-//         interface IParcelable;
-//     }
+        interface IBackStackState;
+        interface IParcelable;
+    }
+
+    class CBackStackRecordTransitionState {
+        interface IBackStackRecordTransitionState;
+    }
 
 //     class CFragmentManagerState {
 //         constructor();

@@ -2,31 +2,34 @@
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/app/CFragmentManagerImpl.h"
 #include "elastos/droid/app/CFragmentManagerImplHelper.h"
-#include "elastos/droid/app/Activity.h"
+// #include "elastos/droid/app/Activity.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
+using Elastos::Droid::Content::EIID_IComponentCallbacks;
+using Elastos::Droid::Content::EIID_IComponentCallbacks2;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 using Elastos::Core::IClassLoader;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::App::Activity;
-using Elastos::Droid::App::IFragmentContainer;
-using Elastos::Droid::App::EIID_IFragmentContainer;
-using Elastos::Droid::App::CFragmentManagerImpl;
-using Elastos::Droid::App::IFragmentManagerImplHelper;
-using Elastos::Droid::App::CFragmentManagerImplHelper;
-using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+//============================================================================
+// FragmentContainerLocal
+//============================================================================
 class FragmentContainerLocal
-    : public ElRefBase
+    : public Object
     , public IFragmentContainer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     FragmentContainerLocal(
         /* [in] */ Fragment* host)
         : mHost(host)
@@ -36,6 +39,9 @@ public:
         /* [in] */ Int32 id,
         /* [out] */ IView** view)
     {
+        VALIDATE_NOT_NULL(view)
+        *view = NULL;
+
         if (mHost->mView == NULL) {
 //            throw new IllegalStateException("Fragment does not have a view");
             return E_ILLEGAL_STATE_EXCEPTION;
@@ -55,7 +61,11 @@ public:
     Fragment* mHost;
 };
 
-CAR_INTERFACE_IMPL(FragmentState::ParcelableCreatorFragmentState, IInterface)
+CAR_INTERFACE_IMPL(FragmentContainerLocal, Object, IFragmentContainer)
+
+//============================================================================
+// FragmentState::ParcelableCreatorFragmentState
+//============================================================================
 
 FragmentState::ParcelableCreatorFragmentState::CreateFromParcel(
     /* [in] */ IParcel* in,
@@ -81,7 +91,7 @@ FragmentState::ParcelableCreatorFragmentState::NewArray(
 // FragmentState
 //===================================================================
 
-CAR_INTERFACE_IMPL(FragmentState, IParcelable)
+CAR_INTERFACE_IMPL(FragmentState, Object, IParcelable)
 
 FragmentState::FragmentState(
     /* [in] */ IFragment* frag)
@@ -128,9 +138,10 @@ ECode FragmentState::Instantiate(
     /* [in] */ IFragment* parent,
     /* [out] */ IFragment** fragment)
 {
+    VALIDATE_NOT_NULL(fragment);
+    *fragment = NULL;
     VALIDATE_NOT_NULL(activity);
     VALIDATE_NOT_NULL(parent);
-    VALIDATE_NOT_NULL(fragment);
 
     if (mInstance != NULL) {
         *fragment = mInstance;
@@ -153,7 +164,7 @@ ECode FragmentState::Instantiate(
         mInstance->SetSavedFragmentState(mSavedFragmentState);
     }
 
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(activity->Probe(EIID_Activity));
+    AutoPtr<Activity> act = (Activity*)activity;
     mInstance->SetIndex(mIndex, parent);
     mInstance->SetFromLayout(mFromLayout);
     mInstance->SetRestored(TRUE);
@@ -194,7 +205,7 @@ ECode FragmentState::WriteToParcel(
 }
 
 //===================================================================
-// FragmentState
+// Fragment
 //===================================================================
 
 AutoPtr<ITransition> InitUSE_DEFAULT_TRANSITION()
@@ -208,80 +219,64 @@ AutoPtr<ITransition> Fragment::USE_DEFAULT_TRANSITION = InitUSE_DEFAULT_TRANSITI
 
 HashMap<String, AutoPtr<IClassInfo> > Fragment::sClassMap;
 
+    , public IFragment
+    , public IComponentCallbacks
+    , public IComponentCallbacks2
+    , public IViewOnCreateContextMenuListener
+
+CAR_INTERFACE_IMPL_4(Fragment, Object, IFragment, IComponentCallbacks, IComponentCallbacks2, IViewOnCreateContextMenuListener)
+
+Fragment::Fragment()
+    : mState(INITIALIZING)
+    , mAnimatingAway(NULL)
+    , mStateAfterAnimating(0)
+    , mSavedFragmentState(NULL)
+    , mSavedViewState(NULL)
+    , mIndex(-1)
+    , mWho(String(NULL))
+    , mArguments(NULL)
+    , mTarget(NULL)
+    , mTargetIndex(-1)
+    , mTargetRequestCode(0)
+    , mAdded(FALSE)
+    , mRemoving(FALSE)
+    , mResumed(FALSE)
+    , mFromLayout(FALSE)
+    , mInLayout(FALSE)
+    , mRestored(FALSE)
+    , mBackStackNesting(0)
+    , mFragmentManager(NULL)
+    , mActivity(NULL)
+    , mChildFragmentManager(NULL)
+    , mParentFragment(NULL)
+    , mFragmentId(0)
+    , mContainerId(0)
+    , mTag(String(NULL))
+    , mHidden(FALSE)
+    , mDetached(FALSE)
+    , mRetainInstance(FALSE)
+    , mRetaining(FALSE)
+    , mHasMenu(FALSE)
+    , mMenuVisible(TRUE)
+    , mCalled(FALSE)
+    , mNextAnim(0)
+    , mContainer(NULL)
+    , mView(NULL)
+    , mDeferStart(FALSE)
+    , mUserVisibleHint(TRUE)
+    , mLoaderManager(NULL)
+    , mLoadersStarted(FALSE)
+    , mCheckedForLoaderManager(FALSE)
+{}
+
+Fragment~Fragment()
+{}
+
 ECode Fragment::Initialize()
 {
     return NOERROR;
 }
 
-PInterface Fragment::Probe(
-        /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IFragment*)this;
-    }
-    else if (riid == EIID_IFragment) {
-        return (IFragment*)this;
-    }
-    else if (riid == EIID_IComponentCallbacks2) {
-        return (IComponentCallbacks2*)this;
-    }
-    else if (riid == EIID_IViewOnCreateContextMenuListener) {
-        return (IViewOnCreateContextMenuListener*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    return NULL;
-}
-
-UInt32 Fragment::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Fragment::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Fragment::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IFragment *)this) {
-        *pIID = EIID_IFragment;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IObject *)this) {
-        *pIID = EIID_IObject;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IComponentCallbacks2 *)this) {
-        *pIID = EIID_IComponentCallbacks2;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IViewOnCreateContextMenuListener *)this) {
-        *pIID = EIID_IViewOnCreateContextMenuListener;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface *)(IWeakReferenceSource *)this) {
-        *pIID = EIID_IWeakReferenceSource;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
-ECode Fragment::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
 
 ECode Fragment::GetState(
     /* [out] */ Int32* state)
@@ -860,15 +855,13 @@ ECode Fragment::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* equal)
 {
-//     return super.equals(o);
-    return E_NOT_IMPLEMENTED;
+    return Object::Equals(o, equal);
 }
 
 ECode Fragment::GetHashCode(
     /* [out] */ Int32* code)
 {
-//     return super.hashCode();
-    return E_NOT_IMPLEMENTED;
+    return Object::GetHashCode(code);
 }
 
 ECode Fragment::ToString(
@@ -879,18 +872,18 @@ ECode Fragment::ToString(
     StringBuilder sb(128);
 //     DebugUtils.buildShortClassTag(this, sb);
     if (mIndex >= 0) {
-        sb.AppendChar(Char32(" #"));
+        sb.Append(" #");
         sb.Append(mIndex);
     }
     if (mFragmentId != 0) {
-        sb.AppendChar(Char32(" id=0x"));
-//        sb.append(Integer.toHexString(mFragmentId));
+        sb.Append(" id=0x");
+        sb::Append(StringUtils::ToHexString(mFragmentId));
     }
     if (mTag != NULL) {
-        sb.AppendChar(Char32(" "));
+        sb.Append(" ");
         sb.Append(mTag);
     }
-    sb.AppendChar(Char32("}"));
+    sb.Append("}");
     *string = sb.ToString();
     return NOERROR;
 }

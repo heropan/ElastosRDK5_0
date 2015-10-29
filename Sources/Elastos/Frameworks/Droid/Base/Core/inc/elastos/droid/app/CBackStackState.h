@@ -2,27 +2,49 @@
 #define __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
 
 #include "_Elastos_Droid_App_CBackStackState.h"
+#include <elastos/core/Object.h>
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/app/CFragmentManagerImpl.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/app/FragmentTransaction.h"
 
-using Elastos::Utility::Etl::List;
+using Elastos::Droid::App::IFragmentManagerImpl;
+using Elastos::Droid::App::IFragmentManagerBackStackEntry;
+using Elastos::Droid::App::IBackStackRecord;
+using Elastos::Droid::Transition::ITransition;
+using Elastos::Droid::Transition::IEpicenterCallback;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IOnPreDrawListener;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::IPair;
+
 using Elastos::Core::IRunnable;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
-using Elastos::Droid::App::IFragmentManagerImpl;
-using Elastos::Droid::App::IFragmentManagerBackStackEntry;
-using Elastos::Droid::App::IBackStackRecord;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+class FragmentManagerImpl;
+
 CarClass(CBackStackState)
+    , public Object
+    , public IBackStackState
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBackStackState();
+
+    virtual ~CBackStackState();
 
     CARAPI constructor();
 
@@ -59,13 +81,128 @@ public:
  * @hide Entry of an operation on the fragment back stack.
  */
 class BackStackRecord
-    : public IBackStackRecord
+    : public FragmentTransaction
     , public IRunnable
+    , public IBackStackRecord
     , public IFragmentManagerBackStackEntry
-    , public ElRefBase
 {
+private:
+    class AddTargetsOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        AddTargetsOnPreDrawListener(
+            /* [in] */ BackStackRecord* host,
+            /* [in] */ IBackStackRecordTransitionState* state,
+            /* [in] */ ITransition* enterTransition,
+            /* [in] */ ITransition* sharedElementTransition,
+            /* [in] */ ITransition* overallTransition,
+            /* [in] */ IView* container,
+            /* [in] */ IFragment* inFragment,
+            /* [in] */ IFragment* outFragment,
+            /* [in] */ IArrayList* /*<View>*/ hiddenFragmentViews,
+            /* [in] */ Boolean isBack,
+            /* [in] */ IArrayList* /*<View>*/ sharedElementTargets,
+            /* [in] */ IArrayList* /*<View>*/ enteringViews);
+
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
+
+    private:
+        BackStackRecord* mHost;
+        AutoPtr<IBackStackRecordTransitionState> mState;
+        AutoPtr<ITransition> mEnterTransition;
+        AutoPtr<ITransition> mSharedElementTransition;
+        AutoPtr<ITransition> mOverallTransition;
+        AutoPtr<IView> mContainer;
+        AutoPtr<IFragment> mInFragment;
+        AutoPtr<IFragment> mOutFragment;
+        AutoPtr<IArrayList> /*<View>*/ mHiddenFragmentViews;
+        Boolean mIsBack;
+        AutoPtr<IArrayList> /*<View>*/ mSharedElementTargets;
+        AutoPtr<IArrayList> /*<View>*/ mEnteringViews;
+    };
+
+    class RemoveTargetsOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        RemoveTargetsOnPreDrawListener(
+            /* [in] */ BackStackRecord* host,
+            /* [in] */ IViewGroup* sceneRoot,
+            /* [in] */ IView* nonExistingView,
+            /* [in] */ ITransition* enterTransition,
+            /* [in] */ IArrayList* /*<View>*/ enteringViews,
+            /* [in] */ ITransition* exitTransition,
+            /* [in] */ IArrayList* /*<View>*/ exitingViews,
+            /* [in] */ ITransition* sharedElementTransition,
+            /* [in] */ IArrayList* /*<View>*/ sharedElementTargets,
+            /* [in] */ ITransition* overallTransition,
+            /* [in] */ IArrayList* /*<View>*/ hiddenViews);
+
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
+
+    private:
+        BackStackRecord* mHost;
+        AutoPtr<IViewGroup> mSceneRoot;
+        AutoPtr<IView> mNonExistingView;
+        AutoPtr<ITransition> mEnterTransition;
+        AutoPtr<IArrayList> /*<View>*/ mEnteringViews;
+        AutoPtr<ITransition> mExitTransition;
+        AutoPtr<IArrayList> /*<View>*/ mExitingViews;
+        AutoPtr<ITransition> mSharedElementTransition;
+        AutoPtr<IArrayList> /*<View>*/ mSharedElementTargets;
+        AutoPtr<ITransition> mOverallTransition;
+        AutoPtr<IArrayList> /*<View>*/ mHiddenViews;
+    };
+
+    class EpicenterCallback
+        : public Object
+        , public IEpicenterCallback
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        EpicenterCallback(
+            /* [in] */ IRect* epicenter);
+
+        CARAPI OnGetEpicenter(
+            /* [in] */ ITransition* transition,
+            /* [out] */ IRect** result);
+
+    private:
+        AutoPtr<IRect> mEpicenter;
+    };
+
+
+    class SharedElementEpicenter
+        : public Object
+        , public IEpicenterCallback
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        SharedElementEpicenter(
+            /* [in] */ IBackStackRecordTransitionState* state);
+
+        CARAPI OnGetEpicenter(
+            /* [in] */ ITransition* transition,
+            /* [out] */ IRect** result);
+
+    private:
+        AutoPtr<IBackStackRecordTransitionState> mState;
+        AutoPtr<IRect> mEpicenter;
+    };
+
 public:
-    class Op : public ElLightRefBase
+    class Op : public Object
     {
     public:
         Op()
@@ -85,25 +222,16 @@ public:
         Int32 mExitAnim;
         Int32 mPopEnterAnim;
         Int32 mPopExitAnim;
-        List< AutoPtr<IFragment> > mRemoved;
+        AutoPtr<IList> mRemoved; //List<IFragment>
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     BackStackRecord(
         /* [in] */ IFragmentManagerImpl* manager);
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* str);
 
     virtual CARAPI Dump(
@@ -191,8 +319,7 @@ public:
     /** TODO: remove this */
     //@Override
     CARAPI SetSharedElements(
-        /* Pair<View, String>... sharedElements*/
-        ArrayOf<IPair*>* sharedElements);
+        /* [in] */ ArrayOf<IPair*>* sharedElements);//* Pair<View, String>... sharedElements*/
 
     virtual CARAPI SetTransitionStyle(
         /* [in] */ Int32 styleRes);
@@ -227,10 +354,10 @@ public:
 
     virtual CARAPI PopFromBackStack(
         /* [in] */ Boolean doStateMove,
-        /* [in] */ ITransitionState* state,
-        /* [in] */ ISparseArray* /*<Fragment>*/ firstOutFragments,
-        /* [in] */ ISparseArray* /*<Fragment>*/ lastInFragments,
-        /* [out] */ ITransitionState** result);
+        /* [in] */ IBackStackRecordTransitionState* state,
+        /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* lastInFragments, //SparseArray<Fragment>
+        /* [out] */ IBackStackRecordTransitionState** result);
 
     virtual CARAPI GetName(
         /* [out] */ String* name);
@@ -267,11 +394,11 @@ private:
         /* [in] */ Int32 opcmd);
 
     static CARAPI_(void) SetFirstOut(
-        /* [in] */ ISparseArray* fragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* fragments, //SparseArray<Fragment>
         /* [in] */ IFragment* fragment);
 
     CARAPI_(void) SetLastIn(
-        /* [in] */ ISparseArray* fragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* fragments, //SparseArray<Fragment>
         /* [in] */ IFragment* fragment);
     /**
      * Finds the first removed fragment and last added fragments when going forward.
@@ -283,8 +410,8 @@ private:
      *                        container ID. This list will be modified by the method.
      */
     CARAPI_(void) CalculateFragments(
-        /* [in] */ ISparseArray* firstOutFragments, //SparseArray<Fragment>
-        /* [in] */ ISparseArray* lastInFragments); //SparseArray<Fragment>
+        /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* lastInFragments); //SparseArray<Fragment>
 
     /**
      * Finds the first removed fragment and last added fragments when popping the back stack.
@@ -296,8 +423,8 @@ private:
      *                        container ID. This list will be modified by the method.
      */
     CARAPI_(void) CalculateBackFragments(
-        /* [in] */ ISparseArray* firstOutFragments, //SparseArray<Fragment>
-        /* [in] */ ISparseArray* lastInFragments); //SparseArray<Fragment>
+        /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* lastInFragments); //SparseArray<Fragment>
 
     /**
      * When custom fragment transitions are used, this sets up the state for each transition
@@ -330,12 +457,12 @@ private:
      * in {@link #setNameOverrides(android.app.BackStackRecord.TransitionState, java.util.ArrayList,
      * java.util.ArrayList)}.
      */
-    AutoPtr<ITransitionState> BeginTransition(
-        /* [in] */ ISparseArray* firstOutFragments, //SparseArray<Fragment>
-        /* [in] */ ISparseArray* lastInFragments, //SparseArray<Fragment>
+    AutoPtr<IBackStackRecordTransitionState> BeginTransition(
+        /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* lastInFragments, //SparseArray<Fragment>
         /* [in] */ Boolean isBack);
 
-    static AutoPtr<ITransitionState> CloneTransition(
+    static AutoPtr<ITransition> CloneTransition(
         /* [in] */ ITransition* transition);
 
     static AutoPtr<ITransition> GetEnterTransition(
@@ -357,7 +484,7 @@ private:
         /* [in] */ IArrayMap* namedViews); //  <String, View>
 
     AutoPtr<IArrayMap>/*<String, View>*/ RemapSharedElements(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ IFragment* outFragment,
         /* [in] */ Boolean isBack);
 
@@ -373,7 +500,7 @@ private:
      * capturing the state of the Transition.</p>
      */
     AutoPtr<IArrayList>/*<View>*/ AddTransitionTargets(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ ITransition* enterTransition,
         /* [in] */ ITransition* sharedElementTransition,
         /* [in] */ ITransition* overallTransition,
@@ -385,7 +512,7 @@ private:
         /* [in] */ IArrayList* /*<View>*/ sharedElementTargets);
 
     void CallSharedElementEnd(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ IFragment* inFragment,
         /* [in] */ IFragment* outFragment,
         /* [in] */ Boolean isBack,
@@ -393,10 +520,10 @@ private:
 
     void SetEpicenterIn(
         /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
-        /* [in] */ ITransitionState* state);
+        /* [in] */ IBackStackRecordTransitionState* state);
 
     AutoPtr<IArrayMap> /*<String, View>*/ MapSharedElementsIn(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ Boolean isBack,
         /* [in] */ IFragment* inFragment);
 
@@ -420,10 +547,10 @@ private:
      *               forward operation.
      */
     void ConfigureTransitions(int containerId,
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ Boolean isBack,
-        /* [in] */ ISparseArray* /*<Fragment>*/ firstOutFragments,
-        /* [in] */ ISparseArray* /*<Fragment>*/ lastInFragments);
+        /* [in] */ IHashMap* firstOutFragments, //SparseArray<Fragment>
+        /* [in] */ IHashMap* lastInFragments);//SparseArray<Fragment>
 
     /**
      * After the transition has started, remove all targets that we added to the transitions
@@ -471,8 +598,8 @@ private:
      * @param isBack true if this is popping the back stack or false if this is a
      *               forward operation.
      */
-    ArrayMap<String, View> mapEnteringSharedElements(
-        /* [in] */ ITransitionState* state,
+    AutoPtr<IArrayMap> /*<String, View>*/ MapEnteringSharedElements(
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ IFragment* inFragment,
         /* [in] */ Boolean isBack);
 
@@ -487,32 +614,37 @@ private:
 
     void SetSharedElementEpicenter(
         /* [in] */ ITransition* transition,
-        /* [in] */ ITransitionState* state);
+        /* [in] */ IBackStackRecordTransitionState* state);
 
     static void SetNameOverride(
         /* [in] */ IArrayMap* /*<String, String>*/ overrides,
-        /* [in] */ cosnt String& source,
+        /* [in] */ const String& source,
         /* [in] */ const String& target);
 
+    static void SetNameOverride(
+        /* [in] */ IArrayMap* /*<String, String>*/ overrides,
+        /* [in] */ ICharSequence* source,
+        /* [in] */ ICharSequence* target);
+
     static void SetNameOverrides(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ IArrayList* /*<String>*/ sourceNames,
-        /* [in] */ IArrayList* /*<String>*/ targetNames)
+        /* [in] */ IArrayList* /*<String>*/ targetNames);
 
     void SetBackNameOverrides(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
         /* [in] */ Boolean isEnd);
 
     void SetNameOverrides(
-        /* [in] */ ITransitionState* state,
+        /* [in] */ IBackStackRecordTransitionState* state,
         /* [in] */ IArrayMap* /*<String, View>*/ namedViews,
         /* [in] */ Boolean isEnd);
 
 public:
     static const String TAG;
 
-    AutoPtr<CFragmentManagerImpl> mManager;
+    AutoPtr<FragmentManagerImpl> mManager;
 
     static const Int32 OP_NULL;
     static const Int32 OP_ADD;

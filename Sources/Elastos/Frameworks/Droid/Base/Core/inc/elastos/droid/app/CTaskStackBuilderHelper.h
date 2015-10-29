@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_CTASKSTACKBUILDERHELPER_H__
 
 #include "_Elastos_Droid_App_CTaskStackBuilderHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -10,8 +11,14 @@ namespace Droid{
 namespace App{
 
 CarClass(CTaskStackBuilderHelper)
+    , public Singleton
+    , public ITaskStackBuilderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Return a new TaskStackBuilder for launching a fresh task stack consisting
      * of a series of activities.

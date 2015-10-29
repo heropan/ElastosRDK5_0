@@ -1,73 +1,81 @@
 
-#ifndef __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPL_H__
-#define __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPL_H__
+#ifndef __ELASTOS_DROID_APP_FRAGMENTMANAGERIMPL_H__
+#define __ELASTOS_DROID_APP_FRAGMENTMANAGERIMPL_H__
 
-#include "_Elastos_Droid_App_CFragmentManagerImpl.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/app/FragmentManager.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/os/Runnable.h"
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Core::IInteger32;
-using Elastos::Core::IRunnable;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::IO::IPrintWriter;
-using Elastos::IO::IFileDescriptor;
-using Elastos::Utility::IObjectInt32Map;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::App::IBackStackRecord;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IMenuInflater;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::ILayoutInflaterFactory;
+using Elastos::Droid::View::ILayoutInflaterFactory2;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Animation::AnimatorListenerAdapter;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Utility::IAttributeSet;
+
+using Elastos::Core::IInteger32;
+using Elastos::Core::IRunnable;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::IO::IPrintWriter;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+class FragmentManagerImpl;
 
 class ExecCommitRunnable
     : public Runnable
 {
 public:
     ExecCommitRunnable(
-        /* [in] */ CFragmentManagerImpl* host)
+        /* [in] */ FragmentManagerImpl* host)
         : mHost(host)
     {}
 
     CARAPI Run();
 
 private:
-    CFragmentManagerImpl* mHost;
+    FragmentManagerImpl* mHost;
 };
 
 
-class Runnable1
+class PopBackStackRunnable1
     : public Runnable
 {
 public:
-    Runnable1(
-        CFragmentManagerImpl* host)
+    PopBackStackRunnable1(
+        FragmentManagerImpl* host)
         : mHost(host)
     {}
 
     CARAPI Run();
 
 private:
-    CFragmentManagerImpl* mHost;
+    FragmentManagerImpl* mHost;
 };
 
-class Runnable2
+class PopBackStackRunnable2
     : public Runnable
 {
 public:
-    Runnable2(
-        /* [in] */ CFragmentManagerImpl* host,
+    PopBackStackRunnable2(
+        /* [in] */ FragmentManagerImpl* host,
         /* [in] */ const String& name,
         /* [in] */ Int32 flags)
         : mHost(host)
@@ -78,17 +86,17 @@ public:
     CARAPI Run();
 
 private:
-    CFragmentManagerImpl* mHost;
+    FragmentManagerImpl* mHost;
     String mName;
     Int32 mFlags;
 };
 
-class Runnable3
+class PopBackStackRunnable3
     : public Runnable
 {
 public:
-    Runnable3(
-        CFragmentManagerImpl* host,
+    PopBackStackRunnable3(
+        FragmentManagerImpl* host,
         Int32 id,
         Int32 flags)
         : mHost(host)
@@ -99,19 +107,20 @@ public:
     CARAPI Run();
 
 private:
-    CFragmentManagerImpl* mHost;
+    FragmentManagerImpl* mHost;
     Int32 mId;
     Int32 mFlags;
 };
 
-class AnimatorListener : public AnimatorListenerAdapter
+class AnimatorListener
+    : public AnimatorListenerAdapter
 {
 public:
     AnimatorListener(
         /* [in] */ IViewGroup* container,
         /* [in] */ IView* view,
         /* [in] */ IFragment* fragment,
-        /* [in] */ CFragmentManagerImpl* host);
+        /* [in] */ FragmentManagerImpl* host);
 
     virtual CARAPI OnAnimationEnd(
         /* [in] */ IAnimator* animation);
@@ -120,10 +129,11 @@ private:
     AutoPtr<IViewGroup> mContainer;
     AutoPtr<IView> mView;
     AutoPtr<IFragment> mFragment;
-    CFragmentManagerImpl* mHost;
+    FragmentManagerImpl* mHost;
 };
 
-class AnimatorListenerEx : public AnimatorListenerAdapter
+class AnimatorListenerEx
+    : public AnimatorListenerAdapter
 {
 public:
     AnimatorListener(
@@ -136,21 +146,22 @@ private:
     AutoPtr<IFragment> mFragment;
 };
 
-CarClass(CFragmentManagerImpl)
-    , public Object
-    , public IFragmentManager
+//=======================================================================
+// FragmentManagerImpl
+//=======================================================================
+class FragmentManagerImpl
+    : public FragmentManager
     , public ILayoutInflaterFactory
     , public ILayoutInflaterFactory2
 {
 public:
-    CFragmentManagerImpl();
+    CAR_INTERFACE_DECL()
 
-    ~CFragmentManagerImpl();
+    FragmentManagerImpl();
+
+    virtual ~FragmentManagerImpl();
 
     CARAPI BeginTransaction(
-        /* [out] */ IFragmentTransaction** transaction);
-
-    CARAPI OpenTransaction(
         /* [out] */ IFragmentTransaction** transaction);
 
     CARAPI ExecutePendingTransactions(
@@ -328,7 +339,7 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI RetainNonConfig(
-        /* [out] */ IObjectContainer** retains);
+        /* [out] */ IArrayList** retains);
 
     CARAPI SaveFragmentViewState(
         /* [in] */ IFragment* f);
@@ -342,7 +353,7 @@ public:
 
     CARAPI RestoreAllState(
         /* [in] */ IParcelable* state,
-        /* [in] */ IObjectContainer* nonConfig);
+        /* [in] */ IArrayList* nonConfig);
 
     CARAPI AttachActivity(
         /* [in] */ IActivity* activity,
@@ -429,6 +440,12 @@ private:
 
 public:
     static Boolean DEBUG;
+    static const String TAG;// = "FragmentManager";
+
+    static const String TARGET_REQUEST_CODE_STATE_TAG;// = "android:target_req_state";
+    static const String TARGET_STATE_TAG;// = "android:target_state";
+    static const String VIEW_STATE_TAG;// = "android:view_state";
+    static const String USER_VISIBLE_HINT_TAG;// = "android:user_visible_hint";
 
     List<AutoPtr<IRunnable> > mPendingActions;
     AutoPtr< ArrayOf<IRunnable* > > mTmpActions;
@@ -459,9 +476,8 @@ public:
 
     // Temporary vars for state save and restore.
     AutoPtr<IBundle> mStateBundle;
-    AutoPtr<IObjectInt32Map> mStateArray;
+    AutoPtr<IHashMap> mStateArray;
     AutoPtr<ExecCommitRunnable> mExecCommit;
-    Object mThisLock;
 };
 
 } // namespace App

@@ -5,6 +5,7 @@
 #include <elastos/core/Object.h>
 
 using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -183,6 +184,9 @@ public:
     static void SetFileDescriptorOfFD(
         /* [in] */ IFileDescriptor* fileDescriptor,
         /* [in] */ Int32 value);
+
+    static AutoPtr<IArrayList> CreateStringArrayList(
+        /* [in] */ IParcel* source);
 
 private:
     CARAPI ReadValue(

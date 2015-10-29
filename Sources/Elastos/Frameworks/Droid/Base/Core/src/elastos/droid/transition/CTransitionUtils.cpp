@@ -92,8 +92,7 @@ ECode CTransitionUtils::MergeTransitions(
     CTransitionSet::New((ITransitionSet**)&transitionSet);
     for (Int32 i = 0; i < transitions->GetLength(); i++) {
         if ((*transitions)[i] != NULL) {
-            AutoPtr<ITransitionSet> set;
-            transitionSet->AddTransition((*transitions)[i], (ITransitionSet**)&set);
+            transitionSet->AddTransition((*transitions)[i]);
         }
     }
     *result = ITransition::Probe(transitionSet);

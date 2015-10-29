@@ -224,8 +224,7 @@ module
          * @attr ref android.R.styleable#Transition_duration
          */
         SetDuration(
-            [in] Int64 duration,
-            [out] ITransition** result);
+            [in] Int64 duration);
 
         /**
          * Returns the duration set on this transition. If no duration has been set,
@@ -249,8 +248,7 @@ module
          * @attr ref android.R.styleable#Transition_startDelay
          */
         SetStartDelay(
-            [in] Int64 startDelay,
-            [out] ITransition** result);
+            [in] Int64 startDelay);
 
         /**
          * Returns the startDelay set on this transition. If no startDelay has been set,
@@ -274,8 +272,7 @@ module
          * @attr ref android.R.styleable#Transition_interpolator
          */
         SetInterpolator(
-            [in] ITimeInterpolator* interpolator,
-            [out] ITransition** result);
+            [in] ITimeInterpolator* interpolator);
 
         /**
          * Returns the interpolator set on this transition. If no interpolator has been set,
@@ -476,8 +473,7 @@ module
          * <code>transitionSet.addTransitions(new Fade()).addTarget(someId);</code>
          */
         AddTarget(
-            [in] Int32 targetId,
-            [out] ITransition** result);
+            [in] Int32 targetId);
 
         /**
          * Adds the transitionName of a target view that this Transition is interested in
@@ -497,8 +493,7 @@ module
          * <code>transitionSet.addTransitions(new Fade()).addTarget(someName);</code>
          */
         AddTarget(
-            [in] String targetName,
-            [out] ITransition** result);
+            [in] String targetName);
 
         /**
          * Adds the Class of a target view that this Transition is interested in
@@ -535,8 +530,7 @@ module
          * <code>transitionSet.addTransitions(new Fade()).removeTargetId(someId);</code>
          */
         RemoveTarget(
-            [in] Int32 targetId,
-            [out] ITransition** result);
+            [in] Int32 targetId);
 
         /**
          * Removes the given targetName from the list of transitionNames that this Transition
@@ -549,8 +543,7 @@ module
          * <code>transitionSet.addTransitions(new Fade()).removeTargetName(someName);</code>
          */
         RemoveTarget(
-            [in] String targetName,
-            [out] ITransition** result);
+            [in] String targetName);
 
         /**
          * Whether to add the given id to the list of target ids to exclude from this
@@ -575,8 +568,7 @@ module
          */
         ExcludeTarget(
             [in] Int32 targetId,
-            [in] Boolean exclude,
-            [out] ITransition** result);
+            [in] Boolean exclude);
 
         /**
          * Whether to add the given transitionName to the list of target transitionNames to exclude
@@ -601,8 +593,7 @@ module
          */
         ExcludeTarget(
             [in] String targetName,
-            [in] Boolean exclude,
-            [out] ITransition** result);
+            [in] Boolean exclude);
 
         /**
          * Whether to add the children of the given id to the list of targets to exclude
@@ -631,8 +622,7 @@ module
          */
         ExcludeChildren(
             [in] Int32 targetId,
-            [in] Boolean exclude,
-            [out] ITransition** result);
+            [in] Boolean exclude);
 
         /**
          * Whether to add the given target to the list of targets to exclude from this
@@ -657,8 +647,7 @@ module
          */
         ExcludeTarget(
             [in] IView* target,
-            [in] Boolean exclude,
-            [out] ITransition** result);
+            [in] Boolean exclude);
 
         /**
          * Whether to add the children of given target to the list of target children
@@ -683,8 +672,7 @@ module
          */
         ExcludeChildren(
             [in] IView* target,
-            [in] Boolean exclude,
-            [out] ITransition** result);
+            [in] Boolean exclude);
 
         /**
          * Whether to add the given type to the list of types to exclude from this
@@ -760,8 +748,7 @@ module
          * <code>transitionSet.addTransitions(new Fade()).addTarget(someView);</code>
          */
         AddTarget(
-            [in] IView* target,
-            [out] ITransition** result);
+            [in] IView* target);
 
         /**
          * Removes the given target from the list of targets that this Transition
@@ -774,8 +761,7 @@ module
          * <code>transitionSet.addTransitions(new Fade()).removeTarget(someView);</code>
          */
         RemoveTarget(
-            [in] IView* target,
-            [out] ITransition** result);
+            [in] IView* target);
 
         /**
          * Removes the given target from the list of targets that this Transition
@@ -936,8 +922,7 @@ module
          * @return This transition object.
          */
         AddListener(
-            [in] ITransitionListener* listener,
-            [out] ITransition** result);
+            [in] ITransitionListener* listener);
 
         /**
          * Removes a listener from the set listening to this animation.
@@ -947,8 +932,7 @@ module
          * @return This transition object.
          */
         RemoveListener(
-            [in] ITransitionListener* listener,
-            [out] ITransition** result);
+            [in] ITransitionListener* listener);
 
         /**
          * Sets the callback to use to find the epicenter of a Transition. A null value indicates
@@ -1092,8 +1076,7 @@ module
             [in] ITransitionValues* transitionValues);
 
         SetSceneRoot(
-            [in] IViewGroup* sceneRoot,
-            [out] ITransition** result);
+            [in] IViewGroup* sceneRoot);
 
         SetCanRemoveViews(
             [in] Boolean canRemoveViews);

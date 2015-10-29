@@ -5,7 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-CAR_INTERFACE_IMPL(CContentProviderHolder, Object, IContentProviderHolder, IParcelable)
+CAR_INTERFACE_IMPL_2(CContentProviderHolder, Object, IContentProviderHolder, IParcelable)
 
 CAR_OBJECT_IMPL(CContentProviderHolder)
 
@@ -45,7 +45,6 @@ ECode CContentProviderHolder::ReadFromParcel(
 //    provider = ContentProviderNative.asInterface(
 //        source.readStrongBinder());
     source->ReadInterfacePtr((Handle32*)&mConnection);
-
     source->ReadBoolean(&mNoReleaseNeeded);
     return NOERROR;
 }

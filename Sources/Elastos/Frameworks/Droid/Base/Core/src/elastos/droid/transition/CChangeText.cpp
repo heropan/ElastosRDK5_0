@@ -213,12 +213,13 @@ ECode CChangeText::CreateAnimator(
             (*arr)[1] = 1;
             AutoPtr<IValueAnimator> vA = ValueAnimator::OfFloat(arr);
             anim = IAnimator::Probe(vA);
-            anim->AddListener(new AnimatorListenerAdapter_3(view,
-                                                            endSelectionStart,
-                                                            endSelectionEnd,
-                                                            startText,
-                                                            endText,
-                                                            this));
+            anim->AddListener(
+                new AnimatorListenerAdapter_3(view,
+                    endSelectionStart,
+                    endSelectionEnd,
+                    startText,
+                    endText,
+                    this));
         }
         else {
             AutoPtr<ICharSequence> pro_text_clr;
@@ -234,13 +235,14 @@ ECode CChangeText::CreateAnimator(
                     mChangeBehavior == CHANGE_BEHAVIOR_OUT) {
             //     outAnim = ValueAnimator::OfInt(255, 0);
                 outAnim->AddUpdateListener(new AnimatorUpdateListener_1(view, startColor));
-                IAnimator::Probe(outAnim)->AddListener(new AnimatorListenerAdapter_2(view,
-                                                                                    endSelectionStart,
-                                                                                    endSelectionEnd,
-                                                                                    startText,
-                                                                                    endText,
-                                                                                    endColor,
-                                                                                    this));
+                IAnimator::Probe(outAnim)->AddListener(
+                    new AnimatorListenerAdapter_2(view,
+                        endSelectionStart,
+                        endSelectionEnd,
+                        startText,
+                        endText,
+                        endColor,
+                        this));
             }
             if (mChangeBehavior == CHANGE_BEHAVIOR_OUT_IN ||
                     mChangeBehavior == CHANGE_BEHAVIOR_IN) {
@@ -264,18 +266,18 @@ ECode CChangeText::CreateAnimator(
                 anim = IAnimator::Probe(inAnim);
             }
         }
-        AutoPtr<ITransitionListener> transitionListener = new TransitionListenerAdapter_1(mChangeBehavior,
-                                                                                            view,
-                                                                                            startSelectionStart,
-                                                                                            startSelectionEnd,
-                                                                                            endSelectionStart,
-                                                                                            endSelectionEnd,
-                                                                                            startText,
-                                                                                            endText,
-                                                                                            endColor,
-                                                                                            this);
-        AutoPtr<ITransition> res;
-        Transition::AddListener(transitionListener, (ITransition**)&res);
+        AutoPtr<ITransitionListener> transitionListener =
+            new TransitionListenerAdapter_1(mChangeBehavior,
+                view,
+                startSelectionStart,
+                startSelectionEnd,
+                endSelectionStart,
+                endSelectionEnd,
+                startText,
+                endText,
+                endColor,
+                this);
+        Transition::AddListener(transitionListener);
         // if (DBG) {
         //     Log.d(LOG_TAG, "createAnimator returning " + anim);
         // }

@@ -487,8 +487,7 @@ Boolean CChangeTransform::Transforms::Equals(
 ECode CChangeTransform::GhostListener::OnTransitionEnd(
     /* [in] */ ITransition* transition)
 {
-    AutoPtr<ITransition> res;
-    transition->RemoveListener(this, (ITransition**)&res);
+    transition->RemoveListener(this);
     assert(0 && "TODO");
 //    GhostView->RemoveGhost(mView);
     // mView->SetTagInternal(R.id.transitionTransform, NULL);

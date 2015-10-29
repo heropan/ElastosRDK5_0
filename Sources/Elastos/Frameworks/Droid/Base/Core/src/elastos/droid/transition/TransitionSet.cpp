@@ -32,18 +32,14 @@ ECode TransitionSet::constructor(
     Int32 ordering = 0;
     // a->GetInt32(R.styleable.TransitionSet_transitionOrdering,
     //         TransitionSet::ORDERING_TOGETHER, &ordering);
-    AutoPtr<ITransitionSet> res;
-    SetOrdering(ordering, (ITransitionSet**)&res);
+    SetOrdering(ordering);
     a->Recycle();
     return NOERROR;
 }
 
 ECode TransitionSet::SetOrdering(
-    /* [in] */ Int32 ordering,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ Int32 ordering)
 {
-    VALIDATE_NOT_NULL(result)
-
     switch (ordering) {
         case ORDERING_SEQUENTIAL:
             mPlayTogether = FALSE;
@@ -56,8 +52,6 @@ ECode TransitionSet::SetOrdering(
             // throw new AndroidRuntimeException("Invalid parameter for TransitionSet " +
             //         "ordering: " + ordering);
     }
-    *result = ITransitionSet::Probe(this);
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -71,30 +65,22 @@ ECode TransitionSet::GetOrdering(
 }
 
 ECode TransitionSet::AddTransition(
-    /* [in] */ ITransition* transition,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ ITransition* transition)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (transition != NULL) {
         mTransitions->Add(transition);
         AutoPtr<Transition> ct = (Transition*)transition;
         ct->mParent = this;
         if (mDuration >= 0) {
-            AutoPtr<ITransition> res;
-            transition->SetDuration(mDuration, (ITransition**)&res);
+            transition->SetDuration(mDuration);
         }
     }
-    *result = ITransitionSet::Probe(this);
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode TransitionSet::GetTransitionCount(
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result)
-
     return mTransitions->GetSize(result);
 }
 
@@ -118,13 +104,9 @@ ECode TransitionSet::GetTransitionAt(
 }
 
 ECode TransitionSet::SetDuration(
-    /* [in] */ Int64 duration,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ Int64 duration)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<ITransition> res;
-    Transition::SetDuration(duration, (ITransition**)&res);
+    Transition::SetDuration(duration);
     if (mDuration >= 0 && mTransitions != NULL) {
         Int32 numTransitions = 0;
         mTransitions->GetSize(&numTransitions);
@@ -132,109 +114,69 @@ ECode TransitionSet::SetDuration(
             AutoPtr<IInterface> t;
             mTransitions->Get(i, (IInterface**)&t);
             AutoPtr<ITransition> p = ITransition::Probe(t);
-            p->SetDuration(duration, (ITransition**)&res);
+            p->SetDuration(duration);
         }
     }
-    *result = ITransitionSet::Probe(this);
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode TransitionSet::SetStartDelay(
-    /* [in] */ Int64 startDelay,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ Int64 startDelay)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<ITransition> p;
-    Transition::SetStartDelay(startDelay, (ITransition**)&p);
-    *result = ITransitionSet::Probe(p);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::SetStartDelay(startDelay);
 }
 
 ECode TransitionSet::SetInterpolator(
-    /* [in] */ ITimeInterpolator* interpolator,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ ITimeInterpolator* interpolator)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<ITransition> p;
-    Transition::SetInterpolator(interpolator, (ITransition**)&p);
-    *result = ITransitionSet::Probe(p);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::SetInterpolator(interpolator);
 }
 
 ECode TransitionSet::AddTarget(
-    /* [in] */ IView* target,
-    /* [out] */ ITransition** result)
+    /* [in] */ IView* target)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->AddTarget(target, (ITransition**)&res);
+        p->AddTarget(target);
     }
-    AutoPtr<ITransition> p;
-    Transition::AddTarget(target, (ITransition**)&p);
-    *result = p;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+
+    return Transition::AddTarget(target);
 }
 
 ECode TransitionSet::AddTarget(
-    /* [in] */ Int32 targetId,
-    /* [out] */ ITransition** result)
+    /* [in] */ Int32 targetId)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->AddTarget(targetId, (ITransition**)&res);
+        p->AddTarget(targetId);
     }
-    AutoPtr<ITransition> p;
-    Transition::AddTarget(targetId, (ITransition**)&p);
-    *result = p;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::AddTarget(targetId);
 }
 
 ECode TransitionSet::AddTarget(
-    /* [in] */ String targetName,
-    /* [out] */ ITransition** result)
+    /* [in] */ String targetName)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->AddTarget(targetName, (ITransition**)&res);
+        p->AddTarget(targetName);
     }
-    AutoPtr<ITransition> p;
-    Transition::AddTarget(targetName, (ITransition**)&p);
-    *result = p;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::AddTarget(targetName);
 }
 
 // ECode TransitionSet::AddTarget(
-//     /* [in] */ Class targetType,
-//     /* [out] */ ITransitionSet** result)
+//     /* [in] */ Class targetType)
 // {
 //     VALIDATE_NOT_NULL(result)
 
@@ -246,76 +188,47 @@ ECode TransitionSet::AddTarget(
 //         AutoPtr<ITransition> p = ITransition::Probe(t);
 //         p->AddTarget(targetType);
 //     }
-//     AutoPtr<ITransition> p;
-//     Transition::AddTarget(targetType, (ITransition**)&p);
-//     *result = ITransitionSet::Probe(p);
-//     REFCOUNT_ADD(*result)
-//     return NOERROR;
+
+//     return Transition::AddTarget(targetType);
 // }
 
 ECode TransitionSet::AddListener(
-    /* [in] */ ITransitionListener* listener,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ ITransitionListener* listener)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<ITransition> p;
-    Transition::AddListener(listener, (ITransition**)&p);
-    *result = ITransitionSet::Probe(p);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::AddListener(listener);
 }
 
 ECode TransitionSet::RemoveTarget(
-    /* [in] */ Int32 targetId,
-    /* [out] */ ITransition** result)
+    /* [in] */ Int32 targetId)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->RemoveTarget(targetId, (ITransition**)&res);
+        p->RemoveTarget(targetId);
     }
-    AutoPtr<ITransition> p;
-    Transition::RemoveTarget(targetId, (ITransition**)&p);
-    *result = p;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::RemoveTarget(targetId);
 }
 
 ECode TransitionSet::RemoveTarget(
-    /* [in] */ IView* target,
-    /* [out] */ ITransition** result)
+    /* [in] */ IView* target)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->RemoveTarget(target, (ITransition**)&res);
+        p->RemoveTarget(target);
     }
-    AutoPtr<ITransition> p;
-    Transition::RemoveTarget(target, (ITransition**)&p);
-    *result = p;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::RemoveTarget(target);
 }
 
 // ECode TransitionSet::RemoveTarget(
-//     /* [in] */ Class target,
-//     /* [out] */ ITransitionSet** result)
+//     /* [in] */ Class target)
 // {
-//     VALIDATE_NOT_NULL(result)
-
 //     Int32 numTransitions = 0;
 //     mTransitions->GetSize(&numTransitions);
 //     for (Int32 i = 0; i < numTransitions; i++) {
@@ -324,96 +237,72 @@ ECode TransitionSet::RemoveTarget(
 //         AutoPtr<ITransition> p = ITransition::Probe(t);
 //         p->RemoveTarget(target);
 //     }
-//     AutoPtr<ITransition> p;
-//     Transition::RemoveTarget(target, (ITransition**)&p);
-//     *result = ITransitionSet::Probe(p);
-//     REFCOUNT_ADD(*result)
-//     return NOERROR;
+//     return Transition::RemoveTarget(target, (ITransition**)&p);
 // }
 
 ECode TransitionSet::RemoveTarget(
-    /* [in] */ String target,
-    /* [out] */ ITransition** result)
+    /* [in] */ String target)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->RemoveTarget(target, (ITransition**)&res);
+        p->RemoveTarget(target);
     }
-    AutoPtr<ITransition> p;
-    Transition::RemoveTarget(target, (ITransition**)&p);
-    *result = p;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+
+    return Transition::RemoveTarget(target);
 }
 
 ECode TransitionSet::ExcludeTarget(
     /* [in] */ IView* target,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->ExcludeTarget(target, exclude, (ITransition**)&res);
+        p->ExcludeTarget(target, exclude);
     }
-    return Transition::ExcludeTarget(target, exclude, result);
+    return Transition::ExcludeTarget(target, exclude);
 }
 
 ECode TransitionSet::ExcludeTarget(
     /* [in] */ String targetName,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->ExcludeTarget(targetName, exclude, (ITransition**)&res);
+        p->ExcludeTarget(targetName, exclude);
     }
-    return Transition::ExcludeTarget(targetName, exclude, result);
+    return Transition::ExcludeTarget(targetName, exclude);
 }
 
 ECode TransitionSet::ExcludeTarget(
     /* [in] */ Int32 targetId,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; i++) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        p->ExcludeTarget(targetId, exclude, (ITransition**)&res);
+        p->ExcludeTarget(targetId, exclude);
     }
-    return Transition::ExcludeTarget(targetId, exclude, result);
+    return Transition::ExcludeTarget(targetId, exclude);
 }
 
 // ECode TransitionSet::ExcludeTarget(
 //     /* [in] */ Class type,
-//     /* [in] */ Boolean exclude,
-//     /* [out] */ ITransition** result)
+//     /* [in] */ Boolean exclude)
 // {
 //     VALIDATE_NOT_NULL(result)
 
@@ -425,20 +314,13 @@ ECode TransitionSet::ExcludeTarget(
 //         AutoPtr<ITransition> p = ITransition::Probe(t);
 //         p->ExcludeTarget(type, exclude);
 //     }
-//     return Transition::ExcludeTarget(type, exclude, result);
+//     return Transition::ExcludeTarget(type, exclude);
 // }
 
 ECode TransitionSet::RemoveListener(
-    /* [in] */ ITransitionListener* listener,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ ITransitionListener* listener)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<ITransition> p;
-    Transition::RemoveListener(listener, (ITransition**)&p);
-    *result = ITransitionSet::Probe(p);
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return Transition::RemoveListener(listener);
 }
 
 ECode TransitionSet::SetPathMotion(
@@ -472,16 +354,11 @@ ECode TransitionSet::ForceVisibility(
 }
 
 ECode TransitionSet::RemoveTransition(
-    /* [in] */ ITransition* transition,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ ITransition* transition)
 {
-    VALIDATE_NOT_NULL(result)
-
     mTransitions->Remove(transition);
     AutoPtr<Transition> ct = (Transition*)transition;
     ct->mParent = NULL;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -494,8 +371,7 @@ void TransitionSet::SetupStartEndListeners()
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> childTransition = ITransition::Probe(t);
-        AutoPtr<ITransition> res;
-        childTransition->AddListener(listener, (ITransition**)&res);
+        childTransition->AddListener(listener);
     }
     mTransitions->GetSize(&mCurrentListeners);
 }
@@ -520,12 +396,11 @@ ECode TransitionSet::CreateAnimators(
         if (startDelay > 0 && (mPlayTogether || i == 0)) {
             Int64 childStartDelay = 0;
             childTransition->GetStartDelay(&childStartDelay);
-            AutoPtr<ITransition> res;
             if (childStartDelay > 0) {
-                childTransition->SetStartDelay(startDelay + childStartDelay, (ITransition**)&res);
+                childTransition->SetStartDelay(startDelay + childStartDelay);
             }
             else {
-                childTransition->SetStartDelay(startDelay, (ITransition**)&res);
+                childTransition->SetStartDelay(startDelay);
             }
         }
         assert(0 && "TODO");
@@ -557,8 +432,7 @@ ECode TransitionSet::RunAnimators()
             mTransitions->Get(i, (IInterface**)&nt);
             AutoPtr<ITransition> nextTransition = ITransition::Probe(nt);
             AutoPtr<TransitionListenerAdapter_1> p = new TransitionListenerAdapter_1(nextTransition);
-            AutoPtr<ITransition> res;
-            previousTransition->AddListener(ITransitionListener::Probe(p), (ITransition**)&res);
+            previousTransition->AddListener(ITransitionListener::Probe(p));
         }
         AutoPtr<IInterface> ft;
         mTransitions->Get(0, (IInterface**)&ft);
@@ -684,23 +558,17 @@ ECode TransitionSet::Cancel()
 }
 
 ECode TransitionSet::SetSceneRoot(
-    /* [in] */ IViewGroup* sceneRoot,
-    /* [out] */ ITransitionSet** result)
+    /* [in] */ IViewGroup* sceneRoot)
 {
-    VALIDATE_NOT_NULL(result)
-
-    AutoPtr<ITransition> res;
-    Transition::SetSceneRoot(sceneRoot, (ITransition**)&res);
+    Transition::SetSceneRoot(sceneRoot);
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; ++i) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
         AutoPtr<ITransition> p = ITransition::Probe(t);
-        p->SetSceneRoot(sceneRoot, (ITransition**)&res);
+        p->SetSceneRoot(sceneRoot);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -775,6 +643,7 @@ ECode TransitionSet::ToString(
 ECode TransitionSet::Clone(
     /* [out] */ ITransitionSet** result)
 {
+    assert(0 && "TODO");
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IInterface> p;
@@ -792,8 +661,7 @@ ECode TransitionSet::Clone(
         AutoPtr<IInterface> pInf;
         cPt->Clone((IInterface**)&pInf);
         AutoPtr<ITransition> cl = ITransition::Probe(pInf);
-        AutoPtr<ITransitionSet> res;
-        clone->AddTransition(cl, (ITransitionSet**)&res);
+        clone->AddTransition(cl);
     }
     *result = clone;
     REFCOUNT_ADD(*result)
@@ -831,9 +699,8 @@ ECode TransitionSet::TransitionSetListener::OnTransitionEnd(
         cts->mStarted = FALSE;
         ITransition::Probe(mTransitionSet)->End();
     }
-    AutoPtr<ITransition> res;
-    transition->RemoveListener(this, (ITransition**)&res);
-    return NOERROR;
+
+    return transition->RemoveListener(this);
 }
 
 //===============================================================
@@ -849,9 +716,7 @@ ECode TransitionSet::TransitionListenerAdapter_1::OnTransitionEnd(
     /* [in] */ ITransition* transition)
 {
     mNextTransition->RunAnimators();
-    AutoPtr<ITransition> res;
-    transition->RemoveListener(this, (ITransition**)&res);
-    return NOERROR;
+    return transition->RemoveListener(this);
 }
 
 } // namespace Transition

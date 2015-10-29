@@ -204,22 +204,19 @@ public:
         /* [in] */ IAttributeSet* attrs);
 
     CARAPI SetDuration(
-        /* [in] */ Int64 duration,
-        /* [out] */ ITransition** result);
+        /* [in] */ Int64 duration);
 
     CARAPI GetDuration(
         /* [out] */ Int64* dura);
 
     CARAPI SetStartDelay(
-        /* [in] */ Int64 startDelay,
-        /* [out] */ ITransition** result);
+        /* [in] */ Int64 startDelay);
 
     CARAPI GetStartDelay(
         /* [out] */ Int64* result);
 
     CARAPI SetInterpolator(
-        /* [in] */ ITimeInterpolator* interpolator,
-        /* [out] */ ITransition** result);
+        /* [in] */ ITimeInterpolator* interpolator);
 
     CARAPI GetInterpolator(
         /* [out] */ ITimeInterpolator** result);
@@ -241,12 +238,10 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI AddTarget(
-        /* [in] */ Int32 targetId,
-        /* [out] */ ITransition** result);
+        /* [in] */ Int32 targetId);
 
     CARAPI AddTarget(
-        /* [in] */ const String& targetName,
-        /* [out] */ ITransition** result);
+        /* [in] */ const String& targetName);
 
     /**
      * Adds the Class of a target view that this Transition is interested in
@@ -273,37 +268,30 @@ public:
 //    public Transition addTarget(Class targetType);
 
     CARAPI RemoveTarget(
-        /* [in] */ Int32 targetId,
-        /* [out] */ ITransition** result);
+        /* [in] */ Int32 targetId);
 
     CARAPI RemoveTarget(
-        /* [in] */ const String& targetName,
-        /* [out] */ ITransition** result);
+        /* [in] */ const String& targetName);
 
     CARAPI ExcludeTarget(
         /* [in] */ Int32 targetId,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     CARAPI ExcludeTarget(
         /* [in] */ const String& targetName,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     CARAPI ExcludeChildren(
         /* [in] */ Int32 targetId,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     CARAPI ExcludeTarget(
         /* [in] */ IView* target,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     CARAPI ExcludeChildren(
         /* [in] */ IView* target,
-        /* [in] */ Boolean exclude,
-        /* [out] */ ITransition** result);
+        /* [in] */ Boolean exclude);
 
     /**
      * Whether to add the given type to the list of types to exclude from this
@@ -353,12 +341,10 @@ public:
 //    public Transition excludeChildren(Class type, boolean exclude);
 
     CARAPI AddTarget(
-        /* [in] */ IView* target,
-        /* [out] */ ITransition** result);
+        /* [in] */ IView* target);
 
     CARAPI RemoveTarget(
-        /* [in] */ IView* target,
-        /* [out] */ ITransition** result);
+        /* [in] */ IView* target);
 
     /**
      * Removes the given target from the list of targets that this Transition
@@ -424,12 +410,10 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI AddListener(
-        /* [in] */ ITransitionListener* listener,
-        /* [out] */ ITransition** result);
+        /* [in] */ ITransitionListener* listener);
 
     CARAPI RemoveListener(
-        /* [in] */ ITransitionListener* listener,
-        /* [out] */ ITransition** result);
+        /* [in] */ ITransitionListener* listener);
 
     CARAPI SetEpicenterCallback(
         /* [in] */ IEpicenterCallback* epicenterCallback);
@@ -456,8 +440,7 @@ public:
         /* [in] */ ITransitionValues* transitionValues);
 
     CARAPI SetSceneRoot(
-        /* [in] */ IViewGroup* sceneRoot,
-        /* [out] */ ITransition** result);
+        /* [in] */ IViewGroup* sceneRoot);
 
     CARAPI SetCanRemoveViews(
         /* [in] */ Boolean canRemoveViews);

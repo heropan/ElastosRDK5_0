@@ -1,6 +1,6 @@
 
 #include "elastos/droid/app/CActivityOptions.h"
-// #include "elastos/droid/app/CActivityOptionsAnimationStartedListener.h"
+#include "elastos/droid/app/CActivityOptionsAnimationStartedListener.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/utility/CPairHelper.h"
@@ -100,10 +100,9 @@ ECode CActivityOptions::SetOnAnimationStartedListener(
     /* [in] */ IHandler* handler,
     /* [in] */ IActivityOptionsOnAnimationStartedListener* listener)
 {
-    assert(0 && "TODO");
     if (listener != NULL) {
         mAnimationStartedListener = NULL;
-        // CActivityOptionsAnimationStartedListener::New(handler, listener, (IRemoteCallback**)&mAnimationStartedListener);
+        CActivityOptionsAnimationStartedListener::New(handler, listener, (IRemoteCallback**)&mAnimationStartedListener);
     }
     return NOERROR;
 }

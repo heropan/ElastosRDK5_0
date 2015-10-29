@@ -288,14 +288,6 @@ module
             [in] ArrayOf<String>* args);
 
         /**
-         * Control whether the framework's internal fragment manager debugging
-         * logs are turned on.  If enabled, you will see output in logcat as
-         * the framework performs fragment operations.
-         */
-        EnableDebugLogging(
-            [in] Boolean enabled);
-
-        /**
          * Invalidate the attached activity's options menu as necessary.
          * This may end up being deferred until we move to the resumed state.
          */
@@ -389,6 +381,9 @@ module
         FindViewById(
             [in] Int32 id,
             [out] IView** view);
+
+        HasView(
+            [out] Boolean* result);
     }
 
     /**
@@ -400,12 +395,6 @@ module
      */
     [local, deprecated]
     interface IFragmentManagerImpl {
-        const String TAG = "FragmentManager";
-
-        const String TARGET_REQUEST_CODE_STATE_TAG = "android:target_req_state";
-        const String TARGET_STATE_TAG = "android:target_state";
-        const String VIEW_STATE_TAG = "android:view_state";
-        const String USER_VISIBLE_HINT_TAG = "android:user_visible_hint";
 
         LoadAnimator(
             [in] IFragment* fragment,

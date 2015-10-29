@@ -25,8 +25,7 @@ AutoPtr<IIActivityManager> ActivityManagerNative::GetDefault()
 Boolean ActivityManagerNative::IsSystemReady()
 {
     if (!sSystemReady) {
-        assert(0 && "TODO");
-        // GetDefault()->TestIsSystemReady(&sSystemReady);
+        GetDefault()->TestIsSystemReady(&sSystemReady);
     }
     return sSystemReady;
 }

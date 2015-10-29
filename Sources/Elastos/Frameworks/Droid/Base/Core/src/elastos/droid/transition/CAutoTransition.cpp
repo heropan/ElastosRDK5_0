@@ -32,17 +32,16 @@ ECode CAutoTransition::constructor(
 
 void CAutoTransition::Init()
 {
-    AutoPtr<ITransitionSet> p;
-    SetOrdering(ORDERING_SEQUENTIAL, (ITransitionSet**)&p);
+    SetOrdering(ORDERING_SEQUENTIAL);
     AutoPtr<IFade> f;
     CFade::New(CFade::OUT, (IFade**)&f);
-    AddTransition(ITransition::Probe(f), (ITransitionSet**)&p);
+    AddTransition(ITransition::Probe(f));
     AutoPtr<IChangeBounds> c;
     CChangeBounds::New((IChangeBounds**)&c);
-    AddTransition(ITransition::Probe(c), (ITransitionSet**)&p);
+    AddTransition(ITransition::Probe(c));
     AutoPtr<IFade> fIn;
     CFade::New(CFade::IN, (IFade**)&fIn);
-    AddTransition(ITransition::Probe(fIn), (ITransitionSet**)&p);
+    AddTransition(ITransition::Probe(fIn));
 }
 
 } // namespace Transition

@@ -2,13 +2,23 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Utility.IHashMap;
 
     interface Elastos.Droid.Utility.IArrayMap;
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.App.IFragmentManagerImpl;
+    interface Elastos.Droid.App.IBackStackRecord;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
+
+    [local]
+    interface IBackStackState {
+        Instantiate(
+            [in] IFragmentManagerImpl* fm,
+            [out] IBackStackRecord** record);
+    }
 
     [local]
     interface IBackStackRecordTransitionState {
@@ -59,6 +69,8 @@ module
         PopFromBackStack(
             [in] Boolean doStateMove,
             [in] IBackStackRecordTransitionState* state,
+            [in] IHashMap* firstOutFragments,
+            [in] IHashMap* lastInFragments,
             [out] IBackStackRecordTransitionState** result);
 
         GetName(

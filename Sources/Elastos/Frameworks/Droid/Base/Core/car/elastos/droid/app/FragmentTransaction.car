@@ -4,6 +4,7 @@ module
 
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.App.IFragment;
+    interface Elastos.Droid.Utility.IPair;
 
     namespace Elastos {
     namespace Droid {
@@ -18,7 +19,7 @@ module
      *
      * @sa Fragments
      */
-    [local]
+    [local, deprecated]
     interface IFragmentTransaction {
         /**
          * Bit mask that is set for all enter transitions.
@@ -238,6 +239,21 @@ module
         AddSharedElement(
             [in] IView* sharedElement,
             [in] String name);;
+
+        /**
+         * TODO: remove from API
+         * @hide
+         */
+        SetSharedElement(
+            [in] IView* sharedElement,
+            [in] String name);
+
+        /**
+         * TODO: remove from API
+         * @hide
+         */
+        SetSharedElements(
+            [in] ArrayOf<IPair*>* sharedElements);//Pair<View, String>
 
         /**
          * Set a custom style resource that will be used for resolving transit

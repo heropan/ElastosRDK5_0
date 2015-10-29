@@ -5,13 +5,21 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IActionModeCallback;
+using Elastos::Core::ICharSequence;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 class ActionBar
-    : Object
-    , IActionBar
+    : public Object
+    , public IActionBar
 {
 public:
     CAR_INTERFACE_DECL()

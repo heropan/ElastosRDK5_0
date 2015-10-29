@@ -2,13 +2,9 @@
 #define __ELASTOS_DROID_APP_FRAGMENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::IO::IPrintWriter;
-using Elastos::IO::IFileDescriptor;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::IObjectInt32Map;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IMenu;
@@ -19,32 +15,34 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IContextMenuInfo;
 using Elastos::Droid::View::IViewOnCreateContextMenuListener;
-using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IComponentCallbacks2;
-using Elastos::Droid::Content::EIID_IComponentCallbacks2;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
+
+using Elastos::Core::ICharSequence;
+using Elastos::IO::IPrintWriter;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IObjectInt32Map;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 class FragmentState
-    : public ElRefBase
+    : public Object
     , public IParcelable
 {
 public:
     class ParcelableCreatorFragmentState
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         CARAPI CreateFromParcel(
             /* [in] */ IParcel* in,
             /* [out] */ FragmentState** ret);
@@ -63,13 +61,13 @@ public:
     FragmentState(
         /* [in] */ IParcel* in);
 
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel* in);
-
     CARAPI Instantiate(
         /* [in] */ IActivity* activity,
         /* [in] */ IFragment* parent,
         /* [out] */ IFragment** fragment);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* in);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
@@ -93,74 +91,20 @@ public:
 };
 
 class Fragment
-    : public IFragment
-    , public ElRefBase
+    : public Object
+    , public IFragment
+    , public IComponentCallbacks
     , public IComponentCallbacks2
     , public IViewOnCreateContextMenuListener
-    , public IWeakReferenceSource
 {
 public:
-    Fragment()
-        : mState(INITIALIZING)
-        , mAnimatingAway(NULL)
-        , mStateAfterAnimating(0)
-        , mSavedFragmentState(NULL)
-        , mSavedViewState(NULL)
-        , mIndex(-1)
-        , mWho(String(NULL))
-        , mArguments(NULL)
-        , mTarget(NULL)
-        , mTargetIndex(-1)
-        , mTargetRequestCode(0)
-        , mAdded(FALSE)
-        , mRemoving(FALSE)
-        , mResumed(FALSE)
-        , mFromLayout(FALSE)
-        , mInLayout(FALSE)
-        , mRestored(FALSE)
-        , mBackStackNesting(0)
-        , mFragmentManager(NULL)
-        , mActivity(NULL)
-        , mChildFragmentManager(NULL)
-        , mParentFragment(NULL)
-        , mFragmentId(0)
-        , mContainerId(0)
-        , mTag(String(NULL))
-        , mHidden(FALSE)
-        , mDetached(FALSE)
-        , mRetainInstance(FALSE)
-        , mRetaining(FALSE)
-        , mHasMenu(FALSE)
-        , mMenuVisible(TRUE)
-        , mCalled(FALSE)
-        , mNextAnim(0)
-        , mContainer(NULL)
-        , mView(NULL)
-        , mDeferStart(FALSE)
-        , mUserVisibleHint(TRUE)
-        , mLoaderManager(NULL)
-        , mLoadersStarted(FALSE)
-        , mCheckedForLoaderManager(FALSE)
-    {}
+    CAR_INTERFACE_DECL()
 
-    virtual ~Fragment()
-    {}
+    Fragment();
+
+    virtual ~Fragment();
 
     virtual CARAPI Initialize();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    virtual CARAPI_(UInt32) AddRef();
-
-    virtual CARAPI_(UInt32) Release();
-
-    virtual CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     virtual CARAPI GetState(
         /* [out] */ Int32* state);

@@ -146,7 +146,7 @@ ECode ActionBar::OpenOptionsMenu(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = FALSE
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -154,7 +154,7 @@ ECode ActionBar::InvalidateOptionsMenu(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = FALSE
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -163,7 +163,7 @@ ECode ActionBar::OnMenuKeyEvent(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = FALSE
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode ActionBar::CollapseActionView(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = FALSE
+    *result = FALSE;
     return NOERROR;
 }
 

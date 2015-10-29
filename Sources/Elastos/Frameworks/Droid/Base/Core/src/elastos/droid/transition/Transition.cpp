@@ -97,22 +97,19 @@ ECode Transition::constructor(
     Int64 duration = 0;
 //    a->GetInt(R.styleable.Transition_duration, -1, &duration);
     if (duration >= 0) {
-        AutoPtr<ITransition> res;
-        SetDuration(duration, (ITransition**)&res);
+        SetDuration(duration);
     }
     Int64 startDelay = 0;
 //    a->GetInt(R.styleable.Transition_startDelay, -1, &startDelay);
     if (startDelay > 0) {
-        AutoPtr<ITransition> res;
-        SetStartDelay(startDelay, (ITransition**)&res);
+        SetStartDelay(startDelay);
     }
     Int32 resID = 0;
 //    a->GetResourceId(com.android.internal.R.styleable.Animator_interpolator, 0, &resID);
     if (resID > 0) {
         AutoPtr<IInterpolator> pol;
         AnimationUtils::LoadInterpolator(context, resID, (IInterpolator**)&pol);
-        AutoPtr<ITransition> res;
-        SetInterpolator(ITimeInterpolator::Probe(pol), (ITransition**)&res);
+        SetInterpolator(ITimeInterpolator::Probe(pol));
     }
     String matchOrder;// = a->GetString(R.styleable.Transition_matchOrder);
     if (matchOrder != NULL) {
@@ -167,14 +164,9 @@ AutoPtr<ArrayOf<Int32> > Transition::ParseMatchOrder(
 }
 
 ECode Transition::SetDuration(
-    /* [in] */ Int64 duration,
-    /* [out] */ ITransition** result)
+    /* [in] */ Int64 duration)
 {
-    VALIDATE_NOT_NULL(result)
-
     mDuration = duration;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -188,14 +180,9 @@ ECode Transition::GetDuration(
 }
 
 ECode Transition::SetStartDelay(
-    /* [in] */ Int64 startDelay,
-    /* [out] */ ITransition** result)
+    /* [in] */ Int64 startDelay)
 {
-    VALIDATE_NOT_NULL(result)
-
     mStartDelay = startDelay;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -208,14 +195,9 @@ ECode Transition::GetStartDelay(
 }
 
 ECode Transition::SetInterpolator(
-    /* [in] */ ITimeInterpolator* interpolator,
-    /* [out] */ ITransition** result)
+    /* [in] */ ITimeInterpolator* interpolator)
 {
-    VALIDATE_NOT_NULL(result)
-
     mInterpolator = interpolator;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -776,27 +758,19 @@ void Transition::RunAnimator(
 }
 
 ECode Transition::AddTarget(
-    /* [in] */ Int32 targetId,
-    /* [out] */ ITransition** result)
+    /* [in] */ Int32 targetId)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (targetId > 0) {
         AutoPtr<IInteger32> pID;
         CInteger32::New(targetId, (IInteger32**)&pID);
         mTargetIds->Add(pID);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::AddTarget(
-    /* [in] */ const String& targetName,
-    /* [out] */ ITransition** result)
+    /* [in] */ const String& targetName)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (targetName != NULL) {
         if (mTargetNames == NULL) {
             CArrayList::New((IArrayList**)&mTargetNames);
@@ -805,8 +779,6 @@ ECode Transition::AddTarget(
         CString::New(targetName, (ICharSequence**)&cName);
         mTargetNames->Add(cName);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -822,107 +794,72 @@ ECode Transition::AddTarget(
 // }
 
 ECode Transition::RemoveTarget(
-    /* [in] */ Int32 targetId,
-    /* [out] */ ITransition** result)
+    /* [in] */ Int32 targetId)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (targetId > 0) {
         mTargetIds->Remove(targetId);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::RemoveTarget(
-    /* [in] */ const String& targetName,
-    /* [out] */ ITransition** result)
+    /* [in] */ const String& targetName)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (!targetName.IsNull() && mTargetNames != NULL) {
         AutoPtr<ICharSequence> cName;
         CString::New(targetName, (ICharSequence**)&cName);
         mTargetNames->Remove(cName);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::ExcludeTarget(
     /* [in] */ Int32 targetId,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (targetId >= 0) {
         AutoPtr<IInteger32> pID;
         CInteger32::New(targetId, (IInteger32**)&pID);
         mTargetIdExcludes = ExcludeObject(mTargetIdExcludes, pID, exclude);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::ExcludeTarget(
     /* [in] */ const String& targetName,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     AutoPtr<ICharSequence> cName;
     CString::New(targetName, (ICharSequence**)&cName);
     mTargetNameExcludes = ExcludeObject(mTargetNameExcludes, cName, exclude);
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::ExcludeChildren(
     /* [in] */ Int32 targetId,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (targetId >= 0) {
         AutoPtr<IInteger32> pID;
         CInteger32::New(targetId, (IInteger32**)&pID);
         mTargetIdChildExcludes = ExcludeObject(mTargetIdChildExcludes, pID, exclude);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::ExcludeTarget(
     /* [in] */ IView* target,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     mTargetExcludes = ExcludeObject(mTargetExcludes, target, exclude);
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::ExcludeChildren(
     /* [in] */ IView* target,
-    /* [in] */ Boolean exclude,
-    /* [out] */ ITransition** result)
+    /* [in] */ Boolean exclude)
 {
-    VALIDATE_NOT_NULL(result)
-
     mTargetChildExcludes = ExcludeObject(mTargetChildExcludes, target, exclude);
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -955,28 +892,18 @@ AutoPtr<IArrayList> Transition::ExcludeObject(
 // }
 
 ECode Transition::AddTarget(
-    /* [in] */ IView* target,
-    /* [out] */ ITransition** result)
+    /* [in] */ IView* target)
 {
-    VALIDATE_NOT_NULL(result)
-
     mTargets->Add(target);
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::RemoveTarget(
-    /* [in] */ IView* target,
-    /* [out] */ ITransition** result)
+    /* [in] */ IView* target)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (target != NULL) {
         mTargets->Remove(target);
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1707,29 +1634,19 @@ ECode Transition::Cancel()
 }
 
 ECode Transition::AddListener(
-    /* [in] */ ITransitionListener* listener,
-    /* [out] */ ITransition** result)
+    /* [in] */ ITransitionListener* listener)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (mListeners == NULL) {
         CArrayList::New((IArrayList**)&mListeners);
     }
     mListeners->Add(listener);
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode Transition::RemoveListener(
-    /* [in] */ ITransitionListener* listener,
-    /* [out] */ ITransition** result)
+    /* [in] */ ITransitionListener* listener)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (mListeners == NULL) {
-        *result = this;
-        REFCOUNT_ADD(*result)
         return NOERROR;
     }
     mListeners->Remove(listener);
@@ -1737,8 +1654,6 @@ ECode Transition::RemoveListener(
     if ((mListeners->GetSize(&size), size) == 0) {
         mListeners = NULL;
     }
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -1838,14 +1753,9 @@ ECode Transition::CapturePropagationValues(
 }
 
 ECode Transition::SetSceneRoot(
-    /* [in] */ IViewGroup* sceneRoot,
-    /* [out] */ ITransition** result)
+    /* [in] */ IViewGroup* sceneRoot)
 {
-    VALIDATE_NOT_NULL(result)
-
     mSceneRoot = sceneRoot;
-    *result = this;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
