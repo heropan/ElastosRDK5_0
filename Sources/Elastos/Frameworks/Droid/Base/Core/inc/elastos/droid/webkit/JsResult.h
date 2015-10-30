@@ -14,8 +14,12 @@ namespace Webkit {
  * and provides a means for the client to indicate whether this action should proceed.
  */
 class JsResult
+    : public Object
+    , public IJsResult
 {
 public:
+    CAR_INTERFACE_DECL();
+
     JsResult()
         : mResult(FALSE)
     {}
@@ -28,6 +32,9 @@ public:
         : mReceiver(receiver)
         , mResult(FALSE)
     {}
+
+    CARAPI constructor(
+        /* [in] */ IJsResultReceiver* receiver);
 
     /**
      * Handle the result if the user cancelled the dialog.
@@ -43,6 +50,9 @@ public:
      * @hide Only for use by WebViewProvider implementations
      */
     virtual CARAPI_(Boolean) GetResult();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     CARAPI Init(

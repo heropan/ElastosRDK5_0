@@ -446,6 +446,14 @@ String URLUtil::ParseContentDisposition(
     return String(NULL);
 }
 
+ECode URLUtil::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "URLUtil";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

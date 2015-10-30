@@ -60,6 +60,9 @@ public:
      */
     virtual CARAPI SuppressDialog(
         /* [out] */ Boolean* result);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

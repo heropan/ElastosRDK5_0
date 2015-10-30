@@ -13,7 +13,7 @@ namespace Webkit {
  * {@link WebBackForwardList}.
  * {@hide}
  */
-class WebBackForwardListClient
+class WebBackForwardListClient : public Object
 {
 public:
     /**
@@ -37,6 +37,9 @@ public:
         /* [in] */ Int32 index)
     {
     }
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

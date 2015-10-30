@@ -21,8 +21,7 @@ extern "C" const InterfaceID EIID_WebStorageClassic;
 
 /** @hide */
 class WebStorageClassic
-    : public ElRefBase
-    , public WebStorage
+    : public WebStorage
     , public IWebStorage
 {
 private:
@@ -34,6 +33,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         WebStorageClassic* mOwner;
@@ -47,6 +49,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         WebStorageClassic* mOwner;
@@ -127,6 +132,9 @@ public:
      * Post a Sync request
      */
     virtual CARAPI_(void) Update();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 public:
     // Message ids

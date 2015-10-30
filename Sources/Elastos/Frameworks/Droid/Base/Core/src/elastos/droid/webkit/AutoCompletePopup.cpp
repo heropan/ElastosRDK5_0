@@ -421,6 +421,14 @@ void AutoCompletePopup::EnsurePopup()
     }
 }
 
+ECode AutoCompletePopup::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "AutoCompletePopup";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

@@ -59,6 +59,9 @@ private:
 public:
     CAR_INTERFACE_DECL();
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 protected:
     CARAPI_(void) SyncFromRamToFlash();
 };

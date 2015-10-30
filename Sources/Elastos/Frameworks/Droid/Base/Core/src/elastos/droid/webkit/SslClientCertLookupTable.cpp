@@ -67,6 +67,14 @@ AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > SslClientCertLookupTable::Certifi
     return array;
 }
 
+ECode SslClientCertLookupTable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "SslClientCertLookupTable";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

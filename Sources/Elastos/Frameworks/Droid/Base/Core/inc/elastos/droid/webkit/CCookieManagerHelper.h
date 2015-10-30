@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Webkit_CCookieManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
 CarClass(CCookieManagerHelper)
+    , public Singleton
+    , public ICookieManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [out] */ ICookieManager** cookieManager);
 

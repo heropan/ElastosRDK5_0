@@ -201,6 +201,14 @@ String MimeTypeMap::MimeTypeFromExtension(
     return mimeType;
 }
 
+ECode MimeTypeMap::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "MimeTypeMap";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

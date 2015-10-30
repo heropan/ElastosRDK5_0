@@ -20,7 +20,7 @@ namespace Webkit {
 CarClass(CWebViewClientClassicExt), public WebViewClientClassicExt
 {
 public:
-    CAR_INTERFACE_DECL();
+    CAR_OBJECT_DECL()
 
     /**
      * Notify the host application that an SSL error occurred while loading a

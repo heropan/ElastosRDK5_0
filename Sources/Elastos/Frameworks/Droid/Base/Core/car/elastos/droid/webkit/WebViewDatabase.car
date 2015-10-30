@@ -32,8 +32,10 @@ module
          *
          * @return true if there are any saved username/password pairs
          * @see WebView#savePassword
-         * @see clearUsernamePassword
+         * @see #clearUsernamePassworda
+         * @deprecated Saving passwords in WebView will not be supported in future versions.
          */
+        //@Deprecated
         HasUsernamePassword(
             [out] Boolean* result);
 
@@ -42,8 +44,10 @@ module
          * Note that these are unrelated to HTTP authentication credentials.
          *
          * @see WebView#savePassword
-         * @see hasUsernamePassword
+         * @see #hasUsernamePassword
+         * @deprecated Saving passwords in WebView will not be supported in future versions.
          */
+        //@Deprecated
         ClearUsernamePassword();
 
         /**
@@ -60,9 +64,9 @@ module
         /**
          * Clears any saved credentials for HTTP authentication.
          *
-         * @see Webview#getHttpAuthUsernamePassword
-         * @see Webview#setHttpAuthUsernamePassword
-         * @see hasHttpAuthUsernamePassword
+         * @see WebView#getHttpAuthUsernamePassword
+         * @see WebView#setHttpAuthUsernamePassword
+         * @see #hasHttpAuthUsernamePassword
          */
         ClearHttpAuthUsernamePassword();
 
@@ -70,7 +74,7 @@ module
          * Gets whether there is any saved data for web forms.
          *
          * @return whether there is any saved data for web forms
-         * @see clearFormData
+         * @see #clearFormData
          */
         HasFormData(
             [out] Boolean* result);
@@ -78,7 +82,7 @@ module
         /**
          * Clears any saved data for web forms.
          *
-         * @see hasFormData
+         * @see #hasFormData
          */
         ClearFormData();
     }

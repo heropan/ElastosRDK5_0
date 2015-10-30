@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CPLUGIN_H__
 
 #include "_Elastos_Droid_Webkit_CPlugin.h"
+#include "elastos/droid/webkit/Plugin.h"
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;
@@ -21,57 +22,10 @@ namespace Webkit {
  * @deprecated This interface was intended to be used by Gears. Since Gears was
  * deprecated, so is this class.
  */
-CarClass(CPlugin)
+CarClass(CPlugin) , public Plugin
 {
-private:
-   /**
-    * Default click handler. The plugins should implement their own.
-    *
-    * @hide
-    * @deprecated This interface was intended to be used by Gears. Since Gears was
-    * deprecated, so is this class.
-    */
-    class DefaultClickHandler
-        : public ElRefBase
-        , public IPreferencesClickHandler
-        , public IDialogInterfaceOnClickListener
-    {
-    public:
-        DefaultClickHandler(
-            /* [in] */ CPlugin* owner)
-            : mOwner(owner)
-        {}
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI HandleClickEvent(
-            /* [in] */ IContext* context);
-
-        /**
-         * @hide
-         * @deprecated This interface was intended to be used by Gears. Since Gears was
-         * deprecated, so is this class.
-         */
-        CARAPI OnClick(
-            /* [in] */ IDialogInterface* dialog,
-            /* [in] */ Int32 which);
-
-    private:
-        AutoPtr<IAlertDialog> mDialog;
-        CPlugin* mOwner;
-    };
-
 public:
-    /**
-     * @hide
-     * @deprecated This interface was intended to be used by Gears. Since Gears was
-     * deprecated, so is this class.
-     */
-    CARAPI constructor(
-        /* [in] */ const String& name,
-        /* [in] */ const String& path,
-        /* [in] */ const String& fileName,
-        /* [in] */ const String& description);
+    CAR_OBJECT_DECL()
 
     /**
      * @hide
@@ -110,13 +64,6 @@ public:
 
     CARAPI DispatchClickEvent(
         /* [in] */ IContext* context);
-
-private:
-    String mName;
-    String mPath;
-    String mFileName;
-    String mDescription;
-    AutoPtr<IPreferencesClickHandler> mHandler;
 };
 
 } // namespace Webkit

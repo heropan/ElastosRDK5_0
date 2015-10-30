@@ -67,10 +67,46 @@ module
      * WebViewClient#onPageFinished}. Note that even sync() happens
      * asynchronously, so don't do it just as your activity is shutting
      * down.
+     *
+     * @deprecated The WebView now automatically syncs cookies as necessary.
+     *             You no longer need to create or use the CookieSyncManager.
+     *             To manually force a sync you can use the CookieManager
+     *             method {@link CookieManager#flush} which is a synchronous
+     *             replacement for {@link #sync}.
      */
-
+    //@Deprecated
     interface ICookieSyncManager /*extends WebSyncManager*/ {
+        /**
+         * sync() forces sync manager to sync now
+         * @deprecated Use {@link CookieManager#flush} instead.
+         */
+        //@Deprecated
+        Sync();
 
+        /**
+         * resetSync() resets sync manager's timer.
+         * @deprecated Calling resetSync is no longer necessary as the WebView automatically
+         *             syncs cookies.
+         */
+        //@Deprecated
+        ResetSync();
+
+        /**
+         * startSync() requests sync manager to start sync.
+         * @deprecated Calling startSync is no longer necessary as the WebView automatically
+         *             syncs cookies.
+         */
+        //@Deprecated
+        StartSync();
+
+        /**
+         * stopSync() requests sync manager to stop sync. remove any SYNC_MESSAGE in
+         * the queue to break the sync loop
+         * @deprecated Calling stopSync is no longer useful as the WebView
+         *             automatically syncs cookies.
+         */
+        //@Deprecated
+        StopSync();
     }
 
     } // namespace Webkit

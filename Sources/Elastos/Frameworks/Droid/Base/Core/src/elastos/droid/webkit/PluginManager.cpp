@@ -481,6 +481,14 @@ Boolean PluginManager::ContainsPluginPermissionAndSignatures(
     return TRUE;
 }
 
+ECode PluginManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "PluginManager";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

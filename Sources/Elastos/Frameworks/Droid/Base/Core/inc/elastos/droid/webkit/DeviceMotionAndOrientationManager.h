@@ -39,7 +39,7 @@ class CWebViewCore;
  * This could be part of WebViewCore, but have moved it to its own class to
  * avoid bloat there.
  */
-class DeviceMotionAndOrientationManager : public ElRefBase
+class DeviceMotionAndOrientationManager : public Object
 {
 public:
     DeviceMotionAndOrientationManager(
@@ -73,6 +73,9 @@ public:
         /* [in] */ IDouble* alpha,
         /* [in] */ IDouble* beta,
         /* [in] */ IDouble* gamma);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     // Native functions

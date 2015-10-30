@@ -20,8 +20,7 @@ class ClientCertRequestHandler;
  * @hide
  */
 class WebViewClientClassicExt
-    : public ElRefBase
-    , public WebViewClient
+    : public WebViewClient
 {
 public:
 
@@ -51,6 +50,9 @@ public:
         /* [in] */ IWebView* view,
         /* [in] */ ClientCertRequestHandler* handler,
         /* [in] */ const String& host_and_port);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

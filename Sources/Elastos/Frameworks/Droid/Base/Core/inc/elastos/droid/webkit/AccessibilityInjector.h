@@ -32,21 +32,18 @@ class CWebViewClassic;
  * Handles injecting accessibility JavaScript and related JavaScript -> Java
  * APIs.
  */
-class AccessibilityInjector : public ElRefBase
+class AccessibilityInjector : public Object
 {
 private:
     /**
      * Used to protect the TextToSpeech class, only exposing the methods we want to expose.
      */
-    class TextToSpeechWrapper : public ElRefBase
+    class TextToSpeechWrapper : public Object
     {
         friend class AccessibilityInjector;
-
     public:
         TextToSpeechWrapper(
             /* [in] */ IContext* context);
-
-        CAR_INTERFACE_DECL();
 
         virtual CARAPI_(Boolean) IsSpeaking();
 
@@ -56,6 +53,9 @@ private:
             /* [in] */ HashMap<String, String>* params);
 
         virtual CARAPI_(Int32) Stop();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     protected:
         virtual CARAPI_(void) Shutdown();
@@ -88,13 +88,10 @@ private:
      * Exposes result interface to JavaScript.
      */
     class CallbackHandler
-        : public ElLightRefBase
-        , public IInterface
+        : public Object
     {
         friend class AccessibilityInjector;
     public:
-        CAR_INTERFACE_DECL();
-
         /**
          * Callback exposed to JavaScript. Handles returning the result of a
          * request to a waiting (or potentially timed out) thread.
@@ -118,6 +115,9 @@ private:
             /* [in] */ IRunnable* callbackRunnable);
 
         virtual CARAPI_(void) Callback();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         CallbackHandler(
@@ -184,6 +184,9 @@ private:
         {}
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         AccessibilityInjector* mOwner;
@@ -304,6 +307,9 @@ public:
      */
     virtual CARAPI_(void) UpdateJavaScriptEnabled(
         /* [in] */ Boolean enabled);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

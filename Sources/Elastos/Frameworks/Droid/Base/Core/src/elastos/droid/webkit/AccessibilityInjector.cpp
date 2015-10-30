@@ -135,6 +135,14 @@ void AccessibilityInjector::TextToSpeechWrapper::Shutdown()
     mTextToSpeech->Shutdown();
 }
 
+ECode AccessibilityInjector::TextToSpeechWrapper::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "AccessibilityInjector::TextToSpeechWrapper";
+    return NOERROR;
+}
+
 //===============================================================
 //             AccessibilityInjector::CallbackHandler
 //===============================================================
@@ -333,6 +341,14 @@ void AccessibilityInjector::CallbackHandler::Callback()
     }
 }
 
+ECode AccessibilityInjector::CallbackHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "AccessibilityInjector::CallbackHandler";
+    return NOERROR;
+}
+
 //===============================================================
 //          AccessibilityInjector::InjectScriptRunnable
 //===============================================================
@@ -343,6 +359,14 @@ ECode AccessibilityInjector::InjectScriptRunnable::Run()
 //    }
 
     mOwner->InjectJavaScript();
+    return NOERROR;
+}
+
+ECode AccessibilityInjector::InjectScriptRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "AccessibilityInjector::InjectScriptRunnable";
     return NOERROR;
 }
 
@@ -977,6 +1001,14 @@ Boolean AccessibilityInjector::SendActionToAndroidVox(
 //    final String jsCode = String.format(ACCESSIBILITY_ANDROIDVOX_TEMPLATE, jsonString);
 //    return mCallback.performAction(mWebView, jsCode);
     return FALSE;
+}
+
+ECode AccessibilityInjector::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "AccessibilityInjector";
+    return NOERROR;
 }
 
 } // namespace Webkit

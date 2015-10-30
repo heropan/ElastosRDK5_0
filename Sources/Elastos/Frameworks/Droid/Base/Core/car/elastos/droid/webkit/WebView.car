@@ -1,10 +1,13 @@
 
 module
 {
+    using interface Elastos.Core.IRunnable;
     using interface Elastos.IO.IFile;
     using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.Net.Http.ISslCertificate;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.IPicture;
@@ -15,6 +18,7 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroupLayoutParams;
     interface Elastos.Droid.Webkit.IWebView;
+//    interface Elastos.Droid.Webkit.IWebViewCore;
     interface Elastos.Droid.Webkit.IWebViewClient;
     interface Elastos.Droid.Webkit.IPluginList;
     interface Elastos.Droid.Webkit.IWebViewProvider;
@@ -78,7 +82,9 @@ module
          * See {@link WebView#capturePicture} for details of the picture.
          *
          * @param view the WebView that owns the picture
-         * @param picture the new picture
+         * @param picture the new picture. Applications targeting
+         *     {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR2} or above
+         *     will always receive a null Picture.
          * @deprecated Deprecated due to internal changes.
          */
         OnNewPicture(
@@ -174,7 +180,7 @@ module
      * and fields, and make super-class calls in this WebView instance.
      * @hide Only for use by WebViewProvider implementations
      */
-    [local]
+    [deprecated, local]
     interface IWebViewPrivateAccess {
         // ---- Access to super-class methods ----
         Super_getScrollBarStyle(
@@ -259,6 +265,14 @@ module
         GetHorizontalScrollbarHeight(
             [out] Int32* height);
 
+        Super_onDrawVerticalScrollBar(
+            [in] ICanvas* canvas,
+            [in] IDrawable* scrollBar,
+            [in] Int32 l,
+            [in] Int32 t,
+            [in] Int32 r,
+            [in] Int32 b);
+
         // ---- Access to (non-public) fields ----
         /** Raw setter for the scroll X value, without invoking onScrollChanged handlers etc. */
         SetScrollXRaw(
@@ -275,9 +289,6 @@ module
      * It uses the WebKit rendering engine to display
      * web pages and includes methods to navigate forward and backward
      * through a history, zoom in and out, perform text searches and more.</p>
-     * <p>To enable the built-in zoom, set
-     * {@link #getSettings() WebSettings}.{@link WebSettings#setBuiltInZoomControls(boolean)}
-     * (introduced in API level {@link android.os.Build.VERSION_CODES#CUPCAKE}).
      * <p>Note that, in order for your Activity to access the Internet and load web pages
      * in a WebView, you must add the {@code INTERNET} permissions to your
      * Android Manifest file:</p>
@@ -307,7 +318,7 @@ module
      * </pre>
      * <p>See {@link android.content.Intent} for more information.</p>
      *
-     * <p>To provide a WebView in your own Activity, include a {@code <WebView>} in your layout,
+     * <p>To provide a WebView in your own Activity, include a {@code &lt;WebView&gt;} in your layout,
      * or set the entire Activity window as a WebView during {@link
      * android.app.Activity#onCreate(Bundle) onCreate()}:</p>
      * <pre class="prettyprint">
@@ -378,8 +389,17 @@ module
      *   }
      * });
      *
-     * webview.loadUrl("http://slashdot.org/");
+     * webview.loadUrl("http://developer.android.com/");
      * </pre>
+     *
+     * <h3>Zoom</h3>
+     *
+     * <p>To enable the built-in zoom, set
+     * {@link #getSettings() WebSettings}.{@link WebSettings#setBuiltInZoomControls(boolean)}
+     * (introduced in API level {@link android.os.Build.VERSION_CODES#CUPCAKE}).</p>
+     * <p>NOTE: Using zoom if either the height or width is set to
+     * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} may lead to undefined behavior
+     * and should be avoided.</p>
      *
      * <h3>Cookie and window management</h3>
      *
@@ -429,8 +449,7 @@ module
      * and default scaling is not applied to the web page; if the value is "1.5", then the device is
      * considered a high density device (hdpi) and the page content is scaled 1.5x; if the
      * value is "0.75", then the device is considered a low density device (ldpi) and the content is
-     * scaled 0.75x. However, if you specify the {@code "target-densitydpi"} meta property
-     * (discussed below), then you can stop this default scaling behavior.</li>
+     * scaled 0.75x.</li>
      * <li>The {@code -webkit-device-pixel-ratio} CSS media query. Use this to specify the screen
      * densities for which this style sheet is to be used. The corresponding value should be either
      * "0.75", "1", or "1.5", to indicate that the styles are for devices with low density, medium
@@ -440,29 +459,7 @@ module
      * <p>The {@code hdpi.css} stylesheet is only used for devices with a screen pixel ration of 1.5,
      * which is the high density pixel ratio.</p>
      * </li>
-     * <li>The {@code target-densitydpi} property for the {@code viewport} meta tag. You can use
-     * this to specify the target density for which the web page is designed, using the following
-     * values:
-     * <ul>
-     * <li>{@code device-dpi} - Use the device's native dpi as the target dpi. Default scaling never
-     * occurs.</li>
-     * <li>{@code high-dpi} - Use hdpi as the target dpi. Medium and low density screens scale down
-     * as appropriate.</li>
-     * <li>{@code medium-dpi} - Use mdpi as the target dpi. High density screens scale up and
-     * low density screens scale down. This is also the default behavior.</li>
-     * <li>{@code low-dpi} - Use ldpi as the target dpi. Medium and high density screens scale up
-     * as appropriate.</li>
-     * <li><em>{@code <value>}</em> - Specify a dpi value to use as the target dpi (accepted
-     * values are 70-400).</li>
      * </ul>
-     * <p>Here's an example meta tag to specify the target density:</p>
-     * <pre>&lt;meta name="viewport" content="target-densitydpi=device-dpi" /&gt;</pre></li>
-     * </ul>
-     * <p>If you want to modify your web page for different densities, by using the {@code
-     * -webkit-device-pixel-ratio} CSS media query and/or the {@code
-     * window.devicePixelRatio} DOM property, then you should set the {@code target-densitydpi} meta
-     * property to {@code device-dpi}. This stops Android from performing scaling in your web page and
-     * allows you to make the necessary adjustments for each density via CSS and JavaScript.</p>
      *
      * <h3>HTML5 Video support</h3>
      *
@@ -484,8 +481,17 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IAbsoluteLayout
      */
-    [deprecated]
+    [deprecated, local]
     interface IWebView {
+        /**
+         * Broadcast Action: Indicates the data reduction proxy setting changed.
+         * Sent by the settings app when user changes the data reduction proxy value. This intent will
+         * always stay as a hidden API.
+         * @hide
+         */
+        const String DATA_REDUCTION_PROXY_SETTING_CHANGED =
+                "android.webkit.DATA_REDUCTION_PROXY_SETTING_CHANGED";
+
         /**
          * URI scheme for telephone number.
          */
@@ -575,7 +581,9 @@ module
          * @param password the password for the given host
          * @see WebViewDatabase#clearUsernamePassword
          * @see WebViewDatabase#hasUsernamePassword
+         * @deprecated Saving passwords in WebView will not be supported in future versions.
          */
+        //@Deprecated
         SavePassword(
             [in] String host,
             [in] String username,
@@ -590,7 +598,7 @@ module
          * @param realm the realm to which the credentials apply
          * @param username the username
          * @param password the password
-         * @see getHttpAuthUsernamePassword
+         * @see #getHttpAuthUsernamePassword
          * @see WebViewDatabase#hasHttpAuthUsernamePassword
          * @see WebViewDatabase#clearHttpAuthUsernamePassword
          */
@@ -610,7 +618,7 @@ module
          * @return the credentials as a String array, if found. The first element
          *         is the username and the second element is the password. Null if
          *         no credentials are found.
-         * @see setHttpAuthUsernamePassword
+         * @see #setHttpAuthUsernamePassword
          * @see WebViewDatabase#hasHttpAuthUsernamePassword
          * @see WebViewDatabase#clearHttpAuthUsernamePassword
          */
@@ -723,11 +731,12 @@ module
 
         /**
          * Loads the URL with postData using "POST" method into this WebView. If url
-         * is not a network URL, it will be loaded with {link
-         * {@link #loadUrl(String)} instead.
+         * is not a network URL, it will be loaded with {@link #loadUrl(String)}
+         * instead, ignoring the postData param.
          *
          * @param url the URL of the resource to load
-         * @param postData the data will be passed to "POST" request
+         * @param postData the data will be passed to "POST" request, which must be
+         *     be "application/x-www-form-urlencoded" encoded.
          */
         PostUrl(
             [in] String url,
@@ -779,7 +788,10 @@ module
          * <p>
          * If the base URL uses the data scheme, this method is equivalent to
          * calling {@link #loadData(String,String,String) loadData()} and the
-         * historyUrl is ignored.
+         * historyUrl is ignored, and the data will be treated as part of a data: URL.
+         * If the base URL uses any other scheme, then the data will be loaded into
+         * the WebView as a plain string (i.e. not part of a data URL) and any URL-encoded
+         * entities in the string will not be decoded.
          *
          * @param baseUrl the URL to use as the page's base URL. If null defaults to
          *                'about:blank'.
@@ -788,7 +800,7 @@ module
          *                 defaults to 'text/html'.
          * @param encoding the encoding of the data
          * @param historyUrl the URL to use as the history entry. If null defaults
-         *                   to 'about:blank'.
+         *                   to 'about:blank'. If non-null, this must be a valid URL.
          */
         LoadDataWithBaseURL(
             [in] String baseUrl,
@@ -796,6 +808,21 @@ module
             [in] String mimeType,
             [in] String encoding,
             [in] String historyUrl);
+
+        /**
+         * Asynchronously evaluates JavaScript in the context of the currently displayed page.
+         * If non-null, |resultCallback| will be invoked with any result returned from that
+         * execution. This method must be called on the UI thread and the callback will
+         * be made on the UI thread.
+         *
+         * @param script the JavaScript to execute.
+         * @param resultCallback A callback to be invoked when the script execution
+         *                       completes with the result of the execution (if any).
+         *                       May be null if no notificaion of the result is required.
+         */
+        EvaluateJavascript(
+            [in] String script,
+            [in] IValueCallback* resultCallback);
 
         /**
          * Saves the current view as a web archive.
@@ -909,7 +936,10 @@ module
         /**
          * Clears this WebView so that onDraw() will draw nothing but white background,
          * and onMeasure() will return 0 if MeasureSpec is not MeasureSpec.EXACTLY.
+         * @deprecated Use WebView.loadUrl("about:blank") to reliably reset the view state
+         *             and release page resources (including any running JavaScript).
          */
+        //@Deprecated
         ClearView();
 
         /**
@@ -923,11 +953,47 @@ module
          * {@link android.os.Build.VERSION_CODES#HONEYCOMB} and
          * {@link android.os.Build.VERSION_CODES#ICE_CREAM_SANDWICH} inclusive, the
          * picture does not include fixed position elements or scrollable divs.
+         * <p>
+         * Note that from {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1} the returned picture
+         * should only be drawn into bitmap-backed Canvas - using any other type of Canvas will involve
+         * additional conversion at a cost in memory and performance. Also the
+         * {@link android.graphics.Picture#createFromStream} and
+         * {@link android.graphics.Picture#writeToStream} methods are not supported on the
+         * returned object.
+         *
+         * @deprecated Use {@link #onDraw} to obtain a bitmap snapshot of the WebView, or
+         * {@link #saveWebArchive} to save the content to a file.
          *
          * @return a picture that captures the current contents of this WebView
          */
+        //@Deprecated
         CapturePicture(
             [out] IPicture** pic);
+
+        /**
+         * @deprecated Use {@link #createPrintDocumentAdapter(String)} which requires user
+         *             to provide a print document name.
+         */
+        //@Deprecated
+//        CreatePrintDocumentAdapter(
+//            [out] IPrintDocumentAdapter** adapter);
+
+        /**
+         * Creates a PrintDocumentAdapter that provides the content of this Webview for printing.
+         *
+         * The adapter works by converting the Webview contents to a PDF stream. The Webview cannot
+         * be drawn during the conversion process - any such draws are undefined. It is recommended
+         * to use a dedicated off screen Webview for the printing. If necessary, an application may
+         * temporarily hide a visible WebView by using a custom PrintDocumentAdapter instance
+         * wrapped around the object returned and observing the onStart and onFinish methods. See
+         * {@link android.print.PrintDocumentAdapter} for more information.
+         *
+         * @param documentName  The user-facing name of the printed document. See
+         *                      {@link android.print.PrintDocumentInfo}
+         */
+//        CreatePrintDocumentAdapter(
+//            [in] String documentName,
+//            [out] IPrintDocumentAdapter** adpter);
 
         /**
          * Gets the current scale of this WebView.
@@ -942,10 +1008,18 @@ module
             [out] Float* scale);
 
         /**
-         * Sets the initial scale for this WebView. 0 means default. If
-         * {@link WebSettings#getUseWideViewPort()} is true, it zooms out all the
-         * way. Otherwise it starts with 100%. If initial scale is greater than 0,
-         * WebView starts with this value as initial scale.
+         * Sets the initial scale for this WebView. 0 means default.
+         * The behavior for the default scale depends on the state of
+         * {@link WebSettings#getUseWideViewPort()} and
+         * {@link WebSettings#getLoadWithOverviewMode()}.
+         * If the content fits into the WebView control by width, then
+         * the zoom is set to 100%. For wide content, the behavor
+         * depends on the state of {@link WebSettings#getLoadWithOverviewMode()}.
+         * If its value is true, the content will be zoomed out to be fit
+         * by width into the WebView control, otherwise not.
+         *
+         * If initial scale is greater than 0, WebView starts with this value
+         * as initial scale.
          * Please note that unlike the scale properties in the viewport meta tag,
          * this method doesn't take the screen density into account.
          *
@@ -1415,6 +1489,15 @@ module
             [out] Boolean* result);
 
         /**
+         * Performs a zoom operation in this WebView.
+         *
+         * @param zoomFactor the zoom factor to apply. The zoom factor will be clamped to the Webview's
+         * zoom limits. This value must be in the range 0.01 to 100.0 inclusive.
+         */
+        ZoomBy(
+            [in] Float zoomFactor);
+
+        /**
          * Performs zoom in in this WebView.
          *
          * @return true if zoom in succeeds, false if no zoom changes
@@ -1506,6 +1589,50 @@ module
          */
         GetPluginList(
             [out] IPluginList** pluginList);
+
+        /**
+         * Clears the client certificate preferences stored in response
+         * to proceeding/cancelling client cert requests. Note that Webview
+         * automatically clears these preferences when it receives a
+         * {@link KeyChain#ACTION_STORAGE_CHANGED} intent. The preferences are
+         * shared by all the webviews that are created by the embedder application.
+         *
+         * @param onCleared  A runnable to be invoked when client certs are cleared.
+         *                   The embedder can pass null if not interested in the
+         *                   callback. The runnable will be called in UI thread.
+         */
+        ClearClientCertPreferences(
+            [in] IRunnable* onCleared);
+
+        /**
+         * For apps targeting the L release, WebView has a new default behavior that reduces
+         * memory footprint and increases performance by intelligently choosing
+         * the portion of the HTML document that needs to be drawn. These
+         * optimizations are transparent to the developers. However, under certain
+         * circumstances, an App developer may want to disable them:
+         * 1. When an app uses {@link #onDraw} to do own drawing and accesses portions
+         * of the page that is way outside the visible portion of the page.
+         * 2. When an app uses {@link #capturePicture} to capture a very large HTML document.
+         * Note that capturePicture is a deprecated API.
+         *
+         * Enabling drawing the entire HTML document has a significant performance
+         * cost. This method should be called before any WebViews are created.
+         */
+        EnableSlowWholeDocumentDraw();
+
+        /**
+         * Enables debugging of web contents (HTML / CSS / JavaScript)
+         * loaded into any WebViews of this application. This flag can be enabled
+         * in order to facilitate debugging of web layouts and JavaScript
+         * code running inside WebViews. Please refer to WebView documentation
+         * for the debugging guide.
+         *
+         * The default is false.
+         *
+         * @param enabled whether to enable web contents debugging
+         */
+        SetWebContentsDebuggingEnabled(
+            [in] Boolean enabled);
     }
 
     } // namespace Webkit

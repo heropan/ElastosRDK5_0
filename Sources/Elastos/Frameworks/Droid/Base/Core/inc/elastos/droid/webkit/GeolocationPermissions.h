@@ -32,8 +32,14 @@ namespace Webkit {
 // (for the duration of the page) or permanently. This class deals only with
 // permanent permissions.
 class GeolocationPermissions
+    : public Object
+    , public IGeolocationPermissions
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CARAPI constructor();
+
     /**
      * Gets the singleton instance of this class.
      *
@@ -93,6 +99,9 @@ public:
      * Clears the Geolocation permission state for all origins.
      */
     virtual CARAPI ClearAll();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

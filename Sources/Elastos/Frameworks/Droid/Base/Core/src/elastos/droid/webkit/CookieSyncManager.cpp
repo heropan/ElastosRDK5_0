@@ -35,6 +35,14 @@ void CookieSyncManager::SyncFromRamToFlash()
 //    }
 }
 
+ECode CookieSyncManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CookieSyncManager";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

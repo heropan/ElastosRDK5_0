@@ -40,6 +40,13 @@ ECode ViewManager::ChildView::AttachViewRunnable::Run()
     return NOERROR;
 }
 
+ECode ViewManager::ChildView::AttachViewRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager::ChildView::AttachViewRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //           ViewManager::ChildView::RemoveViewRunnable
@@ -55,6 +62,13 @@ ECode ViewManager::ChildView::RemoveViewRunnable::Run()
     return NOERROR;
 }
 
+ECode ViewManager::ChildView::RemoveViewRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager::ChildView::RemoveViewRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //                    ViewManager::ChildView
@@ -127,6 +141,13 @@ void ViewManager::ChildView::RemoveViewOnUIThread()
     mOwner->mChildren.Remove(this);
 }
 
+ECode ViewManager::ChildView::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager::ChildView";
+    return NOERROR;
+}
 
 //===============================================================
 //             ViewManager::RequestLayoutRunnable
@@ -134,7 +155,8 @@ void ViewManager::ChildView::RemoveViewOnUIThread()
 ViewManager::RequestLayoutRunnable::RequestLayoutRunnable(
     /* [in] */ ISurfaceView* v)
     : mView(v)
-{}
+{
+}
 
 ECode ViewManager::RequestLayoutRunnable::Run()
 {
@@ -142,6 +164,13 @@ ECode ViewManager::RequestLayoutRunnable::Run()
     return NOERROR;
 }
 
+ECode ViewManager::RequestLayoutRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager::RequestLayoutRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //             ViewManager::PostResetStateAllRunnable
@@ -157,6 +186,13 @@ ECode ViewManager::PostResetStateAllRunnable::Run()
     return NOERROR;
 }
 
+ECode ViewManager::PostResetStateAllRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager::PostResetStateAllRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //             ViewManager::PostReadyToDrawAllRunnable
@@ -176,6 +212,13 @@ ECode ViewManager::PostReadyToDrawAllRunnable::Run()
     return NOERROR;
 }
 
+ECode ViewManager::PostReadyToDrawAllRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager::PostReadyToDrawAllRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //                         ViewManager
@@ -417,6 +460,14 @@ AutoPtr<ViewManager::ChildView> ViewManager::HitTest(
         }
     }
     return NULL;
+}
+
+ECode ViewManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewManager";
+    return NOERROR;
 }
 
 } // namespace Webkit

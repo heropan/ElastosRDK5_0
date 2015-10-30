@@ -15,6 +15,8 @@ namespace Webkit {
 CarClass(CWebChromeClient), public WebChromeClient
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI OnProgressChanged(
         /* [in] */ IWebView* view,
         /* [in] */ Int32 newProgress);
@@ -104,6 +106,12 @@ public:
 
     CARAPI OnGeolocationPermissionsHidePrompt();
 
+    CARAPI OnPermissionRequest(
+        /* [in] */ IPermissionRequest* request);
+
+    CARAPI OnPermissionRequestCanceled(
+        /* [in] */ IPermissionRequest* request);
+
     CARAPI OnJsTimeout(
         /* [out] */ Boolean* result);
 
@@ -124,6 +132,12 @@ public:
 
     CARAPI GetVisitedHistory(
         /* [in] */ IValueCallback* callBack);
+
+    CARAPI OnShowFileChooser(
+        /* [in] */ IWebView* webView,
+        /* [in] */ IValueCallback* filePathCallback,
+        /* [in] */ IWebChromeClientFileChooserParams* fileChooserParams,
+        /* [out] */ Boolean* result);
 
     CARAPI OpenFileChooser(
         /* [in] */ IValueCallback* uploadFile,

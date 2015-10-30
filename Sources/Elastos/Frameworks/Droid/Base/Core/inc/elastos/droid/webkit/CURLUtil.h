@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_WEBKIT_CURLUTIL_H__
 
 #include "_Elastos_Droid_Webkit_CURLUtil.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
 CarClass(CURLUtil)
+    , public Singleton
+    , public IURLUtil
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GuessUrl(
         /* [in] */ const String& inUrl,
         /* [out] */ String* url);

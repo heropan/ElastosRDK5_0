@@ -134,6 +134,14 @@ void HTML5VideoInline::SetFrameAvailableListener(
     }
 }
 
+ECode SetFrameAvailableListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "SetFrameAvailableListener";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

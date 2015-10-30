@@ -271,6 +271,14 @@ Boolean CookieManager::AllowFileSchemeCookiesImpl()
     return FALSE;
 }
 
+ECode CookieManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CookieManager";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

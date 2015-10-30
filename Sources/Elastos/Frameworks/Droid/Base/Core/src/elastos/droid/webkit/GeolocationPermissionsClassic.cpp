@@ -70,6 +70,14 @@ ECode GeolocationPermissionsClassic::InnerUIHandler::HandleMessage(
     return NOERROR;
 }
 
+ECode GeolocationPermissionsClassic::InnerUIHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "GeolocationPermissionsClassic::InnerUIHandler";
+    return NOERROR;
+}
+
 //===============================================================
 //         GeolocationPermissionsClassic::InnerUIHandler
 //===============================================================
@@ -158,6 +166,14 @@ ECode GeolocationPermissionsClassic::InnerHandler::HandleMessage(
             break;
     }
 
+    return NOERROR;
+}
+
+ECode GeolocationPermissionsClassic::InnerHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "GeolocationPermissionsClassic::InnerHandler";
     return NOERROR;
 }
 
@@ -427,6 +443,14 @@ void GeolocationPermissionsClassic::NativeClearAll()
 {
     assert(0);//TODO
     //android::GeolocationPermissions::clearAll();
+}
+
+ECode GeolocationPermissionsClassic::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "GeolocationPermissionsClassic";
+    return NOERROR;
 }
 
 } // namespace Webkit

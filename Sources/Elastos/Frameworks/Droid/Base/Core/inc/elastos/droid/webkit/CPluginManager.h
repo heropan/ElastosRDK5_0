@@ -12,14 +12,10 @@ namespace Webkit {
 CarClass(CPluginManager), public PluginManager
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI RefreshPlugins(
         /* [in] */ Boolean reloadOpenPages);
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-                /* [in] */ Elastos::Droid::Content::IContext * pCtx);
-
 };
 
 } // namespace Webkit

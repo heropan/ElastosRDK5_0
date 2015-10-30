@@ -28,12 +28,12 @@ namespace Webkit {
 class DeviceMotionAndOrientationManager;
 
 class DeviceOrientationService
-    : public ElRefBase
+    : public Object
     , public ISensorEventListener
 {
 private:
     class InnerRunnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -43,6 +43,9 @@ private:
         CAR_INTERFACE_DECL();
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         DeviceOrientationService* mOwner;
@@ -85,6 +88,9 @@ public:
 
     static void Resume(
         /* [in] */ IInterface* obj);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) SendErrorEvent();

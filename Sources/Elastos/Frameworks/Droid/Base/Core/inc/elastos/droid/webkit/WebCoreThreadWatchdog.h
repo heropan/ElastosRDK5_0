@@ -51,7 +51,7 @@ private:
     {
     private:
         class MyDialogInterfaceOnClickListenerClose
-            : public ElRefBase
+            : public Object
             , public IDialogInterfaceOnClickListener
         {
         public:
@@ -64,12 +64,15 @@ private:
                 /* [in] */ IDialogInterface* dialog,
                 /* [in] */ Int32 which);
 
+            CARAPI ToString(
+                /* [out] */ String* info);
+
         private:
             PageNotRespondingRunnable* mOwner;
         };
 
         class MyDialogInterfaceOnClickListenerWait
-            : public ElRefBase
+            : public Object
             , public IDialogInterfaceOnClickListener
         {
         public:
@@ -82,12 +85,15 @@ private:
                 /* [in] */ IDialogInterface* dialog,
                 /* [in] */ Int32 which);
 
+            CARAPI ToString(
+                /* [out] */ String* info);
+
         private:
             PageNotRespondingRunnable* mOwner;
         };
 
         class MyDialogInterfaceOnCancelListener
-            : public ElRefBase
+            : public Object
             , public IDialogInterfaceOnCancelListener
         {
         public:
@@ -98,6 +104,9 @@ private:
 
             CARAPI OnCancel(
                 /* [in] */ IDialogInterface* dialog);
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             PageNotRespondingRunnable* mOwner;
@@ -110,6 +119,9 @@ private:
             /* [in] */ IHandler* watchdogHandler);
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     public:
         AutoPtr<IContext> mContext;
@@ -127,6 +139,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         WebCoreThreadWatchdog* mOwner;
@@ -152,6 +167,9 @@ public:
     static CARAPI_(void) Resume();
 
     CARAPI Run();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) AddWebView(

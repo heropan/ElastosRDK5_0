@@ -16,7 +16,7 @@ namespace Webkit {
 class CWebViewClassic;
 
 class SelectActionModeCallback
-    : public ElRefBase
+    : public Object
     , public IActionModeCallback
 {
 public:
@@ -51,6 +51,9 @@ public:
 
     CARAPI OnDestroyActionMode(
         /* [in] */ IActionMode* mode);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) SetMenuVisibility(

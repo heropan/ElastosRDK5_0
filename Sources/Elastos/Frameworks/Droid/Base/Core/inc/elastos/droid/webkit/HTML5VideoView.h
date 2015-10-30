@@ -24,7 +24,7 @@ class CWebViewClassic;
  * @hide This is only used by the browser
  */
 class HTML5VideoView
-    : public ElRefBase
+    : public Object
     , public IMediaPlayerOnPreparedListener
 {
 private:
@@ -73,6 +73,9 @@ private:
 
         CARAPI SetScheduledTime(
                 /* [in] */ Int64 time);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         CARAPI_(Object*) GetSelfLock();
@@ -202,6 +205,9 @@ public:
     virtual CARAPI_(Boolean) GetStartWhenPrepared();
 
     virtual CARAPI_(void) ShowControllerInFullScreen();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 public:
     // This is true only when the player is buffering and paused

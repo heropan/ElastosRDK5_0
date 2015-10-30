@@ -12,7 +12,7 @@ namespace Webkit {
 CarClass(CWebStorage), public WebStorage
 {
 public:
-    CARAPI constructor();
+    CAR_OBJECT_DECL()
 
     CARAPI GetOrigins(
         /* [in] */ IValueCallback* callBack);

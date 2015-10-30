@@ -13,8 +13,7 @@ namespace Webkit {
 CarClass(CHttpAuthHandler), public HttpAuthHandler
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
 
     IHANDLER_METHODS_DECL();
 

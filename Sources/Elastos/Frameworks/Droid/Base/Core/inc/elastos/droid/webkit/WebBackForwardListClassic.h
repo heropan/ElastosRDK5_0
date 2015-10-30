@@ -26,7 +26,7 @@ class CallbackProxy;
 
 /* package */
 class WebBackForwardListClassic
-    : public ElRefBase
+    : public Object
     , public IWebBackForwardList
     , public IWeakReferenceSource// implements Cloneable, Serializable
 {
@@ -107,6 +107,9 @@ public:
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /* Remove the item at the given index. Called by JNI only. */

@@ -9,7 +9,8 @@ namespace Webkit {
  * @hide Only for use by WebViewProvider implementations.
  */
 HttpAuthHandler::HttpAuthHandler()
-{}
+{
+}
 
 /**
  * Gets whether the credentials stored for the current host (i.e. the host
@@ -59,6 +60,14 @@ ECode HttpAuthHandler::SuppressDialog(
 {
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
+    return NOERROR;
+}
+
+ECode HttpAuthHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HttpAuthHandler";
     return NOERROR;
 }
 

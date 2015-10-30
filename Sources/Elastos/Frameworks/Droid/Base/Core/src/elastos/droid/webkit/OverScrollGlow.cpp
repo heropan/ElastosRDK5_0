@@ -263,6 +263,14 @@ void OverScrollGlow::ReleaseAll()
     mEdgeGlowRight->OnRelease();
 }
 
+ECode OverScrollGlow::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "OverScrollGlow";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

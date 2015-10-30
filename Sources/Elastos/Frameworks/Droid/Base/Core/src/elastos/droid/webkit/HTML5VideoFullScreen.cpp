@@ -106,6 +106,14 @@ ECode HTML5VideoFullScreen::FullScreenMediaController::SetPrevNextListeners(
     return NOERROR;
 }
 
+ECode HTML5VideoFullScreen::FullScreenMediaController::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen::FullScreenMediaController";
+    return NOERROR;
+}
+
 //===============================================================
 //            HTML5VideoFullScreen::VideoSurfaceView
 //===============================================================
@@ -188,6 +196,14 @@ void HTML5VideoFullScreen::VideoSurfaceView::OnMeasure(
     SetMeasuredDimension(width, height);
 }
 
+ECode HTML5VideoFullScreen::VideoSurfaceView::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen::VideoSurfaceView";
+    return NOERROR;
+}
+
 //===============================================================
 //       HTML5VideoFullScreen::InnerSurfaceHolderCallback
 //===============================================================
@@ -249,6 +265,14 @@ ECode HTML5VideoFullScreen::InnerSurfaceHolderCallback::SurfaceDestroyed(
     return NOERROR;
 }
 
+ECode HTML5VideoFullScreen::InnerSurfaceHolderCallback::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen::InnerSurfaceHolderCallback";
+    return NOERROR;
+}
+
 //==========================================================================
 //     HTML5VideoFullScreen::InnerMediaPlayerOnVideoSizeChangedListener
 //==========================================================================
@@ -279,6 +303,14 @@ ECode HTML5VideoFullScreen::InnerMediaPlayerOnVideoSizeChangedListener::OnVideoS
     return NOERROR;
 }
 
+ECode HTML5VideoFullScreen::InnerMediaPlayerOnVideoSizeChangedListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen::InnerMediaPlayerOnVideoSizeChangedListener";
+    return NOERROR;
+}
+
 //==========================================================================
 //     HTML5VideoFullScreen::InnerMediaPlayerOnBufferingUpdateListener
 //==========================================================================
@@ -296,6 +328,14 @@ ECode HTML5VideoFullScreen::InnerMediaPlayerOnBufferingUpdateListener::OnBufferi
     /* [in] */ Int32 percent)
 {
     mOwner->mCurrentBufferPercentage = percent;
+    return NOERROR;
+}
+
+ECode HTML5VideoFullScreen::InnerMediaPlayerOnBufferingUpdateListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen::InnerMediaPlayerOnBufferingUpdateListener";
     return NOERROR;
 }
 
@@ -332,6 +372,14 @@ ECode HTML5VideoFullScreen::InnerWebChromeClientCustomViewCallback::OnCustomView
     mOwner->mProxy->DispatchOnStopFullScreen(mOwner->mPlayingWhenDestroyed);
     mOwner->mProxy = NULL;
 
+    return NOERROR;
+}
+
+ECode HTML5VideoFullScreen::InnerWebChromeClientCustomViewCallback::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen::InnerWebChromeClientCustomViewCallback";
     return NOERROR;
 }
 
@@ -707,6 +755,14 @@ void HTML5VideoFullScreen::ToggleMediaControlsVisiblity()
     else {
         mMediaController->Show();
     }
+}
+
+ECode HTML5VideoFullScreen::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoFullScreen";
+    return NOERROR;
 }
 
 } // namespace Webkit

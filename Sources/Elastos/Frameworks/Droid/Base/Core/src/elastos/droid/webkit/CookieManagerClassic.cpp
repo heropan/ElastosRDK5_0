@@ -294,6 +294,14 @@ void CookieManagerClassic::NativeSetAcceptFileSchemeCookies(
     Elastos_CookieManager_nativeSetAcceptFileSchemeCookies(accept);
 }
 
+ECode CookieManagerClassic::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CookieManagerClassic";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

@@ -20,6 +20,7 @@ module
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeProvider;
     interface Elastos.Droid.View.InputMethod.IEditorInfo;
     interface Elastos.Droid.View.InputMethod.IInputConnection;
     interface Elastos.Droid.Webkit.IValueCallback;
@@ -50,6 +51,9 @@ module
     interface IWebViewProviderViewDelegate {
         ShouldDelayChildPressedState(
             [out] Boolean* result);
+
+        GetAccessibilityNodeProvider(
+            [out] IAccessibilityNodeProvider** provider);
 
         OnInitializeAccessibilityNodeInfo(
             [in] IAccessibilityNodeInfo* info);
@@ -193,6 +197,13 @@ module
         SetLayerType(
             [in] Int32 layerType,
             [in] IPaint* paint);
+
+        PreDispatchDraw(
+            [in] ICanvas* canvas);
+
+        OnStartTemporaryDetach();
+
+        OnFinishTemporaryDetach();
     }
 
     interface IWebViewProviderScrollDelegate {
@@ -348,6 +359,10 @@ module
             [in] String encoding,
             [in] String historyUrl);
 
+        EvaluateJavaScript(
+            [in] String script,
+            [in] IValueCallback* resultCallback);
+
         SaveWebArchive(
             [in] String filename);
 
@@ -392,6 +407,10 @@ module
 
         CapturePicture(
             [out] IPicture** pic);
+
+//        CreatePrintDocumentAdapter(
+//            [in] String documentName,
+//            [out] IPrintDocumentAdapter** adapter);
 
         GetScale(
             [out] Float* scale);
@@ -520,6 +539,10 @@ module
         CanZoomOut(
             [out] Boolean* result);
 
+        ZoomBy(
+            [in] Float zoomFactor,
+            [out] Boolean* result);
+
         ZoomIn(
             [out] Boolean* result);
 
@@ -534,6 +557,12 @@ module
             [in] String className,
             [in] Int32 hashCode,
             [out] IView** view);
+
+        /**
+         * Only used by FindActionModeCallback to inform providers that the find dialog has
+         * been dismissed.
+         */
+        NotifyFindDialogDismissed();
 
         GetViewDelegate(
             [out] IWebViewProviderViewDelegate** viewDelegate);

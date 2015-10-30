@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
 
 #include "_Elastos_Droid_Webkit_CPluginData.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IMap;
@@ -12,8 +13,14 @@ namespace Droid {
 namespace Webkit {
 
 CarClass(CPluginData)
+    , public Object
+    , public IPluginData
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IInputStream* stream,
         /* [in] */ Int64 length,

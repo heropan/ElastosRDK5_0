@@ -3,9 +3,6 @@
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWFRAGMENT_H__
 
 #include "_Elastos_Droid_Webkit_CWebViewFragment.h"
-#include "elastos/droid/ext/frameworkext.h"
-
-#include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/webkit/WebViewFragment.h"
 
 namespace Elastos {
@@ -15,9 +12,7 @@ namespace Webkit {
 CarClass(CWebViewFragment) , public WebViewFragment
 {
 public:
-    CARAPI constructor();
-
-    CAR_INTERFACE_DECL();
+    CAR_OBJECT_DECL();
 
     IFRAGMENT_METHODS_DECL();
 

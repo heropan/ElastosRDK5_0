@@ -55,6 +55,14 @@ ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClick
     return NOERROR;
 }
 
+ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClickListenerClose::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClickListenerClose";
+    return NOERROR;
+}
+
 //=====================================================================================================
 //        WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClickListenerWait
 //=====================================================================================================
@@ -87,6 +95,14 @@ ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClick
     return mOwner->mWatchdogHandler->SendMessageDelayed(msg, SUBSEQUENT_TIMEOUT_PERIOD, &bResult);
 }
 
+ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClickListenerWait::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnClickListenerWait";
+    return NOERROR;
+}
+
 //=====================================================================================================
 //         WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnCancelListener
 //=====================================================================================================
@@ -110,6 +126,14 @@ ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnCance
 
     Boolean bResult = FALSE;
     return mOwner->mWatchdogHandler->SendMessageDelayed(msg, SUBSEQUENT_TIMEOUT_PERIOD, &bResult);
+}
+
+ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnCancelListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebCoreThreadWatchdog::PageNotRespondingRunnable::MyDialogInterfaceOnCancelListener";
+    return NOERROR;
 }
 
 //===============================================================
@@ -141,6 +165,14 @@ ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::Run()
     AutoPtr<IAlertDialog> alertDialog;
     alertDialogBuilder->Show((IAlertDialog**)&alertDialog);
 
+    return NOERROR;
+}
+
+ECode WebCoreThreadWatchdog::PageNotRespondingRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebCoreThreadWatchdog::PageNotRespondingRunnable";
     return NOERROR;
 }
 
@@ -245,6 +277,14 @@ ECode WebCoreThreadWatchdog::InnerHandler::HandleMessage(
         break;
     }
 
+    return NOERROR;
+}
+
+ECode WebCoreThreadWatchdog::InnerHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebCoreThreadWatchdog::InnerHandler";
     return NOERROR;
 }
 
@@ -424,6 +464,14 @@ void WebCoreThreadWatchdog::CreateHandler()
 {
     AutoLock lock(sLock);
     mHandler = new InnerHandler(this);
+}
+
+ECode WebCoreThreadWatchdog::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebCoreThreadWatchdog";
+    return NOERROR;
 }
 
 } // namespace Webkit

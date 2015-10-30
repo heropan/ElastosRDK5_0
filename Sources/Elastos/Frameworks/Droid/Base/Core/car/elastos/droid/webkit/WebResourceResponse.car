@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.IO.IInputStream;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Droid {
@@ -12,6 +13,7 @@ module
      * class from {@link WebViewClient#shouldInterceptRequest} to provide a custom
      * response when the WebView requests a particular resource.
      */
+    [deprecated]
     interface IWebResourceResponse {
 
         /**
@@ -48,7 +50,51 @@ module
             [out] String* encoding);
 
         /**
-         * Sets the input stream that provides the resource respone's data. Callers
+         * Sets the resource response's status code and reason phrase.
+         *
+         * @param statusCode the status code needs to be in the ranges [100, 299], [400, 599].
+         *                   Causing a redirect by specifying a 3xx code is not supported.
+         * @param reasonPhrase the phrase describing the status code, for example "OK". Must be non-null
+         *                     and not empty.
+         */
+        SetStatusCodeAndReasonPhrase(
+            [in] Int32 statusCode,
+            [in] String reasonPhrase);
+
+        /**
+         * Gets the resource response's status code.
+         *
+         * @return the resource response's status code.
+         */
+        GetStatusCode(
+            [out] Int32* statusCode);
+
+        /**
+         * Gets the description of the resource response's status code.
+         *
+         * @return the description of the resource response's status code.
+         */
+        GetReasonPhrase(
+            [out] String* reasonPhrase);
+
+        /**
+         * Sets the headers for the resource response.
+         *
+         * @param headers mapping of header name -> header value.
+         */
+        SetResponseHeaders(
+            [in] IMap* headers);
+
+        /**
+         * Gets the headers for the resource response.
+         *
+         * @return the headers for the resource response.
+         */
+        GetResponseHeaders(
+            [out] IMap** headers);
+
+        /**
+         * Sets the input stream that provides the resource response's data. Callers
          * must implement {@link InputStream#read(byte[]) InputStream.read(byte[])}.
          *
          * @param data the input stream that provides the resource response's data
@@ -57,7 +103,7 @@ module
             [in] IInputStream* data);
 
         /**
-         * Gets the input stream that provides the resource respone's data.
+         * Gets the input stream that provides the resource response's data.
          *
          * @return the input stream that provides the resource response's data
          */

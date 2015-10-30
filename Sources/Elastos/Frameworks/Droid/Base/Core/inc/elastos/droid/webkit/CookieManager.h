@@ -17,8 +17,7 @@ namespace Webkit {
  * Cookies are manipulated according to RFC2109.
  */
 class CookieManager
-    : public ElRefBase
-    , public Object
+    : public Object
     , public ICookieManager
 {
 public:
@@ -174,6 +173,9 @@ public:
      * @hide Package level api, called from CookieSyncManager
      */
     virtual CARAPI_(void) FlushCookieStore();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     /**

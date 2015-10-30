@@ -3,17 +3,16 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEWFRAGMENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/app/Fragment.h"
+// TODO #include "elastos/droid/app/Fragment.h"
 
-
-using Elastos::Droid::App::Fragment;
+// TODO using Elastos::Droid::App::Fragment;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IFragment;
 using Elastos::Droid::App::IFragmentManager;
 using Elastos::Droid::App::IFragmentManagerImpl;
 using Elastos::Droid::App::IFragmentSavedState;
 using Elastos::Droid::App::ILoaderManager;
-using Elastos::Droid::App::ILoaderManagerImpl;
+// TODO using Elastos::Droid::App::ILoaderManagerImpl;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
@@ -23,15 +22,19 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-class InnerWebViewFragment
-    : public Fragment
-{
-public:
-    IFRAGMENT_METHODS_DECL();
+// TODO
+// class InnerWebViewFragment
+//     : public Fragment
+// {
+// public:
+//     IFRAGMENT_METHODS_DECL();
 
-protected:
-    InnerWebViewFragment();
-};
+//     CARAPI ToString(
+//         /* [out] */ String* info);
+
+// protected:
+//     InnerWebViewFragment();
+// };
 
 /**
  * A fragment that displays a WebView.
@@ -39,10 +42,16 @@ protected:
  * The WebView is automically paused or resumed when the Fragment is paused or resumed.
  */
 class WebViewFragment
-    : public InnerWebViewFragment
+    // TODO : public InnerWebViewFragment
+    : public Object
+    , public IWebViewFragment
 {
 public:
+    CAR_INTERFACE_DECL();
+
     WebViewFragment();
+
+    CARAPI constructor();
 
     /**
      * Called to instantiate the view. Creates and returns the WebView.
@@ -78,6 +87,9 @@ public:
      * Gets the WebView.
      */
     virtual CARAPI_(AutoPtr<IWebView>) GetWebView();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     AutoPtr<IWebView> mWebView;

@@ -54,12 +54,12 @@ private:
 
     // A helper class that knows how to download posters
     class PosterDownloader
-        : public ElRefBase
+        : public Object
         , public IEventHandler
     {
     private:
         class InnerRunnable
-            : public ElLightRefBase
+            : public Object
             , public IRunnable
         {
         public:
@@ -69,6 +69,9 @@ private:
             CAR_INTERFACE_DECL();
 
             CARAPI Run();
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             PosterDownloader* mOwner;
@@ -113,6 +116,9 @@ private:
         CARAPI HandleSslErrorRequest(
             /* [in] */ ISslError* error,
             /* [out] */ Boolean* result);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         // Tears down the poster bytes stream. Called on network thread.
@@ -214,6 +220,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         HTML5VideoViewProxy* mOwner;
@@ -338,6 +347,9 @@ public:
         /* [in] */ Int32 keyCode,
         /* [in] */ IKeyEvent* event,
         /* [out] */ Boolean* result);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 public:
     // The C++ MediaPlayerPrivateAndroid object.

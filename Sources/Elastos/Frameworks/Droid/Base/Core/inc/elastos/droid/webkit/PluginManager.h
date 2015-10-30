@@ -24,9 +24,18 @@ class CPluginManager;
  * @hide pending API solidification
  */
 class PluginManager
+    : public Object
+    , public IPluginManager
 {
     friend class CPluginManagerHelper;
 public:
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+                /* [in] */ IContext * pCtx);
+
     /**
      * Service Action: A plugin wishes to be loaded in the WebView must provide
      * {@link android.content.IntentFilter IntentFilter} that accepts this
@@ -71,9 +80,14 @@ public:
         /* [in] */ const String& packageName,
         /* [in] */ const String& className);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 protected:
     PluginManager();
-    void SetContext(IContext* context);
+
+    CARAPI_(void) SetContext(
+        /* [in] */ IContext* context);
 
 private:
     PluginManager(

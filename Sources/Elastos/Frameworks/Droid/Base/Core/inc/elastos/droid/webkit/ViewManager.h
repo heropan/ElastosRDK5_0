@@ -18,12 +18,10 @@ namespace Webkit {
 
 class CWebViewClassic;
 
-class ViewManager : public ElRefBase
+class ViewManager : public Object
 {
 public:
-    class ChildView
-        : public ElRefBase
-        , public IInterface
+    class ChildView : public Object
     {
     private:
         class AttachViewRunnable : public Runnable
@@ -33,6 +31,9 @@ public:
                 /* [in] */ ChildView* owner);
 
             CARAPI Run();
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             AutoPtr<ChildView> mOwner;
@@ -45,6 +46,9 @@ public:
                 /* [in] */ ChildView* owner);
 
             CARAPI Run();
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             AutoPtr<ChildView> mOwner;
@@ -93,6 +97,9 @@ private:
 
         CARAPI Run();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<ISurfaceView> mView;
     };
@@ -105,6 +112,9 @@ private:
 
         CARAPI Run();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<ViewManager> mOwner;
     };
@@ -116,6 +126,9 @@ private:
             /* [in] */ ViewManager* owner);
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         AutoPtr<ViewManager> mOwner;
@@ -144,6 +157,9 @@ public:
     CARAPI_(AutoPtr<ChildView>) HitTest(
         /* [in] */ Int32 contentX,
         /* [in] */ Int32 contentY);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

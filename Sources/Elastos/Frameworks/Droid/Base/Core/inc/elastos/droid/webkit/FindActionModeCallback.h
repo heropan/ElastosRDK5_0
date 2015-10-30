@@ -28,14 +28,14 @@ namespace Webkit {
 class CWebViewClassic;
 
 class FindActionModeCallback
-    : public ElRefBase
+    : public Object
     , public IActionModeCallback
     , public ITextWatcher
     , public IViewOnClickListener
 {
 public:
     class NoAction
-        : public ElRefBase
+        : public Object
         , public IActionModeCallback
     {
     public:
@@ -58,6 +58,9 @@ public:
 
         CARAPI OnDestroyActionMode(
             /* [in] */ IActionMode* mode);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
     };
 
 public:
@@ -137,6 +140,9 @@ public:
         /* [in] */ IEditable* s);
 
     virtual CARAPI_(Int32) GetActionModeGlobalBottom();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /*

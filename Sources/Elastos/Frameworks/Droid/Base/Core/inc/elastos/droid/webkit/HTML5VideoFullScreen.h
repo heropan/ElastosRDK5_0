@@ -45,8 +45,7 @@ class HTML5VideoFullScreen
 {
 public:
     class FullScreenMediaController
-        : public ElRefBase
-        , public MediaController
+        : public MediaController
         , public IMediaController
     {
     public:
@@ -82,6 +81,9 @@ public:
             /* [in] */ IViewOnClickListener* next,
             /* [in] */ IViewOnClickListener* prev);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     public:
         AutoPtr<IView> mVideoView;
     };
@@ -89,8 +91,7 @@ public:
 private:
     // Add this sub-class to handle the resizing when rotating screen.
     class VideoSurfaceView
-        : public ElRefBase
-        , public SurfaceView
+        : public SurfaceView
         , public ISurfaceView
     {
     public:
@@ -104,6 +105,9 @@ private:
 
         ISURFACEVIEW_METHODS_DECL();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     protected:
         CARAPI_(void) OnMeasure(
             /* [in] */ Int32 widthMeasureSpec,
@@ -114,7 +118,7 @@ private:
     };
 
     class InnerSurfaceHolderCallback
-        : public ElLightRefBase
+        : public Object
         , public ISurfaceHolderCallback
     {
     public:
@@ -135,12 +139,15 @@ private:
         CARAPI SurfaceDestroyed(
             /* [in] */ ISurfaceHolder* holder);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         HTML5VideoFullScreen* mOwner;
     };
 
     class InnerMediaPlayerOnVideoSizeChangedListener
-        : public ElLightRefBase
+        : public Object
         , public IMediaPlayerOnVideoSizeChangedListener
     {
     public:
@@ -154,12 +161,15 @@ private:
             /* [in] */ Int32 width,
             /* [in] */ Int32 height);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         HTML5VideoFullScreen* mOwner;
     };
 
     class InnerMediaPlayerOnBufferingUpdateListener
-        : public ElLightRefBase
+        : public Object
         , public IMediaPlayerOnBufferingUpdateListener
     {
     public:
@@ -172,12 +182,15 @@ private:
             /* [in] */ IMediaPlayer* mp,
             /* [in] */ Int32 percent);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         HTML5VideoFullScreen* mOwner;
     };
 
     class InnerWebChromeClientCustomViewCallback
-        : public ElLightRefBase
+        : public Object
         , public IWebChromeClientCustomViewCallback
     {
     public:
@@ -187,6 +200,9 @@ private:
         CAR_INTERFACE_DECL();
 
         CARAPI OnCustomViewHidden();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         HTML5VideoFullScreen* mOwner;
@@ -266,6 +282,9 @@ public:
         /* [in] */ IView* v,
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* result);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     CARAPI_(void) SwitchProgressView(

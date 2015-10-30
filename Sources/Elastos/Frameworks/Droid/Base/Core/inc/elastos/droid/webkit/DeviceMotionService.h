@@ -28,12 +28,12 @@ class DeviceMotionService;
 class DeviceMotionAndOrientationManager;
 
 class DeviceMotionService
-    : public ElRefBase
+    : public Object
     , public ISensorEventListener
 {
 private:
     class ErrorEventRunnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -44,12 +44,15 @@ private:
 
         CARAPI Run();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         DeviceMotionService* mOwner;
     };
 
     class InnerRunnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -59,6 +62,9 @@ private:
         CAR_INTERFACE_DECL();
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         DeviceMotionService* mOwner;
@@ -101,6 +107,9 @@ public:
 
     static void Resume(
         /* [in] */ IInterface* obj);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) SendErrorEvent();

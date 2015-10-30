@@ -81,6 +81,14 @@ void SslCertLookupTable::Clear()
     mTable->Clear();
 }
 
+ECode SslCertLookupTable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "SslCertLookupTable";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

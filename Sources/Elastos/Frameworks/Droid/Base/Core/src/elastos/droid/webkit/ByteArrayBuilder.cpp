@@ -72,6 +72,14 @@ void ByteArrayBuilder::Chunk::ReleaseResources()
     }
 }
 
+ECode ByteArrayBuilder::Chunk::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ByteArrayBuilder::Chunk";
+    return NOERROR;
+}
+
 //===============================================================
 //                          ByteArrayBuilder
 //===============================================================
@@ -231,6 +239,14 @@ AutoPtr<ByteArrayBuilder::Chunk> ByteArrayBuilder::ObtainChunk(
         }
         return new Chunk(length);
     }
+}
+
+ECode ByteArrayBuilder::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ByteArrayBuilder";
+    return NOERROR;
 }
 
 } // namespace Webkit

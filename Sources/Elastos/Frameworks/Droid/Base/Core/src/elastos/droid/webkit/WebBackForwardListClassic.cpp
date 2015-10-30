@@ -332,6 +332,14 @@ void WebBackForwardListClassic::SetCurrentIndex(
         Logger::E(LOGTAG, "WebBackForwardListClassic::SetCurrentIndex");
 }
 
+ECode WebBackForwardListClassic::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebBackForwardListClassic";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

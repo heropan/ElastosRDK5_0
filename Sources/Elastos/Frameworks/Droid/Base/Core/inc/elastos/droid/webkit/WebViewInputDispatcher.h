@@ -63,7 +63,7 @@ namespace Webkit {
  *
  * @hide
  */
-class WebViewInputDispatcher : public ElRefBase
+class WebViewInputDispatcher : public Object
 {
 public:
     /* Implemented by {@link WebViewClassic} to perform operations on the UI thread. */
@@ -167,6 +167,9 @@ private:
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<WebViewInputDispatcher> mOwner;
     };
@@ -185,12 +188,21 @@ private:
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<WebViewInputDispatcher> mOwner;
     };
 
-    class DispatchEvent : public ElLightRefBase
+    class DispatchEvent : public Object
     {
+    public:
+        DispatchEvent();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     public:
         AutoPtr<DispatchEvent> mNext;
 
@@ -203,7 +215,7 @@ private:
         Float mWebKitScale;
     };
 
-    class DispatchEventQueue : public ElRefBase
+    class DispatchEventQueue : public Object
     {
     public:
         virtual CARAPI_(Boolean) IsEmpty();
@@ -215,6 +227,9 @@ private:
 
         virtual CARAPI_(AutoPtr<DispatchEvent>) DequeueList();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     public:
         AutoPtr<DispatchEvent> mHead;
         AutoPtr<DispatchEvent> mTail;
@@ -224,7 +239,7 @@ private:
      * Keeps track of a stream of touch events so that we can discard touch
      * events that would make the stream inconsistent.
      */
-    class TouchStream : public ElRefBase
+    class TouchStream : public Object
     {
     public:
         /**
@@ -248,6 +263,9 @@ private:
          * @return True if cancel is needed.
          */
         virtual CARAPI_(Boolean) IsCancelNeeded();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         CARAPI_(void) UpdateLastEvent(
@@ -404,6 +422,9 @@ public:
     virtual CARAPI_(void) DispatchUiEvents();
 
     static Boolean StaticValueInit();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) ScheduleLongPressLocked();

@@ -15,9 +15,7 @@ namespace Webkit {
  * p1 is "top-left" and p4 is "bottom-left" following webkit's rectangle-to-
  * FloatQuad conversion.
  */
-class QuadF
-    : public ElRefBase
-    , public IInterface
+class QuadF : public Object
 {
 public:
     QuadF();
@@ -58,6 +56,9 @@ public:
         /* [in] */ IInterface* obj,
         /* [in] */ Float x,
         /* [in] */ Float y);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 public:
     AutoPtr<IPointF> p1;

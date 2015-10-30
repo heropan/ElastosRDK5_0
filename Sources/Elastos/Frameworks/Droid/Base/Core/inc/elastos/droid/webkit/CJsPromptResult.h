@@ -9,12 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-CarClass(CJsPromptResult), JsPromptResult
+CarClass(CJsPromptResult)
+    , public JsPromptResult
 {
 public:
-    CARAPI constructor(
-        /* [in] */ IJsResultReceiver* receiver);
-
     CARAPI Cancel();
 
     CARAPI Confirm();

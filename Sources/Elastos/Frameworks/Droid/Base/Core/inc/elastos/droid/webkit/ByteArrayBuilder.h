@@ -17,12 +17,11 @@ namespace Webkit {
     single array, though this is supported in the API. It is fastest
     if the retrieval can be done via iterating through chunks.
 */
-class ByteArrayBuilder : public ElLightRefBase
+class ByteArrayBuilder : public Object
 {
 public:
     class Chunk
-        : public ElRefBase
-        , public IWeakReferenceSource
+        : public Object
     {
     public:
         Chunk(
@@ -37,6 +36,9 @@ public:
          * Release the chunk and make it available for reuse.
          */
         CARAPI_(void) ReleaseResources();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     public:
         AutoPtr< ArrayOf<Byte> > mArray;
@@ -69,6 +71,9 @@ public:
 
     //synchronized
     virtual CARAPI_(void) Clear();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     // Must be called with lock held on sPool.

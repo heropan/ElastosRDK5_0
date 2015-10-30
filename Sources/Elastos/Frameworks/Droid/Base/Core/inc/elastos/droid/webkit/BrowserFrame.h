@@ -142,8 +142,7 @@ class BrowserFrame
 private:
     // Javascript interface object
     class JSObject
-        : public ElLightRefBase
-        , public IInterface
+        : public Object
     {
     public:
         JSObject(
@@ -155,13 +154,16 @@ private:
 
         CAR_INTERFACE_DECL();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     public:
         AutoPtr<IInterface> mObject;
         Boolean mRequireAnnotation;
     };
 
     class ConfigCallback
-        : public ElLightRefBase
+        : public Object
         , public IComponentCallbacks
     {
     public:
@@ -178,6 +180,9 @@ private:
 
         CARAPI OnLowMemory();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         List< AutoPtr<IWeakReference> > mHandlers;
         AutoPtr<IWindowManager> mWindowManager;
@@ -185,7 +190,7 @@ private:
     };
 
     class MyHttpAuthHandler
-        : public ElLightRefBase
+        : public Object
         , public IHttpAuthHandler
         , public HttpAuthHandler
     {
@@ -222,6 +227,9 @@ private:
         CARAPI SuppressDialog(
             /* [out] */ Boolean* result);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         Int32 mHandle;
         Boolean mUseCachedCredentials;
@@ -230,8 +238,7 @@ private:
     };
 
     class MySslErrorHandler
-        : public ElRefBase
-        , public ISslErrorHandler
+        : public ISslErrorHandler
         , public SslErrorHandler
     {
     private:
@@ -281,6 +288,9 @@ private:
         CARAPI Proceed();
 
         CARAPI Cancel();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         AutoPtr<ISslError> mSslError;
@@ -501,6 +511,9 @@ public:
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

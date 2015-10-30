@@ -60,6 +60,14 @@ ECode FindActionModeCallback::NoAction::OnDestroyActionMode(
     return NOERROR;
 }
 
+ECode FindActionModeCallback::NoAction::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "FindActionModeCallback::NoAction";
+    return NOERROR;
+}
+
 //===============================================================
 //                   FindActionModeCallback
 //===============================================================
@@ -449,6 +457,14 @@ void FindActionModeCallback::UpdateMatchesString()
     }
 
     mMatches->SetVisibility(IView::VISIBLE);
+}
+
+ECode FindActionModeCallback::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "FindActionModeCallback";
+    return NOERROR;
 }
 
 } // namespace Webkit

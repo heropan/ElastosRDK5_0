@@ -17,7 +17,7 @@ class CWebViewClassic;
  * This class manages the edge glow effect when a WebView is flung or pulled beyond the edges.
  * @hide
  */
-class OverScrollGlow : public ElRefBase
+class OverScrollGlow : public Object
 {
  public:
     OverScrollGlow(
@@ -86,6 +86,9 @@ class OverScrollGlow : public ElRefBase
      * Release all glows from any touch pulls in progress.
      */
     virtual CARAPI_(void) ReleaseAll();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     AutoPtr<CWebViewClassic> mHostView;

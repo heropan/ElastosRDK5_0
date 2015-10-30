@@ -28,6 +28,14 @@ ECode SslErrorHandler::Cancel()
     return NOERROR;
 }
 
+ECode SslErrorHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "SslErrorHandler";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

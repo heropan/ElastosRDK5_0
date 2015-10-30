@@ -40,6 +40,14 @@ void JsResult::WakeUp()
 //    mReceiver->OnJsResultComplete((IJsResult*)this->Probe(EIID_IJsResult));
 }
 
+ECode JsResult::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "JsResult";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

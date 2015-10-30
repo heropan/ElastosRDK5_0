@@ -37,7 +37,7 @@ namespace Webkit {
  * Implements the Java side of GeolocationServiceAndroid.
  */
 class GeolocationService
-    : public ElRefBase
+    : public Object
     , public ILocationListener
 {
 public:
@@ -119,6 +119,10 @@ public:
     static void SetEnableGps(
         /* [in] */ IInterface* obj,
         /* [in] */ Boolean enable);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     /**
      * Registers this object with the location service.

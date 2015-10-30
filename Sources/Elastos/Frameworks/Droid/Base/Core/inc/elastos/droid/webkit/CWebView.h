@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Webkit_CWebView.h"
 #include "elastos/droid/webkit/WebView.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -13,34 +12,18 @@ namespace Webkit {
 CarClass(CWebView), public WebView
 {
 public:
-    CARAPI constructor(
-        /* [in] */ IContext* context);
+    CAR_OBJECT_DECL()
 
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+    // CARAPI_(PInterface) Probe(
+    //     /* [in]  */ REIID riid);
 
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Boolean privateBrowsing);
-
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    IVIEW_METHODS_DECL()
-    IVIEWGROUP_METHODS_DECL()
-    IVIEWPARENT_METHODS_DECL()
-    IVIEWMANAGER_METHODS_DECL()
-    IDRAWABLECALLBACK_METHODS_DECL()
-    IKEYEVENTCALLBACK_METHODS_DECL()
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+// TODO    IVIEW_METHODS_DECL()
+// TODO    IVIEWGROUP_METHODS_DECL()
+// TODO    IVIEWPARENT_METHODS_DECL()
+// TODO    IVIEWMANAGER_METHODS_DECL()
+// TODO    IDRAWABLECALLBACK_METHODS_DECL()
+// TODO    IKEYEVENTCALLBACK_METHODS_DECL()
+// TODO    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
 
     CARAPI SetHorizontalScrollbarOverlay(
         /* [in] */ Boolean overlay);
@@ -124,6 +107,10 @@ public:
         /* [in] */ const String& mimeType,
         /* [in] */ const String& encoding,
         /* [in] */ const String& historyUrl);
+
+    CARAPI EvaluateJavascript(
+        /* [in] */ const String& script,
+        /* [in] */ IValueCallback* resultCallback);
 
     CARAPI SaveWebArchive(
         /* [in] */ const String& filename);
@@ -301,6 +288,9 @@ public:
 
     CARAPI CanZoomOut(
         /* [out] */ Boolean* result);
+
+    CARAPI ZoomBy(
+        /* [in] */ Float zoomFactor);
 
     CARAPI ZoomIn(
         /* [out] */ Boolean* result);

@@ -462,6 +462,14 @@ ECode WebChromeClient::SetupAutoFill(
     return NOERROR;
 }
 
+ECode WebChromeClient::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebChromeClient";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

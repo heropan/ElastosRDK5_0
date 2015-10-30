@@ -24,13 +24,12 @@ namespace Webkit {
 class CWebViewClassic;
 
 class ZoomControlExternal
-    : public ElRefBase
+    : public Object
     , public IZoomControlBase
 {
 private:
     class ExtendedZoomControls
-        : public ElRefBase
-        , public IFrameLayout
+        : public IFrameLayout
         , public FrameLayout
     {
     public:
@@ -56,6 +55,9 @@ private:
         CARAPI_(void) SetOnZoomOutClickListener(
             /* [in] */ IViewOnClickListener* listener);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         CARAPI_(void) Fade(
             /* [in] */ Int32 visibility,
@@ -67,7 +69,7 @@ private:
     };
 
     class ZoomInClickListener
-        : public ElLightRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
@@ -79,12 +81,15 @@ private:
         CARAPI OnClick(
             /* [in] */ IView* v);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         ZoomControlExternal* mOwner;
     };
 
     class ZoomOutClickListener
-        : public ElLightRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
@@ -95,6 +100,9 @@ private:
 
         CARAPI OnClick(
             /* [in] */ IView* v);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         ZoomControlExternal* mOwner;

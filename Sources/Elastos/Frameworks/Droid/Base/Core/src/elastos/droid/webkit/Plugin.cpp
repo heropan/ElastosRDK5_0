@@ -10,6 +10,7 @@ namespace Webkit {
 //===============================================================
 //                    Plugin::DefaultClickHandler
 //===============================================================
+
 UInt32 Plugin::DefaultClickHandler::AddRef()
 {
     return ElRefBase::AddRef();
@@ -86,9 +87,18 @@ ECode Plugin::DefaultClickHandler::OnClick(
     return NOERROR;
 }
 
+ECode Plugin::DefaultClickHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "Plugin::DefaultClickHandler";
+    return NOERROR;
+}
+
 //===============================================================
 //                             Plugin
 //===============================================================
+
 Plugin::Plugin()
 {
 }
@@ -243,6 +253,14 @@ ECode Plugin::DispatchClickEvent(
     if (mHandler != NULL) {
         mHandler->HandleClickEvent(context);
     }
+    return NOERROR;
+}
+
+ECode Plugin::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "Plugin";
     return NOERROR;
 }
 

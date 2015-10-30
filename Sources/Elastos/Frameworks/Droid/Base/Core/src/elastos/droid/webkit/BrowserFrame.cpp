@@ -148,6 +148,13 @@ ECode BrowserFrame::ConfigCallback::OnLowMemory()
     return NOERROR;
 }
 
+ECode BrowserFrame::ConfigCallback::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "BrowserFrame::ConfigCallback";
+    return NOERROR;
+}
 
 //===============================================================
 //                  BrowserFrame::MyHttpAuthHandler
@@ -192,6 +199,14 @@ ECode BrowserFrame::MyHttpAuthHandler::SuppressDialog(
     return NOERROR;
 }
 
+ECode BrowserFrame::MyHttpAuthHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "BrowserFrame::MyHttpAuthHandler";
+    return NOERROR;
+}
+
 
 //===============================================================
 //       BrowserFrame::MySslErrorHandler::ProceedRunnable
@@ -199,11 +214,20 @@ ECode BrowserFrame::MyHttpAuthHandler::SuppressDialog(
 BrowserFrame::MySslErrorHandler::ProceedRunnable::ProceedRunnable(
     /* [in] */ MySslErrorHandler* owner)
     : mOwner(owner)
-{}
+{
+}
 
 ECode BrowserFrame::MySslErrorHandler::ProceedRunnable::Run()
 {
     mOwner->mOwner->NativeSslCertErrorProceed(mOwner->mHandle);
+    return NOERROR;
+}
+
+ECode BrowserFrame::MySslErrorHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "BrowserFrame::MySslErrorHandler";
     return NOERROR;
 }
 
@@ -214,7 +238,8 @@ ECode BrowserFrame::MySslErrorHandler::ProceedRunnable::Run()
 BrowserFrame::MySslErrorHandler::CancelRunnable::CancelRunnable(
     /* [in] */ MySslErrorHandler* owner)
     : mOwner(owner)
-{}
+{
+}
 
 ECode BrowserFrame::MySslErrorHandler::CancelRunnable::Run()
 {
@@ -222,6 +247,13 @@ ECode BrowserFrame::MySslErrorHandler::CancelRunnable::Run()
     return NOERROR;
 }
 
+ECode BrowserFrame::MySslErrorHandler::CancelRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "BrowserFrame::MySslErrorHandler::CancelRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //                  BrowserFrame::MySslErrorHandler
@@ -253,6 +285,13 @@ ECode BrowserFrame::MySslErrorHandler::Cancel()
     return NOERROR;
 }
 
+ECode BrowserFrame::MySslErrorHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "BrowserFrame::MySslErrorHandler";
+    return NOERROR;
+}
 
 //===============================================================
 //                          BrowserFrame
@@ -2329,6 +2368,14 @@ Int32 BrowserFrame::GetFrameField(
 {
     BrowserFrame* browserFrame = (BrowserFrame*)(obj);
     return browserFrame->mNativeFrame;
+}
+
+ECode BrowserFrame::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "BrowserFrame";
+    return NOERROR;
 }
 
 // end the callback functions definition

@@ -15,9 +15,13 @@ namespace Webkit {
  * dialog prompt back to the WebView instance. The client can call cancel() to cancel the dialog or
  * confirm() with the user's input to confirm the dialog.
  */
-class JsPromptResult : public JsResult
+class JsPromptResult
+    : public JsResult
+    , public IJsPromptResult
 {
 public:
+    CAR_INTERFACE_DECL();
+
     JsPromptResult()
     {}
 
@@ -29,6 +33,9 @@ public:
         : JsResult(receiver)
     {}
 
+    CARAPI constructor(
+        /* [in] */ IJsResultReceiver* receiver);
+
     /**
      * Handle a confirmation response from the user.
      */
@@ -39,6 +46,9 @@ public:
      * @hide Only for use by WebViewProvider implementations
      */
     virtual CARAPI_(String) GetStringResult();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     CARAPI Init(

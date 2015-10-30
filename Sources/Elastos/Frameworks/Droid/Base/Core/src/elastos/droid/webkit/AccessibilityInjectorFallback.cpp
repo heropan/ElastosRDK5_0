@@ -640,6 +640,14 @@ Boolean AccessibilityInjectorFallback::IsEnterActionKey(
             || keyCode == IKeyEvent::KEYCODE_NUMPAD_ENTER;
 }
 
+ECode AccessibilityInjectorFallback::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "AccessibilityInjectorFallback";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

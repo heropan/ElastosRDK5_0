@@ -13,7 +13,7 @@ namespace Webkit {
  * part of onDownloadStart callback.
  * @hide
  */
-class BrowserDownloadListener
+class BrowserDownloadListener : public Object
 {
 public:
     /**
@@ -35,6 +35,9 @@ public:
         return OnDownloadStart(url, userAgent, contentDisposition, mimetype, String(NULL),
                       contentLength);
     }
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

@@ -120,6 +120,14 @@ Int32 ViewStateSerializer::NativeDeserializeViewState(
     return Elastos_ViewStateSerializer_nativeDeserializeViewState(version, jstream, jstorage);
 }
 
+ECode ViewStateSerializer::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ViewStateSerializer";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

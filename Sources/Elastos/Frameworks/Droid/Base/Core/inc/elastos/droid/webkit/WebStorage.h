@@ -28,6 +28,8 @@ class WebStorageClassic;
  * to an origin. It is also possible to set per-origin quotas.
  */
 class WebStorage
+    : public Object
+    , public IWebStorage
 {
 public:
     /**
@@ -37,7 +39,7 @@ public:
      * See {@link WebStorage} for details.
      */
     class Origin
-        : public ElRefBase
+        : public Object
         , public IWebStorageOrigin
     {
         friend class WebStorageClassic;
@@ -76,6 +78,9 @@ public:
         CARAPI GetUsage(
             /* [out] */ Int64* usage);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     protected:
         /** @hide */
         Origin(
@@ -99,6 +104,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * This class should not be instantiated directly, applications must only use
      * {@link #getInstance()} to obtain the instance.
@@ -108,6 +115,8 @@ public:
      * @hide
      */
     WebStorage();
+
+    CARAPI constructor();
 
     /*
      * When calling getOrigins(), getUsageForOrigin() and getQuotaForOrigin(),
@@ -184,6 +193,9 @@ public:
      * @return the singleton {@link WebStorage} instance
      */
     static CARAPI_(AutoPtr<IWebStorage>) GetInstance();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

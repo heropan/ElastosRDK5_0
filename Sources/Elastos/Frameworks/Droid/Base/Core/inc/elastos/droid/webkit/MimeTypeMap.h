@@ -16,8 +16,8 @@ namespace Webkit {
  * class and {@code URLConnection} share the same MIME-type database.
  */
 class MimeTypeMap
-    : public IMimeTypeMap
-    , public ElRefBase
+    : public Object
+    , public IMimeTypeMap
 {
     friend class CMimeTypeMapHelper;
 private:
@@ -63,6 +63,9 @@ public:
     CARAPI GetExtensionFromMimeType(
         /* [in] */ const String& mimeType,
         /* [out] */ String* extension);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 public:
     /**

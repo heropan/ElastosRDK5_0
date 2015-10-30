@@ -25,13 +25,12 @@ class BrowserFrame;
  * @hide
  */
 class ClientCertRequestHandler
-    : public ElRefBase
-    , public IClientCertRequestHandler
+    : public IClientCertRequestHandler
     , public Handler
 {
 private:
     class IgnoreRunnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -42,12 +41,15 @@ private:
 
         CARAPI Run();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         ClientCertRequestHandler* mOwner;
     };
 
     class CancelRunnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -58,12 +60,15 @@ private:
 
         CARAPI Run();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         ClientCertRequestHandler* mOwner;
     };
 
     class CtxRunnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -76,6 +81,9 @@ private:
 
         CARAPI Run();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         ClientCertRequestHandler* mOwner;
         Int32 mCtx;
@@ -83,7 +91,7 @@ private:
     };
 
     class PKCS8Runnable
-        : public ElLightRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -95,6 +103,9 @@ private:
         CAR_INTERFACE_DECL();
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         ClientCertRequestHandler* mOwner;
@@ -129,6 +140,9 @@ public:
      * Cancel this request, remember the users negative choice.
      */
     CARAPI Cancel();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

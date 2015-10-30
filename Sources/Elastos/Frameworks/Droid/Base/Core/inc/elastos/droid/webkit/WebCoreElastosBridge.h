@@ -131,6 +131,9 @@ public:
         /* [in] */ const String& newProxy,
         /* [in] */ const String& exclusionList);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     /**
      * Call native timer callbacks.

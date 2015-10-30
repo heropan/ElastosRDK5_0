@@ -47,10 +47,12 @@ struct ElaCacheManagerCallback
 };
 
 CarClass(CCacheManager)
+    , public Object
+    , public ICacheManager
 {
 public:
     class CacheResult
-        : public ElLightRefBase
+        : public Object
         , public ICacheManagerCacheResult
     {
     public:
@@ -142,6 +144,10 @@ private:
     };
 
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Initializes the HTTP cache. This method must be called before any
      * CacheManager methods are used. Note that this is called automatically

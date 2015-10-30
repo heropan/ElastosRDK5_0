@@ -34,7 +34,7 @@ extern "C" const InterfaceID EIID_WebHistoryItemClassic;
 
 /* package */
 class WebHistoryItemClassic
-    : public ElRefBase
+    : public Object
     , public IWebHistoryItem //implements Cloneable
 {
 public:
@@ -135,6 +135,9 @@ public:
      */
     WebHistoryItemClassic(
         /* [in] */ Int32 nativeBridge);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
 //    protected virtual CARAPI_(void) finalize();

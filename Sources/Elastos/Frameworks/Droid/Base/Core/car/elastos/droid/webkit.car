@@ -2,7 +2,7 @@ module
 {
     merge("webkit/DownloadListener.car");
     merge("webkit/BrowserDownloadListener.car");
-    merge("webkit/ClientCertRequestHandler.car");
+    merge("webkit/ClientCertRequest.car");
     merge("webkit/CacheManager.car");
     merge("webkit/ConsoleMessage.car");
     merge("webkit/CookieManager.car");
@@ -15,8 +15,9 @@ module
     merge("webkit/JsPromptResult.car");
     merge("webkit/L10nUtilsHelper.car");
     merge("webkit/MimeTypeMap.car");
-    merge("webkit/MockGeolocation.car");
+//    merge("webkit/MockGeolocation.car");
     merge("webkit/OverScrollGlow.car");
+    merge("webkit/PermissionRequest.car");
     merge("webkit/Plugin.car");
     merge("webkit/PluginData.car");
     merge("webkit/PluginList.car");
@@ -30,6 +31,7 @@ module
     merge("webkit/WebChromeClient.car");
     merge("webkit/WebHistoryItem.car");
     merge("webkit/WebIconDatabase.car");
+    merge("webkit/WebResourceRequest.car");
     merge("webkit/WebResourceResponse.car");
     merge("webkit/WebSettings.car");
     merge("webkit/WebSettingsClassic.car");
@@ -38,24 +40,30 @@ module
     merge("webkit/WebBackForwardList.car");
     merge("webkit/WebView.car");
     merge("webkit/WebViewProvider.car");
-    merge("webkit/WebViewClassic.car");
+//    merge("webkit/WebViewClassic.car");
     merge("webkit/WebViewClient.car");
-    merge("webkit/WebViewClientClassicExt.car");
-    merge("webkit/WebViewCore.car");
+//    merge("webkit/WebViewClientClassicExt.car");
+//    merge("webkit/WebViewCore.car");
     merge("webkit/WebViewDatabase.car");
     merge("webkit/WebViewFragment.car");
 
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IMap;
 
+    interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IComponentCallbacks;
+    interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IViewParent;
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IOnGlobalFocusChangeListener;
+    interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     interface Elastos.Droid.View.IViewGroupOnHierarchyChangeListener;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
 
@@ -123,12 +131,14 @@ module
 
         class CHttpAuthHandler {
             interface IHttpAuthHandler;
+            interface IHandler;
         }
 
         class CJsPromptResult {
             constructor(
                 [in] IJsResultReceiver* receiver);
 
+            interface IJsResult;
             interface IJsPromptResult;
         }
 
@@ -151,12 +161,12 @@ module
 //            interface IMimeTypeMap;
 //        }
 
-        class CMockGeolocation {
-            constructor(
-                [in] IWebViewCore* webViewCore);
-
-            interface IMockGeolocation;
-        }
+//        class CMockGeolocation {
+//            constructor(
+//                [in] IWebViewCore* webViewCore);
+//
+//            interface IMockGeolocation;
+//        }
 
 //        class COverScrollGlow {
 //            constructor(
@@ -249,6 +259,14 @@ module
                 [in] String encoding,
                 [in] IInputStream* data);
 
+            constructor(
+                [in] String mimeType,
+                [in] String encoding,
+                [in] Int32 statusCode,
+                [in] String reasonPhrase,
+                [in] IMap* responseHeaders,
+                [in] IInputStream* data);
+
             interface IWebResourceResponse;
         }
 
@@ -299,9 +317,9 @@ module
             interface IWebStorage;
         }
 
-        class CWebViewTransport {
-            interface IWebViewTransport;
-        }
+//        class CWebViewTransport {
+//            interface IWebVibabaewTransport;
+//        }
 
         class CWebViewHitTestResult {
             interface IWebViewHitTestResult;
@@ -333,6 +351,8 @@ module
                 [in] Boolean privateBrowsing);
 
             interface IWebView;
+            interface IView;
+            interface IViewGroup;
             interface IViewParent;
             interface IViewManager;
             interface IDrawableCallback;
@@ -342,44 +362,45 @@ module
             interface IViewGroupOnHierarchyChangeListener;
         }
 
-        singleton class CWebViewClassicHelper {
-            interface IWebViewClassicHelper;
-        }
+//        singleton class CWebViewClassicHelper {
+//            interface IWebViewClassicHelper;
+//        }
 
-        [local]
-        class CWebViewClassic {
-            constructor(
-                [in] IWebView* webView,
-                [in] IWebViewPrivateAccess* privateAccess);
-
-            interface IWebViewClassic;
-            interface IWebViewProvider;
-            interface IWebViewProviderScrollDelegate;
-            interface IWebViewProviderViewDelegate;
-        }
+//        [local]
+//        class CWebViewClassic {
+//            constructor(
+//                [in] IWebView* webView,
+//                [in] IWebViewPrivateAccess* privateAccess);
+//
+//            interface IWebViewClassic;
+//            interface IWebViewProvider;
+//            interface IWebViewProviderScrollDelegate;
+//            interface IWebViewProviderViewDelegate;
+//        }
 
         class CWebViewClient {
             interface IWebViewClient;
         }
 
-        class CWebViewClientClassicExt {
-            interface IWebViewClientClassicExt;
-        }
+//        class CWebViewClientClassicExt {
+//            interface IWebViewClientClassicExt;
+//            interface IWebViewClient;
+//        }
 
-        singleton class CWebViewCoreHelper {
-            interface IWebViewCoreHelper;
-        }
+//        singleton class CWebViewCoreHelper {
+//            interface IWebViewCoreHelper;
+//        }
 
-        [local]
-        class CWebViewCore {
-            constructor(
-                [in] IContext* ctx,
-                [in] IWebViewClassic* w,
-                [in] IHandler* proxy,
-                [in] IMap* javascriptInterfaces);
-
-            interface IWebViewCore;
-        }
+//        [local]
+//        class CWebViewCore {
+//            constructor(
+//                [in] IContext* ctx,
+//                [in] IWebViewClassic* w,
+//                [in] IHandler* proxy,
+//                [in] IMap* javascriptInterfaces);
+//
+//            interface IWebViewCore;
+//        }
 
         singleton class CWebViewDatabaseHelper {
             interface IWebViewDatabaseHelper;
@@ -393,6 +414,10 @@ module
             constructor();
 
             interface IWebViewFragment;
+            interface IFragment;
+            interface IComponentCallbacks;
+            interface IComponentCallbacks2;
+            interface IViewOnCreateContextMenuListener;
         }
 
     } // namespace Webkit

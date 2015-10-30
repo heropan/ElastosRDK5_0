@@ -46,8 +46,7 @@ private:
     // Result transportation object for returning results across thread
     // boundaries.
     class ResultTransport
-        : public ElLightRefBase
-        , public IInterface
+        : public Object
     {
     public:
         ResultTransport(
@@ -60,6 +59,9 @@ private:
 
         CARAPI_(AutoPtr<IInterface>) GetResult();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         // Private result object
         AutoPtr<IInterface> mResult;
@@ -67,7 +69,7 @@ private:
     };
 
     class JsResultReceiver
-        : public ElLightRefBase
+        : public Object
         , public IJsResultReceiver
     {
     public:
@@ -88,6 +90,9 @@ private:
         CARAPI OnJsResultComplete(
             /* [in] */ IJsResult* result);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         CARAPI_(void) NotifyCallbackProxy();
 
@@ -105,7 +110,7 @@ private:
     };
 
     class UploadFile
-        : public ElLightRefBase
+        : public Object
         , public IValueCallback
     {
     public:
@@ -121,13 +126,16 @@ private:
 
         CARAPI_(AutoPtr<IUri>) GetResult();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IUri> mValue;
         CallbackProxy* mOwner;
     };
 
     class UploadFileMessageData
-        : public ElLightRefBase
+        : public Object
         , public IInterface
     {
     public:
@@ -144,6 +152,9 @@ private:
 
         CARAPI_(String) GetCapture();
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<UploadFile> mCallback;
         String mAcceptType;
@@ -151,7 +162,7 @@ private:
     };
 
     class InnerDialogOnClickListener
-        : public ElLightRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
@@ -165,13 +176,16 @@ private:
             /* [in] */ IDialogInterface* dialog,
             /* [in] */ Int32 which);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IJsResult> mRes;
         CallbackProxy* mOwner;
     };
 
     class InnerDialogOnClickListenerEx
-        : public ElLightRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
@@ -186,6 +200,9 @@ private:
             /* [in] */ IDialogInterface* dialog,
             /* [in] */ Int32 which);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IJsPromptResult> mRes;
         AutoPtr<IEditText> mEditText;
@@ -193,7 +210,7 @@ private:
     };
 
     class InnerDialogOnCancelListener
-        : public ElLightRefBase
+        : public Object
         , public IDialogInterfaceOnCancelListener
     {
     public:
@@ -206,13 +223,16 @@ private:
         CARAPI OnCancel(
             /* [in] */ IDialogInterface* dialog);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IJsResult> mRes;
         CallbackProxy* mOwner;
     };
 
     class CancelClickListener
-        : public ElLightRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
@@ -225,6 +245,9 @@ private:
         CARAPI OnClick(
             /* [in] */ IDialogInterface* dialog,
             /* [in] */ Int32 which);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         AutoPtr<IJsResult> mRes;
@@ -556,6 +579,9 @@ public:
         /* [in] */ Int32 index);
 
     CARAPI_(Boolean) CanShowAlertDialog();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     CARAPI_(Boolean) MessagesBlocked();

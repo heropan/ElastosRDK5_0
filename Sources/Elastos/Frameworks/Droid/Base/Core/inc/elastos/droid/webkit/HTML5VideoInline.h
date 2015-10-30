@@ -53,6 +53,9 @@ public:
 
     CARAPI_(Int32) GetTextureName();
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     CARAPI_(void) SetFrameAvailableListener(
         /* [in] */ IOnFrameAvailableListener* l);

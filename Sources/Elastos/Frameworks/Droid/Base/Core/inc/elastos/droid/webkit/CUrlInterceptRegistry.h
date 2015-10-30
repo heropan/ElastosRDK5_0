@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_Webkit_CUrlInterceptRegistry.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Singleton.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IMap;
@@ -14,8 +15,14 @@ namespace Droid {
 namespace Webkit {
 
 CarClass(CUrlInterceptRegistry)
+    , public Singleton
+    , public IUrlInterceptRegistry
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI SetUrlInterceptDisabled(
         /* [in] */ Boolean disabled);
 

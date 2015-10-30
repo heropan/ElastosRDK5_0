@@ -62,6 +62,14 @@ void KeyStoreHandler::InstallCert(
     }
 }
 
+ECode KeyStoreHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "KeyStoreHandler";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

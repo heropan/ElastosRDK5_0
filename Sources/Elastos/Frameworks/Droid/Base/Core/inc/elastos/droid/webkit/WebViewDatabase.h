@@ -21,7 +21,7 @@ namespace Webkit {
  * </ul>
  */
 class WebViewDatabase
-    : public ElRefBase
+    : public Object
     , public IWebViewDatabase
 {
 public:
@@ -85,6 +85,9 @@ public:
      * @see hasFormData
      */
     CARAPI ClearFormData();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     /**

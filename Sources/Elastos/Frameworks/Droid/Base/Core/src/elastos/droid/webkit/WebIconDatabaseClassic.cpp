@@ -38,6 +38,13 @@ void WebIconDatabaseClassic::EventHandler::IconResult::Dispatch()
     mListener->OnReceivedIcon(mUrl, mIcon);
 }
 
+ECode WebIconDatabaseClassic::EventHandler::IconResult::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebIconDatabaseClassic::EventHandler::IconResult";
+    return NOERROR;
+}
 
 //===============================================================
 //      WebIconDatabaseClassic::EventHandler::InnerHandler
@@ -108,6 +115,13 @@ ECode WebIconDatabaseClassic::EventHandler::InnerHandler::HandleMessage(
     return NOERROR;
 }
 
+ECode WebIconDatabaseClassic::EventHandler::InnerHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebIconDatabaseClassic::EventHandler::InnerHandler";
+    return NOERROR;
+}
 
 //===============================================================
 //           WebIconDatabaseClassic::EventHandler

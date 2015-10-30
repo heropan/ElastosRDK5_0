@@ -110,6 +110,14 @@ ECode HTML5VideoViewProxy::PosterDownloader::InnerRunnable::Run()
     return NOERROR;
 }
 
+ECode HTML5VideoViewProxy::PosterDownloader::InnerRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoViewProxy::PosterDownloader::InnerRunnable";
+    return NOERROR;
+}
+
 //===============================================================
 //               HTML5VideoViewProxy::PosterDownloader
 //===============================================================
@@ -288,6 +296,14 @@ void HTML5VideoViewProxy::PosterDownloader::ReleaseQueue()
         mRequestQueue->Shutdown();
         mRequestQueue = NULL;
     }
+}
+
+ECode HTML5VideoViewProxy::PosterDownloader::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoViewProxy::PosterDownloader";
+    return NOERROR;
 }
 
 //===============================================================
@@ -543,6 +559,14 @@ void HTML5VideoViewProxy::VideoPlayer::SetPlayerBuffering(
     mHTML5VideoView->SetPlayerBuffering(playerBuffering);
 }
 
+ECode HTML5VideoViewProxy::VideoPlayer::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoViewProxy::VideoPlayer";
+    return NOERROR;
+}
+
 //===============================================================
 //              HTML5VideoViewProxy::InnerHandler
 //===============================================================
@@ -606,6 +630,14 @@ ECode HTML5VideoViewProxy::InnerHandler::HandleMessage(
             break;
     }
 
+    return NOERROR;
+}
+
+ECode HTML5VideoViewProxy::InnerHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoViewProxy::InnerHandler";
     return NOERROR;
 }
 
@@ -1284,6 +1316,14 @@ Boolean HTML5VideoViewProxy::NativeSendSurfaceTexture(
     AutoPtr<CSurfaceTexture> cSurfTex = (CSurfaceTexture*)surfTex;
     android::sp<android::SurfaceTexture> texture = SurfaceTexture_getSurfaceTexture(cSurfTex);
     return Elastos_MediaPlayerPrivateAndroid_SendSurfaceTexture(texture, baseLayer, videoLayerId, textureName, playerState);
+}
+
+ECode HTML5VideoViewProxy::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoViewProxy";
+    return NOERROR;
 }
 
 } // namespace Webkit

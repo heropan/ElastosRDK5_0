@@ -118,6 +118,14 @@ void DeviceMotionAndOrientationManager::NativeOnOrientationChange(
                                 canProvideAlpha, alpha, canProvideBeta, beta, canProvideGamma, gamma);
 }
 
+ECode DeviceMotionAndOrientationManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DeviceMotionAndOrientationManager";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

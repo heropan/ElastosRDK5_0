@@ -32,14 +32,14 @@ class CWebViewClassic;
 class CWebViewClassicWebViewInputConnection;
 
 class AutoCompletePopup
-    : public ElRefBase
+    : public Object
     , public IAdapterViewOnItemClickListener
     , public IFilterListener
     , public IPopupWindowOnDismissListener
 {
 private:
     class AnchorView
-        : public ElRefBase
+        : public Object
         , public Elastos::Droid::View::View
         , public IView
     {
@@ -55,6 +55,9 @@ private:
         CAR_INTERFACE_DECL();
 
         IVIEW_METHODS_DECL();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
     };
 
 public:
@@ -95,6 +98,9 @@ public:
         /* [in] */ Int32 count);
 
     CARAPI OnDismiss();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) PushTextToInputConnection();

@@ -115,13 +115,12 @@ class CWebViewClassic;
  * @hide
  */
 class WebSettingsClassic
-    : public ElRefBase
-    , public WebSettings
+    : public WebSettings
     , public IWebSettingsClassic
 {
 private:
     // Class to handle messages before WebCore is ready.
-    class EventHandler : public ElRefBase
+    class EventHandler : public Object
     {
         friend class WebSettingsClassic;
 
@@ -134,6 +133,9 @@ private:
 
             CARAPI HandleMessage(
                 /* [in] */ IMessage* msg);
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             EventHandler* mOwner;
@@ -150,6 +152,9 @@ private:
     public:
         EventHandler(
             /* [in] */ WebSettingsClassic* owner);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         CARAPI_(void) CreateHandler();
@@ -1054,6 +1059,9 @@ public:
 
     CARAPI GetCacheMode(
         /* [out] */ Int32* mode);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

@@ -337,6 +337,14 @@ AutoPtr<IBitmap> WebHistoryItemClassic::NativeGetFavicon(
     return IBitmap::Probe(Elastos_WebHistory_nativeGetFavicon(ptr));
 }
 
+ECode WebHistoryItemClassic::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebHistoryItemClassic";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

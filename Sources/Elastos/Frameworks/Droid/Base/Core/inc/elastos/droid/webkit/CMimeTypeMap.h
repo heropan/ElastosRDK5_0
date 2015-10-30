@@ -12,6 +12,8 @@ namespace Webkit {
 CarClass(CMimeTypeMap), public MimeTypeMap
 {
 public:
+    CAR_OBJECT_DECL();
+
     CARAPI HasMimeType(
         /* [in] */ const String& mimeType,
         /* [out] */ Boolean* result);

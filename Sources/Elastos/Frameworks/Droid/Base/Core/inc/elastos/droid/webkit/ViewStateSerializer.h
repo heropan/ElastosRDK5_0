@@ -16,7 +16,7 @@ class CWebViewCoreDrawData;
 /**
  * @hide
  */
-class ViewStateSerializer : public ElRefBase
+class ViewStateSerializer : public Object
 {
 public:
     static CARAPI_(Boolean) SerializeViewState(

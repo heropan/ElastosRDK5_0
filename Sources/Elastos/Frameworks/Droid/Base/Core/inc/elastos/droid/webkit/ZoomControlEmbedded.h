@@ -16,12 +16,12 @@ class ZoomManager;
 class CWebViewClassic;
 
 class ZoomControlEmbedded
-    : public ElRefBase
+    : public Object
     , public IZoomControlBase
 {
 private:
     class ZoomListener
-        : public ElLightRefBase
+        : public Object
         , public IOnZoomListener
     {
     public:
@@ -35,6 +35,9 @@ private:
 
         CARAPI OnZoom(
             /* [in] */ Boolean zoomIn);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         ZoomControlEmbedded* mOwner;
@@ -55,6 +58,9 @@ public:
         /* [out] */ Boolean* isVisible);
 
     CARAPI Update();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(AutoPtr<IZoomButtonsController>) GetControls();

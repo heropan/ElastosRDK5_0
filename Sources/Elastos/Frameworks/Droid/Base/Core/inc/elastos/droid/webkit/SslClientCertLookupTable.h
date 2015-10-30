@@ -15,7 +15,7 @@ namespace Webkit {
 /**
  * A simple class to store client certificates that user has chosen.
  */
-class SslClientCertLookupTable : public ElRefBase
+class SslClientCertLookupTable : public Object
 {
 public:
     //synchronized
@@ -40,6 +40,9 @@ public:
 
     CARAPI_(AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > >) CertificateChain(
         /* [in] */ const String& host_and_port);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     SslClientCertLookupTable();

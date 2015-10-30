@@ -43,6 +43,14 @@ ECode GeolocationPermissions::ClearAll()
     return NOERROR;
 }
 
+ECode GeolocationPermissions::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "GeolocationPermissions";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

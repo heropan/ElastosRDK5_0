@@ -13,13 +13,15 @@ namespace Droid {
 namespace Webkit {
 
 class WebChromeClient
+    : public Object
+    , public IWebChromeClient
 {
 public:
     /**
      * A callback interface used by the host application to notify
      * the current page that its custom view has been dismissed.
      */
-    class CustomViewCallback : public ElRefBase
+    class CustomViewCallback : public Object
     {
     public:
         /**
@@ -30,6 +32,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Tell the host application the current progress of loading a page.
      * @param view The WebView that initiated the callback.
@@ -304,6 +308,28 @@ public:
     virtual CARAPI OnGeolocationPermissionsHidePrompt();
 
     /**
+     * Notify the host application that web content is requesting permission to
+     * access the specified resources and the permission currently isn't granted
+     * or denied. The host application must invoke {@link PermissionRequest#grant(String[])}
+     * or {@link PermissionRequest#deny()}.
+     *
+     * If this method isn't overridden, the permission is denied.
+     *
+     * @param request the PermissionRequest from current web content.
+     */
+    virtual CARAPI OnPermissionRequest(
+        /* [in] */ IPermissionRequest* request);
+
+    /**
+     * Notify the host application that the given permission request
+     * has been canceled. Any related UI should therefore be hidden.
+     *
+     * @param request the PermissionRequest that needs be canceled.
+     */
+    virtual CARAPI OnPermissionRequestCanceled(
+        /* [in] */ IPermissionRequest* request);
+
+    /**
      * Tell the client that a JavaScript execution timeout has occured. And the
      * client may decide whether or not to interrupt the execution. If the
      * client returns true, the JavaScript will be interrupted. If the client
@@ -371,6 +397,30 @@ public:
         /* [in] */ IValueCallback* callBack);
 
     /**
+     * Tell the client to show a file chooser.
+     *
+     * This is called to handle HTML forms with 'file' input type, in response to the
+     * user pressing the "Select File" button.
+     * To cancel the request, call <code>filePathCallback.onReceiveValue(null)</code> and
+     * return true.
+     *
+     * @param webView The WebView instance that is initiating the request.
+     * @param filePathCallback Invoke this callback to supply the list of paths to files to upload,
+     *                         or NULL to cancel. Must only be called if the
+     *                         <code>showFileChooser</code> implementations returns true.
+     * @param fileChooserParams Describes the mode of file chooser to be opened, and options to be
+     *                          used with it.
+     * @return true if filePathCallback will be invoked, false to use default handling.
+     *
+     * @see FileChooserParams
+     */
+    virtual CARAPI OnShowFileChooser(
+        /* [in] */ IWebView* webView,
+        /* [in] */ IValueCallback* filePathCallback,
+        /* [in] */ IWebChromeClientFileChooserParams* fileChooserParams,
+        /* [out] */ Boolean* result);
+
+    /**
      * Tell the client to open a file chooser.
      * @param uploadFile A ValueCallback to set the URI of the file to upload.
      *      onReceiveValue must be called to wake up the thread.a
@@ -395,6 +445,9 @@ public:
      */
     virtual CARAPI SetupAutoFill(
         /* [in] */ IMessage* msg);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

@@ -124,6 +124,14 @@ String L10nUtils::LoadString(
     return localisedString;
 }
 
+ECode L10nUtils::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "L10nUtils";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

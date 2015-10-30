@@ -40,15 +40,18 @@ class CWebViewCoreViewState;
  * effect is achieved by scaling the VIEWS (both WebView and ViewManager.ChildView)
  * to the new scale in response to events related to the user's gesture.
  */
-class ZoomManager : public ElRefBase
+class ZoomManager : public Object
 {
 private:
-    class FocusMovementQueue : public ElLightRefBase
+    class FocusMovementQueue : public Object
     {
         friend class ZoomManager;
     public:
         FocusMovementQueue(
             /* [in] */ ZoomManager* owner);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         CARAPI_(void) Clear();
@@ -68,7 +71,7 @@ private:
     };
 
     class ScaleDetectorListener
-        : public ElLightRefBase
+        : public Object
         , public IOnScaleGestureListener
     {
     public:
@@ -96,6 +99,9 @@ private:
         CARAPI OnScaleEnd(
             /* [in] */ IScaleGestureDetector* detector);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         Float mAccumulatedSpan;
         ZoomManager* mOwner;
@@ -111,6 +117,9 @@ private:
             /* [in] */ ZoomManager* owner);
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     public:
         Boolean mUpdateTextWrap;
@@ -361,6 +370,9 @@ public:
     /* package*/
     CARAPI_(void) OnPageFinished(
         /* [in] */ const String& url);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) SetDefaultZoomScale(

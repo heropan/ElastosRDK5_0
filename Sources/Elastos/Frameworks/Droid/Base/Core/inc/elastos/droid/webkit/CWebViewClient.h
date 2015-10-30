@@ -8,6 +8,7 @@
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Net::Http::ISslError;
+using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IKeyEvent;
 
 namespace Elastos {
@@ -17,6 +18,8 @@ namespace Webkit {
 CarClass(CWebViewClient), public WebViewClient
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI ShouldOverrideUrlLoading(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
@@ -38,6 +41,11 @@ public:
     CARAPI ShouldInterceptRequest(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
+        /* [out] */ IWebResourceResponse** wrr);
+
+    CARAPI ShouldInterceptRequest(
+        /* [in] */ IWebView* view,
+        /* [in] */ IWebResourceRequest* request,
         /* [out] */ IWebResourceResponse** wrr);
 
     CARAPI OnTooManyRedirects(
@@ -66,6 +74,10 @@ public:
         /* [in] */ ISslErrorHandler* handler,
         /* [in] */ ISslError* error);
 
+    CARAPI OnReceivedClientCertRequest(
+        /* [in] */ IWebView* view,
+        /* [in] */ IClientCertRequest* request);
+
     CARAPI OnReceivedHttpAuthRequest(
         /* [in] */ IWebView* view,
         /* [in] */ IHttpAuthHandler* handler,
@@ -80,6 +92,10 @@ public:
     CARAPI OnUnhandledKeyEvent(
         /* [in] */ IWebView* view,
         /* [in] */ IKeyEvent* event);
+
+    CARAPI OnUnhandledInputEvent(
+        /* [in] */ IWebView* view,
+        /* [in] */ IInputEvent* event);
 
     CARAPI OnScaleChanged(
         /* [in] */ IWebView* view,

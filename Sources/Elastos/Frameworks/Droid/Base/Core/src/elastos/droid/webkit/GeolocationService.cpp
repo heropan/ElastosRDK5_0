@@ -253,6 +253,14 @@ void GeolocationService::NativeNewErrorAvailable(
     Elastos_GeolocationServiceBridge_NewErrorAvailable(nativeObject, message);
 }
 
+ECode GeolocationService::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "GeolocationService";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

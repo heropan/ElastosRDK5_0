@@ -10,8 +10,14 @@ namespace Droid {
 namespace Webkit {
 
 CarClass(CWebViewHitTestResult)
+    , public Object
+    , public IWebViewHitTestResult
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * @hide Only for use by WebViewProvider implementations
      */

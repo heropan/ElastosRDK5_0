@@ -10,8 +10,14 @@ namespace Droid {
 namespace Webkit {
 
 CarClass(CAutoFillProfile)
+    , public Object
+    , public IAutoFillProfile
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ Int32 uniqueId,
         /* [in] */ const String& fullName,

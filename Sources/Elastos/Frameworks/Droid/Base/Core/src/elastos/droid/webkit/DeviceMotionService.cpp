@@ -42,6 +42,14 @@ ECode DeviceMotionService::ErrorEventRunnable::Run()
     return NOERROR;
 }
 
+ECode DeviceMotionService::ErrorEventRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DeviceMotionService::ErrorEventRunnable";
+    return NOERROR;
+}
+
 //===============================================================
 //            DeviceMotionService::InnerRunnable
 //===============================================================
@@ -66,6 +74,14 @@ ECode DeviceMotionService::InnerRunnable::Run()
     mOwner->mHandler->PostDelayed(mOwner->mUpdateRunnable, INTERVAL_MILLIS, &result);
     // Now that we have successfully sent some data, reset whether we've sent an error.
     mOwner->mHaveSentErrorEvent = FALSE;
+    return NOERROR;
+}
+
+ECode DeviceMotionService::InnerRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DeviceMotionService::InnerRunnable";
     return NOERROR;
 }
 
@@ -263,6 +279,14 @@ Boolean DeviceMotionService::RegisterForAccelerometerSensor()
 void DeviceMotionService::UnregisterFromSensor()
 {
     GetSensorManager()->UnregisterListener(this);
+}
+
+ECode DeviceMotionService::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DeviceMotionService";
+    return NOERROR;
 }
 
 } // namespace Webkit

@@ -26,6 +26,14 @@ ECode ClientCertRequestHandler::IgnoreRunnable::Run()
     return NOERROR;
 }
 
+ECode ClientCertRequestHandler::IgnoreRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ClientCertRequestHandler::IgnoreRunnable";
+    return NOERROR;
+}
+
 //===============================================================
 //          ClientCertRequestHandler::CancelRunnable
 //===============================================================
@@ -41,6 +49,14 @@ CAR_INTERFACE_IMPL_LIGHT(ClientCertRequestHandler::CancelRunnable, IRunnable);
 ECode ClientCertRequestHandler::CancelRunnable::Run()
 {
     mOwner->mBrowserFrame->NativeSslClientCert(mOwner->mHandle, 0, NULL);
+    return NOERROR;
+}
+
+ECode ClientCertRequestHandler::CancelRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ClientCertRequestHandler::CancelRunnable";
     return NOERROR;
 }
 
@@ -67,6 +83,14 @@ ECode ClientCertRequestHandler::CtxRunnable::Run()
     return NOERROR;
 }
 
+ECode ClientCertRequestHandler::CtxRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ClientCertRequestHandler::CtxRunnable";
+    return NOERROR;
+}
+
 //===============================================================
 //          ClientCertRequestHandler::PKCS8Runnable
 //===============================================================
@@ -85,6 +109,14 @@ CAR_INTERFACE_IMPL_LIGHT(ClientCertRequestHandler::PKCS8Runnable, IRunnable);
 
 ECode ClientCertRequestHandler::PKCS8Runnable::Run()
 {
+    return NOERROR;
+}
+
+ECode ClientCertRequestHandler::PKCS8Runnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ClientCertRequestHandler::PKCS8Runnable";
     return NOERROR;
 }
 
@@ -163,6 +195,14 @@ void ClientCertRequestHandler::SetSslClientCertFromPKCS8(
     AutoPtr<IRunnable> runnable = new PKCS8Runnable(this, key, chainBytes);
     Boolean result = FALSE;
     Post(runnable, &result);
+}
+
+ECode ClientCertRequestHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ClientCertRequestHandler";
+    return NOERROR;
 }
 
 } // namespace Webkit

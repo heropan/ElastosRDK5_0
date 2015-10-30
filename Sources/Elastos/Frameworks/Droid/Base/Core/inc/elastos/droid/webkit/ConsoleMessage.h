@@ -16,8 +16,12 @@ namespace Webkit {
  * {@link WebChromeClient#onConsoleMessage(ConsoleMessage)} function.
  */
 class ConsoleMessage
+    : public Object
+    , public IConsoleMessage
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ConsoleMessage();
 
     ConsoleMessage(
@@ -26,6 +30,12 @@ public:
         /* [in] */ Int32 lineNumber,
         /* [in] */ /*MessageLevel*/Int32 msgLevel);
 
+    CARAPI constructor(
+        /* [in] */ const String& message,
+        /* [in] */ const String& sourceId,
+        /* [in] */ Int32 lineNumber,
+        /* [in] */ Elastos::Droid::Webkit::MessageLevel msgLevel);
+
     virtual CARAPI_(/*MessageLevel*/Int32) MessageLevel();
 
     virtual CARAPI_(String) Message();
@@ -33,6 +43,9 @@ public:
     virtual CARAPI_(String) SourceId();
 
     virtual CARAPI_(Int32) LineNumber();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     CARAPI_(void) Init(

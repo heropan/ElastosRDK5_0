@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Webkit_CPluginManagerHelper.h"
 #include "elastos/droid/webkit/CPluginManager.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -14,8 +15,14 @@ namespace Webkit {
 class CPluginManager;
 
 CarClass(CPluginManagerHelper)
+    , public Singleton
+    , public IPluginManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [in] */ IContext* context,
         /* [out] */ IPluginManager** pluginManager);

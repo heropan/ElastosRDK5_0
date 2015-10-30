@@ -96,6 +96,14 @@ AutoPtr<IPluginData> UrlInterceptRegistry::GetPluginData(
     return NULL;
 }
 
+ECode UrlInterceptRegistry::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "UrlInterceptRegistry";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

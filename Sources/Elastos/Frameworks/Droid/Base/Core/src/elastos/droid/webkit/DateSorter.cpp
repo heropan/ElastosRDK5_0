@@ -148,6 +148,14 @@ void DateSorter::BeginningOfDay(
     c->Set(ICalendar::MILLISECOND, 0);
 }
 
+ECode DateSorter::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DateSorter";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

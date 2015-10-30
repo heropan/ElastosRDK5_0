@@ -14,8 +14,7 @@ namespace Webkit {
 CarClass(CDateSorter), public DateSorter
 {
 public:
-    CARAPI constructor(
-        /* [in] */ IContext* context);
+    CAR_OBJECT_DECL();
 
     CARAPI GetIndex(
         /* [in] */ Int64 time,

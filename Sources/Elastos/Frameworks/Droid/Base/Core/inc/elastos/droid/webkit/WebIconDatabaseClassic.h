@@ -33,8 +33,7 @@ namespace Droid {
 namespace Webkit {
 
 class WebIconDatabaseClassic
-    : public ElRefBase
-    , public WebIconDatabase
+    : public WebIconDatabase
     , public IWebIconDatabase
 {
 private:
@@ -45,8 +44,7 @@ private:
     private:
         // Class to handle a result dispatch
         class IconResult
-            : public ElLightRefBase
-            , public IInterface
+            : public Object
         {
         public:
             IconResult(
@@ -57,6 +55,9 @@ private:
             CAR_INTERFACE_DECL();
 
             CARAPI_(void) Dispatch();
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             const String mUrl;
@@ -73,6 +74,9 @@ private:
             CARAPI HandleMessage(
                 /* [in] */ IMessage* msg);
 
+            CARAPI ToString(
+                /* [out] */ String* info);
+
         private:
             EventHandler* mOwner;
         };
@@ -82,6 +86,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         // Called by WebCore thread to create the actual handler
@@ -166,6 +173,9 @@ public:
      */
     /*package*/
     CARAPI_(void) CreateHandler();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     /**

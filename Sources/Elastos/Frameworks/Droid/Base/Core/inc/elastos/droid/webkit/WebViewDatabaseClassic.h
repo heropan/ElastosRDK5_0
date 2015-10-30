@@ -15,7 +15,6 @@ namespace Webkit {
 
 class WebViewDatabaseClassic
     : public WebViewDatabase
-    , public Object
 {
 private:
     class MyThread : public ThreadBase
@@ -26,6 +25,9 @@ private:
             /* [in] */ IContext* context);
 
         CARAPI Run();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         WebViewDatabaseClassic* mOwner;
@@ -154,6 +156,9 @@ public:
      * @see WebViewDatabase#clearFormData
      */
     CARAPI ClearFormData();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     WebViewDatabaseClassic(

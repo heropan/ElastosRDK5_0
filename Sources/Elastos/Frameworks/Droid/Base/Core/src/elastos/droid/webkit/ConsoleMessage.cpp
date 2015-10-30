@@ -52,6 +52,14 @@ Int32 ConsoleMessage::LineNumber()
     return mLineNumber;
 }
 
+ECode ConsoleMessage::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ConsoleMessage";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

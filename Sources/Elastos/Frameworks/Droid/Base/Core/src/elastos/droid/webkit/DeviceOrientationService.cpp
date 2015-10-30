@@ -46,6 +46,14 @@ ECode DeviceOrientationService::InnerRunnable::Run()
     return NOERROR;
 }
 
+ECode DeviceOrientationService::InnerRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DeviceOrientationService::InnerRunnable";
+    return NOERROR;
+}
+
 //===============================================================
 //                   DeviceOrientationService
 //===============================================================
@@ -313,6 +321,14 @@ void DeviceOrientationService::MaybeSendChange(
         // Now that we have successfully sent some data, reset whether we've sent an error.
         mHaveSentErrorEvent = FALSE;
     }
+}
+
+ECode DeviceOrientationService::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "DeviceOrientationService";
+    return NOERROR;
 }
 
 } // namespace Webkit

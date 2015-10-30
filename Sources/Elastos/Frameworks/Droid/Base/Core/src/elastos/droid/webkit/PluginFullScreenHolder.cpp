@@ -31,6 +31,14 @@ IVIEW_METHODS_IMPL(PluginFullScreenHolder::InnerCustomFrameLayout, FrameLayout);
 IVIEWGROUP_METHODS_IMPL(PluginFullScreenHolder::InnerCustomFrameLayout, FrameLayout);
 IFRAMELAYOUT_METHODS_IMPL(PluginFullScreenHolder::InnerCustomFrameLayout, FrameLayout);
 
+ECode PluginFullScreenHolder::InnerCustomFrameLayout::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "PluginFullScreenHolder::InnerCustomFrameLayout";
+    return NOERROR;
+}
+
 //===============================================================
 //          PluginFullScreenHolder::CustomFrameLayout
 //===============================================================
@@ -99,6 +107,14 @@ ECode PluginFullScreenHolder::CustomFrameLayout::OnTrackballEvent(
     // always return true as we are the handler
     if (result) *result = TRUE;
 
+    return NOERROR;
+}
+
+ECode PluginFullScreenHolder::CustomFrameLayout::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "PluginFullScreenHolder::CustomFrameLayout";
     return NOERROR;
 }
 
@@ -172,6 +188,14 @@ void PluginFullScreenHolder::Hide()
     AutoPtr<IWebChromeClient> client;
     mWebView->GetWebChromeClient((IWebChromeClient**)&client);
     client->OnHideCustomView();
+}
+
+ECode PluginFullScreenHolder::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "PluginFullScreenHolder";
+    return NOERROR;
 }
 
 } // namespace Webkit

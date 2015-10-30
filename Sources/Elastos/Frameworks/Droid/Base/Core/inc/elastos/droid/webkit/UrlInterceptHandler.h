@@ -14,7 +14,7 @@ namespace Webkit {
  * deprecated, so is this class.
  */
 //@Deprecated
-class UrlInterceptHandler
+class UrlInterceptHandler : public Object
 {
 public:
     /**

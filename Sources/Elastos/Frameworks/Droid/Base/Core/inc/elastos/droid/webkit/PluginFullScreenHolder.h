@@ -21,12 +21,11 @@ namespace Webkit {
 
 class CWebViewClassic;
 
-class PluginFullScreenHolder : public ElRefBase
+class PluginFullScreenHolder : public Object
 {
 private:
     class InnerCustomFrameLayout
-        : public ElLightRefBase
-        , public FrameLayout
+        : public FrameLayout
         , public IFrameLayout
     {
     public:
@@ -38,6 +37,9 @@ private:
         IVIEW_METHODS_DECL();
         IVIEWGROUP_METHODS_DECL();
         IFRAMELAYOUT_METHODS_DECL();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
     };
 
     class CustomFrameLayout : public InnerCustomFrameLayout
@@ -65,6 +67,9 @@ private:
             /* [in] */ IMotionEvent* event,
             /* [out] */ Boolean* result);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         PluginFullScreenHolder* mOwner;
     };
@@ -81,6 +86,9 @@ public:
     virtual CARAPI_(void) Show();
 
     virtual CARAPI_(void) Hide();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     AutoPtr<CWebViewClassic> mWebView;

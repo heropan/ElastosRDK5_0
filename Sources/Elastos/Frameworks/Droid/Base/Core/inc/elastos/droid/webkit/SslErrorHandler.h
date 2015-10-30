@@ -34,6 +34,9 @@ public:
      * the error.
      */
     virtual CARAPI Cancel();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 };
 
 } // namespace Webkit

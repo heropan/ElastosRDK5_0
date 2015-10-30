@@ -17,7 +17,7 @@ namespace Webkit {
 class WebViewDatabase;
 
 class WebSyncManager
-    : public ElRefBase
+    : public Object
     , public IRunnable
 {
 private:
@@ -29,6 +29,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         WebSyncManager* mOwner;

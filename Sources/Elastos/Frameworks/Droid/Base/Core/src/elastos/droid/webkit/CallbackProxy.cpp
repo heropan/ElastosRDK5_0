@@ -67,6 +67,14 @@ AutoPtr<IInterface> CallbackProxy::ResultTransport::GetResult()
     return mResult;
 }
 
+ECode CallbackProxy::ResultTransport::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::ResultTransport";
+    return NOERROR;
+}
+
 //===============================================================
 //                 CallbackProxy::JsResultReceiver
 //===============================================================
@@ -100,6 +108,14 @@ void CallbackProxy::JsResultReceiver::NotifyCallbackProxy()
     mOwner->Notify();
 }
 
+ECode CallbackProxy::JsResultReceiver::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::JsResultReceiver";
+    return NOERROR;
+}
+
 //===============================================================
 //                 CallbackProxy::UploadFile
 //===============================================================
@@ -120,6 +136,14 @@ ECode CallbackProxy::UploadFile::OnReceiveValue(
 AutoPtr<IUri> CallbackProxy::UploadFile::GetResult()
 {
     return mValue;
+}
+
+ECode CallbackProxy::UploadFile::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::UploadFile";
+    return NOERROR;
 }
 
 //===============================================================
@@ -153,6 +177,14 @@ String CallbackProxy::UploadFileMessageData::GetCapture()
     return mCapture;
 }
 
+ECode CallbackProxy::UploadFileMessageData::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::UploadFileMessageData";
+    return NOERROR;
+}
+
 //===============================================================
 //           CallbackProxy::InnerDialogOnClickListener
 //===============================================================
@@ -172,6 +204,14 @@ ECode CallbackProxy::InnerDialogOnClickListener::OnClick(
     /* [in] */ Int32 which)
 {
     return mRes->Confirm();
+}
+
+ECode CallbackProxy::InnerDialogOnClickListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::InnerDialogOnClickListener";
+    return NOERROR;
 }
 
 //===============================================================
@@ -201,6 +241,14 @@ ECode CallbackProxy::InnerDialogOnClickListenerEx::OnClick(
     return mRes->Confirm(str);
 }
 
+ECode CallbackProxy::InnerDialogOnClickListenerEx::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::InnerDialogOnClickListenerEx";
+    return NOERROR;
+}
+
 //===============================================================
 //           CallbackProxy::InnerDialogOnCancelListener
 //===============================================================
@@ -219,6 +267,14 @@ ECode CallbackProxy::InnerDialogOnCancelListener::OnCancel(
     /* [in] */ IDialogInterface* dialog)
 {
     return mRes->Cancel();
+}
+
+ECode CallbackProxy::InnerDialogOnCancelListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::InnerDialogOnCancelListener";
+    return NOERROR;
 }
 
 //===============================================================
@@ -240,6 +296,14 @@ ECode CallbackProxy::CancelClickListener::OnClick(
     /* [in] */ Int32 which)
 {
     return mRes->Cancel();
+}
+
+ECode CallbackProxy::CancelClickListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy::CancelClickListener";
+    return NOERROR;
 }
 
 //===============================================================
@@ -2283,6 +2347,14 @@ void CallbackProxy::SendMessageToUiThreadSync(
     //    Log.e(LOGTAG, Log.getStackTraceString(e));
     //}
     WebCoreThreadWatchdog::Resume();
+}
+
+ECode CallbackProxy::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CallbackProxy";
+    return NOERROR;
 }
 
 } // namespace Webkit

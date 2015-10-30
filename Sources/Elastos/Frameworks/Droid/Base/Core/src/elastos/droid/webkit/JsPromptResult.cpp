@@ -23,6 +23,14 @@ String JsPromptResult::GetStringResult()
     return mStringResult;
 }
 
+ECode JsPromptResult::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "JsPromptResult";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

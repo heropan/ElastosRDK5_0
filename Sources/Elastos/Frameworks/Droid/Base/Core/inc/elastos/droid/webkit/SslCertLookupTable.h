@@ -17,7 +17,7 @@ namespace Webkit {
  * This class is not threadsafe. It is used only on the WebCore thread. Also, it
  * is used only by the Chromium HTTP stack.
  */
-class SslCertLookupTable : public ElRefBase
+class SslCertLookupTable : public Object
 {
 public:
     static CARAPI_(AutoPtr<SslCertLookupTable>) GetInstance();
@@ -31,6 +31,9 @@ public:
         /* [in] */ ISslError* sslError);
 
     CARAPI_(void) Clear();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     SslCertLookupTable();

@@ -12,7 +12,7 @@ namespace Webkit {
 CarClass(CGeolocationPermissions), public GeolocationPermissions
 {
 public:
-    CARAPI constructor();
+    CAR_OBJECT_DECL();
 
     CARAPI GetOrigins(
         /* [in] */ IValueCallback* callBack);

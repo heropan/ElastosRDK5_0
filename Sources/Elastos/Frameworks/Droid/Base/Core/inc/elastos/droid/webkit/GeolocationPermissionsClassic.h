@@ -21,7 +21,7 @@ namespace Webkit {
 // This class is the Java counterpart of the WebKit C++ GeolocationPermissions
 // class. It simply marshals calls from the UI thread to the WebKit thread.
 class GeolocationPermissionsClassic
-    : public ElRefBase
+    : public Object
     , public GeolocationPermissions
     , public IGeolocationPermissions
 {
@@ -35,6 +35,9 @@ private:
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         GeolocationPermissionsClassic* mOwner;
     };
@@ -47,6 +50,9 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         GeolocationPermissionsClassic* mOwner;
@@ -109,6 +115,9 @@ public:
         /* [in] */ const String& origin);
 
     CARAPI ClearAll();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

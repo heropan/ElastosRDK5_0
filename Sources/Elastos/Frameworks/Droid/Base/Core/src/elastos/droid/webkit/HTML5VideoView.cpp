@@ -122,6 +122,14 @@ Object* HTML5VideoView::TimeupdateTask::GetSelfLock()
     return &mLock;
 }
 
+ECode HTML5VideoView::TimeupdateTask::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoView::TimeupdateTask";
+    return NOERROR;
+}
+
 //===============================================================
 //                        HTML5VideoView
 //===============================================================
@@ -520,6 +528,14 @@ void HTML5VideoView::SwitchProgressView(
     /* [in] */ Boolean playerBuffering)
 {
     // Only used in HTML5VideoFullScreen
+}
+
+ECode HTML5VideoView::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5VideoView";
+    return NOERROR;
 }
 
 } // namespace Webkit

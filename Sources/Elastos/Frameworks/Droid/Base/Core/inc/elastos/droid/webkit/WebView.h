@@ -4,16 +4,23 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/WebViewFactoryProvider.h"
-#include "elastos/droid/widget/AbsoluteLayout.h"
+// TODO #include "elastos/droid/widget/AbsoluteLayout.h"
 
 using Elastos::IO::IBufferedWriter;
 using Elastos::IO::IFile;
 using Elastos::Utility::IMap;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IPicture;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Net::Http::ISslCertificate;
-using Elastos::Droid::Widget::AbsoluteLayout;
+// TODO using Elastos::Droid::Widget::AbsoluteLayout;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
@@ -21,6 +28,7 @@ using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
@@ -238,14 +246,16 @@ namespace Webkit {
 // file are fully delegated, whereas public and protected methods from the View base classes are
 // only delegated where a specific need exists for them to do so.
 //@Widget
-class WebView : public AbsoluteLayout
+class WebView // TODO: public AbsoluteLayout
+    : public Object
+    , public IWebView
 {
     friend class PrivateAccess;
 public:
     /**
      *  Transportation object for returning WebView across thread boundaries.
      */
-    class WebViewTransport
+    class WebViewTransport : public Object
     {
     public:
         /**
@@ -264,6 +274,9 @@ public:
         virtual CARAPI GetWebView(
             /* [out] */ IWebView** webView);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IWebView> mWebview;
         Object mLock;
@@ -275,7 +288,7 @@ public:
      * @hide Only for use by WebViewProvider implementations
      */
     class PrivateAccess
-        : public ElLightRefBase
+        : public Object
         , public IWebViewPrivateAccess
     {
     public:
@@ -378,11 +391,16 @@ public:
         CARAPI SetScrollYRaw(
             /* [in] */ Int32 scrollY);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         WebView* mHost;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new WebView with a Context object.
      *
@@ -428,6 +446,24 @@ public:
      * and {@link WebStorage} for fine-grained control of privacy data.
      */
     WebView(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Boolean privateBrowsing);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle,
@@ -737,6 +773,21 @@ public:
         /* [in] */ const String& mimeType,
         /* [in] */ const String& encoding,
         /* [in] */ const String& historyUrl);
+
+    /**
+     * Asynchronously evaluates JavaScript in the context of the currently displayed page.
+     * If non-null, |resultCallback| will be invoked with any result returned from that
+     * execution. This method must be called on the UI thread and the callback will
+     * be made on the UI thread.
+     *
+     * @param script the JavaScript to execute.
+     * @param resultCallback A callback to be invoked when the script execution
+     *                       completes with the result of the execution (if any).
+     *                       May be null if no notificaion of the result is required.
+     */
+    virtual CARAPI EvaluateJavascript(
+        /* [in] */ const String& script,
+        /* [in] */ IValueCallback* resultCallback);
 
     /**
      * Saves the current view as a web archive.
@@ -1395,6 +1446,15 @@ public:
     virtual CARAPI_(Boolean) CanZoomOut();
 
     /**
+     * Performs a zoom operation in this WebView.
+     *
+     * @param zoomFactor the zoom factor to apply. The zoom factor will be clamped to the Webview's
+     * zoom limits. This value must be in the range 0.01 to 100.0 inclusive.
+     */
+    virtual CARAPI ZoomBy(
+        /* [in] */ Float zoomFactor);
+
+    /**
      * Performs zoom in in this WebView.
      *
      * @return true if zoom in succeeds, false if no zoom changes
@@ -1524,6 +1584,9 @@ public:
     CARAPI SetLayerType(
         /* [in] */ Int32 layerType,
         /* [in] */ IPaint* paint);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     WebView();

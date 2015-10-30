@@ -7,6 +7,7 @@
 #include "elastos/droid/webkit/CPlugin.h"
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Utility::IList;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 
@@ -17,8 +18,14 @@ namespace Webkit {
 class CPlugin;
 
 CarClass(CPluginList)
+    , public Object
+    , public IPluginList
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**
@@ -30,7 +37,7 @@ public:
     */
     //synchronized
     CARAPI GetList(
-        /* [out] */ IObjectContainer** plugins);
+        /* [out] */ IList** plugins);
 
     /**
     * Adds a plugin to the list.

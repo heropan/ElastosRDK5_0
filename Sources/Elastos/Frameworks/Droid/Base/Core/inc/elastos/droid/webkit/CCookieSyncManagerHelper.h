@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CCOOKIESYNCMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Webkit_CCookieSyncManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -11,8 +12,14 @@ namespace Droid {
 namespace Webkit {
 
 CarClass(CCookieSyncManagerHelper)
+    , public Singleton
+    , public ICookieSyncManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [out] */ ICookieSyncManager** instance);
 

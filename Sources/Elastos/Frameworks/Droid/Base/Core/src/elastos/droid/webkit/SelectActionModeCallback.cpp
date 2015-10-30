@@ -203,6 +203,14 @@ void SelectActionModeCallback::SetMenuVisibility(
     }
 }
 
+ECode SelectActionModeCallback::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "SelectActionModeCallback";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

@@ -21,10 +21,7 @@ struct ElaWebResourceResponseCallback
 CarClass(CWebResourceResponse), public WebResourceResponse
 {
 public:
-    CARAPI constructor(
-        /* [in] */ const String& mimeType,
-        /* [in] */ const String& encoding,
-        /* [in] */ IInputStream* data);
+    CAR_OBJECT_DECL();
 
     CARAPI SetMimeType(
         /* [in] */ const String& mimeType);
@@ -37,6 +34,22 @@ public:
 
     CARAPI GetEncoding(
         /* [out] */ String* encoding);
+
+    CARAPI SetStatusCodeAndReasonPhrase(
+        /* [in] */ Int32 statusCode,
+        /* [in] */ const String& reasonPhrase);
+
+    CARAPI GetStatusCode(
+        /* [out] */ Int32* statusCode);
+
+    CARAPI GetReasonPhrase(
+        /* [out] */ String* reasonPhrase);
+
+    CARAPI SetResponseHeaders(
+        /* [in] */ IMap* headers);
+
+    CARAPI GetResponseHeaders(
+        /* [out] */ IMap** headers);
 
     CARAPI SetData(
         /* [in] */ IInputStream* data);

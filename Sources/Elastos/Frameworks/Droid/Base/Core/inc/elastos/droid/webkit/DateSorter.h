@@ -20,12 +20,19 @@ namespace Webkit {
  *   older than a month ago
  */
 class DateSorter
+    : public Object
+    , public IDateSorter
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * @param context Application context
      */
     DateSorter(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -50,6 +57,9 @@ public:
      */
     virtual CARAPI_(Int64) GetBoundary(
         /* [in] */ Int32 index);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     DateSorter();

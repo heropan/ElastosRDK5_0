@@ -90,6 +90,10 @@ private:
 
         CARAPI SetScheduledTime(
                 /* [in] */ Int64 time);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         CARAPI_(Object*) GetSelfLock();
 
@@ -102,12 +106,11 @@ private:
     // given WebView. Queries the WebView on the UI thread. Calls to get()
     // block until the data is available.
     class IsPrivateBrowsingEnabledGetter
-        : public ElLightRefBase
-        , public Object
+        : public Object
     {
     private:
         class InnerRunnable
-            : public ElLightRefBase
+            : public Object
             , public IRunnable
         {
         public:
@@ -118,6 +121,9 @@ private:
             CAR_INTERFACE_DECL();
 
             CARAPI Run();
+
+            CARAPI ToString(
+                /* [out] */ String* info);
 
         private:
             IsPrivateBrowsingEnabledGetter* mOwner;
@@ -132,6 +138,9 @@ private:
 
         //synchronized
         virtual CARAPI_(Boolean) Get();
+
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         HTML5Audio* mOwner;
@@ -200,6 +209,9 @@ public:
     CARAPI_(void) Teardown();
 
     CARAPI_(Float) GetMaxTimeSeekable();
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     CARAPI_(void) ResetMediaPlayer();

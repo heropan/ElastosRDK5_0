@@ -51,13 +51,13 @@ class CWebViewClassic;
  * this class. For details about the key binding implementation
  * refer to {@link AccessibilityWebContentKeyBinding}.
  */
-class AccessibilityInjectorFallback : public ElRefBase
+class AccessibilityInjectorFallback : public Object
 {
 private:
     /**
      * Represents a web content key-binding.
      */
-    class AccessibilityWebContentKeyBinding : public ElRefBase
+    class AccessibilityWebContentKeyBinding : public Object
     {
     public:
         /**
@@ -114,7 +114,8 @@ private:
         CARAPI_(Int32) GetThirdArgument(
             /* [in] */ Int32 index);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* info);
 
     private:
         static const Int32 MODIFIERS_OFFSET = 32;
@@ -166,6 +167,9 @@ public:
      */
     virtual CARAPI_(void) OnSelectionStringChange(
         /* [in] */ const String& selectionString);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     /**

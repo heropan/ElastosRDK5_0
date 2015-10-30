@@ -148,6 +148,14 @@ Object* HTML5Audio::TimeupdateTask::GetSelfLock()
     return &mLock;
 }
 
+ECode HTML5Audio::TimeupdateTask::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5Audio::TimeupdateTask";
+    return NOERROR;
+}
+
 //========================================================================
 //       HTML5Audio::IsPrivateBrowsingEnabledGetter::InnerRunnable
 //========================================================================
@@ -170,6 +178,14 @@ ECode HTML5Audio::IsPrivateBrowsingEnabledGetter::InnerRunnable::Run()
     mOwner->mIsReady = TRUE;
     mOwner->Notify();
 
+    return NOERROR;
+}
+
+ECode HTML5Audio::IsPrivateBrowsingEnabledGetter::InnerRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5Audio::IsPrivateBrowsingEnabledGetter::InnerRunnable";
     return NOERROR;
 }
 
@@ -204,6 +220,14 @@ Boolean HTML5Audio::IsPrivateBrowsingEnabledGetter::Get()
 //        }
     }
     return mIsPrivateBrowsingEnabled;
+}
+
+ECode HTML5Audio::IsPrivateBrowsingEnabledGetter::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5Audio::IsPrivateBrowsingEnabledGetter";
+    return NOERROR;
 }
 
 //===============================================================
@@ -640,6 +664,14 @@ void HTML5Audio::NativeOnTimeupdate(
     if (pointer) {
         Elastos_MediaPlayerPrivateAndroid_OnTimeupdate(position, pointer);
     }
+}
+
+ECode HTML5Audio::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "HTML5Audio";
+    return NOERROR;
 }
 
 } // namespace Webkit

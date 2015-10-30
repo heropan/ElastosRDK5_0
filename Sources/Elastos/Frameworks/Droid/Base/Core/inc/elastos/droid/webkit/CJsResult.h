@@ -12,8 +12,7 @@ namespace Webkit {
 CarClass(CJsResult), public JsResult
 {
 public:
-    CARAPI constructor(
-        /* [in] */ IJsResultReceiver* receiver);
+    CAR_OBJECT_DECL();
 
     CARAPI Cancel();
 

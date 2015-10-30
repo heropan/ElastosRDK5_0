@@ -37,6 +37,9 @@ public:
     CARAPI_(void) InstallCert(
         /* [in] */ IContext* context);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     static const String LOGTAG;
     AutoPtr<ByteArrayBuilder> mDataBuilder;

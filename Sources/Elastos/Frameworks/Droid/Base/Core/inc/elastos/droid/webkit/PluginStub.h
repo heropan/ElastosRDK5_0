@@ -15,7 +15,7 @@ namespace Webkit {
  * implementation will be provided the same NPP instance that is created
  * through the native interface.
  */
-class PluginStub
+class PluginStub : public Object
 {
 public:
     /**
