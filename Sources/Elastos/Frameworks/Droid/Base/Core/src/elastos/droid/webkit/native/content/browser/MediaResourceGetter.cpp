@@ -237,8 +237,9 @@ Boolean MediaResourceGetter::IsNetworkReliable(
     /* [in] */ IContext* context)
 {
     Int32  permission;
-    context->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE, &permission);
+    assert(0 && "TODO");
+    // context->CheckCallingOrSelfPermission(
+    //         Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE, &permission);
     if (permission != IPackageManager::PERMISSION_GRANTED) {
         Slogger::W(TAG, "permission denied to access network state");
         return FALSE;

@@ -757,7 +757,7 @@ ECode PreferenceActivity::LoadHeadersFromResource(
 }
 
 ECode PreferenceActivity::IsValidFragment(
-    /* [in] */ String fragmentName,
+    /* [in] */ const String& fragmentName,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)

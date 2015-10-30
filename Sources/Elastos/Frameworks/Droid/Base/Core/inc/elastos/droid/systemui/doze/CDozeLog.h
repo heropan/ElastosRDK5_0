@@ -29,7 +29,7 @@ private:
 
         void Dump(
             /* [in] */ IPrintWriter* pw,
-            /* [in] */ String type);
+            /* [in] */ const String& type);
 
     private:
         Int32 mCount;
@@ -101,7 +101,7 @@ public:
 
 private:
     CARAPI Log(
-        /* [in] */ String msg);
+        /* [in] */ const String& msg);
 
 private:
     static AutoPtr<KeyguardUpdateMonitorCallback> sKeyguardCallback;

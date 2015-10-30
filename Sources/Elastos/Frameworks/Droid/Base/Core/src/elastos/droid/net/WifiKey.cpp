@@ -11,8 +11,8 @@ WifiKey::WifiKey()
 {}
 
 ECode WifiKey::constructor(
-    /* [in] */ String ssid,
-    /* [in] */ String bssid)
+    /* [in] */ const String& ssid,
+    /* [in] */ const String& bssid)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

@@ -28,7 +28,6 @@ using Elastos::Core::ICharSequence;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::IObjectInt32Map;
 
 namespace Elastos {
 namespace Droid {
@@ -36,6 +35,7 @@ namespace App {
 
 class FragmentState
     : public Object
+    // , public IFragmentState
     , public IParcelable
 {
 public:
@@ -55,11 +55,14 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
-    FragmentState(
-        /* [in] */ IFragment* frag);
+    FragmentState();
 
-    FragmentState(
-        /* [in] */ IParcel* in);
+    virtual ~FragmentState();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IFragment* frag);
 
     CARAPI Instantiate(
         /* [in] */ IActivity* activity,
@@ -72,6 +75,38 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
+    CARAPI GetClassName(
+        /* [out] */ String* name);
+
+    CARAPI GetIndex(
+        /* [out] */ Int32* result);
+
+    CARAPI IsFromLayout(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetFragmentId(
+        /* [out] */ Int32* result);
+
+    CARAPI GetContainerId(
+        /* [out] */ Int32* result);
+
+    CARAPI GetTag(
+        /* [out] */ String* tag);
+
+    CARAPI IsRetainInstance(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsDetached(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetArguments(
+        /* [out] */ IBundle** arguments);
+
+    CARAPI GetSavedFragmentState(
+        /* [out] */ IBundle** state);
+
+    CARAPI GetInstance(
+        /* [out] */ IFragment** fragment);
 public:
     String mClassName;
     Int32 mIndex;
@@ -131,10 +166,10 @@ public:
         /* [in] */ IBundle* fState);
 
     virtual CARAPI GetSavedViewState(
-        /* [out] */ IObjectInt32Map** viewState);
+        /* [out] */ IHashMap** viewState);
 
     virtual CARAPI SetSavedViewState(
-        /* [in] */ IObjectInt32Map* viewState);
+        /* [in] */ IHashMap* viewState);
 
     virtual CARAPI GetIndex(
         /* [out] */ Int32* index);
@@ -756,7 +791,6 @@ public:
 
     AutoPtr<ISharedElementCallback> mEnterTransitionCallback;// = SharedElementCallback.NULL_CALLBACK;
     AutoPtr<ISharedElementCallback> mExitTransitionCallback;// = SharedElementCallback.NULL_CALLBACK;
-
 
 private:
    static HashMap<String, AutoPtr<IClassInfo> > sClassMap;

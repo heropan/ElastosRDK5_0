@@ -257,7 +257,7 @@ AutoPtr<IObjectAnimator> CChangeImageTransform::CreateMatrixAnimator(
 CAR_INTERFACE_IMPL(CChangeImageTransform::MatrixProperty, Object, IProperty)
 
 CChangeImageTransform::MatrixProperty::MatrixProperty(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     mName = str;
 }

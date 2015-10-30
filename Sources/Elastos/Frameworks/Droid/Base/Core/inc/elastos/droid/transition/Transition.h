@@ -80,7 +80,7 @@ public:
     public:
         AnimationInfo(
             /* [in] */ IView* view,
-            /* [in] */ String name,
+            /* [in] */ const String& name,
             /* [in] */ ITransition* transition,
             /* [in] */ IWindowId* windowId,
             /* [in] */ ITransitionValues* values);
@@ -541,7 +541,7 @@ public:
 
 private:
     static CARAPI_(AutoPtr<ArrayOf<Int32> >) ParseMatchOrder(
-        /* [in] */ String matchOrderString);
+        /* [in] */ const String& matchOrderString);
 
     static CARAPI_(Boolean) IsValidMatch(
         /* [in] */ Int32 match);
@@ -636,7 +636,7 @@ private:
     static CARAPI_(Boolean) IsValueChanged(
         /* [in] */ ITransitionValues* oldValues,
         /* [in] */ ITransitionValues* newValues,
-        /* [in] */ String key);
+        /* [in] */ const String& key);
 
 public:
     static Boolean DBG;

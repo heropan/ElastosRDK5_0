@@ -162,7 +162,7 @@ ECode TransitionSet::AddTarget(
 }
 
 ECode TransitionSet::AddTarget(
-    /* [in] */ String targetName)
+    /* [in] */ const String& targetName)
 {
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
@@ -241,7 +241,7 @@ ECode TransitionSet::RemoveTarget(
 // }
 
 ECode TransitionSet::RemoveTarget(
-    /* [in] */ String target)
+    /* [in] */ const String& target)
 {
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
@@ -271,7 +271,7 @@ ECode TransitionSet::ExcludeTarget(
 }
 
 ECode TransitionSet::ExcludeTarget(
-    /* [in] */ String targetName,
+    /* [in] */ const String& targetName,
     /* [in] */ Boolean exclude)
 {
     Int32 numTransitions = 0;
@@ -618,7 +618,7 @@ ECode TransitionSet::SetEpicenterCallback(
 }
 
 ECode TransitionSet::ToString(
-    /* [in] */ String indent,
+    /* [in] */ const String& indent,
     /* [out] */ String* res)
 {
     VALIDATE_NOT_NULL(res)

@@ -352,11 +352,12 @@ AwSettings::AwSettings(
     , mDisplayZoomControls(TRUE)
     , mNativeAwSettings(0)
 {
+    assert(0 && "TODO");
     Int32 permission;
-    context->CheckPermission(
-                Elastos::Droid::Manifest::Permission::INTERNET,
-                Process::MyPid(),
-                Process::MyUid(), &permission);
+    // context->CheckPermission(
+    //             Elastos::Droid::Manifest::Permission::INTERNET,
+    //             Process::MyPid(),
+    //             Process::MyUid(), &permission);
     Boolean hasInternetPermission = (permission == IPackageManager::PERMISSION_GRANTED);
 
     {

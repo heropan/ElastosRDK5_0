@@ -18,17 +18,18 @@ SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
 SOURCES += AppGlobals.cpp
 
-SOURCES += CBackStackState.cpp
+#SOURCES += CBackStackState.cpp
 SOURCES += CBackStackRecordTransitionState.cpp
 
 SOURCES += CContentProviderHolder.cpp
 
-SOURCES += FragmentManager.cpp
+#SOURCES += FragmentManager.cpp
 #SOURCES += CFragmentManagerHelper.cpp
 #SOURCES += FragmentManagerImpl.cpp
 #SOURCES += CFragmentManagerImplHelper.cpp
+#SOURCES += CFragmentManagerState.cpp
 #SOURCES += CFragmentSavedState.cpp
-SOURCES += FragmentTransaction.cpp
+#SOURCES += FragmentTransaction.cpp
 
 SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
@@ -141,7 +142,6 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += SharedPreferencesImpl.cpp
 
 #SOURCES += CBackupAgentBackupServiceBinder.cpp
-#SOURCES += CFragmentManagerState.cpp
 #SOURCES += ListActivity.cpp
 
 #LIBRARIES += admin/admin.lib

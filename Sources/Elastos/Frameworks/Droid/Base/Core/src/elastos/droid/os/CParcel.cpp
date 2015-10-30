@@ -1,6 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/CParcel.h"
+#include "elastos/droid/os/CBundle.h"
 #include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <fcntl.h>
@@ -434,6 +435,43 @@ AutoPtr<IArrayList> CParcel::CreateStringArrayList(
         N--;
     }
     return l;
+}
+
+AutoPtr<IBundle> CParcel::ReadBundle(
+    /* [in] */ IParcel* source)
+{
+    return ReadBundle(source, NULL);
+}
+
+AutoPtr<IBundle> CParcel::ReadBundle(
+    /* [in] */ IParcel* source,
+    /* [in] */ IClassLoader* loader)
+{
+    Int32 length;
+    source->ReadInt32(&length);
+    if (length < 0) {
+        Slogger::D("CParcel", "null bundle: length=%d", length);
+        return NULL;
+    }
+
+    AutoPtr<IBundle> bundle;
+    CBundle::New(length, (IBundle**)&bundle);
+    IParcelable::Probe(bundle)->ReadFromParcel(source);
+    if (loader != NULL) {
+        bundle->SetClassLoader(loader);
+    }
+    return bundle;
+}
+
+ECode CParcel::WriteBundle(
+    /* [in] */ IParcel* dest,
+    /* [in] */ IBundle* val)
+{
+    if (val == NULL) {
+        return dest->WriteInt32(-1);
+    }
+
+    return IParcelable::Probe(val)->WriteToParcel(dest);
 }
 
 } // namespace Os

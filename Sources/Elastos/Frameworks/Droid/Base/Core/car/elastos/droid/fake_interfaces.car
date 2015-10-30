@@ -146,8 +146,6 @@ module
     namespace Droid {
     namespace Location {
 
-        interface IFusedBatchOptions {}
-
         interface IIGpsGeofenceHardware {}
 
         interface IIFusedGeofenceHardware {}
@@ -173,13 +171,4 @@ module
         interface IOpenSSLSocketImpl {}
         interface ISSLClientSessionCache {}
     }} // Org.Conscrypt
-
-    namespace Elastos {
-    namespace Droid {
-    namespace Wifi {
-    namespace P2p {
-    namespace Nsd {
-        interface IWifiP2pServiceInfo {}
-        interface IWifiP2pServiceRequest {}
-    }}}}} // Elastos.Droid.Wifi.P2p.Nsd
 }

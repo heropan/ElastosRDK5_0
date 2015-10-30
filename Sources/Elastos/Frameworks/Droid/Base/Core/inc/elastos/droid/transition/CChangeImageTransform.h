@@ -41,7 +41,7 @@ private:
         CAR_INTERFACE_DECL()
 
         MatrixProperty(
-            /* [in] */ String str);
+            /* [in] */ const String& str);
 
         CARAPI IsReadOnly(
             /* [out] */ Boolean* readOnly);

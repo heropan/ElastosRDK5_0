@@ -49,7 +49,7 @@ public:
         return mHost->mView->FindViewById(id, view);
     }
 
-    CARAPI HasView(
+    ECode FragmentState::HasView(
         /* [out] */ Boolean* result)
     {
         VALIDATE_NOT_NULL(result)
@@ -93,10 +93,30 @@ FragmentState::ParcelableCreatorFragmentState::NewArray(
 
 CAR_INTERFACE_IMPL(FragmentState, Object, IParcelable)
 
-FragmentState::FragmentState(
+//CAR_INTERFACE_IMPL_2(FragmentState, Object, IFragmentState, IParcelable)
+
+FragmentState::FragmentState()
+    : mIndex(0)
+    , mFromLayout(FALSE)
+    , mFragmentId(0)
+    , mContainerId(0)
+    , mRetainInstance(FALSE)
+    , mDetached(FALSE)
+{}
+
+FragmentState::~FragmentState()
+{}
+
+ECode FragmentState::constructor()
+{
+    return NOERROR;
+}
+
+ECode FragmentState::constructor(
     /* [in] */ IFragment* frag)
 {
 //     mClassName = frag.getClass().getName();
+    mClassName = String("Fragment");
     frag->GetIndex(&mIndex);
     frag->GetFromLayout(&mFromLayout);
     frag->GetFragmentId(&mFragmentId);
@@ -105,12 +125,7 @@ FragmentState::FragmentState(
     frag->GetRetainInstance(&mRetainInstance);
     frag->IsDetached(&mDetached);
     frag->GetArguments((IBundle**)&mArguments);
-}
-
-FragmentState::FragmentState(
-    /* [in] */ IParcel* in)
-{
-    ReadFromParcel(in);
+    return NOERROR;
 }
 
 ECode FragmentState::ReadFromParcel(
@@ -201,6 +216,97 @@ ECode FragmentState::WriteToParcel(
     FAIL_RETURN(dest->WriteInt32(mDetached ? 1 : 0));
     FAIL_RETURN(dest->WriteInterfacePtr(mArguments));
     FAIL_RETURN(dest->WriteInterfacePtr(mSavedFragmentState));
+    return NOERROR;
+}
+
+ECode FragmentState::GetClassName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+    *name = mClassName;
+    return NOERROR;
+}
+
+ECode FragmentState::GetIndex(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mIndex;
+    return NOERROR;
+}
+
+ECode FragmentState::IsFromLayout(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mFromLayout;
+    return NOERROR;
+}
+
+ECode FragmentState::GetFragmentId(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mFragmentId;
+    return NOERROR;
+}
+
+ECode FragmentState::GetContainerId(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mContainerId;
+    return NOERROR;
+}
+
+ECode FragmentState::GetTag(
+    /* [out] */ String* tag)
+{
+    VALIDATE_NOT_NULL(tag)
+    *tag = mTag;
+    return NOERROR;
+}
+
+ECode FragmentState::IsRetainInstance(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mRetainInstance;
+    return NOERROR;
+}
+
+ECode FragmentState::IsDetached(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mDetached;
+    return NOERROR;
+}
+
+ECode FragmentState::GetArguments(
+    /* [out] */ IBundle** arguments)
+{
+    VALIDATE_NOT_NULL(arguments)
+    *arguments = mArguments;
+    REFCOUNT_ADD(*arguments)
+    return NOERROR;
+}
+
+ECode FragmentState::GetSavedFragmentState(
+    /* [out] */ IBundle** state)
+{
+    VALIDATE_NOT_NULL(state)
+    *state = mSavedFragmentState;
+    REFCOUNT_ADD(*state)
+    return NOERROR;
+}
+
+ECode FragmentState::GetInstance(
+    /* [out] */ IFragment** fragment)
+{
+    VALIDATE_NOT_NULL(fragment)
+    *fragment = mInstance;
+    REFCOUNT_ADD(*fragment)
     return NOERROR;
 }
 

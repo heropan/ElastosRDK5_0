@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTSAVEDSTATE_H__
 
 #include "_Elastos_Droid_App_CFragmentSavedState.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Droid::Os::IBundle;
@@ -12,17 +13,16 @@ namespace Droid {
 namespace App {
 
 CarClass(CFragmentSavedState)
+    , public Object
+    , public IFragmentSavedState
+    , public IParcelable
 {
 public:
-    CFragmentSavedState()
-        : mState(NULL)
-    {}
+    CAR_INTERFACE_DECL()
 
-    CARAPI GetState(
-        /* [out] */ IBundle** state);
+    CAR_OBJECT_DECL()
 
-    CARAPI SetState(
-        /* [in] */ IBundle* state);
+    CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IBundle* state);
@@ -36,6 +36,12 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
+
+    CARAPI GetState(
+        /* [out] */ IBundle** state);
+
+    CARAPI SetState(
+        /* [in] */ IBundle* state);
 
 public:
     AutoPtr<IBundle> mState;

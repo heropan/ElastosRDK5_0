@@ -132,6 +132,56 @@ public:
         /* [in] */ IIntent* intent);
 
     /**
+     * Called when provisioning of a managed profile or managed device has completed successfully.
+     *
+     * <p> As a prerequisit for the execution of this callback the (@link DeviceAdminReceiver} has
+     * to declare an intent filter for {@link #ACTION_PROFILE_PROVISIONING_COMPLETE}.
+     * Its component must also be specified in the {@link DevicePolicyManager#EXTRA_DEVICE_ADMIN}
+     * of the {@link DevicePolicyManager#ACTION_PROVISION_MANAGED_PROFILE} intent that started the
+     * managed provisioning.
+     *
+     * <p>When provisioning is complete, the managed profile is hidden until the profile owner
+     * calls {DevicePolicyManager#setProfileEnabled(ComponentName admin)}. Typically a profile
+     * owner will enable the profile when it has finished any additional setup such as adding an
+     * account by using the {@link AccountManager} and calling apis to bring the profile into the
+     * desired state.
+     *
+     * <p> Note that provisioning completes without waiting for any server interactions, so the
+     * profile owner needs to wait for data to be available if required (e.g android device ids or
+     * other data that is set as a result of server interactions).
+     *
+     * @param context The running context as per {@link #onReceive}.
+     * @param intent The received intent as per {@link #onReceive}.
+     */
+    CARAPI OnProfileProvisioningComplete(
+        /* [in] */ IContext* context,
+        /* [in] */ IIntent* intent);
+
+    /**
+     * Called when a device is entering lock task mode by a package authorized
+     * by {@link DevicePolicyManager#isLockTaskPermitted(String)}
+     *
+     * @param context The running context as per {@link #onReceive}.
+     * @param intent The received intent as per {@link #onReceive}.
+     * @param pkg If entering, the authorized package using lock task mode, otherwise null.
+     */
+    CARAPI OnLockTaskModeEntering(
+        /* [in] */ IContext* context,
+        /* [in] */ IIntent* intent,
+        /* [in] */ const String& pkg);
+
+    /**
+     * Called when a device is exiting lock task mode by a package authorized
+     * by {@link DevicePolicyManager#isLockTaskPermitted(String)}
+     *
+     * @param context The running context as per {@link #onReceive}.
+     * @param intent The received intent as per {@link #onReceive}.
+     */
+    CARAPI OnLockTaskModeExiting(
+        /* [in] */ IContext* context,
+        /* [in] */ IIntent* intent);
+
+    /**
      * Intercept standard device administrator broadcasts.  Implementations
      * should not override this method; it is better to implement the
      * convenience callbacks for each action.

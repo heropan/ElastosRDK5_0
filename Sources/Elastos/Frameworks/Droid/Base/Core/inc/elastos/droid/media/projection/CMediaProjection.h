@@ -123,7 +123,7 @@ public:
      */
 // TODO: Need IIVirtualDisplayCallback
     // CARAPI CreateVirtualDisplay(
-    //     /* [in] */ String name,
+    //     /* [in] */ const String& name,
     //     /* [in] */ Int32 width,
     //     /* [in] */ Int32 height,
     //     /* [in] */ Int32 dpi,
@@ -159,7 +159,7 @@ public:
      */
 // TODO: Need IIVirtualDisplayCallback
     // CARAPI CreateVirtualDisplay(
-    //     /* [in] */ String name,
+    //     /* [in] */ const String& name,
     //     /* [in] */ Int32 width,
     //     /* [in] */ Int32 height,
     //     /* [in] */ Int32 dpi,

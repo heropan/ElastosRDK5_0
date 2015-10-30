@@ -344,7 +344,7 @@ const Int64 MediaCodecBridge::MAX_PRESENTATION_TIMESTAMP_SHIFT_US;
 
 MediaCodecBridge::MediaCodecBridge(
     /* [in] */ IMediaCodec* mediaCodec,
-    /* [in] */ String mime,
+    /* [in] */ const String& mime,
     /* [in] */ Boolean adaptivePlaybackSupported)
     : mMediaCodec(mediaCodec)
     , mFlushed(TRUE)

@@ -182,7 +182,7 @@
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/animation
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/bluetooth
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/preference
-#  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/location
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/location
 #< Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech/srec
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech/tts
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/speech

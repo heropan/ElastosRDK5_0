@@ -30,7 +30,7 @@ public:
 
     static CARAPI_(String) GetBestDateTimePattern(
         /* [in] */ ILocale* locale,
-        /* [in] */ String skeleton);
+        /* [in] */ const String& skeleton);
 
     /**
      * Returns a {@link java.text.DateFormat} object that can format the time according

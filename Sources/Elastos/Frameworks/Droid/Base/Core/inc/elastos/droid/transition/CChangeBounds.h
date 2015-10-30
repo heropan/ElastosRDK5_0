@@ -29,7 +29,7 @@ private:
     {
     public:
         OffsetProperty(
-            /* [in] */ String name);
+            /* [in] */ const String& name);
 
         CARAPI SetValue(
             /* [in] */ IInterface* view,
@@ -77,7 +77,7 @@ private:
         CAR_INTERFACE_DECL()
 
         PointFProperty(
-            /* [in] */ String str);
+            /* [in] */ const String& str);
 
         CARAPI IsReadOnly(
             /* [out] */ Boolean* readOnly);

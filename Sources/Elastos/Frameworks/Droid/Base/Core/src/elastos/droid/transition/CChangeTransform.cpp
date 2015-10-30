@@ -587,7 +587,7 @@ void CChangeTransform::AnimatorListenerAdapter_1::SetCurrentMatrix(
 CAR_INTERFACE_IMPL(CChangeTransform::MatrixProperty, Object, IProperty)
 
 CChangeTransform::MatrixProperty::MatrixProperty(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     mName = str;
 }

@@ -546,7 +546,7 @@ protected:
      * @return true if the fragment class name is valid for this Activity and false otherwise.
      */
     CARAPI IsValidFragment(
-        /* [in] */ String fragmentName,
+        /* [in] */ const String& fragmentName,
         /* [out] */ Boolean* result);
 
 private:

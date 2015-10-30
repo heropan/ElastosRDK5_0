@@ -152,7 +152,7 @@ public:
 private:
     MediaCodecBridge(
         /* [in] */ IMediaCodec* mediaCodec,
-        /* [in] */ String mime,
+        /* [in] */ const String& mime,
         /* [in] */ Boolean adaptivePlaybackSupported);
 
     /**

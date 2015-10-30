@@ -112,7 +112,7 @@ Boolean DateFormat::Is24HourFormat(
 
 String DateFormat::GetBestDateTimePattern(
     /* [in] */ ILocale* locale,
-    /* [in] */ String skeleton)
+    /* [in] */ const String& skeleton)
 {
     AutoPtr<IICUUtil> icu;
     CICUUtil::AcquireSingleton((IICUUtil**)&icu);

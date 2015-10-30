@@ -107,6 +107,28 @@ ECode CDeviceAdminReceiver::OnPasswordExpiring(
     return NOERROR;
 }
 
+ECode CDeviceAdminReceiver::OnProfileProvisioningComplete(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    return NOERROR;
+}
+
+ECode CDeviceAdminReceiver::OnLockTaskModeEntering(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& pkg
+{
+    return NOERROR;
+}
+
+ECode CDeviceAdminReceiver::OnLockTaskModeExiting(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    return NOERROR;
+}
+
 ECode CDeviceAdminReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)

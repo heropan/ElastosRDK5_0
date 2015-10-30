@@ -36,8 +36,8 @@ public:
      * @throws IllegalArgumentException if either the SSID or BSSID is invalid.
      */
     CARAPI constructor(
-        /* [in] */ String ssid,
-        /* [in] */ String bssid);
+        /* [in] */ const String& ssid,
+        /* [in] */ const String& bssid);
 
     // @Override
     CARAPI Equals(

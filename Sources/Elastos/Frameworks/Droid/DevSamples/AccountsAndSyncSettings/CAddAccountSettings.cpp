@@ -7,14 +7,14 @@ using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::Accounts::EIID_IAccountManagerCallback;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::App::IPendingIntentHelper;
-using Elastos::Droid::Accounts::IAccountManager;
+using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Accounts::CAccountManager;
 using Elastos::Droid::Accounts::IAccountManagerFuture;
 using Elastos::Droid::Accounts::IAccountManagerHelper;
 using Elastos::Droid::Accounts::CAccountManagerHelper;
+using Elastos::Droid::Accounts::IAccountManager;
 using Elastos::Utility::Logging::Logger;
 
 

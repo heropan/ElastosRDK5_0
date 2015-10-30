@@ -198,7 +198,7 @@ ECode CDozeLog::Dump(
 }
 
 ECode CDozeLog::Log(
-    /* [in] */ String msg)
+    /* [in] */ const String& msg)
 {
 //    synchronized (DozeLog.class) {
         if (sMessages == NULL) return NOERROR;
@@ -223,7 +223,7 @@ void CDozeLog::SummaryStats::Append()
 
 void CDozeLog::SummaryStats::Dump(
     /* [in] */ IPrintWriter* pw,
-    /* [in] */ String type)
+    /* [in] */ const String& type)
 {
     pw->Print("    ");
     pw->Print(type);

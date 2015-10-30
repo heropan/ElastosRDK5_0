@@ -94,7 +94,7 @@ ECode CMediaProjection::UnregisterCallback(
 
 // TODO: Need IIVirtualDisplayCallback
 // ECode CMediaProjection::CreateVirtualDisplay(
-//     /* [in] */ String name,
+//     /* [in] */ const String& name,
 //     /* [in] */ Int32 width,
 //     /* [in] */ Int32 height,
 //     /* [in] */ Int32 dpi,
@@ -113,7 +113,7 @@ ECode CMediaProjection::UnregisterCallback(
 
 // TODO: Need IIVirtualDisplayCallback
 // ECode CMediaProjection::CreateVirtualDisplay(
-//     /* [in] */ String name,
+//     /* [in] */ const String& name,
 //     /* [in] */ Int32 width,
 //     /* [in] */ Int32 height,
 //     /* [in] */ Int32 dpi,

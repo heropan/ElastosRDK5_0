@@ -193,7 +193,7 @@ public:
         /* [out] */ String* name);
 
     CARAPI SetOwnerPackageName(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     CARAPI Equals(
         /* [in] */ IDisplayInfo* otherObj,

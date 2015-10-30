@@ -442,7 +442,7 @@ ECode DisplayInfo::GetOwnerPackageName(
 }
 
 ECode DisplayInfo::SetOwnerPackageName(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
     mOwnerPackageName = name;
     return NOERROR;

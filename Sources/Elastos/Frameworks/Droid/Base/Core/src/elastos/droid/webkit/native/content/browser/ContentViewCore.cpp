@@ -3640,7 +3640,7 @@ void ContentViewCore::AddJavascriptInterface(
 // TODO
 // void ContentViewCore::AddPossiblyUnsafeJavascriptInterface(
 //     /* [in] */ IInterface* object,
-//     /* [in] */ String name,
+//     /* [in] */ const String& name,
 //     /* [in] */ Annotation* requiredAnnotation)
 // {
 //     if (mNativeContentViewCore != 0 && object != null) {

@@ -17,6 +17,8 @@ module
     interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Animation.IAnimator;
     interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.App.IActivity;
+    interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.App.IFragmentManagerImpl;
     interface Elastos.Droid.App.IFragmentSavedState;
     interface Elastos.Droid.Transition.ITransition;
@@ -25,6 +27,50 @@ module
     namespace Droid {
     namespace App {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [local]
+    interface IFragmentState {
+        Instantiate(
+            [in] IActivity* activity,
+            [in] IFragment* parent,
+            [out] IFragment** result);
+
+        GetClassName(
+            [out] String* name);
+
+        GetIndex(
+            [out] Int32* result);
+
+        IsFromLayout(
+            [out] Boolean* result);
+
+        GetFragmentId(
+            [out] Int32* result);
+
+        GetContainerId(
+            [out] Int32* result);
+
+        GetTag(
+            [out] String* tag);
+
+        IsRetainInstance(
+            [out] Boolean* result);
+
+        IsDetached(
+            [out] Boolean* result);
+
+        GetArguments(
+            [out] IBundle** arguments);
+
+        GetSavedFragmentState(
+            [out] IBundle** state);
+
+        GetInstance(
+            [out] IFragment** fragment);
+    }
 
     /**
      * State information that has been retrieved from a fragment instance

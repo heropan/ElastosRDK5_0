@@ -56,7 +56,7 @@ private:
     // AutoPtr<IInterface> CreateCustom(
     //     /* [in] */ IAttributeSet* attrs,
     //     /* [in] */ Class expectedType,
-    //     /* [in] */ String tag);
+    //     /* [in] */ const String& tag);
 
     CARAPI_(void) GetTargetIds(
         /* [in] */ IXmlPullParser* parser,

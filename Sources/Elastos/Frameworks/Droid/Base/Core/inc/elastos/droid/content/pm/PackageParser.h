@@ -203,9 +203,9 @@ public:
     {
     public:
         ApkLite(
-            /* [in] */ String codePath,
-            /* [in] */ String packageName,
-            /* [in] */ String splitName,
+            /* [in] */ const String& codePath,
+            /* [in] */ const String& packageName,
+            /* [in] */ const String& splitName,
             /* [in] */ Int32 versionCode,
             /* [in] */ Int32 installLocation,
             /* [in] */ List<AutoPtr<IVerifierInfo> >* verifiers,

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTMANAGERHELPER_H__
 
 #include "_Elastos_Droid_App_CFragmentManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {

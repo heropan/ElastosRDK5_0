@@ -4,6 +4,7 @@
 #include "_Elastos_Droid_Os_CParcel.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::IClassLoader;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IArrayList;
 
@@ -187,6 +188,32 @@ public:
 
     static AutoPtr<IArrayList> CreateStringArrayList(
         /* [in] */ IParcel* source);
+
+    /**
+     * Read and return a new Bundle object from the parcel at the current
+     * dataPosition().  Returns null if the previously written Bundle object was
+     * null.
+     */
+     static AutoPtr<IBundle> ReadBundle(
+        /* [in] */ IParcel* source);
+
+    /**
+     * Read and return a new Bundle object from the parcel at the current
+     * dataPosition(), using the given class loader to initialize the class
+     * loader of the Bundle for later retrieval of Parcelable objects.
+     * Returns null if the previously written Bundle object was null.
+     */
+     static AutoPtr<IBundle> ReadBundle(
+        /* [in] */ IParcel* source,
+        /* [in] */ IClassLoader* loader);
+
+    /**
+     * Flatten a Bundle into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    static CARAPI WriteBundle(
+        /* [in] */ IParcel* dest,
+        /* [in] */ IBundle* val);
 
 private:
     CARAPI ReadValue(

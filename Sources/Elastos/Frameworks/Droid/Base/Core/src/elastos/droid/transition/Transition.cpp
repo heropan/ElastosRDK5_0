@@ -120,7 +120,7 @@ ECode Transition::constructor(
 }
 
 AutoPtr<ArrayOf<Int32> > Transition::ParseMatchOrder(
-    /* [in] */ String matchOrderString)
+    /* [in] */ const String& matchOrderString)
 {
     AutoPtr<IStringTokenizer> st;
     CStringTokenizer::New(matchOrderString, String(","), (IStringTokenizer**)&st);
@@ -1481,7 +1481,7 @@ ECode Transition::AreValuesChanged(
 Boolean Transition::IsValueChanged(
     /* [in] */ ITransitionValues* oldValues,
     /* [in] */ ITransitionValues* newValues,
-    /* [in] */ String key)
+    /* [in] */ const String& key)
 {
     AutoPtr<CTransitionValues> cOld = (CTransitionValues*)oldValues;
     AutoPtr<CTransitionValues> cNew = (CTransitionValues*)newValues;
@@ -1892,7 +1892,7 @@ ECode Transition::ToString(
 
 Transition::AnimationInfo::AnimationInfo(
     /* [in] */ IView* view,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ ITransition* transition,
     /* [in] */ IWindowId* windowId,
     /* [in] */ ITransitionValues* values)

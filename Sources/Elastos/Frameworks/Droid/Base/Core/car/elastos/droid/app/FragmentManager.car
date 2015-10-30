@@ -373,6 +373,9 @@ module
         OnBackStackChanged();
     }
 
+    interface IFragmentManagerState {
+    }
+
     /**
      * Callbacks from FragmentManagerImpl to its container.
      */

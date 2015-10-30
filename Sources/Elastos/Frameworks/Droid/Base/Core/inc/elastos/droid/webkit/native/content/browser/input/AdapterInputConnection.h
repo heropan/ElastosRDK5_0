@@ -96,7 +96,7 @@ public:
      */
     //@VisibleForTesting
     CARAPI_(void) UpdateState(
-        /* [in] */ String text,
+        /* [in] */ const String& text,
         /* [in] */ Int32 selectionStart,
         /* [in] */ Int32 selectionEnd,
         /* [in] */ Int32 compositionStart,

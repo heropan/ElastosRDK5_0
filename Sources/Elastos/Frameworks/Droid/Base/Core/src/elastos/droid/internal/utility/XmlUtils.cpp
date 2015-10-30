@@ -1538,7 +1538,7 @@ ECode XmlUtils::ReadStringAttribute(
 ECode XmlUtils::WriteStringAttribute(
     /* [in] */ IXmlSerializer* out,
     /* [in] */ const String& name,
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     if (value != NULL) {
         return out->WriteAttribute(String(NULL), name, value);

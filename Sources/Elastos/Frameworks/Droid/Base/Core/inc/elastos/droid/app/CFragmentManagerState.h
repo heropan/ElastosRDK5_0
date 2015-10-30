@@ -12,8 +12,15 @@ namespace Droid {
 namespace App {
 
 CarClass(CFragmentManagerState)
+    , public Object
+    , public IFragmentManagerState
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CFragmentManagerState();
 
     CARAPI constructor();

@@ -408,7 +408,7 @@ ECode CChangeBounds::CreateAnimator(
 //===============================================================
 
 CChangeBounds::OffsetProperty::OffsetProperty(
-    /* [in] */ String name) : Int32Property(name)
+    /* [in] */ const String& name) : Int32Property(name)
 {
 }
 
@@ -468,7 +468,7 @@ void CChangeBounds::VerticalOffsetProperty::OffsetBy(
 CAR_INTERFACE_IMPL(CChangeBounds::PointFProperty, Object, IProperty)
 
 CChangeBounds::PointFProperty::PointFProperty(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     CRect::New((IRect**)&mBounds);
     mName = str;

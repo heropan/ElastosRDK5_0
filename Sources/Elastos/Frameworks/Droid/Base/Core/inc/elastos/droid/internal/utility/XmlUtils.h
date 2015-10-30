@@ -607,7 +607,7 @@ public:
     static CARAPI WriteStringAttribute(
         /* [in] */ IXmlSerializer* out,
         /* [in] */ const String& name,
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     static CARAPI ReadByteArrayAttribute(
         /* [in] */ IXmlPullParser* in,

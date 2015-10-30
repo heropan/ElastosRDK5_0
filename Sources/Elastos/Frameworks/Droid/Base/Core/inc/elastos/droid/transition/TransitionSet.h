@@ -94,7 +94,7 @@ public:
         /* [in] */ Int32 targetId);
 
     CARAPI AddTarget(
-        /* [in] */ String targetName);
+        /* [in] */ const String& targetName);
 
     // CARAPI AddTarget(
     //     /* [in] */ Class targetType,
@@ -114,14 +114,14 @@ public:
     //     /* [out] */ ITransition** result);
 
     CARAPI RemoveTarget(
-        /* [in] */ String target);
+        /* [in] */ const String& target);
 
     CARAPI ExcludeTarget(
         /* [in] */ IView* target,
         /* [in] */ Boolean exclude);
 
     CARAPI ExcludeTarget(
-        /* [in] */ String targetName,
+        /* [in] */ const String& targetName,
         /* [in] */ Boolean exclude);
 
     CARAPI ExcludeTarget(
@@ -177,7 +177,7 @@ public:
         /* [in] */ IEpicenterCallback* epicenterCallback);
 
     CARAPI ToString(
-        /* [in] */ String indent,
+        /* [in] */ const String& indent,
         /* [out] */ String* res);
 
     CARAPI Clone(
