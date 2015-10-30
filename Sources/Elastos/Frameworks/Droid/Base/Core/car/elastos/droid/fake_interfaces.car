@@ -43,15 +43,15 @@ module
     //
     // Elastos.Droid.webkit
     //
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Webkit {
-//
-//        interface IWebIconDatabase {}
-//
-//        interface IWebIconDatabaseIconListener {}
-//
-//    }}} // Elastos.Droid.Webkit
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+       interface IWebIconDatabase {}
+
+       interface IWebIconDatabaseIconListener {}
+
+    }}} // Elastos.Droid.Webkit
 
 
     //
