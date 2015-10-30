@@ -20,6 +20,7 @@ module
     merge("view/FocusFinder.car");
     merge("view/FrameStats.car");
     merge("view/GestureDetector.car");
+
     merge("view/Gravity.car");
     merge("view/HapticFeedbackConstants.car");
     merge("view/HardwareCanvas.car");
@@ -83,8 +84,11 @@ module
     merge("view/WindowManagerGlobal.car");
     merge("view/WindowManagerPolicy.car");
     merge("view/GraphicBuffer.car");
+
     // merge("view/CompatibilityInfoHolder.car");
-    // merge("view/DisplayList.car");
+    merge("view/DisplayList.car");
+    merge("view/HardwareRenderer.car");
+    merge("view/GhostView.car");
     // merge("view/IDisplayContentChangeListener.car");
     // merge("view/RootViewSurfaceTaker.car");
     merge("view/IInputMethodCallback.car");

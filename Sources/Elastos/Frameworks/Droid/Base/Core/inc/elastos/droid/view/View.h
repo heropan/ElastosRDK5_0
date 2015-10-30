@@ -5,17 +5,18 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRectF.h"
-// #include "elastos/droid/view/CSurface.h"
-// #include "elastos/droid/view/InputEventConsistencyVerifier.h"
-// #include "elastos/droid/view/HardwareRenderer.h"
-// #include "elastos/droid/os/Runnable.h"
+
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/utility/FloatProperty.h"
+#include "elastos/droid/utility/Pools.h"
+
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::IObjectInt32Map;
+using Elastos::Droid::Animation::IStateListAnimator;
 using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
@@ -34,27 +35,37 @@ using Elastos::Droid::Graphics::IInsets;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IShader;
+using Elastos::Droid::Graphics::IOutline;
 using Elastos::Droid::Graphics::BitmapConfig;
 using Elastos::Droid::Graphics::IInterpolator;
+using Elastos::Droid::Graphics::PorterDuffMode;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::View::CSurface;
+//using Elastos::Droid::View::CSurface;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::ITransformation;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
+using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
-using Elastos::Droid::Utility::IPool;
-using Elastos::Droid::Utility::IPoolable;
-using Elastos::Droid::Utility::IPoolableManager;
+using Elastos::Droid::View::IKeyEventCallback;
+using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::Internal::Utility::IPredicate;
 using Elastos::Droid::Widget::IScrollBarDrawable;
+using Elastos::Droid::Utility::IProperty;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::FloatProperty;
+using Elastos::Droid::Content::Res::IColorStateList;
+using Elastos::Utility::IList;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -64,6 +75,18 @@ class ViewRootImpl;
 class TouchDelegate;
 class ViewPropertyAnimator;
 class CAccessibilityInteractionController;
+
+#ifndef VIEW_PROBE
+#define VIEW_PROBE(host) ((View*)IView::Probe(host))
+#endif
+
+#ifndef IVIEW_PROBE
+#define IVIEW_PROBE(host) (IView::Probe(host))
+#endif
+
+#ifndef VIEWGROUP_PROBE
+#define VIEWGROUP_PROBE(host) ((ViewGroup*)IViewGroup::Probe(host))
+#endif
 
 class View
     : public Object
@@ -644,13 +667,6 @@ public:
      * Flag indicating that the start/end drawables has been resolved into left/right ones.
      */
     static const Int32 PFLAG2_DRAWABLE_RESOLVED;
-
-    /**
-     * Indicates that the view is tracking some sort of transient state
-     * that the app should not need to be aware of, but that the framework
-     * should take special care to preserve.
-     */
-    static const Int32 PFLAG2_HAS_TRANSIENT_STATE;
 
     /**
      * Group of bits indicating that RTL properties resolution is done.
@@ -1656,7 +1672,7 @@ public:
 
         private:
             static const Int32 POOL_LIMIT;
-            static AutoPtr<SynchronizedPool<InvalidateInfo> > sPool ;
+            static AutoPtr<Pools::SynchronizedPool<InvalidateInfo> > sPool;
         };
 
     public:
@@ -1691,7 +1707,7 @@ public:
 
         AutoPtr<IBinder> mPanelParentWindowToken;
 
-        AutoPtr<CSurface> mSurface;
+        //AutoPtr<CSurface> mSurface;
 
         Boolean mHardwareAccelerated;
         Boolean mHardwareAccelerationRequested;
@@ -1999,12 +2015,6 @@ public:
          * Point used to compute visible regions.
          */
         AutoPtr<IPoint> mPoint;
-
-        /**
-         * Used to track which View originated a requestLayout() call, used when
-         * requestLayout() is called during layout.
-         */
-        AutoPtr<IView> mViewRequestingLayout;
     };
 
 public:
@@ -2504,13 +2514,15 @@ private:
 
     private:
         View* mHost;
-        Int32 mChangeTypes = 0;
+        Int32 mChangeTypes;
         Boolean mPosted;
         Boolean mPostedWithDelay;
         Int64 mLastEventTimeMillis;
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     View();
 
     CARAPI constructor(
@@ -2532,9 +2544,6 @@ public:
         /* [in] */ Int32 defStyleRes);
 
     virtual ~View();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     virtual CARAPI GetVerticalFadingEdgeLength(
          /* [out] */ Int32* length);
@@ -3262,27 +3271,27 @@ public:
 
     virtual CARAPI GetFocusables(
         /* [in] */ Int32 direction,
-        /* [out] */ IObjectContainer** views);
+        /* [out] */ IArrayList** views);
 
     virtual CARAPI AddFocusables(
-        /* [in] */ IObjectContainer* views,
+        /* [in] */ IArrayList* views,
         /* [in] */ Int32 direction);
 
     virtual CARAPI AddFocusables(
-        /* [in] */ IObjectContainer* views,
+        /* [in] */ IArrayList* views,
         /* [in] */ Int32 direction,
         /* [in] */ Int32 focusableMode);
 
     virtual CARAPI FindViewsWithText(
-        /* [in, out] */ IObjectContainer* outViews,
+        /* [in, out] */ IArrayList* outViews,
         /* [in] */ ICharSequence* searched,
         /* [in] */ Int32 flags);
 
     virtual CARAPI GetTouchables(
-        /* [out] */ IObjectContainer** views);
+        /* [out] */ IArrayList** views);
 
     virtual CARAPI AddTouchables(
-        /* [in] */ IObjectContainer* views);
+        /* [in] */ IArrayList* views);
 
     virtual CARAPI RequestAccessibilityFocus(
         /* [out] */ Boolean* res);
@@ -3324,6 +3333,9 @@ public:
 
     virtual CARAPI IsActionableForAccessibility(
         /* [out] */ Boolean* res);
+
+    virtual CARAPI NotifyViewAccessibilityStateChangedIfNeeded(
+        /* [in] */ Int32 changeType);
 
     virtual CARAPI NotifySubtreeAccessibilityStateChangedIfNeeded();
 
@@ -4064,7 +4076,7 @@ public:
         /* [out] */ Boolean* res);
 
     virtual CARAPI GetHardwareRenderer(
-        /* [out] */ HardwareRenderer** res);
+        /* [out] */ IHardwareRenderer** res);
 
     virtual CARAPI GetDisplayList(
         /* [out] */ IRenderNode** node);
@@ -4487,18 +4499,6 @@ public:
     // For debug print out.
     CARAPI Log();
 
-    CARAPI GetInflaterContext(
-        /* [out] */ IContext** context);
-
-    CARAPI SetInflaterContext(
-        /* [in] */ IContext* context);
-
-    CARAPI GetXmlPath(
-        /* [out] */ String* path);
-
-    CARAPI SetXmlPath(
-        /* [in] */ const String& path);
-
     CARAPI GetHotspotBounds(
         /* [in] */ IRect* outRect);
 
@@ -4517,7 +4517,7 @@ public:
         /* [out] */ IWindowInsets** res);
 
     CARAPI SetOnApplyWindowInsetsListener(
-        /* [in] */ IViewOnApplyWindowInsetsListener listener);
+        /* [in] */ IViewOnApplyWindowInsetsListener* listener);
 
     CARAPI DispatchApplyWindowInsets(
         /* [in] */ IWindowInsets* insets,
@@ -4610,7 +4610,8 @@ public:
     virtual CARAPI PointInView(
         /* [in] */ Float localX,
         /* [in] */ Float localY,
-        /* [in] */ Float slop);
+        /* [in] */ Float slop,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI DamageInParent();
 
@@ -4644,7 +4645,7 @@ public:
         /* [in] */ Float y);
 
     virtual CARAPI SetBackgroundTintList(
-        /* [in] */ IColorStateList tint);
+        /* [in] */ IColorStateList* tint);
 
     virtual CARAPI GetBackgroundTintList(
         /* [out] */ IColorStateList** res);
@@ -4656,15 +4657,15 @@ public:
         /* [out] */ PorterDuffMode* res);
 
     virtual CARAPI ComputeOpticalInsets(
-        /* [out] */ Insets** res);
+        /* [out] */ IInsets** res);
 
     virtual CARAPI ToGlobalMotionEvent(
         /* [in] */ IMotionEvent* ev,
-        /* [out] */ Boolean res);
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ToLocalMotionEvent(
         /* [in] */ IMotionEvent* ev,
-        /* [out] */ Boolean res);
+        /* [out] */ Boolean* res);
 
     virtual CARAPI TransformMatrixToGlobal(
         /* [in] */ IMatrix* m);
@@ -4728,7 +4729,7 @@ public:
     virtual CARAPI DispatchNestedFling(
         /* [in] */ Float velocityX,
         /* [in] */ Float velocityY,
-        /* [in] */ boolean consumed,
+        /* [in] */ Boolean consumed,
         /* [out] */ Boolean* res);
 
     virtual CARAPI DispatchNestedPreFling(
@@ -4786,6 +4787,9 @@ protected:
     virtual CARAPI_(Int32) GetHorizontalScrollbarHeight();
 
     virtual CARAPI_(void) InitializeScrollbars(
+        /* [in] */ ITypedArray* a);
+
+    virtual CARAPI_(void) InitializeScrollbarsInternal(
         /* [in] */ ITypedArray* a);
 
     virtual CARAPI_(void) OnFocusChanged(
@@ -4965,12 +4969,12 @@ protected:
     virtual CARAPI_(Int32) GetWindowAttachCount();
 
     virtual CARAPI DispatchSaveInstanceState(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     virtual CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
 
     virtual CARAPI DispatchRestoreInstanceState(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     virtual CARAPI_(void) OnRestoreInstanceState(
         /* [in] */ IParcelable* state);
@@ -5114,7 +5118,7 @@ protected:
      *
      * @param outRect The output location
      */
-    virtual CARAPI_(void) GetBoundsOnScreen(
+    virtual CARAPI GetBoundsOnScreen(
         /* [in] */ IRect* outRect);
 
     /**
@@ -5584,9 +5588,6 @@ private:
         /* [in] */ Boolean forward,
         /* [in] */ Boolean extendSelection);
 
-    CARAPI_(Boolean) PreviousAtGranularity(
-        /* [in] */ Int32 granularity);
-
     CARAPI_(void) SendViewTextTraversedAtGranularityEvent(
         /* [in] */ Int32 action,
         /* [in] */ Int32 granularity,
@@ -5673,7 +5674,7 @@ private:
         /* [in] */ Int32 key,
         /* [in] */ IInterface* tag);
 
-    CARAPI_(HashMap<String, AutoPtr<IInterface> >) GetAttributeMap();
+    HashMap<Int32, String> CARAPICALLTYPE GetAttributeMap();
 
     CARAPI_(void) SaveAttributeData(
         /* [in] */ IAttributeSet* attrs,
@@ -5693,7 +5694,7 @@ private:
     CARAPI_(void) SetOutlineProviderFromAttribute(
         /* [in] */ Int32 providerInt);
 
-    CARAPI_(void) RebuildOutline();
+    CARAPI RebuildOutline();
 
     CARAPI_(AutoPtr<IView>) GetProjectionReceiver();
 
@@ -6183,7 +6184,7 @@ protected:
      * Consistency verifier for debugging purposes.
      * @hide
      */
-    AutoPtr<InputEventConsistencyVerifier> mInputEventConsistencyVerifier;
+    AutoPtr<IInputEventConsistencyVerifier> mInputEventConsistencyVerifier;
 
     AutoPtr<SendViewStateChangedAccessibilityEvent> mSendViewStateChangedAccessibilityEvent;
 
@@ -6245,5 +6246,8 @@ private:
 } // namespace View
 } // namespace Droid
 } // namespace Elastos
+
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::View::View::AttachInfo::InvalidateInfo, IInterface)
 
 #endif //__ELASTOS_DROID_VIEW_View_H__

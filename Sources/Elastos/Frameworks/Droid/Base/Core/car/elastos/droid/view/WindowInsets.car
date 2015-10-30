@@ -19,6 +19,15 @@ module
      * @see View#onApplyWindowInsets(WindowInsets)
      */
     interface IWindowInsets {
+
+        /**
+         * Used to provide a safe copy of the system window insets to pass through
+         * to the existing fitSystemWindows method and other similar internals.
+         * @hide
+         */
+        GetSystemWindowInsets(
+            [out] IRect** res);
+
         /**
          * Returns the left system window inset in pixels.
          *

@@ -218,6 +218,15 @@ module
      */
     [local]
     interface IViewTreeObserver {
+        /**
+         * Merges all the listeners registered on the specified observer with the listeners
+         * registered on this object. After this method is invoked, the specified observer
+         * will return false in {@link #isAlive()} and should not be used anymore.
+         *
+         * @param observer The ViewTreeObserver whose listeners must be added to this observer
+         */
+        Merge(
+            [in] IViewTreeObserver* observer);
 
         /**
          * Register a callback to be invoked when the view hierarchy is attached to a window.
