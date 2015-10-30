@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwFormDatabase.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwFormDatabase_dec.h"
 
 namespace Elastos {
 namespace Droid {
@@ -20,11 +21,12 @@ void AwFormDatabase::ClearFormData()
 //--------------------------------------------------------------------------------------------
 Boolean AwFormDatabase::NativeHasFormData()
 {
-    return FALSE;
+    return Elastos_AwFormDatabase_nativeHasFormData();
 }
 
 void AwFormDatabase::NativeClearFormData()
 {
+    Elastos_AwFormDatabase_nativeClearFormData();
 }
 
 } // namespace AndroidWebview

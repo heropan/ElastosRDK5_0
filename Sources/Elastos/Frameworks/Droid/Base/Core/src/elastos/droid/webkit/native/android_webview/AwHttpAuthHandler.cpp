@@ -1,4 +1,7 @@
 #include "elastos/droid/webkit/native/android_webview/AwHttpAuthHandler.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwHttpAuthHandler_dec.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -42,7 +45,7 @@ AutoPtr<IInterface> AwHttpAuthHandler::Create(
     /* [in] */ Boolean firstAttempt)
 {
     AutoPtr<AwHttpAuthHandler> handler = new AwHttpAuthHandler(nativeAwAuthHandler, firstAttempt);
-    AutoPtr<IInterface> result = handler->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(handler);
     return result;
 }
 
@@ -57,11 +60,25 @@ void AwHttpAuthHandler::NativeProceed(
     /* [in] */ const String& username,
     /* [in] */ const String& password)
 {
+    Elastos_AwHttpAuthHandler_nativeProceed(THIS_PROBE(IInterface), (Handle32)nativeAwHttpAuthHandler, username, password);
 }
 
 void AwHttpAuthHandler::NativeCancel(
     /* [in] */ Int64 nativeAwHttpAuthHandler)
 {
+    Elastos_AwHttpAuthHandler_nativeCancel(THIS_PROBE(IInterface), (Handle32)nativeAwHttpAuthHandler);
+}
+//callback function definition
+void AwHttpAuthHandler::HandlerDestroyed(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwHttpAuthHandler> mObj = (AwHttpAuthHandler*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwHttpAuthHandler", "AwHttpAuthHandler::HandlerDestroyed, mObj is NULL");
+        return;
+    }
+    mObj->HandlerDestroyed();
 }
 
 } // namespace AndroidWebview

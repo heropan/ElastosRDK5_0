@@ -1,4 +1,5 @@
-#include "elastos/droid/webkit/native/android_webview/JavaBrowserViewRendererHelper.h"
+#include "elastos/droid/webkit/native/android_webview/CppBrowserViewRendererHelper.h"
+#include "elastos/droid/webkit/native/android_webview/api/CppBrowserViewRendererHelper_dec.h"
 
 //TODO #include "elastos/droid/graphics/CBitmapFactory.h"
 #include <elastos/utility/logging/Logger.h>
@@ -14,10 +15,10 @@ namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 
-const String JavaBrowserViewRendererHelper::LOGTAG("JavaBrowserViewRendererHelper");
+const String CppBrowserViewRendererHelper::LOGTAG("CppBrowserViewRendererHelper");
 
 // Should never be instantiated.
-JavaBrowserViewRendererHelper::JavaBrowserViewRendererHelper()
+CppBrowserViewRendererHelper::CppBrowserViewRendererHelper()
 {
 }
 
@@ -27,7 +28,7 @@ JavaBrowserViewRendererHelper::JavaBrowserViewRendererHelper()
  * drawn into. Note the Canvas will not be modified in any way.
  */
 //@CalledByNative IBitmap
-AutoPtr<IInterface> JavaBrowserViewRendererHelper::CreateBitmap(
+AutoPtr<IInterface> CppBrowserViewRendererHelper::CreateBitmap(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ ICanvas* canvas)
@@ -61,7 +62,7 @@ AutoPtr<IInterface> JavaBrowserViewRendererHelper::CreateBitmap(
  * Used for convenience from the native side and other static helper methods.
  */
 //@CalledByNative
-void JavaBrowserViewRendererHelper::DrawBitmapIntoCanvas(
+void CppBrowserViewRendererHelper::DrawBitmapIntoCanvas(
     /* [in] */ IBitmap* bitmap,
     /* [in] */ ICanvas* canvas,
     /* [in] */ Int32 scroll_x,
@@ -69,6 +70,26 @@ void JavaBrowserViewRendererHelper::DrawBitmapIntoCanvas(
 {
     canvas->Translate(scroll_x, scroll_y);
     canvas->DrawBitmap(bitmap, 0.0, 0.0, NULL);
+}
+//callback function definition
+AutoPtr<IInterface> CppBrowserViewRendererHelper::CreateBitmap(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ IInterface* canvas)
+{
+    AutoPtr<ICanvas> c = ICanvas::Probe(canvas);
+    return CreateBitmap(width, height, canvas);
+}
+
+void CppBrowserViewRendererHelper::DrawBitmapIntoCanvas(
+    /* [in] */ IInterface* bitmap,
+    /* [in] */ IInterface* canvas,
+    /* [in] */ Int32 scroll_x,
+    /* [in] */ Int32 scroll_y)
+{
+    AutoPtr<IBitmap> b = IBitmap::Probe(bitmap);
+    AutoPtr<ICanvas> c = ICanvas::Probe(canvas);
+    DrawBitmapIntoCanvas(b, c, scroll_x, scroll_y);
 }
 
 } // namespace AndroidWebview

@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwContentsStatics.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwContentsStatics_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
@@ -41,7 +42,7 @@ void AwContentsStatics::ClientCertificatesCleared(
     /* [in] */ IInterface* callback)
 {
     if (callback == NULL) return;
-    AutoPtr<IRunnable> runCallback = (IRunnable*)(callback->Probe(EIID_IRunnable));
+    AutoPtr<IRunnable> runCallback = IRunnable::Probe(callback);
     runCallback->Run();
 }
 
@@ -85,26 +86,30 @@ void AwContentsStatics::SetRecordFullDocument(
 void AwContentsStatics::NativeClearClientCertPreferences(
     /* [in] */ IRunnable* callback)
 {
+    Elastos_AwContentsStatics_nativeClearClientCertPreferences(TO_IINTERFACE(callback));
 }
 
 void AwContentsStatics::NativeSetDataReductionProxyKey(
     /* [in] */ const String& key)
 {
+    Elastos_AwContentsStatics_nativeSetDataReductionProxyKey(key);
 }
 
 void AwContentsStatics::NativeSetDataReductionProxyEnabled(
     /* [in] */ Boolean enabled)
 {
+    Elastos_AwContentsStatics_nativeSetDataReductionProxyEnabled(enabled);
 }
 
 String AwContentsStatics::NativeGetUnreachableWebDataUrl()
 {
-    return String();
+    return Elastos_AwContentsStatics_nativeGetUnreachableWebDataUrl();
 }
 
 void AwContentsStatics::NativeSetRecordFullDocument(
     /* [in] */ Boolean recordFullDocument)
 {
+    Elastos_AwContentsStatics_nativeSetRecordFullDocument(recordFullDocument);
 }
 
 } // namespace AndroidWebview

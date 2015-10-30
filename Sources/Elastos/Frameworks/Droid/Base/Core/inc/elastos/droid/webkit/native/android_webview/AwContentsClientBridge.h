@@ -32,7 +32,7 @@ class AwContentsClient;
  */
 //@JNINamespace("android_webview")
 class AwContentsClientBridge
-:public Object
+    : public Object
 {
 public:
     /**
@@ -42,7 +42,7 @@ public:
      * is a programming error and causes an exception.
      */
     class ClientCertificateRequestCallback
-    :public Object
+        : public Object
     {
     public:
         class ProceedRunnable
@@ -277,6 +277,59 @@ private:
     CARAPI_(void) NativeCancelJsResult(
         /* [in] */ Int64 nativeAwContentsClientBridge,
         /* [in] */ Int32 id);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwContentsClientBridgeCallback_Init();
+
+private:
+    static CARAPI_(void) SetNativeContentsClientBridge(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeContentsClientBridge);
+
+    static CARAPI_(Boolean) AllowCertificateError(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 certError,
+        /* [in] */ ArrayOf<Byte>* derBytes,
+        /* [in] */ const String& url,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) SelectClientCertificate(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id,
+        /* [in] */ ArrayOf<String>* keyTypes,
+        /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* encodedPrincipals,
+        /* [in] */ const String& host,
+        /* [in] */ Int32 port);
+
+    static CARAPI_(void) HandleJsAlert(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleJsConfirm(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleJsPrompt(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ const String& defaultValue,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleJsBeforeUnload(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& message,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(Boolean) ShouldOverrideUrlLoading(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url);
 
 private:
     AwContentsClientBridge(const AwContentsClientBridge&);

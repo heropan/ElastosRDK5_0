@@ -19,7 +19,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class InputStreamUtil
-:public Object
+    : public Object
 {
 public:
     //@CalledByNative
@@ -40,6 +40,27 @@ public:
     //@CalledByNative
     static CARAPI_(Int64) Skip(
         /* [in] */ IInputStream* stream,
+        /* [in] */ Int64 n);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaInputStreamUtilCallback_Init();
+
+private:
+    static CARAPI_(void) Close(
+        /* [in] */ IInterface* stream);
+
+    static CARAPI_(Int32) Available(
+        /* [in] */ IInterface* stream);
+
+    static CARAPI_(Int32) Read(
+        /* [in] */ IInterface* stream,
+        /* [in] */ ArrayOf<Byte>* b,
+        /* [in] */ Int32 off,
+        /* [in] */ Int32 len);
+
+    static CARAPI_(Int64) Skip(
+        /* [in] */ IInterface* stream,
         /* [in] */ Int64 n);
 
 private:

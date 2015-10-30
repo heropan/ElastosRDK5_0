@@ -123,7 +123,7 @@ ECode AwContentsClientCallbackHelper::MyHandler::HandleMessage(
                 AutoPtr<IInterface> obj;
                 msg->GetObj((IInterface**)&obj);
                 if (obj != NULL) {
-                    AutoPtr<ICallable> callable = (ICallable*)(obj->Probe(EIID_ICallable));
+                    AutoPtr<ICallable> callable = ICallable::Probe(obj);
                     callable->Call((IInterface**)&iPicture);
                 }
             //} catch (Exception e) {
@@ -210,7 +210,7 @@ void AwContentsClientCallbackHelper::PostOnDownloadStart(
 {
     AutoPtr<DownloadInfo> info = new DownloadInfo(url, userAgent, contentDisposition, mimeType, contentLength);
     AutoPtr<IMessage> msg;
-    AutoPtr<IInterface> obj = info->Probe(EIID_IInterface);
+    AutoPtr<IInterface> obj = TO_IINTERFACE(info);
     mHandler->ObtainMessage(MSG_ON_DOWNLOAD_START, obj, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -223,7 +223,7 @@ void AwContentsClientCallbackHelper::PostOnReceivedLoginRequest(
 {
     AutoPtr<LoginRequestInfo> info = new LoginRequestInfo(realm, account, args);
     AutoPtr<IMessage> msg;
-    AutoPtr<IInterface> obj = info->Probe(EIID_IInterface);
+    AutoPtr<IInterface> obj = TO_IINTERFACE(info);
     mHandler->ObtainMessage(MSG_ON_RECEIVED_LOGIN_REQUEST, obj, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);
@@ -236,7 +236,7 @@ void AwContentsClientCallbackHelper::PostOnReceivedError(
 {
     AutoPtr<OnReceivedErrorInfo> info = new OnReceivedErrorInfo(errorCode, description, failingUrl);
     AutoPtr<IMessage> msg;
-    AutoPtr<IInterface> obj = info->Probe(EIID_IInterface);
+    AutoPtr<IInterface> obj = TO_IINTERFACE(info);
     mHandler->ObtainMessage(MSG_ON_RECEIVED_ERROR, obj, (IMessage**)&msg);
     Boolean result;
     mHandler->SendMessage(msg, &result);

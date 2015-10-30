@@ -8,7 +8,7 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = JavaBrowserViewRendererHelper.cpp
+SOURCES = CppBrowserViewRendererHelper.cpp
 SOURCES += AwFormDatabase.cpp
 SOURCES += AwPdfExporter.cpp
 SOURCES += DefaultVideoPosterRequestHandler.cpp
@@ -24,7 +24,7 @@ SOURCES += AwAssets.cpp
 SOURCES += HttpAuthDatabase.cpp
 SOURCES += AwAutofillClient.cpp
 SOURCES += AwPicture.cpp
-SOURCES += AndroidProtocolHandler.cpp
+SOURCES += ElastosProtocolHandler.cpp
 SOURCES += AwHttpAuthHandler.cpp
 SOURCES += OverScrollGlow.cpp
 SOURCES += ScrollAccessibilityHelper.cpp

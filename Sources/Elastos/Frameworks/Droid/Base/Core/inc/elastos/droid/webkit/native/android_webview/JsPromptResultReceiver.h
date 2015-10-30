@@ -15,6 +15,7 @@ namespace AndroidWebview {
  * confirm() or cancel() to allow processing to continue.
  */
 class JsPromptResultReceiver
+    : public IInterface
 {
 public:
     virtual CARAPI Confirm(

@@ -22,7 +22,8 @@ namespace AndroidWebview {
  */
 //@VisibleForTesting
 //@JNINamespace("android_webview")
-class AwWebContentsDelegate : public WebContentsDelegateAndroid
+class AwWebContentsDelegate
+    : public WebContentsDelegateAndroid
 {
 public:
     // Callback filesSelectedInChooser() when done.
@@ -62,6 +63,37 @@ protected:
         /* [in] */ Int32 mode_flags,
         /* [in] */ ArrayOf<String>* filePath,
         /* [in] */ ArrayOf<String>* displayName);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwWebContentsDelegateCallback_Init();
+
+private:
+    static CARAPI_(void) RunFileChooser(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 processId,
+        /* [in] */ Int32 renderId,
+        /* [in] */ Int32 mode_flags,
+        /* [in] */ const String& acceptTypes,
+        /* [in] */ const String& title,
+        /* [in] */ const String& defaultFilename,
+        /* [in] */ Boolean capture);
+
+    static CARAPI_(Boolean) AddNewContents(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean isDialog,
+        /* [in] */ Boolean isUserGesture);
+
+    static CARAPI_(void) CloseContents(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ActivateContents(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ToggleFullscreenModeForTab(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean enterFullscreen);
+
 };
 
 } // namespace AndroidWebview

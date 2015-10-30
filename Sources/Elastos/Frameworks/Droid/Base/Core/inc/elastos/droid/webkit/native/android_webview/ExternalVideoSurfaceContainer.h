@@ -77,7 +77,7 @@ public:
      * Factory class to facilitate dependency injection.
      */
     class Factory
-    :public Object
+        : public Object
     {
         public:
             static AutoPtr<ExternalVideoSurfaceContainer> Create(
@@ -187,6 +187,37 @@ private:
     static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
         /* [in] */ ContentViewCore* contentViewCore);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaExternalVideoSurfaceContainerCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+        /* [in] */ IInterface* contentViewCore);
+
+    static CARAPI_(void) RequestExternalVideoSurface(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 playerId);
+
+    static CARAPI_(void) ReleaseExternalVideoSurface(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 playerId);
+
+    static CARAPI_(void) Destroy(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnExternalVideoSurfacePositionChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 playerId,
+        /* [in] */ Float left,
+        /* [in] */ Float top,
+        /* [in] */ Float right,
+        /* [in] */ Float bottom);
+
+    static CARAPI_(void) OnFrameInfoUpdated(
+        /* [in] */ IInterface* obj);
 
 private:
     // There can be at most 1 external video surface for now.

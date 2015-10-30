@@ -23,7 +23,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwQuotaManagerBridge
-:public Object
+    : public Object
 {
 public:
     /**
@@ -31,7 +31,7 @@ public:
      * are optimized for JNI convenience and need to be converted.
      */
     class Origins
-    :public Object
+        : public Object
     {
     public:
         Origins(
@@ -136,6 +136,25 @@ private:
         /* [in] */ const String& origin,
         /* [in] */ Int32 callbackId,
         /* [in] */ Boolean isQuota);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwQuotaManagerBridgeCallback_Init();
+
+private:
+    static CARAPI_(void) OnGetOriginsCallback(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 callbackId,
+        /* [in] */ ArrayOf<String>* origin,
+        /* [in] */ ArrayOf<Int64>* usages,
+        /* [in] */ ArrayOf<Int64>* quotas);
+
+    static CARAPI_(void) OnGetUsageAndQuotaForOriginCallback(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 callbackId,
+        /* [in] */ Boolean isQuota,
+        /* [in] */ Int64 usage,
+        /* [in] */ Int64 quota);
 
 private:
     // TODO(boliu): This should be owned by Java AwBrowserContext, not a singleton.

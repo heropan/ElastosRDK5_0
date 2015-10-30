@@ -120,7 +120,7 @@ public:
      * AwHitTestData.
      */
     struct HitTestData
-        :public Object
+        : public Object
     {
         HitTestData()
             : hitTestResultType(0)
@@ -184,7 +184,7 @@ public:
      * native GL rendering.
      */
     class NativeGLDelegate
-        :public Object
+        : public Object
     {
     public:
         /**
@@ -215,7 +215,7 @@ public:
      * certain AwContents dependencies.
      */
     class DependencyFactory
-    :public Object
+        : public Object
     {
     public:
         virtual CARAPI_(AutoPtr<AwLayoutSizer>) CreateLayoutSizer();
@@ -246,7 +246,7 @@ public:
      * A class that stores the state needed to enter and exit fullscreen.
      */
     class FullScreenTransitionsState
-    :public Object
+        : public Object
     {
     public:
         FullScreenTransitionsState(
@@ -277,7 +277,8 @@ public:
     };
 
     //--------------------------------------------------------------------------------------------
-    class IoThreadClientImpl : public AwContentsIoThreadClient
+    class IoThreadClientImpl
+        : public AwContentsIoThreadClient
     {
     public:
         IoThreadClientImpl(
@@ -332,7 +333,7 @@ public:
     // onPageStarted's and double onPageStarted's.
     //
     class InterceptNavigationDelegateImpl
-        :public InterceptNavigationDelegate
+        : public InterceptNavigationDelegate
     {
     public:
         InterceptNavigationDelegateImpl(
@@ -347,7 +348,8 @@ public:
     };
 
     //--------------------------------------------------------------------------------------------
-    class AwLayoutSizerDelegate : public AwLayoutSizer::Delegate
+    class AwLayoutSizerDelegate
+        : public AwLayoutSizer::Delegate
     {
     public:
         AwLayoutSizerDelegate(
@@ -373,7 +375,8 @@ public:
     };
 
     //--------------------------------------------------------------------------------------------
-    class AwScrollOffsetManagerDelegate : public AwScrollOffsetManager::Delegate
+    class AwScrollOffsetManagerDelegate
+        : public AwScrollOffsetManager::Delegate
     {
     public:
         AwScrollOffsetManagerDelegate(
@@ -413,7 +416,8 @@ public:
     };
 
     //--------------------------------------------------------------------------------------------
-    class AwGestureStateListener : public GestureStateListener
+    class AwGestureStateListener
+        : public GestureStateListener
     {
     public:
         AwGestureStateListener(
@@ -536,7 +540,8 @@ public:
     // This is the AwViewMethods implementation that does real work. The AwViewMethodsImpl is
     // hooked up to the WebView in embedded mode and to the FullScreenView in fullscreen mode,
     // but not to both at the same time.
-    class AwViewMethodsImpl : public AwViewMethods
+    class AwViewMethodsImpl
+        : public AwViewMethods
     {
     public:
         AwViewMethodsImpl(
@@ -699,7 +704,8 @@ public:
         AwContents* mOwner;
     };
 
-    class InnerJavaScriptCallback : public ContentViewCore::JavaScriptCallback
+    class InnerJavaScriptCallback
+        : public ContentViewCore::JavaScriptCallback
     {
     public:
         InnerJavaScriptCallback(
@@ -714,7 +720,8 @@ public:
         /*TODO IValueCallback*/IInterface* mCallback;
     };
 
-    class SaveWebArchiveInternalTask : public AsyncTask
+    class SaveWebArchiveInternalTask
+        : public AsyncTask
     {
         public:
             SaveWebArchiveInternalTask(
@@ -1546,7 +1553,7 @@ private:
     static CARAPI_(void) GenerateMHTMLCallback(
         /* [in] */ const String& path,
         /* [in] */ Int64 size,
-        /* [in] */ /*TODO IValueCallback*/IInterface* callback);
+        /* [in] */ IInterface* callback);
 
     //@CalledByNative
     CARAPI_(void) OnReceivedHttpAuthRequest(
@@ -1848,6 +1855,115 @@ private:
         /* [in] */ AwContentsClient* contentsClient,
         /* [in] */ AwSettings* settings,
         /* [in] */ DependencyFactory* dependencyFactory);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwContentsCallback_Init();
+
+private:
+    static CARAPI_(void) OnDocumentHasImagesResponse(
+        /* [in] */ Boolean result,
+        /* [in] */ IInterface* message);
+
+    static CARAPI_(void) OnReceivedTouchIconUrl(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ Boolean precomposed);
+
+    static CARAPI_(void) OnReceivedIcon(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* bitmap);
+
+    static CARAPI_(void) OnReceivedHttpAuthRequest(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* handler,
+        /* [in] */ const String& host,
+        /* [in] */ const String& realm);
+
+    static CARAPI_(void) OnGeolocationPermissionsShowPrompt(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& origin);
+
+    static CARAPI_(void) OnGeolocationPermissionsHidePrompt(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnPermissionRequest(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* awPermissionRequest);
+
+    static CARAPI_(void) OnPermissionRequestCanceled(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* awPermissionRequest);
+
+    static CARAPI_(void) OnFindResultReceived(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 activeMatchOrdinal,
+        /* [in] */ Int32 numberOfMatches,
+        /* [in] */ Boolean isDoneCounting);
+
+    static CARAPI_(void) OnNewPicture(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) UpdateHitTestData(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 type,
+        /* [in] */ const String& extra,
+        /* [in] */ const String& href,
+        /* [in] */ const String& anchorText,
+        /* [in] */ const String& imgSrc);
+
+    static CARAPI_(Boolean) RequestDrawGL(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* canvas,
+        /* [in] */ Boolean waitForCompletion);
+
+    static CARAPI_(void) PostInvalidateOnAnimation(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) InvalidateOnFunctorDestroy(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<ArrayOf<Int32> >) GetLocationOnScreen(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnWebLayoutPageScaleFactorChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Float webLayoutPageScaleFactor);
+
+    static CARAPI_(void) OnWebLayoutContentsSizeChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 widthCss,
+        /* [in] */ Int32 heightCss);
+
+    static CARAPI_(void) ScrollContainerViewTo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
+    static CARAPI_(Boolean) IsFlingActive(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) UpdateScrollState(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 maxContainerViewScrollOffsetX,
+        /* [in] */ Int32 maxContainerViewScrollOffsetY,
+        /* [in] */ Int32 contentWidthDip,
+        /* [in] */ Int32 contentHeightDip,
+        /* [in] */ Float pageScaleFactor,
+        /* [in] */ Float minPageScaleFactor,
+        /* [in] */ Float maxPageScaleFactor);
+
+    static CARAPI_(void) SetAwAutofillClient(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* client);
+
+    static CARAPI_(void) DidOverscroll(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 deltaX,
+        /* [in] */ Int32 deltaY);
+
+    static CARAPI_(Boolean) UseLegacyGeolocationPermissionAPI(
+        /* [in] */ IInterface* obj);
 
 private:
     // This is only to avoid heap allocations inside getGlobalVisibleRect. It should treated

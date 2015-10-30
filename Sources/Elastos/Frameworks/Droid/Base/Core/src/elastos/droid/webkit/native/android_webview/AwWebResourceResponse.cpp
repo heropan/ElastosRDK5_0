@@ -1,4 +1,7 @@
 #include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwWebResourceResponse_dec.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -88,6 +91,91 @@ AutoPtr<ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderNames()
 AutoPtr<ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderValues()
 {
     return mResponseHeaderValues;
+}
+
+//callback function definition
+String AwWebResourceResponse::GetMimeType(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetMimeType, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetMimeType();
+}
+
+String AwWebResourceResponse::GetCharset(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetCharset, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetCharset();
+}
+
+AutoPtr<IInterface> AwWebResourceResponse::GetData(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetData, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetData();
+}
+
+Int32 AwWebResourceResponse::GetStatusCode(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetStatusCode, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetStatusCode();
+}
+
+String AwWebResourceResponse::GetReasonPhrase(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetReasonPhrase, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetReasonPhrase();
+}
+
+AutoPtr<ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderNames(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetResponseHeaderNames, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetResponseHeaderNames();
+}
+
+AutoPtr<ArrayOf<String> > AwWebResourceResponse::GetResponseHeaderValues(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwWebResourceResponse> mObj = (AwWebResourceResponse*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwWebResourceResponse", "AwWebResourceResponse::GetResponseHeaderValues, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetResponseHeaderValues();
 }
 
 } // namespace AndroidWebview

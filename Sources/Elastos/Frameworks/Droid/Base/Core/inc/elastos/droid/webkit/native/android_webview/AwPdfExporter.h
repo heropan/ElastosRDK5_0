@@ -23,7 +23,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwPdfExporter
-:public Object
+    : public Object
 {
 public:
     AwPdfExporter(
@@ -75,6 +75,40 @@ private:
         /* [in] */ Int64 nativeAwPdfExporter,
         /* [in] */ Int32 fd,
         /* [in] */ ICancellationSignal* cancellationSignal);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwPdfExporterCallback_Init();
+
+private:
+    static CARAPI_(void) SetNativeAwPdfExporter(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativePdfExporter);
+
+    static CARAPI_(void) DidExportPdf(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean success);
+
+    static CARAPI_(Int32) GetPageWidth(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetPageHeight(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetDpi(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetLeftMargin(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetRightMargin(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetTopMargin(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetBottomMargin(
+        /* [in] */ IInterface* obj);
 
 private:
     static const String TAG;

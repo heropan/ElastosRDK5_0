@@ -16,6 +16,7 @@ namespace AndroidWebview {
  * processing to continue.
  */
 class JsResultReceiver
+    : public IInterface
 {
 public:
     virtual CARAPI Confirm() = 0;

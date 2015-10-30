@@ -138,8 +138,8 @@ AutoPtr<IZoomButtonsController> AwZoomControls::GetZoomController()
         mZoomButtonsController->GetZoomControls((IView**)&controls);
         AutoPtr<IViewGroupLayoutParams> params;
         controls->GetLayoutParams((IViewGroupLayoutParams**)&params);
-        if (params->Probe(EIID_IFrameLayoutLayoutParams)) {
-            AutoPtr<IFrameLayoutLayoutParams> layoutParams = (IFrameLayoutLayoutParams*)params->Probe(EIID_IFrameLayoutLayoutParams);
+        if (IFrameLayoutLayoutParams::Probe(params)) {
+            AutoPtr<IFrameLayoutLayoutParams> layoutParams = IFrameLayoutLayoutParams::Probe(params);
             layoutParams->SetGravity(IGravity::RIGHT);
         }
     }

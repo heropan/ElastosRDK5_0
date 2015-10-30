@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwSettings.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwSettings_dec.h"
 #include "elastos/droid/webkit/native/android_webview/AwResource.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/os/CMessageHelper.h"
@@ -354,10 +355,10 @@ AwSettings::AwSettings(
 {
     assert(0 && "TODO");
     Int32 permission;
-    // context->CheckPermission(
-    //             Elastos::Droid::Manifest::Permission::INTERNET,
-    //             Process::MyPid(),
-    //             Process::MyUid(), &permission);
+    context->CheckPermission(
+                String("android.permission.INTERNET"),//TODO Elastos::Droid::Manifest::Permission::INTERNET,
+                Process::MyPid(),
+                Process::MyUid(), &permission);
     Boolean hasInternetPermission = (permission == IPackageManager::PERMISSION_GRANTED);
 
     {
@@ -1886,58 +1887,621 @@ void AwSettings::UpdateWebkitPreferencesOnUiThreadLocked()
 Int64 AwSettings::NativeInit(
     /* [in] */ Int64 webContentsPtr)
 {
-    return 0;
+    return Elastos_AwSettings_nativeInit(THIS_PROBE(IInterface), webContentsPtr);
 }
 
 void AwSettings::NativeDestroy(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 void AwSettings::NativePopulateWebPreferencesLocked(
     /* [in] */ Int64 nativeAwSettings,
     /* [in] */ Int64 webPrefsPtr)
 {
+    Elastos_AwSettings_nativePopulateWebPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings, webPrefsPtr);
 }
 
 void AwSettings::NativeResetScrollAndScaleState(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeResetScrollAndScaleState(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateEverythingLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeUpdateEverythingLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateInitialPageScaleLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeUpdateInitialPageScaleLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateUserAgentLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeUpdateUserAgentLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateWebkitPreferencesLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeUpdateWebkitPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 String AwSettings::NativeGetDefaultUserAgent()
 {
-    return String(NULL);
+    return Elastos_AwSettings_nativeGetDefaultUserAgent();
 }
 
 void AwSettings::NativeUpdateFormDataPreferencesLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeUpdateFormDataPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
 }
 
 void AwSettings::NativeUpdateRendererPreferencesLocked(
     /* [in] */ Int64 nativeAwSettings)
 {
+    Elastos_AwSettings_nativeUpdateRendererPreferencesLocked(THIS_PROBE(IInterface), (Handle32)nativeAwSettings);
+}
+//callback function definition
+void AwSettings::NativeAwSettingsGone(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeAwSettings)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::NativeAwSettingsGone, mObj is NULL");
+        return;
+    }
+    mObj->NativeAwSettingsGone(nativeAwSettings);
+}
+
+Double AwSettings::GetDIPScaleLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDIPScaleLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDIPScaleLocked();
+}
+
+Float AwSettings::GetInitialPageScalePercentLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetInitialPageScalePercentLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetInitialPageScalePercentLocked();
+}
+
+Boolean AwSettings::GetSpatialNavigationLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetSpatialNavigationLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetSpatialNavigationLocked();
+}
+
+Boolean AwSettings::GetEnableSupportedHardwareAcceleratedFeaturesLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetEnableSupportedHardwareAcceleratedFeaturesLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetEnableSupportedHardwareAcceleratedFeaturesLocked();
+}
+
+Boolean AwSettings::GetFullscreenSupportedLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetFullscreenSupportedLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetFullscreenSupportedLocked();
+}
+
+Boolean AwSettings::GetSaveFormDataLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetSaveFormDataLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetSaveFormDataLocked();
+}
+
+String AwSettings::GetUserAgentLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetUserAgentLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetUserAgentLocked();
+}
+
+Boolean AwSettings::GetLoadWithOverviewModeLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetLoadWithOverviewModeLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetLoadWithOverviewModeLocked();
+}
+
+Int32 AwSettings::GetTextSizePercentLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetTextSizePercentLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetTextSizePercentLocked();
+}
+
+String AwSettings::GetStandardFontFamilyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetStandardFontFamilyLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetStandardFontFamilyLocked();
+}
+
+String AwSettings::GetFixedFontFamilyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetFixedFontFamilyLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetFixedFontFamilyLocked();
+}
+
+String AwSettings::GetSansSerifFontFamilyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetSansSerifFontFamilyLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetSansSerifFontFamilyLocked();
+}
+
+String AwSettings::GetSerifFontFamilyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetSerifFontFamilyLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetSerifFontFamilyLocked();
+}
+
+String AwSettings::GetCursiveFontFamilyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetCursiveFontFamilyLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetCursiveFontFamilyLocked();
+}
+
+String AwSettings::GetFantasyFontFamilyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetFantasyFontFamilyLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetFantasyFontFamilyLocked();
+}
+
+Int32 AwSettings::GetMinimumFontSizeLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetMinimumFontSizeLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetMinimumFontSizeLocked();
+}
+
+Int32 AwSettings::GetMinimumLogicalFontSizeLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetMinimumLogicalFontSizeLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetMinimumLogicalFontSizeLocked();
+}
+
+Int32 AwSettings::GetDefaultFontSizeLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDefaultFontSizeLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDefaultFontSizeLocked();
+}
+
+Int32 AwSettings::GetDefaultFixedFontSizeLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDefaultFixedFontSizeLocked, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDefaultFixedFontSizeLocked();
+}
+
+Boolean AwSettings::GetLoadsImagesAutomaticallyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetLoadsImagesAutomaticallyLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetLoadsImagesAutomaticallyLocked();
+}
+
+Boolean AwSettings::GetImagesEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetImagesEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetImagesEnabledLocked();
+}
+
+Boolean AwSettings::GetJavaScriptEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetJavaScriptEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetJavaScriptEnabledLocked();
+}
+
+Boolean AwSettings::GetAllowUniversalAccessFromFileURLsLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetAllowUniversalAccessFromFileURLsLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetAllowUniversalAccessFromFileURLsLocked();
+}
+
+Boolean AwSettings::GetAllowFileAccessFromFileURLsLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetAllowFileAccessFromFileURLsLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetAllowFileAccessFromFileURLsLocked();
+}
+
+Boolean AwSettings::GetPluginsDisabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetPluginsDisabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetPluginsDisabledLocked();
+}
+
+Boolean AwSettings::GetJavaScriptCanOpenWindowsAutomaticallyLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetJavaScriptCanOpenWindowsAutomaticallyLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetJavaScriptCanOpenWindowsAutomaticallyLocked();
+}
+
+Boolean AwSettings::GetTextAutosizingEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetTextAutosizingEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetTextAutosizingEnabledLocked();
+}
+
+Boolean AwSettings::GetSupportMultipleWindowsLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetSupportMultipleWindowsLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetSupportMultipleWindowsLocked();
+}
+
+Boolean AwSettings::GetSupportLegacyQuirksLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetSupportLegacyQuirksLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetSupportLegacyQuirksLocked();
+}
+
+Boolean AwSettings::GetUseWideViewportLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetUseWideViewportLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetUseWideViewportLocked();
+}
+
+Boolean AwSettings::GetZeroLayoutHeightDisablesViewportQuirkLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetZeroLayoutHeightDisablesViewportQuirkLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetZeroLayoutHeightDisablesViewportQuirkLocked();
+}
+
+Boolean AwSettings::GetForceZeroLayoutHeightLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetForceZeroLayoutHeightLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetForceZeroLayoutHeightLocked();
+}
+
+Boolean AwSettings::GetPasswordEchoEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetPasswordEchoEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetPasswordEchoEnabledLocked();
+}
+
+Boolean AwSettings::GetAppCacheEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetAppCacheEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetAppCacheEnabledLocked();
+}
+
+Boolean AwSettings::GetDomStorageEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDomStorageEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetDomStorageEnabledLocked();
+}
+
+Boolean AwSettings::GetDatabaseEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDatabaseEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetDatabaseEnabledLocked();
+}
+
+String AwSettings::GetDefaultTextEncodingLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDefaultTextEncodingLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetDefaultTextEncodingLocked();
+}
+
+Boolean AwSettings::GetMediaPlaybackRequiresUserGestureLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetMediaPlaybackRequiresUserGestureLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetMediaPlaybackRequiresUserGestureLocked();
+}
+
+String AwSettings::GetDefaultVideoPosterURLLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetDefaultVideoPosterURLLocked, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetDefaultVideoPosterURLLocked();
+}
+
+Boolean AwSettings::GetAllowRunningInsecureContentLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetAllowRunningInsecureContentLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetAllowRunningInsecureContentLocked();
+}
+
+Boolean AwSettings::GetAllowDisplayingInsecureContentLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetAllowDisplayingInsecureContentLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetAllowDisplayingInsecureContentLocked();
+}
+
+Boolean AwSettings::GetVideoOverlayForEmbeddedVideoEnabledLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::GetVideoOverlayForEmbeddedVideoEnabledLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetVideoOverlayForEmbeddedVideoEnabledLocked();
+}
+
+Boolean AwSettings::SupportsDoubleTapZoomLocked(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::SupportsDoubleTapZoomLocked, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->SupportsDoubleTapZoomLocked();
+}
+
+void AwSettings::UpdateEverything(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::UpdateEverything, mObj is NULL");
+        return;
+    }
+    mObj->UpdateEverything();
+}
+
+void AwSettings::PopulateWebPreferences(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 webPrefsPtr)
+{
+    AutoPtr<AwSettings> mObj = (AwSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwSettings::PopulateWebPreferences, mObj is NULL");
+        return;
+    }
+    mObj->PopulateWebPreferences(webPrefsPtr);
 }
 
 } // namespace AndroidWebview

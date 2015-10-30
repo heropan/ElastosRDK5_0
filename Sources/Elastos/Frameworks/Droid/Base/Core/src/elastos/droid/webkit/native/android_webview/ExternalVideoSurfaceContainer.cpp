@@ -1,11 +1,12 @@
 #include "elastos/droid/webkit/native/android_webview/ExternalVideoSurfaceContainer.h"
+#include "elastos/droid/webkit/native/android_webview/api/ExternalVideoSurfaceContainer_dec.h"
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IViewManager;
-using Elastos::Droid::View::EIID_IViewManager;
 using Elastos::Droid::View::EIID_ISurfaceHolderCallback;
-using Elastos::Droid::View::EIID_IView;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -86,7 +87,7 @@ AutoPtr<IInterface> ExternalVideoSurfaceContainer::Create(
 {
     AutoPtr<ExternalVideoSurfaceContainer> externalVideoSurfaceContainer =
         sFactory->Create(nativeExternalVideoSurfaceContainer, contentViewCore);
-    AutoPtr<IInterface> result = externalVideoSurfaceContainer->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(externalVideoSurfaceContainer);
     return result;
 }
 
@@ -146,7 +147,7 @@ void ExternalVideoSurfaceContainer::SetActiveContainer(
     sActiveContainer->Resolve(EIID_IInterface, (IInterface**)&ws);
     if (ws != NULL) {
         AutoPtr<ExternalVideoSurfaceContainer> activeContainer =
-            (ExternalVideoSurfaceContainer*)(IObject*)ws->Probe(EIID_IObject);
+            (ExternalVideoSurfaceContainer*)(IObject::Probe(ws));
         activeContainer->RemoveSurfaceView();
     }
     //sActiveContainer = new WeakReference<ExternalVideoSurfaceContainer>(container);
@@ -162,7 +163,7 @@ void ExternalVideoSurfaceContainer::ReleaseIfActiveContainer(
     sActiveContainer->Resolve(EIID_IInterface, (IInterface**)&ws);
     if (ws != NULL) {
         AutoPtr<ExternalVideoSurfaceContainer> activeContainer =
-            (ExternalVideoSurfaceContainer*)(IObject*)ws->Probe(EIID_IObject);
+            (ExternalVideoSurfaceContainer*)(IObject::Probe(ws));
         if (activeContainer.Get() == container) {
             SetActiveContainer(NULL);
         }
@@ -178,7 +179,7 @@ void ExternalVideoSurfaceContainer::CreateSurfaceView()
     holder->AddCallback(this);
     // SurfaceHoder.surfaceCreated() will be called after the SurfaceView is attached to
     // the Window and becomes visible.
-    AutoPtr<IView> view = (IView*)(mSurfaceView->Probe(EIID_IView));
+    AutoPtr<IView> view = IView::Probe(mSurfaceView);
     mContentViewCore->GetContainerView()->AddView(view);
 }
 
@@ -187,8 +188,8 @@ void ExternalVideoSurfaceContainer::RemoveSurfaceView()
     // SurfaceHoder.surfaceDestroyed() will be called in ViewGroup.removeView()
     // as soon as the SurfaceView is detached from the Window.
     AutoPtr<IViewGroup> viewGroup = mContentViewCore->GetContainerView();
-    AutoPtr<IViewManager> viewManager = (IViewManager*)(viewGroup->Probe(EIID_IViewManager));
-    AutoPtr<IView> view = (IView*)(mSurfaceView->Probe(EIID_IView));
+    AutoPtr<IViewManager> viewManager = IViewManager::Probe(viewGroup);
+    AutoPtr<IView> view = IView::Probe(mSurfaceView);
     viewManager->RemoveView(view);
     mSurfaceView = NULL;
 }
@@ -253,7 +254,7 @@ void ExternalVideoSurfaceContainer::LayOutSurfaceView()
     mWidth = width;
     mHeight = height;
 
-    AutoPtr<IView> view = (IView*)(mSurfaceView->Probe(EIID_IView));
+    AutoPtr<IView> view = IView::Probe(mSurfaceView);
     view->SetX(x);
     view->SetY(y);
     AutoPtr<IViewGroupLayoutParams> layoutParams;
@@ -308,12 +309,91 @@ void ExternalVideoSurfaceContainer::NativeSurfaceCreated(
     /* [in] */ Int32 playerId,
     /* [in] */ ISurface* surface)
 {
+    Elastos_ExternalVideoSurfaceContainer_nativeSurfaceCreated(THIS_PROBE(IInterface),
+            (Handle32)nativeExternalVideoSurfaceContainerImpl, playerId, TO_IINTERFACE(surface));
 }
 
 void ExternalVideoSurfaceContainer::NativeSurfaceDestroyed(
     /* [in] */ Int64 nativeExternalVideoSurfaceContainerImpl,
     /* [in] */ Int32 playerId)
 {
+    Elastos_ExternalVideoSurfaceContainer_nativeSurfaceDestroyed(THIS_PROBE(IInterface),
+            (Handle32)nativeExternalVideoSurfaceContainerImpl, playerId);
+}
+//callback function definition
+AutoPtr<IInterface> ExternalVideoSurfaceContainer::Create(
+    /* [in] */ Int64 nativeExternalVideoSurfaceContainer,
+    /* [in] */ IInterface* contentViewCore)
+{
+    AutoPtr<ContentViewCore> c = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    return Create(nativeExternalVideoSurfaceContainer, c);
+}
+
+void ExternalVideoSurfaceContainer::RequestExternalVideoSurface(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 playerId)
+{
+    AutoPtr<ExternalVideoSurfaceContainer> mObj = (ExternalVideoSurfaceContainer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ExternalVideoSurfaceContainer", "ExternalVideoSurfaceContainer::RequestExternalVideoSurface, mObj is NULL");
+        return;
+    }
+    mObj->RequestExternalVideoSurface(playerId);
+}
+
+void ExternalVideoSurfaceContainer::ReleaseExternalVideoSurface(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 playerId)
+{
+    AutoPtr<ExternalVideoSurfaceContainer> mObj = (ExternalVideoSurfaceContainer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ExternalVideoSurfaceContainer", "ExternalVideoSurfaceContainer::ReleaseExternalVideoSurface, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseExternalVideoSurface(playerId);
+}
+
+void ExternalVideoSurfaceContainer::Destroy(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ExternalVideoSurfaceContainer> mObj = (ExternalVideoSurfaceContainer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ExternalVideoSurfaceContainer", "ExternalVideoSurfaceContainer::Destroy, mObj is NULL");
+        return;
+    }
+    mObj->Destroy();
+}
+
+void ExternalVideoSurfaceContainer::OnExternalVideoSurfacePositionChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 playerId,
+    /* [in] */ Float left,
+    /* [in] */ Float top,
+    /* [in] */ Float right,
+    /* [in] */ Float bottom)
+{
+    AutoPtr<ExternalVideoSurfaceContainer> mObj = (ExternalVideoSurfaceContainer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ExternalVideoSurfaceContainer", "ExternalVideoSurfaceContainer::OnExternalVideoSurfacePositionChanged, mObj is NULL");
+        return;
+    }
+    mObj->OnExternalVideoSurfacePositionChanged(playerId, left, top, right, bottom);
+}
+
+void ExternalVideoSurfaceContainer::OnFrameInfoUpdated(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ExternalVideoSurfaceContainer> mObj = (ExternalVideoSurfaceContainer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ExternalVideoSurfaceContainer", "ExternalVideoSurfaceContainer::OnFrameInfoUpdated, mObj is NULL");
+        return;
+    }
+    mObj->OnFrameInfoUpdated();
 }
 
 } // namespace AndroidWebview

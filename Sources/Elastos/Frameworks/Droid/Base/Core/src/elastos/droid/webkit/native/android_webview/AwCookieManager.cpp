@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwCookieManager.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwCookieManager_dec.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CLooperHelper.h"
 #include <elastos/utility/logging/Logger.h>
@@ -314,11 +315,12 @@ void AwCookieManager::InvokeBooleanCookieCallback(
 void AwCookieManager::NativeSetShouldAcceptCookies(
     /* [in] */ Boolean accept)
 {
+    Elastos_AwCookieManager_nativeSetShouldAcceptCookies(THIS_PROBE(IInterface), accept);
 }
 
 Boolean AwCookieManager::NativeGetShouldAcceptCookies()
 {
-    return FALSE;
+    return Elastos_AwCookieManager_nativeGetShouldAcceptCookies(THIS_PROBE(IInterface));
 }
 
 void AwCookieManager::NativeSetCookie(
@@ -326,59 +328,68 @@ void AwCookieManager::NativeSetCookie(
     /* [in] */ const String& value,
     /* [in] */ CookieCallback* callback)
 {
+    Elastos_AwCookieManager_nativeSetCookie(THIS_PROBE(IInterface), url, value, TO_IINTERFACE(callback));
 }
 
 void AwCookieManager::NativeSetCookieSync(
     /* [in] */ const String& url,
     /* [in] */ const String& value)
 {
+    Elastos_AwCookieManager_nativeSetCookieSync(THIS_PROBE(IInterface), url, value);
 }
 
 String AwCookieManager::NativeGetCookie(
     /* [in] */ const String& url)
 {
-    return String(NULL);
+    return Elastos_AwCookieManager_nativeGetCookie(THIS_PROBE(IInterface), url);
 }
 
 void AwCookieManager::NativeRemoveSessionCookies(
     /* [in] */ CookieCallback* callback)
 {
+    Elastos_AwCookieManager_nativeRemoveSessionCookies(THIS_PROBE(IInterface), TO_IINTERFACE(callback));
 }
 
 void AwCookieManager::NativeRemoveSessionCookiesSync()
 {
+    Elastos_AwCookieManager_nativeRemoveSessionCookiesSync(THIS_PROBE(IInterface));
 }
 
 void AwCookieManager::NativeRemoveAllCookies(
     /* [in] */ CookieCallback* callback)
 {
+    Elastos_AwCookieManager_nativeRemoveAllCookies(THIS_PROBE(IInterface), TO_IINTERFACE(callback));
 }
 
 void AwCookieManager::NativeRemoveAllCookiesSync()
 {
+    Elastos_AwCookieManager_nativeRemoveAllCookiesSync(THIS_PROBE(IInterface));
 }
 
 void AwCookieManager::NativeRemoveExpiredCookies()
 {
+    Elastos_AwCookieManager_nativeRemoveExpiredCookies(THIS_PROBE(IInterface));
 }
 
 void AwCookieManager::NativeFlushCookieStore()
 {
+    Elastos_AwCookieManager_nativeFlushCookieStore(THIS_PROBE(IInterface));
 }
 
 Boolean AwCookieManager::NativeHasCookies()
 {
-    return FALSE;
+    return Elastos_AwCookieManager_nativeHasCookies(THIS_PROBE(IInterface));
 }
 
 Boolean AwCookieManager::NativeAllowFileSchemeCookies()
 {
-    return FALSE;
+    return Elastos_AwCookieManager_nativeAllowFileSchemeCookies(THIS_PROBE(IInterface));
 }
 
 void AwCookieManager::NativeSetAcceptFileSchemeCookies(
     /* [in] */ Boolean accept)
 {
+    Elastos_AwCookieManager_nativeSetAcceptFileSchemeCookies(THIS_PROBE(IInterface), accept);
 }
 
 } // namespace AndroidWebview

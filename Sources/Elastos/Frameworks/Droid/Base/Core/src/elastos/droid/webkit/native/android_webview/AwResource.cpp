@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwResource.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwResource_dec.h"
 //TODO #include <elastos/utility/CScanner.h>
 //TODO #include <elastos/io/CInputStreamReader.h>
 #include <elastos/utility/logging/Logger.h>

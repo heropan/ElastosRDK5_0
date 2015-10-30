@@ -18,6 +18,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwContentsStatics
+    : public Object
 {
 public:
     /**
@@ -69,6 +70,10 @@ private:
 
     static CARAPI_(void) NativeSetRecordFullDocument(
         /* [in] */ Boolean recordFullDocument);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwContentsStaticsCallback_Init();
 
 private:
     static AutoPtr<ClientCertLookupTable> sClientCertLookupTable;

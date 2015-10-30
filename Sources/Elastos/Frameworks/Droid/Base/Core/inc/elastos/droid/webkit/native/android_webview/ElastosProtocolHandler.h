@@ -24,8 +24,8 @@ namespace AndroidWebview {
  * See android_protocol_handler.cc.
  */
 //@JNINamespace("android_webview")
-class AndroidProtocolHandler
-:public Object
+class ElastosProtocolHandler
+    : public Object
 {
 public:
     /**
@@ -59,6 +59,10 @@ public:
      */
     static CARAPI_(void) SetResourceContextForTesting(
         /* [in] */ IContext* context);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaElastosProtocolHandlerCallback_Init();
 
 private:
     static const String TAG;

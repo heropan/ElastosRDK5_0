@@ -12,7 +12,7 @@ namespace AndroidWebview {
 
 //@JNINamespace("android_webview")
 class AwHttpAuthHandler
-:public Object
+    : public Object
 {
 public:
     CARAPI_(void) Proceed(
@@ -43,6 +43,14 @@ private:
 
     CARAPI_(void) NativeCancel(
         /* [in] */ Int64 nativeAwHttpAuthHandler);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwHttpAuthHandlerCallback_Init();
+
+private:
+    static CARAPI_(void) HandlerDestroyed(
+        /* [in] */ IInterface* obj);
 
 private:
     Int64 mNativeAwHttpAuthHandler;
