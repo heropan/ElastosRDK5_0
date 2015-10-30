@@ -632,7 +632,7 @@ private:
     ECO_LOCAL static CARAPI_(AutoPtr<IList>) CreateArrayList(
         /* [in] */ Int32 length);
 
-    ECO_LOCAL static CARAPI CheckBinarySearchBounds(
+    static CARAPI CheckBinarySearchBounds(
         /* [in] */ Int32 startIndex,
         /* [in] */ Int32 endIndex,
         /* [in] */ Int32 length);

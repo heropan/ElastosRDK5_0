@@ -9,6 +9,7 @@
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Manifest;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::IResources;
@@ -25,6 +26,7 @@ using Elastos::Core::AutoLock;
 using Elastos::Utility::Logging::Logger;
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {

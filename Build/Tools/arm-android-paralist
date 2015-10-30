@@ -122,10 +122,11 @@
   Elastos/LibCore/src/org/kxml2/io
   Elastos/LibCore/src/org/w3c/dom
 > Elastos/LibCore/src/corelibrary
-
+# ==== buid External ====
+  Elastos/External/conscrypt/src/org/conscrypt
 
 # ==== buid Framework ====
-#> Elastos/Frameworks/Droid/ServiceManager
+> Elastos/Frameworks/Droid/ServiceManager
 - Elastos/Frameworks/Droid/DroidRuntime/lib
 > Elastos/Frameworks/Droid/DroidRuntime
 - Elastos/Frameworks/Droid/Base/Core/inc

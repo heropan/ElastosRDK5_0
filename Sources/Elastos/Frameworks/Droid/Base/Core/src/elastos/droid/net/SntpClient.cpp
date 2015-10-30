@@ -16,7 +16,7 @@ const Int32 SntpClient::NTP_PACKET_SIZE = 48;
 const Int32 SntpClient::NTP_PORT = 123;
 const Int32 SntpClient::NTP_MODE_CLIENT = 3;
 const Int32 SntpClient::NTP_VERSION = 3;
-const Int64 SntpClient::OFFSET_1900_TO_1970 = ((365L * 70L) + 17L) * 24L * 60L * 60L;
+const Int64 SntpClient::OFFSET_1900_TO_1970 = ((365L * 70LL) + 17LL) * 24LL * 60LL * 60LL;
 
 ECode SntpClient::constructor()
 {

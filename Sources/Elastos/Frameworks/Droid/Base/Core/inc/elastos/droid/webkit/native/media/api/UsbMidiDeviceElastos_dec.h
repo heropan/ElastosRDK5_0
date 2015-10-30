@@ -39,7 +39,7 @@ void* UsbMidiDeviceElastos::ElaUsbMidiDeviceElastosCallback_Init()
     sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_getDescriptors = &UsbMidiDeviceElastos::GetDescriptors;
     sElaUsbMidiDeviceAndroidCallback.elastos_UsbMidiDeviceAndroid_close = &UsbMidiDeviceElastos::Close;
 
-    Elastos_UsbMidiDeviceAndroid_InitCallback((Handle32)&sElaUsbMidiDeviceAndroidCallback);
+    // Elastos_UsbMidiDeviceAndroid_InitCallback((Handle32)&sElaUsbMidiDeviceAndroidCallback);
     return &sElaUsbMidiDeviceAndroidCallback;
 }
 

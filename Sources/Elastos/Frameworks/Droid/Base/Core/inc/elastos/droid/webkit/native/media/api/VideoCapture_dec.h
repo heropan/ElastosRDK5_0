@@ -47,7 +47,7 @@ void* VideoCapture::ElaVideoCaptureCallback_Init()
     sElaVideoCaptureCallback.elastos_VideoCapture_queryFrameRate = &VideoCapture::QueryFrameRate;
     sElaVideoCaptureCallback.elastos_VideoCapture_getColorspace = &VideoCapture::GetColorspace;
 
-    Elastos_VideoCapture_InitCallback((Handle32)&sElaVideoCaptureCallback);
+    // Elastos_VideoCapture_InitCallback((Handle32)&sElaVideoCaptureCallback);
     return &sElaVideoCaptureCallback;
 }
 

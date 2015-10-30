@@ -308,8 +308,8 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           GCC_SYSROOT=$(XDK_SYSROOT_PATH)
           GCC_LIB_PATH=$(shell $(CC) -print-file-name=)
 
-          EXE_FLAGS := $(EXE_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--no-gc-sections -L$(XDK_TARGETS)
-          ECX_FLAGS :=  $(EXE_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--no-gc-sections -L$(XDK_TARGETS) -L$(PREBUILD_LIB)
+          EXE_FLAGS := $(EXE_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--gc-sections -L$(XDK_TARGETS)
+          ECX_FLAGS :=  $(EXE_FLAGS) $(32B_FLAG) -Bdynamic -Wl,--gc-sections -L$(XDK_TARGETS) -L$(PREBUILD_LIB)
 
           EXE_CRT_BEGIN=-Wl,-X
           ECX_CRT_BEGIN=-Wl,-X
@@ -322,7 +322,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           endif
     endif
     ifeq "$(XDK_TARGET_PLATFORM)" "android"
-          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--no-gc-sections -Wl,--no-undefined,--no-undefined-version -Wl,--whole-archive
+          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--gc-sections -Wl,--no-undefined,--no-undefined-version -Wl,--whole-archive
           ifeq "$(EXPORT_ALL_SYMBOLS)" ""
               DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
           else
@@ -333,8 +333,8 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           GCC_SYSROOT=$(PREBUILD_PATH)
           GCC_LIB_PATH=$(shell $(CC) -print-file-name=)
 
-          EXE_FLAGS := $(EXE_FLAGS) -lgcc -lc -lstdc++ -nostdlib -Bdynamic -Wl,--no-gc-sections -Wl,-z,nocopyreloc -L$(PREBUILD_LIB) -L$(XDK_TARGETS)
-          ECX_FLAGS := $(ECX_FLAGS) $(LIBC_FLAGS) -lstdc++ -nostdlib -Bdynamic -Wl,--no-gc-sections -Wl,-z,nocopyreloc -L$(PREBUILD_LIB) -L$(XDK_TARGETS)
+          EXE_FLAGS := $(EXE_FLAGS) -lgcc -lc -lstdc++ -nostdlib -Bdynamic -Wl,--gc-sections -Wl,-z,nocopyreloc -L$(PREBUILD_LIB) -L$(XDK_TARGETS)
+          ECX_FLAGS := $(ECX_FLAGS) $(LIBC_FLAGS) -lstdc++ -nostdlib -Bdynamic -Wl,--gc-sections -Wl,-z,nocopyreloc -L$(PREBUILD_LIB) -L$(XDK_TARGETS)
 
           EXE_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
           ECX_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
@@ -456,11 +456,11 @@ ifeq "$(XDK_TARGET_CPU)" "arm"
   endif
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "android"
-#    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fpermissive $(C_FLAGS)
-    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -funwind-tables -fstack-protector -Wno-unused-local-typedefs $(C_FLAGS)
+#    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -fdata-sections -funwind-tables -fstack-protector -fpermissive $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -fdata-sections -funwind-tables -fstack-protector -Wno-unused-local-typedefs $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -funwind-tables -fstack-protector $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -fdata-sections -funwind-tables -fstack-protector $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "jil"
     C_FLAGS:= -mthumb -mthumb-interwork $(C_FLAGS)

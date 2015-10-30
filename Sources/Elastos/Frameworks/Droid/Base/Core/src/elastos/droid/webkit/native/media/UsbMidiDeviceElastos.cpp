@@ -396,7 +396,7 @@ void UsbMidiDeviceElastos::NativeOnData(
     /* [in] */ Int32 endpointNumber,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    Elastos_UsbMidiDeviceAndroid_nativeOnData((Handle32)nativeUsbMidiDeviceElastos, endpointNumber, data);
+    // Elastos_UsbMidiDeviceAndroid_nativeOnData((Handle32)nativeUsbMidiDeviceElastos, endpointNumber, data);
 }
 
 //callback function definition
