@@ -24,11 +24,11 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwAutofillClient
-:public Object
+    : public Object
 {
 private:
     class InnerAutofillPopupDelegate
-    : public AutofillPopup::AutofillPopupDelegate
+        : public AutofillPopup::AutofillPopupDelegate
     {
     public:
         InnerAutofillPopupDelegate(
@@ -66,7 +66,7 @@ private:
         /* [in] */ Float y,
         /* [in] */ Float width,
         /* [in] */ Float height,
-        /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     //@CalledByNative ArrayOf AutofillSuggestion
     static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) CreateAutofillSuggestionArray(
@@ -90,6 +90,22 @@ private:
     CARAPI_(void) NativeSuggestionSelected(
         /* [in] */ Int64 nativeAwAutofillClient,
         /* [in] */ Int32 position);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwAutofillClientCallback_Init();
+
+private:
+    static CARAPI_(void) ShowAutofillPopup(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Float width,
+        /* [in] */ Float height,
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
+
+    static CARAPI_(void) HideAutofillPopup(
+        /* [in] */ IInterface* obj);
 
 private:
     const Int64 mNativeAwAutofillClient;

@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwContentsClientBridge.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwContentsClientBridge_dec.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 #include "elastos/droid/webkit/native/android_webview/JsResultHandler.h"
 #include "elastos/droid/webkit/native/android_webview/SslUtil.h"
@@ -231,7 +232,7 @@ AwContentsClientBridge::InnerValueCallback::InnerRunnable::InnerRunnable(
 
 ECode AwContentsClientBridge::InnerValueCallback::InnerRunnable::Run()
 {
-    AutoPtr<IBoolean> iValue = (IBoolean*)(mValue->Probe(EIID_IBoolean));
+    AutoPtr<IBoolean> iValue = IBoolean::Probe(mValue);
     Boolean value;
     iValue->GetValue(&value);
     mOwner->mOwner->ProceedSslError(value, mId);
@@ -426,6 +427,7 @@ void AwContentsClientBridge::NativeProceedSslError(
     /* [in] */ Boolean proceed,
     /* [in] */ Int32 id)
 {
+    Elastos_AwContentsClientBridge_nativeProceedSslError(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, proceed, id);
 }
 
 void AwContentsClientBridge::NativeProvideClientCertificateResponse(
@@ -434,6 +436,7 @@ void AwContentsClientBridge::NativeProvideClientCertificateResponse(
     /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain,
     /* [in] */ AndroidPrivateKey* androidKey)
 {
+    Elastos_AwContentsClientBridge_nativeProvideClientCertificateResponse(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id, certChain, TO_IINTERFACE(androidKey));
 }
 
 void AwContentsClientBridge::NativeConfirmJsResult(
@@ -441,12 +444,134 @@ void AwContentsClientBridge::NativeConfirmJsResult(
     /* [in] */ Int32 id,
     /* [in] */ const String& prompt)
 {
+    Elastos_AwContentsClientBridge_nativeConfirmJsResult(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id, prompt);
 }
 
 void AwContentsClientBridge::NativeCancelJsResult(
     /* [in] */ Int64 nativeAwContentsClientBridge,
     /* [in] */ Int32 id)
 {
+    Elastos_AwContentsClientBridge_nativeCancelJsResult(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id);
+}
+//callback function definition
+void AwContentsClientBridge::SetNativeContentsClientBridge(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeContentsClientBridge)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::SetNativeContentsClientBridge, mObj is NULL");
+        return;
+    }
+    mObj->SetNativeContentsClientBridge(nativeContentsClientBridge);
+}
+
+Boolean AwContentsClientBridge::AllowCertificateError(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 certError,
+    /* [in] */ ArrayOf<Byte>* derBytes,
+    /* [in] */ const String& url,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::AllowCertificateError, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->AllowCertificateError(certError, derBytes, url, id);
+}
+
+void AwContentsClientBridge::SelectClientCertificate(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id,
+    /* [in] */ ArrayOf<String>* keyTypes,
+    /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* encodedPrincipals,
+    /* [in] */ const String& host,
+    /* [in] */ Int32 port)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::SelectClientCertificate, mObj is NULL");
+        return;
+    }
+    mObj->SelectClientCertificate(id, keyTypes, encodedPrincipals, host, port);
+}
+
+void AwContentsClientBridge::HandleJsAlert(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::HandleJsAlert, mObj is NULL");
+        return;
+    }
+    mObj->HandleJsAlert(url, message, id);
+}
+
+void AwContentsClientBridge::HandleJsConfirm(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::HandleJsConfirm, mObj is NULL");
+        return;
+    }
+    mObj->HandleJsConfirm(url, message, id);
+}
+
+void AwContentsClientBridge::HandleJsPrompt(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
+    /* [in] */ const String& defaultValue,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::HandleJsPrompt, mObj is NULL");
+        return;
+    }
+    mObj->HandleJsPrompt(url, message, defaultValue, id);
+}
+
+void AwContentsClientBridge::HandleJsBeforeUnload(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url,
+    /* [in] */ const String& message,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::HandleJsBeforeUnload, mObj is NULL");
+        return;
+    }
+    mObj->HandleJsBeforeUnload(url, message, id);
+}
+
+Boolean AwContentsClientBridge::ShouldOverrideUrlLoading(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url)
+{
+    AutoPtr<AwContentsClientBridge> mObj = (AwContentsClientBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContentsClientBridge::ShouldOverrideUrlLoading, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->ShouldOverrideUrlLoading(url);
 }
 
 } // namespace AndroidWebview

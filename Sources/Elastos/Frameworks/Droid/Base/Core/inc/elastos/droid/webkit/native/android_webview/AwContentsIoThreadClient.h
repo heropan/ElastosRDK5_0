@@ -22,7 +22,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwContentsIoThreadClient
-:public Object
+    : public Object
 {
 public:
     //@CalledByNative
@@ -68,6 +68,50 @@ protected:
         /* [in] */ const String& method,
         /* [in] */ ArrayOf<String>* requestHeaderNames,
         /* [in] */ ArrayOf<String>* requestHeaderValues);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwContentsIoThreadClientCallback_Init();
+
+private:
+    static CARAPI_(Int32) GetCacheMode(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) ShouldBlockContentUrls(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) ShouldBlockFileUrls(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) ShouldBlockNetworkLoads(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) ShouldAcceptThirdPartyCookies(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnDownloadStart(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
+        /* [in] */ Int64 contentLength);
+
+    static CARAPI_(void) NewLoginRequest(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& realm,
+        /* [in] */ const String& account,
+        /* [in] */ const String& args);
+
+    static CARAPI_(AutoPtr<IInterface>) ShouldInterceptRequest(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ Boolean isMainFrame,
+        /* [in] */ Boolean hasUserGesture,
+        /* [in] */ const String& method,
+        /* [in] */ ArrayOf<String>* requestHeaderNames,
+        /* [in] */ ArrayOf<String>* requestHeaderValues);
+
 };
 
 } // namespace AndroidWebview

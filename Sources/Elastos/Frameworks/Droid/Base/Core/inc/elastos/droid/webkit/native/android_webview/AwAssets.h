@@ -20,11 +20,21 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwAssets
+    : public Object
 {
 public:
     //@CalledByNative
     static CARAPI_(AutoPtr<ArrayOf<Int64> >) OpenAsset(
         /* [in] */ IContext* context,
+        /* [in] */ const String& fileName);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwAssetsCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<ArrayOf<Int64> >) OpenAsset(
+        /* [in] */ IInterface* context,
         /* [in] */ const String& fileName);
 
 private:

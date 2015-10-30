@@ -10,6 +10,36 @@ namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 
+
+#ifndef CAR_INTERFACE_IMPL_JSRESULTHANDLER
+#define CAR_INTERFACE_IMPL_JSRESULTHANDLER(ClassName, SupperClassName)       \
+                                                           \
+    UInt32 ClassName::AddRef()                             \
+    {                                                      \
+        return SupperClassName::AddRef();                        \
+    }                                                      \
+                                                           \
+    UInt32 ClassName::Release()                            \
+    {                                                      \
+        return SupperClassName::Release();                       \
+    }                                                      \
+                                                           \
+    PInterface ClassName::Probe(                           \
+        /* [in] */ REIID riid)                             \
+    {                                                      \
+        return SupperClassName::Probe(riid);               \
+    }                                                      \
+                                                           \
+    ECode ClassName::GetInterfaceID(                       \
+        /* [in] */ IInterface* object,                     \
+        /* [out] */ InterfaceID* iid)                      \
+    {                                                      \
+        VALIDATE_NOT_NULL(iid);                            \
+                                                           \
+        return SupperClassName::GetInterfaceID(object, iid); \
+    }
+#endif
+CAR_INTERFACE_IMPL_JSRESULTHANDLER(JsResultHandler, Object);
 //===============================================================
 //               JsResultHandler::ConfirmRunnable
 //===============================================================

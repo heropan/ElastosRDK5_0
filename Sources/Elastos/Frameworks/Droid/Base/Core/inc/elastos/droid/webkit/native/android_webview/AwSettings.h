@@ -31,7 +31,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwSettings
-:public Object
+    : public Object
 {
 public:
     class SetInitialPageScaleRunnable
@@ -158,7 +158,7 @@ public:
 public:
     // Class to handle messages to be processed on the UI thread.
     class EventHandler
-    :public Object
+        : public Object
     {
     public:
         class InnerHandler
@@ -946,6 +946,151 @@ private:
 
     CARAPI_(void) NativeUpdateRendererPreferencesLocked(
         /* [in] */ Int64 nativeAwSettings);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwSettingsCallback_Init();
+
+private:
+    static CARAPI_(void) NativeAwSettingsGone(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeAwSettings);
+
+    static CARAPI_(Double) GetDIPScaleLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Float) GetInitialPageScalePercentLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetSpatialNavigationLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetEnableSupportedHardwareAcceleratedFeaturesLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetFullscreenSupportedLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetSaveFormDataLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetUserAgentLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetLoadWithOverviewModeLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetTextSizePercentLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetStandardFontFamilyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetFixedFontFamilyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetSansSerifFontFamilyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetSerifFontFamilyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetCursiveFontFamilyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetFantasyFontFamilyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetMinimumFontSizeLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetMinimumLogicalFontSizeLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetDefaultFontSizeLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetDefaultFixedFontSizeLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetLoadsImagesAutomaticallyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetImagesEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetJavaScriptEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetAllowUniversalAccessFromFileURLsLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetAllowFileAccessFromFileURLsLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetPluginsDisabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetJavaScriptCanOpenWindowsAutomaticallyLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetTextAutosizingEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetSupportMultipleWindowsLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetSupportLegacyQuirksLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetUseWideViewportLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetZeroLayoutHeightDisablesViewportQuirkLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetForceZeroLayoutHeightLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetPasswordEchoEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetAppCacheEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetDomStorageEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetDatabaseEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetDefaultTextEncodingLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetMediaPlaybackRequiresUserGestureLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetDefaultVideoPosterURLLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetAllowRunningInsecureContentLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetAllowDisplayingInsecureContentLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetVideoOverlayForEmbeddedVideoEnabledLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) SupportsDoubleTapZoomLocked(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) UpdateEverything(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) PopulateWebPreferences(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 webPrefsPtr);
 
 private:
     static const String TAG;

@@ -25,7 +25,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview::AwResource")
 class AwResource
-:public Object
+    : public Object
 {
 public:
     static CARAPI_(void) SetResources(
@@ -59,6 +59,10 @@ private:
 
     static CARAPI_(String) GetRawFileResourceContent(
         /* [in] */ Int32 resid);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwResourceCallback_Init();
 
 private:
     // The following resource ID's must be initialized by the embedder.

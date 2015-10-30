@@ -1,4 +1,8 @@
 #include "elastos/droid/webkit/native/android_webview/AwAutofillClient.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwAutofillClient_dec.h"
+
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -44,7 +48,7 @@ AutoPtr<IInterface> AwAutofillClient::Create(
     /* [in] */ Int64 nativeClient)
 {
     AutoPtr<AwAutofillClient> client = new AwAutofillClient(nativeClient);
-    AutoPtr<IInterface> result = client->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(client);
     return result;
 }
 
@@ -61,7 +65,7 @@ void AwAutofillClient::ShowAutofillPopup(
     /* [in] */ Float y,
     /* [in] */ Float width,
     /* [in] */ Float height,
-    /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     if (mContentViewCore == NULL) return;
 
@@ -110,7 +114,7 @@ void AwAutofillClient::AddToAutofillSuggestionArray(
     /* [in] */ Int32 uniqueId)
 {
     AutoPtr<AutofillSuggestion> autofillSuggestion = new AutofillSuggestion(name, label, uniqueId);
-    AutoPtr<IInterface> suggestionInterface = autofillSuggestion->Probe(EIID_IInterface);
+    AutoPtr<IInterface> suggestionInterface = TO_IINTERFACE(autofillSuggestion);
     //(*array)[index] = new AutofillSuggestion(name, label, uniqueId);
     array->Set(index, suggestionInterface.Get());
 }
@@ -119,6 +123,36 @@ void AwAutofillClient::NativeSuggestionSelected(
     /* [in] */ Int64 nativeAwAutofillClient,
     /* [in] */ Int32 position)
 {
+    Elastos_AwAutofillClient_nativeSuggestionSelected(THIS_PROBE(IInterface), (Handle32)nativeAwAutofillClient, position);
+}
+//callback function definition
+void AwAutofillClient::ShowAutofillPopup(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Float x,
+    /* [in] */ Float y,
+    /* [in] */ Float width,
+    /* [in] */ Float height,
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
+{
+    AutoPtr<AwAutofillClient> mObj = (AwAutofillClient*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwAutofillClient", "AwAutofillClient::ShowAutofillPopup, mObj is NULL");
+        return;
+    }
+    mObj->ShowAutofillPopup(x, y, width, height, suggestions);
+}
+
+void AwAutofillClient::HideAutofillPopup(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwAutofillClient> mObj = (AwAutofillClient*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("AwAutofillClient", "AwAutofillClient::HideAutofillPopup, mObj is NULL");
+        return;
+    }
+    mObj->HideAutofillPopup();
 }
 
 } // namespace AndroidWebview

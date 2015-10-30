@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwPicture.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwPicture_dec.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Graphics::EIID_IPicture;
@@ -114,24 +115,26 @@ void AwPicture::UnsupportedOperation()
 void AwPicture::NativeDestroy(
     /* [in] */ Int64 nativeAwPicture)
 {
+    Elastos_AwPicture_nativeDestroy((Handle32)nativeAwPicture);
 }
 
 Int32 AwPicture::NativeGetWidth(
     /* [in] */ Int64 nativeAwPicture)
 {
-    return 0;
+    return Elastos_AwPicture_nativeGetWidth(THIS_PROBE(IInterface), (Handle32)nativeAwPicture);
 }
 
 Int32 AwPicture::NativeGetHeight(
     /* [in] */ Int64 nativeAwPicture)
 {
-    return 0;
+    return Elastos_AwPicture_nativeGetHeight(THIS_PROBE(IInterface), (Handle32)nativeAwPicture);
 }
 
 void AwPicture::NativeDraw(
     /* [in] */ Int64 nativeAwPicture,
     /* [in] */ ICanvas* canvas)
 {
+    Elastos_AwPicture_nativeDraw(THIS_PROBE(IInterface), (Handle32)nativeAwPicture, TO_IINTERFACE(canvas));
 }
 
 } // namespace AndroidWebview

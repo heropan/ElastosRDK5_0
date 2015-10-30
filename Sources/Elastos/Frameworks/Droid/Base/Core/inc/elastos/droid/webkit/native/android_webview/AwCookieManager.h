@@ -22,7 +22,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwCookieManager
-:public Object
+    : public Object
 {
 public:
     /**
@@ -34,7 +34,7 @@ public:
      * on the handler of the original thread which in turn calls ValueCallback#onReceiveValue.
      */
     class CookieCallback
-    :public Object
+        : public Object
     {
     private:
         class InnerRunnable
@@ -221,6 +221,9 @@ private:
 
     CARAPI_(void) NativeSetAcceptFileSchemeCookies(
         /* [in] */ Boolean accept);
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwCookieManagerCallback_Init();
 };
 
 } // namespace AndroidWebview

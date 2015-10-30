@@ -52,6 +52,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     JsResultHandler(
         /* [in] */ AwContentsClientBridge* bridge,
         /* [in] */ Int32 id);

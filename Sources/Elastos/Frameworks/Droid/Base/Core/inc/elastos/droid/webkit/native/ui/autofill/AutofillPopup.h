@@ -85,7 +85,7 @@ public:
       * @param suggestions Autofill suggestion data.
       */
     virtual CARAPI FilterAndShow(
-        /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     /**
       * Overrides the default dismiss behavior to request the controller to dismiss the view.

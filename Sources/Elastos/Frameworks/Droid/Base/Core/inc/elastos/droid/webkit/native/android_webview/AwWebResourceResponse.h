@@ -22,7 +22,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwWebResourceResponse
-:public Object
+    : public Object
 {
 public:
     AwWebResourceResponse(
@@ -58,6 +58,32 @@ public:
 
     //@CalledByNative
     virtual CARAPI_(AutoPtr<ArrayOf<String> >) GetResponseHeaderValues();
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwWebResourceResponseCallback_Init();
+
+private:
+    static CARAPI_(String) GetMimeType(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetCharset(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<IInterface>) GetData(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetStatusCode(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetReasonPhrase(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<ArrayOf<String> >) GetResponseHeaderNames(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<ArrayOf<String> >) GetResponseHeaderValues(
+        /* [in] */ IInterface* obj);
 
 private:
     String mMimeType;

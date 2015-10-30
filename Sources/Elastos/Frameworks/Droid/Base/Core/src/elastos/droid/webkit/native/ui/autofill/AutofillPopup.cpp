@@ -38,7 +38,7 @@ AutofillPopup::AutofillPopup(
 }
 
 ECode AutofillPopup::FilterAndShow(
-    /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     VALIDATE_NOT_NULL(suggestions);
     // ==================before translated======================

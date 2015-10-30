@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwContents.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwContents_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/content_public/Referrer.h"
 #include "elastos/droid/webkit/native/ui/base/ActivityWindowAndroid.h"
@@ -536,7 +537,7 @@ ECode AwContents::InnerCallable::Call(
 {
     VALIDATE_NOT_NULL(pic);
     AutoPtr<IPicture> picture = mOwner->CapturePicture();
-    *pic = picture->Probe(EIID_IInterface);
+    *pic = TO_IINTERFACE(picture);
     REFCOUNT_ADD(*pic);
     return NOERROR;
 }
@@ -603,7 +604,7 @@ void AwContents::InnerJavaScriptCallback::HandleJavaScriptResult(
     //TODO transfer jsonResult to a kind of object with IInterface support
     AutoPtr<ICharSequence> icsq;
     CString::New(jsonResult, (ICharSequence**)&icsq);
-    AutoPtr<IInterface> result = icsq->Probe(EIID_IInterface);
+    AutoPtr<IInterface> result = TO_IINTERFACE(icsq);
     //TODO mCallback->OnReceiveValue(result);
 }
 
@@ -1229,7 +1230,7 @@ AutoPtr<ContentViewCore> AwContents::CreateAndInitializeContentViewCore(
 {
     AutoPtr<ContentViewCore> contentViewCore = new ContentViewCore(context);
     AutoPtr<WindowAndroid> window;
-    AutoPtr<IActivity> activity = (IActivity*)(context->Probe(EIID_IActivity));
+    AutoPtr<IActivity> activity = IActivity::Probe(context);
     if (activity != NULL) {
         window = new ActivityWindowAndroid(activity);
     }
@@ -2028,7 +2029,7 @@ Boolean AwContents::RequestChildRectangleOnScreen(
  */
 void AwContents::ComputeScroll()
 {
-    AutoPtr<IInterface> iter = mOverScrollGlow->Probe(EIID_IInterface);
+    AutoPtr<IInterface> iter = TO_IINTERFACE(mOverScrollGlow);
     mScrollOffsetManager->ComputeScrollAndAbsorbGlow(/*TODO mOverScrollGlow*/iter);
 }
 
@@ -2820,13 +2821,14 @@ void AwContents::OnReceivedIcon(
 void AwContents::GenerateMHTMLCallback(
     /* [in] */ const String& path,
     /* [in] */ Int64 size,
-    /* [in] */ /*TODO IValueCallback*/IInterface* callback)
+    /* [in] */ IInterface* callback)
 {
     if (callback == NULL) return;
     AutoPtr<ICharSequence> icsq;
     CString::New(path, (ICharSequence**)&icsq);
-    AutoPtr<IInterface> iPath = icsq->Probe(EIID_IInterface);
-    //TODO callback->OnReceiveValue(size < 0 ? NULL : iPath);
+    AutoPtr<IInterface> iPath = TO_IINTERFACE(icsq);
+    //TODO AutoPtr<IValueCallback> vcb = IValueCallback::Probe(callback);
+    //TODO vcb->OnReceiveValue(size < 0 ? NULL : iPath);
 }
 
 //@CalledByNative
@@ -2856,7 +2858,7 @@ void AwContents::OnGeolocationPermissionsShowPrompt(
         return;
     }
     AutoPtr<AwGeolocationCallback> callback =  new AwGeolocationCallback(this);
-    mContentsClient->OnGeolocationPermissionsShowPrompt(origin, callback->Probe(EIID_IInterface)/*TODO*/);
+    mContentsClient->OnGeolocationPermissionsShowPrompt(origin, TO_IINTERFACE(callback)/*TODO*/);
 }
 
 //@CalledByNative
@@ -3157,36 +3159,40 @@ Boolean AwContents::UseLegacyGeolocationPermissionAPI()
 Int64 AwContents::NativeInit(
     /* [in] */ AwBrowserContext* browserContext)
 {
-    return 0;
+    return Elastos_AwContents_nativeInit(TO_IINTERFACE(browserContext));
 }
 
 void AwContents::NativeDestroy(
     /* [in] */ Int64 nativeAwContents)
 {
+    Elastos_AwContents_nativeDestroy(Handle32(nativeAwContents));
 }
 
 void AwContents::NativeSetAwDrawSWFunctionTable(
     /* [in] */ Int64 functionTablePointer)
 {
+    Elastos_AwContents_nativeSetAwDrawSWFunctionTable(functionTablePointer);
 }
 
 void AwContents::NativeSetAwDrawGLFunctionTable(
     /* [in] */ Int64 functionTablePointer)
 {
+    Elastos_AwContents_nativeSetAwDrawGLFunctionTable(functionTablePointer);
 }
 
 Int64 AwContents::NativeGetAwDrawGLFunction()
 {
-    return 0;
+    return Elastos_AwContents_nativeGetAwDrawGLFunction();
 }
 
 Int32 AwContents::NativeGetNativeInstanceCount()
 {
-    return 0;
+    return Elastos_AwContents_nativeGetNativeInstanceCount();
 }
 
 void AwContents::NativeSetShouldDownloadFavicons()
 {
+    Elastos_AwContents_nativeSetShouldDownloadFavicons();
 }
 
 void AwContents::NativeSetJavaPeers(
@@ -3197,18 +3203,26 @@ void AwContents::NativeSetJavaPeers(
     /* [in] */ AwContentsIoThreadClient* ioThreadClient,
     /* [in] */ InterceptNavigationDelegate* navigationInterceptionDelegate)
 {
+    Elastos_AwContents_nativeSetJavaPeers(THIS_PROBE(IInterface), (Handle32)nativeAwContents,
+            TO_IINTERFACE(awContents),
+            TO_IINTERFACE(webViewWebContentsDelegate),
+            TO_IINTERFACE(contentsClientBridge),
+            TO_IINTERFACE(ioThreadClient),
+            TO_IINTERFACE(navigationInterceptionDelegate));
 }
 
 Int64 AwContents::NativeGetWebContents(
     /* [in] */ Int64 nativeAwContents)
 {
-    return 0;
+    return Elastos_AwContents_nativeGetWebContents(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 void AwContents::NativeDocumentHasImages(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ IMessage* message)
 {
+    Elastos_AwContents_nativeDocumentHasImages(THIS_PROBE(IInterface), (Handle32)nativeAwContents,
+            TO_IINTERFACE(message));
 }
 
 void AwContents::NativeGenerateMHTML(
@@ -3216,12 +3230,14 @@ void AwContents::NativeGenerateMHTML(
     /* [in] */ const String& path,
     /* [in] */ /*TODO IValueCallback*/IInterface* callback)
 {
+    Elastos_AwContents_nativeGenerateMHTML(THIS_PROBE(IInterface), (Handle32)nativeAwContents, path, callback);
 }
 
 void AwContents::NativeAddVisitedLinks(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ ArrayOf<String>* visitedLinks)
 {
+    Elastos_AwContents_nativeAddVisitedLinks(THIS_PROBE(IInterface), (Handle32)nativeAwContents, visitedLinks);
 }
 
 Boolean AwContents::NativeOnDraw(
@@ -3235,36 +3251,41 @@ Boolean AwContents::NativeOnDraw(
     /* [in] */ Int32 visibleRight,
     /* [in] */ Int32 visibleBottom)
 {
-    return FALSE;
+    return Elastos_AwContents_nativeOnDraw(THIS_PROBE(IInterface), (Handle32)nativeAwContents, TO_IINTERFACE(canvas),
+            isHardwareAccelerated, scrollX, scrollY, visibleLeft, visibleTop, visibleRight, visibleBottom);
 }
 
 void AwContents::NativeFindAllAsync(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ const String& searchString)
 {
+    Elastos_AwContents_nativeFindAllAsync(THIS_PROBE(IInterface), (Handle32)nativeAwContents, searchString);
 }
 
 void AwContents::NativeFindNext(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean forward)
 {
+    Elastos_AwContents_nativeFindNext(THIS_PROBE(IInterface), (Handle32)nativeAwContents, forward);
 }
 
 void AwContents::NativeClearMatches(
     /* [in] */ Int64 nativeAwContents)
 {
+    Elastos_AwContents_nativeClearMatches(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 void AwContents::NativeClearCache(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean includeDiskFiles)
 {
+    Elastos_AwContents_nativeClearCache(THIS_PROBE(IInterface), (Handle32)nativeAwContents, includeDiskFiles);
 }
 
 AutoPtr< ArrayOf<Byte> > AwContents::NativeGetCertificate(
     /* [in] */ Int64 nativeAwContents)
 {
-    return NULL;
+    return Elastos_AwContents_nativeGetCertificate(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 // Coordinates in desity independent pixels.
@@ -3273,11 +3294,13 @@ void AwContents::NativeRequestNewHitTestDataAt(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
+    Elastos_AwContents_nativeRequestNewHitTestDataAt(THIS_PROBE(IInterface), (Handle32)nativeAwContents, x, y);
 }
 
 void AwContents::NativeUpdateLastHitTestData(
     /* [in] */ Int64 nativeAwContents)
 {
+    Elastos_AwContents_nativeUpdateLastHitTestData(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 void AwContents::NativeOnSizeChanged(
@@ -3287,6 +3310,7 @@ void AwContents::NativeOnSizeChanged(
     /* [in] */ Int32 ow,
     /* [in] */ Int32 oh)
 {
+    Elastos_AwContents_nativeOnSizeChanged(THIS_PROBE(IInterface), (Handle32)nativeAwContents, w, h, ow, oh);
 }
 
 void AwContents::NativeScrollTo(
@@ -3294,24 +3318,28 @@ void AwContents::NativeScrollTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
+    Elastos_AwContents_nativeScrollTo(THIS_PROBE(IInterface), (Handle32)nativeAwContents, x, y);
 }
 
 void AwContents::NativeSetViewVisibility(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean visible)
 {
+    Elastos_AwContents_nativeSetViewVisibility(THIS_PROBE(IInterface), (Handle32)nativeAwContents, visible);
 }
 
 void AwContents::NativeSetWindowVisibility(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean visible)
 {
+    Elastos_AwContents_nativeSetWindowVisibility(THIS_PROBE(IInterface), (Handle32)nativeAwContents, visible);
 }
 
 void AwContents::NativeSetIsPaused(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean paused)
 {
+    Elastos_AwContents_nativeSetIsPaused(THIS_PROBE(IInterface), (Handle32)nativeAwContents, paused);
 }
 
 void AwContents::NativeOnAttachedToWindow(
@@ -3319,24 +3347,27 @@ void AwContents::NativeOnAttachedToWindow(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
+    Elastos_AwContents_nativeOnAttachedToWindow(THIS_PROBE(IInterface), (Handle32)nativeAwContents, w, h);
 }
 
 void AwContents::NativeOnDetachedFromWindow(
     /* [in] */ Int64 nativeAwContents)
 {
+    Elastos_AwContents_nativeOnDetachedFromWindow((Handle32)nativeAwContents);
 }
 
 void AwContents::NativeSetDipScale(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Float dipScale)
 {
+    Elastos_AwContents_nativeSetDipScale(THIS_PROBE(IInterface), (Handle32)nativeAwContents, dipScale);
 }
 
 // Returns null if save state fails.
 AutoPtr< ArrayOf<Byte> > AwContents::NativeGetOpaqueState(
     /* [in] */ Int64 nativeAwContents)
 {
-    return NULL;
+    return Elastos_AwContents_nativeGetOpaqueState(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 // Returns false if restore state fails.
@@ -3344,30 +3375,32 @@ Boolean AwContents::NativeRestoreFromOpaqueState(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ ArrayOf<Byte>* state)
 {
-    return FALSE;
+    return Elastos_AwContents_nativeRestoreFromOpaqueState(THIS_PROBE(IInterface), (Handle32)nativeAwContents, state);
 }
 
 Int64 AwContents::NativeReleasePopupAwContents(
     /* [in] */ Int64 nativeAwContents)
 {
-    return 0;
+    return Elastos_AwContents_nativeReleasePopupAwContents(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 void AwContents::NativeFocusFirstNode(
     /* [in] */ Int64 nativeAwContents)
 {
+    Elastos_AwContents_nativeFocusFirstNode(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 void AwContents::NativeSetBackgroundColor(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Int32 color)
 {
+    Elastos_AwContents_nativeSetBackgroundColor(THIS_PROBE(IInterface), (Handle32)nativeAwContents, color);
 }
 
 Int64 AwContents::NativeGetAwDrawGLViewContext(
     /* [in] */ Int64 nativeAwContents)
 {
-    return 0;
+    return Elastos_AwContents_nativeGetAwDrawGLViewContext(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 Int64 AwContents::NativeCapturePicture(
@@ -3375,18 +3408,20 @@ Int64 AwContents::NativeCapturePicture(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    return 0;
+    return Elastos_AwContents_nativeCapturePicture(THIS_PROBE(IInterface), (Handle32)nativeAwContents, width, height);
 }
 
 void AwContents::NativeEnableOnNewPicture(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean enabled)
 {
+    Elastos_AwContents_nativeEnableOnNewPicture(THIS_PROBE(IInterface), (Handle32)nativeAwContents, enabled);
 }
 
 void AwContents::NativeClearView(
     /* [in] */ Int64 nativeAwContents)
 {
+    Elastos_AwContents_nativeClearView(THIS_PROBE(IInterface), (Handle32)nativeAwContents);
 }
 
 void AwContents::NativeSetExtraHeadersForUrl(
@@ -3394,6 +3429,7 @@ void AwContents::NativeSetExtraHeadersForUrl(
     /* [in] */ const String& url,
     /* [in] */ const String& extraHeaders)
 {
+    Elastos_AwContents_nativeSetExtraHeadersForUrl(THIS_PROBE(IInterface), (Handle32)nativeAwContents, url, extraHeaders);
 }
 
 void AwContents::NativeInvokeGeolocationCallback(
@@ -3401,12 +3437,14 @@ void AwContents::NativeInvokeGeolocationCallback(
     /* [in] */ Boolean value,
     /* [in] */ const String& requestingFrame)
 {
+    Elastos_AwContents_nativeInvokeGeolocationCallback(THIS_PROBE(IInterface), (Handle32)nativeAwContents, value, requestingFrame);
 }
 
 void AwContents::NativeSetJsOnlineProperty(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ Boolean networkUp)
 {
+    Elastos_AwContents_nativeSetJsOnlineProperty(THIS_PROBE(IInterface), (Handle32)nativeAwContents, networkUp);
 }
 
 void AwContents::NativeTrimMemory(
@@ -3414,12 +3452,14 @@ void AwContents::NativeTrimMemory(
     /* [in] */ Int32 level,
     /* [in] */ Boolean visible)
 {
+    Elastos_AwContents_nativeTrimMemory(THIS_PROBE(IInterface), (Handle32)nativeAwContents, level, visible);
 }
 
 void AwContents::NativeCreatePdfExporter(
     /* [in] */ Int64 nativeAwContents,
     /* [in] */ AwPdfExporter* awPdfExporter)
 {
+    Elastos_AwContents_nativeCreatePdfExporter(THIS_PROBE(IInterface), (Handle32)nativeAwContents, TO_IINTERFACE(awPdfExporter));
 }
 
 void AwContents::NativePreauthorizePermission(
@@ -3427,7 +3467,321 @@ void AwContents::NativePreauthorizePermission(
     /* [in] */ const String& origin,
     /* [in] */ Int64 resources)
 {
+    Elastos_AwContents_nativePreauthorizePermission(THIS_PROBE(IInterface), (Handle32)nativeAwContents, origin, resources);
 }
+//callback function definition
+void AwContents::OnDocumentHasImagesResponse(
+    /* [in] */ Boolean result,
+    /* [in] */ IInterface* message)
+{
+    AutoPtr<IMessage> m = IMessage::Probe(message);
+    OnDocumentHasImagesResponse(result, m);
+}
+
+void AwContents::OnReceivedTouchIconUrl(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url,
+    /* [in] */ Boolean precomposed)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnReceivedTouchIconUrl, mObj is NULL");
+        return;
+    }
+    mObj->OnReceivedTouchIconUrl(url, precomposed);
+}
+
+void AwContents::OnReceivedIcon(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* bitmap)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnReceivedIcon, mObj is NULL");
+        return;
+    }
+    AutoPtr<IBitmap> b = IBitmap::Probe(bitmap);
+    mObj->OnReceivedIcon(b);
+}
+
+void AwContents::OnReceivedHttpAuthRequest(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* handler,
+    /* [in] */ const String& host,
+    /* [in] */ const String& realm)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnReceivedHttpAuthRequest, mObj is NULL");
+        return;
+    }
+    AutoPtr<AwHttpAuthHandler> hah = (AwHttpAuthHandler*)(IObject::Probe(handler));
+    mObj->OnReceivedHttpAuthRequest(hah, host, realm);
+}
+
+void AwContents::OnGeolocationPermissionsShowPrompt(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& origin)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnGeolocationPermissionsShowPrompt, mObj is NULL");
+        return;
+    }
+    mObj->OnGeolocationPermissionsShowPrompt(origin);
+}
+
+void AwContents::OnGeolocationPermissionsHidePrompt(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnGeolocationPermissionsHidePrompt, mObj is NULL");
+        return;
+    }
+    mObj->OnGeolocationPermissionsHidePrompt();
+}
+
+void AwContents::OnPermissionRequest(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* awPermissionRequest)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnPermissionRequest, mObj is NULL");
+        return;
+    }
+    AutoPtr<AwPermissionRequest> pr = (AwPermissionRequest*)(IObject::Probe(awPermissionRequest));
+    mObj->OnPermissionRequest(pr);
+}
+
+void AwContents::OnPermissionRequestCanceled(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* awPermissionRequest)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnPermissionRequestCanceled, mObj is NULL");
+        return;
+    }
+    AutoPtr<AwPermissionRequest> pr = (AwPermissionRequest*)(IObject::Probe(awPermissionRequest));
+    mObj->OnPermissionRequestCanceled(pr);
+}
+
+void AwContents::OnFindResultReceived(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 activeMatchOrdinal,
+    /* [in] */ Int32 numberOfMatches,
+    /* [in] */ Boolean isDoneCounting)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnFindResultReceived, mObj is NULL");
+        return;
+    }
+    mObj->OnFindResultReceived(activeMatchOrdinal, numberOfMatches, isDoneCounting);
+}
+
+void AwContents::OnNewPicture(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnNewPicture, mObj is NULL");
+        return;
+    }
+    mObj->OnNewPicture();
+}
+
+void AwContents::UpdateHitTestData(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 type,
+    /* [in] */ const String& extra,
+    /* [in] */ const String& href,
+    /* [in] */ const String& anchorText,
+    /* [in] */ const String& imgSrc)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::UpdateHitTestData, mObj is NULL");
+        return;
+    }
+    mObj->UpdateHitTestData(type, extra, href, anchorText, imgSrc);
+}
+
+Boolean AwContents::RequestDrawGL(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* canvas,
+    /* [in] */ Boolean waitForCompletion)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::RequestDrawGL, mObj is NULL");
+        return FALSE;
+    }
+    AutoPtr<ICanvas> c = ICanvas::Probe(canvas);
+    return mObj->RequestDrawGL(c, waitForCompletion);
+}
+
+void AwContents::PostInvalidateOnAnimation(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::PostInvalidateOnAnimation, mObj is NULL");
+        return;
+    }
+    mObj->PostInvalidateOnAnimation();
+}
+
+void AwContents::InvalidateOnFunctorDestroy(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::InvalidateOnFunctorDestroy, mObj is NULL");
+        return;
+    }
+    mObj->InvalidateOnFunctorDestroy();
+}
+
+AutoPtr<ArrayOf<Int32> > AwContents::GetLocationOnScreen(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::GetLocationOnScreen, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetLocationOnScreen();
+}
+
+void AwContents::OnWebLayoutPageScaleFactorChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Float webLayoutPageScaleFactor)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnWebLayoutPageScaleFactorChanged, mObj is NULL");
+        return;
+    }
+    mObj->OnWebLayoutPageScaleFactorChanged(webLayoutPageScaleFactor);
+}
+
+void AwContents::OnWebLayoutContentsSizeChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 widthCss,
+    /* [in] */ Int32 heightCss)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::OnWebLayoutContentsSizeChanged, mObj is NULL");
+        return;
+    }
+    mObj->OnWebLayoutContentsSizeChanged(widthCss, heightCss);
+}
+
+void AwContents::ScrollContainerViewTo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::ScrollContainerViewTo, mObj is NULL");
+        return;
+    }
+    mObj->ScrollContainerViewTo(x, y);
+}
+
+Boolean AwContents::IsFlingActive(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::IsFlingActive, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->IsFlingActive();
+}
+
+void AwContents::UpdateScrollState(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 maxContainerViewScrollOffsetX,
+    /* [in] */ Int32 maxContainerViewScrollOffsetY,
+    /* [in] */ Int32 contentWidthDip,
+    /* [in] */ Int32 contentHeightDip,
+    /* [in] */ Float pageScaleFactor,
+    /* [in] */ Float minPageScaleFactor,
+    /* [in] */ Float maxPageScaleFactor)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::UpdateScrollState, mObj is NULL");
+        return;
+    }
+    mObj->UpdateScrollState(maxContainerViewScrollOffsetX, maxContainerViewScrollOffsetY, contentWidthDip, contentHeightDip, pageScaleFactor, minPageScaleFactor, maxPageScaleFactor);
+}
+
+void AwContents::SetAwAutofillClient(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* client)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::SetAwAutofillClient, mObj is NULL");
+        return;
+    }
+    AutoPtr<AwAutofillClient> c = (AwAutofillClient*)(IObject::Probe(client));
+    mObj->SetAwAutofillClient(c);
+}
+
+void AwContents::DidOverscroll(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 deltaX,
+    /* [in] */ Int32 deltaY)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::DidOverscroll, mObj is NULL");
+        return;
+    }
+    mObj->DidOverscroll(deltaX, deltaY);
+}
+
+Boolean AwContents::UseLegacyGeolocationPermissionAPI(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwContents> mObj = (AwContents*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwContents::UseLegacyGeolocationPermissionAPI, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->UseLegacyGeolocationPermissionAPI();
+}
+
 
 } // namespace AndroidWebview
 } // namespace Webkit

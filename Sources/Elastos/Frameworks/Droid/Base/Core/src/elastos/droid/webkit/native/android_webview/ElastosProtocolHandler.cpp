@@ -1,4 +1,5 @@
-#include "elastos/droid/webkit/native/android_webview/AndroidProtocolHandler.h"
+#include "elastos/droid/webkit/native/android_webview/ElastosProtocolHandler.h"
+#include "elastos/droid/webkit/native/android_webview/api/ElastosProtocolHandler_dec.h"
 //TODO #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include <elastos/utility/logging/Logger.h>
@@ -24,9 +25,9 @@ namespace Droid {
 namespace Webkit {
 namespace AndroidWebview {
 
-const String AndroidProtocolHandler::TAG("AndroidProtocolHandler");
-const String AndroidProtocolHandler::FILE_SCHEME("file");
-const String AndroidProtocolHandler::CONTENT_SCHEME("content");
+const String ElastosProtocolHandler::TAG("ElastosProtocolHandler");
+const String ElastosProtocolHandler::FILE_SCHEME("file");
+const String ElastosProtocolHandler::CONTENT_SCHEME("content");
 
 /**
  * Open an InputStream for an Android resource.
@@ -35,7 +36,7 @@ const String AndroidProtocolHandler::CONTENT_SCHEME("content");
  * @return An InputStream to the Android resource.
  */
 //@CalledByNative return IInputStream IContext
-AutoPtr<IInterface> AndroidProtocolHandler::Open(
+AutoPtr<IInterface> ElastosProtocolHandler::Open(
     /* [in] */ IInterface* icontext,
     /* [in] */ const String& url)
 {
@@ -69,7 +70,7 @@ AutoPtr<IInterface> AndroidProtocolHandler::Open(
     return NULL;
 }
 
-Int32 AndroidProtocolHandler::GetFieldId(
+Int32 ElastosProtocolHandler::GetFieldId(
     /* [in] */ IContext* context,
     /* [in] */ const String& assetType,
     /* [in] */ const String& assetName)
@@ -80,12 +81,12 @@ Int32 AndroidProtocolHandler::GetFieldId(
     java.lang.reflect.Field field = d.getField(assetName);
     int id = field.getInt(null);
     */
-    Logger::E(TAG, "AndroidProtocolHandler::GetFieldId not impl");
+    Logger::E(TAG, "ElastosProtocolHandler::GetFieldId not impl");
     assert(0);
     return 0;
 }
 
-Int32 AndroidProtocolHandler::GetValueType(
+Int32 ElastosProtocolHandler::GetValueType(
     /* [in] */ IContext* context,
     /* [in] */ Int32 fieldId)
 {
@@ -99,7 +100,7 @@ Int32 AndroidProtocolHandler::GetValueType(
     return type;
 }
 
-AutoPtr<IInputStream> AndroidProtocolHandler::OpenResource(
+AutoPtr<IInputStream> ElastosProtocolHandler::OpenResource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri)
 {
@@ -174,7 +175,7 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenResource(
     //}
 }
 
-AutoPtr<IInputStream> AndroidProtocolHandler::OpenAsset(
+AutoPtr<IInputStream> ElastosProtocolHandler::OpenAsset(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri)
 {
@@ -198,7 +199,7 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenAsset(
     //}
 }
 
-AutoPtr<IInputStream> AndroidProtocolHandler::OpenContent(
+AutoPtr<IInputStream> ElastosProtocolHandler::OpenContent(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri)
 {
@@ -225,7 +226,7 @@ AutoPtr<IInputStream> AndroidProtocolHandler::OpenContent(
  * @return The mime type or null if the type is unknown.
  */
 //@CalledByNative IContext, IInputStream
-String AndroidProtocolHandler::GetMimeType(
+String ElastosProtocolHandler::GetMimeType(
     /* [in] */ IInterface* icontext,
     /* [in] */ IInterface* istream,
     /* [in] */ const String& url)
@@ -281,7 +282,7 @@ String AndroidProtocolHandler::GetMimeType(
  * Make sure the given string URL is correctly formed and parse it into a Uri.
  * @return a Uri instance, or null if the URL was invalid.
  */
-AutoPtr<IUri> AndroidProtocolHandler::VerifyUrl(
+AutoPtr<IUri> ElastosProtocolHandler::VerifyUrl(
     /* [in] */ const String& url)
 {
     if (url.IsNull()) {
@@ -310,25 +311,26 @@ AutoPtr<IUri> AndroidProtocolHandler::VerifyUrl(
  * @param context Context to be used, or null for the default application
  *                context.
  */
-void AndroidProtocolHandler::SetResourceContextForTesting(
+void ElastosProtocolHandler::SetResourceContextForTesting(
     /* [in] */ IContext* context)
 {
     NativeSetResourceContextForTesting(context);
 }
 
-void AndroidProtocolHandler::NativeSetResourceContextForTesting(
+void ElastosProtocolHandler::NativeSetResourceContextForTesting(
     /* [in] */ IContext* context)
 {
+    Elastos_AndroidProtocolHandler_nativeSetResourceContextForTesting(TO_IINTERFACE(context));
 }
 
-String AndroidProtocolHandler::NativeGetAndroidAssetPath()
+String ElastosProtocolHandler::NativeGetAndroidAssetPath()
 {
-    return String(NULL);
+    return Elastos_AndroidProtocolHandler_nativeGetAndroidAssetPath();
 }
 
-String AndroidProtocolHandler::NativeGetAndroidResourcePath()
+String ElastosProtocolHandler::NativeGetAndroidResourcePath()
 {
-    return String(NULL);
+    return Elastos_AndroidProtocolHandler_nativeGetAndroidResourcePath();
 }
 
 } // namespace AndroidWebview

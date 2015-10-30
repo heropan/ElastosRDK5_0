@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/InputStreamUtil.h"
+#include "elastos/droid/webkit/native/android_webview/api/InputStreamUtil_dec.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
@@ -96,6 +97,38 @@ Int64 InputStreamUtil::Skip(
     //     Log.e(LOGTAG, logMessage("skip"), e);
     //     return EXCEPTION_THROWN_STATUS;
     // }
+}
+//callback function definition
+void InputStreamUtil::Close(
+    /* [in] */ IInterface* stream)
+{
+    AutoPtr<IInputStream> is = IInputStream::Probe(stream);
+    Close(is);
+}
+
+Int32 InputStreamUtil::Available(
+    /* [in] */ IInterface* stream)
+{
+    AutoPtr<IInputStream> is = IInputStream::Probe(stream);
+    return Available(is);
+}
+
+Int32 InputStreamUtil::Read(
+    /* [in] */ IInterface* stream,
+    /* [in] */ ArrayOf<Byte>* b,
+    /* [in] */ Int32 off,
+    /* [in] */ Int32 len)
+{
+    AutoPtr<IInputStream> is = IInputStream::Probe(stream);
+    return Read(is, b, off, len);
+}
+
+Int64 InputStreamUtil::Skip(
+    /* [in] */ IInterface* stream,
+    /* [in] */ Int64 n)
+{
+    AutoPtr<IInputStream> is = IInputStream::Probe(stream);
+    return Skip(is, n);
 }
 
 } // namespace AndroidWebview

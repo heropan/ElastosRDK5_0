@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwPdfExporter.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwPdfExporter_dec.h"
 
 #include <elastos/utility/logging/Logger.h>
 
@@ -202,6 +203,117 @@ void AwPdfExporter::NativeExportToPdf(
     /* [in] */ Int32 fd,
     /* [in] */ ICancellationSignal* cancellationSignal)
 {
+    Elastos_AwPdfExporter_nativeExportToPdf(THIS_PROBE(IInterface), (Handle32)nativeAwPdfExporter, fd, TO_IINTERFACE(cancellationSignal));
+}
+//callback function definition
+void AwPdfExporter::SetNativeAwPdfExporter(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativePdfExporter)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::SetNativeAwPdfExporter, mObj is NULL");
+        return;
+    }
+    mObj->SetNativeAwPdfExporter(nativePdfExporter);
+}
+
+void AwPdfExporter::DidExportPdf(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean success)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::DidExportPdf, mObj is NULL");
+        return;
+    }
+    mObj->DidExportPdf(success);
+}
+
+Int32 AwPdfExporter::GetPageWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetPageWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetPageWidth();
+}
+
+Int32 AwPdfExporter::GetPageHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetPageHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetPageHeight();
+}
+
+Int32 AwPdfExporter::GetDpi(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetDpi, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDpi();
+}
+
+Int32 AwPdfExporter::GetLeftMargin(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetLeftMargin, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetLeftMargin();
+}
+
+Int32 AwPdfExporter::GetRightMargin(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetRightMargin, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetRightMargin();
+}
+
+Int32 AwPdfExporter::GetTopMargin(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetTopMargin, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetTopMargin();
+}
+
+Int32 AwPdfExporter::GetBottomMargin(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<AwPdfExporter> mObj = (AwPdfExporter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "AwPdfExporter::GetBottomMargin, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetBottomMargin();
 }
 
 } // namespace AndroidWebview

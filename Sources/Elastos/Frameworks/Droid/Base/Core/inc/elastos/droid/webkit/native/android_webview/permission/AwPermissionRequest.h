@@ -19,7 +19,7 @@ namespace Permission {
  */
 //@JNINamespace("android_webview")
 class AwPermissionRequest
-:public Object
+    : public Object
 {
 public:
     CARAPI_(AutoPtr<IUri>) GetOrigin();
@@ -55,6 +55,14 @@ private:
     CARAPI_(void) NativeOnAccept(
         /* [in] */ Int64 nativeAwPermissionRequest,
         /* [in] */ Boolean allowed);
+
+//callback function declaration
+public:
+    static CARAPI_(void*) ElaAwPermissionRequestCallback_Init();
+
+private:
+    static CARAPI_(void) DetachNativeInstance(
+        /* [in] */ IInterface* obj);
 
 private:
     static String TAG;

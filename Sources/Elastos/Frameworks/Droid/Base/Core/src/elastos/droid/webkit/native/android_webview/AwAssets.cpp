@@ -1,4 +1,5 @@
 #include "elastos/droid/webkit/native/android_webview/AwAssets.h"
+#include "elastos/droid/webkit/native/android_webview/api/AwAssets_dec.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
@@ -61,6 +62,14 @@ AutoPtr<ArrayOf<Int64> > AwAssets::OpenAsset(
     //        Log.e(LOGTAG, "Unable to close AssetFileDescriptor", e2);
     //    }
     //}
+}
+//callback function definition
+AutoPtr<ArrayOf<Int64> > AwAssets::OpenAsset(
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& fileName)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return OpenAsset(c, fileName);
 }
 
 } // namespace AndroidWebview
