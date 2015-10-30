@@ -687,9 +687,12 @@ void ViewGroup::InitFromAttributes(
     a->Recycle();
 }
 
-Int32 ViewGroup::GetDescendantFocusability()
+ECode ViewGroup::GetDescendantFocusability(
+    /* [out] */ Int32* res)
 {
-    return mGroupFlags & FLAG_MASK_FOCUSABILITY;
+    VALIDATE_NOT_NULL(res)
+    *res = mGroupFlags & FLAG_MASK_FOCUSABILITY;
+    return NOERROR;
 }
 
 ECode ViewGroup::SetDescendantFocusability(
@@ -779,87 +782,99 @@ ECode ViewGroup::FocusableViewAvailable(
     return NOERROR;
 }
 
-Boolean ViewGroup::ShowContextMenuForChild(
-    /* [in] */ IView* originalView)
-{
-    Boolean result = FALSE;
-    if (mParent != NULL) {
-        mParent->ShowContextMenuForChild(originalView, &result);
-    }
-
-    return result;
-}
-
-AutoPtr<IActionMode> ViewGroup::StartActionModeForChild(
+ECode ViewGroup::ShowContextMenuForChild(
     /* [in] */ IView* originalView,
-    /* [in] */ IActionModeCallback* callback)
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mParent != NULL) {
-        AutoPtr<IActionMode> mode;
-        mParent->StartActionModeForChild(originalView, callback, (IActionMode**)&mode);
-        return mode;
+        mParent->ShowContextMenuForChild(originalView, res);
     }
 
-    return NULL;
+    return NOERROR;
 }
 
-AutoPtr<IView> ViewGroup::FocusSearch(
-     /* [in] */ IView* focused,
-      /* [in] */ Int32 direction)
+ECode ViewGroup::StartActionModeForChild(
+    /* [in] */ IView* originalView,
+    /* [in] */ IActionModeCallback* callback,
+    /* [out] */ IActionMode** res)
 {
-    AutoPtr<IView> result;
+    VALIDATE_NOT_NULL(res)
+    if (mParent != NULL) {
+        mParent->StartActionModeForChild(originalView, callback, res);
+        return NOERROR;
+    }
+
+    *res = NULL;
+    return NOERROR;
+}
+
+ECode ViewGroup::FocusSearch(
+    /* [in] */ IView* focused,
+    /* [in] */ Int32 direction,
+    /* [out] */ IView** res)
+{
+    VALIDATE_NOT_NULL(res)
     if (IsRootNamespace()) {
         // root namespace means we should consider ourselves the top of the
         // tree for focus searching; otherwise we could be focus searching
         // into other tabs.  see LocalActivityManager and TabHost for more info
         //
         FocusFinder::GetInstance()->FindNextFocus(
-            THIS_PROBE(IViewGroup), focused, direction, (IView**)&result);
+            THIS_PROBE(IViewGroup), focused, direction, res);
     }
     else if (mParent != NULL) {
-        mParent->FocusSearch(focused, direction, (IView**)&result);
+        mParent->FocusSearch(focused, direction, res);
     }
 
-    return result;
+    return NOERROR;
 }
 
-Boolean ViewGroup::RequestChildRectangleOnScreen(
+ECode ViewGroup::RequestChildRectangleOnScreen(
     /* [in] */ IView* child,
     /* [in] */ IRect* rectangle,
-    /* [in] */ Boolean immediate)
+    /* [in] */ Boolean immediate,
+    /* [out] */ Boolean* res)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+    return NOERROR;
 }
 
-Boolean ViewGroup::RequestSendAccessibilityEvent(
+ECode ViewGroup::RequestSendAccessibilityEvent(
     /* [in] */ IView* child,
-    /* [in] */ IAccessibilityEvent* event)
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     AutoPtr<IViewParent> parent = mParent;
     if (parent == NULL) {
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
     Boolean propagate = OnRequestSendAccessibilityEvent(child, event);
     if (!propagate) {
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
-    Boolean res;
-    parent->RequestSendAccessibilityEvent(IView::Probe(this), event, &res);
-    return res;
+    parent->RequestSendAccessibilityEvent(IView::Probe(this), event, res);
+    return NOERROR;
 }
 
-Boolean ViewGroup::OnRequestSendAccessibilityEvent(
+ECode ViewGroup::OnRequestSendAccessibilityEvent(
     /* [in] */ IView* child,
-    /* [in] */ IAccessibilityEvent* event)
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mAccessibilityDelegate != NULL) {
-        Boolean res;
         mAccessibilityDelegate->OnRequestSendAccessibilityEvent(
-                THIS_PROBE(IViewGroup), child, event, &res);
-        return res;
+                THIS_PROBE(IViewGroup), child, event, res);
+        return NOERROR;
     }
     else {
-        return OnRequestSendAccessibilityEventInternal(child, event);
+        *res = OnRequestSendAccessibilityEventInternal(child, event);
+        return NOERROR;
     }
 }
 
@@ -1052,21 +1067,25 @@ ECode ViewGroup::ChildHasTransientStateChanged(
     return NOERROR;
 }
 
-Boolean ViewGroup::HasTransientState()
+ECode ViewGroup::HasTransientState(
+    /* [out] */ Boolean* res)
 {
-    return mChildCountWithTransientState > 0 || View::HasTransientState();
+    VALIDATE_NOT_NULL(res)
+    *res = mChildCountWithTransientState > 0 || View::HasTransientState();
+    return NOERROR;
 }
 
-Boolean ViewGroup::DispatchUnhandledMove(
+ECode ViewGroup::DispatchUnhandledMove(
      /* [in] */ IView* focused,
-     /* [in] */ Int32 direction)
+     /* [in] */ Int32 direction,
+    /* [out] */ Boolean* res)
 {
-    Boolean result = FALSE;
+    VALIDATE_NOT_NULL(res)
     if (mFocused != NULL) {
-        mFocused->DispatchUnhandledMove(focused, direction, &result);
+        mFocused->DispatchUnhandledMove(focused, direction, res);
     }
 
-    return result;
+    return NOERROR;
 }
 
 ECode ViewGroup::ClearChildFocus(
@@ -1112,9 +1131,13 @@ ECode ViewGroup::UnFocus(
     return NOERROR;
 }
 
-AutoPtr<IView> ViewGroup::GetFocusedChild()
+ECode ViewGroup::GetFocusedChild(
+    /* [out] */ IView** res)
 {
-    return mFocused;
+    VALIDATE_NOT_NULL(res)
+    *res = mFocused;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 ECode ViewGroup::GetDeepestFocusedChild(
@@ -1140,36 +1163,46 @@ ECode ViewGroup::GetDeepestFocusedChild(
     return NOERROR;
 }
 
-Boolean ViewGroup::HasFocus()
+ECode ViewGroup::HasFocus(
+    /* [out] */ Boolean* res)
 {
-    return (mPrivateFlags & PFLAG_FOCUSED) != 0 || mFocused != NULL;
+    VALIDATE_NOT_NULL(res)
+    *res = (mPrivateFlags & PFLAG_FOCUSED) != 0 || mFocused != NULL;
+    return NOERROR;
 }
 
-AutoPtr<IView> ViewGroup::FindFocus()
+ECode ViewGroup::FindFocus(
+    /* [out] */ IView** focused)
 {
-    if (DBG) {
-        //System.out.println("Find focus in " + this + ": flags="
-        //        + isFocused() + ", child=" + mFocused);
-    }
+    VALIDATE_NOT_NULL(res)
 
     if (IsFocused()) {
-        return AutoPtr<IView>(IView::Probe(this));
+        *res = IView::Probe(this);
+        REFCOUNT_ADD(*res)
+        return NOERROR;
     }
 
     if (mFocused != NULL) {
-        return (View::Probe(mFocused))->FindFocus();
+        *res = (View::Probe(mFocused))->FindFocus();
+        REFCOUNT_ADD(*res)
+        return NOERROR;
     }
-    return AutoPtr<IView>(NULL);
+    *res = NULL;
+    return NOERROR;
 }
 
-Boolean ViewGroup::HasFocusable()
+ECode ViewGroup::HasFocusable(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if ((mViewFlags & VISIBILITY_MASK) != IView::VISIBLE) {
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
     if (IsFocusable()) {
-        return TRUE;
+        *res = TRUE;
+        return NOERROR;
     }
 
     if (GetDescendantFocusability() != FOCUS_BLOCK_DESCENDANTS) {
@@ -1177,12 +1210,14 @@ Boolean ViewGroup::HasFocusable()
             Boolean hasFocusable = FALSE;
             (*mChildren)[i]->HasFocusable(&hasFocusable);
             if (hasFocusable) {
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             }
         }
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 ECode ViewGroup::AddFocusables(
@@ -1294,22 +1329,29 @@ ECode ViewGroup::FindViewsWithText(
     return NOERROR;
 }
 
-AutoPtr<IView> ViewGroup::FindViewByAccessibilityIdTraversal(
-    /* [in] */ Int32 accessibilityId)
+ECode ViewGroup::FindViewByAccessibilityIdTraversal(
+    /* [in] */ Int32 accessibilityId,
+    /* [out] */ IView** focused)
 {
+    VALIDATE_NOT_NULL(res)
     AutoPtr<IView> foundView = View::FindViewByAccessibilityIdTraversal(accessibilityId);
     if (foundView != NULL) {
-        return foundView;
+        *res = foundView;
+        REFCOUNT_ADD(*res)
+        return NOERROR;
     }
 
     for (Int32 i = 0; i < mChildrenCount; i++) {
         View* child = View::Probe((*mChildren)[i]);
         foundView = child->FindViewByAccessibilityIdTraversal(accessibilityId);
         if (foundView != NULL) {
-            return foundView;
+           *res = foundView;
+           REFCOUNT_ADD(*res)
+           return NOERROR;
         }
     }
-    return NULL;
+    *res = NULL;
+    return NOERROR;
 }
 
 ECode ViewGroup::DispatchWindowFocusChanged(
@@ -1394,7 +1436,7 @@ void ViewGroup::OnChildVisibilityChanged(
     }
 }
 
-void ViewGroup::DispatchVisibilityChanged(
+ECode ViewGroup::DispatchVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
@@ -1404,6 +1446,7 @@ void ViewGroup::DispatchVisibilityChanged(
         View::Probe((*mChildren)[i])->DispatchVisibilityChanged(
             changedView, visibility);
     }
+    return NOERROR;
 }
 
 ECode ViewGroup::DispatchWindowVisibilityChanged(
@@ -1481,9 +1524,11 @@ AutoPtr<IPointF> ViewGroup::GetLocalPoint()
     return mLocalPoint;
 }
 
-Boolean ViewGroup::DispatchDragEvent(
-    /* [in] */ IDragEvent* event)
+ECode ViewGroup::DispatchDragEvent(
+    /* [in] */ IDragEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     Boolean retval = FALSE;
     Float tx = 0.0f;
     event->GetX(&tx);
@@ -1653,7 +1698,8 @@ Boolean ViewGroup::DispatchDragEvent(
         retval = View::DispatchDragEvent(event);
     }
 
-    return retval;
+    *res = retval;
+    return NOERROR;
 }
 
 AutoPtr<IView> ViewGroup::FindFrontmostDroppableChildAt(
@@ -1738,26 +1784,33 @@ Boolean ViewGroup::UpdateLocalSystemUiVisibility(
     return changed;
 }
 
-Boolean ViewGroup::DispatchKeyEventPreIme(
-    /* [in] */ IKeyEvent* event)
+ECode ViewGroup::DispatchKeyEventPreIme(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
-        return View::DispatchKeyEventPreIme(event);
+        View::DispatchKeyEventPreIme(event, res);
+        return NOERROR;
     }
     else if (mFocused != NULL) {
         View* focused = View::Probe(mFocused);
         assert(focused);
         if ((focused->mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
-            return focused->DispatchKeyEventPreIme(event);
+            focused->DispatchKeyEventPreIme(event, res);
+            return NOERROR;
         }
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
-Boolean ViewGroup::DispatchKeyEvent(
-    /* [in] */ IKeyEvent* event)
+ECode ViewGroup::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mInputEventConsistencyVerifier != NULL) {
         mInputEventConsistencyVerifier->OnKeyEvent(event, 1);
     }
@@ -1765,13 +1818,15 @@ Boolean ViewGroup::DispatchKeyEvent(
     if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS))
             == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
         if (View::DispatchKeyEvent(event)) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
     else if (mFocused != NULL && (View::Probe(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
             == PFLAG_HAS_BOUNDS) {
         if (View::Probe(mFocused)->DispatchKeyEvent(event)) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
 
@@ -1779,29 +1834,37 @@ Boolean ViewGroup::DispatchKeyEvent(
         mInputEventConsistencyVerifier->OnUnhandledEvent(event, 1);
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
-Boolean ViewGroup::DispatchKeyShortcutEvent(
-    /* [in] */ IKeyEvent* event)
+ECode ViewGroup::DispatchKeyShortcutEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
-        return View::DispatchKeyShortcutEvent(event);
+        View::DispatchKeyShortcutEvent(event, res);
+        return NOERROR;
     }
     else if (mFocused != NULL) {
         View* focused = View::Probe(mFocused);
         assert(focused);
         if ((focused->mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
-            return focused->DispatchKeyShortcutEvent(event);
+            focused->DispatchKeyShortcutEvent(event, res);
+            return NOERROR;
         }
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
-Boolean ViewGroup::DispatchTrackballEvent(
-    /* [in] */ IMotionEvent* event)
+ECode ViewGroup::DispatchTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mInputEventConsistencyVerifier != NULL) {
         mInputEventConsistencyVerifier->OnTrackballEvent(event, 1);
     }
@@ -1809,13 +1872,15 @@ Boolean ViewGroup::DispatchTrackballEvent(
     if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS))
             == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
         if (View::DispatchTrackballEvent(event)) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
     else if (mFocused != NULL && (View::Probe(mFocused)->mPrivateFlags & PFLAG_HAS_BOUNDS)
             == PFLAG_HAS_BOUNDS) {
         if (View::Probe(mFocused)->DispatchTrackballEvent(event)) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
 
@@ -1823,7 +1888,8 @@ Boolean ViewGroup::DispatchTrackballEvent(
         mInputEventConsistencyVerifier->OnUnhandledEvent(event, 1);
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 Boolean ViewGroup::DispatchHoverEvent(
@@ -2102,10 +2168,13 @@ ECode ViewGroup::AddChildrenForAccessibility(
     return NOERROR;
 }
 
-Boolean ViewGroup::OnInterceptHoverEvent(
-    /* [in] */ IMotionEvent* event)
+ECode ViewGroup::OnInterceptHoverEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+    return NOERROR;
 }
 
 AutoPtr<IMotionEvent> ViewGroup::ObtainMotionEventNoHistoryOrSelf(
@@ -2206,9 +2275,11 @@ Boolean ViewGroup::DispatchTransformedGenericPointerEvent(
     return handled;
 }
 
-Boolean ViewGroup::DispatchTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode ViewGroup::DispatchTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mInputEventConsistencyVerifier != NULL) {
         mInputEventConsistencyVerifier->OnTouchEvent(ev, 1);
     }
@@ -2410,7 +2481,8 @@ Boolean ViewGroup::DispatchTouchEvent(
         mInputEventConsistencyVerifier->OnUnhandledEvent(ev, 1);
     }
 
-    return handled;
+    *res = handled;
+    return NOERROR;
 }
 
 void ViewGroup::ResetTouchState()
@@ -2691,9 +2763,12 @@ ECode ViewGroup::SetMotionEventSplittingEnabled(
     return NOERROR;
 }
 
-Boolean ViewGroup::IsMotionEventSplittingEnabled()
+ECode ViewGroup::IsMotionEventSplittingEnabled(
+    /* [out] */ Boolean* res)
 {
-    return (mGroupFlags & FLAG_SPLIT_MOTION_EVENTS) == FLAG_SPLIT_MOTION_EVENTS;
+    VALIDATE_NOT_NULL(res)
+    *res = (mGroupFlags & FLAG_SPLIT_MOTION_EVENTS) == FLAG_SPLIT_MOTION_EVENTS;
+    return NOERROR;
 }
 
 /**
@@ -2803,10 +2878,13 @@ ECode ViewGroup::RequestDisallowInterceptTouchEvent(
  * The current target will receive an ACTION_CANCEL event, and no further
  * messages will be delivered here.
  */
-Boolean ViewGroup::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode ViewGroup::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(res)
+    *res = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -2822,10 +2900,12 @@ Boolean ViewGroup::OnInterceptTouchEvent(
  * @see #FOCUS_BLOCK_DESCENDANTS
  * @see #onRequestFocusInDescendants
  */
-Boolean ViewGroup::RequestFocus(
+ECode ViewGroup::RequestFocus(
     /* [in] */ Int32 direction,
-    /* [in] */ IRect* previouslyFocusedRect)
+    /* [in] */ IRect* previouslyFocusedRect,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (DBG) {
         Logger::D(VG_TAG,
             "0x%08x ViewGroup.requestFocus direction = %d", this, direction);
@@ -2835,19 +2915,28 @@ Boolean ViewGroup::RequestFocus(
 
     switch (descendantFocusability) {
     case FOCUS_BLOCK_DESCENDANTS:
-        return View::RequestFocus(direction, previouslyFocusedRect);
+        View::RequestFocus(direction, previouslyFocusedRect, res);
+        return NOERROR;
     case FOCUS_BEFORE_DESCENDANTS:
         {
             Boolean took = View::RequestFocus(direction, previouslyFocusedRect);
-            return took ? took : OnRequestFocusInDescendants(
-                direction, previouslyFocusedRect);
+            if (took) {
+                *res = took;
+            } else {
+                OnRequestFocusInDescendants(direction, previouslyFocusedRect, res);
+            }
+            return NOERROR;
         }
     case FOCUS_AFTER_DESCENDANTS:
         {
             Boolean took = OnRequestFocusInDescendants(
                 direction, previouslyFocusedRect);
-            return took ? took : View::RequestFocus(
-                direction, previouslyFocusedRect);
+            if (took) {
+                *res = took
+            } else {
+                View::RequestFocus(direction, previouslyFocusedRect, res);
+            }
+            return NOERROR;
         }
     default:
         {
@@ -2857,7 +2946,8 @@ Boolean ViewGroup::RequestFocus(
 
         }
     }
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -2928,7 +3018,7 @@ ECode ViewGroup::DispatchFinishTemporaryDetach()
     return NOERROR;
 }
 
-void ViewGroup::DispatchAttachedToWindow(
+ECode ViewGroup::DispatchAttachedToWindow(
     /* [in] */ AttachInfo* info,
     /* [in] */ Int32 visibility)
 {
@@ -2941,6 +3031,7 @@ void ViewGroup::DispatchAttachedToWindow(
         child->DispatchAttachedToWindow(info,
                 visibility | (child->mViewFlags&VISIBILITY_MASK));
     }
+    return NOERROR;
 }
 
 //@Override
@@ -3792,7 +3883,7 @@ ECode ViewGroup::GetClipChildren(
   *        FALSE otherwise
   * @attr ref android.R.styleable#ViewGroup_clipChildren
   */
-void ViewGroup::SetClipChildren(
+ECode ViewGroup::SetClipChildren(
     /* [in] */ Boolean clipChildren)
 {
     Boolean previousValue = (mGroupFlags & FLAG_CLIP_CHILDREN) == FLAG_CLIP_CHILDREN;
@@ -3806,6 +3897,7 @@ void ViewGroup::SetClipChildren(
         }
         Invalidate(TRUE);
     }
+    return NOERROR;
 }
 
 /**
@@ -3816,13 +3908,14 @@ void ViewGroup::SetClipChildren(
   *        group, FALSE otherwise
   * @attr ref android.R.styleable#ViewGroup_clipToPadding
   */
-void ViewGroup::SetClipToPadding(
+ECode ViewGroup::SetClipToPadding(
     /* [in] */ Boolean clipToPadding)
 {
     if (HasBooleanFlag(FLAG_CLIP_TO_PADDING) != clipToPadding) {
         SetBooleanFlag(FLAG_CLIP_TO_PADDING, clipToPadding);
         Invalidate(TRUE);
     }
+    return NOERROR;
 }
 
 /**
@@ -3845,20 +3938,22 @@ ECode ViewGroup::GetClipToPadding(
   * {@inheritDoc}
   */
 //@Override
-void ViewGroup::DispatchSetSelected(
+ECode ViewGroup::DispatchSetSelected(
     /* [in] */ Boolean selected)
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
         (*mChildren)[i]->SetSelected(selected);
     }
+    return NOERROR;
 }
 
-void ViewGroup::DispatchSetActivated(
+ECode ViewGroup::DispatchSetActivated(
     /* [in] */ Boolean activated)
 {
     for (Int32 i = 0; i < mChildrenCount; i++) {
         (*mChildren)[i]->SetActivated(activated);
     }
+    return NOERROR;
 }
 
 //@Override
@@ -4567,9 +4662,13 @@ ECode ViewGroup::SetLayoutTransition(
     return NOERROR;
 }
 
-AutoPtr<ILayoutTransition> ViewGroup::GetLayoutTransition()
+ECode ViewGroup::GetLayoutTransition(
+    /* [out] */ ILayoutTransition** res)
 {
-    return mTransition;
+    VALIDATE_NOT_NULL(res)
+    *res = mTransition;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 void ViewGroup::RemoveViewsInternal(
@@ -5360,14 +5459,21 @@ ECode ViewGroup::SetLayoutAnimation(
     return NOERROR;
 }
 
-AutoPtr<ILayoutAnimationController> ViewGroup::GetLayoutAnimation()
+ECode ViewGroup::GetLayoutAnimation(
+    /* [out] */ ILayoutAnimationController** res)
 {
-    return mLayoutAnimationController;
+    VALIDATE_NOT_NULL(res)
+    *res = mLayoutAnimationController;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
-Boolean ViewGroup::IsAnimationCacheEnabled()
+ECode ViewGroup::IsAnimationCacheEnabled(
+    /* [out] */ Boolean* res)
 {
-    return (mGroupFlags & FLAG_ANIMATION_CACHE) == FLAG_ANIMATION_CACHE;
+    VALIDATE_NOT_NULL(res)
+    *res = (mGroupFlags & FLAG_ANIMATION_CACHE) == FLAG_ANIMATION_CACHE;
+    return NOERROR;
 }
 
 ECode ViewGroup::SetAnimationCacheEnabled(
@@ -5377,9 +5483,12 @@ ECode ViewGroup::SetAnimationCacheEnabled(
     return NOERROR;
 }
 
-Boolean ViewGroup::IsAlwaysDrawnWithCacheEnabled()
+ECode ViewGroup::IsAlwaysDrawnWithCacheEnabled(
+    /* [out] */ Boolean* res)
 {
-    return (mGroupFlags & FLAG_ALWAYS_DRAWN_WITH_CACHE) == FLAG_ALWAYS_DRAWN_WITH_CACHE;
+    VALIDATE_NOT_NULL(res)
+    *res = (mGroupFlags & FLAG_ALWAYS_DRAWN_WITH_CACHE) == FLAG_ALWAYS_DRAWN_WITH_CACHE;
+    return NOERROR;
 }
 
 ECode ViewGroup::SetAlwaysDrawnWithCacheEnabled(
@@ -5429,9 +5538,12 @@ void ViewGroup::SetBooleanFlag(
     }
 }
 
-Int32 ViewGroup::GetPersistentDrawingCache()
+ECode ViewGroup::GetPersistentDrawingCache(
+    /* [out] */ Int32* res)
 {
-    return mPersistentDrawingCache;
+    VALIDATE_NOT_NULL(res)
+    *res = mPersistentDrawingCache;
+    return NOERROR;
 }
 
 ECode ViewGroup::SetPersistentDrawingCache(
@@ -5490,8 +5602,10 @@ void ViewGroup::InvalidateInheritedLayoutMode(
  *
  * @see #setLayoutMode(int)
  */
-Int32 ViewGroup::GetLayoutMode()
+ECode ViewGroup::GetLayoutMode(
+    /* [out] */ Int32* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mLayoutMode == LAYOUT_MODE_UNDEFINED) {
         Int32 inheritedLayoutMode = LAYOUT_MODE_DEFAULT;
         if (IViewGroup::Probe(mParent)) {
@@ -5499,7 +5613,8 @@ Int32 ViewGroup::GetLayoutMode()
         }
         SetLayoutMode(inheritedLayoutMode, FALSE);
     }
-    return mLayoutMode;
+    *res = mLayoutMode;
+    return NOERROR;
 }
 
 ECode ViewGroup::SetLayoutMode(
@@ -5591,16 +5706,20 @@ ECode ViewGroup::GenerateDefaultLayoutParams(
   * @return a positive integer representing the position of the view in the
   *         group, or -1 if the view does not exist in the group
   */
-Int32 ViewGroup::IndexOfChild(
-    /* [in] */ IView* child)
+ECode ViewGroup::IndexOfChild(
+    /* [in] */ IView* child,
+    /* [out] */ Int32* res)
 {
+    VALIDATE_NOT_NULL(res)
     for (Int32 i = 0; i < mChildrenCount; i++) {
         if ((*mChildren)[i] == child) {
-            return i;
+            *res = i;
+            return NOERROR;
         }
     }
 
-    return -1;
+    *res = -1;
+    return NOERROR;
 }
 
 /**
@@ -5609,9 +5728,12 @@ Int32 ViewGroup::IndexOfChild(
  * @return a positive integer representing the number of children in
  *         the group
  */
-Int32 ViewGroup::GetChildCount()
+ECode ViewGroup::GetChildCount(
+    /* [out] */ Int32* res)
 {
-    return mChildrenCount;
+    VALIDATE_NOT_NULL(res)
+    *res = mChildrenCount;
+    return NOERROR;
 }
 
 /**
@@ -5621,13 +5743,18 @@ Int32 ViewGroup::GetChildCount()
  * @return the view at the specified position or NULL if the position
  *         does not exist within the group
  */
-AutoPtr<IView> ViewGroup::GetChildAt(
-    /* [in] */ Int32 index)
+ECode ViewGroup::GetChildAt(
+    /* [in] */ Int32 index,
+    /* [out] */ IView** res)
 {
+    VALIDATE_NOT_NULL(res)
     if (index < 0 || index >= mChildrenCount) {
-        return NULL;
+        *res = NULL;
+        return NOERROR;
     }
-    return (*mChildren)[index];
+    *res = (*mChildren)[index];
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 void ViewGroup::MeasureChildren(
@@ -5971,14 +6098,17 @@ ECode ViewGroup::IsLayoutSuppressed(
     return NOERROR;
 }
 
-Boolean ViewGroup::GatherTransparentRegion(
-    /* [in, out] */ IRegion* region)
+ECode ViewGroup::GatherTransparentRegion(
+    /* [in, out] */ IRegion* region,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     // If no transparent regions requested, we are always opaque.
     const Boolean meOpaque = (mPrivateFlags & View::PFLAG_REQUEST_TRANSPARENT_REGIONS) == 0;
     if (meOpaque && region == NULL) {
         // The caller doesn't care about the region, so stop now.
-        return TRUE;
+        *res = TRUE;
+        return NOERROR;
     }
     View::GatherTransparentRegion(region);
     Boolean noneOfTheChildrenAreTransparent = TRUE;
@@ -5990,7 +6120,8 @@ Boolean ViewGroup::GatherTransparentRegion(
             }
         }
     }
-    return meOpaque || noneOfTheChildrenAreTransparent;
+    *res = meOpaque || noneOfTheChildrenAreTransparent;
+    return NOERROR;
 }
 
 ECode ViewGroup::RequestTransparentRegion(
@@ -6027,9 +6158,13 @@ ECode ViewGroup::DispatchApplyWindowInsets(
     return NOERROR;
 }
 
-AutoPtr<IAnimationListener> ViewGroup::GetLayoutAnimationListener()
+ECode ViewGroup::GetLayoutAnimationListener(
+    /* [out] */ IAnimationListener** res)
 {
-    return mAnimationListener;
+    VALIDATE_NOT_NULL(res)
+    *res = mAnimationListener;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
 ECode ViewGroup::DrawableStateChanged()
@@ -6136,9 +6271,12 @@ ECode ViewGroup::SetAddStatesFromChildren(
     return RefreshDrawableState();
 }
 
-Boolean ViewGroup::AddStatesFromChildren()
+ECode ViewGroup::AddStatesFromChildren(
+    /* [out] */ Boolean* res)
 {
-    return (mGroupFlags & FLAG_ADD_STATES_FROM_CHILDREN) != 0;
+    VALIDATE_NOT_NULL(res)
+    *res = (mGroupFlags & FLAG_ADD_STATES_FROM_CHILDREN) != 0;
+    return NOERROR;
 }
 
 ECode ViewGroup::ChildDrawableStateChanged(
@@ -6185,8 +6323,10 @@ ECode ViewGroup::ResolveRtlPropertiesIfNeeded(
     return NOERROR;
 }
 
-Boolean ViewGroup::ResolveLayoutDirection()
+ECode ViewGroup::ResolveLayoutDirection(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     Boolean result = View::ResolveLayoutDirection();
     if (result) {
         Int32 count = GetChildCount();
@@ -6198,11 +6338,14 @@ Boolean ViewGroup::ResolveLayoutDirection()
         }
     }
 
-    return result;
+    *res = result;
+    return NOERROR;
 }
 
-Boolean ViewGroup::ResolveTextDirection()
+ECode ViewGroup::ResolveTextDirection(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     Boolean result = View::ResolveTextDirection();
     if (result) {
         Int32 count = GetChildCount();
@@ -6213,11 +6356,14 @@ Boolean ViewGroup::ResolveTextDirection()
             }
         }
     }
-    return result;
+    *res = result;
+    return NOERROR;
 }
 
-Boolean ViewGroup::ResolveTextAlignment()
+ECode ViewGroup::ResolveTextAlignment(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     Boolean result = View::ResolveTextAlignment();
     if (result) {
         Int32 count = GetChildCount();
@@ -6228,7 +6374,8 @@ Boolean ViewGroup::ResolveTextAlignment()
             }
         }
     }
-    return result;
+    *res = result;
+    return NOERROR;
 }
 
 ECode ViewGroup::ResolvePadding()
@@ -6341,9 +6488,12 @@ void ViewGroup::ResetResolvedDrawables()
     }
 }
 
-Boolean ViewGroup::ShouldDelayChildPressedState()
+ECode ViewGroup::ShouldDelayChildPressedState(
+    /* [out] */ Boolean* res)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(res)
+    *res = TRUE;
+    return NOERROR;
 }
 
 /**

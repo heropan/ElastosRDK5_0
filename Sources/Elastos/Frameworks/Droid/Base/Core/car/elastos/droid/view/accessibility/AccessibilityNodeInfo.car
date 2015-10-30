@@ -989,7 +989,7 @@ module
         GetLiveRegion(
             [out] Int32* region);
 
-        GetLiveRegion(
+        SetLiveRegion(
             [in] Int32 region);
 
         IsMultiLine(

@@ -611,6 +611,10 @@ module
             GetAccessibilityNodeProvider(
                 [in] IView* host,
                 [out] IAccessibilityNodeProvider** anp);
+
+            CreateAccessibilityNodeInfo(
+                [in] IView* host,
+                [out] IAccessibilityNodeInfo** res);
         }
 
         [local, deprecated]
@@ -7651,6 +7655,44 @@ module
                 [in] String path);
 
             DamageInParent();
+        }
+
+        [local]
+        interface IViewHelper {
+
+            IsLayoutModeOptical(
+                [in] IInterface* it,
+                [out] Boolean* res);
+
+            CombineMeasuredStates(
+                [in] Int32 curState,
+                [in] Int32 newState,
+                [out] Int32* res);
+
+            ResolveSize(
+                [in] Int32 size,
+                [in] Int32 measureSpec,
+                [out] Int32* res);
+
+            ResolveSizeAndState(
+                [in] Int32 size,
+                [in] Int32 measureSpec,
+                [in] Int32 childMeasuredState,
+                [out] Int32* res);
+
+            GetDefaultSize(
+                [in] Int32 size,
+                [in] Int32 measureSpec,
+                [out] Int32* res);
+
+            Inflate(
+                [in] IContext* context,
+                [in] Int32 resource,
+                [in] IViewGroup* root,
+                [out] IView** res);
+
+            GenerateViewId(
+                [out] Int32* res);
         }
 
     } // namespace View

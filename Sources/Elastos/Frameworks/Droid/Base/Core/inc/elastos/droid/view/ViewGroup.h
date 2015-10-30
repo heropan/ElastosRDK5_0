@@ -251,7 +251,8 @@ public:
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
 
-    virtual CARAPI_(Int32) GetDescendantFocusability();
+    virtual CARAPI GetDescendantFocusability(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetDescendantFocusability(
         /* [in] */ Int32 focusability);
@@ -267,36 +268,42 @@ public:
     virtual CARAPI FocusableViewAvailable(
         /* [in] */ IView* v);
 
-    virtual CARAPI_(Boolean) ShowContextMenuForChild(
-        /* [in] */ IView* originalView);
+    virtual CARAPI ShowContextMenuForChild(
+        /* [in] */ IView* originalView,
+        /* [out] */ Boolean* res);
 
     /**
      * {@inheritDoc}
      */
-    virtual CARAPI_(AutoPtr<IActionMode>) StartActionModeForChild(
+    virtual CARAPI StartActionModeForChild(
         /* [in] */ IView* originalView,
-        /* [in] */ IActionModeCallback* callback);
+        /* [in] */ IActionModeCallback* callback,
+        /* [out] */ IActionMode** res);
 
-    virtual CARAPI_(AutoPtr<IView>) FocusSearch(
-         /* [in] */ IView* focused,
-         /* [in] */ Int32 direction);
+    virtual CARAPI FocusSearch(
+        /* [in] */ IView* focused,
+        /* [in] */ Int32 direction,
+        /* [out] */ IView** res);
 
-    virtual CARAPI_(Boolean) RequestChildRectangleOnScreen(
+    virtual CARAPI RequestChildRectangleOnScreen(
         /* [in] */ IView* child,
         /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* res);
 
     /**
      * {@inheritDoc}
      */
     //@Override
-    virtual CARAPI_(Boolean) RequestSendAccessibilityEvent(
+    virtual CARAPI RequestSendAccessibilityEvent(
         /* [in] */ IView* child,
-        /* [in] */ IAccessibilityEvent* event);
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnRequestSendAccessibilityEvent(
+    virtual CARAPI OnRequestSendAccessibilityEvent(
         /* [in] */ IView* child,
-        /* [in] */ IAccessibilityEvent* event);
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ChildHasTransientStateChanged(
         /* [in] */ IView* child,
@@ -306,11 +313,13 @@ public:
      * @hide
      */
     //@Override
-    virtual CARAPI_(Boolean) HasTransientState();
+    virtual CARAPI HasTransientState(
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) DispatchUnhandledMove(
+    CARAPI DispatchUnhandledMove(
         /* [in] */ IView* focused,
-        /* [in] */ Int32 direction);
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ClearChildFocus(
         /* [in] */ IView* child);
@@ -323,13 +332,17 @@ public:
     CARAPI GetDeepestFocusedChild(
         /* [out] */ IView** focused);
 
-    virtual CARAPI_(AutoPtr<IView>) GetFocusedChild();
+    virtual CARAPI GetFocusedChild(
+        /* [out] */ IView** res);
 
-    CARAPI_(Boolean) HasFocus();
+    CARAPI HasFocus(
+        /* [out] */ Boolean* res);
 
-    CARAPI_(AutoPtr<IView>) FindFocus();
+    CARAPI FindFocus(
+        /* [out] */ IView** focused);
 
-    CARAPI_(Boolean) HasFocusable();
+    CARAPI HasFocusable(
+        /* [out] */ Boolean* res);
 
     using View::AddFocusables;
 
@@ -343,8 +356,9 @@ public:
         /* [in] */ ICharSequence* searched,
         /* [in] */ Int32 flags);
 
-    CARAPI_(AutoPtr<IView>) FindViewByAccessibilityIdTraversal(
-        /* [in] */ Int32 accessibilityId);
+    CARAPI FindViewByAccessibilityIdTraversal(
+        /* [in] */ Int32 accessibilityId,
+        /* [out] */ IView** focused);
 
     CARAPI AddTouchables(
         /* [in] */ IObjectContainer* views);
@@ -357,7 +371,7 @@ public:
     CARAPI DispatchDisplayHint(
         /* [in] */ Int32 hint);
 
-    CARAPI_(void) DispatchVisibilityChanged(
+    CARAPI DispatchVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
@@ -382,8 +396,9 @@ public:
      */
     // TODO: Write real docs
     //@Override
-    virtual CARAPI_(Boolean) DispatchDragEvent(
-        /* [in] */ IDragEvent* event);
+    virtual CARAPI DispatchDragEvent(
+        /* [in] */ IDragEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI DispatchWindowSystemUiVisiblityChanged(
         /* [in] */ Int32 visible);
@@ -391,62 +406,71 @@ public:
     virtual CARAPI DispatchSystemUiVisibilityChanged(
         /* [in] */ Int32 visible);
 
-    virtual CARAPI_(Boolean) DispatchKeyEventPreIme(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI DispatchKeyEventPreIme(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchKeyShortcutEvent(
-        /* [in] */ IKeyEvent* event);
+    virtual CARAPI DispatchKeyShortcutEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI DispatchTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI AddChildrenForAccessibility(
         /* [in] */ IObjectContainer* childrenForAccessibility);
 
-    virtual CARAPI_(Boolean) OnInterceptHoverEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnInterceptHoverEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) DispatchTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    virtual CARAPI DispatchTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI RequestDisallowInterceptTouchEvent(
         /* [in] */ Boolean disallowIntercept);
 
-    virtual CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    virtual CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) RequestFocus(
+    CARAPI RequestFocus(
         /* [in] */ Int32 direction,
-        /* [in] */ IRect* previouslyFocusedRect);
+        /* [in] */ IRect* previouslyFocusedRect,
+        /* [out] */ Boolean* res);
+
     using View::RequestFocus;
 
     CARAPI DispatchStartTemporaryDetach();
 
     CARAPI DispatchFinishTemporaryDetach();
 
-    CARAPI_(void) DispatchAttachedToWindow(
+    CARAPI DispatchAttachedToWindow(
         /* [in] */ AttachInfo* info,
         /* [in] */ Int32 visibility);
 
     CARAPI DispatchDetachedFromWindow();
 
-    CARAPI_(void) SetClipChildren(
+    CARAPI SetClipChildren(
         /* [in] */ Boolean clipChildren);
 
-    CARAPI_(void) SetClipToPadding(
+    CARAPI SetClipToPadding(
         /* [in] */ Boolean clipToPadding);
 
-    CARAPI_(void) DispatchSetSelected(
+    CARAPI DispatchSetSelected(
         /* [in] */ Boolean selected);
 
     /**
      * {@inheritDoc}
      */
     //@Override
-    CARAPI_(void) DispatchSetActivated(
+    CARAPI DispatchSetActivated(
         /* [in] */ Boolean activated);
 
     virtual CARAPI AddView(
@@ -647,7 +671,8 @@ public:
      *
      * @return the current animation controller
      */
-    virtual CARAPI_(AutoPtr<ILayoutAnimationController>) GetLayoutAnimation();
+    virtual CARAPI GetLayoutAnimation(
+        /* [out] */ ILayoutAnimationController** res);
 
     /**
      * Indicates whether the children's drawing cache is used during a layout
@@ -660,7 +685,8 @@ public:
      * @see #setAnimationCacheEnabled(Boolean)
      * @see View#setDrawingCacheEnabled(Boolean)
      */
-    virtual CARAPI_(Boolean) IsAnimationCacheEnabled();
+    virtual CARAPI IsAnimationCacheEnabled(
+        /* [out] */ Boolean* res);
 
     /**
      * Enables or disables the children's drawing cache during a layout animation.
@@ -686,7 +712,8 @@ public:
      * @see #setChildrenDrawnWithCacheEnabled(Boolean)
      * @see View#setDrawingCacheEnabled(Boolean)
      */
-    virtual CARAPI_(Boolean) IsAlwaysDrawnWithCacheEnabled();
+    virtual CARAPI IsAlwaysDrawnWithCacheEnabled(
+        /* [out] */ Boolean* res);
 
     /**
      * Indicates whether this ViewGroup will always try to draw its children using their
@@ -718,7 +745,8 @@ public:
      *         {@link #PERSISTENT_ANIMATION_CACHE}, {@link #PERSISTENT_SCROLLING_CACHE}
      *         and {@link #PERSISTENT_ALL_CACHES}
      */
-    virtual CARAPI_(Int32) GetPersistentDrawingCache();
+    virtual CARAPI GetPersistentDrawingCache(
+        /* [out] */ Int32* res);
 
     /**
      * Indicates what types of drawing caches should be kept in memory after
@@ -734,7 +762,8 @@ public:
     virtual CARAPI SetPersistentDrawingCache(
         /* [in] */ Int32 drawingCacheToKeep);
 
-    virtual CARAPI_(Int32) GetLayoutMode();
+    virtual CARAPI GetLayoutMode(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetLayoutMode(
         /* [in] */ Int32 layoutMode);
@@ -751,13 +780,16 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IViewGroupLayoutParams** params);
 
-    virtual CARAPI_(Int32) IndexOfChild(
-        /* [in] */ IView* child);
+    virtual CARAPI IndexOfChild(
+        /* [in] */ IView* child,
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(Int32) GetChildCount();
+    virtual CARAPI GetChildCount(
+        /* [out] */ Int32* res);
 
-    virtual CARAPI_(AutoPtr<IView>) GetChildAt(
-        /* [in] */ Int32 index);
+    virtual CARAPI GetChildAt(
+        /* [in] */ Int32 index,
+        /* [out] */ IView** res);
 
     static Int32 GetChildMeasureSpec(
         /* [in] */ Int32 spec,
@@ -770,8 +802,9 @@ public:
      */
     virtual CARAPI ClearDisappearingChildren();
 
-    CARAPI_(Boolean) GatherTransparentRegion(
-        /* [in, out] */ IRegion* region);
+    CARAPI GatherTransparentRegion(
+        /* [in, out] */ IRegion* region,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI RequestTransparentRegion(
         /* [in] */ IView* child);
@@ -782,7 +815,8 @@ public:
      *
      * @return an {@link android.view.animation.Animation.AnimationListener}
      */
-    virtual CARAPI_(AutoPtr<IAnimationListener>) GetLayoutAnimationListener();
+    virtual CARAPI GetLayoutAnimationListener(
+        /* [out] */ IAnimationListener** res);
 
     /**
      * Sets whether this ViewGroup's drawable states also include
@@ -799,7 +833,8 @@ public:
      * make a group appear to be focused when its child EditText or button
      * is focused.
      */
-    virtual CARAPI_(Boolean) AddStatesFromChildren();
+    virtual CARAPI AddStatesFromChildren(
+        /* [out] */ Boolean* res);
 
     /**
      * If {link #addStatesFromChildren} is TRUE, refreshes this group's
@@ -824,14 +859,16 @@ public:
     virtual CARAPI SetMotionEventSplittingEnabled(
         /* [in] */ Boolean split);
 
-    virtual CARAPI_(Boolean) IsMotionEventSplittingEnabled();
+    virtual CARAPI IsMotionEventSplittingEnabled(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResetSubtreeAccessibilityStateChanged();
 
     virtual CARAPI SetLayoutTransition(
         /* [in] */ ILayoutTransition* transition);
 
-    virtual CARAPI_(AutoPtr<ILayoutTransition>) GetLayoutTransition();
+    virtual CARAPI GetLayoutTransition(
+        /* [out] */ ILayoutTransition** res);
 
     /**
      * {@inheritDoc}
@@ -855,11 +892,14 @@ public:
     virtual CARAPI ResolveRtlPropertiesIfNeeded(
         /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) ResolveLayoutDirection();
+    virtual CARAPI ResolveLayoutDirection(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) ResolveTextDirection();
+    virtual CARAPI ResolveTextDirection(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) ResolveTextAlignment();
+    virtual CARAPI ResolveTextAlignment(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI ResolvePadding();
 
@@ -873,7 +913,8 @@ public:
 
     virtual CARAPI ResetResolvedPadding();
 
-    virtual CARAPI_(Boolean) ShouldDelayChildPressedState();
+    virtual CARAPI ShouldDelayChildPressedState(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI SetTouchscreenBlocksFocus(
         /* [in] */ Boolean touchscreenBlocksFocus);
