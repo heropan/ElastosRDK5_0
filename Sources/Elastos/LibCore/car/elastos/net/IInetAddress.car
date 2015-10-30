@@ -453,11 +453,35 @@ module
     }
 
     /**
+     * An IPv4 address. See {@link InetAddress}.
+     */
+    /**
      * @Involve
      * interface Elastos.IO.ISerializable;
      * interface IInetAddress;
      */
     interface IInet4Address {
+    }
+
+    interface IInet4AddressHelper {
+        /**
+         * @hide
+         */
+        GetANY(
+            [out] IInetAddress** result);
+
+        /**
+         * @hide
+         */
+        GetALL(
+            [out] IInetAddress** result);
+
+        /**
+         * @hide
+         */
+        GetLOOPBACK(
+            [out] IInetAddress** result);
+
     }
 
     /**

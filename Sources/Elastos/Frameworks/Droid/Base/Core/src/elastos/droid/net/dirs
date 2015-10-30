@@ -1,4 +1,5 @@
 
+DIRS += dhcp
 #DIRS += http
 #DIRS += nsd
 #DIRS += wifi

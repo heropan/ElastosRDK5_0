@@ -9,6 +9,7 @@
 #include "CLibcore.h"
 #include "Arrays.h"
 #include "Collections.h"
+#include "elastos/net/CInet4AddressHelper.h"
 //#include "CCountDownLatch.h"
 //#include "CAtomicBoolean.h"
 #include <netdb.h>
@@ -789,7 +790,11 @@ ECode InetAddress::LoopbackAddresses(
 
     AutoPtr< ArrayOf<IInetAddress*> > addrs = ArrayOf<IInetAddress*>::Alloc(2);
     addrs->Set(0, CInet6Address::LOOPBACK);
-    addrs->Set(1, CInet4Address::LOOPBACK);
+    AutoPtr<IInetAddress> loopback;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetLOOPBACK((IInetAddress**)&loopback);
+    addrs->Set(1, loopback);
     *result = addrs;
     REFCOUNT_ADD(*result);
     return NOERROR;

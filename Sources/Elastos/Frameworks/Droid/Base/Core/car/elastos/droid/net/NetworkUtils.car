@@ -21,7 +21,7 @@ module
      * @Involved
      * no super interface
      */
-    [deprecated]
+    [deprecated, local]
     interface INetworkUtils {
         /** Setting bit 0 indicates reseting of IPv4 addresses required */
         const Int32 RESET_IPV4_ADDRESSES = 0x01;

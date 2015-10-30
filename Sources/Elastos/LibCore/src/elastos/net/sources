@@ -38,6 +38,7 @@ SOURCES += CHttpCookieHelper.cpp
 SOURCES += HttpURLConnection.cpp
 SOURCES += CIDN.cpp
 SOURCES += Inet4Address.cpp
+SOURCES += CInet4AddressHelper.cpp
 SOURCES += Inet6Address.cpp
 SOURCES += CInet6AddressHelper.cpp
 SOURCES += InetAddress.cpp

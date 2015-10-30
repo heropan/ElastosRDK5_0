@@ -11,6 +11,7 @@
 #include "CIoBridge.h"
 #include "OsConstants.h"
 #include <cutils/log.h>
+#include "elastos/net/CInet4AddressHelper.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -51,7 +52,11 @@ ECode DatagramSocket::constructor(
     /* [in] */ Int32 aPort)
 {
     FAIL_RETURN(CheckPort(aPort));
-    return CreateSocket(aPort, CInet4Address::ANY.Get());
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    return CreateSocket(aPort, any);
 }
 
 ECode DatagramSocket::constructor(
@@ -59,7 +64,11 @@ ECode DatagramSocket::constructor(
     /* [in] */ IInetAddress* addr)
 {
     FAIL_RETURN(CheckPort(aport));
-    return CreateSocket(aport, addr == NULL ? CInet4Address::ANY.Get() : addr);
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    return CreateSocket(aport, addr == NULL ? any.Get() : addr);
 }
 
 ECode DatagramSocket::constructor(
@@ -435,7 +444,11 @@ ECode DatagramSocket::EnsureBound()
 {
     Boolean isBound = FALSE;
     if (IsBound(&isBound), !isBound) {
-        FAIL_RETURN(mImpl->Bind(0, CInet4Address::ANY.Get()));
+        AutoPtr<IInetAddress> any;
+        AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+        CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+        inet4AddressHelper->GetANY((IInetAddress**)&any);
+        FAIL_RETURN(mImpl->Bind(0, any));
         mIsBound = TRUE;
     }
     return NOERROR;
@@ -446,7 +459,10 @@ ECode DatagramSocket::Bind(
 {
     FAIL_RETURN(CheckOpen());
     Int32 localPort = 0;
-    AutoPtr<IInetAddress> addr = CInet4Address::ANY;
+    AutoPtr<IInetAddress> addr;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&addr);
     if (localAddr != NULL) {
         IInetSocketAddress* inetAddr = IInetSocketAddress::Probe(localAddr);
         if (inetAddr == NULL) {

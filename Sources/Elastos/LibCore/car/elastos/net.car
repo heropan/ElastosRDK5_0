@@ -306,6 +306,10 @@ module
         interface ISerializable;
     }
 
+    singleton class CInet4AddressHelper {
+        interface IInet4AddressHelper;
+    }
+
     [deprecated]
     class CInet6Address {
         constructor(

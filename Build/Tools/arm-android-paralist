@@ -140,6 +140,7 @@
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifi
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ethernet
 #  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/pppoe
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/dhcp
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/utility
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/content/pm

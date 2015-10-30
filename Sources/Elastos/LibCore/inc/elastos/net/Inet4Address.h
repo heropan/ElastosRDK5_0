@@ -47,7 +47,25 @@ public:
     CARAPI IsSiteLocalAddress(
         /* [out] */ Boolean* isSiteLocalAddress);
 
-public:
+    /**
+     * @hide
+     */
+    static CARAPI GetANY(
+        /* [out] */ IInetAddress** result);
+
+    /**
+     * @hide
+     */
+    static CARAPI GetALL(
+        /* [out] */ IInetAddress** result);
+
+    /**
+     * @hide
+     */
+    static CARAPI GetLOOPBACK(
+        /* [out] */ IInetAddress** result);
+
+private:
     /**
      * @hide
      */
@@ -63,7 +81,6 @@ public:
      */
     static AutoPtr<IInetAddress> LOOPBACK;
 
-private:
     AutoPtr<IInterface> WriteReplace();
 };
 

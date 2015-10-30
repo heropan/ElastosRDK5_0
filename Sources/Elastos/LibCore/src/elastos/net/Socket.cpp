@@ -8,6 +8,7 @@
 #include "CBoolean.h"
 #include "CIoBridge.h"
 #include "AutoLock.h"
+#include "elastos/net/CInet4AddressHelper.h"
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -35,7 +36,11 @@ Socket::Socket()
     , mIsInputShutdown(FALSE)
     , mIsOutputShutdown(FALSE)
 {
-    mLocalAddress = CInet4Address::ANY;
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    mLocalAddress = any;
 }
 
 ECode Socket::constructor()
@@ -185,7 +190,11 @@ ECode Socket::Close()
     mIsClosed = TRUE;
     mIsConnected = FALSE;
     // RI compatibility: the RI returns the any address (but the original local port) after close.
-    mLocalAddress = CInet4Address::ANY;
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    mLocalAddress = any;
     return mImpl->Close();
 }
 
@@ -195,7 +204,11 @@ ECode Socket::OnClose()
     mIsConnected = FALSE;
     // RI compatibility: the RI returns the any address (but the original local port) after
     // close.
-    mLocalAddress = CInet4Address::ANY;
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    mLocalAddress = any;
     return ((SocketImpl *)mImpl.Get())->OnClose();
 }
 
@@ -485,7 +498,11 @@ ECode Socket::StartupSocket(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    IInetAddress* addr = localAddress == NULL ? CInet4Address::ANY.Get() : localAddress;
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    IInetAddress* addr = localAddress == NULL ? any.Get() : localAddress;
 
     AutoLock lock(this);
     mImpl->Create(streaming);
@@ -667,7 +684,11 @@ ECode Socket::Bind(
     }
 
     Int32 port = 0;
-    AutoPtr<IInetAddress> addr = CInet4Address::ANY;
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    AutoPtr<IInetAddress> addr = any;
     if (localAddr != NULL) {
         if (IInetSocketAddress::Probe(localAddr) == NULL) {
             // throw new IllegalArgumentException("Local address not an InetSocketAddress: " +
@@ -764,7 +785,11 @@ ECode Socket::Connect(
         // options on create
         // impl.create(true);
         if (!UsingSocks()) {
-            ec = mImpl->Bind(CInet4Address::ANY, 0);
+            AutoPtr<IInetAddress> any;
+            AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+            CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+            inet4AddressHelper->GetANY((IInetAddress**)&any);
+            ec = mImpl->Bind(any, 0);
             if (FAILED(ec)) {
                 mImpl->Close();
                 return ec;

@@ -8,6 +8,7 @@
 #include "CBoolean.h"
 #include "CPlainDatagramSocketImpl.h"
 #include "AutoLock.h"
+#include "elastos/net/CInet4AddressHelper.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -288,7 +289,11 @@ ECode CMulticastSocket::SetInterface(
     addr->IsAnyLocalAddress(&isAnyLocalAddress);
     if (isAnyLocalAddress) {
         ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
-        option->SetOption(ISocketOptions::_IP_MULTICAST_IF, CInet4Address::ANY.Get());
+        AutoPtr<IInetAddress> any;
+        AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+        CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+        inet4AddressHelper->GetANY((IInetAddress**)&any);
+        option->SetOption(ISocketOptions::_IP_MULTICAST_IF, any);
     }
     else if (IInet4Address::Probe(addr) != NULL) {
         ISocketOptions* option = (ISocketOptions*)mImpl->Probe(EIID_ISocketOptions);
