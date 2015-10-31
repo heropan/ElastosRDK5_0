@@ -13,6 +13,7 @@ module
     namespace Location {
 
     /** @hide */
+    [local]
     interface IIGeofenceHardware {
         SetGpsGeofenceHardware(
             [in] IIGpsGeofenceHardware* service);

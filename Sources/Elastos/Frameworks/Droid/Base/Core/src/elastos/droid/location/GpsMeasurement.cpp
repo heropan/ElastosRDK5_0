@@ -1,34 +1,36 @@
 
-#include "elastos/droid/location/GpsMeasurement.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Math.h>
 #include "elastos/utility/logging/Logger.h"
+#include "elastos/droid/location/GpsMeasurement.h"
 
 using Elastos::Core::StringBuilder;
+using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
-
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 const String GpsMeasurement::TAG("GpsMeasurement");
 const Int32 GpsMeasurement::HAS_NO_FLAGS = 0;
-const Int32 GpsMeasurement::HAS_SNR = (1<<0);
-const Int32 GpsMeasurement::HAS_ELEVATION = (1<<1);
-const Int32 GpsMeasurement::HAS_ELEVATION_UNCERTAINTY = (1<<2);
-const Int32 GpsMeasurement::HAS_AZIMUTH = (1<<3);
-const Int32 GpsMeasurement::HAS_AZIMUTH_UNCERTAINTY = (1<<4);
-const Int32 GpsMeasurement::HAS_PSEUDORANGE = (1<<5);
-const Int32 GpsMeasurement::HAS_PSEUDORANGE_UNCERTAINTY = (1<<6);
-const Int32 GpsMeasurement::HAS_CODE_PHASE = (1<<7);
-const Int32 GpsMeasurement::HAS_CODE_PHASE_UNCERTAINTY = (1<<8);
-const Int32 GpsMeasurement::HAS_CARRIER_FREQUENCY = (1<<9);
-const Int32 GpsMeasurement::HAS_CARRIER_CYCLES = (1<<10);
-const Int32 GpsMeasurement::HAS_CARRIER_PHASE = (1<<11);
-const Int32 GpsMeasurement::HAS_CARRIER_PHASE_UNCERTAINTY = (1<<12);
-const Int32 GpsMeasurement::HAS_BIT_NUMBER = (1<<13);
-const Int32 GpsMeasurement::HAS_TIME_FROM_LAST_BIT = (1<<14);
-const Int32 GpsMeasurement::HAS_DOPPLER_SHIFT = (1<<15);
-const Int32 GpsMeasurement::HAS_DOPPLER_SHIFT_UNCERTAINTY = (1<<16);
+const Int32 GpsMeasurement::HAS_SNR = 1<<0;
+const Int32 GpsMeasurement::HAS_ELEVATION = 1<<1;
+const Int32 GpsMeasurement::HAS_ELEVATION_UNCERTAINTY = 1<<2;
+const Int32 GpsMeasurement::HAS_AZIMUTH = 1<<3;
+const Int32 GpsMeasurement::HAS_AZIMUTH_UNCERTAINTY = 1<<4;
+const Int32 GpsMeasurement::HAS_PSEUDORANGE = 1<<5;
+const Int32 GpsMeasurement::HAS_PSEUDORANGE_UNCERTAINTY = 1<<6;
+const Int32 GpsMeasurement::HAS_CODE_PHASE = 1<<7;
+const Int32 GpsMeasurement::HAS_CODE_PHASE_UNCERTAINTY = 1<<8;
+const Int32 GpsMeasurement::HAS_CARRIER_FREQUENCY = 1<<9;
+const Int32 GpsMeasurement::HAS_CARRIER_CYCLES = 1<<10;
+const Int32 GpsMeasurement::HAS_CARRIER_PHASE = 1<<11;
+const Int32 GpsMeasurement::HAS_CARRIER_PHASE_UNCERTAINTY = 1<<12;
+const Int32 GpsMeasurement::HAS_BIT_NUMBER = 1<<13;
+const Int32 GpsMeasurement::HAS_TIME_FROM_LAST_BIT = 1<<14;
+const Int32 GpsMeasurement::HAS_DOPPLER_SHIFT = 1<<15;
+const Int32 GpsMeasurement::HAS_DOPPLER_SHIFT_UNCERTAINTY = 1<<16;
 
 CAR_INTERFACE_IMPL_2(GpsMeasurement, Object, IGpsMeasurement, IParcelable)
 
@@ -331,7 +333,7 @@ ECode GpsMeasurement::SetPseudorangeInMeters(
 ECode GpsMeasurement::ResetPseudorangeInMeters()
 {
     ResetFlag(HAS_PSEUDORANGE);
-    mPseudorangeInMeters = (Double)0.0/0.0;//Double.NaN;
+    mPseudorangeInMeters = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -362,7 +364,7 @@ ECode GpsMeasurement::SetPseudorangeUncertaintyInMeters(
 ECode GpsMeasurement::ResetPseudorangeUncertaintyInMeters()
 {
     ResetFlag(HAS_PSEUDORANGE_UNCERTAINTY);
-    mPseudorangeUncertaintyInMeters = (Double)0.0/0.0;//Double.NaN;
+    mPseudorangeUncertaintyInMeters = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -393,7 +395,7 @@ ECode GpsMeasurement::SetCodePhaseInChips(
 ECode GpsMeasurement::ResetCodePhaseInChips()
 {
     ResetFlag(HAS_CODE_PHASE);
-    mCodePhaseInChips = (Double)0.0/0.0;//Double.NaN;
+    mCodePhaseInChips = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -424,7 +426,7 @@ ECode GpsMeasurement::SetCodePhaseUncertaintyInChips(
 ECode GpsMeasurement::ResetCodePhaseUncertaintyInChips()
 {
     ResetFlag(HAS_CODE_PHASE_UNCERTAINTY);
-    mCodePhaseUncertaintyInChips = (Double)0.0/0.0;//Double.NaN;
+    mCodePhaseUncertaintyInChips = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -456,7 +458,7 @@ ECode GpsMeasurement::SetCarrierFrequencyInHz(
 ECode GpsMeasurement::ResetCarrierFrequencyInHz()
 {
     ResetFlag(HAS_CARRIER_FREQUENCY);
-    mCarrierFrequencyInHz = 0.0/0.0F;//Float.NaN;
+    mCarrierFrequencyInHz = Elastos::Core::Math::FLOAT_NAN;
     return NOERROR;
 }
 
@@ -487,7 +489,7 @@ ECode GpsMeasurement::SetCarrierCycles(
 ECode GpsMeasurement::ResetCarrierCycles()
 {
     ResetFlag(HAS_CARRIER_CYCLES);
-    mCarrierCycles = 0x8000000000000000L;;//Long.MIN_VALUE;
+    mCarrierCycles = Elastos::Core::Math::INT64_MIN_VALUE;
     return NOERROR;
 }
 
@@ -518,7 +520,7 @@ ECode GpsMeasurement::SetCarrierPhase(
 ECode GpsMeasurement::ResetCarrierPhase()
 {
     ResetFlag(HAS_CARRIER_PHASE);
-    mCarrierPhase = (Double)0.0/0.0;//Double.NaN;
+    mCarrierPhase = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -549,7 +551,7 @@ ECode GpsMeasurement::SetCarrierPhaseUncertainty(
 ECode GpsMeasurement::ResetCarrierPhaseUncertainty()
 {
     ResetFlag(HAS_CARRIER_PHASE_UNCERTAINTY);
-    mCarrierPhaseUncertainty = (Double)0.0/0.0;//Double.NaN;
+    mCarrierPhaseUncertainty = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -621,7 +623,7 @@ ECode GpsMeasurement::SetBitNumber(
 ECode GpsMeasurement::ResetBitNumber()
 {
     ResetFlag(HAS_BIT_NUMBER);
-    mBitNumber = 0x80000000;//Integer.MIN_VALUE;
+    mBitNumber = Elastos::Core::Math::INT32_MIN_VALUE;
     return NOERROR;
 }
 
@@ -652,7 +654,7 @@ ECode GpsMeasurement::SetTimeFromLastBitInMs(
 ECode GpsMeasurement::ResetTimeFromLastBitInMs()
 {
     ResetFlag(HAS_TIME_FROM_LAST_BIT);
-    mTimeFromLastBitInMs = (Int16) 0x8000;//Short.MIN_VALUE;
+    mTimeFromLastBitInMs = Elastos::Core::Math::INT16_MIN_VALUE;
     return NOERROR;
 }
 
@@ -683,7 +685,7 @@ ECode GpsMeasurement::SetDopplerShiftInHz(
 ECode GpsMeasurement::ResetDopplerShiftInHz()
 {
     ResetFlag(HAS_DOPPLER_SHIFT);
-    mDopplerShiftInHz = (Double)0.0/0.0;//Double.NaN;
+    mDopplerShiftInHz = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -714,7 +716,7 @@ ECode GpsMeasurement::SetDopplerShiftUncertaintyInHz(
 ECode GpsMeasurement::ResetDopplerShiftUncertaintyInHz()
 {
     ResetFlag((Int16)HAS_DOPPLER_SHIFT_UNCERTAINTY);
-    mDopplerShiftUncertaintyInHz = (Double)0.0/0.0;//Double.NaN;
+    mDopplerShiftUncertaintyInHz = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -785,7 +787,7 @@ ECode GpsMeasurement::SetSnrInDb(
 ECode GpsMeasurement::ResetSnrInDb()
 {
     ResetFlag(HAS_SNR);
-    mSnrInDb = (Double)0.0/0.0;//Double.NaN;
+    mSnrInDb = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -816,7 +818,7 @@ ECode GpsMeasurement::SetElevationInDeg(
 ECode GpsMeasurement::ResetElevationInDeg()
 {
     ResetFlag(HAS_ELEVATION);
-    mElevationInDeg = (Double)0.0/0.0;//Double.NaN;
+    mElevationInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -847,7 +849,7 @@ ECode GpsMeasurement::SetElevationUncertaintyInDeg(
 ECode GpsMeasurement::ResetElevationUncertaintyInDeg()
 {
     ResetFlag(HAS_ELEVATION_UNCERTAINTY);
-    mElevationUncertaintyInDeg = (Double)0.0/0.0;//Double.NaN;
+    mElevationUncertaintyInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -878,7 +880,7 @@ ECode GpsMeasurement::SetAzimuthInDeg(
 ECode GpsMeasurement::ResetAzimuthInDeg()
 {
     ResetFlag(HAS_AZIMUTH);
-    mAzimuthInDeg = (Double)0.0/0.0;//Double.NaN;
+    mAzimuthInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -909,7 +911,7 @@ ECode GpsMeasurement::SetAzimuthUncertaintyInDeg(
 ECode GpsMeasurement::ResetAzimuthUncertaintyInDeg()
 {
     ResetFlag(HAS_AZIMUTH_UNCERTAINTY);
-    mAzimuthUncertaintyInDeg = (Double)0.0/0.0;//Double.NaN;
+    mAzimuthUncertaintyInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -1138,17 +1140,17 @@ ECode GpsMeasurement::ToString(
 void GpsMeasurement::Initialize()
 {
     mFlags = HAS_NO_FLAGS;
-    SetPrn((Byte) 0x80);//Byte.MIN_VALUE
-    SetTimeOffsetInNs(0x8000000000000000L);//Long.MIN_VALUE
+    SetPrn(Elastos::Core::Math::BYTE_MIN_VALUE);
+    SetTimeOffsetInNs(Elastos::Core::Math::INT64_MIN_VALUE);
     SetState(IGpsMeasurement::STATE_UNKNOWN);
-    SetReceivedGpsTowInNs(0x8000000000000000L);//Long.MIN_VALUE
-    SetReceivedGpsTowUncertaintyInNs(0x7FFFFFFFFFFFFFFFL);//Long.MAX_VALUE
-    SetCn0InDbHz(5e-324);//Double.MIN_VALUE
-    SetPseudorangeRateInMetersPerSec(5e-324);//Double.MIN_VALUE
-    SetPseudorangeRateUncertaintyInMetersPerSec(5e-324);//Double.MIN_VALUE
+    SetReceivedGpsTowInNs(Elastos::Core::Math::INT64_MIN_VALUE);
+    SetReceivedGpsTowUncertaintyInNs(Elastos::Core::Math::INT64_MAX_VALUE);
+    SetCn0InDbHz(Elastos::Core::Math::DOUBLE_MIN_VALUE);
+    SetPseudorangeRateInMetersPerSec(Elastos::Core::Math::DOUBLE_MIN_VALUE);
+    SetPseudorangeRateUncertaintyInMetersPerSec(Elastos::Core::Math::DOUBLE_MIN_VALUE);
     SetAccumulatedDeltaRangeState(IGpsMeasurement::ADR_STATE_UNKNOWN);
-    SetAccumulatedDeltaRangeInMeters(5e-324);//Double.MIN_VALUE
-    SetAccumulatedDeltaRangeUncertaintyInMeters(5e-324);//Double.MIN_VALUE
+    SetAccumulatedDeltaRangeInMeters(Elastos::Core::Math::DOUBLE_MIN_VALUE);
+    SetAccumulatedDeltaRangeUncertaintyInMeters(Elastos::Core::Math::DOUBLE_MIN_VALUE);
     ResetPseudorangeInMeters();
     ResetPseudorangeUncertaintyInMeters();
     ResetCodePhaseInChips();

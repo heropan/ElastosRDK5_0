@@ -21,3 +21,6 @@ SOURCES += Geofence.cpp
 SOURCES += CGeofenceHelper.cpp
 SOURCES += GpsClock.cpp
 SOURCES += GpsMeasurement.cpp
+SOURCES += GpsSatellite.cpp
+SOURCES += GpsStatus.cpp
+SOURCES += LocalListenerHelper.cpp

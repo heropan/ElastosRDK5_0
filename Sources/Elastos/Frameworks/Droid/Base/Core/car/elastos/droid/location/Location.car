@@ -18,6 +18,9 @@ module
      * (both UTC time and elapsed real-time since boot), all other
      * parameters are optional.
      */
+     /**
+      * @Involve IParcelable
+      */
     [deprecated]
     interface ILocation {
         /**
@@ -472,6 +475,24 @@ module
             [in] Double endLatitude,
             [in] Double endLongitude,
             [in] ArrayOf<Float>* results);
+
+        /**
+         * Returns true if the Location came from a mock provider.
+         *
+         * @return true if this Location came from a mock provider, false otherwise
+         */
+        IsFromMockProvider(
+            [out] Boolean* result);
+
+        /**
+         * Flag this Location as having come from a mock provider or not.
+         *
+         * @param isFromMockProvider true if this Location came from a mock provider, false otherwise
+         * @hide
+         */
+        //@SystemApi
+        SetIsFromMockProvider(
+            [in] Boolean isFromMockProvider);
     }
 
     }//namespace Location

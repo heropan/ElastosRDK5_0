@@ -20,6 +20,7 @@ module
      *
      * @hide
      */
+    [local,deprecated]
     interface IILocationManager
     {
         RequestLocationUpdates(
@@ -51,6 +52,7 @@ module
 
         AddGpsStatusListener(
             [in] IIGpsStatusListener* listener,
+            [in] String packageName,
             [out] Boolean* result);
 
         RemoveGpsStatusListener(
@@ -81,6 +83,24 @@ module
         SendNiResponse(
             [in] Int32 notifId,
             [in] Int32 userResponse,
+            [out] Boolean* result);
+
+        AddGpsMeasurementsListener(
+            [in] IIGpsMeasurementsListener* listener,
+            [in] String packageName,
+            [out] Boolean* result);
+
+        RemoveGpsMeasurementsListener(
+            [in] IIGpsMeasurementsListener* listener,
+            [out] Boolean* result);
+
+        AddGpsNavigationMessageListener(
+            [in] IIGpsNavigationMessageListener* listener,
+            [in] String packageName,
+            [out] Boolean* result);
+
+        RemoveGpsNavigationMessageListener(
+            [in] IIGpsNavigationMessageListener* listener,
             [out] Boolean* result);
 
         // --- deprecated ---

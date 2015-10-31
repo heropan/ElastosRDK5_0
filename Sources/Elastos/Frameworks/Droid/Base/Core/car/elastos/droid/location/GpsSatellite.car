@@ -75,6 +75,31 @@ module
          */
         UsedInFix(
             [out] Boolean* usedInFix);
+
+        IsValid(
+            [out] Boolean* result);
+
+        SetValid(
+            [in] Boolean usedInFix);
+
+        //Below is added for Set data from outside
+        SetSnr(
+            [in] Float snr);
+
+        SetElevation(
+            [in] Float elevation);
+
+        SetAzimuth(
+            [in] Float azimuth);
+
+        SetHasEphemeris(
+            [in] Boolean hasEphemeris);
+
+        SetHasAlmanac(
+            [in] Boolean hasAlmanac);
+
+        SetUsedInFix(
+            [in] Boolean usedInFix);
     }
 
     }//namespace Location

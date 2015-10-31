@@ -740,7 +740,7 @@ private:
         /* [in] */ Int16 flag);
 
 private:
-    const static String TAG;//"GpsMeasurement";
+    const static String TAG;
 
     Int32 mFlags;
     Byte mPrn;
@@ -777,24 +777,24 @@ private:
 
     // The following enumerations must be in sync with the values declared in gps.h
 
-    const static Int32 HAS_NO_FLAGS;//0;
-    const static Int32 HAS_SNR;//(1<<0);
-    const static Int32 HAS_ELEVATION;//(1<<1);
-    const static Int32 HAS_ELEVATION_UNCERTAINTY;//(1<<2);
-    const static Int32 HAS_AZIMUTH;//(1<<3);
-    const static Int32 HAS_AZIMUTH_UNCERTAINTY;//(1<<4);
-    const static Int32 HAS_PSEUDORANGE;//(1<<5);
-    const static Int32 HAS_PSEUDORANGE_UNCERTAINTY;//(1<<6);
-    const static Int32 HAS_CODE_PHASE;//(1<<7);
-    const static Int32 HAS_CODE_PHASE_UNCERTAINTY;//(1<<8);
-    const static Int32 HAS_CARRIER_FREQUENCY;//(1<<9);
-    const static Int32 HAS_CARRIER_CYCLES;//(1<<10);
-    const static Int32 HAS_CARRIER_PHASE;//(1<<11);
-    const static Int32 HAS_CARRIER_PHASE_UNCERTAINTY;//(1<<12);
-    const static Int32 HAS_BIT_NUMBER;//(1<<13);
-    const static Int32 HAS_TIME_FROM_LAST_BIT;//(1<<14);
-    const static Int32 HAS_DOPPLER_SHIFT;//(1<<15);
-    const static Int32 HAS_DOPPLER_SHIFT_UNCERTAINTY;//(1<<16);
+    const static Int32 HAS_NO_FLAGS;
+    const static Int32 HAS_SNR;
+    const static Int32 HAS_ELEVATION;
+    const static Int32 HAS_ELEVATION_UNCERTAINTY;
+    const static Int32 HAS_AZIMUTH;
+    const static Int32 HAS_AZIMUTH_UNCERTAINTY;
+    const static Int32 HAS_PSEUDORANGE;
+    const static Int32 HAS_PSEUDORANGE_UNCERTAINTY;
+    const static Int32 HAS_CODE_PHASE;
+    const static Int32 HAS_CODE_PHASE_UNCERTAINTY;
+    const static Int32 HAS_CARRIER_FREQUENCY;
+    const static Int32 HAS_CARRIER_CYCLES;
+    const static Int32 HAS_CARRIER_PHASE;
+    const static Int32 HAS_CARRIER_PHASE_UNCERTAINTY;
+    const static Int32 HAS_BIT_NUMBER;
+    const static Int32 HAS_TIME_FROM_LAST_BIT;
+    const static Int32 HAS_DOPPLER_SHIFT;
+    const static Int32 HAS_DOPPLER_SHIFT_UNCERTAINTY;
 
     // End enumerations in sync with gps.h
 

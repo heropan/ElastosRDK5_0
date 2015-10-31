@@ -20,15 +20,31 @@ module
     merge("location/IGeocodeProvider.car");
     merge("location/IGpsStatusListener.car");
     merge("location/IGpsStatusProvider.car");
-    merge("location/ILocationListener.car");
-    merge("location/ILocationManager.car");
-    merge("location/INetInitiatedListener.car");
-    merge("location/Location.car");
-    merge("location/LocationListener.car");
-    merge("location/LocationManager.car");
-    merge("location/LocationProvider.car");
     merge("location/LocationRequest.car");
     merge("location/ProviderProperties.car");
+    merge("location/Location.car");
+    merge("location/ILocationListener.car");
+    merge("location/LocationListener.car");
+    merge("location/GpsMeasurementsEvent.car");
+    merge("location/IGpsMeasurementsListener.car");//
+    merge("location/GpsNavigationMessage.car");
+
+
+    merge("location/GpsNavigationMessageEvent.car");
+    merge("location/IGpsNavigationMessageListener.car");//
+    merge("location/ILocationManager.car");
+    merge("location/INetInitiatedListener.car");
+    merge("location/LocationManager.car");
+    merge("location/LocationProvider.car");
+    merge("location/IFusedGeofenceHardware.car");
+    merge("location/IFusedProvider.car");
+    merge("location/IGpsGeofenceHardware.car");
+    merge("location/IGeofenceProvider.car");
+
+    merge("location/LocalListenerHelper.car");
+    merge("location/SettingInjectorService.car");
+    merge("location/GpsMeasurementListenerTransport.car");
+    merge("location/GpsNavigationMessageListenerTransport.car");
 
     interface Elastos.Utility.ILocale;
     interface Elastos.Droid.Content.IContext;
@@ -132,18 +148,18 @@ module
             interface IParcelable;
         }
 
-//        class CGpsSatellite {
-//            constructor(
-//                [in] Int32 prn);
+        class CGpsSatellite {
+            constructor(
+                [in] Int32 prn);
 
-//            interface IGpsSatellite;
-//        }
+            interface IGpsSatellite;
+        }
 
-//        class CGpsStatus {
-//            constructor();
+        class CGpsStatus {
+            constructor();
 
-//            interface IGpsStatus;
-//        }
+            interface IGpsStatus;
+        }
 
 //        class CLocation {
 //            constructor();
