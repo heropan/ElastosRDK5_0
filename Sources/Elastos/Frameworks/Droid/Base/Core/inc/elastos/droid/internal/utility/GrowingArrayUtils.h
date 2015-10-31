@@ -20,7 +20,8 @@ namespace Utility {
  *
  * @hide
  */
-class GrowingArrayUtils {
+class GrowingArrayUtils
+{
 public:
     /**
      * Appends an element to the end of the array, growing the array if there is no more room.

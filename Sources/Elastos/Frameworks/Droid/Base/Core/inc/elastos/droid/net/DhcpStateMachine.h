@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/utility/State.h"
-#include "elastos/droid/utility/StateMachine.h"
 #endif
+#include "elastos/droid/internal/utility/State.h"
+#include "elastos/droid/internal/utility/StateMachine.h"
 
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
@@ -21,9 +21,9 @@ using Elastos::Droid::Internal::Utility::IStateMachine;
 using Elastos::Droid::Internal::Utility::IState;
 #if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
 using Elastos::Droid::Content::BroadcastReceiver;
+#endif
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
-#endif
 
 namespace Elastos {
 namespace Droid {
@@ -44,11 +44,7 @@ namespace Net {
  * @hide
  */
 class DhcpStateMachine
-#if 0 // TODO: Waiting for StateMachine
     : public StateMachine
-#else
-    : public Object
-#endif
     , public IDhcpStateMachine
 {
 public:

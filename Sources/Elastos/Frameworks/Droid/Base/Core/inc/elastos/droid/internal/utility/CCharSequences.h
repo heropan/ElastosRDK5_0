@@ -94,7 +94,7 @@ public:
      *
      * @param bytes ASCII bytes
      */
-    static CARAPI_(AutoPtr<ICharSequence>) _ForAsciiBytes(
+    static CARAPI_(AutoPtr<ICharSequence>) ForAsciiBytes(
         /* [in] */ ArrayOf<Byte>* bytes);
 
     /**
@@ -122,7 +122,7 @@ public:
     /**
      * Compares two character sequences for equality.
      */
-    static CARAPI_(Boolean) _Equals(
+    static CARAPI_(Boolean) Equals(
          /* [in] */ ICharSequence* a,
          /* [in] */ ICharSequence* b);
 
@@ -133,7 +133,7 @@ public:
      * @param another The other CharSequence.
      * @return See {@link Comparable#compareTo}.
      */
-    static CARAPI_(Int32) _CompareToIgnoreCase(
+    static CARAPI_(Int32) CompareToIgnoreCase(
          /* [in] */ ICharSequence* a,
          /* [in] */ ICharSequence* b);
 

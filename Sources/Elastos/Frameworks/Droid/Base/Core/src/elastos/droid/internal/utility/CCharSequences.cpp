@@ -103,7 +103,7 @@ CAR_INTERFACE_IMPL(CCharSequences, Singleton, ICharSequences)
 
 CAR_SINGLETON_IMPL(CCharSequences)
 
-AutoPtr<ICharSequence> CCharSequences::_ForAsciiBytes(
+AutoPtr<ICharSequence> CCharSequences::ForAsciiBytes(
      /* [in] */ ArrayOf<Byte>* bytes)
 {
     return new AsciiBytesCharSequence1(bytes);
@@ -134,7 +134,7 @@ ECode CCharSequences::Validate(
     return NOERROR;
 }
 
-Boolean CCharSequences::_Equals(
+Boolean CCharSequences::Equals(
      /* [in] */ ICharSequence* a,
      /* [in] */ ICharSequence* b)
 {
@@ -162,7 +162,7 @@ Boolean CCharSequences::_Equals(
     return TRUE;
 }
 
-Int32 CCharSequences::_CompareToIgnoreCase(
+Int32 CCharSequences::CompareToIgnoreCase(
      /* [in] */ ICharSequence* a,
      /* [in] */ ICharSequence* b)
 {
@@ -189,7 +189,7 @@ ECode CCharSequences::ForAsciiBytes(
     /* [out] */ ICharSequence** cs)
 {
     VALIDATE_NOT_NULL(cs)
-    AutoPtr<ICharSequence> temp = _ForAsciiBytes(bytes);
+    AutoPtr<ICharSequence> temp = ForAsciiBytes(bytes);
     *cs = temp;
     REFCOUNT_ADD(*cs)
     return NOERROR;
@@ -210,7 +210,7 @@ ECode CCharSequences::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = _Equals(a, b);
+    *result = Equals(a, b);
     return NOERROR;
 }
 
@@ -220,7 +220,7 @@ ECode CCharSequences::CompareToIgnoreCase(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = _CompareToIgnoreCase(me, another);
+    *result = CompareToIgnoreCase(me, another);
     return NOERROR;
 }
 

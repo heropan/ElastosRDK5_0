@@ -49,11 +49,7 @@ const Int32 DhcpStateMachine::CMD_PRE_DHCP_ACTION_COMPLETE;
 const Int32 DhcpStateMachine::DHCP_SUCCESS;
 const Int32 DhcpStateMachine::DHCP_FAILURE;
 
-#if 0 // TODO: Waiting for StateMachine
 CAR_INTERFACE_IMPL(DhcpStateMachine, StateMachine, IDhcpStateMachine)
-#else
-CAR_INTERFACE_IMPL(DhcpStateMachine, Object, IDhcpStateMachine)
-#endif
 
 //==============================================================
 // DhcpStateMachine::DefaultState
@@ -324,12 +320,8 @@ DhcpStateMachine::DhcpStateMachine(
     /* [in] */ IContext* context,
     /* [in] */ IStateMachine* controller,
     /* [in] */ const String& intf)
-#if 0 // TODO: Waiting for StateMachine
     : StateMachine(TAG)
     , mController(controller)
-#else
-    : mController(controller)
-#endif
     , mContext(context)
     , mInterfaceName(intf)
     , mRegisteredForPreDhcpNotification(FALSE)

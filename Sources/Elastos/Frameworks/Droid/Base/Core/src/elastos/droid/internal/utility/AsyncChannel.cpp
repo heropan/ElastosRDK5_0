@@ -1,5 +1,5 @@
 
-#include "elastos/droid/internal/utility/CAsyncChannel.h"
+#include "elastos/droid/internal/utility/AsyncChannel.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CMessenger.h"
 #include "elastos/droid/os/CMessageHelper.h"
@@ -38,16 +38,16 @@ static AutoPtr<IStack> InitStack()
     return stack;
 }
 
-AutoPtr<IStack> CAsyncChannel::SyncMessenger::sStack = InitStack();
-Int32 CAsyncChannel::SyncMessenger::sCount = 0;
+AutoPtr<IStack> AsyncChannel::SyncMessenger::sStack = InitStack();
+Int32 AsyncChannel::SyncMessenger::sCount = 0;
 
-const String CAsyncChannel::TAG("CAsyncChannel");
-const Boolean CAsyncChannel::DBG = FALSE;
+const String AsyncChannel::TAG("AsyncChannel");
+const Boolean AsyncChannel::DBG = FALSE;
 
 //=============================================
-// CAsyncChannel::SyncMessenger::SyncHandler
+// AsyncChannel::SyncMessenger::SyncHandler
 //=============================================
-ECode CAsyncChannel::SyncMessenger::SyncHandler::HandleMessage(
+ECode AsyncChannel::SyncMessenger::SyncHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     AutoPtr<IMessageHelper> helper;
@@ -64,9 +64,9 @@ ECode CAsyncChannel::SyncMessenger::SyncHandler::HandleMessage(
 
 
 //=============================================
-// CAsyncChannel::SyncMessenger
+// AsyncChannel::SyncMessenger
 //=============================================
-AutoPtr<CAsyncChannel::SyncMessenger> CAsyncChannel::SyncMessenger::Obtain()
+AutoPtr<AsyncChannel::SyncMessenger> AsyncChannel::SyncMessenger::Obtain()
 {
     AutoPtr<SyncMessenger> sm;
     {
@@ -97,13 +97,13 @@ AutoPtr<CAsyncChannel::SyncMessenger> CAsyncChannel::SyncMessenger::Obtain()
     return sm;
 }
 
-void CAsyncChannel::SyncMessenger::Recycle()
+void AsyncChannel::SyncMessenger::Recycle()
 {
     AutoLock lock(sStack);
     sStack->Push(TO_IINTERFACE(this));
 }
 
-AutoPtr<IMessage> CAsyncChannel::SyncMessenger::SendMessageSynchronously(
+AutoPtr<IMessage> AsyncChannel::SyncMessenger::SendMessageSynchronously(
     /* [in] */ IMessenger* dstMessenger,
     /* [in] */ IMessage* msg)
 {
@@ -133,49 +133,49 @@ AutoPtr<IMessage> CAsyncChannel::SyncMessenger::SendMessageSynchronously(
 }
 
 //=============================================
-// CAsyncChannel::AsyncChannelConnection
+// AsyncChannel::AsyncChannelConnection
 //=============================================
-CAR_INTERFACE_IMPL(CAsyncChannel::AsyncChannelConnection, Object, IServiceConnection)
+CAR_INTERFACE_IMPL(AsyncChannel::AsyncChannelConnection, Object, IServiceConnection)
 
-CAsyncChannel::AsyncChannelConnection::AsyncChannelConnection(
+AsyncChannel::AsyncChannelConnection::AsyncChannelConnection(
     /* [in] */ IWeakReference* host)
     : mWeakHost(host)
 {
 }
 
-ECode CAsyncChannel::AsyncChannelConnection::OnServiceConnected(
+ECode AsyncChannel::AsyncChannelConnection::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
     AutoPtr<IWeakReferenceSource> wrs;
     mWeakHost->Resolve(EIID_IWeakReferenceSource, (IInterface**)&wrs);
     if (wrs) {
-        CAsyncChannel* ac = (CAsyncChannel*)wrs.Get();
+        AsyncChannel* ac = (AsyncChannel*)wrs.Get();
         ac->mDstMessenger = NULL;
         AutoPtr<IIMessenger> msger = IIMessenger::Probe(service);
         assert(msger != NULL);
         CMessenger::New(msger, (IMessenger**)&ac->mDstMessenger);
-        ac->ReplyHalfConnected(CAsyncChannel::STATUS_SUCCESSFUL);
+        ac->ReplyHalfConnected(AsyncChannel::STATUS_SUCCESSFUL);
     }
     return NOERROR;
 }
 
-ECode CAsyncChannel::AsyncChannelConnection::OnServiceDisconnected(
+ECode AsyncChannel::AsyncChannelConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
     AutoPtr<IWeakReferenceSource> wrs;
     mWeakHost->Resolve(EIID_IWeakReferenceSource, (IInterface**)&wrs);
     if (wrs) {
-        CAsyncChannel* ac = (CAsyncChannel*)wrs.Get();
-        ac->ReplyDisconnected(CAsyncChannel::STATUS_SUCCESSFUL);
+        AsyncChannel* ac = (AsyncChannel*)wrs.Get();
+        ac->ReplyDisconnected(AsyncChannel::STATUS_SUCCESSFUL);
     }
     return NOERROR;
 }
 
 //=============================================
-// CAsyncChannel::ConnectAsyncRunnable
+// AsyncChannel::ConnectAsyncRunnable
 //=============================================
-CAsyncChannel::ConnectAsyncRunnable::ConnectAsyncRunnable(
+AsyncChannel::ConnectAsyncRunnable::ConnectAsyncRunnable(
     /* [in] */ IWeakReference* wr,
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
@@ -189,12 +189,12 @@ CAsyncChannel::ConnectAsyncRunnable::ConnectAsyncRunnable(
 {
 }
 
-ECode CAsyncChannel::ConnectAsyncRunnable::Run()
+ECode AsyncChannel::ConnectAsyncRunnable::Run()
 {
     AutoPtr<IWeakReferenceSource> wrs;
     mWeakHost->Resolve(EIID_IWeakReferenceSource, (IInterface**)&wrs);
     if (wrs) {
-        CAsyncChannel* ac = (CAsyncChannel*)wrs.Get();
+        AsyncChannel* ac = (AsyncChannel*)wrs.Get();
         Int32 result;
         ac->ConnectSrcHandlerToPackageSync(mSrcCtx, mSrcHdlr, mDstPackageName,
                 mDstClassName, &result);
@@ -204,33 +204,36 @@ ECode CAsyncChannel::ConnectAsyncRunnable::Run()
 }
 
 //=============================================
-// CAsyncChannel::DeathMonitor
+// AsyncChannel::DeathMonitor
 //=============================================
-CAR_INTERFACE_IMPL(CAsyncChannel::DeathMonitor, Object, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(AsyncChannel::DeathMonitor, Object, IProxyDeathRecipient)
 
-CAsyncChannel::DeathMonitor::DeathMonitor(
-    /* [in] */ CAsyncChannel* owner)
+AsyncChannel::DeathMonitor::DeathMonitor(
+    /* [in] */ AsyncChannel* owner)
     : mOwner(owner)
 {
 }
 
-ECode CAsyncChannel::DeathMonitor::ProxyDied()
+ECode AsyncChannel::DeathMonitor::ProxyDied()
 {
     mOwner->ReplyDisconnected(STATUS_REMOTE_DISCONNECTION);
     return NOERROR;
 }
 
 //=============================================
-// CAsyncChannel
+// AsyncChannel
 //=============================================
-CAR_INTERFACE_IMPL(CAsyncChannel, Object, IAsyncChannel)
-CAR_OBJECT_IMPL(CAsyncChannel)
+CAR_INTERFACE_IMPL(AsyncChannel, Object, IAsyncChannel)
 
-CAsyncChannel::CAsyncChannel()
+AsyncChannel::AsyncChannel()
 {
 }
 
-ECode CAsyncChannel::ConnectSrcHandlerToPackageSync(
+AsyncChannel::~AsyncChannel()
+{
+}
+
+ECode AsyncChannel::ConnectSrcHandlerToPackageSync(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ const String& dstPackageName,
@@ -274,7 +277,7 @@ ECode CAsyncChannel::ConnectSrcHandlerToPackageSync(
     return NOERROR;
 }
 
-ECode CAsyncChannel::ConnectSync(
+ECode AsyncChannel::ConnectSync(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ IMessenger* dstMessenger,
@@ -291,7 +294,7 @@ ECode CAsyncChannel::ConnectSync(
     return NOERROR;
 }
 
-ECode CAsyncChannel::ConnectSync(
+ECode AsyncChannel::ConnectSync(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ IHandler* dstHandler,
@@ -302,7 +305,7 @@ ECode CAsyncChannel::ConnectSync(
     return ConnectSync(srcContext, srcHandler, msger, status);
 }
 
-ECode CAsyncChannel::FullyConnectSync(
+ECode AsyncChannel::FullyConnectSync(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ IHandler* dstHandler,
@@ -317,7 +320,7 @@ ECode CAsyncChannel::FullyConnectSync(
     return NOERROR;
 }
 
-ECode CAsyncChannel::Connect(
+ECode AsyncChannel::Connect(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ const String& dstPackageName,
@@ -342,7 +345,7 @@ ECode CAsyncChannel::Connect(
     return NOERROR;
 }
 
-ECode CAsyncChannel::Connect(
+ECode AsyncChannel::Connect(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ IMessenger* dstMessenger)
@@ -359,7 +362,7 @@ ECode CAsyncChannel::Connect(
     return NOERROR;
 }
 
-ECode CAsyncChannel::Connected(
+ECode AsyncChannel::Connected(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ IMessenger* dstMessenger)
@@ -382,7 +385,7 @@ ECode CAsyncChannel::Connected(
     return NOERROR;
 }
 
-ECode CAsyncChannel::Connect(
+ECode AsyncChannel::Connect(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,
     /* [in] */ IHandler* dstHandler)
@@ -392,7 +395,7 @@ ECode CAsyncChannel::Connect(
     return Connect(srcContext, srcHandler, mgr);
 }
 
-ECode CAsyncChannel::Connect(
+ECode AsyncChannel::Connect(
     /* [in] */ IAsyncService* srcAsyncService,
     /* [in] */ IMessenger* dstMessenger)
 {
@@ -401,7 +404,7 @@ ECode CAsyncChannel::Connect(
     return Connect(IContext::Probe(srcAsyncService), handler, dstMessenger);
 }
 
-ECode CAsyncChannel::Disconnected()
+ECode AsyncChannel::Disconnected()
 {
     mSrcContext = NULL;
     mSrcHandler = NULL;
@@ -412,9 +415,9 @@ ECode CAsyncChannel::Disconnected()
     return NOERROR;
 }
 
-ECode CAsyncChannel::Disconnect()
+ECode AsyncChannel::Disconnect()
 {
-    if (DBG) Slogger::D(TAG, " >> CAsyncChannel::Disconnect()");
+    if (DBG) Slogger::D(TAG, " >> AsyncChannel::Disconnect()");
     if ((mConnection != NULL) && (mSrcContext != NULL)) {
         mSrcContext->UnbindService(mConnection);
         mConnection = NULL;
@@ -451,7 +454,7 @@ ECode CAsyncChannel::Disconnect()
     return NOERROR;
 }
 
-ECode CAsyncChannel::SendMessage(
+ECode AsyncChannel::SendMessage(
     /* [in] */ IMessage* msg)
 {
     msg->SetReplyTo(mSrcMessenger);
@@ -468,20 +471,20 @@ ECode CAsyncChannel::SendMessage(
     return NOERROR;
 }
 
-ECode CAsyncChannel::SendMessage(
+ECode AsyncChannel::SendMessage(
     /* [in] */ Int32 what)
 {
     return SendMessage(what, 0);
 }
 
-ECode CAsyncChannel::SendMessage(
+ECode AsyncChannel::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1)
 {
     return SendMessage(what, arg1, 0);
 }
 
-ECode CAsyncChannel::SendMessage(
+ECode AsyncChannel::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2)
@@ -489,7 +492,7 @@ ECode CAsyncChannel::SendMessage(
     return SendMessage(what, arg1, 0, NULL);
 }
 
-ECode CAsyncChannel::SendMessage(
+ECode AsyncChannel::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -507,14 +510,14 @@ ECode CAsyncChannel::SendMessage(
     return SendMessage(msg);
 }
 
-ECode CAsyncChannel::SendMessage(
+ECode AsyncChannel::SendMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
 {
     return SendMessage(what, 0, 0, obj);
 }
 
-ECode CAsyncChannel::ReplyToMessage(
+ECode AsyncChannel::ReplyToMessage(
     /* [in] */ IMessage* srcMsg,
     /* [in] */ IMessage* dstMsg)
 {
@@ -530,14 +533,14 @@ ECode CAsyncChannel::ReplyToMessage(
     return NOERROR;
 }
 
-ECode CAsyncChannel::ReplyToMessage(
+ECode AsyncChannel::ReplyToMessage(
     /* [in] */ IMessage* srcMsg,
     /* [in] */ Int32 what)
 {
     return ReplyToMessage(srcMsg, what, 0);
 }
 
-ECode CAsyncChannel::ReplyToMessage(
+ECode AsyncChannel::ReplyToMessage(
     /* [in] */ IMessage* srcMsg,
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1)
@@ -545,7 +548,7 @@ ECode CAsyncChannel::ReplyToMessage(
     return ReplyToMessage(srcMsg, what, arg1, 0);
 }
 
-ECode CAsyncChannel::ReplyToMessage(
+ECode AsyncChannel::ReplyToMessage(
     /* [in] */ IMessage* srcMsg,
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
@@ -554,7 +557,7 @@ ECode CAsyncChannel::ReplyToMessage(
     return ReplyToMessage(srcMsg, what, arg1, arg2, NULL);
 }
 
-ECode CAsyncChannel::ReplyToMessage(
+ECode AsyncChannel::ReplyToMessage(
     /* [in] */ IMessage* srcMsg,
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
@@ -572,7 +575,7 @@ ECode CAsyncChannel::ReplyToMessage(
     return ReplyToMessage(srcMsg, msg);
 }
 
-ECode CAsyncChannel::ReplyToMessage(
+ECode AsyncChannel::ReplyToMessage(
     /* [in] */ IMessage* srcMsg,
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj)
@@ -580,7 +583,7 @@ ECode CAsyncChannel::ReplyToMessage(
     return ReplyToMessage(srcMsg, what, 0, 0, obj);
 }
 
-ECode CAsyncChannel::SendMessageSynchronously(
+ECode AsyncChannel::SendMessageSynchronously(
     /* [in] */ IMessage* msg,
     /* [out] */ IMessage** _resultMsg)
 {
@@ -591,14 +594,14 @@ ECode CAsyncChannel::SendMessageSynchronously(
     return NOERROR;
 }
 
-ECode CAsyncChannel::SendMessageSynchronously(
+ECode AsyncChannel::SendMessageSynchronously(
     /* [in] */ Int32 what,
     /* [out] */ IMessage** resultMsg)
 {
     return SendMessageSynchronously(what, 0, resultMsg);
 }
 
-ECode CAsyncChannel::SendMessageSynchronously(
+ECode AsyncChannel::SendMessageSynchronously(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [out] */ IMessage** resultMsg)
@@ -606,7 +609,7 @@ ECode CAsyncChannel::SendMessageSynchronously(
     return SendMessageSynchronously(what, arg1, 0, resultMsg);
 }
 
-ECode CAsyncChannel::SendMessageSynchronously(
+ECode AsyncChannel::SendMessageSynchronously(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -622,7 +625,7 @@ ECode CAsyncChannel::SendMessageSynchronously(
     return SendMessageSynchronously(msg, resultMsg);
 }
 
-ECode CAsyncChannel::SendMessageSynchronously(
+ECode AsyncChannel::SendMessageSynchronously(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* obj,
     /* [out] */ IMessage** resultMsg)
@@ -636,7 +639,7 @@ ECode CAsyncChannel::SendMessageSynchronously(
     return SendMessageSynchronously(msg, resultMsg);
 }
 
-void CAsyncChannel::ReplyHalfConnected(
+void AsyncChannel::ReplyHalfConnected(
     /* [in] */ Int32 status)
 {
     AutoPtr<IMessage> msg;
@@ -665,7 +668,7 @@ void CAsyncChannel::ReplyHalfConnected(
     mSrcHandler->SendMessage(msg, &result);
 }
 
-void CAsyncChannel::ReplyDisconnected(
+void AsyncChannel::ReplyDisconnected(
     /* [in] */ Int32 status)
 {
     AutoPtr<IMessage> msg;
