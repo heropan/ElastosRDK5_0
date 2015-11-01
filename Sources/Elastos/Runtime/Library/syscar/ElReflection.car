@@ -1148,6 +1148,9 @@ library
 
     [local]
     interface IConstructorInfo extends IFunctionInfo {
+        GetAnnotation(
+            [out] String* annotation);
+
         CreateArgumentList(
             [out] IArgumentList** argumentList);
 

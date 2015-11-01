@@ -63,6 +63,16 @@ ECode CConstructorInfo::GetName(
     return mMethodInfo->GetName(name);
 }
 
+ECode CConstructorInfo::GetAnnotation(
+    /* [out] */ String* annotation)
+{
+    if (annotation == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    return mMethodInfo->GetAnnotation(annotation);
+}
+
 ECode CConstructorInfo::GetParamCount(
     /* [out] */ Int32* count)
 {

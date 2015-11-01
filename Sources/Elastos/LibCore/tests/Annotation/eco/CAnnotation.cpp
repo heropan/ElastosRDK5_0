@@ -1,7 +1,18 @@
 
 #include "CAnnotation.h"
 
+CAR_INTERFACE_IMPL(CAnnotation, Object, IAnnotation)
 
+ECode CAnnotation::constructor()
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CAnnotation::constructor(
+    /* [in] */ Int32 data)
+{
+    return E_NOT_IMPLEMENTED;
+}
 
 ECode CAnnotation::M1()
 {

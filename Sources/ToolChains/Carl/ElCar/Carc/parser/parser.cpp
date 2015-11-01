@@ -4892,6 +4892,7 @@ void AddGenericParent(
 int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
 {
     InterfaceDescriptor *pIntfDesc = NULL;
+    char* annotation = NULL;
     ClassDescriptor *pClsDesc;
     pClsDesc = pClass->mDesc;
 
@@ -4902,17 +4903,42 @@ int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
 
     pIntfDesc = s_pModule->mInterfaceDirs[pClsDesc->mCtorIndex]->mDesc;
 
-    int n;
-    CARToken token;
+    CARToken token = GetToken(s_pFile);
+    if (token == Token_S_lbracket) {
+        token = GetToken(s_pFile);
+        if (token != Token_S_rbracket) {
+            if (token == Token_S_at) {
+                token = GetToken(s_pFile);
+                if (token != Token_ident) {
+                    ErrorReport(CAR_E_IllegalMethodAnnotation, g_szCurrentToken);
+                    return Ret_AbortOnError;
+                }
+                annotation = (char*)malloc(sizeof(g_szCurrentToken) + 1);
+                strcpy(annotation, g_szCurrentToken);
+                if (GetToken(s_pFile) != Token_S_rbracket) {
+                    ErrorReport(CAR_E_ExpectSymbol, "]");
+                    return Ret_AbortOnError;
+                }
+            }
+            else {
+                ErrorReport(CAR_E_IllegalMethodProperties, g_szCurrentToken);
+                return Ret_AbortOnError;
+            }
+        }
+        token = GetToken(s_pFile);
+    }
+    if (token != Token_K_constructor) {
+        ErrorReport(CAR_E_ExpectSymbol, "constructor");
+        return Ret_AbortOnError;
+    }
 
-    GetToken(s_pFile); // Skip k_constructor
-
-    n = CreateInterfaceMethod("Method", pIntfDesc);
+    int n = CreateInterfaceMethod("Method", pIntfDesc);
     if (n < 0) {
         CreateError(n, "interface method", g_szCurrentToken);
         return Ret_AbortOnError;
     }
     pIntfDesc->mMethods[n]->mType.mType = Type_ECode;
+    pIntfDesc->mMethods[n]->mAnnotation = annotation;
 
     if (GetToken(s_pFile) != Token_S_lparen) {
         ErrorReport(CAR_E_ExpectSymbol, "(");
@@ -5232,7 +5258,7 @@ int P_ClassBody(ClassDirEntry *pClass, BOOL isDeprecated)
 
     while (PeekToken(s_pFile) != Token_S_rbrace) {
         token = PeekToken(s_pFile);
-        if (token == Token_K_constructor) {
+        if (token == Token_K_constructor || token == Token_S_lbracket) {
             if (pDesc->mAttribs & ClassAttrib_t_generic) {
                 ErrorReport(CAR_E_CouldntHasCtor, "generic");
                 return Ret_AbortOnError;
