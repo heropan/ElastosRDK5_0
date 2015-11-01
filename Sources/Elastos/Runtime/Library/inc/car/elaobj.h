@@ -60,6 +60,13 @@ IInterface
     virtual CARAPI_(PInterface) Probe(
         /* [in] */ _ELASTOS REIID riid) = 0;
 
+    static CARAPI_(IInterface*) Probe(
+        /* [in] */ PInterface object)
+    {
+        if (object == NULL) return NULL;
+        return (IInterface*)object->Probe(EIID_IInterface);
+    }
+
     virtual CARAPI_(_ELASTOS UInt32) AddRef() = 0;
 
     virtual CARAPI_(_ELASTOS UInt32) Release() = 0;
