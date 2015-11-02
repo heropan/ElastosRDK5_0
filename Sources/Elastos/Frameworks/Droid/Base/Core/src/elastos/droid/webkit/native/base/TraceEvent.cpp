@@ -9,6 +9,8 @@
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::EIID_IIdleHandler;
+using Elastos::Droid::Utility::EIID_IPrinter;
 
 namespace Elastos {
 namespace Droid {
@@ -18,6 +20,7 @@ namespace Base {
 //===============================================================
 //                 TraceEvent::BasicLooperMonitor
 //===============================================================
+CAR_INTERFACE_IMPL(TraceEvent::BasicLooperMonitor, Object, IPrinter);
 
 //@Override
 ECode TraceEvent::BasicLooperMonitor::Println(
@@ -49,6 +52,7 @@ void TraceEvent::BasicLooperMonitor::EndHandling(
 //===============================================================
 //              TraceEvent::IdleTracingLooperMonitor
 //===============================================================
+CAR_INTERFACE_IMPL(TraceEvent::IdleTracingLooperMonitor, BasicLooperMonitor, IIdleHandler);
 
 const String TraceEvent::IdleTracingLooperMonitor::TAG("TraceEvent.LooperMonitor");
 const String TraceEvent::IdleTracingLooperMonitor::IDLE_EVENT_NAME("Looper.queueIdle");

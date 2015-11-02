@@ -22,6 +22,7 @@ namespace Base {
 //===============================================================
 //                 PowerMonitor::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(PowerMonitor::InnerRunnable, Object, IRunnable);
 
 PowerMonitor::InnerRunnable::InnerRunnable()
 {

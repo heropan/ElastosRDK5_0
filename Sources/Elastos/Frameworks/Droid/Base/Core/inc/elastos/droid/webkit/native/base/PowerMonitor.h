@@ -11,6 +11,7 @@ using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IBatteryManager;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +26,7 @@ class PowerMonitor : public ApplicationStatus::ApplicationStateListener
 {
 private:
     static AutoPtr<IRunnable> Runnable_Create();
-private:
+public:
     class LazyHolder
     {
     private:
@@ -33,8 +34,8 @@ private:
     };
 
     class InnerRunnable
-    //    : public Object
-        : public IRunnable
+        : public Object
+        , public IRunnable
     {
     public:
         InnerRunnable();

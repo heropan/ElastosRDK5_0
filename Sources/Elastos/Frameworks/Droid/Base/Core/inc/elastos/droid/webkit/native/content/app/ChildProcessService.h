@@ -52,6 +52,7 @@ namespace App {
  */
 //@JNINamespace("content")
 class ChildProcessService
+    : public Object
     // TODO : public Service
 {
 private:

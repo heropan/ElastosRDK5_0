@@ -1114,6 +1114,347 @@ Int32 MediaCodecBridge::GetAudioFormat(
     }
 }
 
+void MediaCodecBridge::ReleaseResource(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::ReleaseResources, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseResources();
+}
+
+Boolean MediaCodecBridge::Start(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::Start, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->Start();
+}
+
+AutoPtr<IInterface> MediaCodecBridge::DequeueInputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 timeoutUs)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueInputBuffer, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->DequeueInputBuffer(timeoutUs));
+}
+
+Int32 MediaCodecBridge::Flush(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::Flush, mObj is NULL");
+        return 0;
+    }
+    return mObj->Flush();
+}
+
+void MediaCodecBridge::Stop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::Stop, mObj is NULL");
+        return;
+    }
+    mObj->Stop();
+}
+
+Int32 MediaCodecBridge::GetOutputHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetOutputHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetOutputHeight();
+}
+
+Int32 MediaCodecBridge::GetOutputWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetOutputWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetOutputWidth();
+}
+
+AutoPtr<IInterface> MediaCodecBridge::GetInputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 index)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetInputBuffer, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetInputBuffer(index);
+}
+
+AutoPtr<IInterface> MediaCodecBridge::GetOutputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 index)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetOutputBuffer, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetOutputBuffer(index);
+}
+
+Int32 MediaCodecBridge::GetInputBuffersCount(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetInputBuffersCount, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetInputBuffersCount();
+}
+
+Int32 MediaCodecBridge::GetOutputBuffersCount(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetOutputBuffersCount, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetOutputBuffersCount();
+}
+
+Int32 MediaCodecBridge::GetOutputBuffersCapacity(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetOutputBuffersCapacity, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetOutputBuffersCapacity();
+}
+
+Boolean MediaCodecBridge::GetOutputBuffers(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::GetOutputBuffers, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetOutputBuffers();
+}
+
+Int32 MediaCodecBridge::QueueInputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 offset,
+    /* [in] */ Int32 size,
+    /* [in] */ Int64 presentationTimeUs,
+    /* [in] */ Int32 flags)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::QueueInputBuffer, mObj is NULL");
+        return 0;
+    }
+    return mObj->QueueInputBuffer(index, offset, size, presentationTimeUs, flags);
+}
+
+void MediaCodecBridge::SetVideoBitrate(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 bps)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::SetVideoBitrate, mObj is NULL");
+        return;
+    }
+    mObj->SetVideoBitrate(bps);
+}
+
+void MediaCodecBridge::RequestKeyFrameSoon(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::RequestKeyFrameSoon, mObj is NULL");
+        return;
+    }
+    mObj->RequestKeyFrameSoon();
+}
+
+Int32 MediaCodecBridge::QueueSecureInputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 offset,
+    /* [in] */ ArrayOf<Byte>* iv,
+    /* [in] */ ArrayOf<Byte>* keyId,
+    /* [in] */ ArrayOf<Int32>* numBytesOfClearData,
+    /* [in] */ ArrayOf<Int32>* numBytesOfEncryptedData,
+    /* [in] */ Int32 numSubSamples,
+    /* [in] */ Int64 presentationTimeUs)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::QueueSecureInputBuffer, mObj is NULL");
+        return 0;
+    }
+    return mObj->QueueSecureInputBuffer(index, offset, iv, keyId, numBytesOfClearData, numBytesOfEncryptedData, numSubSamples, presentationTimeUs);
+}
+
+void MediaCodecBridge::ReleaseOutputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 index,
+    /* [in] */ Boolean render)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::ReleaseOutputBuffer, mObj is NULL");
+        return;
+    }
+    mObj->ReleaseOutputBuffer(index, render);
+}
+
+AutoPtr<IInterface> MediaCodecBridge::DequeueOutputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 timeoutUs)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::DequeueOutputBuffer, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->DequeueOutputBuffer(timeoutUs));
+}
+
+Boolean MediaCodecBridge::ConfigureVideo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* format,
+    /* [in] */ IInterface* surface,
+    /* [in] */ IInterface* crypto,
+    /* [in] */ Int32 flags)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::ConfigureVideo, mObj is NULL");
+        return FALSE;
+    }
+    AutoPtr<IMediaFormat> m = IMediaFormat::Probe(format);
+    AutoPtr<ISurface> s = ISurface::Probe(surface);
+    AutoPtr<IMediaCrypto> c = IMediaCrypto::Probe(crypto);
+    return mObj->ConfigureVideo(m, s, c, flags);
+}
+
+Boolean MediaCodecBridge::IsAdaptivePlaybackSupported(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::IsAdaptivePlaybackSupported, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->IsAdaptivePlaybackSupported(width, height);
+}
+
+void MediaCodecBridge::SetCodecSpecificData(
+    /* [in] */ IInterface* format,
+    /* [in] */ Int32 index,
+    /* [in] */ ArrayOf<Byte>* bytes)
+{
+    AutoPtr<IMediaFormat> m = IMediaFormat::Probe(format);
+    SetCodecSpecificData(m, index, bytes);
+}
+
+void MediaCodecBridge::SetFrameHasADTSHeader(
+    /* [in] */ IInterface* format)
+{
+    AutoPtr<IMediaFormat> m = IMediaFormat::Probe(format);
+    SetFrameHasADTSHeader(m);
+}
+
+Boolean MediaCodecBridge::ConfigureAudio(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* format,
+    /* [in] */ IInterface* crypto,
+    /* [in] */ Int32 flags,
+    /* [in] */ Boolean playAudio)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::ConfigureAudio, mObj is NULL");
+        return FALSE;
+    }
+    AutoPtr<IMediaFormat> m = IMediaFormat::Probe(format);
+    AutoPtr<IMediaCrypto> c = IMediaCrypto::Probe(crypto);
+    return mObj->ConfigureAudio(m, c, flags, playAudio);
+}
+
+Int64 MediaCodecBridge::PlayOutputBuffer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ ArrayOf<Byte>* buf)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::PlayOutputBuffer, mObj is NULL");
+        return 0;
+    }
+    return mObj->PlayOutputBuffer(buf);
+}
+
+void MediaCodecBridge::SetVolume(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Double volume)
+{
+    AutoPtr<MediaCodecBridge> mObj = (MediaCodecBridge*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "MediaCodecBridge::SetVolume, mObj is NULL");
+        return;
+    }
+    mObj->SetVolume(volume);
+}
+
 } // namespace Media
 } // namespace Webkit
 } // namespace Droid

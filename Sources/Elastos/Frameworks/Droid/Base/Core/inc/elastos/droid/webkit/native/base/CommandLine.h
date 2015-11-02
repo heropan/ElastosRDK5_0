@@ -29,11 +29,12 @@ namespace Base {
  * ContentShellActivity.COMMAND_LINE_FILE or ChromeShellApplication.COMMAND_LINE_FILE.
 **/
 class CommandLine
+    : public Object
 {
     friend class JavaCommandLine;
     friend class NativeCommandLine;
 public:
-    CAR_INTERFACE_DECL();
+    //CAR_INTERFACE_DECL();
 
     // Public abstract interface, implemented in derived classes.
     // All these methods reflect their native-side counterparts.

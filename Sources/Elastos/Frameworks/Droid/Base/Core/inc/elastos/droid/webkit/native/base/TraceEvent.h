@@ -28,8 +28,8 @@ class TraceEvent
 {
 public:
     class BasicLooperMonitor
-        //: public Object,
-        : public IPrinter
+        : public Object
+        , public IPrinter
     {
     public:
         CAR_INTERFACE_DECL();
