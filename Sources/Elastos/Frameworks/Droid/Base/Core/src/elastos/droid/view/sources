@@ -28,6 +28,7 @@ SOURCES += GraphicBuffer.cpp
 SOURCES += Choreographer.cpp
 SOURCES += InputDevice.cpp
 SOURCES += TouchDelegate.cpp
+SOURCES += ThreadedRenderer.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
 #SOURCES += CAbsSavedStateHelper.cpp
