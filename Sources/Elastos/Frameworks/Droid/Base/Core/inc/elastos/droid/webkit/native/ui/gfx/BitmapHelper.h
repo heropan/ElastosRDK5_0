@@ -31,9 +31,12 @@ namespace Gfx {
 class BitmapHelper
     : public Object
 {
+public:
+    static CARAPI_(void*) ElaBitmapHelperCallback_Init();
+
 private:
-    // @CalledByNative
-    static CARAPI_(AutoPtr<IBitmap>) CreateBitmap(
+    // @CalledByNative return IBitmap
+    static CARAPI_(AutoPtr<IInterface>) CreateBitmap(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 bitmapFormatValue);
@@ -47,8 +50,8 @@ private:
       * @return A bitmap sampled down from the original with the same aspect ratio and dimensions.
       *         that are equal to or greater than the requested width and height.
       */
-    // @CalledByNative
-    static CARAPI_(AutoPtr<IBitmap>) DecodeDrawableResource(
+    // @CalledByNative return IBitmap
+    static CARAPI_(AutoPtr<IInterface>) DecodeDrawableResource(
         /* [in] */ const String& name,
         /* [in] */ Int32 reqWidth,
         /* [in] */ Int32 reqHeight);
@@ -68,6 +71,9 @@ private:
     // @CalledByNative
     static CARAPI_(Int32) GetBitmapFormatForConfig(
         /* [in] */ BitmapConfig bitmapConfig);
+
+    static CARAPI_(Int32) GetBitmapFormatForConfig(
+        /* [in] */ IInterface* bitmapConfig);
 
     /**
       * Provides a matching Bitmap.Config for the enum config value passed.

@@ -1,20 +1,21 @@
 
-#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
+#include "elastos/droid/webkit/native/ui/api/WindowElastos_dec.h"
 #include <elastos/utility/logging/Logger.h>
 //#include "elastos/droid/widget/CToastHelper.h"
 
-using Elastos::Utility::CHashMap;
-using Elastos::Utility::Logging::Logger;
-using Elastos::IO::ISerializable;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::CString;
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 //using Elastos::Droid::Widget::CToastHelper;
+using Elastos::IO::ISerializable;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -23,40 +24,40 @@ namespace Ui {
 namespace Base {
 
 //=====================================================================
-//               WindowAndroid::InnerVSyncMonitorListener
+//               WindowElastos::InnerVSyncMonitorListener
 //=====================================================================
-WindowAndroid::InnerVSyncMonitorListener::InnerVSyncMonitorListener(
-    /* [in] */ WindowAndroid* owner)
+WindowElastos::InnerVSyncMonitorListener::InnerVSyncMonitorListener(
+    /* [in] */ WindowElastos* owner)
     : mOwner(owner)
 {
     // ==================before translated======================
     // mOwner = owner;
 }
 
-ECode WindowAndroid::InnerVSyncMonitorListener::OnVSync(
+ECode WindowElastos::InnerVSyncMonitorListener::OnVSync(
     /* [in] */ VSyncMonitor* monitor,
     /* [in] */ Int64 vsyncTimeMicros)
 {
     VALIDATE_NOT_NULL(monitor);
     // ==================before translated======================
-    // if (mNativeWindowAndroid != 0) {
-    //     nativeOnVSync(mNativeWindowAndroid, vsyncTimeMicros);
+    // if (mNativeWindowElastos != 0) {
+    //     nativeOnVSync(mNativeWindowElastos, vsyncTimeMicros);
     // }
 
-    if (mOwner->mNativeWindowAndroid != 0) {
-        mOwner->NativeOnVSync(mOwner->mNativeWindowAndroid, vsyncTimeMicros);
+    if (mOwner->mNativeWindowElastos != 0) {
+        mOwner->NativeOnVSync(mOwner->mNativeWindowElastos, vsyncTimeMicros);
     }
     return NOERROR;
 }
 
 //=====================================================================
-//                            WindowAndroid
+//                            WindowElastos
 //=====================================================================
-const String WindowAndroid::WINDOW_CALLBACK_ERRORS("window_callback_errors");
-const Int32 WindowAndroid::START_INTENT_FAILURE;
-const String WindowAndroid::TAG("WindowAndroid");
+const String WindowElastos::WINDOW_CALLBACK_ERRORS("window_callback_errors");
+const Int32 WindowElastos::START_INTENT_FAILURE;
+const String WindowElastos::TAG("WindowElastos");
 
-WindowAndroid::WindowAndroid(
+WindowElastos::WindowElastos(
     /* [in] */ IContext* context)
 {
     // ==================before translated======================
@@ -77,7 +78,7 @@ WindowAndroid::WindowAndroid(
     mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
 }
 
-Boolean WindowAndroid::ShowIntent(
+Boolean WindowElastos::ShowIntent(
     /* [in] */ IPendingIntent* intent,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -88,7 +89,7 @@ Boolean WindowAndroid::ShowIntent(
     return (ShowCancelableIntent(intent, callback, errorId) >= 0);
 }
 
-Boolean WindowAndroid::ShowIntent(
+Boolean WindowElastos::ShowIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -99,7 +100,7 @@ Boolean WindowAndroid::ShowIntent(
     return (ShowCancelableIntent(intent, callback, errorId) >= 0);
 }
 
-Int32 WindowAndroid::ShowCancelableIntent(
+Int32 WindowElastos::ShowCancelableIntent(
     /* [in] */ IPendingIntent* intent,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -112,7 +113,7 @@ Int32 WindowAndroid::ShowCancelableIntent(
     return START_INTENT_FAILURE;
 }
 
-Int32 WindowAndroid::ShowCancelableIntent(
+Int32 WindowElastos::ShowCancelableIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -125,7 +126,7 @@ Int32 WindowAndroid::ShowCancelableIntent(
     return START_INTENT_FAILURE;
 }
 
-ECode WindowAndroid::CancelIntent(
+ECode WindowElastos::CancelIntent(
     /* [in] */ Int32 requestCode)
 {
     // ==================before translated======================
@@ -135,7 +136,7 @@ ECode WindowAndroid::CancelIntent(
     return NOERROR;
 }
 
-Boolean WindowAndroid::RemoveIntentCallback(
+Boolean WindowElastos::RemoveIntentCallback(
     /* [in] */ IntentCallback* callback)
 {
     // ==================before translated======================
@@ -146,7 +147,7 @@ Boolean WindowAndroid::RemoveIntentCallback(
     // return true;
 
     assert(0);
-    IInterface* interfaceTmp = callback->Probe(EIID_IInterface);
+    IInterface* interfaceTmp = TO_IINTERFACE(callback);
     Int32 requestCode = 0;
     mOutstandingIntents->IndexOfValue(interfaceTmp, &requestCode);
     if (requestCode < 0) return FALSE;
@@ -158,7 +159,7 @@ Boolean WindowAndroid::RemoveIntentCallback(
     return TRUE;
 }
 
-ECode WindowAndroid::ShowError(
+ECode WindowElastos::ShowError(
     /* [in] */ const String& error)
 {
     // ==================before translated======================
@@ -180,7 +181,7 @@ ECode WindowAndroid::ShowError(
     return NOERROR;
 }
 
-ECode WindowAndroid::ShowError(
+ECode WindowElastos::ShowError(
     /* [in] */ Int32 resId)
 {
     // ==================before translated======================
@@ -192,7 +193,7 @@ ECode WindowAndroid::ShowError(
     return NOERROR;
 }
 
-ECode WindowAndroid::SendBroadcast(
+ECode WindowElastos::SendBroadcast(
     /* [in] */ IIntent* intent)
 {
     VALIDATE_NOT_NULL(intent);
@@ -203,7 +204,7 @@ ECode WindowAndroid::SendBroadcast(
     return NOERROR;
 }
 
-AutoPtr<IWeakReference> WindowAndroid::GetActivity()
+AutoPtr<IWeakReference> WindowElastos::GetActivity()
 {
     // ==================before translated======================
     // return new WeakReference<Activity>(null);
@@ -214,7 +215,7 @@ AutoPtr<IWeakReference> WindowAndroid::GetActivity()
     return wr;
 }
 
-AutoPtr<IContext> WindowAndroid::GetApplicationContext()
+AutoPtr<IContext> WindowElastos::GetApplicationContext()
 {
     // ==================before translated======================
     // return mApplicationContext;
@@ -222,7 +223,7 @@ AutoPtr<IContext> WindowAndroid::GetApplicationContext()
     return mApplicationContext;
 }
 
-ECode WindowAndroid::SaveInstanceState(
+ECode WindowElastos::SaveInstanceState(
     /* [in] */ IBundle* bundle)
 {
     VALIDATE_NOT_NULL(bundle);
@@ -234,7 +235,7 @@ ECode WindowAndroid::SaveInstanceState(
     return NOERROR;
 }
 
-ECode WindowAndroid::RestoreInstanceState(
+ECode WindowElastos::RestoreInstanceState(
     /* [in] */ IBundle* bundle)
 {
     VALIDATE_NOT_NULL(bundle);
@@ -260,7 +261,7 @@ ECode WindowAndroid::RestoreInstanceState(
     return NOERROR;
 }
 
-Boolean WindowAndroid::OnActivityResult(
+Boolean WindowElastos::OnActivityResult(
     /* [in] */ Int32 requestCode,
     /* [in] */ Int32 resultCode,
     /* [in] */ IIntent* data)
@@ -271,7 +272,7 @@ Boolean WindowAndroid::OnActivityResult(
     return FALSE;
 }
 
-Boolean WindowAndroid::CanResolveActivity(
+Boolean WindowElastos::CanResolveActivity(
     /* [in] */ IIntent* intent)
 {
     // ==================before translated======================
@@ -286,36 +287,36 @@ Boolean WindowAndroid::CanResolveActivity(
     return resolveInfo != NULL;
 }
 
-ECode WindowAndroid::Destroy()
+ECode WindowElastos::Destroy()
 {
     // ==================before translated======================
-    // if (mNativeWindowAndroid != 0) {
-    //     nativeDestroy(mNativeWindowAndroid);
-    //     mNativeWindowAndroid = 0;
+    // if (mNativeWindowElastos != 0) {
+    //     nativeDestroy(mNativeWindowElastos);
+    //     mNativeWindowElastos = 0;
     // }
 
-    if (mNativeWindowAndroid != 0) {
-        NativeDestroy(mNativeWindowAndroid);
-        mNativeWindowAndroid = 0;
+    if (mNativeWindowElastos != 0) {
+        NativeDestroy(mNativeWindowElastos);
+        mNativeWindowElastos = 0;
     }
     return NOERROR;
 }
 
-Int64 WindowAndroid::GetNativePointer()
+Int64 WindowElastos::GetNativePointer()
 {
     // ==================before translated======================
-    // if (mNativeWindowAndroid == 0) {
-    //     mNativeWindowAndroid = nativeInit(mVSyncMonitor.getVSyncPeriodInMicroseconds());
+    // if (mNativeWindowElastos == 0) {
+    //     mNativeWindowElastos = nativeInit(mVSyncMonitor.getVSyncPeriodInMicroseconds());
     // }
-    // return mNativeWindowAndroid;
+    // return mNativeWindowElastos;
 
-    if (mNativeWindowAndroid == 0) {
-        mNativeWindowAndroid = NativeInit(mVSyncMonitor->GetVSyncPeriodInMicroseconds());
+    if (mNativeWindowElastos == 0) {
+        mNativeWindowElastos = NativeInit(mVSyncMonitor->GetVSyncPeriodInMicroseconds());
     }
-    return mNativeWindowAndroid;
+    return mNativeWindowElastos;
 }
 
-ECode WindowAndroid::ShowCallbackNonExistentError(
+ECode WindowElastos::ShowCallbackNonExistentError(
     /* [in] */ const String& error)
 {
     // ==================before translated======================
@@ -325,7 +326,7 @@ ECode WindowAndroid::ShowCallbackNonExistentError(
     return NOERROR;
 }
 
-ECode WindowAndroid::RequestVSyncUpdate()
+ECode WindowElastos::RequestVSyncUpdate()
 {
     // ==================before translated======================
     // mVSyncMonitor.requestUpdate();
@@ -334,27 +335,39 @@ ECode WindowAndroid::RequestVSyncUpdate()
     return NOERROR;
 }
 
-Int64 WindowAndroid::NativeInit(
+Int64 WindowElastos::NativeInit(
     /* [in] */ Int64 vsyncPeriod)
 {
-    assert(0);
-    return 0;
+    return Elastos_WindowAndroid_nativeInit(THIS_PROBE(IInterface), vsyncPeriod);
 }
 
-ECode WindowAndroid::NativeOnVSync(
-    /* [in] */ Int64 nativeWindowAndroid,
+ECode WindowElastos::NativeOnVSync(
+    /* [in] */ Int64 nativeWindowElastos,
     /* [in] */ Int64 vsyncTimeMicros)
 {
-    assert(0);
+    Elastos_WindowAndroid_nativeOnVSync(THIS_PROBE(IInterface), (Handle32)nativeWindowElastos, vsyncTimeMicros);
     return NOERROR;
 }
 
-ECode WindowAndroid::NativeDestroy(
-    /* [in] */ Int64 nativeWindowAndroid)
+ECode WindowElastos::NativeDestroy(
+    /* [in] */ Int64 nativeWindowElastos)
 {
-    assert(0);
+    Elastos_WindowAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeWindowElastos);
     return NOERROR;
 }
+
+void WindowElastos::RequestVSyncUpdate(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<WindowElastos> mObj = (WindowElastos*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "WindowElastos::RequestVSyncUpdate, mObj is NULL");
+        return;
+    }
+    mObj->RequestVSyncUpdate();
+}
+
 
 } // namespace Base
 } // namespace Ui

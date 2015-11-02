@@ -28,6 +28,9 @@ namespace Base {
 class TouchDevice
     : public Object
 {
+public:
+    static CARAPI_(void*) ElaTouchDeviceCallback_Init();
+
 private:
     /**
       * Static methods only so make constructor private.
@@ -42,6 +45,10 @@ private:
     // @CalledByNative
     static CARAPI_(Int32) MaxTouchPoints(
         /* [in] */ IContext* context);
+
+    static CARAPI_(Int32) MaxTouchPoints(
+        /* [in] */ IInterface* context);
+
 };
 
 } // namespace Base

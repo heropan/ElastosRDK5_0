@@ -1,11 +1,14 @@
 
 #include "elastos/droid/webkit/native/ui/gfx/ViewConfigurationHelper.h"
+#include "elastos/droid/webkit/native/ui/api/ViewConfigurationHelper_dec.h"
 //#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::View::IViewConfigurationHelper;
 //using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -310,9 +313,90 @@ ECode ViewConfigurationHelper::NativeUpdateSharedViewConfiguration(
     /* [in] */ Int32 scaledMinScalingSpan,
     /* [in] */ Int32 scaledMinScalingTouchMajor)
 {
-    assert(0);
+    Elastos_ViewConfigurationHelper_nativeUpdateSharedViewConfiguration(THIS_PROBE(IInterface),
+            scaledMaximumFlingVelocity, scaledMinimumFlingVelocity, scaledTouchSlop, scaledDoubleTapSlop, scaledMinScalingSpan, scaledMinScalingTouchMajor);
     return NOERROR;
 }
+
+Int32 ViewConfigurationHelper::GetScaledMaximumFlingVelocity(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ViewConfigurationHelper> mObj = (ViewConfigurationHelper*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ViewConfigurationHelper", "ViewConfigurationHelper::GetScaledMaximumFlingVelocity, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetScaledMaximumFlingVelocity();
+}
+
+Int32 ViewConfigurationHelper::GetScaledMinimumFlingVelocity(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ViewConfigurationHelper> mObj = (ViewConfigurationHelper*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ViewConfigurationHelper", "ViewConfigurationHelper::GetScaledMinimumFlingVelocity, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetScaledMinimumFlingVelocity();
+}
+
+Int32 ViewConfigurationHelper::GetScaledTouchSlop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ViewConfigurationHelper> mObj = (ViewConfigurationHelper*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ViewConfigurationHelper", "ViewConfigurationHelper::GetScaledTouchSlop, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetScaledTouchSlop();
+}
+
+Int32 ViewConfigurationHelper::GetScaledDoubleTapSlop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ViewConfigurationHelper> mObj = (ViewConfigurationHelper*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ViewConfigurationHelper", "ViewConfigurationHelper::GetScaledDoubleTapSlop, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetScaledDoubleTapSlop();
+}
+
+Int32 ViewConfigurationHelper::GetScaledMinScalingSpan(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ViewConfigurationHelper> mObj = (ViewConfigurationHelper*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ViewConfigurationHelper", "ViewConfigurationHelper::GetScaledMinScalingSpan, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetScaledMinScalingSpan();
+}
+
+Int32 ViewConfigurationHelper::GetScaledMinScalingTouchMajor(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ViewConfigurationHelper> mObj = (ViewConfigurationHelper*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ViewConfigurationHelper", "ViewConfigurationHelper::GetScaledMinScalingTouchMajor, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetScaledMinScalingTouchMajor();
+}
+
+AutoPtr<IInterface> ViewConfigurationHelper::CreateWithListener(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(CreateWithListener(c));
+}
+
 
 } // namespace Gfx
 } // namespace Ui

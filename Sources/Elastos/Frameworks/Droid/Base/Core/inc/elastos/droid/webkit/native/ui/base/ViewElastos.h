@@ -6,16 +6,16 @@
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
-#include "elastos/droid/webkit/native/ui/base/ViewAndroidDelegate.h"
+#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
+#include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
 
 // package org.chromium.ui.base;
 // import android.view.View;
 // import org.chromium.base.JNINamespace;
 
 using Elastos::Droid::View::IView;
-using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
-using Elastos::Droid::Webkit::Ui::Base::ViewAndroidDelegate;
+using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
+using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
 
 namespace Elastos {
 namespace Droid {
@@ -24,30 +24,30 @@ namespace Ui {
 namespace Base {
 
 /**
-  * From the Chromium architecture point of view, ViewAndroid and its native counterpart
+  * From the Chromium architecture point of view, ViewElastos and its native counterpart
   * serve purpose of representing Android view where Chrome expects to have a cross platform
-  * handle to the system view type. As Views are Java object on Android, this ViewAndroid
+  * handle to the system view type. As Views are Java object on Android, this ViewElastos
   * and its native counterpart provide the expected abstractions on the C++ side and allow
   * it to be flexibly glued to an actual Android Java View at runtime.
   *
   * It should only be used where access to Android Views is needed from the C++ code.
   */
 // @JNINamespace("ui")
-class ViewAndroid
+class ViewElastos
     : public Object
 {
 public:
     /**
       * Constructs a View object.
       */
-    ViewAndroid(
-        /* [in] */ WindowAndroid* nativeWindow,
-        /* [in] */ ViewAndroidDelegate* viewAndroidDelegate);
+    ViewElastos(
+        /* [in] */ WindowElastos* nativeWindow,
+        /* [in] */ ViewElastosDelegate* viewElastosDelegate);
 
-    virtual CARAPI_(AutoPtr<ViewAndroidDelegate>) GetViewAndroidDelegate();
+    virtual CARAPI_(AutoPtr<ViewElastosDelegate>) GetViewElastosDelegate();
 
     /**
-      * Destroys the c++ ViewAndroid object if one has been created.
+      * Destroys the c++ ViewElastos object if one has been created.
       */
     virtual CARAPI Destroy();
 
@@ -72,13 +72,13 @@ private:
         /* [in] */ Int64 windowPtr);
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeViewAndroid);
+        /* [in] */ Int64 nativeViewElastos);
 
 private:
-    // Native pointer to the c++ ViewAndroid object.
-    Int64 mNativeViewAndroid;
-    /*const*/ AutoPtr<ViewAndroidDelegate> mViewAndroidDelegate;
-    /*const*/ AutoPtr<WindowAndroid> mWindowAndroid;
+    // Native pointer to the c++ ViewElastos object.
+    Int64 mNativeViewElastos;
+    AutoPtr<ViewElastosDelegate> mViewElastosDelegate;
+    AutoPtr<WindowElastos> mWindowElastos;
     Int32 mKeepScreenOnCount;
     AutoPtr<IView> mKeepScreenOnView;
 };

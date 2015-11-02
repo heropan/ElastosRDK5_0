@@ -7,7 +7,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 //#include "elastos/droid/widget/ListPopupWindow.h"
-#include "elastos/droid/webkit/native/ui/base/ViewAndroidDelegate.h"
+#include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -28,7 +28,7 @@ using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnLayoutChangeListener;
-using Elastos::Droid::Webkit::Ui::Base::ViewAndroidDelegate;
+using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
 
 namespace Elastos {
 namespace Droid {
@@ -94,7 +94,7 @@ public:
       */
     DropdownPopupWindow(
         /* [in] */ IContext* context,
-        /* [in] */ ViewAndroidDelegate* viewAndroidDelegate);
+        /* [in] */ ViewElastosDelegate* viewElastosDelegate);
 
     /**
       * Sets the location and the size of the anchor view that the DropdownPopupWindow will use to
@@ -132,9 +132,9 @@ public:
     AutoPtr<IListAdapter> mAdapter;
 
 private:
-    /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr<ViewAndroidDelegate> mViewAndroidDelegate;
-    /*const*/ AutoPtr<IView> mAnchorView;
+    AutoPtr<IContext> mContext;
+    AutoPtr<ViewElastosDelegate> mViewElastosDelegate;
+    AutoPtr<IView> mAnchorView;
     Float mAnchorWidth;
     Float mAnchorHeight;
     Float mAnchorX;

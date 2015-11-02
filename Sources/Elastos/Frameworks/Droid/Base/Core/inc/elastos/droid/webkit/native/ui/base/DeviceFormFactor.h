@@ -23,6 +23,7 @@ namespace Base {
   * UI utilities for accessing form factor information.
   */
 class DeviceFormFactor
+    : public Object
 {
 public:
     /**
@@ -32,6 +33,12 @@ public:
     // @CalledByNative
     static CARAPI_(Boolean) IsTablet(
         /* [in] */ IContext* context);
+
+    static CARAPI_(void*) ElaDeviceFormFactorCallback_Init();
+
+private:
+    static CARAPI_(Boolean) IsTablet(
+        /* [in] */ IInterface* context);
 
 private:
     /**

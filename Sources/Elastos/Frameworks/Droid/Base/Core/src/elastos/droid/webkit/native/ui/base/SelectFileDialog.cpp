@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/ui/base/SelectFileDialog.h"
+#include "elastos/droid/webkit/native/ui/api/SelectFileDialog_dec.h"
 #include "elastos/utility/Arrays.h"
 #include "elastos/core/IntegralToString.h"
 #include "elastos/droid/content/CIntent.h"
@@ -7,6 +8,7 @@
 #include "elastos/droid/os/CEnvironment.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::ISystem;
@@ -28,6 +30,7 @@ using Elastos::Droid::Provider::IMediaStoreMediaColumns;
 using Elastos::Droid::Provider::IMediaStoreAudioMedia;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Webkit::Base::ContentUriUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -86,7 +89,7 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
         dispalyNames->Set(i, charSequenceTmp1);
     }
 
-    *result = dispalyNames->Probe(EIID_IInterface);
+    *result = TO_IINTERFACE(dispalyNames);
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
@@ -126,7 +129,7 @@ const String SelectFileDialog::ANY_TYPES("*/*");
 const String SelectFileDialog::CAPTURE_IMAGE_DIRECTORY("browser-photos");
 
 ECode SelectFileDialog::OnIntentCompleted(
-    /* [in] */ WindowAndroid* window,
+    /* [in] */ WindowElastos* window,
     /* [in] */ Int32 resultCode,
     /* [in] */ IContentResolver* contentResolver,
     /* [in] */ IIntent* results)
@@ -225,7 +228,7 @@ SelectFileDialog::SelectFileDialog(
 ECode SelectFileDialog::SelectFile(
     /* [in] */ ArrayOf<String>* fileTypes,
     /* [in] */ Boolean capture,
-    /* [in] */ WindowAndroid* window)
+    /* [in] */ WindowElastos* window)
 {
     VALIDATE_NOT_NULL(fileTypes);
     VALIDATE_NOT_NULL(window);
@@ -562,14 +565,14 @@ Boolean SelectFileDialog::AcceptSpecificType(
     return FALSE;
 }
 
-AutoPtr<SelectFileDialog> SelectFileDialog::Create(
+AutoPtr<IInterface> SelectFileDialog::Create(
     /* [in] */ Int64 nativeSelectFileDialog)
 {
     // ==================before translated======================
     // return new SelectFileDialog(nativeSelectFileDialog);
 
     AutoPtr<SelectFileDialog> empty = new SelectFileDialog(nativeSelectFileDialog);
-    return empty;
+    return TO_IINTERFACE(empty);
 }
 
 ECode SelectFileDialog::NativeOnFileSelected(
@@ -577,15 +580,31 @@ ECode SelectFileDialog::NativeOnFileSelected(
     /* [in] */ const String& filePath,
     /* [in] */ const String& displayName)
 {
-    assert(0);
+    Elastos_SelectFileDialog_nativeOnFileSelected(THIS_PROBE(IInterface), (Handle32)nativeSelectFileDialogImpl, filePath, displayName);
     return NOERROR;
 }
 
 ECode SelectFileDialog::NativeOnFileNotSelected(
     /* [in] */ Int64 nativeSelectFileDialogImpl)
 {
-    assert(0);
+    Elastos_SelectFileDialog_nativeOnFileNotSelected(THIS_PROBE(IInterface), (Handle32)nativeSelectFileDialogImpl);
     return NOERROR;
+}
+
+void SelectFileDialog::SelectFile(
+    /* [in] */ IInterface* obj,
+    /* [in] */ ArrayOf<String>* fileTypes,
+    /* [in] */ Boolean capture,
+    /* [in] */ IInterface* window)
+{
+    AutoPtr<SelectFileDialog> mObj = (SelectFileDialog*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("SelectFileDialog", "SelectFileDialog::SelectFile, mObj is NULL");
+        return;
+    }
+    AutoPtr<WindowElastos> w = (WindowElastos*)(IObject::Probe(window));
+    mObj->SelectFile(fileTypes, capture, w);
 }
 
 } // namespace Base

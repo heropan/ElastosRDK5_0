@@ -96,6 +96,28 @@ public:
         /* [in] */ const String& html,
         /* [in] */ const String& text);
 
+//callback function declaration
+    static CARAPI_(void*) ElaClipboardCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(String) GetCoercedText(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetHTMLText(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) SetText(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& text);
+
+    static CARAPI_(void) SetHTMLText(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& html,
+        /* [in] */ const String& text);
+
 private:
     /**
       * Returns a new Clipboard object bound to the specified context.
@@ -145,8 +167,8 @@ private:
 private:
     // Necessary for coercing clipboard contents to text if they require
     // access to network resources, etceteras (e.g., URI in clipboard)
-    /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr<IClipboardManager> mClipboardManager;
+    AutoPtr<IContext> mContext;
+    AutoPtr<IClipboardManager> mClipboardManager;
 };
 
 } // namespace Base

@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
+#include "elastos/droid/webkit/native/ui/api/LocalizationUtils_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
@@ -120,7 +121,7 @@ LocalizationUtils::LocalizationUtils()
     // /* cannot be instantiated */
 }
 
-AutoPtr<ILocale> LocalizationUtils::GetJavaLocale(
+AutoPtr<IInterface> LocalizationUtils::GetJavaLocale(
     /* [in] */ const String& language,
     /* [in] */ const String& country,
     /* [in] */ const String& variant)
@@ -130,7 +131,7 @@ AutoPtr<ILocale> LocalizationUtils::GetJavaLocale(
 
     AutoPtr<ILocale> locale;
     CLocale::New(language, country, variant, (ILocale**)&locale);
-    return locale;
+    return TO_IINTERFACE(locale);
 }
 
 String LocalizationUtils::GetDisplayNameForLocale(
@@ -148,16 +149,24 @@ String LocalizationUtils::GetDisplayNameForLocale(
 Int32 LocalizationUtils::NativeGetFirstStrongCharacterDirection(
     /* [in] */ const String& string)
 {
-    assert(0);
-    return 0;
+    return Elastos_LocalizationUtils_nativeGetFirstStrongCharacterDirection(string);
 }
 
 String LocalizationUtils::NativeGetDurationString(
     /* [in] */ Int64 timeInMillis)
 {
-    assert(0);
-    return String("");
+    return Elastos_LocalizationUtils_nativeGetDurationString(timeInMillis);
 }
+
+String LocalizationUtils::GetDisplayNameForLocale(
+    /* [in] */ IInterface* locale,
+    /* [in] */ IInterface* displayLocale)
+{
+    AutoPtr<ILocale> l = ILocale::Probe(locale);
+    AutoPtr<ILocale> dl = ILocale::Probe(displayLocale);
+    return GetDisplayNameForLocale(l, dl);
+}
+
 
 } // namespace Base
 } // namespace Ui

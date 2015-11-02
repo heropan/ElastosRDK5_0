@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/ui/base/DeviceFormFactor.h"
+#include "elastos/droid/webkit/native/ui/api/DeviceFormFactor_dec.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -38,6 +39,13 @@ Boolean DeviceFormFactor::IsTablet(
         sIsTablet = minimumScreenWidthDp >= MINIMUM_TABLET_WIDTH_DP;
     }
     return sIsTablet;
+}
+
+Boolean DeviceFormFactor::IsTablet(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return IsTablet(c);
 }
 
 } // namespace Base

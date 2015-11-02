@@ -50,7 +50,7 @@ private:
 
 private:
     // Used to determine the class instance to dispatch the native call to.
-    /*const*/ Int64 mNativeSurfaceTextureListener;
+    Int64 mNativeSurfaceTextureListener;
 };
 
 } // namespace Gl

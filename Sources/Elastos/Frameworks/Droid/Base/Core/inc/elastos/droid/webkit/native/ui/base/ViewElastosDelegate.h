@@ -21,7 +21,7 @@ namespace Base {
 /**
   * Interface to acquire and release anchor views from the implementing View.
   */
-class ViewAndroidDelegate
+class ViewElastosDelegate
     : public Object
 {
 public:

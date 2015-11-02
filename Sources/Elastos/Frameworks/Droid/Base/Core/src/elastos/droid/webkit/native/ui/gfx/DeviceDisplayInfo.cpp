@@ -1,7 +1,9 @@
 
 #include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
+#include "elastos/droid/webkit/native/ui/api/DeviceDisplayInfo_dec.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/graphics/PixelFormat.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -9,6 +11,7 @@ using Elastos::Droid::Graphics::PixelFormat;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::View::ISurface;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -297,8 +300,125 @@ ECode DeviceDisplayInfo::NativeUpdateSharedDeviceDisplayInfo(
     /* [in] */ Int32 rotationDegrees)
 {
     assert(0);
+    Elastos_DeviceDisplayInfo_nativeUpdateSharedDeviceDisplayInfo(THIS_PROBE(IInterface), displayHeight, displayWidth, physicalDisplayHeight, physicalDisplayWidth, bitsPerPixel, bitsPerComponent, dipScale, smallestDIPWidth, rotationDegrees);
     return NOERROR;
 }
+
+Int32 DeviceDisplayInfo::GetDisplayHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetDisplayHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDisplayHeight();
+}
+
+Int32 DeviceDisplayInfo::GetDisplayWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetDisplayWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDisplayWidth();
+}
+
+Int32 DeviceDisplayInfo::GetPhysicalDisplayHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetPhysicalDisplayHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetPhysicalDisplayHeight();
+}
+
+Int32 DeviceDisplayInfo::GetPhysicalDisplayWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetPhysicalDisplayWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetPhysicalDisplayWidth();
+}
+
+Int32 DeviceDisplayInfo::GetBitsPerPixel(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetBitsPerPixel, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetBitsPerPixel();
+}
+
+Int32 DeviceDisplayInfo::GetBitsPerComponent(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetBitsPerComponent, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetBitsPerComponent();
+}
+
+Double DeviceDisplayInfo::GetDIPScale(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetDIPScale, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDIPScale();
+}
+
+Int32 DeviceDisplayInfo::GetSmallestDIPWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetSmallestDIPWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetSmallestDIPWidth();
+}
+
+Int32 DeviceDisplayInfo::GetRotationDegrees(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceDisplayInfo> mObj = (DeviceDisplayInfo*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("DeviceDisplayInfo", "DeviceDisplayInfo::GetRotationDegrees, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetRotationDegrees();
+}
+
+AutoPtr<IInterface> DeviceDisplayInfo::Create(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Create(c));
+}
+
 
 } // namespace Gfx
 } // namespace Ui

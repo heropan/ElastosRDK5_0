@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/ui/base/TouchDevice.h"
+#include "elastos/droid/webkit/native/ui/api/TouchDevice_dec.h"
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 
@@ -72,6 +73,14 @@ Int32 TouchDevice::MaxTouchPoints(
         return 0;
     }
 }
+
+Int32 TouchDevice::MaxTouchPoints(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return MaxTouchPoints(c);
+}
+
 
 } // namespace Base
 } // namespace Ui
