@@ -65,7 +65,7 @@ public:
     static CARAPI GetLOOPBACK(
         /* [out] */ IInetAddress** result);
 
-private:
+public:
     /**
      * @hide
      */
@@ -81,6 +81,7 @@ private:
      */
     static AutoPtr<IInetAddress> LOOPBACK;
 
+private:
     AutoPtr<IInterface> WriteReplace();
 };
 

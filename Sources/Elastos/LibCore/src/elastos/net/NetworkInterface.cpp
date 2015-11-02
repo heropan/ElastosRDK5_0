@@ -11,7 +11,6 @@
 #include "InterfaceAddress.h"
 #include "CArrayList.h"
 #include "Arrays.h"
-#include "elastos/net/CInet4AddressHelper.h"
 #include <net/if.h>
 
 using Elastos::Core::StringBuilder;
@@ -264,9 +263,7 @@ ECode NetworkInterface::CollectIpv4Addresses(
     ec = (CLibcore::sOs->IoctlInetAddress(fd, SIOCGIFNETMASK, interfaceName, (IInetAddress**)&netmask));
     FAIL_GOTO(ec, _EXIT_)
 
-    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-    inet4AddressHelper->GetANY((IInetAddress**)&any);
-    isEquals = Object::Equals(broadcast, any);
+    isEquals = Object::Equals(broadcast, CInet4Address::ANY);
     if (isEquals) {
         broadcast = NULL;
     }

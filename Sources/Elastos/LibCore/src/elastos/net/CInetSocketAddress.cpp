@@ -3,7 +3,6 @@
 #include "CInet4Address.h"
 #include "InetAddress.h"
 #include "StringUtils.h"
-#include "elastos/net/CInet4AddressHelper.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::EIID_ISerializable;
@@ -41,11 +40,7 @@ ECode CInetSocketAddress::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (address == NULL) {
-        AutoPtr<IInetAddress> any;
-        AutoPtr<IInet4AddressHelper> inet4AddressHelper;
-        CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-        inet4AddressHelper->GetANY((IInetAddress**)&any);
-        mAddr = any;
+        mAddr = CInet4Address::ANY;
     }
     else {
         mAddr = address;

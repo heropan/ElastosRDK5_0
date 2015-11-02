@@ -1,6 +1,6 @@
 
 DIRS += dhcp
-#DIRS += http
+DIRS += http
 #DIRS += nsd
 #DIRS += wifi
 #DIRS += ethernet

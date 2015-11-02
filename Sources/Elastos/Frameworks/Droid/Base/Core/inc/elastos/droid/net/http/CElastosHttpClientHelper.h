@@ -3,17 +3,47 @@
 #define __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTHELPER_H__
 
 #include "_Elastos_Droid_Net_Http_CElastosHttpClientHelper.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+
+using Elastos::IO::IInputStream;
 using Org::Apache::Http::Entity::IAbstractHttpEntity;
+using Org::Apache::Http::IHttpEntity;
+using Org::Apache::Http::IHttpRequest;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+/**
+ * Implementation of the Apache {@link DefaultHttpClient} that is configured with
+ * reasonable default settings and registered schemes for Android.
+ * Don't create this directly, use the {@link #newInstance} factory method.
+ *
+ * <p>This client processes cookies but does not retain them by default.
+ * To retain cookies, simply add a cookie store to the HttpContext:</p>
+ *
+ * <pre>context.setAttribute(ClientContext.COOKIE_STORE, cookieStore);</pre>
+ */
 CarClass(CElastosHttpClientHelper)
+    , public Singleton
+    , public IElastosHttpClientHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
+    // Gzip of data shorter than this probably won't be worthwhile
+    CARAPI GetDEFAULT_SYNC_MIN_GZIP_BYTES(
+        /* [out] */ Int64* result);
+
+    CARAPI SetDEFAULT_SYNC_MIN_GZIP_BYTES(
+        /* [in] */ Int64 DEFAULT_SYNC_MIN_GZIP_BYTES);
+
     /**
      * Create a new HttpClient with reasonable defaults (which you can update).
      *
@@ -23,8 +53,8 @@ public:
      */
     CARAPI NewInstance(
         /* [in] */ const String& userAgent,
-        /* [in] */ Elastos::Droid::Content::IContext* context,
-        /* [out] */ Elastos::Droid::Net::Http::IElastosHttpClient** client);
+        /* [in] */ IContext* context,
+        /* [out] */ IElastosHttpClient** result);
 
     /**
      * Create a new HttpClient with reasonable defaults (which you can update).
@@ -33,7 +63,7 @@ public:
      */
     CARAPI NewInstance(
         /* [in] */ const String& userAgent,
-        /* [out] */ Elastos::Droid::Net::Http::IElastosHttpClient** client);
+        /* [out] */ IElastosHttpClient** result);
 
     /**
      * Modifies a request to indicate to the server that we would like a
@@ -42,7 +72,7 @@ public:
      * @see #getUngzippedContent
      */
     CARAPI ModifyRequestToAcceptGzipResponse(
-        /* [in, out] */ Org::Apache::Http::IHttpRequest* request);
+        /* [in] */ IHttpRequest* request);
 
     /**
      * Gets the input stream from a response entity.  If the entity is gzipped
@@ -53,8 +83,8 @@ public:
      * @throws IOException
      */
     CARAPI GetUngzippedContent(
-        /* [in] */ Org::Apache::Http::IHttpEntity* entity,
-        /* [out] */ Elastos::IO::IInputStream** stream);
+        /* [in] */ IHttpEntity* entity,
+        /* [out] */ IInputStream** result);
 
     /**
      * Compress data to send to server.
@@ -65,16 +95,16 @@ public:
      */
     CARAPI GetCompressedEntity(
         /* [in] */ ArrayOf<Byte>* data,
-        /* [in] */ Elastos::Droid::Content::IContentResolver* resolver,
-        /* [out] */ Org::Apache::Http::Entity::IAbstractHttpEntity** entity);
+        /* [in] */ IContentResolver* resolver,
+        /* [out] */ IAbstractHttpEntity** result);
 
     /**
      * Retrieves the minimum size for compressing data.
      * Shorter data will not be compressed.
      */
     CARAPI GetMinGzipSize(
-        /* [in] */ Elastos::Droid::Content::IContentResolver* resolver,
-        /* [out] */ Int64* size);
+        /* [in] */ IContentResolver* resolver,
+        /* [out] */ Int64* result);
 
     /**
      * Returns the date of the given HTTP date string. This method can identify
@@ -92,17 +122,13 @@ public:
      */
     CARAPI ParseDate(
         /* [in] */ const String& dateString,
-        /* [out] */ Int64* date);
-
-public:
-    // Gzip of data shorter than this probably won't be worthwhile
-    static Int64 DEFAULT_SYNC_MIN_GZIP_BYTES;
+        /* [out] */ Int64* result);
 
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTHELPER_H__
+#endif //  __ELASTOS_DROID_NET_HTTP_CELASTOSHTTPCLIENTHELPER_H__

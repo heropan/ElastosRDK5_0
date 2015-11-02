@@ -10,7 +10,6 @@
 #include "AutoLock.h"
 #include "CIoBridge.h"
 #include "StringBuilder.h"
-#include "elastos/net/CInet4AddressHelper.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IInteger32;
@@ -56,22 +55,14 @@ ECode ServerSocket::constructor()
 ECode ServerSocket::constructor(
     /* [in] */ Int32 aPort)
 {
-    AutoPtr<IInetAddress> any;
-    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
-    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-    inet4AddressHelper->GetANY((IInetAddress**)&any);
-    return constructor(aPort, DEFAULT_BACKLOG, any);
+    return constructor(aPort, DEFAULT_BACKLOG, CInet4Address::ANY);
 }
 
 ECode ServerSocket::constructor(
     /* [in] */ Int32 aPort,
     /* [in] */ Int32 backlog)
 {
-    AutoPtr<IInetAddress> any;
-    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
-    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-    inet4AddressHelper->GetANY((IInetAddress**)&any);
-    return constructor(aPort, backlog, any);
+    return constructor(aPort, backlog, CInet4Address::ANY);
 }
 
 ECode ServerSocket::constructor(
@@ -96,11 +87,7 @@ ECode ServerSocket::constructor(
         mImpl = (ISocketImpl*)pss->Probe(EIID_ISocketImpl);
     }
 
-    AutoPtr<IInetAddress> any;
-    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
-    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-    inet4AddressHelper->GetANY((IInetAddress**)&any);
-    AutoPtr<IInetAddress> addr = localAddr == NULL ? any.Get() : localAddr;
+    AutoPtr<IInetAddress> addr = localAddr == NULL ? CInet4Address::ANY.Get() : localAddr;
 
     synchronized (this) {
         mImpl->Create(TRUE);
@@ -332,11 +319,7 @@ ECode ServerSocket::Bind(
     }
 
     Int32 port = 0;
-    AutoPtr<IInetAddress> any;
-    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
-    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-    inet4AddressHelper->GetANY((IInetAddress**)&any);
-    AutoPtr<IInetAddress> addr = any;
+    AutoPtr<IInetAddress> addr = CInet4Address::ANY;
     if (localAddr != NULL) {
         if (IInetSocketAddress::Probe(localAddr) == NULL) {
 //            throw new IllegalArgumentException("Local address not an InetSocketAddress: " +

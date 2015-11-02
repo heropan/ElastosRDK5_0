@@ -56,6 +56,9 @@
 #include "elastos/droid/net/CWifiKey.h"
 #include "elastos/droid/net/CWifiLinkQualityInfo.h"
 
+#include "elastos/droid/net/http/CElastosHttpClient.h"
+// #include "elastos/droid/net/CElastosHttpClientConnection.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -172,6 +175,20 @@ CAR_OBJECT_IMPL(CWifiKey)
 
 CAR_OBJECT_IMPL(CWifiLinkQualityInfo)
 
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+namespace Http {
+
+CAR_OBJECT_IMPL(CElastosHttpClient)
+
+// CAR_OBJECT_IMPL(CElastosHttpClientConnection)
+
+} // namespace Http
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
