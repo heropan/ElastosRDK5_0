@@ -17,9 +17,10 @@ DrawFilter::~DrawFilter()
 }
 
 void DrawFilter::NativeDestructor(
-    /* [in] */ Int32 nObj)
+    /* [in] */ Int64 objHandle)
 {
-    SkSafeUnref((SkDrawFilter*)nObj);
+    SkDrawFilter* obj = reinterpret_cast<SkDrawFilter*>(objHandle);
+    SkSafeUnref(obj);
 }
 
 } // namespace Graphics

@@ -74,7 +74,9 @@ const Float RippleBackground::WAVE_OUTER_SIZE_INFLUENCE_MIN = 40.f;
 Boolean RippleBackground::InitStatic()
 {
     assert(0 && "TODO");
-    // CLinearInterpolator::New((ITimeInterpolator**)&LINEAR_INTERPOLATOR);
+    // AutoPtr<CLinearInterpolator> li;
+    // CLinearInterpolator::New((CTimeInterpolator**)&li);
+    // LINEAR_INTERPOLATOR = (ITimeInterpolator*)li.Get();
     return TRUE;
 }
 

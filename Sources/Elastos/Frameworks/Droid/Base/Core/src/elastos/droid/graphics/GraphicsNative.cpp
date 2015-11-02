@@ -5,6 +5,9 @@
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/BitmapRegionDecoder.h"
+#include "elastos/droid/graphics/NativeCanvas.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include <skia/core/SkDither.h>
 
 namespace Elastos {
@@ -61,9 +64,7 @@ SkRect* GraphicsNative::IRectF2SkRect(
     /* [in] */ SkRect* r)
 {
     CRectF* rf = (CRectF*)obj;
-    assert(0 && "TODO: need jni codes.");
-    // r->set(SkFloatToScalar(rf->mLeft), SkFloatToScalar(rf->mTop),
-    //        SkFloatToScalar(rf->mRight), SkFloatToScalar(rf->mBottom));
+    r->set(rf->mLeft, rf->mTop, rf->mRight, rf->mBottom);
     return r;
 }
 
@@ -384,100 +385,6 @@ bool GraphicsNative::DroidPixelAllocator::allocPixelRef(
     return mStorageObj != NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Conversions to/from SkColor, for get/setPixels, and the create method, which
-// is basically like setPixels
-
-typedef void (*FromColorProc)(void* dst, const SkColor src[], int width,
-                              int x, int y);
-
-static void FromColor_D32(void* dst, const SkColor src[], int width,
-                          int, int)
-{
-    SkPMColor* d = (SkPMColor*)dst;
-
-    for (int i = 0; i < width; i++) {
-        *d++ = SkPreMultiplyColor(*src++);
-    }
-}
-
-static void FromColor_D565(void* dst, const SkColor src[], int width,
-                           int x, int y)
-{
-    uint16_t* d = (uint16_t*)dst;
-
-    DITHER_565_SCAN(y);
-    for (int stop = x + width; x < stop; x++) {
-        SkColor c = *src++;
-        *d++ = SkDitherRGBTo565(SkColorGetR(c), SkColorGetG(c), SkColorGetB(c),
-                                DITHER_VALUE(x));
-    }
-}
-
-static void FromColor_D4444(void* dst, const SkColor src[], int width,
-                            int x, int y)
-{
-    SkPMColor16* d = (SkPMColor16*)dst;
-
-    DITHER_4444_SCAN(y);
-    for (int stop = x + width; x < stop; x++) {
-        SkPMColor c = SkPreMultiplyColor(*src++);
-        *d++ = SkDitherARGB32To4444(c, DITHER_VALUE(x));
-//        *d++ = SkPixel32ToPixel4444(c);
-    }
-}
-
-// can return NULL
-static FromColorProc ChooseFromColorProc(SkBitmap::Config config) {
-    switch (config) {
-        case SkBitmap::kARGB_8888_Config:
-            return FromColor_D32;
-        case SkBitmap::kARGB_4444_Config:
-            return FromColor_D4444;
-        case SkBitmap::kRGB_565_Config:
-            return FromColor_D565;
-        default:
-            break;
-    }
-    return NULL;
-}
-
-Boolean GraphicsNative::SetPixels(
-    /* [in] */ ArrayOf<Int32>* srcColors,
-    /* [in] */ Int32 srcOffset,
-    /* [in] */ Int32 srcStride,
-    /* [in] */ Int32 x,
-    /* [in] */ Int32 y,
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [in] */ const SkBitmap& dstBitmap)
-{
-    assert(0 && "TODO");
-    // SkAutoLockPixels alp(dstBitmap);
-    // void* dst = dstBitmap.getPixels();
-    // FromColorProc proc = ChooseFromColorProc(dstBitmap);
-
-    // if (NULL == dst || NULL == proc) {
-    //     return FALSE;
-    // }
-
-    // const Int32* array = srcColors.GetPayload();
-    // const SkColor* src = (const SkColor*)array + srcOffset;
-
-    // // reset to to actual choice from caller
-    // dst = dstBitmap.getAddr(x, y);
-    // // now copy/convert each scanline
-    // for (Int32 y = 0; y < height; y++) {
-    //     proc(dst, src, width, x, y);
-    //     src += srcStride;
-    //     dst = (char*)dst + dstBitmap.rowBytes();
-    // }
-
-    // dstBitmap.notifyPixelsChanged();
-
-    return TRUE;
-}
-
 void GraphicsNative::ReinitBitmap(
     /* [in] */ IBitmap* bitmapObj,
     /* [in] */ SkBitmap* bitmap,
@@ -496,6 +403,129 @@ Int32 GraphicsNative::GetBitmapAllocationByteCount(
     Int32 count = 0;
     bitmapObj->GetAllocationByteCount(&count);
     return count;
+}
+
+SkCanvas* GraphicsNative::GetNativeCanvas(
+    /* [in] */ ICanvas* canvas)
+{
+    SkASSERT(canvas);
+    // SkASSERT(env->IsInstanceOf(canvas, gCanvas_class));
+    Int64 canvasHandle = ((CCanvas*)canvas)->GetNativeCanvasWrapper();
+    SkCanvas* c = reinterpret_cast<NativeCanvas*>(canvasHandle)->getSkCanvas();
+    SkASSERT(c);
+    return c;
+}
+
+NativePaint* GraphicsNative::GetNativePaint(
+    /* [in] */ IPaint* paint)
+{
+    SkASSERT(paint);
+    // SkASSERT(env->IsInstanceOf(paint, gPaint_class));
+    NativePaint* p = reinterpret_cast<NativePaint*>(((CPaint*)paint)->mNativePaint);
+    SkASSERT(p);
+    return p;
+}
+
+TypefaceImpl* GraphicsNative::GetNativeTypeface(
+    /* [in] */ IPaint* paint)
+{
+    SkASSERT(paint);
+    // SkASSERT(env->IsInstanceOf(paint, gPaint_class));
+    Int64 typefaceHandle = ((CPaint*)paint)->mNativeTypeface;
+    TypefaceImpl* p = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+    return p;
+}
+
+AutoFloatArray::AutoFloatArray(
+    /* [in] */ ArrayOf<Float>* array,
+    /* [in] */ Int32 minLength,
+    /* [in] */ JNIAccess access)
+    : fArray(array), fPtr(NULL), fLen(0)
+{
+    SkASSERT(env);
+    if (array) {
+        fLen = array->GetLength();
+        if (fLen < minLength) {
+            sk_throw();
+        }
+        fPtr = array->GetPayload();
+    }
+    // fReleaseMode = (access == kRO_JNIAccess) ? JNI_ABORT : 0;
+}
+
+AutoFloatArray::~AutoFloatArray()
+{
+    // if (fPtr) {
+    //     fEnv->ReleaseFloatArrayElements(fArray, fPtr, fReleaseMode);
+    // }
+}
+
+AutoInt32Array::AutoInt32Array(
+    /* [in] */ ArrayOf<Int32>* array,
+    /* [in] */ Int32 minLength)
+    : fArray(array), fPtr(NULL), fLen(0)
+{
+    SkASSERT(env);
+    if (array) {
+        fLen = array->GetLength();
+        if (fLen < minLength) {
+            sk_throw();
+        }
+        fPtr = array->GetPayload();
+    }
+}
+
+AutoInt32Array::~AutoInt32Array()
+{
+    // if (fPtr) {
+    //     fEnv->ReleaseIntArrayElements(fArray, fPtr, 0);
+    // }
+}
+
+AutoShortArray::AutoShortArray(
+    /* [in] */ ArrayOf<short>* array,
+    /* [in] */ Int32 minLength,
+    /* [in] */ JNIAccess access)
+    : fArray(array), fPtr(NULL), fLen(0)
+{
+    SkASSERT(env);
+    if (array) {
+        fLen = array->GetLength();
+        if (fLen < minLength) {
+            sk_throw();
+        }
+        fPtr = array->GetPayload();
+    }
+    // fReleaseMode = (access == kRO_JNIAccess) ? JNI_ABORT : 0;
+}
+
+AutoShortArray::~AutoShortArray()
+{
+    // if (fPtr) {
+    //     fEnv->ReleaseShortArrayElements(fArray, fPtr, fReleaseMode);
+    // }
+}
+
+AutoByteArray::AutoByteArray(
+    /* [in] */ ArrayOf<Byte>* array,
+    /* [in] */ Int32 minLength)
+    : fArray(array), fPtr(NULL), fLen(0)
+{
+    SkASSERT(env);
+    if (array) {
+        fLen = array->GetLength();
+        if (fLen < minLength) {
+            sk_throw();
+        }
+        fPtr = array->GetPayload();
+    }
+}
+
+AutoByteArray::~AutoByteArray()
+{
+    // if (fPtr) {
+    //     fEnv->ReleaseByteArrayElements(fArray, fPtr, 0);
+    // }
 }
 
 } // namespace Graphics

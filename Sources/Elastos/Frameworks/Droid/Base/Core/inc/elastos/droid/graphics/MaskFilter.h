@@ -30,10 +30,10 @@ public:
 
 private:
     static CARAPI_(void) NativeDestructor(
-        /* [in] */ Int32 nativeInstance);
+        /* [in] */ Int64 nativeInstance);
 
 protected:
-    Int32 mNativeInstance;
+    Int64 mNativeInstance;
 };
 
 } // namespace Graphics

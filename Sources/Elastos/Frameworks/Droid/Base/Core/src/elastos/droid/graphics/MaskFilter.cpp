@@ -17,7 +17,7 @@ MaskFilter::~MaskFilter()
 }
 
 void MaskFilter::NativeDestructor(
-    /* [in] */ Int32 nativeInstance)
+    /* [in] */ Int64 nativeInstance)
 {
     SkMaskFilter* obj = reinterpret_cast<SkMaskFilter*>(nativeInstance);
     SkSafeUnref(obj);

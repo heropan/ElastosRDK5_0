@@ -2135,7 +2135,7 @@ ECode CMountService::UnregisterListener(
 ECode CMountService::Shutdown(
     /* [in] */ IMountShutdownObserver* observer)
 {
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::SHUTDOWN));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::SHUTDOWN));
 
     Slogger::I(TAG, "Shutting down");
     AutoLock lock(mVolumesLock);
@@ -2241,7 +2241,7 @@ ECode CMountService::SetUsbMassStorageEnabled(
     /* [in] */ Boolean enable)
 {
     WaitForReady();
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::MOUNT_UNMOUNT_FILESYSTEMS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::MOUNT_UNMOUNT_FILESYSTEMS));
 
     // AutoPtr<IStorageVolume> primary = GetPrimaryPhysicalVolume();
     // if (primary == NULL) {
@@ -2371,7 +2371,7 @@ ECode CMountService::MountVolume(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::MOUNT_UNMOUNT_FILESYSTEMS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::MOUNT_UNMOUNT_FILESYSTEMS));
 
     WaitForReady();
     *result = DoMountVolume(mountPoint);
@@ -2383,7 +2383,7 @@ ECode CMountService::UnmountVolume(
     /* [in] */ Boolean force,
     /* [in] */ Boolean removeEncryption)
 {
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::MOUNT_UNMOUNT_FILESYSTEMS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::MOUNT_UNMOUNT_FILESYSTEMS));
     WaitForReady();
 
     String volState;
@@ -2412,7 +2412,7 @@ ECode CMountService::FormatVolume(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::MOUNT_FORMAT_FILESYSTEMS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::MOUNT_FORMAT_FILESYSTEMS));
     WaitForReady();
 
     *result = DoFormatVolume(mountPoint);
@@ -2424,7 +2424,7 @@ ECode CMountService::GetStorageUsers(
     /* [out, callee] */ ArrayOf<Int32>** pids)
 {
     VALIDATE_NOT_NULL(pids);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::MOUNT_UNMOUNT_FILESYSTEMS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::MOUNT_UNMOUNT_FILESYSTEMS));
     WaitForReady();
     // try {
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
@@ -2484,7 +2484,7 @@ ECode CMountService::GetSecureContainerList(
     /* [out, callee] */ ArrayOf<String>** pids)
 {
     VALIDATE_NOT_NULL(pids);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_ACCESS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_ACCESS));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2519,7 +2519,7 @@ ECode CMountService::CreateSecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_CREATE));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_CREATE));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2562,7 +2562,7 @@ ECode CMountService::FinalizeSecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_CREATE));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_CREATE));
     WarnOnNotMounted();
 
     Int32 rc = StorageResultCode::OperationSucceeded;
@@ -2595,7 +2595,7 @@ ECode CMountService::FixPermissionsSecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_CREATE));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_CREATE));
     WarnOnNotMounted();
 
     Int32 rc = StorageResultCode::OperationSucceeded;
@@ -2631,7 +2631,7 @@ ECode CMountService::DestroySecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_DESTROY));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_DESTROY));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2697,7 +2697,7 @@ ECode CMountService::MountSecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_MOUNT_UNMOUNT));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_MOUNT_UNMOUNT));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2753,7 +2753,7 @@ ECode CMountService::UnmountSecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_MOUNT_UNMOUNT));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_MOUNT_UNMOUNT));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2824,7 +2824,7 @@ ECode CMountService::IsSecureContainerMounted(
     /* [out] */ Boolean* mounted)
 {
     VALIDATE_NOT_NULL(mounted);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_ACCESS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_ACCESS));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2840,7 +2840,7 @@ ECode CMountService::RenameSecureContainer(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_RENAME));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_RENAME));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2883,7 +2883,7 @@ ECode CMountService::GetSecureContainerPath(
     /* [out] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_ACCESS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_ACCESS));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -2930,7 +2930,7 @@ ECode CMountService::GetSecureContainerFilesystemPath(
     /* [out] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
-    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::ASEC_ACCESS));
+    FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::ASEC_ACCESS));
     WaitForReady();
     WarnOnNotMounted();
 
@@ -3156,7 +3156,7 @@ ECode CMountService::GetEncryptionState(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CRYPT_KEEPER , String("no permission to access the crypt keeper")));
+            Elastos::Droid::Manifest::permission::CRYPT_KEEPER , String("no permission to access the crypt keeper")));
 
     WaitForReady();
 
@@ -3224,7 +3224,7 @@ ECode CMountService::DecryptStorage(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
+            Elastos::Droid::Manifest::permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
 
     WaitForReady();
 
@@ -3281,7 +3281,7 @@ ECode CMountService::EncryptStorage(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
+            Elastos::Droid::Manifest::permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
 
     WaitForReady();
 
@@ -3329,7 +3329,7 @@ ECode CMountService::ChangeEncryptionPassword(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
+            Elastos::Droid::Manifest::permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
 
     WaitForReady();
 
@@ -3373,7 +3373,7 @@ ECode CMountService::VerifyEncryptionPassword(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
+            Elastos::Droid::Manifest::permission::CRYPT_KEEPER, String("no permission to access the crypt keeper")));
 
     AutoPtr<ICharSequence> cs;
     CStringWrapper::New(password, (ICharSequence**)&cs);
@@ -3423,7 +3423,7 @@ ECode CMountService::GetVolumeList(
     Int32 callingUserId = UserHandle::GetCallingUserId();
     Int32 permission;
     FAIL_RETURN(mContext->CheckPermission(
-            Elastos::Droid::Manifest::Permission::ACCESS_ALL_EXTERNAL_STORAGE,
+            Elastos::Droid::Manifest::permission::ACCESS_ALL_EXTERNAL_STORAGE,
             Binder::GetCallingPid(), Binder::GetCallingUid(), &permission));
     Boolean accessAll = permission == IPackageManager::PERMISSION_GRANTED;
 
@@ -3787,10 +3787,10 @@ String CMountService::BuildObbPath(
 //     /* [in] */ IPrintWriter* pw,
 //     /* [in] */ ArrayOf<String>* args)
 // {
-//     if (mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP) != PackageManager::PERMISSION_GRANTED) {
+//     if (mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP) != PackageManager::PERMISSION_GRANTED) {
 //         pw->Println("Permission Denial: can't dump ActivityManager from from pid="
 //                 + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
-//                 + " without permission " + Elastos::Droid::Manifest::Permission::DUMP);
+//                 + " without permission " + Elastos::Droid::Manifest::permission::DUMP);
 //         return;
 //     }
 

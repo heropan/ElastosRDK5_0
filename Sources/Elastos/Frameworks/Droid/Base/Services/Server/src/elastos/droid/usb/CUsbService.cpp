@@ -184,7 +184,7 @@ ECode CUsbService::SetDevicePackage(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     GetSettingsForUser(userId)->SetDevicePackage(device, packageName);
     return NOERROR;
 }
@@ -194,7 +194,7 @@ ECode CUsbService::SetAccessoryPackage(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     GetSettingsForUser(userId)->SetAccessoryPackage(accessory, packageName);
     return NOERROR;
 }
@@ -243,7 +243,7 @@ ECode CUsbService::GrantDevicePermission(
     /* [in] */ IUsbDevice* device,
     /* [in] */ Int32 uid)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     Int32 userId = UserHandle::GetCallingUserId();
     GetSettingsForUser(userId)->GrantDevicePermission(device, uid);
     return NOERROR;
@@ -253,7 +253,7 @@ ECode CUsbService::GrantAccessoryPermission(
     /* [in] */ IUsbAccessory* accessory,
     /* [in] */ Int32 uid)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     Int32 userId = UserHandle::GetCallingUserId();
     GetSettingsForUser(userId)->GrantAccessoryPermission(accessory, uid);
     return NOERROR;
@@ -265,7 +265,7 @@ ECode CUsbService::HasDefaults(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     *result = GetSettingsForUser(userId)->HasDefaults(packageName);
     return NOERROR;
 }
@@ -274,7 +274,7 @@ ECode CUsbService::ClearDefaults(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     GetSettingsForUser(userId)->ClearDefaults(packageName);
     return NOERROR;
 }
@@ -283,7 +283,7 @@ ECode CUsbService::SetCurrentFunction(
     /* [in] */ const String& function,
     /* [in] */ Boolean makeDefault)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     if (mDeviceManager == NULL) {
         // throw new IllegalStateException("USB device mode not supported");
         Slogger::E(TAG, "USB device mode not supported");
@@ -296,7 +296,7 @@ ECode CUsbService::SetCurrentFunction(
 ECode CUsbService::SetMassStorageBackingFile(
     /* [in] */ const String& path)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     if (mDeviceManager == NULL) {
         // throw new IllegalStateException("USB device mode not supported");
         Slogger::E(TAG, "USB device mode not supported");
@@ -310,14 +310,14 @@ ECode CUsbService::AllowUsbDebugging(
     /* [in] */ Boolean alwaysAllow,
     /* [in] */ const String& publicKey)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     mDeviceManager->AllowUsbDebugging(alwaysAllow, publicKey);
     return NOERROR;
 }
 
 ECode CUsbService::DenyUsbDebugging()
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_USB, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_USB, String(NULL)));
     mDeviceManager->DenyUsbDebugging();
     return NOERROR;
 }

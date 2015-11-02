@@ -758,7 +758,7 @@ ECode CUiModeManagerService::UpdateComputedNightModeLocked()
 //     /* [in] */ IPrintWriter *pw,
 //     /* [in] */ ArrayOf<String> *args)
 // {
-//     String permission = Elastos::Droid::Manifest::Permission::DUMP;
+//     String permission = Elastos::Droid::Manifest::permission::DUMP;
 //     Int32 checked;
 //     mContext->CheckCallingOrSelfPermission(permission, &checked);
 //     if (checked != PackageManager::PERMISSION_GRANTED) {

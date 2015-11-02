@@ -138,6 +138,7 @@ Int64 CRadialGradient::NativeCreate1(
     const Int32* colorValues = colors.GetPayload();
 
     // AutoJavaFloatArray autoPos(env, posArray, count);
+    assert(positions->GetLength() >= count);
 #ifdef SK_SCALAR_IS_FLOAT
     SkScalar* pos = positions->GetPayload();
 #else

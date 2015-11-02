@@ -470,7 +470,7 @@ void AppWidgetServiceImpl::Dump(
 {
     assert(0);
     // Int32 selfPermission;
-    // mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, &selfPermission);
+    // mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &selfPermission);
     // AutoPtr<IBinderHelper> binderHelper;
     // CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
     // Int32 pid;
@@ -781,7 +781,7 @@ ECode AppWidgetServiceImpl::BindAppWidgetId(
     /* [in] */ IComponentName* provider,
     /* [in] */ IBundle* options)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_APPWIDGET,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_APPWIDGET,
             String("bindAppWidgetId appWidgetId=") + StringUtils::Int32ToString(appWidgetId) +
             String(" provider=") + StringUtils::Int32ToString((Int32)provider)));
     return BindAppWidgetIdImpl(appWidgetId, provider, options);
@@ -796,7 +796,7 @@ ECode AppWidgetServiceImpl::BindAppWidgetIdIfAllowed(
 {
     //try {
     ECode ec = mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::BIND_APPWIDGET, String(NULL));
+        Elastos::Droid::Manifest::permission::BIND_APPWIDGET, String(NULL));
     //} catch (SecurityException se) {
     if(ec == (Int32)E_SECURITY_EXCEPTION) {
         if (!CallerHasBindAppWidgetPermission(packageName)) {
@@ -841,7 +841,7 @@ ECode AppWidgetServiceImpl::HasBindAppWidgetPermission(
     /* [out] */ Boolean* result)
 {
     FAIL_RETURN(mContext->EnforceCallingPermission(
-            Elastos::Droid::Manifest::Permission::MODIFY_APPWIDGET_BIND_PERMISSIONS,
+            Elastos::Droid::Manifest::permission::MODIFY_APPWIDGET_BIND_PERMISSIONS,
             String("hasBindAppWidgetPermission packageName=") + packageName));
 
     {
@@ -858,7 +858,7 @@ ECode AppWidgetServiceImpl::SetBindAppWidgetPermission(
     /* [in] */ Boolean permission)
 {
     FAIL_RETURN(mContext->EnforceCallingPermission(
-            Elastos::Droid::Manifest::Permission::MODIFY_APPWIDGET_BIND_PERMISSIONS,
+            Elastos::Droid::Manifest::permission::MODIFY_APPWIDGET_BIND_PERMISSIONS,
             String("setBindAppWidgetPermission packageName=") + packageName));
 
     {
@@ -897,7 +897,7 @@ ECode AppWidgetServiceImpl::BindRemoteViewsService(
     if (FAILED(ec)) return E_ILLEGAL_ARGUMENT_EXCEPTION;
     String permission;
     si->GetPermission(&permission);
-    if (!Elastos::Droid::Manifest::Permission::BIND_REMOTEVIEWS.Equals(permission)) {
+    if (!Elastos::Droid::Manifest::permission::BIND_REMOTEVIEWS.Equals(permission)) {
         //throw new SecurityException("Selected service does not require "
         //        + android.permission.BIND_REMOTEVIEWS + ": " + componentName);
         return E_SECURITY_EXCEPTION;
@@ -1477,7 +1477,7 @@ Boolean AppWidgetServiceImpl::CanAccessAppWidgetId(
     }
 
     Int32 selfPermission = 0;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_APPWIDGET, &selfPermission));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_APPWIDGET, &selfPermission));
     if (selfPermission == IPackageManager::PERMISSION_GRANTED) {
         // Apps that can bind have access to all appWidgetIds.
         return TRUE;

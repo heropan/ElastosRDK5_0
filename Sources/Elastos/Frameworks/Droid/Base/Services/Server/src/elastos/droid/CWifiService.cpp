@@ -1024,25 +1024,25 @@ ECode CWifiService::StartScan(
 ECode CWifiService::EnforceAccessPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::ACCESS_WIFI_STATE, String("WifiService"));
+            Elastos::Droid::Manifest::permission::ACCESS_WIFI_STATE, String("WifiService"));
 }
 
 ECode CWifiService::EnforceChangePermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CHANGE_WIFI_STATE, String("WifiService"));
+            Elastos::Droid::Manifest::permission::CHANGE_WIFI_STATE, String("WifiService"));
 }
 
 ECode CWifiService::EnforceMulticastChangePermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CHANGE_WIFI_MULTICAST_STATE, String("WifiService"));
+            Elastos::Droid::Manifest::permission::CHANGE_WIFI_MULTICAST_STATE, String("WifiService"));
 }
 
 ECode CWifiService::EnforceConnectivityInternalPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, String("ConnectivityService"));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, String("ConnectivityService"));
 }
 
 ECode CWifiService::SetWifiEnabled(
@@ -1582,7 +1582,7 @@ void CWifiService::Dump(
     /* [in] */ ArrayOf<String>* args)
 {
     assert(0);
-//    if (mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP) != PackageManager::PERMISSION_GRANTED) {
+//    if (mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP) != PackageManager::PERMISSION_GRANTED) {
 //        pw->Println("Permission Denial: can't dump WifiService from from pid=" + Binder->GetCallingPid() + ", uid=" + Binder->GetCallingUid());
 //        return;
 //    }
@@ -1627,7 +1627,7 @@ ECode CWifiService::EnforceWakeSourcePermission(
     if (uid == Process::MyUid()) {
         return NOERROR;
     }
-    return mContext->EnforcePermission(Elastos::Droid::Manifest::Permission::UPDATE_DEVICE_STATS,
+    return mContext->EnforcePermission(Elastos::Droid::Manifest::permission::UPDATE_DEVICE_STATS,
             pid, uid, String(NULL));
 }
 
@@ -1642,7 +1642,7 @@ ECode CWifiService::AcquireWifiLock(
     *result = FALSE;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::WAKE_LOCK, String(NULL)));
+            Elastos::Droid::Manifest::permission::WAKE_LOCK, String(NULL)));
     if (lockMode != IWifiManager::WIFI_MODE_FULL &&
             lockMode != IWifiManager::WIFI_MODE_SCAN_ONLY &&
             lockMode != IWifiManager::WIFI_MODE_FULL_HIGH_PERF) {
@@ -1782,7 +1782,7 @@ ECode CWifiService::ReleaseWifiLock(
     *result = FALSE;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::WAKE_LOCK, String(NULL)));
+            Elastos::Droid::Manifest::permission::WAKE_LOCK, String(NULL)));
     {
         AutoLock l(mLocksLock);
         *result = ReleaseWifiLockLocked(lock);

@@ -65,9 +65,9 @@ ECode AbstractAccountAuthenticator::CheckBinderPermission()
 {
     Int32 uid = Binder::GetCallingUid();
     Int32 value;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::ACCOUNT_MANAGER, &value));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::ACCOUNT_MANAGER, &value));
     if (value != IPackageManager::PERMISSION_GRANTED) {
-        Slogger::E(TAG, "caller uid %d lacks %s", uid, Elastos::Droid::Manifest::Permission::ACCOUNT_MANAGER.string());
+        Slogger::E(TAG, "caller uid %d lacks %s", uid, Elastos::Droid::Manifest::permission::ACCOUNT_MANAGER.string());
         return E_SECURITY_EXCEPTION;
         // throw new SecurityException("caller uid " + uid + " lacks " + perm);
     }

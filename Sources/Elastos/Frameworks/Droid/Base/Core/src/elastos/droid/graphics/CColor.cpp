@@ -218,7 +218,7 @@ ECode CColor::ParseColor(
         return NOERROR;
     }
     else {
-        String cstr = colorString.ToLowerCase(/*Locale.US*/);
+        String cstr = colorString.ToLowerCase(/*Locale.ROOT*/);
         HashMap<String, Int32>::Iterator it = sColorNameMap->Find(cstr);
         if (it != sColorNameMap->End()) {
             *color = it->mSecond;
@@ -241,17 +241,18 @@ ECode CColor::HSBtoColor(
 Int32 CColor::GetHtmlColor(
     /* [in] */ const String& color)
 {
-    assert(0 && "TODO");
-    // Integer i = sColorNameMap.get(color.toLowerCase(Locale.ROOT));
-    // if (i != null) {
-    //     return i;
-    // } else {
-    //     try {
-    //         return XmlUtils.convertValueToInt(color, -1);
-    //     } catch (NumberFormatException nfe) {
-    //         return -1;
-    //     }
-    // }
+    HashMap<String, Int32>::Iterator it = sColorNameMap->Find(color.ToLowerCase(/*Locale.ROOT*/));
+    if (it != sColorNameMap->End()) {
+        return it->mSecond;
+    }
+    else {
+        // try {
+        assert(0 && "TODO");
+        // return XmlUtils::ConvertValueToInt(color, -1);
+        // } catch (NumberFormatException nfe) {
+        //     return -1;
+        // }
+    }
     return -1;
 }
 

@@ -152,7 +152,7 @@ ECode CSearchManagerService::GetAssistIntent(
         AutoPtr<IActivityManagerHelper> amHelper;
         CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
         Int32 value;
-        amHelper->CheckComponentPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL, uId, -1, TRUE, &value);
+        amHelper->CheckComponentPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL, uId, -1, TRUE, &value);
         if (value == IPackageManager::PERMISSION_GRANTED) {
             // Translate to the current user id, if caller wasn't aware
             if (userHandle == IUserHandle::USER_CURRENT) {
@@ -171,7 +171,7 @@ ECode CSearchManagerService::GetAssistIntent(
             //         + "Request to getAssistIntent for " + userHandle
             //         + " but is calling from user " + UserHandle.getCallingUserId()
             //         + "; this requires "
-            //         + Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL;
+            //         + Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL;
             // Slog.w(TAG, msg);
             return NOERROR;
         }

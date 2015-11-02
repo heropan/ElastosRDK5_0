@@ -160,21 +160,21 @@ Int64 CLinearGradient::NativeCreate2(
 
 AutoPtr<IShader> CLinearGradient::Copy()
 {
-    assert(0 && "TODO");
     AutoPtr<ILinearGradient> copy;
-    // switch (mType) {
-    //     case TYPE_COLORS_AND_POSITIONS:
-    //         copy = new LinearGradient(mX0, mY0, mX1, mY1, mColors.clone(),
-    //                 mPositions != null ? mPositions.clone() : null, mTileMode);
-    //         break;
-    //     case TYPE_COLOR_START_AND_COLOR_END:
-    //         copy = new LinearGradient(mX0, mY0, mX1, mY1, mColor0, mColor1, mTileMode);
-    //         break;
-    //     default:
-    //         throw new IllegalArgumentException("LinearGradient should be created with either " +
-    //                 "colors and positions or start color and end color");
-    // }
-    // copyLocalMatrix(copy);
+    switch (mType) {
+        case TYPE_COLORS_AND_POSITIONS:
+            CLinearGradient::New(mX0, mY0, mX1, mY1, *mColors->Clone(),
+                    mPositions != NULL ? mPositions->Clone() : NULL, mTileMode, (ILinearGradient**)&copy);
+            break;
+        case TYPE_COLOR_START_AND_COLOR_END:
+            CLinearGradient::New(mX0, mY0, mX1, mY1, mColor0, mColor1, mTileMode, (ILinearGradient**)&copy);
+            break;
+        default:
+            // throw new IllegalArgumentException("LinearGradient should be created with either " +
+            //         "colors and positions or start color and end color");
+            assert(0 && "colors and positions or start color and end color.");
+    }
+    CopyLocalMatrix(IShader::Probe(copy));
     return IShader::Probe(copy);
 }
 

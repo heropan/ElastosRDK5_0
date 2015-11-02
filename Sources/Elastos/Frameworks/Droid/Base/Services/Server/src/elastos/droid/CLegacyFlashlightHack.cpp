@@ -46,10 +46,10 @@ ECode CLegacyFlashlightHack::GetFlashlightEnabled(
 ECode CLegacyFlashlightHack::SetFlashlightEnabled(
     /* [in] */ Boolean on)
 {
-    String permission1 = Elastos::Droid::Manifest::Permission::FLASHLIGHT;
+    String permission1 = Elastos::Droid::Manifest::permission::FLASHLIGHT;
     Int32 result1;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(permission1, &result1));
-    String permission2 = Elastos::Droid::Manifest::Permission::HARDWARE_TEST;
+    String permission2 = Elastos::Droid::Manifest::permission::HARDWARE_TEST;
     Int32 result2;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(permission2, &result2));
     if (result1 != IPackageManager::PERMISSION_GRANTED &&

@@ -309,7 +309,7 @@ ECode CThrottleService::SettingsObserver::OnChange(
 ECode CThrottleService::EnforceAccessPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE,
+        Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE,
         String("ThrottleService"));
 }
 

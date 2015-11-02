@@ -40,8 +40,7 @@ public:
         /* [in] */ Int32 bottom);
 
     CARAPI constructor(
-        /* [in] */ Int64 ni,
-        /* [in] */ Int32 dummy);
+        /* [in] */ Int64 ni);
 
     /** Set the region to the empty region
      */

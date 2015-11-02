@@ -319,7 +319,7 @@ Boolean RecognitionService::CheckPermissions(
         //Java:    Log.d(TAG, "checkPermissions");
         Logger::D(TAG, String("checkPermissions\n"));
     }
-    if (/*RecognitionService.this.checkCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED*/FALSE) {
+    if (/*RecognitionService.this.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED*/FALSE) {
         return TRUE;
     }
     //try {

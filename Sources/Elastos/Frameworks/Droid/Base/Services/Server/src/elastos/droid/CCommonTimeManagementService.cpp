@@ -280,7 +280,7 @@ ECode CCommonTimeManagementService::Dump(
     /* [in] */ ArrayOf<String> *args)
 {
     Int32 result = 0;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder sb("Permission Denial: can't dump CommonTimeManagement service from from ");
         sb += "pid=";

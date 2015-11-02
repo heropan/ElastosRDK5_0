@@ -639,7 +639,7 @@ ECode CWallpaperManagerService::SetDimensionHints(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::SET_WALLPAPER_HINTS));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::SET_WALLPAPER_HINTS));
 
     AutoLock lock(&mLock);
     Int32 userId = UserHandle::GetCallingUserId();
@@ -775,7 +775,7 @@ ECode CWallpaperManagerService::SetWallpaper(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::SET_WALLPAPER));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::SET_WALLPAPER));
 
     AutoLock lock(&mLock);
     if (DEBUG) Slogger::V(TAG, "setWallpaper");
@@ -846,7 +846,7 @@ AutoPtr<IParcelFileDescriptor> CWallpaperManagerService::UpdateWallpaperBitmapLo
 ECode CWallpaperManagerService::SetWallpaperComponent(
     /* [in] */ IComponentName* name)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::SET_WALLPAPER_COMPONENT));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::SET_WALLPAPER_COMPONENT));
 
     AutoLock lock(&mLock);
     String str;
@@ -934,7 +934,7 @@ Boolean CWallpaperManagerService::BindWallpaperComponentLocked(
         if (componentName != NULL)
             componentName->ToString(&strComponentName);
 
-        if (!permission.Equals(Elastos::Droid::Manifest::Permission::BIND_WALLPAPER)) {
+        if (!permission.Equals(Elastos::Droid::Manifest::permission::BIND_WALLPAPER)) {
             Slogger::W(TAG, "Selected service does not require android.permission.BIND_WALLPAPER: %s",
                 strComponentName.string());
             if (fromUser) {

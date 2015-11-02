@@ -1,29 +1,29 @@
+
 #include "elastos/droid/graphics/TemporaryBuffer.h"
-#include "elastos/droid/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 AutoPtr< ArrayOf<Char32> > TemporaryBuffer::sTemp;
-Mutex TemporaryBuffer::sClassLock;
-
+Object TemporaryBuffer::sObject;
 AutoPtr< ArrayOf<Char32> > TemporaryBuffer::Obtain(
     /* [in] */ Int32 len)
 {
     AutoPtr< ArrayOf<Char32> > buf;
 
-    {
-        AutoLock lock(sClassLock);
-
+    synchronized(sObject) {
         buf = sTemp;
         sTemp = NULL;
     }
 
     if (buf == NULL || buf->GetLength() < len) {
-        buf = ArrayOf<Char32>::Alloc(ArrayUtils::IdealCharArraySize(len));
+        buf = ArrayUtils::NewUnpaddedChar32Array(len);
     }
 
     return buf;
@@ -34,13 +34,10 @@ void TemporaryBuffer::Recycle(
 {
     if (temp->GetLength() > 1000) return;
 
-    {
-        AutoLock lock(sClassLock);
-
+    synchronized(sObject) {
         sTemp = temp;
     }
 }
-
 
 } // namespace Graphics
 } // namepsace Droid

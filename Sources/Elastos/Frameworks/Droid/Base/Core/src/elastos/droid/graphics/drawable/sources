@@ -9,7 +9,7 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 INCLUDES += $(PREBUILD_INC)/skia/utils
 INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/skia/effects
-INCLUDES += $(PREBUILD_INC)/libcxx
+#INCLUDES += $(PREBUILD_INC)/libcxx
 
 C_DEFINES += -DDROID_CORE
 CPP_FLAGS += -std=c++0x

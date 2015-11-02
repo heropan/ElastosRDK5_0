@@ -368,7 +368,7 @@ ECode CVibratorService::Vibrate(
     /* [in] */ IBinder* token)
 {
     Int32 result = 0;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::VIBRATE, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::VIBRATE, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         //throw new SecurityException("Requires VIBRATE permission");
         Slogger::E(TAG, "Requires VIBRATE permission");
@@ -414,7 +414,7 @@ ECode CVibratorService::VibratePattern(
     /* [in] */ IBinder* token)
 {
     Int32 result = 0;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::VIBRATE, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::VIBRATE, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         //throw new SecurityException("Requires VIBRATE permission");
         Slogger::E(TAG, "Requires VIBRATE permission");
@@ -475,7 +475,7 @@ ECode CVibratorService::CancelVibrate(
     /* [in] */ IBinder* token)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::VIBRATE, String("cancelVibrate")));
+            Elastos::Droid::Manifest::permission::VIBRATE, String("cancelVibrate")));
 
     // so wakelock calls will succeed
     Int64 identity = Binder::ClearCallingIdentity();

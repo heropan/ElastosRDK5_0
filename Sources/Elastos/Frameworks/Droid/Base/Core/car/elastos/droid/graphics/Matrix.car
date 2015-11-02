@@ -64,12 +64,6 @@ module
         const Int32 MPERSP_1 = 7;   //!< use with getValues/setValues
         const Int32 MPERSP_2 = 8;   //!< use with getValues/setValues
 
-        /** Returns true iff obj is a Matrix and its values equal our values.
-        */
-        Equals(
-            [in] IMatrix* matrix,
-            [out] Boolean* isEqual);
-
         /**
          * Copy 9 values from the matrix into the array.
          */

@@ -191,7 +191,7 @@ ECode LockdownVpnTracker::InitLocked()
     CIntentFilter::New(ACTION_LOCKDOWN_RESET, (IIntentFilter**)&resetFilter);
     AutoPtr<IIntent> intent;
     mContext->RegisterReceiver(mResetReceiver, resetFilter,
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, NULL, (IIntent**)&intent);
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, NULL, (IIntent**)&intent);
 
     // try {
     // TODO: support non-standard port numbers

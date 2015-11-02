@@ -39,7 +39,7 @@ ECode CActiveRestoreSession::GetAvailableRestoreSets(
 
         *result = 0;
         mHost->mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::BACKUP,
+                Elastos::Droid::Manifest::permission::BACKUP,
                 String("getAvailableRestoreSets"));
         if (observer == NULL) {
             //throw new IllegalArgumentException("Observer must not be NULL");
@@ -98,7 +98,7 @@ ECode CActiveRestoreSession::RestoreAll(
     VALIDATE_NOT_NULL(value);
     *value = 0;
     mHost->mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::BACKUP,
+            Elastos::Droid::Manifest::permission::BACKUP,
             String("performRestore"));
 
     if (DEBUG) Slogger::D(TAG, "restoreAll token= %d, observer", token);
@@ -160,7 +160,7 @@ ECode CActiveRestoreSession::RestoreSome(
     /* [out] */ Int32* success)
 {
     VALIDATE_NOT_NULL(success);
-    mHost->mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    mHost->mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
             String("performRestore"));
 
     if (DEBUG) {
@@ -274,7 +274,7 @@ ECode CActiveRestoreSession::RestorePackage(
         // If the caller is not privileged and is not coming from the target
         // app's uid, throw a permission exception back to the caller.
         Int32 perm = 0;
-        FAIL_RETURN(mHost->mContext->CheckPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+        FAIL_RETURN(mHost->mContext->CheckPermission(Elastos::Droid::Manifest::permission::BACKUP,
                 Binder::GetCallingPid(), Binder::GetCallingUid(), &perm));
 
         AutoPtr<IApplicationInfo> info;

@@ -2180,7 +2180,7 @@ AutoPtr< List<AutoPtr<IActivityManagerRunningServiceInfo> > > ActiveServices::Ge
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
     Int32 result;
     amHelper->CheckUidPermission(
-                Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+                Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
                 uid, &result);
     if (result == IPackageManager::PERMISSION_GRANTED) {
         AutoPtr< ArrayOf<Int32> > users = mAm->GetUsersLocked();

@@ -54,7 +54,9 @@ ECode Ripple::RippleAnimatorListenerAdapter::OnAnimationEnd(
 Boolean Ripple::InitStatic()
 {
     assert(0 && "TODO");
-    // CLinearInterpolator::New((ITimeInterpolator**)&LINEAR_INTERPOLATOR);
+    // AutoPtr<CLinearInterpolator> li;
+    // CLinearInterpolator::New((CTimeInterpolator**)&li);
+    // LINEAR_INTERPOLATOR = (ITimeInterpolator*)li.Get();
     DECEL_INTERPOLATOR = new LogInterpolator();
     return TRUE;
 }

@@ -17,6 +17,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_MINIKINSKIA_H__
 #define __ELASTOS_DROID_GRAPHICS_MINIKINSKIA_H__
 
+#include <skia/core/SkPaint.h>
 #include <minikin/MinikinFont.h>
 
 using android::MinikinPaint;

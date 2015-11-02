@@ -78,9 +78,15 @@ const Int32 RippleDrawable::MAX_RIPPLES = 10;
 
 Boolean RippleDrawable::InitStatic()
 {
-    CPorterDuffXfermode::New(PorterDuffMode_DST_IN, (IPorterDuffXfermode**)&DST_IN);
-    CPorterDuffXfermode::New(PorterDuffMode_SRC_ATOP, (IPorterDuffXfermode**)&SRC_ATOP);
-    CPorterDuffXfermode::New(PorterDuffMode_SRC_OVER, (IPorterDuffXfermode**)&SRC_OVER);
+    AutoPtr<CPorterDuffXfermode> pdx;
+    CPorterDuffXfermode::NewByFriend(PorterDuffMode_DST_IN, (CPorterDuffXfermode**)&pdx);
+    DST_IN = (IPorterDuffXfermode*)pdx.Get();
+    pdx = NULL;
+    CPorterDuffXfermode::NewByFriend(PorterDuffMode_SRC_ATOP, (CPorterDuffXfermode**)&pdx);
+    SRC_ATOP = (IPorterDuffXfermode*)pdx.Get();
+    pdx = NULL;
+    CPorterDuffXfermode::NewByFriend(PorterDuffMode_SRC_OVER, (CPorterDuffXfermode**)&pdx);
+    SRC_OVER = (IPorterDuffXfermode*)pdx.Get();
     return TRUE;
 }
 

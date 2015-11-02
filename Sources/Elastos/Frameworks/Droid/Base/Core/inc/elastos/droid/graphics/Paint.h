@@ -1526,7 +1526,7 @@ private:
     CARAPI_(AutoPtr<ILocale>) GetDefaultLocale();
 
 public:
-    Int32 mNativePaint;
+    Int64 mNativePaint;
 
     /**
      * @hide

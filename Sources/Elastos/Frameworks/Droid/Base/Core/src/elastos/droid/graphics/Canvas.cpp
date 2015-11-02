@@ -14,6 +14,9 @@
 #include "elastos/droid/graphics/CColor.h"
 #include "elastos/droid/graphics/DrawFilter.h"
 #include "elastos/droid/graphics/NinePatch.h"
+#include "elastos/droid/graphics/NativePaint.h"
+#include "elastos/droid/graphics/NativeCanvas.h"
+#include "elastos/droid/graphics/MinikinUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkCanvas.h>
@@ -29,12 +32,78 @@
 #include <skia/core/SkDrawFilter.h>
 #include <skia/effects/SkPorterDuff.h>
 #include <utils/RefBase.h>
+#include <minikin/Layout.h>
+#include <minikin/MinikinFont.h>
 
 using Elastos::Utility::Logging::Logger;
+using android::Layout;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
+
+class DrawTextOnPathFunctor {
+public:
+    DrawTextOnPathFunctor(const Layout& layout, NativeCanvas* canvas, float hOffset,
+                float vOffset, const NativePaint& paint, const SkPath& path)
+            : layout(layout), canvas(canvas), hOffset(hOffset), vOffset(vOffset),
+                paint(paint), path(path) {
+    }
+    void operator()(size_t start, size_t end) {
+        uint16_t glyphs[1];
+        for (size_t i = start; i < end; i++) {
+            glyphs[0] = layout.getGlyphId(i);
+            float x = hOffset + layout.getX(i);
+            float y = vOffset + layout.getY(i);
+            canvas->drawTextOnPath(glyphs, 1, path, x, y, paint);
+        }
+    }
+private:
+    const Layout& layout;
+    NativeCanvas* canvas;
+    float hOffset;
+    float vOffset;
+    const NativePaint& paint;
+    const SkPath& path;
+};
+
+class DrawTextFunctor {
+public:
+    DrawTextFunctor(const Layout& layout, NativeCanvas* canvas, uint16_t* glyphs, float* pos,
+                    const SkPaint& paint, float x, float y, MinikinRect& bounds)
+            : layout(layout), canvas(canvas), glyphs(glyphs), pos(pos), paint(paint),
+              x(x), y(y), bounds(bounds) { }
+
+    void operator()(size_t start, size_t end) {
+        if (canvas->drawTextAbsolutePos()) {
+            for (size_t i = start; i < end; i++) {
+                glyphs[i] = layout.getGlyphId(i);
+                pos[2 * i] = x + layout.getX(i);
+                pos[2 * i + 1] = y + layout.getY(i);
+            }
+        } else {
+            for (size_t i = start; i < end; i++) {
+                glyphs[i] = layout.getGlyphId(i);
+                pos[2 * i] = layout.getX(i);
+                pos[2 * i + 1] = layout.getY(i);
+            }
+        }
+
+        size_t glyphCount = end - start;
+        canvas->drawText(glyphs + start, pos + (2 * start), glyphCount, paint, x, y,
+                         bounds.mLeft , bounds.mTop , bounds.mRight , bounds.mBottom);
+    }
+private:
+    const Layout& layout;
+    NativeCanvas* canvas;
+    uint16_t* glyphs;
+    float* pos;
+    const SkPaint& paint;
+    float x;
+    float y;
+    MinikinRect& bounds;
+};
+
 
 // {CC4FB366-48F0-48FF-A6B6-670E64F46A7B}
 extern const InterfaceID EIID_Canvas =
@@ -1653,7 +1722,7 @@ void Canvas::FreeCaches()
 
 void Canvas::FreeTextLayoutCaches()
 {
-    assert(0 && "TODO: need jni codes.");
+    Layout::purgeCaches();
 }
 
 Int64 Canvas::GetNativeCanvasWrapper()
@@ -1667,94 +1736,108 @@ Boolean Canvas::IsRecordingFor(
     return FALSE;
 }
 
-Int64 Canvas::InitRaster(
-    /* [in] */ Int64 bitmap)
+static NativeCanvas* get_canvas(
+    /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return NOERROR;
+    return reinterpret_cast<NativeCanvas*>(canvasHandle);
+}
+
+Int64 Canvas::InitRaster(
+    /* [in] */ Int64 bitmapHandle)
+{
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    return reinterpret_cast<Int64>(NativeCanvas::create_canvas(bitmap));
 }
 
 void Canvas::NativeSetBitmap(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 bitmapHandle,
     /* [in] */ Boolean copyState)
 {
-    assert(0 && "TODO: need jni codes.");
+    SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    get_canvas(canvasHandle)->setBitmap(bitmap, copyState);
 }
 
 Boolean Canvas::NativeIsOpaque(
     /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return FALSE;
+    return get_canvas(canvasHandle)->isOpaque() ? TRUE : FALSE;
 }
 
 Int32 Canvas::NativeGetWidth(
     /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    return static_cast<Int32>(get_canvas(canvasHandle)->width());
 }
 
 Int32 Canvas::NativeGetHeight(
     /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    return static_cast<Int32>(get_canvas(canvasHandle)->height());
 }
 
 Int32 Canvas::NativeSave(
     /* [in] */ Int64 canvasHandle,
     /* [in] */ Int32 saveFlags)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    SkCanvas::SaveFlags flags = static_cast<SkCanvas::SaveFlags>(saveFlags);
+    return static_cast<Int32>(get_canvas(canvasHandle)->save(flags));
 }
 
 Int32 Canvas::NativeSaveLayer(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float l,
     /* [in] */ Float t,
     /* [in] */ Float r,
     /* [in] */ Float b,
-    /* [in] */ Int64 paint,
-    /* [in] */ Int32 flags)
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int32 flagsHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    NativePaint* paint  = reinterpret_cast<NativePaint*>(paintHandle);
+    SkCanvas::SaveFlags flags = static_cast<SkCanvas::SaveFlags>(flagsHandle);
+    return static_cast<Int32>(get_canvas(canvasHandle)->saveLayer(l, t, r, b, paint, flags));
 }
 
 Int32 Canvas::NativeSaveLayerAlpha(
-    /* [in] */Int64 canvas,
+    /* [in] */Int64 canvasHandle,
     /* [in] */ Float l,
     /* [in] */ Float t,
     /* [in] */ Float r,
     /* [in] */ Float b,
     /* [in] */ Int32 alpha,
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flagsHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    SkCanvas::SaveFlags flags = static_cast<SkCanvas::SaveFlags>(flagsHandle);
+    return static_cast<Int32>(get_canvas(canvasHandle)->saveLayerAlpha(l, t, r, b, alpha, flags));
 }
 
 void Canvas::NativeRestore(
     /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativeCanvas* canvas = get_canvas(canvasHandle);
+    if (canvas->getSaveCount() <= 1) {  // cannot restore anymore
+        // doThrowISE(env, "Underflow in restore");
+        return;
+    }
+    canvas->restore();
 }
 
 void Canvas::NativeRestoreToCount(
     /* [in] */ Int64 canvasHandle,
-    /* [in] */ Int32 saveCount)
+    /* [in] */ Int32 restoreCount)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativeCanvas* canvas = get_canvas(canvasHandle);
+    if (restoreCount < 1 || restoreCount > canvas->getSaveCount()) {
+        // doThrowIAE(env, "Underflow in restoreToCount");
+        return;
+    }
+    canvas->restoreToCount(restoreCount);
 }
 
 Int32 Canvas::NativeGetSaveCount(
     /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    return static_cast<Int32>(get_canvas(canvasHandle)->getSaveCount());
 }
 
 void Canvas::NativeTranslate(
@@ -1762,7 +1845,7 @@ void Canvas::NativeTranslate(
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
-    assert(0 && "TODO: need jni codes.");
+    get_canvas(canvasHandle)->translate(dx, dy);
 }
 
 void Canvas::NativeScale(
@@ -1770,14 +1853,14 @@ void Canvas::NativeScale(
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
-    assert(0 && "TODO: need jni codes.");
+    get_canvas(canvasHandle)->scale(sx, sy);
 }
 
 void Canvas::NativeRotate(
     /* [in] */ Int64 canvasHandle,
     /* [in] */ Float degrees)
 {
-    assert(0 && "TODO: need jni codes.");
+    get_canvas(canvasHandle)->rotate(degrees);
 }
 
 void Canvas::NativeSkew(
@@ -1785,7 +1868,7 @@ void Canvas::NativeSkew(
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
-    assert(0 && "TODO: need jni codes.");
+    get_canvas(canvasHandle)->skew(sx, sy);
 }
 
 void Canvas::NativeConcat(
@@ -1796,96 +1879,115 @@ void Canvas::NativeConcat(
 }
 
 void Canvas::NativeSetMatrix(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 matrix)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 matrixHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    get_canvas(canvasHandle)->setMatrix(matrix ? *matrix : SkMatrix::I());
 }
 
 Boolean Canvas::NativeClipRect(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Float left,
-    /* [in] */ Float top,
-    /* [in] */ Float right,
-    /* [in] */ Float bottom,
-    /* [in] */ RegionOp op)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Float l,
+    /* [in] */ Float t,
+    /* [in] */ Float r,
+    /* [in] */ Float b,
+    /* [in] */ RegionOp opHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return NOERROR;
+    SkRegion::Op op = static_cast<SkRegion::Op>(opHandle);
+    bool emptyClip = get_canvas(canvasHandle)->clipRect(l, t, r, b, op);
+    return emptyClip ? FALSE : TRUE;
 }
 
 Boolean Canvas::NativeClipPath(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 path,
-    /* [in] */ RegionOp op)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 pathHandle,
+    /* [in] */ RegionOp opHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return FALSE;
+    SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
+    SkRegion::Op op = static_cast<SkRegion::Op>(opHandle);
+    bool emptyClip = get_canvas(canvasHandle)->clipPath(path, op);
+    return emptyClip ? FALSE : TRUE;
 }
 
 Boolean Canvas::NativeClipRegion(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 region,
-    /* [in] */ RegionOp op)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 deviceRgnHandle,
+    /* [in] */ RegionOp opHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return FALSE;
+    SkRegion* deviceRgn = reinterpret_cast<SkRegion*>(deviceRgnHandle);
+    SkRegion::Op op = static_cast<SkRegion::Op>(opHandle);
+    bool emptyClip = get_canvas(canvasHandle)->clipRegion(deviceRgn, op);
+    return emptyClip ? FALSE : TRUE;
 }
 
 void Canvas::NativeSetDrawFilter(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 nativeFilter)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 filterHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    get_canvas(canvasHandle)->setDrawFilter(reinterpret_cast<SkDrawFilter*>(filterHandle));
 }
 
 Boolean Canvas::NativeGetClipBounds(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ IRect* bounds)
 {
-    assert(0 && "TODO: need jni codes.");
-    return FALSE;
+    SkRect   r;
+    SkIRect ir;
+    bool result = get_canvas(canvasHandle)->getClipBounds(&r);
+
+    if (!result) {
+        r.setEmpty();
+    }
+    r.round(&ir);
+
+    (void)GraphicsNative::SkIRect2IRect(ir, bounds);
+    return result ? TRUE : FALSE;
 }
 
 void Canvas::NativeGetCTM(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 matrix)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 matrixHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    get_canvas(canvasHandle)->getMatrix(matrix);
 }
 
 Boolean Canvas::NativeQuickReject(
-    /* [in] */ Int64 nativeCanvas,
-    /* [in] */ Int64 nativePath)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 pathHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return FALSE;
+    SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
+    bool result = get_canvas(canvasHandle)->quickRejectPath(*path);
+    return result ? TRUE : FALSE;
 }
 
 Boolean Canvas::NativeQuickReject(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom)
 {
-    assert(0 && "TODO: need jni codes.");
-    return FALSE;
+    bool result = get_canvas(canvasHandle)->quickRejectRect(left, top, right, bottom);
+    return result ? TRUE : FALSE;
 }
 
 void Canvas::NativeDrawColor(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Int32 color,
-    /* [in] */ Int32 mode)
+    /* [in] */ Int32 modeHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    SkPorterDuff::Mode mode = static_cast<SkPorterDuff::Mode>(modeHandle);
+    get_canvas(canvasHandle)->drawColor(color, SkPorterDuff::ToXfermodeMode(mode));
 }
 
 void Canvas::NativeDrawPaint(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawPaint(*paint);
 }
 
 void Canvas::NativeDrawPoint(
@@ -1894,7 +1996,8 @@ void Canvas::NativeDrawPoint(
     /* [in] */ Float y,
     /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawPoint(x, y, *paint);
 }
 
 void Canvas::NativeDrawPoints(
@@ -1904,18 +2007,31 @@ void Canvas::NativeDrawPoints(
     /* [in] */ Int32 count,
     /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    // NPE_CHECK_RETURN_VOID(env, pts);
+    if (pts == NULL) return;
+    // AutoJavaFloatArray autoPts(env, pts);
+    float* floats = pts->GetPayload();
+    const int length = pts->GetLength();
+
+    if ((offset | count) < 0 || offset + count > length) {
+        // doThrowAIOOBE(env);
+        return;
+    }
+
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawPoints(floats + offset, count, *paint);
 }
 
 void Canvas::NativeDrawLine(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float startX,
     /* [in] */ Float startY,
     /* [in] */ Float stopX,
     /* [in] */ Float stopY,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawLine(startX, startY, stopX, stopY, *paint);
 }
 
 void Canvas::NativeDrawLines(
@@ -1925,101 +2041,141 @@ void Canvas::NativeDrawLines(
     /* [in] */ Int32 count,
     /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    // NPE_CHECK_RETURN_VOID(env, pts);
+    if (pts == NULL) return;
+    // AutoJavaFloatArray autoPts(env, pts);
+    float* floats = pts->GetPayload();
+    const int length = pts->GetLength();
+
+    if ((offset | count) < 0 || offset + count > length) {
+        // doThrowAIOOBE(env);
+        return;
+    }
+
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawLines(floats + offset, count, *paint);
 }
 
 void Canvas::NativeDrawRect(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawRect(left, top, right, bottom, *paint);
 }
 
 void Canvas::NativeDrawOval(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
-    /* [in] */ Int64 nativePaint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawOval(left, top, right, bottom, *paint);
 }
 
 void Canvas::NativeDrawCircle(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float cx,
     /* [in] */ Float cy,
     /* [in] */ Float radius,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawCircle(cx, cy, radius, *paint);
 }
 
 void Canvas::NativeDrawArc(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
     /* [in] */ Float startAngle,
-    /* [in] */ Float sweep,
+    /* [in] */ Float sweepAngle,
     /* [in] */ Boolean useCenter,
-    /* [in] */ Int64 nativePaint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawArc(left, top, right, bottom, startAngle, sweepAngle,
+                                       useCenter, *paint);
 }
 
 void Canvas::NativeDrawRoundRect(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ Float left,
     /* [in] */ Float top,
     /* [in] */ Float right,
     /* [in] */ Float bottom,
     /* [in] */ Float rx,
     /* [in] */ Float ry,
-    /* [in] */ Int64 nativePaint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawRoundRect(left, top, right, bottom, rx, ry, *paint);
 }
 
 void Canvas::NativeDrawPath(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 path,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 pathHandle,
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawPath(*path, *paint);
 }
 
 void Canvas::NativeDrawBitmap(
-    /* [in] */ Int64 canvas_,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 bitmapHandle,
     /* [in] */ Float left,
     /* [in] */ Float top,
-    /* [in] */ Int64 paint,
+    /* [in] */ Int64 paintHandle,
     /* [in] */ Int32 canvasDensity,
     /* [in] */ Int32 screenDensity,
     /* [in] */ Int32 bitmapDensity)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativeCanvas* canvas = get_canvas(canvasHandle);
+    const SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+
+    if (canvasDensity == bitmapDensity || canvasDensity == 0 || bitmapDensity == 0) {
+        if (screenDensity != 0 && screenDensity != bitmapDensity) {
+            NativePaint filteredPaint;
+            if (paint) {
+                filteredPaint = *paint;
+            }
+            filteredPaint.setFilterLevel(NativePaint::kLow_FilterLevel);
+            canvas->drawBitmap(*bitmap, left, top, &filteredPaint);
+        } else {
+            canvas->drawBitmap(*bitmap, left, top, paint);
+        }
+    } else {
+        canvas->save(SkCanvas::kMatrixClip_SaveFlag);
+        SkScalar scale = canvasDensity / (float)bitmapDensity;
+        canvas->translate(left, top);
+        canvas->scale(scale, scale);
+
+        NativePaint filteredPaint;
+        if (paint) {
+            filteredPaint = *paint;
+        }
+        filteredPaint.setFilterLevel(NativePaint::kLow_FilterLevel);
+
+        canvas->drawBitmap(*bitmap, 0, 0, &filteredPaint);
+        canvas->restore();
+    }
 }
 
-static void DoDrawBitmap(
-    /* [in] */ SkCanvas* canvas,
-    /* [in] */ SkBitmap* bitmap,
-    /* [in] */ IRect* srcIRect,
-    /* [in] */ const SkRect& dst,
-    /* [in] */ SkPaint* paint,
-    /* [in] */ Int32 screenDensity,
-    /* [in] */ Int32 bitmapDensity);
-
 void Canvas::NativeDrawBitmap(
-    /* [in] */ Int64 nativeCanvas,
-    /* [in] */ Int64 nativeBitmap,
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 bitmapHandle,
     /* [in] */ Float srcLeft,
     /* [in] */ Float srcTop,
     /* [in] */ Float srcRight,
@@ -2028,15 +2184,30 @@ void Canvas::NativeDrawBitmap(
     /* [in] */ Float dstTop,
     /* [in] */ Float dstRight,
     /* [in] */ Float dstBottom,
-    /* [in] */ Int64 nativePaintOrZero,
+    /* [in] */ Int64 paintHandle,
     /* [in] */ Int32 screenDensity,
     /* [in] */ Int32 bitmapDensity)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativeCanvas* canvas = get_canvas(canvasHandle);
+    const SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+
+    if (screenDensity != 0 && screenDensity != bitmapDensity) {
+        NativePaint filteredPaint;
+        if (paint) {
+            filteredPaint = *paint;
+        }
+        filteredPaint.setFilterLevel(NativePaint::kLow_FilterLevel);
+        canvas->drawBitmap(*bitmap, srcLeft, srcTop, srcRight, srcBottom,
+                           dstLeft, dstTop, dstRight, dstBottom, &filteredPaint);
+    } else {
+        canvas->drawBitmap(*bitmap, srcLeft, srcTop, srcRight, srcBottom,
+                           dstLeft, dstTop, dstRight, dstBottom, paint);
+    }
 }
 
 void Canvas::NativeDrawBitmap(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ ArrayOf<Int32>* colors,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 stride,
@@ -2045,37 +2216,61 @@ void Canvas::NativeDrawBitmap(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Boolean hasAlpha,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    // Note: If hasAlpha is false, kRGB_565_SkColorType will be used, which will
+    // correct the alphaType to kOpaque_SkAlphaType.
+    SkImageInfo info = SkImageInfo::Make(width, height,
+                           hasAlpha ? kN32_SkColorType : kRGB_565_SkColorType,
+                           kPremul_SkAlphaType);
+    SkBitmap bitmap;
+    if (!bitmap.allocPixels(info)) {
+        return;
+    }
+
+    if (!GraphicsNative::SetPixels(colors, offset, stride, 0, 0, width, height, bitmap)) {
+        return;
+    }
+
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawBitmap(bitmap, x, y, paint);
 }
 
 void Canvas::NativeDrawBitmapMatrix(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 bitmap,
-    /* [in] */ Int64 matrix,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 bitmapHandle,
+    /* [in] */ Int64 matrixHandle,
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    const SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawBitmap(*bitmap, *matrix, paint);
 }
 
 void Canvas::NativeDrawBitmapMesh(
-    /* [in] */ Int64 canvas,
-    /* [in] */ Int64 bitmap,
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 bitmapHandle,
     /* [in] */ Int32 meshWidth,
     /* [in] */ Int32 meshHeight,
     /* [in] */ ArrayOf<Float>* _verts,
     /* [in] */ Int32 vertIndex,
     /* [in] */ ArrayOf<Int32>* colors,
     /* [in] */ Int32 colorIndex,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    const int ptCount = (meshWidth + 1) * (meshHeight + 1);
+    AutoFloatArray vertA(_verts, vertIndex + (ptCount << 1));
+    AutoInt32Array colorA(colors, colorIndex + ptCount);
+    const SkBitmap* bitmap = reinterpret_cast<SkBitmap*>(bitmapHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawBitmapMesh(*bitmap, meshWidth, meshHeight,
+                                             vertA.ptr(), colorA.ptr(), paint);
 }
 
 void Canvas::NativeDrawVertices(
-    /* [in] */ Int64 canvas,
-    /* [in] */ CanvasVertexMode mode,
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ CanvasVertexMode modeHandle,
     /* [in] */ Int32 vertexCount,
     /* [in] */ ArrayOf<Float>* _verts,
     /* [in] */ Int32 vertIndex,
@@ -2086,142 +2281,139 @@ void Canvas::NativeDrawVertices(
     /* [in] */ ArrayOf<Int16>* _indices,
     /* [in] */ Int32 indexIndex,
     /* [in] */ Int32 indexCount,
-    /* [in] */ Int64 paint)
+    /* [in] */ Int64 paintHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-}
+    AutoFloatArray  vertA(_verts, vertIndex + vertexCount);
+    AutoFloatArray  texA(_texs, texIndex + vertexCount);
+    AutoInt32Array    colorA(_colors, colorIndex + vertexCount);
+    AutoShortArray  indexA(_indices, indexIndex + indexCount);
 
-// static void DoDrawGlyphsPos(
-//     /* [in] */ SkCanvas* canvas,
-//     /* [in] */ const Char16* glyphArray,
-//     /* [in] */ const Float* posArray,
-//     /* [in] */ Int32 index,
-//     /* [in] */ Int32 count,
-//     /* [in] */ Float x,
-//     /* [in] */ Float y,
-//     /* [in] */ Int32 flags,
-//     /* [in] */ SkPaint* paint)
-// {
-//     SkPoint* posPtr = new SkPoint[count];
-//     for (Int32 indx = 0; indx < count; indx++) {
-//         posPtr[indx].fX = SkFloatToScalar(x + posArray[indx * 2]);
-//         posPtr[indx].fY = SkFloatToScalar(y + posArray[indx * 2 + 1]);
-//     }
-//     canvas->drawPosText(glyphArray, count << 1, posPtr, *paint);
-//     delete [] posPtr;
-// }
+    const float* verts = vertA.ptr() + vertIndex;
+    const float* texs = texA.ptr() + vertIndex;
+    const int* colors = NULL;
+    const uint16_t* indices = NULL;
+
+    if (_colors != NULL) {
+        colors = colorA.ptr() + colorIndex;
+    }
+    if (_indices != NULL) {
+        indices = (const uint16_t*)(indexA.ptr() + indexIndex);
+    }
+
+    SkCanvas::VertexMode mode = static_cast<SkCanvas::VertexMode>(modeHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    get_canvas(canvasHandle)->drawVertices(mode, vertexCount, verts, texs, colors,
+                                           indices, indexCount, *paint);
+}
 
 // Same values used by Skia
 #define kStdStrikeThru_Offset   (-6.0f / 21.0f)
 #define kStdUnderline_Offset    (1.0f / 9.0f)
 #define kStdUnderline_Thickness (1.0f / 18.0f)
 
-// static void DrawChar16ArrayWithGlyphs(
-//     /* [in] */ SkCanvas* canvas,
-//     /* [in] */ const ArrayOf<Char16>& char16Array,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 count,
-//     /* [in] */ Int32 contextCount,
-//     /* [in] */ Float x,
-//     /* [in] */ Float y,
-//     /* [in] */ Int32 flags,
-//     /* [in] */ SkPaint* paint)
-// {
-//     android::sp<android::TextLayoutValue> value = android::TextLayoutEngine::getInstance().getValue(paint,
-//             char16Array.GetPayload(), start, count, contextCount, flags);
-//     if (value == NULL) {
-//         return;
-//     }
-//     SkPaint::Align align = paint->getTextAlign();
-//     if (align == SkPaint::kCenter_Align) {
-//         x -= 0.5 * value->getTotalAdvance();
-//     }
-//     else if (align == SkPaint::kRight_Align) {
-//         x -= value->getTotalAdvance();
-//     }
-//     paint->setTextAlign(SkPaint::kLeft_Align);
-//     assert(0 && "TODO: need jni codes.");
-//     // DoDrawGlyphsPos(canvas, value->getGlyphs(), value->getPos(), 0, value->getGlyphsCount(), x, y, flags, paint);
-//     // DoDrawTextDecorations(canvas, x, y, value->getTotalAdvance(), paint);
-//     paint->setTextAlign(align);
-// }
+void drawTextDecorations(NativeCanvas* canvas, float x, float y, float length, const SkPaint& paint) {
+    uint32_t flags;
+    SkDrawFilter* drawFilter = canvas->getDrawFilter();
+    if (drawFilter) {
+        SkPaint paintCopy(paint);
+        drawFilter->filter(&paintCopy, SkDrawFilter::kText_Type);
+        flags = paintCopy.getFlags();
+    } else {
+        flags = paint.getFlags();
+    }
+    if (flags & (SkPaint::kUnderlineText_Flag | SkPaint::kStrikeThruText_Flag)) {
+        SkScalar left = x;
+        SkScalar right = x + length;
+        float textSize = paint.getTextSize();
+        float strokeWidth = fmax(textSize * kStdUnderline_Thickness, 1.0f);
+        if (flags & SkPaint::kUnderlineText_Flag) {
+            SkScalar top = y + textSize * kStdUnderline_Offset - 0.5f * strokeWidth;
+            SkScalar bottom = y + textSize * kStdUnderline_Offset + 0.5f * strokeWidth;
+            canvas->drawRect(left, top, right, bottom, paint);
+        }
+        if (flags & SkPaint::kStrikeThruText_Flag) {
+            SkScalar top = y + textSize * kStdStrikeThru_Offset - 0.5f * strokeWidth;
+            SkScalar bottom = y + textSize * kStdStrikeThru_Offset + 0.5f * strokeWidth;
+            canvas->drawRect(left, top, right, bottom, paint);
+        }
+    }
+}
 
-// static void DrawChar16ArrayWithGlyphs(
-//     /* [in] */ SkCanvas* canvas,
-//     /* [in] */ const ArrayOf<Char16>& textArray,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Float x,
-//     /* [in] */ Float y,
-//     /* [in] */ Int32 flags,
-//     /* [in] */ SkPaint* paint)
-// {
-//     Int32 count = end - start;
-//     DrawChar16ArrayWithGlyphs(canvas, textArray, start, count, count, x, y, flags, paint);
-// }
+void drawText(
+    /* [in] */ NativeCanvas* canvas,
+    /* [in] */ const uint16_t* text,
+    /* [in] */ int start,
+    /* [in] */ int count,
+    /* [in] */ int contextCount,
+    /* [in] */ float x,
+    /* [in] */ float y, int bidiFlags,
+    /* [in] */ const NativePaint& origPaint,
+    /* [in] */ TypefaceImpl* typeface)
+{
+    // minikin may modify the original paint
+    NativePaint paint(origPaint);
 
-// static void DrawTextWithGlyphs(
-//     /* [in] */ SkCanvas* canvas,
-//     /* [in] */ const ArrayOf<Char32>& textArray,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 count,
-//     /* [in] */ Int32 contextCount,
-//     /* [in] */ Float x,
-//     /* [in] */ Float y,
-//     /* [in] */ Int32 flags,
-//     /* [in] */ SkPaint* paint)
-// {
-//     AutoPtr< ArrayOf<Char16> > char16Array = ArrayOf<Char16>::Alloc(textArray.GetLength());
-//     for (Int32 i = 0; i < textArray.GetLength(); ++i) {
-//         (*char16Array)[i] = (Char16)textArray[i];
-//     }
-//     DrawChar16ArrayWithGlyphs(canvas, *char16Array, start, count, contextCount, x, y, flags, paint);
-// }
+    Layout layout;
+    MinikinUtils::doLayout(&layout, &paint, bidiFlags, typeface, text, start, count, contextCount);
 
-// static void DrawTextWithGlyphs(
-//     /* [in] */ SkCanvas* canvas,
-//     /* [in] */ const ArrayOf<Char32>& textArray,
-//     /* [in] */ Int32 start,
-//     /* [in] */ Int32 end,
-//     /* [in] */ Float x,
-//     /* [in] */ Float y,
-//     /* [in] */ Int32 flags,
-//     /* [in] */ SkPaint* paint)
-// {
-//     Int32 count = end - start;
-//     DrawTextWithGlyphs(canvas, textArray, start, count, count, x, y, flags, paint);
-// }
+    size_t nGlyphs = layout.nGlyphs();
+    uint16_t* glyphs = new uint16_t[nGlyphs];
+    float* pos = new float[nGlyphs * 2];
+
+    x += MinikinUtils::xOffsetForTextAlign(&paint, layout);
+
+    MinikinRect bounds;
+    layout.getBounds(&bounds);
+
+    DrawTextFunctor f(layout, canvas, glyphs, pos, paint, x, y, bounds);
+    MinikinUtils::forFontRun(layout, &paint, f);
+
+    drawTextDecorations(canvas, x, y, layout.getAdvance(), paint);
+
+    delete[] glyphs;
+    delete[] pos;
+}
 
 void Canvas::NativeDrawText(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
     /* [in] */ Float x,
     /* [in] */ Float y,
-    /* [in] */ Int32 flags,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
+    /* [in] */ Int32 bidiFlags,
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int64 typefaceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+    AutoPtr<ArrayOf<Char16> > chars = String(*text).GetChar16s();
+    drawText(get_canvas(canvasHandle), chars->GetPayload() + index, 0, count, count, x, y,
+                                       bidiFlags, *paint, typeface);
 }
 
 void Canvas::NativeDrawText(
-    /* [in] */ Int64 canvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ Float x,
     /* [in] */ Float y,
-    /* [in] */ Int32 flags,
-    /* [in] */ Int64 paint,
-    /* [in] */ Int64 nativeTypeface)
+    /* [in] */ Int32 bidiFlags,
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int64 typefaceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+    const int count = end - start;
+    const AutoPtr<ArrayOf<Char16> > chars = text.GetChar16s();
+    drawText(get_canvas(canvasHandle), chars->GetPayload() + start, 0, count, count, x, y,
+                                       bidiFlags, *paint, typeface);
+    // env->ReleaseStringChars(text, jchars);
 }
 
 void Canvas::NativeDrawTextRun(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ const String& text,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -2230,60 +2422,112 @@ void Canvas::NativeDrawTextRun(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Boolean isRtl,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int64 typefaceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+
+    int bidiFlags = isRtl ? kBidi_Force_RTL : kBidi_Force_LTR;
+    Int32 count = end - start;
+    Int32 contextCount = contextEnd - contextStart;
+    const AutoPtr<ArrayOf<Char16> > chars = text.GetChar16s();
+    drawText(get_canvas(canvasHandle), chars->GetPayload() + contextStart, start - contextStart, count,
+                                       contextCount, x, y, bidiFlags, *paint, typeface);
+    // env->ReleaseStringChars(text, jchars);
 }
 
 void Canvas::NativeDrawTextRun(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ ArrayOf<Char32>* text,
-    /* [in] */ Int32 start,
+    /* [in] */ Int32 index,
     /* [in] */ Int32 count,
-    /* [in] */ Int32 contextStart,
+    /* [in] */ Int32 contextIndex,
     /* [in] */ Int32 contextCount,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Boolean isRtl,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int64 typefaceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+
+    const int bidiFlags = isRtl ? kBidi_Force_RTL : kBidi_Force_LTR;
+    AutoPtr<ArrayOf<Char16> > chars = String(*text).GetChar16s();
+    drawText(get_canvas(canvasHandle), chars->GetPayload() + contextIndex, index - contextIndex, count,
+                                       contextCount, x, y, bidiFlags, *paint, typeface);
+    // env->ReleaseCharArrayElements(text, jchars, JNI_ABORT);
+}
+
+static void drawTextOnPath(NativeCanvas* canvas, const uint16_t* text, int count, int bidiFlags,
+                           const SkPath& path, float hOffset, float vOffset,
+                           const NativePaint& paint, TypefaceImpl* typeface) {
+    NativePaint paintCopy(paint);
+    Layout layout;
+    MinikinUtils::doLayout(&layout, &paintCopy, bidiFlags, typeface, text, 0, count, count);
+    hOffset += MinikinUtils::hOffsetForTextAlign(&paintCopy, layout, path);
+
+    // Set align to left for drawing, as we don't want individual
+    // glyphs centered or right-aligned; the offset above takes
+    // care of all alignment.
+    paintCopy.setTextAlign(NativePaint::kLeft_Align);
+
+    DrawTextOnPathFunctor f(layout, canvas, hOffset, vOffset, paintCopy, path);
+    MinikinUtils::forFontRun(layout, &paintCopy, f);
 }
 
 void Canvas::NativeDrawTextOnPath(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ ArrayOf<Char32>* text,
     /* [in] */ Int32 index,
     /* [in] */ Int32 count,
-    /* [in] */ Int64 nativePath,
+    /* [in] */ Int64 pathHandle,
     /* [in] */ Float hOffset,
     /* [in] */ Float vOffset,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int64 typefaceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+
+    AutoPtr<ArrayOf<Char16> > chars = String(*text).GetChar16s();
+
+    drawTextOnPath(get_canvas(canvasHandle), chars->GetPayload() + index, count, bidiFlags, *path,
+                   hOffset, vOffset, *paint, typeface);
+
+    // env->ReleaseCharArrayElements(text, jchars, 0);
 }
 
 void Canvas::NativeDrawTextOnPath(
-    /* [in] */ Int64 nativeCanvas,
+    /* [in] */ Int64 canvasHandle,
     /* [in] */ const String& text,
-    /* [in] */ Int64 nativePath,
+    /* [in] */ Int64 pathHandle,
     /* [in] */ Float hOffset,
     /* [in] */ Float vOffset,
     /* [in] */ Int32 bidiFlags,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Int64 nativeTypeface)
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Int64 typefaceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    TypefaceImpl* typeface = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
+
+    const AutoPtr<ArrayOf<Char16> > chars = text.GetChar16s();
+    int count = text.GetLength();
+
+    drawTextOnPath(get_canvas(canvasHandle), chars->GetPayload(), count, bidiFlags, *path,
+                   hOffset, vOffset, *paint, typeface);
+
+    // env->ReleaseStringChars(text, jchars);
 }
 
 void Canvas::NativeFinalizer(
-    /* [in] */ Int64 canvas)
+    /* [in] */ Int64 canvasHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    delete get_canvas(canvasHandle);
 }
 
 ECode Canvas::SetSurfaceFormat(
@@ -2299,37 +2543,6 @@ ECode Canvas::GetNativeCanvas(
     VALIDATE_NOT_NULL(nativeCanvas);
     *nativeCanvas = (Handle32)mNativeCanvasWrapper;
     return NOERROR;
-}
-
-static void DoDrawBitmap(
-    /* [in] */ SkCanvas* canvas,
-    /* [in] */ SkBitmap* bitmap,
-    /* [in] */ IRect* srcIRect,
-    /* [in] */ const SkRect& dst,
-    /* [in] */ SkPaint* paint,
-    /* [in] */ Int32 screenDensity,
-    /* [in] */ Int32 bitmapDensity)
-{
-    SkIRect src, *srcPtr = NULL;
-
-    if (NULL != srcIRect) {
-        src.set(((CRect*)srcIRect)->mLeft,
-                ((CRect*)srcIRect)->mTop,
-                ((CRect*)srcIRect)->mRight,
-                ((CRect*)srcIRect)->mBottom);
-        srcPtr = &src;
-    }
-
-    if (screenDensity != 0 && screenDensity != bitmapDensity) {
-        SkPaint filteredPaint;
-        if (paint) {
-            filteredPaint = *paint;
-        }
-        filteredPaint.setFilterBitmap(true);
-        canvas->drawBitmapRect(*bitmap, srcPtr, dst, &filteredPaint);
-    } else {
-        canvas->drawBitmapRect(*bitmap, srcPtr, dst, paint);
-    }
 }
 
 } // namespace Graphics

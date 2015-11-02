@@ -636,3 +636,7 @@ template <unsigned> struct __static_assert_check {};
 #endif
 
 #endif  // _LIBCPP_CONFIG
+
+#define _LIBCPP_BEGIN_NAMESPACE_STD namespace std {
+#define _LIBCPP_END_NAMESPACE_STD  }
+#define _VSTD std

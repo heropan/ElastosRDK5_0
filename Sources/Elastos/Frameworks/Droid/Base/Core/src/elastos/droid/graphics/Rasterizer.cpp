@@ -1,9 +1,33 @@
+
 #include "elastos/droid/graphics/Rasterizer.h"
-#include <SkRasterizer.h>
+#include "elastos/droid/graphics/CLayerRasterizer.h"
+#include "elastos/droid/graphics/NativePaint.h"
+#include <skia/core/SkRasterizer.h>
+#include <skia/effects/SkLayerRasterizer.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
+
+
+// Rasterizer.java holds a pointer (jlong) to this guy
+class NativeRasterizer {
+public:
+    NativeRasterizer() {}
+    virtual ~NativeRasterizer() {}
+
+    // Can return NULL, or a ref to the skia rasterizer.
+    virtual SkRasterizer* refRasterizer() { return NULL; }
+};
+
+class NativeLayerRasterizer : public NativeRasterizer {
+public:
+    SkLayerRasterizer::Builder fBuilder;
+
+    virtual SkRasterizer* refRasterizer() {
+        return fBuilder.snapshotRasterizer();
+    }
+};
 
 // {2D3A6B44-0939-4A44-A9C2-6C1E9E71D8FC}
 extern const InterfaceID EIID_Rasterizer =
@@ -18,8 +42,25 @@ Rasterizer::~Rasterizer()
 void Rasterizer::Finalizer(
     /* [in] */ Int64 nativeInstance)
 {
-    assert(0 && "TODO");
-    // delete reinterpret_cast<NativeRasterizer *>(objHandle);
+    delete reinterpret_cast<NativeRasterizer *>(nativeInstance);
+}
+
+Int64 CLayerRasterizer::NativeConstructor()
+{
+    return reinterpret_cast<Int64>(new NativeLayerRasterizer);
+}
+
+void CLayerRasterizer::NativeAddLayer(
+    /* [in] */ Int64 layerHandle,
+    /* [in] */ Int64 paintHandle,
+    /* [in] */ Float dx,
+    /* [in] */ Float dy)
+{
+    NativeLayerRasterizer* nr = reinterpret_cast<NativeLayerRasterizer *>(layerHandle);
+    const NativePaint* paint = reinterpret_cast<NativePaint *>(paintHandle);
+    SkASSERT(nr);
+    SkASSERT(paint);
+    nr->fBuilder.addLayer(*paint, dx, dy);
 }
 
 } // namespace Graphics

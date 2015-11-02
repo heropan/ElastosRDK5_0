@@ -62,7 +62,7 @@ void HTML5VideoInline::PrepareDataAndDisplayMode(
     // TODO: This is a workaround, after b/5375681 fixed, we should switch
     // to the better way.
     Int32 pm;
-    mProxy->GetContext()->CheckCallingOrSelfPermission(Manifest::Permission::WAKE_LOCK, &pm);
+    mProxy->GetContext()->CheckCallingOrSelfPermission(Manifest::permission::WAKE_LOCK, &pm);
     if (pm == IPackageManager::PERMISSION_GRANTED) {
         mPlayer->SetWakeMode(proxy->GetContext(), IPowerManager::FULL_WAKE_LOCK);
     }

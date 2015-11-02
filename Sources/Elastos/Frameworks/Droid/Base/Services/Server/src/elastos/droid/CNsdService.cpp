@@ -149,7 +149,7 @@ ECode CNsdService::GetMessenger(
     *messenger = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::INTERNET,
+        Elastos::Droid::Manifest::permission::INTERNET,
         String("NsdService")));
     AutoPtr<IHandler> handler = mNsdStateMachine->GetHandler();
     CMessenger::New(handler, messenger);
@@ -160,7 +160,7 @@ ECode CNsdService::SetEnabled(
     /* [in] */ Boolean enable)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
+        Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL,
         String("NsdService")));
     Boolean result;
     AutoPtr<ISettingsGlobal> settingsGlobal;

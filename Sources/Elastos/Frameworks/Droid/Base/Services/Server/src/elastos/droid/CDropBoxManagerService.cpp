@@ -538,7 +538,7 @@ ECode CDropBoxManagerService::GetNextEntry(
 
     AutoLock lock(this);
     Int32 result;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_LOGS, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_LOGS, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E(TAG, String("READ_LOGS permission required"));
         return E_SECURITY_EXCEPTION;
@@ -894,7 +894,7 @@ ECode CDropBoxManagerService::HandleMessage(
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
         AutoPtr<IUserHandle> OWNER;
         helper->GetOWNER((IUserHandle**)&OWNER);
-        mContext->SendBroadcastAsUser(obj, OWNER, Elastos::Droid::Manifest::Permission::READ_LOGS);
+        mContext->SendBroadcastAsUser(obj, OWNER, Elastos::Droid::Manifest::permission::READ_LOGS);
     }
     return NOERROR;
 }

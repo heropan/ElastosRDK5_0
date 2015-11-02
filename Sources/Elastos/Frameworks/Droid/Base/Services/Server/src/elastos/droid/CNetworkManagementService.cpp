@@ -210,7 +210,7 @@ ECode CNetworkManagementService::RegisterObserver(
     /* [in] */ INetworkManagementEventObserver* observer)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+        Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     Boolean result;
     return mObservers->Register(observer, &result);
 }
@@ -219,7 +219,7 @@ ECode CNetworkManagementService::UnregisterObserver(
     /* [in] */ INetworkManagementEventObserver* observer)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+        Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     Boolean result;
     return mObservers->Unregister(observer, &result);
 }
@@ -413,7 +413,7 @@ ECode CNetworkManagementService::ListInterfaces(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
      // try {
     AutoPtr<ICharSequence> cseq;
     CStringWrapper::New(String("list"), (ICharSequence**)&cseq);
@@ -439,7 +439,7 @@ ECode CNetworkManagementService::GetInterfaceConfig(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<NativeDaemonEvent> event;
      // try {
@@ -498,7 +498,7 @@ ECode CNetworkManagementService::SetInterfaceConfig(
     /* [in] */ IInterfaceConfiguration* cfg)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ILinkAddress> linkAddr;
     cfg->GetLinkAddress((ILinkAddress**)&linkAddr);
     AutoPtr<IInetAddress> inetAddr;
@@ -549,7 +549,7 @@ ECode CNetworkManagementService::SetInterfaceDown(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<IInterfaceConfiguration> ifcg;
     FAIL_RETURN(GetInterfaceConfig(iface, (IInterfaceConfiguration**)&ifcg));
     ifcg->SetInterfaceDown();
@@ -561,7 +561,7 @@ ECode CNetworkManagementService::SetInterfaceUp(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<IInterfaceConfiguration> ifcg;
     FAIL_RETURN(GetInterfaceConfig(iface, (IInterfaceConfiguration**)&ifcg));
     ifcg->SetInterfaceUp();
@@ -574,7 +574,7 @@ ECode CNetworkManagementService::SetInterfaceIpv6PrivacyExtensions(
     /* [in] */ Boolean enable)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("ipv6privacyextensions"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -600,7 +600,7 @@ ECode CNetworkManagementService::ClearInterfaceAddresses(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("clearaddrs"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -621,7 +621,7 @@ ECode CNetworkManagementService::EnableIpv6(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("ipv6"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -645,7 +645,7 @@ ECode CNetworkManagementService::DisableIpv6(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("ipv6"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -670,7 +670,7 @@ ECode CNetworkManagementService::AddRoute(
     /* [in] */ IRouteInfo* route)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return ModifyRoute(interfaceName, ADD, route, DEFAULT);
 }
 
@@ -679,7 +679,7 @@ ECode CNetworkManagementService::RemoveRoute(
     /* [in] */ IRouteInfo* route)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return ModifyRoute(interfaceName, REMOVE, route, DEFAULT);
 }
 
@@ -688,7 +688,7 @@ ECode CNetworkManagementService::AddSecondaryRoute(
     /* [in] */ IRouteInfo* route)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return ModifyRoute(interfaceName, ADD, route, SECONDARY);
 }
 
@@ -697,7 +697,7 @@ ECode CNetworkManagementService::RemoveSecondaryRoute(
     /* [in] */ IRouteInfo* route)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return ModifyRoute(interfaceName, REMOVE, route, SECONDARY);
 }
 
@@ -804,7 +804,7 @@ ECode CNetworkManagementService::GetRoutes(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     List<AutoPtr<IRouteInfo> > routes;
 
     // v4 routes listed as:
@@ -905,7 +905,7 @@ ECode CNetworkManagementService::Shutdown()
 {
     // TODO: remove from aidl if nobody calls externally
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::SHUTDOWN/*SHUTDOWN*/, TAG));
+            Elastos::Droid::Manifest::permission::SHUTDOWN/*SHUTDOWN*/, TAG));
      Slogger::D(TAG, "Shutting down");
      return NOERROR;
 }
@@ -915,7 +915,7 @@ ECode CNetworkManagementService::GetIpForwardingEnabled(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("status"), (ICharSequence**)&cseq0);
@@ -938,7 +938,7 @@ ECode CNetworkManagementService::SetIpForwardingEnabled(
     /* [in] */ Boolean enable)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(enable ? String("enable") : String("disable"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
@@ -956,7 +956,7 @@ ECode CNetworkManagementService::StartTethering(
     /* [in] */ ArrayOf<String>* dhcpRange)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
      // cmd is "tether start first_start first_stop second_start second_stop ..."
      // an odd number of addrs will fail
 
@@ -984,7 +984,7 @@ ECode CNetworkManagementService::StartTethering(
 ECode CNetworkManagementService::StopTethering()
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("stop"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
@@ -1003,7 +1003,7 @@ ECode CNetworkManagementService::IsTetheringStarted(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("status"), (ICharSequence**)&cseq0);
@@ -1029,7 +1029,7 @@ ECode CNetworkManagementService::StartReverseTethering(
 {
     if (DBG) Slogger::D(TAG, "startReverseTethering in");
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     // cmd is "tether start first_start first_stop second_start second_stop ..."
     // an odd number of addrs will fail
     StringBuffer cmd("tether start-reverse");
@@ -1053,7 +1053,7 @@ ECode CNetworkManagementService::StartReverseTethering(
 ECode CNetworkManagementService::StopReverseTethering()
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 //    try {
     String cmd("tether stop-reverse");
     List<String> responses;
@@ -1071,7 +1071,7 @@ ECode CNetworkManagementService::TetherInterface(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("interface"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -1095,7 +1095,7 @@ ECode CNetworkManagementService::UntetherInterface(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+        Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("interface"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -1120,7 +1120,7 @@ ECode CNetworkManagementService::ListTetheredInterfaces(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("interface"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -1144,7 +1144,7 @@ ECode CNetworkManagementService::SetDnsForwarders(
     /* [in] */ ArrayOf<String>* dns)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("dns"), (ICharSequence**)&cseq0);
@@ -1176,7 +1176,7 @@ ECode CNetworkManagementService::GetDnsForwarders(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("dns"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -1261,7 +1261,7 @@ ECode CNetworkManagementService::EnableNat(
     /* [in] */ const String& externalInterface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     return ModifyNat(String("enable"), internalInterface, externalInterface);
 }
@@ -1271,7 +1271,7 @@ ECode CNetworkManagementService::DisableNat(
     /* [in] */ const String& externalInterface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     return ModifyNat(String("disable"), internalInterface, externalInterface);
 }
@@ -1283,7 +1283,7 @@ ECode CNetworkManagementService::ListTtys(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<NativeDaemonConnector::Command> cmd = new NativeDaemonConnector::Command(
         String("list_ttys"), NULL);
@@ -1303,7 +1303,7 @@ ECode CNetworkManagementService::AttachPppd(
     /* [in] */ const String& dns2Addr)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<IInetAddress> inetAddr;
     String str1, str2, str3, str4;
@@ -1347,7 +1347,7 @@ ECode CNetworkManagementService::DetachPppd(
     /* [in] */ const String& tty)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("detach"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -1369,7 +1369,7 @@ ECode CNetworkManagementService::StartAccessPoint(
     /* [in] */ const String& wlanIface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     // try {
     WifiFirmwareReload(wlanIface, String("AP"));
     StringBuffer cmd("softap start ");
@@ -1444,7 +1444,7 @@ ECode CNetworkManagementService::WifiFirmwareReload(
     /* [in] */ const String& mode)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("fwreload"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -1468,7 +1468,7 @@ ECode CNetworkManagementService::StopAccessPoint(
     /* [in] */ const String& wlanIface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("stopap"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
@@ -1488,7 +1488,7 @@ ECode CNetworkManagementService::SetAccessPoint(
     /* [in] */ const String& wlanIface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
      if (wifiConfig == NULL) {
         AutoPtr<ICharSequence> cseq0;
@@ -1534,7 +1534,7 @@ ECode CNetworkManagementService::AddIdleTimer(
     /* [in] */ const String& label)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     if (DBG) Slogger::D(TAG, "Adding idletimer");
 
@@ -1572,7 +1572,7 @@ ECode CNetworkManagementService::RemoveIdleTimer(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     if (DBG) Slogger::D(TAG, "Removing idletimer");
 
@@ -1609,7 +1609,7 @@ ECode CNetworkManagementService::GetNetworkStatsSummaryDev(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return mStatsFactory->ReadNetworkStatsSummaryDev(result);
 }
 
@@ -1620,7 +1620,7 @@ ECode CNetworkManagementService::GetNetworkStatsSummaryXt(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return mStatsFactory->ReadNetworkStatsSummaryXt(result);
 }
 
@@ -1631,7 +1631,7 @@ ECode CNetworkManagementService::GetNetworkStatsDetail(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return mStatsFactory->ReadNetworkStatsDetail(INetworkStats::UID_ALL, result);
 }
 
@@ -1640,7 +1640,7 @@ ECode CNetworkManagementService::SetInterfaceQuota(
     /* [in] */ Int64 quotaBytes)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     // silently discard when control disabled
     // TODO: eventually migrate to be always enabled
@@ -1677,7 +1677,7 @@ ECode CNetworkManagementService::RemoveInterfaceQuota(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     // silently discard when control disabled
     // TODO: eventually migrate to be always enabled
@@ -1712,7 +1712,7 @@ ECode CNetworkManagementService::SetInterfaceAlert(
     /* [in] */ Int64 alertBytes)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     // silently discard when control disabled
     // TODO: eventually migrate to be always enabled
@@ -1755,7 +1755,7 @@ ECode CNetworkManagementService::RemoveInterfaceAlert(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     // silently discard when control disabled
     // TODO: eventually migrate to be always enabled
@@ -1789,7 +1789,7 @@ ECode CNetworkManagementService::SetGlobalAlert(
     /* [in] */ Int64 alertBytes)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     // silently discard when control disabled
     // TODO: eventually migrate to be always enabled
@@ -1813,7 +1813,7 @@ ECode CNetworkManagementService::SetUidNetworkRules(
     /* [in] */ Boolean rejectOnQuotaInterfaces)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     // silently discard when control disabled
     // TODO: eventually migrate to be always enabled
@@ -1858,7 +1858,7 @@ ECode CNetworkManagementService::IsBandwidthControlEnabled(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     *result = mBandwidthControlEnabled;
     return NOERROR;
 }
@@ -1871,7 +1871,7 @@ ECode CNetworkManagementService::GetNetworkStatsUidDetail(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return mStatsFactory->ReadNetworkStatsDetail(uid, result);
 }
 
@@ -1883,7 +1883,7 @@ ECode CNetworkManagementService::GetNetworkStatsTethering(
     *result = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+        Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     if (ifacePairs->GetLength() % 2 != 0) {
         //throw new IllegalArgumentException("unexpected ifacePairs; length=" + ifacePairs.length);
@@ -1958,7 +1958,7 @@ ECode CNetworkManagementService::SetInterfaceThrottle(
     /* [in] */ Int32 txKbps)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("setthrottle"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -2016,7 +2016,7 @@ ECode CNetworkManagementService::GetInterfaceRxThrottle(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return GetInterfaceThrottle(iface, TRUE, result);
 }
 
@@ -2026,7 +2026,7 @@ ECode CNetworkManagementService::GetInterfaceTxThrottle(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     return GetInterfaceThrottle(iface, FALSE, result);
 }
 
@@ -2034,7 +2034,7 @@ ECode CNetworkManagementService::SetDefaultInterfaceForDns(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("setdefaultif"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -2056,7 +2056,7 @@ ECode CNetworkManagementService::SetDnsServersForInterface(
     /* [in] */ ArrayOf<String>* servers)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
 
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("setifdns"), (ICharSequence**)&cseq0);
@@ -2090,7 +2090,7 @@ ECode CNetworkManagementService::SetDnsServersForInterface(
 ECode CNetworkManagementService::FlushDefaultDnsCache()
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("flushdefaultif"), (ICharSequence**)&cseq0);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(1);
@@ -2104,7 +2104,7 @@ ECode CNetworkManagementService::FlushInterfaceDnsCache(
     /* [in] */ const String& iface)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL/*CONNECTIVITY_INTERNAL*/, TAG));
     AutoPtr<ICharSequence> cseq0;
     CStringWrapper::New(String("flushif"), (ICharSequence**)&cseq0);
     AutoPtr<ICharSequence> cseq1;
@@ -2268,7 +2268,7 @@ ECode CNetworkManagementService::EnforceSystemUid()
 //     /* [in] */ IPrintWriter* pw,
 //     /* [in] */ ArrayOf<String>* args)
 // {
-//     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+//     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
 //     pw->Println("NetworkManagementService NativeDaemonConnector Log:");
 //     mConnector->Dump(fd, pw, args);

@@ -1,7 +1,6 @@
 
 #include "elastos/droid/graphics/CLayerRasterizer.h"
 #include "elastos/droid/graphics/Paint.h"
-#include <skia/effects/SkLayerRasterizer.h>
 
 namespace Elastos {
 namespace Droid {
@@ -57,27 +56,6 @@ ECode CLayerRasterizer::AddLayer(
 {
     NativeAddLayer(mNativeInstance, ((Paint*)(IPaint*)paint->Probe(EIID_Paint))->mNativePaint, 0, 0);
     return NOERROR;
-}
-
-Int64 CLayerRasterizer::NativeConstructor()
-{
-    assert(0 && "TODO");
-    // return reinterpret_cast<jlong>(new NativeLayerRasterizer);
-    return 0;
-}
-
-void CLayerRasterizer::NativeAddLayer(
-    /* [in] */ Int64 nativeLayer,
-    /* [in] */ Int64 nativePaint,
-    /* [in] */ Float dx,
-    /* [in] */ Float dy)
-{
-    assert(0 && "TODO");
-    // NativeLayerRasterizer* nr = reinterpret_cast<NativeLayerRasterizer *>(layerHandle);
-    // const Paint* paint = reinterpret_cast<Paint *>(paintHandle);
-    // SkASSERT(nr);
-    // SkASSERT(paint);
-    // nr->fBuilder.addLayer(*paint, dx, dy);
 }
 
 } // namespace Graphics

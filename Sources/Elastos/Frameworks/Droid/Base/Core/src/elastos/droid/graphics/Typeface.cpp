@@ -174,7 +174,10 @@ ECode Typeface::Create(
         }
     }
 
-    CTypeface::New(NativeCreateFromTypeface(ni, style), typeface);
+    AutoPtr<CTypeface> tmpType;
+    CTypeface::NewByFriend(NativeCreateFromTypeface(ni, style), (CTypeface**)&tmpType);
+    *typeface = (ITypeface*)tmpType.Get();
+    REFCOUNT_ADD(*typeface);
     if (styles == NULL) {
         styles = new TypefaceMap(4);
         sTypefaceCache[ni] = styles;

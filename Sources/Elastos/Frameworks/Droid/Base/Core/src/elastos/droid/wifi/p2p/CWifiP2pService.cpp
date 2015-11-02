@@ -296,14 +296,14 @@ ECode CWifiP2pService::GetMessenger(
 ECode CWifiP2pService::EnforceAccessPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::ACCESS_WIFI_STATE,
+        Elastos::Droid::Manifest::permission::ACCESS_WIFI_STATE,
         String("WifiP2pService"));
 }
 
 ECode CWifiP2pService::EnforceChangePermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CHANGE_WIFI_STATE,
+        Elastos::Droid::Manifest::permission::CHANGE_WIFI_STATE,
         String("WifiP2pService"));
 }
 

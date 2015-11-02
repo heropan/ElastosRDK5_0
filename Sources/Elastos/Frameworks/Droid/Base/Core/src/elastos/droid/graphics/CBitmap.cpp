@@ -10,10 +10,9 @@
 #include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
 #include "elastos/droid/graphics/NativePaint.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
-// #include "elastos/droid/utility/droid_nio_utils.h"
 #include <elastos/core/Math.h>
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkUnPreMultiply.h>
 #include <skia/core/SkImageEncoder.h>
 #include <skia/core/SkDither.h>
@@ -22,85 +21,12 @@
 #include <skia/core/SkStream.h>
 
 using Elastos::Droid::Utility::CDisplayMetrics;
-// using Elastos::Droid::Utility::AutoBufferPointer;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
-
-// static AutoPtr<INIOAccessHelper> sNioAccessHelper;
-// static void* nio_getPointer(
-//     /* [in] */ IBuffer* buffer,
-//     /* [in] */ IInterface** array)
-// {
-//     assert(array);
-//     if (sNioAccessHelper == NULL) {
-//         CNIOAccessHelper::AcquireSingleton((INIOAccessHelper**)&sNioAccessHelper);
-//     }
-
-//     Int64 pointer = 0;
-//     Int32 offset = 0;
-//     void *data;
-
-//     sNioAccessHelper->GetBasePointer(buffer, &pointer);
-
-//     if (pointer != 0L) {
-//         *array = NULL;
-//         return reinterpret_cast<void *>(pointer);
-//     }
-
-//     AutoPtr<IInterface> ia;
-//     sNioAccessHelper->GetBaseArray(buffer, array);
-
-//     sNioAccessHelper->GetBaseArrayOffset(buffer, &offset);
-//     data = _env->GetPrimitiveArrayCritical(*array, (jboolean *) 0);
-
-//     return (void *) ((char *) data + offset);
-// }
-
-
-// void nio_releasePointer(
-//     /* [in] */ IBuffer* array,
-//     /* [in] */ void *data,
-//     /* [in] */ Boolean commit)
-// {
-//     _env->ReleasePrimitiveArrayCritical(array, data,
-//                                         commit ? 0 : JNI_ABORT);
-// }
-
-// class AutoBufferPointer {
-// public:
-//     AutoBufferPointer(
-//         /* [in] */ IBuffer* nioBuffer,
-//         /* [in] */ Boolean commit);
-
-//     ~AutoBufferPointer();
-
-//     void* Pointer() const { return fPointer; }
-
-// private:
-//     void*   fPointer;
-//     /*jarray*/AutoPtr<IInterface>  fArray;
-//     Int32    fRemaining;
-//     Boolean fCommit;
-// };
-
-// AutoBufferPointer::AutoBufferPointer(
-//     /* [in] */ IBuffer* nioBuffer,
-//     /* [in] */ Boolean commit)
-// {
-//     fCommit = commit;
-//     fPointer = nio_getPointer(nioBuffer, &fArray);
-// }
-
-// AutoBufferPointer::~AutoBufferPointer()
-// {
-//     if (NULL != fArray) {
-//         nio_releasePointer(fArray, fPointer, fCommit);
-//     }
-// }
 
 static const char* TAG = "CBitmap";
 const Int32 CBitmap::DENSITY_NONE;
@@ -1393,6 +1319,43 @@ static FromColorProc ChooseFromColorProc(const SkBitmap& bitmap) {
             break;
     }
     return NULL;
+}
+
+Boolean GraphicsNative::SetPixels(
+    /* [in] */ ArrayOf<Int32>* srcColors,
+    /* [in] */ Int32 srcOffset,
+    /* [in] */ Int32 srcStride,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ const SkBitmap& dstBitmap)
+{
+    SkAutoLockPixels alp(dstBitmap);
+    void* dst = dstBitmap.getPixels();
+    FromColorProc proc = ChooseFromColorProc(dstBitmap);
+
+    if (NULL == dst || NULL == proc) {
+        return FALSE;
+    }
+
+    const Int32* array = srcColors->GetPayload() /*env->GetIntArrayElements(srcColors, NULL)*/;
+    const SkColor* src = (const SkColor*)array + srcOffset;
+
+    // reset to to actual choice from caller
+    dst = dstBitmap.getAddr(x, y);
+    // now copy/convert each scanline
+    for (int y = 0; y < height; y++) {
+        proc(dst, src, width, x, y);
+        src += srcStride;
+        dst = (char*)dst + dstBitmap.rowBytes();
+    }
+
+    dstBitmap.notifyPixelsChanged();
+
+    // env->ReleaseIntArrayElements(srcColors, const_cast<jint*>(array),
+    //                              JNI_ABORT);
+    return TRUE;
 }
 
 //////////////////// ToColor procs /////////////////////

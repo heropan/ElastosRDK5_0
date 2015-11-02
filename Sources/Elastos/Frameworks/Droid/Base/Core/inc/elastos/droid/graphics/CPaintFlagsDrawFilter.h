@@ -31,7 +31,7 @@ public:
         /* [in] */ Int32 setBits);
 
 private:
-    static CARAPI_(Int32) NativeConstructor(
+    static CARAPI_(Int64) NativeConstructor(
         /* [in] */ Int32 clearBits,
         /* [in] */ Int32 setBits);
 

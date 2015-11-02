@@ -934,7 +934,7 @@ ECode CAlarmManagerService::SetTime(
     /* [in] */ Int64 millis)
 {
     PEL("CAlarmManagerService::SetTime")
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::SET_TIME, String("SetTime")));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::SET_TIME, String("SetTime")));
     SystemClock::SetCurrentTimeMillis(millis);
     return NOERROR;
 }
@@ -942,7 +942,7 @@ ECode CAlarmManagerService::SetTime(
 ECode CAlarmManagerService::SetTimeZone(
     /* [in] */ const String& tz)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::SET_TIME_ZONE, String("SetTimeZone")));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::SET_TIME_ZONE, String("SetTimeZone")));
 
     AutoPtr<IBinderHelper> binderHelper;
     CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);

@@ -37,6 +37,7 @@ ECode CImageFormat::GetBitsPerPixel(
         }
     }
 
+    *bits = -1;
     return NOERROR;
 }
 

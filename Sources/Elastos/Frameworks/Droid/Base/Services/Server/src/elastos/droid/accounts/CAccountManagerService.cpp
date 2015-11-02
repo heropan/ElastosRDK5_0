@@ -1609,7 +1609,7 @@ ECode CAccountManagerService::GetAuthToken(
         // throw new IllegalArgumentException("authTokenType is null");
     }
     AutoPtr< ArrayOf<String> > perm = ArrayOf<String>::Alloc(1);
-    (*perm)[0] = Elastos::Droid::Manifest::Permission::USE_CREDENTIALS;
+    (*perm)[0] = Elastos::Droid::Manifest::permission::USE_CREDENTIALS;
     FAIL_RETURN(CheckBinderPermission(perm));
     AutoPtr<UserAccounts> accounts = GetUserAccountsForCaller();
 
@@ -2345,11 +2345,11 @@ Boolean CAccountManagerService::ScanArgs(
 }
 
 // protected void dump(FileDescriptor fd, PrintWriter fout, String[] args) {
-//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP)
+//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP)
 //             != PackageManager.PERMISSION_GRANTED) {
 //         fout.println("Permission Denial: can't dump AccountsManager from from pid="
 //                 + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid()
-//                 + " without permission " + Elastos::Droid::Manifest::Permission::DUMP);
+//                 + " without permission " + Elastos::Droid::Manifest::permission::DUMP);
 //         return;
 //     }
 //     Boolean isCheckinRequest = scanArgs(args, "--checkin") || scanArgs(args, "-c");
@@ -2672,7 +2672,7 @@ ECode CAccountManagerService::CheckAuthenticateAccountsPermission(
     /* [in] */ IAccount* account)
 {
     AutoPtr< ArrayOf<String> > perms = ArrayOf<String>::Alloc(1);
-    (*perms)[0] = Elastos::Droid::Manifest::Permission::AUTHENTICATE_ACCOUNTS;
+    (*perms)[0] = Elastos::Droid::Manifest::permission::AUTHENTICATE_ACCOUNTS;
     FAIL_RETURN(CheckBinderPermission(perms));
     return CheckCallingUidAgainstAuthenticator(account);
 }
@@ -2680,22 +2680,22 @@ ECode CAccountManagerService::CheckAuthenticateAccountsPermission(
 ECode CAccountManagerService::CheckReadAccountsPermission()
 {
     AutoPtr< ArrayOf<String> > perms = ArrayOf<String>::Alloc(1);
-    (*perms)[0] = Elastos::Droid::Manifest::Permission::GET_ACCOUNTS;
+    (*perms)[0] = Elastos::Droid::Manifest::permission::GET_ACCOUNTS;
     return CheckBinderPermission(perms);
 }
 
 ECode CAccountManagerService::CheckManageAccountsPermission()
 {
     AutoPtr< ArrayOf<String> > perms = ArrayOf<String>::Alloc(1);
-    (*perms)[0] = Elastos::Droid::Manifest::Permission::MANAGE_ACCOUNTS;
+    (*perms)[0] = Elastos::Droid::Manifest::permission::MANAGE_ACCOUNTS;
     return CheckBinderPermission(perms);
 }
 
 ECode CAccountManagerService::CheckManageAccountsOrUseCredentialsPermissions()
 {
     AutoPtr< ArrayOf<String> > perms = ArrayOf<String>::Alloc(2);
-    (*perms)[0] = Elastos::Droid::Manifest::Permission::MANAGE_ACCOUNTS;
-    (*perms)[1] = Elastos::Droid::Manifest::Permission::USE_CREDENTIALS;
+    (*perms)[0] = Elastos::Droid::Manifest::permission::MANAGE_ACCOUNTS;
+    (*perms)[1] = Elastos::Droid::Manifest::permission::USE_CREDENTIALS;
     return CheckBinderPermission(perms);
 }
 

@@ -1050,11 +1050,11 @@ ECode CPowerManagerService::AcquireWakeLock(
     FAIL_RETURN(CPowerManagerHelper::AcquireSingleton((IPowerManagerHelper**)&helper));
     FAIL_RETURN(helper->ValidateWakeLockParameters(flags, tag));
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::WAKE_LOCK, String(NULL)));
+            Elastos::Droid::Manifest::permission::WAKE_LOCK, String(NULL)));
     Int32 size;
     if (ws != NULL && (ws->GetSize(&size), size != 0)) {
         FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::UPDATE_DEVICE_STATS, String(NULL)));
+                Elastos::Droid::Manifest::permission::UPDATE_DEVICE_STATS, String(NULL)));
     }
     else {
         ws = NULL;
@@ -1145,7 +1145,7 @@ ECode CPowerManagerService::ReleaseWakeLock(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::WAKE_LOCK, String(NULL)));
+        Elastos::Droid::Manifest::permission::WAKE_LOCK, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -1237,11 +1237,11 @@ ECode CPowerManagerService::UpdateWakeLockWorkSource(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::WAKE_LOCK, String(NULL)));
+            Elastos::Droid::Manifest::permission::WAKE_LOCK, String(NULL)));
     Int32 size;
     if (ws != NULL && (ws->GetSize(&size), size != 0)) {
         FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::UPDATE_DEVICE_STATS, String(NULL)));
+                Elastos::Droid::Manifest::permission::UPDATE_DEVICE_STATS, String(NULL)));
     }
     else {
         ws = NULL;
@@ -1350,7 +1350,7 @@ ECode CPowerManagerService::UserActivity(
 {
     Int64 now = SystemClock::GetUptimeMillis();
     Int32 result;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DEVICE_POWER, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         // Once upon a time applications could call userActivity().
         // Now we require the DEVICE_POWER permission.  Log a warning and ignore the
@@ -1457,7 +1457,7 @@ ECode CPowerManagerService::WakeUp(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+        Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -1545,7 +1545,7 @@ ECode CPowerManagerService::GoToSleep(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -1649,7 +1649,7 @@ ECode CPowerManagerService::Nap(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+        Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2390,7 +2390,7 @@ ECode CPowerManagerService::Reboot(
     /* [in] */ Boolean wait)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::REBOOT, String(NULL)));
+            Elastos::Droid::Manifest::permission::REBOOT, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2406,7 +2406,7 @@ ECode CPowerManagerService::Shutdown(
     /* [in] */ Boolean wait)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::REBOOT, String(NULL)));
+            Elastos::Droid::Manifest::permission::REBOOT, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2480,7 +2480,7 @@ ECode CPowerManagerService::Crash(
     /* [in] */ const String& message)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::REBOOT, String(NULL)));
+            Elastos::Droid::Manifest::permission::REBOOT, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2521,7 +2521,7 @@ ECode CPowerManagerService::SetStayOnSetting(
     /* [in] */ Int32 val)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::WRITE_SETTINGS, String(NULL)));
+        Elastos::Droid::Manifest::permission::WRITE_SETTINGS, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2577,7 +2577,7 @@ ECode CPowerManagerService::SetAttentionLight(
     /* [in] */ Int32 color)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2618,7 +2618,7 @@ ECode CPowerManagerService::GoToBootFastSleep(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2690,7 +2690,7 @@ ECode CPowerManagerService::BootFastWake(
     }
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2829,7 +2829,7 @@ ECode CPowerManagerService::SetScreenBrightnessOverrideFromWindowManager(
     /* [in] */ Int32 brightness)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2857,14 +2857,14 @@ ECode CPowerManagerService::SetButtonBrightnessOverrideFromWindowManager(
     // Do nothing.
     // Button lights are not currently supported in the new implementation.
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL));
 }
 
 ECode CPowerManagerService::SetUserActivityTimeoutOverrideFromWindowManager(
     /* [in] */ Int64 timeoutMillis)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2890,7 +2890,7 @@ ECode CPowerManagerService::SetTemporaryScreenBrightnessSettingOverride(
     /* [in] */ Int32 brightness)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2916,7 +2916,7 @@ ECode CPowerManagerService::SetTemporaryScreenAutoBrightnessAdjustmentSettingOve
     /* [in] */ Float adj)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DEVICE_POWER, String(NULL)));
+            Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
 
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -2963,7 +2963,7 @@ ECode CPowerManagerService::LowLevelReboot(
 //     /* [in] */ IPrintWriter* pw,
 //     /* [in] */ ArrayOf<String>* args)
 // {
-//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP)
+//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP)
 //             != PackageManager.PERMISSION_GRANTED) {
 //         pw.println("Permission Denial: can't dump PowerManager from from pid="
 //                 + Binder.getCallingPid()

@@ -695,7 +695,7 @@ Boolean CDisplayManagerService::CanCallerConfigureWifiDisplay()
 {
     Int32 res;
     FAIL_RETURN(mContext->CheckCallingPermission(
-        Elastos::Droid::Manifest::Permission::CONFIGURE_WIFI_DISPLAY, &res));
+        Elastos::Droid::Manifest::permission::CONFIGURE_WIFI_DISPLAY, &res));
     Boolean result = res == IPackageManager::PERMISSION_GRANTED;
     if (DEBUG) Slogger::D(TAG, "CanCallerConfigureWifiDisplay %s", result ? "TRUE" : "FALSE");
     return result;

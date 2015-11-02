@@ -19,7 +19,7 @@
 
 #include <hb.h>
 
-#include <vector>
+#include <libcxx/vector>
 
 #include <minikin/FontCollection.h>
 #include <minikin/MinikinFontFreeType.h>

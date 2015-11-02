@@ -694,7 +694,7 @@ ECode Vpn::Establish(
     info->GetServiceInfo((IServiceInfo**)&sinfo);
     String permission;
     sinfo->GetPermission(&permission);
-    if (!Elastos::Droid::Manifest::Permission::BIND_VPN_SERVICE.Equals(permission)) {
+    if (!Elastos::Droid::Manifest::permission::BIND_VPN_SERVICE.Equals(permission)) {
         // throw new SecurityException(config.user + " does not require " + BIND_VPN_SERVICE);
         return E_SECURITY_EXCEPTION;
     }

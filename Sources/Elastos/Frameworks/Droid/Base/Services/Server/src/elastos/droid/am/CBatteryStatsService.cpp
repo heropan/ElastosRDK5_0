@@ -113,7 +113,7 @@ ECode CBatteryStatsService::GetStatistics(
     /* [out, callee] */ ArrayOf<Byte>** statistics)
 {
     VALIDATE_NOT_NULL(statistics)
-    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::Permission::BATTERY_STATS, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::BATTERY_STATS, String(NULL)));
     //Slog.i("foo", "SENDING BATTERY INFO:");
     //mStats.dumpLocked(new LogPrinter(Log.INFO, "foo", Log.LOG_ID_SYSTEM));
     AutoPtr<IParcel> out;
@@ -558,7 +558,7 @@ ECode CBatteryStatsService::GetAwakeTimeBattery(
 {
     VALIDATE_NOT_NULL(time);
     FAIL_RETURN( mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::BATTERY_STATS, String(NULL)) );
+            Elastos::Droid::Manifest::permission::BATTERY_STATS, String(NULL)) );
     *time = mStats->GetAwakeTimeBattery();
     return NOERROR;
 }
@@ -568,7 +568,7 @@ ECode CBatteryStatsService::GetAwakeTimePlugged(
 {
     VALIDATE_NOT_NULL(time);
     FAIL_RETURN( mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::BATTERY_STATS, String(NULL)) );
+            Elastos::Droid::Manifest::permission::BATTERY_STATS, String(NULL)) );
     *time = mStats->GetAwakeTimePlugged();
     return NOERROR;
 }
@@ -576,7 +576,7 @@ ECode CBatteryStatsService::GetAwakeTimePlugged(
 void CBatteryStatsService::EnforceCallingPermission()
 {
     if (Binder::GetCallingPid() == Process::MyPid()) return;
-    mContext->EnforcePermission(Elastos::Droid::Manifest::Permission::UPDATE_DEVICE_STATS,
+    mContext->EnforcePermission(Elastos::Droid::Manifest::permission::UPDATE_DEVICE_STATS,
             Binder::GetCallingPid(), Binder::GetCallingUid(), String(NULL));
 }
 
@@ -597,14 +597,14 @@ ECode CBatteryStatsService::Dump(
     /* [in] */ ArrayOf<String>* args)
 {
     Int32 permission;
-    if (mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, &permission),
+    if (mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &permission),
             permission != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder sb("Permission Denial: can't dump BatteryStats from from pid=");
         sb += Binder::GetCallingPid();
         sb += ", uid=";
         sb += Binder::GetCallingUid();
         sb += " without permission ";
-        sb += Elastos::Droid::Manifest::Permission::DUMP;
+        sb += Elastos::Droid::Manifest::permission::DUMP;
         pw->PrintString(sb.ToString());
         return NOERROR;
     }

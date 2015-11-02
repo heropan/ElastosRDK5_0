@@ -2392,7 +2392,7 @@ ECode CConnectivityService::SetPolicyDataEnable(
 {
     // only someone like NPMS should only be calling us
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(EVENT_SET_POLICY_DATA_ENABLE,
@@ -2419,14 +2419,14 @@ void CConnectivityService::HandleSetPolicyDataEnable(
 ECode CConnectivityService::EnforceAccessPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE,
+            Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE,
             String("ConnectivityService"));
 }
 
 ECode CConnectivityService::EnforceChangePermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CHANGE_NETWORK_STATE,
+            Elastos::Droid::Manifest::permission::CHANGE_NETWORK_STATE,
             String("ConnectivityService"));
 }
 
@@ -2434,21 +2434,21 @@ ECode CConnectivityService::EnforceChangePermission()
 ECode CConnectivityService::EnforceTetherChangePermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CHANGE_NETWORK_STATE,
+            Elastos::Droid::Manifest::permission::CHANGE_NETWORK_STATE,
             String("ConnectivityService"));
 }
 
 ECode CConnectivityService::EnforceTetherAccessPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE,
+            Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE,
             String("ConnectivityService"));
 }
 
 ECode CConnectivityService::EnforceConnectivityInternalPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL,
             String("ConnectivityService"));
 }
 
@@ -2723,7 +2723,7 @@ void CConnectivityService::SendDataActivityBroadcast(
     AutoPtr<IUserHandle> ALL;
     helper->GetALL((IUserHandle**)&ALL);
     mContext->SendOrderedBroadcastAsUser(intent, ALL,
-                Elastos::Droid::Manifest::Permission::RECEIVE_DATA_ACTIVITY_CHANGE,
+                Elastos::Droid::Manifest::permission::RECEIVE_DATA_ACTIVITY_CHANGE,
                 NULL, NULL, 0, String(NULL), NULL);
     Binder::RestoreCallingIdentity(ident);
 }
@@ -3837,7 +3837,7 @@ void CConnectivityService::Dump(
 //
 //    Int32 permission;
 //    mContext->CheckCallingOrSelfPermission(
-//            Elastos::Droid::Manifest::Permission::DUMP, &permission);
+//            Elastos::Droid::Manifest::permission::DUMP, &permission);
 //    if (permission!= IPackageManager::PERMISSION_GRANTED) {
 //        AutoPtr<IBinderHelper> binderHelper;
 //        CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
@@ -4145,7 +4145,7 @@ ECode CConnectivityService::ReportInetCondition(
 {
     if (VDBG) Slogger::V(TAG, "reportNetworkCondition(%d, %d)", networkType, percentage);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::STATUS_BAR,
+            Elastos::Droid::Manifest::permission::STATUS_BAR,
             String("ConnectivityService")));
 
 //    if (DBG) {
