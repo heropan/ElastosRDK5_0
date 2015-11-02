@@ -45,6 +45,8 @@ LIBRARIES += text/text.lib
 LIBRARIES += transition/transition.lib
 LIBRARIES += utility/utility.lib
 LIBRARIES += location/location.lib
+#todo: should link view.lib
+LIBRARIES += view/accessibility/accessibility.lib
 
 // LIBRARIES += wifi/wifi.lib
 // LIBRARIES += view/view.lib

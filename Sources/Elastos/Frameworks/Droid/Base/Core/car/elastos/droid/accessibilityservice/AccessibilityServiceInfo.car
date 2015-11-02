@@ -443,6 +443,9 @@ module
             [out] String* str);
     }
 
+    interface IAccessibilityServiceInfoCapabilityInfo {
+    }
+
     } // namespace AccessibilityService
     } // namepsace Droid
     } // namespace Elastos

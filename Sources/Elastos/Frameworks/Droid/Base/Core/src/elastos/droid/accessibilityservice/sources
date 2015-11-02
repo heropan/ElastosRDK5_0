@@ -11,4 +11,5 @@ C_DEFINES += -DDROID_CORE
 SOURCES = AccessibilityService.cpp
 SOURCES += CAccessibilityServiceClientWrapper.cpp
 SOURCES += CAccessibilityServiceInfo.cpp
+SOURCES += CAccessibilityServiceInfoCapabilityInfo.cpp
 SOURCES += CAccessibilityServiceInfoHelper.cpp

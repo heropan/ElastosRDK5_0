@@ -381,7 +381,7 @@ module
          * @return The text.
          */
         GetText(
-            [out] IList** container);
+            [out] IList** list);
 
         /**
          * Sets the text before a change.

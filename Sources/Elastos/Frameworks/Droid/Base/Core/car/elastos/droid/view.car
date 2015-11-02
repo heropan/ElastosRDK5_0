@@ -157,7 +157,7 @@ module
     merge("view/textservice/TextInfo.car");
     merge("view/textservice/TextServicesManager.car");
 
-    // using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.ICharSequence;
     // interface Elastos.Droid.Content.IContext;
     // interface Elastos.Droid.Content.Pm.IResolveInfo;
     // interface Elastos.Droid.Graphics.ISurfaceTexture;
@@ -175,10 +175,19 @@ module
     // interface Elastos.Droid.View.IInputMethodCallback;
     // interface Elastos.Droid.View.IWindowManagerPolicyThread;
     // interface Elastos.Droid.View.IAccessibilityInteractionController;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityAction;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityActionHelper;
+    interface Elastos.Droid.View.Accessibility.ICollectionInfo;
+    interface Elastos.Droid.View.Accessibility.ICollectionInfoHelper;
+    interface Elastos.Droid.View.Accessibility.ICollectionItemInfo;
+    interface Elastos.Droid.View.Accessibility.ICollectionItemInfoHelper;
+    interface Elastos.Droid.View.Accessibility.IRangeInfo;
+    interface Elastos.Droid.View.Accessibility.IRangeInfoHelper;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnection;
+    // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityRecord;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityRecordHelper;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
@@ -200,9 +209,9 @@ module
     // } // namespace Droid
     // } // namespace Elastos
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace View {
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
     //     singleton class CChoreographerHelper {
     //         interface IChoreographerHelper;
     //     }
@@ -686,7 +695,7 @@ module
     //         constructor(
     //             [in] Handle32 viewRootImpl);
 
-    //         interface IAccessibilityInteractionConnection;
+    //         interface IIAccessibilityInteractionConnection;
     //     }
 
     //     class CAccessibilityInteractionController {
@@ -1569,7 +1578,7 @@ module
 
     // }// namespace Animation
 
-    // namespace Accessibility {
+    namespace Accessibility {
 
     // /**
     //  * This class represents a node of the window content as well as actions that
@@ -1599,14 +1608,80 @@ module
     //  * @see AccessibilityEvent
     //  * @see AccessibilityManager
     //  */
-    // class CAccessibilityNodeInfo {
-    //     interface IAccessibilityNodeInfo;
-    //     interface IParcelable;
-    // }
+    class CAccessibilityNodeInfo {
+        constructor();
 
-    // singleton class CAccessibilityNodeInfoHelper {
-    //     interface IAccessibilityNodeInfoHelper;
-    // }
+        interface IAccessibilityNodeInfo;
+        interface IParcelable;
+    }
+
+    singleton class CAccessibilityNodeInfoHelper {
+        interface IAccessibilityNodeInfoHelper;
+    }
+
+    class CAccessibilityAction {
+        constructor();
+
+        constructor(
+            [in] Int32 actionId,
+            [in] ICharSequence* label);
+
+        interface IAccessibilityAction;
+    }
+
+    singleton class CAccessibilityActionHelper {
+        interface IAccessibilityActionHelper;
+    }
+
+    class CCollectionInfo {
+        constructor();
+
+        constructor(
+            [in] Int32 rowCount,
+            [in] Int32 columnCount,
+            [in] Boolean hierarchical,
+            [in] Int32 selectionMode);
+
+        interface ICollectionInfo;
+    }
+
+    singleton class CCollectionInfoHelper {
+        interface ICollectionInfoHelper;
+    }
+
+    class CCollectionItemInfo {
+        constructor();
+
+        constructor(
+            [in] Int32 rowIndex,
+            [in] Int32 rowSpan,
+            [in] Int32 columnIndex,
+            [in] Int32 columnSpan,
+            [in] Boolean heading,
+            [in] Boolean selected);
+
+        interface ICollectionItemInfo;
+    }
+
+    singleton class CCollectionItemInfoHelper {
+        interface ICollectionItemInfoHelper;
+    }
+
+    class CRangeInfo {
+        constructor();
+
+        constructor(
+            [in] Int32 type,
+            [in] Float min,
+            [in] Float max,
+            [in] Float current);
+
+        interface IRangeInfo;
+    }
+
+    singleton class CRangeInfoHelper {
+        interface IRangeInfoHelper;
+    }
 
     // class CAccessibilityRecord {
     //     interface IAccessibilityRecord;
@@ -1654,9 +1729,9 @@ module
     //     interface IAccessibilityInteractionClientHelper;
     // }
 
-    // } // Accessibility
+    } // Accessibility
 
-    // } // namespace View
-    // } // namepsace Droid
-    // } // namespace Elastos
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
 }

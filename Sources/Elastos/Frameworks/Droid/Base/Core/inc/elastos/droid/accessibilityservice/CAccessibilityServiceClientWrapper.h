@@ -18,7 +18,7 @@ namespace AccessibilityService {
 CarClass(CAccessibilityServiceClientWrapper)
     , public Object
     , public IAccessibilityServiceClientWrapper
-    , public IAccessibilityServiceClient
+    , public IIAccessibilityServiceClient
     //, public IHandlerCallerCallback
 {
 public:

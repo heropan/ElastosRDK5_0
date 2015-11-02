@@ -3,6 +3,7 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Os.IBundle;
@@ -17,7 +18,6 @@ module
     namespace Droid {
     namespace View {
     namespace Accessibility {
-
 
     /**
      * Class with information if a node is a collection. Use
@@ -55,7 +55,7 @@ module
          * @return The column count.
          */
         GetColumnCount(
-            [out] Int32* rowCount);
+            [out] Int32* columnCount);
 
         /**
          * Gets if the collection is a hierarchically ordered.
@@ -63,7 +63,7 @@ module
          * @return Whether the collection is hierarchical.
          */
         IsHierarchical(
-            [out] Boolean* result);
+            [out] Boolean* hierarchical);
 
         /**
          * Gets the collection's selection mode.
@@ -77,9 +77,23 @@ module
          */
         GetSelectionMode(
             [out] Int32* mode);
+
+        /**
+         * Recycles this instance.
+         */
+        Recycle();
     }
 
     interface ICollectionInfoHelper {
+        /**
+         * Obtains a pooled instance that is a clone of another one.
+         *
+         * @param other The instance to clone.
+         * @hide
+         */
+        Obtain(
+            [in] ICollectionInfo* other,
+            [out] ICollectionInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -134,7 +148,7 @@ module
          * @return The column index.
          */
         GetColumnIndex(
-            [out] Int32* result);
+            [out] Int32* columnIndex);
 
         /**
          * Gets the row index at which the item is located.
@@ -142,7 +156,7 @@ module
          * @return The row index.
          */
         GetRowIndex(
-            [out] Int32* result);
+            [out] Int32* rowIndex);
 
         /**
          * Gets the number of columns the item spans.
@@ -150,7 +164,7 @@ module
          * @return The column span.
          */
         GetColumnSpan(
-            [out] Int32* result);
+            [out] Int32* columnSpan);
 
         /**
          * Gets the number of rows the item spans.
@@ -158,7 +172,7 @@ module
          * @return The row span.
          */
         GetRowSpan(
-            [out] Int32* result);
+            [out] Int32* rowSpan);
 
         /**
          * Gets if the collection item is a heading. For example, section
@@ -167,7 +181,7 @@ module
          * @return If the item is a heading.
          */
         IsHeading(
-            [out] Boolean* result);
+            [out] Boolean* heading);
 
         /**
          * Gets if the collection item is selected.
@@ -175,10 +189,24 @@ module
          * @return If the item is selected.
          */
         IsSelected(
-            [out] Boolean* result);
+            [out] Boolean* selected);
+
+        /**
+         * Recycles this instance.
+         */
+        Recycle();
     }
 
     interface ICollectionItemInfoHelper {
+        /**
+         * Obtains a pooled instance that is a clone of another one.
+         *
+         * @param other The instance to clone.
+         * @hide
+         */
+        Obtain(
+            [in] ICollectionItemInfo* other,
+            [out] ICollectionItemInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -217,10 +245,41 @@ module
             [out] ICollectionItemInfo** info);
     }
 
+    /**
+     * A class defining an action that can be performed on an {@link AccessibilityNodeInfo}.
+     * Each action has a unique id that is mandatory and optional data.
+     * <p>
+     * There are three categories of actions:
+     * <ul>
+     * <li><strong>Standard actions</strong> - These are actions that are reported and
+     * handled by the standard UI widgets in the platform. For each standard action
+     * there is a static constant defined in this class, e.g. {@link #ACTION_FOCUS}.
+     * </li>
+     * <li><strong>Custom actions action</strong> - These are actions that are reported
+     * and handled by custom widgets. i.e. ones that are not part of the UI toolkit. For
+     * example, an application may define a custom action for clearing the user history.
+     * </li>
+     * <li><strong>Overriden standard actions</strong> - These are actions that override
+     * standard actions to customize them. For example, an app may add a label to the
+     * standard click action to announce that this action clears browsing history.
+     * </ul>
+     * </p>
+     */
     interface IAccessibilityAction {
+        /**
+         * Gets the id for this action.
+         *
+         * @return The action id.
+         */
         GetId(
             [out] Int32* id);
 
+        /**
+         * Gets the label for this action. Its purpose is to describe the
+         * action to user.
+         *
+         * @return The label.
+         */
         GetLabel(
             [out] ICharSequence** seq);
     }
@@ -237,6 +296,9 @@ module
             [out] IAccessibilityAction** action);
 
         GetACTION_CLEAR_SELECTION(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_CLICK(
             [out] IAccessibilityAction** action);
 
         GetACTION_LONG_CLICK(
@@ -303,24 +365,52 @@ module
             [out] Int32* type);
 
         GetMin(
-            [out] Float* value);
+            [out] Float* min);
 
         GetMax(
-            [out] Float* value);
+            [out] Float* max);
 
         GetCurrent(
-            [out] Float* value);
+            [out] Float* current);
+
+        /**
+         * Recycles this instance.
+         */
+        Recycle();
     }
 
     interface IRangeInfoHelper {
+        /**
+         * Obtains a pooled instance that is a clone of another one.
+         *
+         * @param other The instance to clone.
+         *
+         * @hide
+         */
+        Obtain(
+            [in] IRangeInfo* other,
+            [out] IRangeInfo** info);
+
+        /**
+         * Obtains a pooled instance.
+         *
+         * @param type The type of the range.
+         * @param min The min value.
+         * @param max The max value.
+         * @param current The current value.
+         */
         Obtain(
             [in] Int32 type,
             [in] Float min,
             [in] Float max,
             [in] Float current,
-            [out] IRangeInfo** result);
+            [out] IRangeInfo** info);
     }
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     [local]
     interface IAccessibilityNodeInfo {
 
@@ -570,6 +660,8 @@ module
          */
         const Int32 ACTION_SET_TEXT = 0x00200000;
 
+        const Int32 LAST_LEGACY_STANDARD_ACTION = ACTION_SET_TEXT;
+
         // Action arguments
 
         /**
@@ -690,24 +782,99 @@ module
          */
         const Int32 MOVEMENT_GRANULARITY_PAGE = 0x00000010;
 
-
+        /**
+         * Sets the source.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param source The info source.
+         */
         SetSource(
             [in] IView* source);
 
+        /**
+         * Sets the source to be a virtual descendant of the given <code>root</code>.
+         * If <code>virtualDescendantId</code> is {@link View#NO_ID} the root
+         * is set as the source.
+         * <p>
+         * A virtual descendant is an imaginary View that is reported as a part of the view
+         * hierarchy for accessibility purposes. This enables custom views that draw complex
+         * content to report themselves as a tree of virtual views, thus conveying their
+         * logical structure.
+         * </p>
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param root The root of the virtual subtree.
+         * @param virtualDescendantId The id of the virtual descendant.
+         */
         SetSource(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
+        /**
+         * Find the view that has the specified focus type. The search starts from
+         * the view represented by this node info.
+         *
+         * @param focus The focus to find. One of {@link #FOCUS_INPUT} or
+         *         {@link #FOCUS_ACCESSIBILITY}.
+         * @return The node info of the focused view or null.
+         *
+         * @see #FOCUS_INPUT
+         * @see #FOCUS_ACCESSIBILITY
+         */
         FindFocus(
             [in] Int32 focus,
             [out] IAccessibilityNodeInfo** info);
 
+        /**
+         * Searches for the nearest view in the specified direction that can take
+         * the input focus.
+         *
+         * @param direction The direction. Can be one of:
+         *     {@link View#FOCUS_DOWN},
+         *     {@link View#FOCUS_UP},
+         *     {@link View#FOCUS_LEFT},
+         *     {@link View#FOCUS_RIGHT},
+         *     {@link View#FOCUS_FORWARD},
+         *     {@link View#FOCUS_BACKWARD}.
+         *
+         * @return The node info for the view that can take accessibility focus.
+         */
         FocusSearch(
             [in] Int32 direction,
             [out] IAccessibilityNodeInfo** info);
 
+        /**
+         * Gets the id of the window from which the info comes from.
+         *
+         * @return The window id.
+         */
         GetWindowId(
             [out] Int32* id);
+
+        /**
+         * Refreshes this info with the latest state of the view it represents.
+         * <p>
+         * <strong>Note:</strong> If this method returns false this info is obsolete
+         * since it represents a view that is no longer in the view tree and should
+         * be recycled.
+         * </p>
+         *
+         * @param bypassCache Whether to bypass the cache.
+         * @return Whether the refresh succeeded.
+         *
+         * @hide
+         */
+        Refresh(
+            [in] Boolean bypassCache,
+            [out] Boolean* result);
 
         /**
          * Refreshes this info with the latest state of the view it represents.
@@ -719,29 +886,123 @@ module
          * @return Whether the refresh succeeded.
          */
         Refresh(
-            [out] Boolean* bypassCache);
+            [out] Boolean* result);
 
+        /**
+         * Returns the array containing the IDs of this node's children.
+         *
+         * @hide
+         */
+        GetChildNodeIds(
+            [out] IMap** ids);
+
+        /**
+         * Returns the id of the child at the specified index.
+         *
+         * @throws IndexOutOfBoundsException when index &lt; 0 || index &gt;=
+         *             getChildCount()
+         * @hide
+         */
         GetChildId(
-            [out] Int32* id);
+            [in] Int32 index,
+            [out] Int64* id);
 
+        /**
+         * Gets the number of children.
+         *
+         * @return The child count.
+         */
         GetChildCount(
             [out] Int32* count);
 
+        /**
+         * Get the child at given index.
+         * <p>
+         *   <strong>Note:</strong> It is a client responsibility to recycle the
+         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
+         *     to avoid creating of multiple instances.
+         * </p>
+         *
+         * @param index The child index.
+         * @return The child node.
+         *
+         * @throws IllegalStateException If called outside of an AccessibilityService.
+         *
+         */
         GetChild(
             [in] Int32 index,
             [out] IAccessibilityNodeInfo** info);
 
+        /**
+         * Adds a child.
+         * <p>
+         * <strong>Note:</strong> Cannot be called from an
+         * {@link android.accessibilityservice.AccessibilityService}.
+         * This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param child The child.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         AddChild(
             [in] IView* child);
 
-        AddChild(
+         /**
+         * Unchecked version of {@link #addChild(View)} that does not verify
+         * uniqueness. For framework use only.
+         *
+         * @hide
+         */
+        AddChildUnchecked(
+            [in] IView* child);
+
+        /**
+         * Removes a child. If the child was not previously added to the node,
+         * calling this method has no effect.
+         * <p>
+         * <strong>Note:</strong> Cannot be called from an
+         * {@link android.accessibilityservice.AccessibilityService}.
+         * This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param child The child.
+         * @return true if the child was present
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
+        RemoveChild(
             [in] IView* child,
             [out] Boolean* result);
 
+        /**
+         * Adds a virtual child which is a descendant of the given <code>root</code>.
+         * If <code>virtualDescendantId</code> is {@link View#NO_ID} the root
+         * is added as a child.
+         * <p>
+         * A virtual descendant is an imaginary View that is reported as a part of the view
+         * hierarchy for accessibility purposes. This enables custom views that draw complex
+         * content to report them selves as a tree of virtual views, thus conveying their
+         * logical structure.
+         * </p>
+         *
+         * @param root The root of the virtual subtree.
+         * @param virtualDescendantId The id of the virtual child.
+         */
         AddChild(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
+        /**
+         * Removes a virtual child which is a descendant of the given
+         * <code>root</code>. If the child was not previously added to the node,
+         * calling this method has no effect.
+         *
+         * @param root The root of the virtual subtree.
+         * @param virtualDescendantId The id of the virtual child.
+         * @return true if the child was present
+         * @see #addChild(View, int)
+         */
         RemoveChild(
             [in] IView* root,
             [in] Int32 virtualDescendantId,
@@ -772,6 +1033,8 @@ module
          * @see AccessibilityNodeInfo#ACTION_PREVIOUS_HTML_ELEMENT
          * @see AccessibilityNodeInfo#ACTION_SCROLL_FORWARD
          * @see AccessibilityNodeInfo#ACTION_SCROLL_BACKWARD
+         *
+         * @deprecated Use {@link #getActionList()}.
          */
         GetActions(
             [out] Int32* actions);
@@ -798,45 +1061,185 @@ module
          */
         AddAction(
             [in] IAccessibilityAction* action);
-
+        /**
+         * Adds an action that can be performed on the node.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param action The action.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         * @throws IllegalArgumentException If the argument is not one of the standard actions.
+         *
+         * @deprecated This has been deprecated for {@link #addAction(AccessibilityAction)}
+         */
         AddAction(
             [in] Int32 action);
 
+        /**
+         * Removes an action that can be performed on the node. If the action was
+         * not already added to the node, calling this method has no effect.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param action The action to be removed.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         * @deprecated Use {@link #removeAction(AccessibilityAction)}
+         */
         RemoveAction(
             [in] Int32 action);
 
+        /**
+         * Removes an action that can be performed on the node. If the action was
+         * not already added to the node, calling this method has no effect.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param action The action to be removed.
+         * @return The action removed from the list of actions.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         RemoveAction(
             [in] IAccessibilityAction* action,
             [out] Boolean* result);
 
+        /**
+         * Sets the maximum text length, or -1 for no limit.
+         * <p>
+         * Typically used to indicate that an editable text field has a limit on
+         * the number of characters entered.
+         * <p>
+         * <strong>Note:</strong> Cannot be called from an
+         * {@link android.accessibilityservice.AccessibilityService}.
+         * This class is made immutable before being delivered to an AccessibilityService.
+         *
+         * @param max The maximum text length.
+         * @see #getMaxTextLength()
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetMaxTextLength(
             [in] Int32 max);
 
+        /**
+         * Returns the maximum text length for this node.
+         *
+         * @return The maximum text length, or -1 for no limit.
+         * @see #setMaxTextLength(int)
+         */
         GetMaxTextLength(
             [out] Int32* max);
 
+        /**
+         * Sets the movement granularities for traversing the text of this node.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param granularities The bit mask with granularities.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetMovementGranularities(
             [in] Int32 granularities);
 
+        /**
+         * Gets the movement granularities for traversing the text of this node.
+         *
+         * @return The bit mask with granularities.
+         */
         GetMovementGranularities(
             [out] Int32* granularities);
 
+        /**
+         * Performs an action on the node.
+         * <p>
+         *   <strong>Note:</strong> An action can be performed only if the request is made
+         *   from an {@link android.accessibilityservice.AccessibilityService}.
+         * </p>
+         *
+         * @param action The action to perform.
+         * @return True if the action was performed.
+         *
+         * @throws IllegalStateException If called outside of an AccessibilityService.
+         */
         PerformAction(
             [in] Int32 action,
             [out] Boolean* result);
 
+        /**
+         * Performs an action on the node.
+         * <p>
+         *   <strong>Note:</strong> An action can be performed only if the request is made
+         *   from an {@link android.accessibilityservice.AccessibilityService}.
+         * </p>
+         *
+         * @param action The action to perform.
+         * @param arguments A bundle with additional arguments.
+         * @return True if the action was performed.
+         *
+         * @throws IllegalStateException If called outside of an AccessibilityService.
+         */
         PerformAction(
             [in] Int32 action,
             [in] IBundle* arguments,
             [out] Boolean* result);
 
+        /**
+         * Finds {@link AccessibilityNodeInfo}s by text. The match is case
+         * insensitive containment. The search is relative to this info i.e.
+         * this info is the root of the traversed tree.
+         *
+         * <p>
+         *   <strong>Note:</strong> It is a client responsibility to recycle the
+         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
+         *     to avoid creating of multiple instances.
+         * </p>
+         *
+         * @param text The searched text.
+         * @return A list of node info.
+         */
         FindAccessibilityNodeInfosByText(
             [in] String text,
-            [out] IList** container);
+            [out] IList** list);
 
+        /**
+         * Finds {@link AccessibilityNodeInfo}s by the fully qualified view id's resource
+         * name where a fully qualified id is of the from "package:id/id_resource_name".
+         * For example, if the target application's package is "foo.bar" and the id
+         * resource name is "baz", the fully qualified resource id is "foo.bar:id/baz".
+         *
+         * <p>
+         *   <strong>Note:</strong> It is a client responsibility to recycle the
+         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
+         *     to avoid creating of multiple instances.
+         * </p>
+         * <p>
+         *   <strong>Note:</strong> The primary usage of this API is for UI test automation
+         *   and in order to report the fully qualified view id if an {@link AccessibilityNodeInfo}
+         *   the client has to set the {@link AccessibilityServiceInfo#FLAG_REPORT_VIEW_IDS}
+         *   flag when configuring his {@link android.accessibilityservice.AccessibilityService}.
+         * </p>
+         *
+         * @param viewId The fully qualified resource name of the view id to find.
+         * @return A list of node info.
+         */
         FindAccessibilityNodeInfosByViewId(
             [in] String viewId,
-            [out] IList** container);
+            [out] IList** list);
 
         /**
          * Gets the window to which this node belongs.
@@ -848,114 +1251,432 @@ module
         GetWindow(
             [out] IAccessibilityWindowInfo** info);
 
+        /**
+         * Gets the parent.
+         * <p>
+         *   <strong>Note:</strong> It is a client responsibility to recycle the
+         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
+         *     to avoid creating of multiple instances.
+         * </p>
+         *
+         * @return The parent.
+         */
         GetParent(
             [out] IAccessibilityNodeInfo** parent);
 
+        /**
+         * @return The parent node id.
+         *
+         * @hide
+         */
         GetParentNodeId(
             [out] Int64* id);
 
+        /**
+         * Sets the parent.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param parent The parent.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetParent(
             [in] IView* parent);
 
+        /**
+         * Sets the parent to be a virtual descendant of the given <code>root</code>.
+         * If <code>virtualDescendantId</code> equals to {@link View#NO_ID} the root
+         * is set as the parent.
+         * <p>
+         * A virtual descendant is an imaginary View that is reported as a part of the view
+         * hierarchy for accessibility purposes. This enables custom views that draw complex
+         * content to report them selves as a tree of virtual views, thus conveying their
+         * logical structure.
+         * </p>
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param root The root of the virtual subtree.
+         * @param virtualDescendantId The id of the virtual descendant.
+         */
         SetParent(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
+        /**
+         * Gets the node bounds in parent coordinates.
+         *
+         * @param outBounds The output node bounds.
+         */
         GetBoundsInParent(
             [in] IRect* outBounds);
 
+        /**
+         * Sets the node bounds in parent coordinates.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param bounds The node bounds.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetBoundsInParent(
             [in] IRect* bounds);
 
+        /**
+         * Gets the node bounds in screen coordinates.
+         *
+         * @param outBounds The output node bounds.
+         */
         GetBoundsInScreen(
             [in] IRect* outBounds);
 
+        /**
+         * Sets the node bounds in screen coordinates.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param bounds The node bounds.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetBoundsInScreen(
             [in] IRect* bounds);
 
+        /**
+         * Gets whether this node is checkable.
+         *
+         * @return True if the node is checkable.
+         */
         IsCheckable(
             [out] Boolean* checkable);
 
+        /**
+         * Sets whether this node is checkable.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param checkable True if the node is checkable.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetCheckable(
             [in] Boolean checkable);
 
+        /**
+         * Gets whether this node is checked.
+         *
+         * @return True if the node is checked.
+         */
         IsChecked(
             [out] Boolean* checked);
 
+        /**
+         * Sets whether this node is checked.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param checked True if the node is checked.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetChecked(
             [in] Boolean checked);
 
+        /**
+         * Gets whether this node is focusable.
+         *
+         * @return True if the node is focusable.
+         */
         IsFocusable(
             [out] Boolean* focusable);
 
+        /**
+         * Sets whether this node is focusable.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param focusable True if the node is focusable.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetFocusable(
             [in] Boolean focusable);
 
+        /**
+         * Gets whether this node is focused.
+         *
+         * @return True if the node is focused.
+         */
         IsFocused(
             [out] Boolean* focused);
 
+        /**
+         * Sets whether this node is focused.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param focused True if the node is focused.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetFocused(
             [in] Boolean focused);
 
+        /**
+         * Sets whether this node is visible to the user.
+         *
+         * @return Whether the node is visible to the user.
+         */
         IsVisibleToUser(
             [out] Boolean* visible);
 
+        /**
+         * Sets whether this node is visible to the user.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param visibleToUser Whether the node is visible to the user.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetVisibleToUser(
             [in] Boolean visible);
 
+        /**
+         * Gets whether this node is accessibility focused.
+         *
+         * @return True if the node is accessibility focused.
+         */
         IsAccessibilityFocused(
             [out] Boolean* focused);
 
+        /**
+         * Sets whether this node is accessibility focused.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param focused True if the node is accessibility focused.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetAccessibilityFocused(
             [in] Boolean focusable);
 
+        /**
+         * Gets whether this node is selected.
+         *
+         * @return True if the node is selected.
+         */
         IsSelected(
             [out] Boolean* selected);
 
+        /**
+         * Sets whether this node is selected.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param selected True if the node is selected.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetSelected(
             [in] Boolean selected);
 
+        /**
+         * Gets whether this node is clickable.
+         *
+         * @return True if the node is clickable.
+         */
         IsClickable(
             [out] Boolean* clickable);
 
+        /**
+         * Sets whether this node is clickable.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param clickable True if the node is clickable.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetClickable(
             [in] Boolean clickable);
 
+        /**
+         * Gets whether this node is long clickable.
+         *
+         * @return True if the node is long clickable.
+         */
         IsLongClickable(
             [out] Boolean* longClickable);
 
+        /**
+         * Sets whether this node is long clickable.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param longClickable True if the node is long clickable.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetLongClickable(
             [in] Boolean longClickable);
 
+        /**
+         * Gets whether this node is enabled.
+         *
+         * @return True if the node is enabled.
+         */
         IsEnabled(
             [out] Boolean* result);
 
+        /**
+         * Sets whether this node is enabled.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param enabled True if the node is enabled.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetEnabled(
             [in] Boolean enabled);
 
+        /**
+         * Gets whether this node is a password.
+         *
+         * @return True if the node is a password.
+         */
         IsPassword(
             [out] Boolean* isPassword);
 
+        /**
+         * Sets whether this node is a password.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param password True if the node is a password.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetPassword(
             [in] Boolean isPassword);
 
+        /**
+         * Gets if the node is scrollable.
+         *
+         * @return True if the node is scrollable, false otherwise.
+         */
         IsScrollable(
             [out] Boolean* scrollable);
 
+        /**
+         * Sets if the node is scrollable.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param scrollable True if the node is scrollable, false otherwise.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetScrollable(
             [in] Boolean scrollable);
 
+        /**
+         * Gets if the node is editable.
+         *
+         * @return True if the node is editable, false otherwise.
+         */
         IsEditable(
             [out] Boolean* editable);
 
+        /**
+         * Sets whether this node is editable.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param editable True if the node is editable.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetEditable(
             [in] Boolean editable);
 
+        /**
+         * Gets the collection info if the node is a collection. A collection
+         * child is always a collection item.
+         *
+         * @return The collection info.
+         */
         GetCollectionInfo(
             [out] ICollectionInfo** info);
 
+        /**
+         * Sets the collection info if the node is a collection. A collection
+         * child is always a collection item.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param collectionInfo The collection info.
+         */
         SetCollectionInfo(
-            [in] ICollectionInfo* info);
+            [in] ICollectionInfo* collectionInfo);
 
         /**
          * Gets the collection item info if the node is a collection item. A collection
@@ -966,6 +1687,15 @@ module
         GetCollectionItemInfo(
             [out] ICollectionItemInfo** info);
 
+        /**
+         * Sets the collection item info if the node is a collection item. A collection
+         * item is always a child of a collection.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         */
         SetCollectionItemInfo(
             [in] ICollectionItemInfo* collectionItemInfo);
 
@@ -977,131 +1707,487 @@ module
         GetRangeInfo(
             [out] IRangeInfo** info);
 
+        /**
+         * Sets the range info if this node is a range.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param rangeInfo The range info.
+         */
         SetRangeInfo(
-            [in] IRangeInfo* info);
+            [in] IRangeInfo* rangeInfo);
 
+        /**
+         * Gets if the content of this node is invalid. For example,
+         * a date is not well-formed.
+         *
+         * @return If the node content is invalid.
+         */
         IsContentInvalid(
             [out] Boolean* result);
 
+        /**
+         * Sets if the content of this node is invalid. For example,
+         * a date is not well-formed.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param contentInvalid If the node content is invalid.
+         */
         SetContentInvalid(
             [in] Boolean contentInvalid);
 
+        /**
+         * Gets the node's live region mode.
+         * <p>
+         * A live region is a node that contains information that is important for
+         * the user and when it changes the user should be notified. For example,
+         * in a login screen with a TextView that displays an "incorrect password"
+         * notification, that view should be marked as a live region with mode
+         * {@link View#ACCESSIBILITY_LIVE_REGION_POLITE}.
+         * <p>
+         * It is the responsibility of the accessibility service to monitor
+         * {@link AccessibilityEvent#TYPE_WINDOW_CONTENT_CHANGED} events indicating
+         * changes to live region nodes and their children.
+         *
+         * @return The live region mode, or
+         *         {@link View#ACCESSIBILITY_LIVE_REGION_NONE} if the view is not a
+         *         live region.
+         * @see android.view.View#getAccessibilityLiveRegion()
+         */
         GetLiveRegion(
             [out] Int32* region);
 
+        /**
+         * Sets the node's live region mode.
+         * <p>
+         * <strong>Note:</strong> Cannot be called from an
+         * {@link android.accessibilityservice.AccessibilityService}. This class is
+         * made immutable before being delivered to an AccessibilityService.
+         *
+         * @param mode The live region mode, or
+         *        {@link View#ACCESSIBILITY_LIVE_REGION_NONE} if the view is not a
+         *        live region.
+         * @see android.view.View#setAccessibilityLiveRegion(int)
+         */
         SetLiveRegion(
-            [in] Int32 region);
+            [in] Int32 mode);
 
+        /**
+         * Gets if the node is a multi line editable text.
+         *
+         * @return True if the node is multi line.
+         */
         IsMultiLine(
             [out] Boolean* result);
 
+        /**
+         * Sets if the node is a multi line editable text.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param multiLine True if the node is multi line.
+         */
         SetMultiLine(
-            [in] Boolean result);
+            [in] Boolean multiLine);
 
+        /**
+         * Gets if this node opens a popup or a dialog.
+         *
+         * @return If the the node opens a popup.
+         */
         CanOpenPopup(
             [out] Boolean* result);
 
+        /**
+         * Sets if this node opens a popup or a dialog.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param opensPopup If the the node opens a popup.
+         */
         SetCanOpenPopup(
-            [in] Boolean result);
+            [in] Boolean opensPopup);
 
+        /**
+         * Gets if the node can be dismissed.
+         *
+         * @return If the node can be dismissed.
+         */
         IsDismissable(
             [out] Boolean* dismissable);
 
+        /**
+         * Sets if the node can be dismissed.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param dismissable If the node can be dismissed.
+         */
         SetDismissable(
             [in] Boolean dismissable);
 
+        /**
+         * Gets the package this node comes from.
+         *
+         * @return The package name.
+         */
         GetPackageName(
             [out] ICharSequence** packageName);
 
+        /**
+         * Sets the package this node comes from.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param packageName The package name.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetPackageName(
             [in] ICharSequence* packageName);
 
+        /**
+         * Gets the class this node comes from.
+         *
+         * @return The class name.
+         */
         GetClassName(
             [out] ICharSequence** className);
 
+        /**
+         * Sets the class this node comes from.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param className The class name.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetClassName(
             [in] ICharSequence* className);
 
+        /**
+         * Gets the text of this node.
+         *
+         * @return The text.
+         */
         GetText(
             [out] ICharSequence** text);
 
-        SetError(
-            [in] ICharSequence* text);
-
-        GetError(
-            [out] ICharSequence** error);
-
+        /**
+         * Sets the text of this node.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param text The text.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetText(
             [in] ICharSequence* error);
 
+        /**
+         * Sets the error text of this node.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param error The error text.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
+        SetError(
+            [in] ICharSequence* error);
+
+        /**
+         * Gets the error text of this node.
+         *
+         * @return The error text.
+         */
+        GetError(
+            [out] ICharSequence** error);
+
+        /**
+         * Gets the content description of this node.
+         *
+         * @return The content description.
+         */
         GetContentDescription(
             [out] ICharSequence** description);
 
+        /**
+         * Sets the content description of this node.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param contentDescription The content description.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetContentDescription(
             [in] ICharSequence* description);
 
+        /**
+         * Sets the view for which the view represented by this info serves as a
+         * label for accessibility purposes.
+         *
+         * @param labeled The view for which this info serves as a label.
+         */
         SetLabelFor(
             [in] IView* labeled);
 
+        /**
+         * Sets the view for which the view represented by this info serves as a
+         * label for accessibility purposes. If <code>virtualDescendantId</code>
+         * is {@link View#NO_ID} the root is set as the labeled.
+         * <p>
+         * A virtual descendant is an imaginary View that is reported as a part of the view
+         * hierarchy for accessibility purposes. This enables custom views that draw complex
+         * content to report themselves as a tree of virtual views, thus conveying their
+         * logical structure.
+         * </p>
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param root The root whose virtual descendant serves as a label.
+         * @param virtualDescendantId The id of the virtual descendant.
+         */
         SetLabelFor(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
+        /**
+         * Gets the node info for which the view represented by this info serves as
+         * a label for accessibility purposes.
+         * <p>
+         *   <strong>Note:</strong> It is a client responsibility to recycle the
+         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
+         *     to avoid creating of multiple instances.
+         * </p>
+         *
+         * @return The labeled info.
+         */
         GetLabelFor(
             [out] IAccessibilityNodeInfo** info);
 
+        /**
+         * Sets the view which serves as the label of the view represented by
+         * this info for accessibility purposes.
+         *
+         * @param label The view that labels this node's source.
+         */
         SetLabeledBy(
             [in] IView* label);
 
+        /**
+         * Sets the view which serves as the label of the view represented by
+         * this info for accessibility purposes. If <code>virtualDescendantId</code>
+         * is {@link View#NO_ID} the root is set as the label.
+         * <p>
+         * A virtual descendant is an imaginary View that is reported as a part of the view
+         * hierarchy for accessibility purposes. This enables custom views that draw complex
+         * content to report themselves as a tree of virtual views, thus conveying their
+         * logical structure.
+         * </p>
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param root The root whose virtual descendant labels this node's source.
+         * @param virtualDescendantId The id of the virtual descendant.
+         */
         SetLabeledBy(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
 
+        /**
+         * Gets the node info which serves as the label of the view represented by
+         * this info for accessibility purposes.
+         * <p>
+         *   <strong>Note:</strong> It is a client responsibility to recycle the
+         *     received info by calling {@link AccessibilityNodeInfo#recycle()}
+         *     to avoid creating of multiple instances.
+         * </p>
+         *
+         * @return The label.
+         */
         GetLabeledBy(
             [out] IAccessibilityNodeInfo** info);
 
+        /**
+         * Sets the fully qualified resource name of the source view's id.
+         *
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param viewIdResName The id resource name.
+         */
         SetViewIdResourceName(
             [in] String viewIdResName);
 
+        /**
+         * Gets the fully qualified resource name of the source view's id.
+         *
+         * <p>
+         *   <strong>Note:</strong> The primary usage of this API is for UI test automation
+         *   and in order to report the source view id of an {@link AccessibilityNodeInfo} the
+         *   client has to set the {@link AccessibilityServiceInfo#FLAG_REPORT_VIEW_IDS}
+         *   flag when configuring his {@link android.accessibilityservice.AccessibilityService}.
+         * </p>
+         * @return The id resource name.
+         */
         GetViewIdResourceName(
             [out] String* viewIdResName);
 
+        /**
+         * Gets the text selection start.
+         *
+         * @return The text selection start if there is selection or -1.
+         */
         GetTextSelectionStart(
             [out] Int32* start);
 
+        /**
+         * Gets the text selection end.
+         *
+         * @return The text selection end if there is selection or -1.
+         */
         GetTextSelectionEnd(
-            [out] Int32* start);
+            [out] Int32* end);
 
+        /**
+         * Sets the text selection start and end.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param start The text selection start.
+         * @param end The text selection end.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetTextSelection(
             [in] Int32 start,
             [in] Int32 end);
 
+        /**
+         * Gets the input type of the source as defined by {@link InputType}.
+         *
+         * @return The input type.
+         */
         GetInputType(
             [out] Int32* type);
 
+        /**
+         * Sets the input type of the source as defined by {@link InputType}.
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an
+         *   AccessibilityService.
+         * </p>
+         *
+         * @param inputType The input type.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
         SetInputType(
             [in] Int32 inputType);
 
+        /**
+         * Gets an optional bundle with extra data. The bundle
+         * is lazily created and never <code>null</code>.
+         * <p>
+         * <strong>Note:</strong> It is recommended to use the package
+         * name of your application as a prefix for the keys to avoid
+         * collisions which may confuse an accessibility service if the
+         * same key has different meaning when emitted from different
+         * applications.
+         * </p>
+         *
+         * @return The bundle.
+         */
         GetExtras(
             [out] IBundle** bundle);
 
-        GetBooleanProperty(
-            [in] Int32 property,
-            [out] Boolean* result);
-
-        SetBooleanProperty(
-            [in] Int32 property,
-            [in] Boolean result);
-
+        /**
+         * Sets the unique id of the IAccessibilityServiceConnection over which
+         * this instance can send requests to the system.
+         *
+         * @param connectionId The connection id.
+         *
+         * @hide
+         */
         SetConnectionId(
             [in] Int32 connectionId);
 
+        /**
+         * Gets the id of the source node.
+         *
+         * @return The id.
+         *
+         * @hide
+         */
         GetSourceNodeId(
             [out] Int64* id);
 
+        /**
+         * Sets if this instance is sealed.
+         *
+         * @param sealed Whether is sealed.
+         *
+         * @hide
+         */
         SetSealed(
             [in] Boolean sealed);
 
+        /**
+         * Gets if this instance is sealed.
+         *
+         * @return Whether is sealed.
+         *
+         * @hide
+         */
         IsSealed(
             [out] Boolean* sealed);
 

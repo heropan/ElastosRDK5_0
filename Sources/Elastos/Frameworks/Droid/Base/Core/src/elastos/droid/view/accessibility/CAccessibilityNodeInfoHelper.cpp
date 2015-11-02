@@ -1,5 +1,4 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfoHelper.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 
@@ -7,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
+
+CAR_INTERFACE_IMPL(CAccessibilityNodeInfoHelper, Singleton, IAccessibilityNodeInfoHelper)
+
+CAR_SINGLETON_IMPL(CAccessibilityNodeInfoHelper)
 
 ECode CAccessibilityNodeInfoHelper::GetAccessibilityViewId(
     /* [in] */ Int64 accessibilityNodeId,

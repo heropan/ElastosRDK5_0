@@ -4,7 +4,7 @@ module
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.IRegion;
     interface Elastos.Droid.View.IMagnificationSpec;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -16,7 +16,7 @@ module
             [in] Int64 accessibilityNodeId,
             [in] IRegion* interactiveRegion,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -27,7 +27,7 @@ module
             [in] String viewId,
             [in] IRegion* interactiveRegion,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -38,7 +38,7 @@ module
             [in] String text,
             [in] IRegion* interactiveRegion,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -49,7 +49,7 @@ module
             [in] Int32 focusType,
             [in] IRegion* interactiveRegion,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interogatingPid,
             [in] Int64 interrogatingTid,
@@ -60,7 +60,7 @@ module
             [in] Int32 direction,
             [in] IRegion* interactiveRegion,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interogatingPid,
             [in] Int64 interrogatingTid,
@@ -71,7 +71,7 @@ module
             [in] Int32 action,
             [in] IBundle* arguments,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interogatingPid,
             [in] Int64 interrogatingTid);
@@ -80,7 +80,7 @@ module
             [in] Int64 accessibilityNodeId,
             [in] IRegion* interactiveRegion,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
             [in] IMagnificationSpec* spec);

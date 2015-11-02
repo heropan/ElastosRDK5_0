@@ -20,7 +20,7 @@ const Int32 CAccessibilityServiceClientWrapper::DO_CLEAR_ACCESSIBILITY_CACHE = 5
 const Int32 CAccessibilityServiceClientWrapper::DO_ON_KEY_EVENT = 6;
 
 CAR_INTERFACE_IMPL_2(CAccessibilityServiceClientWrapper, Object, IAccessibilityServiceClientWrapper,
-        IAccessibilityServiceClient/*, IHandlerCallerCallback*/)
+        IIAccessibilityServiceClient/*, IHandlerCallerCallback*/)
 
 CAR_OBJECT_IMPL(CAccessibilityServiceClientWrapper)
 

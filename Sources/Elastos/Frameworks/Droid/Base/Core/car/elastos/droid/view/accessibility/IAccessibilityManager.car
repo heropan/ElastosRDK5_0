@@ -6,15 +6,14 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.View.IIWindow;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityManagerClient;
+    interface Elastos.Droid.View.Accessibility.IIAccessibilityManagerClient;
     interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
-    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceClient;
+    interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Accessibility {
-
 
     /**
      * Callback for specifying the result for an asynchronous request made
@@ -25,7 +24,7 @@ module
     [local, deprecated]
     interface IIAccessibilityManager {
         AddClient(
-            [in] IAccessibilityManagerClient* client,
+            [in] IIAccessibilityManagerClient* client,
             [in] Int32 userId,
             [out] Int32* result);
 
@@ -48,7 +47,7 @@ module
 
         AddAccessibilityInteractionConnection(
             [in] IIWindow* windowToken,
-            [in] IAccessibilityInteractionConnection* connection,
+            [in] IIAccessibilityInteractionConnection* connection,
             [in] Int32 userId,
             [out] Int32* result);
 
@@ -57,11 +56,11 @@ module
 
         RegisterUiTestAutomationService(
             [in] IBinder* owner,
-            [in] IAccessibilityServiceClient* client,
+            [in] IIAccessibilityServiceClient* client,
             [in] IAccessibilityServiceInfo* info);
 
         UnregisterUiTestAutomationService(
-            [in] IAccessibilityServiceClient* client);
+            [in] IIAccessibilityServiceClient* client);
 
         TemporaryEnableAccessibilityStateUntilKeyguardRemoved(
             [in] IComponentName* service,

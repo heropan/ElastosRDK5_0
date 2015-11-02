@@ -1,15 +1,33 @@
 
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
-#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
+#include "elastos/droid/view/accessibility/CRangeInfo.h"
+#include "elastos/droid/view/accessibility/CCollectionInfo.h"
+#include "elastos/droid/view/accessibility/CCollectionItemInfo.h"
+#include "elastos/droid/view/accessibility/CAccessibilityAction.h"
+//#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
 #include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::IInputType;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
-
+using Elastos::Core::CoreUtils;
+using Elastos::Core::Math;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::CObjectInt32Map;
-using Elastos::Droid::Graphics::CRect;
+// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 
 namespace Elastos {
 namespace Droid {
@@ -18,41 +36,66 @@ namespace Accessibility {
 
 const String CAccessibilityNodeInfo::TAG("AccessibilityNodeInfo");
 const Boolean CAccessibilityNodeInfo::DEBUG = FALSE;
-const Int32 CAccessibilityNodeInfo::PROPERTY_CHECKABLE = 0x00000001;
-const Int32 CAccessibilityNodeInfo::PROPERTY_CHECKED = 0x00000002;
-const Int32 CAccessibilityNodeInfo::PROPERTY_FOCUSABLE = 0x00000004;
-const Int32 CAccessibilityNodeInfo::PROPERTY_FOCUSED = 0x00000008;
-const Int32 CAccessibilityNodeInfo::PROPERTY_SELECTED = 0x00000010;
-const Int32 CAccessibilityNodeInfo::PROPERTY_CLICKABLE = 0x00000020;
-const Int32 CAccessibilityNodeInfo::PROPERTY_LONG_CLICKABLE = 0x00000040;
-const Int32 CAccessibilityNodeInfo::PROPERTY_ENABLED = 0x00000080;
-const Int32 CAccessibilityNodeInfo::PROPERTY_PASSWORD = 0x00000100;
-const Int32 CAccessibilityNodeInfo::PROPERTY_SCROLLABLE = 0x00000200;
-const Int32 CAccessibilityNodeInfo::PROPERTY_ACCESSIBILITY_FOCUSED = 0x00000400;
-const Int32 CAccessibilityNodeInfo::PROPERTY_VISIBLE_TO_USER = 0x00000800;
-const Int64 CAccessibilityNodeInfo::VIRTUAL_DESCENDANT_ID_MASK = 0xffffffff00000000ll;
-const Int32 CAccessibilityNodeInfo::VIRTUAL_DESCENDANT_ID_SHIFT = 32;
-const Int32 CAccessibilityNodeInfo::MAX_POOL_SIZE = 50;
+const Int32 CAccessibilityNodeInfo::LAST_LEGACY_STANDARD_ACTION = ACTION_SET_TEXT;
+const Int32 CAccessibilityNodeInfo::ACTION_TYPE_MASK = 0xFF000000;
 
-AutoPtr<CAccessibilityNodeInfo> CAccessibilityNodeInfo::sPool = NULL;
-Mutex CAccessibilityNodeInfo::sPoolLock;
-Int32 CAccessibilityNodeInfo::sPoolSize = 0;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_CHECKABLE = 0x00000001;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_CHECKED = 0x00000002;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_FOCUSABLE = 0x00000004;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_FOCUSED = 0x00000008;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_SELECTED = 0x00000010;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_CLICKABLE = 0x00000020;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_LONG_CLICKABLE = 0x00000040;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_ENABLED = 0x00000080;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_PASSWORD = 0x00000100;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_SCROLLABLE = 0x00000200;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_ACCESSIBILITY_FOCUSED = 0x00000400;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_VISIBLE_TO_USER = 0x00000800;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_EDITABLE = 0x00001000;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_OPENS_POPUP = 0x00002000;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_DISMISSABLE = 0x00004000;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_MULTI_LINE = 0x00008000;
+const Int32 CAccessibilityNodeInfo::BOOLEAN_PROPERTY_CONTENT_INVALID = 0x00010000;
+const Int64 CAccessibilityNodeInfo::VIRTUAL_DESCENDANT_ID_MASK = 0xffffffff00000000ll;
+
+const Int32 CAccessibilityNodeInfo::VIRTUAL_DESCENDANT_ID_SHIFT = 32;
+
+const Int32 CAccessibilityNodeInfo::MAX_POOL_SIZE = 50;
+AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfo> > CAccessibilityNodeInfo::sPool =
+        new Pools::SynchronizedPool<IAccessibilityNodeInfo>(MAX_POOL_SIZE);
+
+CAR_INTERFACE_IMPL_2(CAccessibilityNodeInfo, Object, IAccessibilityNodeInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CAccessibilityNodeInfo)
 
 CAccessibilityNodeInfo::CAccessibilityNodeInfo()
-    : mIsInPool(FALSE)
-    , mSealed(FALSE)
-    , mWindowId(UNDEFINED)
+    : mSealed(FALSE)
+    , mWindowId(UNDEFINED_ITEM_ID)
     , mSourceNodeId(ROOT_NODE_ID)
     , mParentNodeId(ROOT_NODE_ID)
     , mLabelForId(ROOT_NODE_ID)
     , mLabeledById(ROOT_NODE_ID)
     , mBooleanProperties(0)
-    , mActions(0)
+    , mViewIdResourceName(NULL)
+    , mMaxTextLength(-1)
     , mMovementGranularities(0)
-    , mConnectionId(UNDEFINED)
+    , mTextSelectionStart(UNDEFINED_SELECTION_INDEX)
+    , mTextSelectionEnd(UNDEFINED_SELECTION_INDEX)
+    , mInputType(IInputType::TYPE_NULL)
+    , mLiveRegion(IView::ACCESSIBILITY_LIVE_REGION_NONE)
+    , mConnectionId(UNDEFINED_CONNECTION_ID)
 {
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mBoundsInParent));
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mBoundsInScreen));
+}
+
+CAccessibilityNodeInfo::~CAccessibilityNodeInfo()
+{
+}
+
+ECode CAccessibilityNodeInfo::constructor()
+{
+    return NOERROR;
 }
 
 Int32 CAccessibilityNodeInfo::GetAccessibilityViewId(
@@ -72,6 +115,14 @@ Int64 CAccessibilityNodeInfo::MakeNodeId(
     /* [in] */ Int32 accessibilityViewId,
     /* [in] */ Int32 virtualDescendantId)
 {
+    // We changed the value for undefined node to positive due to wrong
+    // global id composition (two 32-bin ints into one 64-bit long) but
+    // the value used for the host node provider view has id -1 so we
+    // remap it here.
+    if (virtualDescendantId == IAccessibilityNodeProvider::HOST_VIEW_ID) {
+        virtualDescendantId = UNDEFINED_ITEM_ID;
+    }
+
     return (((Int64)virtualDescendantId) << VIRTUAL_DESCENDANT_ID_SHIFT)
             | accessibilityViewId;
 }
@@ -79,7 +130,7 @@ Int64 CAccessibilityNodeInfo::MakeNodeId(
 ECode CAccessibilityNodeInfo::SetSource(
     /* [in] */ IView* source)
 {
-    return SetSource(source, UNDEFINED);
+    return SetSource(source, UNDEFINED_ITEM_ID);
 }
 
 ECode CAccessibilityNodeInfo::SetSource(
@@ -87,8 +138,8 @@ ECode CAccessibilityNodeInfo::SetSource(
     /* [in] */ Int32 virtualDescendantId)
 {
     FAIL_RETURN(EnforceNotSealed());
-    mWindowId = UNDEFINED;
-    Int32 rootAccessibilityViewId = UNDEFINED;
+    mWindowId = UNDEFINED_ITEM_ID;
+    Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
     if (root != NULL) {
         root->GetAccessibilityWindowId(&mWindowId);
         root->GetAccessibilityViewId(&rootAccessibilityViewId);
@@ -111,8 +162,10 @@ ECode CAccessibilityNodeInfo::FindFocus(
         return NOERROR;
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FindFocus(mConnectionId, mWindowId, mSourceNodeId, focus, info);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindFocus(mConnectionId, mWindowId, mSourceNodeId, focus, info);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::FocusSearch(
@@ -128,8 +181,10 @@ ECode CAccessibilityNodeInfo::FocusSearch(
         return NOERROR;
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FocusSearch(mConnectionId, mWindowId, mSourceNodeId, direction, info);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FocusSearch(mConnectionId, mWindowId, mSourceNodeId, direction, info);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::GetWindowId(
@@ -140,29 +195,80 @@ ECode CAccessibilityNodeInfo::GetWindowId(
     return NOERROR;
 }
 
+ECode CAccessibilityNodeInfo::Refresh(
+    /* [in] */ Boolean bypassCache,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
+    FAIL_RETURN(EnforceSealed());
+    if (!CanPerformRequestOverConnection(mSourceNodeId)) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    assert(0 && "TODO");
+
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // AutoPtr<IAccessibilityNodeInfo> refreshedInfo;
+    // client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
+    //         mWindowId, mSourceNodeId, bypassCache, 0, (IAccessibilityNodeInfo**)&refreshedInfo);
+    // if (refreshedInfo == NULL) {
+    //     *result = FALSE;
+    //     return NOERROR;
+    // }
+
+    // Init(refreshedInfo);
+    // refreshedInfo->Recycle();
+    *result = TRUE;
+
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::Refresh(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return Refresh(FALSE, result);
+}
+
 ECode CAccessibilityNodeInfo::GetChildNodeIds(
-    /* [out] */ IObjectInt32Map** ids)
+    /* [out] */ IMap** ids)
 {
     VALIDATE_NOT_NULL(ids);
-
-    AutoPtr<IObjectInt32Map> map;
-    CObjectInt32Map::New((IObjectInt32Map**)&map);
-    HashMap<Int32, Int64>::Iterator it = mChildNodeIds.Begin();
-    for (; it != mChildNodeIds.End(); ++it) {
-        AutoPtr<IInteger64> integer;
-        CInteger64::New(it->mSecond, (IInteger64**)&integer);
-        map->Put(it->mFirst, (IInterface*)integer);
-    }
-    *ids = map;
+    *ids = mChildNodeIds;
     REFCOUNT_ADD(*ids);
     return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetChildId(
+    /* [in] */ Int32 index,
+    /* [out] */ Int64* id)
+{
+    VALIDATE_NOT_NULL(id);
+    *id = 0;
+    if (mChildNodeIds == NULL) {
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    AutoPtr<IInterface> obj;
+    mChildNodeIds->Get(TO_IINTERFACE(CoreUtils::Convert(index)), (IInterface**)&obj);
+    AutoPtr<IInteger64> obj64 = IInteger64::Probe(obj);
+
+    return obj64->GetValue(id);
 }
 
 ECode CAccessibilityNodeInfo::GetChildCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    *count = mChildNodeIds.GetSize();
+    *count = 0;
+
+    if (mChildNodeIds != NULL) {
+        return mChildNodeIds->GetSize(count);
+    }
+
     return NOERROR;
 }
 
@@ -172,41 +278,125 @@ ECode CAccessibilityNodeInfo::GetChild(
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
-
     FAIL_RETURN(EnforceSealed());
+
+    if (mChildNodeIds == NULL) {
+        return NOERROR;
+    }
+
     if (!CanPerformRequestOverConnection(mSourceNodeId)) {
         return NOERROR;
     }
-    HashMap<Int32, Int64>::Iterator it = mChildNodeIds.Find(index);
-    Int64 childId = 0;
-    if (it != mChildNodeIds.End()) {
-        childId = it->mSecond;
-    }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId, mWindowId,
-        childId, FLAG_PREFETCH_DESCENDANTS, info);
+    AutoPtr<IInterface> obj;
+    mChildNodeIds->Get(TO_IINTERFACE(CoreUtils::Convert(index)), (IInterface**)&obj);
+    AutoPtr<IInteger64> obj64 = IInteger64::Probe(obj);
+    Int64 childId;
+    obj64->GetValue(&childId);
+
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
+    //         mWindowId, childId, FALSE, FLAG_PREFETCH_DESCENDANTS, info);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::AddChild(
     /* [in] */ IView* child)
 {
-    return AddChild(child, UNDEFINED);
+    return AddChildInternal(child, UNDEFINED_ITEM_ID, TRUE);
+}
+
+ECode CAccessibilityNodeInfo::AddChildUnchecked(
+    /* [in] */ IView* child)
+{
+    return AddChildInternal(child, UNDEFINED_ITEM_ID, FALSE);
+}
+
+ECode CAccessibilityNodeInfo::RemoveChild(
+    /* [in] */ IView* child,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return RemoveChild(child, UNDEFINED_ITEM_ID, result);
 }
 
 ECode CAccessibilityNodeInfo::AddChild(
     /* [in] */ IView* root,
     /* [in] */ Int32 virtualDescendantId)
 {
-    ASSERT_SUCCEEDED(EnforceNotSealed());
-    Int32 index = mChildNodeIds.GetSize();
-    Int32 rootAccessibilityViewId = UNDEFINED;
+    return AddChildInternal(root, virtualDescendantId, TRUE);
+}
+
+ECode CAccessibilityNodeInfo::AddChildInternal(
+    /* [in] */ IView* root,
+    /* [in] */ Int32 virtualDescendantId,
+    /* [in] */ Boolean checked)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    if (mChildNodeIds == NULL) {
+        CHashMap::New((IMap**)&mChildNodeIds);
+    }
+
+    Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
     if (root != NULL) {
         root->GetAccessibilityViewId(&rootAccessibilityViewId);
     }
     Int64 childNodeId = MakeNodeId(rootAccessibilityViewId, virtualDescendantId);
-    mChildNodeIds[index] = childNodeId;
+    // If we're checking uniqueness and the ID already exists, abort.
+    Int32 key;
+    IList::Probe(TO_IINTERFACE(mChildNodeIds))->IndexOf(TO_IINTERFACE(CoreUtils::Convert(childNodeId)), &key);
 
+    if (checked && key >= 0) {
+        return NOERROR;
+    }
+
+    IList::Probe(TO_IINTERFACE(mChildNodeIds))->Add(TO_IINTERFACE(CoreUtils::Convert(childNodeId)));
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::RemoveChild(
+    /* [in] */ IView* root,
+    /* [in] */ Int32 virtualDescendantId,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    FAIL_RETURN(EnforceNotSealed());
+    AutoPtr<IMap> childIds = mChildNodeIds;
+    if (childIds == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
+    if (root != NULL) {
+        root->GetAccessibilityViewId(&rootAccessibilityViewId);
+    }
+
+    Int64 childNodeId = MakeNodeId(rootAccessibilityViewId, virtualDescendantId);
+    Int32 index;
+    IList::Probe(TO_IINTERFACE(childIds))->IndexOf(TO_IINTERFACE(CoreUtils::Convert(childNodeId)), &index);
+
+    if (index < 0) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    childIds->Remove(TO_IINTERFACE(CoreUtils::Convert(index)));
+    *result = TRUE;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetActionList(
+    /* [out] */ IList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    if (mActions == NULL) {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->GetEmptyList(list);
+    }
+
+    *list = IList::Probe(mActions);
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -214,7 +404,45 @@ ECode CAccessibilityNodeInfo::GetActions(
     /* [out] */ Int32* actions)
 {
     VALIDATE_NOT_NULL(actions);
-    *actions = mActions;
+    Int32 returnValue = 0;
+
+    if (mActions == NULL) {
+        *actions = returnValue;
+        return NOERROR;
+    }
+
+    Int32 actionSize;
+    mActions->GetSize(&actionSize);
+    for (Int32 i = 0; i < actionSize; i++) {
+        AutoPtr<IInterface> obj;
+        mActions->Get(i, (IInterface**)&obj);
+        Int32 actionId;
+        IAccessibilityAction::Probe(obj)->GetId(&actionId);
+        if (actionId <= LAST_LEGACY_STANDARD_ACTION) {
+            returnValue |= actionId;
+        }
+    }
+
+    *actions = returnValue;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::AddAction(
+    /* [in] */ IAccessibilityAction* action)
+{
+    FAIL_RETURN(EnforceNotSealed());
+
+    if (action == NULL) {
+        return NOERROR;
+    }
+
+    if (mActions == NULL) {
+        CArrayList::New((IArrayList**)&mActions);
+    }
+
+    mActions->Remove(TO_IINTERFACE(action));
+    mActions->Add(TO_IINTERFACE(action));
+
     return NOERROR;
 }
 
@@ -222,7 +450,55 @@ ECode CAccessibilityNodeInfo::AddAction(
     /* [in] */ Int32 action)
 {
     FAIL_RETURN(EnforceNotSealed());
-    mActions |= action;
+    if ((action & ACTION_TYPE_MASK) != 0) {
+        // throw new IllegalArgumentException("Action is not a combination of the standard " +
+        //         "actions: " + action);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AddLegacyStandardActions(action);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::RemoveAction(
+    /* [in] */ Int32 action)
+{
+    FAIL_RETURN(EnforceNotSealed());
+
+    Boolean res;
+    RemoveAction(GetActionSingleton(action), &res);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::RemoveAction(
+    /* [in] */ IAccessibilityAction* action,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    FAIL_RETURN(EnforceNotSealed());
+
+    if (mActions == NULL || action == NULL ) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    mActions->Remove(TO_IINTERFACE(action));
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetMaxTextLength(
+    /* [in] */ Int32 max)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    mMaxTextLength = max;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetMaxTextLength(
+    /* [out] */ Int32* max)
+{
+    VALIDATE_NOT_NULL(max);
+    *max = mMaxTextLength;
     return NOERROR;
 }
 
@@ -253,10 +529,11 @@ ECode CAccessibilityNodeInfo::PerformAction(
         *result = FALSE;
         return NOERROR;
     }
-
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
-        action, NULL, result);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
+    //         action, NULL, result);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::PerformAction(
@@ -272,26 +549,68 @@ ECode CAccessibilityNodeInfo::PerformAction(
         return NOERROR;
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
-        action, arguments, result);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
+    //         action, arguments, result);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::FindAccessibilityNodeInfosByText(
     /* [in] */ const String& text,
-    /* [out] */ IObjectContainer** container)
+    /* [out] */ IList** list)
 {
-    VALIDATE_NOT_NULL(container);
+    VALIDATE_NOT_NULL(list);
 
     FAIL_RETURN(EnforceSealed());
     if (!CanPerformRequestOverConnection(mSourceNodeId)) {
-        return CObjectContainer::New(container);
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->GetEmptyList(list);
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FindAccessibilityNodeInfosByText(
-        mConnectionId, mWindowId, mSourceNodeId, text, container);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindAccessibilityNodeInfosByText(
+    //         mConnectionId, mWindowId, mSourceNodeId, text, list);
+    return NOERROR;
+}
 
+ECode CAccessibilityNodeInfo::FindAccessibilityNodeInfosByViewId(
+    /* [in] */ const String& viewId,
+    /* [out] */ IList** list)
+{
+    VALIDATE_NOT_NULL(list);
+
+    FAIL_RETURN(EnforceSealed());
+    if (!CanPerformRequestOverConnection(mSourceNodeId)) {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->GetEmptyList(list);
+    }
+
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindAccessibilityNodeInfosByViewId(
+    //         mConnectionId, mWindowId, mSourceNodeId, viewId, list);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetWindow(
+    /* [out] */ IAccessibilityWindowInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = NULL;
+
+    FAIL_RETURN(EnforceSealed());
+    if (!CanPerformRequestOverConnection(mSourceNodeId)) {
+        return NOERROR;
+    }
+
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->GetWindow(mConnectionId, mWindowId, info);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::GetParent(
@@ -305,10 +624,12 @@ ECode CAccessibilityNodeInfo::GetParent(
         return NOERROR;
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FindAccessibilityNodeInfoByAccessibilityId(
-        mConnectionId, mWindowId, mParentNodeId,
-        FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, parent);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindAccessibilityNodeInfoByAccessibilityId(
+    //         mConnectionId, mWindowId, mParentNodeId, FALSE,
+    //         FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, parent);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::GetParentNodeId(
@@ -322,7 +643,7 @@ ECode CAccessibilityNodeInfo::GetParentNodeId(
 ECode CAccessibilityNodeInfo::SetParent(
     /* [in] */ IView* parent)
 {
-    return SetParent(parent, UNDEFINED);
+    return SetParent(parent, UNDEFINED_ITEM_ID);
 }
 
 ECode CAccessibilityNodeInfo::SetParent(
@@ -330,7 +651,7 @@ ECode CAccessibilityNodeInfo::SetParent(
     /* [in] */ Int32 virtualDescendantId)
 {
     FAIL_RETURN(EnforceNotSealed());
-    Int32 rootAccessibilityViewId = UNDEFINED;
+    Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
     if (root != NULL) {
         root->GetAccessibilityViewId(&rootAccessibilityViewId);
     }
@@ -393,169 +714,307 @@ ECode CAccessibilityNodeInfo::IsCheckable(
     /* [out] */ Boolean* checkable)
 {
     VALIDATE_NOT_NULL(checkable);
-    *checkable = GetBooleanProperty(PROPERTY_CHECKABLE);
+    *checkable = GetBooleanProperty(BOOLEAN_PROPERTY_CHECKABLE);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetCheckable(
     /* [in] */ Boolean checkable)
 {
-    return SetBooleanProperty(PROPERTY_CHECKABLE, checkable);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_CHECKABLE, checkable);
 }
 
 ECode CAccessibilityNodeInfo::IsChecked(
     /* [out] */ Boolean* checked)
 {
     VALIDATE_NOT_NULL(checked);
-    *checked = GetBooleanProperty(PROPERTY_CHECKED);
+    *checked = GetBooleanProperty(BOOLEAN_PROPERTY_CHECKED);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetChecked(
     /* [in] */ Boolean checked)
 {
-    return SetBooleanProperty(PROPERTY_CHECKED, checked);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_CHECKED, checked);
 }
 
 ECode CAccessibilityNodeInfo::IsFocusable(
     /* [out] */ Boolean* focusable)
 {
     VALIDATE_NOT_NULL(focusable);
-    *focusable = GetBooleanProperty(PROPERTY_FOCUSABLE);
+    *focusable = GetBooleanProperty(BOOLEAN_PROPERTY_FOCUSABLE);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetFocusable(
     /* [in] */ Boolean focusable)
 {
-    return SetBooleanProperty(PROPERTY_FOCUSABLE, focusable);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_FOCUSABLE, focusable);
 }
 
 ECode CAccessibilityNodeInfo::IsFocused(
     /* [out] */ Boolean* focused)
 {
     VALIDATE_NOT_NULL(focused);
-    *focused = GetBooleanProperty(PROPERTY_FOCUSED);
+    *focused = GetBooleanProperty(BOOLEAN_PROPERTY_FOCUSED);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetFocused(
     /* [in] */ Boolean focused)
 {
-    return SetBooleanProperty(PROPERTY_FOCUSED, focused);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_FOCUSED, focused);
 }
 
 ECode CAccessibilityNodeInfo::IsVisibleToUser(
     /* [out] */ Boolean* visible)
 {
     VALIDATE_NOT_NULL(visible);
-    *visible = GetBooleanProperty(PROPERTY_VISIBLE_TO_USER);
+    *visible = GetBooleanProperty(BOOLEAN_PROPERTY_VISIBLE_TO_USER);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetVisibleToUser(
     /* [in] */ Boolean visible)
 {
-    return SetBooleanProperty(PROPERTY_VISIBLE_TO_USER, visible);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_VISIBLE_TO_USER, visible);
 }
 
 ECode CAccessibilityNodeInfo::IsAccessibilityFocused(
     /* [out] */ Boolean* focused)
 {
     VALIDATE_NOT_NULL(focused);
-    *focused = GetBooleanProperty(PROPERTY_ACCESSIBILITY_FOCUSED);
+    *focused = GetBooleanProperty(BOOLEAN_PROPERTY_ACCESSIBILITY_FOCUSED);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetAccessibilityFocused(
     /* [in] */ Boolean focused)
 {
-    return SetBooleanProperty(PROPERTY_ACCESSIBILITY_FOCUSED, focused);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_ACCESSIBILITY_FOCUSED, focused);
 }
 
 ECode CAccessibilityNodeInfo::IsSelected(
     /* [out] */ Boolean* selected)
 {
     VALIDATE_NOT_NULL(selected);
-    *selected = GetBooleanProperty(PROPERTY_SELECTED);
+    *selected = GetBooleanProperty(BOOLEAN_PROPERTY_SELECTED);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetSelected(
     /* [in] */ Boolean selected)
 {
-    return SetBooleanProperty(PROPERTY_SELECTED, selected);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_SELECTED, selected);
 }
 
 ECode CAccessibilityNodeInfo::IsClickable(
     /* [out] */ Boolean* clickable)
 {
     VALIDATE_NOT_NULL(clickable);
-    *clickable = GetBooleanProperty(PROPERTY_CLICKABLE);
+    *clickable = GetBooleanProperty(BOOLEAN_PROPERTY_CLICKABLE);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetClickable(
     /* [in] */ Boolean clickable)
 {
-    return SetBooleanProperty(PROPERTY_CLICKABLE, clickable);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_CLICKABLE, clickable);
 }
 
 ECode CAccessibilityNodeInfo::IsLongClickable(
     /* [out] */ Boolean* longClickable)
 {
     VALIDATE_NOT_NULL(longClickable);
-    *longClickable = GetBooleanProperty(PROPERTY_LONG_CLICKABLE);
+    *longClickable = GetBooleanProperty(BOOLEAN_PROPERTY_LONG_CLICKABLE);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetLongClickable(
     /* [in] */ Boolean longClickable)
 {
-    return SetBooleanProperty(PROPERTY_LONG_CLICKABLE, longClickable);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_LONG_CLICKABLE, longClickable);
 }
 
 ECode CAccessibilityNodeInfo::IsEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = GetBooleanProperty(PROPERTY_ENABLED);
+    *result = GetBooleanProperty(BOOLEAN_PROPERTY_ENABLED);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetEnabled(
     /* [in] */ Boolean enabled)
 {
-    return SetBooleanProperty(PROPERTY_ENABLED, enabled);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_ENABLED, enabled);
 }
 
 ECode CAccessibilityNodeInfo::IsPassword(
     /* [out] */ Boolean* isPassword)
 {
     VALIDATE_NOT_NULL(isPassword);
-    *isPassword = GetBooleanProperty(PROPERTY_PASSWORD);
+    *isPassword = GetBooleanProperty(BOOLEAN_PROPERTY_PASSWORD);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetPassword(
     /* [in] */ Boolean isPassword)
 {
-    return SetBooleanProperty(PROPERTY_PASSWORD, isPassword);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_PASSWORD, isPassword);
 }
 
 ECode CAccessibilityNodeInfo::IsScrollable(
     /* [out] */ Boolean* scrollable)
 {
     VALIDATE_NOT_NULL(scrollable);
-    *scrollable = GetBooleanProperty(PROPERTY_SCROLLABLE);
+    *scrollable = GetBooleanProperty(BOOLEAN_PROPERTY_SCROLLABLE);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetScrollable(
     /* [in] */ Boolean scrollable)
 {
+    return SetBooleanProperty(BOOLEAN_PROPERTY_SCROLLABLE, scrollable);
+}
+
+ECode CAccessibilityNodeInfo::IsEditable(
+    /* [out] */ Boolean* editable)
+{
+    VALIDATE_NOT_NULL(editable);
+    *editable = GetBooleanProperty(BOOLEAN_PROPERTY_EDITABLE);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetEditable(
+    /* [in] */ Boolean editable)
+{
+    return SetBooleanProperty(BOOLEAN_PROPERTY_EDITABLE, editable);
+}
+
+ECode CAccessibilityNodeInfo::GetCollectionInfo(
+    /* [out] */ ICollectionInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = mCollectionInfo;
+    REFCOUNT_ADD(*info);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetCollectionInfo(
+    /* [in] */ ICollectionInfo* collectionInfo)
+{
+    FAIL_RETURN(EnforceNotSealed())
+    mCollectionInfo = collectionInfo;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetCollectionItemInfo(
+    /* [out] */ ICollectionItemInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = mCollectionItemInfo;
+    REFCOUNT_ADD(*info);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetCollectionItemInfo(
+    /* [in] */ ICollectionItemInfo* collectionItemInfo)
+{
+    FAIL_RETURN(EnforceNotSealed())
+    mCollectionItemInfo = collectionItemInfo;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetRangeInfo(
+    /* [out] */ IRangeInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = mRangeInfo;
+    REFCOUNT_ADD(*info);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetRangeInfo(
+    /* [in] */ IRangeInfo* rangeInfo)
+{
+    FAIL_RETURN(EnforceNotSealed())
+    mRangeInfo = rangeInfo;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::IsContentInvalid(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = GetBooleanProperty(BOOLEAN_PROPERTY_CONTENT_INVALID);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetContentInvalid(
+    /* [in] */ Boolean contentInvalid)
+{
+    return SetBooleanProperty(BOOLEAN_PROPERTY_CONTENT_INVALID, contentInvalid);
+}
+
+ECode CAccessibilityNodeInfo::GetLiveRegion(
+    /* [out] */ Int32* region)
+{
+    VALIDATE_NOT_NULL(region);
+    *region = mLiveRegion;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetLiveRegion(
+    /* [in] */ Int32 mode)
+{
+    FAIL_RETURN(EnforceNotSealed())
+    mLiveRegion = mode;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::IsMultiLine(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = GetBooleanProperty(BOOLEAN_PROPERTY_MULTI_LINE);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetMultiLine(
+    /* [in] */ Boolean multiLine)
+{
+    return SetBooleanProperty(BOOLEAN_PROPERTY_MULTI_LINE, multiLine);
+}
+
+ECode CAccessibilityNodeInfo::CanOpenPopup(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = GetBooleanProperty(BOOLEAN_PROPERTY_OPENS_POPUP);
+    return NOERROR;
+}
+
+
+ECode CAccessibilityNodeInfo::SetCanOpenPopup(
+    /* [in] */ Boolean opensPopup)
+{
     FAIL_RETURN(EnforceNotSealed());
-    return SetBooleanProperty(PROPERTY_SCROLLABLE, scrollable);
+    return SetBooleanProperty(BOOLEAN_PROPERTY_OPENS_POPUP, opensPopup);
+}
+
+ECode CAccessibilityNodeInfo::IsDismissable(
+    /* [out] */ Boolean* dismissable)
+{
+    VALIDATE_NOT_NULL(dismissable);
+    *dismissable = GetBooleanProperty(BOOLEAN_PROPERTY_DISMISSABLE);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetDismissable(
+    /* [in] */ Boolean dismissable)
+{
+    return SetBooleanProperty(BOOLEAN_PROPERTY_DISMISSABLE, dismissable);
 }
 
 ECode CAccessibilityNodeInfo::GetPackageName(
@@ -609,6 +1068,23 @@ ECode CAccessibilityNodeInfo::SetText(
     return NOERROR;
 }
 
+ECode CAccessibilityNodeInfo::SetError(
+    /* [in] */ ICharSequence* error)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    mError = error;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetError(
+    /* [out] */ ICharSequence** error)
+{
+    VALIDATE_NOT_NULL(error);
+    *error = mError;
+    REFCOUNT_ADD(*error);
+    return NOERROR;
+}
+
 ECode CAccessibilityNodeInfo::GetContentDescription(
     /* [out] */ ICharSequence** description)
 {
@@ -629,7 +1105,7 @@ ECode CAccessibilityNodeInfo::SetContentDescription(
 ECode CAccessibilityNodeInfo::SetLabelFor(
     /* [in] */ IView* labeled)
 {
-    return SetLabelFor(labeled, UNDEFINED);
+    return SetLabelFor(labeled, UNDEFINED_ITEM_ID);
 }
 
 ECode CAccessibilityNodeInfo::SetLabelFor(
@@ -637,7 +1113,7 @@ ECode CAccessibilityNodeInfo::SetLabelFor(
     /* [in] */ Int32 virtualDescendantId)
 {
     FAIL_RETURN(EnforceNotSealed());
-    Int32 rootAccessibilityViewId = UNDEFINED;
+    Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
     if (root != NULL) {
         root->GetAccessibilityViewId(&rootAccessibilityViewId);
     }
@@ -655,16 +1131,19 @@ ECode CAccessibilityNodeInfo::GetLabelFor(
         return NOERROR;
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FindAccessibilityNodeInfoByAccessibilityId(
-        mConnectionId, mWindowId, mLabelForId,
-        FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
+    assert(0 && "TODO");
+
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindAccessibilityNodeInfoByAccessibilityId(
+    //         mConnectionId, mWindowId, mLabelForId, FALSE,
+    //         FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
+    return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::SetLabeledBy(
     /* [in] */ IView* label)
 {
-    return SetLabeledBy(label, UNDEFINED);
+    return SetLabeledBy(label, UNDEFINED_ITEM_ID);
 }
 
 ECode CAccessibilityNodeInfo::SetLabeledBy(
@@ -672,7 +1151,7 @@ ECode CAccessibilityNodeInfo::SetLabeledBy(
     /* [in] */ Int32 virtualDescendantId)
 {
     FAIL_RETURN(EnforceNotSealed());
-    Int32 rootAccessibilityViewId = UNDEFINED;
+    Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
     if (root != NULL) {
         root->GetAccessibilityViewId(&rootAccessibilityViewId);
     }
@@ -692,10 +1171,83 @@ ECode CAccessibilityNodeInfo::GetLabeledBy(
         return NOERROR;
     }
 
-    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    return client->FindAccessibilityNodeInfoByAccessibilityId(
-        mConnectionId, mWindowId, mLabeledById,
-        FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
+    assert(0 && "TODO");
+    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    // client->FindAccessibilityNodeInfoByAccessibilityId(
+    //         mConnectionId, mWindowId, mLabeledById, FALSE,
+    //         FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetViewIdResourceName(
+    /* [in] */ const String& viewIdResName)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    mViewIdResourceName = viewIdResName;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetViewIdResourceName(
+    /* [out] */ String* viewIdResName)
+{
+    VALIDATE_NOT_NULL(viewIdResName);
+    *viewIdResName = mViewIdResourceName;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetTextSelectionStart(
+    /* [out] */ Int32* start)
+{
+    VALIDATE_NOT_NULL(start);
+    *start = mTextSelectionStart;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetTextSelectionEnd(
+    /* [out] */ Int32* end)
+{
+    VALIDATE_NOT_NULL(end);
+    *end = mTextSelectionEnd;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetTextSelection(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    mTextSelectionStart = start;
+    mTextSelectionEnd = end;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetInputType(
+    /* [out] */ Int32* type)
+{
+    VALIDATE_NOT_NULL(type);
+    *type = mInputType;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::SetInputType(
+    /* [in] */ Int32 inputType)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    mInputType = inputType;
+    return NOERROR;
+}
+
+ECode CAccessibilityNodeInfo::GetExtras(
+    /* [out] */ IBundle** bundle)
+{
+    VALIDATE_NOT_NULL(bundle);
+    if (mExtras == NULL) {
+        CBundle::New((IBundle**)&mExtras);
+    }
+
+    *bundle = mExtras;
+    REFCOUNT_ADD(*bundle);
+    return NOERROR;
 }
 
 Boolean CAccessibilityNodeInfo::GetBooleanProperty(
@@ -836,21 +1388,16 @@ ECode CAccessibilityNodeInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-
-    AutoLock lock(sPoolLock);
-    if (sPool != NULL) {
-        AutoPtr<CAccessibilityNodeInfo> infoCls = sPool;
-        sPool = sPool->mNext;
-        sPoolSize--;
-        infoCls->mNext = NULL;
-        infoCls->mIsInPool = FALSE;
-        *info = (IAccessibilityNodeInfo*)infoCls;
+    AutoPtr<IAccessibilityNodeInfo> _info = sPool->AcquireItem();
+    if (_info == NULL) {
+        AutoPtr<CAccessibilityNodeInfo> cinfo;
+        CAccessibilityNodeInfo::NewByFriend((CAccessibilityNodeInfo**)&cinfo);
+        *info = cinfo;
         REFCOUNT_ADD(*info);
         return NOERROR;
     }
-    AutoPtr<CAccessibilityNodeInfo> cinfo;
-    CAccessibilityNodeInfo::NewByFriend((CAccessibilityNodeInfo**)&cinfo);
-    *info = cinfo;
+
+    *info = _info;
     REFCOUNT_ADD(*info);
     return NOERROR;
 }
@@ -867,19 +1414,8 @@ ECode CAccessibilityNodeInfo::Obtain(
 
 ECode CAccessibilityNodeInfo::Recycle()
 {
-    if (mIsInPool) {
-        Slogger::E(TAG, "Info already recycled!");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalStateException("Info already recycled!");
-    }
     Clear();
-    AutoLock lock(sPoolLock);
-    if (sPoolSize <= MAX_POOL_SIZE) {
-        mNext = sPool;
-        sPool = this;
-        mIsInPool = TRUE;
-        sPoolSize++;
-    }
+    sPool->ReleaseItem(THIS_PROBE(IAccessibilityNodeInfo));
     return NOERROR;
 }
 
@@ -896,12 +1432,21 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
     dest->WriteInt64(mLabeledById);
     dest->WriteInt32(mConnectionId);
 
-    HashMap<Int32, Int64> childIds = mChildNodeIds;
-    Int32 childIdsSize = childIds.GetSize();
-    dest->WriteInt32(childIdsSize);
-    HashMap<Int32, Int64>::Iterator it = childIds.Begin();
-    for (; it != childIds.End(); ++it) {
-        dest->WriteInt64(it->mSecond);
+    AutoPtr<IMap> childIds = mChildNodeIds;
+    if (childIds == NULL) {
+        dest->WriteInt32(0);
+    } else {
+        Int32 childIdsSize;
+        childIds->GetSize(&childIdsSize);
+        dest->WriteInt32(childIdsSize);
+        for (Int32 i = 0; i < childIdsSize; ++i)
+        {
+            AutoPtr<IInterface> obj;
+            childIds->Get(TO_IINTERFACE(CoreUtils::Convert(i)), (IInterface**)&obj);
+            Int64 id;
+            IInteger64::Probe(obj)->GetValue(&id);
+            dest->WriteInt64(id);
+        }
     }
 
     AutoPtr<CRect> inParentCls = (CRect*)mBoundsInParent.Get();
@@ -916,16 +1461,116 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
     dest->WriteInt32(inScreenCls->mLeft);
     dest->WriteInt32(inScreenCls->mRight);
 
-    dest->WriteInt32(mActions);
+    Boolean res;
+    if (mActions != NULL && !(mActions->IsEmpty(&res), res)) {
+        Int32 actionCount;
+        mActions->GetSize(&actionCount);
+        dest->WriteInt32(actionCount);
 
+        Int32 defaultLegacyStandardActions = 0;
+        for (Int32 i = 0; i < actionCount; i++) {
+            AutoPtr<IInterface> obj;
+            mActions->Get(i, (IInterface**)&obj);
+            AutoPtr<IAccessibilityAction> action = IAccessibilityAction::Probe(obj);
+            if (IsDefaultLegacyStandardAction(action)) {
+                Int32 id;
+                action->GetId(&id);
+                defaultLegacyStandardActions |= id;
+            }
+        }
+        dest->WriteInt32(defaultLegacyStandardActions);
+
+        for (Int32 i = 0; i < actionCount; i++) {
+            AutoPtr<IInterface> obj;
+            mActions->Get(i, (IInterface**)&obj);
+            AutoPtr<IAccessibilityAction> action = IAccessibilityAction::Probe(obj);
+            if (!IsDefaultLegacyStandardAction(action)) {
+                Int32 id;
+                action->GetId(&id);
+                dest->WriteInt32(id);
+                AutoPtr<ICharSequence> cs;
+                action->GetLabel((ICharSequence**)&cs);
+                dest->WriteInterfacePtr((IInterface*)cs);
+            }
+        }
+    } else {
+        dest->WriteInt32(0);
+    }
+
+    dest->WriteInt32(mMaxTextLength);
     dest->WriteInt32(mMovementGranularities);
-
     dest->WriteInt32(mBooleanProperties);
 
     dest->WriteInterfacePtr((IInterface*)mPackageName);
     dest->WriteInterfacePtr((IInterface*)mClassName);
     dest->WriteInterfacePtr((IInterface*)mText);
+    dest->WriteInterfacePtr((IInterface*)mError);
     dest->WriteInterfacePtr((IInterface*)mContentDescription);
+    dest->WriteString(mViewIdResourceName);
+
+    dest->WriteInt32(mTextSelectionStart);
+    dest->WriteInt32(mTextSelectionEnd);
+    dest->WriteInt32(mInputType);
+    dest->WriteInt32(mLiveRegion);
+
+    if (mExtras != NULL) {
+        dest->WriteInt32(1);
+        dest->WriteInterfacePtr((IInterface*)mExtras);
+    } else {
+        dest->WriteInt32(0);
+    }
+
+    if (mRangeInfo != NULL) {
+        dest->WriteInt32(1);
+        Int32 type;
+        mRangeInfo->GetType(&type);
+        Float min, max, current;
+        mRangeInfo->GetMin(&min);
+        mRangeInfo->GetMax(&max);
+        mRangeInfo->GetCurrent(&current);
+        dest->WriteInt32(type);
+        dest->WriteFloat(min);
+        dest->WriteFloat(max);
+        dest->WriteFloat(current);
+    } else {
+        dest->WriteInt32(0);
+    }
+
+    if (mCollectionInfo != NULL) {
+        dest->WriteInt32(1);
+        Int32 rowCount, columnCount, selectionMode;
+        Boolean hierarchical;
+        mCollectionInfo->GetRowCount(&rowCount);
+        mCollectionInfo->GetColumnCount(&columnCount);
+        mCollectionInfo->IsHierarchical(&hierarchical);
+        mCollectionInfo->GetSelectionMode(&selectionMode);
+        dest->WriteInt32(rowCount);
+        dest->WriteInt32(columnCount);
+        dest->WriteBoolean(hierarchical);
+        dest->WriteInt32(selectionMode);
+    } else {
+        dest->WriteInt32(0);
+    }
+
+    if (mCollectionItemInfo != NULL) {
+        dest->WriteInt32(1);
+        Int32 rowIndex, rowSpan, columnIndex, columnSpan;
+        Boolean heading, selected;
+        mCollectionItemInfo->GetRowIndex(&rowIndex);
+        mCollectionItemInfo->GetRowSpan(&rowSpan);
+        mCollectionItemInfo->GetColumnIndex(&columnIndex);
+        mCollectionItemInfo->GetColumnSpan(&columnSpan);
+        mCollectionItemInfo->IsHeading(&heading);
+        mCollectionItemInfo->IsSelected(&selected);
+        dest->WriteInt32(rowIndex);
+        dest->WriteInt32(rowSpan);
+        dest->WriteInt32(columnIndex);
+        dest->WriteInt32(columnSpan);
+        dest->WriteBoolean(heading);
+        dest->WriteBoolean(selected);
+    } else {
+        dest->WriteInt32(0);
+    }
 
     // Since instances of this class are fetched via synchronous i.e. blocking
     // calls in IPCs we always recycle as soon as the instance is marshaled.
@@ -956,14 +1601,64 @@ void CAccessibilityNodeInfo::Init(
     mPackageName = other->mPackageName;
     mClassName = other->mClassName;
     mText = other->mText;
+    mText = other->mError;
     mContentDescription = other->mContentDescription;
-    mActions= other->mActions;
-    mBooleanProperties = other->mBooleanProperties;
-    mMovementGranularities = other->mMovementGranularities;
-    HashMap<Int32, Int64>::Iterator it = other->mChildNodeIds.Begin();
-    for (Int32 i = 0; it != other->mChildNodeIds.End(); ++it, ++i) {
-        mChildNodeIds[i] = it->mSecond;
+    mViewIdResourceName = other->mViewIdResourceName;
+
+    AutoPtr<IArrayList> otherActions = other->mActions;
+    Int32 size;
+    otherActions->GetSize(&size);
+    if (otherActions != NULL && size > 0) {
+        if (mActions == NULL) {
+            CArrayList::New(ICollection::Probe(otherActions), (IArrayList**)&mActions);
+        } else {
+            mActions->Clear();
+            mActions->AddAll(ICollection::Probe(mActions));
+        }
     }
+    mBooleanProperties = other->mBooleanProperties;
+    mMaxTextLength = other->mMaxTextLength;
+    mMovementGranularities = other->mMovementGranularities;
+
+    AutoPtr<IMap> otherChildNodeIds = other->mChildNodeIds;
+    otherChildNodeIds->GetSize(&size);
+    if (mChildNodeIds != NULL &&  size > 0) {
+        if (mActions == NULL) {
+            CHashMap::New(otherChildNodeIds, (IMap**)&mChildNodeIds);
+        } else {
+            mChildNodeIds->Clear();
+            mChildNodeIds->PutAll(otherChildNodeIds);
+        }
+    }
+
+    mTextSelectionStart = other->mTextSelectionStart;
+    mTextSelectionEnd = other->mTextSelectionEnd;
+    mInputType = other->mInputType;
+    mLiveRegion = other->mLiveRegion;
+
+    Boolean res;
+    other->mExtras->IsEmpty(&res);
+    if (other->mExtras != NULL && !res) {
+        AutoPtr<IBundle> bundle;
+        GetExtras((IBundle**)&bundle);
+        bundle->PutAll(other->mExtras);
+    }
+
+    mRangeInfo = NULL;
+    if (other->mRangeInfo != NULL) {
+        CRangeInfo::Obtain(other->mRangeInfo, (IRangeInfo**)&mRangeInfo);
+    }
+
+    mCollectionInfo = NULL;
+    if (other->mCollectionInfo != NULL) {
+        CCollectionInfo::Obtain(other->mCollectionInfo, (ICollectionInfo**)&mCollectionInfo);
+    }
+
+    mCollectionItemInfo = NULL;
+    if (other->mCollectionItemInfo != NULL) {
+        CCollectionItemInfo::Obtain(other->mCollectionItemInfo, (ICollectionItemInfo**)&mCollectionItemInfo);
+    }
+
 }
 
 void CAccessibilityNodeInfo::InitFromParcel(
@@ -979,10 +1674,16 @@ void CAccessibilityNodeInfo::InitFromParcel(
 
     Int32 childrenSize;
     parcel->ReadInt32(&childrenSize);
-    for (Int32 i = 0; i < childrenSize; i++) {
-        Int64 childId;
-        parcel->ReadInt64(&childId);
-        mChildNodeIds[i] = childId;
+    if (childrenSize <= 0) {
+        mChildNodeIds = NULL;
+    } else {
+        CHashMap::New(childrenSize, (IMap**)&mChildNodeIds);
+        for (Int32 i = 0; i < childrenSize; i++) {
+            Int64 childId;
+            parcel->ReadInt64(&childId);
+            mChildNodeIds->Put(TO_IINTERFACE(CoreUtils::Convert(i)),
+                    TO_IINTERFACE(CoreUtils::Convert(childId)));
+        }
     }
 
     AutoPtr<CRect> inParentCls = (CRect*)mBoundsInParent.Get();
@@ -997,10 +1698,28 @@ void CAccessibilityNodeInfo::InitFromParcel(
     parcel->ReadInt32(&inScreenCls->mLeft);
     parcel->ReadInt32(&inScreenCls->mRight);
 
-    parcel->ReadInt32(&mActions);
+    Int32 actionCount;
+    parcel->ReadInt32(&actionCount);
+    if (actionCount > 0) {
+        Int32 legacyStandardActions;
+        parcel->ReadInt32(&legacyStandardActions);
+        AddLegacyStandardActions(legacyStandardActions);
+        Int32 nonLegacyActionCount = actionCount - Elastos::Core::Math::BitCount(legacyStandardActions);
+        for (Int32 i = 0; i < nonLegacyActionCount; ++i)
+        {
+            Int32 data;
+            parcel->ReadInt32(&data);
+            AutoPtr<IInterface> obj;
+            parcel->ReadInterfacePtr((Handle32*)&obj);
+            AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
+            AutoPtr<IAccessibilityAction> action;
+            CAccessibilityAction::New(data, cs, (IAccessibilityAction**)&action);
+            AddAction(action);
+        }
+    }
 
+    parcel->ReadInt32(&mMaxTextLength);
     parcel->ReadInt32(&mMovementGranularities);
-
     parcel->ReadInt32(&mBooleanProperties);
 
     AutoPtr<IInterface> obj;
@@ -1011,7 +1730,64 @@ void CAccessibilityNodeInfo::InitFromParcel(
     parcel->ReadInterfacePtr((Handle32*)&obj);
     mText = ICharSequence::Probe(obj);
     parcel->ReadInterfacePtr((Handle32*)&obj);
+    mError = ICharSequence::Probe(obj);
+    parcel->ReadInterfacePtr((Handle32*)&obj);
     mContentDescription = ICharSequence::Probe(obj);
+    parcel->ReadString(&mViewIdResourceName);
+
+    parcel->ReadInt32(&mTextSelectionStart);
+    parcel->ReadInt32(&mTextSelectionEnd);
+
+    parcel->ReadInt32(&mInputType);
+    parcel->ReadInt32(&mLiveRegion);
+
+    Int32 data;
+    parcel->ReadInt32(&data);
+    if (data == 1) {
+        AutoPtr<IInterface> obj;
+        parcel->ReadInterfacePtr((Handle32*)&obj);
+        AutoPtr<IBundle> btmp = IBundle::Probe(obj);
+        AutoPtr<IBundle> bundle;
+        GetExtras((IBundle**)&bundle);
+        bundle->PutAll(btmp);
+    }
+
+    parcel->ReadInt32(&data);
+    if (data == 1) {
+        Int32 type;
+        Float min, max, current;
+        parcel->ReadInt32(&type);
+        parcel->ReadFloat(&min);
+        parcel->ReadFloat(&max);
+        parcel->ReadFloat(&current);
+        CRangeInfo::Obtain(type, min, max, current, (IRangeInfo**)&mRangeInfo);
+    }
+
+    parcel->ReadInt32(&data);
+    if (data == 1) {
+        Int32 rowCount, columnCount, selectionMode;
+        Boolean hierarchical;
+        parcel->ReadInt32(&rowCount);
+        parcel->ReadInt32(&columnCount);
+        parcel->ReadBoolean(&hierarchical);
+        parcel->ReadInt32(&selectionMode);
+        CCollectionInfo::Obtain(rowCount, columnCount, hierarchical, selectionMode, (ICollectionInfo**)&mCollectionInfo);
+    }
+
+    parcel->ReadInt32(&data);
+    if (data == 1) {
+        Int32 rowIndex, rowSpan, columnIndex, columnSpan;
+        Boolean heading, selected;
+        parcel->ReadInt32(&rowIndex);
+        parcel->ReadInt32(&rowSpan);
+        parcel->ReadInt32(&columnIndex);
+        parcel->ReadInt32(&columnSpan);
+        parcel->ReadBoolean(&heading);
+        parcel->ReadBoolean(&selected);
+        CCollectionItemInfo::Obtain(rowIndex, rowSpan, columnIndex, columnSpan,
+                heading, selected, (ICollectionItemInfo**)&mCollectionItemInfo);
+    }
+
 }
 
 void CAccessibilityNodeInfo::Clear()
@@ -1021,18 +1797,85 @@ void CAccessibilityNodeInfo::Clear()
     mParentNodeId = ROOT_NODE_ID;
     mLabelForId = ROOT_NODE_ID;
     mLabeledById = ROOT_NODE_ID;
-    mWindowId = UNDEFINED;
-    mConnectionId = UNDEFINED;
+    mWindowId = UNDEFINED_ITEM_ID;
+    mConnectionId = UNDEFINED_ITEM_ID;
+    mMaxTextLength = -1;
     mMovementGranularities = 0;
-    mChildNodeIds.Clear();
+    if (mChildNodeIds != NULL) {
+        mChildNodeIds.Clear();
+    }
     mBoundsInParent->Set(0, 0, 0, 0);
     mBoundsInScreen->Set(0, 0, 0, 0);
     mBooleanProperties = 0;
     mPackageName = NULL;
     mClassName = NULL;
     mText = NULL;
+    mError = NULL;
     mContentDescription = NULL;
-    mActions = 0;
+    mViewIdResourceName = NULL;
+    if (mActions != NULL) {
+        mActions->Clear();
+    }
+    mTextSelectionStart = UNDEFINED_SELECTION_INDEX;
+    mTextSelectionEnd = UNDEFINED_SELECTION_INDEX;
+    mInputType = IInputType::TYPE_NULL;
+    mLiveRegion = IView::ACCESSIBILITY_LIVE_REGION_NONE;
+    if (mExtras != NULL) {
+        mExtras->Clear();
+    }
+    if (mRangeInfo != NULL) {
+        mRangeInfo->Recycle();
+        mRangeInfo = NULL;
+    }
+    if (mCollectionInfo != NULL) {
+        mCollectionInfo->Recycle();
+        mCollectionInfo = NULL;
+    }
+    if (mCollectionItemInfo != NULL) {
+        mCollectionItemInfo->Recycle();
+        mCollectionItemInfo = NULL;
+    }
+}
+
+Boolean CAccessibilityNodeInfo::IsDefaultLegacyStandardAction(
+    /* [in] */ IAccessibilityAction* action)
+{
+    Int32 id;
+    action->GetId(&id);
+    AutoPtr<ICharSequence> cs;
+    action->GetLabel((ICharSequence**)&cs);
+    return id <= LAST_LEGACY_STANDARD_ACTION && TextUtils::IsEmpty(cs);
+}
+
+AutoPtr<IAccessibilityAction> CAccessibilityNodeInfo::GetActionSingleton(
+    /* [in] */ Int32 actionId)
+{
+    Int32 actions;
+    ICollection::Probe(CAccessibilityAction::sStandardActions)->GetSize(&actions);
+    for (Int32 i = 0; i < actions; i++) {
+        AutoPtr<IInterface> obj;
+        CAccessibilityAction::sStandardActions->GetValueAt(i, (IInterface**)&obj);
+        AutoPtr<IAccessibilityAction> currentAction = IAccessibilityAction::Probe(obj);
+        Int32 id;
+        currentAction->GetId(&id);
+        if (actionId == id) {
+            return currentAction;
+        }
+    }
+
+    return NULL;
+}
+
+void CAccessibilityNodeInfo::AddLegacyStandardActions(
+    /* [in] */ Int32 actionMask)
+{
+    Int32 remainingIds = actionMask;
+    while (remainingIds > 0) {
+        Int32 id = 1 << Elastos::Core::Math::NumberOfTrailingZeros(remainingIds);
+        remainingIds &= ~id;
+        AutoPtr<IAccessibilityAction> action = GetActionSingleton(id);
+        AddAction(action);
+    }
 }
 
 String CAccessibilityNodeInfo::GetActionSymbolicName(
@@ -1067,10 +1910,16 @@ String CAccessibilityNodeInfo::GetActionSymbolicName(
             return String("ACTION_SCROLL_FORWARD");
         case ACTION_SCROLL_BACKWARD:
             return String("ACTION_SCROLL_BACKWARD");
+        case ACTION_CUT:
+            return String("ACTION_CUT");
+        case ACTION_COPY:
+            return String("ACTION_COPY");
+        case ACTION_PASTE:
+            return String("ACTION_PASTE");
+        case ACTION_SET_SELECTION:
+            return String("ACTION_SET_SELECTION");
         default:
-            Slogger::E(TAG, "Unknown action: %d", action);
-            return String(NULL);
-            // throw new IllegalArgumentException("Unknown action: " + action);
+            return String("ACTION_UNKNOWN");
     }
 }
 
@@ -1098,9 +1947,9 @@ String CAccessibilityNodeInfo::GetMovementGranularitySymbolicName(
 Boolean CAccessibilityNodeInfo::CanPerformRequestOverConnection(
     /* [in] */ Int64 accessibilityNodeId)
 {
-    return (mWindowId != UNDEFINED
-            && GetAccessibilityViewId(accessibilityNodeId) != UNDEFINED
-            && mConnectionId != UNDEFINED);
+    return (mWindowId != UNDEFINED_ITEM_ID
+            && GetAccessibilityViewId(accessibilityNodeId) != UNDEFINED_ITEM_ID
+            && mConnectionId != UNDEFINED_CONNECTION_ID);
 }
 
 ECode CAccessibilityNodeInfo::Equals(
@@ -1110,9 +1959,14 @@ ECode CAccessibilityNodeInfo::Equals(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    IAccessibilityNodeInfo* info = IAccessibilityNodeInfo::Probe(other);
-    if (info == NULL)
+    if (other == NULL) {
         return NOERROR;
+    }
+
+    IAccessibilityNodeInfo* info = IAccessibilityNodeInfo::Probe(other);
+    if (info == NULL) {
+        return NOERROR;
+    }
 
     CAccessibilityNodeInfo* node = (CAccessibilityNodeInfo*)info;
     if (node == this) {
@@ -1154,6 +2008,7 @@ ECode CAccessibilityNodeInfo::ToString(
     // builder.append(super.toString());
 
     // if (DEBUG) {
+    //     builder.append("; sourceNodeId: " + mSourceNodeId);
     //     builder.append("; accessibilityViewId: " + getAccessibilityViewId(mSourceNodeId));
     //     builder.append("; virtualDescendantId: " + getVirtualDescendantId(mSourceNodeId));
     //     builder.append("; mParentNodeId: " + mParentNodeId);
@@ -1170,12 +2025,14 @@ ECode CAccessibilityNodeInfo::ToString(
     //     }
     //     builder.append("]");
 
-    //     SparseLongArray childIds = mChildNodeIds;
     //     builder.append("; childAccessibilityIds: [");
-    //     for (int i = 0, count = childIds.size(); i < count; i++) {
-    //         builder.append(childIds.valueAt(i));
-    //         if (i < count - 1) {
-    //             builder.append(", ");
+    //     final LongArray childIds = mChildNodeIds;
+    //     if (childIds != null) {
+    //         for (int i = 0, count = childIds.size(); i < count; i++) {
+    //             builder.append(childIds.get(i));
+    //             if (i < count - 1) {
+    //                 builder.append(", ");
+    //             }
     //         }
     //     }
     //     builder.append("]");
@@ -1187,7 +2044,10 @@ ECode CAccessibilityNodeInfo::ToString(
     // builder.append("; packageName: ").append(mPackageName);
     // builder.append("; className: ").append(mClassName);
     // builder.append("; text: ").append(mText);
+    // builder.append("; error: ").append(mError);
+    // builder.append("; maxTextLength: ").append(mMaxTextLength);
     // builder.append("; contentDescription: ").append(mContentDescription);
+    // builder.append("; viewIdResName: ").append(mViewIdResourceName);
 
     // builder.append("; checkable: ").append(isCheckable());
     // builder.append("; checked: ").append(isChecked());
@@ -1198,24 +2058,13 @@ ECode CAccessibilityNodeInfo::ToString(
     // builder.append("; longClickable: ").append(isLongClickable());
     // builder.append("; enabled: ").append(isEnabled());
     // builder.append("; password: ").append(isPassword());
-    // builder.append("; scrollable: " + isScrollable());
-
-    // builder.append("; [");
-    // for (int actionBits = mActions; actionBits != 0;) {
-    //     final int action = 1 << Integer.numberOfTrailingZeros(actionBits);
-    //     actionBits &= ~action;
-    //     builder.append(getActionSymbolicName(action));
-    //     if (actionBits != 0) {
-    //         builder.append(", ");
-    //     }
-    // }
-    // builder.append("]");
+    // builder.append("; scrollable: ").append(isScrollable());
+    // builder.append("; actions: ").append(mActions);
 
     // return builder.toString();
     assert(0);
     return E_NOT_IMPLEMENTED;
 }
-
 
 } // Accessibility
 } // View

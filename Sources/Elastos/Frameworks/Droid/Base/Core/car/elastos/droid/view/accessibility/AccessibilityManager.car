@@ -12,7 +12,7 @@ module
     namespace Accessibility {
 
     interface IAccessibilityEvent;
-    interface IAccessibilityInteractionConnection;
+    interface IIAccessibilityInteractionConnection;
 
     /**
      * Listener for the system accessibility state. To listen for changes to the accessibility
@@ -245,7 +245,7 @@ module
          */
         AddAccessibilityInteractionConnection(
             [in] IIWindow* windowToken,
-            [in] IAccessibilityInteractionConnection* connection,
+            [in] IIAccessibilityInteractionConnection* connection,
             [out] Int32* add);
 
         /**

@@ -4,12 +4,14 @@
 #include "_Elastos_Droid_AccessibilityService_CAccessibilityServiceInfo.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IList;
 
 namespace Elastos {
@@ -22,30 +24,6 @@ CarClass(CAccessibilityServiceInfo)
     , public IParcelable
 {
 public:
-    class CapabilityInfo
-        : public Object
-    {
-    public:
-        CapabilityInfo(){}
-
-        CapabilityInfo(
-            /* [in] */ Int32 capability,
-            /* [in] */ Int32 titleResId,
-            /* [in] */ Int32 descResId)
-            : mCapability(capability)
-            , mTitleResId(titleResId)
-            , mDescResId(descResId)
-        {}
-
-        ~CapabilityInfo();
-
-        CARAPI_(String) ToString();
-
-        Int32 mCapability;
-        Int32 mTitleResId;
-        Int32 mDescResId;
-    };
-
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
@@ -292,6 +270,7 @@ private:
 
 public:
     static const String TAG_ACCESSIBILITY_SERVICE;
+    static const AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > sAvailableCapabilityInfos;
 
     /**
      * The event types an {@link AccessibilityService} is interested in.

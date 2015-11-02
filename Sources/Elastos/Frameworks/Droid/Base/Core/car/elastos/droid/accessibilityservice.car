@@ -14,35 +14,44 @@ module
     namespace Elastos {
     namespace Droid {
     namespace AccessibilityService {
-        [local]
-        class CAccessibilityServiceClientWrapper {
-            constructor();
+    [local]
+    class CAccessibilityServiceClientWrapper {
+        constructor();
 
-            constructor(
-                [in] IContext* ctx,
-                [in] ILooper* looper,
-                [in] IAccessibilityServiceCallbacks* cb);
+        constructor(
+            [in] IContext* ctx,
+            [in] ILooper* looper,
+            [in] IAccessibilityServiceCallbacks* cb);
 
-            interface IAccessibilityServiceClientWrapper;
-            interface IAccessibilityServiceClient;
-            //interface IHandlerCallerCallback;
-        }
+        interface IAccessibilityServiceClientWrapper;
+        interface IIAccessibilityServiceClient;
+        //interface IHandlerCallerCallback;
+    }
 
-        [local]
-        class CAccessibilityServiceInfo {
-            constructor();
+    [local]
+    class CAccessibilityServiceInfo {
+        constructor();
 
-            constructor(
-                [in] IResolveInfo* resolveInfo,
-                [in] IContext* ctx);
+        constructor(
+            [in] IResolveInfo* resolveInfo,
+            [in] IContext* ctx);
 
-            interface IAccessibilityServiceInfo;
-            interface IParcelable;
-        }
+        interface IAccessibilityServiceInfo;
+        interface IParcelable;
+    }
 
-        singleton class CAccessibilityServiceInfoHelper {
-            interface IAccessibilityServiceInfoHelper;
-        }
+    singleton class CAccessibilityServiceInfoHelper {
+        interface IAccessibilityServiceInfoHelper;
+    }
+
+    class CAccessibilityServiceInfoCapabilityInfo {
+        constructor(
+            [in] Int32 capability,
+            [in] Int32 titleResId,
+            [in] Int32 descResId);
+
+        interface IAccessibilityServiceInfoCapabilityInfo;
+    }
 
     } //AccessibilityService
     } //Droid

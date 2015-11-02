@@ -28,7 +28,7 @@ module
      * @Involved
      * interface IParcelable;
      */
-    [local]
+    [local, parcelable]
     interface INetworkStatsHistory {
         const Int32 FIELD_ACTIVE_TIME = 0x01;
 

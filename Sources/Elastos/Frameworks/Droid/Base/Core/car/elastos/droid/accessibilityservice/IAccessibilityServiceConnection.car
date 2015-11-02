@@ -5,7 +5,7 @@ module
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.Accessibility.IAccessibilityWindowInfo;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
     interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
 
     namespace Elastos {
@@ -26,7 +26,7 @@ module
             [in] Int32 accessibilityWindowId,
             [in] Int64 accessibilityNodeId,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int64 threadId,
             [out] Boolean* scale);
@@ -36,7 +36,7 @@ module
             [in] Int64 accessibilityNodeId,
             [in] String text,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int64 threadId,
             [out] Boolean* scale);
 
@@ -45,7 +45,7 @@ module
             [in] Int64 accessibilityNodeId,
             [in] String viewId,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int64 threadId,
             [out] Boolean* scale);
 
@@ -54,7 +54,7 @@ module
             [in] Int64 accessibilityNodeId,
             [in] Int32 focusType,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int64 threadId,
             [out] Boolean* scale);
 
@@ -63,7 +63,7 @@ module
             [in] Int64 accessibilityNodeId,
             [in] Int32 direction,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int64 threadId,
             [out] Boolean* scale);
 
@@ -73,7 +73,7 @@ module
             [in] Int32 action,
             [in] IBundle* arguments,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int64 threadId,
             [out] Boolean* result);
 
@@ -81,7 +81,7 @@ module
             [in] Int32 accessibilityWindowId,
             [in] Int64 accessibilityNodeId,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* callBack,
+            [in] IIAccessibilityInteractionConnectionCallback* callBack,
             [in] Int64 threadId,
             [out] Boolean* result);
 

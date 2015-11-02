@@ -1,7 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceClient;
+    interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.View.IInputEvent;
     interface Elastos.Droid.View.IWindowContentFrameStats;
@@ -23,7 +23,7 @@ module
 
     interface IIUiAutomationConnection {
         Connect(
-            [in] IAccessibilityServiceClient* client);
+            [in] IIAccessibilityServiceClient* client);
 
         Disconnect();
 

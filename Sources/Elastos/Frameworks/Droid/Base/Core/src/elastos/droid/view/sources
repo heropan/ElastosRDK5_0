@@ -124,6 +124,6 @@ SOURCES += VelocityTracker.cpp
 #SOURCES += CWindowInfoHelper.cpp
 
 // LIBRARIES += inputmethod/inputmethod.lib
-// LIBRARIES += accessibility/accessibility.lib
+LIBRARIES += accessibility/accessibility.lib
 // LIBRARIES += animation/animation.lib
 // LIBRARIES += menu/menu.lib

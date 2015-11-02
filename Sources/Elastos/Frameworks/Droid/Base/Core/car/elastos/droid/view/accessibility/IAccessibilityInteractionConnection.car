@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.Graphics.IRegion;
     interface Elastos.Droid.View.IMagnificationSpec;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
     interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
@@ -18,21 +18,23 @@ module
      * @hide
      */
     [local, oneway]
-    interface IAccessibilityInteractionConnection {
+    interface IIAccessibilityInteractionConnection {
         FindAccessibilityNodeInfoByAccessibilityId(
             [in] Int64 accessibilityNodeId,
+            [in] IRegion* bounds,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
             [in] IMagnificationSpec* spec);
 
-        FindAccessibilityNodeInfoByViewId(
+        FindAccessibilityNodeInfosByViewId(
             [in] Int64 accessibilityNodeId,
-            [in] Int32 viewId,
+            [in] String viewId,
+            [in] IRegion* bounds,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -41,8 +43,9 @@ module
         FindAccessibilityNodeInfosByText(
             [in] Int64 accessibilityNodeId,
             [in] String text,
+            [in] IRegion* bounds,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -51,8 +54,9 @@ module
         FindFocus(
             [in] Int64 accessibilityNodeId,
             [in] Int32 focusType,
+            [in] IRegion* bounds,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -61,8 +65,9 @@ module
         FocusSearch(
             [in] Int64 accessibilityNodeId,
             [in] Int32 direction,
+            [in] IRegion* bounds,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
@@ -73,17 +78,16 @@ module
             [in] Int32 action,
             [in] IBundle* arguments,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid,
-            [in] IMagnificationSpec* spec);
+            [in] Int64 interrogatingTid);
 
         ComputeClickPointInScreen(
             [in] Int64 accessibilityNodeId,
             [in] IRegion* bounds,
             [in] Int32 interactionId,
-            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] IIAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 interrogatingPid,
             [in] Int64 interrogatingTid,
             [in] IMagnificationSpec* spec);

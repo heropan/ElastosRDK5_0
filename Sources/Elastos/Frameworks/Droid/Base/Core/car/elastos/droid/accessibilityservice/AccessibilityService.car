@@ -485,14 +485,14 @@ module
             [out] Boolean* result);
 
         OnKeyEvent(
-             [in] IKeyEvent* event,
+            [in] IKeyEvent* event,
             [out] Boolean* result);
     }
 
     /**
      * @Involve
      * interface IHandlerCallerCallback
-     * interface IAccessibilityServiceClient
+     * interface IIAccessibilityServiceClient
      */
     interface IAccessibilityServiceClientWrapper {}
 
