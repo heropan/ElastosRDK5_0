@@ -67,10 +67,7 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
-    FileObserver()
-        : mDescriptor(0)
-        , mMask(0)
-    {}
+    FileObserver();
 
     /**
      * Create a new file observer for a certain file or directory.
@@ -92,9 +89,6 @@ public:
     CARAPI constructor(
         /* [in] */ const String& path,
         /* [in] */ Int32 mask = IFileObserver::ALL_EVENTS);
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     /**
      * Start watching for events.  The monitored file or directory must exist at

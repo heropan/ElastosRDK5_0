@@ -160,7 +160,7 @@ void FileObserver::ObserverThread::NativeStopWatching(
 }
 
 //========================================================
-//
+// FileObserver
 //========================================================
 CAR_INTERFACE_IMPL(FileObserver, Object, IFileObserver)
 
@@ -173,6 +173,11 @@ Boolean FileObserver::InitObserverThread()
 
 AutoPtr<FileObserver::ObserverThread> FileObserver::sObserverThread;
 const Boolean FileObserver::sObserverThreadInited = FileObserver::InitObserverThread();
+
+FileObserver::FileObserver()
+    : mDescriptor(0)
+    , mMask(0)
+{}
 
 FileObserver::FileObserver(
     /* [in] */ const String& path,
