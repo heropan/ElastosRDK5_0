@@ -400,7 +400,7 @@ ECode CContentService::RegisterContentObserver(
 
     Int32 callingUser = UserHandle::GetCallingUserId();
     if (callingUser != userHandle) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
             String("no permission to observe other users' provider view")));
     }
 
@@ -468,7 +468,7 @@ ECode CContentService::NotifyChange(
     // Notify for any user other than the caller's own requires permission.
     Int32 callingUserHandle = UserHandle::GetCallingUserId();
     if (userHandle != callingUserHandle) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
                 String("no permission to notify other users")))
     }
 
@@ -645,7 +645,7 @@ ECode CContentService::GetSyncAutomatically(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
             String("no permission to read the sync settings")));
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -670,7 +670,7 @@ ECode CContentService::SetSyncAutomatically(
     /* [in] */ const String& providerName,
     /* [in] */ Boolean sync)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
             String("no permission to write the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -696,7 +696,7 @@ ECode CContentService::AddPeriodicSync(
     /* [in] */ IBundle* extras,
     /* [in] */ Int64 pollFrequency)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
             String("no permission to write the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -721,7 +721,7 @@ ECode CContentService::RemovePeriodicSync(
     /* [in] */ const String& authority,
     /* [in] */ IBundle* extras)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
             String("no permission to write the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -749,7 +749,7 @@ ECode CContentService::GetPeriodicSyncs(
     VALIDATE_NOT_NULL(periodicSyncList);
     *periodicSyncList = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
             String("no permission to read the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -777,7 +777,7 @@ ECode CContentService::GetIsSyncable(
     VALIDATE_NOT_NULL(value)
     *value = -1;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
             String("no permission to read the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -802,7 +802,7 @@ ECode CContentService::SetIsSyncable(
     /* [in] */ const String& providerName,
     /* [in] */ Int32 syncable)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
             String("no permission to write the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -828,7 +828,7 @@ ECode CContentService::GetMasterSyncAutomatically(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
             String("no permission to read the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -851,7 +851,7 @@ ECode CContentService::GetMasterSyncAutomatically(
 ECode CContentService::SetMasterSyncAutomatically(
     /* [in] */ Boolean flag)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SYNC_SETTINGS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
             String("no permission to write the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -879,7 +879,7 @@ ECode CContentService::IsSyncActive(
     VALIDATE_NOT_NULL(isActive)
     *isActive = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_STATS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
             String("no permission to read the sync stats")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -905,7 +905,7 @@ ECode CContentService::GetCurrentSyncs(
     VALIDATE_NOT_NULL(syncInfoList)
     *syncInfoList = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_STATS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
             String("no permission to read the sync stats")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -933,7 +933,7 @@ ECode CContentService::GetSyncStatus(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_STATS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
             String("no permission to read the sync stats")))
     Int32 userId = UserHandle::GetCallingUserId();
 
@@ -961,7 +961,7 @@ ECode CContentService::IsSyncPending(
     VALIDATE_NOT_NULL(isPending)
     *isPending = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_SYNC_STATS,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
             String("no permission to read the sync stats")))
     Int32 userId = UserHandle::GetCallingUserId();
 

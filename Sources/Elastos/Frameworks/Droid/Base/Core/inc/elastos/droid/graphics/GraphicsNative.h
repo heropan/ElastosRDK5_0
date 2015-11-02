@@ -2,15 +2,91 @@
 #define __ELASTOS_DROID_GRAPHICS_GRAPHICSNATIVE_H__
 
 #include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/NativePaint.h"
+#include "elastos/droid/graphics/TypefaceImpl.h"
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkRect.h>
 #include <skia/core/SkMallocPixelRef.h>
+#include <skia/core/SkCanvas.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
 class SkBitmapRegionDecoder;
+
+enum JNIAccess {
+    kRO_JNIAccess,
+    kRW_JNIAccess
+};
+
+class AutoFloatArray {
+public:
+    AutoFloatArray(
+        /* [in] */ ArrayOf<Float>* array,
+        /* [in] */ Int32 minLength = 0,
+        /* [in] */ JNIAccess = kRW_JNIAccess);
+    ~AutoFloatArray();
+
+    Float* ptr() const { return fPtr; }
+    Int32    length() const { return fLen; }
+
+private:
+    AutoPtr<ArrayOf<Float> > fArray;
+    Float*        fPtr;
+    Int32         fLen;
+    Int32         fReleaseMode;
+};
+
+class AutoInt32Array {
+public:
+    AutoInt32Array(
+        /* [in] */ ArrayOf<Int32>* array,
+        /* [in] */ Int32 minLength = 0);
+    ~AutoInt32Array();
+
+    Int32* ptr() const { return fPtr; }
+    Int32    length() const { return fLen; }
+
+private:
+    AutoPtr<ArrayOf<Int32> > fArray;
+    Int32*        fPtr;
+    Int32         fLen;
+};
+
+class AutoShortArray {
+public:
+    AutoShortArray(
+        /* [in] */ ArrayOf<short>* array,
+        /* [in] */ Int32 minLength = 0,
+        /* [in] */ JNIAccess = kRW_JNIAccess);
+    ~AutoShortArray();
+
+    short* ptr() const { return fPtr; }
+    Int32    length() const { return fLen; }
+
+private:
+    AutoPtr<ArrayOf<short> > fArray;
+    short*        fPtr;
+    Int32         fLen;
+    Int32         fReleaseMode;
+};
+
+class AutoByteArray {
+public:
+    AutoByteArray(
+        /* [in] */ ArrayOf<Byte>* array,
+        /* [in] */ Int32 minLength = 0);
+    ~AutoByteArray();
+
+    Byte* ptr() const { return fPtr; }
+    Int32    length() const { return fLen; }
+
+private:
+    AutoPtr<ArrayOf<Byte> > fArray;
+    Byte*         fPtr;
+    Int32         fLen;
+};
 
 class GraphicsNative
 {
@@ -186,6 +262,15 @@ public:
 
     static CARAPI_(Int32) GetBitmapAllocationByteCount(
         /* [in] */ IBitmap* bitmapObj);
+
+    static SkCanvas* GetNativeCanvas(
+        /* [in] */ ICanvas* canvas);
+
+    static NativePaint* GetNativePaint(
+        /* [in] */ IPaint* paint);
+
+    static TypefaceImpl* GetNativeTypeface(
+        /* [in] */ IPaint* paint);
 };
 
 } // namespace Graphics

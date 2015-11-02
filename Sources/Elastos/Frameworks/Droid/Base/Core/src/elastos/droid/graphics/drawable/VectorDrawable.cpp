@@ -243,8 +243,9 @@ VectorDrawable::VPathRenderer::VPathRenderer()
 
 AutoPtr<IMatrix> VectorDrawable::VPathRenderer::InitStatic()
 {
-    CMatrix::New((IMatrix**)&IDENTITY_MATRIX);
-    return IDENTITY_MATRIX;
+    AutoPtr<CMatrix> matrix;
+    CMatrix::NewByFriend((CMatrix**)&matrix);
+    return (IMatrix*)matrix.Get();
 }
 
 void VectorDrawable::VPathRenderer::SetRootAlpha(

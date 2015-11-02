@@ -119,7 +119,7 @@ ECode CViewRootImplW::ExecuteCommand(
 //    if (viewRoot != null) {
 //        final View view = viewRoot.mView;
 //        if (view != null) {
-//            if (checkCallingPermission(Elastos::Droid::Manifest::Permission::DUMP) !=
+//            if (checkCallingPermission(Elastos::Droid::Manifest::permission::DUMP) !=
 //                    PackageManager.PERMISSION_GRANTED) {
 //                throw new SecurityException("Insufficient permissions to invoke"
 //                        + " executeCommand() from pid=" + Binder.getCallingPid()

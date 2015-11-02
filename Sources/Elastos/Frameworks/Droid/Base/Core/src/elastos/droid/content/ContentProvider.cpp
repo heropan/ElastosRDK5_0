@@ -201,7 +201,7 @@ Boolean ContentProvider::CheckUser(
     Int32 cuid, perm;
     context->GetUserId(&cuid);
     assert(0 && "TODO");
-    //context->CheckPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS, pid, uid, &perm);
+    //context->CheckPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, pid, uid, &perm);
     return UserHandle::GetUserId(uid) == cuid
             || mSingleUser
             || perm == IPackageManager::PERMISSION_GRANTED;

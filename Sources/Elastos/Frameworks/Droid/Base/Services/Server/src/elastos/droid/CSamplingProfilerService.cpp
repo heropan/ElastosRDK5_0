@@ -110,7 +110,7 @@ ECode CSamplingProfilerService::Dump(
     /* [in] */ IPrintWriter *pw,
     /* [in] */ ArrayOf<String> *args)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, String(TAG)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, String(TAG)));
 
     pw->PrintStringln(String("SamplingProfilerService:") );
     pw->PrintStringln(String("Watching directory: ") + SNAPSHOT_DIR);

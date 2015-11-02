@@ -47,20 +47,61 @@ ECode CPaintFlagsDrawFilter::GetInterfaceID(
     return DrawFilter::GetInterfaceID(object, iid);
 }
 
-Int32 CPaintFlagsDrawFilter::NativeConstructor(
-    /* [in] */ Int32 clearBits,
-    /* [in] */ Int32 setBits)
-{
-    // trim off any out-of-range bits
-    clearBits &= SkPaint::kAllFlags;
-    setBits &= SkPaint::kAllFlags;
+// Custom version of SkPaintFlagsDrawFilter that also calls setFilterLevel.
+class CompatFlagsDrawFilter : public SkPaintFlagsDrawFilter {
+public:
+    CompatFlagsDrawFilter(uint32_t clearFlags, uint32_t setFlags,
+            SkPaint::FilterLevel desiredLevel)
+    : SkPaintFlagsDrawFilter(clearFlags, setFlags)
+    , fDesiredLevel(desiredLevel) {
+    }
 
-    if (clearBits | setBits) {
-        return (Int32)new SkPaintFlagsDrawFilter(clearBits, setBits);
+    virtual bool filter(SkPaint* paint, Type type) {
+        SkPaintFlagsDrawFilter::filter(paint, type);
+        paint->setFilterLevel(fDesiredLevel);
+        return true;
     }
-    else {
-        return 0;
+
+private:
+    const SkPaint::FilterLevel fDesiredLevel;
+};
+
+// Returns whether flags contains FILTER_BITMAP_FLAG. If flags does, remove it.
+static inline bool hadFiltering(Int32& flags) {
+    // Equivalent to the Java Paint's FILTER_BITMAP_FLAG.
+    static const uint32_t sFilterBitmapFlag = 0x02;
+
+    const bool result = (flags & sFilterBitmapFlag) != 0;
+    flags &= ~sFilterBitmapFlag;
+    return result;
+}
+
+Int64 CPaintFlagsDrawFilter::NativeConstructor(
+    /* [in] */ Int32 clearFlags,
+    /* [in] */ Int32 setFlags)
+{
+    if (clearFlags | setFlags) {
+        // Mask both groups of flags to remove FILTER_BITMAP_FLAG, which no
+        // longer has a Skia equivalent flag (instead it corresponds to
+        // calling setFilterLevel), and keep track of which group(s), if
+        // any, had the flag set.
+        const bool turnFilteringOn = hadFiltering(setFlags);
+        const bool turnFilteringOff = hadFiltering(clearFlags);
+
+        SkDrawFilter* filter;
+        if (turnFilteringOn) {
+            // Turning filtering on overrides turning it off.
+            filter = new CompatFlagsDrawFilter(clearFlags, setFlags,
+                    SkPaint::kLow_FilterLevel);
+        } else if (turnFilteringOff) {
+            filter = new CompatFlagsDrawFilter(clearFlags, setFlags,
+                    SkPaint::kNone_FilterLevel);
+        } else {
+            filter = new SkPaintFlagsDrawFilter(clearFlags, setFlags);
+        }
+        return reinterpret_cast<Int64>(filter);
     }
+    return 0;
 }
 
 } // namespace Graphics

@@ -1,5 +1,4 @@
 
-
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/utility/CArraySet.h"
 #include <elastos/core/Math.h>

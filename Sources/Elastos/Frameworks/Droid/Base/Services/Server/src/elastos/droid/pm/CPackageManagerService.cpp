@@ -129,7 +129,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-static const String READ_EXTERNAL_STORAGE = Elastos::Droid::Manifest::Permission::READ_EXTERNAL_STORAGE;
+static const String READ_EXTERNAL_STORAGE = Elastos::Droid::Manifest::permission::READ_EXTERNAL_STORAGE;
 
 ////////////////////////////////////////////////////////////////////////////////
 // InstallArgs
@@ -1596,7 +1596,7 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
                 verification->SetComponent(requiredVerifierComponent);
                 AutoPtr<IBroadcastReceiver> receiver = new CopyBroadcastReceiver(mHost, verificationId);
                 mHost->mContext->SendOrderedBroadcastAsUser(verification, GetUser(),
-                        Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT,
+                        Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
                         receiver, NULL, 0, String(NULL), NULL);
 
                 /*
@@ -3684,7 +3684,7 @@ String CPackageManagerService::GetRequiredVerifierLPr()
             continue;
         }
 
-        if (ps->mGrantedPermissions.Find(Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT)
+        if (ps->mGrantedPermissions.Find(Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT)
                     == ps->mGrantedPermissions.End()) {
             continue;
         }
@@ -4899,18 +4899,18 @@ ECode CPackageManagerService::EnforceCrossUserPermission(
     if (callingUid != IProcess::SYSTEM_UID && callingUid != 0) {
         if (requireFullPermission) {
             return mContext->EnforceCallingOrSelfPermission(
-                    Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL, message);
+                    Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL, message);
         }
         else {
             // try {
             if (FAILED(mContext->EnforceCallingOrSelfPermission(
-                    Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL, message))) {
+                    Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL, message))) {
                 return mContext->EnforceCallingOrSelfPermission(
-                        Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS, message);
+                        Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, message);
             }
             // } catch (SecurityException se) {
             //     mContext.enforceCallingOrSelfPermission(
-            //             Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS, message);
+            //             Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, message);
             // }
         }
     }
@@ -5162,7 +5162,7 @@ ECode CPackageManagerService::GrantPermission(
     /* [in] */ const String& permissionName)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::GRANT_REVOKE_PERMISSIONS, String(NULL)));
+            Elastos::Droid::Manifest::permission::GRANT_REVOKE_PERMISSIONS, String(NULL)));
 
     AutoLock lock(mPackagesLock);
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator pkgit =
@@ -5222,7 +5222,7 @@ ECode CPackageManagerService::RevokePermission(
     pkg->mApplicationInfo->GetUid(&uid);
     if (uid != Binder::GetCallingUid()) {
         FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                String("Manifest::Permission::GRANT_REVOKE_PERMISSIONS"), String(NULL)));
+                String("Manifest::permission::GRANT_REVOKE_PERMISSIONS"), String(NULL)));
     }
     AutoPtr<BasePermission> bp;
     HashMap<String, AutoPtr<BasePermission> >::Iterator bpit = mSettings->mPermissions.Find(permissionName);
@@ -8034,7 +8034,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
 
     if (mFactoryTest &&
         Find(pkg->mRequestedPermissions.Begin(), pkg->mRequestedPermissions.End(),
-            Elastos::Droid::Manifest::Permission::FACTORY_TEST)
+            Elastos::Droid::Manifest::permission::FACTORY_TEST)
             != pkg->mRequestedPermissions.End()) {
         Int32 flags;
         pkg->mApplicationInfo->GetFlags(&flags);
@@ -9268,7 +9268,7 @@ ECode CPackageManagerService::InstallPackageWithVerificationAndEncryption(
     /* [in] */ IContainerEncryptionParams* encryptionParams)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::INSTALL_PACKAGES,
+        Elastos::Droid::Manifest::permission::INSTALL_PACKAGES,
         String(NULL)));
 
     Int32 uid = Binder::GetCallingUid();
@@ -9309,7 +9309,7 @@ ECode CPackageManagerService::InstallExistingPackage(
     /* [in] */ const String& packageName,
     /* [out] */ Int32* result)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::INSTALL_PACKAGES,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INSTALL_PACKAGES,
             String(NULL)));
     AutoPtr<PackageSetting> pkgSetting;
     Int32 uid = Binder::GetCallingUid();
@@ -9358,7 +9358,7 @@ ECode CPackageManagerService::VerifyPendingInstall(
     /* [in] */ Int32 verificationCode)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT,
+            Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
             String("Only package verification agents can verify applications")));
 
     AutoPtr<PackageVerificationResponse> response = new PackageVerificationResponse(
@@ -9378,7 +9378,7 @@ ECode CPackageManagerService::ExtendVerificationTimeout(
     /* [in] */ Int64 millisecondsToDelay)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT,
+            Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
             String("Only package verification agents can extend verification timeouts")));
 
     HashMap<Int32, AutoPtr<PackageVerificationState> >::Iterator sIt = mPendingVerification.Find(id);
@@ -9425,7 +9425,7 @@ ECode CPackageManagerService::BroadcastPackageVerified(
     intent->PutExtra(IPackageManager::EXTRA_VERIFICATION_RESULT, verificationCode);
 
     mContext->SendBroadcastAsUser(intent, user,
-            Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT);
+            Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT);
     return NOERROR;
 }
 
@@ -10721,7 +10721,7 @@ ECode CPackageManagerService::DeletePackage(
     /* [in] */ Int32 flags)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::DELETE_PACKAGES,
+        Elastos::Droid::Manifest::permission::DELETE_PACKAGES,
         String(NULL)));
 
     // Queue up an async operation since the package deletion may take a little while.
@@ -11171,7 +11171,7 @@ ECode CPackageManagerService::ClearApplicationUserData(
     /* [in] */ Int32 userId)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::CLEAR_APP_USER_DATA,
+        Elastos::Droid::Manifest::permission::CLEAR_APP_USER_DATA,
         String(NULL)));
 
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, TRUE, String("clear application data")));
@@ -11241,7 +11241,7 @@ ECode CPackageManagerService::DeleteApplicationCacheFiles(
     /* [in] */ IPackageDataObserver* observer)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::DELETE_CACHE_FILES,
+        Elastos::Droid::Manifest::permission::DELETE_CACHE_FILES,
         String(NULL)));
 
     // Queue up an async operation since the package deletion may take a little while.
@@ -11292,7 +11292,7 @@ ECode CPackageManagerService::GetPackageSizeInfo(
     /* [in] */ IPackageStatsObserver* observer)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::GET_PACKAGE_SIZE, String(NULL)));
+            Elastos::Droid::Manifest::permission::GET_PACKAGE_SIZE, String(NULL)));
 
     AutoPtr<IPackageStats> stats;
     CPackageStats::New(packageName, userHandle, (IPackageStats**)&stats);
@@ -11451,14 +11451,14 @@ ECode CPackageManagerService::AddPreferredActivity(
     AutoLock lock(mPackagesLock);
     Int32 perm;
     mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, &perm);
+            Elastos::Droid::Manifest::permission::SET_PREFERRED_APPLICATIONS, &perm);
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         if (GetUidTargetSdkVersionLockedLPr(callingUid) < Build::VERSION_CODES::FROYO) {
             Slogger::W(TAG, "Ignoring addPreferredActivity() from uid %d", callingUid);
             return NOERROR;
         }
         FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, String(NULL)));
+            Elastos::Droid::Manifest::permission::SET_PREFERRED_APPLICATIONS, String(NULL)));
     }
 
     Slogger::I(TAG, "Adding preferred activity %p for user %d :", activity, userId);
@@ -11502,7 +11502,7 @@ ECode CPackageManagerService::ReplacePreferredActivity(
 
     Int32 result = 0;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, &result));
+        Elastos::Droid::Manifest::permission::SET_PREFERRED_APPLICATIONS, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         if (GetUidTargetSdkVersionLockedLPr(Binder::GetCallingUid())
                 < Build::VERSION_CODES::FROYO) {
@@ -11511,7 +11511,7 @@ ECode CPackageManagerService::ReplacePreferredActivity(
             return NOERROR;
         }
         FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, String(NULL)));
+                Elastos::Droid::Manifest::permission::SET_PREFERRED_APPLICATIONS, String(NULL)));
     }
 
     Int32 callingUserId = UserHandle::GetCallingUserId();
@@ -11569,7 +11569,7 @@ ECode CPackageManagerService::ClearPackagePreferredActivities(
     Int32 pkgUid;
     if (pkg == NULL || (pkg->mApplicationInfo->GetUid(&pkgUid), pkgUid != uid)) {
         Int32 result = 0;
-        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, &result));
+        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::SET_PREFERRED_APPLICATIONS, &result));
         if (result != IPackageManager::PERMISSION_GRANTED) {
             if (GetUidTargetSdkVersionLockedLPr(Binder::GetCallingUid())
                     < Build::VERSION_CODES::FROYO) {
@@ -11577,7 +11577,7 @@ ECode CPackageManagerService::ClearPackagePreferredActivities(
                 return NOERROR;
             }
             FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, String(NULL)));
+                Elastos::Droid::Manifest::permission::SET_PREFERRED_APPLICATIONS, String(NULL)));
         }
     }
 
@@ -11709,7 +11709,7 @@ ECode CPackageManagerService::SetEnabledSetting(
     const Int32 uid = Binder::GetCallingUid();
     Int32 permission = 0;
     FAIL_RETURN(mContext->CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::CHANGE_COMPONENT_ENABLED_STATE, &permission));
+            Elastos::Droid::Manifest::permission::CHANGE_COMPONENT_ENABLED_STATE, &permission));
     FAIL_RETURN(EnforceCrossUserPermission(uid, userId, FALSE, String("set enabled")));
     const Boolean allowedByPermission = (permission == IPackageManager::PERMISSION_GRANTED);
     Boolean sendNow = FALSE;
@@ -11877,7 +11877,7 @@ ECode CPackageManagerService::SetPackageStoppedState(
     const Int32 uid = Binder::GetCallingUid();
     Int32 permission;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CHANGE_COMPONENT_ENABLED_STATE, &permission));
+            Elastos::Droid::Manifest::permission::CHANGE_COMPONENT_ENABLED_STATE, &permission));
     Boolean allowedByPermission = (permission == IPackageManager::PERMISSION_GRANTED);
     FAIL_RETURN(EnforceCrossUserPermission(uid, userId, TRUE, String("stop package")));
     // writer
@@ -12043,13 +12043,13 @@ String CPackageManagerService::ArrayToString(
 }
 
 // protected void Dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP)
+//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP)
 //             != PackageManager.PERMISSION_GRANTED) {
 //         pw.println("Permission Denial: can't dump ActivityManager from from pid="
 //                 + Binder.getCallingPid()
 //                 + ", uid=" + Binder.getCallingUid()
 //                 + " without permission "
-//                 + Elastos::Droid::Manifest::Permission::DUMP);
+//                 + Elastos::Droid::Manifest::permission::DUMP);
 //         return;
 //     }
 
@@ -12761,7 +12761,7 @@ ECode CPackageManagerService::MovePackage(
     /* [in] */ Int32 flags)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MOVE_PACKAGE, String(NULL)));
+            Elastos::Droid::Manifest::permission::MOVE_PACKAGE, String(NULL)));
     AutoPtr<IUserHandle> user;
     CUserHandle::New(UserHandle::GetCallingUserId(), (IUserHandle**)&user);
     Int32 returnCode = IPackageManager::MOVE_SUCCEEDED;
@@ -12871,7 +12871,7 @@ ECode CPackageManagerService::SetInstallLocation(
     VALIDATE_NOT_NULL(result);
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, String(NULL)));
+        Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS, String(NULL)));
     Int32 location = 0;
     if (GetInstallLocation(&location), location == loc) {
         *result = TRUE;
@@ -12938,7 +12938,7 @@ ECode CPackageManagerService::GetVerifierDeviceIdentity(
     *identity = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT,
+            Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
             String("Only package verification agents can read the verifier device identity")));
 
     AutoLock lock(mPackagesLock);
@@ -12952,7 +12952,7 @@ ECode CPackageManagerService::SetPermissionEnforced(
     /* [in] */ const String& permission,
     /* [in] */ Boolean enforced)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::GRANT_REVOKE_PERMISSIONS, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::GRANT_REVOKE_PERMISSIONS, String(NULL)));
     if (READ_EXTERNAL_STORAGE.Equals(permission)) {
         AutoLock lock(mPackagesLock);
         Boolean value;

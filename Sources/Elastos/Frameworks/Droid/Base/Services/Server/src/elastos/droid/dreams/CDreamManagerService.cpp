@@ -93,7 +93,7 @@ ECode CDreamManagerService::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     pw->PrintStringln(String("DREAM MANAGER (dumpsys dreams)"));
     pw->Println();
@@ -125,7 +125,7 @@ ECode CDreamManagerService::Dump(
 ECode CDreamManagerService::GetDreamComponents(
     /* [out,callee] */ ArrayOf<IComponentName*>** result)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::READ_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::READ_DREAM_STATE));
 
     const Int32 userId = UserHandle::GetCallingUserId();
     const Int64 ident = Binder::ClearCallingIdentity();
@@ -141,7 +141,7 @@ ECode CDreamManagerService::GetDreamComponents(
 ECode CDreamManagerService::SetDreamComponents(
     /* [in] */ ArrayOf<IComponentName*>* componentNames)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::WRITE_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::WRITE_DREAM_STATE));
 
     const Int32 userId = UserHandle::GetCallingUserId();
     const Int64 ident = Binder::ClearCallingIdentity();
@@ -164,7 +164,7 @@ ECode CDreamManagerService::SetDreamComponents(
 ECode CDreamManagerService::GetDefaultDreamComponent(
     /* [out] */ IComponentName** component)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::READ_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::READ_DREAM_STATE));
 
     const Int32 userId = UserHandle::GetCallingUserId();
     const Int64 ident = Binder::ClearCallingIdentity();
@@ -194,7 +194,7 @@ ECode CDreamManagerService::GetDefaultDreamComponent(
 ECode CDreamManagerService::IsDreaming(
     /* [out] */ Boolean* result)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::READ_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::READ_DREAM_STATE));
 
     {
         AutoLock lock(mLock);
@@ -205,7 +205,7 @@ ECode CDreamManagerService::IsDreaming(
 
 ECode CDreamManagerService::Dream()
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::WRITE_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::WRITE_DREAM_STATE));
 
     const Int64 ident = Binder::ClearCallingIdentity();
 //     try {
@@ -225,7 +225,7 @@ ECode CDreamManagerService::Dream()
 ECode CDreamManagerService::TestDream(
     /* [in] */ IComponentName* dream)
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::WRITE_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::WRITE_DREAM_STATE));
 
     if (dream == NULL) {
 //         throw new IllegalArgumentException("dream must not be null");
@@ -257,7 +257,7 @@ ECode CDreamManagerService::TestDream(
 
 ECode CDreamManagerService::Awaken()
 {
-    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::WRITE_DREAM_STATE));
+    FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::permission::WRITE_DREAM_STATE));
 
     const Int64 ident = Binder::ClearCallingIdentity();
 //     try {

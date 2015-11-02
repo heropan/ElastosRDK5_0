@@ -20,7 +20,7 @@ public:
 
 private:
     static AutoPtr< ArrayOf<Char32> > sTemp;
-    static Object sClassLock;
+    static Object sObject;
 };
 
 } // namespace Graphics

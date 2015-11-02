@@ -731,7 +731,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(IConnectivityManager::CONNECTIVITY_ACTION_IMMEDIATE, (IIntentFilter**)&connFilter);
     AutoPtr<IIntent> resIntent;
     mContext->RegisterReceiver(
-        mConnReceiver, connFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
+        mConnReceiver, connFilter, Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL,
         mHandler, (IIntent**)&resIntent);
 
     // listen for package changes to update policy
@@ -764,7 +764,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(CNetworkStatsService::ACTION_NETWORK_STATS_UPDATED, (IIntentFilter**)&statsFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mStatsReceiver, statsFilter, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY,
+        mStatsReceiver, statsFilter, Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY,
         mHandler, (IIntent**)&resIntent);
 
     // listen for restrict background changes from notifications
@@ -772,7 +772,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(ACTION_ALLOW_BACKGROUND, (IIntentFilter**)&allowFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mAllowReceiver, allowFilter, Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY,
+        mAllowReceiver, allowFilter, Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY,
         mHandler, (IIntent**)&resIntent);
 
     // listen for snooze warning from notifications
@@ -780,7 +780,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(ACTION_SNOOZE_WARNING, (IIntentFilter**)&snoozeWarningFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mSnoozeWarningReceiver, snoozeWarningFilter, Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY,
+        mSnoozeWarningReceiver, snoozeWarningFilter, Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY,
         mHandler, (IIntent**)&resIntent);
 
     // listen for configured wifi networks to be removed
@@ -788,7 +788,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(IWifiManager::CONFIGURED_NETWORKS_CHANGED_ACTION, (IIntentFilter**)&wifiConfigFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mWifiConfigReceiver, wifiConfigFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
+        mWifiConfigReceiver, wifiConfigFilter, Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL,
         mHandler, (IIntent**)&resIntent);
 
     // listen for wifi state changes to catch metered hint
@@ -796,7 +796,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(IWifiManager::NETWORK_STATE_CHANGED_ACTION, (IIntentFilter**)&wifiStateFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mWifiStateReceiver, wifiStateFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL,
+        mWifiStateReceiver, wifiStateFilter, Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL,
         mHandler, (IIntent**)&resIntent);
 
     return NOERROR;
@@ -1807,7 +1807,7 @@ ECode CNetworkPolicyManagerService::SetUidPolicy(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 policy)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
@@ -1847,7 +1847,7 @@ ECode CNetworkPolicyManagerService::GetUidPolicy(
 {
     VALIDATE_NOT_NULL(policy);
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     {
         AutoLock lock(mRulesLock);
@@ -1865,7 +1865,7 @@ ECode CNetworkPolicyManagerService::GetUidsWithPolicy(
     /* [out, callee] */ ArrayOf<Int32>** _uids)
 {
     VALIDATE_NOT_NULL(_uids);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     AutoPtr<ArrayOf<Int32> > uids = ArrayOf<Int32>::Alloc(0);
     {
@@ -1923,7 +1923,7 @@ ECode CNetworkPolicyManagerService::RegisterListener(
 {
     // TODO: create permission for observing network policy
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, TAG));
 
     Boolean result;
     return mListeners->Register(listener, &result);
@@ -1936,7 +1936,7 @@ ECode CNetworkPolicyManagerService::UnregisterListener(
 {
     // TODO: create permission for observing network policy
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, TAG));
+            Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, TAG));
 
     Boolean result;
     return mListeners->Unregister(listener, &result);
@@ -1946,7 +1946,7 @@ ECode CNetworkPolicyManagerService::SetNetworkPolicies(
     /* [in] */ ArrayOf<INetworkPolicy*>* policies)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     MaybeRefreshTrustedTime();
     {
@@ -1987,9 +1987,9 @@ ECode CNetworkPolicyManagerService::GetNetworkPolicies(
     VALIDATE_NOT_NULL(policies);
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::READ_PHONE_STATE, TAG));
+            Elastos::Droid::Manifest::permission::READ_PHONE_STATE, TAG));
 
     {
         AutoLock lock(mRulesLock);
@@ -2009,7 +2009,7 @@ ECode CNetworkPolicyManagerService::SnoozeLimit(
     /* [in] */  INetworkTemplate* templ)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     const Int64 token = Binder::ClearCallingIdentity();
     //try {
@@ -2064,7 +2064,7 @@ ECode CNetworkPolicyManagerService::SetRestrictBackground(
     /* [in] */ Boolean restrictBackground)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     MaybeRefreshTrustedTime();
     {
@@ -2088,7 +2088,7 @@ ECode CNetworkPolicyManagerService::GetRestrictBackground(
     VALIDATE_NOT_NULL(restrictBackground);
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     {
         AutoLock lock(mRulesLock);
@@ -2122,7 +2122,7 @@ ECode CNetworkPolicyManagerService::GetNetworkQuotaInfo(
     *info = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE, TAG));
+            Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE, TAG));
 
     // only returns usage summary, so we don't require caller to have
     // READ_NETWORK_USAGE_HISTORY.
@@ -2234,7 +2234,7 @@ void CNetworkPolicyManagerService::Dump(
     /* [in] */ const ArrayOf<String>& args)
 {
     assert(0);
-    // FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+    // FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     // //Note: IIndentingPrintWriter is not ready
     // //AutoPtr<IIndentingPrintWriter> fout;
@@ -2352,7 +2352,7 @@ ECode CNetworkPolicyManagerService::IsUidForeground(
     VALIDATE_NOT_NULL(isUidForeground);
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
+            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     {
         AutoLock lock(mRulesLock);

@@ -39,7 +39,7 @@ ECode CDiskStatsService::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String> *args)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     // Run a quick-and-dirty performance test: write 512 bytes
     Int32 len = 512;

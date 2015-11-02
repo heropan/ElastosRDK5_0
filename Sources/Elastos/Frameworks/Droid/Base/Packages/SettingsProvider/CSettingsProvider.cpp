@@ -576,10 +576,10 @@ ECode CSettingsProvider::CheckWritePermissions(
         AutoPtr<IContext> context;
         GetContext((IContext**)&context);
         Int32 value;
-        FAIL_RETURN(context->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &value))
+        FAIL_RETURN(context->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS, &value))
         if (value != IPackageManager::PERMISSION_GRANTED) {
             Logger::E(TAG, "Permission denial: writing to secure settings requires %1$s",
-                    Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS.string());
+                    Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS.string());
             return E_SECURITY_EXCEPTION;
             // throw new SecurityException(
             //         String.format("Permission denial: writing to secure settings requires %1$s",
@@ -1370,7 +1370,7 @@ ECode CSettingsProvider::InsertForUser(
         AutoPtr<IContext> context;
         GetContext((IContext**)&context);
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+                Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
                 String("Not permitted to access settings for other users")))
     }
 

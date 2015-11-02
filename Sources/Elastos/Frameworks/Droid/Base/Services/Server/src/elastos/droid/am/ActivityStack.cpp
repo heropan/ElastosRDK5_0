@@ -1750,7 +1750,7 @@ Boolean ActivityStack::ResumeTopActivityLocked(
             const Int32 nextUid = uid;
             Int32 permission;
             mService->CheckPermission(
-                            Elastos::Droid::Manifest::Permission::STOP_APP_SWITCHES,
+                            Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES,
                             -1, next->mLaunchedFromUid, &permission);
             if (inTime && lastUid != nextUid
                     && lastUid != next->mLaunchedFromUid
@@ -2996,7 +2996,7 @@ ECode ActivityStack::StartActivityLocked(
 
     Int32 startAnyPerm;
     FAIL_RETURN(mService->CheckPermission(
-           Elastos::Droid::Manifest::Permission::START_ANY_ACTIVITY, callingPid, callingUid, &startAnyPerm));
+           Elastos::Droid::Manifest::permission::START_ANY_ACTIVITY, callingPid, callingUid, &startAnyPerm));
     String permission;
     aInfo->GetPermission(&permission);
     AutoPtr<IApplicationInfo> appInfo;
@@ -3838,7 +3838,7 @@ ECode ActivityStack::StartActivityMayWait(
         // do so now.  This allows a clean switch, as we are waiting
         // for the current activity to pause (so we will not destroy
         // it), and have not yet started the next activity.
-        FAIL_RETURN(mService->EnforceCallingPermission(Elastos::Droid::Manifest::Permission::CHANGE_CONFIGURATION, String("updateConfiguration()")));
+        FAIL_RETURN(mService->EnforceCallingPermission(Elastos::Droid::Manifest::permission::CHANGE_CONFIGURATION, String("updateConfiguration()")));
         mConfigWillChange = FALSE;
         if (DEBUG_CONFIGURATION) {
             Slogger::V(TAG, "Updating to new configuration after starting activity.");

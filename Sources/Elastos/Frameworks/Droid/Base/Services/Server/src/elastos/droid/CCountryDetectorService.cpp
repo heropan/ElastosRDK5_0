@@ -223,7 +223,7 @@ ECode CCountryDetectorService::IsSystemReady(
 //     /* [in] */ IPrintWriter *fout,
 //     /* [in] */ ArrayOf<String> *args)
 // {
-//     String permission = Elastos::Droid::Manifest::Permission::DUMP;
+//     String permission = Elastos::Droid::Manifest::permission::DUMP;
 //     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(permission, String(TAG)));
 
 //     if (!DEBUG) {

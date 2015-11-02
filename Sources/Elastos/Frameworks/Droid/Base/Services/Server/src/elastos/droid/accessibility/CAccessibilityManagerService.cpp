@@ -386,8 +386,8 @@ ECode CAccessibilityManagerService::SecurityPolicy::ResolveCallingUserIdEnforcin
         *result = userId;
         return NOERROR;
     }
-    if (!HasPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS)
-            && !HasPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL)) {
+    if (!HasPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
+            && !HasPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)) {
         Slogger::E(CAccessibilityManagerService::TAG, "Call from user %d as user %d" \
             " without permission INTERACT_ACROSS_USERS or INTERACT_ACROSS_USERS_FULL not allowed.",
             callingUserId, userId);
@@ -1182,7 +1182,7 @@ ECode CAccessibilityManagerService::RegisterUiTestAutomationService(
     /* [in] */ IAccessibilityServiceInfo* accessibilityServiceInfo)
 {
     FAIL_RETURN(mSecurityPolicy->EnforceCallingPermission(
-        Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_CONTENT,
+        Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_CONTENT,
         FUNCTION_REGISTER_UI_TEST_AUTOMATION_SERVICE));
     AutoPtr<IComponentName> componentName;
     CComponentName::New(String("foo.bar"), String("AutomationAccessibilityService"),
@@ -1222,7 +1222,7 @@ ECode CAccessibilityManagerService::TemporaryEnableAccessibilityStateUntilKeygua
     /* [in] */ Boolean touchExplorationEnabled)
 {
     FAIL_RETURN(mSecurityPolicy->EnforceCallingPermission(
-        Elastos::Droid::Manifest::Permission::TEMPORARY_ENABLE_ACCESSIBILITY,
+        Elastos::Droid::Manifest::permission::TEMPORARY_ENABLE_ACCESSIBILITY,
         TEMPORARY_ENABLE_ACCESSIBILITY_UNTIL_KEYGUARD_REMOVED));
     // try {
     Boolean isSecure;
@@ -1539,11 +1539,11 @@ void CAccessibilityManagerService::PopulateInstalledAccessibilityServiceLocked(
         resolveInfo->GetServiceInfo((IServiceInfo**)&serviceInfo);
         String permission;
         serviceInfo->GetPermission(&permission);
-        if (!Elastos::Droid::Manifest::Permission::BIND_ACCESSIBILITY_SERVICE.Equals(permission)) {
+        if (!Elastos::Droid::Manifest::permission::BIND_ACCESSIBILITY_SERVICE.Equals(permission)) {
             // Slogger::W(TAG, "Skipping accessibilty service " + new ComponentName(
             //         serviceInfo.packageName, serviceInfo.name).flattenToShortString()
             //         + ": it does not require the permission "
-            //         + Elastos::Droid::Manifest::Permission::BIND_ACCESSIBILITY_SERVICE);
+            //         + Elastos::Droid::Manifest::permission::BIND_ACCESSIBILITY_SERVICE);
             continue;
         }
         AutoPtr<IAccessibilityServiceInfo> accessibilityServiceInfo;

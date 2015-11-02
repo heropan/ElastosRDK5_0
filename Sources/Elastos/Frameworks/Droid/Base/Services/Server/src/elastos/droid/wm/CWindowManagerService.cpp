@@ -2978,7 +2978,7 @@ Int32 CWindowManagerService::RelayoutWindow(
         if ((systemUiVisibility & IStatusBarManager::DISABLE_MASK) != 0) {
             Int32 perm;
             FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-                    Elastos::Droid::Manifest::Permission::STATUS_BAR,
+                    Elastos::Droid::Manifest::permission::STATUS_BAR,
                     &perm));
             if (perm != IPackageManager::PERMISSION_GRANTED) {
                 systemUiVisibility &= ~IStatusBarManager::DISABLE_MASK;
@@ -3403,7 +3403,7 @@ ECode CWindowManagerService::GetWindowCompatibilityScale(
     VALIDATE_NOT_NULL(scale);
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_INFO,
+            Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_INFO,
             String("getWindowCompatibilityScale()"))) {
         Slogger::E(TAG, "Requires RETRIEVE_WINDOW_INFO permission.");
         return E_SECURITY_EXCEPTION;
@@ -3426,7 +3426,7 @@ ECode CWindowManagerService::GetWindowInfo(
 {
     VALIDATE_NOT_NULL(info);
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_INFO,
+            Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_INFO,
             String("getWindowInfo()"))) {
         Slogger::E(TAG, "Requires RETRIEVE_WINDOW_INFO permission.");
         return E_SECURITY_EXCEPTION;
@@ -3455,7 +3455,7 @@ ECode CWindowManagerService::GetVisibleWindowsForDisplay(
     VALIDATE_NOT_NULL(outInfos);
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_INFO,
+            Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_INFO,
             String("getWindowInfo()"))) {
         Slogger::E(TAG, "Requires RETRIEVE_WINDOW_INFO permission.");
         return E_SECURITY_EXCEPTION;
@@ -3496,7 +3496,7 @@ ECode CWindowManagerService::MagnifyDisplay(
     /* [in] */ Float offsetY)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MAGNIFY_DISPLAY,
+            Elastos::Droid::Manifest::permission::MAGNIFY_DISPLAY,
             String("magnifyDisplay()"))) {
         Slogger::E(TAG, "Requires MAGNIFY_DISPLAY permission.");
         return E_SECURITY_EXCEPTION;
@@ -4150,7 +4150,7 @@ ECode CWindowManagerService::AddWindowToken(
     /* [in] */ Int32 type)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("AddWindowToken()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4182,7 +4182,7 @@ ECode CWindowManagerService::RemoveWindowToken(
     /* [in] */ IBinder* token)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("RemoveWindowToken()"))) {
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
@@ -4278,7 +4278,7 @@ ECode CWindowManagerService::AddAppToken(
     /* [in] */ Boolean showWhenLocked)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("AddAppToken()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4342,7 +4342,7 @@ ECode CWindowManagerService::SetAppGroupId(
     /* [in] */ Int32 groupId)
 {
     if (!CheckCallingPermission(
-        Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+        Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
         String("SetAppStartingIcon()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4479,7 +4479,7 @@ ECode CWindowManagerService::UpdateOrientationFromAppTokens(
     VALIDATE_NOT_NULL(config);
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("UpdateOrientationFromAppTokens()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4579,7 +4579,7 @@ ECode CWindowManagerService::SetNewConfiguration(
     /* [in] */ IConfiguration* config)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("SetNewConfiguration()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4599,7 +4599,7 @@ ECode CWindowManagerService::SetAppOrientation(
     /* [in] */ Int32 requestedOrientation)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("SetAppOrientation()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4640,7 +4640,7 @@ ECode CWindowManagerService::SetFocusedApp(
     /* [in] */ Boolean moveFocusNow)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("SetFocusedApp()"))) {
         //throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4686,7 +4686,7 @@ ECode CWindowManagerService::PrepareAppTransition(
     /* [in] */ Boolean alwaysKeepCurrent)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("PrepareAppTransition()"))) {
         //throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4828,7 +4828,7 @@ ECode CWindowManagerService::ExecuteAppTransition()
 {
 // Slogger::D(TAG, "==== File: %s, Line: %d ====", __FILE__, __LINE__);
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("ExecuteAppTransition()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -4866,7 +4866,7 @@ ECode CWindowManagerService::SetAppStartingWindow(
     /* [in] */ Boolean createIfNeeded)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("SetAppStartingIcon()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -5102,7 +5102,7 @@ ECode CWindowManagerService::SetAppWillBeHidden(
     /* [in] */ IBinder* token)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("SetAppWillBeHidden()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -5239,7 +5239,7 @@ ECode CWindowManagerService::SetAppVisibility(
     /* [in] */ Boolean visible)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("SetAppVisibility()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -5408,7 +5408,7 @@ ECode CWindowManagerService::StartAppFreezingScreen(
     /* [in] */ Int32 configChanges)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("StartAppFreezingScreen()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         return E_SECURITY_EXCEPTION;
@@ -5439,7 +5439,7 @@ ECode CWindowManagerService::StopAppFreezingScreen(
     /* [in] */ Boolean force)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("StopAppFreezingScreen()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -5465,7 +5465,7 @@ ECode CWindowManagerService::RemoveAppToken(
     /* [in] */ IBinder* token)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("RemoveAppToken()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -5744,7 +5744,7 @@ ECode CWindowManagerService::MoveAppToken(
     /* [in] */ IBinder* token)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("MoveAppToken()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -5973,7 +5973,7 @@ ECode CWindowManagerService::MoveAppTokensToTop(
     /* [in] */ IObjectContainer* tokens)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("MoveAppTokensToTop()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -6019,7 +6019,7 @@ ECode CWindowManagerService::MoveAppTokensToBottom(
     /* [in] */ IObjectContainer* tokens)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("MoveAppTokensToBottom()"))) {
         //throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -6078,7 +6078,7 @@ ECode CWindowManagerService::StartFreezingScreen(
     /* [in] */ Int32 enterAnim)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::FREEZE_SCREEN,
+            Elastos::Droid::Manifest::permission::FREEZE_SCREEN,
             String("startFreezingScreen()"))) {
         Slogger::E(TAG, "Requires FREEZE_SCREEN permission");
         return E_SECURITY_EXCEPTION;
@@ -6105,7 +6105,7 @@ ECode CWindowManagerService::StartFreezingScreen(
 ECode CWindowManagerService::StopFreezingScreen()
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::FREEZE_SCREEN,
+            Elastos::Droid::Manifest::permission::FREEZE_SCREEN,
             String("stopFreezingScreen()"))) {
         Slogger::E(TAG, "Requires FREEZE_SCREEN permission");
         return E_SECURITY_EXCEPTION;
@@ -6133,7 +6133,7 @@ ECode CWindowManagerService::DisableKeyguard(
 {
     Int32 perm;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DISABLE_KEYGUARD,
+            Elastos::Droid::Manifest::permission::DISABLE_KEYGUARD,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         //throw new SecurityException("Requires DISABLE_KEYGUARD permission");
@@ -6159,7 +6159,7 @@ ECode CWindowManagerService::ReenableKeyguard(
 {
     Int32 perm;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DISABLE_KEYGUARD,
+            Elastos::Droid::Manifest::permission::DISABLE_KEYGUARD,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         //throw new SecurityException("Requires DISABLE_KEYGUARD permission");
@@ -6179,7 +6179,7 @@ ECode CWindowManagerService::ExitKeyguardSecurely(
 {
     Int32 perm;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DISABLE_KEYGUARD,
+            Elastos::Droid::Manifest::permission::DISABLE_KEYGUARD,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         //throw new SecurityException("Requires DISABLE_KEYGUARD permission");
@@ -6215,7 +6215,7 @@ ECode CWindowManagerService::DismissKeyguard()
 {
     Int32 perm;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::DISABLE_KEYGUARD,
+            Elastos::Droid::Manifest::permission::DISABLE_KEYGUARD,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         //throw new SecurityException("Requires DISABLE_KEYGUARD permission");
@@ -6267,7 +6267,7 @@ ECode CWindowManagerService::SetAnimationScale(
     /* [in] */ Float scale)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::SET_ANIMATION_SCALE,
+            Elastos::Droid::Manifest::permission::SET_ANIMATION_SCALE,
             String("SetAnimationScale()"))) {
         //throw new SecurityException("Requires SET_ANIMATION_SCALE permission");
         Slogger::E(TAG, "Requires SET_ANIMATION_SCALE permission");
@@ -6292,7 +6292,7 @@ ECode CWindowManagerService::SetAnimationScales(
     /* [in] */ ArrayOf<Float>* scales)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::SET_ANIMATION_SCALE,
+            Elastos::Droid::Manifest::permission::SET_ANIMATION_SCALE,
             String("SetAnimationScale()"))) {
         //throw new SecurityException("Requires SET_ANIMATION_SCALE permission");
         Slogger::E(TAG, "Requires SET_ANIMATION_SCALE permission");
@@ -6416,7 +6416,7 @@ ECode CWindowManagerService::SetInputFilter(
     /* [in] */ IIInputFilter* filter)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::FILTER_EVENTS,
+            Elastos::Droid::Manifest::permission::FILTER_EVENTS,
             String("setInputFilter()"))) {
         Slogger::E(TAG, "Requires FILTER_EVENTS permission");
         return E_SECURITY_EXCEPTION;
@@ -6793,7 +6793,7 @@ ECode CWindowManagerService::ScreenshotApplications(
     *bitmap = NULL;
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::READ_FRAME_BUFFER,
+            Elastos::Droid::Manifest::permission::READ_FRAME_BUFFER,
             String("ScreenshotApplications()"))) {
         Slogger::E(TAG, "Requires READ_FRAME_BUFFER permission");
         return E_SECURITY_EXCEPTION;
@@ -7014,7 +7014,7 @@ ECode CWindowManagerService::FreezeRotation(
     /* [in] */ Int32 rotation)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::SET_ORIENTATION,
+            Elastos::Droid::Manifest::permission::SET_ORIENTATION,
             String("freezeRotation()"))) {
         Slogger::E(TAG, "Requires SET_ORIENTATION permission");
         return E_SECURITY_EXCEPTION;
@@ -7039,7 +7039,7 @@ ECode CWindowManagerService::FreezeRotation(
 ECode CWindowManagerService::ThawRotation()
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::SET_ORIENTATION,
+            Elastos::Droid::Manifest::permission::SET_ORIENTATION,
             String("thawRotation()"))) {
         Slogger::E(TAG, "Requires SET_ORIENTATION permission");
         return E_SECURITY_EXCEPTION;
@@ -7348,7 +7348,7 @@ ECode CWindowManagerService::StartViewServer(
     }
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::DUMP, String("startViewServer"))) {
+            Elastos::Droid::Manifest::permission::DUMP, String("startViewServer"))) {
         *result = FALSE;
         return NOERROR;
     }
@@ -7408,7 +7408,7 @@ ECode CWindowManagerService::StopViewServer(
     }
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::DUMP, String("stopViewServer"))) {
+            Elastos::Droid::Manifest::permission::DUMP, String("stopViewServer"))) {
         return NOERROR;
     }
 
@@ -7428,7 +7428,7 @@ ECode CWindowManagerService::IsViewServerRunning(
     }
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::DUMP, String("isViewServerRunning"))) {
+            Elastos::Droid::Manifest::permission::DUMP, String("isViewServerRunning"))) {
         *result = FALSE;
         return NOERROR;
     }
@@ -7702,7 +7702,7 @@ ECode CWindowManagerService::AddDisplayContentChangeListener(
     /* [in] */ IDisplayContentChangeListener* listener)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_INFO,
+            Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_INFO,
             String("addDisplayContentChangeListener()"))) {
         Slogger::E(TAG, "Requires RETRIEVE_WINDOW_INFO permission");
         return E_SECURITY_EXCEPTION;
@@ -7726,7 +7726,7 @@ ECode CWindowManagerService::RemoveDisplayContentChangeListener(
     /* [in] */ IDisplayContentChangeListener* listener)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_INFO,
+            Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_INFO,
             String("removeDisplayContentChangeListener()"))) {
         Slogger::E(TAG, "Requires RETRIEVE_WINDOW_INFO permission");
         return E_SECURITY_EXCEPTION;
@@ -8484,7 +8484,7 @@ ECode CWindowManagerService::PauseKeyDispatching(
     /* [in] */ IBinder* token)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("PauseKeyDispatching()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -8510,7 +8510,7 @@ ECode CWindowManagerService::ResumeKeyDispatching(
     /* [in] */ IBinder* token)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("ResumeKeyDispatching()"))) {
         // throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -8536,7 +8536,7 @@ ECode CWindowManagerService::SetEventDispatching(
     /* [in] */ Boolean enabled)
 {
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::MANAGE_APP_TOKENS,
+            Elastos::Droid::Manifest::permission::MANAGE_APP_TOKENS,
             String("ResumeKeyDispatching()"))) {
         //throw new SecurityException("Requires MANAGE_APP_TOKENS permission");
         Slogger::E(TAG, "Requires MANAGE_APP_TOKENS permission");
@@ -8559,7 +8559,7 @@ ECode CWindowManagerService::GetFocusedWindowToken(
     VALIDATE_NOT_NULL(token);
 
     if (!CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::RETRIEVE_WINDOW_INFO,
+            Elastos::Droid::Manifest::permission::RETRIEVE_WINDOW_INFO,
             String("getFocusedWindowToken()"))) {
         Slogger::E(TAG, "Requires RETRIEVE_WINDOW_INFO permission.");
         return E_SECURITY_EXCEPTION;
@@ -12260,13 +12260,13 @@ ECode CWindowManagerService::StatusBarVisibilityChanged(
 {
     Int32 perm;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::STATUS_BAR,
+            Elastos::Droid::Manifest::permission::STATUS_BAR,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         Slogger::E(TAG, "Caller does not hold permission android.permission.STATUS_BAR");
         return E_SECURITY_EXCEPTION;
         // throw new SecurityException("Caller does not hold permission "
-        //         + Elastos::Droid::Manifest::Permission::STATUS_BAR);
+        //         + Elastos::Droid::Manifest::permission::STATUS_BAR);
     }
 
     AutoLock lock(mWindowMapLock);
@@ -12402,7 +12402,7 @@ ECode CWindowManagerService::ShowAssistant()
 {
     // TODO: What permission?
     Int32 perm;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DEVICE_POWER,
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         return NOERROR;

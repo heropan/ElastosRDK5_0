@@ -1298,7 +1298,7 @@ ECode CInputManagerService::SetCurrentKeyboardLayoutForInputDevice(
     /* [in] */ const String& keyboardLayoutDescriptor)
 {
     if (!CheckCallingPermission(
-        Elastos::Droid::Manifest::Permission::SET_KEYBOARD_LAYOUT,
+        Elastos::Droid::Manifest::permission::SET_KEYBOARD_LAYOUT,
         String("setCurrentKeyboardLayoutForInputDevice()"))) {
         Slogger::E(TAG, "Requires SET_KEYBOARD_LAYOUT permission");
         return E_SECURITY_EXCEPTION;
@@ -1348,7 +1348,7 @@ ECode CInputManagerService::AddKeyboardLayoutForInputDevice(
     /* [in] */ const String& keyboardLayoutDescriptor)
 {
     if (!CheckCallingPermission(
-        Elastos::Droid::Manifest::Permission::SET_KEYBOARD_LAYOUT,
+        Elastos::Droid::Manifest::permission::SET_KEYBOARD_LAYOUT,
         String("addKeyboardLayoutForInputDevice()"))) {
         Slogger::E(TAG, "Requires SET_KEYBOARD_LAYOUT permission");
         return E_SECURITY_EXCEPTION;
@@ -1381,7 +1381,7 @@ ECode CInputManagerService::RemoveKeyboardLayoutForInputDevice(
     /* [in] */ const String& keyboardLayoutDescriptor)
 {
     if (!CheckCallingPermission(
-        Elastos::Droid::Manifest::Permission::SET_KEYBOARD_LAYOUT,
+        Elastos::Droid::Manifest::permission::SET_KEYBOARD_LAYOUT,
         String("removeKeyboardLayoutForInputDevice()"))) {
         Slogger::E(TAG, "Requires SET_KEYBOARD_LAYOUT permission");
         return E_SECURITY_EXCEPTION;
@@ -1517,7 +1517,7 @@ ECode CInputManagerService::TryPointerSpeed(
     /* [in] */ Int32 speed)
 {
     if (!CheckCallingPermission(
-        Elastos::Droid::Manifest::Permission::SET_POINTER_SPEED,
+        Elastos::Droid::Manifest::permission::SET_POINTER_SPEED,
         String("tryPointerSpeed()"))) {
         Slogger::E(TAG, "Requires SET_POINTER_SPEED permission");
         return E_SECURITY_EXCEPTION;
@@ -1694,7 +1694,7 @@ ECode CInputManagerService::Dump(
     /* [in] */ const ArrayOf<String>& args)
 {
     Int32 result;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         pw->PrintStringln(
             String("Permission Denial: can't dump InputManager from from pid=")
@@ -1871,7 +1871,7 @@ Boolean CInputManagerService::CheckInjectEventsPermission(
 {
     Int32 value;
     FAIL_RETURN(mContext->CheckPermission(
-        Elastos::Droid::Manifest::Permission::INJECT_EVENTS,
+        Elastos::Droid::Manifest::permission::INJECT_EVENTS,
         injectorPid, injectorUid, &value));
     return value == IPackageManager::PERMISSION_GRANTED;
 }

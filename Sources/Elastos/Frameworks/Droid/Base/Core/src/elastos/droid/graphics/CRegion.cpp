@@ -53,10 +53,9 @@ ECode CRegion::constructor(
 }
 
 ECode CRegion::constructor(
-    /* [in] */ Int64 ni,
-    /* [in] */ Int32 dummy)
+    /* [in] */ Int64 ni)
 {
-    if ((SkRegion*)ni == NULL) {
+    if (ni == NULL) {
         //throw new RuntimeException();
         return E_RUNTIME_EXCEPTION;
     }

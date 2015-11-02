@@ -80,8 +80,8 @@ ECode Drawable::ConstantState::CanApplyTheme(
 
 AutoPtr<IRect> Init_ZERO_BOUNDS_RECT()
 {
-    AutoPtr<IRect> rect;
-    CRect::New((IRect**)&rect);
+    AutoPtr<CRect> rect;
+    CRect::NewByFriend((CRect**)&rect);
     return (IRect*)rect.Get();
 }
 

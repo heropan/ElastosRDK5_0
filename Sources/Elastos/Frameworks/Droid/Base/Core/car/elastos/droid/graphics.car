@@ -887,8 +887,7 @@ module
             [in] Int32 bottom);
 
         /*private*/ constructor(
-            [in] Int64 ni,
-            [in] Int32 dummy);
+            [in] Int64 ni);
 
         interface IRegion;
         interface IParcelable;

@@ -139,7 +139,7 @@ ECode CUpdateLockService::Dump(
     /* [in] */ ArrayOf<String> *args)
 {
     Int32 result;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder b("Permission Denial: can't dump update lock service from from pid=");
         b += Binder::GetCallingPid();

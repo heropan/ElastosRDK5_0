@@ -36,7 +36,7 @@ ECode CSerialService::constructor(
 ECode CSerialService::GetSerialPorts(
     /* [out, callee] */ ArrayOf<String>** serialPorts)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::SERIAL_PORT, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::SERIAL_PORT, String(NULL)));
 
     List<String> ports;
     Int32 length = mSerialPorts->GetLength();
@@ -68,7 +68,7 @@ ECode CSerialService::OpenSerialPort(
     VALIDATE_NOT_NULL(descriptor);
     *descriptor = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::SERIAL_PORT, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::SERIAL_PORT, String(NULL)));
     return NativeOpen(path, descriptor);
 }
 

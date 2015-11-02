@@ -835,12 +835,12 @@ ECode CTextServicesManagerService::SetCurrentSpellChecker(
     {
         AutoLock lock(mSpellCheckerMapLock);
         Int32 permission;
-        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &permission));
+        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS, &permission));
         if (permission != IPackageManager::PERMISSION_GRANTED) {
             /*throw new SecurityException(
                     "Requires permission "
-                    + Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS);*/
-            Slogger::D(TAG, "Requires permission Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS");
+                    + Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS);*/
+            Slogger::D(TAG, "Requires permission Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS");
             return E_SECURITY_EXCEPTION;
         }
 
@@ -860,12 +860,12 @@ ECode CTextServicesManagerService::SetCurrentSpellCheckerSubtype(
     {
         AutoLock lock(mSpellCheckerMapLock);
         Int32 permission;
-        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &permission));
+        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS, &permission));
         if (permission != IPackageManager::PERMISSION_GRANTED) {
             /*throw new SecurityException(
                     "Requires permission "
-                    + Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS);*/
-            Slogger::D(TAG, "Requires permission Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS");
+                    + Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS);*/
+            Slogger::D(TAG, "Requires permission Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS");
             return E_SECURITY_EXCEPTION;
         }
 
@@ -884,12 +884,12 @@ ECode CTextServicesManagerService::SetSpellCheckerEnabled(
     {
         AutoLock lock(mSpellCheckerMapLock);
         Int32 permission;
-        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &permission));
+        FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS, &permission));
         if (permission != IPackageManager::PERMISSION_GRANTED) {
             /*throw new SecurityException(
                     "Requires permission "
-                    + Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS);*/
-            Slogger::D(TAG, "Requires permission Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS");
+                    + Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS);*/
+            Slogger::D(TAG, "Requires permission Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS");
             return E_SECURITY_EXCEPTION;
         }
 
@@ -1248,8 +1248,8 @@ ECode CTextServicesManagerService::BuildSpellCheckerMapLocked(
             CComponentName::New(packageName, name, (IComponentName**)&compName);
             String strCompName;
             compName->ToString(&strCompName);
-            if (!Elastos::Droid::Manifest::Permission::BIND_TEXT_SERVICE.Equals(permission)) {
-                Slogger::W(TAG, "Skipping text service %s : it does not require the permission: %s ", strCompName.string(), Elastos::Droid::Manifest::Permission::BIND_TEXT_SERVICE.string());
+            if (!Elastos::Droid::Manifest::permission::BIND_TEXT_SERVICE.Equals(permission)) {
+                Slogger::W(TAG, "Skipping text service %s : it does not require the permission: %s ", strCompName.string(), Elastos::Droid::Manifest::permission::BIND_TEXT_SERVICE.string());
                 continue;
             }
             if (DBG) Slogger::D(TAG, "Add: %s", strCompName.string());
@@ -1310,7 +1310,7 @@ ECode CTextServicesManagerService::Dump(
 {
     Int32 result;
     assert(pw != NULL);
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, &result));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
         pw->PrintStringln(String("Permission Denial: can't dump TextServicesManagerService from from pid=")
                 + StringUtils::Int32ToString(Binder::GetCallingPid())

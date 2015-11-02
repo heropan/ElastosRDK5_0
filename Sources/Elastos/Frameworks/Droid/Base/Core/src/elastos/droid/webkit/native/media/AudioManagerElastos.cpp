@@ -542,13 +542,13 @@ void AudioManagerElastos::Init()
     // permissions. Both are required for full functionality.
     assert(0 && "TODO");
     // mHasModifyAudioSettingsPermission = HasPermission(
-    //         Manifest::Permission::MODIFY_AUDIO_SETTINGS);
+    //         Manifest::permission::MODIFY_AUDIO_SETTINGS);
     if (DEBUG && !mHasModifyAudioSettingsPermission) {
         Logd(String("MODIFY_AUDIO_SETTINGS permission is missing"));
     }
     assert(0 && "TODO");
     // mHasRecordAudioPermission = HasPermission(
-    //         Manifest::Permission::RECORD_AUDIO);
+    //         Manifest::permission::RECORD_AUDIO);
     if (DEBUG && !mHasRecordAudioPermission) {
         Logd(String("RECORD_AUDIO permission is missing"));
     }
@@ -922,7 +922,7 @@ void AudioManagerElastos::RegisterBluetoothIntentsIfNeeded()
     // Check if this process has the BLUETOOTH permission or not.
     assert(0 && "TODO");
     // mHasBluetoothPermission = HasPermission(
-    //         Manifest::Permission::BLUETOOTH);
+    //         Manifest::permission::BLUETOOTH);
 
     // Add a Bluetooth headset to the list of available devices if a BT
     // headset is detected and if we have the BLUETOOTH permission.

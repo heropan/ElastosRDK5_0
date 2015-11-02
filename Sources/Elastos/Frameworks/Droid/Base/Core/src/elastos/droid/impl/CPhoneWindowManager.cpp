@@ -2668,10 +2668,10 @@ ECode CPhoneWindowManager::CheckAddPermission(
         case IWindowManagerLayoutParams::TYPE_SYSTEM_ALERT:
         case IWindowManagerLayoutParams::TYPE_SYSTEM_ERROR:
         case IWindowManagerLayoutParams::TYPE_SYSTEM_OVERLAY:
-            permission = Elastos::Droid::Manifest::Permission::SYSTEM_ALERT_WINDOW;
+            permission = Elastos::Droid::Manifest::permission::SYSTEM_ALERT_WINDOW;
             break;
         default:
-            permission = Elastos::Droid::Manifest::Permission::INTERNAL_SYSTEM_WINDOW;
+            permission = Elastos::Droid::Manifest::permission::INTERNAL_SYSTEM_WINDOW;
             break;
     }
 
@@ -2741,7 +2741,7 @@ ECode CPhoneWindowManager::CheckShowToOwnerOnly(
     // Check if third party app has set window to system window type.
     Int32 tmp = 0;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::INTERNAL_SYSTEM_WINDOW,
+            Elastos::Droid::Manifest::permission::INTERNAL_SYSTEM_WINDOW,
             &tmp));
     *result = tmp != IPackageManager::PERMISSION_GRANTED;
 
@@ -3308,7 +3308,7 @@ ECode CPhoneWindowManager::PrepareAddWindowLw(
     switch (type) {
         case IWindowManagerLayoutParams::TYPE_STATUS_BAR:
             FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-               Elastos::Droid::Manifest::Permission::STATUS_BAR_SERVICE,
+               Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE,
                String("PhoneWindowManager")));
 
             // TODO: Need to handle the race condition of the status bar proc
@@ -3325,7 +3325,7 @@ ECode CPhoneWindowManager::PrepareAddWindowLw(
             break;
         case IWindowManagerLayoutParams::TYPE_NAVIGATION_BAR:
             FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                   Elastos::Droid::Manifest::Permission::STATUS_BAR_SERVICE,
+                   Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE,
                    String("PhoneWindowManager")));
             if (mNavigationBar != NULL) {
                 Boolean live = FALSE;
@@ -3338,17 +3338,17 @@ ECode CPhoneWindowManager::PrepareAddWindowLw(
             break;
         case IWindowManagerLayoutParams::TYPE_NAVIGATION_BAR_PANEL:
             FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                    Elastos::Droid::Manifest::Permission::STATUS_BAR_SERVICE,
+                    Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE,
                     String("PhoneWindowManager")));
             break;
         case IWindowManagerLayoutParams::TYPE_STATUS_BAR_PANEL:
             FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-               Elastos::Droid::Manifest::Permission::STATUS_BAR_SERVICE,
+               Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE,
                String("PhoneWindowManager")));
             break;
         case IWindowManagerLayoutParams::TYPE_STATUS_BAR_SUB_PANEL:
             FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                    Elastos::Droid::Manifest::Permission::STATUS_BAR_SERVICE,
+                    Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE,
                     String("PhoneWindowManager")));
             break;
         case IWindowManagerLayoutParams::TYPE_KEYGUARD:
@@ -6771,7 +6771,7 @@ ECode CPhoneWindowManager::UserActivity()
 ECode CPhoneWindowManager::LockNow(
     /* [in] */ IBundle* options)
 {
-    mContext->EnforceCallingOrSelfPermission(Manifest::Permission::DEVICE_POWER, String(NULL));
+    mContext->EnforceCallingOrSelfPermission(Manifest::permission::DEVICE_POWER, String(NULL));
     mHandler->RemoveCallbacks(mScreenLockTimeout);
 
     if (options != NULL) {

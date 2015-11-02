@@ -1906,7 +1906,7 @@ ECode CDevicePolicyManagerService::SetActiveAdmin(
     /* [in] */ Boolean refreshing,
     /* [in] */ Int32 userHandle)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_DEVICE_ADMIN, String(NULL)));
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
@@ -2031,7 +2031,7 @@ ECode CDevicePolicyManagerService::GetRemoveWarning(
     /* [in] */ Int32 userHandle)
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_DEVICE_ADMIN, String(NULL)));
 
     AutoLock lock(mLock);
 
@@ -2069,7 +2069,7 @@ ECode CDevicePolicyManagerService::RemoveActiveAdmin(
         return NOERROR;
     }
     if (admin->GetUid() != Binder::GetCallingUid()) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_DEVICE_ADMIN, String(NULL)));
     }
     Int64 ident = Binder::ClearCallingIdentity();
 
@@ -2112,7 +2112,7 @@ ECode CDevicePolicyManagerService::SetActivePasswordState(
     /* [in] */ Int32 userHandle)
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_DEVICE_ADMIN, String(NULL)));
 
     AutoPtr<DevicePolicyData> p = GetUserData(userHandle);
     ValidateQualityConstant(quality);
@@ -2150,7 +2150,7 @@ ECode CDevicePolicyManagerService::ReportFailedPasswordAttempt(
     /* [in] */ Int32 userHandle)
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_DEVICE_ADMIN, String(NULL)));
 
     AutoLock lock(mLock);
 
@@ -2173,7 +2173,7 @@ ECode CDevicePolicyManagerService::ReportSuccessfulPasswordAttempt(
     /* [in] */ Int32 userHandle)
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BIND_DEVICE_ADMIN, String(NULL)));
 
     AutoLock lock(mLock);
 
@@ -2272,7 +2272,7 @@ ECode CDevicePolicyManagerService::EnforceCrossUserPermission(
     if (userHandle == userId) return NOERROR;
 
     if (callingUid != IProcess::SYSTEM_UID && callingUid != 0) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
                 String("Must be system or have INTERACT_ACROSS_USERS_FULL permission")));
     }
 

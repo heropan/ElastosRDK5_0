@@ -774,11 +774,11 @@ ECode BroadcastQueue::ProcessNextBroadcast(
         AutoPtr<IActivityManagerHelper> helper;
         CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
         Int32 result;
-        if (helper->CheckUidPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS, appUid, &result)
+        if (helper->CheckUidPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, appUid, &result)
                 , result != IPackageManager::PERMISSION_GRANTED) {
             String str;
             component->FlattenToShortString(&str);
-            Slogger::W(TAG, "Permission Denial: Receiver %s requests FLAG_SINGLE_USER, but app does not hold Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS"
+            Slogger::W(TAG, "Permission Denial: Receiver %s requests FLAG_SINGLE_USER, but app does not hold Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS"
                     , str.string());
             skip = TRUE;
         }

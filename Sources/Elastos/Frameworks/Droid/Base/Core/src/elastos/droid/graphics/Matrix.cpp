@@ -76,12 +76,12 @@ ECode Matrix::Set(
 /** Returns true iff obj is a Matrix and its values equal our values.
  */
 ECode Matrix::Equals(
-    /* [in] */ IMatrix* obj,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEqual)
 {
     VALIDATE_NOT_NULL(isEqual);
     //if (obj == this) return true;     -- NaN value would mean matrix != itself
-    if (obj != NULL) {
+    if (IMatrix::Probe(obj) == NULL) {
         *isEqual = FALSE;
         return NOERROR;
     }
@@ -97,8 +97,7 @@ ECode Matrix::GetHashCode(
     // the matrix elements -- our equals() does an element-by-element comparison, and we
     // need to ensure that the hash code for two equal objects is the same.  We're not
     // really using this at the moment, so we take the easy way out.
-    return 44;
-    *hash = 44/*(Int32)mNativeInstance*/;
+    *hash = 44;
     return NOERROR;
 }
 
@@ -781,7 +780,6 @@ ECode Matrix::ToString(
     return NOERROR;
 }
 
-
 ECode Matrix::ToShortString(
     /* [out] */ String* str)
 {
@@ -1195,10 +1193,10 @@ Boolean Matrix::NativeSetPolyToPoly(
 }
 
 Boolean Matrix::NativeInvert(
-    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 matrixHandle,
     /* [in] */ Int64 inverseHandle)
 {
-    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(nObj);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
     SkMatrix* inverse = reinterpret_cast<SkMatrix*>(inverseHandle);
     return matrix->invert(inverse);
 }
@@ -1234,13 +1232,14 @@ void Matrix::NativeMapPoints(
 }
 
 Boolean Matrix::NativeMapRect(
-    /* [in] */ Int64 nObj,
+    /* [in] */ Int64 matrixHandle,
     /* [in] */ IRectF* dst,
     /* [in] */ IRectF* src)
 {
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
     SkRect dst_, src_;
     GraphicsNative::IRectF2SkRect(src, &src_);
-    Boolean rectStaysRect = ((SkMatrix*)nObj)->mapRect(&dst_, src_);
+    Boolean rectStaysRect = matrix->mapRect(&dst_, src_);
     GraphicsNative::SkRect2IRectF(dst_, dst);
     return rectStaysRect;
 }

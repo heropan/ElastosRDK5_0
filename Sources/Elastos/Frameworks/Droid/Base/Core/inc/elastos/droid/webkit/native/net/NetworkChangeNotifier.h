@@ -5,9 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
+// #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
+#include <elastos/utility/etl/List.h>
 // #include "elastos/droid/webkit/native/base/ObserverList.h" /* ObserverList cannot compile */
 
 // package org.chromium.net;

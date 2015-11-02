@@ -994,9 +994,9 @@ String CLocationManagerService::GetResolutionPermission(
 {
     switch (resolutionLevel) {
         case RESOLUTION_LEVEL_FINE:
-            return Elastos::Droid::Manifest::Permission::ACCESS_FINE_LOCATION;
+            return Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION;
         case RESOLUTION_LEVEL_COARSE:
-            return Elastos::Droid::Manifest::Permission::ACCESS_COARSE_LOCATION;
+            return Elastos::Droid::Manifest::permission::ACCESS_COARSE_LOCATION;
         default:
             return String(NULL);
     }
@@ -1007,13 +1007,13 @@ Int32 CLocationManagerService::GetAllowedResolutionLevel(
     /* [in] */ Int32 uid)
 {
     Int32 result;
-    FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::Permission::ACCESS_FINE_LOCATION,
+    FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION,
             pid, uid, &result));
     if (result == IPackageManager::PERMISSION_GRANTED) {
         return RESOLUTION_LEVEL_FINE;
     }
     else {
-        FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::Permission::ACCESS_COARSE_LOCATION,
+        FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_COARSE_LOCATION,
                 pid, uid, &result));
         if (result == IPackageManager::PERMISSION_GRANTED) {
             return RESOLUTION_LEVEL_COARSE;

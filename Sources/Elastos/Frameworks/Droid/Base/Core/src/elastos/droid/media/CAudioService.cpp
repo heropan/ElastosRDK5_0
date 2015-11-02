@@ -5063,7 +5063,7 @@ Boolean CAudioService::CheckAudioSettingsPermission(
     /* [in] */ const String& method)
 {
     Int32 tempValue;
-    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MODIFY_AUDIO_SETTINGS, &tempValue));
+    FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MODIFY_AUDIO_SETTINGS, &tempValue));
     if (tempValue == IPackageManager::PERMISSION_GRANTED) {
         return TRUE;
     }
@@ -6498,7 +6498,7 @@ ECode CAudioService::RegisterMediaButtonEventReceiverForCalls(
     /* [in] */ IComponentName* c)
 {
     Int32 tempValue;
-    FAIL_RETURN(mContext->CheckCallingPermission(Elastos::Droid::Manifest::Permission::MODIFY_PHONE_STATE, &tempValue));
+    FAIL_RETURN(mContext->CheckCallingPermission(Elastos::Droid::Manifest::permission::MODIFY_PHONE_STATE, &tempValue));
     if (tempValue != IPackageManager::PERMISSION_GRANTED) {
         Logger::E(TAG, "Invalid permissions to register media button receiver for calls");
         return NOERROR;
@@ -6515,7 +6515,7 @@ ECode CAudioService::RegisterMediaButtonEventReceiverForCalls(
 ECode CAudioService::UnregisterMediaButtonEventReceiverForCalls()
 {
     Int32 tempValue;
-    FAIL_RETURN(mContext->CheckCallingPermission(Elastos::Droid::Manifest::Permission::MODIFY_PHONE_STATE, &tempValue));
+    FAIL_RETURN(mContext->CheckCallingPermission(Elastos::Droid::Manifest::permission::MODIFY_PHONE_STATE, &tempValue));
     if (tempValue != IPackageManager::PERMISSION_GRANTED) {
         Logger::E(TAG, "Invalid permissions to unregister media button receiver for calls");
         return NOERROR;
@@ -7290,7 +7290,7 @@ ECode CAudioService::SetRingtonePlayer(
     /* [in] */ IIRingtonePlayer* player)
 {
     String text;
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::REMOTE_AUDIO_PLAYBACK, text));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::REMOTE_AUDIO_PLAYBACK, text));
 
     mRingtonePlayer = player;
 
@@ -7459,7 +7459,7 @@ ECode CAudioService::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     StringBuilder sb;
     sb += DumpFocusStack();

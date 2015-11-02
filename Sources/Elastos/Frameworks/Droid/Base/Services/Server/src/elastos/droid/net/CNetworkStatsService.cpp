@@ -522,19 +522,19 @@ void CNetworkStatsService::SystemReady()
     AutoPtr<IIntentFilter> connFilter;
     CIntentFilter::New(IConnectivityManager::CONNECTIVITY_ACTION_IMMEDIATE, (IIntentFilter**)&connFilter);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiver(mConnReceiver, connFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent);
+    mContext->RegisterReceiver(mConnReceiver, connFilter, Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent);
 
     // watch for tethering changes
     AutoPtr<IIntentFilter> tetherFilter;
     CIntentFilter::New(IConnectivityManager::ACTION_TETHER_STATE_CHANGED, (IIntentFilter**)&tetherFilter);
     AutoPtr<IIntent> intent2;
-    mContext->RegisterReceiver(mTetherReceiver, tetherFilter, Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent2);
+    mContext->RegisterReceiver(mTetherReceiver, tetherFilter, Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent2);
 
     // listen for periodic polling events
     AutoPtr<IIntentFilter> pollFilter;
     CIntentFilter::New(ACTION_NETWORK_STATS_POLL, (IIntentFilter**)&pollFilter);
     AutoPtr<IIntent> intent3;
-    mContext->RegisterReceiver(mPollReceiver, pollFilter, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY, mHandler, (IIntent**)&intent3);
+    mContext->RegisterReceiver(mPollReceiver, pollFilter, Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY, mHandler, (IIntent**)&intent3);
 
     // listen for uid removal to clean stats
     AutoPtr<IIntentFilter> removedFilter;
@@ -691,7 +691,7 @@ ECode CNetworkStatsService::OpenSession(
     VALIDATE_NOT_NULL(comple)
     *comple = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY, TAG))
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY, TAG))
     FAIL_RETURN(AssertBandwidthControlEnabled())
 
     // return an IBinder which holds strong references to any loaded stats
@@ -757,7 +757,7 @@ ECode CNetworkStatsService::GetNetworkTotalBytes(
     /* [out] */ Int64* totalBytes)
 {
     VALIDATE_NOT_NULL(totalBytes)
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY, TAG))
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY, TAG))
     FAIL_RETURN(AssertBandwidthControlEnabled())
     return InternalGetSummaryForNetwork(templ, start, end)->GetTotalBytes(totalBytes);
 }
@@ -770,7 +770,7 @@ ECode CNetworkStatsService::GetDataLayerSnapshotForUid(
     *datalayerOut = NULL;
 
     if (Binder::GetCallingUid() != uid) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::ACCESS_NETWORK_STATE, TAG))
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE, TAG))
     }
     FAIL_RETURN(AssertBandwidthControlEnabled())
 
@@ -820,7 +820,7 @@ ECode CNetworkStatsService::IncrementOperationCount(
     /* [in] */ Int32 operationCount)
 {
     if (Binder::GetCallingUid() != uid) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MODIFY_NETWORK_ACCOUNTING, TAG))
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MODIFY_NETWORK_ACCOUNTING, TAG))
     }
 
     if (operationCount < 0) {
@@ -850,7 +850,7 @@ ECode CNetworkStatsService::SetUidForeground(
     /* [in] */ Int32 uid,
     /* [in] */ Boolean uidForeground)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MODIFY_NETWORK_ACCOUNTING, TAG))
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MODIFY_NETWORK_ACCOUNTING, TAG))
 
     AutoLock lock(this);
     Int32 set = uidForeground ? INetworkStats::SET_FOREGROUND : INetworkStats::SET_DEFAULT;
@@ -870,7 +870,7 @@ ECode CNetworkStatsService::SetUidForeground(
 
 ECode CNetworkStatsService::ForceUpdate()
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY, TAG))
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY, TAG))
     FAIL_RETURN(AssertBandwidthControlEnabled())
 
     Int64 token = Binder::ClearCallingIdentity();
@@ -890,7 +890,7 @@ static Int64 MathUtilsConstrain(
 ECode CNetworkStatsService::AdvisePersistThreshold(
     /* [in] */ Int64 thresholdBytes)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MODIFY_NETWORK_ACCOUNTING, TAG))
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MODIFY_NETWORK_ACCOUNTING, TAG))
     FAIL_RETURN(AssertBandwidthControlEnabled())
 
     // clamp threshold into safe range
@@ -1181,7 +1181,7 @@ void CNetworkStatsService::PerformPollLocked(
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
     AutoPtr<IUserHandle> userHandle;
     userHandleHelper->GetALL((IUserHandle**)&userHandle);
-    mContext->SendBroadcastAsUser(updatedIntent, userHandle, Elastos::Droid::Manifest::Permission::READ_NETWORK_USAGE_HISTORY);
+    mContext->SendBroadcastAsUser(updatedIntent, userHandle, Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY);
 }
 
 void CNetworkStatsService::PerformSampleLocked()

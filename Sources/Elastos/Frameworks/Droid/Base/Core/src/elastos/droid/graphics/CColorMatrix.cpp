@@ -1,9 +1,10 @@
 
-#include "elastos/droid/graphics/CColorMatrix.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CColorMatrix.h"
+#include <elastos/utility/Arrays.h>
+#include <elastos/core/Math.h>
 
-using namespace Elastos::Core;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
@@ -56,9 +57,7 @@ ECode CColorMatrix::Reset()
 {
     ArrayOf<Float>& a = *mArray;
 
-    for (Int32 i = 19; i > 0; --i) {
-        a[i] = 0;
-    }
+    Arrays::Fill(&a, 0.f);
     a[0] = a[6] = a[12] = a[18] = 1;
     return NOERROR;
 }

@@ -4693,7 +4693,7 @@ _Exit_:
 
     AutoPtr<IIntent> intent;
     ctx->RegisterReceiver(mRunBackupReceiver, filter,
-            Elastos::Droid::Manifest::Permission::BACKUP, NULL, (IIntent**)&intent);
+            Elastos::Droid::Manifest::permission::BACKUP, NULL, (IIntent**)&intent);
 
     mRunInitReceiver = new RunInitializeReceiver(this);
     filter = NULL;
@@ -4704,7 +4704,7 @@ _Exit_:
 
     intent = NULL;
     ctx->RegisterReceiver(mRunInitReceiver, filter,
-            Elastos::Droid::Manifest::Permission::BACKUP, NULL, (IIntent**)&intent);
+            Elastos::Droid::Manifest::permission::BACKUP, NULL, (IIntent**)&intent);
 
     AutoPtr<IIntent> backupIntent;
     CIntent::New(RUN_BACKUP_ACTION, (IIntent**)&backupIntent);
@@ -4916,7 +4916,7 @@ ECode CBackupManagerService::ClearBackupData(
     // wipe of its own backed-up data.
     HashSet<String> apps;
     Int32 perm = 0;
-    FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::BACKUP,
                 Binder::GetCallingPid(),
                 Binder::GetCallingUid(), &perm));
 
@@ -5068,7 +5068,7 @@ ECode CBackupManagerService::RestoreAtInstall(
 ECode CBackupManagerService::SetBackupEnabled(
     /* [in] */ Boolean enable)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
             String("setBackupEnabled")));
 
     Slogger::I(TAG, "Backup enabled => %d", enable);
@@ -5134,7 +5134,7 @@ ECode CBackupManagerService::SetBackupEnabled(
 ECode CBackupManagerService::SetAutoRestore(
     /* [in] */ Boolean doAutoRestore)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
         String("setAutoRestore")));
 
     Slogger::I(TAG, "Auto restore => %d", doAutoRestore);
@@ -5157,7 +5157,7 @@ ECode CBackupManagerService::SetAutoRestore(
 ECode CBackupManagerService::SetBackupProvisioned(
     /* [in] */ Boolean available)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
             String("setBackupProvisioned")));
     /*
     * This is now a no-op; provisioning is simply the device's own setup state.
@@ -5171,7 +5171,7 @@ ECode CBackupManagerService::IsBackupEnabled(
 {
     VALIDATE_NOT_NULL(enabled);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::BACKUP, String("isBackupEnabled")));
+        Elastos::Droid::Manifest::permission::BACKUP, String("isBackupEnabled")));
     *enabled = mEnabled;    // no need to synchronize just to read it
     return NOERROR;
 }
@@ -5182,7 +5182,7 @@ ECode CBackupManagerService::SetBackupPassword(
         /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(String(Elastos::Droid::Manifest::Permission::BACKUP) ,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(String(Elastos::Droid::Manifest::permission::BACKUP) ,
             String("setBackupPassword")));
 
     // If the supplied pw doesn't hash to the the saved one, fail
@@ -5261,7 +5261,7 @@ ECode CBackupManagerService::HasBackupPassword(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(String(Elastos::Droid::Manifest::Permission::BACKUP), String("hasBackupPassword")));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(String(Elastos::Droid::Manifest::permission::BACKUP), String("hasBackupPassword")));
 
     // try {
     Int32 intResult;
@@ -5285,7 +5285,7 @@ ECode CBackupManagerService::HasBackupPassword(
 // that they have pending updates.
 ECode CBackupManagerService::BackupNow()
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
         String("backupNow")));
 
     if (DEBUG) Slogger::V(TAG, "Scheduling immediate backup pass");
@@ -5315,7 +5315,7 @@ ECode CBackupManagerService::FullBackup(
         /* [in] */ Boolean includeSystem,
         /* [in] */ ArrayOf<String>* pkgList)
 {
-    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("fullBackup")));
+    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("fullBackup")));
 
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
@@ -5397,7 +5397,7 @@ _Exit_:
 ECode CBackupManagerService::FullRestore(
     /* [in] */ IParcelFileDescriptor* fd)
 {
-    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("fullRestore")));
+    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("fullRestore")));
 
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
@@ -5479,7 +5479,7 @@ ECode CBackupManagerService::AcknowledgeFullBackupOrRestore(
 
     // TODO: possibly require not just this signature-only permission, but even
     // require that the specific designated confirmation-UI app uid is the caller?
-    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("acknowledgeFullBackupOrRestore")));
+    FAIL_RETURN(mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("acknowledgeFullBackupOrRestore")));
 
     Int64 oldId = Binder::ClearCallingIdentity();
     // try {
@@ -5547,7 +5547,7 @@ ECode CBackupManagerService::GetCurrentTransport(
     /* [out] */ String* transport)
 {
     VALIDATE_NOT_NULL(transport);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
             String("getCurrentTransport")));
     if (MORE_DEBUG) Slogger::V(TAG, "... getCurrentTransport() returning %s", mCurrentTransport.string());
 
@@ -5563,7 +5563,7 @@ ECode CBackupManagerService::ListAllTransports(
     *transports = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::BACKUP,
+        Elastos::Droid::Manifest::permission::BACKUP,
         String("listAllTransports")));
 
     if (mTransports.IsEmpty()) {
@@ -5602,7 +5602,7 @@ ECode CBackupManagerService::SelectBackupTransport(
 {
     VALIDATE_NOT_NULL(port);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::Permission::BACKUP,
+        Elastos::Droid::Manifest::permission::BACKUP,
         String("selectBackupTransport")));
     {
         AutoLock lock(mTransportsLock);
@@ -5635,7 +5635,7 @@ ECode CBackupManagerService::GetConfigurationIntent(
     /* [out] */ IIntent** result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("getConfigurationIntent")));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP, String("getConfigurationIntent")));
     {
         AutoLock lock(mTransportsLock);
         AutoPtr<IIBackupTransport> transport = mTransports[transportName];
@@ -5671,7 +5671,7 @@ ECode CBackupManagerService::GetDestinationString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP,
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::BACKUP,
             String("getDestinationString")));
 
     {
@@ -5738,7 +5738,7 @@ ECode CBackupManagerService::BeginRestoreSession(
 
     if (needPermission) {
         FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::BACKUP,
+                Elastos::Droid::Manifest::permission::BACKUP,
                 String("beginRestoreSession")));
     }
     else {
@@ -5804,7 +5804,7 @@ ECode CBackupManagerService::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String> args)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
@@ -7114,7 +7114,7 @@ AutoPtr< HashSet<String> > CBackupManagerService::DataChangedTargets(
     // If the caller does not hold the BACKUP permission, it can only request a
     // backup of its own data.
     Int32 res = 0;
-    mContext->CheckPermission(Elastos::Droid::Manifest::Permission::BACKUP, Binder::GetCallingPid(),
+    mContext->CheckPermission(Elastos::Droid::Manifest::permission::BACKUP, Binder::GetCallingPid(),
             Binder::GetCallingUid(), &res);
 
     AutoPtr< HashSet<String> > targets = new HashSet<String>();

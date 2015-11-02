@@ -558,19 +558,19 @@ ECode CStatusBarManagerService::SetCurrentUser(
 
 ECode CStatusBarManagerService::EnforceStatusBar()
 {
-    return mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::STATUS_BAR,
+    return mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::STATUS_BAR,
             String("StatusBarManagerService"));
 }
 
 ECode CStatusBarManagerService::EnforceExpandStatusBar()
 {
-    return mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::EXPAND_STATUS_BAR,
+    return mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::EXPAND_STATUS_BAR,
             String("StatusBarManagerService"));
 }
 
 ECode CStatusBarManagerService::EnforceStatusBarService()
 {
-    return mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::STATUS_BAR_SERVICE,
+    return mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::STATUS_BAR_SERVICE,
             String("StatusBarManagerService"));
 }
 

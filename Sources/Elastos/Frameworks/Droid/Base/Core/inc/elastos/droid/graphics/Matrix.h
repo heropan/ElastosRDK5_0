@@ -64,7 +64,7 @@ public:
     /** Returns true iff obj is a Matrix and its values equal our values.
      */
     virtual CARAPI Equals(
-        /* [in] */ IMatrix* obj,
+        /* [in] */ IInterface* obj,
         /* [out] */ Boolean* isEqual);
 
     virtual CARAPI GetHashCode(

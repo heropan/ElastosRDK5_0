@@ -3613,7 +3613,7 @@ ECode CInputMethodManagerService::WindowGainedFocus(
         if (!calledFromValidUser) {
             // Slog.w(TAG, "A background user is requesting window. Hiding IME.");
             // Slog.w(TAG, "If you want to interect with IME, you need "
-            //         + "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL");
+            //         + "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL");
             HideCurrentInputLocked(0, NULL);
             *result = NULL;
             return NOERROR;
@@ -4072,12 +4072,12 @@ ECode CInputMethodManagerService::SetInputMethodWithSubtypeId(
     if (token == NULL) {
         Int32 perm = 0;
         FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS,
+                Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS,
                 &perm));
         if (perm != IPackageManager::PERMISSION_GRANTED) {
             // throw new SecurityException(
             //         "Using NULL token requires permission "
-            //         + Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS);
+            //         + Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS);
             return E_SECURITY_EXCEPTION;
         }
     }
@@ -4285,7 +4285,7 @@ void CInputMethodManagerService::BuildInputMethodListLocked(
         AutoPtr<IComponentName> compName;
         CComponentName::New(pkgName, name, (IComponentName**)&compName);
         compName->ToString(&strCompName);
-        if (!Elastos::Droid::Manifest::Permission::BIND_INPUT_METHOD.Equals(permission)) {
+        if (!Elastos::Droid::Manifest::permission::BIND_INPUT_METHOD.Equals(permission)) {
             Slogger::W(TAG, "Skipping input method compName: %s:" \
                 " it does not require the permission android.permission.BIND_INPUT_METHOD",
                 strCompName.string());
@@ -4562,12 +4562,12 @@ ECode CInputMethodManagerService::SetInputMethodEnabled(
 
     Int32 perm = 0;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS,
+            Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS,
             &perm));
     if (perm != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException(
         //         "Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS);
+        //         + Elastos::Droid::Manifest::permission::WRITE_SECURE_SETTINGS);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -5151,7 +5151,7 @@ ECode CInputMethodManagerService::SetCurrentInputMethodSubtype(
 
 // @Override
 // protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP)
+//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP)
 //             != PackageManager.PERMISSION_GRANTED) {
 
 //         pw.println("Permission Denial: can't dump InputMethodManager from from pid="

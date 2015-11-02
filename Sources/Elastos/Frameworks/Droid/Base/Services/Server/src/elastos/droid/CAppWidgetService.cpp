@@ -603,7 +603,7 @@ ECode CAppWidgetService::Dump(
     /* [in] */ ArrayOf<String>* args)
 {
     assert(0);
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP, TAG));
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
 
     // Dump the state of all the app widget providers
     //synchronized (mAppWidgetServices)

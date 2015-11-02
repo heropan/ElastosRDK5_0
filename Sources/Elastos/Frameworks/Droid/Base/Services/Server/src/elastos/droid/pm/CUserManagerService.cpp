@@ -525,7 +525,7 @@ ECode CUserManagerService::CheckManageUsersPermission(
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
     Int32 val;
     amHelper->CheckComponentPermission(
-                    Elastos::Droid::Manifest::Permission::MANAGE_USERS,
+                    Elastos::Droid::Manifest::permission::MANAGE_USERS,
                     uid, -1, TRUE, &val);
     if (uid != IProcess::SYSTEM_UID && uid != 0
             && val != IPackageManager::PERMISSION_GRANTED) {
@@ -1028,7 +1028,7 @@ ECode CUserManagerService::CreateUser(
             userInfo->GetId(&id);
             addedIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, id);
             mContext->SendBroadcastAsUser(addedIntent, UserHandle::ALL,
-                    Elastos::Droid::Manifest::Permission::MANAGE_USERS);
+                    Elastos::Droid::Manifest::permission::MANAGE_USERS);
         }
     // } finally {
     Binder::RestoreCallingIdentity(ident);
@@ -1091,7 +1091,7 @@ void CUserManagerService::FinishRemoveUser(
     addedIntent->PutExtra(IIntent::EXTRA_USER_HANDLE, userHandle);
     AutoPtr<IBroadcastReceiver> receiver = new FinishBroadcastReceiver(this, userHandle);
     mContext->SendOrderedBroadcastAsUser(addedIntent, UserHandle::ALL,
-            Elastos::Droid::Manifest::Permission::MANAGE_USERS, receiver,
+            Elastos::Droid::Manifest::permission::MANAGE_USERS, receiver,
             NULL, IActivity::RESULT_OK, String(NULL), NULL);
     // } finally {
     Binder::RestoreCallingIdentity(ident);
@@ -1263,13 +1263,13 @@ Int32 CUserManagerService::GetNextAvailableIdLocked()
 
 // @Override
 // protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::DUMP)
+//     if (mContext.checkCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP)
 //             != PackageManager.PERMISSION_GRANTED) {
 //         pw.println("Permission Denial: can't dump UserManager from from pid="
 //                 + Binder.getCallingPid()
 //                 + ", uid=" + Binder.getCallingUid()
 //                 + " without permission "
-//                 + Elastos::Droid::Manifest::Permission::DUMP);
+//                 + Elastos::Droid::Manifest::permission::DUMP);
 //         return;
 //     }
 

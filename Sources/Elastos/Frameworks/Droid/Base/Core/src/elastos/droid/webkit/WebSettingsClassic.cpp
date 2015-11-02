@@ -327,7 +327,7 @@ WebSettingsClassic::WebSettingsClassic(
 
     Int32 permission;
     mContext->CheckPermission(
-            Elastos::Droid::Manifest::Permission::INTERNET, Process::MyPid(),
+            Elastos::Droid::Manifest::permission::INTERNET, Process::MyPid(),
             Process::MyUid(), &permission);
     mBlockNetworkLoads = permission != IPackageManager::PERMISSION_GRANTED;
 
@@ -1335,7 +1335,7 @@ ECode WebSettingsClassic::VerifyNetworkAccess()
 {
     if (!mBlockNetworkLoads) {
         Int32 permission;
-        mContext->CheckPermission(Elastos::Droid::Manifest::Permission::INTERNET,
+        mContext->CheckPermission(Elastos::Droid::Manifest::permission::INTERNET,
                 Process::MyPid(), Process::MyUid(), &permission);
         if (permission  != IPackageManager::PERMISSION_GRANTED) {
             //throw new SecurityException

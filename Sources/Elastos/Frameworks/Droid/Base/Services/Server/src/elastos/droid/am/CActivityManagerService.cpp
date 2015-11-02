@@ -2287,7 +2287,7 @@ ECode CActivityManagerService::StartProcessLocked(
             if (env->IsExternalStorageEmulated(&isEmulated), isEmulated) {
                 Int32 res;
                 pm->CheckPermission(
-                        Elastos::Droid::Manifest::Permission::ACCESS_ALL_EXTERNAL_STORAGE,
+                        Elastos::Droid::Manifest::permission::ACCESS_ALL_EXTERNAL_STORAGE,
                         packageName, &res);
                 if (res == IPackageManager::PERMISSION_GRANTED) {
                     mountExternal = IZygote::MOUNT_EXTERNAL_MULTIUSER_ALL;
@@ -2808,7 +2808,7 @@ ECode CActivityManagerService::GetFrontActivityScreenCompatMode(
 ECode CActivityManagerService::SetFrontActivityScreenCompatMode(
     /* [in] */ Int32 mode)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_SCREEN_COMPATIBILITY,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_SCREEN_COMPATIBILITY,
             String("setFrontActivityScreenCompatMode")));
     {
         AutoLock lock(mLock);
@@ -2837,7 +2837,7 @@ ECode CActivityManagerService::SetPackageScreenCompatMode(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 mode)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_SCREEN_COMPATIBILITY,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_SCREEN_COMPATIBILITY,
             String("setPackageScreenCompatMode")));
     {
         AutoLock lock(mLock);
@@ -2864,7 +2864,7 @@ ECode CActivityManagerService::SetPackageAskScreenCompat(
     /* [in] */ const String& packageName,
     /* [in] */ Boolean ask)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_SCREEN_COMPATIBILITY,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_SCREEN_COMPATIBILITY,
             String("setPackageAskScreenCompat")));
     {
         AutoLock lock(mLock);
@@ -3457,9 +3457,9 @@ ECode CActivityManagerService::FinishActivity(
 
 ECode CActivityManagerService::FinishHeavyWeightApp()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::FORCE_STOP_PACKAGES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES)
             != IPackageManager::PERMISSION_GRANTED) {
-        Slogger::W(TAG, "Permission Denial: finishHeavyWeightApp() from pid=%d, uid=%d requires Elastos::Droid::Manifest::Permission::FORCE_STOP_PACKAGES",
+        Slogger::W(TAG, "Permission Denial: finishHeavyWeightApp() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES",
                 Binder::GetCallingPid(), Binder::GetCallingUid());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -3501,9 +3501,9 @@ ECode CActivityManagerService::CrashApplication(
     /* [in] */ const String& packageName,
     /* [in] */ const String& message)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::FORCE_STOP_PACKAGES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES)
             != IPackageManager::PERMISSION_GRANTED) {
-        Slogger::W(TAG, "Permission Denial: crashApplication() from pid=%d, uid=%d requires Elastos::Droid::Manifest::Permission::FORCE_STOP_PACKAGES",
+        Slogger::W(TAG, "Permission Denial: crashApplication() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES",
                 Binder::GetCallingPid(), Binder::GetCallingUid());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -4323,14 +4323,14 @@ ECode CActivityManagerService::ClearApplicationUserData(
             return FALSE;
         }
         if (uid == pkgUid || CheckComponentPermission(
-               Elastos::Droid::Manifest::Permission::CLEAR_APP_USER_DATA,
+               Elastos::Droid::Manifest::permission::CLEAR_APP_USER_DATA,
                pid, uid, -1, TRUE)
                == IPackageManager::PERMISSION_GRANTED) {
             ForceStopPackageLocked(packageName, pkgUid);
         } else {
             Binder::RestoreCallingIdentity(callingId);
                // throw new SecurityException(pid+" does not have permission:"+
-               //         Elastos::Droid::Manifest::Permission::CLEAR_APP_USER_DATA+" to clear data" +
+               //         Elastos::Droid::Manifest::permission::CLEAR_APP_USER_DATA+" to clear data" +
                //                 "for process:"+packageName);
             return E_SECURITY_EXCEPTION;
         }
@@ -4362,11 +4362,11 @@ ECode CActivityManagerService::KillBackgroundProcesses(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::KILL_BACKGROUND_PROCESSES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES)
             != IPackageManager::PERMISSION_GRANTED &&
-            CheckCallingPermission(Elastos::Droid::Manifest::Permission::RESTART_PACKAGES)
+            CheckCallingPermission(Elastos::Droid::Manifest::permission::RESTART_PACKAGES)
                 != IPackageManager::PERMISSION_GRANTED) {
-        Slogger::W(TAG, "Permission Denial: killBackgroundProcesses() from pid=%d, uid=%d requires Elastos::Droid::Manifest::Permission::KILL_BACKGROUND_PROCESSES",
+        Slogger::W(TAG, "Permission Denial: killBackgroundProcesses() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES",
                 Binder::GetCallingPid(), Binder::GetCallingUid());
        // throw new SecurityException(msg);
        return E_SECURITY_EXCEPTION;
@@ -4402,14 +4402,14 @@ ECode CActivityManagerService::KillBackgroundProcesses(
 
 ECode CActivityManagerService::KillAllBackgroundProcesses()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::KILL_BACKGROUND_PROCESSES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: killAllBackgroundProcesses() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::KILL_BACKGROUND_PROCESSES";
+        msg += "Elastos::Droid::Manifest::permission::KILL_BACKGROUND_PROCESSES";
         Slogger::W(TAG, msg.ToString().string());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -4457,14 +4457,14 @@ ECode CActivityManagerService::ForceStopPackage(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 userId)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::FORCE_STOP_PACKAGES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: forceStopPackage() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::FORCE_STOP_PACKAGES";
+        msg += "Elastos::Droid::Manifest::permission::FORCE_STOP_PACKAGES";
         Slogger::W(TAG, msg.ToString().string());
         // throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -5551,7 +5551,7 @@ ECode CActivityManagerService::FinishBooting()
                     intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
                     BroadcastIntentLocked(NULL, nullStr, intent,
                         nullStr, NULL, 0, nullStr, NULL,
-                        Elastos::Droid::Manifest::Permission::RECEIVE_BOOT_COMPLETED,
+                        Elastos::Droid::Manifest::permission::RECEIVE_BOOT_COMPLETED,
                         FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &ival);
                 }
             }
@@ -5606,7 +5606,7 @@ ECode CActivityManagerService::SendBootFastComplete()
                     Int32 result;
                     FAIL_RETURN(BroadcastIntentLocked(NULL, nullStr, intent,
                            nullStr, NULL, 0, nullStr, NULL,
-                           Elastos::Droid::Manifest::Permission::RECEIVE_BOOT_COMPLETED,
+                           Elastos::Droid::Manifest::permission::RECEIVE_BOOT_COMPLETED,
                            FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &result));
                     Slogger::D(TAG,"real send boot complete");
                 //}
@@ -6154,7 +6154,7 @@ ECode CActivityManagerService::GetIntentForIntentSender(
 ECode CActivityManagerService::SetProcessLimit(
     /* [in] */ Int32 max)
 {
-    ECode ec = EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_PROCESS_LIMIT,
+    ECode ec = EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_PROCESS_LIMIT,
             String("setProcessLimit()"));
     {
         AutoLock lock(mLock);
@@ -6203,7 +6203,7 @@ ECode CActivityManagerService::SetProcessForeground(
     /* [in] */ Int32 pid,
     /* [in] */ Boolean isForeground)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_PROCESS_LIMIT,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_PROCESS_LIMIT,
             String("setProcessForeground()")));
     {
         AutoLock lock(mLock);
@@ -7223,7 +7223,7 @@ ECode CActivityManagerService::GetTasks(
         if (localLOGV) Slogger::V(
            TAG, "getTasks: max=%d, flags=%d, receiver=%p", maxNum, flags, receiver);
 
-        if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::GET_TASKS)
+        if (CheckCallingPermission(Elastos::Droid::Manifest::permission::GET_TASKS)
                 != IPackageManager::PERMISSION_GRANTED) {
             if (receiver != NULL) {
                 // If the caller wants to wait for pending thumbnails,
@@ -7233,7 +7233,7 @@ ECode CActivityManagerService::GetTasks(
                 // } catch (RemoteException ex) {
                 // }
             }
-            Slogger::W(TAG, "Permission Denial: getTasks() from pid=%d, uid=%d requires Elastos::Droid::Manifest::Permission::GET_TASKS",
+            Slogger::W(TAG, "Permission Denial: getTasks() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::GET_TASKS",
                     Binder::GetCallingPid(), Binder::GetCallingUid());
             // throw new SecurityException(msg);
             return E_SECURITY_EXCEPTION;
@@ -7382,10 +7382,10 @@ ECode CActivityManagerService::GetRecentTasks(
             FALSE, TRUE, String("GetRecentTasks"), String(NULL), &userId));
 
     AutoLock lock(mLock);
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::GET_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::GET_TASKS,
             String("GetRecentTasks()")));
     Boolean detailed = CheckCallingPermission(
-            Elastos::Droid::Manifest::Permission::GET_DETAILED_TASKS)
+            Elastos::Droid::Manifest::permission::GET_DETAILED_TASKS)
             == IPackageManager::PERMISSION_GRANTED;
 
     AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
@@ -7475,7 +7475,7 @@ ECode CActivityManagerService::GetTaskThumbnails(
 
     {
         AutoLock lock(mLock);
-        FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::READ_FRAME_BUFFER,
+        FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::READ_FRAME_BUFFER,
                 String("getTaskThumbnails()")));
         AutoPtr<TaskRecord> tr = TaskForIdLocked(id);
         if (tr != NULL) {
@@ -7494,7 +7494,7 @@ ECode CActivityManagerService::GetTaskTopThumbnail(
  {
     SLOGGERD(TAG, "CActivityManagerService::GetTaskTopThumbnail");
     AutoLock lock(mLock);
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::READ_FRAME_BUFFER,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::READ_FRAME_BUFFER,
             String("GetTaskTopThumbnail()")));
     AutoPtr<TaskRecord> tr = TaskForIdLocked(id);
     if (tr != NULL) {
@@ -7516,7 +7516,7 @@ ECode CActivityManagerService::RemoveSubTask(
     VALIDATE_NOT_NULL(removed);
 
     AutoLock lock(mLock);
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::REMOVE_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REMOVE_TASKS,
             String("removeSubTask()")));
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
@@ -7597,7 +7597,7 @@ ECode CActivityManagerService::RemoveTask(
 
     {
         AutoLock lock(mLock);
-        FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::REMOVE_TASKS,
+        FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REMOVE_TASKS,
                 String("removeTask()")));
         Int64 ident = Binder::ClearCallingIdentity();
         // try {
@@ -7696,7 +7696,7 @@ ECode CActivityManagerService::MoveTaskToFront(
     /* [in] */ Int32 flags,
     /* [in] */ IBundle* options)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::REORDER_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REORDER_TASKS,
             String("moveTaskToFront()")));
 
     AutoLock lock(mLock);
@@ -7752,7 +7752,7 @@ ECode CActivityManagerService::MoveTaskToFront(
 ECode CActivityManagerService::MoveTaskToBack(
     /* [in] */ Int32 task)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::REORDER_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REORDER_TASKS,
            String("moveTaskToBack()")));
 
     AutoLock lock(mLock);
@@ -7805,7 +7805,7 @@ ECode CActivityManagerService::MoveActivityTaskToBack(
 ECode CActivityManagerService::MoveTaskBackwards(
     /* [in] */ Int32 task)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::REORDER_TASKS,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::REORDER_TASKS,
             String("moveTaskBackwards()")));
 
     AutoLock lock(mLock);
@@ -8545,7 +8545,7 @@ ECode CActivityManagerService::GetContentProviderExternal(
     VALIDATE_NOT_NULL(providerHolder);
     *providerHolder = NULL;
 
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
             String("Do not have permission in call getContentProviderExternal()")));
     FAIL_RETURN(HandleIncomingUser(Binder::GetCallingPid(), Binder::GetCallingUid(), userId,
             FALSE, TRUE, String("getContentProvider"), String(NULL), &userId));
@@ -8595,7 +8595,7 @@ ECode CActivityManagerService::RemoveContentProviderExternal(
     /* [in] */ const String& name,
     /* [in] */ IBinder* token)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::ACCESS_CONTENT_PROVIDERS_EXTERNALLY,
            String("Do not have permission in call removeContentProviderExternal()")));
     return RemoveContentProviderExternalUnchecked(name, token, UserHandle::GetCallingUserId());
 }
@@ -9078,7 +9078,7 @@ AutoPtr<ProcessRecord> CActivityManagerService::AddAppLocked(
 
 ECode CActivityManagerService::UnhandledBack()
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::FORCE_BACK,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::FORCE_BACK,
            String("unhandledBack()")));
 
     AutoLock lock(mLock);
@@ -9152,10 +9152,10 @@ Boolean CActivityManagerService::IsSleeping()
 
 ECode CActivityManagerService::GoingToSleep()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::DEVICE_POWER)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::DEVICE_POWER);
+        //         + Elastos::Droid::Manifest::permission::DEVICE_POWER);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9183,10 +9183,10 @@ ECode CActivityManagerService::Shutdown(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::SHUTDOWN)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SHUTDOWN)
           != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::SHUTDOWN);
+        //         + Elastos::Droid::Manifest::permission::SHUTDOWN);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9267,8 +9267,8 @@ ECode CActivityManagerService::ComeOutOfSleepIfNeededLocked()
 
 ECode CActivityManagerService::WakingUp()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::DEVICE_POWER) != IPackageManager::PERMISSION_GRANTED) {
-        //throw new SecurityException("Requires permission " + Elastos::Droid::Manifest::Permission::DEVICE_POWER);
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER) != IPackageManager::PERMISSION_GRANTED) {
+        //throw new SecurityException("Requires permission " + Elastos::Droid::Manifest::permission::DEVICE_POWER);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9290,10 +9290,10 @@ ECode CActivityManagerService::UpdateEventDispatchingLocked()
 ECode CActivityManagerService::SetLockScreenShown(
     /* [in] */ Boolean shown)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::DEVICE_POWER)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::DEVICE_POWER);
+        //         + Elastos::Droid::Manifest::permission::DEVICE_POWER);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9305,10 +9305,10 @@ ECode CActivityManagerService::SetLockScreenShown(
 
 ECode CActivityManagerService::StopAppSwitches()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::STOP_APP_SWITCHES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES)
            != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::STOP_APP_SWITCHES);
+        //         + Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9324,10 +9324,10 @@ ECode CActivityManagerService::StopAppSwitches()
 
 ECode CActivityManagerService::ResumeAppSwitches()
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::STOP_APP_SWITCHES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES)
           != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //        + Elastos::Droid::Manifest::Permission::STOP_APP_SWITCHES);
+        //        + Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9349,7 +9349,7 @@ Boolean CActivityManagerService::CheckAppSwitchAllowedLocked(
     }
 
     Int32 perm = CheckComponentPermission(
-            Elastos::Droid::Manifest::Permission::STOP_APP_SWITCHES, callingPid, callingUid, -1, TRUE);
+            Elastos::Droid::Manifest::permission::STOP_APP_SWITCHES, callingPid, callingUid, -1, TRUE);
     if (perm == IPackageManager::PERMISSION_GRANTED) {
         return TRUE;
     }
@@ -9363,7 +9363,7 @@ ECode CActivityManagerService::SetDebugApp(
     /* [in] */ Boolean waitForDebugger,
     /* [in] */ Boolean persistent)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_DEBUG_APP,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_DEBUG_APP,
            String("setDebugApp()")));
 
     // Note that this is not really thread safe if there are multiple
@@ -9462,7 +9462,7 @@ ECode CActivityManagerService::SetProfileApp(
 ECode CActivityManagerService::SetAlwaysFinish(
     /* [in] */ Boolean enabled)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_ALWAYS_FINISH,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ALWAYS_FINISH,
         String("setAlwaysFinish()")));
 
     AutoPtr<ISettingsGlobal> settingsGlobal;
@@ -9482,7 +9482,7 @@ ECode CActivityManagerService::SetAlwaysFinish(
 ECode CActivityManagerService::SetActivityController(
     /* [in] */ IActivityController* controller)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_ACTIVITY_WATCHER,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER,
             String("SetActivityController()")));
 
     AutoLock lock(mLock);
@@ -9520,10 +9520,10 @@ ECode CActivityManagerService::InputDispatchingTimedOut(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::FILTER_EVENTS)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::FILTER_EVENTS)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::FILTER_EVENTS);
+        //         + Elastos::Droid::Manifest::permission::FILTER_EVENTS);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -9585,7 +9585,7 @@ ECode CActivityManagerService::TestIsSystemReady(
 ECode CActivityManagerService::RegisterProcessObserver(
     /* [in] */ IProcessObserver* observer)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::SET_ACTIVITY_WATCHER,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER,
             String("registerProcessObserver()")));
     AutoLock lock(mLock);
     Boolean registed;
@@ -10285,7 +10285,7 @@ ECode CActivityManagerService::SystemReady(
         // AutoPtr<IIntentReceiver> receiver = new SystemBroadcastReceiver();
         BroadcastIntentLocked(NULL, String(NULL), newIntent,
                 String(NULL), receiver, 0, String(NULL), NULL,
-                Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS,
+                Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS,
                 TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
         // } finally {
         Binder::RestoreCallingIdentity(ident);
@@ -11202,7 +11202,7 @@ ECode CActivityManagerService::GetProcessesInErrorState(
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
     Int32 permission;
     helper->CheckUidPermission(
-           Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+           Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
            Binder::GetCallingUid(), &permission);
     const Boolean allUsers = permission == IPackageManager::PERMISSION_GRANTED;
     Int32 userId = UserHandle::GetUserId(Binder::GetCallingUid());
@@ -11338,7 +11338,7 @@ ECode CActivityManagerService::GetRunningAppProcesses(
     AutoPtr<IActivityManagerHelper> helper;
     CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
     Int32 permission;
-    FAIL_RETURN(helper->CheckUidPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL,
+    FAIL_RETURN(helper->CheckUidPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
             Binder::GetCallingUid(), &permission));
     Boolean allUsers = permission == IPackageManager::PERMISSION_GRANTED;
     Int32 userId = UserHandle::GetUserId(Binder::GetCallingUid());
@@ -11459,14 +11459,14 @@ ECode CActivityManagerService::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::DUMP)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::DUMP)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder sb("Permission Denial: can't dump ActivityManager from from pid=");
         sb += Binder::GetCallingPid();
         sb += ", uid=";
         sb += Binder::GetCallingUid();
         sb += " without permission ";
-        sb += "Elastos::Droid::Manifest::Permission::DUMP";
+        sb += "Elastos::Droid::Manifest::permission::DUMP";
         pw->PrintStringln(sb.ToString());
         return NOERROR;
     }
@@ -13886,8 +13886,8 @@ ECode CActivityManagerService::HandleIncomingUser(
     Int32 callingUserId = UserHandle::GetUserId(callingUid);
     if (callingUserId != userId) {
         if (callingUid != 0 && callingUid != IProcess::SYSTEM_UID) {
-            String INTERACT_ACROSS_USERS = String("android.permission.INTERACT_ACROSS_USERS");//TODO Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS;
-            String INTERACT_ACROSS_USERS_FULL = String("android.permission.INTERACT_ACROSS_USERS_FULL");//TODO Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL;
+            String INTERACT_ACROSS_USERS = String("android.permission.INTERACT_ACROSS_USERS");//TODO Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS;
+            String INTERACT_ACROSS_USERS_FULL = String("android.permission.INTERACT_ACROSS_USERS_FULL");//TODO Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL;
             if ((requireFull || CheckComponentPermission(INTERACT_ACROSS_USERS,
                     callingPid, callingUid, -1, TRUE) != IPackageManager::PERMISSION_GRANTED)
                 && CheckComponentPermission(INTERACT_ACROSS_USERS_FULL,
@@ -13960,7 +13960,7 @@ Boolean CActivityManagerService::IsSingleton(
             AutoPtr<IActivityManagerHelper> helper;
             CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
             Int32 permission;
-            helper->CheckUidPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS, aUid, &permission);
+            helper->CheckUidPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, aUid, &permission);
             if (permission != IPackageManager::PERMISSION_GRANTED) {
                 AutoPtr<IComponentName> comp;
                 CComponentName::New(pkgName, className, (IComponentName**)&comp);
@@ -13969,7 +13969,7 @@ Boolean CActivityManagerService::IsSingleton(
                 StringBuilder msg("Permission Denial: Component ");
                 msg += compString;
                 msg += " requests FLAG_SINGLE_USER, but app does not hold ";
-                msg += "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS";
+                msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS";
                 Slogger::W(TAG, msg.ToString().string());
                 // throw new SecurityException(msg);
                 return FALSE;
@@ -14113,7 +14113,7 @@ ECode CActivityManagerService::BindBackupAgent(
     VALIDATE_NOT_NULL(result);
 
     if (DEBUG_BACKUP) Slogger::V(TAG, "bindBackupAgent: app=%p mode=%d", app, backupMode);
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("bindBackupAgent")));
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("bindBackupAgent")));
 
     {
         AutoLock lock(mLock);
@@ -14191,7 +14191,7 @@ ECode CActivityManagerService::BindBackupAgent(
 ECode CActivityManagerService::ClearPendingBackup()
 {
     if (DEBUG_BACKUP) Slogger::V(TAG, "clearPendingBackup");
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("clearPendingBackup")));
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::BACKUP, String("clearPendingBackup")));
 
     AutoLock lock(mLock);
     mBackupTarget = NULL;
@@ -14826,7 +14826,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
             || action.Equals(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE)
             || uidRemoved) {
         if (CheckComponentPermission(
-                    Elastos::Droid::Manifest::Permission::BROADCAST_PACKAGE_REMOVED,
+                    Elastos::Droid::Manifest::permission::BROADCAST_PACKAGE_REMOVED,
                     callingPid, callingUid, -1, TRUE)
                 == IPackageManager::PERMISSION_GRANTED) {
             if (uidRemoved) {
@@ -14883,7 +14883,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
         else {
             String action;
             intent->GetAction(&action);
-            Slogger::W(TAG, "Permission Denial: %s broadcast from %s (pid=%d, uid=%d) requires Elastos::Droid::Manifest::Permission::BROADCAST_PACKAGE_REMOVED"
+            Slogger::W(TAG, "Permission Denial: %s broadcast from %s (pid=%d, uid=%d) requires Elastos::Droid::Manifest::permission::BROADCAST_PACKAGE_REMOVED"
                     , action.string(), callerPackage.string(), callingPid, callingUid);
             return E_SECURITY_EXCEPTION;
         }
@@ -14928,10 +14928,10 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     // Add to the sticky list if requested.
     if (sticky) {
         Int32 permission;
-        CheckPermission(Elastos::Droid::Manifest::Permission::BROADCAST_STICKY,
+        CheckPermission(Elastos::Droid::Manifest::permission::BROADCAST_STICKY,
                         callingPid, callingUid, &permission);
         if (permission != IPackageManager::PERMISSION_GRANTED) {
-            Slogger::W(TAG, "Permission Denial: broadcastIntent() requesting a sticky broadcast from pid=%d, uid=%d requires Elastos::Droid::Manifest::Permission::BROADCAST_STICKY"
+            Slogger::W(TAG, "Permission Denial: broadcastIntent() requesting a sticky broadcast from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::BROADCAST_STICKY"
                     , callingPid, callingUid);
             return E_SECURITY_EXCEPTION;
         }
@@ -15325,12 +15325,12 @@ ECode CActivityManagerService::UnbroadcastIntent(
 
     {
         AutoLock lock(mLock);
-        if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::BROADCAST_STICKY)
+        if (CheckCallingPermission(Elastos::Droid::Manifest::permission::BROADCAST_STICKY)
                 != IPackageManager::PERMISSION_GRANTED) {
             // String msg = "Permission Denial: unbroadcastIntent() from pid="
             //         + Binder::GetCallingPid()
             //         + ", uid=" + Binder::GetCallingUid()
-            //         + " requires " + Elastos::Droid::Manifest::Permission::BROADCAST_STICKY;
+            //         + " requires " + Elastos::Droid::Manifest::permission::BROADCAST_STICKY;
             // Slogger::W(TAG, msg);
             // throw new SecurityException(msg);
             return E_SECURITY_EXCEPTION;
@@ -15655,9 +15655,9 @@ ECode CActivityManagerService::GetConfiguration(
 ECode CActivityManagerService::UpdatePersistentConfiguration(
     /* [in] */ IConfiguration* values)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::CHANGE_CONFIGURATION,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::CHANGE_CONFIGURATION,
             String("updateConfiguration()")));
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::WRITE_SETTINGS,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::WRITE_SETTINGS,
             String("updateConfiguration()")));
     if (values == NULL) {
         // throw new NullPointerException("Configuration must not be null");
@@ -15676,7 +15676,7 @@ ECode CActivityManagerService::UpdatePersistentConfiguration(
 ECode CActivityManagerService::UpdateConfiguration(
     /* [in] */ IConfiguration* _values)
 {
-    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::Permission::CHANGE_CONFIGURATION,
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::CHANGE_CONFIGURATION,
            String("UpdateConfiguration()")));
 
     AutoPtr<IConfiguration> values = _values;
@@ -17541,10 +17541,10 @@ ECode CActivityManagerService::SignalPersistentProcesses(
     }
 
     AutoLock lock(mLock);
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::SIGNAL_PERSISTENT_PROCESSES)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SIGNAL_PERSISTENT_PROCESSES)
             != IPackageManager::PERMISSION_GRANTED) {
         // throw new SecurityException("Requires permission "
-        //         + Elastos::Droid::Manifest::Permission::SIGNAL_PERSISTENT_PROCESSES);
+        //         + Elastos::Droid::Manifest::permission::SIGNAL_PERSISTENT_PROCESSES);
         return E_SECURITY_EXCEPTION;
     }
 
@@ -17614,10 +17614,10 @@ ECode CActivityManagerService::ProfileControl(
         AutoLock lock(mLock);
         // note: hijacking SET_ACTIVITY_WATCHER, but should be changed to
         // its own permission.
-        if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::SET_ACTIVITY_WATCHER)
+        if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER)
                 != IPackageManager::PERMISSION_GRANTED) {
             // throw new SecurityException("Requires permission "
-            //         + Elastos::Droid::Manifest::Permission::SET_ACTIVITY_WATCHER);
+            //         + Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER);
             if (fd != NULL) {
                 fd->Close();
             }
@@ -17756,10 +17756,10 @@ ECode CActivityManagerService::DumpHeap(
             AutoLock lock(mLock);
             // note: hijacking SET_ACTIVITY_WATCHER, but should be changed to
             // its own permission (same as profileControl).
-            if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::SET_ACTIVITY_WATCHER)
+            if (CheckCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER)
                     != IPackageManager::PERMISSION_GRANTED) {
                 // throw new SecurityException("Requires permission "
-                //         + Elastos::Droid::Manifest::Permission::SET_ACTIVITY_WATCHER);
+                //         + Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER);
                 if (fd != NULL) {
                     fd->Close();
                 }
@@ -17847,14 +17847,14 @@ ECode CActivityManagerService::SwitchUser(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: switchUser() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL";
+        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL";
         Slogger::W(TAG, msg.ToString().string());
         return E_SECURITY_EXCEPTION;
     }
@@ -17989,7 +17989,7 @@ ECode CActivityManagerService::SwitchUser(
                 Int32 bValue;
                 BroadcastIntentLocked(NULL, String(NULL), intent,
                         String(NULL), receiver, 0, String(NULL), NULL,
-                        Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS,
+                        Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS,
                         TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &bValue);
             }
         }
@@ -18037,7 +18037,7 @@ ECode CActivityManagerService::SendUserSwitchBroadcastsLocked(
 
         BroadcastIntentLocked(NULL, nullStr, intent,
                 nullStr, NULL, 0, nullStr, NULL,
-                Elastos::Droid::Manifest::Permission::MANAGE_USERS,
+                Elastos::Droid::Manifest::permission::MANAGE_USERS,
                 FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
     }
     // } finally {
@@ -18184,7 +18184,7 @@ ECode CActivityManagerService::FinishUserSwitch(
         String nullStr;
         BroadcastIntentLocked(NULL, nullStr, intent,
             nullStr, NULL, 0, nullStr, NULL,
-            Elastos::Droid::Manifest::Permission::RECEIVE_BOOT_COMPLETED,
+            Elastos::Droid::Manifest::permission::RECEIVE_BOOT_COMPLETED,
             FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &result);
     }
     Int32 num = mUserLru.GetSize();
@@ -18230,14 +18230,14 @@ ECode CActivityManagerService::StopUser(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
            != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: switchUser() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL";
+        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -18308,7 +18308,7 @@ Int32 CActivityManagerService::StopUserLocked(
             String nullStr;
             BroadcastIntentLocked(NULL, nullStr, stoppingIntent,
                 nullStr, stoppingReceiver, 0, nullStr, NULL,
-                Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS,
+                Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS,
                 TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, IUserHandle::USER_ALL, &result);
         // } finally {
         Binder::RestoreCallingIdentity(ident);
@@ -18369,11 +18369,11 @@ ECode CActivityManagerService::GetCurrentUser(
     /* [out] */ IUserInfo** userInfo)
 {
     VALIDATE_NOT_NULL(userInfo);
-    if ((CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS)
+    if ((CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
             != IPackageManager::PERMISSION_GRANTED) && (
-            CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL)
+            CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
             != IPackageManager::PERMISSION_GRANTED)) {
-        Slogger::W(TAG, "Permission Denial: getCurrentUser() from pid=%d, uid=%d requires Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS", Binder::GetCallingPid, Binder::GetCallingUid);
+        Slogger::W(TAG, "Permission Denial: getCurrentUser() from pid=%d, uid=%d requires Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS", Binder::GetCallingPid, Binder::GetCallingUid);
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
     }
@@ -18398,14 +18398,14 @@ ECode CActivityManagerService::IsUserRunning(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS)
+    if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
             != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: isUserRunning() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS";
+        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -18439,14 +18439,14 @@ ECode CActivityManagerService::GetRunningUserIds(
     VALIDATE_NOT_NULL(userIds);
     *userIds = NULL;
 
-   if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS)
+   if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS)
            != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: isUserRunning() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS";
+        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;
@@ -18487,14 +18487,14 @@ ECode CActivityManagerService::UpdateStartedUserArrayLocked()
 ECode CActivityManagerService::RegisterUserSwitchObserver(
     /* [in] */ IUserSwitchObserver* observer)
 {
-   if (CheckCallingPermission(Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL)
+   if (CheckCallingPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL)
            != IPackageManager::PERMISSION_GRANTED) {
         StringBuilder msg("Permission Denial: registerUserSwitchObserver() from pid=");
         msg += Binder::GetCallingPid();
         msg += ", uid=";
         msg += Binder::GetCallingUid();
         msg += " requires ";
-        msg += "Elastos::Droid::Manifest::Permission::INTERACT_ACROSS_USERS_FULL";
+        msg += "Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL";
         Slogger::W(TAG, msg.ToString());
         //throw new SecurityException(msg);
         return E_SECURITY_EXCEPTION;

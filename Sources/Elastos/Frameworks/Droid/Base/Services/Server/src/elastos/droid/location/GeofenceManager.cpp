@@ -485,7 +485,7 @@ void GeofenceManager::SendIntent(
 {
     mWakeLock->AcquireLock();
     ECode ec = pendingIntent->Send(mContext, 0, intent, this, NULL,
-            Elastos::Droid::Manifest::Permission::ACCESS_FINE_LOCATION);
+            Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION);
     if(FAILED(ec))
     {
         RemoveFence(NULL, pendingIntent);

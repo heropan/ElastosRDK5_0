@@ -968,7 +968,7 @@ ECode CUsageStatsService::EnforceCallingPermission()
     if (Binder::GetCallingPid() == Process::MyPid()) {
         return NOERROR;
     }
-    return mContext->EnforcePermission(Elastos::Droid::Manifest::Permission::UPDATE_DEVICE_STATS,
+    return mContext->EnforcePermission(Elastos::Droid::Manifest::permission::UPDATE_DEVICE_STATS,
             Binder::GetCallingPid(), Binder::GetCallingUid(), String(NULL));
 }
 
@@ -980,7 +980,7 @@ ECode CUsageStatsService::GetPkgUsageStats(
     *pkgUsageStats = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::PACKAGE_USAGE_STATS, String(NULL)));
+            Elastos::Droid::Manifest::permission::PACKAGE_USAGE_STATS, String(NULL)));
     String pkgName;
     if ((componentName == NULL) ||
             (componentName->GetPackageName(&pkgName), pkgName.IsNull())) {
@@ -1018,7 +1018,7 @@ ECode CUsageStatsService::GetAllPkgUsageStats(
     *stats = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::Permission::PACKAGE_USAGE_STATS, String(NULL)));
+            Elastos::Droid::Manifest::permission::PACKAGE_USAGE_STATS, String(NULL)));
 
     AutoLock lock(mStatsLock);
     Int32 size = mLastResumeTimes.GetSize();

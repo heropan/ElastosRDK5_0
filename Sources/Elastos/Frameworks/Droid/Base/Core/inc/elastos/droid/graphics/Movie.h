@@ -5,6 +5,7 @@
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/Object.h>
+#include <skia/images/SkMovie.h>
 
 using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
@@ -74,11 +75,13 @@ private:
     static CARAPI_(void) NativeDestructor(
         /* [in] */ Int64 nativeMovie);
 
-    static CARAPI_(AutoPtr<IMovie>) NativeDecodeAsset(
-        /* [in] */ Int64 asset);
+    static CARAPI NativeDecodeAsset(
+        /* [in] */ Int64 asset,
+        /* [out] */IMovie** movie);
 
-    static CARAPI_(AutoPtr<IMovie>) NativeDecodeStream(
-        /* [in] */ IInputStream* is);
+    static CARAPI NativeDecodeStream(
+        /* [in] */ IInputStream* is,
+        /* [out] */IMovie** movie);
 
 private:
     Int64 mNativeMovie;

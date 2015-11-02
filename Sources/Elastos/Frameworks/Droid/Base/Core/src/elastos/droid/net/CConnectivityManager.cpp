@@ -1193,14 +1193,14 @@ ECode CConnectivityManager::EnforceTetherChangePermission(
         // turn on tethering
 #if 0 // TODO: Waiting for Manifest.cpp add to sources
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, String("ConnectivityService")))
+                Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, String("ConnectivityService")))
 #else
         assert(0);
 #endif
     } else {
 #if 0 // TODO: Waiting for Manifest.cpp add to sources
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::Permission::CHANGE_NETWORK_STATE, String("ConnectivityService")))
+                Elastos::Droid::Manifest::permission::CHANGE_NETWORK_STATE, String("ConnectivityService")))
 #else
         assert(0);
 #endif

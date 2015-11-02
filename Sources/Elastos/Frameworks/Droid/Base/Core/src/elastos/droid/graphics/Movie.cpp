@@ -4,8 +4,13 @@
 #include "elastos/droid/graphics/Canvas.h"
 #include "elastos/droid/graphics/Paint.h"
 #include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
-#include <skia/images/SkMovie.h>
+#include "elastos/droid/graphics/Utils.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
+#include "elastos/droid/content/res/CAssetManager.h"
+#include <skia/utils/SkFrontBufferedStream.h>
 
+using Elastos::Droid::Content::Res::IAssetInputStream;
+using Elastos::Droid::Content::Res::CAssetManager;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 
@@ -86,17 +91,16 @@ ECode Movie::Draw(
     assert(canvas != NULL);
     // its OK for paint to be null
 
-    assert(0 && "TODO");
     // NPE_CHECK_RETURN_VOID(env, movie);
     // NPE_CHECK_RETURN_VOID(env, canvas);
     // // its OK for paint to be null
 
-    // SkMovie* m = J2Movie(env, movie);
-    // SkCanvas* c = GraphicsJNI::getNativeCanvas(env, canvas);
-    // const SkBitmap& b = m->bitmap();
-    // const SkPaint* p = jpaint ? GraphicsJNI::getNativePaint(env, jpaint) : NULL;
+    SkMovie* m = ((SkMovie*)mNativeMovie);
+    SkCanvas* c = GraphicsNative::GetNativeCanvas(canvas);
+    const SkBitmap& b = m->bitmap();
+    const SkPaint* p = paint ? GraphicsNative::GetNativePaint(paint) : NULL;
 
-    // c->drawBitmap(b, fx, fy, p);
+    c->drawBitmap(b, x, y, p);
     return NOERROR;
 }
 
@@ -117,7 +121,7 @@ static ECode CreateMovie(
         return NOERROR;
     }
 
-    *movie = new Movie((Int32)moov);
+    *movie = new Movie(static_cast<Int64>(reinterpret_cast<uintptr_t>(moov)));
     REFCOUNT_ADD(*movie);
     return NOERROR;
 }
@@ -133,15 +137,14 @@ ECode Movie::DecodeStream(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // if (is instanceof AssetManager.AssetInputStream) {
-    //     final long asset = ((AssetManager.AssetInputStream) is).getNativeAsset();
-    //     return nativeDecodeAsset(asset);
-    // }
+    if (IAssetInputStream::Probe(is)) {
+        Int64 asset = 0;
+        ((CAssetManager::AssetInputStream*)IAssetInputStream::Probe(is))->GetNativeAsset(&asset);
+        NativeDecodeAsset(asset, movie);
+        return NOERROR;
+    }
 
-    *movie = NativeDecodeStream(is);
-    REFCOUNT_ADD(*movie);
-    return NOERROR;
+    return NativeDecodeStream(is, movie);
 }
 
 ECode Movie::DecodeByteArray(
@@ -202,44 +205,53 @@ void Movie::NativeDestructor(
     delete movie;
 }
 
-AutoPtr<IMovie> Movie::NativeDecodeAsset(
-    /* [in] */ Int64 asset)
+ECode Movie::NativeDecodeAsset(
+    /* [in] */ Int64 native_asset,
+    /* [out] */IMovie** movie)
 {
-    assert(0 && "TODO");
-    // android::Asset* asset = reinterpret_cast<android::Asset*>(native_asset);
-    // if (asset == NULL) return NULL;
-    // SkAutoTUnref<SkStreamRewindable> stream (new android::AssetStreamAdaptor(asset,
-    //         android::AssetStreamAdaptor::kNo_OwnAsset,
-    //         android::AssetStreamAdaptor::kNo_HasMemoryBase));
-    // SkMovie* moov = SkMovie::DecodeStream(stream.get());
-    // return create_jmovie(env, moov);
-    return NULL;
+    VALIDATE_NOT_NULL(movie);
+    android::Asset* asset = reinterpret_cast<android::Asset*>(native_asset);
+    if (asset == NULL) {
+        *movie = NULL;
+        return NOERROR;
+    }
+    SkAutoTUnref<SkStreamRewindable> stream (new AssetStreamAdaptor(asset,
+            AssetStreamAdaptor::kNo_OwnAsset,
+            AssetStreamAdaptor::kNo_HasMemoryBase));
+    SkMovie* moov = SkMovie::DecodeStream(stream.get());
+
+    return CreateMovie(moov, movie);
 }
 
-AutoPtr<IMovie> Movie::NativeDecodeStream(
-    /* [in] */ IInputStream* is)
+ECode Movie::NativeDecodeStream(
+    /* [in] */ IInputStream* istream,
+    /* [out] */IMovie** movie)
 {
-    assert(0 && "TODO");
+    VALIDATE_NOT_NULL(movie);
     // NPE_CHECK_RETURN_ZERO(env, istream);
+    if (istream == NULL) {
+        *movie = NULL;
+        return NOERROR;
+    }
 
-    // jbyteArray byteArray = env->NewByteArray(16*1024);
+    AutoPtr<ArrayOf<Byte> > byteArray = ArrayOf<Byte>::Alloc(16*1024);
     // ScopedLocalRef<jbyteArray> scoper(env, byteArray);
-    // SkStream* strm = CreateJavaInputStreamAdaptor(env, istream, byteArray);
-    // if (NULL == strm) {
-    //     return 0;
-    // }
+    SkStream* strm = CreateInputStreamAdaptor(istream, byteArray);
+    if (NULL == strm) {
+        *movie = NULL;
+        return NOERROR;
+    }
 
-    // // Need to buffer enough input to be able to rewind as much as might be read by a decoder
-    // // trying to determine the stream's format. The only decoder for movies is GIF, which
-    // // will only read 6.
-    // // FIXME: Get this number from SkImageDecoder
-    // SkAutoTUnref<SkStreamRewindable> bufferedStream(SkFrontBufferedStream::Create(strm, 6));
-    // SkASSERT(bufferedStream.get() != NULL);
+    // Need to buffer enough input to be able to rewind as much as might be read by a decoder
+    // trying to determine the stream's format. The only decoder for movies is GIF, which
+    // will only read 6.
+    // FIXME: Get this number from SkImageDecoder
+    SkAutoTUnref<SkStreamRewindable> bufferedStream(SkFrontBufferedStream::Create(strm, 6));
+    SkASSERT(bufferedStream.get() != NULL);
 
-    // SkMovie* moov = SkMovie::DecodeStream(bufferedStream);
-    // strm->unref();
-    // return create_jmovie(env, moov);
-    return NULL;
+    SkMovie* moov = SkMovie::DecodeStream(bufferedStream);
+    strm->unref();
+    return CreateMovie(moov, movie);
 }
 
 } // namespace Graphics

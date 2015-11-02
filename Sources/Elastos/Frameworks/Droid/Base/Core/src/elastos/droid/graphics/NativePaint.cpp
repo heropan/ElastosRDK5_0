@@ -1,6 +1,8 @@
 
 #include "elastos/droid/graphics/NativePaint.h"
 
+using android::VARIANT_DEFAULT;
+
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
