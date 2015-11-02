@@ -1,19 +1,32 @@
+#ifndef __ELASTOS_DROID_APP_CACITONKEYINFO_H__
+#define __ELASTOS_DROID_APP_CACITONKEYINFO_H__
+
+#include "_Elastos_Droid_App_CActionKeyInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * Information you can retrieve about an ActivityStack in the system.
  * @hide
  */
-public static class StackInfo implements Parcelable {
-    public int stackId;
-    public Rect bounds = new Rect();
-    public int[] taskIds;
-    public String[] taskNames;
-    public int displayId;
+CarClass(CActivityManagerStackInfo)
+    , public Object
+    , public IActivityManagerStackInfo
+    , public IParcelable
+{
+public:
+    CAR_INTERFACE_DECL()
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+    CAR_OBJECT_DECL()
+
+    CActivityManagerStackInfo();
+
+    CARAPI constructor();
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -68,8 +81,20 @@ public static class StackInfo implements Parcelable {
         return sb.toString();
     }
 
-    @Override
-    public String toString() {
-        return toString("");
-    }
-}
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+public:
+    Int32 mStackId;
+    AutoPtr<IRect> mBounds;// = new Rect();
+    AutoPtr<ArrayOf<Int32> > mTaskIds;
+    AutoPtr<ArrayOf<String> > mTaskNames;
+    Int32 mDisplayId;
+
+};
+
+}// namespace App
+}// namespace Droid
+}// namespace Elastos
+
+#endif

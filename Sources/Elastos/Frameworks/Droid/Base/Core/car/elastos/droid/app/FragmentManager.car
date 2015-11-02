@@ -399,6 +399,11 @@ module
     [local, deprecated]
     interface IFragmentManagerImpl {
 
+        const String TARGET_REQUEST_CODE_STATE_TAG = "android:target_req_state";
+        const String TARGET_STATE_TAG = "android:target_state";
+        const String VIEW_STATE_TAG = "android:view_state";
+        const String USER_VISIBLE_HINT_TAG = "android:user_visible_hint";
+
         LoadAnimator(
             [in] IFragment* fragment,
             [in] Int32 transit,

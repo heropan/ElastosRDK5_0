@@ -2,9 +2,10 @@
 #ifndef __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 #define __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/content/pm/PackageManager.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -44,13 +45,14 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+/*package*/
 class ApplicationPackageManager
-    : public ElRefBase
-    , public PackageManager
+    : public PackageManager
     , public IPackageManager
 {
 public:
-    class ResourceName: public ElRefBase
+    class ResourceName
+        : public Object
     {
     public:
         ResourceName(
@@ -72,9 +74,11 @@ public:
         CARAPI_(Boolean) Equals(
             /* [in] */ ResourceName* o);
 
-        CARAPI_(Int32) GetHashCode();
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hash);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     public:
         String mPackageName;

@@ -1871,6 +1871,14 @@ AutoPtr<CResources::ConstantStateMap> CResources::GetPreloadedDrawables()
     return sPreloadedDrawables[0];
 }
 
+ECode CResources::GetPreloadedDrawables(
+    /* [out] */ IHashMap** drawables)
+{
+    VALIDATE_NOT_NULL(drawables)
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 Boolean CResources::VerifyPreloadConfig(
     /* [in] */ Int32 changingConfigurations,
     /* [in] */ Int32 allowVarying,

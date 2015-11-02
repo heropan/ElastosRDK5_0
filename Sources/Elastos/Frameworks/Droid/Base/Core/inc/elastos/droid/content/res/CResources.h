@@ -24,6 +24,7 @@ using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::Pools;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -1231,6 +1232,9 @@ public:
      * @hide
      */
     AutoPtr<ConstantStateMap> GetPreloadedDrawables();
+
+    CARAPI GetPreloadedDrawables(
+        /* [out] */ IHashMap** drawables);
 
     CARAPI LoadDrawable(
         /* [in] */ ITypedValue* value,

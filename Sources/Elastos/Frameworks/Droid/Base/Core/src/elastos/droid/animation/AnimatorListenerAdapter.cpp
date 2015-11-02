@@ -6,6 +6,13 @@ namespace Droid {
 namespace Animation {
 
 CAR_INTERFACE_IMPL_2(AnimatorListenerAdapter, Object, IAnimatorListener, IAnimatorPauseListener);
+
+AnimatorListenerAdapter::AnimatorListenerAdapter()
+{}
+
+AnimatorListenerAdapter::~AnimatorListenerAdapter()
+{}
+
 ECode AnimatorListenerAdapter::OnAnimationStart(
     /* [in] */ IAnimator* animation)
 {

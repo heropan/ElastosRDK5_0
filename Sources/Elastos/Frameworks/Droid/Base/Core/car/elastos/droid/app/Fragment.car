@@ -2,6 +2,8 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IHashMap;
+    using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.IO.IFileDescriptor;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IView;
@@ -21,6 +23,7 @@ module
     interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.App.IFragmentManagerImpl;
     interface Elastos.Droid.App.IFragmentSavedState;
+    interface Elastos.Droid.App.ILoaderManagerImpl;
     interface Elastos.Droid.Transition.ITransition;
 
     namespace Elastos {
@@ -302,10 +305,10 @@ module
             [in] Boolean start);
 
         SetLoaderManager(
-            [in] ILoaderManager* lManager);
+            [in] ILoaderManagerImpl* lManager);
 
         GetLoaderManagerValue(
-            [out] ILoaderManager** lManager);
+            [out] ILoaderManagerImpl** lManager);
 
         GetLoadersStarted(
             [out] Boolean* started);
@@ -1310,10 +1313,16 @@ module
         GetAllowReturnTransitionOverlap(
             [out] Boolean* result);
 
+        Dump(
+            [in] String prefix,
+            [in] IFileDescriptor* fd,
+            [in] IPrintWriter* writer,
+            [in] ArrayOf<String>* args);
+
         PerformCreate(
             [in] IBundle* savedInstanceState);
 
-	    PerformCreateView(
+        PerformCreateView(
             [in] ILayoutInflater* inflater,
             [in] IViewGroup* container,
             [in] IBundle* savedInstanceState,

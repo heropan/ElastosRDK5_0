@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-CAR_INTERFACE_IMPL(CFragmentManagerState, Object, IFragmentManagerState, IParcelable)
+CAR_INTERFACE_IMPL_2(CFragmentManagerState, Object, IFragmentManagerState, IParcelable)
 
 CAR_OBJECT_IMPL(CFragmentManagerState)
 
@@ -28,13 +28,13 @@ ECode CFragmentManagerState::ReadFromParcel(
     source->ReadInt32(&value);
     if (value >= 0) {
         Int32 size = value;
-        mActive = ArrayOf<FragmentState*>::Alloc(size);
+        mActive = ArrayOf<IFragmentState*>::Alloc(size);
         for (Int32 i = 0; i < size; ++i) {
-            AutoPtr<FragmentState> nc;
+            AutoPtr<IFragmentState> nc;
             source->ReadInt32(&value);
             if (value != 0) {
                 assert(0);
-//                FragmentState::New((FragmentState**)&nc);
+//                CFragmentState::New((IFragmentState**)&nc);
                 parcelable = IParcelable::Probe(nc);
                 parcelable->ReadFromParcel(source);
             }
@@ -75,7 +75,7 @@ ECode CFragmentManagerState::WriteToParcel(
     else {
         Int32 size = mActive->GetLength();
         dest->WriteInt32(size);
-        AutoPtr<FragmentState> nc;
+        AutoPtr<IFragmentState> nc;
         for (Int32 i = 0; i < size; ++i) {
             nc = (*mActive)[i];
             if (nc != NULL) {

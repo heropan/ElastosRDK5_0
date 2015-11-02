@@ -762,20 +762,20 @@ module
 //         interface IAccessibilityEventSource;
 //     }
 
-//    [local]
-//    class CFragmentSavedState {
-//        constructor();
+    [local]
+    class CFragmentSavedState {
+        constructor();
 
-//        constructor(
-//            [in] IBundle* state);
+        constructor(
+            [in] IBundle* state);
 
-//        constructor(
-//            [in] IParcel* pin,
-//            [in] IClassLoader* loader);
+        constructor(
+            [in] IParcel* pin,
+            [in] IClassLoader* loader);
 
-//        interface IFragmentSavedState;
-//        interface IParcelable;
-//    }
+        interface IFragmentSavedState;
+        interface IParcelable;
+    }
 
 //     [local]
 //     class CDialog {
@@ -889,17 +889,17 @@ module
 //         interface IWallpaperManagerHelper;
 //     }
 
-//    singleton class CFragmentManagerHelper {
-//        interface IFragmentManagerHelper;
-//    }
+    singleton class CFragmentManagerHelper {
+        interface IFragmentManagerHelper;
+    }
 
 //     class CFragmentManagerImpl {
 //         interface IFragmentManagerImpl;
 //     }
 
-//     singleton class CFragmentManagerImplHelper {
-//         interface IFragmentManagerImplHelper;
-//     }
+    singleton class CFragmentManagerImplHelper {
+        interface IFragmentManagerImplHelper;
+    }
 
     class CActivityOptions {
         constructor();
@@ -1004,28 +1004,28 @@ module
 //         interface IOnKeyguardExitResult;
 //     }
 
-//    [local]
-//    class CBackStackState {
-//        constructor();
+    [local]
+    class CBackStackState {
+        constructor();
 
-//        constructor(
-//            [in] IFragmentManagerImpl* fm,
-//            [in] IBackStackRecord* bse);
+        constructor(
+            [in] IFragmentManagerImpl* fm,
+            [in] IBackStackRecord* bse);
 
-//        interface IBackStackState;
-//        interface IParcelable;
-//    }
+        interface IBackStackState;
+        interface IParcelable;
+    }
 
     class CBackStackRecordTransitionState {
         interface IBackStackRecordTransitionState;
     }
 
-//    class CFragmentManagerState {
-//        constructor();
+    class CFragmentManagerState {
+        constructor();
 
-//        interface IFragmentManagerState;
-//        interface IParcelable;
-//    }
+        interface IFragmentManagerState;
+        interface IParcelable;
+    }
 
 //     class CDownloadManager {
 //         constructor(

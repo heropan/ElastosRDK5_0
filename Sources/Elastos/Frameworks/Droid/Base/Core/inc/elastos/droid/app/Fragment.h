@@ -16,6 +16,7 @@ using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IContextMenuInfo;
 using Elastos::Droid::View::IViewOnCreateContextMenuListener;
 using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Transition::ITransition;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
@@ -23,10 +24,12 @@ using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IComponentCallbacks2;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::ITypedArray;
 
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::IHashMap;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -35,7 +38,7 @@ namespace App {
 
 class FragmentState
     : public Object
-    // , public IFragmentState
+    , public IFragmentState
     , public IParcelable
 {
 public:
@@ -139,192 +142,192 @@ public:
 
     virtual ~Fragment();
 
-    virtual CARAPI Initialize();
+    CARAPI Initialize();
 
-    virtual CARAPI GetState(
+    CARAPI GetState(
         /* [out] */ Int32* state);
 
-    virtual CARAPI SetState(
+    CARAPI SetState(
         /* [in] */ Int32 state);
 
-    virtual CARAPI GetAnimatingAway(
+    CARAPI GetAnimatingAway(
         /* [out] */ IAnimator** animator);
 
-    virtual CARAPI SetAnimatingAway(
+    CARAPI SetAnimatingAway(
         /* [in] */ IAnimator* animator);
 
-    virtual CARAPI GetStateAfterAnimating(
+    CARAPI GetStateAfterAnimating(
         /* [out] */ Int32* state);
 
-    virtual CARAPI SetStateAfterAnimating(
+    CARAPI SetStateAfterAnimating(
         /* [in] */ Int32 state);
 
-    virtual CARAPI GetSavedFragmentState(
+    CARAPI GetSavedFragmentState(
         /* [out] */ IBundle** fState);
 
-    virtual CARAPI SetSavedFragmentState(
+    CARAPI SetSavedFragmentState(
         /* [in] */ IBundle* fState);
 
-    virtual CARAPI GetSavedViewState(
+    CARAPI GetSavedViewState(
         /* [out] */ IHashMap** viewState);
 
-    virtual CARAPI SetSavedViewState(
+    CARAPI SetSavedViewState(
         /* [in] */ IHashMap* viewState);
 
-    virtual CARAPI GetIndex(
+    CARAPI GetIndex(
         /* [out] */ Int32* index);
 
-    virtual CARAPI GetWho(
+    CARAPI GetWho(
         /* [out] */ String* who);
 
-    virtual CARAPI SetWho(
+    CARAPI SetWho(
         /* [in] */ const String& who);
 
-    virtual CARAPI GetTarget(
+    CARAPI GetTarget(
         /* [out] */ IFragment** target);
 
-    virtual CARAPI SetTarget(
+    CARAPI SetTarget(
         /* [in] */ IFragment* target);
 
-    virtual CARAPI GetTargetIndex(
+    CARAPI GetTargetIndex(
         /* [out] */ Int32* index);
 
-    virtual CARAPI SetTargetIndex(
+    CARAPI SetTargetIndex(
         /* [in] */ Int32 index);
 
-    virtual CARAPI SetTargetRequestCode(
+    CARAPI SetTargetRequestCode(
         /* [in] */ Int32 code);
 
-    virtual CARAPI GetAdded(
+    CARAPI GetAdded(
         /* [out] */ Boolean* added);
 
-    virtual CARAPI SetAdded(
+    CARAPI SetAdded(
         /* [in] */ Boolean added);
 
-    virtual CARAPI SetRemoving(
+    CARAPI SetRemoving(
         /* [in] */ Boolean removing);
 
-    virtual CARAPI SetResumed(
+    CARAPI SetResumed(
         /* [in] */ Boolean resumed);
 
-    virtual CARAPI GetFromLayout(
+    CARAPI GetFromLayout(
         /* [out] */ Boolean* fLayout);
 
-    virtual CARAPI SetFromLayout(
+    CARAPI SetFromLayout(
         /* [in] */ Boolean fLayout);
 
-    virtual CARAPI SetInLayout(
+    CARAPI SetInLayout(
         /* [in] */ Boolean inLayout);
 
-    virtual CARAPI GetRestored(
+    CARAPI GetRestored(
         /* [out] */ Boolean* restored);
 
-    virtual CARAPI SetRestored(
+    CARAPI SetRestored(
         /* [in] */ Boolean restored);
 
-    virtual CARAPI GetBackStackNesting(
+    CARAPI GetBackStackNesting(
         /* [out] */ Int32* bsNesting);
 
-    virtual CARAPI SetBackStackNesting(
+    CARAPI SetBackStackNesting(
         /* [in] */ Int32 bsNesting);
 
-    virtual CARAPI SetFragmentManager(
+    CARAPI SetFragmentManager(
         /* [in] */ IFragmentManagerImpl* fManager);
 
-    virtual CARAPI SetActivity(
+    CARAPI SetActivity(
         /* [in] */ IActivity* activity);
 
-    virtual CARAPI SetChildFragmentManager(
+    CARAPI SetChildFragmentManager(
         /* [in] */ IFragmentManagerImpl* cfManager);
 
-    virtual CARAPI GetChildFragmentManagerValue(
+    CARAPI GetChildFragmentManagerValue(
         /* [out] */ IFragmentManagerImpl** cfManager);
 
-    virtual CARAPI SetParentFragment(
+    CARAPI SetParentFragment(
         /* [in] */ IFragment* pFragment);
 
-    virtual CARAPI GetFragmentId(
+    CARAPI GetFragmentId(
         /* [out] */ Int32* fid);
 
-    virtual CARAPI SetFragmentId(
+    CARAPI SetFragmentId(
         /* [in] */ Int32 fid);
 
-    virtual CARAPI GetContainerId(
+    CARAPI GetContainerId(
         /* [out] */ Int32* cid);
 
-    virtual CARAPI SetContainerId(
+    CARAPI SetContainerId(
         /* [in] */ Int32 cid);
 
-    virtual CARAPI SetTag(
+    CARAPI SetTag(
         /* [in] */ const String& tag);
 
-    virtual CARAPI SetHidden(
+    CARAPI SetHidden(
         /* [in] */ Boolean hidden);
 
-    virtual CARAPI SetDetached(
+    CARAPI SetDetached(
         /* [in] */ Boolean detached);
 
-    virtual CARAPI GetRetaining(
+    CARAPI GetRetaining(
         /* [out] */ Boolean* retaining);
 
-    virtual CARAPI SetRetaining(
+    CARAPI SetRetaining(
         /* [in] */ Boolean retaining);
 
-    virtual CARAPI GetHasMenu(
+    CARAPI GetHasMenu(
         /* [out] */ Boolean* hasMenu);
 
-    virtual CARAPI SetHasMenu(
+    CARAPI SetHasMenu(
         /* [in] */ Boolean hasMenu);
 
-    virtual CARAPI GetMenuVisible(
+    CARAPI GetMenuVisible(
         /* [out] */ Boolean* visible);
 
-    virtual CARAPI SetMenuVisible(
+    CARAPI SetMenuVisible(
         /* [in] */ Boolean visible);
 
-    virtual CARAPI GetCalled(
+    CARAPI GetCalled(
         /* [out] */ Boolean* called);
 
-    virtual CARAPI SetCalled(
+    CARAPI SetCalled(
         /* [in] */ Boolean called);
 
-    virtual CARAPI GetNextAnim(
+    CARAPI GetNextAnim(
         /* [out] */ Int32* anim);
 
-    virtual CARAPI SetNextAnim(
+    CARAPI SetNextAnim(
         /* [in] */ Int32 anim);
 
-    virtual CARAPI GetContainer(
+    CARAPI GetContainer(
         /* [out] */ IViewGroup** container);
 
-    virtual CARAPI SetContainer(
+    CARAPI SetContainer(
         /* [in] */ IViewGroup* container);
 
-    virtual CARAPI SetView(
+    CARAPI SetView(
         /* [in] */ IView* view);
 
-    virtual CARAPI GetDeferStart(
+    CARAPI GetDeferStart(
         /* [out] */ Boolean* start);
 
-    virtual CARAPI SetDeferStart(
+    CARAPI SetDeferStart(
         /* [in] */ Boolean start);
 
-    virtual CARAPI SetLoaderManager(
+    CARAPI SetLoaderManager(
         /* [in] */ ILoaderManagerImpl* lManager);
 
-    virtual CARAPI GetLoaderManagerValue(
+    CARAPI GetLoaderManagerValue(
         /* [out] */ ILoaderManagerImpl** lManager);
 
-    virtual CARAPI GetLoadersStarted(
+    CARAPI GetLoadersStarted(
         /* [out] */ Boolean* started);
 
-    virtual CARAPI SetLoadersStarted(
+    CARAPI SetLoadersStarted(
         /* [in] */ Boolean started);
 
-    virtual CARAPI GetCheckedForLoaderManager(
+    CARAPI GetCheckedForLoaderManager(
         /* [out] */ Boolean* cfManager);
 
-    virtual CARAPI SetCheckedForLoaderManager(
+    CARAPI SetCheckedForLoaderManager(
         /* [in] */ Boolean cfManager);
 
     static CARAPI Instantiate(
@@ -338,313 +341,313 @@ public:
         /* [in] */ IBundle* args,
         /* [out] */ IFragment** fragment);
 
-    virtual CARAPI RestoreViewState(
+    CARAPI RestoreViewState(
         /* [in] */ IBundle* savedInstanceState);
 
     CARAPI SetIndex(
         /* [in] */ Int32 index,
         /* [in] */ IFragment* parent);
 
-    virtual CARAPI IsInBackStack(
+    CARAPI IsInBackStack(
         /* [out] */ Boolean* inbs);
 
-    virtual CARAPI Equals(
+    CARAPI Equals(
         /* [in] */ IInterface* o,
         /* [out] */ Boolean* equal);
 
-    virtual CARAPI GetHashCode(
+    CARAPI GetHashCode(
         /* [out] */ Int32* code);
 
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* string);
 
-    virtual CARAPI GetId(
+    CARAPI GetId(
         /* [out] */ Int32* id);
 
-    virtual CARAPI GetTag(
+    CARAPI GetTag(
         /* [out] */ String* tag);
 
-    virtual CARAPI SetArguments(
+    CARAPI SetArguments(
         /* [in] */ IBundle* args);
 
-    virtual CARAPI GetArguments(
+    CARAPI GetArguments(
         /* [out] */ IBundle** args);
 
-    virtual CARAPI SetInitialSavedState(
+    CARAPI SetInitialSavedState(
         /* [in] */ IFragmentSavedState* state);
 
-    virtual CARAPI SetTargetFragment(
+    CARAPI SetTargetFragment(
         /* [in] */ IFragment* fragment,
         /* [in] */ Int32 requestCode);
 
-    virtual CARAPI GetTargetFragment(
+    CARAPI GetTargetFragment(
         /* [out] */ IFragment** fragment);
 
-    virtual CARAPI GetTargetRequestCode(
+    CARAPI GetTargetRequestCode(
         /* [out] */ Int32* code);
 
-    virtual CARAPI GetActivity(
+    CARAPI GetActivity(
         /* [out] */ IActivity** activity);
 
-    virtual CARAPI GetResources(
+    CARAPI GetResources(
         /* [out] */ IResources** resources);
 
-    virtual CARAPI GetText(
+    CARAPI GetText(
         /* [in] */ Int32 resId,
         /* [out] */ ICharSequence** text);
 
-    virtual CARAPI GetString(
+    CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [out] */ String* string);
 
-    virtual CARAPI GetString(
+    CARAPI GetString(
         /* [in] */ Int32 resId,
         /* [in] */ ArrayOf<IInterface*>* formatArgs,
         /* [out] */ String* string);
 
-    virtual CARAPI GetFragmentManager(
+    CARAPI GetFragmentManager(
         /* [out] */ IFragmentManager** manager);
 
-    virtual CARAPI GetChildFragmentManager(
+    CARAPI GetChildFragmentManager(
         /* [out] */ IFragmentManager** manager);
 
-    virtual CARAPI GetParentFragment(
+    CARAPI GetParentFragment(
         /* [out] */ IFragment** fragment);
 
-    virtual CARAPI IsAdded(
+    CARAPI IsAdded(
         /* [out] */ Boolean* added);
 
-    virtual CARAPI IsDetached(
+    CARAPI IsDetached(
         /* [out] */ Boolean* detached);
 
-    virtual CARAPI IsRemoving(
+    CARAPI IsRemoving(
         /* [out] */ Boolean* removing);
 
-    virtual CARAPI IsInLayout(
+    CARAPI IsInLayout(
         /* [out] */ Boolean* inlayout);
 
-    virtual CARAPI IsResumed(
+    CARAPI IsResumed(
         /* [out] */ Boolean* resumed);
 
-    virtual CARAPI IsVisible(
+    CARAPI IsVisible(
         /* [out] */ Boolean* visible);
 
-    virtual CARAPI IsHidden(
+    CARAPI IsHidden(
         /* [out] */ Boolean* hidden);
 
-    virtual CARAPI OnHiddenChanged(
+    CARAPI OnHiddenChanged(
         /* [in] */ Boolean hidden);
 
-    virtual CARAPI SetRetainInstance(
+    CARAPI SetRetainInstance(
         /* [in] */ Boolean retain);
 
-    virtual CARAPI GetRetainInstance(
+    CARAPI GetRetainInstance(
         /* [out] */ Boolean* retainInstance);
 
-    virtual CARAPI SetHasOptionsMenu(
+    CARAPI SetHasOptionsMenu(
         /* [in] */ Boolean hasMenu);
 
-    virtual CARAPI SetMenuVisibility(
+    CARAPI SetMenuVisibility(
         /* [in] */ Boolean menuVisible);
 
-    virtual CARAPI SetUserVisibleHint(
+    CARAPI SetUserVisibleHint(
         /* [in] */ Boolean isVisibleToUser);
 
-    virtual CARAPI GetUserVisibleHint(
+    CARAPI GetUserVisibleHint(
         /* [out] */ Boolean* hint);
 
-    virtual CARAPI GetLoaderManager(
+    CARAPI GetLoaderManager(
         /* [out] */ ILoaderManager** manager);
 
-    virtual CARAPI StartActivity(
+    CARAPI StartActivity(
         /* [in] */ IIntent* intent);
 
-    virtual CARAPI StartActivity(
+    CARAPI StartActivity(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
-    virtual CARAPI StartActivityForResult(
+    CARAPI StartActivityForResult(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode);
 
-    virtual CARAPI StartActivityForResult(
+    CARAPI StartActivityForResult(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
         /* [in] */ IBundle* options);
 
-    virtual CARAPI OnActivityResult(
+    CARAPI OnActivityResult(
         /* [in] */ Int32 requestCode,
         /* [in] */ Int32 resultCode,
         /* [in] */ IIntent* data);
 
-    virtual CARAPI GetLayoutInflater(
+    CARAPI GetLayoutInflater(
         /* [in] */ IBundle* savedInstanceState,
         /* [out] */ ILayoutInflater** inflater);
 
-    virtual CARAPI OnInflate(
+    CARAPI OnInflate(
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnInflate(
+    CARAPI OnInflate(
         /* [in] */ IActivity* activity,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnAttach(
+    CARAPI OnAttach(
         /* [in] */ IActivity* activity);
 
-    virtual CARAPI OnCreateAnimator(
+    CARAPI OnCreateAnimator(
         /* [in] */ Int32 transit,
         /* [in] */ Boolean enter,
         /* [in] */ Int32 nextAnim,
         /* [out] */ IAnimator** animator);
 
-    virtual CARAPI OnCreate(
+    CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnCreateView(
+    CARAPI OnCreateView(
         /* [in] */ ILayoutInflater* inflater,
         /* [in] */ IViewGroup* container,
         /* [in] */ IBundle* savedInstanceState,
         /* [out] */ IView** view);
 
-    virtual CARAPI OnViewCreated(
+    CARAPI OnViewCreated(
         /* [in] */ IView* view,
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI GetView(
+    CARAPI GetView(
         /* [out] */ IView** view);
 
-    virtual CARAPI OnActivityCreated(
+    CARAPI OnActivityCreated(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnViewStateRestored(
+    CARAPI OnViewStateRestored(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI OnStart();
+    CARAPI OnStart();
 
-    virtual CARAPI OnResume();
+    CARAPI OnResume();
 
-    virtual CARAPI OnSaveInstanceState(
+    CARAPI OnSaveInstanceState(
         /* [in] */ IBundle* outState);
 
-    virtual CARAPI OnConfigurationChanged(
+    CARAPI OnConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);
 
-    virtual CARAPI OnPause();
+    CARAPI OnPause();
 
-    virtual CARAPI OnStop();
+    CARAPI OnStop();
 
-    virtual CARAPI OnLowMemory();
+    CARAPI OnLowMemory();
 
-    virtual CARAPI OnTrimMemory(
+    CARAPI OnTrimMemory(
         /* [in] */ Int32 level);
 
-    virtual CARAPI OnDestroyView();
+    CARAPI OnDestroyView();
 
-    virtual CARAPI OnDestroy();
+    CARAPI OnDestroy();
 
-    virtual CARAPI InitState();
+    CARAPI InitState();
 
-    virtual CARAPI OnDetach();
+    CARAPI OnDetach();
 
-    virtual CARAPI OnCreateOptionsMenu(
+    CARAPI OnCreateOptionsMenu(
         /* [in] */ IMenu* menu,
         /* [in] */ IMenuInflater* inflater);
 
-    virtual CARAPI OnPrepareOptionsMenu(
+    CARAPI OnPrepareOptionsMenu(
         /* [in] */ IMenu* menu);
 
-    virtual CARAPI OnDestroyOptionsMenu();
+    CARAPI OnDestroyOptionsMenu();
 
-    virtual CARAPI OnOptionsItemSelected(
+    CARAPI OnOptionsItemSelected(
         /* [in] */ IMenuItem* item,
         /* [out] */ Boolean* selected);
 
-    virtual CARAPI OnOptionsMenuClosed(
+    CARAPI OnOptionsMenuClosed(
         /* [in] */ IMenu* menu);
 
-    virtual CARAPI OnCreateContextMenu(
+    CARAPI OnCreateContextMenu(
         /* [in] */ IContextMenu* menu,
         /* [in] */ IView* v,
         /* [in] */ IContextMenuInfo* menuInfo);
 
-    virtual CARAPI RegisterForContextMenu(
+    CARAPI RegisterForContextMenu(
         /* [in] */ IView* view);
 
-    virtual CARAPI UnregisterForContextMenu(
+    CARAPI UnregisterForContextMenu(
         /* [in] */ IView* view);
 
-    virtual CARAPI OnContextItemSelected(
+    CARAPI OnContextItemSelected(
         /* [in] */ IMenuItem* item,
         /* [out] */ Boolean* selected);
 
-    virtual CARAPI Dump(
+    CARAPI Dump(
         /* [in] */ const String& prefix,
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* writer,
         /* [in] */ ArrayOf<String>* args);
 
-    virtual CARAPI FindFragmentByWho(
+    CARAPI FindFragmentByWho(
         /* [in] */ const String& who,
         /* [out] */ IFragment** fragment);
 
     virtual CARAPI_(void) InstantiateChildFragmentManager();
 
-    virtual CARAPI PerformCreate(
+    CARAPI PerformCreate(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI PerformCreateView(
+    CARAPI PerformCreateView(
         /* [in] */ ILayoutInflater* inflater,
         /* [in] */ IViewGroup* container,
         /* [in] */ IBundle* savedInstanceState,
         /* [out] */ IView** v);
 
-    virtual CARAPI PerformActivityCreated(
+    CARAPI PerformActivityCreated(
         /* [in] */ IBundle* savedInstanceState);
 
-    virtual CARAPI PerformStart();
+    CARAPI PerformStart();
 
-    virtual CARAPI PerformResume();
+    CARAPI PerformResume();
 
-    virtual CARAPI PerformConfigurationChanged(
+    CARAPI PerformConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);
 
-    virtual CARAPI PerformLowMemory();
+    CARAPI PerformLowMemory();
 
-    virtual CARAPI PerformTrimMemory(
+    CARAPI PerformTrimMemory(
         /* [in] */ Int32 level);
 
-    virtual CARAPI PerformCreateOptionsMenu(
+    CARAPI PerformCreateOptionsMenu(
         /* [in] */ IMenu* menu,
         /* [in] */ IMenuInflater* inflater,
         /* [out] */ Boolean* result);
 
-    virtual CARAPI PerformPrepareOptionsMenu(
+    CARAPI PerformPrepareOptionsMenu(
         /* [in] */ IMenu* menu,
         /* [out] */ Boolean* result);
 
-    virtual CARAPI PerformOptionsItemSelected(
+    CARAPI PerformOptionsItemSelected(
         /* [in] */ IMenuItem* item,
         /* [out] */ Boolean* selected);
 
-    virtual CARAPI PerformContextItemSelected(
+    CARAPI PerformContextItemSelected(
         /* [in] */ IMenuItem* item,
         /* [out] */ Boolean* selected);
 
-    virtual CARAPI PerformOptionsMenuClosed(
+    CARAPI PerformOptionsMenuClosed(
         /* [in] */ IMenu* menu);
 
-    virtual CARAPI PerformSaveInstanceState(
+    CARAPI PerformSaveInstanceState(
         /* [in] */ IBundle* outState);
 
-    virtual CARAPI PerformPause();
+    CARAPI PerformPause();
 
-    virtual CARAPI PerformStop();
+    CARAPI PerformStop();
 
-    virtual CARAPI PerformDestroyView();
+    CARAPI PerformDestroyView();
 
-    virtual CARAPI PerformDestroy();
+    CARAPI PerformDestroy();
 
     static AutoPtr<ITransition> LoadTransition(
         /* [in] */ IContext* context,
@@ -669,7 +672,7 @@ public:
 
     // When instantiated from saved state, this is the saved state.
     AutoPtr<IBundle> mSavedFragmentState;
-    AutoPtr<IObjectInt32Map> mSavedViewState;
+    AutoPtr<IHashMap> mSavedViewState;
 
     // Index into active fragment array.
     Int32 mIndex;

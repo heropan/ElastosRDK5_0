@@ -2284,22 +2284,28 @@ Boolean ApplicationPackageManager::ResourceName::Equals(
 
 }
 
-Int32 ApplicationPackageManager::ResourceName::GetHashCode()
+ECode ApplicationPackageManager::ResourceName::GetHashCode(
+    /* [out] */ Int32* hash)
 {
+    VALIDATE_NOT_NULL(hash)
     Int32 result;
     result = mPackageName.GetHashCode();
     result = 31 * result + mIconId;
-    return result;
+    *hash = result;
+    return NOERROR;
 }
 
-String ApplicationPackageManager::ResourceName::ToString()
+ECode ApplicationPackageManager::ResourceName::ToString(
+    /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     StringBuilder sb("{ResourceName ");
     sb += mPackageName;
     sb += " / ";
     sb += mIconId;
     sb += "}";
-    return sb.ToString();
+    *str = sb.ToString();
+    return NOERROR;
 }
 
 } // namespace App

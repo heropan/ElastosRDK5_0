@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPLHELPER_H__
 
 #include "_Elastos_Droid_App_CFragmentManagerImplHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CFragmentManagerImplHelper)
+    , public Singleton
+    , public IFragmentManagerImplHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ReverseTransit(
         /* [in] */ Int32 transit,
         /* [out] */ Int32* reverse);

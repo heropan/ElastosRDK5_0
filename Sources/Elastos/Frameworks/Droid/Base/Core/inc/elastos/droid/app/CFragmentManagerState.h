@@ -2,10 +2,7 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTMANAGERSTATE_H__
 
 #include "_Elastos_Droid_App_CFragmentManagerState.h"
-#include "elastos/droid/app/Fragment.h"
-
-using Elastos::Droid::App::IBackStackState;
-using Elastos::Droid::App::FragmentState;
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -31,7 +28,7 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 public:
-    AutoPtr< ArrayOf<FragmentState*> > mActive;
+    AutoPtr< ArrayOf<IFragmentState*> > mActive;
     AutoPtr< ArrayOf<Int32> > mAdded;
     AutoPtr< ArrayOf<IBackStackState*> > mBackStack;
 };

@@ -41,6 +41,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+//=====================================================================
+// CBackStackState
+//=====================================================================
+
 CAR_INTERFACE_IMPL_2(CBackStackState, Object, IBackStackState, IParcelable)
 
 CAR_OBJECT_IMPL(CBackStackState)
@@ -227,6 +231,8 @@ ECode CBackStackState::ReadFromParcel(
 //===================================================================
 // BackStackRecord
 //===================================================================
+CAR_INTERFACE_IMPL_3(BackStackRecord, FragmentTransaction, IBackStackRecord, IRunnable, IFragmentManagerBackStackEntry)
+
 const String BackStackRecord::TAG("BackStackRecord");
 const Int32 BackStackRecord::OP_NULL = 0;
 const Int32 BackStackRecord::OP_ADD = 1;
@@ -1487,7 +1493,7 @@ AutoPtr<IArrayMap> /*<String, View>*/ BackStackRecord::MapSharedElementsIn(
     return namedViews;
 }
 
-AutoPtr<ITransition> MergeTransitions(
+AutoPtr<ITransition> BackStackRecord::MergeTransitions(
     /* [in] */ ITransition* enterTransition,
     /* [in] */ ITransition* exitTransition,
     /* [in] */ ITransition* sharedElementTransition,

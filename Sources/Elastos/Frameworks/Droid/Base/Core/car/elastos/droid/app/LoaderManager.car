@@ -161,6 +161,14 @@ module
             [in] ArrayOf<String>* args);
     }
 
+    /**
+     * @Involve
+     * interface ILoaderManager
+     */
+    interface ILoaderManagerImpl {
+        HasRunningLoaders(
+            [out] Boolean* has);
+    }
 
     } // namespace App
     } // namespace Droid

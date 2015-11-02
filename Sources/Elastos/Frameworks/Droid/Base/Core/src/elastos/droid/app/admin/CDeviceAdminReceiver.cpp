@@ -136,20 +136,19 @@ ECode CDeviceAdminReceiver::OnReceive(
     String action;
     intent->GetAction(&action);
 
-    if (IDeviceAdminReceiver::ACTION_PASSWORD_CHANGED == action) {
+    if (IDeviceAdminReceiver::ACTION_PASSWORD_CHANGED.Equals(action)) {
         OnPasswordChanged(context, intent);
     }
-    else if (IDeviceAdminReceiver::ACTION_PASSWORD_FAILED == action) {
+    else if (IDeviceAdminReceiver::ACTION_PASSWORD_FAILED.Equals(action)) {
         OnPasswordFailed(context, intent);
     }
-    else if (IDeviceAdminReceiver::ACTION_PASSWORD_SUCCEEDED == action) {
+    else if (IDeviceAdminReceiver::ACTION_PASSWORD_SUCCEEDED.Equals(action)) {
         OnPasswordSucceeded(context, intent);
     }
-    else if (IDeviceAdminReceiver::ACTION_DEVICE_ADMIN_ENABLED == action) {
+    else if (IDeviceAdminReceiver::ACTION_DEVICE_ADMIN_ENABLED.Equals(action)) {
         OnEnabled(context, intent);
     }
-    else if (IDeviceAdminReceiver::ACTION_DEVICE_ADMIN_DISABLE_REQUESTED
-            == action) {
+    else if (IDeviceAdminReceiver::ACTION_DEVICE_ADMIN_DISABLE_REQUESTED.Equals(action)) {
         AutoPtr < ICharSequence > res;
         OnDisableRequested(context, intent, (ICharSequence**)&res);
         if (res != NULL) {
@@ -158,12 +157,24 @@ ECode CDeviceAdminReceiver::OnReceive(
             extras->PutCharSequence(IDeviceAdminReceiver::EXTRA_DISABLE_WARNING, res);
         }
     }
-    else if (IDeviceAdminReceiver::ACTION_DEVICE_ADMIN_DISABLED == action) {
+    else if (IDeviceAdminReceiver::ACTION_DEVICE_ADMIN_DISABLED.Equals(action)) {
         OnDisabled(context, intent);
     }
-    else if (IDeviceAdminReceiver::ACTION_PASSWORD_EXPIRING == action) {
+    else if (IDeviceAdminReceiver::ACTION_PASSWORD_EXPIRING.Equals(action)) {
         OnPasswordExpiring(context, intent);
     }
+    else if (IDeviceAdminReceiver::ACTION_PROFILE_PROVISIONING_COMPLETE.equals(action)) {
+        OnProfileProvisioningComplete(context, intent);
+    }
+    else if (IDeviceAdminReceiver::ACTION_LOCK_TASK_ENTERING.Equals(action)) {
+        String pkg;
+        intent->GetStringExtra(EXTRA_LOCK_TASK_PACKAGE, &pkg);
+        OnLockTaskModeEntering(context, intent, pkg);
+    }
+    else if (IDeviceAdminReceiver::ACTION_LOCK_TASK_EXITING.Equals(action)) {
+        OnLockTaskModeExiting(context, intent);
+    }
+    return NOERROR;
 }
 
 } // namespace Admin

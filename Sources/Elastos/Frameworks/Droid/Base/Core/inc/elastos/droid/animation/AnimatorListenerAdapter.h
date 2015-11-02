@@ -19,6 +19,10 @@ class AnimatorListenerAdapter
 public:
     CAR_INTERFACE_DECL();
 
+    AnimatorListenerAdapter();
+
+    virtual ~AnimatorListenerAdapter();
+
     virtual CARAPI OnAnimationStart(
         /* [in] */ IAnimator* animation);
 

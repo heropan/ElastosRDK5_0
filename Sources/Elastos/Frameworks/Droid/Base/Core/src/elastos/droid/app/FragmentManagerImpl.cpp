@@ -12,6 +12,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Droid::R;
 using Elastos::Droid::Os::CBundle;
@@ -20,6 +21,8 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::App::CFragmentSavedState;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::EIID_ILayoutInflaterFactory;
 using Elastos::Droid::View::EIID_ILayoutInflaterFactory2;
 using Elastos::Droid::Animation::AnimatorInflater;
@@ -137,11 +140,6 @@ ECode AnimatorListenerEx::OnAnimationEnd(
 Boolean FragmentManagerImpl::DEBUG = FALSE;
 const String FragmentManagerImpl::TAG("FragmentManagerImpl");
 
-const String FragmentManagerImpl::TARGET_REQUEST_CODE_STATE_TAG("android:target_req_state");
-const String FragmentManagerImpl::TARGET_STATE_TAG("android:target_state");
-const String FragmentManagerImpl::VIEW_STATE_TAG("android:view_state");
-const String FragmentManagerImpl::USER_VISIBLE_HINT_TAG("android:user_visible_hint");
-
 CAR_INTERFACE_IMPL_2(FragmentManagerImpl, FragmentManager, ILayoutInflaterFactory, ILayoutInflaterFactory2)
 
 FragmentManagerImpl::FragmentManagerImpl()
@@ -175,7 +173,7 @@ ECode FragmentManagerImpl::BeginTransaction(
 {
     VALIDATE_NOT_NULL(transaction);
 
-    *transaction = new BackStackRecord(this);
+    *transaction = new BackStackRecord(THIS_PROBE(IFragmentManagerImpl));
     REFCOUNT_ADD(*transaction);
     return NOERROR;
 }
@@ -387,7 +385,7 @@ ECode FragmentManagerImpl::ToString(
     VALIDATE_NOT_NULL(s);
     StringBuilder sb(128);
     sb += "FragmentManager{";
-    sb += StringUtils::Int32ToHexString((Int32)this);
+    sb += StringUtils::ToHexString((Int32)this);
     sb += " in ";
     if (mParent != NULL) {
 //         DebugUtils.buildShortClassTag(mParent, sb);
@@ -411,7 +409,7 @@ ECode FragmentManagerImpl::Dump(
     if (!mActive.IsEmpty()) {
         writer->Print(prefix);
         writer->Print(String("Active Fragments in "));
-        writer->Print(StringUtils::Int32ToHexString((Int32)this));
+        writer->Print(StringUtils::ToHexString((Int32)this));
         writer->Println(String(":"));
         Int32 i = 0;
         List<AutoPtr<IFragment> >::Iterator it;
@@ -540,13 +538,13 @@ ECode FragmentManagerImpl::Dump(
     writer->Print(String("  mCurState="));
     writer->Print(mCurState);
     writer->Print(String(" mStateSaved="));
-    writer->PrintBoolean(mStateSaved);
+    writer->Print(mStateSaved);
     writer->Print(String(" mDestroyed="));
-    writer->PrintBooleanln(mDestroyed);
+    writer->Println(mDestroyed);
     if (mNeedMenuInvalidate) {
         writer->Print(prefix);
         writer->Print(String("  mNeedMenuInvalidate="));
-        writer->PrintBooleanln(mNeedMenuInvalidate);
+        writer->Println(mNeedMenuInvalidate);
     }
     if (mNoTransactionsBecause != NULL) {
         writer->Print(prefix);
@@ -583,7 +581,8 @@ ECode FragmentManagerImpl::LoadAnimator(
     }
 
     if (fanim != 0) {
-        AutoPtr<IAnimator> anim = AnimatorInflater::LoadAnimator(mActivity, fanim);
+        AutoPtr<IAnimator> anim;
+        AnimatorInflater::LoadAnimator(IContext::Probe(mActivity), fanim, (IAnimator**)&anim);
         if (anim != NULL) {
             *animator = anim;
             REFCOUNT_ADD(*animator);
@@ -620,7 +619,7 @@ ECode FragmentManagerImpl::LoadAnimator(
             const_cast<Int32 *>(R::styleable::FragmentAnimation),
             ARRAY_SIZE(R::styleable::FragmentAnimation));
     AutoPtr<ITypedArray> attrs;
-    mActivity->ObtainStyledAttributes(transitionStyle, attrIds, (ITypedArray**)&attrs);
+    IContext::Probe(mActivity)->ObtainStyledAttributes(transitionStyle, attrIds, (ITypedArray**)&attrs);
     Int32 anim;
     attrs->GetResourceId(styleIndex, 0, &anim);
     attrs->Recycle();
@@ -629,7 +628,8 @@ ECode FragmentManagerImpl::LoadAnimator(
         *animator = NULL;
         return NOERROR;
     }
-    AutoPtr<IAnimator> a = AnimatorInflater::LoadAnimator(mActivity, anim);
+    AutoPtr<IAnimator> a;
+    AnimatorInflater::LoadAnimator(IContext::Probe(mActivity), anim, (IAnimator**)&a);
     *animator = a;
     REFCOUNT_ADD(*animator)
     return NOERROR;
@@ -715,10 +715,11 @@ ECode FragmentManagerImpl::MoveToState(
             {
                 if (DEBUG) Logger::V(TAG, "moveto CREATED: %p", f);
                 if (savedFragmentState != NULL) {
-                   AutoPtr<IInterface> parcelableMap;
-                   savedFragmentState->GetParcelableMap(
-                            IFragmentManagerImpl::VIEW_STATE_TAG, (IInterface**)&parcelableMap);
-                    f->SetSavedViewState(IObjectInt32Map::Probe(parcelableMap));
+                    assert(0 && "TODO");
+                   // AutoPtr<IInterface> parcelableMap;
+                   // savedFragmentState->GetParcelableMap(
+                   //          IFragmentManagerImpl::VIEW_STATE_TAG, (IInterface**)&parcelableMap);
+                   //  f->SetSavedViewState(IObjectInt32Map::Probe(parcelableMap));
                     AutoPtr<IFragment> fragment;
                     GetFragment(savedFragmentState,
                             IFragmentManagerImpl::TARGET_STATE_TAG, (IFragment**)&fragment);
@@ -888,8 +889,8 @@ ECode FragmentManagerImpl::MoveToState(
                         // done already.
                         Boolean finishing;
                         mActivity->IsFinishing(&finishing);
-                        AutoPtr<IObjectInt32Map> savedViewState;
-                        f->GetSavedViewState((IObjectInt32Map**)&savedViewState);
+                        AutoPtr<IHashMap> savedViewState;
+                        f->GetSavedViewState((IHashMap**)&savedViewState);
                         if (!finishing && savedViewState == NULL) {
                             SaveFragmentViewState(f);
                         }
@@ -1196,7 +1197,7 @@ ECode FragmentManagerImpl::HideFragment(
                 // Delay the actual hide operation until the animation finishes, otherwise
                 // the fragment will just immediately disappear
                 AutoPtr<IFragment> finalFragment = fragment;
-                AutoPtr<AnimatorListenerAdapter> l = new AnimatorListener(finalFragment);
+                AutoPtr<AnimatorListenerAdapter> l = new AnimatorListenerEx(finalFragment);
                 anim->AddListener(l);
                 anim->Start();
             } else {
@@ -1801,15 +1802,16 @@ ECode FragmentManagerImpl::SaveFragmentBasicState(
     if (view != NULL) {
         SaveFragmentViewState(f);
     }
-    AutoPtr<IObjectInt32Map> savedViewState;
-    f->GetSavedViewState((IObjectInt32Map**)&savedViewState);
-    if (savedViewState != NULL) {
-        if (result == NULL) {
-            CBundle::New((IBundle**)&result);
-        }
-        result->PutParcelableMap(
-                IFragmentManagerImpl::VIEW_STATE_TAG, savedViewState->Probe(EIID_IInterface));
-    }
+    assert(0 && "TODO");
+    // AutoPtr<IObjectInt32Map> savedViewState;
+    // f->GetSavedViewState((IObjectInt32Map**)&savedViewState);
+    // if (savedViewState != NULL) {
+    //     if (result == NULL) {
+    //         CBundle::New((IBundle**)&result);
+    //     }
+    //     result->PutParcelableMap(
+    //             IFragmentManagerImpl::VIEW_STATE_TAG, savedViewState->Probe(EIID_IInterface));
+    // }
     Boolean userVisibleHint;
     f->GetUserVisibleHint(&userVisibleHint);
     if (!userVisibleHint) {
@@ -2325,11 +2327,12 @@ ECode FragmentManagerImpl::DispatchOptionsMenuClosed(
     /* [in] */ IMenu* menu)
 {
     if (!mAdded.IsEmpty()) {
+        Boolean result;
         List<AutoPtr<IFragment> >::Iterator it;
         for (it = mAdded.Begin(); it != mAdded.End(); ++it) {
             AutoPtr<IFragment> f = *it;
             if (f != NULL) {
-                f->PerformOptionsMenuClosed(menu);
+                f->PerformOptionsMenuClosed(menu, &result);
             }
         }
     }

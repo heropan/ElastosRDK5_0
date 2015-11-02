@@ -54,7 +54,6 @@ private:
     FragmentManagerImpl* mHost;
 };
 
-
 class PopBackStackRunnable1
     : public Runnable
 {
@@ -136,7 +135,7 @@ class AnimatorListenerEx
     : public AnimatorListenerAdapter
 {
 public:
-    AnimatorListener(
+    AnimatorListenerEx(
         /* [in] */ IFragment* fragment);
 
     virtual CARAPI OnAnimationEnd(
@@ -441,11 +440,6 @@ private:
 public:
     static Boolean DEBUG;
     static const String TAG;// = "FragmentManager";
-
-    static const String TARGET_REQUEST_CODE_STATE_TAG;// = "android:target_req_state";
-    static const String TARGET_STATE_TAG;// = "android:target_state";
-    static const String VIEW_STATE_TAG;// = "android:view_state";
-    static const String USER_VISIBLE_HINT_TAG;// = "android:user_visible_hint";
 
     List<AutoPtr<IRunnable> > mPendingActions;
     AutoPtr< ArrayOf<IRunnable* > > mTmpActions;

@@ -79,8 +79,8 @@ public:
  */
 class BackStackRecord
     : public FragmentTransaction
-    , public IRunnable
     , public IBackStackRecord
+    , public IRunnable
     , public IFragmentManagerBackStackEntry
 {
 private:

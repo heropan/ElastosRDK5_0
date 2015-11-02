@@ -30,13 +30,22 @@ public:
         /* [in] */ IComponentName* who,
         /* [out] */ Boolean* isAdminActive);
 
+    CARAPI IsAdminActive(
+        /* [in] */ IComponentName* who,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* isAdminActive);
+
     /**
      * Return a list of all currently active device administrator's component
      * names.  Note that if there are no administrators than null may be
      * returned.
      */
     CARAPI GetActiveAdmins(
-        /* [out] */ IObjectContainer** admins);
+        /* [out] */ IList** admins);
+
+    CARAPI GetActiveAdmins(
+        /* [in] */ Int32 userId,
+        /* [out] */ IList** admins);
 
     /**
      * Used by package administration code to determine if a package can be stopped
@@ -720,6 +729,26 @@ public:
         /* [out] */ IComponentName** component);
 
     /**
+     * Set a network-independent global HTTP proxy.  This is not normally what you want
+     * for typical HTTP proxies - they are generally network dependent.  However if you're
+     * doing something unusual like general internal filtering this may be useful.  On
+     * a private network where the proxy is not accessible, you may break HTTP using this.
+     *
+     * <p>This method requires the caller to be the device owner.
+     *
+     * <p>This proxy is only a recommendation and it is possible that some apps will ignore it.
+     * @see ProxyInfo
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated
+     *            with.
+     * @param proxyInfo The a {@link ProxyInfo} object defining the new global
+     *        HTTP proxy.  A {@code null} value will clear the global HTTP proxy.
+     */
+    CARAPI SetRecommendedGlobalProxy(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ IProxyInfo* proxyInfo);
+
+    /**
      * Returns the component name setting the global proxy.
      * @return ComponentName object of the device admin that set the global proxy, or
      *            null if no admin has set the proxy.
@@ -803,6 +832,79 @@ public:
         /* [out] */ Int32* st);
 
     /**
+     * Installs the given certificate as a user CA.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param certBuffer encoded form of the certificate to install.
+     *
+     * @return false if the certBuffer cannot be parsed or installation is
+     *         interrupted, true otherwise.
+     */
+    CARAPI InstallCaCert(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ ArrayOf<Byte>* certBuffer,
+        /* [out] */ Booelan* result);
+
+    /**
+     * Uninstalls the given certificate from trusted user CAs, if present.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param certBuffer encoded form of the certificate to remove.
+     */
+    CARAPI UninstallCaCert(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ ArrayOf<Byte>* certBuffer);
+
+    /**
+     * Returns all CA certificates that are currently trusted, excluding system CA certificates.
+     * If a user has installed any certificates by other means than device policy these will be
+     * included too.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @return a List of byte[] arrays, each encoding one user CA certificate.
+     */
+    CARAPI GetInstalledCaCerts(
+        /* [in] */ IComponentName* admin,
+        /* [out] */ IList** list);
+
+    /**
+     * Uninstalls all custom trusted CA certificates from the profile. Certificates installed by
+     * means other than device policy will also be removed, except for system CA certificates.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     */
+    CARAPI UninstallAllUserCaCerts(
+        /* [in] */ IComponentName* admin);
+    /**
+     * Returns whether this certificate is installed as a trusted CA.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param certBuffer encoded form of the certificate to look up.
+     */
+    CARAPI HasCaCertInstalled(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ ArrayOf<Byte>* certBuffer,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Called by a device or profile owner to install a certificate and private key pair. The
+     * keypair will be visible to all apps within the profile.
+     *
+     * @param who Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param privKey The private key to install.
+     * @param cert The certificate to install.
+     * @param alias The private key alias under which to install the certificate. If a certificate
+     * with that alias already exists, it will be overwritten.
+     * @return {@code true} if the keys were installed, {@code false} otherwise.
+     */
+    CARAPI InstallKeyPair(
+        /* [in] */ IComponentName* who,
+        /* [in] */ IPrivateKey* privKey,
+        /* [in] */ ICertificate* cert,
+        /* [in] */ const String& alias,
+        /* [out] */ Boolean* result);
+
+    /**
      * Called by an application that is administering the device to disable all cameras
      * on the device.  After setting this, no applications will be able to access any cameras
      * on the device.
@@ -833,6 +935,60 @@ public:
         /* [in] */ IComponentName* admin,
         /* [in] */ Int32 userHandle,
         /* [out] */ Boolean* disabled);
+
+    /**
+     * Called by a device/profile owner to set whether the screen capture is disabled. Disabling
+     * screen capture also prevents the content from being shown on display devices that do not have
+     * a secure video output. See {@link android.view.Display#FLAG_SECURE} for more details about
+     * secure surfaces and secure displays.
+     *
+     * <p>The calling device admin must be a device or profile owner. If it is not, a
+     * security exception will be thrown.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param disabled Whether screen capture is disabled or not.
+     */
+    CARAPI SetScreenCaptureDisabled(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ Boolean disabled);
+
+    /**
+     * Determine whether or not screen capture has been disabled by the current
+     * admin, if specified, or all admins.
+     * @param admin The name of the admin component to check, or null to check if any admins
+     * have disabled screen capture.
+     */
+    CARAPI GetScreenCaptureDisabled(
+        /* [in] */ IComponentName* admin,
+        /* [out] */ Boolean* result);
+
+    /** @hide per-user version */
+    CARAPI GetScreenCaptureDisabled(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ Int32 userHandle,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Called by a device owner to set whether auto time is required. If auto time is
+     * required the user cannot set the date and time, but has to use network date and time.
+     *
+     * <p>Note: if auto time is required the user can still manually set the time zone.
+     *
+     * <p>The calling device admin must be a device owner. If it is not, a security exception will
+     * be thrown.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param required Whether auto time is set required or not.
+     */
+    CARAPI SetAutoTimeRequired(
+        /* [in] */ IComponentName* admin,
+        /* [in] */ Boolean required);
+
+    /**
+     * @return true if auto time is required.
+     */
+    CARAPI GetAutoTimeRequired(
+        /* [out] */ Boolean* result);
 
     /**
      * Called by an application that is administering the device to disable keyguard customizations,
@@ -877,6 +1033,11 @@ public:
         /* [in] */ IComponentName* policyReceiver,
         /* [in] */ Boolean refreshing);
 
+    CARAPI SetActiveAdmin(
+        /* [in] */ IComponentName* policyReceiver,
+        /* [in] */ Boolean refreshing,
+        /* [in] */ Int32 userId);
+
     /**
      * Returns the DeviceAdminInfo as defined by the administrator's package info & meta-data
      * @hide
@@ -917,6 +1078,15 @@ public:
      */
     CARAPI ReportSuccessfulPasswordAttempt(
         /* [in] */ Int32 userHandle);
+
+private:
+    /**
+     * Returns the alias of a given CA certificate in the certificate store, or null if it
+     * doesn't exist.
+     */
+    static CARAPI GetCaCertAlias(
+        /* [in] */ Arrayof<Byte>* certBuffer,
+        /* [out] */ String* alias);
 
 private:
     static const String TAG;
