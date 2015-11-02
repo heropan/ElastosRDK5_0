@@ -26,8 +26,11 @@ const String InputEventConsistencyVerifier::EVENT_TYPE_TOUCH("TouchEvent");
 const String InputEventConsistencyVerifier::EVENT_TYPE_GENERIC_MOTION("GenericMotionEvent");
 const Int32 InputEventConsistencyVerifier::RECENT_EVENTS_TO_LOG;
 
-Mutex InputEventConsistencyVerifier::KeyState::mRecycledListLock;
+Object InputEventConsistencyVerifier::KeyState::mRecycledListLock;
 AutoPtr<InputEventConsistencyVerifier::KeyState> InputEventConsistencyVerifier::KeyState::mRecycledList;
+
+CAR_INTERFACE_IMPL(InputEventConsistencyVerifier, Object, IInputEventConsistencyVerifier)
+CAR_INTERFACE_IMPL(InputEventConsistencyVerifier::KeyState, Object, IInterface)
 
 AutoPtr<InputEventConsistencyVerifier::KeyState> InputEventConsistencyVerifier::KeyState::Obtain(
     /* [in] */ Int32 deviceId,
@@ -52,7 +55,7 @@ AutoPtr<InputEventConsistencyVerifier::KeyState> InputEventConsistencyVerifier::
     return state;
 }
 
-void InputEventConsistencyVerifier::KeyState::Recycle()
+ECode InputEventConsistencyVerifier::KeyState::Recycle()
 {
     AutoLock lock(mRecycledListLock);
     mNext = mRecycledList;
@@ -85,7 +88,7 @@ Boolean InputEventConsistencyVerifier::IsInstrumentationEnabled()
     return IS_ENG_BUILD;
 }
 
-void InputEventConsistencyVerifier::Reset()
+ECode InputEventConsistencyVerifier::Reset()
 {
     mLastEventSeq = -1;
     mLastNestingLevel = 0;
@@ -103,7 +106,7 @@ void InputEventConsistencyVerifier::Reset()
     }
 }
 
-void InputEventConsistencyVerifier::OnInputEvent(
+ECode InputEventConsistencyVerifier::OnInputEvent(
     /* [in] */ IInputEvent* event,
     /* [in] */ Int32 nestingLevel)
 {
@@ -128,7 +131,7 @@ void InputEventConsistencyVerifier::OnInputEvent(
     }
 }
 
-void InputEventConsistencyVerifier::OnKeyEvent(
+ECode InputEventConsistencyVerifier::OnKeyEvent(
     /* [in] */ IKeyEvent* event,
     /* [in] */ Int32 nestingLevel)
 {
@@ -196,7 +199,7 @@ void InputEventConsistencyVerifier::OnKeyEvent(
     //}
 }
 
-void InputEventConsistencyVerifier::OnTrackballEvent(
+ECode InputEventConsistencyVerifier::OnTrackballEvent(
     /* [in] */ IMotionEvent* event,
     /* [in] */ Int32 nestingLevel)
 {
@@ -263,7 +266,7 @@ void InputEventConsistencyVerifier::OnTrackballEvent(
     //}
 }
 
-void InputEventConsistencyVerifier::OnTouchEvent(
+ECode InputEventConsistencyVerifier::OnTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [in] */ Int32 nestingLevel)
 {
@@ -424,7 +427,7 @@ void InputEventConsistencyVerifier::OnTouchEvent(
     //}
 }
 
-void InputEventConsistencyVerifier::OnGenericMotionEvent(
+ECode InputEventConsistencyVerifier::OnGenericMotionEvent(
     /* [in] */ IMotionEvent* event,
     /* [in] */ Int32 nestingLevel)
 {
@@ -481,7 +484,7 @@ void InputEventConsistencyVerifier::OnGenericMotionEvent(
     //}
 }
 
-void InputEventConsistencyVerifier::OnUnhandledEvent(
+ECode InputEventConsistencyVerifier::OnUnhandledEvent(
     /* [in] */ IInputEvent* event,
     /* [in] */ Int32 nestingLevel)
 {
@@ -523,7 +526,7 @@ void InputEventConsistencyVerifier::OnUnhandledEvent(
     }
 }
 
-void InputEventConsistencyVerifier::EnsureMetaStateIsNormalized(
+ECode InputEventConsistencyVerifier::EnsureMetaStateIsNormalized(
     /* [in] */ Int32 metaState)
 {
     Int32 normalizedMetaState = CKeyEvent::NormalizeMetaState(metaState);
@@ -536,7 +539,7 @@ void InputEventConsistencyVerifier::EnsureMetaStateIsNormalized(
     }
 }
 
-void InputEventConsistencyVerifier::EnsurePointerCountIsOneForThisAction(
+ECode InputEventConsistencyVerifier::EnsurePointerCountIsOneForThisAction(
     /* [in] */ IMotionEvent* event)
 {
     Int32 pointerCount;
@@ -550,7 +553,7 @@ void InputEventConsistencyVerifier::EnsurePointerCountIsOneForThisAction(
     }
 }
 
-void InputEventConsistencyVerifier::EnsureHistorySizeIsZeroForThisAction(
+ECode InputEventConsistencyVerifier::EnsureHistorySizeIsZeroForThisAction(
     /* [in] */ IMotionEvent* event)
 {
     Int32 historySize;
@@ -593,7 +596,7 @@ Boolean InputEventConsistencyVerifier::StartEvent(
     return TRUE;
 }
 
-void InputEventConsistencyVerifier::FinishEvent()
+ECode InputEventConsistencyVerifier::FinishEvent()
 {
     if (mViolationMessage != NULL && mViolationMessage->GetLength() != 0) {
         Boolean isTainted;
@@ -648,7 +651,7 @@ void InputEventConsistencyVerifier::FinishEvent()
     mCurrentEventType = NULL;
 }
 
-void InputEventConsistencyVerifier::AppendEvent(
+ECode InputEventConsistencyVerifier::AppendEvent(
     /* [in] */ StringBuilder* message,
     /* [in] */ Int32 index,
     /* [in] */ IInputEvent* event,
@@ -669,7 +672,7 @@ void InputEventConsistencyVerifier::AppendEvent(
         message->AppendString(((CMotionEvent*)event)->ToString());
 }
 
-void InputEventConsistencyVerifier::Problem(
+ECode InputEventConsistencyVerifier::Problem(
     /* [in] */ const String& message)
 {
     if (mViolationMessage == NULL) {
@@ -713,7 +716,7 @@ AutoPtr<InputEventConsistencyVerifier::KeyState> InputEventConsistencyVerifier::
     return NULL;
 }
 
-void InputEventConsistencyVerifier::AddKeyState(
+ECode InputEventConsistencyVerifier::AddKeyState(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 source,
     /* [in] */ Int32 keyCode)

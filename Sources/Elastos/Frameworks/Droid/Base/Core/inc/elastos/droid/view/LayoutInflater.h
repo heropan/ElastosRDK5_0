@@ -3,9 +3,10 @@
 #define __ELASTOS_DROID_VIEW_LAYOUTINFLATER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IHashMap;
+using Elastos::Core::Object;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -15,18 +16,13 @@ namespace Droid {
 namespace View {
 
 class LayoutInflater
+    : public Object
+    , public ILayoutInflater
 {
-public:
-    static const String TAG;
-
-    static const String TAG_MERGE;
-    static const String TAG_INCLUDE;
-    static const String TAG_1995;
-    static const String TAG_REQUEST_FOCUS;
-
 private:
     class FactoryMerger
-        : public ElRefBase
+        : public Object
+        , public ILayoutInflaterFactory
         , public ILayoutInflaterFactory2
     {
     public:
@@ -60,8 +56,7 @@ public:
 
     ~LayoutInflater();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Obtains the LayoutInflater from the given context.
@@ -74,7 +69,8 @@ public:
      * Return the context we are running in, for access to resources, class
      * loader, etc.
      */
-    CARAPI_(AutoPtr<IContext>) GetContext();
+    CARAPI GetContext(
+        /* [out] */ IContext** inflater);
 
     CARAPI GetFactory(
         /* [out] */ ILayoutInflaterFactory** factory);
@@ -184,9 +180,10 @@ protected:
         /* [in] */ IView* parent,
         /* [in] */ const String& name,
         /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Boolean inheritContext,
         /* [out] */ IView** view);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -197,7 +194,7 @@ protected:
      * @param original The original LayoutInflater to copy.
      * @param newContext The new Context to use.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ LayoutInflater* original,
         /* [in] */ IContext* newContext);
 
@@ -209,7 +206,8 @@ protected:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IView* parent,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Boolean finishInflate);
+        /* [in] */ Boolean finishInflate,
+        /* [in] */ Boolean inheritContext);
 
 private:
     /**
@@ -220,21 +218,27 @@ private:
         /* [in] */ const String& prefix,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI ParseRequestFocus(
-        /* [in] */ IXmlPullParser* parser,
-        /* [in] */ IView* parent);
-
     CARAPI ParseInclude(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IView* parent,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Boolean inheritContext);
+
+    CARAPI ParseViewTag(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IView* view,
         /* [in] */ IAttributeSet* attrs);
 
     CARAPI_(String) ConvertViewName(
         /* [in] */ const String& name);
 
-    CARAPI_(void) SetViewXmlPath(
-        /* [in] */ IView* view,
-        /* [in] */ IXmlPullParser* parser);
+    /**
+     * Parses a <code>&lt;request-focus&gt;</code> element and requests focus on
+     * the containing View.
+     */
+    CARAPI ParseRequestFocus(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ IView* view);
 
 public:
     AutoPtr<ArrayOf<IInterface*> > mConstructorArgs;
@@ -255,9 +259,18 @@ private:
 
     Object mConstructorArgsLock;
 
-    static AutoPtr< HashMap<String, AutoPtr<IConstructorInfo> > > sConstructorMap;
+    // static AutoPtr< HashMap<String, AutoPtr<IConstructorInfo> > > sConstructorMap;
+    static AutoPtr<IHashMap> sConstructorMap;
 
-    AutoPtr< HashMap<String, Boolean> > mFilterMap;
+    AutoPtr<IHashMap> mFilterMap;
+
+    static const String TAG;
+
+    static const String TAG_TAG;
+    static const String TAG_MERGE;
+    static const String TAG_INCLUDE;
+    static const String TAG_1995;
+    static const String TAG_REQUEST_FOCUS;
 };
 
 } // namespace View

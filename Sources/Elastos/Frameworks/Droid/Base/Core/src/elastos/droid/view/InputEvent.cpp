@@ -1,6 +1,6 @@
 
 #include "elastos/droid/view/InputEvent.h"
-#include "elastos/droid/view/CInputDevice.h"
+#include "elastos/droid/view/InputDevice.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/logging/Logger.h>
 
@@ -14,8 +14,11 @@ const Int32 InputEvent::PARCEL_TOKEN_MOTION_EVENT;
 const Int32 InputEvent::PARCEL_TOKEN_KEY_EVENT;
 
 Int32 InputEvent::sNextSeq = 0;
-Mutex InputEvent::sNextSeqLock;
+Object InputEvent::sNextSeqLock;
+
 const Boolean InputEvent::TRACK_RECYCLED_LOCATION;
+
+CAR_INTERFACE_IMPL_2(InputEvent, Object, IInputEvent, IParcelable)
 
 InputEvent::InputEvent()
     : mRecycled(FALSE)
@@ -27,10 +30,10 @@ InputEvent::InputEvent()
 ECode InputEvent::GetDevice(
     /* [out] */ IInputDevice** device)
 {
-    assert(device);
+    VALIDATE_NOT_NULL(device)
     Int32 deviceId;
     GetDeviceId(&deviceId);
-    return CInputDevice::GetDevice(deviceId, device);
+    return InputDevice::GetDevice(deviceId, device);
 }
 
 ECode InputEvent::Recycle()
@@ -61,7 +64,6 @@ ECode InputEvent::RecycleIfNeededAfterDispatch()
 void InputEvent::PrepareForReuse()
 {
     mRecycled = FALSE;
-    //mRecycledLocation = NULL;
     AutoLock lock(sNextSeqLock);
     mSeq = ++sNextSeq;
 }
@@ -69,7 +71,7 @@ void InputEvent::PrepareForReuse()
 ECode InputEvent::GetSequenceNumber(
     /* [out] */ Int32* seq)
 {
-    assert(seq);
+    VALIDATE_NOT_NULL(seq)
     *seq = mSeq;
 
     return NOERROR;

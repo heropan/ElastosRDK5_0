@@ -289,8 +289,6 @@ public:
         /* [out] */ IKeyEvent** newEvent);
 
 private:
-    static CARAPI_(void) PopulateKeycodeSymbolicNames();
-
     static CARAPI_(AutoPtr<CKeyEvent>) Obtain();
 
     static CARAPI MetaStateFilterDirectionalModifiers(
@@ -992,10 +990,8 @@ protected:
     static const char* TAG;
 
 private:
+    static const String LABEL_PREFIX("KEYCODE_");
     static const Int32 LAST_KEYCODE = IKeyEvent::KEYCODE_SCREENSHOT;
-
-    // Symbolic names of all key codes.
-    static HashMap<Int32, String> KEYCODE_SYMBOLIC_NAMES;
 
     // Symbolic names of all metakeys in bit order from least significant to most significant.
     // Accordingly there are exactly 32 values in this table.
@@ -1030,10 +1026,6 @@ private:
     // These bits are known to be used for purposes other than specifying modifiers.
     static const Int32 META_INVALID_MODIFIER_MASK =
             META_LOCK_MASK | META_SYNTHETIC_MASK;
-
-    static const Boolean mIsStaticInited;
-
-    static Boolean InitStatic();
 
 private:
     AutoPtr<CKeyEvent> mNext;

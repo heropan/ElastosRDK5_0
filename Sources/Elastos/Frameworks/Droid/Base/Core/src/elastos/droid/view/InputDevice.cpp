@@ -19,7 +19,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-CAR_INTERFACE_IMPL(InputDevice::MotionRange, Object, IMotionRange);
+CAR_INTERFACE_IMPL(InputDevice::MotionRange, Object, IMotionRange)
+CAR_INTERFACE_IMPL_2(InputDevice, Object, IInputDevice, IParcelable)
 
 InputDevice::MotionRange::MotionRange(
     /* [in] */ Int32 axis,
@@ -42,7 +43,7 @@ InputDevice::MotionRange::MotionRange(
 ECode InputDevice::MotionRange::GetAxis(
     /* [out] */ Int32* axis)
 {
-    VALIDATE_NOT_NULL(axis);
+    VALIDATE_NOT_NULL(axis)
     *axis = mAxis;
 
     return NOERROR;
@@ -51,7 +52,7 @@ ECode InputDevice::MotionRange::GetAxis(
 ECode InputDevice::MotionRange::GetSource(
     /* [out] */ Int32* source)
 {
-    VALIDATE_NOT_NULL(source);
+    VALIDATE_NOT_NULL(source)
     *source = mSource;
 
     return NOERROR;
@@ -61,6 +62,7 @@ ECode InputDevice::MotionRange::IsFromSource(
     /* [in] */ Int32 source,
     /* [out] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     *rst = (mSource & source) == source;
     return NOERROR;
 }
@@ -191,6 +193,7 @@ ECode InputDevice::GetId(
 ECode InputDevice::GetControllerNumber(
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
     *number = mControllerNumber;
     return NOERROR;
 }
@@ -198,6 +201,7 @@ ECode InputDevice::GetControllerNumber(
 ECode InputDevice::GetIdentifier(
     /* [out] */ IInputDeviceIdentifier** identifier)
 {
+    VALIDATE_NOT_NULL(identifier)
     *identifier = mIdentifier;
     REFCOUNT_ADD(*identifier)
     return NOERROR;
@@ -215,6 +219,7 @@ ECode InputDevice::GetGeneration(
 ECode InputDevice::GetVendorId(
     /* [out] */ Int32* id)
 {
+    VALIDATE_NOT_NULL(id)
     *id = mVendorId;
     return NOERROR;
 }
@@ -222,6 +227,7 @@ ECode InputDevice::GetVendorId(
 ECode InputDevice::GetProductId(
     /* [out] */ Int32* id)
 {
+    VALIDATE_NOT_NULL(id)
     *id = mProductId;
     return NOERROR;
 }
@@ -314,6 +320,7 @@ ECode InputDevice::HasKeys(
     /* [in] */ ArrayOf<Int32>* keys,
     /* [out] */ ArrayOf<Boolean>** rsts)
 {
+    VALIDATE_NOT_NULL(rsts)
     AutoPtr<IInputManagerHelper> helper;
     CInputManagerHelper::AcquireSingleton((IInputManagerHelper**)&helper);
     AutoPtr<IInputManager> manager;
@@ -424,6 +431,7 @@ ECode InputDevice::GetVibrator(
 ECode InputDevice::HasButtonUnderPad(
     /* [in] */ Boolean* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     *rst = mHasButtonUnderPad;
     return NOERROR;
 }
@@ -517,6 +525,7 @@ ECode InputDevice::WriteToParcel(
 ECode InputDevice::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     StringBuilder description;
     ((((description += "Input Device ") += mId) += ": ") += mName) += "\n";
     ((description += "  Descriptor: ") += mDescriptor) += "\n";

@@ -4,8 +4,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::StringBuilder;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -20,16 +23,10 @@ namespace View {
  *
  * @hide
  */
-class InputEventConsistencyVerifier : public ElRefBase
+class InputEventConsistencyVerifier
+    : public Object
+    , public IInputEventConsistencyVerifier
 {
-public:
-    /**
-     * Indicates that the verifier is intended to act on raw device input event streams.
-     * Disables certain checks for invariants that are established by the input dispatcher
-     * itself as it delivers input events, such as key repeating behavior.
-     */
-    static const Int32 FLAG_RAW_DEVICE_INPUT = 1 << 0;
-
 private:
     static const Boolean IS_ENG_BUILD;
 
@@ -44,19 +41,22 @@ private:
     static const Int32 RECENT_EVENTS_TO_LOG = 5;
 
 private:
-    class KeyState : public ElRefBase
+    class KeyState
+        : public Object
     {
     private:
         KeyState()
         {}
 
     public:
+        CAR_INTERFACE_DECL()
+
         static CARAPI_(AutoPtr<KeyState>) Obtain(
             /* [in] */ Int32 deviceId,
             /* [in] */ Int32 source,
             /* [in] */ Int32 keyCode);
 
-        CARAPI_(void) Recycle();
+        CARAPI Recycle();
 
     private:
         static Object mRecycledListLock;
@@ -71,6 +71,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates an input consistency verifier.
      * @param caller The object to which the verifier is attached.
@@ -91,7 +93,7 @@ public:
     /**
      * Resets the state of the input event consistency verifier.
      */
-    CARAPI_(void) Reset();
+    CARAPI Reset();
 
     /**
      * Checks an arbitrary input event.
@@ -102,7 +104,7 @@ public:
      * where a subclass dispatching method delegates to its superclass's dispatching method
      * and both dispatching methods call into the consistency verifier.
      */
-    CARAPI_(void) OnInputEvent(
+    CARAPI OnInputEvent(
         /* [in] */ IInputEvent* event,
         /* [in] */ Int32 nestingLevel);
 
@@ -115,7 +117,7 @@ public:
      * where a subclass dispatching method delegates to its superclass's dispatching method
      * and both dispatching methods call into the consistency verifier.
      */
-    CARAPI_(void) OnKeyEvent(
+    CARAPI OnKeyEvent(
         /* [in] */ IKeyEvent* event,
         /* [in] */ Int32 nestingLevel);
 
@@ -128,7 +130,7 @@ public:
      * where a subclass dispatching method delegates to its superclass's dispatching method
      * and both dispatching methods call into the consistency verifier.
      */
-    CARAPI_(void) OnTrackballEvent(
+    CARAPI OnTrackballEvent(
         /* [in] */ IMotionEvent* event,
         /* [in] */ Int32 nestingLevel);
 
@@ -141,7 +143,7 @@ public:
      * where a subclass dispatching method delegates to its superclass's dispatching method
      * and both dispatching methods call into the consistency verifier.
      */
-    CARAPI_(void) OnTouchEvent(
+    CARAPI OnTouchEvent(
         /* [in] */ IMotionEvent* event,
         /* [in] */ Int32 nestingLevel);
 
@@ -154,7 +156,7 @@ public:
      * where a subclass dispatching method delegates to its superclass's dispatching method
      * and both dispatching methods call into the consistency verifier.
      */
-    CARAPI_(void) OnGenericMotionEvent(
+    CARAPI OnGenericMotionEvent(
         /* [in] */ IMotionEvent* event,
         /* [in] */ Int32 nestingLevel);
 
@@ -170,18 +172,18 @@ public:
      * where a subclass dispatching method delegates to its superclass's dispatching method
      * and both dispatching methods call into the consistency verifier.
      */
-    CARAPI_(void) OnUnhandledEvent(
+    CARAPI OnUnhandledEvent(
         /* [in] */ IInputEvent* event,
         /* [in] */ Int32 nestingLevel);
 
 private:
-    CARAPI_(void) EnsureMetaStateIsNormalized(
+    CARAPI EnsureMetaStateIsNormalized(
         /* [in] */ Int32 metaState);
 
-    CARAPI_(void) EnsurePointerCountIsOneForThisAction(
+    CARAPI EnsurePointerCountIsOneForThisAction(
         /* [in] */ IMotionEvent* event);
 
-    CARAPI_(void) EnsureHistorySizeIsZeroForThisAction(
+    CARAPI EnsureHistorySizeIsZeroForThisAction(
         /* [in] */ IMotionEvent* event);
 
     CARAPI_(Boolean) StartEvent(
@@ -189,15 +191,15 @@ private:
         /* [in] */ Int32 nestingLevel,
         /* [in] */ const String& eventType);
 
-    CARAPI_(void) FinishEvent();
+    CARAPI FinishEvent();
 
-    static CARAPI_(void) AppendEvent(
+    static CARAPI AppendEvent(
         /* [in] */ StringBuilder* message,
         /* [in] */ Int32 index,
         /* [in] */ IInputEvent* event,
         /* [in] */ Boolean unhandled);
 
-    CARAPI_(void) Problem(
+    CARAPI Problem(
         /* [in] */ const String& message);
 
     CARAPI_(AutoPtr<KeyState>) FindKeyState(
@@ -206,7 +208,7 @@ private:
         /* [in] */ Int32 keyCode,
         /* [in] */ Boolean remove);
 
-    CARAPI_(void) AddKeyState(
+    CARAPI AddKeyState(
         /* [in] */ Int32 deviceId,
         /* [in] */ Int32 source,
         /* [in] */ Int32 keyCode);

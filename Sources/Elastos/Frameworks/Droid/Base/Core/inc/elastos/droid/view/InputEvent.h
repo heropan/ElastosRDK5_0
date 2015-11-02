@@ -1,29 +1,27 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTEVENT_H__
 #define __ELASTOS_DROID_VIEW_INPUTEVENT_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::Object;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 class InputEvent
+    : public Object
+    , public IInputEvent
+    , public IParcelable
 {
 protected:
     InputEvent();
 
 public:
-    /**
-     * Gets the id for the device that this event came from.  An id of
-     * zero indicates that the event didn't come from a physical device
-     * and maps to the default keymap.  The other numbers are arbitrary and
-     * you shouldn't depend on the values.
-     *
-     * @return The device id.
-     * @see InputDevice#getDevice
-     */
-    virtual CARAPI GetDeviceId(
-        /* [out] */ Int32* deviceId) = 0;
+    CAR_INTERFACE_DECL()
 
     /**
      * Gets the device that this event came from.
@@ -34,32 +32,16 @@ public:
         /* [out] */ IInputDevice** device);
 
     /**
-     * Gets the source of the event.
+     * Determines whether the event is from the given source.
      *
-     * @return The event source or {@link InputDevice#SOURCE_UNKNOWN} if unknown.
-     * @see InputDevice#getSourceInfo
+     * @param source The input source to check against. This can be a specific device type, such as
+     * {@link InputDevice#SOURCE_TOUCH_NAVIGATION}, or a more generic device class, such as
+     * {@link InputDevice#SOURCE_CLASS_POINTER}.
+     * @return Whether the event is from the given source.
      */
-    virtual CARAPI GetSource(
-        /* [out] */ Int32* source) = 0;
-
-    /**
-     * Modifies the source of the event.
-     * @param source The source.
-     *
-     * @hide
-     */
-    virtual CARAPI SetSource(
-        /* [in] */ Int32 source) = 0;
-
-
-    /**
-     * Copies the event.
-     *
-     * @return A deep copy of the event.
-     * @hide
-     */
-    virtual CARAPI Copy(
-        /* [out] */ IInputEvent** event) = 0;
+        IsFromSource(
+            /* [in] */ Int32 source,
+            /* [out] */ Boolean* result);
 
     /**
      * Recycles the event.
@@ -84,57 +66,6 @@ public:
     virtual CARAPI RecycleIfNeededAfterDispatch();
 
     /**
-     * Gets a private flag that indicates when the system has detected that this input event
-     * may be inconsistent with respect to the sequence of previously delivered input events,
-     * such as when a key up event is sent but the key was not down or when a pointer
-     * move event is sent but the pointer is not down.
-     *
-     * @return True if this event is tainted.
-     * @hide
-     */
-    virtual CARAPI IsTainted(
-        /* [out] */ Boolean* isTainted) = 0;
-
-    /**
-     * Sets a private flag that indicates when the system has detected that this input event
-     * may be inconsistent with respect to the sequence of previously delivered input events,
-     * such as when a key up event is sent but the key was not down or when a pointer
-     * move event is sent but the pointer is not down.
-     *
-     * @param tainted True if this event is tainted.
-     * @hide
-     */
-    virtual CARAPI SetTainted(
-        /* [in] */ Boolean tainted) = 0;
-
-    /**
-     * Retrieve the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base.
-     *
-     * @return Returns the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base.
-     */
-    virtual CARAPI GetEventTime(
-        /* [out] */ Int64* eventTime) = 0;
-
-    /**
-     * Retrieve the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base but with
-     * nanosecond (instead of millisecond) precision.
-     * <p>
-     * The value is in nanosecond precision but it may not have nanosecond accuracy.
-     * </p>
-     *
-     * @return Returns the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base but with
-     * nanosecond (instead of millisecond) precision.
-     *
-     * @hide
-     */
-    virtual CARAPI GetEventTimeNano(
-        /* [out] */ Int64* eventTimeNano) = 0;
-
-    /**
      * Gets the unique sequence number of this event.
      * Every input event that is created or received by a process has a
      * unique sequence number.  Moreover, a new sequence number is obtained
@@ -152,23 +83,11 @@ public:
 protected:
     virtual CARAPI_(void) PrepareForReuse();
 
-    //public static final Parcelable.Creator<InputEvent> CREATOR
-    //    = new Parcelable.Creator<InputEvent>() {
-    //        public InputEvent createFromParcel(Parcel in) {
-    //            Int32 token = in.readInt();
-    //            if (token == PARCEL_TOKEN_KEY_EVENT) {
-    //                return KeyEvent.createFromParcelBody(in);
-    //            } else if (token == PARCEL_TOKEN_MOTION_EVENT) {
-    //                return MotionEvent.createFromParcelBody(in);
-    //            } else {
-    //                throw new IllegalStateException("Unexpected input event type token in parcel.");
-    //            }
-    //        }
+    virtual CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
 
-    //        public InputEvent[] newArray(Int32 size) {
-    //            return new InputEvent[size];
-    //        }
-    //};
+    virtual CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
 
 protected:
     /** @hide */
@@ -177,7 +96,6 @@ protected:
     static const Int32 PARCEL_TOKEN_KEY_EVENT = 2;
 
     Int32 mSeq;
-
     Boolean mRecycled;
 
 private:

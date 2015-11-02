@@ -29,6 +29,8 @@ SOURCES += Choreographer.cpp
 SOURCES += InputDevice.cpp
 SOURCES += TouchDelegate.cpp
 SOURCES += ThreadedRenderer.cpp
+SOURCES += InputEvent.cpp
+SOURCES += LayoutInflater.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
 #SOURCES += CAbsSavedStateHelper.cpp
@@ -40,7 +42,7 @@ SOURCES += ThreadedRenderer.cpp
 #SOURCES += CDispatcherState.cpp
 
 #SOURCES += NativeDisplayEventReceiver.cpp
-SOURCES += DisplayEventReceiver.cpp
+#SOURCES += DisplayEventReceiver.cpp
 
 #SOURCES += CDragShadowBuilder.cpp
 #SOURCES += NativeInputChannel.cpp
