@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/ui/gfx/BitmapHelper.h"
+#include "elastos/droid/webkit/native/ui/api/BitmapHelper_dec.h"
 #include "elastos/core/Math.h"
 //#include "elastos/droid/graphics/CBitmapHelper.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
@@ -7,7 +8,6 @@
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/BitmapFormat.h"
 
-using Elastos::Core::Math;
 using Elastos::Droid::Graphics::IBitmapHelper;
 //using Elastos::Droid::Graphics::CBitmapHelper;
 using Elastos::Droid::Graphics::IBitmapFactory;
@@ -22,6 +22,7 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Webkit::Ui::Gfx::BitmapFormat;
+using Elastos::Core::Math;
 
 namespace Elastos {
 namespace Droid {
@@ -32,7 +33,7 @@ namespace Gfx {
 //=====================================================================
 //                             BitmapHelper
 //=====================================================================
-AutoPtr<IBitmap> BitmapHelper::CreateBitmap(
+AutoPtr<IInterface> BitmapHelper::CreateBitmap(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 bitmapFormatValue)
@@ -48,10 +49,10 @@ AutoPtr<IBitmap> BitmapHelper::CreateBitmap(
     // CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
     AutoPtr<IBitmap> bitmap;
     helper->CreateBitmap(width, height, bitmapConfig, (IBitmap**)&bitmap);
-    return bitmap;
+    return TO_IINTERFACE(bitmap);
 }
 
-AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
+AutoPtr<IInterface> BitmapHelper::DecodeDrawableResource(
     /* [in] */ const String& name,
     /* [in] */ Int32 reqWidth,
     /* [in] */ Int32 reqHeight)
@@ -96,7 +97,7 @@ AutoPtr<IBitmap> BitmapHelper::DecodeDrawableResource(
 
     AutoPtr<IBitmap> result;
     bitmapFactory->DecodeResource(res, resId, options, (IBitmap**)&result);
-    return result;
+    return TO_IINTERFACE(result);
 }
 
 Int32 BitmapHelper::CalculateInSampleSize(

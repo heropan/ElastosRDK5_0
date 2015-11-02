@@ -103,6 +103,39 @@ public:
     static CARAPI_(AutoPtr<DeviceDisplayInfo>) Create(
         /* [in] */ IContext* context);
 
+    static CARAPI_(void*) ElaDeviceDisplayInfoCallback_Init();
+
+private:
+    static CARAPI_(Int32) GetDisplayHeight(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetDisplayWidth(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetPhysicalDisplayHeight(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetPhysicalDisplayWidth(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetBitsPerPixel(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetBitsPerComponent(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Double) GetDIPScale(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetSmallestDIPWidth(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetRotationDegrees(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ IInterface* context);
+
 private:
     DeviceDisplayInfo(
         /* [in] */ IContext* context);
@@ -140,8 +173,8 @@ private:
         /* [in] */ Int32 rotationDegrees);
 
 private:
-    /*const*/ AutoPtr<IContext> mAppContext;
-    /*const*/ AutoPtr<IWindowManager> mWinManager;
+    AutoPtr<IContext> mAppContext;
+    AutoPtr<IWindowManager> mWinManager;
     AutoPtr<IPoint> mTempPoint;
     AutoPtr<IDisplayMetrics> mTempMetrics;
 };

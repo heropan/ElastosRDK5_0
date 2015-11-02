@@ -1,8 +1,8 @@
 
 #include "elastos/droid/webkit/native/content/browser/PowerSaveBlocker.h"
-#include "elastos/droid/webkit/native/ui/base/ViewAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/ViewElastos.h"
 
-using Elastos::Droid::Webkit::Ui::Base::ViewAndroid;
+using Elastos::Droid::Webkit::Ui::Base::ViewElastos;
 
 namespace Elastos {
 namespace Droid {
@@ -15,13 +15,13 @@ namespace Browser {
 //=====================================================================
 
 ECode PowerSaveBlocker::ApplyBlock(
-    /* [in] */ ViewAndroid* view)
+    /* [in] */ ViewElastos* view)
 {
     return view->IncrementKeepScreenOnCount();
 }
 
 ECode PowerSaveBlocker::RemoveBlock(
-    /* [in] */ ViewAndroid* view)
+    /* [in] */ ViewElastos* view)
 {
     return view->DecrementKeepScreenOnCount();
 }

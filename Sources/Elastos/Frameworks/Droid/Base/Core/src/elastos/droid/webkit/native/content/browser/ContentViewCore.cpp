@@ -989,7 +989,7 @@ void ContentViewCore::SetViewportSizeOffset(
  * @return A ViewAndroidDelegate that can be used to add and remove views.
  */
 //@VisibleForTesting
-AutoPtr<ViewAndroidDelegate> ContentViewCore::GetViewAndroidDelegate()
+AutoPtr<ViewElastosDelegate> ContentViewCore::GetViewAndroidDelegate()
 {
     return new InnerViewAndroidDelegate(this);
 }

@@ -45,7 +45,7 @@ namespace Base {
   * The window base class that has the minimum functionality.
   */
 // @JNINamespace("ui")
-class WindowAndroid
+class WindowElastos
     : public Object
 {
 public:
@@ -54,7 +54,7 @@ public:
     {
     public:
         InnerVSyncMonitorListener(
-            /* [in] */ WindowAndroid* owner);
+            /* [in] */ WindowElastos* owner);
 
         // @Override
         CARAPI OnVSync(
@@ -62,7 +62,7 @@ public:
             /* [in] */ Int64 vsyncTimeMicros);
 
     private:
-        WindowAndroid* mOwner;
+        WindowElastos* mOwner;
     };
 
     /**
@@ -80,7 +80,7 @@ public:
           * @param data The data returned by the intent.
           */
         virtual CARAPI OnIntentCompleted(
-            /* [in] */ WindowAndroid* window,
+            /* [in] */ WindowElastos* window,
             /* [in] */ Int32 resultCode,
             /* [in] */ IContentResolver* contentResolver,
             /* [in] */ IIntent* data) = 0;
@@ -91,7 +91,7 @@ public:
       * @param context The application context.
       */
     // @SuppressLint("UseSparseArrays")
-    WindowAndroid(
+    WindowElastos(
         /* [in] */ IContext* context);
 
     /**
@@ -234,7 +234,7 @@ public:
         /* [in] */ IIntent* intent);
 
     /**
-      * Destroys the c++ WindowAndroid object if one has been created.
+      * Destroys the c++ WindowElastos object if one has been created.
       */
     virtual CARAPI Destroy();
 
@@ -245,6 +245,8 @@ public:
       */
     virtual CARAPI_(Int64) GetNativePointer();
 
+    static CARAPI_(void*) ElaWindowElastosCallback_Init();
+
 protected:
     /**
       * Displays an error message for a nonexistent callback.
@@ -254,6 +256,9 @@ protected:
         /* [in] */ const String& error);
 
 private:
+    static CARAPI_(void) RequestVSyncUpdate(
+        /* [in] */ IInterface* obj);
+
     // @CalledByNative
     CARAPI RequestVSyncUpdate();
 
@@ -261,11 +266,11 @@ private:
         /* [in] */ Int64 vsyncPeriod);
 
     CARAPI NativeOnVSync(
-        /* [in] */ Int64 nativeWindowAndroid,
+        /* [in] */ Int64 nativeWindowElastos,
         /* [in] */ Int64 vsyncTimeMicros);
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeWindowAndroid);
+        /* [in] */ Int64 nativeWindowElastos);
 
 public:
     // A string used as a key to store intent errors in a bundle
@@ -283,10 +288,10 @@ protected:
 
 private:
     static const String TAG;
-    // Native pointer to the c++ WindowAndroid object.
-    Int64 mNativeWindowAndroid;
-    /*const*/ AutoPtr<VSyncMonitor> mVSyncMonitor;
-    /*const*/ AutoPtr<VSyncMonitor::Listener> mVSyncListener;
+    // Native pointer to the c++ WindowElastos object.
+    Int64 mNativeWindowElastos;
+    AutoPtr<VSyncMonitor> mVSyncMonitor;
+    AutoPtr<VSyncMonitor::Listener> mVSyncListener;
 };
 
 } // namespace Base

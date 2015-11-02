@@ -1,7 +1,10 @@
 
 #include "elastos/droid/webkit/native/ui/base/Clipboard.h"
+#include "elastos/droid/webkit/native/ui/api/Clipboard_dec.h"
 #include "elastos/droid/content/CClipDataHelper.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -207,6 +210,65 @@ ECode Clipboard::SetPrimaryClipNoException(
     //}
     return NOERROR;
 }
+
+AutoPtr<IInterface> Clipboard::Create(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Create(c));
+}
+
+String Clipboard::GetCoercedText(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<Clipboard> mObj = (Clipboard*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("Clipboard", "Clipboard::GetCoercedText, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetCoercedText();
+}
+
+String Clipboard::GetHTMLText(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<Clipboard> mObj = (Clipboard*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("Clipboard", "Clipboard::GetHTMLText, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetHTMLText();
+}
+
+void Clipboard::SetText(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& text)
+{
+    AutoPtr<Clipboard> mObj = (Clipboard*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("Clipboard", "Clipboard::SetText, mObj is NULL");
+        return;
+    }
+    mObj->SetText(text);
+}
+
+void Clipboard::SetHTMLText(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& html,
+    /* [in] */ const String& text)
+{
+    AutoPtr<Clipboard> mObj = (Clipboard*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("Clipboard", "Clipboard::SetHTMLText, mObj is NULL");
+        return;
+    }
+    mObj->SetHTMLText(html, text);
+}
+
 
 } // namespace Base
 } // namespace Ui

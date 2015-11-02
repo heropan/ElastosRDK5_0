@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/ui/base/ResourceBundle.h"
+#include "elastos/droid/webkit/native/ui/api/ResourceBundle_dec.h"
 
 using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
@@ -39,6 +40,14 @@ Boolean ResourceBundle::AssetContainedInApk(
     //} catch (IOException e) {
     //    return false;
     //}
+}
+
+Boolean ResourceBundle::AssetContainedInApk(
+    /* [in] */ IInterface* ctx,
+    /* [in] */ const String& filename)
+{
+    AutoPtr<IContext> c = IContext::Probe(ctx);
+    return AssetContainedInApk(c, filename);
 }
 
 } // namespace Base

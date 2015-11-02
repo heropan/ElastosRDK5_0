@@ -6,7 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_UI_BASE_ACTIVITYWINDOWANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 
 // package org.chromium.ui.base;
 // import android.app.Activity;
@@ -19,7 +19,7 @@
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
+using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
 
 namespace Elastos {
 namespace Droid {
@@ -28,15 +28,15 @@ namespace Ui {
 namespace Base {
 
 /**
-  * The class provides the WindowAndroid's implementation which requires
+  * The class provides the WindowElastos's implementation which requires
   * Activity Instance.
   * Only instantiate this class when you need the implemented features.
   */
-class ActivityWindowAndroid
-    : public WindowAndroid
+class ActivityWindowElastos
+    : public WindowElastos
 {
 public:
-    ActivityWindowAndroid(
+    ActivityWindowElastos(
         /* [in] */ IActivity* activity);
 
     // @Override

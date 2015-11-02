@@ -68,11 +68,17 @@ public:
     static CARAPI_(String) GetDurationString(
         /* [in] */ Int64 timeInMillis);
 
+    static CARAPI_(void*) ElaLocalizationUtilsCallback_Init();
+
+    static CARAPI_(String) GetDisplayNameForLocale(
+        /* [in] */ IInterface* locale,
+        /* [in] */ IInterface* displayLocale);
+
 private:
     LocalizationUtils();
 
-    // @CalledByNative
-    static CARAPI_(AutoPtr<ILocale>) GetJavaLocale(
+    // @CalledByNative return ILocal
+    static CARAPI_(AutoPtr<IInterface>) GetJavaLocale(
         /* [in] */ const String& language,
         /* [in] */ const String& country,
         /* [in] */ const String& variant);

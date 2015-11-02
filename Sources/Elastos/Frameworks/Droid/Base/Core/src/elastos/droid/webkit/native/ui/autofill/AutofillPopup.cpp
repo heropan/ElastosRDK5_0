@@ -20,9 +20,9 @@ const Int32 AutofillPopup::ITEM_ID_DATA_LIST_ENTRY;
 
 AutofillPopup::AutofillPopup(
     /* [in] */ IContext* context,
-    /* [in] */ ViewAndroidDelegate* viewAndroidDelegate,
+    /* [in] */ ViewElastosDelegate* viewElastosDelegate,
     /* [in] */ AutofillPopupDelegate* autofillCallback)
-    : DropdownPopupWindow(context, viewAndroidDelegate)
+    : DropdownPopupWindow(context, viewElastosDelegate)
     , mContext(context)
     , mAutofillCallback(autofillCallback)
 {

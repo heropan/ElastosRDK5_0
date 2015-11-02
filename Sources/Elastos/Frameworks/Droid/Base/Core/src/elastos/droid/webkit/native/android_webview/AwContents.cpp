@@ -2,8 +2,8 @@
 #include "elastos/droid/webkit/native/android_webview/api/AwContents_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/content_public/Referrer.h"
-#include "elastos/droid/webkit/native/ui/base/ActivityWindowAndroid.h"
-#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/ActivityWindowElastos.h"
+#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 #include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
 #include "elastos/droid/webkit/native/android_webview/ErrorCodeConversionHelper.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClientCallbackHelper.h"
@@ -41,8 +41,8 @@ using Elastos::Droid::Utility::IPair;
 //TODO using Elastos::Droid::Webkit::IGeolocationPermissions;
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Droid::Webkit::Content_Public::Referrer;
-using Elastos::Droid::Webkit::Ui::Base::ActivityWindowAndroid;
-using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
+using Elastos::Droid::Webkit::Ui::Base::ActivityWindowElastos;
+using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
 using Elastos::Droid::Webkit::Ui::Gfx::DeviceDisplayInfo;
 //TODO using Elastos::Droid::Webkit::EIID_IGeolocationPermissionsCallback;
 //TODO Elastos::Droid::Widget::COverScroller;
@@ -1229,15 +1229,15 @@ AutoPtr<ContentViewCore> AwContents::CreateAndInitializeContentViewCore(
     /* [in] */ ContentViewCore::ZoomControlsDelegate* zoomControlsDelegate)
 {
     AutoPtr<ContentViewCore> contentViewCore = new ContentViewCore(context);
-    AutoPtr<WindowAndroid> window;
+    AutoPtr<WindowElastos> window;
     AutoPtr<IActivity> activity = IActivity::Probe(context);
     if (activity != NULL) {
-        window = new ActivityWindowAndroid(activity);
+        window = new ActivityWindowElastos(activity);
     }
     else {
         AutoPtr<IContext> ctx;
         context->GetApplicationContext((IContext**)&ctx);
-        window = new WindowAndroid(ctx);
+        window = new WindowElastos(ctx);
     }
     //TODO contentViewCore->Initialize(containerView, internalDispatcher, nativeWebContents, window);
     contentViewCore->AddGestureStateListener(gestureStateListener);

@@ -7,7 +7,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/AsyncTask.h"
-#include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 
 // package org.chromium.ui.base;
 // import android.app.Activity;
@@ -34,7 +34,7 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Os::AsyncTask;
-using Elastos::Droid::Webkit::Ui::Base::WindowAndroid;
+using Elastos::Droid::Webkit::Ui::Base::WindowElastos;
 
 namespace Elastos {
 namespace Droid {
@@ -48,7 +48,7 @@ namespace Base {
   */
 // @JNINamespace("ui")
 class SelectFileDialog
-    : public WindowAndroid::IntentCallback
+    : public WindowElastos::IntentCallback
 {
 private:
     class GetDisplayNameTask
@@ -73,8 +73,8 @@ private:
     public:
         SelectFileDialog* mOwner;
         AutoPtr< ArrayOf<String> > mFilePaths;
-        /*const*/ AutoPtr<IContentResolver> mContentResolver;
-        /*const*/ Boolean mIsMultiple;
+        AutoPtr<IContentResolver> mContentResolver;
+        Boolean mIsMultiple;
     };
 
 public:
@@ -88,10 +88,12 @@ public:
       */
     // @Override
     CARAPI OnIntentCompleted(
-        /* [in] */ WindowAndroid* window,
+        /* [in] */ WindowElastos* window,
         /* [in] */ Int32 resultCode,
         /* [in] */ IContentResolver* contentResolver,
         /* [in] */ IIntent* results);
+
+    static CARAPI_(void*) ElaSelectFileDialogCallback_Init();
 
 private:
     SelectFileDialog(
@@ -101,13 +103,13 @@ private:
       * Creates and starts an intent based on the passed fileTypes and capture value.
       * @param fileTypes MIME types requested (i.e. "image")
       * @param capture The capture value as described in http://www.w3.org/TR/html-media-capture/
-      * @param window The WindowAndroid that can show intents
+      * @param window The WindowElastos that can show intents
       */
     // @CalledByNative
     CARAPI SelectFile(
         /* [in] */ ArrayOf<String>* fileTypes,
         /* [in] */ Boolean capture,
-        /* [in] */ WindowAndroid* window);
+        /* [in] */ WindowElastos* window);
 
     /**
       * Get a file for the image capture in the CAPTURE_IMAGE_DIRECTORY directory.
@@ -140,8 +142,8 @@ private:
     CARAPI_(Boolean) AcceptSpecificType(
         /* [in] */ const String& accept);
 
-    // @CalledByNative
-    static CARAPI_(AutoPtr<SelectFileDialog>) Create(
+    // @CalledByNative return SelectFileDialog
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeSelectFileDialog);
 
     CARAPI NativeOnFileSelected(
@@ -152,6 +154,12 @@ private:
     CARAPI NativeOnFileNotSelected(
         /* [in] */ Int64 nativeSelectFileDialogImpl);
 
+    static CARAPI_(void) SelectFile(
+        /* [in] */ IInterface* obj,
+        /* [in] */ ArrayOf<String>* fileTypes,
+        /* [in] */ Boolean capture,
+        /* [in] */ IInterface* window);
+
 private:
     static const String IMAGE_TYPE;
     static const String VIDEO_TYPE;
@@ -161,7 +169,7 @@ private:
     static const String ALL_AUDIO_TYPES;
     static const String ANY_TYPES;
     static const String CAPTURE_IMAGE_DIRECTORY;
-    /*const*/ Int64 mNativeSelectFileDialog;
+    Int64 mNativeSelectFileDialog;
     AutoPtr<IList> mFileTypes;
     Boolean mCapture;
     AutoPtr<IUri> mCameraOutputUri;

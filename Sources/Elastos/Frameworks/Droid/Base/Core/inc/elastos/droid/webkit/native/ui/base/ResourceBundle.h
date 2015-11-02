@@ -28,12 +28,21 @@ namespace Base {
   */
 // @JNINamespace("ui")
 class ResourceBundle
+    : public Object
 {
 public:
     // @CalledByNative
     static CARAPI_(Boolean) AssetContainedInApk(
         /* [in] */ IContext* ctx,
         /* [in] */ const String& filename);
+
+    static CARAPI_(void*) ElaResourceBundleCallback_Init();
+
+private:
+    static CARAPI_(Boolean) AssetContainedInApk(
+        /* [in] */ IInterface* ctx,
+        /* [in] */ const String& filename);
+
 };
 
 } // namespace Base

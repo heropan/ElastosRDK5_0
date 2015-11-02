@@ -239,7 +239,7 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
         return NOERROR;
     }
 
-    AutoPtr<IInterface> interfaceTmp = (*mSuggestions)[index]->Probe(EIID_IInterface);
+    AutoPtr<IInterface> interfaceTmp = TO_IINTERFACE((*mSuggestions)[index]);
     viewTmp->SetTag(interfaceTmp);
     viewTmp->SetVisibility(IView::VISIBLE);
 

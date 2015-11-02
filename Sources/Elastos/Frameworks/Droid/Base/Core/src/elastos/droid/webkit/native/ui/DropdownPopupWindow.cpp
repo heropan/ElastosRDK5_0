@@ -83,7 +83,7 @@ ECode DropdownPopupWindow::InnerPopupWindowOnDismissListener::OnDismiss()
     }
     //mOwner->mWindow->mAnchorView->RemoveOnLayoutChangeListener(mOwner->mWindow->mLayoutChangeListener);
     //mOwner->mWindow->mAnchorView->SetTag(NULL);
-    //mOwner->mWindow->mViewAndroidDelegate->ReleaseAnchorView(mOwner->mWindow->mAnchorView);
+    //mOwner->mWindow->mViewElastosDelegate->ReleaseAnchorView(mOwner->mWindow->mAnchorView);
     return NOERROR;
 }
 
@@ -92,11 +92,11 @@ ECode DropdownPopupWindow::InnerPopupWindowOnDismissListener::OnDismiss()
 //=====================================================================
 DropdownPopupWindow::DropdownPopupWindow(
     /* [in] */ IContext* context,
-    /* [in] */ ViewAndroidDelegate* viewAndroidDelegate)
+    /* [in] */ ViewElastosDelegate* viewElastosDelegate)
     //: ListPopupWindow(context, NULL, 0, R::style::DropdownPopupWindow)
     : mContext(context)
-    , mViewAndroidDelegate(viewAndroidDelegate)
-    , mAnchorView(mViewAndroidDelegate->AcquireAnchorView())
+    , mViewElastosDelegate(viewElastosDelegate)
+    , mAnchorView(mViewElastosDelegate->AcquireAnchorView())
     , mAnchorWidth(0.0f)
     , mAnchorHeight(0.0f)
     , mAnchorX(0.0f)
@@ -136,7 +136,7 @@ DropdownPopupWindow::DropdownPopupWindow(
 
     mAnchorView->SetId(-1/*R::id::dropdown_popup_window*/);
 
-    //IInterface* interfaceTmp = this->Probe(EIID_IInterface);
+    //IInterface* interfaceTmp = THIS_PROBE(IInterface);
     //mAnchorView->SetTag(interfaceTmp);
 
     mLayoutChangeListener = new InnerOnLayoutChangeListener(this);
@@ -168,7 +168,7 @@ ECode DropdownPopupWindow::SetAnchorRect(
     mAnchorX = x;
     mAnchorY = y;
     if (NULL != mAnchorView) {
-        mViewAndroidDelegate->SetAnchorViewPosition(mAnchorView, mAnchorX, mAnchorY,mAnchorWidth, mAnchorHeight);
+        mViewElastosDelegate->SetAnchorViewPosition(mAnchorView, mAnchorX, mAnchorY,mAnchorWidth, mAnchorHeight);
     }
     return NOERROR;
 }
@@ -239,7 +239,7 @@ ECode DropdownPopupWindow::Show()
         //SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
     }
 
-    mViewAndroidDelegate->SetAnchorViewPosition(mAnchorView, mAnchorX, mAnchorY, mAnchorWidth, mAnchorHeight);
+    mViewElastosDelegate->SetAnchorViewPosition(mAnchorView, mAnchorX, mAnchorY, mAnchorWidth, mAnchorHeight);
     //ListPopupWindow::Show();
 
     AutoPtr<IListView> listView;// = GetListView();

@@ -31,7 +31,7 @@
 #include "elastos/droid/webkit/native/content/browser/input/SelectPopup.h"
 #include "elastos/droid/webkit/native/content/browser/input/SelectionHandleController.h"
 #include "elastos/droid/webkit/native/content_public/browser/GestureStateListener.h"
-#include "elastos/droid/webkit/native/ui/base/ViewAndroidDelegate.h"
+#include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
 
 using Elastos::Utility::IHashSet;
 using Elastos::Utility::IMap;
@@ -85,7 +85,7 @@ using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::Widget::IFrameLayout;
 
 using Elastos::Droid::Webkit::Base::ObserverList;
-using Elastos::Droid::Webkit::Ui::Base::ViewAndroidDelegate;
+using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
 using Elastos::Droid::Webkit::Content::Browser::Accessibility::AccessibilityInjector;
 using Elastos::Droid::Webkit::Content::Browser::Accessibility::BrowserAccessibilityManager;
 using Elastos::Droid::Webkit::Content::Browser::Input::AdapterInputConnection;
@@ -274,7 +274,7 @@ public:
 
 private:
     class InnerViewAndroidDelegate
-        : public ViewAndroidDelegate
+        : public ViewElastosDelegate
     {
     public:
         InnerViewAndroidDelegate(
@@ -681,7 +681,7 @@ public:
      * @return A ViewAndroidDelegate that can be used to add and remove views.
      */
     //@VisibleForTesting
-    CARAPI_(AutoPtr<ViewAndroidDelegate>) GetViewAndroidDelegate();
+    CARAPI_(AutoPtr<ViewElastosDelegate>) GetViewAndroidDelegate();
 
     //@VisibleForTesting
     CARAPI_(void) SetImeAdapterForTest(

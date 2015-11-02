@@ -4,11 +4,42 @@
 #ifndef ELASTOS_BYTEBUFFER_CALLBACK_DEC_HH
 #define ELASTOS_BYTEBUFFER_CALLBACK_DEC_HH
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    extern void Elastos_ByteBuffer_InitCallback(Handle32 cb);
+#ifdef __cplusplus
+}
+#endif
+
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
+namespace AndroidWebview {
+
 struct ElaByteBufferCallback
 {
     void* (*elastos_ByteBuffer_GetDirectBufferAddress)(IInterface* obj);
     Int64 (*elastos_ByteBuffer_GetDirectBufferCapacity)(IInterface* obj);
 };
 
+void* ByteBuffer::ElaByteBufferCallback_Init()
+{
+    static ElaByteBufferCallback sElaByteBufferCallback;
+
+    sElaByteBufferCallback. (*elastos_ByteBuffer_GetDirectBufferAddress = &ByteBuffer::GetDirectBufferAddress;
+    sElaByteBufferCallback.elastos_ByteBuffer_GetDirectBufferCapacity = &ByteBuffer::GetDirectBufferCapacity;
+
+    Elastos_ByteBuffer_InitCallback((Handle32)&sElaByteBufferCallback);
+    return &sElaByteBufferCallback;
+}
+
+static void* sPElaByteBufferCallback = ByteBuffer::ElaByteBufferCallback_Init();
+
+} // namespace AndroidWebview
+} // namespace Webkit
+} // namespace Droid
+} // namespace Elastos
 
 #endif //

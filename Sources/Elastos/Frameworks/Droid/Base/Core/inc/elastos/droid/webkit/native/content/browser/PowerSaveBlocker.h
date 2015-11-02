@@ -14,7 +14,7 @@ namespace Webkit {
 namespace Ui {
 namespace Base {
 
-class ViewAndroid;
+class ViewElastos;
 
 } // namespace Base
 } // namespace Ui
@@ -22,7 +22,7 @@ class ViewAndroid;
 } // namespace Droid
 } // namespace Elastos
 
-using Elastos::Droid::Webkit::Ui::Base::ViewAndroid;
+using Elastos::Droid::Webkit::Ui::Base::ViewElastos;
 
 // package org.chromium.content.browser;
 // import org.chromium.base.CalledByNative;
@@ -39,11 +39,11 @@ class PowerSaveBlocker
 private:
     // @CalledByNative
     static CARAPI ApplyBlock(
-        /* [in] */ ViewAndroid* view);
+        /* [in] */ ViewElastos* view);
 
     // @CalledByNative
     static CARAPI RemoveBlock(
-        /* [in] */ ViewAndroid* view);
+        /* [in] */ ViewElastos* view);
 };
 
 } // namespace Browser

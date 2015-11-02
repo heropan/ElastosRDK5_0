@@ -59,6 +59,31 @@ public:
         ViewConfigurationHelper* mOwner;
     };
 
+public:
+    static CARAPI_(void*) ElaViewConfigurationHelperCallback_Init();
+
+private:
+    static CARAPI_(Int32) GetScaledMaximumFlingVelocity(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetScaledMinimumFlingVelocity(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetScaledTouchSlop(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetScaledDoubleTapSlop(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetScaledMinScalingSpan(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetScaledMinScalingTouchMajor(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<IInterface>) CreateWithListener(
+        /* [in] */ IInterface* context);
+
 private:
     ViewConfigurationHelper(
         /* [in] */ IContext* context);
@@ -114,7 +139,7 @@ private:
     // ui/android/java/res/values/dimens.xml.
     static const Float MIN_SCALING_SPAN_MM;
     static const Float MIN_SCALING_TOUCH_MAJOR_DIP;
-    /*const*/ AutoPtr<IContext> mAppContext;
+    AutoPtr<IContext> mAppContext;
     AutoPtr<IViewConfiguration> mViewConfiguration;
 };
 

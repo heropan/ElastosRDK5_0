@@ -1,5 +1,5 @@
 
-#include "elastos/droid/webkit/native/ui/base/ActivityWindowAndroid.h"
+#include "elastos/droid/webkit/native/ui/base/ActivityWindowElastos.h"
 #include "elastos/droid/content/CIntent.h"
 
 using Elastos::Core::IInteger32;
@@ -16,15 +16,15 @@ namespace Ui {
 namespace Base {
 
 //=====================================================================
-//                        ActivityWindowAndroid
+//                        ActivityWindowElastos
 //=====================================================================
-const Int32 ActivityWindowAndroid::REQUEST_CODE_PREFIX;
-const Int32 ActivityWindowAndroid::REQUEST_CODE_RANGE_SIZE;
-const String ActivityWindowAndroid::TAG("ActivityWindowAndroid");
+const Int32 ActivityWindowElastos::REQUEST_CODE_PREFIX;
+const Int32 ActivityWindowElastos::REQUEST_CODE_RANGE_SIZE;
+const String ActivityWindowElastos::TAG("ActivityWindowElastos");
 
-ActivityWindowAndroid::ActivityWindowAndroid(
+ActivityWindowElastos::ActivityWindowElastos(
     /* [in] */ IActivity* activity)
-    : WindowAndroid(NULL) // WindowAndroid(context)
+    : WindowElastos(NULL) // WindowElastos(context)
 {
     // ==================before translated======================
     // super(activity.getApplicationContext());
@@ -38,7 +38,7 @@ ActivityWindowAndroid::ActivityWindowAndroid(
     source->GetWeakReference((IWeakReference**)&mActivityRef);
 }
 
-Int32 ActivityWindowAndroid::ShowCancelableIntent(
+Int32 ActivityWindowElastos::ShowCancelableIntent(
     /* [in] */ IPendingIntent* intent,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -82,7 +82,7 @@ Int32 ActivityWindowAndroid::ShowCancelableIntent(
     return requestCode;
 }
 
-Int32 ActivityWindowAndroid::ShowCancelableIntent(
+Int32 ActivityWindowElastos::ShowCancelableIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -124,7 +124,7 @@ Int32 ActivityWindowAndroid::ShowCancelableIntent(
     return requestCode;
 }
 
-ECode ActivityWindowAndroid::CancelIntent(
+ECode ActivityWindowElastos::CancelIntent(
     /* [in] */ Int32 requestCode)
 {
     // ==================before translated======================
@@ -141,7 +141,7 @@ ECode ActivityWindowAndroid::CancelIntent(
     return NOERROR;
 }
 
-Boolean ActivityWindowAndroid::OnActivityResult(
+Boolean ActivityWindowElastos::OnActivityResult(
     /* [in] */ Int32 requestCode,
     /* [in] */ Int32 resultCode,
     /* [in] */ IIntent* data)
@@ -193,7 +193,7 @@ Boolean ActivityWindowAndroid::OnActivityResult(
     return FALSE;
 }
 
-AutoPtr<IWeakReference> ActivityWindowAndroid::GetActivity()
+AutoPtr<IWeakReference> ActivityWindowElastos::GetActivity()
 {
     // ==================before translated======================
     // // Return a new WeakReference to prevent clients from releasing our internal WeakReference.
@@ -211,7 +211,7 @@ AutoPtr<IWeakReference> ActivityWindowAndroid::GetActivity()
     return result;
 }
 
-Int32 ActivityWindowAndroid::GenerateNextRequestCode()
+Int32 ActivityWindowElastos::GenerateNextRequestCode()
 {
     // ==================before translated======================
     // int requestCode = REQUEST_CODE_PREFIX + mNextRequestCode;
@@ -223,7 +223,7 @@ Int32 ActivityWindowAndroid::GenerateNextRequestCode()
     return requestCode;
 }
 
-ECode ActivityWindowAndroid::StoreCallbackData(
+ECode ActivityWindowElastos::StoreCallbackData(
     /* [in] */ Int32 requestCode,
     /* [in] */ IntentCallback* callback,
     /* [in] */ Int32 errorId)
@@ -234,7 +234,7 @@ ECode ActivityWindowAndroid::StoreCallbackData(
     // mIntentErrors.put(requestCode, mApplicationContext.getString(errorId));
 
     assert(0);
-    IInterface* callbackTmp = callback->Probe(EIID_IInterface);
+    IInterface* callbackTmp = TO_IINTERFACE(callback);
     mOutstandingIntents->Put(requestCode, callbackTmp);
 
     AutoPtr<IInteger32> requestCodeTmp;

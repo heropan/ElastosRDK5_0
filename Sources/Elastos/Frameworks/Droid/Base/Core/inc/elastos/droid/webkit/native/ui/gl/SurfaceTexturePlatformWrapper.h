@@ -30,13 +30,45 @@ namespace Gl {
 class SurfaceTexturePlatformWrapper
     : public Object
 {
+public:
+    static CARAPI_(void*) ElaSurfaceTexturePlatformWrapperCallback_Init();
+
 private:
-    // @CalledByNative
-    static CARAPI_(AutoPtr<ISurfaceTexture>) Create(
+    static CARAPI_(void) Destroy(
+        /* [in] */ IInterface* surfaceTexture);
+
+    static CARAPI_(void) SetFrameAvailableCallback(
+        /* [in] */ IInterface* surfaceTexture,
+        /* [in] */ Int64 nativeSurfaceTextureListener);
+
+    static CARAPI_(void) UpdateTexImage(
+        /* [in] */ IInterface* surfaceTexture);
+
+    static CARAPI_(void) ReleaseTexImage(
+        /* [in] */ IInterface* surfaceTexture);
+
+    static CARAPI_(void) SetDefaultBufferSize(
+        /* [in] */ IInterface* surfaceTexture,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height);
+
+    static CARAPI_(void) GetTransformMatrix(
+        /* [in] */ IInterface* surfaceTexture,
+        /* [in] */ ArrayOf<Float>* matrix);
+
+    static CARAPI_(void) AttachToGLContext(
+        /* [in] */ IInterface* surfaceTexture,
+        /* [in] */ Int32 texName);
+
+    static CARAPI_(void) DetachFromGLContext(
+        /* [in] */ IInterface* surfaceTexture);
+
+    // @CalledByNative return ISurfaceTexture
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int32 textureId);
 
-    // @CalledByNative
-    static CARAPI_(AutoPtr<ISurfaceTexture>) CreateSingleBuffered(
+    // @CalledByNative return ISurfaceTexture
+    static CARAPI_(AutoPtr<IInterface>) CreateSingleBuffered(
         /* [in] */ Int32 textureId);
 
     // @CalledByNative
