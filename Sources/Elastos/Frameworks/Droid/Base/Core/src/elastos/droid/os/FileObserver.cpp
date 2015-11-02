@@ -162,6 +162,8 @@ void FileObserver::ObserverThread::NativeStopWatching(
 //========================================================
 //
 //========================================================
+CAR_INTERFACE_IMPL(FileObserver, Object, IFileObserver)
+
 Boolean FileObserver::InitObserverThread()
 {
     sObserverThread = new ObserverThread();
