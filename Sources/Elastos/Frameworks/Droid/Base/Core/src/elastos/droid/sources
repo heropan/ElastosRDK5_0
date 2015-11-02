@@ -74,7 +74,8 @@ LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += $(PREBUILD_LIB)/libm.a
 LIBRARIES += $(PREBUILD_LIB)/libxml2.a
-LIBRARIES += $(PREBUILD_LIB)/libstdc++.a
+#LIBRARIES += $(PREBUILD_LIB)/libstdc++.a
+LIBRARIES += $(PREBUILD_LIB)/cxx-stl/gnu-libstdc++/armeabi/libstdc++.a
 #LIBRARIES += $(PREBUILD_LIB)/libc++.a
 LIBRARIES += $(PREBUILD_LIB)/libstagefright_amrnbenc.a
 

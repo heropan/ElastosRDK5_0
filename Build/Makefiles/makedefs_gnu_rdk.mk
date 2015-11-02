@@ -322,7 +322,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           endif
     endif
     ifeq "$(XDK_TARGET_PLATFORM)" "android"
-          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--gc-sections -Wl,--no-undefined,--no-undefined-version -Wl,--whole-archive
+          DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--gc-sections -Wl,--no-undefined,--no-undefined-version
           ifeq "$(EXPORT_ALL_SYMBOLS)" ""
               DLL_FLAGS := $(DLL_FLAGS) $(DEF_FLAGS)
           else
@@ -340,7 +340,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           ECX_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
 
           DLL_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
-          DLL_CRT_END=
+          DLL_CRT_END=$(GCC_LIB_PATH)/libgcc.a
       endif
 endif # elf
 
@@ -559,19 +559,19 @@ endif
 
 .LIBPATTERNS = lib%.so lib%.a
 
-ifneq "$(ELASTOS_LIBS)" ""
-  ELASTOS_LIBS:= elastos.lib $(ELASTOS_LIBS)
-  ifneq "$(XDK_PACKAGE)" "sdk"
-    ELASTOS_LIBS=
-  endif
-endif
+#ifneq "$(ELASTOS_LIBS)" ""
+#  ELASTOS_LIBS:= elastos.lib $(ELASTOS_LIBS)
+#  ifneq "$(XDK_PACKAGE)" "sdk"
+#    ELASTOS_LIBS=
+#  endif
+#endif
 
-ELASTOS_LIBS:= $(ELASTOS_LIBS) $(EXTERN_LIBS) # all external libraries
+#ELASTOS_LIBS:= $(ELASTOS_LIBS) $(EXTERN_LIBS) # all external libraries
 
 ifneq "$(ELASTOS_LIBS)" ""
   ELASTOS_LIBS:= $(filter-out \,$(ELASTOS_LIBS))
   ELASTOS_LIBS:= $(strip $(ELASTOS_LIBS)) # remove multiple spaces
-  ELASTOS_LIBS:= $(patsubst %,-l%,$(patsubst %.lib,%,$(ELASTOS_LIBS)))
+#  ELASTOS_LIBS:= $(patsubst %,-l%,$(patsubst %.lib,%,$(ELASTOS_LIBS)))
 endif
 
 EXPORT_HEADERS := $(subst \, ,$(EXPORT_HEADERS))
