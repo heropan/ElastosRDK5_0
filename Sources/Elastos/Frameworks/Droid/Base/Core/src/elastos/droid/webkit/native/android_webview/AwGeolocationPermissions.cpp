@@ -91,7 +91,7 @@ ECode AwGeolocationPermissions::GetOriginsRunnable::Run()
 //                    AwGeolocationPermissions
 //===============================================================
 
-static const String PREF_PREFIX("AwGeolocationPermissions%");
+const String AwGeolocationPermissions::PREF_PREFIX("AwGeolocationPermissions%");
 
 AwGeolocationPermissions::AwGeolocationPermissions(
     /* [in] */ ISharedPreferences* sharedPreferences)

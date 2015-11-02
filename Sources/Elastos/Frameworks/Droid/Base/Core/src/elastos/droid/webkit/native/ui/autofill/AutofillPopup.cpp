@@ -2,6 +2,7 @@
 #include "elastos/droid/webkit/native/ui/autofill/AutofillPopup.h"
 #include "elastos/utility/Arrays.h"
 
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -17,6 +18,8 @@ const Int32 AutofillPopup::ITEM_ID_AUTOCOMPLETE_ENTRY;
 const Int32 AutofillPopup::ITEM_ID_PASSWORD_ENTRY;
 const Int32 AutofillPopup::ITEM_ID_SEPARATOR_ENTRY;
 const Int32 AutofillPopup::ITEM_ID_DATA_LIST_ENTRY;
+
+CAR_INTERFACE_IMPL(AutofillPopup, DropdownPopupWindow, IAdapterViewOnItemClickListener);
 
 AutofillPopup::AutofillPopup(
     /* [in] */ IContext* context,

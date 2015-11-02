@@ -20,7 +20,7 @@ namespace AndroidWebview {
  * Callbacks are posted on the UI thread.
  */
 class AwGeolocationPermissions
-:public Object
+    : public Object
 {
 private:
     class GetAllowedRunnable

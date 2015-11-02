@@ -612,6 +612,10 @@ void AwContents::InnerJavaScriptCallback::HandleJavaScriptResult(
 //             AwContents::AwGeolocationCallback
 //===============================================================
 //CAR_INTERFACE_IMPL(AwContents::AwGeolocationCallback, Object, IGeolocationPermissionsCallback);
+AwContents::AwGeolocationCallback::AwGeolocationCallback(
+    /* [in] */ AwContents* owner)
+    : mOwner(owner)
+{}
 
 //@Override
 ECode AwContents::AwGeolocationCallback::Invoke(
