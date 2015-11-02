@@ -28,7 +28,8 @@ ECode SQLiteWrapper::CheckSQLiteException(
 {
     if (IsLowMemory(e)) {
         AutoPtr<IToast> toast;
-        Toast::MakeText(context, R::string::low_memory, IToast::LENGTH_SHORT, (IToast**)&toast);
+        assert(0 && "weit for adding dirs:widget to join compiled");
+        //Toast::MakeText(context, R::string::low_memory, IToast::LENGTH_SHORT, (IToast**)&toast);
         return toast->Show();
     }
     else {
