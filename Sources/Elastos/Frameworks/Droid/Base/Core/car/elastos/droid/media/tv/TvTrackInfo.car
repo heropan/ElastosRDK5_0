@@ -10,6 +10,7 @@ module
     /**
      * Encapsulates the format of tracks played in {@link TvInputService}.
      */
+    [parcelable]
     interface ITvTrackInfo {
         /**
          * The type value for audio tracks.

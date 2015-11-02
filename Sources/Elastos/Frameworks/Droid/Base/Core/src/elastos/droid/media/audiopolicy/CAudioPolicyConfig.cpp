@@ -7,7 +7,7 @@ namespace AudioPolicy {
 
 String CAudioPolicyConfig::TAG("AudioPolicyConfig");
 
-CAR_INTERFACE_IMPL(CAudioPolicyConfig, Object, IAudioPolicyConfig)
+CAR_INTERFACE_IMPL_2(CAudioPolicyConfig, Object, IAudioPolicyConfig, IParcelable)
 
 CAR_OBJECT_IMPL(CAudioPolicyConfig)
 

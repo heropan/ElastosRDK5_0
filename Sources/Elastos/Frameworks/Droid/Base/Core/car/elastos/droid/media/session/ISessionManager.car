@@ -1,8 +1,9 @@
 module
 {
-    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.View.IKeyEvent;
+    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Media.IIRemoteVolumeController;
     interface Elastos.Droid.Media.Session.IIActiveSessionsListener;
     interface Elastos.Droid.Media.Session.IISessionCallback;
@@ -24,7 +25,7 @@ module
         GetSessions(
             [in] IComponentName * compName,
             [in] Int32 userId,
-            [out, callee] ArrayOf<IBinder*> * result);
+            [out] IList ** result);
 
         DispatchMediaKeyEvent(
             [in] IKeyEvent * keyEvent,

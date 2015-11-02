@@ -84,6 +84,7 @@ module
     /**
      * This class is used to specify meta information of a TV input.
      */
+    [parcelable]
     interface ITvInputInfo {
         // Should be in sync with frameworks/base/core/res/res/values/attrs.xml
         /**

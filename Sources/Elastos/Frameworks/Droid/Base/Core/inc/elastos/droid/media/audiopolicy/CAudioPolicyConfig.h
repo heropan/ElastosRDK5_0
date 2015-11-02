@@ -19,6 +19,7 @@ namespace AudioPolicy {
 CarClass(CAudioPolicyConfig)
     , public Object
     , public IAudioPolicyConfig
+    , public IParcelable
 {
 public:
     CAudioPolicyConfig();

@@ -13,7 +13,6 @@ module
      */
     interface IITvInputSessionWrapper {
 
-
     }
 
     } // namespace Tv

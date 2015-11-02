@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Core.ICharSequence;
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IResultReceiver;
     interface Elastos.Droid.Os.IHandler;
@@ -22,6 +23,7 @@ module
      * owner to allow them to create a {@link MediaController} to communicate with
      * the session.
      */
+    [parcelable]
     interface IMediaSessionToken {
     }
 
@@ -153,6 +155,10 @@ module
     /**
      * @hide
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Media.Session.IISessionCallback
+     */
     interface IMediaSessionCallbackStub {
     }
 
@@ -160,6 +166,7 @@ module
      * A single item that is part of the play queue. It contains a description
      * of the item and its id in the queue.
      */
+    [parcelable]
     interface IMediaSessionQueueItem {
         /**
          * This id is reserved. No items can be explicitly asigned this id.
@@ -315,7 +322,7 @@ module
          * @param active Whether this session is active or not.
          */
         SetActive(
-            [in] Boolean * active);
+            [in] Boolean active);
 
         /**
          * Get the current active state of this session.
@@ -393,7 +400,7 @@ module
          * @param queue A list of items in the play queue.
          */
         SetQueue(
-            [in] ArrayOf<IMediaSessionQueueItem*> * queue);
+            [in] IList * queue);
 
         /**
          * Set the title of the play queue. The UI should display this title along

@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Os.IBundle;
 
@@ -13,6 +14,7 @@ module
      * the standard transport controls by exposing app specific actions to
      * {@link MediaController MediaControllers}.
      */
+    [parcelable]
     interface IPlaybackStateCustomAction {
         /**
          * Returns the action of the {@link CustomAction}.
@@ -331,7 +333,7 @@ module
          * Get the list of custom actions.
          */
         GetCustomActions(
-            [out, callee] ArrayOf<IPlaybackStateCustomAction*> * result);
+            [out] IList ** result);
 
         /**
          * Get a user readable error message. This should be set when the state is

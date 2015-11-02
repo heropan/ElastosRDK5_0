@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
@@ -58,7 +59,7 @@ module
          */
         OnTracksChanged(
             [in] ITvInputManagerSession * session,
-            [in] ArrayOf<ITvTrackInfo*> * tracks);
+            [in] IList * tracks);
 
         /**
          * This is called when a track for a given type is selected.
@@ -332,7 +333,7 @@ module
          */
         GetTracks(
             [in] Int32 type,
-            [out, callee] ArrayOf<ITvTrackInfo*> * result);
+            [out] IList ** result);
 
         /**
          * Returns the selected track for a given type. Returns {@code null} if the information is
@@ -527,7 +528,7 @@ module
          * @return List of {@link TvInputInfo} for each TV input that describes its meta information.
          */
         GetTvInputList(
-            [out, callee] ArrayOf<ITvInputInfo*> * result);
+            [out] IList ** result);
 
         /**
          * Returns the {@link TvInputInfo} for a given TV input.
@@ -613,7 +614,7 @@ module
          */
         // @SystemApi
         GetBlockedRatings(
-            [out, callee] ArrayOf<ITvContentRating*> * result);
+            [out] IList ** result);
 
         /**
          * Adds a user blocked content rating.
@@ -645,7 +646,7 @@ module
          */
         // @SystemApi
         GetTvContentRatingSystemList(
-            [out, callee] ArrayOf<ITvContentRatingSystemInfo*> * result);
+            [out] IList ** result);
 
         /**
          * Creates a {@link Session} for a given TV input.
@@ -677,7 +678,7 @@ module
         // @SystemApi
         GetAvailableTvStreamConfigList(
             [in] String inputId,
-            [out, callee] ArrayOf<ITvStreamConfig*> * result);
+            [out] IList ** result);
 
         /**
          * Take a snapshot of the given TV input into the provided Surface.
@@ -711,7 +712,7 @@ module
          */
         // @SystemApi
         GetHardwareList(
-            [out, callee] ArrayOf<ITvInputHardwareInfo*> * result);
+            [out] IList ** result);
 
         /**
          * Returns acquired TvInputManager.Hardware object for given deviceId.

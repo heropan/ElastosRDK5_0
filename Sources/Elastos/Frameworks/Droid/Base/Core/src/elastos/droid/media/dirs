@@ -2,3 +2,4 @@ DIRS += audiofx
 DIRS += audiopolicy
 DIRS += browse
 DIRS += projection
+DIRS += session

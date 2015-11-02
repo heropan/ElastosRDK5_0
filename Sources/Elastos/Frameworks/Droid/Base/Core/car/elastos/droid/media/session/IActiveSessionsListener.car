@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Media.Session.IMediaSessionToken;
 
     namespace Elastos {
@@ -10,7 +11,7 @@ module
     [deprecated]
     interface IIActiveSessionsListener {
         OnActiveSessionsChanged(
-            [in] ArrayOf<IMediaSessionToken*> * sessions);
+            [in] IList * sessions);
     }
 
     } // namespace Session

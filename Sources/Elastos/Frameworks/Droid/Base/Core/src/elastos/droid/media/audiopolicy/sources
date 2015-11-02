@@ -7,11 +7,6 @@ include $(MAKEDIR)/../../../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
 
-INCLUDES += $(PREBUILD_INC)/media
-INCLUDES += $(PREBUILD_INC)/system
-INCLUDES += $(PREBUILD_INC)/gui
-INCLUDES += $(PREBUILD_INC)/binder
-
 C_DEFINES += -DDROID_CORE
 
 SOURCES = CAudioMix.cpp

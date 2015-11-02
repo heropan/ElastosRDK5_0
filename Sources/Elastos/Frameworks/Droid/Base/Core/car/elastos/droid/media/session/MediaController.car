@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Core.ICharSequence;
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IResultReceiver;
@@ -138,7 +139,7 @@ module
          * @see MediaSession.QueueItem
          */
         OnQueueChanged(
-            [in] ArrayOf<IMediaSessionQueueItem*> * queue);
+            [in] IList * queue);
 
         /**
          * Override to handle changes to the queue title.
@@ -342,7 +343,7 @@ module
          * @return The current play queue or null.
          */
         GetQueue(
-            [out, callee] ArrayOf<IMediaSessionQueueItem*> * result);
+            [out] IList ** result);
 
         /**
          * Get the queue title for this session.

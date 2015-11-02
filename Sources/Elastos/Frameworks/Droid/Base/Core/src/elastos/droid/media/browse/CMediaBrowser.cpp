@@ -1,7 +1,6 @@
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/media/browse/CMediaBrowser.h"
-//TODO: Need CIntent
-//#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntent.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -12,8 +11,7 @@ using Elastos::Utility::IMap;
 // using Elastos::Utility::Collections;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;
-//TODO: Need CIntent
-//using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::EIID_IServiceConnection;
 using Elastos::Droid::Service::Media::IMediaBrowserService;
 using Elastos::Droid::Service::Media::EIID_IIMediaBrowserServiceCallbacks;
@@ -354,8 +352,7 @@ ECode CMediaBrowser::Connect()
     mState = CMediaBrowser::CONNECT_STATE_CONNECTING;
 
     AutoPtr<IIntent> intent;
-//TODO: Need CIntent
-    // CIntent::New(IMediaBrowserService::SERVICE_INTERFACE, (IIntent**)&intent);
+    CIntent::New(IMediaBrowserService::SERVICE_INTERFACE, (IIntent**)&intent);
     intent->SetComponent(mServiceComponent);
 
     AutoPtr<IServiceConnection> thisConnection = mServiceConnection = new MediaServiceConnection(this);

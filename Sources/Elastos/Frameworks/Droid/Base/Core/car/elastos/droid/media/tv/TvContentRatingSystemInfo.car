@@ -15,6 +15,7 @@ module
      * @hide
      */
     // @SystemApi
+    [parcelable]
     interface ITvContentRatingSystemInfo {
         /**
          * Returns {@code true} if the TV content rating system is defined by a system app,

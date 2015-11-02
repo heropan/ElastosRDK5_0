@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Net.IUri;
@@ -37,7 +38,7 @@ module
             [in] Int32 seq);
 
         OnTracksChanged(
-            [in] ArrayOf<ITvTrackInfo*> * tracks,
+            [in] IList * tracks,
             [in] Int32 seq);
 
         OnTrackSelected(

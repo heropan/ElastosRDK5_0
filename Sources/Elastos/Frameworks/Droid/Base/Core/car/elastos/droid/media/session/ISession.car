@@ -27,7 +27,7 @@ module
             [in] Int32 flags);
 
         SetActive(
-            [in] Boolean * active);
+            [in] Boolean active);
 
         SetMediaButtonReceiver(
             [in] IPendingIntent * mbr);

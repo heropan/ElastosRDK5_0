@@ -227,7 +227,7 @@ module
          * @param key The key the value is stored under
          * @return a long value
          */
-        GetLong(
+        GetInt64(
             [in] String key,
             [out] Int64 * result);
 

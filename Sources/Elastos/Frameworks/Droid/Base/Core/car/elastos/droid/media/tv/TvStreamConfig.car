@@ -8,6 +8,7 @@ module
     /**
      * @hide
      */
+    [parcelable]
     interface ITvStreamConfig {
         const Int32 STREAM_TYPE_INDEPENDENT_VIDEO_SOURCE = 1;
         const Int32 STREAM_TYPE_BUFFER_PRODUCER = 2;

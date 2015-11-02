@@ -1,19 +1,12 @@
 
-#TARGET_NAME= media
-#TARGET_TYPE= lib
-#
-#include $(MAKEDIR)/../../../../../../sources.inc
-#
-#INCLUDES += ../
-#INCLUDES += $(MAKEDIR)/../../../../inc/
+TARGET_NAME= media
+TARGET_TYPE= lib
 
-#INCLUDES += $(PREBUILD_INC)/media
-#INCLUDES += $(PREBUILD_INC)/system
-#INCLUDES += $(PREBUILD_INC)/gui
-#INCLUDES += $(PREBUILD_INC)/binder
-#
-#C_DEFINES += -DDROID_CORE
-#
+include $(MAKEDIR)/../../../../../../sources.inc
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../inc/
+
 #SOURCES = CAmrInputStream.cpp
 #SOURCES += AmrInputStream.cpp
 #SOURCES += CAsyncPlayer.cpp
@@ -109,4 +102,11 @@
 #SOURCES += ThumbnailUtils.cpp
 #SOURCES += CThumbnailUtils.cpp
 #SOURCES += Media_Utils.cpp
-#
+
+
+LIBRARIES += audiofx/audiofx.lib
+LIBRARIES += audiopolicy/audiopolicy.lib
+LIBRARIES += browse/browse.lib
+LIBRARIES += projection/projection.lib
+LIBRARIES += session/session.lib
+#LIBRARIES += tv/tv.lib

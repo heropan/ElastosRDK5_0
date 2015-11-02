@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -685,7 +687,7 @@ module
          * object.
          */
         GetSubRatings(
-            [out, callee] ArrayOf<String> * result);
+            [out] IList ** result);
 
         /**
          * Returns a string that unambiguously describes the rating information contained in a

@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.View.IView;
@@ -58,7 +59,7 @@ module
          * @throws IllegalArgumentException if {@code tracks} contains redundant tracks.
          */
         NotifyTracksChanged(
-            [in] ArrayOf<ITvTrackInfo*> * tracks);
+            [in] IList * tracks);
 
         /**
          * Sends the ID of the selected track for a given track type. This is expected to be called

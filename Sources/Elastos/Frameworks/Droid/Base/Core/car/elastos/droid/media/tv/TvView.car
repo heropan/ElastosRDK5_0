@@ -1,5 +1,6 @@
 module
 {
+    interface Elastos.Utility.IList;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IInputEvent;
@@ -64,7 +65,7 @@ module
          */
         OnTracksChanged(
             [in] String inputId,
-            [in] ArrayOf<ITvTrackInfo*> * tracks);
+            [in] IList * tracks);
 
         /**
          * This is called when there is a change on the selected tracks.
@@ -310,7 +311,7 @@ module
          */
         GetTracks(
             [in] Int32 type,
-            [out, callee] ArrayOf<ITvTrackInfo*> * result);
+            [out] IList ** result);
 
         /**
          * Returns the ID of the selected track for a given type. Returns {@code null} if the

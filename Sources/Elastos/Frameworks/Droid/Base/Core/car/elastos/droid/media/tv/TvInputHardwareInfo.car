@@ -12,6 +12,7 @@ module
      * @hide
      */
     // @SystemApi
+    [parcelable]
     interface ITvInputHardwareInfo {
         // Match hardware/libhardware/include/hardware/tv_input.h
         const Int32 TV_INPUT_TYPE_OTHER_HARDWARE = 1;
