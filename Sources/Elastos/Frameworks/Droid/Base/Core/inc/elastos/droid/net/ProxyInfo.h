@@ -28,7 +28,7 @@ class ProxyInfo
 public:
     CAR_INTERFACE_DECL()
 
-    ProxyInfo(){}
+    ProxyInfo();
 
     /**
      * Constructs a {@link ProxyInfo} object that points at a Direct proxy

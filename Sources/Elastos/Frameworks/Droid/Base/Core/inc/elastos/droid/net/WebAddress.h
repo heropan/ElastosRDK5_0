@@ -77,6 +77,10 @@ public:
     CARAPI SetAddressPattern(
         /* [in] */ IPattern* addressPattern);
 
+private:
+    static CARAPI_(AutoPtr<IPattern>) CreateAddressPattern();
+
+public:
     static const Int32 MATCH_GROUP_SCHEME;
 
     static const Int32 MATCH_GROUP_AUTHORITY;
@@ -88,8 +92,6 @@ public:
     static const Int32 MATCH_GROUP_PATH;
 
 private:
-    static CARAPI_(AutoPtr<IPattern>) CreateAddressPattern();
-
     static AutoPtr<IPattern> sAddressPattern;
 
     String mScheme;

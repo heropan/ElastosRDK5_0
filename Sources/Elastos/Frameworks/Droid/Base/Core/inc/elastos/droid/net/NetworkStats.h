@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::IHashSet;
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::IHashSet;
 
 namespace Elastos {
 namespace Droid {

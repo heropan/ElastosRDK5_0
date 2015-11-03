@@ -5,11 +5,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 // #include <elastos/net/ProxySelector.h>
 
+using Elastos::Droid::Net::IIProxyService;
+
+using Elastos::Net::ISocketAddress;
 using Elastos::Net::IURI;
 using Elastos::Net::ProxyType;
-using Elastos::Droid::Net::IIProxyService;
 using Elastos::Utility::IList;
-using Elastos::Net::ISocketAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -58,9 +59,9 @@ private:
 
     static const String PROXY;
 
-    IIProxyService* mProxyService;
+    AutoPtr<IIProxyService> mProxyService;
 
-    IList* mDefaultList;
+    AutoPtr<IList> mDefaultList;
 
 };
 

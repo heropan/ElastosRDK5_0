@@ -1,9 +1,7 @@
 
 module
 {
-
     interface Elastos.Droid.Net.INetworkStatsNonMonotonicObserver;
-
 
     namespace Elastos {
     namespace Droid {

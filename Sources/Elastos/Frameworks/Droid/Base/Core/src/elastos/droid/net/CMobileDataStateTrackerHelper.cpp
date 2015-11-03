@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CMobileDataStateTrackerHelper.h"
 #include "elastos/droid/net/CMobileDataStateTracker.h"
+#include "elastos/droid/net/CMobileDataStateTrackerHelper.h"
 
 namespace Elastos {
 namespace Droid {

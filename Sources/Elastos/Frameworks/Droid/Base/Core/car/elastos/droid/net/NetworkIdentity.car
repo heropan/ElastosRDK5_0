@@ -1,7 +1,6 @@
 
 module
 {
-
     interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
@@ -21,9 +20,9 @@ module
     interface INetworkIdentity {
 
         /**
-             * When enabled, combine all {@link #mSubType} together under
-             * {@link #SUBTYPE_COMBINED}.
-             */
+         * When enabled, combine all {@link #mSubType} together under
+         * {@link #SUBTYPE_COMBINED}.
+         */
         const Boolean COMBINE_SUBTYPE_ENABLED = TRUE;
 
         const Int32 SUBTYPE_COMBINED = -1;

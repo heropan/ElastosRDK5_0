@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.Droid.Os.IMessenger;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IMessenger;
 
     namespace Elastos {
     namespace Droid {

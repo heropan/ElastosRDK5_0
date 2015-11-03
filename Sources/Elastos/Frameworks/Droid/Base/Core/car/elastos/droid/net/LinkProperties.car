@@ -4,9 +4,9 @@ module
 
     interface Elastos.Droid.Net.ILinkPropertiesCompareResult;
 
-    using interface Elastos.Utility.IList;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {

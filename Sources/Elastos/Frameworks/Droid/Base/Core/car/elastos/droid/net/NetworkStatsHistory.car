@@ -1,10 +1,8 @@
 
 module
 {
-
-    interface Elastos.Droid.Net.INetworkStatsHistoryEntry;
-
     interface Elastos.Droid.Internal.Utility.IIndentingPrintWriter;
+    interface Elastos.Droid.Net.INetworkStatsHistoryEntry;
 
     using interface Elastos.IO.IDataOutputStream;
     using interface Elastos.Utility.IRandom;

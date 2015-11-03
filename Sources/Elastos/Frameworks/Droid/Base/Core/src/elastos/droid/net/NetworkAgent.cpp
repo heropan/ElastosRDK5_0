@@ -1,9 +1,7 @@
 
 #include "elastos/droid/net/NetworkAgent.h"
-// #include <CArrayList.h>
 
 using Elastos::Droid::Internal::Utility::IProtocol;
-// using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {

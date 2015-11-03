@@ -2,25 +2,8 @@
 module
 {
     interface Elastos.Droid.Wifi.IRttManagerCapabilities;
+    interface Elastos.Droid.Wifi.IRttManagerRttListener;
     interface Elastos.Droid.Wifi.IRttManagerRttParams;
-    interface Elastos.Droid.Wifi.IRttManagerRttListener;
-    interface Elastos.Droid.Wifi.IRttManagerRttListener;
-    // interface Elastos.Droid.Annotation.ISystemApi;
-    // interface Elastos.Droid.Content.IContext;
-    // interface Elastos.Droid.Os.IBundle;
-    // interface Elastos.Droid.Os.IHandler;
-    // interface Elastos.Droid.Os.IHandlerThread;
-    // interface Elastos.Droid.Os.ILooper;
-    // interface Elastos.Droid.Os.IMessage;
-    // interface Elastos.Droid.Os.IMessenger;
-    // interface Elastos.Droid.Os.IParcel;
-    // interface Elastos.Droid.Os.IParcelable;
-    // interface Elastos.Droid.Os.IRemoteException;
-    // interface Elastos.Droid.Util.ILog;
-    // interface Elastos.Droid.Util.ISparseArray;
-    // interface Elastos.Droid.Internal.Util.IAsyncChannel;
-    // interface Elastos.Droid.Internal.Util.IProtocol;
-// No match parts: import java.util.concurrent.CountDownLatch;
 
     namespace Elastos {
     namespace Droid {

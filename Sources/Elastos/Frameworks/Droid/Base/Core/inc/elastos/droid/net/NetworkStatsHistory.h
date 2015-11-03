@@ -52,11 +52,6 @@ public:
     CARAPI constructor(
         /* [in] */ IParcel* in);
 
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* out,
-        /* [in] */ Int32 flags);
-
     CARAPI constructor(
         /* [in] */ IDataInputStream* in);
 

@@ -1,9 +1,7 @@
 
 module
 {
-
     interface Elastos.Droid.Net.IScoredNetwork;
-
 
     namespace Elastos {
     namespace Droid {

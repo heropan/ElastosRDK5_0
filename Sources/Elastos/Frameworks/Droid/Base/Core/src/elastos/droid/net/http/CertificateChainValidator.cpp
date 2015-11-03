@@ -1,120 +1,150 @@
 
-#include "CertificateChainValidator.h"
-
-using Elastos::Net::Ssl::ISSLSession;
-using Elastos::Net::Ssl::IX509TrustManager;
+#include "elastos/droid/net/http/CertificateChainValidator.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-AutoPtr<IDefaultHostnameVerifier> CertificateChainValidator::mVerifier;
+CAR_INTERFACE_IMPL(CertificateChainValidator, Object, ICertificateChainValidator)
 
+const String CertificateChainValidator::TAG = "CertificateChainValidator";
 
-CAR_INTERFACE_IMPL(CertificateChainValidator, ICertificateChainValidator);
+ECode CertificateChainValidator::GetInstance(
+    /* [out] */ ICertificateChainValidator** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return NoPreloadHolder.sInstance;
+
+#endif
+}
 
 CertificateChainValidator::CertificateChainValidator()
-{}
-
-ECode CertificateChainValidator::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
 {
     return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        try {
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("X.509");
+            tmf.init((KeyStore) null);
+            for (TrustManager tm : tmf.getTrustManagers()) {
+                if (tm instanceof X509TrustManager) {
+                    mTrustManager = (X509TrustManager) tm;
+                }
+            }
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("X.509 TrustManagerFactory must be available", e);
+        } catch (KeyStoreException e) {
+            throw new RuntimeException("X.509 TrustManagerFactory cannot be initialized", e);
+        }
+        if (mTrustManager == null) {
+            throw new RuntimeException(
+                    "None of the X.509 TrustManagers are X509TrustManager");
+        }
+
+#endif
 }
-
-ECode CertificateChainValidator::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CertificateChainValidator::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CertificateChainValidator::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    ICertificateChainValidator * o = ICertificateChainValidator::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(ICertificateChainValidator));
-    }
-    return NOERROR;
-}
-
-ECode CertificateChainValidator::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(ICertificateChainValidator);
-    return NOERROR;
-}
-
-ECode CertificateChainValidator::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    StringBuilder sb("CertificateChainValidator:(");
-    sb += (Int32)THIS_PROBE(ICertificateChainValidator);
-    sb += ")";
-    sb.ToString(info);
-    return NOERROR;
-}
-
 
 ECode CertificateChainValidator::DoHandshakeAndValidateServerCertificates(
-    /* [in] */ Elastos::Droid::Net::Http::IHttpsConnection* connection,
+    /* [in] */ IHttpsConnection* connection,
     /* [in] */ ISSLSocket* sslSocket,
-    /* [in] */ const String& sDomain,
-    /* [out] */ Elastos::Droid::Net::Http::ISslError** err)
+    /* [in] */ String domain,
+    /* [out] */ ISslError** result)
 {
-    // // get a valid SSLSession, close the socket if we fail
-    // AutoPtr<ISSLSession> sslSession;
-    // sslSocket->GetSession((ISSLSession**)&sslSession);
-    // Boolean isValid;
-    // sslSession.isValid(&isValid);
-    // if (!isValid) {
-    //     return CloseSocketThrowException(sslSocket, String("failed to perform SSL handshake");
-    // }
-
-    // // retrieve the chain of the server peer certificates
-    // AutoPtr<ArrayOf<ICertificate*> > peerCertificates;
-    // sslSession = NULL;
-    // sslSocket->GetSession((ISSLSession**)&sslSession);
-    // sslSession->GetPeerCertificates((ArrayOf<ICertificate*>*)&peerCertificates);
-
-    // if (peerCertificates == NULL || peerCertificates->GetLength() == 0) {
-    //     return CloseSocketThrowException(sslSocket, String("failed to retrieve peer certificates"));
-    // } else {
-    //     // update the SSL certificate associated with the connection
-    //     if (connection != NULL) {
-    //         if ((*peerCertificates)[0] != NULL) {
-    //             AutoPtr<ISslCertificate> sslc;
-    //             CSslCertificate::New((X509Certificate)((*peerCertificates)[0]), (ISslCertificate**)&sslc);
-    //             connection->SetCertificate(sslc);
-    //         }
-    //     }
-    // }
-
-    // return VerifyServerDomainAndCertificates((X509Certificate[]) peerCertificates, sDomain, String("RSA"), err;
     return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        // get a valid SSLSession, close the socket if we fail
+        SSLSession sslSession = sslSocket.getSession();
+        if (!sslSession.isValid()) {
+            closeSocketThrowException(sslSocket, "failed to perform SSL handshake");
+        }
+        // retrieve the chain of the server peer certificates
+        Certificate[] peerCertificates =
+            sslSocket.getSession().getPeerCertificates();
+        if (peerCertificates == null || peerCertificates.length == 0) {
+            closeSocketThrowException(
+                sslSocket, "failed to retrieve peer certificates");
+        } else {
+            // update the SSL certificate associated with the connection
+            if (connection != null) {
+                if (peerCertificates[0] != null) {
+                    connection.setCertificate(
+                        new SslCertificate((X509Certificate)peerCertificates[0]));
+                }
+            }
+        }
+        return verifyServerDomainAndCertificates((X509Certificate[]) peerCertificates, domain, "RSA");
+
+#endif
+}
+
+ECode CertificateChainValidator::VerifyServerCertificates(
+    /* [in] */ ArrayOf<IArrayOf>* certChain,
+    /* [in] */ String domain,
+    /* [in] */ String authType,
+    /* [out] */ ISslError** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (certChain == null || certChain.length == 0) {
+            throw new IllegalArgumentException("bad certificate chain");
+        }
+        X509Certificate[] serverCertificates = new X509Certificate[certChain.length];
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            for (int i = 0; i < certChain.length; ++i) {
+                serverCertificates[i] = (X509Certificate) cf.generateCertificate(
+                        new ByteArrayInputStream(certChain[i]));
+            }
+        } catch (CertificateException e) {
+            throw new IOException("can't read certificate", e);
+        }
+        return verifyServerDomainAndCertificates(serverCertificates, domain, authType);
+
+#endif
+}
+
+ECode CertificateChainValidator::HandleTrustStorageUpdate()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        TrustManagerFactory tmf;
+        try {
+            tmf = TrustManagerFactory.getInstance("X.509");
+            tmf.init((KeyStore) null);
+        } catch (NoSuchAlgorithmException e) {
+            Slog.w(TAG, "Couldn't find default X.509 TrustManagerFactory");
+            return;
+        } catch (KeyStoreException e) {
+            Slog.w(TAG, "Couldn't initialize default X.509 TrustManagerFactory", e);
+            return;
+        }
+        TrustManager[] tms = tmf.getTrustManagers();
+        boolean sentUpdate = false;
+        for (TrustManager tm : tms) {
+            try {
+                Method updateMethod = tm.getClass().getDeclaredMethod("handleTrustStorageUpdate");
+                updateMethod.setAccessible(true);
+                updateMethod.invoke(tm);
+                sentUpdate = true;
+            } catch (Exception e) {
+            }
+        }
+        if (!sentUpdate) {
+            Slog.w(TAG, "Didn't find a TrustManager to handle CA list update");
+        }
+
+#endif
 }
 
 ECode CertificateChainValidator::VerifyServerDomainAndCertificates(
     /* [in] */ ArrayOf<IX509Certificate*>* chain,
-    /* [in] */ const String& sDomain,
-    /* [in] */ const String& authType,
-    /* [out] */ ISslError** err)
+    /* [in] */ String domain,
+    /* [in] */ String authType,
+    /* [out] */ ISslError** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check. Source code changed.
     VALIDATE_NOT_NULL(err);
     // check if the first certificate in the chain is for this site
     AutoPtr<IX509Certificate> currCertificate = (*chain)[0];
@@ -157,42 +187,54 @@ ECode CertificateChainValidator::VerifyServerDomainAndCertificates(
 
     *err = NULL;
     return NOERROR;
+#endif
+}
+
+ECode CertificateChainValidator::GetTrustManager(
+    /* [out] */ IX509TrustManager** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mTrustManager;
+
+#endif
 }
 
 ECode CertificateChainValidator::CloseSocketThrowException(
-        /* [in] */ ISSLSocket* socket,
-        /* [in] */ const String& errorMessage,
-        /* [in] */ const String& defaultErrorMessage)
+    /* [in] */ ISSLSocket* socket,
+    /* [in] */ String errorMessage,
+    /* [in] */ String defaultErrorMessage)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     return CloseSocketThrowException(
             socket, !errorMessage.IsNullOrEmpty() ? errorMessage : defaultErrorMessage);
+#endif
 }
 
 ECode CertificateChainValidator::CloseSocketThrowException(
-        /* [in] */ ISSLSocket* socket,
-        /* [in] */ const String& errorMessage)
+    /* [in] */ ISSLSocket* socket,
+    /* [in] */ String errorMessage)
 {
-    // if (HttpLog.LOGV) {
-    //     HttpLog.v("validation error: " + errorMessage);
-    // }
-
-    if (socket != NULL) {
-        AutoPtr<ISSLSession> session;
-        // socket->GetSession(&session);
-        // if (session != NULL) {
-        //     session->Invalidate();
-        // }
-
-        // socket->Close();
-    }
-
-    // throw new SSLHandshakeException(errorMessage);
-    // return E_SSLHANDS_SHAKE_EXCEPTION;
     return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (HttpLog.LOGV) {
+            HttpLog.v("validation error: " + errorMessage);
+        }
+        if (socket != null) {
+            SSLSession session = socket.getSession();
+            if (session != null) {
+                session.invalidate();
+            }
+            socket.close();
+        }
+        throw new SSLHandshakeException(errorMessage);
+
+#endif
 }
 
-}
-}
-}
-}
 
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

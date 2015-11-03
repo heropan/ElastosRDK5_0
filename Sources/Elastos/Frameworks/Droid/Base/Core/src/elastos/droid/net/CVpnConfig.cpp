@@ -4,10 +4,10 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/net/CVpnConfig.h"
 
-using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
-using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IIntent;
 
 namespace Elastos {
 namespace Droid {

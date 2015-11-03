@@ -5,8 +5,9 @@
 #include "_Elastos_Droid_Net_CProxy.h"
 #include <elastos/core/Singleton.h>
 
-using Org::Apache::Http::IHttpHost;
 using Elastos::Droid::Content::IContext;
+
+using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {
 namespace Droid {

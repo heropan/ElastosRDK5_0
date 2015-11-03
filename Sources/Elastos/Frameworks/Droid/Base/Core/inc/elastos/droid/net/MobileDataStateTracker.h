@@ -3,18 +3,18 @@
 #define __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "BaseNetworkStateTracker.h"
-#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/net/BaseNetworkStateTracker.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Internal::Telephony::PhoneConstantsDataState;
 using Elastos::Droid::Internal::Telephony::IITelephony;
+using Elastos::Droid::Internal::Telephony::PhoneConstantsDataState;
 using Elastos::Droid::Internal::Utility::IAsyncChannel;
 using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Telephony::ISignalStrength;
 using Elastos::Droid::Telephony::IPhoneStateListener;
+using Elastos::Droid::Telephony::ISignalStrength;
 
 namespace Elastos {
 namespace Droid {
@@ -32,7 +32,6 @@ class MobileDataStateTracker
     , public IMobileDataStateTracker
 {
 public:
-    CAR_INTERFACE_DECL()
     class MdstHandler
         : public Handler
     {
@@ -63,6 +62,20 @@ public:
             latency = i4;
         }
     };
+
+private:
+    class MobileDataStateReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+    };
+
+public:
+    CAR_INTERFACE_DECL()
 
     MobileDataStateTracker();
 
@@ -235,22 +248,7 @@ public:
     CARAPI StopSampling(
         /* [in] */ ISamplingDataTrackerSamplingSnapshot* s);
 
-    // maintained in DataConnectionTracker.
-    Boolean mUserDataEnabled;
-
-    Boolean mPolicyDataEnabled;
-
 private:
-    class MobileDataStateReceiver
-        : public BroadcastReceiver
-    {
-    public:
-        // @Override
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-    };
-
     CARAPI UpdateLinkProperitesAndCapatilities(
         /* [in] */ IIntent* intent);
 
@@ -304,6 +302,13 @@ private:
     // added for initialize mTheoreticalBWTable only
     static CARAPI_(AutoPtr<ArrayOf<NetworkDataEntry> >) CreateTheoreticalBWTable();
 
+public:
+    // maintained in DataConnectionTracker.
+    Boolean mUserDataEnabled;
+
+    Boolean mPolicyDataEnabled;
+
+private:
     static const String TAG;
 
     static const Boolean DBG;
@@ -352,14 +357,3 @@ private:
 } // namespace Droid
 } // namespace Elastos
 #endif // __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
-
-#if 0 // old CMobileDataStateTracker.h
-CarClass(CMobileDataStateTracker)
-{
-public:
-    static class MdstHandler
-        : public HandlerBase
-    {
-    };
-};
-#endif

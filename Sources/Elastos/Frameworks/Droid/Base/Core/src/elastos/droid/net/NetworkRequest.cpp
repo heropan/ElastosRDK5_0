@@ -1,6 +1,6 @@
 
-#include "elastos/droid/net/NetworkRequest.h"
 #include "elastos/droid/net/CNetworkCapabilities.h"
+#include "elastos/droid/net/NetworkRequest.h"
 
 namespace Elastos {
 namespace Droid {

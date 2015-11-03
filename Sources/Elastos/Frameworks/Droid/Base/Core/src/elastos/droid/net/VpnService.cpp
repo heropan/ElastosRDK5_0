@@ -1,10 +1,5 @@
 
 #include "elastos/droid/net/VpnService.h"
-// #include "elastos/droid/internal/net/CVpnConfig.h"
-// #include <elastos/utility/Clist.h>
-
-// using Elastos::Droid::Internal::Net::CVpnConfig;
-// using Elastos::Utility::CList;
 
 namespace Elastos {
 namespace Droid {

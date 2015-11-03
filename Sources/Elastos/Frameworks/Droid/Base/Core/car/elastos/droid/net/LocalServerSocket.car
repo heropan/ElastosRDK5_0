@@ -3,8 +3,8 @@ module
 {
     using interface Elastos.IO.IFileDescriptor;
 
-    interface Elastos.Droid.Net.ILocalSocketAddress;
     interface Elastos.Droid.Net.ILocalSocket;
+    interface Elastos.Droid.Net.ILocalSocketAddress;
 
     namespace Elastos {
     namespace Droid {

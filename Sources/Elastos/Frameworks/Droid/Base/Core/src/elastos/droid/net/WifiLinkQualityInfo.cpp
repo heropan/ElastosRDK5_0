@@ -19,22 +19,6 @@ WifiLinkQualityInfo::constructor()
     return NOERROR;
 }
 
-ECode WifiLinkQualityInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super.writeToParcel(dest, flags, OBJECT_TYPE_WIFI_LINK_QUALITY_INFO);
-        dest.writeInt(mType);
-        dest.writeInt(mRssi);
-        dest.writeLong(mTxGood);
-        dest.writeLong(mTxBad);
-        dest.writeString(mBssid);
-
-#endif
-}
-
 ECode WifiLinkQualityInfo::CreateFromParcelBody(
     /* [in] */ IParcel* in,
     /* [out] */ IWifiLinkQualityInfo** result)

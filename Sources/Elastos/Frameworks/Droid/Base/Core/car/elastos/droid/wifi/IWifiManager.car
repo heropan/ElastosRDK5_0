@@ -2,14 +2,14 @@
 module
 {
     interface Elastos.Droid.Net.IDhcpInfo;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IMessenger;
     interface Elastos.Droid.Os.IWorkSource;
-    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Wifi.IScanSettings;
     interface Elastos.Droid.Wifi.IWifiActivityEnergyInfo;
     interface Elastos.Droid.Wifi.IWifiConfiguration;
-    interface Elastos.Droid.Wifi.IWifiInfo;
-    interface Elastos.Droid.Wifi.IScanSettings;
     interface Elastos.Droid.Wifi.IWifiConnectionStatistics;
+    interface Elastos.Droid.Wifi.IWifiInfo;
 
     using interface Elastos.Utility.IList;
 

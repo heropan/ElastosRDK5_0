@@ -1,12 +1,12 @@
 
 module
 {
-
     interface Elastos.Droid.Net.IWebAddress;
 
-    using interface Org.Apache.Http.IHttpHost;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IMap;
+
+    using interface Org.Apache.Http.IHttpHost;
 
     namespace Elastos {
     namespace Droid {

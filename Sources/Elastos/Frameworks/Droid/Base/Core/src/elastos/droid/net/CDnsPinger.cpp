@@ -1,35 +1,27 @@
 
-#include "elastos/droid/net/CDnsPinger.h"
-// #include "elastos/droid/net/NetworkUtils.h"
-#include "elastos/droid/net/CConnectivityManager.h"
 #include "elastos/droid/R.h"
-// #include "elastos/droid/provider/Settings.h"
-#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/net/CConnectivityManager.h"
 #include "elastos/droid/net/CConnectivityManagerHelper.h"
-
+#include "elastos/droid/net/CDnsPinger.h"
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>
-// #include <CRandom.h>
-// #include <CAtomicInteger32.h>
-// #include <CArrayList.h>
 
-using Elastos::Droid::Os::SystemClock;
-// using Elastos::Droid::Net::NetworkUtils;
-using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::CConnectivityManager;
-// using Elastos::Droid::Provider::Settings;
-using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::Utility::IProtocol;
+using Elastos::Droid::Net::CConnectivityManager;
+using Elastos::Droid::Net::IConnectivityManager;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Provider::ISettingsGlobal;
 
-using Elastos::Net::IDatagramPacket;
 using Elastos::Net::CDatagramPacket;
 using Elastos::Net::CDatagramSocket;
+using Elastos::Net::CNetworkInterfaceHelper;
+using Elastos::Net::IDatagramPacket;
 using Elastos::Net::INetworkInterface;
 using Elastos::Net::INetworkInterfaceHelper;
-using Elastos::Net::CNetworkInterfaceHelper;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -72,7 +64,13 @@ const Int32 CDnsPinger::BASE = IProtocol::BASE_DNS_PINGER; //Protocol.BASE_DNS_P
 const Int32 CDnsPinger::ACTION_PING_DNS = CDnsPinger::BASE + 1; //0x00050001; // = BASE + 1;
 const Int32 CDnsPinger::ACTION_LISTEN_FOR_RESPONSE = CDnsPinger::BASE + 2; //0x00050002; // = BASE + 2;
 const Int32 CDnsPinger::ACTION_CANCEL_ALL_PINGS = CDnsPinger::BASE + 3; //0x00050003; // = BASE + 3;
-const Byte CDnsPinger::mDnsQuery[] = {
+const AutoPtr<ArrayOf<Byte> > CDnsPinger::mDnsQuery = InitDnsQuery();
+
+AutoPtr<ArrayOf<Byte> > CDnsPinger::InitDnsQuery()
+{
+    AutoPtr<ArrayOf<Byte> > rev;
+#if 0 // TODO: Translate codes below.
+= {
     0, 0, // [0-1] is for ID (will set each time)
     1, 0, // [2-3] are flags.  Set byte[2] = 1 for recursion desired (RD) on.  Currently on.
     0, 1, // [4-5] bytes are for number of queries (QCOUNT)
@@ -85,8 +83,9 @@ const Byte CDnsPinger::mDnsQuery[] = {
     0,    // null terminator of address (also called empty TLD)
     0, 1, // QTYPE, set to 1 = A (host address)
     0, 1  // QCLASS, set to 1 = IN (internet)
-};
-
+#endif
+    return rev;
+}
 
 CDnsPinger::DnsArg::DnsArg(
     /* [in] */ IInetAddress* dns,

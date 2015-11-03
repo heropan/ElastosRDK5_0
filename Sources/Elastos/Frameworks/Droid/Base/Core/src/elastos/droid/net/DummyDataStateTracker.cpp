@@ -1,19 +1,19 @@
 
-#include "elastos/droid/net/DummyDataStateTracker.h"
 #ifdef DROID_CORE
-#include "elastos/droid/net/CNetworkInfo.h"
-#include "elastos/droid/net/CLinkProperties.h"
 #include "elastos/droid/net/CLinkCapabilities.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CNetworkInfo.h"
 #include "elastos/droid/os/CMessage.h"
 #endif
+#include "elastos/droid/net/DummyDataStateTracker.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Net::CNetworkInfo;
-using Elastos::Droid::Net::CLinkProperties;
 using Elastos::Droid::Net::CLinkCapabilities;
-using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Net::CLinkProperties;
+using Elastos::Droid::Net::CNetworkInfo;
 using Elastos::Droid::Os::CMessage;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

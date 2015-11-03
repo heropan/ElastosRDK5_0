@@ -4,23 +4,23 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Net_CConnectivityManager.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/logging/Logger.h>
-#include "elastos/droid/os/Handler.h"
 
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessenger;
+using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Utility::IArrayMap;
 
 using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::IMessenger;
-using Elastos::Droid::Os::INetworkManagementService;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::Handler;
-using Elastos::Utility::IHashMap;
-using Elastos::Droid::Utility::IArrayMap;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::App::IPendingIntent;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -48,6 +48,165 @@ CarClass(CConnectivityManager)
     , public Object
     , public IConnectivityManager
 {
+public:
+    /**
+     * Base class for NetworkRequest callbacks.  Used for notifications about network
+     * changes.  Should be extended by applications wanting notifications.
+     */
+    class ConnectivityManagerNetworkCallback
+        : public Object
+        , public IConnectivityManagerNetworkCallback
+    {
+        friend class CConnectivityManager;
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor();
+
+        /**
+         * @hide
+         * Called whenever the framework connects to a network that it may use to
+         * satisfy this request
+         */
+        CARAPI OnPreCheck(
+            /* [in] */ INetwork* network);
+
+        /**
+         * Called when the framework connects and has declared new network ready for use.
+         * This callback may be called more than once if the {@link Network} that is
+         * satisfying the request changes.
+         *
+         * @param network The {@link Network} of the satisfying network.
+         */
+        CARAPI OnAvailable(
+            /* [in] */ INetwork* network);
+
+        /**
+         * Called when the network is about to be disconnected.  Often paired with an
+         * {@link NetworkCallback#onAvailable} call with the new replacement network
+         * for graceful handover.  This may not be called if we have a hard loss
+         * (loss without warning).  This may be followed by either a
+         * {@link NetworkCallback#onLost} call or a
+         * {@link NetworkCallback#onAvailable} call for this network depending
+         * on whether we lose or regain it.
+         *
+         * @param network The {@link Network} that is about to be disconnected.
+         * @param maxMsToLive The time in ms the framework will attempt to keep the
+         *                     network connected.  Note that the network may suffer a
+         *                     hard loss at any time.
+         */
+        CARAPI OnLosing(
+            /* [in] */ INetwork* network,
+            /* [in] */ Int32 maxMsToLive);
+
+        /**
+         * Called when the framework has a hard loss of the network or when the
+         * graceful failure ends.
+         *
+         * @param network The {@link Network} lost.
+         */
+        CARAPI OnLost(
+            /* [in] */ INetwork* network);
+
+        /**
+         * Called if no network is found in the given timeout time.  If no timeout is given,
+         * this will not be called.
+         * @hide
+         */
+        CARAPI OnUnavailable();
+
+        /**
+         * Called when the network the framework connected to for this request
+         * changes capabilities but still satisfies the stated need.
+         *
+         * @param network The {@link Network} whose capabilities have changed.
+         * @param networkCapabilities The new {@link NetworkCapabilities} for this network.
+         */
+        CARAPI OnCapabilitiesChanged(
+            /* [in] */ INetwork* network,
+            /* [in] */ INetworkCapabilities* networkCapabilities);
+
+        /**
+         * Called when the network the framework connected to for this request
+         * changes {@link LinkProperties}.
+         *
+         * @param network The {@link Network} whose link properties have changed.
+         * @param linkProperties The new {@link LinkProperties} for this network.
+         */
+        CARAPI OnLinkPropertiesChanged(
+            /* [in] */ INetwork* network,
+            /* [in] */ ILinkProperties* linkProperties);
+
+    private:
+        AutoPtr<INetworkRequest> mNetworkRequest;
+
+    };
+
+private:
+    class LegacyRequest
+        : public Object
+    {
+    public:
+        LegacyRequest();
+        AutoPtr<INetworkCapabilities> mNetworkCapabilities;
+        AutoPtr<INetworkRequest> mNetworkRequest;
+        Int32 mExpireSequenceNumber;
+        AutoPtr<INetwork> mCurrentNetwork;
+        Int32 mDelay;
+        class InnerSub_ConnectivityManagerNetworkCallback
+            : public ConnectivityManagerNetworkCallback
+        {
+        public:
+            InnerSub_ConnectivityManagerNetworkCallback(LegacyRequest* const host);
+
+            // @Override
+            CARAPI OnAvailable(
+                /* [in] */ INetwork* network);
+
+            // @Override
+            ECode OnLost(
+                /* [in] */ INetwork* network);
+
+        private:
+            LegacyRequest* const mHost;
+        };
+
+        AutoPtr<InnerSub_ConnectivityManagerNetworkCallback> mNetworkCallback;
+    };
+
+    class CallbackHandler
+        : public Handler
+    {
+    public:
+        CallbackHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ IHashMap* callbackMap,
+            /* [in] */ IAtomicInteger32* refCount,
+            /* [in] */ CConnectivityManager* cm);
+
+        // @Override
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* message);
+    private:
+        const AutoPtr<IHashMap> mCallbackMap;
+        const AutoPtr<IAtomicInteger32> mRefCount;
+        static const String TAG;
+
+        CConnectivityManager* const mCm;
+
+
+        CARAPI GetObject(
+            /* [in] */ IMessage* msg,
+            /* [in] */ ClassID c,
+            /* [out] */ IInterface** result);
+
+        CARAPI GetCallbacks(
+            /* [in] */ INetworkRequest* req,
+            /* [out] */ IConnectivityManagerNetworkCallback** result);
+
+    };
+
 public:
     CAR_OBJECT_DECL()
 
@@ -894,100 +1053,6 @@ public:
         /* [in] */ INetworkMisc* misc);
 
     /**
-     * Base class for NetworkRequest callbacks.  Used for notifications about network
-     * changes.  Should be extended by applications wanting notifications.
-     */
-    class ConnectivityManagerNetworkCallback
-        : public Object
-        , public IConnectivityManagerNetworkCallback
-    {
-        friend class CConnectivityManager;
-
-    public:
-        CAR_INTERFACE_DECL()
-
-        CARAPI constructor();
-
-        /**
-         * @hide
-         * Called whenever the framework connects to a network that it may use to
-         * satisfy this request
-         */
-        CARAPI OnPreCheck(
-            /* [in] */ INetwork* network);
-
-        /**
-         * Called when the framework connects and has declared new network ready for use.
-         * This callback may be called more than once if the {@link Network} that is
-         * satisfying the request changes.
-         *
-         * @param network The {@link Network} of the satisfying network.
-         */
-        CARAPI OnAvailable(
-            /* [in] */ INetwork* network);
-
-        /**
-         * Called when the network is about to be disconnected.  Often paired with an
-         * {@link NetworkCallback#onAvailable} call with the new replacement network
-         * for graceful handover.  This may not be called if we have a hard loss
-         * (loss without warning).  This may be followed by either a
-         * {@link NetworkCallback#onLost} call or a
-         * {@link NetworkCallback#onAvailable} call for this network depending
-         * on whether we lose or regain it.
-         *
-         * @param network The {@link Network} that is about to be disconnected.
-         * @param maxMsToLive The time in ms the framework will attempt to keep the
-         *                     network connected.  Note that the network may suffer a
-         *                     hard loss at any time.
-         */
-        CARAPI OnLosing(
-            /* [in] */ INetwork* network,
-            /* [in] */ Int32 maxMsToLive);
-
-        /**
-         * Called when the framework has a hard loss of the network or when the
-         * graceful failure ends.
-         *
-         * @param network The {@link Network} lost.
-         */
-        CARAPI OnLost(
-            /* [in] */ INetwork* network);
-
-        /**
-         * Called if no network is found in the given timeout time.  If no timeout is given,
-         * this will not be called.
-         * @hide
-         */
-        CARAPI OnUnavailable();
-
-        /**
-         * Called when the network the framework connected to for this request
-         * changes capabilities but still satisfies the stated need.
-         *
-         * @param network The {@link Network} whose capabilities have changed.
-         * @param networkCapabilities The new {@link NetworkCapabilities} for this network.
-         */
-        CARAPI OnCapabilitiesChanged(
-            /* [in] */ INetwork* network,
-            /* [in] */ INetworkCapabilities* networkCapabilities);
-
-        /**
-         * Called when the network the framework connected to for this request
-         * changes {@link LinkProperties}.
-         *
-         * @param network The {@link Network} whose link properties have changed.
-         * @param linkProperties The new {@link LinkProperties} for this network.
-         */
-        CARAPI OnLinkPropertiesChanged(
-            /* [in] */ INetwork* network,
-            /* [in] */ ILinkProperties* linkProperties);
-
-    private:
-        AutoPtr<INetworkRequest> mNetworkRequest;
-
-    };
-
-    /**
      * Start listening to reports when the system's default data network is active, meaning it is
      * a good time to perform network traffic.  Use {@link #isDefaultNetworkActive()}
      * to determine the current state of the system's default network after registering the
@@ -1167,12 +1232,6 @@ public:
         /* [in] */ INetwork* network,
         /* [out] */ Boolean* result);
 
-    static const AutoPtr<IHashMap> sNetworkCallback;
-
-    static const AutoPtr<IAtomicInteger32> sCallbackRefCount;
-
-    static AutoPtr<IHandler> sCallbackHandler;
-
 private:
     CARAPI NetworkCapabilitiesForFeature(
         /* [in] */ Int32 networkType,
@@ -1186,69 +1245,6 @@ private:
     CARAPI LegacyTypeForNetworkCapabilities(
         /* [in] */ INetworkCapabilities* netCap,
         /* [out] */ Int32* result);
-
-    class LegacyRequest
-        : public Object
-    {
-    public:
-        LegacyRequest();
-        AutoPtr<INetworkCapabilities> mNetworkCapabilities;
-        AutoPtr<INetworkRequest> mNetworkRequest;
-        Int32 mExpireSequenceNumber;
-        AutoPtr<INetwork> mCurrentNetwork;
-        Int32 mDelay;
-        class InnerSub_ConnectivityManagerNetworkCallback
-            : public ConnectivityManagerNetworkCallback
-        {
-        public:
-            InnerSub_ConnectivityManagerNetworkCallback(LegacyRequest* const host);
-
-            // @Override
-            CARAPI OnAvailable(
-                /* [in] */ INetwork* network);
-
-            // @Override
-            ECode OnLost(
-                /* [in] */ INetwork* network);
-
-        private:
-            LegacyRequest* const mHost;
-        };
-
-        AutoPtr<InnerSub_ConnectivityManagerNetworkCallback> mNetworkCallback;
-    };
-
-    class CallbackHandler
-        : public Handler
-    {
-    public:
-        CallbackHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ IHashMap* callbackMap,
-            /* [in] */ IAtomicInteger32* refCount,
-            /* [in] */ CConnectivityManager* cm);
-
-        // @Override
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* message);
-    private:
-        const AutoPtr<IHashMap> mCallbackMap;
-        const AutoPtr<IAtomicInteger32> mRefCount;
-        static const String TAG;
-
-        CConnectivityManager* const mCm;
-
-
-        CARAPI GetObject(
-            /* [in] */ IMessage* msg,
-            /* [in] */ ClassID c,
-            /* [out] */ IInterface** result);
-
-        CARAPI GetCallbacks(
-            /* [in] */ INetworkRequest* req,
-            /* [out] */ IConnectivityManagerNetworkCallback** result);
-
-    };
 
     CARAPI FindRequestForFeature(
         /* [in] */ INetworkCapabilities* netCap,
@@ -1290,7 +1286,14 @@ private:
         /* [in] */ Int32 legacyType,
         /* [out] */ INetworkRequest** result);
 
+public:
+    static const AutoPtr<IHashMap> sNetworkCallback;
 
+    static const AutoPtr<IAtomicInteger32> sCallbackRefCount;
+
+    static AutoPtr<IHandler> sCallbackHandler;
+
+private:
     static const String TAG;
     static const Boolean LEGACY_DBG; // STOPSHIP
     AutoPtr<IIConnectivityManager> mService;

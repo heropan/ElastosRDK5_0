@@ -26,15 +26,6 @@ public:
     CARAPI constructor();
 
     /**
-     * Implement the Parcelable interface.
-     * @hide
-     */
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
-
-    /**
      * @hide
      */
     static CARAPI CreateFromParcelBody(

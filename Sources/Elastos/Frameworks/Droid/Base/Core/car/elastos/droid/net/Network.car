@@ -1,12 +1,11 @@
 
 module
 {
-
     using interface Elastos.Net.IInetAddress;
-    using interface Elastosx.Net.ISocketFactory;
+    using interface Elastos.Net.ISocket;
     using interface Elastos.Net.IURL;
     using interface Elastos.Net.IURLConnection;
-    using interface Elastos.Net.ISocket;
+    using interface Elastosx.Net.ISocketFactory;
 
     namespace Elastos {
     namespace Droid {

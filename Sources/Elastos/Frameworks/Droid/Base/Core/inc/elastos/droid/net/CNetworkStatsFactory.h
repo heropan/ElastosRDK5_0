@@ -4,8 +4,9 @@
 
 #include "_Elastos_Droid_Internal_Net_CNetworkStatsFactory.h"
 
-using Elastos::IO::IFile;
 using Elastos::Droid::Net::INetworkStats;
+
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {

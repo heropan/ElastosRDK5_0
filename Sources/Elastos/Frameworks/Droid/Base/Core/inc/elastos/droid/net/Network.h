@@ -5,15 +5,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastosx/net/SocketFactory.h>
 
-using Elastosx::Net::ISocketFactory;
+using Elastos::Net::ISocket;
+using Elastos::Net::ISocketAddress;
 using Elastos::Net::IURL;
 using Elastos::Net::IURLConnection;
-using Elastos::Net::ISocket;
-// using Elastos::Droid::Okhttp::IConnectionPool;
-// using Elastos::Droid::Okhttp::IHostResolver;
-using Elastos::Net::ISocketAddress;
+using Elastosx::Net::ISocketFactory;
 using Elastosx::Net::SocketFactory;
-
 
 namespace Elastos {
 namespace Droid {
@@ -33,6 +30,60 @@ class Network
     , public INetwork
     , public IParcelable
 {
+private:
+    /**
+     * A {@code SocketFactory} that produces {@code Socket}'s bound to this network.
+     */
+    class NetworkBoundSocketFactory
+        : public SocketFactory
+    {
+    public:
+        NetworkBoundSocketFactory(
+            /* [in] */ Int32 netId);
+
+        // @Override
+        CARAPI CreateSocket(
+            /* [in] */ const String& host,
+            /* [in] */ Int32 port,
+            /* [in] */ IInetAddress* localHost,
+            /* [in] */ Int32 localPort,
+            /* [out] */ ISocket** result);
+
+        // @Override
+        CARAPI CreateSocket(
+            /* [in] */ IInetAddress* address,
+            /* [in] */ Int32 port,
+            /* [in] */ IInetAddress* localAddress,
+            /* [in] */ Int32 localPort,
+            /* [out] */ ISocket** result);
+
+        // @Override
+        CARAPI CreateSocket(
+            /* [in] */ IInetAddress* host,
+            /* [in] */ Int32 port,
+            /* [out] */ ISocket** result);
+
+        // @Override
+        CARAPI CreateSocket(
+            /* [in] */ const String& host,
+            /* [in] */ Int32 port,
+            /* [out] */ ISocket** result);
+
+        // @Override
+        CARAPI CreateSocket(
+            /* [out] */ ISocket** result);
+
+    private:
+        CARAPI ConnectToHost(
+            /* [in] */ const String& host,
+            /* [in] */ Int32 port,
+            /* [in] */ ISocketAddress* localAddress,
+            /* [out] */ ISocket** result);
+
+        const Int32 mNetId;
+
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -135,59 +186,6 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
-    /**
-     * A {@code SocketFactory} that produces {@code Socket}'s bound to this network.
-     */
-    class NetworkBoundSocketFactory
-        : public SocketFactory
-    {
-    public:
-        NetworkBoundSocketFactory(
-            /* [in] */ Int32 netId);
-
-        // @Override
-        CARAPI CreateSocket(
-            /* [in] */ const String& host,
-            /* [in] */ Int32 port,
-            /* [in] */ IInetAddress* localHost,
-            /* [in] */ Int32 localPort,
-            /* [out] */ ISocket** result);
-
-        // @Override
-        CARAPI CreateSocket(
-            /* [in] */ IInetAddress* address,
-            /* [in] */ Int32 port,
-            /* [in] */ IInetAddress* localAddress,
-            /* [in] */ Int32 localPort,
-            /* [out] */ ISocket** result);
-
-        // @Override
-        CARAPI CreateSocket(
-            /* [in] */ IInetAddress* host,
-            /* [in] */ Int32 port,
-            /* [out] */ ISocket** result);
-
-        // @Override
-        CARAPI CreateSocket(
-            /* [in] */ const String& host,
-            /* [in] */ Int32 port,
-            /* [out] */ ISocket** result);
-
-        // @Override
-        CARAPI CreateSocket(
-            /* [out] */ ISocket** result);
-
-    private:
-        CARAPI ConnectToHost(
-            /* [in] */ const String& host,
-            /* [in] */ Int32 port,
-            /* [in] */ ISocketAddress* localAddress,
-            /* [out] */ ISocket** result);
-
-        const Int32 mNetId;
-
-    };
-
     // TODO: This creates a connection pool and host resolver for
     // every Network object, instead of one for every NetId. This is
     // suboptimal, because an app could potentially have more than one

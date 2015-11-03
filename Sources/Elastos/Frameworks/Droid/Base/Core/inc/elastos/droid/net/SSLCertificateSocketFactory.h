@@ -7,11 +7,12 @@
 
 using Elastos::Core::IArrayOf;
 using Elastos::Security::IPrivateKey;
-using Elastosx::Net::Ssl::SSLSocketFactory;
-using Elastosx::Net::Ssl::ITrustManager;
 using Elastosx::Net::Ssl::IKeyManager;
-using Org::Conscrypt::ISSLClientSessionCache;
+using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::SSLSocketFactory;
+
 using Org::Conscrypt::IOpenSSLSocketImpl;
+using Org::Conscrypt::ISSLClientSessionCache;
 
 namespace Elastos {
 namespace Droid {
@@ -51,6 +52,19 @@ class SSLCertificateSocketFactory
     : public SSLSocketFactory
     , public ISSLCertificateSocketFactory
 {
+private:
+    class InnerSub_TrustManager {
+#if 0 // TODO: Translate codes below.
+        private static final TrustManager[] INSECURE_TRUST_MANAGER = new TrustManager[] {
+            new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() { return null; }
+                public void checkClientTrusted(X509Certificate[] certs, String authType) { }
+                public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+            }
+        }
+#endif
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -366,20 +380,6 @@ public:
         /* [out, callee] */ ArrayOf<String>** result);
 
 private:
-    class InnerSub_TrustManager {
-#if 0 // TODO: Translate codes below.
-        private static final TrustManager[] INSECURE_TRUST_MANAGER = new TrustManager[] {
-            new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() { return null; }
-                public void checkClientTrusted(X509Certificate[] certs, String authType) { }
-                public void checkServerTrusted(X509Certificate[] certs, String authType) { }
-            }
-        }
-#endif
-    };
-
-    const AutoPtr<ArrayOf<ITrustManager*> > TRANS_MANAGER;
-
     SSLCertificateSocketFactory(
         /* [in] */ Int32 handshakeTimeoutMillis,
         /* [in] */ ISSLSessionCache* cache,
@@ -400,19 +400,22 @@ private:
         /* [in] */ ISocket* socket,
         /* [out] */ IOpenSSLSocketImpl** result);
 
+private:
+    const AutoPtr<ArrayOf<ITrustManager*> > TRANS_MANAGER;
+
     static const String TAG;
 
     AutoPtr<ISSLSocketFactory> mInsecureFactory;
 
     AutoPtr<ISSLSocketFactory> mSecureFactory;
 
-    ArrayOf<ITrustManager*>* mTrustManagers;
+    AutoPtr<ArrayOf<ITrustManager*> > mTrustManagers;
 
-    ArrayOf<IKeyManager*>* mKeyManagers;
+    AutoPtr<ArrayOf<IKeyManager*> > mKeyManagers;
 
-    ArrayOf<Byte>* mNpnProtocols;
+    AutoPtr<ArrayOf<Byte> > mNpnProtocols;
 
-    ArrayOf<Byte>* mAlpnProtocols;
+    AutoPtr<ArrayOf<Byte> > mAlpnProtocols;
 
     AutoPtr<IPrivateKey> mChannelIdPrivateKey;
 

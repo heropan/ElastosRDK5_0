@@ -86,10 +86,8 @@ class Uri
     <scheme>://<authority><path>?<query>
 
     */
+
 public:
-    CAR_INTERFACE_DECL()
-
-
     /**
      * Wrapper for path segment array.
      */
@@ -317,6 +315,9 @@ public:
         AutoPtr<PathSegments> mPathSegments;
 #endif
     };
+
+public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Returns true if this URI is opaque like "mailto:nobody@google.com". The

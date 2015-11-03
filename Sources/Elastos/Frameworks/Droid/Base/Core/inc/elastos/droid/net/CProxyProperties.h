@@ -6,11 +6,12 @@
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Net::IUri;
+
 using Elastos::Core::CString;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 using Elastos::Net::IInetSocketAddress;
-using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CNetworkStatsHelper.h"
 #include "elastos/droid/net/CNetworkStats.h"
+#include "elastos/droid/net/CNetworkStatsHelper.h"
 
 namespace Elastos {
 namespace Droid {

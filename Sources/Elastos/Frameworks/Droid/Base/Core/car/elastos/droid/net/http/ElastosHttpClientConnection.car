@@ -1,7 +1,6 @@
 
 module
 {
-
     interface Elastos.Droid.Net.Http.IHeaders;
 
     using interface Elastos.Net.IInetAddress;
@@ -26,8 +25,8 @@ module
      */
     /**
      * @Involved
-     * interface IHttpInetConnection;
-     * interface IHttpConnection;
+     * interface Org.Apache.Http.IHttpInetConnection;
+     * interface Org.Apache.Http.IHttpConnection;
      */
     interface IElastosHttpClientConnection {
         /**

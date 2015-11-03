@@ -6,6 +6,7 @@
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
+
 using Elastos::Core::Singleton;
 
 namespace Elastos {

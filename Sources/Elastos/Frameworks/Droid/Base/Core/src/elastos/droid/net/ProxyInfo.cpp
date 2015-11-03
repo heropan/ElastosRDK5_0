@@ -7,6 +7,9 @@ namespace Net {
 
 CAR_INTERFACE_IMPL_2(ProxyInfo, Object, IParcelable, IProxyInfo)
 
+ProxyInfo::ProxyInfo()
+{}
+
 ECode ProxyInfo::BuildDirectProxy(
     /* [in] */ const String& host,
     /* [in] */ Int32 port,

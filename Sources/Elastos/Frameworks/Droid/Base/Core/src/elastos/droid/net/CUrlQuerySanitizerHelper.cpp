@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CUrlQuerySanitizerHelper.h"
 #include "elastos/droid/net/CUrlQuerySanitizer.h"
+#include "elastos/droid/net/CUrlQuerySanitizerHelper.h"
 
 namespace Elastos {
 namespace Droid {

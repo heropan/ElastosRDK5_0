@@ -99,25 +99,6 @@ ECode NetworkStatsHistory::constructor(
 #endif
 }
 
-ECode NetworkStatsHistory::WriteToParcel(
-    /* [in] */ IParcel* out,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        out.writeLong(bucketDuration);
-        writeLongArray(out, bucketStart, bucketCount);
-        writeLongArray(out, activeTime, bucketCount);
-        writeLongArray(out, rxBytes, bucketCount);
-        writeLongArray(out, rxPackets, bucketCount);
-        writeLongArray(out, txBytes, bucketCount);
-        writeLongArray(out, txPackets, bucketCount);
-        writeLongArray(out, operations, bucketCount);
-        out.writeLong(totalBytes);
-
-#endif
-}
-
 ECode NetworkStatsHistory::constructor(
     /* [in] */ IDataInputStream* in)
 {

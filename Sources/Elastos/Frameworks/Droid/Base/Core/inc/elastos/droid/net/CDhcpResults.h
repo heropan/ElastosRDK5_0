@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CDHCPRESULTS_H__
 
 #include "_Elastos_Droid_Net_CDhcpResults.h"
-#include "DhcpResults.h"
+#include "elastos/droid/net/DhcpResults.h"
 
 namespace Elastos {
 namespace Droid {

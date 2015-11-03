@@ -5,8 +5,9 @@
 #include "_Elastos_Droid_Net_CNetworkPolicyManagerHelper.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Text::Format::ITime;
+
 using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
@@ -53,7 +54,6 @@ public:
         /* [in] */ IPrintWriter* fout,
         /* [in] */ Int32 rules);
 
-private:
 };
 
 } // namespace Net

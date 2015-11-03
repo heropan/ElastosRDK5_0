@@ -1,11 +1,10 @@
 
 module
 {
-
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.INetworkInfo;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IMessenger;
-    interface Elastos.Droid.Net.INetworkInfo;
 
     namespace Elastos {
     namespace Droid {

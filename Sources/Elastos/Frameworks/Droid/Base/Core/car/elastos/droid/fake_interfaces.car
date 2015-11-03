@@ -161,4 +161,24 @@ module
         interface IOpenSSLSocketImpl {}
         interface ISSLClientSessionCache {}
     }} // Org.Conscrypt
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Impl {
+    namespace Entity {
+
+        interface IEntitySerializer {}
+
+    }}}}} // Org.Apache.Http.Impl.Entity
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Impl {
+
+        interface IHttpConnectionMetricsImpl {}
+
+    }}}}} // Org.Apache.Http.Impl.Entity
+
 }

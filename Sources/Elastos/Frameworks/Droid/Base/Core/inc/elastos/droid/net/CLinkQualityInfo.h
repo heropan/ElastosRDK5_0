@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CLINKQUALITYINFO_H__
 
 #include "_Elastos_Droid_Net_CLinkQualityInfo.h"
-#include "LinkQualityInfo.h"
+#include "elastos/droid/net/LinkQualityInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CSamplingDataTrackerHelper.h"
 #include "elastos/droid/net/CSamplingDataTracker.h"
+#include "elastos/droid/net/CSamplingDataTrackerHelper.h"
 
 namespace Elastos {
 namespace Droid {

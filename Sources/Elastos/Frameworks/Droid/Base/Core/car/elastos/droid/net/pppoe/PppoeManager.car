@@ -1,9 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Net.IDhcpInfo;
     interface Elastos.Droid.Net.Pppoe.IIPppoeManager;
     interface Elastos.Droid.Net.Pppoe.IPppoeDevInfo;
-    interface Elastos.Droid.Net.IDhcpInfo;
     interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
@@ -61,7 +61,9 @@ module
             PppoeSetDefaultConf();
             IsPppoeDeviceUp(
                 [out] Boolean* result);
+
         }
+
     } // namespace Pppoe
     } // namespace Net
     } // namespace Droid

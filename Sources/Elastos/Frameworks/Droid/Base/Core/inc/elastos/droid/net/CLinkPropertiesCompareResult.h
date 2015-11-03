@@ -10,8 +10,8 @@ namespace Droid {
 namespace Net {
 
 /**
-     * @hide
-     */
+ * @hide
+ */
 CarClass(CLinkPropertiesCompareResult)
     , public LinkPropertiesCompareResult
 {

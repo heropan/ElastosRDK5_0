@@ -82,11 +82,11 @@ public:
     CARAPI Close();
 
 private:
-    const ILocalSocketImpl* mImpl;
-    const ILocalSocketAddress* mLocalAddress;
+    AutoPtr<ILocalSocketImpl> mImpl;
+    AutoPtr<ILocalSocketAddress> mLocalAddress;
 
     /** 50 seems a bit much, but it's what was here */
-    static const Int32 sLISTEN_BACKLOG;
+    static const Int32 LISTEN_BACKLOG;
 };
 
 } // namespace Net

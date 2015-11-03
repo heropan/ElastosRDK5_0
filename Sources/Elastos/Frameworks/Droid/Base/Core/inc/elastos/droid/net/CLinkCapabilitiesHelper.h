@@ -15,7 +15,6 @@ public:
         /* [in] */ const String& applicationRole,
         /* [out] */ ILinkCapabilities** result);
 
-private:
 };
 
 } // namespace Net

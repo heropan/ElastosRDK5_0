@@ -1,9 +1,7 @@
 
 module
 {
-
     interface Elastos.Droid.Os.IParcel;
-
 
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Utility.ICollection;

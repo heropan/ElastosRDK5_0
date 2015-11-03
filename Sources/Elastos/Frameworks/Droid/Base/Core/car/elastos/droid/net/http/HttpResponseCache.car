@@ -1,7 +1,6 @@
 
 module
 {
-
     using interface Elastos.IO.IFile;
 
     namespace Elastos {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CVpnServiceHelper.h"
 #include "elastos/droid/net/CVpnService.h"
+#include "elastos/droid/net/CVpnServiceHelper.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CConnectivityManagerHelper.h"
 #include "elastos/droid/net/CConnectivityManager.h"
+#include "elastos/droid/net/CConnectivityManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

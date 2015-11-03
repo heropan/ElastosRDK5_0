@@ -7,7 +7,7 @@ namespace Net {
 
 CAR_INTERFACE_IMPL(LocalServerSocket, Object, ILocalServerSocket)
 
-const Int32 LocalServerSocket::sLISTEN_BACKLOG = 50;
+const Int32 LocalServerSocket::LISTEN_BACKLOG = 50;
 
 ECode LocalServerSocket::constructor(
     /* [in] */ const String& name)

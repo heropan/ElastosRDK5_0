@@ -1,10 +1,7 @@
 
 module
 {
-
     interface Elastos.Droid.Net.IWifiKey;
-
-
 
     namespace Elastos {
     namespace Droid {

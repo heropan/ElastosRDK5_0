@@ -1,22 +1,9 @@
 
 module
 {
-    // interface Elastos.Droid.Os.IParcel;
-    // interface Elastos.Droid.Os.IParcelable;
-// No match parts: import android.security.Credentials;
-    // interface Elastos.Droid.Text.ITextUtils;
-    // using interface Elastos.IO.IByteArrayInputStream;
-    // using interface Elastos.Security.IKeyFactory;
-    // using interface Elastos.Security.INoSuchAlgorithmException;
-    using interface Elastos.Security.IPrivateKey;
-    // using interface Elastos.Security.Cert.ICertificateEncodingException;
-    // using interface Elastos.Security.Cert.ICertificateException;
-    // using interface Elastos.Security.Cert.ICertificateFactory;
     using interface Elastos.Security.Cert.IX509Certificate;
-// No match parts: import java.security.spec.InvalidKeySpecException;
-// No match parts: import java.security.spec.PKCS8EncodedKeySpec;
+    using interface Elastos.Security.IPrivateKey;
     using interface Elastos.Utility.IHashMap;
-    // using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Droid {

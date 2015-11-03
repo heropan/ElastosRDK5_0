@@ -4,10 +4,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Net::IInet4Address;
 using Elastos::Droid::Utility::IPair;
-using Elastos::Utility::ICollection;
+
+using Elastos::Net::IInet4Address;
 using Elastos::Net::IInetAddress;
+using Elastos::Utility::ICollection;
 
 namespace Elastos {
 namespace Droid {
@@ -21,8 +22,6 @@ namespace Net {
 class NetworkUtils
 {
 public:
-    CAR_INTERFACE_DECL()
-
     /**
      * Reset IPv6 or IPv4 sockets that are connected via the named interface.
      *

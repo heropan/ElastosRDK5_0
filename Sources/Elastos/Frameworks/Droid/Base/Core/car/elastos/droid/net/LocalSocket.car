@@ -1,12 +1,12 @@
 
 module
 {
+    interface Elastos.Droid.Net.ICredentials;
+    interface Elastos.Droid.Net.ILocalSocketAddress;
+
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IOutputStream;
-
-    interface Elastos.Droid.Net.ILocalSocketAddress;
-    interface Elastos.Droid.Net.ICredentials;
 
     namespace Elastos {
     namespace Droid {
