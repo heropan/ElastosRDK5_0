@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
+#include "elastos/droid/webkit/native/components/api/ValidationMessageBubble_dec.h"
 //#include "elastos/droid/view/View.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/graphics/CPoint.h"
@@ -8,6 +9,7 @@
 //#include "elastos/droid/widget/PopupWindow.h"
 #include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -30,6 +32,7 @@ using Elastos::Droid::Graphics::CRectF;
 //using Elastos::Droid::Widget::PopupWindow;
 using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -349,6 +352,49 @@ AutoPtr<IPoint> ValidationMessageBubble::AdjustWindowPosition(
     AutoPtr<IPoint> result;
     CPoint::New(x, y, (IPoint**)&result);
     return result;
+}
+
+AutoPtr<IInterface> ValidationMessageBubble::CreateAndShow(
+    /* [in] */ IInterface* contentViewCore,
+    /* [in] */ Int32 anchorX,
+    /* [in] */ Int32 anchorY,
+    /* [in] */ Int32 anchorWidth,
+    /* [in] */ Int32 anchorHeight,
+    /* [in] */ const String& mainText,
+    /* [in] */ const String& subText)
+{
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    return TO_IINTERFACE(CreateAndShow(cvc, anchorX, anchorY, anchorWidth, anchorHeight, mainText, subText));
+}
+
+void ValidationMessageBubble::Close(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ValidationMessageBubble> mObj = (ValidationMessageBubble*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ValidationMessageBubble", "ValidationMessageBubble::Close, mObj is NULL");
+        return;
+    }
+    mObj->Close();
+}
+
+void ValidationMessageBubble::SetPositionRelativeToAnchor(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* contentViewCore,
+    /* [in] */ Int32 anchorX,
+    /* [in] */ Int32 anchorY,
+    /* [in] */ Int32 anchorWidth,
+    /* [in] */ Int32 anchorHeight)
+{
+    AutoPtr<ValidationMessageBubble> mObj = (ValidationMessageBubble*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ValidationMessageBubble", "ValidationMessageBubble::SetPositionRelativeToAnchor, mObj is NULL");
+        return;
+    }
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    mObj->SetPositionRelativeToAnchor(cvc, anchorX, anchorY, anchorWidth, anchorHeight);
 }
 
 } // namespace Components

@@ -9,7 +9,8 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 SOURCES = ValidationMessageBubble.cpp
-SOURCES += WebContentsDelegateAndroid.cpp
+SOURCES += WebContentsDelegateElastos.cpp
 SOURCES += PersonalAutofillPopulator.cpp
-SOURCES += ColorChooserAndroid.cpp
+SOURCES += ColorChooserElastos.cpp
 SOURCES += NavigationParams.cpp
+SOURCES += InterceptNavigationDelegate.cpp

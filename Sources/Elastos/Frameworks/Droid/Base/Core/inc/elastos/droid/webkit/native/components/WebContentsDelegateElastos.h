@@ -18,15 +18,27 @@ using Elastos::Droid::View::IKeyEvent;
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
+namespace Content {
+namespace Browser {
+   class ContentViewCore;
+}
+}
+}
+}
+}
+
+using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
+namespace Elastos {
+namespace Droid {
+namespace Webkit {
 namespace Components {
 
-class ContentViewCore;
 
 /**
   * Java peer of the native class of the same name.
   */
 // @JNINamespace("web_contents_delegate_android")
-class WebContentsDelegateAndroid
+class WebContentsDelegateElastos
     : public Object
 {
 public:
@@ -126,7 +138,76 @@ public:
     // @CalledByNative
     virtual CARAPI_(Boolean) IsFullscreenForTabOrPending();
 
+    static CARAPI_(void*) ElaWebContentsDelegateElastosCallback_Init();
+
 private:
+    static CARAPI_(void) OpenNewTab(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& extraHeaders,
+        /* [in] */ ArrayOf<Byte>* postData,
+        /* [in] */ Int32 disposition,
+        /* [in] */ Boolean isRendererInitiated);
+
+    static CARAPI_(void) ActivateContents(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) CloseContents(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnLoadStarted(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnLoadStopped(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) NavigationStateChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 flags);
+
+    static CARAPI_(void) VisibleSSLStateChanged(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) NotifyLoadProgressChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Double progress);
+
+    static CARAPI_(void) RendererUnresponsive(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) RendererResponsive(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnUpdateUrl(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url);
+
+    static CARAPI_(Boolean) TakeFocus(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean reverse);
+
+    static CARAPI_(void) HandleKeyboardEvent(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event);
+
+    static CARAPI_(Boolean) AddMessageToConsole(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 level,
+        /* [in] */ const String& message,
+        /* [in] */ Int32 lineNumber,
+        /* [in] */ const String& sourceId);
+
+    static CARAPI_(void) ShowRepostFormWarningDialog(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* contentViewCore);
+
+    static CARAPI_(void) ToggleFullscreenModeForTab(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean enterFullscreen);
+
+    static CARAPI_(Boolean) IsFullscreenForTabOrPending(
+        /* [in] */ IInterface* obj);
+
     // @SuppressWarnings("unused")
     // @CalledByNative
     const CARAPI NotifyLoadProgressChanged(

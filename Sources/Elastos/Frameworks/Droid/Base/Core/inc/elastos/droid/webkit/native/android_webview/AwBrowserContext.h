@@ -6,12 +6,12 @@
 #include "elastos/droid/webkit/native/android_webview/AwCookieManager.h"
 #include "elastos/droid/webkit/native/android_webview/AwFormDatabase.h"
 #include "elastos/droid/webkit/native/android_webview/HttpAuthDatabase.h"
-#include "elastos/droid/webkit/native/net/DefaultAndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/DefaultElastosKeyStore.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Webkit::Content::Browser::ContentViewStatics;
-using Elastos::Droid::Webkit::Net::DefaultAndroidKeyStore;
+using Elastos::Droid::Webkit::Net::DefaultElastosKeyStore;
 using Elastos::Droid::Webkit::AndroidWebview::AwGeolocationPermissions;
 using Elastos::Droid::Webkit::AndroidWebview::AwCookieManager;
 using Elastos::Droid::Webkit::AndroidWebview::AwFormDatabase;
@@ -45,7 +45,7 @@ public:
     virtual CARAPI_(AutoPtr<HttpAuthDatabase>) GetHttpAuthDatabase(
         /* [in] */ IContext* context);
 
-    virtual CARAPI_(AutoPtr<DefaultAndroidKeyStore>) GetKeyStore();
+    virtual CARAPI_(AutoPtr<DefaultElastosKeyStore>) GetKeyStore();
 
     /**
      * @see android.webkit.WebView#pauseTimers()
@@ -66,7 +66,7 @@ private:
     AutoPtr<AwCookieManager> mCookieManager;
     AutoPtr<AwFormDatabase> mFormDatabase;
     AutoPtr<HttpAuthDatabase> mHttpAuthDatabase;
-    AutoPtr<DefaultAndroidKeyStore> mLocalKeyStore;
+    AutoPtr<DefaultElastosKeyStore> mLocalKeyStore;
 };
 
 } // namespace AndroidWebview

@@ -11,7 +11,7 @@ namespace Droid {
 namespace Webkit {
 namespace Net {
 
-class CertVerifyStatusAndroid
+class CertVerifyStatusElastos
     : public Object
 {
 public:

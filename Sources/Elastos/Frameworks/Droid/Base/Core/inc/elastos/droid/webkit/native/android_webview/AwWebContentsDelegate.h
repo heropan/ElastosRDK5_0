@@ -1,13 +1,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/components/WebContentsDelegateAndroid.h"
+#include "elastos/droid/webkit/native/components/WebContentsDelegateElastos.h"
 
 // import com.google.common.annotations.VisibleForTesting;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
-using Elastos::Droid::Webkit::Components::WebContentsDelegateAndroid;
+using Elastos::Droid::Webkit::Components::WebContentsDelegateElastos;
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +23,7 @@ namespace AndroidWebview {
 //@VisibleForTesting
 //@JNINamespace("android_webview")
 class AwWebContentsDelegate
-    : public WebContentsDelegateAndroid
+    : public WebContentsDelegateElastos
 {
 public:
     // Callback filesSelectedInChooser() when done.

@@ -27,16 +27,16 @@ namespace Net {
   * The result of a certification verification.
   */
 // @JNINamespace("net::android")
-class AndroidCertVerifyResult
+class ElastosCertVerifyResult
     : public Object
 {
 public:
-    AndroidCertVerifyResult(
+    ElastosCertVerifyResult(
         /* [in] */ Int32 status,
         /* [in] */ Boolean isIssuedByKnownRoot,
         /* [in] */ IList* certificateChain);
 
-    AndroidCertVerifyResult(
+    ElastosCertVerifyResult(
         /* [in] */ Int32 status);
 
     // @CalledByNative
@@ -47,6 +47,18 @@ public:
 
     // @CalledByNative
     virtual CARAPI_(AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > >) GetCertificateChainEncoded();
+
+    static CARAPI_(void*) ElaElastosCertVerifyResultCallback_Init();
+
+private:
+    static CARAPI_(Int32) GetStatus(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) IsIssuedByKnownRoot(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<ArrayOf<AutoPtr<ArrayOf<Byte> > > >) GetCertificateChainEncoded(
+        /* [in] */ IInterface* obj);
 
 private:
     /**
@@ -60,7 +72,7 @@ private:
     /**
       * The properly ordered certificate chain used for verification.
       */
-    /*const*/ AutoPtr<IList> mCertificateChain;
+    AutoPtr<IList> mCertificateChain;
 };
 
 } // namespace Net

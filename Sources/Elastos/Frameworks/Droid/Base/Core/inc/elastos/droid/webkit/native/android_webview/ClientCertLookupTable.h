@@ -1,11 +1,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_CLIENTCERTLOOKUPTABLE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_CLIENTCERTLOOKUPTABLE_H__
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
+#include "elastos/droid/webkit/native/net/ElastosPrivateKey.h"
 #include <elastos/utility/etl/Map.h>
 #include <elastos/utility/etl/Set.h>
 
-using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
+using Elastos::Droid::Webkit::Net::ElastosPrivateKey;
 using Elastos::Utility::Etl::Map;
 using Elastos::Utility::Etl::Set;
 
@@ -34,11 +34,11 @@ public:
     {
     public:
         Cert(
-            /* [in] */ AndroidPrivateKey* privateKey,
+            /* [in] */ ElastosPrivateKey* privateKey,
             /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain);
 
     public:
-        AutoPtr<AndroidPrivateKey> privateKey;
+        AutoPtr<ElastosPrivateKey> privateKey;
         AutoPtr<ArrayOf<AutoPtr<ArrayOf<Byte> > > > certChain;
     };
 
@@ -51,7 +51,7 @@ public:
     CARAPI_(void) Allow(
         /* [in] */ const String& host,
         /* [in] */ Int32 port,
-        /* [in] */ AndroidPrivateKey* privateKey,
+        /* [in] */ ElastosPrivateKey* privateKey,
         /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* chain);
 
     CARAPI_(void) Deny(

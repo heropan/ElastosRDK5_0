@@ -157,7 +157,7 @@ public:
     CARAPI CloseContents();
 
     //@Override
-    CARAPI_(void) ShowRepostFormWarningDialog(
+    CARAPI ShowRepostFormWarningDialog(
         /* [in] */ ContentViewCore* contentViewCore);
 
     //@Override

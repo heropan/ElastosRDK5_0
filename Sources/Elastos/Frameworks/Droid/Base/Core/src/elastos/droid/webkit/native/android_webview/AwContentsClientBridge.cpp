@@ -125,7 +125,7 @@ void AwContentsClientBridge::ClientCertificateRequestCallback::ProceedOnUiThread
         return;
     }
 
-    AutoPtr<AndroidPrivateKey> key = mOwner->mLocalKeyStore->CreateKey(privateKey);
+    AutoPtr<ElastosPrivateKey> key = mOwner->mLocalKeyStore->CreateKey(privateKey);
 
     if (key == NULL || chain == NULL || chain->GetLength() == 0) {
         Logger::W(TAG, "Empty client certificate chain?");
@@ -183,7 +183,7 @@ ECode AwContentsClientBridge::ClientCertificateRequestCallback::CheckIfCalled()
 }
 
 void AwContentsClientBridge::ClientCertificateRequestCallback::ProvideResponse(
-    /* [in] */ AndroidPrivateKey* androidKey,
+    /* [in] */ ElastosPrivateKey* androidKey,
     /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain)
 {
     if (mOwner->mNativeContentsClientBridge == 0) {
@@ -248,7 +248,7 @@ const String AwContentsClientBridge::TAG("AwContentsClientBridge");
 
 // Used for mocking this class in tests.
 AwContentsClientBridge::AwContentsClientBridge(
-    /* [in] */ DefaultAndroidKeyStore* keyStore,
+    /* [in] */ DefaultElastosKeyStore* keyStore,
     /* [in] */ ClientCertLookupTable* table)
     : mNativeContentsClientBridge(0)
     , mLocalKeyStore(keyStore)
@@ -258,7 +258,7 @@ AwContentsClientBridge::AwContentsClientBridge(
 
 AwContentsClientBridge::AwContentsClientBridge(
     /* [in] */ AwContentsClient* client,
-    /* [in] */ DefaultAndroidKeyStore* keyStore,
+    /* [in] */ DefaultElastosKeyStore* keyStore,
     /* [in] */ ClientCertLookupTable* table)
     : mNativeContentsClientBridge(0)
 {
@@ -434,7 +434,7 @@ void AwContentsClientBridge::NativeProvideClientCertificateResponse(
     /* [in] */ Int64 nativeAwContentsClientBridge,
     /* [in] */ Int32 id,
     /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain,
-    /* [in] */ AndroidPrivateKey* androidKey)
+    /* [in] */ ElastosPrivateKey* androidKey)
 {
     Elastos_AwContentsClientBridge_nativeProvideClientCertificateResponse(THIS_PROBE(IInterface), (Handle32)nativeAwContentsClientBridge, id, certChain, TO_IINTERFACE(androidKey));
 }

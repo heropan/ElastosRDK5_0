@@ -1,5 +1,8 @@
 
-#include "elastos/droid/webkit/native/components/ColorChooserAndroid.h"
+#include "elastos/droid/webkit/native/components/ColorChooserElastos.h"
+#include "elastos/droid/webkit/native/components/api/ColorChooserElastos_dec.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -7,17 +10,17 @@ namespace Webkit {
 namespace Components {
 
 //=====================================================================
-//           ColorChooserAndroid::InnerOnColorChangedListener
+//           ColorChooserElastos::InnerOnColorChangedListener
 //=====================================================================
-ColorChooserAndroid::InnerOnColorChangedListener::InnerOnColorChangedListener(
-    /* [in] */ ColorChooserAndroid* owner)
+ColorChooserElastos::InnerOnColorChangedListener::InnerOnColorChangedListener(
+    /* [in] */ ColorChooserElastos* owner)
     : mOwner(owner)
 {
     // ==================before translated======================
     // mOwner = owner;
 }
 
-ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
+ECode ColorChooserElastos::InnerOnColorChangedListener::OnColorChanged(
     /* [in] */ Int32 color)
 {
     // ==================before translated======================
@@ -27,14 +30,14 @@ ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
     assert(NULL == mOwner);
     assert(NULL == mOwner->mDialog);
     //mOwner->mDialog->Dismiss();
-    mOwner->NativeOnColorChosen(mOwner->mNativeColorChooserAndroid, color);
+    mOwner->NativeOnColorChosen(mOwner->mNativeColorChooserElastos, color);
     return NOERROR;
 }
 
 //=====================================================================
-//                         ColorChooserAndroid
+//                         ColorChooserElastos
 //=====================================================================
-ECode ColorChooserAndroid::CloseColorChooser()
+ECode ColorChooserElastos::CloseColorChooser()
 {
     // ==================before translated======================
     // mDialog.dismiss();
@@ -43,11 +46,11 @@ ECode ColorChooserAndroid::CloseColorChooser()
     return NOERROR;
 }
 
-AutoPtr<ColorChooserAndroid> ColorChooserAndroid::CreateColorChooserAndroid(
-    /* [in] */ Int64 nativeColorChooserAndroid,
+AutoPtr<ColorChooserElastos> ColorChooserElastos::CreateColorChooserElastos(
+    /* [in] */ Int64 nativeColorChooserElastos,
     /* [in] */ ContentViewCore* contentViewCore,
     /* [in] */ Int32 initialColor,
-    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     // ==================before translated======================
     // ColorChooserAndroid chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
@@ -56,16 +59,16 @@ AutoPtr<ColorChooserAndroid> ColorChooserAndroid::CreateColorChooserAndroid(
     // return chooser;
 
     AutoPtr<IContext> context = contentViewCore->GetContext();
-    AutoPtr<ColorChooserAndroid> chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
+    AutoPtr<ColorChooserElastos> chooser = new ColorChooserElastos(nativeColorChooserElastos,
          context, initialColor, suggestions);
     return chooser;
 }
 
-ColorChooserAndroid::ColorChooserAndroid(
-    /* [in] */ Int64 nativeColorChooserAndroid,
+ColorChooserElastos::ColorChooserElastos(
+    /* [in] */ Int64 nativeColorChooserElastos,
     /* [in] */ IContext* context,
     /* [in] */ Int32 initialColor,
-    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     // ==================before translated======================
     // OnColorChangedListener listener = new OnColorChangedListener() {
@@ -80,11 +83,11 @@ ColorChooserAndroid::ColorChooserAndroid(
     // mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 
     AutoPtr<OnColorChangedListener> listener = new InnerOnColorChangedListener(this);
-    mNativeColorChooserAndroid = nativeColorChooserAndroid;
+    mNativeColorChooserElastos = nativeColorChooserElastos;
     mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 }
 
-ECode ColorChooserAndroid::OpenColorChooser()
+ECode ColorChooserElastos::OpenColorChooser()
 {
     // ==================before translated======================
     // mDialog.show();
@@ -93,37 +96,60 @@ ECode ColorChooserAndroid::OpenColorChooser()
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<ColorSuggestion*> > ColorChooserAndroid::CreateColorSuggestionArray(
+AutoPtr< ArrayOf<IInterface*> > ColorChooserElastos::CreateColorSuggestionArray(
     /* [in] */ Int32 size)
 {
     // ==================before translated======================
     // return new ColorSuggestion[size];
 
-    AutoPtr< ArrayOf<ColorSuggestion*> > result = ArrayOf<ColorSuggestion*>::Alloc(size);
+    AutoPtr< ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(size);
     return result;
 }
 
-ECode ColorChooserAndroid::AddToColorSuggestionArray(
-    /* [in] */ ArrayOf<ColorSuggestion*>* array,
+void ColorChooserElastos::AddToColorSuggestionArray(
+    /* [in] */ ArrayOf<IInterface*>* array,
     /* [in] */ Int32 index,
     /* [in] */ Int32 color,
     /* [in] */ const String& label)
 {
-    VALIDATE_NOT_NULL(array);
+    //VALIDATE_NOT_NULL(array);
     // ==================before translated======================
     // array[index] = new ColorSuggestion(color, label);
 
-    AutoPtr<ColorSuggestion> item = new ColorSuggestion(color, label);
+    AutoPtr<ColorSuggestion> cs = new ColorSuggestion(color, label);
+    AutoPtr<IInterface> item = TO_IINTERFACE(cs);
     array->Set(index, item);
+    //return NOERROR;
+}
+
+ECode ColorChooserElastos::NativeOnColorChosen(
+    /* [in] */ Int64 nativeColorChooserElastos,
+    /* [in] */ Int32 color)
+{
+    Elastos_ColorChooserAndroid_nativeOnColorChosen(THIS_PROBE(IInterface), (Handle32)nativeColorChooserElastos, color);
     return NOERROR;
 }
 
-ECode ColorChooserAndroid::NativeOnColorChosen(
-    /* [in] */ Int64 nativeColorChooserAndroid,
-    /* [in] */ Int32 color)
+void ColorChooserElastos::CloseColorChooser(
+    /* [in] */ IInterface* obj)
 {
-    assert(0);
-    return NOERROR;
+    AutoPtr<ColorChooserElastos> mObj = (ColorChooserElastos*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ColorChooserElastos", "ColorChooserElastos::CloseColorChooser, mObj is NULL");
+        return;
+    }
+    mObj->CloseColorChooser();
+}
+
+AutoPtr<IInterface> ColorChooserElastos::CreateColorChooserElastos(
+    /* [in] */ Int64 nativeColorChooserElastos,
+    /* [in] */ IInterface* contentViewCore,
+    /* [in] */ Int32 initialColor,
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
+{
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    return TO_IINTERFACE(CreateColorChooserElastos(nativeColorChooserElastos, cvc, initialColor, suggestions));
 }
 
 } // namespace Components

@@ -1,13 +1,13 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
-#include "elastos/droid/webkit/native/net/DefaultAndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/ElastosPrivateKey.h"
+#include "elastos/droid/webkit/native/net/DefaultElastosKeyStore.h"
 #include "elastos/droid/webkit/native/android_webview/ClientCertLookupTable.h"
 
 //TODO using Elastos::Droid::Webkit::IValueCallback;
-using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
-using Elastos::Droid::Webkit::Net::DefaultAndroidKeyStore;
+using Elastos::Droid::Webkit::Net::ElastosPrivateKey;
+using Elastos::Droid::Webkit::Net::DefaultElastosKeyStore;
 using Elastos::Core::IRunnable;
 
 // import org.chromium.base.CalledByNative;
@@ -121,7 +121,7 @@ public:
         CARAPI CheckIfCalled();
 
         CARAPI_(void) ProvideResponse(
-            /* [in] */ AndroidPrivateKey* androidKey,
+            /* [in] */ ElastosPrivateKey* androidKey,
             /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain);
 
     private:
@@ -178,7 +178,7 @@ public:
 
     AwContentsClientBridge(
         /* [in] */ AwContentsClient* client,
-        /* [in] */ DefaultAndroidKeyStore* keyStore,
+        /* [in] */ DefaultElastosKeyStore* keyStore,
         /* [in] */ ClientCertLookupTable* table);
 
     virtual CARAPI_(void) ConfirmJsResult(
@@ -191,7 +191,7 @@ public:
 protected:
     // Used for mocking this class in tests.
     AwContentsClientBridge(
-        /* [in] */ DefaultAndroidKeyStore* keyStore,
+        /* [in] */ DefaultElastosKeyStore* keyStore,
         /* [in] */ ClientCertLookupTable* table);
 
     // Intentionally not private for testing the native peer of this class.
@@ -267,7 +267,7 @@ private:
         /* [in] */ Int64 nativeAwContentsClientBridge,
         /* [in] */ Int32 id,
         /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain,
-        /* [in] */ AndroidPrivateKey* androidKey);
+        /* [in] */ ElastosPrivateKey* androidKey);
 
     CARAPI_(void) NativeConfirmJsResult(
         /* [in] */ Int64 nativeAwContentsClientBridge,
@@ -338,7 +338,7 @@ private:
     // The native peer of this object.
     Int64 mNativeContentsClientBridge;
 
-    AutoPtr<DefaultAndroidKeyStore> mLocalKeyStore;
+    AutoPtr<DefaultElastosKeyStore> mLocalKeyStore;
 
     AutoPtr<ClientCertLookupTable> mLookupTable;
 };

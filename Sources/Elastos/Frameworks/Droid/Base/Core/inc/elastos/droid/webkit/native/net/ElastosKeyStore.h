@@ -16,13 +16,13 @@ namespace Droid {
 namespace Webkit {
 namespace Net {
 
-class AndroidPrivateKey;
+class ElastosPrivateKey;
 
 /**
-  * Specifies all the dependencies from the native OpenSSL engine on an Android KeyStore.
+  * Specifies all the dependencies from the native OpenSSL engine on an Elastos KeyStore.
   */
 // @JNINamespace("net::android")
-class AndroidKeyStore
+class ElastosKeyStore
     : public Object
 {
 public:
@@ -39,7 +39,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(AutoPtr< ArrayOf<Byte> >) GetRSAKeyModulus(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
 
     /**
       * Returns the 'Q' parameter of a given DSA private key as a byte
@@ -53,7 +53,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(AutoPtr< ArrayOf<Byte> >) GetDSAKeyParamQ(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
 
     /**
       * Returns the 'order' parameter of a given ECDSA private key as a
@@ -64,7 +64,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(AutoPtr< ArrayOf<Byte> >) GetECKeyOrder(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
 
     /**
       * Returns the encoded data corresponding to a given PrivateKey.
@@ -76,7 +76,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(AutoPtr< ArrayOf<Byte> >) GetPrivateKeyEncodedBytes(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
 
     /**
       * Sign a given message with a given PrivateKey object. This method
@@ -109,7 +109,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(AutoPtr< ArrayOf<Byte> >) RawSignDigestWithPrivateKey(
-        /* [in] */ AndroidPrivateKey* key,
+        /* [in] */ ElastosPrivateKey* key,
         /* [in] */ ArrayOf<Byte>* message) = 0;
 
     /**
@@ -121,7 +121,7 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(Int32) GetPrivateKeyType(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
 
     /**
       * Return the system EVP_PKEY handle corresponding to a given PrivateKey
@@ -156,14 +156,50 @@ public:
       */
     // @CalledByNative
     virtual CARAPI_(Int64) GetOpenSSLHandleForPrivateKey(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
 
     /**
       * Called when the native OpenSSL engine no longer needs access to the underlying key.
       */
     // @CalledByNative
     virtual CARAPI ReleaseKey(
-        /* [in] */ AndroidPrivateKey* key) = 0;
+        /* [in] */ ElastosPrivateKey* key) = 0;
+
+    static CARAPI_(void*) ElaElastosKeyStoreCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetRSAKeyModulus(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
+
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetDSAKeyParamQ(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
+
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetECKeyOrder(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
+
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) GetPrivateKeyEncodedBytes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
+
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) RawSignDigestWithPrivateKey(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key,
+        /* [in] */ ArrayOf<Byte>* message);
+
+    static CARAPI_(Int32) GetPrivateKeyType(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
+
+    static CARAPI_(Int64) GetOpenSSLHandleForPrivateKey(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
+
+    static CARAPI_(void) ReleaseKey(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* key);
 };
 
 } // namespace Net

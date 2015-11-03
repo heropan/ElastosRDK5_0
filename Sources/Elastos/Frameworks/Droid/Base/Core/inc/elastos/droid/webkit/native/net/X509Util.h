@@ -7,7 +7,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
+#include "elastos/droid/webkit/native/net/ElastosCertVerifyResult.h"
 #include "elastos/utility/etl/List.h"
 #include "elastos/utility/etl/Pair.h"
 
@@ -61,7 +61,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Net::Http::IX509TrustManagerExtensions;
-using Elastos::Droid::Webkit::Net::AndroidCertVerifyResult;
+using Elastos::Droid::Webkit::Net::ElastosCertVerifyResult;
 
 namespace Elastos {
 namespace Droid {
@@ -160,7 +160,7 @@ public:
     static CARAPI_(Boolean) VerifyKeyUsage(
         /* [in] */ IX509Certificate* certificate);
 
-    static CARAPI_(AutoPtr<AndroidCertVerifyResult>) VerifyServerCertificates(
+    static CARAPI_(AutoPtr<ElastosCertVerifyResult>) VerifyServerCertificates(
         /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
         /* [in] */ const String& authType,
         /* [in] */ const String& host);

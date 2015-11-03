@@ -45,10 +45,10 @@ AutoPtr<HttpAuthDatabase> AwBrowserContext::GetHttpAuthDatabase(
     return mHttpAuthDatabase;
 }
 
-AutoPtr<DefaultAndroidKeyStore> AwBrowserContext::GetKeyStore()
+AutoPtr<DefaultElastosKeyStore> AwBrowserContext::GetKeyStore()
 {
     if (mLocalKeyStore == NULL) {
-        mLocalKeyStore = new DefaultAndroidKeyStore();
+        mLocalKeyStore = new DefaultElastosKeyStore();
     }
     return mLocalKeyStore;
 }

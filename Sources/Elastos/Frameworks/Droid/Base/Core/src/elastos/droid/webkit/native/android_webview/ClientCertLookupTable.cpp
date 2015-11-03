@@ -16,7 +16,7 @@ namespace AndroidWebview {
  * A container for the certificate data.
  */
 ClientCertLookupTable::Cert::Cert(
-    /* [in] */ AndroidPrivateKey* privateKey,
+    /* [in] */ ElastosPrivateKey* privateKey,
     /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* certChain)
 {
     this->privateKey = privateKey;
@@ -48,7 +48,7 @@ ClientCertLookupTable::ClientCertLookupTable()
 void ClientCertLookupTable::Allow(
     /* [in] */ const String& host,
     /* [in] */ Int32 port,
-    /* [in] */ AndroidPrivateKey* privateKey,
+    /* [in] */ ElastosPrivateKey* privateKey,
     /* [in] */ ArrayOf<AutoPtr<ArrayOf<Byte> > >* chain)
 {
     String host_and_port = HostAndPort(host, port);

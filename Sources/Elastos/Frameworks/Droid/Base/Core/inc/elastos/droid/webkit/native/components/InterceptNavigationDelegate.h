@@ -31,6 +31,14 @@ public:
     // @CalledByNative
     virtual CARAPI_(Boolean) ShouldIgnoreNavigation(
         /* [in] */ NavigationParams* navigationParams) = 0;
+
+    static CARAPI_(void*) ElaInterceptNavigationDelegateCallback_Init();
+
+private:
+    static CARAPI_(Boolean) ShouldIgnoreNavigation(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* navigationParams);
+
 };
 
 } // namespace Components

@@ -43,7 +43,30 @@ namespace Components {
 class ValidationMessageBubble
     : public Object
 {
+public:
+    static CARAPI_(void*) ElaValidationMessageBubbleCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) CreateAndShow(
+        /* [in] */ IInterface* contentViewCore,
+        /* [in] */ Int32 anchorX,
+        /* [in] */ Int32 anchorY,
+        /* [in] */ Int32 anchorWidth,
+        /* [in] */ Int32 anchorHeight,
+        /* [in] */ const String& mainText,
+        /* [in] */ const String& subText);
+
+    static CARAPI_(void) Close(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) SetPositionRelativeToAnchor(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* contentViewCore,
+        /* [in] */ Int32 anchorX,
+        /* [in] */ Int32 anchorY,
+        /* [in] */ Int32 anchorWidth,
+        /* [in] */ Int32 anchorHeight);
+
     ValidationMessageBubble(
         /* [in] */ ContentViewCore* contentViewCore,
         /* [in] */ IRectF* anchor,

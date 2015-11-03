@@ -6,8 +6,8 @@
 #define _ELASTOS_DROID_WEBKIT_NET_DEFAULTANDROIDKEYSTORE_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/net/AndroidKeyStore.h"
-#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
+#include "elastos/droid/webkit/native/net/ElastosKeyStore.h"
+#include "elastos/droid/webkit/native/net/ElastosPrivateKey.h"
 
 // package org.chromium.net;
 // import android.util.Log;
@@ -25,8 +25,8 @@
 // import java.security.spec.ECParameterSpec;
 
 using Elastos::Security::IPrivateKey;
-using Elastos::Droid::Webkit::Net::AndroidKeyStore;
-using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
+using Elastos::Droid::Webkit::Net::ElastosKeyStore;
+using Elastos::Droid::Webkit::Net::ElastosPrivateKey;
 
 namespace Elastos {
 namespace Droid {
@@ -34,68 +34,68 @@ namespace Webkit {
 namespace Net {
 
 /**
-  * Simple implementation of the AndroidKeyStore for use with an in-process Java KeyStore.
+  * Simple implementation of the ElastosKeyStore for use with an in-process Java KeyStore.
   */
-class DefaultAndroidKeyStore
-    : public AndroidKeyStore
+class DefaultElastosKeyStore
+    : public ElastosKeyStore
 {
 private:
-    class DefaultAndroidPrivateKey
-        : public AndroidPrivateKey
+    class DefaultElastosPrivateKey
+        : public ElastosPrivateKey
     {
     public:
-        DefaultAndroidPrivateKey(
+        DefaultElastosPrivateKey(
             /* [in] */ IPrivateKey* key,
-            /* [in] */ DefaultAndroidKeyStore* store);
+            /* [in] */ DefaultElastosKeyStore* store);
 
         virtual CARAPI_(AutoPtr<IPrivateKey>) GetJavaKey();
 
         // @Override
-        CARAPI_(AutoPtr<AndroidKeyStore>) GetKeyStore();
+        CARAPI_(AutoPtr<ElastosKeyStore>) GetKeyStore();
 
     public:
         // The actual Java key being wrapped.
         const AutoPtr<IPrivateKey> mKey;
         // Key store handling this key.
-        const AutoPtr<DefaultAndroidKeyStore> mStore;
+        const AutoPtr<DefaultElastosKeyStore> mStore;
     };
 
 public:
-    virtual CARAPI_(AutoPtr<AndroidPrivateKey>) CreateKey(
+    virtual CARAPI_(AutoPtr<ElastosPrivateKey>) CreateKey(
         /* [in] */ IPrivateKey* javaKey);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetRSAKeyModulus(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetDSAKeyParamQ(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetECKeyOrder(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetPrivateKeyEncodedBytes(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) RawSignDigestWithPrivateKey(
-        /* [in] */ AndroidPrivateKey* key,
+        /* [in] */ ElastosPrivateKey* key,
         /* [in] */ ArrayOf<Byte>* message);
 
     // @Override
     CARAPI_(Int32) GetPrivateKeyType(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(Int64) GetOpenSSLHandleForPrivateKey(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI ReleaseKey(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
 private:
     static const String TAG;

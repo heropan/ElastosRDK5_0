@@ -1,9 +1,12 @@
 
-#include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
+#include "elastos/droid/webkit/native/net/ElastosCertVerifyResult.h"
+#include "elastos/droid/webkit/native/net/api/ElastosCertVerifyResult_dec.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CArrayList;
 using Elastos::Security::Cert::ICertificate;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,9 +14,9 @@ namespace Webkit {
 namespace Net {
 
 //=====================================================================
-//                       AndroidCertVerifyResult
+//                       ElastosCertVerifyResult
 //=====================================================================
-AndroidCertVerifyResult::AndroidCertVerifyResult(
+ElastosCertVerifyResult::ElastosCertVerifyResult(
     /* [in] */ Int32 status,
     /* [in] */ Boolean isIssuedByKnownRoot,
     /* [in] */ IList* certificateChain)
@@ -35,7 +38,7 @@ AndroidCertVerifyResult::AndroidCertVerifyResult(
     }
 }
 
-AndroidCertVerifyResult::AndroidCertVerifyResult(
+ElastosCertVerifyResult::ElastosCertVerifyResult(
     /* [in] */ Int32 status)
     : mStatus(status)
     , mIsIssuedByKnownRoot(FALSE)
@@ -48,7 +51,7 @@ AndroidCertVerifyResult::AndroidCertVerifyResult(
     CArrayList::New((IList**)&mCertificateChain);
 }
 
-Int32 AndroidCertVerifyResult::GetStatus()
+Int32 ElastosCertVerifyResult::GetStatus()
 {
     // ==================before translated======================
     // return mStatus;
@@ -56,7 +59,7 @@ Int32 AndroidCertVerifyResult::GetStatus()
     return mStatus;
 }
 
-Boolean AndroidCertVerifyResult::IsIssuedByKnownRoot()
+Boolean ElastosCertVerifyResult::IsIssuedByKnownRoot()
 {
     // ==================before translated======================
     // return mIsIssuedByKnownRoot;
@@ -64,7 +67,7 @@ Boolean AndroidCertVerifyResult::IsIssuedByKnownRoot()
     return mIsIssuedByKnownRoot;
 }
 
-AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > AndroidCertVerifyResult::GetCertificateChainEncoded()
+AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > ElastosCertVerifyResult::GetCertificateChainEncoded()
 {
     // ==================before translated======================
     // byte[][] verifiedChainArray = new byte[mCertificateChain.size()][];
@@ -93,6 +96,42 @@ AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > AndroidCertVerifyResult::GetCerti
     //    return new byte[0][];
     // }
     return verifiedChainArray;
+}
+
+Int32 ElastosCertVerifyResult::GetStatus(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ElastosCertVerifyResult> mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ElastosCertVerifyResult", "ElastosCertVerifyResult::GetStatus, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetStatus();
+}
+
+Boolean ElastosCertVerifyResult::IsIssuedByKnownRoot(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ElastosCertVerifyResult> mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ElastosCertVerifyResult", "ElastosCertVerifyResult::IsIssuedByKnownRoot, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->IsIssuedByKnownRoot();
+}
+
+AutoPtr<ArrayOf<AutoPtr<ArrayOf<Byte> > > > ElastosCertVerifyResult::GetCertificateChainEncoded(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ElastosCertVerifyResult> mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ElastosCertVerifyResult", "ElastosCertVerifyResult::GetCertificateChainEncoded, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetCertificateChainEncoded();
 }
 
 } // namespace Net

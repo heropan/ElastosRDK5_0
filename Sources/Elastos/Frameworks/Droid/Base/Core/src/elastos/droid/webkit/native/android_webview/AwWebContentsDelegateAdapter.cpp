@@ -369,7 +369,7 @@ ECode AwWebContentsDelegateAdapter::CloseContents()
 }
 
 //@Override
-void AwWebContentsDelegateAdapter::ShowRepostFormWarningDialog(
+ECode AwWebContentsDelegateAdapter::ShowRepostFormWarningDialog(
     /* [in] */ ContentViewCore* contentViewCore)
 {
     // TODO(mkosiba) We should be using something akin to the JsResultReceiver as the
@@ -387,6 +387,7 @@ void AwWebContentsDelegateAdapter::ShowRepostFormWarningDialog(
     AutoPtr<IMessage> dontResend;
     handler->ObtainMessage(MSG_CANCEL_PENDING_RELOAD, (IMessage**)&dontResend);
     mContentsClient->OnFormResubmission(dontResend, resend);
+    return NOERROR;
 }
 
 //@Override

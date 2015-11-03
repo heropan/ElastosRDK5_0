@@ -26,14 +26,15 @@ public:
         /* [in] */ Int32 pageTransitionType,
         /* [in] */ Boolean isRedirect);
 
-    // @CalledByNative
-    static CARAPI_(AutoPtr<NavigationParams>) Create(
+    // @CalledByNative return NavigationParams
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ const String& url,
         /* [in] */ Boolean isPost,
         /* [in] */ Boolean hasUserGesture,
         /* [in] */ Int32 pageTransitionType,
         /* [in] */ Boolean isRedirect);
 
+    static CARAPI_(void*) ElaNavigationParamsCallback_Init();
 public:
     // Target url of the navigation.
     const String url;

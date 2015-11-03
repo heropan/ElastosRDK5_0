@@ -36,7 +36,7 @@ namespace Components {
   * native color_chooser_android.cc
   */
 // @JNINamespace("web_contents_delegate_android")
-class ColorChooserAndroid
+class ColorChooserElastos
     : public Object
 {
 public:
@@ -45,14 +45,14 @@ public:
     {
     public:
         InnerOnColorChangedListener(
-            /* [in] */ ColorChooserAndroid* owner);
+            /* [in] */ ColorChooserElastos* owner);
 
         // @Override
         CARAPI OnColorChanged(
             /* [in] */ Int32 color);
 
     private:
-        ColorChooserAndroid* mOwner;
+        ColorChooserElastos* mOwner;
     };
 
 public:
@@ -60,23 +60,34 @@ public:
     virtual CARAPI CloseColorChooser();
 
     // @CalledByNative
-    static CARAPI_(AutoPtr<ColorChooserAndroid>) CreateColorChooserAndroid(
-        /* [in] */ Int64 nativeColorChooserAndroid,
+    static CARAPI_(AutoPtr<ColorChooserElastos>) CreateColorChooserElastos(
+        /* [in] */ Int64 nativeColorChooserElastos,
         /* [in] */ ContentViewCore* contentViewCore,
         /* [in] */ Int32 initialColor,
-        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
+
+    static CARAPI_(void*) ElaColorChooserElastosCallback_Init();
 
 private:
-    ColorChooserAndroid(
-        /* [in] */ Int64 nativeColorChooserAndroid,
+    static CARAPI_(void) CloseColorChooser(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<IInterface>) CreateColorChooserElastos(
+        /* [in] */ Int64 nativeColorChooserElastos,
+        /* [in] */ IInterface* contentViewCore,
+        /* [in] */ Int32 initialColor,
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
+
+    ColorChooserElastos(
+        /* [in] */ Int64 nativeColorChooserElastos,
         /* [in] */ IContext* context,
         /* [in] */ Int32 initialColor,
-        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     CARAPI OpenColorChooser();
 
-    // @CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<ColorSuggestion*> >) CreateColorSuggestionArray(
+    // @CalledByNative ColorSuggestion
+    static CARAPI_(AutoPtr< ArrayOf<IInterface*> >) CreateColorSuggestionArray(
         /* [in] */ Int32 size);
 
     /**
@@ -86,20 +97,20 @@ private:
       * @param label Label of the suggestion.
       */
     // @CalledByNative
-    static CARAPI AddToColorSuggestionArray(
-        /* [in] */ ArrayOf<ColorSuggestion*>* array,
+    static CARAPI_(void) AddToColorSuggestionArray(
+        /* [in] */ ArrayOf<IInterface*>* array,
         /* [in] */ Int32 index,
         /* [in] */ Int32 color,
         /* [in] */ const String& label);
 
     // Implemented in color_chooser_android.cc
     CARAPI NativeOnColorChosen(
-        /* [in] */ Int64 nativeColorChooserAndroid,
+        /* [in] */ Int64 nativeColorChooserElastos,
         /* [in] */ Int32 color);
 
 private:
     /*const*/ AutoPtr<ColorPickerDialog> mDialog;
-    /*const*/ Int64 mNativeColorChooserAndroid;
+    /*const*/ Int64 mNativeColorChooserElastos;
 };
 
 } // namespace Components

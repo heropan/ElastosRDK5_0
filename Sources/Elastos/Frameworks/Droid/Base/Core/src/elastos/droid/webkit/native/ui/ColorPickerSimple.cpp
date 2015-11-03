@@ -46,11 +46,11 @@ ColorPickerSimple::ColorPickerSimple(
     // super(context, attrs, defStyle);
 }
 
+// suggestion type is ColorSuggestion
 ECode ColorPickerSimple::Init(
-    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions,
+    /* [in] */ ArrayOf<IInterface*>* suggestions,
     /* [in] */ OnColorChangedListener* onColorChangedListener)
 {
-    VALIDATE_NOT_NULL(suggestions);
     VALIDATE_NOT_NULL(onColorChangedListener);
     // ==================before translated======================
     // mOnColorChangedListener = onColorChangedListener;
@@ -71,14 +71,15 @@ ECode ColorPickerSimple::Init(
     assert(0);
     mOnColorChangedListener = onColorChangedListener;
     if (NULL == suggestions) {
-        suggestions = ArrayOf<ColorSuggestion*>::Alloc(DEFAULT_COLORS->GetLength());
+        //tye is ColorSuggestion
+        suggestions = ArrayOf<IInterface*>::Alloc(DEFAULT_COLORS->GetLength());
         String idsTemp;
         AutoPtr<IContext> context;
         //GetContext(&context);
         for (Int32 i = 0; i < suggestions->GetLength(); ++i) {
             context->GetString((*DEFAULT_COLOR_LABEL_IDS)[i], &idsTemp);
             const String kk("kk");
-            (*suggestions)[i] = new ColorSuggestion((*DEFAULT_COLORS)[i], kk);
+            suggestions->Set(i, TO_IINTERFACE(new ColorSuggestion((*DEFAULT_COLORS)[i], kk)));
         }
     }
 

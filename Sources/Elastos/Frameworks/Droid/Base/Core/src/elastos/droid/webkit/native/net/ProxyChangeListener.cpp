@@ -1,8 +1,10 @@
 
 #include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
+#include "elastos/droid/webkit/native/net/api/ProxyChangeListener_dec.h"
 #include "elastos/droid/os/Build.h"
 //#include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/content/CIntentFilter.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -14,6 +16,7 @@ using Elastos::Droid::Net::IProxyInfoHelper;
 //using Elastos::Droid::Net::CProxyProperties;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -354,16 +357,49 @@ ECode ProxyChangeListener::NativeProxySettingsChangedTo(
     /* [in] */ const String& host,
     /* [in] */ Int32 port)
 {
-    assert(0);
+    Elastos_ProxyChangeListener_nativeProxySettingsChangedTo(THIS_PROBE(IInterface), (Handle32)nativePtr, host, port);
     return NOERROR;
 }
 
 ECode ProxyChangeListener::NativeProxySettingsChanged(
     /* [in] */ Int64 nativePtr)
 {
-    assert(0);
+    Elastos_ProxyChangeListener_nativeProxySettingsChanged(THIS_PROBE(IInterface), (Handle32)nativePtr);
     return NOERROR;
 }
+
+AutoPtr<IInterface> ProxyChangeListener::Create(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Create(c));
+}
+
+void ProxyChangeListener::Start(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativePtr)
+{
+    AutoPtr<ProxyChangeListener> mObj = (ProxyChangeListener*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ProxyChangeListener", "ProxyChangeListener::Start, mObj is NULL");
+        return;
+    }
+    mObj->Start(nativePtr);
+}
+
+void ProxyChangeListener::Stop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ProxyChangeListener> mObj = (ProxyChangeListener*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ProxyChangeListener", "ProxyChangeListener::Stop, mObj is NULL");
+        return;
+    }
+    mObj->Stop();
+}
+
 
 } // namespace Net
 } // namespace Webkit

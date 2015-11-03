@@ -1,5 +1,6 @@
 
-#include "elastos/droid/webkit/native/net/AndroidNetworkLibrary.h"
+#include "elastos/droid/webkit/native/net/ElastosNetworkLibrary.h"
+#include "elastos/droid/webkit/native/net/api/ElastosNetworkLibrary_dec.h"
 #include "elastos/core/IntegralToString.h"
 #include "elastos/droid/content/CIntent.h"
 //#include "elastos/droid/telephony/CTelephonyManager.h"
@@ -30,11 +31,11 @@ namespace Webkit {
 namespace Net {
 
 //=====================================================================
-//                        AndroidNetworkLibrary
+//                        ElastosNetworkLibrary
 //=====================================================================
-const String AndroidNetworkLibrary::TAG("AndroidNetworkLibrary");
+const String ElastosNetworkLibrary::TAG("ElastosNetworkLibrary");
 
-Boolean AndroidNetworkLibrary::StoreKeyPair(
+Boolean ElastosNetworkLibrary::StoreKeyPair(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<Byte>* publicKey,
     /* [in] */ ArrayOf<Byte>* privateKey)
@@ -72,7 +73,7 @@ Boolean AndroidNetworkLibrary::StoreKeyPair(
     return FALSE;
 }
 
-Boolean AndroidNetworkLibrary::StoreCertificate(
+Boolean ElastosNetworkLibrary::StoreCertificate(
     /* [in] */ IContext* context,
     /* [in] */ Int32 certType,
     /* [in] */ ArrayOf<Byte>* data)
@@ -136,7 +137,7 @@ Boolean AndroidNetworkLibrary::StoreCertificate(
     return FALSE;
 }
 
-String AndroidNetworkLibrary::GetMimeTypeFromExtension(
+String ElastosNetworkLibrary::GetMimeTypeFromExtension(
     /* [in] */ const String& extension)
 {
     // ==================before translated======================
@@ -147,7 +148,7 @@ String AndroidNetworkLibrary::GetMimeTypeFromExtension(
     return result;
 }
 
-Boolean AndroidNetworkLibrary::HaveOnlyLoopbackAddresses()
+Boolean ElastosNetworkLibrary::HaveOnlyLoopbackAddresses()
 {
     // ==================before translated======================
     // Enumeration<NetworkInterface> list = null;
@@ -201,7 +202,7 @@ Boolean AndroidNetworkLibrary::HaveOnlyLoopbackAddresses()
     return TRUE;
 }
 
-String AndroidNetworkLibrary::GetNetworkList()
+String ElastosNetworkLibrary::GetNetworkList()
 {
     // ==================before translated======================
     // Enumeration<NetworkInterface> list = null;
@@ -308,7 +309,7 @@ String AndroidNetworkLibrary::GetNetworkList()
 
                 String ipAddress;
                 address->GetHostAddress(&ipAddress);
-                AutoPtr<IInet6Address> inet6Addr = (IInet6Address*)address->Probe(EIID_IInet6Address);
+                AutoPtr<IInet6Address> inet6Addr = IInet6Address::Probe(address);
                 if (inet6Addr != NULL && ipAddress.Contains(String("%"))) {
                     ipAddress = ipAddress.Substring(0, ipAddress.LastIndexOf(String("%")));
                 }
@@ -343,7 +344,7 @@ String AndroidNetworkLibrary::GetNetworkList()
     return resultStr;
 }
 
-AutoPtr<AndroidCertVerifyResult> AndroidNetworkLibrary::VerifyServerCertificates(
+AutoPtr<IInterface> ElastosNetworkLibrary::VerifyServerCertificates(
     /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
@@ -358,7 +359,7 @@ AutoPtr<AndroidCertVerifyResult> AndroidNetworkLibrary::VerifyServerCertificates
     // }
 
     //try {
-        return X509Util::VerifyServerCertificates(certChain, authType, host);
+        return TO_IINTERFACE(X509Util::VerifyServerCertificates(certChain, authType, host));
     //} catch (KeyStoreException e) {
     //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
     //} catch (NoSuchAlgorithmException e) {
@@ -366,27 +367,25 @@ AutoPtr<AndroidCertVerifyResult> AndroidNetworkLibrary::VerifyServerCertificates
     //}
 }
 
-ECode AndroidNetworkLibrary::AddTestRootCertificate(
+void ElastosNetworkLibrary::AddTestRootCertificate(
     /* [in] */ ArrayOf<Byte>* rootCert)
 {
-    VALIDATE_NOT_NULL(rootCert);
+    //VALIDATE_NOT_NULL(rootCert);
     // ==================before translated======================
     // X509Util.addTestRootCertificate(rootCert);
 
     X509Util::AddTestRootCertificate(rootCert);
-    return NOERROR;
 }
 
-ECode AndroidNetworkLibrary::ClearTestRootCertificates()
+void ElastosNetworkLibrary::ClearTestRootCertificates()
 {
     // ==================before translated======================
     // X509Util.clearTestRootCertificates();
 
     X509Util::ClearTestRootCertificates();
-    return NOERROR;
 }
 
-String AndroidNetworkLibrary::GetNetworkCountryIso(
+String ElastosNetworkLibrary::GetNetworkCountryIso(
     /* [in] */ IContext* context)
 {
     // ==================before translated======================
@@ -409,7 +408,7 @@ String AndroidNetworkLibrary::GetNetworkCountryIso(
     return result;
 }
 
-String AndroidNetworkLibrary::GetNetworkOperator(
+String ElastosNetworkLibrary::GetNetworkOperator(
     /* [in] */ IContext* context)
 {
     // ==================before translated======================
@@ -430,6 +429,38 @@ String AndroidNetworkLibrary::GetNetworkOperator(
         return result;
     }
     return result;
+}
+
+Boolean ElastosNetworkLibrary::StoreKeyPair(
+    /* [in] */ IInterface* context,
+    /* [in] */ ArrayOf<Byte>* publicKey,
+    /* [in] */ ArrayOf<Byte>* privateKey)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return StoreKeyPair(c, publicKey, privateKey);
+}
+
+Boolean ElastosNetworkLibrary::StoreCertificate(
+    /* [in] */ IInterface* context,
+    /* [in] */ Int32 certType,
+    /* [in] */ ArrayOf<Byte>* data)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return StoreCertificate(c, certType, data);
+}
+
+String ElastosNetworkLibrary::GetNetworkCountryIso(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return GetNetworkCountryIso(c);
+}
+
+String ElastosNetworkLibrary::GetNetworkOperator(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return GetNetworkOperator(c);
 }
 
 } // namespace Net

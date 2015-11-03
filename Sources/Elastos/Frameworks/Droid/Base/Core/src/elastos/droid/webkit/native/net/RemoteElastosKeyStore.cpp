@@ -1,5 +1,5 @@
 
-#include "elastos/droid/webkit/native/net/RemoteAndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/RemoteElastosKeyStore.h"
 
 namespace Elastos {
 namespace Droid {
@@ -7,11 +7,11 @@ namespace Webkit {
 namespace Net {
 
 //=====================================================================
-//               RemoteAndroidKeyStore::RemotePrivateKey
+//               RemoteElastosKeyStore::RemotePrivateKey
 //=====================================================================
-RemoteAndroidKeyStore::RemotePrivateKey::RemotePrivateKey(
+RemoteElastosKeyStore::RemotePrivateKey::RemotePrivateKey(
     /* [in] */ Int32 handle,
-    /* [in] */ RemoteAndroidKeyStore* store)
+    /* [in] */ RemoteElastosKeyStore* store)
     : mHandle(handle)
     , mStore(store)
 {
@@ -20,7 +20,7 @@ RemoteAndroidKeyStore::RemotePrivateKey::RemotePrivateKey(
     // mStore = store;
 }
 
-Int32 RemoteAndroidKeyStore::RemotePrivateKey::GetHandle()
+Int32 RemoteElastosKeyStore::RemotePrivateKey::GetHandle()
 {
     // ==================before translated======================
     // return mHandle;
@@ -28,7 +28,7 @@ Int32 RemoteAndroidKeyStore::RemotePrivateKey::GetHandle()
     return mHandle;
 }
 
-AutoPtr<AndroidKeyStore> RemoteAndroidKeyStore::RemotePrivateKey::GetKeyStore()
+AutoPtr<ElastosKeyStore> RemoteElastosKeyStore::RemotePrivateKey::GetKeyStore()
 {
     // ==================before translated======================
     // return mStore;
@@ -37,20 +37,20 @@ AutoPtr<AndroidKeyStore> RemoteAndroidKeyStore::RemotePrivateKey::GetKeyStore()
 }
 
 //=====================================================================
-//                        RemoteAndroidKeyStore
+//                        RemoteElastosKeyStore
 //=====================================================================
-const String RemoteAndroidKeyStore::TAG("AndroidKeyStoreRemoteImpl");
+const String RemoteElastosKeyStore::TAG("ElastosKeyStoreRemoteImpl");
 
-RemoteAndroidKeyStore::RemoteAndroidKeyStore(
-    /* [in] */ RemoteAndroidKeyStore* manager)
+RemoteElastosKeyStore::RemoteElastosKeyStore(
+    /* [in] */ RemoteElastosKeyStore* manager)
     : mRemoteManager(manager)
 {
     // ==================before translated======================
     // mRemoteManager = manager;
 }
 
-AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetRSAKeyModulus(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetRSAKeyModulus(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // RemotePrivateKey remoteKey = (RemotePrivateKey) key;
@@ -65,7 +65,7 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetRSAKeyModulus(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         //Log.d(TAG, "getRSAKeyModulus");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetRSAKeyModulus((AndroidPrivateKey*)remoteKey->GetHandle());
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetRSAKeyModulus((ElastosPrivateKey*)remoteKey->GetHandle());
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -73,8 +73,8 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetRSAKeyModulus(
     //}
 }
 
-AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetDSAKeyParamQ(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetDSAKeyParamQ(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // RemotePrivateKey remoteKey = (RemotePrivateKey) key;
@@ -89,7 +89,7 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetDSAKeyParamQ(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         //Log.d(TAG, "getDSAKeyParamQ");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetDSAKeyParamQ((AndroidPrivateKey*)remoteKey->GetHandle());
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetDSAKeyParamQ((ElastosPrivateKey*)remoteKey->GetHandle());
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -97,8 +97,8 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetDSAKeyParamQ(
     //}
 }
 
-AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetECKeyOrder(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetECKeyOrder(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // RemotePrivateKey remoteKey = (RemotePrivateKey) key;
@@ -113,7 +113,7 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetECKeyOrder(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         //Log.d(TAG, "getECKeyOrder");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetECKeyOrder((AndroidPrivateKey*)remoteKey->GetHandle());
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetECKeyOrder((ElastosPrivateKey*)remoteKey->GetHandle());
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -121,8 +121,8 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetECKeyOrder(
     //}
 }
 
-AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::RawSignDigestWithPrivateKey(
-    /* [in] */ AndroidPrivateKey* key,
+AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::RawSignDigestWithPrivateKey(
+    /* [in] */ ElastosPrivateKey* key,
     /* [in] */ ArrayOf<Byte>* message)
 {
     // ==================before translated======================
@@ -138,7 +138,7 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::RawSignDigestWithPrivateKey(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         //Log.d(TAG, "rawSignDigestWithPrivateKey");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->RawSignDigestWithPrivateKey((AndroidPrivateKey*)remoteKey->GetHandle(), message);
+        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->RawSignDigestWithPrivateKey((ElastosPrivateKey*)remoteKey->GetHandle(), message);
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -146,8 +146,8 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::RawSignDigestWithPrivateKey(
     //}
 }
 
-Int32 RemoteAndroidKeyStore::GetPrivateKeyType(
-    /* [in] */ AndroidPrivateKey* key)
+Int32 RemoteElastosKeyStore::GetPrivateKeyType(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // RemotePrivateKey remoteKey = (RemotePrivateKey) key;
@@ -162,15 +162,15 @@ Int32 RemoteAndroidKeyStore::GetPrivateKeyType(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         //Log.d(TAG, "getPrivateKeyType");
-        return mRemoteManager->GetPrivateKeyType((AndroidPrivateKey*)remoteKey->GetHandle());
+        return mRemoteManager->GetPrivateKeyType((ElastosPrivateKey*)remoteKey->GetHandle());
     //} catch (RemoteException e) {
     //    e.printStackTrace();
     //    return 0;
     //}
 }
 
-AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetPrivateKeyEncodedBytes(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetPrivateKeyEncodedBytes(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // // This should not be called as it's only for older versions of Android.
@@ -182,8 +182,8 @@ AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetPrivateKeyEncodedBytes(
     return NULL;
 }
 
-Int64 RemoteAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
-    /* [in] */ AndroidPrivateKey* privateKey)
+Int64 RemoteElastosKeyStore::GetOpenSSLHandleForPrivateKey(
+    /* [in] */ ElastosPrivateKey* privateKey)
 {
     // ==================before translated======================
     // // This should not be called as it's only for older versions of Android.
@@ -195,7 +195,7 @@ Int64 RemoteAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
     return 0;
 }
 
-AutoPtr<AndroidPrivateKey> RemoteAndroidKeyStore::CreateKey(
+AutoPtr<ElastosPrivateKey> RemoteElastosKeyStore::CreateKey(
     /* [in] */ const String& alias)
 {
     // ==================before translated======================
@@ -211,7 +211,7 @@ AutoPtr<AndroidPrivateKey> RemoteAndroidKeyStore::CreateKey(
     //try {
         /* java file mRemoteManager is belong type IRemoteAndroidKeyStore that suffix is .aidl file */
         Int32 handle;// = mRemoteManager->GetPrivateKeyHandle(alias);
-        AutoPtr<AndroidPrivateKey> ret = new RemotePrivateKey(handle, this);
+        AutoPtr<ElastosPrivateKey> ret = new RemotePrivateKey(handle, this);
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -219,8 +219,8 @@ AutoPtr<AndroidPrivateKey> RemoteAndroidKeyStore::CreateKey(
     //}
 }
 
-ECode RemoteAndroidKeyStore::ReleaseKey(
-    /* [in] */ AndroidPrivateKey* key)
+ECode RemoteElastosKeyStore::ReleaseKey(
+    /* [in] */ ElastosPrivateKey* key)
 {
     VALIDATE_NOT_NULL(key);
     // ==================before translated======================
@@ -235,7 +235,7 @@ ECode RemoteAndroidKeyStore::ReleaseKey(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*) key;
     //try {
         //Log.d(TAG, "releaseKey");
-        mRemoteManager->ReleaseKey((AndroidPrivateKey*)remoteKey->GetHandle());
+        mRemoteManager->ReleaseKey((ElastosPrivateKey*)remoteKey->GetHandle());
     //} catch (RemoteException e) {
     //    e.printStackTrace();
     //}

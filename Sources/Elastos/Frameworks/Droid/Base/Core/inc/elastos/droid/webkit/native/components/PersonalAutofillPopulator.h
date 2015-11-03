@@ -137,7 +137,54 @@ public:
     static CARAPI_(AutoPtr<PersonalAutofillPopulator>) Create(
         /* [in] */ IContext* context);
 
+    static CARAPI_(void*) ElaPersonalAutofillPopulatorCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(String) GetFirstName(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetLastName(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetMiddleName(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetSuffix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<ArrayOf<String> >) GetEmailAddresses(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetStreet(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetPobox(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetNeighborhood(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetCity(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetRegion(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetPostalCode(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(String) GetCountry(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<ArrayOf<String> >) GetPhoneNumbers(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) GetHasPermissions(
+        /* [in] */ IInterface* obj);
+
     /**
       * Takes a query object, transforms into actual query and returns cursor.
       * Primary contact values will be first.

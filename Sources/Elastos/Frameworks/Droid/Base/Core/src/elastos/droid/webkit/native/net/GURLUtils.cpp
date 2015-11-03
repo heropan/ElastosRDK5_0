@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/net/GURLUtils.h"
+#include "elastos/droid/webkit/native/net/api/GURLUtils_dec.h"
 
 namespace Elastos {
 namespace Droid {
@@ -30,15 +31,13 @@ String GURLUtils::GetScheme(
 String GURLUtils::NativeGetOrigin(
     /* [in] */ const String& url)
 {
-    assert(0);
-    return String("");
+    return Elastos_GURLUtils_nativeGetOrigin(url);
 }
 
 String GURLUtils::NativeGetScheme(
     /* [in] */ const String& url)
 {
-    assert(0);
-    return String("");
+    return Elastos_GURLUtils_nativeGetScheme(url);
 }
 
 } // namespace Net

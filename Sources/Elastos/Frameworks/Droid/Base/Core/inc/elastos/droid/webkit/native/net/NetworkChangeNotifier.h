@@ -123,7 +123,7 @@ public:
       *    state, false implies "disconnected".
       */
     // @CalledByNative
-    static CARAPI ForceConnectivityState(
+    static CARAPI_(void) ForceConnectivityState(
         /* [in] */ Boolean networkAvailable);
 
     /**
@@ -151,6 +151,23 @@ public:
       * Checks if there currently is connectivity.
       */
     static CARAPI_(Boolean) IsOnline();
+
+    static CARAPI_(void*) ElaNetworkChangeNotifierCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<IInterface>) Init(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(Int32) GetCurrentConnectionType(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) AddNativeObserver(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeChangeNotifier);
+
+    static CARAPI_(void) RemoveNativeObserver(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeChangeNotifier);
 
 private:
     NetworkChangeNotifier(

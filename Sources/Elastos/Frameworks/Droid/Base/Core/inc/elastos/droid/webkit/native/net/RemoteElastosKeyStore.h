@@ -6,15 +6,15 @@
 #define _ELASTOS_DROID_WEBKIT_NET_REMOTEANDROIDKEYSTORE_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/net/AndroidKeyStore.h"
-#include "elastos/droid/webkit/native/net/AndroidPrivateKey.h"
+#include "elastos/droid/webkit/native/net/ElastosKeyStore.h"
+#include "elastos/droid/webkit/native/net/ElastosPrivateKey.h"
 
 // package org.chromium.net;
 // import android.os.RemoteException;
 // import android.util.Log;
 
-using Elastos::Droid::Webkit::Net::AndroidKeyStore;
-using Elastos::Droid::Webkit::Net::AndroidPrivateKey;
+using Elastos::Droid::Webkit::Net::ElastosKeyStore;
+using Elastos::Droid::Webkit::Net::ElastosPrivateKey;
 
 namespace Elastos {
 namespace Droid {
@@ -25,73 +25,73 @@ namespace Net {
   * Provides a remoted implementation of AndroidKeyStore where all calls are forwarded via
   * binder to an external process.
   */
-class RemoteAndroidKeyStore
-    : public AndroidKeyStore
+class RemoteElastosKeyStore
+    : public ElastosKeyStore
 {
 private:
     class RemotePrivateKey
-        : public AndroidPrivateKey
+        : public ElastosPrivateKey
     {
     public:
         RemotePrivateKey(
             /* [in] */ Int32 handle,
-            /* [in] */ RemoteAndroidKeyStore* store);
+            /* [in] */ RemoteElastosKeyStore* store);
 
         virtual CARAPI_(Int32) GetHandle();
 
         // @Override
-        CARAPI_(AutoPtr<AndroidKeyStore>) GetKeyStore();
+        CARAPI_(AutoPtr<ElastosKeyStore>) GetKeyStore();
 
     public:
         // Reference to the key on a remote store.
         const Int32 mHandle;
         // Key store handling this key.
-        const AutoPtr<RemoteAndroidKeyStore> mStore;
+        const AutoPtr<RemoteElastosKeyStore> mStore;
     };
 
 public:
-    RemoteAndroidKeyStore(
-        /* [in] */ RemoteAndroidKeyStore* manager);
+    RemoteElastosKeyStore(
+        /* [in] */ RemoteElastosKeyStore* manager);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetRSAKeyModulus(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetDSAKeyParamQ(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetECKeyOrder(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) RawSignDigestWithPrivateKey(
-        /* [in] */ AndroidPrivateKey* key,
+        /* [in] */ ElastosPrivateKey* key,
         /* [in] */ ArrayOf<Byte>* message);
 
     // @Override
     CARAPI_(Int32) GetPrivateKeyType(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetPrivateKeyEncodedBytes(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
     // @Override
     CARAPI_(Int64) GetOpenSSLHandleForPrivateKey(
-        /* [in] */ AndroidPrivateKey* privateKey);
+        /* [in] */ ElastosPrivateKey* privateKey);
 
-    virtual CARAPI_(AutoPtr<AndroidPrivateKey>) CreateKey(
+    virtual CARAPI_(AutoPtr<ElastosPrivateKey>) CreateKey(
         /* [in] */ const String& alias);
 
     // @Override
     CARAPI ReleaseKey(
-        /* [in] */ AndroidPrivateKey* key);
+        /* [in] */ ElastosPrivateKey* key);
 
 private:
     static const String TAG;
-    const AutoPtr<RemoteAndroidKeyStore> mRemoteManager;
+    const AutoPtr<RemoteElastosKeyStore> mRemoteManager;
 };
 
 } // namespace Net

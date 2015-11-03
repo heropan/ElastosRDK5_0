@@ -6,13 +6,13 @@
 #define _ELASTOS_DROID_WEBKIT_NET_ANDROIDPRIVATEKEY_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/net/AndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/ElastosKeyStore.h"
 
 // package org.chromium.net;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
-using Elastos::Droid::Webkit::Net::AndroidKeyStore;
+using Elastos::Droid::Webkit::Net::ElastosKeyStore;
 
 namespace Elastos {
 namespace Droid {
@@ -23,13 +23,20 @@ namespace Net {
   * Abstract private key that bundles the PrivateKey and AndroidKeyStore that it belongs to.
   */
 // @JNINamespace("net::android")
-class AndroidPrivateKey
+class ElastosPrivateKey
     : public Object
 {
 public:
     /** @return AndroidKeyStore that handles this key. */
     // @CalledByNative
-    virtual CARAPI_(AutoPtr<AndroidKeyStore>) GetKeyStore() = 0;
+    virtual CARAPI_(AutoPtr<ElastosKeyStore>) GetKeyStore() = 0;
+
+    static CARAPI_(void*) ElaElastosPrivateKeyCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<IInterface>) GetKeyStore(
+        /* [in] */ IInterface* obj);
+
 };
 
 } // namespace Net

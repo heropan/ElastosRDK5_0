@@ -41,7 +41,7 @@ CAR_INTERFACE_IMPL(ColorSuggestionListAdapter, Object, IViewOnClickListener)
 
 ColorSuggestionListAdapter::ColorSuggestionListAdapter(
     /* [in] */ IContext* context,
-    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
     : mContext(context)
     , mSuggestions(suggestions)
 {
@@ -239,11 +239,11 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
         return NOERROR;
     }
 
-    AutoPtr<IInterface> interfaceTmp = TO_IINTERFACE((*mSuggestions)[index]);
+    AutoPtr<IInterface> interfaceTmp = (*mSuggestions)[index];
     viewTmp->SetTag(interfaceTmp);
     viewTmp->SetVisibility(IView::VISIBLE);
 
-    AutoPtr<ColorSuggestion> suggestion = (*mSuggestions)[index];
+    AutoPtr<ColorSuggestion> suggestion = (ColorSuggestion*)(IObject::Probe((*mSuggestions)[index]));
     AutoPtr<IDrawable> layersTmp;
     viewTmp->GetBackground((IDrawable**)&layersTmp);
     AutoPtr<ILayerDrawable> layers = ILayerDrawable::Probe(layersTmp);

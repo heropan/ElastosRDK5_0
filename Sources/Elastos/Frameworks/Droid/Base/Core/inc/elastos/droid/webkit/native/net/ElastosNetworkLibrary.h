@@ -6,7 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_NET_ANDROIDNETWORKLIBRARY_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/net/AndroidCertVerifyResult.h"
+#include "elastos/droid/webkit/native/net/ElastosCertVerifyResult.h"
 
 // package org.chromium.net;
 // import android.content.ActivityNotFoundException;
@@ -29,7 +29,7 @@
 // import java.util.Enumeration;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Webkit::Net::AndroidCertVerifyResult;
+using Elastos::Droid::Webkit::Net::ElastosCertVerifyResult;
 
 namespace Elastos {
 namespace Droid {
@@ -39,7 +39,7 @@ namespace Net {
 /**
   * This class implements net utilities required by the net component.
   */
-class AndroidNetworkLibrary
+class ElastosNetworkLibrary
     : public Object
 {
 public:
@@ -116,8 +116,8 @@ public:
       * @param host The hostname of the server.
       * @return Android certificate verification result code.
       */
-    // @CalledByNative
-    static CARAPI_(AutoPtr<AndroidCertVerifyResult>) VerifyServerCertificates(
+    // @CalledByNative return AndroidCertVerifyResult
+    static CARAPI_(AutoPtr<IInterface>) VerifyServerCertificates(
         /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
         /* [in] */ const String& authType,
         /* [in] */ const String& host);
@@ -127,7 +127,7 @@ public:
       * @param rootCert DER encoded bytes of the certificate.
       */
     // @CalledByNativeUnchecked
-    static CARAPI AddTestRootCertificate(
+    static CARAPI_(void) AddTestRootCertificate(
         /* [in] */ ArrayOf<Byte>* rootCert);
 
     /**
@@ -135,9 +135,27 @@ public:
       * trust store.
       */
     // @CalledByNativeUnchecked
-    static CARAPI ClearTestRootCertificates();
+    static CARAPI_(void) ClearTestRootCertificates();
+
+    static CARAPI_(void*) ElaElastosNetworkLibraryCallback_Init();
 
 private:
+    static CARAPI_(Boolean) StoreKeyPair(
+        /* [in] */ IInterface* context,
+        /* [in] */ ArrayOf<Byte>* publicKey,
+        /* [in] */ ArrayOf<Byte>* privateKey);
+
+    static CARAPI_(Boolean) StoreCertificate(
+        /* [in] */ IInterface* context,
+        /* [in] */ Int32 certType,
+        /* [in] */ ArrayOf<Byte>* data);
+
+    static CARAPI_(String) GetNetworkCountryIso(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(String) GetNetworkOperator(
+        /* [in] */ IInterface* context);
+
     /**
       * Returns the ISO country code equivalent of the current MCC.
       */

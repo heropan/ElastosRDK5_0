@@ -59,9 +59,9 @@ public:
       * @param suggestions The list of suggestions that should be displayed.
       * @param onColorChangedListener The listener that gets notified when the user touches
       *                               a color.
-      */
+      */// ColorSuggestion for suggestions
     virtual CARAPI Init(
-        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions,
+        /* [in] */ ArrayOf<IInterface*>* suggestions,
         /* [in] */ OnColorChangedListener* onColorChangedListener);
 
     // @Override

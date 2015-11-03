@@ -1,7 +1,9 @@
 
 #include "elastos/droid/webkit/native/components/PersonalAutofillPopulator.h"
+#include "elastos/droid/webkit/native/components/api/PersonalAutofillPopulator_dec.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::ICloseable;
 using Elastos::Droid::Provider::ContactsContractProfile;
@@ -12,6 +14,7 @@ using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredPostal
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredName;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Net::Uri;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -509,6 +512,181 @@ Boolean PersonalAutofillPopulator::GetHasPermissions()
     // return mHasPermissions;
 
     return mHasPermissions;
+}
+
+AutoPtr<IInterface> PersonalAutofillPopulator::Create(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Create(c));
+}
+
+String PersonalAutofillPopulator::GetFirstName(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetFirstName, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetFirstName();
+}
+
+String PersonalAutofillPopulator::GetLastName(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetLastName, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetLastName();
+}
+
+String PersonalAutofillPopulator::GetMiddleName(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetMiddleName, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetMiddleName();
+}
+
+String PersonalAutofillPopulator::GetSuffix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetSuffix, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetSuffix();
+}
+
+AutoPtr<ArrayOf<String> > PersonalAutofillPopulator::GetEmailAddresses(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetEmailAddresses, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetEmailAddresses();
+}
+
+String PersonalAutofillPopulator::GetStreet(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetStreet, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetStreet();
+}
+
+String PersonalAutofillPopulator::GetPobox(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetPobox, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetPobox();
+}
+
+String PersonalAutofillPopulator::GetNeighborhood(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetNeighborhood, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetNeighborhood();
+}
+
+String PersonalAutofillPopulator::GetCity(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetCity, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetCity();
+}
+
+String PersonalAutofillPopulator::GetRegion(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetRegion, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetRegion();
+}
+
+String PersonalAutofillPopulator::GetPostalCode(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetPostalCode, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetPostalCode();
+}
+
+String PersonalAutofillPopulator::GetCountry(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetCountry, mObj is NULL");
+        return String(NULL);
+    }
+    return mObj->GetCountry();
+}
+
+AutoPtr<ArrayOf<String> > PersonalAutofillPopulator::GetPhoneNumbers(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetPhoneNumbers, mObj is NULL");
+        return NULL;
+    }
+    return mObj->GetPhoneNumbers();
+}
+
+Boolean PersonalAutofillPopulator::GetHasPermissions(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<PersonalAutofillPopulator> mObj = (PersonalAutofillPopulator*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("PersonalAutofillPopulator", "PersonalAutofillPopulator::GetHasPermissions, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->GetHasPermissions();
 }
 
 } // namespace Components

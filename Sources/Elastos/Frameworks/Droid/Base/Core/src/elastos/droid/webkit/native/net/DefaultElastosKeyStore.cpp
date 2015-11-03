@@ -1,5 +1,5 @@
 
-#include "elastos/droid/webkit/native/net/DefaultAndroidKeyStore.h"
+#include "elastos/droid/webkit/native/net/DefaultElastosKeyStore.h"
 #include "elastos/droid/webkit/native/net/PrivateKeyType.h"
 #include "elastos/droid/content/pm/CSignature.h"
 
@@ -30,11 +30,11 @@ namespace Webkit {
 namespace Net {
 
 //=====================================================================
-//           DefaultAndroidKeyStore::DefaultAndroidPrivateKey
+//           DefaultElastosKeyStore::DefaultElastosPrivateKey
 //=====================================================================
-DefaultAndroidKeyStore::DefaultAndroidPrivateKey::DefaultAndroidPrivateKey(
+DefaultElastosKeyStore::DefaultElastosPrivateKey::DefaultElastosPrivateKey(
     /* [in] */ IPrivateKey* key,
-    /* [in] */ DefaultAndroidKeyStore* store)
+    /* [in] */ DefaultElastosKeyStore* store)
     : mKey(key)
     , mStore(store)
 {
@@ -43,7 +43,7 @@ DefaultAndroidKeyStore::DefaultAndroidPrivateKey::DefaultAndroidPrivateKey(
     // mStore = store;
 }
 
-AutoPtr<IPrivateKey> DefaultAndroidKeyStore::DefaultAndroidPrivateKey::GetJavaKey()
+AutoPtr<IPrivateKey> DefaultElastosKeyStore::DefaultElastosPrivateKey::GetJavaKey()
 {
     // ==================before translated======================
     // return mKey;
@@ -51,33 +51,33 @@ AutoPtr<IPrivateKey> DefaultAndroidKeyStore::DefaultAndroidPrivateKey::GetJavaKe
     return mKey;
 }
 
-AutoPtr<AndroidKeyStore> DefaultAndroidKeyStore::DefaultAndroidPrivateKey::GetKeyStore()
+AutoPtr<ElastosKeyStore> DefaultElastosKeyStore::DefaultElastosPrivateKey::GetKeyStore()
 {
     // ==================before translated======================
     // return mStore;
 
-    AutoPtr<AndroidKeyStore> result = (AndroidKeyStore*)&mStore;
+    AutoPtr<ElastosKeyStore> result = (ElastosKeyStore*)&mStore;
     return result;
 }
 
 //=====================================================================
-//                        DefaultAndroidKeyStore
+//                        DefaultElastosKeyStore
 //=====================================================================
-const String DefaultAndroidKeyStore::TAG("AndroidKeyStoreInProcessImpl");
+const String DefaultElastosKeyStore::TAG("ElastosKeyStoreInProcessImpl");
 
-AutoPtr<AndroidPrivateKey> DefaultAndroidKeyStore::CreateKey(
+AutoPtr<ElastosPrivateKey> DefaultElastosKeyStore::CreateKey(
     /* [in] */ IPrivateKey* javaKey)
 {
     // ==================before translated======================
     // return new DefaultAndroidPrivateKey(javaKey, this);
 
 
-    AutoPtr<AndroidPrivateKey> result = new DefaultAndroidPrivateKey(javaKey, this);;
+    AutoPtr<ElastosPrivateKey> result = new DefaultElastosPrivateKey(javaKey, this);;
     return result;
 }
 
-AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetRSAKeyModulus(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetRSAKeyModulus(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
@@ -87,8 +87,8 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetRSAKeyModulus(
     // Log.w(TAG, "Not a RSAKey instance!");
     // return null;
 
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IRSAKey> rsakey = (IRSAKey*)javaKey->Probe(EIID_IRSAKey);
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IRSAKey> rsakey = IRSAKey::Probe(javaKey);
     if (rsakey != NULL) {
         AutoPtr<IBigInteger> bigInteger;
         CBigInteger::New((IBigInteger**)&bigInteger);
@@ -102,8 +102,8 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetRSAKeyModulus(
     return NULL;
 }
 
-AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetDSAKeyParamQ(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetDSAKeyParamQ(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
@@ -115,8 +115,8 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetDSAKeyParamQ(
     // return null;
 
     assert(0);
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IDSAKey> dsaKey = (IDSAKey*)javaKey->Probe(EIID_IDSAKey);
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IDSAKey> dsaKey = IDSAKey::Probe(javaKey);
     if (dsaKey != NULL) {
         AutoPtr<IDSAParams> params;
         dsaKey->GetParams((IDSAParams**)&params);
@@ -133,8 +133,8 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetDSAKeyParamQ(
     return NULL;
 }
 
-AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetECKeyOrder(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetECKeyOrder(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
@@ -146,8 +146,8 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetECKeyOrder(
     // return null;
 
     assert(0);
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IECKey> eckkey = (IECKey*)javaKey->Probe(EIID_IECKey);
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IECKey> eckkey = IECKey::Probe(javaKey);
     if (eckkey != NULL) {
         AutoPtr<IECParameterSpec> params;
         eckkey->GetParams((IECParameterSpec**)&params);
@@ -164,22 +164,22 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetECKeyOrder(
     return NULL;
 }
 
-AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::GetPrivateKeyEncodedBytes(
-    /* [in] */ AndroidPrivateKey* key)
+AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetPrivateKeyEncodedBytes(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
     // return javaKey.getEncoded();
 
     assert(0);
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     AutoPtr< ArrayOf<Byte> > result;
     //javaKey->GetEncoded((ArrayOf<Byte>**)&result); // no matching function
     return result;
 }
 
-AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::RawSignDigestWithPrivateKey(
-    /* [in] */ AndroidPrivateKey* key,
+AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::RawSignDigestWithPrivateKey(
+    /* [in] */ ElastosPrivateKey* key,
     /* [in] */ ArrayOf<Byte>* message)
 {
     // ==================before translated======================
@@ -220,15 +220,15 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::RawSignDigestWithPrivateKey(
     // }
 
     assert(0);
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     // Get the Signature for this key.
     AutoPtr<ISignature> signature;
     // Hint: Algorithm names come from:
     // http://docs.oracle.com/javase/6/docs/technotes/guides/security/StandardNames.html
     //try {
-        AutoPtr<IRSAPrivateKey> rsakey = (IRSAPrivateKey*)javaKey->Probe(EIID_IRSAPrivateKey);
-        AutoPtr<IDSAPrivateKey> dsakey = (IDSAPrivateKey*)javaKey->Probe(EIID_IDSAPrivateKey);
-        AutoPtr<IECPrivateKey> eckey = (IECPrivateKey*)javaKey->Probe(EIID_IECPrivateKey);
+        AutoPtr<IRSAPrivateKey> rsakey = IRSAPrivateKey::Probe(javaKey);
+        AutoPtr<IDSAPrivateKey> dsakey = IDSAPrivateKey::Probe(javaKey);
+        AutoPtr<IECPrivateKey> eckey = IECPrivateKey::Probe(javaKey);
         if (rsakey != NULL) {
             // IMPORTANT: Due to a platform bug, this will throw NoSuchAlgorithmException
             // on Android 4.0.x and 4.1.x. Fixed in 4.2 and higher.
@@ -264,8 +264,8 @@ AutoPtr< ArrayOf<Byte> > DefaultAndroidKeyStore::RawSignDigestWithPrivateKey(
     //}
 }
 
-Int32 DefaultAndroidKeyStore::GetPrivateKeyType(
-    /* [in] */ AndroidPrivateKey* key)
+Int32 DefaultElastosKeyStore::GetPrivateKeyType(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
@@ -279,10 +279,10 @@ Int32 DefaultAndroidKeyStore::GetPrivateKeyType(
     //     return PrivateKeyType.INVALID;
 
     assert(0);
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
-    AutoPtr<IRSAPrivateKey> rsakey = (IRSAPrivateKey*)javaKey->Probe(EIID_IRSAPrivateKey);
-    AutoPtr<IDSAPrivateKey> dsakey = (IDSAPrivateKey*)javaKey->Probe(EIID_IDSAPrivateKey);
-    AutoPtr<IECPrivateKey> eckey = (IECPrivateKey*)javaKey->Probe(EIID_IECPrivateKey);
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IRSAPrivateKey> rsakey = IRSAPrivateKey::Probe(javaKey);
+    AutoPtr<IDSAPrivateKey> dsakey = IDSAPrivateKey::Probe(javaKey);
+    AutoPtr<IECPrivateKey> eckey = IECPrivateKey::Probe(javaKey);
 
     if (rsakey != NULL)
         return PrivateKeyType::RSA;
@@ -294,8 +294,8 @@ Int32 DefaultAndroidKeyStore::GetPrivateKeyType(
         return PrivateKeyType::INVALID;
 }
 
-Int64 DefaultAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
-    /* [in] */ AndroidPrivateKey* key)
+Int64 DefaultElastosKeyStore::GetOpenSSLHandleForPrivateKey(
+    /* [in] */ ElastosPrivateKey* key)
 {
     // ==================before translated======================
     // PrivateKey javaKey = ((DefaultAndroidPrivateKey) key).getJavaKey();
@@ -383,14 +383,14 @@ Int64 DefaultAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
     // }
 
     assert(0);
-    AutoPtr<IPrivateKey> javaKey = ((DefaultAndroidPrivateKey*)key)->GetJavaKey();
+    AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     // Sanity checks
     if (NULL == javaKey) {
         //Log.e(TAG, "key == null");
         return 0;
     }
 
-    AutoPtr<IRSAPrivateKey> rsaKey = (IRSAPrivateKey*)javaKey->Probe(EIID_IRSAPrivateKey);
+    AutoPtr<IRSAPrivateKey> rsaKey = IRSAPrivateKey::Probe(javaKey);
     if (NULL == rsaKey) {
         //Log.e(TAG, "does not implement RSAPrivateKey");
         return 0;
@@ -412,7 +412,7 @@ Int64 DefaultAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
     //    Log.e(TAG, "Cannot find system OpenSSLRSAPrivateKey class: " + e);
     //    return 0;
     //}
-    //--AutoPtr<IOpenSSLRSAPrivateKey> sslKey = (IOpenSSLRSAPrivateKey*)javaKey->Probe(EIID_IOpenSSLRSAPrivateKey);
+    //--AutoPtr<IOpenSSLRSAPrivateKey> sslKey = IOpenSSLRSAPrivateKey::Probe(javaKey);
     //--if (NULL == sslKey) {
         // This may happen if the PrivateKey was not created by the "AndroidOpenSSL"
         // provider, which should be the default. That could happen if an OEM decided
@@ -477,8 +477,8 @@ Int64 DefaultAndroidKeyStore::GetOpenSSLHandleForPrivateKey(
     //}
 }
 
-ECode DefaultAndroidKeyStore::ReleaseKey(
-    /* [in] */ AndroidPrivateKey* key)
+ECode DefaultElastosKeyStore::ReleaseKey(
+    /* [in] */ ElastosPrivateKey* key)
 {
     VALIDATE_NOT_NULL(key);
     // ==================before translated======================

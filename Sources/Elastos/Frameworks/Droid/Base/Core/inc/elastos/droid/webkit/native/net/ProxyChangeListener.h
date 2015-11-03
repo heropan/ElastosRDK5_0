@@ -109,6 +109,19 @@ public:
     // @CalledByNative
     virtual CARAPI Stop();
 
+    static CARAPI_(void*) ElaProxyChangeListenerCallback_Init();
+
+private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(void) Start(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativePtr);
+
+    static CARAPI_(void) Stop(
+        /* [in] */ IInterface* obj);
+
 private:
     ProxyChangeListener(
         /* [in] */ IContext* context);

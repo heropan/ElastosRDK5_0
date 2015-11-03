@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/net/X509Util.h"
+#include "elastos/droid/webkit/native/net/api/X509Util_dec.h"
 #include "elastos/core/IntegralToString.h"
 #include "elastos/core/AutoLock.h"
 //#include "elastos/security/cert/CCertificateFactoryHelper.h"
@@ -9,7 +10,7 @@
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CPairHelper.h"
 #include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/webkit/native/net/CertVerifyStatusAndroid.h"
+#include "elastos/droid/webkit/native/net/CertVerifyStatusElastos.h"
 
 using Elastos::Core::IntegralToString;
 using Elastos::Core::ICharSequence;
@@ -43,7 +44,7 @@ using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Os::Build;
 //using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
-using Elastos::Droid::Webkit::Net::CertVerifyStatusAndroid;
+using Elastos::Droid::Webkit::Net::CertVerifyStatusElastos;
 
 namespace Elastos {
 namespace Droid {
@@ -302,7 +303,7 @@ Boolean X509Util::VerifyKeyUsage(
     return FALSE;
 }
 
-AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
+AutoPtr<ElastosCertVerifyResult> X509Util::VerifyServerCertificates(
     /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
@@ -391,7 +392,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //try {
         EnsureInitialized();
     //} catch (CertificateException e) {
-    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
+    //    return new ElastosCertVerifyResult(CertVerifyStatusElastos.VERIFY_FAILED);
     //}
 
     AutoPtr< ArrayOf<IX509Certificate*> > serverCertificates = ArrayOf<IX509Certificate*>::Alloc(certChain->GetLength());
@@ -411,7 +412,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //try {
         (*serverCertificates)[0]->CheckValidity();
         if (!VerifyKeyUsage((*serverCertificates)[0])) {
-            AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_INCORRECT_KEY_USAGE);
+            AutoPtr<ElastosCertVerifyResult> ret = new ElastosCertVerifyResult(CertVerifyStatusElastos::VERIFY_INCORRECT_KEY_USAGE);
             return ret;
         }
     //} catch (CertificateExpiredException e) {
@@ -425,7 +426,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     AutoLock lock(sLock);
     // If no trust manager was found, fail without crashing on the null pointer.
     if (sDefaultTrustManager == NULL) {
-        AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_FAILED);
+        AutoPtr<ElastosCertVerifyResult> ret = new ElastosCertVerifyResult(CertVerifyStatusElastos::VERIFY_FAILED);
         return ret;
     }
 
@@ -459,7 +460,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
         isIssuedByKnownRoot = IsKnownRoot((IX509Certificate*)&root);
     }
 
-    AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(CertVerifyStatusAndroid::VERIFY_OK,
+    AutoPtr<ElastosCertVerifyResult> ret = new ElastosCertVerifyResult(CertVerifyStatusElastos::VERIFY_OK,
         isIssuedByKnownRoot, verifiedChain);
     return ret;
 }
@@ -876,22 +877,22 @@ Boolean X509Util::IsKnownRoot(
 
 ECode X509Util::NativeNotifyKeyChainChanged()
 {
-    assert(0);
+    Elastos_X509Util_nativeNotifyKeyChainChanged();
     return NOERROR;
 }
 
 ECode X509Util::NativeRecordCertVerifyCapabilitiesHistogram(
     /* [in] */ Boolean foundSystemTrustRoots)
 {
-    assert(0);
+    Elastos_X509Util_nativeRecordCertVerifyCapabilitiesHistogram(foundSystemTrustRoots);
     return NOERROR;
 }
 
 AutoPtr<IContext> X509Util::NativeGetApplicationContext()
 {
-    assert(0);
-    AutoPtr<IContext> empty;
-    return empty;
+    AutoPtr<IInterface> c = Elastos_X509Util_nativeGetApplicationContext();
+    AutoPtr<IContext> context = IContext::Probe(c);
+    return context;
 }
 
 } // namespace Net

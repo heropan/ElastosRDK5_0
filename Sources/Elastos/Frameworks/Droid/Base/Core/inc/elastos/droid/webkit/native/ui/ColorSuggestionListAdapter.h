@@ -65,7 +65,7 @@ public:
 public:
     ColorSuggestionListAdapter(
         /* [in] */ IContext* context,
-        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);// type is ColorSuggestion
 
     /**
       * Sets the listener that will be notified upon a click on a suggestion.
@@ -108,7 +108,7 @@ private:
 
 private:
     AutoPtr<IContext> mContext;
-    AutoPtr< ArrayOf<ColorSuggestion*> > mSuggestions;
+    AutoPtr< ArrayOf<IInterface*> > mSuggestions;//type is ColorSuggestion
     AutoPtr<OnColorSuggestionClickListener> mListener;
     static const Int32 COLORS_PER_ROW = 4;
 };

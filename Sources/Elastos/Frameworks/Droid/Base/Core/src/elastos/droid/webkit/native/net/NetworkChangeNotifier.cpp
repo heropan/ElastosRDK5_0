@@ -1,5 +1,8 @@
 
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"
+#include "elastos/droid/webkit/native/net/api/NetworkChangeNotifier_dec.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -123,7 +126,7 @@ ECode NetworkChangeNotifier::SetAutoDetectConnectivityState(
     return NOERROR;
 }
 
-ECode NetworkChangeNotifier::ForceConnectivityState(
+void NetworkChangeNotifier::ForceConnectivityState(
     /* [in] */ Boolean networkAvailable)
 {
     // ==================before translated======================
@@ -132,7 +135,6 @@ ECode NetworkChangeNotifier::ForceConnectivityState(
 
     SetAutoDetectConnectivityState(FALSE);
     GetInstance()->ForceConnectivityStateInternal(networkAvailable);
-    return NOERROR;
 }
 
 ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
@@ -315,8 +317,53 @@ ECode NetworkChangeNotifier::NativeNotifyConnectionTypeChanged(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 newConnectionType)
 {
-    assert(0);
+    Elastos_NetworkChangeNotifier_nativeNotifyConnectionTypeChanged(THIS_PROBE(IInterface), (Handle32)nativePtr, newConnectionType);
     return NOERROR;
+}
+
+AutoPtr<IInterface> NetworkChangeNotifier::Init(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Init(c));
+}
+
+Int32 NetworkChangeNotifier::GetCurrentConnectionType(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<NetworkChangeNotifier> mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("NetworkChangeNotifier", "NetworkChangeNotifier::GetCurrentConnectionType, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetCurrentConnectionType();
+}
+
+void NetworkChangeNotifier::AddNativeObserver(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeChangeNotifier)
+{
+    AutoPtr<NetworkChangeNotifier> mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("NetworkChangeNotifier", "NetworkChangeNotifier::AddNativeObserver, mObj is NULL");
+        return;
+    }
+    mObj->AddNativeObserver(nativeChangeNotifier);
+}
+
+void NetworkChangeNotifier::RemoveNativeObserver(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeChangeNotifier)
+{
+    AutoPtr<NetworkChangeNotifier> mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("NetworkChangeNotifier", "NetworkChangeNotifier::RemoveNativeObserver, mObj is NULL");
+        return;
+    }
+    mObj->RemoveNativeObserver(nativeChangeNotifier);
 }
 
 } // namespace Net

@@ -132,7 +132,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ OnColorChangedListener* listener,
         /* [in] */ Int32 color,
-        /* [in] */ ArrayOf<ColorSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     /**
       * Listens to the ColorPicker for when the user has changed the selected color, and
@@ -165,13 +165,13 @@ private:
         /* [in] */ Int32 color);
 
 private:
-    /*const*/ AutoPtr<ColorPickerAdvanced> mAdvancedColorPicker;
-    /*const*/ AutoPtr<ColorPickerSimple> mSimpleColorPicker;
-    /*const*/ AutoPtr<IButton> mMoreButton;
+    AutoPtr<ColorPickerAdvanced> mAdvancedColorPicker;
+    AutoPtr<ColorPickerSimple> mSimpleColorPicker;
+    AutoPtr<IButton> mMoreButton;
     // The view up in the corner that shows the user the color they've currently selected.
-    /*const*/ AutoPtr<IView> mCurrentColorView;
-    /*const*/ AutoPtr<OnColorChangedListener> mListener;
-    /*const*/ Int32 mInitialColor;
+    AutoPtr<IView> mCurrentColorView;
+    AutoPtr<OnColorChangedListener> mListener;
+    Int32 mInitialColor;
     Int32 mCurrentColor;
 };
 

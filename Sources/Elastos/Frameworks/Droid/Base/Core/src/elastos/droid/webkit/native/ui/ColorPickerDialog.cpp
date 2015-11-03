@@ -126,7 +126,7 @@ ColorPickerDialog::ColorPickerDialog(
     /* [in] */ IContext* context,
     /* [in] */ OnColorChangedListener* listener,
     /* [in] */ Int32 color,
-    /* [in] */ ArrayOf<ColorSuggestion*>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
     //: AlertDialog(context, 0)
     : mListener(listener)
     , mInitialColor(color)

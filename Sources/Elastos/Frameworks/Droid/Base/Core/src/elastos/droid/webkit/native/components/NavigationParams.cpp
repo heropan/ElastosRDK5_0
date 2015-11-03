@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/components/NavigationParams.h"
+#include "elastos/droid/webkit/native/components/api/NavigationParams_dec.h"
 
 namespace Elastos {
 namespace Droid {
@@ -29,7 +30,7 @@ NavigationParams::NavigationParams(
     // this.isRedirect = isRedirect;
 }
 
-AutoPtr<NavigationParams> NavigationParams::Create(
+AutoPtr<IInterface> NavigationParams::Create(
     /* [in] */ const String& url,
     /* [in] */ Boolean isPost,
     /* [in] */ Boolean hasUserGesture,
@@ -41,7 +42,7 @@ AutoPtr<NavigationParams> NavigationParams::Create(
     //         isRedirect);
 
     AutoPtr<NavigationParams> result = new NavigationParams(url, isPost, hasUserGesture, pageTransitionType, isRedirect);;
-    return result;
+    return TO_IINTERFACE(result);
 }
 
 } // namespace Components
