@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CLOCALSOCKETADDRESSNAMESPACE_H__
 
 #include "_Elastos_Droid_Net_CLocalSocketAddressNamespace.h"
-#include "LocalSocketAddress.h"
+#include "elastos/droid/net/LocalSocketAddress.h"
 
 namespace Elastos {
 namespace Droid {

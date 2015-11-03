@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORKFACTORY_H__
 
 #include "_Elastos_Droid_Net_CNetworkFactory.h"
-#include "NetworkFactory.h"
+#include "elastos/droid/net/NetworkFactory.h"
 
 namespace Elastos {
 namespace Droid {

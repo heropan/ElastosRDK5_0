@@ -25,9 +25,9 @@
 #include "elastos/droid/net/CNetworkPolicyManager.h"
 #include "elastos/droid/net/CNetworkQuotaInfo.h"
 #include "elastos/droid/net/CNetworkRequest.h"
+#include "elastos/droid/net/CNetworkRequestBuilder.h"
 #include "elastos/droid/net/CNetworkScoreManager.h"
 #include "elastos/droid/net/CNetworkScorerAppData.h"
-#include "elastos/droid/net/CNetworkRequestBuilder.h"
 #include "elastos/droid/net/CNetworkState.h"
 #include "elastos/droid/net/CNetworkStats.h"
 #include "elastos/droid/net/CNetworkStatsEntry.h"
@@ -48,8 +48,8 @@
 #include "elastos/droid/net/CStaticIpConfiguration.h"
 #include "elastos/droid/net/CUidRange.h"
 #include "elastos/droid/net/CUrlQuerySanitizer.h"
-#include "elastos/droid/net/CUrlQuerySanitizerParameterValuePair.h"
 #include "elastos/droid/net/CUrlQuerySanitizerIllegalCharacterValueSanitizer.h"
+#include "elastos/droid/net/CUrlQuerySanitizerParameterValuePair.h"
 #include "elastos/droid/net/CVpnService.h"
 #include "elastos/droid/net/CVpnServiceBuilder.h"
 #include "elastos/droid/net/CWebAddress.h"
@@ -57,7 +57,7 @@
 #include "elastos/droid/net/CWifiLinkQualityInfo.h"
 
 #include "elastos/droid/net/http/CElastosHttpClient.h"
-// #include "elastos/droid/net/CElastosHttpClientConnection.h"
+#include "elastos/droid/net/http/CElastosHttpClientConnection.h"
 
 namespace Elastos {
 namespace Droid {
@@ -186,7 +186,8 @@ namespace Http {
 
 CAR_OBJECT_IMPL(CElastosHttpClient)
 
-// CAR_OBJECT_IMPL(CElastosHttpClientConnection)
+CAR_OBJECT_IMPL(CElastosHttpClientConnection)
+
 
 } // namespace Http
 } // namespace Net

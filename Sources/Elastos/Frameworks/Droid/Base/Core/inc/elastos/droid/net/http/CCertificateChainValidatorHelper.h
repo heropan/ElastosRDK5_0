@@ -3,21 +3,32 @@
 #define __ELASTOS_DROID_NET_HTTP_CCERTIFICATECHAINVALIDATORHELPER_H__
 
 #include "_Elastos_Droid_Net_Http_CCertificateChainValidatorHelper.h"
-#include "CertificateChainValidator.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+/**
+ * Class responsible for all server certificate validation functionality
+ *
+ * {@hide}
+ */
 CarClass(CCertificateChainValidatorHelper)
+    , public Singleton
+    , public ICertificateChainValidatorHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * @return The singleton instance of the certificates chain validator
      */
     CARAPI GetInstance(
-        /* [out] */ Elastos::Droid::Net::Http::ICertificateChainValidator** instance);
+        /* [out] */ ICertificateChainValidator** result);
 
     /**
      * Similar to doHandshakeAndValidateServerCertificates but exposed to JNI for use
@@ -28,27 +39,22 @@ public:
      * @return An SSL error object if there is an error and null otherwise
      */
     CARAPI VerifyServerCertificates(
-        /* [in] */ IObjectContainer* certChain,
-        /* [in] */ const String& sDomain,
-        /* [in] */ const String& authType,
-        /* [out] */ Elastos::Droid::Net::Http::ISslError** err);
+        /* [in] */ ArrayOf<IArrayOf>* certChain,
+        /* [in] */ String domain,
+        /* [in] */ String authType,
+        /* [out] */ ISslError** result);
 
     /**
      * Handles updates to credential storage.
      */
     CARAPI HandleTrustStorageUpdate();
 
-private:
-    /**
-     * The singleton instance of the certificate chain validator
-     */
-    static AutoPtr<ICertificateChainValidator> mInstance;
-
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_HTTP_CCERTIFICATECHAINVALIDATORHELPER_H__
+#endif //  __ELASTOS_DROID_NET_HTTP_CCERTIFICATECHAINVALIDATORHELPER_H__
+

@@ -125,7 +125,7 @@ private:
     String mPackageName;
 
     /** Name of this scorer app for display. */
-    ICharSequence* mScorerName;
+    AutoPtr<ICharSequence> mScorerName;
 
     /**
      * Optional class name of a configuration activity. Null if none is set.

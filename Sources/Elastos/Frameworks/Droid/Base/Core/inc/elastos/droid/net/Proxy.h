@@ -4,9 +4,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::Regex::IPattern;
-using Elastos::Net::IProxySelector;
 using Elastos::Droid::Content::IContext;
+
+using Elastos::Net::IProxySelector;
+using Elastos::Utility::Regex::IPattern;
+
 using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {

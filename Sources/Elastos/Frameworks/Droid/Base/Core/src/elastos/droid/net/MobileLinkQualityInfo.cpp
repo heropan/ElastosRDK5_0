@@ -23,30 +23,6 @@ MobileLinkQualityInfo::MobileLinkQualityInfo()
     , mLteCqi(ILinkQualityInfo::UNKNOWN_INT)
 {}
 
-ECode MobileLinkQualityInfo::WriteToParcel(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super.writeToParcel(dest, flags, OBJECT_TYPE_MOBILE_LINK_QUALITY_INFO);
-        dest.writeInt(mMobileNetworkType);
-        dest.writeInt(mRssi);
-        dest.writeInt(mGsmErrorRate);
-        dest.writeInt(mCdmaDbm);
-        dest.writeInt(mCdmaEcio);
-        dest.writeInt(mEvdoDbm);
-        dest.writeInt(mEvdoEcio);
-        dest.writeInt(mEvdoSnr);
-        dest.writeInt(mLteSignalStrength);
-        dest.writeInt(mLteRsrp);
-        dest.writeInt(mLteRsrq);
-        dest.writeInt(mLteRssnr);
-        dest.writeInt(mLteCqi);
-
-#endif
-}
-
 ECode MobileLinkQualityInfo::CreateFromParcelBody(
     /* [in] */ IParcel* in,
     /* [out] */ IMobileLinkQualityInfo** result)

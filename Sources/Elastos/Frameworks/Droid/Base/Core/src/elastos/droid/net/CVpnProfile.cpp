@@ -1,20 +1,19 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/net/CVpnProfile.h"
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringUtils.h>
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::StringUtils;
+using Elastos::Droid::Text::TextUtils;
+
 using Elastos::Core::StringBuilder;
-// using Elastos::IO::Charset::ICharset;
-// using Elastos::IO::Charset::CCharset;
+using Elastos::Core::StringUtils;
+using Elastos::Net::CInetAddressHelper;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetAddressHelper;
-using Elastos::Net::CInetAddressHelper;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/RouteInfo.h"
 #include "elastos/droid/net/CRouteInfoHelper.h"
+#include "elastos/droid/net/RouteInfo.h"
 
 namespace Elastos {
 namespace Droid {

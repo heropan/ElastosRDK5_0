@@ -1,12 +1,12 @@
 
 module
 {
-    interface Elastos.Droid.Wifi.IWifiScannerScanListener;
     interface Elastos.Droid.Wifi.IWifiScannerBssidInfo;
-    interface Elastos.Droid.Wifi.IWifiScannerWifiChangeListener;
     interface Elastos.Droid.Wifi.IWifiScannerBssidListener;
-    interface Elastos.Droid.Wifi.IWifiScannerWifiChangeSettings;
     interface Elastos.Droid.Wifi.IWifiScannerChannelSpec;
+    interface Elastos.Droid.Wifi.IWifiScannerScanListener;
+    interface Elastos.Droid.Wifi.IWifiScannerWifiChangeListener;
+    interface Elastos.Droid.Wifi.IWifiScannerWifiChangeSettings;
 
     using interface Elastos.Utility.IList;
 

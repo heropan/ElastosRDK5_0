@@ -1,8 +1,8 @@
 
 #include "elastos/droid/net/dhcp/DhcpAckPacket.h"
 
-using Elastos::Net::IInet4AddressHelper;
 using Elastos::Net::CInet4AddressHelper;
+using Elastos::Net::IInet4AddressHelper;
 
 namespace Elastos {
 namespace Droid {

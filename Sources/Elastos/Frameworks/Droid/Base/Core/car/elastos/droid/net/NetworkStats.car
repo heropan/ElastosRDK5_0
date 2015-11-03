@@ -1,9 +1,7 @@
 
 module
 {
-
     interface Elastos.Droid.Net.INetworkStatsEntry;
-
 
     using interface Elastos.IO.IPrintWriter;
     using interface Elastos.Utility.IHashSet;

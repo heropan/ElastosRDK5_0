@@ -59,16 +59,16 @@ public:
         /* [out] */ Boolean* result);
 
     /**
-         * Scrub given IMSI on production builds.
-         */
+     * Scrub given IMSI on production builds.
+     */
     static CARAPI ScrubSubscriberId(
         /* [in] */ const String& subscriberId,
         /* [out] */ String* result);
 
     /**
-         * Build a {@link NetworkIdentity} from the given {@link NetworkState},
-         * assuming that any mobile networks are using the current IMSI.
-         */
+     * Build a {@link NetworkIdentity} from the given {@link NetworkState},
+     * assuming that any mobile networks are using the current IMSI.
+     */
     static CARAPI BuildNetworkIdentity(
         /* [in] */ IContext* context,
         /* [in] */ INetworkState* state,

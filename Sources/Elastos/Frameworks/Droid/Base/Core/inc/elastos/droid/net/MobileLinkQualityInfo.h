@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_MOBILELINKQUALITYINFO_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "LinkQualityInfo.h"
+#include "elastos/droid/net/LinkQualityInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -20,15 +20,6 @@ class MobileLinkQualityInfo
 {
 public:
     CAR_INTERFACE_DECL()
-
-    /**
-     * Implement the Parcelable interface.
-     * @hide
-     */
-    // @Override
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest,
-        /* [in] */ Int32 flags);
 
     /**
      * @hide

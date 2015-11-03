@@ -5,12 +5,12 @@
 #include "_Elastos_Droid_Net_CLinkSocket.h"
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Net::ISocketAddress;
-using Elastos::Net::IInetAddress;
+using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::ISocketAddress;
 using Elastos::Net::ISocketChannel;
-using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Droid {

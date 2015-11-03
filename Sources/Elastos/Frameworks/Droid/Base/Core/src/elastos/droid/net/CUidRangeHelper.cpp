@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CUidRangeHelper.h"
 #include "elastos/droid/net/CUidRange.h"
+#include "elastos/droid/net/CUidRangeHelper.h"
 
 namespace Elastos {
 namespace Droid {

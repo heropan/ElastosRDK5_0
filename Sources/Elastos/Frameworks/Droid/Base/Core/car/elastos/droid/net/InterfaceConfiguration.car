@@ -1,9 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Net.ILinkAddress;
 
     using interface Elastos.Utility.IIterable;
-    interface Elastos.Droid.Net.ILinkAddress;
 
     namespace Elastos {
     namespace Droid {

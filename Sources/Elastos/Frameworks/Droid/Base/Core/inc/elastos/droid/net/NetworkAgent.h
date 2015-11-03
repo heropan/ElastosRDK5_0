@@ -5,13 +5,13 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::Utility::IAsyncChannel;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Utility::IArrayList;
-using Elastos::Droid::Internal::Utility::IAsyncChannel;
 
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {

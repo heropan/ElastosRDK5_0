@@ -2,15 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CERTIFICATECHAINVALIDATOR_H__
 #define __ELASTOS_DROID_NET_HTTP_CERTIFICATECHAINVALIDATOR_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-
-using Elastos::Security::Cert::IX509Certificate;
-using Elastos::Net::Ssl::IDefaultHostnameVerifier;
-using Elastos::Net::Ssl::ISSLSocket;
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -23,34 +15,31 @@ namespace Http {
  * {@hide}
  */
 class CertificateChainValidator
-    : public ElRefBase
-    , public IObject
+    : public Object
     , public ICertificateChainValidator
 {
-    friend class CCertificateChainValidatorHelper;
+private:
+    class NoPreloadHolder
+        : public Object
+    {
+#if 0 // TODO: Translate codes below.
+        static final CertificateChainValidator sInstance = new CertificateChainValidator();
+            /**
+             * The singleton instance of the hostname verifier.
+             */
+            private static final HostnameVerifier sVerifier = HttpsURLConnection
+                    .getDefaultHostnameVerifier();
+#endif
+    };
 
 public:
-    CAR_INTERFACE_DECL();
+    CAR_INTERFACE_DECL()
 
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI ToString(
-        /* [out] */ String* info);
+    /**
+     * @return The singleton instance of the certificates chain validator
+     */
+    static CARAPI GetInstance(
+        /* [out] */ ICertificateChainValidator** result);
 
     /**
      * Performs the handshake and server certificates validation
@@ -63,10 +52,29 @@ public:
      * @return An SSL error object if there is an error and null otherwise
      */
     CARAPI DoHandshakeAndValidateServerCertificates(
-        /* [in] */ Elastos::Droid::Net::Http::IHttpsConnection* connection,
+        /* [in] */ IHttpsConnection* connection,
         /* [in] */ ISSLSocket* sslSocket,
-        /* [in] */ const String& sDomain,
-        /* [out] */ Elastos::Droid::Net::Http::ISslError** err);
+        /* [in] */ String domain,
+        /* [out] */ ISslError** result);
+
+    /**
+     * Similar to doHandshakeAndValidateServerCertificates but exposed to JNI for use
+     * by Chromium HTTPS stack to validate the cert chain.
+     * @param certChain The bytes for certificates in ASN.1 DER encoded certificates format.
+     * @param domain The full website hostname and domain
+     * @param authType The authentication type for the cert chain
+     * @return An SSL error object if there is an error and null otherwise
+     */
+    static CARAPI VerifyServerCertificates(
+        /* [in] */ ArrayOf<IArrayOf>* certChain,
+        /* [in] */ String domain,
+        /* [in] */ String authType,
+        /* [out] */ ISslError** result);
+
+    /**
+     * Handles updates to credential storage.
+     */
+    static CARAPI HandleTrustStorageUpdate();
 
 private:
     /**
@@ -85,27 +93,34 @@ private:
      */
     static CARAPI VerifyServerDomainAndCertificates(
         /* [in] */ ArrayOf<IX509Certificate*>* chain,
-        /* [in] */ const String& sDomain,
-        /* [in] */ const String& authType,
-        /* [out] */ ISslError** err);
+        /* [in] */ String domain,
+        /* [in] */ String authType,
+        /* [out] */ ISslError** result);
+
+    /**
+     * Returns the platform default {@link X509TrustManager}.
+     */
+    CARAPI GetTrustManager(
+        /* [out] */ IX509TrustManager** result);
 
     CARAPI CloseSocketThrowException(
         /* [in] */ ISSLSocket* socket,
-        /* [in] */ const String& errorMessage,
-        /* [in] */ const String& defaultErrorMessage);
+        /* [in] */ String errorMessage,
+        /* [in] */ String defaultErrorMessage);
 
     CARAPI CloseSocketThrowException(
         /* [in] */ ISSLSocket* socket,
-        /* [in] */ const String& errorMessage);
+        /* [in] */ String errorMessage);
 
-private:
-    static AutoPtr<IDefaultHostnameVerifier> mVerifier;
+    static const String TAG;
+
+    AutoPtr<IX509TrustManager> mTrustManager;
 
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_CERTIFICATECHAINVALIDATOR_H__

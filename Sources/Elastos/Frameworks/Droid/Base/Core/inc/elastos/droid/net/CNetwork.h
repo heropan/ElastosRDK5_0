@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORK_H__
 
 #include "_Elastos_Droid_Net_CNetwork.h"
-#include "Network.h"
+#include "elastos/droid/net/Network.h"
 
 namespace Elastos {
 namespace Droid {

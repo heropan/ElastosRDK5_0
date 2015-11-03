@@ -1,20 +1,18 @@
 
 module
 {
-
-    interface Elastos.Droid.Net.INetworkInfo;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Net.IConnectivityManagerNetworkCallback;
+    interface Elastos.Droid.Net.IConnectivityManagerOnNetworkActiveListener;
     interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Net.ILinkQualityInfo;
-    interface Elastos.Droid.Net.INetworkQuotaInfo;
     interface Elastos.Droid.Net.INetworkCapabilities;
+    interface Elastos.Droid.Net.INetworkInfo;
     interface Elastos.Droid.Net.INetworkMisc;
-    interface Elastos.Droid.Net.IConnectivityManagerOnNetworkActiveListener;
+    interface Elastos.Droid.Net.INetworkQuotaInfo;
     interface Elastos.Droid.Net.INetworkRequest;
-    interface Elastos.Droid.Net.IConnectivityManagerNetworkCallback;
-
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IMessenger;
-    interface Elastos.Droid.App.IPendingIntent;
 
     using interface Elastos.Net.IInetAddress;
 

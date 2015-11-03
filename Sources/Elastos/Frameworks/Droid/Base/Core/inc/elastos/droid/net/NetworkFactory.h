@@ -5,10 +5,10 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessenger;
-using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::ISparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -33,6 +33,20 @@ class NetworkFactory
     : public Handler
     , public INetworkFactory
 {
+private:
+    class NetworkRequestInfo {
+    public:
+        const AutoPtr<INetworkRequest> mRequest;
+        Int32 mScore;
+        Boolean mRequested; // do we have a request outstanding, limited by score
+        NetworkRequestInfo(INetworkRequest* request, Int32 score)
+            : mRequest(request)
+        {
+            mScore = score;
+            mRequested = FALSE;
+        }
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -106,19 +120,6 @@ public:
         /* [in] */ const String& s);
 
 private:
-    class NetworkRequestInfo {
-    public:
-        const AutoPtr<INetworkRequest> mRequest;
-        Int32 mScore;
-        Boolean mRequested; // do we have a request outstanding, limited by score
-        NetworkRequestInfo(INetworkRequest* request, Int32 score)
-            : mRequest(request)
-        {
-            mScore = score;
-            mRequested = FALSE;
-        }
-    };
-
     CARAPI HandleAddRequest(
         /* [in] */ INetworkRequest* request,
         /* [in] */ Int32 score);

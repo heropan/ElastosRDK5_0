@@ -8,8 +8,8 @@
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
-using Elastos::IO::InputStream;
 using Elastos::IO::IOutputStream;
+using Elastos::IO::InputStream;
 using Elastos::IO::OutputStream;
 
 namespace Elastos {
@@ -25,9 +25,6 @@ class LocalSocketImpl
     , public ILocalSocketImpl
 {
 public:
-    CAR_INTERFACE_DECL()
-
-
     /**
      * An input stream for local sockets. Needed because we may
      * need to read ancillary data.
@@ -105,6 +102,8 @@ public:
         CARAPI Flush();
 
     };
+
+    CAR_INTERFACE_DECL()
 
     /*package*/
     CARAPI constructor();
@@ -266,12 +265,6 @@ public:
     // @Override
     CARAPI Finalize();
 
-    /** file descriptor array received during a previous read */
-    ArrayOf<IFileDescriptor*>* mInboundFileDescriptors;
-
-    /** file descriptor array that should be written during next write */
-    ArrayOf<IFileDescriptor*>* mOutboundFileDescriptors;
-
 private:
     CARAPI Pending_native(
         /* [in] */ IFileDescriptor* fd,
@@ -349,6 +342,14 @@ private:
         /* [in] */ ILocalSocketImpl* s,
         /* [out] */ IFileDescriptor** result);
 
+public:
+    /** file descriptor array received during a previous read */
+    AutoPtr<ArrayOf<IFileDescriptor*> > mInboundFileDescriptors;
+
+    /** file descriptor array that should be written during next write */
+    AutoPtr<ArrayOf<IFileDescriptor*> > mOutboundFileDescriptors;
+
+private:
     AutoPtr<IInterface> mReadMonitor;
 
     AutoPtr<IInterface> mWriteMonitor;

@@ -1,11 +1,10 @@
 
-#include "elastos/droid/net/CLinkSocket.h"
-#include "elastos/droid/net/CLinkProperties.h"
 #include "elastos/droid/net/CLinkCapabilities.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CLinkSocket.h"
 
-using Elastos::Droid::Net::CLinkProperties;
 using Elastos::Droid::Net::CLinkCapabilities;
-
+using Elastos::Droid::Net::CLinkProperties;
 
 namespace Elastos {
 namespace Droid {

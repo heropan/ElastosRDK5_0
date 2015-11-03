@@ -3,41 +3,32 @@
 #include "elastos/droid/net/CConnectivityManager.h"
 #include "elastos/droid/net/CNetworkUtils.h"
 #include "elastos/droid/os/CBinder.h"
-#include <elastos/core/StringUtils.h>
-// #include "CHashMap.h"
-// #include "CArrayMap.h"
-#include <elastos/core/AutoLock.h>
-// #include "CAtomicInteger32.h"
-// #include "CNetworkCapabilities.h"
-#include "elastos/droid/R.h"
-#include "elastos/droid/Manifest.h"
-// #include "CHandlerThread.h"
 #include "elastos/droid/os/CMessenger.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/Manifest.h" // can't move upper
 
-using Elastos::Core::StringUtils;
-// using Elastos::Droid::Net::NetworkUtils;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::CBinder;
-// using Elastos::Utility::CHashMap;
-using Elastos::Droid::Internal::Telephony::IPhoneConstants;
-// using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
-using Elastos::Utility::ISet;
-using Elastos::Utility::IIterator;
-using Elastos::Droid::Os::IServiceManager;
-// using Elastos::Droid::Os::CServiceManager;
-using Elastos::Droid::Net::CNetworkUtils;
-using Elastos::Droid::Internal::Telephony::IITelephony;
-using Elastos::Droid::Os::INetworkActivityListener;
-using Elastos::Utility::IMap;
-using Elastos::Droid::Os::EIID_INetworkActivityListener;
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+
 using Elastos::Droid::Content::Res::IResources;
-// using Elastos::Droid::Os::CHandlerThread;
-using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Core::IThread;
+using Elastos::Droid::Internal::Telephony::IITelephony;
+using Elastos::Droid::Internal::Telephony::IPhoneConstants;
+using Elastos::Droid::Net::CNetworkUtils;
+using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::CMessenger;
-using Elastos::Net::IInetAddressHelper;
+using Elastos::Droid::Os::EIID_INetworkActivityListener;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::INetworkActivityListener;
+using Elastos::Droid::Os::IServiceManager;
+
+using Elastos::Core::IThread;
+using Elastos::Core::StringUtils;
 using Elastos::Net::CInetAddressHelper;
-// using Libcore::Net::Event::INetworkEventDispatcherHelper;
+using Elastos::Net::IInetAddressHelper;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {

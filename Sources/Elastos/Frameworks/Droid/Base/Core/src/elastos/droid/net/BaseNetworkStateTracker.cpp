@@ -1,8 +1,9 @@
 
 #include "elastos/droid/net/BaseNetworkStateTracker.h"
 
-using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 using Elastos::Droid::Os::IMessage;
+
+using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 
 namespace Elastos {
 namespace Droid {

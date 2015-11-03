@@ -1,6 +1,7 @@
+
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CNetworkTemplateHelper.h"
 #include "elastos/droid/net/CNetworkTemplate.h"
+#include "elastos/droid/net/CNetworkTemplateHelper.h"
 
 namespace Elastos {
 namespace Droid {

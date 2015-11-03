@@ -1,18 +1,18 @@
 
-#include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/net/CProxy.h"
+#include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/net/NetworkUtils.h"
-#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Net::Uri;
-using Elastos::Net::IInetSocketAddress;
-using Elastos::Net::CInetSocketAddress;
-using Elastos::Net::IProxyHelper;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringUtils;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Net::CInetSocketAddress;
+using Elastos::Net::IInetSocketAddress;
+using Elastos::Net::IProxyHelper;
 
 namespace Elastos {
 namespace Droid {

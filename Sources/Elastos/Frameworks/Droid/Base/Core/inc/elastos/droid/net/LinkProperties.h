@@ -4,11 +4,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::IList;
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::IHashTable;
-using Elastos::Utility::ICollection;
 using Elastos::Net::IInetAddress;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IHashTable;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {

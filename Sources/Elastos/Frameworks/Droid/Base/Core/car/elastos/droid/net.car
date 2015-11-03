@@ -121,6 +121,8 @@ module
     using interface Elastosx.Net.ISocketFactory;
     using interface Elastosx.Net.Ssl.ISSLSocketFactory;
     using interface Org.Apache.Http.Client.IHttpClient;
+    using interface Org.Apache.Http.IHttpConnection;
+    using interface Org.Apache.Http.IHttpInetConnection;
 
     namespace Elastos {
     namespace Droid {
@@ -938,20 +940,14 @@ module
         interface IElastosHttpClientHelper;
     }
 
-//    /**
-//     * A alternate class for (@link DefaultHttpClientConnection).
-//     * It has better performance than DefaultHttpClientConnection
-//     *
-//     * {@hide}
-//     */
-//    class CAndroidHttpClientConnection {
-//        constructor();
-//
-//        interface IAndroidHttpClientConnection;
-//        interface IHttpInetConnection;
-//        interface IHttpConnection;
-//    }
-//
+    class CElastosHttpClientConnection {
+        constructor();
+
+        interface IElastosHttpClientConnection;
+        interface IHttpInetConnection;
+        interface IHttpConnection;
+    }
+
 //    singleton class CCertificateChainValidatorHelper {
 //        interface ICertificateChainValidatorHelper;
 //    }

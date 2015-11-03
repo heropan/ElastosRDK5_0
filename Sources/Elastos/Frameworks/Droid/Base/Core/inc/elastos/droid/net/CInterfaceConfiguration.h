@@ -4,10 +4,11 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Net_CInterfaceConfiguration.h"
-#include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Droid::Collect::ISets;
+
 using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::IHashSet;

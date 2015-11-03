@@ -3,11 +3,9 @@
 #define __ELASTOS_DROID_NET_VPNSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-// #include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Binder.h"
 
 using Elastos::Droid::App::IPendingIntent;
-// using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Internal::Net::IVpnConfig;
@@ -98,6 +96,26 @@ class VpnService
 #endif
     , public IVpnService
 {
+private:
+    /**
+     * Use raw Binder instead of AIDL since now there is only one usage.
+     */
+    class Callback
+        : public Binder
+    {
+    protected:
+        // @Override
+#if 0 // TODO: Translate codes below
+         boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
+            if (code == IBinder.LAST_CALL_TRANSACTION) {
+                onRevoke();
+                return true;
+            }
+            return false;
+        }
+#endif
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -246,25 +264,6 @@ public:
     CARAPI OnRevoke();
 
 private:
-    /**
-     * Use raw Binder instead of AIDL since now there is only one usage.
-     */
-    class Callback
-        : public Binder
-    {
-    protected:
-        // @Override
-#if 0 // TODO: Translate codes below
-         boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
-            if (code == IBinder.LAST_CALL_TRANSACTION) {
-                onRevoke();
-                return true;
-            }
-            return false;
-        }
-#endif
-    };
-
     /**
      * Use IConnectivityManager since those methods are hidden and not
      * available in ConnectivityManager.
@@ -568,14 +567,14 @@ public:
         /* [out] */ IParcelFileDescriptor** result);
 
 private:
+    CARAPI VerifyApp(
+        /* [in] */ const String& packageName);
+
     CARAPI_(AutoPtr<IVpnConfig>) CreateConfig();
     CARAPI_(AutoPtr<IList>) CreateList();
     const AutoPtr<IVpnConfig> mConfig;
     const AutoPtr<IList> mAddresses;
     const AutoPtr<IList> mRoutes;
-
-    CARAPI VerifyApp(
-        /* [in] */ const String& packageName);
 
 };
 

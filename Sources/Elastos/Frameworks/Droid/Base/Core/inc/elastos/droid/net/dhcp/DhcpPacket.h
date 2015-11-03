@@ -5,11 +5,11 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/dhcp/DhcpStateMachine.h"
 
-using Elastos::Net::IInetAddress;
-using Elastos::Net::IInetAddress;
-using Elastos::IO::IByteBuffer;
-using Elastos::Utility::IList;
 using Elastos::Core::IInteger32;
+using Elastos::IO::IByteBuffer;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -245,6 +245,44 @@ public:
         /* [in] */ const String& hostName,
         /* [out] */ IByteBuffer** result);
 
+private:
+    /**
+     * Converts a signed short value to an unsigned int value.  Needed
+     * because Java does not have unsigned types.
+     */
+    CARAPI IntAbs(
+        /* [in] */ Int16 v,
+        /* [out] */ Int32* result);
+
+    /**
+     * Performs an IP checksum (used in IP header and across UDP
+     * payload) on the specified portion of a ByteBuffer.  The seed
+     * allows the checksum to commence with a specified value.
+     */
+    CARAPI Checksum(
+        /* [in] */ IByteBuffer* buf,
+        /* [in] */ Int32 seed,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [out] */ Int32* result);
+
+    /**
+     * Reads a four-octet value from a ByteBuffer and construct
+     * an IPv4 address from that value.
+     */
+    static CARAPI ReadIpAddress(
+        /* [in] */ IByteBuffer* packet,
+        /* [out] */ IInetAddress** result);
+
+    /**
+     * Reads a string of specified length from the buffer.
+     */
+    static CARAPI ReadAsciiString(
+        /* [in] */ IByteBuffer* buf,
+        /* [in] */ Int32 byteCount,
+        /* [out] */ String* result);
+
+public:
     /**
      * Packet encapsulations.
      */
@@ -423,42 +461,6 @@ protected:
     static const Byte CLIENT_ID_ETHER;
 
 private:
-    /**
-     * Converts a signed short value to an unsigned int value.  Needed
-     * because Java does not have unsigned types.
-     */
-    CARAPI IntAbs(
-        /* [in] */ Int16 v,
-        /* [out] */ Int32* result);
-
-    /**
-     * Performs an IP checksum (used in IP header and across UDP
-     * payload) on the specified portion of a ByteBuffer.  The seed
-     * allows the checksum to commence with a specified value.
-     */
-    CARAPI Checksum(
-        /* [in] */ IByteBuffer* buf,
-        /* [in] */ Int32 seed,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [out] */ Int32* result);
-
-    /**
-     * Reads a four-octet value from a ByteBuffer and construct
-     * an IPv4 address from that value.
-     */
-    static CARAPI ReadIpAddress(
-        /* [in] */ IByteBuffer* packet,
-        /* [out] */ IInetAddress** result);
-
-    /**
-     * Reads a string of specified length from the buffer.
-     */
-    static CARAPI ReadAsciiString(
-        /* [in] */ IByteBuffer* buf,
-        /* [in] */ Int32 byteCount,
-        /* [out] */ String* result);
-
     /**
      * IP layer definitions.
      */

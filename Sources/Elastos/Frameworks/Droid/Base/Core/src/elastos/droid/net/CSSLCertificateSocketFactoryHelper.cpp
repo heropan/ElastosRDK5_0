@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/CSSLCertificateSocketFactoryHelper.h"
 #include "elastos/droid/net/CSSLCertificateSocketFactory.h"
+#include "elastos/droid/net/CSSLCertificateSocketFactoryHelper.h"
 
 namespace Elastos {
 namespace Droid {

@@ -10,23 +10,15 @@
 
 #endif
 
-#if 0 // TODO: Waiting for NetworkUtils
-#include "elastos/droid/net/NetworkUtils.h"
-#endif
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IPendingIntentHelper;
-#if 0 // TODO: Waiting for CPendingIntentHelper, CIntent, CIntentFilter
-using Elastos::Droid::App::CPendingIntentHelper;
-using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::CIntentFilter;
-using Elastos::Droid::Net::NetworkUtils;
-#endif
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::SystemClock;
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -35,19 +27,19 @@ namespace Net {
 const String DhcpStateMachine::TAG("DhcpStateMachine");
 const Boolean DhcpStateMachine::DBG = FALSE;
 const String DhcpStateMachine::WAKELOCK_TAG("DHCP");
-const Int32 DhcpStateMachine::DHCP_RENEW;
+const Int32 DhcpStateMachine::DHCP_RENEW = 0;
 const String DhcpStateMachine::ACTION_DHCP_RENEW("android.net.wifi.DHCP_RENEW");
-const Int32 DhcpStateMachine::MIN_RENEWAL_TIME_SECS;
-const Int32 DhcpStateMachine::BASE;
-const Int32 DhcpStateMachine::CMD_START_DHCP;
-const Int32 DhcpStateMachine::CMD_STOP_DHCP;
-const Int32 DhcpStateMachine::CMD_RENEW_DHCP;
-const Int32 DhcpStateMachine::CMD_PRE_DHCP_ACTION;
-const Int32 DhcpStateMachine::CMD_POST_DHCP_ACTION;
-const Int32 DhcpStateMachine::CMD_ON_QUIT;
-const Int32 DhcpStateMachine::CMD_PRE_DHCP_ACTION_COMPLETE;
-const Int32 DhcpStateMachine::DHCP_SUCCESS;
-const Int32 DhcpStateMachine::DHCP_FAILURE;
+const Int32 DhcpStateMachine::MIN_RENEWAL_TIME_SECS = 5 * 60;
+const Int32 DhcpStateMachine::BASE = IProtocol::BASE_DHCP;
+const Int32 DhcpStateMachine::CMD_START_DHCP = BASE + 1;
+const Int32 DhcpStateMachine::CMD_STOP_DHCP = BASE + 2;
+const Int32 DhcpStateMachine::CMD_RENEW_DHCP = BASE + 3;
+const Int32 DhcpStateMachine::CMD_PRE_DHCP_ACTION = BASE + 4;
+const Int32 DhcpStateMachine::CMD_POST_DHCP_ACTION = BASE + 5;
+const Int32 DhcpStateMachine::CMD_ON_QUIT = BASE + 6;
+const Int32 DhcpStateMachine::CMD_PRE_DHCP_ACTION_COMPLETE = BASE + 7;
+const Int32 DhcpStateMachine::DHCP_SUCCESS = 1;
+const Int32 DhcpStateMachine::DHCP_FAILURE = 2;
 
 CAR_INTERFACE_IMPL(DhcpStateMachine, StateMachine, IDhcpStateMachine)
 

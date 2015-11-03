@@ -1,8 +1,5 @@
 
 #include "elastos/droid/net/CDhcpInfo.h"
-#if 0 // TODO: Waiting for NetworkUtils
-#include "elastos/droid/net/NetworkUtils.h"
-#endif
 
 namespace Elastos {
 namespace Droid {

@@ -3,27 +3,21 @@
 #define __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
-#include "elastos/droid/content/BroadcastReceiver.h"
-#endif
 #include "elastos/droid/internal/utility/State.h"
 #include "elastos/droid/internal/utility/StateMachine.h"
 
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Os::IPowerManagerWakeLock;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Internal::Utility::IProtocol;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Internal::Utility::IStateMachine;
 using Elastos::Droid::Internal::Utility::IState;
-#if 0 // TODO: Waiting for BroadcastReceiver, State, StateMachine
-using Elastos::Droid::Content::BroadcastReceiver;
-#endif
+using Elastos::Droid::Internal::Utility::IStateMachine;
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IPowerManagerWakeLock;
 
 namespace Elastos {
 namespace Droid {
@@ -47,15 +41,6 @@ class DhcpStateMachine
     : public StateMachine
     , public IDhcpStateMachine
 {
-public:
-    CAR_INTERFACE_DECL()
-
-private:
-    enum DhcpAction {
-        DhcpAction_START,
-        DhcpAction_RENEW
-    };
-
 public:
     class DefaultState
 #if 0 // TODO: Waiting for State
@@ -201,7 +186,15 @@ private:
         DhcpStateMachine* mOwner;
     };
 
+private:
+    enum DhcpAction {
+        DhcpAction_START,
+        DhcpAction_RENEW
+    };
+
 public:
+    CAR_INTERFACE_DECL()
+
     static CARAPI_(AutoPtr<IDhcpStateMachine>) MakeDhcpStateMachine(
         /* [in] */ IContext* context,
         /* [in] */ IStateMachine* controller,
@@ -223,32 +216,31 @@ private:
     CARAPI_(Boolean) RunDhcp(
         /* [in] */ DhcpAction dhcpAction);
 
-private:
-    static const Int32 BASE = IProtocol::BASE_DHCP;
-
 public:
     /* Commands from controller to start/stop DHCP */
-    static const Int32 CMD_START_DHCP = BASE + 1;
-    static const Int32 CMD_STOP_DHCP = BASE + 2;
-    static const Int32 CMD_RENEW_DHCP = BASE + 3;
+    static const Int32 CMD_START_DHCP;
+    static const Int32 CMD_STOP_DHCP;
+    static const Int32 CMD_RENEW_DHCP;
 
     /* Notification from DHCP state machine prior to DHCP discovery/renewal */
-    static const Int32 CMD_PRE_DHCP_ACTION = BASE + 4;
+    static const Int32 CMD_PRE_DHCP_ACTION;
     /* Notification from DHCP state machine post DHCP discovery/renewal. Indicates
      * success/failure */
-    static const Int32 CMD_POST_DHCP_ACTION = BASE + 5;
+    static const Int32 CMD_POST_DHCP_ACTION;
     /* Notification from DHCP state machine before quitting */
-    static const Int32 CMD_ON_QUIT = BASE + 6;
+    static const Int32 CMD_ON_QUIT;
 
     /* Command from controller to indicate DHCP discovery/renewal can continue
      * after pre DHCP action is complete */
-    static const Int32 CMD_PRE_DHCP_ACTION_COMPLETE = BASE + 7;
+    static const Int32 CMD_PRE_DHCP_ACTION_COMPLETE;
 
     /* Message.arg1 arguments to CMD_POST_DHCP notification */
-    static const Int32 DHCP_SUCCESS = 1;
-    static const Int32 DHCP_FAILURE = 2;
+    static const Int32 DHCP_SUCCESS;
+    static const Int32 DHCP_FAILURE;
 
 private:
+    static const Int32 BASE;
+
     static const String TAG;
     static const Boolean DBG;
 
@@ -265,11 +257,11 @@ private:
     //Remember DHCP configuration from first request
     AutoPtr<IDhcpResults> mDhcpResults;
 
-    static const Int32 DHCP_RENEW = 0;
+    static const Int32 DHCP_RENEW;
     static const String ACTION_DHCP_RENEW;
 
     //Used for sanity check on setting up renewal
-    static const Int32 MIN_RENEWAL_TIME_SECS = 5 * 60;  // 5 minutes
+    static const Int32 MIN_RENEWAL_TIME_SECS;  // 5 minutes
 
     String mInterfaceName;
     Boolean mRegisteredForPreDhcpNotification;

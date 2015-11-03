@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Net::IInterfaceAddress;
 using Elastos::Net::IInetAddress;
+using Elastos::Net::IInterfaceAddress;
 
 namespace Elastos {
 namespace Droid {

@@ -1,9 +1,8 @@
 
 module
 {
-
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
+    interface Elastos.Droid.Content.IContext;
 
     using interface Elastos.IO.IInputStream;
     using interface Org.Apache.Http.Client.IResponseHandler;

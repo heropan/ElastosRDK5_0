@@ -7,6 +7,7 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::Utility::IStateMachine;
+
 using Elastos::Core::Singleton;
 
 namespace Elastos {

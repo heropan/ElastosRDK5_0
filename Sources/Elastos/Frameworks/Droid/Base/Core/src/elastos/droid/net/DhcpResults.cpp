@@ -1,4 +1,4 @@
-// DhcpResults.cpp
+
 #include "elastos/droid/net/DhcpResults.h"
 
 namespace Elastos {

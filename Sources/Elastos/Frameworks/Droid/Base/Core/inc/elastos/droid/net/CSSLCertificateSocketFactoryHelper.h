@@ -5,8 +5,8 @@
 #include "_Elastos_Droid_Net_CSSLCertificateSocketFactoryHelper.h"
 #include <elastos/core/Singleton.h>
 
-using Elastosx::Net::ISocketFactory;
 using Elastos::Net::ISocket;
+using Elastosx::Net::ISocketFactory;
 using Elastosx::Net::Ssl::ISSLSocketFactory;
 
 namespace Elastos {

@@ -6,8 +6,8 @@
 
 using Elastos::IO::ICloseable;
 using Elastos::IO::IInputStream;
-using Elastos::IO::IOutputStream;
 using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IOutputStream;
 
 namespace Elastos {
 namespace Droid {

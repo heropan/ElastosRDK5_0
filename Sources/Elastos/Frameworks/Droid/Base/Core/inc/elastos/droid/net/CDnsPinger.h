@@ -2,25 +2,24 @@
 #ifndef __ELASTOS_DROID_NET_CDNSPINGER_H__
 #define __ELASTOS_DROID_NET_CDNSPINGER_H__
 
-#include "_Elastos_Droid_Net_CDnsPinger.h"
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/os/SystemClock.h"
+#include "_Elastos_Droid_Net_CDnsPinger.h"
 #include "elastos/droid/os/Handler.h"
-
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/utility/etl/List.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::SystemClock;
 
 using Elastos::Net::IDatagramSocket;
 using Elastos::Net::IInetAddress;
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::SystemClock;
-
-using Elastos::Utility::IRandom;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Utility::Etl::List;
 using Elastos::Utility::IList;
+using Elastos::Utility::IRandom;
 
 namespace Elastos {
 namespace Droid {
@@ -31,7 +30,38 @@ CarClass(CDnsPinger)
     , public IDnsPinger
 {
 private:
-        class DnsArg;
+    class DnsArg;
+
+    class ActivePing
+        : public Object
+    {
+    public:
+        ActivePing() {
+            mStart = SystemClock::GetElapsedRealtime();
+        }
+
+    public:
+        AutoPtr<IDatagramSocket> mSocket;
+        Int32 mInternalId;
+        Int16 mPacketId;
+        Int32 mTimeout;
+        Int32 mResult;
+        Int64 mStart;// = SystemClock::GetElapsedRealtime();
+    };
+
+    /* Message argument for ACTION_PING_DNS */
+    class DnsArg
+        : public Object
+    {
+    public:
+        DnsArg(
+          /* [in] */ IInetAddress* dns,
+          /* [in] */ Int32 seq);
+
+    public:
+        AutoPtr<IInetAddress> mDns;
+        Int32 mSeq;
+    };
 
 public:
     CAR_OBJECT_DECL()
@@ -84,37 +114,6 @@ public:
     CARAPI CancelPings();
 
 private:
-    class ActivePing
-        : public Object
-    {
-    public:
-        ActivePing() {
-            mStart = SystemClock::GetElapsedRealtime();
-        }
-
-    public:
-        AutoPtr<IDatagramSocket> mSocket;
-        Int32 mInternalId;
-        Int16 mPacketId;
-        Int32 mTimeout;
-        Int32 mResult;
-        Int64 mStart;// = SystemClock::GetElapsedRealtime();
-    };
-
-    /* Message argument for ACTION_PING_DNS */
-    class DnsArg
-        : public Object
-    {
-    public:
-        DnsArg(
-          /* [in] */ IInetAddress* dns,
-          /* [in] */ Int32 seq);
-
-    public:
-        AutoPtr<IInetAddress> mDns;
-        Int32 mSeq;
-    };
-
     CARAPI SendResponse(
         /* [in] */ Int32 internalId,
         /* [in] */ Int32 externalId,
@@ -131,6 +130,8 @@ private:
 
     CARAPI Loge(
         /* [in] */ const String& s);
+
+    static CARAPI_(AutoPtr<ArrayOf<Byte> >) InitDnsQuery();
 
     static const Boolean DBG;
 
@@ -166,7 +167,7 @@ private:
     AutoPtr<IList> mActivePings;
     Int32 mEventCounter;
 
-    static const Byte mDnsQuery[];
+    static const AutoPtr<ArrayOf<Byte> > mDnsQuery;
 };
 
 } // namespace Net

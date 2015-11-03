@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::IMap;
 using Elastos::Utility::IHashMap;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -84,6 +84,9 @@ public:
         /* [out] */ IMap** rethashmap);
 
 private:
+    MailTo();
+
+private:
     AutoPtr <IHashMap> mHeaders;
 
     // Well known headers
@@ -92,7 +95,6 @@ private:
     static const String CC;
     static const String SUBJECT;
 
-    MailTo();
 };
 
 } // namespace Net

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CLOCALSERVERSOCKET_H__
 
 #include "_Elastos_Droid_Net_CLocalServerSocket.h"
-#include "LocalServerSocket.h"
+#include "elastos/droid/net/LocalServerSocket.h"
 
 namespace Elastos {
 namespace Droid {

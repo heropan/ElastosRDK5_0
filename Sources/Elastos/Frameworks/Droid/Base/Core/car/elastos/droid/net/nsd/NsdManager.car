@@ -1,9 +1,8 @@
 
 module
 {
-
-    interface Elastos.Droid.Net.Nsd.INsdManagerRegistrationListener;
     interface Elastos.Droid.Net.Nsd.INsdManagerDiscoveryListener;
+    interface Elastos.Droid.Net.Nsd.INsdManagerRegistrationListener;
     interface Elastos.Droid.Net.Nsd.INsdManagerResolveListener;
 
     namespace Elastos {

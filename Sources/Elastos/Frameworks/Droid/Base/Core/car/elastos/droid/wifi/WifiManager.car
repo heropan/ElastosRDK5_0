@@ -1,34 +1,17 @@
 
 module
 {
-    interface Elastos.Droid.Wifi.IWifiManagerTxPacketCountListener;
-    interface Elastos.Droid.Wifi.IWifiManagerActionListener;
-    interface Elastos.Droid.Wifi.IWpsInfo;
-    interface Elastos.Droid.Wifi.IWifiManagerWpsCallback;
-    interface Elastos.Droid.Wifi.IWifiManagerWifiLock;
-    interface Elastos.Droid.Wifi.IWifiManagerMulticastLock;
-    // interface Elastos.Droid.Annotation.ISdkConstant;
-// No match parts: import android.annotation.SdkConstant.SdkConstantType;
-    // interface Elastos.Droid.Annotation.ISystemApi;
-    // interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IDhcpInfo;
-    // interface Elastos.Droid.Wifi.IScanSettings;
-    // interface Elastos.Droid.Wifi.IWifiChannel;
-    // interface Elastos.Droid.Os.IBinder;
-    // interface Elastos.Droid.Os.IIBinder;
-    // interface Elastos.Droid.Os.IHandler;
-    // interface Elastos.Droid.Os.IHandlerThread;
-    // interface Elastos.Droid.Os.ILooper;
-    // interface Elastos.Droid.Os.IMessage;
-    // interface Elastos.Droid.Os.IRemoteException;
-    interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.Os.IMessenger;
-    // interface Elastos.Droid.Util.ILog;
-    // interface Elastos.Droid.Util.ISparseArray;
+    interface Elastos.Droid.Os.IWorkSource;
+    interface Elastos.Droid.Wifi.IWifiManagerActionListener;
+    interface Elastos.Droid.Wifi.IWifiManagerMulticastLock;
+    interface Elastos.Droid.Wifi.IWifiManagerTxPacketCountListener;
+    interface Elastos.Droid.Wifi.IWifiManagerWifiLock;
+    interface Elastos.Droid.Wifi.IWifiManagerWpsCallback;
+    interface Elastos.Droid.Wifi.IWpsInfo;
+
     using interface Elastos.Net.IInetAddress;
-// No match parts: import java.util.concurrent.CountDownLatch;
-    // interface Elastos.Droid.Internal.Util.IAsyncChannel;
-    // interface Elastos.Droid.Internal.Util.IProtocol;
     using interface Elastos.Utility.IList;
 
     namespace Elastos {

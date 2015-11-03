@@ -31,15 +31,15 @@ public:
         /* [out, callee] */ ArrayOf<Int64>** result);
 
     /**
-                 * Read variable-length {@link Long} using protobuf-style approach.
-                 */
+     * Read variable-length {@link Long} using protobuf-style approach.
+     */
     CARAPI ReadVarLong(
         /* [in] */ IDataInputStream* in,
         /* [out] */ Int64* result);
 
     /**
-                 * Write variable-length {@link Long} using protobuf-style approach.
-                 */
+     * Write variable-length {@link Long} using protobuf-style approach.
+     */
     CARAPI WriteVarLong(
         /* [in] */ IDataOutputStream* out,
         /* [in] */ Int64 value);

@@ -4,11 +4,12 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Org::Conscrypt::IPSKKeyManager;
-using Elastosx::Net::Ssl::IKeyManager;
 using Elastos::Net::ISocket;
-using Elastosx::Net::Ssl::ISSLEngine;
 using Elastosx::Crypto::ISecretKey;
+using Elastosx::Net::Ssl::IKeyManager;
+using Elastosx::Net::Ssl::ISSLEngine;
+
+using Org::Conscrypt::IPSKKeyManager;
 
 namespace Elastos {
 namespace Droid {

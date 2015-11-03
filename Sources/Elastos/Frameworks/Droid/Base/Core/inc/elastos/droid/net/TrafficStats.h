@@ -491,13 +491,3 @@ private:
 } // namespace Droid
 } // namespace Elastos
 #endif // __ELASTOS_DROID_NET_TRAFFICSTATS_H__
-
-#if 0 // old CTrafficStats.h
-#include "elastos/Mutex.h"
-#include "content/Context.h"
-
-
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Net::INetworkStats;
-using Elastos::Net::ISocket;
-#endif

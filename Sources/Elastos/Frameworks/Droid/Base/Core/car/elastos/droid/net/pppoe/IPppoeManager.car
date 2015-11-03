@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.Droid.Net.Pppoe.IPppoeDevInfo;
     interface Elastos.Droid.Net.IDhcpInfo;
+    interface Elastos.Droid.Net.Pppoe.IPppoeDevInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -29,7 +29,9 @@ module
                 [out] Boolean* result);
             GetDhcpInfo(
                 [out] IDhcpInfo** info);
+
         }
+
     } // namespace Pppoe
     } // namespace Net
     } // namespace Droid

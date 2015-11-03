@@ -4,6 +4,25 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Droid::Net::Http::IHeaders;
+
+using Elastos::Net::IInetAddress;
+using Elastos::Net::ISocket;
+
+using Org::Apache::Http::IHttpConnection;
+using Org::Apache::Http::IHttpConnectionMetrics;
+using Org::Apache::Http::IHttpEntity;
+using Org::Apache::Http::IHttpEntityEnclosingRequest;
+using Org::Apache::Http::IHttpInetConnection;
+using Org::Apache::Http::IHttpRequest;
+using Org::Apache::Http::Impl::IHttpConnectionMetricsImpl;
+using Org::Apache::Http::Impl::Entity::IEntitySerializer;
+using Org::Apache::Http::IO::IHttpMessageWriter;
+using Org::Apache::Http::IO::ISessionInputBuffer;
+using Org::Apache::Http::IO::ISessionOutputBuffer;
+using Org::Apache::Http::IStatusLine;
+using Org::Apache::Http::Params::IHttpParams;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -16,13 +35,16 @@ namespace Http {
  * {@hide}
  */
 class ElastosHttpClientConnection
-    : public $SUPER_CLASS$
+    : public Object
+    , public IHttpInetConnection
+    , public IHttpConnection
     , public IElastosHttpClientConnection
 {
 public:
     CAR_INTERFACE_DECL()
 
-    public:
+    ElastosHttpClientConnection();
+
     CARAPI constructor();
 
     /**
@@ -32,8 +54,8 @@ public:
      * @throws IOException
       */
     CARAPI Bind(
-        /* [in] */  ,
-        /* [in] */  );
+        /* [in] */ ISocket* socket,
+        /* [in] */ IHttpParams* params);
 
     // @Override
     CARAPI ToString(
@@ -71,7 +93,7 @@ public:
      * @throws IOException
      */
     CARAPI SendRequestHeader(
-        /* [in] */  );
+        /* [in] */ IHttpRequest* request);
 
     /**
      * Sends the request entity over the connection.
@@ -80,7 +102,7 @@ public:
      * @throws IOException
      */
     CARAPI SendRequestEntity(
-        /* [in] */  );
+        /* [in] */ IHttpEntityEnclosingRequest* request);
 
     CARAPI DoFlush();
 
@@ -104,7 +126,7 @@ public:
      * @see HttpClientConnection#receiveResponseEntity(HttpResponse response)
      */
     CARAPI ReceiveResponseEntity(
-        /* [in] */  ,
+        /* [in] */ IHeaders* headers,
         /* [out] */ IHttpEntity** result);
 
     /**
@@ -132,33 +154,34 @@ public:
     CARAPI GetMetrics(
         /* [out] */ IHttpConnectionMetrics** result);
 
-    private:
+private:
     CARAPI AssertNotOpen();
 
     CARAPI AssertOpen();
 
     CARAPI DetermineLength(
-        /* [in] */  ,
+        /* [in] */ const IHeaders* headers,
         /* [out] */ Int64* result);
 
-    ISessionInputBuffer* mInbuffer;
+private:
+    AutoPtr<ISessionInputBuffer> mInbuffer;
 
-    ISessionOutputBuffer* mOutbuffer;
+    AutoPtr<ISessionOutputBuffer> mOutbuffer;
 
     Int32 mMaxHeaderCount;
 
     // store CoreConnectionPNames.MAX_LINE_LENGTH for performance
     Int32 mMaxLineLength;
 
-    const IEntitySerializer* entityserializer;
+    AutoPtr<IEntitySerializer> mEntityserializer;
 
-    IHttpMessageWriter* mRequestWriter;
+    AutoPtr<IHttpMessageWriter> mRequestWriter;
 
-    IHttpConnectionMetricsImpl* mMetrics;
+    AutoPtr<IHttpConnectionMetricsImpl> mMetrics;
 
-    Ivolatile* mOpen;
+    volatile Boolean mOpen;
 
-    ISocket* mSocket;
+    AutoPtr<ISocket> mSocket;
 
 };
 

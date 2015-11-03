@@ -1,10 +1,10 @@
 
 module
 {
-
     interface Elastos.Droid.Net.Http.IHeaderCallback;
 
     using interface Elastos.Utility.IArrayList;
+
     using interface Org.Apache.Http.Utility.ICharArrayBuffer;
 
     namespace Elastos {

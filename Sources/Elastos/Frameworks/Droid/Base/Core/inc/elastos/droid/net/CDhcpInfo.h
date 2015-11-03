@@ -7,9 +7,9 @@
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuffer.h>
 
-using Elastos::Core::StringBuffer;
 using Elastos::Core::CString;
 using Elastos::Core::Object;
+using Elastos::Core::StringBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -36,9 +36,8 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-     CARAPI ReadFromParcel(
+    CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
-
 
     CARAPI GetIpAddress(
         /* [out] */ Int32* ipaddress);

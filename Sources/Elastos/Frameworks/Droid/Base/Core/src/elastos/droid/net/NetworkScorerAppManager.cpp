@@ -1,6 +1,5 @@
 
 #include "elastos/droid/net/NetworkScorerAppManager.h"
-// #include "elastos/droid/content/CIntent.h"
 
 namespace Elastos {
 namespace Droid {
