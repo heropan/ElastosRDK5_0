@@ -100,12 +100,11 @@ ECode ThreadedRenderer::constructor(
     return NOERROR;
 }
 
-ECode ThreadedRenderer::Destroy()
+void ThreadedRenderer::Destroy()
 {
     mInitialized = FALSE;
     UpdateEnabledState(NULL);
     NativeDestroy(mNativeProxy);
-    return NOERROR;
 }
 
 void ThreadedRenderer::UpdateEnabledState(
@@ -140,19 +139,17 @@ ECode ThreadedRenderer::UpdateSurface(
     return NOERROR;
 }
 
-ECode ThreadedRenderer::PauseSurface(
+void ThreadedRenderer::PauseSurface(
     /* [in] */ ISurface* surface)
 {
     NativePauseSurface(mNativeProxy, surface);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::DestroyHardwareResources(
+void ThreadedRenderer::DestroyHardwareResources(
         /* [in] */ IView* view)
 {
     DestroyResources(view);
     NativeDestroyHardwareResources(mNativeProxy);
-    return NOERROR;
 }
 
 void ThreadedRenderer::DestroyResources(
@@ -173,21 +170,19 @@ void ThreadedRenderer::DestroyResources(
     }
 }
 
-ECode ThreadedRenderer::Invalidate(
+void ThreadedRenderer::Invalidate(
     /* [in] */ ISurface* surface)
 {
     UpdateSurface(surface);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::DetachSurfaceTexture(
+void ThreadedRenderer::DetachSurfaceTexture(
     /* [in] */ Int64 hardwareLayer)
 {
     NativeDetachSurfaceTexture(mNativeProxy, hardwareLayer);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::Setup(
+void ThreadedRenderer::Setup(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ IRect* surfaceInsets)
@@ -219,14 +214,12 @@ ECode ThreadedRenderer::Setup(
     NativeSetup(mNativeProxy, mSurfaceWidth, mSurfaceHeight,
             lightX, mLightY, mLightZ, mLightRadius,
             mAmbientShadowAlpha, mSpotShadowAlpha);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::SetOpaque(
+void ThreadedRenderer::SetOpaque(
     /* [in] */ Boolean opaque)
 {
     NativeSetOpaque(mNativeProxy, opaque && !mHasInsets);
-    return NOERROR;
 }
 
 Int32 ThreadedRenderer::GetWidth()
@@ -239,13 +232,12 @@ Int32 ThreadedRenderer::GetHeight()
     return mHeight;
 }
 
-ECode ThreadedRenderer::DumpGfxInfo(
+void ThreadedRenderer::DumpGfxInfo(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ IFileDescriptor* fd)
 {
     IFlushable::Probe(pw)->Flush();
     NativeDumpProfileInfo(mNativeProxy, fd);
-    return NOERROR;
 }
 
 Int32 ThreadedRenderer::Search(
@@ -323,10 +315,9 @@ void ThreadedRenderer::UpdateViewTreeDisplayList(
 // //    Trace::TraceEnd(Trace::TRACE_TAG_VIEW);
 // }
 
-ECode ThreadedRenderer::InvalidateRoot()
+void ThreadedRenderer::InvalidateRoot()
 {
     mRootNodeNeedsUpdate = TRUE;
-    return NOERROR;
 }
 
 // ECode ThreadedRenderer::Draw(
@@ -388,13 +379,12 @@ AutoPtr<IHardwareLayer> ThreadedRenderer::CreateTextureLayer()
     return NULL;
 }
 
-ECode ThreadedRenderer::BuildLayer(
+void ThreadedRenderer::BuildLayer(
     /* [in] */ IRenderNode* node)
 {
     assert(0 && "TODO");
     Int64 dl = 0; // node->GetNativeDisplayList();
     NativeBuildLayer(mNativeProxy, dl);
-    return NOERROR;
 }
 
 Boolean ThreadedRenderer::CopyLayerInto(
@@ -408,53 +398,46 @@ Boolean ThreadedRenderer::CopyLayerInto(
             dlu, cbmp->mNativeBitmap);
 }
 
-ECode ThreadedRenderer::PushLayerUpdate(
+void ThreadedRenderer::PushLayerUpdate(
     /* [in] */ IHardwareLayer* layer)
 {
     Int64 dlu = 0;
     layer->GetDeferredLayerUpdater(&dlu);
     NativePushLayerUpdate(mNativeProxy, dlu);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::OnLayerDestroyed(
+void ThreadedRenderer::OnLayerDestroyed(
     /* [in] */ IHardwareLayer* layer)
 {
     Int64 dlu = 0;
     layer->GetDeferredLayerUpdater(&dlu);
     NativeCancelLayerUpdate(mNativeProxy, dlu);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::SetName(
+void ThreadedRenderer::SetName(
     /* [in] */ String name)
 {
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::Fence()
+void ThreadedRenderer::Fence()
 {
     NativeFence(mNativeProxy);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::StopDrawing()
+void ThreadedRenderer::StopDrawing()
 {
     NativeStopDrawing(mNativeProxy);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::NotifyFramePending()
+void ThreadedRenderer::NotifyFramePending()
 {
     NativeNotifyFramePending(mNativeProxy);
-    return NOERROR;
 }
 
-ECode ThreadedRenderer::RegisterAnimatingRenderNode(
+void ThreadedRenderer::RegisterAnimatingRenderNode(
     /* [in] */ IRenderNode* animator)
 {
 //    NativeRegisterAnimatingRenderNode(mRootNode->mNativeRenderNode, animator->mNativeRenderNode);
-    return NOERROR;
 }
 
 // throws Throwable
