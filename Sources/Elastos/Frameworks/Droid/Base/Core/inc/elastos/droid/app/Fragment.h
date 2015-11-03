@@ -582,6 +582,42 @@ public:
         /* [in] */ IMenuItem* item,
         /* [out] */ Boolean* selected);
 
+    /**
+     * When custom transitions are used with Fragments, the enter transition callback
+     * is called when this Fragment is attached or detached when not popping the back stack.
+     *
+     * @param callback Used to manipulate the shared element transitions on this Fragment
+     *                 when added not as a pop from the back stack.
+     */
+    CARPAI SetEnterSharedElementCallback(
+        /* [in] */ ISharedElementCallback* callback);
+
+    /**
+     * @hide
+     */
+    CARPAI SetEnterSharedElementTransitionCallback(
+        /* [in] */ ISharedElementCallback* callback);
+
+    /**
+     * When custom transitions are used with Fragments, the exit transition callback
+     * is called when this Fragment is attached or detached when popping the back stack.
+     *
+     * @param callback Used to manipulate the shared element transitions on this Fragment
+     *                 when added as a pop from the back stack.
+     */
+    CARAPI SetExitSharedElementCallback(
+        /* [in] */ ISharedElementCallback* callback)
+
+    /**
+     * @hide
+     */
+    CARAPI SetExitSharedElementTransitionCallback(
+        /* [in] */ ISharedElementCallback* callback)
+
+
+
+
+
     CARAPI Dump(
         /* [in] */ const String& prefix,
         /* [in] */ IFileDescriptor* fd,

@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CActivityManagerRunningServiceInfo, Object, IActivityManagerRunningServiceInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CActivityManagerRunningServiceInfo)
+
 CActivityManagerRunningServiceInfo::CActivityManagerRunningServiceInfo()
     : mPid(0)
     , mUid(0)
@@ -189,7 +193,7 @@ ECode CActivityManagerRunningServiceInfo::SetActiveSince(
 /**
  * Set to true if this service has been explicitly started.
  */
-ECode CActivityManagerRunningServiceInfo::GetStarted(
+ECode CActivityManagerRunningServiceInfo::IsStarted(
     /* [out] */ Boolean* started)
 {
     VALIDATE_NOT_NULL(started);

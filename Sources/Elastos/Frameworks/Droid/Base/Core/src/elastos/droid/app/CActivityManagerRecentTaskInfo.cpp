@@ -1,5 +1,6 @@
 
 #include "elastos/droid/app/CActivityManagerRecentTaskInfo.h"
+// #include "elastos/droid/app/CActivityManagerTaskDescription.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
@@ -13,13 +14,17 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CActivityManagerRecentTaskInfo, Object, IActivityManagerRecentTaskInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CActivityManagerRecentTaskInfo)
+
 CActivityManagerRecentTaskInfo::CActivityManagerRecentTaskInfo()
     : mId(0)
     , mPersistentId(0)
     , mStackId(0)
     , mUserId(0)
-    , firstActiveTime(0)
-    , lastActiveTime(0)
+    , mFirstActiveTime(0)
+    , mLastActiveTime(0)
     , mAffiliatedTaskId(0)
     , mAffiliatedTaskColor(0)
 {
@@ -48,7 +53,7 @@ ECode CActivityManagerRecentTaskInfo::WriteToParcel(
 
     if (mTaskDescription != NULL) {
         dest->WriteInt32(1);
-        mTaskDescription.writeToParcel(dest, 0);
+        IParcelable::Probe(mTaskDescription)->WriteToParcel(dest);
     } else {
         dest->WriteInt32(0);
     }
@@ -77,8 +82,15 @@ ECode CActivityManagerRecentTaskInfo::ReadFromParcel(
     mDescription = ICharSequence::Probe(obj);
     // TODO
 //    description = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
-    taskDescription = source->ReadInt32() > 0 ?
-            TaskDescription.CREATOR.createFromParcel(source) : null;
+    Int32 ival;
+    source->ReadInt32(&ival);
+    if (ival > 0) {
+        // CActivityManagerTaskDescription((IActivityManagerTaskDescription**)&mTaskDescription);
+        IParcelable::Probe(mTaskDescription)->ReadFromParcel(source);
+    }
+    else {
+        mTaskDescription = NULL;
+    }
     source->ReadInt32(&mStackId);
     source->ReadInt32(&mUserId);
     source->ReadInt64(&mFirstActiveTime);
@@ -163,6 +175,37 @@ ECode CActivityManagerRecentTaskInfo::SetDescription(
     /* [in] */ ICharSequence* description)
 {
     mDescription = description;
+    return NOERROR;
+}
+
+ECode CActivityManagerRecentTaskInfo::SetTaskDescription(
+    /* [in] */ IActivityManagerTaskDescription* description)
+{
+    mTaskDescription = description;
+    return NOERROR;
+}
+
+ECode CActivityManagerRecentTaskInfo::GetTaskDescription(
+    /* [out] */ IActivityManagerTaskDescription** description)
+{
+    VALIDATE_NOT_NULL(description)
+    *description = mTaskDescription;
+    REFCOUNT_ADD(*description);
+    return NOERROR;
+}
+
+ECode CActivityManagerRecentTaskInfo::GetAffiliatedTaskId(
+    /* [out] */ Int32* id)
+{
+    VALIDATE_NOT_NULL(id)
+    *id = mAffiliatedTaskId;
+    return NOERROR;
+}
+
+ECode CActivityManagerRecentTaskInfo::SetAffiliatedTaskId(
+    /* [in] */ Int32 id)
+{
+    mAffiliatedTaskId = id;
     return NOERROR;
 }
 

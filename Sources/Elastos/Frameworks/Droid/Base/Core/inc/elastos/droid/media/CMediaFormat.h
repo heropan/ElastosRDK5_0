@@ -6,7 +6,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IByteBuffer;
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

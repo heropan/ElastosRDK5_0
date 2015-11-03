@@ -13,7 +13,6 @@ using Elastos::Utility::ILocale;
 using Elastos::Utility::Map;
 using Elastos::Utility::Set;
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Os::IBundle;
 //using Elastos::Droid::Os::IIBinder;
 using Elastos::Droid::Content::IComponentName;

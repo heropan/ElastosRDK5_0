@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CActivityManagerRunningAppProcessInfo, Object, IActivityManagerRunningAppProcessInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CActivityManagerRunningAppProcessInfo)
+
 CActivityManagerRunningAppProcessInfo::CActivityManagerRunningAppProcessInfo()
     : mPid(0)
     , mUid(0)
@@ -18,7 +22,7 @@ CActivityManagerRunningAppProcessInfo::CActivityManagerRunningAppProcessInfo()
     , mLru(0)
     , mImportanceReasonCode(0)
     , mImportanceReasonPid(0)
-    , mProcessState(IActivityManagerRunningAppProcessInfo::PROCESS_STATE_IMPORTANT_FOREGROUND)
+    , mProcessState(IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND)
 {
 }
 
@@ -43,18 +47,18 @@ ECode CActivityManagerRunningAppProcessInfo::constructor(
 Int32 CActivityManagerRunningAppProcessInfo::ProcStateToImportance(
     /* [in] */ Int32 procState)
 {
-    if (procState >= ActivityManager.PROCESS_STATE_HOME) {
-        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
-    } else if (procState >= ActivityManager.PROCESS_STATE_SERVICE) {
-        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_SERVICE;
-    } else if (procState > ActivityManager.PROCESS_STATE_HEAVY_WEIGHT) {
-        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_CANT_SAVE_STATE;
-    } else if (procState >= ActivityManager.PROCESS_STATE_IMPORTANT_BACKGROUND) {
-        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE;
-    } else if (procState >= ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND) {
-        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
+    if (procState >= IActivityManager::PROCESS_STATE_HOME) {
+        return IActivityManagerRunningAppProcessInfo::IMPORTANCE_BACKGROUND;
+    } else if (procState >= IActivityManager::PROCESS_STATE_SERVICE) {
+        return IActivityManagerRunningAppProcessInfo::IMPORTANCE_SERVICE;
+    } else if (procState > IActivityManager::PROCESS_STATE_HEAVY_WEIGHT) {
+        return IActivityManagerRunningAppProcessInfo::IMPORTANCE_CANT_SAVE_STATE;
+    } else if (procState >= IActivityManager::PROCESS_STATE_IMPORTANT_BACKGROUND) {
+        return IActivityManagerRunningAppProcessInfo::IMPORTANCE_PERCEPTIBLE;
+    } else if (procState >= IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND) {
+        return IActivityManagerRunningAppProcessInfo::IMPORTANCE_VISIBLE;
     } else {
-        return ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
+        return IActivityManagerRunningAppProcessInfo::IMPORTANCE_FOREGROUND;
     }
 }
 

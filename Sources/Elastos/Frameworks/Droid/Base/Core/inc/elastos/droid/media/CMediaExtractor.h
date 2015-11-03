@@ -25,7 +25,6 @@ using Elastos::Droid::Net::IUri;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IByteBuffer;
 using Elastos::Droid::Media::IDataSource;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Media::IMediaCodecCryptoInfo;
 //using android::NuMediaExtractor;
 

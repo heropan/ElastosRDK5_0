@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERPRUNNINGAPPPROCESSINFO_H__
 
 #include "_Elastos_Droid_App_CActivityManagerRunningAppProcessInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IComponentName;
 
@@ -14,8 +15,15 @@ namespace App {
  * Information you can retrieve about a running process.
  */
 CarClass(CActivityManagerRunningAppProcessInfo)
+    , public Object
+    , public IActivityManagerRunningAppProcessInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityManagerRunningAppProcessInfo();
 
     CARAPI constructor();

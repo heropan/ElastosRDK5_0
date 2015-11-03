@@ -1,12 +1,12 @@
 
 #include "elastos/droid/app/CApplicationThread.h"
+#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/CServiceManager.h"
 #include "elastos/droid/os/CDebug.h"
 #include <elastos/utility/logging/Slogger.h>
-
 
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
@@ -26,6 +26,10 @@ namespace App {
 const String CApplicationThread::ONE_COUNT_COLUMN("%21s %8d");
 const String CApplicationThread::TWO_COUNT_COLUMNS("%21s %8d %21s %8d");
 const String CApplicationThread::DB_INFO_FORMAT("  %8s %8s %14s %14s  %s");
+
+CAR_INTERFACE_IMPL_2(CApplicationThread, Object, IApplicationThread, IBinder)
+
+CAR_OBJECT_IMPL(CApplicationThread)
 
 CApplicationThread::CApplicationThread()
     : mLastProcessState(-1)

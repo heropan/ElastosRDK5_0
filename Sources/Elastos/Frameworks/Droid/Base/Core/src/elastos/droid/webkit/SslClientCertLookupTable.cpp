@@ -1,7 +1,6 @@
 
 #include "elastos/droid/webkit/SslClientCertLookupTable.h"
 
-using Elastos::Utility::CObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

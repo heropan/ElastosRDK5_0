@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORT_H__
 
 #include "_Elastos_Droid_App_CApplicationErrorReport.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Content::IContext;
@@ -14,8 +15,15 @@ namespace Droid {
 namespace App {
 
 CarClass(CApplicationErrorReport)
+    , public Object
+    , public IApplicationErrorReport
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CApplicationErrorReport();
 
     /**

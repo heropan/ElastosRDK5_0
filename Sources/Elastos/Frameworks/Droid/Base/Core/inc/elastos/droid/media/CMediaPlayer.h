@@ -14,7 +14,6 @@ using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Net::IInetSocketAddress;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {

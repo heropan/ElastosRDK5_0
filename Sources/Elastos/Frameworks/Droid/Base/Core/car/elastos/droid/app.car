@@ -132,6 +132,7 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntentReceiver;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
+    interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Utility.IAttributeSet;
 
 //     using interface Elastos.Core.ICharSequence;
@@ -145,7 +146,6 @@ module
 //     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
 //     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
 //     interface Elastos.Droid.Content.IComponentName;
-//     interface Elastos.Droid.Graphics.IBitmap;
 //     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
 //     interface Elastos.Droid.View.IView;
 //     interface Elastos.Droid.View.IDisplay;
@@ -410,73 +410,107 @@ module
 //         interface ISearchableInfoHelper;
 //     }
 
-//     [local]
-//     class CActivityManager {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IHandler* handler);
+    [local]
+    class CActivityManager {
+        constructor(
+            [in] IContext* ctx,
+            [in] IHandler* handler);
 
-//         interface IActivityManager;
-//     }
+        interface IActivityManager;
+    }
 
-//     singleton class CActivityManagerHelper {
-//         interface IActivityManagerHelper;
-//     }
+    singleton class CActivityManagerHelper {
+        interface IActivityManagerHelper;
+    }
 
-//     class CActivityManagerMemoryInfo {
-//         constructor();
+    class CActivityManagerStackInfo {
+         constructor();
 
-//         interface IActivityManagerMemoryInfo;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerStackInfo;
+        interface IParcelable;
+    }
 
-//     class CActivityManagerProcessErrorStateInfo {
-//         constructor();
+    class CActivityManagerMemoryInfo {
+        constructor();
 
-//         interface IActivityManagerProcessErrorStateInfo;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerMemoryInfo;
+        interface IParcelable;
+    }
 
-//     class CActivityManagerRecentTaskInfo {
-//         constructor();
+    class CActivityManagerProcessErrorStateInfo {
+        constructor();
 
-//         interface IActivityManagerRecentTaskInfo;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerProcessErrorStateInfo;
+        interface IParcelable;
+    }
 
-//     [deprecated]
-//     class CActivityManagerRunningAppProcessInfo {
-//         constructor();
+    class CActivityManagerRecentTaskInfo {
+        constructor();
 
-//         constructor(
-//             [in] String processName,
-//             [in] Int32 pid,
-//             [in] ArrayOf<String>* arr);
+        interface IActivityManagerRecentTaskInfo;
+        interface IParcelable;
+    }
 
-//         interface IActivityManagerRunningAppProcessInfo;
-//         interface IParcelable;
-//     }
+    [deprecated]
+    class CActivityManagerRunningAppProcessInfo {
+        constructor();
 
-//     class CActivityManagerRunningServiceInfo {
-//         constructor();
+        constructor(
+            [in] String processName,
+            [in] Int32 pid,
+            [in] ArrayOf<String>* arr);
 
-//         interface IActivityManagerRunningServiceInfo;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerRunningAppProcessInfo;
+        interface IParcelable;
+    }
 
-//     class CActivityManagerRunningTaskInfo {
-//         constructor();
+    class CActivityManagerRunningServiceInfo {
+        constructor();
 
-//         interface IActivityManagerRunningTaskInfo;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerRunningServiceInfo;
+        interface IParcelable;
+    }
 
-//     class CActivityManagerTaskThumbnails {
-//         constructor();
+    class CActivityManagerRunningTaskInfo {
+        constructor();
 
-//         interface IActivityManagerTaskThumbnails;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerRunningTaskInfo;
+        interface IParcelable;
+    }
+
+    class CActivityManagerTaskThumbnail {
+        constructor();
+
+        interface IActivityManagerTaskThumbnail;
+        interface IParcelable;
+    }
+
+    class CActivityManagerTaskDescription {
+        constructor();
+
+        constructor(
+            [in] String label,
+            [in] IBitmap* icon,
+            [in] Int32 colorPrimary);
+
+        constructor(
+            [in] String label,
+            [in] Int32 colorPrimary,
+            [in] String iconFilename);
+
+        constructor(
+            [in] String label,
+            [in] IBitmap* icon);
+
+        constructor(
+            [in] String label);
+
+        constructor(
+            [in] IActivityManagerTaskDescription* td);
+
+        interface IActivityManagerTaskDescription;
+        interface IParcelable;
+    }
 
 //     class CUiModeManager {
 //         constructor();
@@ -511,46 +545,46 @@ module
         interface IPendingIntentHelper;
     }
 
-//     class CApplicationErrorReport {
-//         constructor();
+    class CApplicationErrorReport {
+        constructor();
 
-//         interface IApplicationErrorReport;
-//         interface IParcelable;
-//     }
+        interface IApplicationErrorReport;
+        interface IParcelable;
+    }
 
-//     singleton class CApplicationErrorReportHelper {
-//         constructor();
+    singleton class CApplicationErrorReportHelper {
+        constructor();
 
-//         interface IApplicationErrorReportHelper;
-//     }
+        interface IApplicationErrorReportHelper;
+    }
 
-//     class CApplicationErrorReportCrashInfo {
-//         constructor();
+    class CApplicationErrorReportCrashInfo {
+        constructor();
 
-//         interface IApplicationErrorReportCrashInfo;
-//         interface IParcelable;
-//     }
+        interface IApplicationErrorReportCrashInfo;
+        interface IParcelable;
+    }
 
-//     class CApplicationErrorReportAnrInfo {
-//         constructor();
+    class CApplicationErrorReportAnrInfo {
+        constructor();
 
-//         interface IApplicationErrorReportAnrInfo;
-//         interface IParcelable;
-//     }
+        interface IApplicationErrorReportAnrInfo;
+        interface IParcelable;
+    }
 
-//     class CApplicationErrorReportBatteryInfo {
-//         constructor();
+    class CApplicationErrorReportBatteryInfo {
+        constructor();
 
-//         interface IApplicationErrorReportBatteryInfo;
-//         interface IParcelable;
-//     }
+        interface IApplicationErrorReportBatteryInfo;
+        interface IParcelable;
+    }
 
-//     class CApplicationErrorReportRunningServiceInfo {
-//         constructor();
+    class CApplicationErrorReportRunningServiceInfo {
+        constructor();
 
-//         interface IApplicationErrorReportRunningServiceInfo;
-//         interface IParcelable;
-//     }
+        interface IApplicationErrorReportRunningServiceInfo;
+        interface IParcelable;
+    }
 
 //     [local]
 //     class CProgressDialog {
@@ -740,12 +774,12 @@ module
         interface IParcelable;
     }
 
-//     class CActivityManagerWaitResult {
-//         constructor();
+    class CActivityManagerWaitResult {
+        constructor();
 
-//         interface IActivityManagerWaitResult;
-//         interface IParcelable;
-//     }
+        interface IActivityManagerWaitResult;
+        interface IParcelable;
+    }
 
 //     [local]
 //     class CNativeContentView {

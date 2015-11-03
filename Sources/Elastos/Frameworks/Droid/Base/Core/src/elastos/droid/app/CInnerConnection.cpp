@@ -8,7 +8,6 @@ ECode CInnerConnection::Init(
     /* [in] */ LoadedPkg::ServiceDispatcher* sd)
 {
     mDispatcher = sd;
-
     return NOERROR;
 }
 
@@ -23,17 +22,10 @@ ECode CInnerConnection::Connected(
     return NOERROR;
 }
 
-ECode CInnerConnection::GetDescription(
-    /* [out] */ String* description)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode CInnerConnection::ToString(
     /* [out] */ String* str)
 {
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    return Object::ToString(str);
 }
 
 }

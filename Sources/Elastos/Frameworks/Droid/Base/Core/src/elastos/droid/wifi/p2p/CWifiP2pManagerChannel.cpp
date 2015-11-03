@@ -3,7 +3,6 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::IBundle;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Wifi::P2p::Nsd::IWifiP2pDnsSdServiceInfo;
 

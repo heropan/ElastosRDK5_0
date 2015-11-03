@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTRUNNINGSERVICEINFO_H__
 
 #include "_Elastos_Droid_App_CApplicationErrorReportRunningServiceInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IPrinter;
 
@@ -14,8 +15,15 @@ namespace App {
  * Describes a running service report.
  */
 CarClass(CApplicationErrorReportRunningServiceInfo)
+    , public Object
+    , public IApplicationErrorReportRunningServiceInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CApplicationErrorReportRunningServiceInfo();
 
     /**

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTANRINFO_H__
 
 #include "_Elastos_Droid_App_CApplicationErrorReportAnrInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IPrinter;
 
@@ -11,8 +12,15 @@ namespace Droid {
 namespace App {
 
 CarClass(CApplicationErrorReportAnrInfo)
+    , public Object
+    , public IApplicationErrorReportAnrInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Create an uninitialized instance of AnrInfo.
      */

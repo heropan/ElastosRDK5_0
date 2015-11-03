@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERPROCESSERRORSTATEINFO_H__
 
 #include "_Elastos_Droid_App_CActivityManagerProcessErrorStateInfo.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,8 +13,15 @@ namespace App {
  * Information you can retrieve about any processes that are in an error condition.
  */
 CarClass(CActivityManagerProcessErrorStateInfo)
+    , public Object
+    , public IActivityManagerProcessErrorStateInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityManagerProcessErrorStateInfo();
 
     CARAPI constructor();

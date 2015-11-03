@@ -42,8 +42,6 @@ using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::Net::CURL;
-using Elastos::Utility::CObjectStringMap;
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 

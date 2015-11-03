@@ -11,7 +11,6 @@
 
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
 using Elastos::IO::IBuffer;

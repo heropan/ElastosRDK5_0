@@ -4,7 +4,6 @@
 
 #include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceInfoHelper.h"
 
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

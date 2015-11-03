@@ -1,22 +1,30 @@
 
-#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
-#define __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAIL_H__
+#define __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAIL_H__
 
-#include "_Elastos_Droid_App_CActivityManagerTaskThumbnails.h"
-#include "ActivityManagerTaskThumbnails.h"
+#include "_Elastos_Droid_App_CActivityManagerTaskThumbnail.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::App::ActivityManagerTaskThumbnails;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 /** @hide */
-CarClass(CActivityManagerTaskThumbnails)
-    , public ActivityManagerTaskThumbnails
+CarClass(CActivityManagerTaskThumbnail)
+    , public Object
+    , public IActivityManagerTaskThumbnail
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CActivityManagerTaskThumbnail();
+
     CARAPI constructor();
 
     CARAPI WriteToParcel(
@@ -31,26 +39,20 @@ public:
     CARAPI SetMainThumbnail(
         /* [in] */ IBitmap* thumbnail);
 
-    CARAPI GetNumSubThumbbails(
-        /* [out] */ Int32* num);
+    CARAPI GetThumbnailFileDescriptor(
+        /* [out] */ IParcelFileDescriptor** pfd);
 
-    CARAPI SetNumSubThumbbails(
-        /* [in] */ Int32 num);
+    CARAPI SetThumbnailFileDescriptor(
+        /* [in] */ IParcelFileDescriptor* pfd);
 
-    /** @hide */
-    CARAPI GetRetriever(
-        /* [out] */ IThumbnailRetriever** retriever);
+public:
+    AutoPtr<IBitmap> mMainThumbnail;
 
-    CARAPI SetRetriever(
-        /* [in] */ IThumbnailRetriever* retriever);
-
-    CARAPI GetSubThumbnail(
-        /* [in] */ Int32 index,
-        /* [out] */ IBitmap** thumbnail);
+    AutoPtr<IParcelFileDescriptor> mThumbnailFileDescriptor;
 };
 
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAIL_H__

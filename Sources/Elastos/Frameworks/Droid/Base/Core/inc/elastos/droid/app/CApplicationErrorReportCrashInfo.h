@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTCRASHINFO_H__
 
 #include "_Elastos_Droid_App_CApplicationErrorReportCrashInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IPrinter;
 
@@ -14,8 +15,15 @@ namespace App {
  * Describes an application crash.
  */
 CarClass(CApplicationErrorReportCrashInfo)
+    , public Object
+    , public IApplicationErrorReportCrashInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CApplicationErrorReportCrashInfo();
 
     /**

@@ -8,6 +8,10 @@ namespace Droid {
 namespace App {
 
 
+CAR_INTERFACE_IMPL_2(CApplicationErrorReportAnrInfo, Object, IApplicationErrorReportAnrInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CApplicationErrorReportAnrInfo)
+
 /**
  * Create an uninitialized instance of AnrInfo.
  */

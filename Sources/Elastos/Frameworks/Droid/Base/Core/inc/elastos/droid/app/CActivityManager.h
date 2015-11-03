@@ -3,9 +3,9 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
 
 #include "_Elastos_Droid_App_CActivityManager.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::IObjectStringMap;
-
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IPackageDataObserver;
@@ -14,15 +14,28 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IDebugMemoryInfo;
 using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Internal::Os::IPkgUsageStats;
+using Elastos::Droid::Graphics::IPoint;
+using Elastos::Droid::Utility::ISize;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+/**
+ * Interact with the overall activities running in the system.
+ */
 CarClass(CActivityManager)
+    , public Object
+    , public IActivityManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CActivityManager();
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IHandler* handler);
@@ -66,6 +79,9 @@ public:
     CARAPI GetMemoryClass(
         /* [out] */ Int32* cls);
 
+    /** @hide */
+    static Int32 StaticGetMemoryClass();
+
     /**
      * Return the approximate per-application memory class of the current
      * device when an application is running with a large heap.  This is the
@@ -85,7 +101,7 @@ public:
     /** @hide */
     static Int32 StaticGetLargeMemoryClass();
 
-    Boolean IsLowRamDevice(
+    CARAPI IsLowRamDevice(
         /* [out] */ Boolean* isLow);
 
     /** @hide */
@@ -119,7 +135,7 @@ public:
     CARAPI GetRecentTasks(
         /* [in] */ Int32 maxNum,
         /* [in] */ Int32 flags,
-        /* [out] */ IObjectContainer** tasks);
+        /* [out] */ IList** tasks);
 
     /**
      * Same as {@link #getRecentTasks(int, int)} but returns the recent tasks for a
@@ -143,7 +159,7 @@ public:
         /* [in] */ Int32 maxNum,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 userId,
-        /* [out] */ IObjectContainer** tasks);
+        /* [out] */ IList** tasks);
 
     /**
      * Get the list of tasks associated with the calling application.
@@ -152,7 +168,7 @@ public:
      * @throws SecurityException
      */
     CARAPI GetAppTasks(
-        /* [out] */ IList* tasks); //List<ActivityManager.AppTask>
+        /* [out] */ IList** tasks); //List<ActivityManager.AppTask>
 
     /**
      * Return the current design dimensions for {@link AppTask} thumbnails, for use
@@ -187,7 +203,7 @@ public:
     CARAPI AddAppTask(
         /* [in] */ IActivity* activity,
         /* [in] */ IIntent* intent,
-        /* [in] */ ITaskDescription* description,
+        /* [in] */ IActivityManagerTaskDescription* description,
         /* [in] */ IBitmap* thumbnail,
         /* [out] */ Int32* value);
 
@@ -245,7 +261,7 @@ public:
     /** @hide */
     CARAPI IsInHomeStack(
         /* [in] */ Int32 taskId,
-        /* [out] */ Boolean** isin);
+        /* [out] */ Boolean* isin);
 
     /**
      * Equivalent to calling {@link #moveTaskToFront(int, int, Bundle)}
@@ -294,7 +310,7 @@ public:
      */
     CARAPI GetRunningServices(
         /* [in] */ Int32 maxNum,
-        /* [out] */ IObjectContainer** runningServices);
+        /* [out] */ IList** runningServices);
 
     /**
      * Returns a PendingIntent you can start to show a control panel for the
@@ -337,7 +353,7 @@ public:
      *     data be erased; {@code false} otherwise.
      */
     CARAPI ClearApplicationUserData(
-        /* [out] */ Boolean* result) {
+        /* [out] */ Boolean* result);
 
     /**
      * Returns a list of any processes that are currently in an error condition.  The result
@@ -348,7 +364,7 @@ public:
      * specified.
      */
     CARAPI GetProcessesInErrorState(
-        /* [out] */ IObjectContainer** records);
+        /* [out] */ IList** records);
 
     /**
      * Returns a list of application processes installed on external media
@@ -362,7 +378,7 @@ public:
      * @hide
      */
     CARAPI GetRunningExternalApplications(
-        /* [out] */ IObjectContainer** records);
+        /* [out] */ IList** records);
 
     /**
      * Returns a list of application processes that are running on the device.
@@ -375,7 +391,21 @@ public:
      * specified.
      */
     CARAPI GetRunningAppProcesses(
-        /* [out] */ IObjectContainer** records);
+        /* [out] */ IList** records);
+
+    /**
+     * Return global memory state information for the calling process.  This
+     * does not fill in all fields of the {@link RunningAppProcessInfo}.  The
+     * only fields that will be filled in are
+     * {@link RunningAppProcessInfo#pid},
+     * {@link RunningAppProcessInfo#uid},
+     * {@link RunningAppProcessInfo#lastTrimLevel},
+     * {@link RunningAppProcessInfo#importance},
+     * {@link RunningAppProcessInfo#lru}, and
+     * {@link RunningAppProcessInfo#importanceReasonCode}.
+     */
+    static CARAPI GetMyMemoryState(
+        /* [in] */ IActivityManagerRunningAppProcessInfo* outInfo);
 
     /**
      * Return information about the memory usage of one or more processes.
@@ -472,7 +502,7 @@ public:
     CARAPI GetLauncherLargeIconSize(
         /* [out] */ Int32* size);
 
-    static Int GetLauncherLargeIconSizeInner(
+    static Int32 GetLauncherLargeIconSizeInner(
         /* [in] */ IContext* context);
 
     /**
@@ -549,7 +579,7 @@ public:
      * Return the default limit on the number of recents that an app can make.
      * @hide
      */
-    static Int32 GetDefaultAppRecentsLimitStatic()
+    static Int32 GetDefaultAppRecentsLimitStatic();
 
     /**
      * Return the maximum limit on the number of recents that an app can make.
@@ -565,19 +595,6 @@ public:
      * @hide
      */
     static CARAPI_(Boolean) IsLargeRAM();
-
-    /**
-     * Return global memory state information for the calling process.  This
-     * does not fill in all fields of the {@link RunningAppProcessInfo}.  The
-     * only fields that will be filled in are
-     * {@link RunningAppProcessInfo#pid},
-     * {@link RunningAppProcessInfo#uid},
-     * {@link RunningAppProcessInfo#lastTrimLevel},
-     * {@link RunningAppProcessInfo#importance},
-     * {@link RunningAppProcessInfo#lru}, and
-     * {@link RunningAppProcessInfo#importanceReasonCode}.
-     */
-    static CARAPI_(AutoPtr<IActivityManagerRunningAppProcessInfo>) GetMyMemoryState();
 
     /**
      * Returns "true" if the user interface is currently being messed with

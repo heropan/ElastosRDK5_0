@@ -1,6 +1,4 @@
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/content/res/CCompatibilityInfo.h"
-#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/app/ReceiverRestrictedContext.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/app/CInstrumentation.h"
@@ -33,9 +31,10 @@
 #include "elastos/droid/os/CDropBoxManager.h"
 #include "elastos/droid/os/CUserManager.h"
 #include "elastos/droid/os/storage/CStorageManager.h"
-#include "elastos/droid/privacy/surrogate/CPrivacyLocationManager.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CClipboardManager.h"
+#include "elastos/droid/content/res/CCompatibilityInfo.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/net/CConnectivityManager.h"
 #include "elastos/droid/net/wifi/CWifiManager.h"
@@ -49,8 +48,9 @@
 #include "elastos/droid/database/sqlite/SQLiteDatabase.h"
 #include "elastos/droid/accounts/CAccountManager.h"
 #include "elastos/droid/privacy/CPrivacySettingsManager.h"
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/privacy/surrogate/CPrivacyLocationManager.h"
 #include "elastos/droid/R.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;

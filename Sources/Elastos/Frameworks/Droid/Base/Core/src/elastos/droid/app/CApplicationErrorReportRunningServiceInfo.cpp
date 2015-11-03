@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CApplicationErrorReportRunningServiceInfo, Object, IApplicationErrorReportRunningServiceInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CApplicationErrorReportRunningServiceInfo)
+
 CApplicationErrorReportRunningServiceInfo::CApplicationErrorReportRunningServiceInfo()
     : mDurationMillis(0)
 {

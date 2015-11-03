@@ -17,7 +17,6 @@ using Elastos::Droid::Media::CMediaPlayer;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnPreparedListener;
 using Elastos::Utility::CTimer;
 using Elastos::Utility::EIID_ITimerTask;
-using Elastos::Utility::CObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

@@ -6,6 +6,9 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CApplicationErrorReportHelper, Singleton, IApplicationErrorReportHelper)
+
+CAR_SINGLETON_IMPL(CApplicationErrorReportHelper)
 
 ECode CApplicationErrorReportHelper::constructor()
 {
@@ -18,8 +21,9 @@ ECode CApplicationErrorReportHelper::GetErrorReportReceiver(
     /* [in] */ Int32 appFlags,
     /* [out] */ IComponentName** receiver)
 {
-    VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(receiver);
+    *receiver = NULL;
+    VALIDATE_NOT_NULL(context);
 
     *receiver = CApplicationErrorReport::GetErrorReportReceiver(
             context, packageName, appFlags);
@@ -32,8 +36,9 @@ ECode CApplicationErrorReportHelper::GetErrorReportReceiver(
     /* [in] */ const String& receiverPackage,
     /* [out] */ IComponentName** receiver)
 {
-    VALIDATE_NOT_NULL(pm);
     VALIDATE_NOT_NULL(receiver);
+    *receiver = NULL;
+    VALIDATE_NOT_NULL(pm);
 
     *receiver = CApplicationErrorReport::GetErrorReportReceiver(
             pm, errorPackage, receiverPackage);

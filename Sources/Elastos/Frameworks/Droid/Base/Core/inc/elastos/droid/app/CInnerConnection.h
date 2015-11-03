@@ -18,9 +18,6 @@ public:
         /* [in] */ IComponentName* name,
         /* [in] */ IBinder* service);
 
-    CARAPI GetDescription(
-        /* [out] */ String* description);
-
     CARAPI ToString(
         /* [out] */ String* str);
 

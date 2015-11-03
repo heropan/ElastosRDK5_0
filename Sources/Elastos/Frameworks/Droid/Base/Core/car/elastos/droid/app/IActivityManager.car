@@ -287,9 +287,9 @@ module
             [in] Int32 userId,
             [out] IList** tasks);
 
-        GetTaskThumbnails(
+        GetTaskThumbnail(
             [in] Int32 taskId,
-            [out] IActivityManagerTaskThumbnails** taskThumbnails);
+            [out] IActivityManagerTaskThumbnail** taskThumbnails);
 
         GetServices(
             [in] Int32 maxNum,

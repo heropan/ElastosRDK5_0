@@ -4,7 +4,7 @@ module
     using interface Elastos.Utility.IList;
     using interface Org.Xmlpull.V1.IXmlSerializer;
 
-    interface Elastos.Droid.App.IActivityManagerTaskThumbnails;
+    interface Elastos.Droid.App.IActivityManagerTaskThumbnail;
     interface Elastos.Droid.App.IActivityManagerMemoryInfo;
     interface Elastos.Droid.App.IActivityManagerRunningAppProcessInfo;
     interface Elastos.Droid.App.IActivityManagerRecentTaskInfo;
@@ -18,6 +18,7 @@ module
     interface Elastos.Droid.Content.Pm.IPackageDataObserver;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IDebugMemoryInfo;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
 
     namespace Elastos {
     namespace Droid {
@@ -759,9 +760,9 @@ module
             [out] Boolean* removed);
 
         /** @hide */
-        GetTaskThumbnails(
+        GetTaskThumbnail(
             [in] Int32 id,
-            [out] IActivityManagerTaskThumbnails** taskThumbnail);
+            [out] IActivityManagerTaskThumbnail** taskThumbnail);
 
         /** @hide */
         IsInHomeStack(
@@ -876,7 +877,8 @@ module
          * @return {@code true} if the application successfully requested that the application's
          *     data be erased; {@code false} otherwise.
          */
-        ClearApplicationUserData();
+        ClearApplicationUserData(
+            [out] Boolean* result);
 
         /**
          * Returns a list of any processes that are currently in an error condition.  The result
@@ -1106,7 +1108,7 @@ module
          * @sa RunningAppProcessInfo#importanceReasonCode
          */
         GetMyMemoryState(
-            [out] IActivityManagerRunningAppProcessInfo** outState);
+            [in] IActivityManagerRunningAppProcessInfo* outInfo);
 
         /**
          * Returns "true" if the user interface is currently being messed with
@@ -1297,18 +1299,18 @@ module
      * @Involve
      * interface IParcelable
      */
-    interface IActivityManagerTaskThumbnails {
+    interface IActivityManagerTaskThumbnail {
         GetMainThumbnail(
             [out] IBitmap** thumbnail);
 
         SetMainThumbnail(
             [in] IBitmap* thumbnail);
 
-        GetNumSubThumbbails(
-            [out] Int32* num);
+        GetThumbnailFileDescriptor(
+            [out] IParcelFileDescriptor** num);
 
-        SetNumSubThumbbails(
-            [in] Int32 num);
+        SetThumbnailFileDescriptor(
+            [in] IParcelFileDescriptor* num);
     }
 
     /**
@@ -1765,6 +1767,12 @@ module
          * Constant for {@link #importance}: this process does not exist.
          */
         const Int32 IMPORTANCE_GONE = 1000;
+
+        /**
+         * Constant for {@link #importanceReasonCode}: nothing special has
+         * been specified for the reason for this level.
+         */
+        const Int32 REASON_UNKNOWN = 0;
 
         /**
          * Constant for #importanceReasonCode: one of the application's

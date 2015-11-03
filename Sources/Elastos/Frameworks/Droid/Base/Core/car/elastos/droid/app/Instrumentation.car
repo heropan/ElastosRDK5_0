@@ -1034,7 +1034,7 @@ module
             [in] IContext* who,
             [in] IBinder* contextThread,
             [in] IBinder* token,
-            [in] IAppTask* appTask,
+            [in] IIAppTask* appTask,
             [in] IIntent* intent,
             [in] IBundle* options,
             [out] IInstrumentationActivityResult** activityResult);

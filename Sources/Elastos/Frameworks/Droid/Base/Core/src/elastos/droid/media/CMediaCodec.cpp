@@ -9,7 +9,6 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IByteBufferHelper;
 using Elastos::IO::CByteBufferHelper;

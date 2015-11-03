@@ -4,8 +4,6 @@
 
 #include "elastos/droid/widget/BaseExpandableListAdapter.h"
 
-using Elastos::Utility::IObjectStringMap;
-using Elastos::Utility::CObjectStringMap;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Content::IContext;

@@ -8,7 +8,6 @@
 using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
 using Elastos::Droid::Net::IUri;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::ITimer;
 using Elastos::Utility::ITimerTask;
 using Elastos::Utility::TimerTask;

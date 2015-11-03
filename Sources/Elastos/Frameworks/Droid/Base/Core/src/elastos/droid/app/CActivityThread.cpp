@@ -11,6 +11,8 @@
 #include "elastos/droid/app/QueuedWork.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/pm/CInstrumentationInfo.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/content/pm/CActivityInfo.h"
 #include "elastos/droid/content/res/CConfigurationHelper.h"
 #include "elastos/droid/graphics/Canvas.h"
 #include "elastos/droid/graphics/CCanvas.h"
@@ -36,20 +38,7 @@
 #include <elastos/core/StringUtils.h>
 #include <unistd.h>
 
-using Elastos::Core::ISystem;
-using Elastos::Core::IClassLoader;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
-using Elastos::Core::Thread;
-using Elastos::Utility::ITimeZoneHelper;
-using Elastos::Utility::CTimeZoneHelper;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::IO::CFile;
-using Elastos::IO::IFile;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::CLocaleHelper;
+
 using Elastos::Droid::R;
 using Elastos::Droid::App::Backup::EIID_IBackupAgent;
 using Elastos::Droid::App::CInstrumentation;
@@ -73,6 +62,8 @@ using Elastos::Droid::Content::EIID_IPendingResult;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Content::Pm::IInstrumentationInfo;
 using Elastos::Droid::Content::Pm::CInstrumentationInfo;
+using Elastos::Droid::Content::Pm::CActivityInfo;
+using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::CAssetManager;
 using Elastos::Droid::Content::Res::CConfiguration;
@@ -93,6 +84,21 @@ using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Utility::CParcelableObjectContainer;
+
+using Elastos::Core::ISystem;
+using Elastos::Core::IClassLoader;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Thread;
+using Elastos::IO::CFile;
+using Elastos::IO::IFile;
+using Elastos::Utility::ITimeZoneHelper;
+using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::CLocaleHelper;
 
 namespace Elastos {
 namespace Droid {

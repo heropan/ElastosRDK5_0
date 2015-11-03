@@ -1,28 +1,21 @@
 
 #include "elastos/droid/app/LoadedPkg.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringBuffer.h>
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/app/CInnerReceiver.h"
 #include "elastos/droid/app/CInstrumentationHelper.h"
-#include "elastos/droid/content/pm/PackageManager.h"
-#include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/app/CContextImpl.h"
-#include "elastos/droid/app/CInnerConnection.h"
+// #include "elastos/droid/app/CInnerConnection.h"
+#include "elastos/droid/content/pm/PackageManager.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/view/CCompatibilityInfoHolder.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::CPathClassLoader;
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Etl::Pair;
-using Elastos::IO::CFile;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Content::EIID_IPendingResult;
 using Elastos::Droid::Content::Pm::PackageManager;
@@ -33,6 +26,12 @@ using Elastos::Droid::App::CActivityThread;
 using Elastos::Droid::App::CInstrumentationHelper;
 using Elastos::Droid::View::CCompatibilityInfoHolder;
 
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::CPathClassLoader;
+using Elastos::Core::StringBuilder;
+using Elastos::IO::CFile;
+using Elastos::Utility::Etl::Pair;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos{
 namespace Droid{

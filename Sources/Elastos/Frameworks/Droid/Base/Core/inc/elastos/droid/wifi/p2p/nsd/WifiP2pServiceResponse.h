@@ -4,7 +4,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
 
 namespace Elastos {

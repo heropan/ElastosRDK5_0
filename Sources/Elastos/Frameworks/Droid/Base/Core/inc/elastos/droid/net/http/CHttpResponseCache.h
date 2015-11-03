@@ -7,7 +7,6 @@
 using namespace Elastos::Core;
 
 using Elastos::IO::IFile;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Net::Http::IHttpResponseCache;
 
 namespace Elastos {

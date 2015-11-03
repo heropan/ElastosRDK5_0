@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/Set.h>
 
 using Elastos::Utility::Set;
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

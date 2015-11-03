@@ -1,15 +1,27 @@
 #ifndef __ELASTOS_DROID_APP_QUEUEDWORK_H__
 #define __ELASTOS_DROID_APP_QUEUEDWORK_H__
 
-#include <Elastos.CoreLibrary.h>
+#include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Utility::Concurrent::IExecutorService;
 using Elastos::Core::IRunnable;
+using Elastos::Utility::Concurrent::IExecutorService;
+using Elastos::Utility::Concurrent::IConcurrentLinkedQueue;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+/**
+ * Internal utility class to keep track of process-global work that's
+ * outstanding and hasn't been finished yet.
+ *
+ * This was created for writing SharedPreference edits out
+ * asynchronously so we'd have a mechanism to wait for the writes in
+ * Activity.onPause and similar places, but we may use this mechanism
+ * for other things in the future.
+ *
+ * @hide
+ */
 class QueuedWork
 {
 public:
@@ -60,8 +72,12 @@ public:
     // The set of Runnables that will finish or wait on any async
     // activities started by the application.
     //static ConcurrentLinkedQueue<Runnable> sPendingWorkFinishers;
-
+    static AutoPtr<IConcurrentLinkedQueue> sPendingWorkFinishers;
     static AutoPtr<IExecutorService> sSingleThreadExecutor; // lazy, guarded by class
+    static Object sClassLock;
+private:
+    QueuedWork();
+    QueuedWork(const QueuedWork&);
 };
 
 } // namespace App

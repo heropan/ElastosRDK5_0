@@ -15,7 +15,6 @@ using Elastos::Core::CInteger64;
 using Elastos::Core::CFloat;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::CObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

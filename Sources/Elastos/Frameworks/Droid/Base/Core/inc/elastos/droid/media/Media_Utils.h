@@ -10,7 +10,6 @@
 #include <utils/KeyedVector.h>
 
 using Elastos::IO::IByteBuffer;
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

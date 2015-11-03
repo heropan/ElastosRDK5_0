@@ -3,11 +3,8 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONTHREAD_H__
 
 #include "_Elastos_Droid_App_CApplicationThread.h"
-#include "elastos/droid/app/CActivityThread.h"
+#include <elastos/core/Object.h>
 
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IPrintWriter;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentReceiver;
 using Elastos::Droid::Content::IComponentName;
@@ -21,15 +18,27 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IDebugMemoryInfo;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
 
+class CActivityThread;
+
 CarClass(CApplicationThread)
+    , public Object
+    , public IApplicationThread
+    , public IBinder
 {
     friend class CActivityThread;
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CApplicationThread();
 
     CARAPI SchedulePauseActivity(
@@ -323,11 +332,9 @@ private:
     static const String TWO_COUNT_COLUMNS;
     static const String DB_INFO_FORMAT;
 
-    Int32 mLastProcessState = -1;
+    Int32 mLastProcessState;// = -1;
 
     CActivityThread* mAThread;//CActivityThread is host of CApplicationThread
-
-    Object mPackagesLock;
 };
 
 } // namespace App

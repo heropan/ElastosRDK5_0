@@ -6,7 +6,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <media/mediametadataretriever.h>
 
-using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Graphics::IBitmap;

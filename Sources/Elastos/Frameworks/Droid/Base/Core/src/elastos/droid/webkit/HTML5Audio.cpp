@@ -22,8 +22,6 @@ using Elastos::Droid::Media::EIID_IMediaPlayerOnBufferingUpdateListener;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
-using Elastos::Utility::CObjectStringMap;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::CTimer;
 using Elastos::Utility::EIID_ITimerTask;
 using Elastos::Utility::Logging::Logger;

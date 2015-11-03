@@ -323,11 +323,6 @@ AutoPtr<ITransition> Fragment::USE_DEFAULT_TRANSITION = InitUSE_DEFAULT_TRANSITI
 
 HashMap<String, AutoPtr<IClassInfo> > Fragment::sClassMap;
 
-    , public IFragment
-    , public IComponentCallbacks
-    , public IComponentCallbacks2
-    , public IViewOnCreateContextMenuListener
-
 CAR_INTERFACE_IMPL_4(Fragment, Object, IFragment, IComponentCallbacks, IComponentCallbacks2, IViewOnCreateContextMenuListener)
 
 Fragment::Fragment()
@@ -361,7 +356,7 @@ Fragment::Fragment()
     , mAllowEnterTransitionOverlap(FALSE)
 {}
 
-Fragment~Fragment()
+Fragment::~Fragment()
 {}
 
 ECode Fragment::Initialize()
@@ -1710,7 +1705,9 @@ ECode Fragment::OnContextItemSelected(
  * @param callback Used to manipulate the shared element transitions on this Fragment
  *                 when added not as a pop from the back stack.
  */
-public void setEnterSharedElementCallback(SharedElementCallback callback) {
+CARPAI SetEnterSharedElementCallback(
+    /* [in] */ ISharedElementCallback* callback)
+{
     if (callback == null) {
         callback = SharedElementCallback.NULL_CALLBACK;
     }
@@ -1720,8 +1717,10 @@ public void setEnterSharedElementCallback(SharedElementCallback callback) {
 /**
  * @hide
  */
-public void setEnterSharedElementTransitionCallback(SharedElementCallback callback) {
-    setEnterSharedElementCallback(callback);
+CARPAI SetEnterSharedElementTransitionCallback(
+    /* [in] */ ISharedElementCallback* callback)
+{
+    return SetEnterSharedElementCallback(callback);
 }
 
 /**
@@ -1731,8 +1730,10 @@ public void setEnterSharedElementTransitionCallback(SharedElementCallback callba
  * @param callback Used to manipulate the shared element transitions on this Fragment
  *                 when added as a pop from the back stack.
  */
-public void setExitSharedElementCallback(SharedElementCallback callback) {
-    if (callback == null) {
+CARAPI SetExitSharedElementCallback(
+    /* [in] */ ISharedElementCallback* callback)
+{
+    if (callback == NULL) {
         callback = SharedElementCallback.NULL_CALLBACK;
     }
     mExitTransitionCallback = callback;
@@ -1741,7 +1742,9 @@ public void setExitSharedElementCallback(SharedElementCallback callback) {
 /**
  * @hide
  */
-public void setExitSharedElementTransitionCallback(SharedElementCallback callback) {
+CARAPI SetExitSharedElementTransitionCallback(
+    /* [in] */ ISharedElementCallback* callback)
+{
     setExitSharedElementCallback(callback);
 }
 

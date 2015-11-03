@@ -4,12 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_CActivityThread.h"
-#include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/content/res/CResources.h"
-#include "elastos/droid/content/pm/CActivityInfo.h"
-#include "elastos/droid/content/pm/CServiceInfo.h"
-#include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/app/CApplicationThread.h"
 #include "elastos/droid/app/CResultInfo.h"
 #include "elastos/droid/app/Activity.h"
@@ -19,11 +16,7 @@
 #include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include <elastos/Map.h>
 
-using Elastos::Utility::Regex::IPattern;
-using Elastos::Core::IClassLoader;
-using Elastos::IO::IFile;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Runnable;
@@ -39,11 +32,8 @@ using Elastos::Droid::Content::IContentProvider;
 using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IPendingResult;
-using Elastos::Droid::Content::Pm::CActivityInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Content::Pm::CServiceInfo;
-using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Content::Pm::IProviderInfo;
 using Elastos::Droid::Content::Pm::IIPackageManager;
 using Elastos::Droid::Content::Pm::IServiceInfo;
@@ -62,6 +52,10 @@ using Elastos::Droid::App::Activity;
 using Elastos::Droid::App::IOnActivityPausedListener;
 using Elastos::Droid::App::IContentProviderHolder;
 using Elastos::Droid::App::Backup::IBackupAgent;
+
+using Elastos::Core::IClassLoader;
+using Elastos::IO::IFile;
+using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
 namespace Droid {

@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IResolveInfo;

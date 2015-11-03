@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERRUNNINGTASKINFO_H__
 
 #include "_Elastos_Droid_App_CActivityManagerRunningTaskInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IComponentName;
@@ -21,8 +22,15 @@ namespace App {
  * last state in order to restart it when the user returns.
  */
 CarClass(CActivityManagerRunningTaskInfo)
+    , public Object
+    , public IActivityManagerRunningTaskInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityManagerRunningTaskInfo();
 
     CARAPI constructor();

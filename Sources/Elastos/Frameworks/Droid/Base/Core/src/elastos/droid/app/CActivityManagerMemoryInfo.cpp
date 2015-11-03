@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CActivityManagerMemoryInfo, Object, IActivityManagerMemoryInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CActivityManagerMemoryInfo)
+
 CActivityManagerMemoryInfo::CActivityManagerMemoryInfo()
     : mAvailMem(0)
     , mTotalMem(0)

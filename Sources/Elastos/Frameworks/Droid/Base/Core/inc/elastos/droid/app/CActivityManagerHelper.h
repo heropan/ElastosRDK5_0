@@ -3,20 +3,28 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERHELPER_H__
 
 #include "_Elastos_Droid_App_CActivityManagerHelper.h"
-
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CActivityManagerHelper)
+    , public Singleton
+    , public IActivityManagerHelper
 {
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
+
     /** @hide */
-    CARAPI GetMemoryClass(
+    CARAPI StaticGetMemoryClass(
         /* [out] */ Int32* cls);
 
     /** @hide */
-    CARAPI GetLargeMemoryClass(
+    CARAPI StaticGetLargeMemoryClass(
         /* [out] */ Int32* cls);
 
     /**
@@ -28,15 +36,27 @@ CarClass(CActivityManagerHelper)
     CARAPI IsHighEndGfx(
         /* [out] */ Boolean* result);
 
+
     /**
-     * Use to decide whether the running device can be considered a "large
-     * RAM" device.  Exactly what memory limit large RAM is will vary, but
-     * it essentially means there is plenty of RAM to have lots of background
-     * processes running under decent loads.
+     * Return the maximum number of recents entries that we will maintain and show.
      * @hide
      */
-    CARAPI IsLargeRAM(
-        /* [out] */ Boolean* result);
+    CARAPI GetMaxRecentTasksStatic(
+        /* [out] */ Int32* result);
+
+    /**
+     * Return the default limit on the number of recents that an app can make.
+     * @hide
+     */
+    CARAPI GetDefaultAppRecentsLimitStatic(
+        /* [out] */ Int32* result);
+
+    /**
+     * Return the maximum limit on the number of recents that an app can make.
+     * @hide
+     */
+    CARAPI GetMaxAppRecentsLimitStatic(
+        /* [out] */ Int32* result);
 
     /**
      * Return global memory state information for the calling process.  This
@@ -50,7 +70,7 @@ CarClass(CActivityManagerHelper)
      * {@link RunningAppProcessInfo#importanceReasonCode}.
      */
     CARAPI GetMyMemoryState(
-        /* [out] */ IActivityManagerRunningAppProcessInfo** outState);
+        /* [out] */ IActivityManagerRunningAppProcessInfo* outInfo);
 
     /**
      * Returns "true" if the user interface is currently being messed with

@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Net::Nsd::IDnsSdTxtRecord;
 
 namespace Elastos {

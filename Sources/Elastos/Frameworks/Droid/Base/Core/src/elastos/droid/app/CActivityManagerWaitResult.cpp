@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL_2(CActivityManagerWaitResult, Object, IActivityManagerWaitResult, IParcelable)
+
+CAR_OBJECT_IMPL(CActivityManagerWaitResult)
+
 CActivityManagerWaitResult::CActivityManagerWaitResult()
     : mResult(0)
     , mTimeout(FALSE)

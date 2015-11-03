@@ -6,12 +6,14 @@
 #include "elastos/droid/app/CApplicationErrorReportBatteryInfo.h"
 #include "elastos/droid/app/CApplicationErrorReportRunningServiceInfo.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CComponentName.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IComponentName;
@@ -19,18 +21,23 @@ using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-static const String TAG = String("CApplicationErrorReport");
+const String TAG("CApplicationErrorReport");
 
 // System property defining error report receiver for system apps
-static const String SYSTEM_APPS_ERROR_RECEIVER_PROPERTY = String("ro.error.receiver.system.apps");
+const String SYSTEM_APPS_ERROR_RECEIVER_PROPERTY("ro.error.receiver.system.apps");
 
 // System property defining default error report receiver
-static const String DEFAULT_ERROR_RECEIVER_PROPERTY = String("ro.error.receiver.default");
+const String DEFAULT_ERROR_RECEIVER_PROPERTY("ro.error.receiver.default");
+
+CAR_INTERFACE_IMPL_2(CApplicationErrorReport, Object, IApplicationErrorReport, IParcelable)
+
+CAR_OBJECT_IMPL(CApplicationErrorReport)
 
 CApplicationErrorReport::CApplicationErrorReport()
     : mType(0)
@@ -241,7 +248,7 @@ AutoPtr<IComponentName> CApplicationErrorReport::GetErrorReportReceiver(
     }
 
     String activityName;
-    activityInfo->GetName(&activityName);
+    IPackageItemInfo::Probe(activityInfo)->GetName(&activityName);
 
     AutoPtr<IComponentName> compName;
     CComponentName::New(receiverPackage, activityName, (IComponentName**)&compName);
@@ -337,7 +344,7 @@ ECode CApplicationErrorReport::Dump(
     sb.Reset();
     sb.Append(prefix);
     sb.Append("systemApp:");
-    sb.AppendBoolean(mSystemApp);
+    sb.Append(mSystemApp);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
@@ -367,7 +374,8 @@ ECode CApplicationErrorReport::WriteToParcel(
 {
     VALIDATE_NOT_NULL(dest);
 
-    Int32 start = dest.dataPosition();
+    Int32 start;
+    dest->GetDataPosition(&start);
     FAIL_RETURN(dest->WriteInt32(mType));
     FAIL_RETURN(dest->WriteString(mPackageName));
     FAIL_RETURN(dest->WriteString(mInstallerPackageName));
@@ -377,44 +385,34 @@ ECode CApplicationErrorReport::WriteToParcel(
 
     switch (mType) {
         case IApplicationErrorReport::TYPE_CRASH:
-        {
-            IParcelable* parcelable = (IParcelable*)(mCrashInfo->Probe(EIID_IParcelable));
-            return parcelable->WriteToParcel(dest);
-        }
+            return IParcelable::Probe(mCrashInfo)->WriteToParcel(dest);
 
         case IApplicationErrorReport::TYPE_ANR:
-        {
-           IParcelable* parcelable = (IParcelable*)(mAnrInfo->Probe(EIID_IParcelable));
-           return parcelable->WriteToParcel(dest);
-        }
-
+            return IParcelable::Probe(mAnrInfo)->WriteToParcel(dest);
 
         case IApplicationErrorReport::TYPE_BATTERY:
-        {
-           IParcelable* parcelable = (IParcelable*)(mBatteryInfo->Probe(EIID_IParcelable));
-           return parcelable->WriteToParcel(dest);
-        }
+            return IParcelable::Probe(mBatteryInfo)->WriteToParcel(dest);
 
         case IApplicationErrorReport::TYPE_RUNNING_SERVICE:
-        {
-           IParcelable* parcelable = (IParcelable*)(mRunningServiceInfo->Probe(EIID_IParcelable));
-           return parcelable->WriteToParcel(dest);
-        }
+            return IParcelable::Probe(mRunningServiceInfo)->WriteToParcel(dest);
 
         default:
             Logger::W(TAG, "WriteToParcel: Invalid Error type!");
             break;
     }
 
-    int total = dest.dataPosition()-start;
+    Int32 total;
+    dest->GetDataPosition(&total);
+    total = total - start;
     if (total > 20*1024) {
-        Slog.d("Error", "ERR: exClass=" + exceptionClassName);
-        Slog.d("Error", "ERR: exMsg=" + exceptionMessage);
-        Slog.d("Error", "ERR: file=" + throwFileName);
-        Slog.d("Error", "ERR: class=" + throwClassName);
-        Slog.d("Error", "ERR: method=" + throwMethodName + " line=" + throwLineNumber);
-        Slog.d("Error", "ERR: stack=" + stackTrace);
-        Slog.d("Error", "ERR: TOTAL BYTES WRITTEN: " + (dest.dataPosition()-start));
+        Slogger::D("Error", "ERR: InstallerPackageName=%s", mInstallerPackageName.string());
+        // Slogger.D("Error", "ERR: exClass=" + exceptionClassName);
+        // Slogger.D("Error", "ERR: exMsg=" + exceptionMessage);
+        // Slogger.D("Error", "ERR: file=" + throwFileName);
+        // Slogger.D("Error", "ERR: class=" + throwClassName);
+        // Slogger.D("Error", "ERR: method=" + throwMethodName + " line=" + throwLineNumber);
+        // Slogger.D("Error", "ERR: stack=" + stackTrace);
+        // Slogger.D("Error", "ERR: TOTAL BYTES WRITTEN: " + (dest.dataPosition()-start));
     }
 
     return NOERROR;

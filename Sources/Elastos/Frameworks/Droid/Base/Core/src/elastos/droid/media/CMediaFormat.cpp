@@ -4,7 +4,6 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::IO::IByteBuffer;
-using Elastos::Utility::CObjectStringMap;
 using Elastos::Core::IFloat;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IInteger64;

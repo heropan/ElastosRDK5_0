@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERRUNNINGSERVICEINFO_H__
 
 #include "_Elastos_Droid_App_CActivityManagerRunningServiceInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IComponentName;
 
@@ -15,8 +16,15 @@ namespace App {
  * currently running in the system.
  */
 CarClass(CActivityManagerRunningServiceInfo)
+    , public Object
+    , public IActivityManagerRunningServiceInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityManagerRunningServiceInfo();
 
     CARAPI constructor();
@@ -86,7 +94,7 @@ public:
     /**
      * Set to true if this service has been explicitly started.
      */
-    CARAPI GetStarted(
+    CARAPI IsStarted(
         /* [out] */ Boolean* started);
 
     CARAPI SetStarted(

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTHELPER_H__
 
 #include "_Elastos_Droid_App_CApplicationErrorReportHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
@@ -13,8 +14,14 @@ namespace Droid {
 namespace App {
 
 CarClass(CApplicationErrorReportHelper)
+    , public Singleton
+    , public IApplicationErrorReportHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI constructor();
 
     CARAPI GetErrorReportReceiver(

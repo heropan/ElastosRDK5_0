@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Net_Http_CRequestQueue.h"
 #include "RequestQueue.h"
 
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

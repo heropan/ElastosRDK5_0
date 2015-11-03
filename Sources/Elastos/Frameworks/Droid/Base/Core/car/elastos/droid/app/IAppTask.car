@@ -8,13 +8,10 @@ module
     namespace Droid {
     namespace App {
 
-    /**
-     * System private API for talking with the alarm manager service.
-     *
-     * {@hide}
-     */
+
+    /** @hide */
     [local]
-    interface IAppTask {
+    interface IIAppTask {
         FinishAndRemoveTask();
 
         GetTaskInfo(

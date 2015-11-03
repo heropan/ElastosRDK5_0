@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_App_CActivityNonConfigurationInstances.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGER_WAIT_RESULT_H__
 
 #include "_Elastos_Droid_App_CActivityManagerWaitResult.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IComponentName;
 
@@ -10,8 +11,15 @@ namespace Droid {
 namespace App {
 
 CarClass(CActivityManagerWaitResult)
+    , public Object
+    , public IActivityManagerWaitResult
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
 
     CActivityManagerWaitResult();
 

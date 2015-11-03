@@ -1,11 +1,11 @@
-#ifndef __ELASTOS_DROID_APP_CACITONKEYINFO_H__
-#define __ELASTOS_DROID_APP_CACITONKEYINFO_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_STACKINFO_H__
+#define __ELASTOS_DROID_APP_CACTIVITYMANAGER_STACKINFO_H__
 
-#include "_Elastos_Droid_App_CActionKeyInfo.h"
+#include "_Elastos_Droid_App_CActivityManagerStackInfo.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Graphics::IRect;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
@@ -28,58 +28,45 @@ public:
 
     CARAPI constructor();
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(stackId);
-        dest.writeInt(bounds.left);
-        dest.writeInt(bounds.top);
-        dest.writeInt(bounds.right);
-        dest.writeInt(bounds.bottom);
-        dest.writeIntArray(taskIds);
-        dest.writeStringArray(taskNames);
-        dest.writeInt(displayId);
-    }
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
 
-    public void readFromParcel(Parcel source) {
-        stackId = source.readInt();
-        bounds = new Rect(
-                source.readInt(), source.readInt(), source.readInt(), source.readInt());
-        taskIds = source.createIntArray();
-        taskNames = source.createStringArray();
-        displayId = source.readInt();
-    }
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
 
-    public static final Creator<StackInfo> CREATOR = new Creator<StackInfo>() {
-        @Override
-        public StackInfo createFromParcel(Parcel source) {
-            return new StackInfo(source);
-        }
-        @Override
-        public StackInfo[] newArray(int size) {
-            return new StackInfo[size];
-        }
-    };
+    CARAPI GetStackId(
+        /* [out] */ Int32* result);
 
-    public StackInfo() {
-    }
+    CARAPI SetStackId(
+        /* [in] */ Int32 id);
 
-    private StackInfo(Parcel source) {
-        readFromParcel(source);
-    }
+    CARAPI GetBounds(
+        /* [out] */ IRect** rect);
 
-    public String toString(String prefix) {
-        StringBuilder sb = new StringBuilder(256);
-        sb.append(prefix); sb.append("Stack id="); sb.append(stackId);
-                sb.append(" bounds="); sb.append(bounds.toShortString());
-                sb.append(" displayId="); sb.append(displayId);
-                sb.append("\n");
-        prefix = prefix + "  ";
-        for (int i = 0; i < taskIds.length; ++i) {
-            sb.append(prefix); sb.append("taskId="); sb.append(taskIds[i]);
-                    sb.append(": "); sb.append(taskNames[i]); sb.append("\n");
-        }
-        return sb.toString();
-    }
+    CARAPI SetBounds(
+        /* [in] */ IRect* rect);
+
+    CARAPI GetTaskIds(
+        /* [out, callee] */ ArrayOf<Int32>** ids);
+
+    CARAPI SetTaskId(
+        /* [in] */ ArrayOf<Int32>* ids);
+
+    CARAPI GetTaskNames(
+        /* [out, callee] */ ArrayOf<String>** names);
+
+    CARAPI SetTaskNames(
+        /* [in] */ ArrayOf<String>* names);
+
+    CARAPI GetDisplayId(
+        /* [out] */ Int32* id);
+
+    CARAPI SetDisplayId(
+        /* [in] */ Int32 id);
+
+    CARAPI ToString(
+        /* [in] */ const String& prefix,
+        /* [out] */ String* str);
 
     CARAPI ToString(
         /* [out] */ String* str);
@@ -97,4 +84,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_APP_CACTIVITYMANAGER_STACKINFO_H__

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERRECENTTASKINFO_H__
 
 #include "_Elastos_Droid_App_CActivityManagerRecentTaskInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IIntent;
@@ -17,8 +18,15 @@ namespace App {
  * started or visited.
  */
 CarClass(CActivityManagerRecentTaskInfo)
+    , public Object
+    , public IActivityManagerRecentTaskInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityManagerRecentTaskInfo();
 
     ~CActivityManagerRecentTaskInfo();
@@ -60,6 +68,25 @@ public:
 
     CARAPI SetDescription(
         /* [in] */ ICharSequence* description);
+
+    /**
+     * The recent activity values for the highest activity in the stack to have set the values.
+     * {@link Activity#setTaskDescription(android.app.ActivityManager.TaskDescription)}.
+     */
+    CARAPI SetTaskDescription(
+        /* [in] */ IActivityManagerTaskDescription* description);
+
+    CARAPI GetTaskDescription(
+        /* [out] */ IActivityManagerTaskDescription** description);
+
+    /**
+     * Task affiliation for grouping with other tasks.
+     */
+    CARAPI GetAffiliatedTaskId(
+        /* [out] */ Int32* id);
+
+    CARAPI SetAffiliatedTaskId(
+        /* [in] */ Int32 id);
 
 private:
     /**
@@ -110,19 +137,19 @@ private:
      * The first time this task was active.
      * @hide
      */
-    Int64 firstActiveTime;
+    Int64 mFirstActiveTime;
 
     /**
      * The last time this task was active.
      * @hide
      */
-    Int64 lastActiveTime;
+    Int64 mLastActiveTime;
 
     /**
      * The recent activity values for the highest activity in the stack to have set the values.
      * {@link Activity#setTaskDescription(android.app.ActivityManager.TaskDescription)}.
      */
-    AutoPtr<IActivityTaskDescription> taskDescription;
+    AutoPtr<IActivityManagerTaskDescription> mTaskDescription;
 
     /**
      * Task affiliation for grouping with other tasks.

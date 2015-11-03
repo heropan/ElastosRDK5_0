@@ -9,7 +9,6 @@
 
 using namespace Elastos::Core;
 
-using Elastos::Utility::IObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

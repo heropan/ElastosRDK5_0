@@ -10,7 +10,6 @@
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Utility::ICollection;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::IMap;
 
 namespace Elastos {

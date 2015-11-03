@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERMEMORYINFO_H__
 
 #include "_Elastos_Droid_App_CActivityManagerMemoryInfo.h"
-
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -14,8 +14,15 @@ namespace App {
  * {@link ActivityManager#getMemoryInfo}.
  */
 CarClass(CActivityManagerMemoryInfo)
+    , public Object
+    , public IActivityManagerMemoryInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CActivityManagerMemoryInfo();
 
     CARAPI constructor();

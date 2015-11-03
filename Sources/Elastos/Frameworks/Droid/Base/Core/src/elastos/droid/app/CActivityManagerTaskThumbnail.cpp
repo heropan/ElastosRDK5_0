@@ -1,70 +1,106 @@
 
-#include "elastos/droid/app/CActivityManagerTaskThumbnails.h"
+#include "elastos/droid/app/CActivityManagerTaskThumbnail.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/CParcelFileDescriptor.h"
+#include "elastos/droid/graphics/CBitmap.h"
+
+using Elastos::Droid::Os::CParcelFileDescriptor;
+using Elastos::Droid::Graphics::CBitmap;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-ECode CActivityManagerTaskThumbnails::constructor()
+CAR_INTERFACE_IMPL_2(CActivityManagerTaskThumbnail, Object, IActivityManagerTaskThumbnail, IParcelable)
+
+CAR_OBJECT_IMPL(CActivityManagerTaskThumbnail)
+
+CActivityManagerTaskThumbnail::CActivityManagerTaskThumbnail()
 {
-    return ActivityManagerTaskThumbnails::Init();
 }
 
-ECode CActivityManagerTaskThumbnails::WriteToParcel(
+ECode CActivityManagerTaskThumbnail::constructor()
+{
+    return NOERROR;
+}
+
+ECode CActivityManagerTaskThumbnail::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return ActivityManagerTaskThumbnails::WriteToParcel(dest);
+    VALIDATE_NOT_NULL(dest);
+
+    if (mMainThumbnail != NULL) {
+        FAIL_RETURN(dest->WriteInt32(1));
+        IParcelable::Probe(mMainThumbnail)->WriteToParcel(dest);
+    } else {
+        FAIL_RETURN(dest->WriteInt32(0));
+    }
+
+    if (mThumbnailFileDescriptor != NULL) {
+        FAIL_RETURN(dest->WriteInt32(1));
+        IParcelable::Probe(mThumbnailFileDescriptor)->WriteToParcel(dest);
+    } else {
+        FAIL_RETURN(dest->WriteInt32(0));
+    }
+
+    return NOERROR;
 }
 
-ECode CActivityManagerTaskThumbnails::ReadFromParcel(
+ECode CActivityManagerTaskThumbnail::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    return ActivityManagerTaskThumbnails::ReadFromParcel(source);
+    VALIDATE_NOT_NULL(source);
+
+    Int32 value;
+    FAIL_RETURN(source->ReadInt32(&value));
+    if (value != 0) {
+        CBitmap::New((IBitmap**)&mMainThumbnail);
+        IParcelable::Probe(mMainThumbnail)->ReadFromParcel(source);
+    } else {
+        mMainThumbnail = NULL;
+    }
+
+    FAIL_RETURN(source->ReadInt32(&value));
+    if (value != 0)  {
+        CParcelFileDescriptor::New((IParcelFileDescriptor**)&mThumbnailFileDescriptor);
+        IParcelable::Probe(mThumbnailFileDescriptor)->ReadFromParcel(source);
+    } else {
+        mThumbnailFileDescriptor = NULL;
+    }
+
+    return NOERROR;
 }
 
-ECode CActivityManagerTaskThumbnails::GetMainThumbnail(
+ECode CActivityManagerTaskThumbnail::GetMainThumbnail(
     /* [out] */ IBitmap** thumbnail)
 {
-    return ActivityManagerTaskThumbnails::GetMainThumbnail(thumbnail);
+    VALIDATE_NOT_NULL(thumbnail);
+    *thumbnail = mMainThumbnail;
+    REFCOUNT_ADD(*thumbnail)
+    return NOERROR;
 }
 
-ECode CActivityManagerTaskThumbnails::SetMainThumbnail(
+ECode CActivityManagerTaskThumbnail::SetMainThumbnail(
     /* [in] */ IBitmap* thumbnail)
 {
-    return ActivityManagerTaskThumbnails::SetMainThumbnail(thumbnail);
+    mMainThumbnail = thumbnail;
+    return NOERROR;
 }
 
-ECode CActivityManagerTaskThumbnails::GetNumSubThumbbails(
-    /* [out] */ Int32* num)
+ECode CActivityManagerTaskThumbnail::GetThumbnailFileDescriptor(
+    /* [out] */ IParcelFileDescriptor** pfd)
 {
-    return ActivityManagerTaskThumbnails::GetNumSubThumbbails(num);
+    VALIDATE_NOT_NULL(pfd);
+    *pfd = mThumbnailFileDescriptor;
+    REFCOUNT_ADD(*pfd)
+    return NOERROR;
 }
 
-ECode CActivityManagerTaskThumbnails::SetNumSubThumbbails(
-    /* [in] */ Int32 num)
+ECode CActivityManagerTaskThumbnail::SetThumbnailFileDescriptor(
+    /* [in] */ IParcelFileDescriptor* pfd)
 {
-    return ActivityManagerTaskThumbnails::SetNumSubThumbbails(num);
-}
-
-/** @hide */
-ECode CActivityManagerTaskThumbnails::GetRetriever(
-    /* [out] */ IThumbnailRetriever** retriever)
-{
-    return ActivityManagerTaskThumbnails::GetRetriever(retriever);
-}
-
-ECode CActivityManagerTaskThumbnails::SetRetriever(
-    /* [in] */ IThumbnailRetriever* retriever)
-{
-    return ActivityManagerTaskThumbnails::SetRetriever(retriever);
-}
-
-ECode CActivityManagerTaskThumbnails::GetSubThumbnail(
-    /* [in] */ Int32 index,
-    /* [out] */ IBitmap** thumbnail)
-{
-    return ActivityManagerTaskThumbnails::GetSubThumbnail(index, thumbnail);
+    mThumbnailFileDescriptor = pfd;
+    return NOERROR;
 }
 
 } // namespace App

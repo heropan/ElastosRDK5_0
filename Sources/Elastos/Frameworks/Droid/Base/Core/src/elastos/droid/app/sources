@@ -12,17 +12,41 @@ SOURCES += ActionBar.cpp
 SOURCES += CActionKeyInfo.cpp
 
 SOURCES += ActivityManagerNative.cpp
+
+SOURCES += CActivityManager.cpp
+SOURCES += CActivityManagerHelper.cpp
+SOURCES += CActivityManagerMemoryInfo.cpp
+SOURCES += CActivityManagerProcessErrorStateInfo.cpp
+SOURCES += CActivityManagerRecentTaskInfo.cpp
+SOURCES += CActivityManagerRunningAppProcessInfo.cpp
+SOURCES += CActivityManagerRunningServiceInfo.cpp
+SOURCES += CActivityManagerRunningTaskInfo.cpp
+SOURCES += CActivityManagerTaskDescription.cpp
+SOURCES += CActivityManagerTaskThumbnail.cpp
+SOURCES += CActivityManagerWaitResult.cpp
+SOURCES += CActivityManagerStackInfo.cpp
 SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
 SOURCES += AppGlobals.cpp
 
+#SOURCES += Application.cpp
+#SOURCES += CApplicationThread.cpp
+
+SOURCES += CApplicationErrorReport.cpp
+SOURCES += CApplicationErrorReportHelper.cpp
+SOURCES += CApplicationErrorReportAnrInfo.cpp
+SOURCES += CApplicationErrorReportBatteryInfo.cpp
+SOURCES += CApplicationErrorReportCrashInfo.cpp
+SOURCES += CApplicationErrorReportRunningServiceInfo.cpp
+
 SOURCES += CBackStackState.cpp
 SOURCES += CBackStackRecordTransitionState.cpp
 
 SOURCES += CContentProviderHolder.cpp
 
+#SOURCES += Fragment.cpp
 SOURCES += FragmentManager.cpp
 SOURCES += CFragmentManagerHelper.cpp
 SOURCES += FragmentManagerImpl.cpp
@@ -35,6 +59,8 @@ SOURCES += CPendingIntent.cpp
 SOURCES += CPendingIntentFinishedDispatcher.cpp
 SOURCES += CPendingIntentHelper.cpp
 
+#SOURCES += QueuedWork.cpp
+
 SOURCES += CResultInfo.cpp
 
 SOURCES += CTaskStackBuilder.cpp
@@ -45,32 +71,13 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += AlertDialog.cpp
 #SOURCES += ApplicationPackageManager.cpp
 #SOURCES += CActionBarLayoutParams.cpp
-#SOURCES += CActivityManager.cpp
-#SOURCES += CActivityManagerHelper.cpp
-#SOURCES += CActivityManagerMemoryInfo.cpp
-#SOURCES += CActivityManagerProcessErrorStateInfo.cpp
-#SOURCES += CActivityManagerRecentTaskInfo.cpp
-#SOURCES += CActivityManagerRunningAppProcessInfo.cpp
-#SOURCES += CActivityManagerRunningServiceInfo.cpp
-#SOURCES += CActivityManagerRunningTaskInfo.cpp
-#SOURCES += ActivityManagerTaskThumbnails.cpp
-#SOURCES += CActivityManagerTaskThumbnails.cpp
-#SOURCES += CActivityManagerWaitResult.cpp
+
 #SOURCES += CActivityNonConfigurationInstances.cpp
 #SOURCES += CActivityThread.cpp
 #SOURCES += CActivityThreadHelper.cpp
 #SOURCES += CAlarmManager.cpp
 #SOURCES += CAlertDialog.cpp
 #SOURCES += CAlertDialogBuilder.cpp
-#SOURCES += CApplicationErrorReport.cpp
-#SOURCES += CApplicationErrorReportHelper.cpp
-#SOURCES += CApplicationErrorReportAnrInfo.cpp
-#SOURCES += CApplicationErrorReportBatteryInfo.cpp
-#SOURCES += CApplicationErrorReportCrashInfo.cpp
-#SOURCES += CApplicationErrorReportRunningServiceInfo.cpp
-#SOURCES += CApplicationThread.cpp
-#SOURCES += Application.cpp
-#SOURCES += CApplication.cpp
 
 #SOURCES += CContextImpl.cpp
 #SOURCES += ReceiverRestrictedContext.cpp
@@ -110,10 +117,8 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += LoadedPkg.cpp
 #SOURCES += CInnerReceiver.cpp
 #SOURCES += ProgressDialog.cpp
-#SOURCES += QueuedWork.cpp
 #SOURCES += Service.cpp
 
-#SOURCES += Fragment.cpp
 #SOURCES += DialogFragment.cpp
 #SOURCES += CActionBarImpl.cpp
 #SOURCES += CAlertController.cpp

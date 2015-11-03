@@ -33,10 +33,8 @@ using Elastos::Droid::Os::CMessageHelper;
 //using Elastos::Droid::Provider::IBrowser;//TODO the Browser no implementation
 using Elastos::Droid::Net::Uri;
 using Elastos::Net::IURL;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::LayoutInflater;
-using Elastos::Utility::CObjectStringMap;
 
 namespace Elastos {
 namespace Droid {

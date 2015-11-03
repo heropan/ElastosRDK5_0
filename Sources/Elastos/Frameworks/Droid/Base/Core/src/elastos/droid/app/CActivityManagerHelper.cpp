@@ -6,21 +6,25 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CActivityManagerHelper, Singleton, IActivityManagerHelper)
+
+CAR_SINGLETON_IMPL(CActivityManagerHelper)
+
 /** @hide */
-ECode CActivityManagerHelper::GetMemoryClass(
+ECode CActivityManagerHelper::StaticGetMemoryClass(
     /* [out] */ Int32* cls)
 {
     VALIDATE_NOT_NULL(cls);
-    *cls = CActivityManager::GetMemoryClass();
+    *cls = CActivityManager::StaticGetMemoryClass();
     return NOERROR;
 }
 
 /** @hide */
-ECode CActivityManagerHelper::GetLargeMemoryClass(
+ECode CActivityManagerHelper::StaticGetLargeMemoryClass(
     /* [out] */ Int32* cls)
 {
     VALIDATE_NOT_NULL(cls);
-    *cls = CActivityManager::GetLargeMemoryClass();
+    *cls = CActivityManager::StaticGetLargeMemoryClass();
     return NOERROR;
 }
 
@@ -32,22 +36,34 @@ ECode CActivityManagerHelper::IsHighEndGfx(
     return NOERROR;
 }
 
-ECode CActivityManagerHelper::IsLargeRAM(
-    /* [out] */ Boolean* result)
+ECode CActivityManagerHelper::GetMaxRecentTasksStatic(
+    /* [out] */ Int32* cls)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = CActivityManager::IsLargeRAM();
+    VALIDATE_NOT_NULL(cls);
+    *cls = CActivityManager::GetMaxRecentTasksStatic();
+    return NOERROR;
+}
+
+ECode CActivityManagerHelper::GetDefaultAppRecentsLimitStatic(
+    /* [out] */ Int32* cls)
+{
+    VALIDATE_NOT_NULL(cls);
+    *cls = CActivityManager::GetDefaultAppRecentsLimitStatic();
+    return NOERROR;
+}
+
+ECode CActivityManagerHelper::GetMaxAppRecentsLimitStatic(
+    /* [out] */ Int32* cls)
+{
+    VALIDATE_NOT_NULL(cls);
+    *cls = CActivityManager::GetMaxAppRecentsLimitStatic();
     return NOERROR;
 }
 
 ECode CActivityManagerHelper::GetMyMemoryState(
-    /* [out] */ IActivityManagerRunningAppProcessInfo** outState)
+    /* [out] */ IActivityManagerRunningAppProcessInfo* outState)
 {
-    VALIDATE_NOT_NULL(outState);
-    AutoPtr<IActivityManagerRunningAppProcessInfo> info = CActivityManager::GetMyMemoryState();
-    *outState = info.Get();
-    REFCOUNT_ADD(*outState)
-    return NOERROR;
+    return CActivityManager::GetMyMemoryState(outState);
 }
 
 ECode CActivityManagerHelper::IsUserAMonkey(
