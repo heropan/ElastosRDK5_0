@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_THREADEDRENDERER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/HardwareRenderer.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
@@ -35,7 +36,7 @@ namespace View {
  * @hide
  */
 class ThreadedRenderer
-//    : public HardwareRenderer
+    : public HardwareRenderer
 {
 private:
     class AtlasInitializer
@@ -67,7 +68,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Boolean translucent);
 
-    CARAPI Destroy();
+    virtual void Destroy();
 
     CARAPI_(Boolean) Initialize(
         /* [in] */ ISurface* surface);
@@ -75,37 +76,37 @@ public:
     CARAPI UpdateSurface(
         /* [in] */ ISurface* surface);
 
-    CARAPI PauseSurface(
+    virtual void PauseSurface(
         /* [in] */ ISurface* surface);
 
-    CARAPI DestroyHardwareResources(
+    virtual void DestroyHardwareResources(
         /* [in] */ IView* view);
 
-    CARAPI Invalidate(
+    virtual void Invalidate(
         /* [in] */ ISurface* surface);
 
-    CARAPI DetachSurfaceTexture(
+    virtual void DetachSurfaceTexture(
         /* [in] */ Int64 hardwareLayer);
 
-    CARAPI Setup(
+    virtual void Setup(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ IRect* surfaceInsets);
 
-    CARAPI SetOpaque(
+    virtual void SetOpaque(
         /* [in] */ Boolean opaque);
 
     CARAPI_(Int32) GetWidth();
 
     CARAPI_(Int32) GetHeight();
 
-    CARAPI DumpGfxInfo(
+    virtual void DumpGfxInfo(
         /* [in] */ IPrintWriter* pw,
         /* [in] */ IFileDescriptor* fd);
 
     CARAPI_(Boolean) LoadSystemProperties();
 
-    CARAPI InvalidateRoot();
+    virtual void InvalidateRoot();
 
     // CARAPI Draw(
     //     /* [in] */ IView* view,
@@ -118,29 +119,29 @@ public:
 
     CARAPI_(AutoPtr<IHardwareLayer>) CreateTextureLayer();
 
-    CARAPI BuildLayer(
+    virtual void BuildLayer(
         /* [in] */ IRenderNode* node);
 
     CARAPI_(Boolean) CopyLayerInto(
         /* [in] */ IHardwareLayer* layer,
         /* [in] */ IBitmap* bitmap);
 
-    CARAPI PushLayerUpdate(
+    virtual void PushLayerUpdate(
         /* [in] */ IHardwareLayer* layer);
 
-    CARAPI OnLayerDestroyed(
+    virtual void OnLayerDestroyed(
         /* [in] */ IHardwareLayer* layer);
 
-    CARAPI SetName(
+    virtual void SetName(
         /* [in] */ String name);
 
-    CARAPI Fence();
+    virtual void Fence();
 
-    CARAPI StopDrawing();
+    virtual void StopDrawing();
 
-    CARAPI NotifyFramePending();
+    virtual void NotifyFramePending();
 
-    CARAPI RegisterAnimatingRenderNode(
+    virtual void RegisterAnimatingRenderNode(
         /* [in] */ IRenderNode* animator);
 
     static CARAPI_(void) TrimMemory(
