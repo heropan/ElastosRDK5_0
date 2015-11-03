@@ -17,6 +17,7 @@ module
     merge("utility/LocalLog.car");
     merge("utility/MemInfoReader.car");
     merge("utility/NotificationColorUtil.car");
+    merge("utility/ParcelableString.car");
     merge("utility/Preconditions.car");
     merge("utility/Predicate.car");
     merge("utility/Predicates.car");
@@ -29,14 +30,19 @@ module
     merge("utility/VirtualRefBasePtr.car");
     merge("utility/WithFramework.car");
 
-    interface Elastos.Droid.Utility.IPrinter;
+    using interface Elastos.Droid.Utility.IPrinter;
     using interface Elastos.Core.IAppendable;
+    using interface Elastos.Core.ICloneable;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFlushable;
     using interface Elastos.IO.IFile;
+    using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.IO.ISerializable;
     using interface Elastos.IO.IWriter;
+    using interface Elastos.Utility.IHashMap;
+    using interface Elastos.Utility.IMap;
     using interface Org.Xmlpull.V1.IXmlSerializer;
 
     namespace Elastos {
@@ -45,6 +51,8 @@ module
     namespace Utility {
 
     class CAsyncChannel {
+        constructor();
+
         interface IAsyncChannel;
     }
 
@@ -235,6 +243,8 @@ module
     }
 
     class CFastXmlSerializer {
+        constructor();
+
         interface IFastXmlSerializer;
         interface IXmlSerializer;
     }
@@ -284,11 +294,67 @@ module
     }
 
     class CMemInfoReader {
+        constructor();
+
         interface IMemInfoReader;
     }
 
     singleton class CNotificationColorUtilHelper {
         interface INotificationColorUtilHelper;
+    }
+
+    class CParcelableString{
+        constructor();
+
+        interface IParcelableString;
+        interface IParcelable;
+    }
+
+    singleton class CPreconditions {
+        interface IPreconditions;
+    }
+
+    class CProcFileReader {
+        constructor(
+            [in] IInputStream* stream);
+
+        constructor(
+            [in] IInputStream* stream,
+            [in] Int32 bufferSize);
+
+        interface IProcFileReader;
+        interface ICloseable;
+    }
+
+    class CSizedInputStream {
+        constructor(
+            [in] IInputStream* wrapped,
+            [in] Int64 length);
+
+        interface ISizedInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
+
+    class CTypedProperties {
+        constructor();
+
+        interface ITypedProperties;
+        interface IHashMap;
+        interface IMap;
+        interface ICloneable;
+        interface ISerializable;
+    }
+
+    singleton class CUserIcons {
+        interface IUserIcons;
+    }
+
+    class CVirtualRefBasePtr{
+        constructor(
+            [in] Int64 ptr);
+
+        interface IVirtualRefBasePtr;
     }
 
     } // namespace Utility

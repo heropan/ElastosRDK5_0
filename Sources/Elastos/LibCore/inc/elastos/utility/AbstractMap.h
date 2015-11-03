@@ -23,7 +23,7 @@ namespace Utility {
  *
  * @since 1.2
  */
-class AbstractMap
+class ECO_PUBLIC AbstractMap
     : public Object
     , public IMap
 {
@@ -520,9 +520,9 @@ public:
 
 public:
     // Lazily initialized key set.
-    AutoPtr<ISet> mKeySet;
+    ECO_PUBLIC AutoPtr<ISet> mKeySet;
 
-    AutoPtr<ICollection> mValuesCollection;
+    ECO_PUBLIC AutoPtr<ICollection> mValuesCollection;
 };
 
 } // namespace Utility

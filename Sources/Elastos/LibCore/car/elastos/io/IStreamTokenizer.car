@@ -179,6 +179,24 @@ module
         SetWordChars(
             [in] Int32 low,
             [in] Int32 hi);
+
+        GetNval(
+            [out] Double* nval);
+
+        SetNval(
+            [in] Double nval);
+
+        GetSval(
+            [out] String* sval);
+
+        SetSval(
+            [in] String sval);
+
+        GetTtype(
+            [out] Int32* ttype);
+
+        SetTtype(
+            [in] Int32 ttype);
     }
 
     } // namespace IO

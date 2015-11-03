@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_OS_CATOMICFILE_H__
 
 #include "_Elastos_Droid_Internal_Os_CAtomicFile.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;

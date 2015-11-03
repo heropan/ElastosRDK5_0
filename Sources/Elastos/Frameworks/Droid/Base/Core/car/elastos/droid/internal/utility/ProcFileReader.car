@@ -40,21 +40,21 @@ module
         /**
          * Parse and return next token as base-10 encoded {@code Int64}.
          */
-        NextLong(
+        NextInt64(
             [out] Int64* result);
 
         /**
          * Parse and return next token as base-10 encoded {@code Int64}, or return
          * the given default value if no remaining tokens on current line.
          */
-        NextOptionalLong(
+        NextOptionalInt64(
             [in] Int64 def,
             [out] Int64* result);
 
         /**
          * Parse and return next token as base-10 encoded {@code int}.
          */
-        NextInt(
+        NextInt32(
             [out] Int32* result);
     }
 

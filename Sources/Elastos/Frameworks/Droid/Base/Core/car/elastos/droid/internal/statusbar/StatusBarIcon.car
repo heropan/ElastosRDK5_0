@@ -13,7 +13,6 @@ module
      * @Involve
      * interface IParcelable
      */
-    [local, parcelable]
     interface IStatusBarIcon {
         GetIconPackage(
             [out] String* pkg);

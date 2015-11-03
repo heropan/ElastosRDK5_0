@@ -56,7 +56,7 @@ module
 
     [local]
     class CBatteryStatsHelper {
-         constructor(
+        constructor(
             [in] IContext* context);
 
         constructor(
@@ -115,6 +115,8 @@ module
     }
 
     class CTransferPipe {
+        constructor();
+
         interface ITransferPipe;
         interface IRunnable;
     }

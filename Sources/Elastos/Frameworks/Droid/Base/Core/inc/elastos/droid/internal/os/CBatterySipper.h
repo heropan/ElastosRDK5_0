@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_OS_CBATTERYSIPPER_H__
 
 #include "_Elastos_Droid_Internal_Os_CBatterySipper.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBatteryStatsUid;
 using Elastos::Core::IComparable;

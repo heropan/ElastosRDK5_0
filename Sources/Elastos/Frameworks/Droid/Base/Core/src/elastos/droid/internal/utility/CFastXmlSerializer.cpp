@@ -53,11 +53,16 @@ CFastXmlSerializer::CFastXmlSerializer()
     , mNesting(0)
     , mLineStart(TRUE)
 {
+}
+
+ECode CFastXmlSerializer::constructor()
+{
     AutoPtr<IByteBufferHelper> helper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&helper);
-    helper->Allocate(BUFFER_LEN, (IByteBuffer**)&mBytes);
+    FAIL_RETURN(helper->Allocate(BUFFER_LEN, (IByteBuffer**)&mBytes))
 
     mText = ArrayOf<Char32>::Alloc(BUFFER_LEN);
+    return NOERROR;
 }
 
 ECode CFastXmlSerializer::Append(

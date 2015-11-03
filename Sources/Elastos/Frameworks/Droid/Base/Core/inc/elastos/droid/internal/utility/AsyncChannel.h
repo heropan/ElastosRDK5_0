@@ -155,6 +155,8 @@ public:
 
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     /**
      * Connect handler to named package/class synchronously.
      *

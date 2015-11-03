@@ -233,6 +233,11 @@ AsyncChannel::~AsyncChannel()
 {
 }
 
+ECode AsyncChannel::constructor()
+{
+    return NOERROR;
+}
+
 ECode AsyncChannel::ConnectSrcHandlerToPackageSync(
     /* [in] */ IContext* srcContext,
     /* [in] */ IHandler* srcHandler,

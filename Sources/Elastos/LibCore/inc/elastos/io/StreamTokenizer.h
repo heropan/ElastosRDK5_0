@@ -216,6 +216,35 @@ public:
         /* [in] */ Int32 low,
         /* [in] */ Int32 hi);
 
+    CARAPI GetNval(
+        /* [out] */ Double* nval);
+
+    CARAPI SetNval(
+        /* [in] */ Double nval);
+
+    CARAPI GetSval(
+        /* [out] */ String* sval);
+
+    CARAPI SetSval(
+        /* [in] */ const String& sval);
+
+    CARAPI GetTtype(
+        /* [out] */ Int32* ttype);
+
+    CARAPI SetTtype(
+        /* [in] */ Int32 ttype);
+
+private:
+    /**
+     * Private constructor to initialize the default values according to the
+     * specification.
+     */
+    CARAPI constructor();
+
+    CARAPI Read(
+        /* [out] */ Int32* rev);
+
+public:
     /**
      * Contains a number if the current token is a number ({@code ttype} ==
      * {@code TT_NUMBER}).
@@ -244,17 +273,7 @@ public:
      */
     Int32 mTtype;
 
-
 private:
-    /**
-     * Private constructor to initialize the default values according to the
-     * specification.
-     */
-    CARAPI constructor();
-
-    CARAPI Read(
-        /* [out] */ Int32* rev);
-
     /**
      * Internal character meanings, 0 implies TOKEN_ORDINARY
      */

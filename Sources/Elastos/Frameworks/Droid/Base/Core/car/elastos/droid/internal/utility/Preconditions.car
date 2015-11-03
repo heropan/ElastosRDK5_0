@@ -36,7 +36,7 @@ module
          */
         CheckNotNull(
             [in] IInterface* reference,
-            [in] IInterface* errorMessage);
+            [in] IObject* errorMessage);
 
         /**
          * Ensures the truth of an expression involving the state of the calling
@@ -66,8 +66,7 @@ module
          */
         CheckArgumentNonnegative(
             [in] Int32 value,
-            [in] String errorMessage,
-            [out] Int32* result);
+            [in] String errorMessage);
 
         /**
          * Ensures that that the argument numeric value is non-negative.
@@ -79,8 +78,7 @@ module
          */
         CheckArgumentNonnegative(
             [in] Int64 value,
-            [in] String errorMessage,
-            [out] Int64* result);
+            [in] String errorMessage);
 
         /**
          * Ensures that that the argument numeric value is positive.
@@ -92,8 +90,7 @@ module
          */
         CheckArgumentPositive(
             [in] Int32 value,
-            [in] String errorMessage,
-            [out] Int32* result);
+            [in] String errorMessage);
 
         /**
          * Ensures that the argument floating point value is a finite number.
@@ -110,8 +107,7 @@ module
          */
         CheckArgumentFinite(
             [in] Float value,
-            [in] String valueName,
-            [out] Float* result);
+            [in] String valueName);
 
         /**
          * Ensures that the argument floating point value is within the inclusive range.
@@ -132,8 +128,7 @@ module
             [in] Float value,
             [in] Float lower,
             [in] Float upper,
-            [in] String valueName,
-            [out] Float* result);
+            [in] String valueName);
 
         /**
          * Ensures that the argument Int32 value is within the inclusive range.
@@ -151,8 +146,7 @@ module
             [in] Int32 value,
             [in] Int32 lower,
             [in] Int32 upper,
-            [in] String valueName,
-            [out] Int32* result);
+            [in] String valueName);
 
         /**
          * Ensures that the array is not {@code null}, and none of its elements are {@code null}.
@@ -166,8 +160,7 @@ module
          */
         CheckArrayElementsNotNull(
             [in] ArrayOf<IInterface*>* value,
-            [in] String valueName,
-            [out, callee] ArrayOf<IInterface*>* array);
+            [in] String valueName);
 
         /**
          * Ensures that the {@link Collection} is not {@code null}, and none of its elements are
@@ -182,8 +175,7 @@ module
          */
         CheckCollectionElementsNotNull(
             [in] ICollection* value,
-            [in] String valueName,
-            [out] ICollection** collection);
+            [in] String valueName);
 
         /**
          * Ensures that the {@link Collection} is not {@code null}, and contains at least one element.
@@ -198,8 +190,7 @@ module
          */
         CheckCollectionNotEmpty(
             [in] ICollection* value,
-            [in] String valueName,
-            [out] ICollection** collection);
+            [in] String valueName);
 
         /**
          * Ensures that all elements in the argument floating point array are within the inclusive range
@@ -221,8 +212,7 @@ module
             [in] ArrayOf<Float>* value,
             [in] Float lower,
             [in] Float upper,
-            [in] String valueName,
-            [out, callee] ArrayOf<Float>* result);
+            [in] String valueName);
     }
 
     } // namespace Utility

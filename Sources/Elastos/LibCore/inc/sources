@@ -74,10 +74,12 @@ EXPORT_HEADERS += elastos/utility/logging/Logger.h
 EXPORT_HEADERS += elastos/utility/logging/Slogger.h
 
 EXPORT_HEADERS += elastos/utility/AbstractCollection.h
+EXPORT_HEADERS += elastos/utility/AbstractMap.h
 EXPORT_HEADERS += elastos/utility/AbstractSet.h
 EXPORT_HEADERS += elastos/utility/Arrays.h
 EXPORT_HEADERS += elastos/utility/ComparableTimSort.h
 EXPORT_HEADERS += elastos/utility/DualPivotQuicksort.h
+EXPORT_HEADERS += elastos/utility/HashMap.h
 EXPORT_HEADERS += elastos/utility/HashTable.h
 EXPORT_HEADERS += elastos/utility/Objects.h
 EXPORT_HEADERS += elastos/utility/Observable.h

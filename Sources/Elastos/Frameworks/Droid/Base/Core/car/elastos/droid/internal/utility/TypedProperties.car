@@ -117,7 +117,7 @@ module
          * @return the value of the property
          * @throws TypeException if the property is set and is not a Int16
          */
-        GetShort(
+        GetInt16(
             [in] String property,
             [in] Int16 def,
             [out] Int16* result);
@@ -131,7 +131,7 @@ module
          * @return the value of the property
          * @throws TypeException if the property is set and is not an integer
          */
-        GetInt(
+        GetInt32(
             [in] String property,
             [in] Int32 def,
             [out] Int32* result);
@@ -145,7 +145,7 @@ module
          * @return the value of the property
          * @throws TypeException if the property is set and is not a Int64
          */
-        GetLong(
+        GetInt64(
             [in] String property,
             [in] Int64 def,
             [out] Int64* result);
@@ -228,7 +228,7 @@ module
          * @return the value of the property
          * @throws TypeException if the property is set and is not a Int16
          */
-        GetShort(
+        GetInt16(
             [in] String property,
             [out] Int16* result);
 
@@ -240,7 +240,7 @@ module
          * @return the value of the property
          * @throws TypeException if the property is set and is not an integer
          */
-        GetInt(
+        GetInt32(
             [in] String property,
             [out] Int32* result);
 
@@ -252,7 +252,7 @@ module
          * @return the value of the property
          * @throws TypeException if the property is set and is not a Int64
          */
-        GetLong(
+        GetInt64(
             [in] String property,
             [out] Int64* result);
 

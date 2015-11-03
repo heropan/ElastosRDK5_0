@@ -23,14 +23,6 @@ public:
 
     CAR_SINGLETON_DECL()
 
-    /**
-     * Fast round from float to int. This is faster than Math.round()
-     * thought it may return slightly different results. It does not try to
-     * handle (in any meaningful way) NaN or infinities.
-     */
-    static Int32 Round(
-        /* [in] */ Float value);
-
     CARAPI Round(
         /* [in] */ Float value,
         /* [out] */ Int32* result);

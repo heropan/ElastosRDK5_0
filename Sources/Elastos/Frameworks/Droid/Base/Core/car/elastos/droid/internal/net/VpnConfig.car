@@ -24,7 +24,6 @@ module
      * @Involve
      * interface IParcelable
      */
-    [local, parcelable]
     interface IVpnConfig {
         const String SERVICE_INTERFACE = "android.net.VpnService";
 

@@ -20,7 +20,12 @@ CAR_OBJECT_IMPL(CMemInfoReader)
 
 CMemInfoReader::CMemInfoReader()
 {
+}
+
+ECode CMemInfoReader::constructor()
+{
     mInfos = ArrayOf<Int64>::Alloc(IDebug::MEMINFO_COUNT);
+    return NOERROR;
 }
 
 ECode CMemInfoReader::ReadMemInfo()

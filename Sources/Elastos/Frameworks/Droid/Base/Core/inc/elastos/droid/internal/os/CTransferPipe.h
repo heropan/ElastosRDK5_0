@@ -25,6 +25,7 @@ namespace Os {
 CarClass(CTransferPipe)
     , public Object
     , public ITransferPipe
+    , public IRunnable
 {
 public:
     interface ICaller : public IInterface
@@ -42,6 +43,8 @@ public:
     CAR_INTERFACE_DECL();
 
     CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI Run();
 

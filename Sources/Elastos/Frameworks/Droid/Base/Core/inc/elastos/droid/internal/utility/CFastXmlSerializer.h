@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_UTILITY_CFASTXMLSERIALIZER_H__
 
 #include "_Elastos_Droid_Internal_Utility_CFastXmlSerializer.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IBoolean;
 using Elastos::IO::IWriter;
@@ -27,6 +27,8 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI SetFeature(
         /* [in] */ const String& name,

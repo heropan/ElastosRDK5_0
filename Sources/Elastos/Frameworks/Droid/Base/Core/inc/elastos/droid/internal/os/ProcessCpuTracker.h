@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_OS_PROCESSCPUTRACKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

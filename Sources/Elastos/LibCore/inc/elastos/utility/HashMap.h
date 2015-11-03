@@ -13,7 +13,7 @@ using Elastos::IO::IObjectStreamField;
 namespace Elastos {
 namespace Utility {
 
-class HashMap
+class ECO_PUBLIC HashMap
     : public AbstractMap
     , public IHashMap
     , public ICloneable
@@ -61,7 +61,7 @@ public:
     };
 
 private:
-    class HashIterator
+    class ECO_LOCAL HashIterator
         : public Object
     {
     public:
@@ -85,7 +85,7 @@ private:
         AutoPtr<HashMap> mHost;
     };
 
-    class KeyIterator
+    class ECO_LOCAL KeyIterator
         : public HashIterator
         , public IIterator
     {
@@ -104,7 +104,7 @@ private:
         CARAPI Remove();
     };
 
-    class ValueIterator
+    class ECO_LOCAL ValueIterator
         : public HashIterator
         , public IIterator
     {
@@ -123,7 +123,7 @@ private:
         CARAPI Remove();
     };
 
-    class EntryIterator
+    class ECO_LOCAL EntryIterator
         : public HashIterator
         , public IIterator
     {
@@ -142,7 +142,7 @@ private:
         CARAPI Remove();
     };
 
-    class _KeySet
+    class ECO_LOCAL _KeySet
         : public AbstractSet
     {
     public:
@@ -206,7 +206,7 @@ private:
         HashMap* mHost;
     };
 
-    class _Values
+    class ECO_LOCAL _Values
         : public AbstractCollection
     {
     public:
@@ -271,7 +271,7 @@ private:
         HashMap* mHost;
     };
 
-    class _EntrySet
+    class ECO_LOCAL _EntrySet
         : public AbstractSet
     {
     public:
@@ -652,7 +652,7 @@ public:
     virtual CARAPI_(AutoPtr<IIterator>) NewEntryIterator();
 
 private:
-    CARAPI_(AutoPtr<IInterface>) PutValueForNullKey(
+    ECO_LOCAL CARAPI_(AutoPtr<IInterface>) PutValueForNullKey(
         /* [in] */ IInterface* value);
 
     /**
@@ -661,7 +661,7 @@ private:
      * (i.e., clone, readObject). In particular, this method does not check to
      * ensure that capacity is sufficient, and does not increment modCount.
      */
-    CARAPI ConstructorPut(
+    ECO_LOCAL CARAPI ConstructorPut(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -675,14 +675,14 @@ private:
      *
      *  <p>This method is called only by putAll.
      */
-    CARAPI EnsureCapacity(
+    ECO_LOCAL CARAPI EnsureCapacity(
         /* [in] */ Int32 numMappings);
 
     /**
      * Allocate a table of the given capacity and set the threshold accordingly.
      * @param newCapacity must be a power of two
      */
-    CARAPI_(AutoPtr< ArrayOf<HashMapEntry*> >) MakeTable(
+    ECO_LOCAL CARAPI_(AutoPtr< ArrayOf<HashMapEntry*> >) MakeTable(
         /* [in] */ Int32 newCapacity);
 
     /**
@@ -691,14 +691,14 @@ private:
      * MAXIMUM_CAPACITY, this method is a no-op. Returns the table, which
      * will be new unless we were already at MAXIMUM_CAPACITY.
      */
-    CARAPI_(AutoPtr< ArrayOf<HashMapEntry*> >) DoubleCapacity();
+    ECO_LOCAL CARAPI_(AutoPtr< ArrayOf<HashMapEntry*> >) DoubleCapacity();
 
-    CARAPI_(AutoPtr<IInterface>) RemoveNullKey();
+    ECO_LOCAL CARAPI_(AutoPtr<IInterface>) RemoveNullKey();
 
     /**
      * Returns true if this map contains the specified mapping.
      */
-    CARAPI_(Boolean) ContainsMapping(
+    ECO_LOCAL CARAPI_(Boolean) ContainsMapping(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -706,7 +706,7 @@ private:
      * Removes the mapping from key to value and returns true if this mapping
      * exists; otherwise, returns does nothing and returns false.
      */
-    CARAPI_(Boolean) RemoveMapping(
+    ECO_LOCAL CARAPI_(Boolean) RemoveMapping(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value);
 
@@ -716,7 +716,7 @@ private:
      * uses power-of-two length hash tables, that otherwise encounter collisions
      * for hashCodes that do not differ in lower or upper bits.
      */
-    static CARAPI_(Int32) SecondaryHash(
+    ECO_LOCAL static CARAPI_(Int32) SecondaryHash(
         /* [in] */ Int32 h);
 
     /**
@@ -726,13 +726,13 @@ private:
      * returns Integer.MIN_VALUE. If the argument is zero, the method returns
      * zero.
      */
-    static CARAPI_(Int32) RoundUpToPowerOfTwo(
+    ECO_LOCAL static CARAPI_(Int32) RoundUpToPowerOfTwo(
         /* [in] */ Int32 i);
 
-    CARAPI WriteObject(
+    ECO_LOCAL CARAPI WriteObject(
         /* [in] */ IObjectOutputStream* stream);
 
-    CARAPI ReadObject(
+    ECO_LOCAL CARAPI ReadObject(
         /* [in] */ IObjectInputStream* stream);
 
 public:
@@ -752,35 +752,35 @@ public:
      * The hash table. If this hash map contains a mapping for null, it is
      * not represented this hash table.
      */
-    /* transient */ AutoPtr< ArrayOf<HashMapEntry*> > mTable;
+    /* transient */ ECO_PUBLIC AutoPtr< ArrayOf<HashMapEntry*> > mTable;
 
 protected:
     /**
      * Incremented by "structural modifications" to allow (best effort)
      * detection of concurrent modification.
      */
-    /* transient */ Int32 mModCount;
+    /* transient */ ECO_PUBLIC Int32 mModCount;
 
     /**
      * The entry representing the null key, or null if there's no such mapping.
      */
-    /* transient */ AutoPtr<HashMapEntry> mEntryForNullKey;
+    /* transient */ ECO_PUBLIC AutoPtr<HashMapEntry> mEntryForNullKey;
 
 private:
-    static const Int64 sSerialVersionUID = 362498820763181265L;
+    ECO_LOCAL static const Int64 sSerialVersionUID = 362498820763181265L;
 
-    static AutoPtr< ArrayOf<IObjectStreamField*> > sSerialPersistentFields;
+    ECO_LOCAL static AutoPtr< ArrayOf<IObjectStreamField*> > sSerialPersistentFields;
 
     /**
      * Min capacity (other than zero) for a HashMap. Must be a power of two
      * greater than 1 (and less than 1 << 30).
      */
-    static const Int32 MINIMUM_CAPACITY = 4;
+    ECO_LOCAL static const Int32 MINIMUM_CAPACITY = 4;
 
     /**
      * Max capacity for a HashMap. Must be a power of two >= MINIMUM_CAPACITY.
      */
-    static const Int32 MAXIMUM_CAPACITY = 1 << 30;
+    ECO_LOCAL static const Int32 MAXIMUM_CAPACITY = 1 << 30;
 
     /**
      * An empty table shared by all zero-capacity maps (typically from default
@@ -788,7 +788,7 @@ private:
      * is set to half the minimum, so that the first resize will create a
      * minimum-sized table.
      */
-    static const AutoPtr< ArrayOf<HashMapEntry*> > EMPTY_TABLE; // = new HashMapEntry[MINIMUM_CAPACITY >>> 1];
+    ECO_LOCAL static const AutoPtr< ArrayOf<HashMapEntry*> > EMPTY_TABLE; // = new HashMapEntry[MINIMUM_CAPACITY >>> 1];
 
     /**
      * The number of mappings in this hash map.
@@ -813,8 +813,6 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-
 DEFINE_CONVERSION_FOR(Elastos::Utility::HashMap::HashMapEntry, IInterface)
-
 
 #endif // __ELASTOS_UTILITY_HashMap_H__

@@ -20,7 +20,6 @@ module
      * interface ICloneable
      * interface IParcelable
      */
-    [local, parcelable]
     interface IVpnProfile {
         // Match these constants with R.array.vpn_types.
         const Int32 TYPE_PPTP = 0;

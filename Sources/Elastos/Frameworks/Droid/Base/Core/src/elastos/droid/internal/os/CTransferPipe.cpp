@@ -36,10 +36,14 @@ CAR_OBJECT_IMPL(CTransferPipe)
 
 CTransferPipe::CTransferPipe()
 {
-    CThread::New((IRunnable*)this->Probe(EIID_IRunnable), String("CTransferPipe"), (IThread**)&mThread);
+}
+
+ECode CTransferPipe::constructor()
+{
+    FAIL_RETURN(CThread::New(this, String("CTransferPipe"), (IThread**)&mThread))
     AutoPtr<IParcelFileDescriptorHelper> helper;
     CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
-    helper->CreatePipe((ArrayOf<IParcelFileDescriptor*>**)&mFds);
+    return helper->CreatePipe((ArrayOf<IParcelFileDescriptor*>**)&mFds);
 }
 
 AutoPtr<IParcelFileDescriptor> CTransferPipe::GetReadFd()

@@ -535,5 +535,50 @@ ECode StreamTokenizer::Read(
     return NOERROR;
 }
 
+ECode StreamTokenizer::GetNval(
+    /* [out] */ Double* nval)
+{
+    VALIDATE_NOT_NULL(nval)
+    *nval = mNval;
+    return NOERROR;
+}
+
+ECode StreamTokenizer::SetNval(
+    /* [in] */ Double nval)
+{
+    mNval = nval;
+    return NOERROR;
+}
+
+ECode StreamTokenizer::GetSval(
+    /* [out] */ String* sval)
+{
+    VALIDATE_NOT_NULL(sval)
+    *sval = mSval;
+    return NOERROR;
+}
+
+ECode StreamTokenizer::SetSval(
+    /* [in] */ const String& sval)
+{
+    mSval = sval;
+    return NOERROR;
+}
+
+ECode StreamTokenizer::GetTtype(
+    /* [out] */ Int32* ttype)
+{
+    VALIDATE_NOT_NULL(ttype)
+    *ttype = mTtype;
+    return NOERROR;
+}
+
+ECode StreamTokenizer::SetTtype(
+    /* [in] */ Int32 ttype)
+{
+    mTtype = ttype;
+    return NOERROR;
+}
+
 } // namespace IO
 } // namespace Elastos

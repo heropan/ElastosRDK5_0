@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_OS_CPOWERPROFILE_H__
 
 #include "_Elastos_Droid_Internal_Os_CPowerProfile.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;
