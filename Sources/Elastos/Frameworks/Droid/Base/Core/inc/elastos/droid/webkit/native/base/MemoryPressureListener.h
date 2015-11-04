@@ -20,11 +20,12 @@ namespace Base {
  * native for levels that are considered actionable.
  */
 class MemoryPressureListener
+    : public Object
 {
 private:
     class InnerComponentCallbacks2
-//        : public Object
-        : public IComponentCallbacks2
+        : public Object
+        , public IComponentCallbacks2
     {
     public:
         InnerComponentCallbacks2();
@@ -55,6 +56,26 @@ public:
     static CARAPI_(void) MaybeNotifyMemoryPresure(
         /* [in] */ Int32 level);
 
+    static CARAPI_(void*) ElaMemoryPressureListenerCallback_Init();
+
+private:
+    static CARAPI_(void) RegisterSystemCallback(
+        /* [in] */ IInterface* context);
+
+    //@CalledByNative
+    static CARAPI_(void) RegisterSystemCallback(
+        /* [in] */ IContext* context);
+
+    static CARAPI_(void) SimulateLowMemoryPressureSignal(
+        /* [in] */ IActivity* activity);
+
+    static CARAPI_(void) SimulateTrimMemoryPressureSignal(
+        /* [in] */ IActivity* activity,
+        /* [in] */ Int32 level);
+
+    static CARAPI_(void) NativeOnMemoryPressure(
+        /* [in] */ Int32 memoryPressureType);
+
 private:
     /**
      * Sending an intent with this action to Chrome will cause it to issue a call to onLowMemory
@@ -79,21 +100,6 @@ private:
      * with notification level TRIM_MEMORY_MODERATE thus simulating a low memory situation
      */
     static const String ACTION_TRIM_MEMORY_MODERATE;
-
-private:
-    //@CalledByNative
-    static CARAPI_(void) RegisterSystemCallback(
-        /* [in] */ IContext* context);
-
-    static CARAPI_(void) SimulateLowMemoryPressureSignal(
-        /* [in] */ IActivity* activity);
-
-    static CARAPI_(void) SimulateTrimMemoryPressureSignal(
-        /* [in] */ IActivity* activity,
-        /* [in] */ Int32 level);
-
-    static CARAPI_(void) NativeOnMemoryPressure(
-        /* [in] */ Int32 memoryPressureType);
 };
 
 } // namespace Base

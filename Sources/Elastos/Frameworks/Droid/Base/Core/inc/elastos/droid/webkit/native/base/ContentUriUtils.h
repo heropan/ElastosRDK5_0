@@ -20,6 +20,7 @@ namespace Base {
  * This class provides methods to access content URI schemes.
  */
 class ContentUriUtils
+    : public Object
 {
 public:
     /**
@@ -61,11 +62,19 @@ public:
         /* [in] */ IContentResolver* contentResolver,
         /* [in] */ const String& columnField);
 
+    static CARAPI_(void*) ElaContentUriUtilsCallback_Init();
+
 private:
+    static CARAPI_(Int32) OpenContentUriForRead(
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& uriString);
+
+    static CARAPI_(Boolean) ContentUriExists(
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& uriString);
+
     // Prevent instantiation.
     ContentUriUtils();
-
-    static const String TAG;
 
     /**
      * Helper method to open a content URI and return the ParcelFileDescriptor.
@@ -77,6 +86,9 @@ private:
     static CARAPI_(AutoPtr<IParcelFileDescriptor>) GetParcelFileDescriptor(
         /* [in] */ IContext* context,
         /* [in] */ const String& uriString);
+
+private:
+    static const String TAG;
 };
 
 } // namespace Base

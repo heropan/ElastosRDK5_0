@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/PathUtils.h"
+#include "elastos/droid/webkit/native/base/api/PathUtils_dec.h"
 #include "elastos/droid/os/Environment.h"
 
 using Elastos::Droid::Os::Environment;
@@ -138,6 +139,41 @@ String PathUtils::GetExternalStorageDirectory()
     // file->GetAbsolutePath(&path);
     // return path;
     return String(NULL);
+}
+
+String PathUtils::GetDataDirectory(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return GetDataDirectory(c);
+}
+
+String PathUtils::GetDatabaseDirectory(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return GetDatabaseDirectory(c);
+}
+
+String PathUtils::GetCacheDirectory(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return GetCacheDirectory(c);
+}
+
+String PathUtils::GetDownloadsDirectory(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return GetDownloadsDirectory(c);
+}
+
+String PathUtils::GetNativeLibraryDirectory(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return GetNativeLibraryDirectory(c);
 }
 
 } // namespace Base

@@ -17,6 +17,7 @@ namespace Base {
  * This class provides the path related methods for the native library.
  */
 class PathUtils
+    : public Object
 {
 public:
     /**
@@ -57,7 +58,24 @@ public:
     //@CalledByNative
     static CARAPI_(String) GetExternalStorageDirectory();
 
+    static CARAPI_(void*) ElaPathUtilsCallback_Init();
+
 private:
+    static CARAPI_(String) GetDataDirectory(
+        /* [in] */ IInterface* appContext);
+
+    static CARAPI_(String) GetDatabaseDirectory(
+        /* [in] */ IInterface* appContext);
+
+    static CARAPI_(String) GetCacheDirectory(
+        /* [in] */ IInterface* appContext);
+
+    static CARAPI_(String) GetDownloadsDirectory(
+        /* [in] */ IInterface* appContext);
+
+    static CARAPI_(String) GetNativeLibraryDirectory(
+        /* [in] */ IInterface* appContext);
+
     // Prevent instantiation.
     PathUtils();
 

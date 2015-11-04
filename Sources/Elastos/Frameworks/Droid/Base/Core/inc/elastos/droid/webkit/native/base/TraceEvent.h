@@ -25,6 +25,7 @@ namespace Base {
  */
 //@JNINamespace("base::android")
 class TraceEvent
+    : public Object
 {
 public:
     class BasicLooperMonitor
@@ -280,6 +281,8 @@ public:
     static CARAPI_(void) End(
         /* [in] */ const String& name,
         /* [in] */ const String& arg);
+
+    static CARAPI_(void*) ElaTraceEventCallback_Init();
 
 private:
     static CARAPI_(String) GetCallerName();

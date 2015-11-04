@@ -1,13 +1,17 @@
 
-#include "elastos/droid/webkit/native/base/JavaHandlerThread.h"
+#include "elastos/droid/webkit/native/base/CppHandlerThread.h"
+#include "elastos/droid/webkit/native/base/api/CppHandlerThread_dec.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CHandlerThread.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::IThread;
-using Elastos::Core::EIID_IThread;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::IThread;
+using Elastos::Core::EIID_IThread;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -15,11 +19,12 @@ namespace Webkit {
 namespace Base {
 
 //===============================================================
-//               JavaHandlerThread::InnerRunnable
+//               CppHandlerThread::InnerRunnable
 //===============================================================
+CAR_INTERFACE_IMPL(CppHandlerThread::InnerRunnable, Object, IRunnable);
 
-JavaHandlerThread::InnerRunnable::InnerRunnable(
-    /* [in] */ JavaHandlerThread* owner,
+CppHandlerThread::InnerRunnable::InnerRunnable(
+    /* [in] */ CppHandlerThread* owner,
     /* [in] */ const Int64 nativeThread,
     /* [in] */ const Int64 nativeEvent)
     : mOwner(owner)
@@ -29,36 +34,36 @@ JavaHandlerThread::InnerRunnable::InnerRunnable(
 }
 
 //@Override
-ECode JavaHandlerThread::InnerRunnable::Run()
+ECode CppHandlerThread::InnerRunnable::Run()
 {
     mOwner->NativeInitializeThread(mNativeThread, mNativeEvent);
     return NOERROR;
 }
 
 //===============================================================
-//                   JavaHandlerThread
+//                   CppHandlerThread
 //===============================================================
 
-JavaHandlerThread::JavaHandlerThread(
+CppHandlerThread::CppHandlerThread(
     /* [in] */ const String& name)
 {
     CHandlerThread::New(name, (IHandlerThread**)&mThread);
 }
 
 //@CalledByNative
-AutoPtr<JavaHandlerThread> JavaHandlerThread::Create(
+AutoPtr<IInterface> CppHandlerThread::Create(
     /* [in] */ const String& name)
 {
-    AutoPtr<JavaHandlerThread> thread = new JavaHandlerThread(name);
-    return thread;
+    AutoPtr<CppHandlerThread> thread = new CppHandlerThread(name);
+    return TO_IINTERFACE(thread);
 }
 
 //@CalledByNative
-void JavaHandlerThread::Start(
+void CppHandlerThread::Start(
     /* [in] */ const Int64 nativeThread,
     /* [in] */ const Int64 nativeEvent)
 {
-    AutoPtr<IThread> thread = (IThread*)mThread->Probe(EIID_IThread);
+    AutoPtr<IThread> thread = IThread::Probe(mThread);
     thread->Start();
     AutoPtr<ILooper> looper;
     mThread->GetLooper((ILooper**)&looper);
@@ -69,10 +74,25 @@ void JavaHandlerThread::Start(
     handler->Post(runnable, &result);
 }
 
-void JavaHandlerThread::NativeInitializeThread(
-    /* [in] */ Int64 nativeJavaHandlerThread,
+void CppHandlerThread::NativeInitializeThread(
+    /* [in] */ Int64 nativeCppHandlerThread,
     /* [in] */ Int64 nativeEvent)
 {
+    Elastos_JavaHandlerThread_nativeInitializeThread(THIS_PROBE(IInterface), (Handle32)nativeCppHandlerThread, nativeEvent);
+}
+
+void CppHandlerThread::Start(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeThread,
+    /* [in] */ Int64 nativeEvent)
+{
+    AutoPtr<CppHandlerThread> mObj = (CppHandlerThread*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("CppHandlerThread", "CppHandlerThread::Start, mObj is NULL");
+        return;
+    }
+    mObj->Start(nativeThread, nativeEvent);
 }
 
 } // namespace Base

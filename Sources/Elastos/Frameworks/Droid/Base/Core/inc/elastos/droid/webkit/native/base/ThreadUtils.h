@@ -22,6 +22,7 @@ namespace Base {
  * Helper methods to deal with threading related tasks.
  */
 class ThreadUtils
+    : public Object
 {
 public:
     static CARAPI_(void) SetWillOverrideUiThread();
@@ -136,6 +137,8 @@ public:
     //@CalledByNative
     static CARAPI_(void) SetThreadPriorityAudio(
         /* [in] */ Int32 tid);
+
+    static CARAPI_(void*) ElaThreadUtilsCallback_Init();
 
 private:
     static CARAPI_(AutoPtr<IHandler>) GetUiThreadHandler();

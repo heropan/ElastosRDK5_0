@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/PowerMonitor.h"
+#include "elastos/droid/webkit/native/base/api/PowerMonitor_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 //#include "elastos/droid/os/CLooper.h"
 #include "elastos/droid/os/CLooperHelper.h"
@@ -145,14 +146,17 @@ Boolean PowerMonitor::IsBatteryPower()
 
 void PowerMonitor::NativeOnBatteryChargingChanged()
 {
+    Elastos_PowerMonitor_nativeOnBatteryChargingChanged();
 }
 
 void PowerMonitor::NativeOnMainActivitySuspended()
 {
+    Elastos_PowerMonitor_nativeOnMainActivitySuspended();
 }
 
 void PowerMonitor::NativeOnMainActivityResumed()
 {
+    Elastos_PowerMonitor_nativeOnMainActivityResumed();
 }
 
 } // namespace Base

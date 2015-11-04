@@ -235,7 +235,7 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelative(
         // On JB MR1, due to a platform bug, setCompoundDrawablesRelative() is a no-op if the
         // view has ever been measured. As a workaround, use setCompoundDrawables() directly.
         // See: http://crbug.com/368196 and http://crbug.com/361709
-        AutoPtr<IView> view = (IView*)textView->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(textView);
         Boolean isRtl = IsLayoutRtl(view);
         textView->SetCompoundDrawables(isRtl ? end : start, top, isRtl ? start : end, bottom);
     }
@@ -260,7 +260,7 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelativeWithIntrinsicBounds(
 {
     if (Build::VERSION::SDK_INT == Build::VERSION_CODES::JELLY_BEAN_MR1) {
         // Work around the platform bug described in setCompoundDrawablesRelative() above.
-        AutoPtr<IView> view = (IView*)textView->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(textView);
         Boolean isRtl = IsLayoutRtl(view);
         textView->SetCompoundDrawablesWithIntrinsicBounds(isRtl ? end : start, top,
                 isRtl ? start : end, bottom);
@@ -286,7 +286,7 @@ void ApiCompatibilityUtils::SetCompoundDrawablesRelativeWithIntrinsicBounds(
 {
     if (Build::VERSION::SDK_INT == Build::VERSION_CODES::JELLY_BEAN_MR1) {
         // Work around the platform bug described in setCompoundDrawablesRelative() above.
-        AutoPtr<IView> view = (IView*)textView->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(textView);
         Boolean isRtl = IsLayoutRtl(view);
         textView->SetCompoundDrawablesWithIntrinsicBounds(isRtl ? end : start, top,
                 isRtl ? start : end, bottom);

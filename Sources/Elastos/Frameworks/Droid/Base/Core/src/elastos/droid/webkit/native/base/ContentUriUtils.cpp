@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
+#include "elastos/droid/webkit/native/base/api/ContentUriUtils_dec.h"
 //#include "elastos/droid/net/CUriHelper.h"
 
 //using Elastos::Droid::Net::CUriHelper;
@@ -128,6 +129,22 @@ String ContentUriUtils::GetDisplayName(
     //    if (cursor != null) cursor.close();
     //}
     return String("");
+}
+
+Int32 ContentUriUtils::OpenContentUriForRead(
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& uriString)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return OpenContentUriForRead(c, uriString);
+}
+
+Boolean ContentUriUtils::ContentUriExists(
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& uriString)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return ContentUriExists(c, uriString);
 }
 
 } // namespace Base

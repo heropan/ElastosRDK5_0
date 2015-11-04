@@ -3,8 +3,9 @@
 #define __ELASTOS_DROID_WEBKIT_BASE_SYSTEMMESSAGEHANDLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessage;
 
 namespace Elastos {
@@ -13,17 +14,27 @@ namespace Webkit {
 namespace Base {
 
 class SystemMessageHandler
-    //: public Object
-    //, public IHandler
+    : public Handler
 {
 public:
-    CAR_INTERFACE_DECL();
-
     //@Override
     ECode HandleMessage(
         /* [in] */ IMessage* msg);
 
+    static CARAPI_(void*) ElaSystemMessageHandlerCallback_Init();
+
 private:
+    static CARAPI_(void) ScheduleWork(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ScheduleDelayedWork(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 delayedTimeTicks,
+        /* [in] */ Int64 millis);
+
+    static CARAPI_(void) RemoveAllPendingMessages(
+        /* [in] */ IInterface* obj);
+
     SystemMessageHandler(
         /* [in] */ Int64 messagePumpDelegateNative);
 
@@ -41,8 +52,8 @@ private:
     //@CalledByNative
     CARAPI_(void) RemoveAllPendingMessages();
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<SystemMessageHandler>) Create(
+    //@CalledByNative return SystemMessageHandler
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 messagePumpDelegateNative);
 
     CARAPI_(void) NativeDoRunLoopOnce(

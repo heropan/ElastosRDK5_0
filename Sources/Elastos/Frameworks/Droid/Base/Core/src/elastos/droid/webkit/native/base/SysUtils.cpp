@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/SysUtils.h"
+#include "elastos/droid/webkit/native/base/api/SysUtils_dec.h"
 
 namespace Elastos {
 namespace Droid {

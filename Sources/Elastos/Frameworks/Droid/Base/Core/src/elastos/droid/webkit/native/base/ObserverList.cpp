@@ -115,7 +115,7 @@ ObserverList::ObserverList()
     assert(0);
     // TODO
     // CArrayList::New((IArrayList**)&arrayList);
-    mObservers = (IList*)arrayList->Probe(EIID_IList);
+    mObservers = IList::Probe(arrayList);
 }
 
 /**

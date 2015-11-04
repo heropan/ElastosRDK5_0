@@ -23,6 +23,7 @@ namespace Base {
  * Exposes system related information about the current device.
  */
 class SysUtils
+    : public Object
 {
 public:
     /**
@@ -41,6 +42,8 @@ public:
      */
     //@CalledByNative
     static CARAPI_(Boolean) IsLowEndDevice();
+
+    static CARAPI_(void*) ElaSysUtilsCallback_Init();
 
 private:
     SysUtils();

@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/CommandLine.h"
+#include "elastos/droid/webkit/native/base/api/CommandLine_dec.h"
 //#include "elastos/droid/text/TextUtils.h"
 
 //using Elastos::Droid::Text::TextUtils;
@@ -413,36 +414,38 @@ AutoPtr< ArrayOf<Int8> > CommandLine::ReadUtf8FileFully(
 
 void CommandLine::NativeReset()
 {
+    Elastos_CommandLine_nativeReset();
 }
 
 Boolean CommandLine::NativeHasSwitch(
     /* [in] */ const String& switchString)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_CommandLine_nativeHasSwitch(switchString);
 }
 
 String CommandLine::NativeGetSwitchValue(
     /* [in] */ const String& switchString)
 {
-    assert(0);
-    return String(NULL);
+    return Elastos_CommandLine_nativeGetSwitchValue(switchString);
 }
 
 void CommandLine::NativeAppendSwitch(
     /* [in] */ const String& switchString)
 {
+    Elastos_CommandLine_nativeAppendSwitch(switchString);
 }
 
 void CommandLine::NativeAppendSwitchWithValue(
     /* [in] */ const String& switchString,
     /* [in] */ const String& value)
 {
+    Elastos_CommandLine_nativeAppendSwitchWithValue(switchString, value);
 }
 
 void CommandLine::NativeAppendSwitchesAndArguments(
     /* [in] */ ArrayOf<String>* array)
 {
+    Elastos_CommandLine_nativeAppendSwitchesAndArguments(array);
 }
 
 } // namespace Base

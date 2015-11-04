@@ -16,6 +16,8 @@ namespace Base {
 class EventLog
 {
 public:
+    static CARAPI_(void*) ElaEventLogCallback_Init();
+
     //@CalledByNative
     static CARAPI_(void) WriteEvent(
         /* [in] */ Int32 tag,

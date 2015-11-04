@@ -1,5 +1,6 @@
 
-#include "elastos/droid/webkit/native/base/ImportantFileWriterAndroid.h"
+#include "elastos/droid/webkit/native/base/ImportantFileWriterElastos.h"
+#include "elastos/droid/webkit/native/base/api/ImportantFileWriterElastos_dec.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,19 +16,18 @@ namespace Base {
  * @param data The data to be written to the file
  * @return true if the data was written to the file, false if not.
  */
-Boolean ImportantFileWriterAndroid::WriteFileAtomically(
+Boolean ImportantFileWriterElastos::WriteFileAtomically(
     /* [in] */ const String& fileName,
     /* [in] */ ArrayOf<Byte>* data)
 {
     return NativeWriteFileAtomically(fileName, data);
 }
 
-Boolean ImportantFileWriterAndroid::NativeWriteFileAtomically(
+Boolean ImportantFileWriterElastos::NativeWriteFileAtomically(
     /* [in] */ const String& fileName,
     /* [in] */ ArrayOf<Byte>* data)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ImportantFileWriterAndroid_nativeWriteFileAtomically(fileName, data);
 }
 
 } // namespace Base

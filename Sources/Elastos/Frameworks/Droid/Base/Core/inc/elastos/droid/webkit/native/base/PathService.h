@@ -14,6 +14,7 @@ namespace Base {
  */
 //@JNINamespace("base::android")
 class PathService
+    : public Object
 {
 public:
     // Must match the value of DIR_MODULE in base/base_paths.h!

@@ -1,10 +1,12 @@
 
 #include "elastos/droid/webkit/native/base/MemoryPressureListener.h"
+#include "elastos/droid/webkit/native/base/api/MemoryPressureListener_dec.h"
 #include "elastos/droid/webkit/native/base/MemoryPressureLevelList.h"
 
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
+using Elastos::Droid::Content::EIID_IComponentCallbacks2;
 
 namespace Elastos {
 namespace Droid {
@@ -14,6 +16,7 @@ namespace Base {
 //===============================================================
 //       MemoryPressureListener::InnerComponentCallbacks2
 //===============================================================
+CAR_INTERFACE_IMPL(MemoryPressureListener::InnerComponentCallbacks2, Object, IComponentCallbacks2);
 
 MemoryPressureListener::InnerComponentCallbacks2::InnerComponentCallbacks2()
 {
@@ -55,7 +58,7 @@ void MemoryPressureListener::RegisterSystemCallback(
     /* [in] */ IContext* context)
 {
     AutoPtr<IComponentCallbacks2> callback2 = new InnerComponentCallbacks2();
-    AutoPtr<IComponentCallbacks> callback = (IComponentCallbacks*)callback2->Probe(EIID_IComponentCallbacks);
+    AutoPtr<IComponentCallbacks> callback = IComponentCallbacks::Probe(callback2);
     context->RegisterComponentCallbacks(callback);
 }
 
@@ -129,6 +132,14 @@ void MemoryPressureListener::SimulateTrimMemoryPressureSignal(
 void MemoryPressureListener::NativeOnMemoryPressure(
     /* [in] */ Int32 memoryPressureType)
 {
+    Elastos_MemoryPressureListener_nativeOnMemoryPressure(memoryPressureType);
+}
+
+void MemoryPressureListener::RegisterSystemCallback(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    RegisterSystemCallback(c);
 }
 
 } // namespace Base

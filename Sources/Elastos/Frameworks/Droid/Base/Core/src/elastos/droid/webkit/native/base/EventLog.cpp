@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/EventLog.h"
+#include "elastos/droid/webkit/native/base/api/EventLog_dec.h"
 
 namespace Elastos {
 namespace Droid {

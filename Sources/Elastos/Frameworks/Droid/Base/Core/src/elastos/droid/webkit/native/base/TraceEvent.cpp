@@ -1,16 +1,19 @@
 
 #include "elastos/droid/webkit/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/native/base/api/TraceEvent_dec.h"
 #include "elastos/droid/webkit/native/base/CommandLine.h"
 #include "elastos/droid/webkit/native/base/BaseSwitches.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/CLooperHelper.h"
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::EIID_IIdleHandler;
 using Elastos::Droid::Utility::EIID_IPrinter;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -147,17 +150,19 @@ ECode TraceEvent::IdleTracingLooperMonitor::QueueIdle(
     const Int64 elapsed = now - mLastIdleStartedAt;
     mNumIdlesSeen++;
     assert(0);
-#if 0
-    TraceEvent::Begin(IDLE_EVENT_NAME, mNumTasksSinceLastIdle + " tasks since last idle.");
+    String strNumTasksSinceLastIdle = StringUtils::ToString(mNumTasksSinceLastIdle);
+    String str(" tasks since last idle.");
+    TraceEvent::Begin(IDLE_EVENT_NAME + strNumTasksSinceLastIdle + str);
     if (elapsed > MIN_INTERESTING_BURST_DURATION_MILLIS) {
+#if 0
         // Dump stats
         String statsString = mNumTasksSeen + " tasks and "
                 + mNumIdlesSeen + " idles processed so far, "
                 + mNumTasksSinceLastIdle + " tasks bursted and "
                 + elapsed + "ms elapsed since last idle";
         TraceAndLog(Log.DEBUG, statsString);
-    }
 #endif
+    }
     mLastIdleStartedAt = now;
     mNumTasksSinceLastIdle = 0;
     *result = TRUE; // stay installed
@@ -419,40 +424,48 @@ String TraceEvent::GetCallerName()
 
 void TraceEvent::NativeRegisterEnabledObserver()
 {
+    Elastos_TraceEvent_nativeRegisterEnabledObserver();
 }
 
 void TraceEvent::NativeStartATrace()
 {
+    Elastos_TraceEvent_nativeStartATrace();
 }
 
 void TraceEvent::NativeStopATrace()
 {
+    Elastos_TraceEvent_nativeStopATrace();
 }
 
 void TraceEvent::NativeInstant(
     /* [in] */ const String& name,
     /* [in] */ const String& arg)
 {
+    Elastos_TraceEvent_nativeInstant(name, arg);
 }
 
 void TraceEvent::NativeBegin(
     /* [in] */ const String& name,
     /* [in] */ const String& arg)
 {
+    Elastos_TraceEvent_nativeBegin(name, arg);
 }
 
 void TraceEvent::NativeEnd(
     /* [in] */ const String& name,
     /* [in] */ const String& arg)
 {
+    Elastos_TraceEvent_nativeEnd(name, arg);
 }
 
 void TraceEvent::NativeBeginToplevel()
 {
+    Elastos_TraceEvent_nativeBeginToplevel();
 }
 
 void TraceEvent::NativeEndToplevel()
 {
+    Elastos_TraceEvent_nativeEndToplevel();
 }
 
 void TraceEvent::NativeStartAsync(
@@ -460,6 +473,7 @@ void TraceEvent::NativeStartAsync(
     /* [in] */ Int64 id,
     /* [in] */ const String& arg)
 {
+    Elastos_TraceEvent_nativeStartAsync(name, id, arg);
 }
 
 void TraceEvent::NativeFinishAsync(
@@ -467,6 +481,7 @@ void TraceEvent::NativeFinishAsync(
     /* [in] */ Int64 id,
     /* [in] */ const String& arg)
 {
+    Elastos_TraceEvent_nativeFinishAsync(name, id, arg);
 }
 
 } // namespace Base

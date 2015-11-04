@@ -22,7 +22,8 @@ namespace Base {
  * Integrates native PowerMonitor with the java side.
  */
 //@JNINamespace("base::android")
-class PowerMonitor : public ApplicationStatus::ApplicationStateListener
+class PowerMonitor
+    : public ApplicationStatus::ApplicationStateListener
 {
 private:
     static AutoPtr<IRunnable> Runnable_Create();
@@ -64,6 +65,18 @@ public:
     CARAPI_(void) OnApplicationStateChange(
         /* [in] */ Int32 newState);
 
+    static CARAPI_(void*) ElaPowerMonitorCallback_Init();
+
+private:
+    PowerMonitor();
+
+    //@CalledByNative
+    static CARAPI_(Boolean) IsBatteryPower();
+
+    static CARAPI_(void) NativeOnBatteryChargingChanged();
+    static CARAPI_(void) NativeOnMainActivitySuspended();
+    static CARAPI_(void) NativeOnMainActivityResumed();
+
 private:
     static const Int64 SUSPEND_DELAY_MS = 1 * 60 * 1000;  // 1 minute.
 
@@ -77,16 +90,6 @@ private:
     // would be too aggressive. An Android activity can be in the "paused" state quite often. This
     // can happen when a dialog window shows up for instance.
     static const AutoPtr<IRunnable> sSuspendTask;
-
-private:
-    PowerMonitor();
-
-    //@CalledByNative
-    static CARAPI_(Boolean) IsBatteryPower();
-
-    static CARAPI_(void) NativeOnBatteryChargingChanged();
-    static CARAPI_(void) NativeOnMainActivitySuspended();
-    static CARAPI_(void) NativeOnMainActivityResumed();
 };
 
 } // namespace Base

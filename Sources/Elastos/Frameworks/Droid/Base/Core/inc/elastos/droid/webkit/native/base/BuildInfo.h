@@ -17,6 +17,7 @@ namespace Base {
  * from native code.
  */
 class BuildInfo
+    : public Object
 {
 public:
     //@CalledByNative
@@ -61,7 +62,21 @@ public:
     //@CalledByNative
     static CARAPI_(Int32) GetSdkInt();
 
+    static CARAPI_(void*) ElaBuildInfoCallback_Init();
+
 private:
+    static CARAPI_(String) GetPackageVersionCode(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(String) GetPackageVersionName(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(String) GetPackageLabel(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(String) GetPackageName(
+        /* [in] */ IInterface* context);
+
     /**
      * BuildInfo is a static utility class and therefore shouldn't be
      * instantiated.

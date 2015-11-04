@@ -35,12 +35,14 @@ namespace Webkit {
 namespace Base {
 
 class ApplicationStatus
+    : public Object
 {
 public:
     /**
      * Interface to be implemented by listeners.
      */
-    class ApplicationStateListener : public Object
+    class ApplicationStateListener
+        : public Object
     {
     public:
         /**
@@ -54,7 +56,8 @@ public:
     /**
      * Interface to be implemented by listeners.
      */
-    class ActivityStateListener : public Object
+    class ActivityStateListener
+        : public Object
     {
     public:
         /**
@@ -68,7 +71,8 @@ public:
     };
 
 private:
-    class ActivityInfo : public Object
+    class ActivityInfo
+        : public Object
     {
     public:
         ActivityInfo();
@@ -94,7 +98,8 @@ private:
         AutoPtr<ObserverList> mListeners;
     };
 
-    class InnerWindowFocusChangedListener : public BaseChromiumApplication::WindowFocusChangedListener
+    class InnerWindowFocusChangedListener
+        : public BaseChromiumApplication::WindowFocusChangedListener
     {
     public:
         InnerWindowFocusChangedListener();
@@ -137,7 +142,8 @@ private:
             /* [in] */ IActivity* activity);
     };
 
-    class InnerRunnable : public Runnable
+    class InnerRunnable
+        : public Runnable
     {
     public:
         InnerRunnable();
@@ -145,7 +151,8 @@ private:
         CARAPI Run();
     };
 
-    class InnerApplicationStateListener : public ApplicationStateListener
+    class InnerApplicationStateListener
+        : public ApplicationStateListener
     {
     public:
         InnerApplicationStateListener();
@@ -291,7 +298,8 @@ public:
     static CARAPI_(void) UnregisterApplicationStateListener(
         /* [in] */ ApplicationStateListener* listener);
 
-private:
+    static CARAPI_(void*) ElaApplicationStatusCallback_Init();
+
     ApplicationStatus();
 
     /**
@@ -344,7 +352,7 @@ private:
     /**
      * A map of which observers listen to state changes from which {@link Activity}.
      */
-    static /*const*/ AutoPtr<IMap> sActivityInfo;
+    static AutoPtr<IMap> sActivityInfo;
 
     /**
      * A list of observers to be notified when any {@link Activity} has a state change.

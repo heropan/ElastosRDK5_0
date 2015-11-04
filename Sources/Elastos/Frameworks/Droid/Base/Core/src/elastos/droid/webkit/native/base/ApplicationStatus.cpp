@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
+#include "elastos/droid/webkit/native/base/api/ApplicationStatus_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/native/base/ActivityState.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
@@ -325,7 +326,7 @@ AutoPtr<IActivity> ApplicationStatus::GetLastTrackedFocusedActivity()
 AutoPtr<IContext> ApplicationStatus::GetApplicationContext()
 {
     if (sApplication != NULL) {
-        AutoPtr<IContext> appContext = (IContext*)sApplication->Probe(EIID_IContext);
+        AutoPtr<IContext> appContext = IContext::Probe(sApplication);
         AutoPtr<IContext> context;
         appContext->GetApplicationContext((IContext**)&context);
         return context;
@@ -527,7 +528,7 @@ Int32 ApplicationStatus::DetermineApplicationState()
 
     AutoPtr<ICollection> collection;
     sActivityInfo->GetValues((ICollection**)&collection);
-    AutoPtr<IIterator> iter = (IIterator*)collection->Probe(EIID_IIterator);
+    AutoPtr<IIterator> iter = IIterator::Probe(collection);
     Boolean bNext;
     for (iter->HasNext(&bNext); bNext; iter->HasNext(&bNext)) {
         AutoPtr<ActivityInfo> info;
@@ -557,6 +558,7 @@ Int32 ApplicationStatus::DetermineApplicationState()
 void ApplicationStatus::NativeOnApplicationStateChange(
     /* [in] */ Int32 newState)
 {
+    Elastos_ApplicationStatus_nativeOnApplicationStateChange(newState);
 }
 
 } // namespace Base

@@ -14,7 +14,8 @@ namespace Base {
  * important data files without risking data loss.
  */
 //@JNINamespace("base::android")
-class ImportantFileWriterAndroid
+class ImportantFileWriterElastos
+    : public Object
 {
 public:
     /**

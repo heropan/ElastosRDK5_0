@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/base/CpuFeatures.h"
+#include "elastos/droid/webkit/native/base/api/CpuFeatures_dec.h"
 
 namespace Elastos {
 namespace Droid {
@@ -26,14 +27,12 @@ Int64 CpuFeatures::GetMask()
 
 Int32 CpuFeatures::NativeGetCoreCount()
 {
-    assert(0);
-    return 0;
+    return Elastos_CpuFeatures_nativeGetCoreCount();
 }
 
 Int64 CpuFeatures::NativeGetCpuFeatures()
 {
-    assert(0);
-    return 0;
+    return Elastos_CpuFeatures_nativeGetCpuFeatures();
 }
 
 } // namespace Base

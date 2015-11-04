@@ -1,8 +1,10 @@
 
 #include "elastos/droid/webkit/native/base/BuildInfo.h"
+#include "elastos/droid/webkit/native/base/api/BuildInfo_dec.h"
 #include "elastos/droid/os/Build.h"
 
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Math;
@@ -10,6 +12,7 @@ using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -56,9 +59,7 @@ String BuildInfo::GetAndroidBuildFingerprint()
     String str(Build::FINGERPRINT);
     Int32 length = str.GetLength();
     Int32 minLen = Elastos::Core::Math::Min(length, MAX_FINGERPRINT_LENGTH);
-//    return str.Substring(0, minLen, MAX_FINGERPRINT_LENGTH);
-    assert(0);
-    return String(NULL);
+    return str.Substring(0, minLen);
 }
 
 //@CalledByNative
@@ -157,6 +158,34 @@ String BuildInfo::GetBuildType()
 Int32 BuildInfo::GetSdkInt()
 {
     return Build::VERSION::SDK_INT;
+}
+
+String BuildInfo::GetPackageVersionCode(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return GetPackageVersionCode(c);
+}
+
+String BuildInfo::GetPackageVersionName(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return GetPackageVersionName(c);
+}
+
+String BuildInfo::GetPackageLabel(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return GetPackageLabel(c);
+}
+
+String BuildInfo::GetPackageName(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return GetPackageName(c);
 }
 
 } // namespace Base
