@@ -6,7 +6,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
-// #include "elastos/droid/view/View.h" zhangjingcheng
+#include "elastos/droid/view/View.h"
 #ifdef DROID_CORE
 // #include "elastos/droid/widget/CBlinkLayout.h"
 // #include "elastos/droid/view/CContextThemeWrapper.h"
@@ -960,7 +960,7 @@ ECode LayoutInflater::RInflate(
     }
 
     if (finishInflate) {
-        // ((View*)parent)->OnFinishInflate(); zhangjingcheng
+        ((View*)parent)->OnFinishInflate();
     }
 
     return NOERROR;

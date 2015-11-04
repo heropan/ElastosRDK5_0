@@ -5,16 +5,20 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
+using Elastos::Droid::View::IInputChannel;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
+
+class InputEventReceiver;
 
 class InputChannel
     : public Object
     , public IInputChannel
     , public IParcelable
 {
+    friend class InputEventReceiver;
 private:
     static const char* TAG;
 

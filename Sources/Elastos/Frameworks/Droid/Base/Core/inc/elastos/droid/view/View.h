@@ -71,6 +71,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+class LayoutInflater;
 class ViewRootImpl;
 class TouchDelegate;
 class ViewPropertyAnimator;
@@ -97,6 +98,7 @@ class View
 
 {
     friend class ViewRootImpl;
+    friend class LayoutInflater;
     friend class ViewGroup;
     friend class ViewPropertyAnimator;
     friend class CAccessibilityInteractionController;

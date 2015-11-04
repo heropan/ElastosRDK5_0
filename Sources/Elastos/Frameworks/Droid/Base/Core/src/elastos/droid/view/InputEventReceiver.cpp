@@ -1,11 +1,15 @@
 
 #include "elastos/droid/view/InputEventReceiver.h"
+#include "elastos/droid/view/InputChannel.h"
 #include "elastos/droid/view/NativeInputChannel.h"
+#include "elastos/droid/view/ScopedLocalRef.h"
 #ifdef DROID_CORE
-#include "elastos/droid/view/CKeyEvent.h"
-#include "elastos/droid/view/CMotionEvent.h"
+// #include "elastos/droid/view/CKeyEvent.h"
+// #include "elastos/droid/view/CMotionEvent.h"
 #endif
 #include <elastos/utility/logging/Logger.h>
+#include <android/looper.h>
+#include <input/Input.h>
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
@@ -24,17 +28,19 @@ static AutoPtr<IKeyEvent> CreateKeyEventFromNative(
     /* [in] */ const android::KeyEvent* event)
 {
     AutoPtr<IKeyEvent> eventObj;
-    ECode ec = CKeyEvent::New(nanoseconds_to_milliseconds(event->getDownTime()),
-            nanoseconds_to_milliseconds(event->getEventTime()),
-            event->getAction(),
-            event->getKeyCode(),
-            event->getRepeatCount(),
-            event->getMetaState(),
-            event->getDeviceId(),
-            event->getScanCode(),
-            event->getFlags(),
-            event->getSource(),
-            (IKeyEvent**)&eventObj);
+    ECode ec;
+    // ECode ec = CKeyEvent::New(nanoseconds_to_milliseconds(event->getDownTime()),
+    //         nanoseconds_to_milliseconds(event->getEventTime()),
+    //         event->getAction(),
+    //         event->getKeyCode(),
+    //         event->getRepeatCount(),
+    //         event->getMetaState(),
+    //         event->getDeviceId(),
+    //         event->getScanCode(),
+    //         event->getFlags(),
+    //         event->getSource(),
+    //         (IKeyEvent**)&eventObj);
+    // zhangjingcheng wait
     if (FAILED(ec)) {
 //        ALOGE("An exception occurred while obtaining a key event.");
         return NULL;
@@ -46,10 +52,10 @@ static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
     /* [in] */ const android::MotionEvent* event)
 {
     AutoPtr<IMotionEvent> eventObj;
-    if (FAILED(CMotionEvent::New((IMotionEvent**)&eventObj))) {
-        return NULL;
-    }
-
+    // if (FAILED(CMotionEvent::New((IMotionEvent**)&eventObj))) {
+    //     return NULL;
+    // }
+    // zhangjingcheng wait
     Handle32 native;
     eventObj->GetNative(&native);
     android::MotionEvent* destEvent = (android::MotionEvent*)native;
@@ -62,16 +68,17 @@ static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
     return eventObj;
 }
 
-CAR_INTERFACE_IMPL_2(InputEventReceiver, IInputEventReceiver, IWeakReferenceSource);
+CAR_INTERFACE_IMPL_2(InputEventReceiver, Object, IInputEventReceiver, IWeakReferenceSource);
 
 InputEventReceiver::NativeInputEventReceiver::NativeInputEventReceiver(
     /* [in] */ IWeakReference* inputEventReceiver,
     /* [in] */ const android::sp<android::InputChannel>& inputChannel,
-    /* [in] */ const android::sp<android::Looper>& looper) :
-    mInputEventReceiver(inputEventReceiver),
-    mInputConsumer(inputChannel),
-    mLooper(looper),
-    mBatchedInputEventPending(false)
+    /* [in] */ MessageQueue* messageQueue)
+    : mInputEventReceiver(inputEventReceiver)
+    , mInputConsumer(inputChannel)
+    , mMessageQueue(messageQueue)
+    , mBatchedInputEventPending(false)
+    , mFdEvents(0)
 {
 #if DEBUG_DISPATCH_CYCLE
     ALOGD("channel '%s' ~ Initializing input event receiver.", getInputChannelName());
@@ -84,8 +91,7 @@ InputEventReceiver::NativeInputEventReceiver::~NativeInputEventReceiver()
 
 android::status_t InputEventReceiver::NativeInputEventReceiver::initialize()
 {
-    int receiveFd = mInputConsumer.getChannel()->getFd();
-    mLooper->addFd(receiveFd, 0, ALOOPER_EVENT_INPUT, this, NULL);
+    setFdEvents(ALOOPER_EVENT_INPUT);
     return android::OK;
 }
 
@@ -95,7 +101,7 @@ void InputEventReceiver::NativeInputEventReceiver::dispose()
     ALOGD("channel '%s' ~ Disposing input event receiver.", getInputChannelName());
 #endif
 
-    mLooper->removeFd(mInputConsumer.getChannel()->getFd());
+    setFdEvents(0);
 }
 
 android::status_t InputEventReceiver::NativeInputEventReceiver::finishInputEvent(uint32_t seq, bool handled)
@@ -106,33 +112,95 @@ android::status_t InputEventReceiver::NativeInputEventReceiver::finishInputEvent
 
     android::status_t status = mInputConsumer.sendFinishedSignal(seq, handled);
     if (status) {
+        if (status == android::WOULD_BLOCK) {
+#if DEBUG_DISPATCH_CYCLE
+            ALOGD("channel '%s' ~ Could not send finished signal immediately.  "
+                    "Enqueued for later.", getInputChannelName());
+#endif
+            Finish finish;
+            finish.seq = seq;
+            finish.handled = handled;
+            mFinishQueue.add(finish);
+            if (mFinishQueue.size() == 1) {
+                setFdEvents(ALOOPER_EVENT_INPUT | ALOOPER_EVENT_OUTPUT);
+            }
+            return android::OK;
+        }
         ALOGW("Failed to send finished signal on channel '%s'.  status=%d",
                 getInputChannelName(), status);
     }
     return status;
 }
 
+void InputEventReceiver::NativeInputEventReceiver::setFdEvents(int events) {
+    if (mFdEvents != events) {
+        mFdEvents = events;
+        int fd = mInputConsumer.getChannel()->getFd();
+        if (events) {
+            mMessageQueue->GetLooper()->addFd(fd, 0, events, this, NULL);
+        } else {
+            mMessageQueue->GetLooper()->removeFd(fd);
+        }
+    }
+}
+
 int InputEventReceiver::NativeInputEventReceiver::handleEvent(int receiveFd, int events, void* data)
 {
     if (events & (ALOOPER_EVENT_ERROR | ALOOPER_EVENT_HANGUP)) {
-        ALOGE("channel '%s' ~ Publisher closed input channel or an error occurred.  "
+#if DEBUG_DISPATCH_CYCLE
+        // This error typically occurs when the publisher has closed the input channel
+        // as part of removing a window or finishing an IME session, in which case
+        // the consumer will soon be disposed as well.
+        ALOGD("channel '%s' ~ Publisher closed input channel or an error occurred.  "
                 "events=0x%x", getInputChannelName(), events);
+#endif
         return 0; // remove the callback
     }
 
-    if (!(events & ALOOPER_EVENT_INPUT)) {
-        ALOGW("channel '%s' ~ Received spurious callback for unhandled poll event.  "
-                "events=0x%x", getInputChannelName(), events);
+    if (events & ALOOPER_EVENT_OUTPUT) {
+        for (size_t i = 0; i < mFinishQueue.size(); i++) {
+            const Finish& finish = mFinishQueue.itemAt(i);
+            android::status_t status = mInputConsumer.sendFinishedSignal(finish.seq, finish.handled);
+            if (status) {
+                mFinishQueue.removeItemsAt(0, i);
+
+                if (status == android::WOULD_BLOCK) {
+#if DEBUG_DISPATCH_CYCLE
+                    ALOGD("channel '%s' ~ Sent %u queued finish events; %u left.",
+                            getInputChannelName(), i, mFinishQueue.size());
+#endif
+                    return 1; // keep the callback, try again later
+                }
+
+                ALOGW("Failed to send finished signal on channel '%s'.  status=%d",
+                        getInputChannelName(), status);
+                if (status != android::DEAD_OBJECT) {
+                    // String8 message;
+                    // message.appendFormat("Failed to finish input event.  status=%d", status);
+                    ALOGE("Failed to finish input event.  status=%d", status);
+                    return E_RUNTIME_EXCEPTION;
+                    // jniThrowRuntimeException(env, message.string());
+                    // mMessageQueue->raiseAndClearException(env, "finishInputEvent");
+                }
+                return 0; // remove the callback
+            }
+        }
+#if DEBUG_DISPATCH_CYCLE
+        ALOGD("channel '%s' ~ Sent %u queued finish events; none left.",
+                getInputChannelName(), mFinishQueue.size());
+#endif
+        mFinishQueue.clear();
+        setFdEvents(ALOOPER_EVENT_INPUT);
         return 1;
     }
 
-    android::status_t status = consumeEvents(false /*consumeBatches*/, -1);
-    //mMessageQueue->raiseAndClearException(env, "handleReceiveCallback");
-    return status == android::OK || status == android::NO_MEMORY ? 1 : 0;
+    ALOGW("channel '%s' ~ Received spurious callback for unhandled poll event.  "
+            "events=0x%x", getInputChannelName(), events);
+    return 1;
 }
 
 android::status_t InputEventReceiver::NativeInputEventReceiver::consumeEvents(
-    bool consumeBatches, nsecs_t frameTime) {
+    bool consumeBatches, nsecs_t frameTime, bool* outConsumedBatch) {
 #if DEBUG_DISPATCH_CYCLE
     ALOGD("channel '%s' ~ Consuming input events, consumeBatches=%s, frameTime=%lld.",
             getInputChannelName(), consumeBatches ? "true" : "false", frameTime);
@@ -141,7 +209,11 @@ android::status_t InputEventReceiver::NativeInputEventReceiver::consumeEvents(
     if (consumeBatches) {
         mBatchedInputEventPending = false;
     }
+    if (outConsumedBatch) {
+        *outConsumedBatch = false;
+    }
 
+    AutoPtr<IWeakReference> receiverObj;
     bool skipCallbacks = false;
     for (;;) {
         uint32_t seq;
@@ -153,19 +225,31 @@ android::status_t InputEventReceiver::NativeInputEventReceiver::consumeEvents(
                 if (!skipCallbacks && !mBatchedInputEventPending
                         && mInputConsumer.hasPendingBatch()) {
                     // There is a pending batch.  Come back later.
+                    if (receiverObj != NULL) {
+                        receiverObj = mInputEventReceiver;
+                        AutoPtr<IInterface> obj;
+                        receiverObj->Resolve(EIID_IInterface, (IInterface**)&obj);
+                        if (obj) {
+                            ALOGW("channel '%s' ~ Receiver object was finalized "
+                                    "without being disposed.", getInputChannelName());
+                            return android::DEAD_OBJECT;
+                        }
+                    }
+
                     mBatchedInputEventPending = true;
 #if DEBUG_DISPATCH_CYCLE
                     ALOGD("channel '%s' ~ Dispatching batched input event pending notification.",
                             getInputChannelName());
 #endif
                     AutoPtr<IInterface> obj;
-                    mInputEventReceiver->Resolve(EIID_IInterface, (IInterface**)&obj);
+                    if (receiverObj != NULL)
+                        receiverObj->Resolve(EIID_IInterface, (IInterface**)&obj);
                     if (obj) {
                         AutoPtr<IInputEventReceiver> tmp = (IInputEventReceiver*)(obj->Probe(EIID_IInputEventReceiver));
                         AutoPtr<InputEventReceiver> inputEventReceiver = (InputEventReceiver*)(tmp.Get());
                         if (NOERROR != inputEventReceiver->DispatchBatchedInputEventPending()) {
-                        ALOGE("Exception dispatching batched input events.");
-                        mBatchedInputEventPending = false; // try again later
+                            ALOGE("Exception dispatching batched input events.");
+                            mBatchedInputEventPending = false; // try again later
                         }
                     }
 
@@ -179,6 +263,19 @@ android::status_t InputEventReceiver::NativeInputEventReceiver::consumeEvents(
         assert(inputEvent);
 
         if (!skipCallbacks) {
+            AutoPtr<IInterface> obj;
+            if (receiverObj != NULL)
+                receiverObj->Resolve(EIID_IInterface, (IInterface**)&obj);
+            if (obj == NULL) {
+                receiverObj = mInputEventReceiver;
+                if (receiverObj != NULL)
+                    receiverObj->Resolve(EIID_IInterface, (IInterface**)&obj);
+                if (obj == NULL) {
+                    ALOGW("channel '%s' ~ Receiver object was finalized "
+                            "without being disposed.", getInputChannelName());
+                    return android::DEAD_OBJECT;
+                }
+            }
             AutoPtr<IInputEvent> inputEventObj;
             switch (inputEvent->getType()) {
             case AINPUT_EVENT_TYPE_KEY:
@@ -196,8 +293,11 @@ android::status_t InputEventReceiver::NativeInputEventReceiver::consumeEvents(
 #if DEBUG_DISPATCH_CYCLE
                 ALOGD("channel '%s' ~ Received motion event.", getInputChannelName());
 #endif
-                AutoPtr<IMotionEvent> motionEvent = CreateMotionEventFromNative(
-                    static_cast<android::MotionEvent*>(inputEvent));
+                android::MotionEvent* nMotionEvent = static_cast<android::MotionEvent*>(inputEvent);
+                if ((nMotionEvent->getAction() & AMOTION_EVENT_ACTION_MOVE) && outConsumedBatch) {
+                    *outConsumedBatch = true;
+                }
+                AutoPtr<IMotionEvent> motionEvent = CreateMotionEventFromNative(nMotionEvent);
                 inputEventObj = IInputEvent::Probe(motionEvent);
                 break;
             }
@@ -259,7 +359,7 @@ InputEventReceiver::InputEventReceiver(
     Handle32 nativeQueue;
     queue->GetNativeMessageQueue(&nativeQueue);
     mMessageQueue = (NativeMessageQueue*)nativeQueue;
-    NativeInit();
+    ASSERT_SUCCEEDED(NativeInit())
 
     //mCloseGuard.open("dispose");
 }
@@ -311,7 +411,8 @@ ECode InputEventReceiver::OnInputEvent(
  */
 ECode InputEventReceiver::OnBatchedInputEventPending()
 {
-    return ConsumeBatchedInputEvents(-1);
+    Boolean tmp;
+    return ConsumeBatchedInputEvents(-1, &tmp);
 }
 
 /**
@@ -343,7 +444,7 @@ ECode InputEventReceiver::FinishInputEvent(
         else {
             Int32 seq = find->mSecond;
             mSeqMap.Erase(find);
-            NativeFinishInputEvent(seq, handled);
+            FAIL_RETURN(NativeFinishInputEvent(seq, handled))
         }
     }
     event->RecycleIfNeededAfterDispatch();
@@ -362,7 +463,8 @@ ECode InputEventReceiver::FinishInputEvent(
  * when the current display frame started rendering, or -1 if unknown.
  */
 ECode InputEventReceiver::ConsumeBatchedInputEvents(
-    /* [in] */ Int64 frameTimeNanos)
+    /* [in] */ Int64 frameTimeNanos,
+    /* [out] */ Boolean* result)
 {
     if (mNativeReceiver == NULL) {
         Logger::W(TAG, String("Attempted to consume batched input events but the input event ")
@@ -371,9 +473,10 @@ ECode InputEventReceiver::ConsumeBatchedInputEvents(
     else {
         // ensure mNativeReceiver won't be destructed before NativeConsumeBatchedInputEvents finished
         android::sp<NativeInputEventReceiver> nativeReceiver = mNativeReceiver;
-        NativeConsumeBatchedInputEvents(frameTimeNanos);
+        return NativeConsumeBatchedInputEvents(frameTimeNanos, result);
     }
 
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -396,57 +499,60 @@ ECode InputEventReceiver::DispatchBatchedInputEventPending()
     return OnBatchedInputEventPending();
 }
 
-void InputEventReceiver::NativeInit()
+ECode InputEventReceiver::NativeInit()
 {
-    NativeInputChannel* nativeInputChannel = NULL;
-    mInputChannel->GetNativeInputChannel((Handle32*)&nativeInputChannel);
+    InputChannel* nChannel = (InputChannel*)mInputChannel.Get();
+    Handle64 nInputChannel = nChannel->mNative;
+    NativeInputChannel* nativeInputChannel = reinterpret_cast<NativeInputChannel*>(nInputChannel);
     android::sp<android::InputChannel> inputChannel =
             nativeInputChannel != NULL ? nativeInputChannel->getInputChannel() : NULL;
     if (inputChannel == NULL) {
         Logger::W(TAG, "inputChannel is not initialized.");
-        return ;
+        return NOERROR;
     }
 
     AutoPtr<IWeakReference> weakThis;
     GetWeakReference((IWeakReference**)&weakThis);
     mNativeReceiver = new NativeInputEventReceiver(
-        weakThis, inputChannel, mMessageQueue->GetLooper());
+        weakThis, inputChannel, mMessageQueue);
     android::status_t status = mNativeReceiver->initialize();
     if (status) {
         ALOGE("Failed to initialize input event receiver.  status=%d", status);
+        return E_RUNTIME_EXCEPTION;
     }
+    return NOERROR;
 }
 
-void InputEventReceiver::NativeDispose()
+ECode InputEventReceiver::NativeDispose()
 {
     mNativeReceiver->dispose();
+    return NOERROR;
 }
 
-void InputEventReceiver::NativeFinishInputEvent(
+ECode InputEventReceiver::NativeFinishInputEvent(
     /* [in] */ Int32 seq,
     /* [in] */ Boolean handled)
 {
     android::status_t status = mNativeReceiver->finishInputEvent(seq, handled);
     if (status && status != android::DEAD_OBJECT) {
         ALOGE("Failed to finish input event.  status=%d", status);
+        return E_RUNTIME_EXCEPTION;
     }
+    return NOERROR;
 }
 
-void InputEventReceiver::NativeConsumeBatchedInputEvents(
-    /* [in] */ Int64 frameTimeNanos)
+ECode InputEventReceiver::NativeConsumeBatchedInputEvents(
+    /* [in] */ Int64 frameTimeNanos,
+    /* [out] */ Boolean* result)
 {
-    android::status_t status = mNativeReceiver->consumeEvents(true /*consumeBatches*/, frameTimeNanos);
+    bool consumedBatch;
+    android::status_t status = mNativeReceiver->consumeEvents(true /*consumeBatches*/, frameTimeNanos, &consumedBatch);
     if (status && status != android::DEAD_OBJECT) {
         ALOGE("Failed to consume batched input event.  status=%d", status);
+        *result = FALSE;
+        return E_RUNTIME_EXCEPTION;
     }
-}
-
-ECode InputEventReceiver::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
+    *result = consumedBatch ? TRUE : FALSE;
     return NOERROR;
 }
 

@@ -2,13 +2,18 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 #define __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include <utils/Looper.h>
-#include <androidfw/InputTransport.h>
-#include "elastos/droid/os/NativeMessageQueue.h"
+#include <elastos/core/Object.h>
+#include <input/InputTransport.h>
 #include <elastos/utility/etl/HashMap.h>
+#include <utils/Vector.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/NativeMessageQueue.h"
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
+using android::Vector;
+using Elastos::Droid::Os::MessageQueue;
 using Elastos::Droid::Os::NativeMessageQueue;
 using Elastos::Droid::Os::ILooper;
 
@@ -20,10 +25,9 @@ namespace View {
  * Provides a low-level mechanism for an application to receive input events.
  * @hide
  */
-class InputEventReceiver :
-    public ElRefBase,
-    public IInputEventReceiver,
-    public IWeakReferenceSource
+class InputEventReceiver
+    : public Object
+    , public IInputEventReceiver
 {
 private:
     class NativeInputEventReceiver : public android::LooperCallback
@@ -32,22 +36,31 @@ private:
         NativeInputEventReceiver(
             IWeakReference* inputEventReceiver,
             const android::sp<android::InputChannel>& inputChannel,
-            const android::sp<android::Looper>& looper);
+            MessageQueue* messageQueue);
 
         android::status_t initialize();
         void dispose();
         android::status_t finishInputEvent(uint32_t seq, bool handled);
-        android::status_t consumeEvents(bool consumeBatches, nsecs_t frameTime);
+        android::status_t consumeEvents(bool consumeBatches, nsecs_t frameTime, bool* outConsumedBatch);
 
     protected:
         virtual ~NativeInputEventReceiver();
 
     private:
+        struct Finish
+        {
+            uint32_t seq;
+            bool handled;
+        };
         AutoPtr<IWeakReference> mInputEventReceiver;
         android::InputConsumer mInputConsumer;
-        android::sp<android::Looper> mLooper;
+        AutoPtr<MessageQueue> mMessageQueue;
         android::PreallocatedInputEventFactory mInputEventFactory;
         bool mBatchedInputEventPending;
+        int mFdEvents;
+        Vector<Finish> mFinishQueue;
+
+        void setFdEvents(int events);
 
         const char* getInputChannelName() {
             return mInputConsumer.getChannel()->getName().string();
@@ -58,9 +71,6 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     InputEventReceiver(
         /* [in] */ IInputChannel* inputChannel,
@@ -80,7 +90,8 @@ public:
         /* [in] */ Boolean handled);
 
     CARAPI ConsumeBatchedInputEvents(
-        /* [in] */ Int64 frameTimeNanos);
+        /* [in] */ Int64 frameTimeNanos,
+        /* [out] */ Boolean* result);
 
 private:
     CARAPI DispatchInputEvent(
@@ -95,16 +106,17 @@ private:
     // }
 
 private:
-    CARAPI_(void) NativeInit();
+    CARAPI NativeInit();
 
-    CARAPI_(void) NativeDispose();
+    CARAPI NativeDispose();
 
-    CARAPI_(void) NativeFinishInputEvent(
+    CARAPI NativeFinishInputEvent(
         /* [in] */ Int32 seq,
         /* [in] */ Boolean handled);
 
-    CARAPI_(void) NativeConsumeBatchedInputEvents(
-        /* [in] */ Int64 frameTimeNanos);
+    CARAPI NativeConsumeBatchedInputEvents(
+        /* [in] */ Int64 frameTimeNanos,
+        /* [out] */ Boolean* result);
 
 private:
      static const char* TAG;

@@ -29,6 +29,7 @@ SOURCES += Choreographer.cpp
 SOURCES += InputDevice.cpp
 SOURCES += TouchDelegate.cpp
 SOURCES += ThreadedRenderer.cpp
+SOURCES += InputChannel.cpp
 SOURCES += InputEvent.cpp
 SOURCES += LayoutInflater.cpp
 SOURCES += HardwareRenderer.cpp
@@ -47,14 +48,14 @@ SOURCES += HardwareRenderer.cpp
 
 #SOURCES += CDragShadowBuilder.cpp
 #SOURCES += NativeInputChannel.cpp
-SOURCES += InputChannel.cpp
+
 #SOURCES += CInputChannelHelper.cpp
 #SOURCES += CInputDevice.cpp
 #SOURCES += CInputDeviceHelper.cpp
 #SOURCES += CInputQueue.cpp
 #SOURCES += InputEvent.cpp
 #SOURCES += InputEventConsistencyVerifier.cpp
-#SOURCES += InputEventReceiver.cpp
+SOURCES += InputEventReceiver.cpp
 #SOURCES += InputFilter.cpp
 #SOURCES += CKeyCharacterMap.cpp
 #SOURCES += CKeyCharacterMapHelper.cpp
