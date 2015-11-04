@@ -9,6 +9,7 @@ using Elastos::Core::AutoLock;
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 //CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable
 CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable::CountryDetectorListenerTransportRunnnable(
     /* [in] */ ICountry* country,
@@ -54,12 +55,6 @@ CAR_INTERFACE_IMPL(CountryDetector, Object, ICountryDetector)
 
 CountryDetector::CountryDetector()
 {}
-
-CountryDetector::CountryDetector(
-    /* [in] */ IICountryDetector* service)
-{
-    Init(service);
-}
 
 ECode CountryDetector::constructor(
     /* [in] */ IICountryDetector* service)

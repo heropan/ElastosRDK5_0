@@ -36,12 +36,6 @@ public:
      *
      * @hide
      */
-    GeocoderParams(
-        /* [in] */ IContext* context,
-        /* [in] */ ILocale* locale);
-
-    CARAPI constructor();
-
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ ILocale* locale);

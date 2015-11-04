@@ -6,11 +6,11 @@
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Location::ICountryListener;
-using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Runnable;
+using Elastos::Utility::Etl::HashMap;
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener);
 
@@ -81,7 +81,7 @@ private:
 
         private:
             AutoPtr<ICountry> mCountry;
-            AutoPtr<CountryDetectorListenerTransport> mHost;
+            CountryDetectorListenerTransport* mHost;
         };
 
     private:
@@ -99,9 +99,6 @@ public:
      *       create an instance of this class is using the factory
      *       Context.getSystemService.
      */
-    CountryDetector(
-        /* [in] */ IICountryDetector* service);
-
     CARAPI constructor(
         /* [in] */ IICountryDetector* service);
 
@@ -111,7 +108,7 @@ public:
      * @return the country if it is available immediately, otherwise null will
      *         be returned.
      */
-    virtual CARAPI DetectCountry(
+    CARAPI DetectCountry(
         /* [out] */ ICountry** country);
 
     /**
@@ -123,14 +120,14 @@ public:
      *        implement the callback mechanism. If looper is null then the
      *        callbacks will be called on the main thread.
      */
-   virtual CARAPI AddCountryListener(
+   CARAPI AddCountryListener(
        /* [in] */ ICountryListener* listener,
        /* [in] */ ILooper* looper);
 
     /**
      * Remove the listener
      */
-    virtual CARAPI RemoveCountryListener(
+    CARAPI RemoveCountryListener(
         /* [in] */ ICountryListener* listener);
 
 protected:
@@ -140,7 +137,7 @@ protected:
      *       create an instance of this class is using the factory
      *       Context.getSystemService.
      */
-    virtual CARAPI Init(
+    CARAPI Init(
         /* [in] */ IICountryDetector* service);
 
 private:

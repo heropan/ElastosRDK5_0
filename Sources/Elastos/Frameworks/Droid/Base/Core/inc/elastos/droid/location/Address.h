@@ -5,8 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::ILocale;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -22,7 +22,8 @@ public:
     CAR_INTERFACE_DECL()
 
     Address();
-    ~Address();
+
+    virtual ~Address();
 
     CARAPI constructor(
         /* [in] */ ILocale* locale);
@@ -312,8 +313,9 @@ public:
     CARAPI SetExtras(
         /* [in] */ IBundle* extras);
 
-    CARAPI GetDescription(
-        /* [out] */ String* str);
+    //@Override
+    CARAPI ToString(
+        /* [out] */ String* result);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);

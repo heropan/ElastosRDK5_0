@@ -11,28 +11,30 @@ using Elastos::Utility::IList;
 namespace Elastos {
 namespace Droid {
 namespace Location {
-
+/**
+ * A class for handling geocoding and reverse geocoding.  Geocoding is
+ * the process of transforming a street address or other description
+ * of a location into a (latitude, longitude) coordinate.  Reverse
+ * geocoding is the process of transforming a (latitude, longitude)
+ * coordinate into a (partial) address.  The amount of detail in a
+ * reverse geocoded location description may vary, for example one
+ * might contain the full street address of the closest building, while
+ * another might contain only a city name and postal code.
+ *
+ * The Geocoder class requires a backend service that is not included in
+ * the core android framework.  The Geocoder query methods will return an
+ * empty list if there no backend service in the platform.  Use the
+ * isPresent() method to determine whether a Geocoder implementation
+ * exists.
+ */
 class Geocoder
     : public Object
     , public IGeocoder
 {
-private:
-    static const String TAG;
-
-    AutoPtr<IGeocoderParams> mParams;
-    AutoPtr<IILocationManager> mService;
-
 public:
     CAR_INTERFACE_DECL()
 
     Geocoder();
-
-    Geocoder(
-        /* [in] */ IContext* context,
-        /* [in] */ ILocale* locale);
-
-    Geocoder(
-        /* [in] */ IContext* context);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -143,6 +145,11 @@ public:
         /* [in] */ Double upperRightLatitude,
         /* [in] */ Double upperRightLongitude,
         /* [out] */ IList** addressContainer);
+
+private:
+    static const String TAG;
+    AutoPtr<IGeocoderParams> mParams;
+    AutoPtr<IILocationManager> mService;
 };
 
 }//namespace Location

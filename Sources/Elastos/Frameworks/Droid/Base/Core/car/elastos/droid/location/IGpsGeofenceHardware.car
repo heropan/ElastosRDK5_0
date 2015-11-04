@@ -1,4 +1,4 @@
-// IGpsGeofenceHardware.car
+
 module
 {
     namespace Elastos {
@@ -37,7 +37,6 @@ module
             [in] Int32 geofenceId,
             [in] Int32 monitorTransition,
             [out] Boolean* result);
-
     }
 
     } // namespace Location

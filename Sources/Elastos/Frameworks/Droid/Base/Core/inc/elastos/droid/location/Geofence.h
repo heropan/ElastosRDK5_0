@@ -20,16 +20,12 @@ class Geofence
     , public IGeofence
     , public IParcelable
 {
-private:
-    Geofence(
-        /* [in] */ Double latitude,
-        /* [in] */ Double longitude,
-        /* [in] */ Float radius);
-
 public:
     CAR_INTERFACE_DECL()
 
     Geofence();
+
+    CARAPI constructor();
 
     static CARAPI CreateCircle(
         /* [in] */ Double latitude,
@@ -53,10 +49,6 @@ public:
     CARAPI GetRadius(
         /* [out] */ Float* radius);
 
-    //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 
@@ -76,24 +68,30 @@ public:
         /* [out] */ Int32* hash);
 
 private:
-    static CARAPI_(void) CheckRadius(
+    Geofence(
+        /* [in] */ Double latitude,
+        /* [in] */ Double longitude,
         /* [in] */ Float radius);
 
-    static CARAPI_(void) CheckLatLong(
+    static CARAPI CheckRadius(
+        /* [in] */ Float radius);
+
+    static CARAPI CheckLatLong(
         /* [in] */ Double latitude,
         /* [in] */ Double longitude);
 
-    static CARAPI_(void) CheckType(
+    static CARAPI CheckType(
         /* [in] */ Int32 type);
 
-    static CARAPI_(String) TypeToString(
-        /* [in] */ Int32 type);
+    static CARAPI TypeToString(
+        /* [in] */ Int32 type,
+        /* [out] */ String* result);
 
 private:
-    const Int32 mType;
-    const Double mLatitude;
-    const Double mLongitude;
-    const Float mRadius;
+    Int32 mType;
+    Double mLatitude;
+    Double mLongitude;
+    Float mRadius;
 };
 
 }//namespace Location

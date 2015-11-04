@@ -1,4 +1,4 @@
-// GpsMeasurementsEvent.car
+
 module
 {
     interface Elastos.Utility.ICollection;
@@ -28,7 +28,6 @@ module
         // @NonNull
         GetMeasurements(
             [out] ICollection** result);
-
     }
 
     interface IGpsMeasurementsEventListener {

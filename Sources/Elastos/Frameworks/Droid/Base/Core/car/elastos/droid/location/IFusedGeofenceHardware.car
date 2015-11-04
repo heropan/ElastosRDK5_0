@@ -1,4 +1,4 @@
-// IFusedGeofenceHardware.car
+
 module
 {
     interface Elastos.Droid.Hardware.Location.IGeofenceHardwareRequestParcelable;
@@ -86,7 +86,6 @@ module
             [in] Int32 notificationResponsiveness,
             [in] Int32 unknownTimer,
             [in] Int32 sourcesToUse);
-
     }
 
     } // namespace Location

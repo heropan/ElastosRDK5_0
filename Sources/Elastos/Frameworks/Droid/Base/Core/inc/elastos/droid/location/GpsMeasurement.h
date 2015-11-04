@@ -7,6 +7,7 @@
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 /**
  * A class representing a GPS satellite measurement, containing raw and computed information.
  *

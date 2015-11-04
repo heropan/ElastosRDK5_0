@@ -1,4 +1,4 @@
-// GpsNavigationMessageEvent.car
+
 module
 {
     namespace Elastos {
@@ -19,7 +19,6 @@ module
         // @NonNull
         GetNavigationMessage(
             [out] IGpsNavigationMessage** result);
-
     }
 
     [local, deprecated]

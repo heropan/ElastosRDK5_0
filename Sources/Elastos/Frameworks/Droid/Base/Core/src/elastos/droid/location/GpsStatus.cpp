@@ -1,20 +1,24 @@
 
 #include "elastos/droid/location/GpsStatus.h"
 #include "elastos/droid/location/CGpsSatellite.h"
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Utility::EIID_IIterable;
+using Elastos::Utility::EIID_IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 //---------------GpsStatus::SatelliteIterator-----------------//
 
 CAR_INTERFACE_IMPL(GpsStatus::SatelliteIterator, Object, IIterator)
 
 GpsStatus::SatelliteIterator::SatelliteIterator(
     /* [in] */ ArrayOf<IGpsSatellite* >* satellites)
-        : mIndex(0)
+    : mIndex(0)
+    , mSatellites(satellites)
 {
-    mSatellites = satellites;
 }
 
 ECode GpsStatus::SatelliteIterator::HasNext(
@@ -36,20 +40,14 @@ ECode GpsStatus::SatelliteIterator::HasNext(
 ECode GpsStatus::SatelliteIterator::GetNext(
     /* [out] */ IInterface** object)
 {
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode GpsStatus::SatelliteIterator::GetNext(
-    /* [out] */ IGpsSatellite** object)
-{
     VALIDATE_NOT_NULL(object)
     while (mIndex < mSatellites->GetLength()) {
         AutoPtr<IGpsSatellite> satellite = (*mSatellites)[mIndex++];
         Boolean valid = FALSE;
         satellite->IsValid(&valid);
         if (valid) {
-            *object = satellite;
-            REFCOUNT_ADD(*object)
+            // *object = IInterface::Probe(satellite);
+            // REFCOUNT_ADD(*object)
             return NOERROR;
         }
     }
@@ -67,7 +65,7 @@ CAR_INTERFACE_IMPL(GpsStatus::StatelliteList, Object, IIterable)
 
 GpsStatus::StatelliteList::StatelliteList(
     /* [in] */ GpsStatus* host)
-        : mHost(host)
+    : mHost(host)
 {}
 
 ECode GpsStatus::StatelliteList::GetIterator(
@@ -86,22 +84,21 @@ const Int32 GpsStatus::NUM_SATELLITES;
 CAR_INTERFACE_IMPL(GpsStatus, Object, IGpsStatus)
 
 GpsStatus::GpsStatus()
+    : mTimeToFirstFix(0)
 {
-    constructor();
-}
-
-ECode GpsStatus::constructor()
-{
-    mTimeToFirstFix = 0;
     mSatellites = ArrayOf<IGpsSatellite*>::Alloc(NUM_SATELLITES);
     for(Int32 i = 0; i < mSatellites->GetLength(); i++)
     {
         AutoPtr<IGpsSatellite> satellite;
-        CGpsSatellite::New(i+1, (IGpsSatellite**)&satellite);
+        CGpsSatellite::New(i + 1, (IGpsSatellite**)&satellite);
         mSatellites->Set(i, satellite);
     }
     AutoPtr<StatelliteList> sl= new StatelliteList(this);
     mSatelliteList = IIterable::Probe(sl);
+}
+
+ECode GpsStatus::constructor()
+{
     return NOERROR;
 }
 
@@ -175,7 +172,6 @@ ECode GpsStatus::GetSatellites(
     VALIDATE_NOT_NULL(satellites);
     *satellites = mSatelliteList.Get();
     REFCOUNT_ADD(*satellites)
-
     return NOERROR;
 }
 
@@ -184,10 +180,8 @@ ECode GpsStatus::GetMaxSatellites(
 {
     VALIDATE_NOT_NULL(maxNumber);
     *maxNumber = NUM_SATELLITES;
-
     return NOERROR;
 }
-
 
 }//namespace Location
 }//namespace Droid

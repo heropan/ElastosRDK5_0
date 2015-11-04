@@ -21,7 +21,9 @@ class Country
 public:
     CAR_INTERFACE_DECL()
 
-    Country() {}
+    Country();
+
+    CARAPI constructor();
 
     /**
      * @param countryIso the ISO 3166-1 two letters country code.
@@ -35,18 +37,9 @@ public:
      *        <li>{@link #COUNTRY_SOURCE_LOCALE}</li>
      *        </ul>
      */
-    Country(
-        /* [in] */ const String& countryIso,
-        /* [in] */ const Int32 source);
-
-    Country(
-        /* [in] */ ICountry* country);
-
-    CARAPI constructor();
-
     CARAPI constructor(
         /* [in] */ const String& countryIso,
-        /* [in] */ const Int32 source);
+        /* [in] */ Int32 source);
 
     CARAPI constructor(
         /* [in] */ ICountry* country);
@@ -77,14 +70,25 @@ public:
     virtual CARAPI GetTimestamp(
         /* [out] */ Int64* timestamp);
 
-    virtual CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     virtual CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 
     virtual CARAPI WriteToParcel(
         /* [in] */ IParcel* parcel);
+
+    /**
+     * Returns true if this {@link Country} is equivalent to the given object. This ignores
+     * the timestamp value and just checks for equivalence of countryIso and source values.
+     * Returns false otherwise.
+     */
+    //@Override
+    CARAPI Equals(
+        /* [in] */ IInterface* object,
+        /* [out] */ Boolean* result);
+
+    //@Override
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
 
     /**
      * Compare the specified country to this country object ignoring the source
@@ -99,27 +103,12 @@ public:
         /* [out] */ Boolean* result);
 
     //@Override
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* strOut);
 
-protected:
-
-    virtual CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& countryIso,
-        /* [in] */ const Int32 source);
-
-    virtual CARAPI Init(
-        /* [in] */ const String& countryIso,
-        /* [in] */ const Int32 source,
-        /* [in] */ Int64 timestamp);
-
-    virtual CARAPI Init(
-        /* [in] */ ICountry* country);
-
-private:
-    Country(
-        /* [in] */ const String& countryIso,
-        /* [in] */ const Int32 source,
+        /* [in] */ Int32 source,
         /* [in] */ Int64 timestamp);
 
 private:
