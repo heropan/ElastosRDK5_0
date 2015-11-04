@@ -196,7 +196,7 @@ ECode SoundTriggerRecognitionEvent::Equals(
 {
     VALIDATE_NOT_NULL(equal);
 
-    if (THIS_PROBE(IInterface) == obj) {
+    if (THIS_PROBE(IInterface) == TO_IINTERFACE(obj)) {
         *equal = TRUE;
         return NOERROR;
     }

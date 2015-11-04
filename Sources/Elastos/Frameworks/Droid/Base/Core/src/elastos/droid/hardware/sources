@@ -30,3 +30,4 @@ LIBRARIES += display/display.lib
 LIBRARIES += input/input.lib
 LIBRARIES += usb/usb.lib
 LIBRARIES += soundtrigger/soundtrigger.lib
+LIBRARIES += location/location.lib
