@@ -151,15 +151,6 @@ ECode Service::ToString(
     return NOERROR;
 }
 
-ECode Service::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
 ECode Service::Initialize()
 {
     return NOERROR;

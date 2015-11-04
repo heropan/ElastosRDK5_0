@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CInstrumentationHelper, Singleton, IInstrumentationHelper)
+
+CAR_SINGLETON_IMPL(CInstrumentationHelper)
+
 ECode CInstrumentationHelper::NewApplication(
     /* [in] */ IClassInfo* clazz,
     /* [in] */ IContext* context,

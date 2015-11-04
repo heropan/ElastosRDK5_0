@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_App_CInstrumentationHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::IClassLoader;
 using Elastos::Droid::Content::IContext;
@@ -15,8 +16,14 @@ namespace Droid {
 namespace App {
 
 CarClass(CInstrumentationHelper)
+    , public Singleton
+    , public IInstrumentationHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI NewApplication(
         /* [in] */ IClassInfo* cls,
         /* [in] */ IContext* context,

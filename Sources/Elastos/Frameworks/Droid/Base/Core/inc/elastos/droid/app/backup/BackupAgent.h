@@ -317,8 +317,6 @@ public:
     CARAPI GetClassID(
         /* [out] */ ClassID *pCLSID);
 
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     CARAPI Equals(
         /* [in] */ IInterface* other,

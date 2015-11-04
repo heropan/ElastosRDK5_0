@@ -93,8 +93,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* info);
 
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     CARAPI OnCreate();
 

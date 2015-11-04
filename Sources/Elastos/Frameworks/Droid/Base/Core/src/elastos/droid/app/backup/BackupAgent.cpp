@@ -536,15 +536,6 @@ String BackupAgent::ToString()
     return sb.ToString();
 }
 
-ECode BackupAgent::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
 //
 // IContext interfaces
 //

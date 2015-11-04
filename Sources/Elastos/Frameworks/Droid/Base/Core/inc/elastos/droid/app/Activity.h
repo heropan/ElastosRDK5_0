@@ -108,30 +108,6 @@ public:
 
     virtual CARAPI Initialize();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
-
     /** Return the intent that started this activity. */
     CARAPI GetIntent(
         /* [out] */ IIntent** intent);
@@ -2778,7 +2754,7 @@ public:
      * @see #onBackgroundVisibleBehindChanged(boolean)
      * @hide
      */
-    CARPAI IsBackgroundVisibleBehind(
+    CARAPI IsBackgroundVisibleBehind(
         /* [out] */ Boolean* result);
 
     /**
@@ -3092,7 +3068,7 @@ public:
      * an action described by the request dialog.  Calling stopLockTask will also exit the
      * mode.
      */
-    CARPAI StartLockTask();
+    CARAPI StartLockTask();
 
     /**
      * Allow the user to switch away from the current task.
@@ -3103,7 +3079,7 @@ public:
      *
      * This will allow the user to exit this app and move onto other activities.
      */
-    CARPAI StopLockTask();
+    CARAPI StopLockTask();
 
     CARAPI SetCalled(
         /* [in] */ Boolean called);

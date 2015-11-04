@@ -1917,6 +1917,7 @@ module
         constructor(
             [in] ICollection* c);
 
+        interface IConcurrentLinkedQueue;
         interface IQueue;
         interface ICollection;
         interface IIterable;

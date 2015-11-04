@@ -1,5 +1,6 @@
 
 #include "elastos/droid/app/CFragmentHelper.h"
+#include "elastos/droid/app/Fragment.h"
 
 namespace Elastos {
 namespace Droid {

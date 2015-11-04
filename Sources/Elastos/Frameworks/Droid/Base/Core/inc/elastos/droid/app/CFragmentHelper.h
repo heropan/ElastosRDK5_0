@@ -3,13 +3,15 @@
 #define __ELASTOS_DROID_APP_CFRAGMENTHELPER_H__
 
 #include "_Elastos_Droid_App_CFragmentHelper.h"
-#include "elastos/droid/app/Fragment.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CFragmentHelper)
+    , public Singleton
+    , public IFragmentHelper
 {
 public:
     CARAPI Instantiate(

@@ -42,20 +42,6 @@ class FragmentState
     , public IParcelable
 {
 public:
-    class ParcelableCreatorFragmentState
-        : public Object
-    {
-    public:
-        CARAPI CreateFromParcel(
-            /* [in] */ IParcel* in,
-            /* [out] */ FragmentState** ret);
-
-        CARAPI NewArray(
-            /* [in] */ Int32 size,
-            /* [out] */ ArrayOf<FragmentState*>** ret);
-    };
-
-public:
     CAR_INTERFACE_DECL()
 
     FragmentState();
@@ -124,8 +110,6 @@ public:
     AutoPtr<IBundle> mSavedFragmentState;
 
     AutoPtr<IFragment> mInstance;
-
-    AutoPtr<ParcelableCreatorFragmentState> CREATOR;
 };
 
 class Fragment
@@ -236,12 +220,6 @@ public:
 
     CARAPI SetActivity(
         /* [in] */ IActivity* activity);
-
-    CARAPI SetChildFragmentManager(
-        /* [in] */ IFragmentManagerImpl* cfManager);
-
-    CARAPI GetChildFragmentManagerValue(
-        /* [out] */ IFragmentManagerImpl** cfManager);
 
     CARAPI SetParentFragment(
         /* [in] */ IFragment* pFragment);
@@ -589,13 +567,13 @@ public:
      * @param callback Used to manipulate the shared element transitions on this Fragment
      *                 when added not as a pop from the back stack.
      */
-    CARPAI SetEnterSharedElementCallback(
+    CARAPI SetEnterSharedElementCallback(
         /* [in] */ ISharedElementCallback* callback);
 
     /**
      * @hide
      */
-    CARPAI SetEnterSharedElementTransitionCallback(
+    CARAPI SetEnterSharedElementTransitionCallback(
         /* [in] */ ISharedElementCallback* callback);
 
     /**
@@ -606,17 +584,243 @@ public:
      *                 when added as a pop from the back stack.
      */
     CARAPI SetExitSharedElementCallback(
-        /* [in] */ ISharedElementCallback* callback)
+        /* [in] */ ISharedElementCallback* callback);
 
     /**
      * @hide
      */
     CARAPI SetExitSharedElementTransitionCallback(
-        /* [in] */ ISharedElementCallback* callback)
+        /* [in] */ ISharedElementCallback* callback);
 
+    /**
+     * Sets the Transition that will be used to move Views into the initial scene. The entering
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#INVISIBLE} to {@link View#VISIBLE}. If <code>transition</code> is null,
+     * entering Views will remain unaffected.
+     *
+     * @param transition The Transition to use to move Views into the initial Scene.
+     * @attr ref android.R.styleable#Fragment_fragmentEnterTransition
+     */
+    CARAPI SetEnterTransition(
+        /* [in] */ ITransition* transition);
 
+    /**
+     * Returns the Transition that will be used to move Views into the initial scene. The entering
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#INVISIBLE} to {@link View#VISIBLE}.
+     *
+     * @return the Transition to use to move Views into the initial Scene.
+     * @attr ref android.R.styleable#Fragment_fragmentEnterTransition
+     */
+    CARAPI GetEnterTransition(
+        /* [out] */ ITransition** transition);
 
+    /**
+     * Sets the Transition that will be used to move Views out of the scene when the Fragment is
+     * preparing to be removed, hidden, or detached because of popping the back stack. The exiting
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
+     * entering Views will remain unaffected. If nothing is set, the default will be to
+     * use the same value as set in {@link #setEnterTransition(android.transition.Transition)}.
+     *
+     * @param transition The Transition to use to move Views out of the Scene when the Fragment
+     *                   is preparing to close.
+     * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+     */
+    CARAPI SetReturnTransition(
+        /* [in] */ ITransition* transition);
 
+    /**
+     * Returns the Transition that will be used to move Views out of the scene when the Fragment is
+     * preparing to be removed, hidden, or detached because of popping the back stack. The exiting
+     * Views will be those that are regular Views or ViewGroups that have
+     * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as entering is governed by changing visibility from
+     * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
+     * entering Views will remain unaffected.
+     *
+     * @return the Transition to use to move Views out of the Scene when the Fragment
+     *         is preparing to close.
+     * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+     */
+    CARAPI GetReturnTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets the Transition that will be used to move Views out of the scene when the
+     * fragment is removed, hidden, or detached when not popping the back stack.
+     * The exiting Views will be those that are regular Views or ViewGroups that
+     * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as exiting is governed by changing visibility
+     * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
+     * remain unaffected.
+     *
+     * @param transition The Transition to use to move Views out of the Scene when the Fragment
+     *                   is being closed not due to popping the back stack.
+     * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+     */
+    CARAPI SetExitTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Returns the Transition that will be used to move Views out of the scene when the
+     * fragment is removed, hidden, or detached when not popping the back stack.
+     * The exiting Views will be those that are regular Views or ViewGroups that
+     * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
+     * {@link android.transition.Visibility} as exiting is governed by changing visibility
+     * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
+     * remain unaffected.
+     *
+     * @return the Transition to use to move Views out of the Scene when the Fragment
+     *         is being closed not due to popping the back stack.
+     * @attr ref android.R.styleable#Fragment_fragmentExitTransition
+     */
+    CARAPI GetExitTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets the Transition that will be used to move Views in to the scene when returning due
+     * to popping a back stack. The entering Views will be those that are regular Views
+     * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
+     * will extend {@link android.transition.Visibility} as exiting is governed by changing
+     * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
+     * the views will remain unaffected. If nothing is set, the default will be to use the same
+     * transition as {@link #setExitTransition(android.transition.Transition)}.
+     *
+     * @param transition The Transition to use to move Views into the scene when reentering from a
+     *                   previously-started Activity.
+     * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
+     */
+    CARAPI SetReenterTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Returns the Transition that will be used to move Views in to the scene when returning due
+     * to popping a back stack. The entering Views will be those that are regular Views
+     * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
+     * will extend {@link android.transition.Visibility} as exiting is governed by changing
+     * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
+     * the views will remain unaffected. If nothing is set, the default will be to use the same
+     * transition as {@link #setExitTransition(android.transition.Transition)}.
+     *
+     * @return the Transition to use to move Views into the scene when reentering from a
+     *                   previously-started Activity.
+     * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
+     */
+    CARAPI GetReenterTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets the Transition that will be used for shared elements transferred into the content
+     * Scene. Typical Transitions will affect size and location, such as
+     * {@link android.transition.ChangeBounds}. A null
+     * value will cause transferred shared elements to blink to the final position.
+     *
+     * @param transition The Transition to use for shared elements transferred into the content
+     *                   Scene.
+     * @attr ref android.R.styleable#Fragment_fragmentSharedElementEnterTransition
+     */
+    CARAPI SetSharedElementEnterTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Returns the Transition that will be used for shared elements transferred into the content
+     * Scene. Typical Transitions will affect size and location, such as
+     * {@link android.transition.ChangeBounds}. A null
+     * value will cause transferred shared elements to blink to the final position.
+     *
+     * @return The Transition to use for shared elements transferred into the content
+     *                   Scene.
+     * @attr ref android.R.styleable#Fragment_fragmentSharedElementEnterTransition
+     */
+    CARAPI GetSharedElementEnterTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets the Transition that will be used for shared elements transferred back during a
+     * pop of the back stack. This Transition acts in the leaving Fragment.
+     * Typical Transitions will affect size and location, such as
+     * {@link android.transition.ChangeBounds}. A null
+     * value will cause transferred shared elements to blink to the final position.
+     * If no value is set, the default will be to use the same value as
+     * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
+     *
+     * @param transition The Transition to use for shared elements transferred out of the content
+     *                   Scene.
+     * @attr ref android.R.styleable#Fragment_fragmentSharedElementReturnTransition
+     */
+    CARAPI SetSharedElementReturnTransition(
+        /* [in] */ ITransition* transition);
+
+    /**
+     * Return the Transition that will be used for shared elements transferred back during a
+     * pop of the back stack. This Transition acts in the leaving Fragment.
+     * Typical Transitions will affect size and location, such as
+     * {@link android.transition.ChangeBounds}. A null
+     * value will cause transferred shared elements to blink to the final position.
+     * If no value is set, the default will be to use the same value as
+     * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
+     *
+     * @return The Transition to use for shared elements transferred out of the content
+     *                   Scene.
+     * @attr ref android.R.styleable#Fragment_fragmentSharedElementReturnTransition
+     */
+    CARAPI GetSharedElementReturnTransition(
+        /* [out] */ ITransition** transition);
+
+    /**
+     * Sets whether the the exit transition and enter transition overlap or not.
+     * When true, the enter transition will start as soon as possible. When false, the
+     * enter transition will wait until the exit transition completes before starting.
+     *
+     * @param allow true to start the enter transition when possible or false to
+     *              wait until the exiting transition completes.
+     * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
+     */
+    CARAPI SetAllowEnterTransitionOverlap(
+        /* [in] */ Boolean allow);
+
+    /**
+     * Returns whether the the exit transition and enter transition overlap or not.
+     * When true, the enter transition will start as soon as possible. When false, the
+     * enter transition will wait until the exit transition completes before starting.
+     *
+     * @return true when the enter transition should start as soon as possible or false to
+     * when it should wait until the exiting transition completes.
+     * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
+     */
+    CARAPI GetAllowEnterTransitionOverlap(
+        /* [out] */ Boolean* allow);
+
+    /**
+     * Sets whether the the return transition and reenter transition overlap or not.
+     * When true, the reenter transition will start as soon as possible. When false, the
+     * reenter transition will wait until the return transition completes before starting.
+     *
+     * @param allow true to start the reenter transition when possible or false to wait until the
+     *              return transition completes.
+     * @attr ref android.R.styleable#Fragment_fragmentAllowReturnTransitionOverlap
+     */
+    CARAPI SetAllowReturnTransitionOverlap(
+        /* [in] */ Boolean allow);
+
+    /**
+     * Returns whether the the return transition and reenter transition overlap or not.
+     * When true, the reenter transition will start as soon as possible. When false, the
+     * reenter transition will wait until the return transition completes before starting.
+     *
+     * @return true to start the reenter transition when possible or false to wait until the
+     *         return transition completes.
+     * @attr ref android.R.styleable#Fragment_fragmentAllowReturnTransitionOverlap
+     */
+    CARAPI GetAllowReturnTransitionOverlap(
+        /* [out] */ Boolean* allow);
 
     CARAPI Dump(
         /* [in] */ const String& prefix,
@@ -628,7 +832,7 @@ public:
         /* [in] */ const String& who,
         /* [out] */ IFragment** fragment);
 
-    virtual CARAPI_(void) InstantiateChildFragmentManager();
+    CARAPI_(void) InstantiateChildFragmentManager();
 
     CARAPI PerformCreate(
         /* [in] */ IBundle* savedInstanceState);
@@ -838,5 +1042,7 @@ private:
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::App::FragmentState, IInterface)
 
 #endif //__ELASTOS_DROID_APP_FRAGMENT_H__

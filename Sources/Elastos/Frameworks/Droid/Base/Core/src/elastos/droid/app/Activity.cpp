@@ -3,11 +3,9 @@
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 //#include "elastos/droid/app/CSearchManager.h"
-#include "elastos/droid/app/CInstrumentationHelper.h"
-#include "elastos/droid/app/CFragmentManagerImpl.h"
-#include "elastos/droid/app/CFragmentManagerImplHelper.h"
+// #include "elastos/droid/app/CInstrumentationHelper.h"
+#include "elastos/droid/app/FragmentManagerImpl.h"
 #include "elastos/droid/app/CApplication.h"
-#include "elastos/droid/app/CActionBarImpl.h"
 #include "elastos/droid/app/CPendingIntent.h"
 #include "elastos/droid/app/CTaskStackBuilderHelper.h"
 #include "elastos/droid/app/CActivityNonConfigurationInstances.h"
@@ -26,7 +24,7 @@
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/content/res/CConfiguration.h"
-#include "elastos/droid/impl/CPolicyManager.h"
+// #include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/R.h"
 
@@ -86,21 +84,8 @@ using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::EIID_IContextThemeWrapper;
 using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 using Elastos::Droid::View::EIID_ILayoutInflaterFactory2;
-using Elastos::Droid::App::ActivityManagerNative;
-using Elastos::Droid::App::ITaskStackBuilder;
-using Elastos::Droid::App::CTaskStackBuilderHelper;
-using Elastos::Droid::App::IInstrumentationActivityResult;
-using Elastos::Droid::App::CActivityNonConfigurationInstances;
-using Elastos::Droid::App::Fragment;
-using Elastos::Droid::App::IFragment;
-using Elastos::Droid::App::IFragmentManagerImpl;
-using Elastos::Droid::App::CFragmentManagerImpl;
-using Elastos::Droid::App::IFragmentManagerImplHelper;
-using Elastos::Droid::App::CFragmentManagerImplHelper;
-using Elastos::Droid::App::ITaskStackBuilderHelper;
-using Elastos::Droid::Internal::App::CActionBarImpl;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
-using Elastos::Droid::Internal::Policy::CPolicyManager;
+// using Elastos::Droid::Internal::Policy::CPolicyManager;
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::IRunnable;
@@ -134,10 +119,22 @@ public:
     }
 
     ECode HasView(
-        /* [in] */ Boolean* view)
+        /* [out] */ Boolean* hasView)
     {
-        Window window = Activity.this.getWindow();
-        return (window != null && window.peekDecorView() != null);
+        VALIDATE_NOT_NULL(hasView)
+        *hasView = FALSE;
+        AutoPtr<IWindow> window;
+        mHost->GetWindow((IWindow**)&window);
+
+        if (window) {
+            AutoPtr<IView> decorView;
+            window->PeekDecorView((IView**)&decorView);
+            if (decorView != NULL) {
+                *hasView = TRUE;
+            }
+        }
+
+        return NOERROR;
     }
 
 private:
@@ -181,7 +178,7 @@ Activity::Activity()
     , mDefaultKeyMode(IActivity::DEFAULT_KEYS_DISABLE)
     , mThemeResource(0)
 {
-    CFragmentManagerImpl::New((IFragmentManagerImpl**)&mFragments);
+    mFragments = new FragmentManagerImpl();
     mContainer = new FragmentContainerLocal(this);
     CHandler::New((IHandler**)&mHandler);
 }
@@ -235,15 +232,6 @@ String Activity::ToString()
     sb += mEmbeddedID;
     sb += ")";
     return sb.ToString();
-}
-
-ECode Activity::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
 }
 
 ECode Activity::GetIntent(
@@ -2579,7 +2567,8 @@ ECode Activity::StartIntentSenderForResultInner(
     FAIL_RETURN(ec);
 
     AutoPtr<IInstrumentationHelper> helper;
-    CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
+    assert(0 && "TODO");
+    // CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
     FAIL_RETURN(helper->CheckStartActivityResult(result, NULL));
 
     if (requestCode >= 0) {
@@ -2641,7 +2630,8 @@ ECode Activity::StartActivityIfNeeded(
 //        }
 
         AutoPtr<IInstrumentationHelper> helper;
-        CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
+        assert(0 && "TODO");
+        // CInstrumentationHelper::AcquireSingleton((IInstrumentationHelper**)&helper);
         FAIL_RETURN(helper->CheckStartActivityResult(result, intent));
 
         if (requestCode >= 0) {
@@ -4003,7 +3993,8 @@ ECode Activity::Attach(
     FAIL_RETURN(mFragments->AttachActivity(THIS_PROBE(IActivity), mContainer, NULL));
 
     AutoPtr<IPolicyManager> pm;
-    CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
+    assert(0 && "TODO");
+    // CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
     mWindow = NULL;
     FAIL_RETURN(pm->MakeNewWindow(THIS_PROBE(IContext), (IWindow**)&mWindow));
     FAIL_RETURN(mWindow->SetCallback(THIS_PROBE(IWindowCallback)));

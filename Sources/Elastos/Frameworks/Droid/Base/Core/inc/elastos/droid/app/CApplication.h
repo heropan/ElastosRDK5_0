@@ -5,11 +5,12 @@
 #include "_Elastos_Droid_App_CApplication.h"
 #include "elastos/droid/app/Application.h"
 
+namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CApplication)
-    : public Application
+    , public Application
 {
 public:
     CAR_OBJECT_DECL()

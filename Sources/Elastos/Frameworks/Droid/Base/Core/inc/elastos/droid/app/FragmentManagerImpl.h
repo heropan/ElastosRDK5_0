@@ -150,6 +150,7 @@ private:
 //=======================================================================
 class FragmentManagerImpl
     : public FragmentManager
+    , public IFragmentManagerImpl
     , public ILayoutInflaterFactory
     , public ILayoutInflaterFactory2
 {
@@ -478,4 +479,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPL_H__
+#endif //__ELASTOS_DROID_APP_FRAGMENTMANAGERIMPL_H__

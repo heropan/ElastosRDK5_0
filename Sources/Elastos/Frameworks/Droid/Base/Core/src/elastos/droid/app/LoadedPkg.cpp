@@ -282,15 +282,6 @@ LoadedPkg::ReceiverDispatcher::~ReceiverDispatcher()
 
 CAR_INTERFACE_IMPL(LoadedPkg::ReceiverDispatcher, IWeakReferenceSource)
 
-ECode LoadedPkg::ReceiverDispatcher::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
 ECode LoadedPkg::ReceiverDispatcher::Validate(
    /* [in] */ IContext* context,
    /* [in] */ IHandler* activityThread)
@@ -419,15 +410,6 @@ ECode LoadedPkg::ServiceDispatcher::DeathMonitor::ProxyDied()
 // LoadedPkg::ServiceDispatcher
 //==============================================================================
 CAR_INTERFACE_IMPL(LoadedPkg::ServiceDispatcher, IWeakReferenceSource)
-
-ECode LoadedPkg::ServiceDispatcher::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
 
 LoadedPkg::ServiceDispatcher::ServiceDispatcher(
     /* [in] */ IServiceConnection* conn,

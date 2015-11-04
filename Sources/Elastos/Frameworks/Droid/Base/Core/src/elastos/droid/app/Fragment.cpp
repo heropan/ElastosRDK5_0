@@ -1,18 +1,30 @@
 
 #include "elastos/droid/app/Fragment.h"
-#include "elastos/droid/app/CFragmentManagerImpl.h"
-#include "elastos/droid/app/CFragmentManagerImplHelper.h"
+#include "elastos/droid/app/FragmentManagerImpl.h"
 // #include "elastos/droid/app/Activity.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/transition/TransitionInflater.h"
+#include "elastos/droid/transition/CTransitionSet.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Content::EIID_IComponentCallbacks2;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Transition::TransitionInflater;
+using Elastos::Droid::Transition::ITransitionInflater;
+using Elastos::Droid::Transition::CTransitionSet;
+using Elastos::Droid::Transition::ITransitionSet;
+using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
+using Elastos::Droid::R;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IClassLoader;
+using Elastos::Utility::IMap;
 using Elastos::Utility::Logging::Slogger;
 
 
@@ -49,7 +61,7 @@ public:
         return mHost->mView->FindViewById(id, view);
     }
 
-    ECode FragmentState::HasView(
+    ECode HasView(
         /* [out] */ Boolean* result)
     {
         VALIDATE_NOT_NULL(result)
@@ -62,30 +74,6 @@ public:
 };
 
 CAR_INTERFACE_IMPL(FragmentContainerLocal, Object, IFragmentContainer)
-
-//============================================================================
-// FragmentState::ParcelableCreatorFragmentState
-//============================================================================
-
-FragmentState::ParcelableCreatorFragmentState::CreateFromParcel(
-    /* [in] */ IParcel* in,
-    /* [out] */ FragmentState** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = new FragmentState(in);
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
-
-FragmentState::ParcelableCreatorFragmentState::NewArray(
-    /* [in] */ Int32 size,
-    /* [out] */ ArrayOf<FragmentState*>** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret = ArrayOf<FragmentState*>::Alloc(size);
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
 
 //===================================================================
 // FragmentState
@@ -164,20 +152,21 @@ ECode FragmentState::Instantiate(
 
     if (mArguments != NULL) {
         AutoPtr<IClassLoader> classLoader;
-        activity->GetClassLoader((IClassLoader**)&classLoader);
+        // IContext::Probe(activity)->GetClassLoader((IClassLoader**)&classLoader);
         mArguments->SetClassLoader(classLoader);
     }
 
-    Fragment::Instantiate(activity, mClassName, mArguments, (IFragment**)&mInstance);
+    Fragment::Instantiate(IContext::Probe(activity), mClassName, mArguments, (IFragment**)&mInstance);
 
     if (mSavedFragmentState != NULL) {
         AutoPtr<IClassLoader> classLoader;
-        activity->GetClassLoader((IClassLoader**)&classLoader);
+        // IContext::Probe(activity)->GetClassLoader((IClassLoader**)&classLoader);
         mSavedFragmentState->SetClassLoader(classLoader);
         mInstance->SetSavedFragmentState(mSavedFragmentState);
     }
 
-    AutoPtr<Activity> act = (Activity*)activity;
+    assert(0 && "TODO");
+    // AutoPtr<Activity> act = (Activity*)activity;
     mInstance->SetIndex(mIndex, parent);
     mInstance->SetFromLayout(mFromLayout);
     mInstance->SetRestored(TRUE);
@@ -186,12 +175,8 @@ ECode FragmentState::Instantiate(
     mInstance->SetTag(mTag);
     mInstance->SetRetainInstance(mRetainInstance);
     mInstance->SetDetached(mDetached);
-    mInstance->SetFragmentManager(act->mFragments);
-    AutoPtr<IFragmentManagerImplHelper> fHelper;
-    CFragmentManagerImplHelper::AcquireSingleton((IFragmentManagerImplHelper**)&fHelper);
-    Boolean debug;
-    fHelper->GetDEBUG(&debug);
-    if (debug) Slogger::V(IFragmentManagerImpl::TAG,
+    // mInstance->SetFragmentManager(act->mFragments);
+    if (FragmentManagerImpl::DEBUG) Slogger::V(FragmentManagerImpl::TAG,
             "Instantiated fragment %p", mInstance.Get());
 
     *fragment = mInstance;
@@ -314,12 +299,12 @@ ECode FragmentState::GetInstance(
 
 AutoPtr<ITransition> InitUSE_DEFAULT_TRANSITION()
 {
-    AutoPtr<CTransition> transit;
-    CTransition::NewByFriend((CTransition**)&transit);
-    return (ITransition*)transit.Get();
+    AutoPtr<CTransitionSet> transit;
+    CTransitionSet::NewByFriend((CTransitionSet**)&transit);
+    return ITransition::Probe(transit);
 }
 
-AutoPtr<ITransition> Fragment::USE_DEFAULT_TRANSITION = InitUSE_DEFAULT_TRANSITION();
+const AutoPtr<ITransition> Fragment::USE_DEFAULT_TRANSITION = InitUSE_DEFAULT_TRANSITION();
 
 HashMap<String, AutoPtr<IClassInfo> > Fragment::sClassMap;
 
@@ -352,8 +337,8 @@ Fragment::Fragment()
     , mUserVisibleHint(TRUE)
     , mLoadersStarted(FALSE)
     , mCheckedForLoaderManager(FALSE)
-    , mAllowReturnTransitionOverlap(FALSE)
-    , mAllowEnterTransitionOverlap(FALSE)
+    , mAllowReturnTransitionOverlap(TRUE)
+    , mAllowEnterTransitionOverlap(TRUE)
 {}
 
 Fragment::~Fragment()
@@ -428,7 +413,7 @@ ECode Fragment::SetSavedFragmentState(
 }
 
 ECode Fragment::GetSavedViewState(
-    /* [out] */ IObjectInt32Map** viewState)
+    /* [out] */ IHashMap** viewState)
 {
     VALIDATE_NOT_NULL(viewState);
     *viewState = mSavedViewState;
@@ -437,7 +422,7 @@ ECode Fragment::GetSavedViewState(
 }
 
 ECode Fragment::SetSavedViewState(
-    /* [in] */ IObjectInt32Map* viewState)
+    /* [in] */ IHashMap* viewState)
 {
     mSavedViewState = viewState;
     return NOERROR;
@@ -596,22 +581,6 @@ ECode Fragment::SetActivity(
     /* [in] */ IActivity* activity)
 {
     mActivity = activity;
-    return NOERROR;
-}
-
-ECode Fragment::SetChildFragmentManager(
-    /* [in] */ IFragmentManagerImpl* cfManager)
-{
-    mChildFragmentManager = cfManager;
-    return NOERROR;
-}
-
-ECode Fragment::GetChildFragmentManagerValue(
-    /* [out] */ IFragmentManagerImpl** cfManager)
-{
-    VALIDATE_NOT_NULL(cfManager);
-    *cfManager = mChildFragmentManager;
-    REFCOUNT_ADD(*cfManager);
     return NOERROR;
 }
 
@@ -854,12 +823,12 @@ ECode Fragment::Instantiate(
         if (it == sClassMap.End()) {
 //             // Class not found in the cache, see if it's real, and try to add it
             AutoPtr<IClassLoader> classLoader;
-            context->GetClassLoader((IClassLoader**)&classLoader);
+            // context->GetClassLoader((IClassLoader**)&classLoader);
             classLoader->LoadClass(fname, (IClassInfo**)&clazz);
-            if (!Fragment.class.isAssignableFrom(clazz)) {
-                throw new InstantiationException("Trying to instantiate a class " + fname
-                        + " that is not a Fragment", new ClassCastException());
-            }
+            // if (!Fragment.class.isAssignableFrom(clazz)) {
+            //     throw new InstantiationException("Trying to instantiate a class " + fname
+            //             + " that is not a Fragment", new ClassCastException());
+            // }
 
             sClassMap[fname] = clazz;
         }
@@ -898,7 +867,7 @@ ECode Fragment::RestoreViewState(
     /* [in] */ IBundle* savedInstanceState)
 {
     if (mSavedViewState != NULL) {
-        mView->RestoreHierarchyState(mSavedViewState);
+        mView->RestoreHierarchyState(IMap::Probe(mSavedViewState));
         mSavedViewState = NULL;
     }
     mCalled = FALSE;
@@ -954,7 +923,7 @@ ECode Fragment::GetHashCode(
 ECode Fragment::ToString(
     /* [out] */ String* string)
 {
-    VALIDATE_NOT_NULL(string);
+    VALIDATE_NOT_NULL(string)
 
     StringBuilder sb(128);
 //     DebugUtils.buildShortClassTag(this, sb);
@@ -964,7 +933,7 @@ ECode Fragment::ToString(
     }
     if (mFragmentId != 0) {
         sb.Append(" id=0x");
-        sb::Append(StringUtils::ToHexString(mFragmentId));
+        sb.Append(StringUtils::ToHexString(mFragmentId));
     }
     if (mTag != NULL) {
         sb.Append(" ");
@@ -1074,7 +1043,7 @@ ECode Fragment::GetResources(
 //         throw new IllegalStateException("Fragment " + this + " not attached to Activity");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mActivity->GetResources(resources);
+    IContext::Probe(mActivity)->GetResources(resources);
     return NOERROR;
 }
 
@@ -1120,7 +1089,7 @@ ECode Fragment::GetFragmentManager(
 {
     VALIDATE_NOT_NULL(manager);
 
-    *manager = mFragmentManager;
+    *manager = IFragmentManager::Probe(mFragmentManager);
     REFCOUNT_ADD(*manager);
     return NOERROR;
 }
@@ -1142,7 +1111,7 @@ ECode Fragment::GetChildFragmentManager(
             mChildFragmentManager->DispatchCreate();
         }
     }
-    *manager = mChildFragmentManager;
+    *manager = IFragmentManager::Probe(mChildFragmentManager);
     REFCOUNT_ADD(*manager);
     return NOERROR;
 }
@@ -1261,7 +1230,7 @@ ECode Fragment::SetHasOptionsMenu(
         IsAdded(&added);
         IsHidden(&hidden);
         if (added && !hidden) {
-            mFragmentManager->InvalidateOptionsMenu();
+            IFragmentManager::Probe(mFragmentManager)->InvalidateOptionsMenu();
         }
     }
     return NOERROR;
@@ -1276,7 +1245,7 @@ ECode Fragment::SetMenuVisibility(
         IsAdded(&added);
         IsHidden(&hidden);
         if (mHasMenu && added && !hidden) {
-            mFragmentManager->InvalidateOptionsMenu();
+            IFragmentManager::Probe(mFragmentManager)->InvalidateOptionsMenu();
         }
     }
     return NOERROR;
@@ -1286,7 +1255,7 @@ ECode Fragment::SetUserVisibleHint(
     /* [in] */ Boolean isVisibleToUser)
 {
     if (!mUserVisibleHint && isVisibleToUser && mState < IFragment::STARTED) {
-        mFragmentManager->PerformPendingDeferredStart((IFragment*)this->Probe(EIID_IFragment));
+        mFragmentManager->PerformPendingDeferredStart(THIS_PROBE(IFragment));
     }
     mUserVisibleHint = isVisibleToUser;
     mDeferStart = !isVisibleToUser;
@@ -1307,7 +1276,7 @@ ECode Fragment::GetLoaderManager(
     VALIDATE_NOT_NULL(manager);
 
     if (mLoaderManager != NULL) {
-        *manager = mLoaderManager;
+        *manager = ILoaderManager::Probe(mLoaderManager);
         REFCOUNT_ADD(*manager);
     }
     if (mActivity == NULL) {
@@ -1315,9 +1284,10 @@ ECode Fragment::GetLoaderManager(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     mCheckedForLoaderManager = TRUE;
-    AutoPtr<Activity> act = reinterpret_cast<Activity*>(mActivity->Probe(EIID_Activity));
-    mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, TRUE);
-    *manager = mLoaderManager;
+    assert(0 && "TODO");
+    // AutoPtr<Activity> act = (Activity*)mActivity.Get();;
+    // mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, TRUE);
+    *manager = ILoaderManager::Probe(mLoaderManager);
     REFCOUNT_ADD(*manager);
     return NOERROR;
 }
@@ -1343,11 +1313,11 @@ ECode Fragment::StartActivity(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (options != NULL) {
-        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, -1, options);
+        mActivity->StartActivityFromFragment(THIS_PROBE(IFragment), intent, -1, options);
     } else {
         // Note we want to go through this call for compatibility with
         // applications that may have overridden the method.
-        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, -1);
+        mActivity->StartActivityFromFragment(THIS_PROBE(IFragment), intent, -1);
     }
     return NOERROR;
 }
@@ -1369,11 +1339,11 @@ ECode Fragment::StartActivityForResult(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (options != NULL) {
-        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, requestCode, options);
+        mActivity->StartActivityFromFragment(THIS_PROBE(IFragment), intent, requestCode, options);
     } else {
         // Note we want to go through this call for compatibility with
         // applications that may have overridden the method.
-        mActivity->StartActivityFromFragment((IFragment*)this->Probe(EIID_IFragment), intent, requestCode, options);
+        mActivity->StartActivityFromFragment(THIS_PROBE(IFragment), intent, requestCode, options);
     }
     return NOERROR;
 }
@@ -1393,11 +1363,22 @@ ECode Fragment::GetLayoutInflater(
     VALIDATE_NOT_NULL(inflater);
 
     // Newer platform versions use the child fragment manager's LayoutInflaterFactory.
-    if (mActivity.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
-        LayoutInflater result = mActivity.getLayoutInflater().cloneInContext(mActivity);
-        getChildFragmentManager(); // Init if needed; use raw implementation below.
-        result.setPrivateFactory(mChildFragmentManager.getLayoutInflaterFactory());
-        return result;
+    AutoPtr<IApplicationInfo> ai;
+    IContext::Probe(mActivity)->GetApplicationInfo((IApplicationInfo**)&ai);
+    Int32 skdVer;
+    ai->GetTargetSdkVersion(&skdVer);
+    if (skdVer >= Build::VERSION_CODES::LOLLIPOP) {
+        AutoPtr<ILayoutInflater> li, result;
+        mActivity->GetLayoutInflater((ILayoutInflater**)&li);
+        li->CloneInContext(IContext::Probe(mActivity), (ILayoutInflater**)&result);
+        AutoPtr<IFragmentManager> tmp;
+        GetChildFragmentManager((IFragmentManager**)&tmp); // Init if needed; use raw implementation below.
+        AutoPtr<ILayoutInflaterFactory2> fact;
+        ((FragmentManagerImpl*)mChildFragmentManager.Get())->GetLayoutInflaterFactory((ILayoutInflaterFactory2**)&fact);
+        result->SetPrivateFactory(fact);
+        *inflater = result;
+        REFCOUNT_ADD(*inflater)
+        return NOERROR;
     }
 
     return mActivity->GetLayoutInflater(inflater);
@@ -1417,32 +1398,41 @@ ECode Fragment::OnInflate(
     /* [in] */ IBundle* savedInstanceState)
 {
     OnInflate(attrs, savedInstanceState);
-    mCalled = true;
+    mCalled = TRUE;
 
-    TypedArray a = activity.obtainStyledAttributes(attrs,
-            com.android.internal.R.styleable.Fragment);
-    mEnterTransition = loadTransition(activity, a, mEnterTransition, null,
-            com.android.internal.R.styleable.Fragment_fragmentEnterTransition);
-    mReturnTransition = loadTransition(activity, a, mReturnTransition, USE_DEFAULT_TRANSITION,
-            com.android.internal.R.styleable.Fragment_fragmentReturnTransition);
-    mExitTransition = loadTransition(activity, a, mExitTransition, null,
-            com.android.internal.R.styleable.Fragment_fragmentExitTransition);
-    mReenterTransition = loadTransition(activity, a, mReenterTransition, USE_DEFAULT_TRANSITION,
-            com.android.internal.R.styleable.Fragment_fragmentReenterTransition);
-    mSharedElementEnterTransition = loadTransition(activity, a, mSharedElementEnterTransition,
-            null, com.android.internal.R.styleable.Fragment_fragmentSharedElementEnterTransition);
-    mSharedElementReturnTransition = loadTransition(activity, a, mSharedElementReturnTransition,
+    IContext* ctx = IContext::Probe(activity);
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Fragment),
+            ARRAY_SIZE(R::styleable::Fragment));
+    AutoPtr<ITypedArray> a;
+    ctx->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+
+    mEnterTransition = LoadTransition(ctx, a, mEnterTransition, NULL,
+            R::styleable::Fragment_fragmentEnterTransition);
+    mReturnTransition = LoadTransition(ctx, a, mReturnTransition, USE_DEFAULT_TRANSITION,
+            R::styleable::Fragment_fragmentReturnTransition);
+    mExitTransition = LoadTransition(ctx, a, mExitTransition, NULL,
+            R::styleable::Fragment_fragmentExitTransition);
+    mReenterTransition = LoadTransition(ctx, a, mReenterTransition, USE_DEFAULT_TRANSITION,
+            R::styleable::Fragment_fragmentReenterTransition);
+    mSharedElementEnterTransition = LoadTransition(ctx, a, mSharedElementEnterTransition,
+            NULL, R::styleable::Fragment_fragmentSharedElementEnterTransition);
+    mSharedElementReturnTransition = LoadTransition(ctx, a, mSharedElementReturnTransition,
             USE_DEFAULT_TRANSITION,
-            com.android.internal.R.styleable.Fragment_fragmentSharedElementReturnTransition);
-    if (mAllowEnterTransitionOverlap == null) {
-        mAllowEnterTransitionOverlap = a.getBoolean(
-                com.android.internal.R.styleable.Fragment_fragmentAllowEnterTransitionOverlap, true);
+            R::styleable::Fragment_fragmentSharedElementReturnTransition);
+    // if (mAllowEnterTransitionOverlap == NULL)
+    {
+        a->GetBoolean(
+            R::styleable::Fragment_fragmentAllowEnterTransitionOverlap, TRUE, &mAllowEnterTransitionOverlap);
     }
-    if (mAllowReturnTransitionOverlap == null) {
-        mAllowReturnTransitionOverlap = a.getBoolean(
-                com.android.internal.R.styleable.Fragment_fragmentAllowReturnTransitionOverlap, true);
+    // if (mAllowReturnTransitionOverlap == NULL)
+    {
+        a->GetBoolean(
+            R::styleable::Fragment_fragmentAllowReturnTransitionOverlap, TRUE, &mAllowReturnTransitionOverlap);
     }
-    a.recycle();
+
+    a->Recycle();
     return NOERROR;
 }
 
@@ -1520,11 +1510,13 @@ ECode Fragment::OnStart()
         mLoadersStarted = TRUE;
         if (!mCheckedForLoaderManager) {
             mCheckedForLoaderManager = TRUE;
-            AutoPtr<Activity> act = reinterpret_cast<Activity*>(mActivity->Probe(EIID_Activity));
-            mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
+            assert(0 && "TODO");
+            // AutoPtr<Activity> act = (Activity*)mActivity.Get();;
+            // mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
         }
         if (mLoaderManager != NULL) {
-            mLoaderManager->DoStart();
+            assert(0 && "TODO");
+            // ((LoaderManagerImpl*)mLoaderManager.Get())->DoStart();
         }
     }
     return NOERROR;
@@ -1587,11 +1579,12 @@ ECode Fragment::OnDestroy()
     //        + " mLoaderManager=" + mLoaderManager);
     if (!mCheckedForLoaderManager) {
         mCheckedForLoaderManager = TRUE;
-        AutoPtr<Activity> act = reinterpret_cast<Activity*>(mActivity->Probe(EIID_Activity));
-        mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
+        assert(0 && "TODO");
+        // AutoPtr<Activity> act = (Activity*)mActivity.Get();;
+        // mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
     }
     if (mLoaderManager != NULL) {
-        mLoaderManager->DoDestroy();
+        // ((LoaderManagerImpl*)mLoaderManager.Get())->DoDestroy();
     }
     return NOERROR;
 }
@@ -1696,308 +1689,180 @@ ECode Fragment::OnContextItemSelected(
     return NOERROR;
 }
 
-//=====================================================
-
-/**
- * When custom transitions are used with Fragments, the enter transition callback
- * is called when this Fragment is attached or detached when not popping the back stack.
- *
- * @param callback Used to manipulate the shared element transitions on this Fragment
- *                 when added not as a pop from the back stack.
- */
-CARPAI SetEnterSharedElementCallback(
+ECode Fragment::SetEnterSharedElementCallback(
     /* [in] */ ISharedElementCallback* callback)
 {
-    if (callback == null) {
-        callback = SharedElementCallback.NULL_CALLBACK;
-    }
     mEnterTransitionCallback = callback;
+    assert(0 && "TODO");
+    if (mEnterTransitionCallback == NULL) {
+        // mEnterTransitionCallback = SharedElementCallback::NULL_CALLBACK;
+    }
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-CARPAI SetEnterSharedElementTransitionCallback(
+ECode Fragment::SetEnterSharedElementTransitionCallback(
     /* [in] */ ISharedElementCallback* callback)
 {
     return SetEnterSharedElementCallback(callback);
 }
 
-/**
- * When custom transitions are used with Fragments, the exit transition callback
- * is called when this Fragment is attached or detached when popping the back stack.
- *
- * @param callback Used to manipulate the shared element transitions on this Fragment
- *                 when added as a pop from the back stack.
- */
-CARAPI SetExitSharedElementCallback(
+ECode Fragment::SetExitSharedElementCallback(
     /* [in] */ ISharedElementCallback* callback)
 {
-    if (callback == NULL) {
-        callback = SharedElementCallback.NULL_CALLBACK;
-    }
     mExitTransitionCallback = callback;
+    assert(0 && "TODO");
+    if (mExitTransitionCallback == NULL) {
+        // mExitTransitionCallback = SharedElementCallback.NULL_CALLBACK;
+    }
+
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-CARAPI SetExitSharedElementTransitionCallback(
+ECode Fragment::SetExitSharedElementTransitionCallback(
     /* [in] */ ISharedElementCallback* callback)
 {
-    setExitSharedElementCallback(callback);
+    return SetExitSharedElementCallback(callback);
 }
 
-/**
- * Sets the Transition that will be used to move Views into the initial scene. The entering
- * Views will be those that are regular Views or ViewGroups that have
- * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
- * {@link android.transition.Visibility} as entering is governed by changing visibility from
- * {@link View#INVISIBLE} to {@link View#VISIBLE}. If <code>transition</code> is null,
- * entering Views will remain unaffected.
- *
- * @param transition The Transition to use to move Views into the initial Scene.
- * @attr ref android.R.styleable#Fragment_fragmentEnterTransition
- */
-public void setEnterTransition(Transition transition) {
+ECode Fragment::SetEnterTransition(
+    /* [in] */ ITransition* transition)
+{
     mEnterTransition = transition;
+    return NOERROR;
 }
 
-/**
- * Returns the Transition that will be used to move Views into the initial scene. The entering
- * Views will be those that are regular Views or ViewGroups that have
- * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
- * {@link android.transition.Visibility} as entering is governed by changing visibility from
- * {@link View#INVISIBLE} to {@link View#VISIBLE}.
- *
- * @return the Transition to use to move Views into the initial Scene.
- * @attr ref android.R.styleable#Fragment_fragmentEnterTransition
- */
-public Transition getEnterTransition() {
-    return mEnterTransition;
+ECode Fragment::GetEnterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition)
+    *transition = mEnterTransition;
+    REFCOUNT_ADD(*transition)
+    return NOERROR;
 }
 
-/**
- * Sets the Transition that will be used to move Views out of the scene when the Fragment is
- * preparing to be removed, hidden, or detached because of popping the back stack. The exiting
- * Views will be those that are regular Views or ViewGroups that have
- * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
- * {@link android.transition.Visibility} as entering is governed by changing visibility from
- * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
- * entering Views will remain unaffected. If nothing is set, the default will be to
- * use the same value as set in {@link #setEnterTransition(android.transition.Transition)}.
- *
- * @param transition The Transition to use to move Views out of the Scene when the Fragment
- *                   is preparing to close.
- * @attr ref android.R.styleable#Fragment_fragmentExitTransition
- */
-public void setReturnTransition(Transition transition) {
+ECode Fragment::SetReturnTransition(
+    /* [in] */ ITransition* transition)
+{
     mReturnTransition = transition;
+    return NOERROR;
 }
 
-/**
- * Returns the Transition that will be used to move Views out of the scene when the Fragment is
- * preparing to be removed, hidden, or detached because of popping the back stack. The exiting
- * Views will be those that are regular Views or ViewGroups that have
- * {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
- * {@link android.transition.Visibility} as entering is governed by changing visibility from
- * {@link View#VISIBLE} to {@link View#INVISIBLE}. If <code>transition</code> is null,
- * entering Views will remain unaffected.
- *
- * @return the Transition to use to move Views out of the Scene when the Fragment
- *         is preparing to close.
- * @attr ref android.R.styleable#Fragment_fragmentExitTransition
- */
-public Transition getReturnTransition() {
-    return mReturnTransition == USE_DEFAULT_TRANSITION ? getEnterTransition()
-            : mReturnTransition;
+ECode Fragment::GetReturnTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition)
+    if (mReturnTransition == USE_DEFAULT_TRANSITION) {
+        return GetEnterTransition(transition);
+    }
+    else {
+        *transition = mReturnTransition;
+        REFCOUNT_ADD(*transition)
+    }
+    return NOERROR;
 }
 
-/**
- * Sets the Transition that will be used to move Views out of the scene when the
- * fragment is removed, hidden, or detached when not popping the back stack.
- * The exiting Views will be those that are regular Views or ViewGroups that
- * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
- * {@link android.transition.Visibility} as exiting is governed by changing visibility
- * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
- * remain unaffected.
- *
- * @param transition The Transition to use to move Views out of the Scene when the Fragment
- *                   is being closed not due to popping the back stack.
- * @attr ref android.R.styleable#Fragment_fragmentExitTransition
- */
-public void setExitTransition(Transition transition) {
+
+ECode Fragment::SetExitTransition(
+    /* [in] */ ITransition* transition)
+{
     mExitTransition = transition;
+    return NOERROR;
 }
 
-/**
- * Returns the Transition that will be used to move Views out of the scene when the
- * fragment is removed, hidden, or detached when not popping the back stack.
- * The exiting Views will be those that are regular Views or ViewGroups that
- * have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions will extend
- * {@link android.transition.Visibility} as exiting is governed by changing visibility
- * from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null, the views will
- * remain unaffected.
- *
- * @return the Transition to use to move Views out of the Scene when the Fragment
- *         is being closed not due to popping the back stack.
- * @attr ref android.R.styleable#Fragment_fragmentExitTransition
- */
-public Transition getExitTransition() {
-    return mExitTransition;
+ECode Fragment::GetExitTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition)
+    *transition = mExitTransition;
+    REFCOUNT_ADD(*transition)
+    return NOERROR;
 }
 
-/**
- * Sets the Transition that will be used to move Views in to the scene when returning due
- * to popping a back stack. The entering Views will be those that are regular Views
- * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
- * will extend {@link android.transition.Visibility} as exiting is governed by changing
- * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
- * the views will remain unaffected. If nothing is set, the default will be to use the same
- * transition as {@link #setExitTransition(android.transition.Transition)}.
- *
- * @param transition The Transition to use to move Views into the scene when reentering from a
- *                   previously-started Activity.
- * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
- */
-public void setReenterTransition(Transition transition) {
+ECode Fragment::SetReenterTransition(
+    /* [in] */ ITransition* transition)
+{
     mReenterTransition = transition;
+    return NOERROR;
 }
 
-/**
- * Returns the Transition that will be used to move Views in to the scene when returning due
- * to popping a back stack. The entering Views will be those that are regular Views
- * or ViewGroups that have {@link ViewGroup#isTransitionGroup} return true. Typical Transitions
- * will extend {@link android.transition.Visibility} as exiting is governed by changing
- * visibility from {@link View#VISIBLE} to {@link View#INVISIBLE}. If transition is null,
- * the views will remain unaffected. If nothing is set, the default will be to use the same
- * transition as {@link #setExitTransition(android.transition.Transition)}.
- *
- * @return the Transition to use to move Views into the scene when reentering from a
- *                   previously-started Activity.
- * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
- */
-public Transition getReenterTransition() {
-    return mReenterTransition == USE_DEFAULT_TRANSITION ? getExitTransition()
-            : mReenterTransition;
+ECode Fragment::GetReenterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition)
+    if (mReenterTransition == USE_DEFAULT_TRANSITION) {
+        return GetExitTransition(transition);
+    }
+    else {
+        *transition = mReenterTransition;
+        REFCOUNT_ADD(*transition)
+    }
+    return NOERROR;
 }
 
-/**
- * Sets the Transition that will be used for shared elements transferred into the content
- * Scene. Typical Transitions will affect size and location, such as
- * {@link android.transition.ChangeBounds}. A null
- * value will cause transferred shared elements to blink to the final position.
- *
- * @param transition The Transition to use for shared elements transferred into the content
- *                   Scene.
- * @attr ref android.R.styleable#Fragment_fragmentSharedElementEnterTransition
- */
-public void setSharedElementEnterTransition(Transition transition) {
+ECode Fragment::SetSharedElementEnterTransition(
+    /* [in] */ ITransition* transition)
+{
     mSharedElementEnterTransition = transition;
+    return NOERROR;
 }
 
-/**
- * Returns the Transition that will be used for shared elements transferred into the content
- * Scene. Typical Transitions will affect size and location, such as
- * {@link android.transition.ChangeBounds}. A null
- * value will cause transferred shared elements to blink to the final position.
- *
- * @return The Transition to use for shared elements transferred into the content
- *                   Scene.
- * @attr ref android.R.styleable#Fragment_fragmentSharedElementEnterTransition
- */
-public Transition getSharedElementEnterTransition() {
-    return mSharedElementEnterTransition;
+ECode Fragment::GetSharedElementEnterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition)
+    *transition = mSharedElementEnterTransition;
+    REFCOUNT_ADD(*transition)
+    return NOERROR;
 }
 
-/**
- * Sets the Transition that will be used for shared elements transferred back during a
- * pop of the back stack. This Transition acts in the leaving Fragment.
- * Typical Transitions will affect size and location, such as
- * {@link android.transition.ChangeBounds}. A null
- * value will cause transferred shared elements to blink to the final position.
- * If no value is set, the default will be to use the same value as
- * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
- *
- * @param transition The Transition to use for shared elements transferred out of the content
- *                   Scene.
- * @attr ref android.R.styleable#Fragment_fragmentSharedElementReturnTransition
- */
-public void setSharedElementReturnTransition(Transition transition) {
+ECode Fragment::SetSharedElementReturnTransition(
+    /* [in] */ ITransition* transition)
+{
     mSharedElementReturnTransition = transition;
+    return NOERROR;
 }
 
-/**
- * Return the Transition that will be used for shared elements transferred back during a
- * pop of the back stack. This Transition acts in the leaving Fragment.
- * Typical Transitions will affect size and location, such as
- * {@link android.transition.ChangeBounds}. A null
- * value will cause transferred shared elements to blink to the final position.
- * If no value is set, the default will be to use the same value as
- * {@link #setSharedElementEnterTransition(android.transition.Transition)}.
- *
- * @return The Transition to use for shared elements transferred out of the content
- *                   Scene.
- * @attr ref android.R.styleable#Fragment_fragmentSharedElementReturnTransition
- */
-public Transition getSharedElementReturnTransition() {
-    return mSharedElementReturnTransition == USE_DEFAULT_TRANSITION ?
-            getSharedElementEnterTransition() : mSharedElementReturnTransition;
+ECode Fragment::GetSharedElementReturnTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition)
+    if (mSharedElementReturnTransition == USE_DEFAULT_TRANSITION) {
+        return GetSharedElementEnterTransition(transition);
+    }
+    else {
+        *transition = mSharedElementReturnTransition;
+        REFCOUNT_ADD(*transition)
+    }
+    return NOERROR;
 }
 
-/**
- * Sets whether the the exit transition and enter transition overlap or not.
- * When true, the enter transition will start as soon as possible. When false, the
- * enter transition will wait until the exit transition completes before starting.
- *
- * @param allow true to start the enter transition when possible or false to
- *              wait until the exiting transition completes.
- * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
- */
-public void setAllowEnterTransitionOverlap(boolean allow) {
+ECode Fragment::SetAllowEnterTransitionOverlap(
+    /* [in] */ Boolean allow)
+{
     mAllowEnterTransitionOverlap = allow;
+    return NOERROR;
 }
 
-/**
- * Returns whether the the exit transition and enter transition overlap or not.
- * When true, the enter transition will start as soon as possible. When false, the
- * enter transition will wait until the exit transition completes before starting.
- *
- * @return true when the enter transition should start as soon as possible or false to
- * when it should wait until the exiting transition completes.
- * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
- */
-public boolean getAllowEnterTransitionOverlap() {
-    return (mAllowEnterTransitionOverlap == null) ? true : mAllowEnterTransitionOverlap;
+ECode Fragment::GetAllowEnterTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    return mAllowEnterTransitionOverlap;
 }
 
-/**
- * Sets whether the the return transition and reenter transition overlap or not.
- * When true, the reenter transition will start as soon as possible. When false, the
- * reenter transition will wait until the return transition completes before starting.
- *
- * @param allow true to start the reenter transition when possible or false to wait until the
- *              return transition completes.
- * @attr ref android.R.styleable#Fragment_fragmentAllowReturnTransitionOverlap
- */
-public void setAllowReturnTransitionOverlap(boolean allow) {
+ECode Fragment::SetAllowReturnTransitionOverlap(
+    /* [in] */ Boolean allow)
+{
     mAllowReturnTransitionOverlap = allow;
+    return NOERROR;
 }
 
-/**
- * Returns whether the the return transition and reenter transition overlap or not.
- * When true, the reenter transition will start as soon as possible. When false, the
- * reenter transition will wait until the return transition completes before starting.
- *
- * @return true to start the reenter transition when possible or false to wait until the
- *         return transition completes.
- * @attr ref android.R.styleable#Fragment_fragmentAllowReturnTransitionOverlap
- */
-public boolean getAllowReturnTransitionOverlap() {
-    return (mAllowReturnTransitionOverlap == null) ? true : mAllowReturnTransitionOverlap;
+ECode Fragment::GetAllowReturnTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    VALIDATE_NOT_NULL(allow)
+    *allow = mAllowReturnTransitionOverlap;
+    return NOERROR;
 }
-
-//=====================================================
 
 ECode Fragment::Dump(
     /* [in] */ const String& prefix,
@@ -2005,90 +1870,90 @@ ECode Fragment::Dump(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String>* args)
 {
-    writer->PrintString(prefix); writer->PrintString(String("mFragmentId=#"));
+    writer->Print(prefix); writer->Print(String("mFragmentId=#"));
 //             writer.print(Integer.toHexString(mFragmentId));
-    writer->PrintString(String(" mContainerId=#"));
+    writer->Print(String(" mContainerId=#"));
 //             writer.print(Integer.toHexString(mContainerId));
-    writer->PrintString(String(" mTag=")); writer->PrintStringln(mTag);
-    writer->PrintString(prefix); writer->PrintString(String("mState="));
-    writer->PrintInt32(mState);
-    writer->PrintString(String(" mIndex=")); writer->PrintInt32(mIndex);
-    writer->PrintString(String(" mWho=")); writer->PrintString(mWho);
-    writer->PrintString(String(" mBackStackNesting="));
-    writer->PrintInt32ln(mBackStackNesting);
-    writer->PrintString(prefix); writer->PrintString(String("mAdded="));
-    writer->PrintBoolean(mAdded);
-            writer->PrintString(String(" mRemoving=")); writer->PrintBoolean(mRemoving);
-            writer->PrintString(String(" mResumed=")); writer->PrintBoolean(mResumed);
-            writer->PrintString(String(" mFromLayout=")); writer->PrintBoolean(mFromLayout);
-            writer->PrintString(String(" mInLayout=")); writer->PrintBooleanln(mInLayout);
-    writer->PrintString(prefix); writer->PrintString(String("mHidden="));
-    writer->PrintBoolean(mHidden);
-            writer->PrintString(String(" mDetached=")); writer->PrintBoolean(mDetached);
-            writer->PrintString(String(" mMenuVisible=")); writer->PrintBoolean(mMenuVisible);
-            writer->PrintString(String(" mHasMenu=")); writer->PrintBooleanln(mHasMenu);
-    writer->PrintString(prefix); writer->PrintString(String("mRetainInstance="));
-    writer->PrintBoolean(mRetainInstance);
-            writer->PrintString(String(" mRetaining=")); writer->PrintBoolean(mRetaining);
-            writer->PrintString(String(" mUserVisibleHint=")); writer->PrintBooleanln(mUserVisibleHint);
+    writer->Print(String(" mTag=")); writer->Println(mTag);
+    writer->Print(prefix); writer->Print(String("mState="));
+    writer->Print(mState);
+    writer->Print(String(" mIndex=")); writer->Print(mIndex);
+    writer->Print(String(" mWho=")); writer->Print(mWho);
+    writer->Print(String(" mBackStackNesting="));
+    writer->Println(mBackStackNesting);
+    writer->Print(prefix); writer->Print(String("mAdded="));
+    writer->Print(mAdded);
+        writer->Print(String(" mRemoving=")); writer->Print(mRemoving);
+        writer->Print(String(" mResumed=")); writer->Print(mResumed);
+        writer->Print(String(" mFromLayout=")); writer->Print(mFromLayout);
+        writer->Print(String(" mInLayout=")); writer->Println(mInLayout);
+    writer->Print(prefix); writer->Print(String("mHidden="));
+    writer->Print(mHidden);
+        writer->Print(String(" mDetached=")); writer->Print(mDetached);
+        writer->Print(String(" mMenuVisible=")); writer->Print(mMenuVisible);
+        writer->Print(String(" mHasMenu=")); writer->Println(mHasMenu);
+    writer->Print(prefix); writer->Print(String("mRetainInstance="));
+    writer->Print(mRetainInstance);
+        writer->Print(String(" mRetaining=")); writer->Print(mRetaining);
+        writer->Print(String(" mUserVisibleHint=")); writer->Println(mUserVisibleHint);
     if (mFragmentManager != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mFragmentManager="));
-                writer->PrintObjectln((IInterface*)mFragmentManager);
+        writer->Print(prefix); writer->Print(String("mFragmentManager="));
+                writer->Println((IInterface*)mFragmentManager);
     }
     if (mActivity != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mActivity="));
-                writer->PrintObjectln((IInterface*)mActivity);
+        writer->Print(prefix); writer->Print(String("mActivity="));
+                writer->Println((IInterface*)mActivity);
     }
     if (mParentFragment != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mParentFragment="));
-                writer->PrintObjectln((IInterface*)mParentFragment);
+        writer->Print(prefix); writer->Print(String("mParentFragment="));
+                writer->Println((IInterface*)mParentFragment);
     }
     if (mArguments != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mArguments="));
-        writer->PrintObjectln((IInterface*)mArguments);
+        writer->Print(prefix); writer->Print(String("mArguments="));
+        writer->Println((IInterface*)mArguments);
     }
     if (mSavedFragmentState != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mSavedFragmentState="));
-                writer->PrintObjectln((IInterface*)mSavedFragmentState);
+        writer->Print(prefix); writer->Print(String("mSavedFragmentState="));
+                writer->Println((IInterface*)mSavedFragmentState);
     }
     if (mSavedViewState != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mSavedViewState="));
-                writer->PrintObjectln((IInterface*)mSavedViewState);
+        writer->Print(prefix); writer->Print(String("mSavedViewState="));
+                writer->Println((IInterface*)mSavedViewState);
     }
     if (mTarget != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mTarget="));
-        writer->PrintObject((IInterface*)mTarget);
-                writer->PrintString(String(" mTargetRequestCode="));
-                writer->PrintInt32ln(mTargetRequestCode);
+        writer->Print(prefix); writer->Print(String("mTarget="));
+        writer->Print((IInterface*)mTarget);
+                writer->Print(String(" mTargetRequestCode="));
+                writer->Println(mTargetRequestCode);
     }
     if (mNextAnim != 0) {
-        writer->PrintString(prefix); writer->PrintString(String("mNextAnim="));
-        writer->PrintInt32ln(mNextAnim);
+        writer->Print(prefix); writer->Print(String("mNextAnim="));
+        writer->Println(mNextAnim);
     }
     if (mContainer != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mContainer="));
-        writer->PrintObjectln((IInterface*)mContainer);
+        writer->Print(prefix); writer->Print(String("mContainer="));
+        writer->Println((IInterface*)mContainer);
     }
     if (mView != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mView="));
-        writer->PrintObjectln((IInterface*)mView);
+        writer->Print(prefix); writer->Print(String("mView="));
+        writer->Println((IInterface*)mView);
     }
     if (mAnimatingAway != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("mAnimatingAway="));
-        writer->PrintObjectln((IInterface*)mAnimatingAway);
-        writer->PrintString(prefix); writer->PrintString(String("mStateAfterAnimating="));
-                writer->PrintInt32ln(mStateAfterAnimating);
+        writer->Print(prefix); writer->Print(String("mAnimatingAway="));
+        writer->Println((IInterface*)mAnimatingAway);
+        writer->Print(prefix); writer->Print(String("mStateAfterAnimating="));
+            writer->Println(mStateAfterAnimating);
     }
     if (mLoaderManager != NULL) {
-        writer->PrintString(prefix); writer->PrintStringln(String("Loader Manager:"));
-        mLoaderManager->Dump(prefix + "  ", fd, writer, args);
+        writer->Print(prefix); writer->Println(String("Loader Manager:"));
+        ILoaderManager::Probe(mLoaderManager)->Dump(prefix + "  ", fd, writer, args);
     }
     if (mChildFragmentManager != NULL) {
         StringBuilder sb("Child ");
         sb += mChildFragmentManager;
         sb += ":";
-        writer->PrintString(prefix); writer->PrintStringln(sb.ToString());
-        mChildFragmentManager->Dump(prefix + "  ", fd, writer, args);
+        writer->Print(prefix); writer->Println(sb.ToString());
+        IFragmentManager::Probe(mChildFragmentManager)->Dump(prefix + "  ", fd, writer, args);
     }
     return NOERROR;
 }
@@ -2116,10 +1981,9 @@ Fragment::FindFragmentByWho(
 
 void Fragment::InstantiateChildFragmentManager()
 {
-    mChildFragmentManager = NULL;
-    CFragmentManagerImpl::New((IFragmentManagerImpl**)&mChildFragmentManager);
+    mChildFragmentManager = new FragmentManagerImpl();
     AutoPtr<FragmentContainerLocal> fc = new FragmentContainerLocal(this);
-    mChildFragmentManager->AttachActivity(mActivity, IFragmentContainer::Probe(fc), (IFragment*)this->Probe(EIID_IFragment));
+    mChildFragmentManager->AttachActivity(mActivity, IFragmentContainer::Probe(fc), THIS_PROBE(IFragment));
 }
 
 ECode Fragment::PerformCreate(
@@ -2136,7 +2000,8 @@ ECode Fragment::PerformCreate(
     }
     if (savedInstanceState != NULL) {
         AutoPtr<IParcelable> p;
-        savedInstanceState->GetParcelable(Activity::FRAGMENTS_TAG, (IParcelable**)&p);
+        assert(0 && "TODO");
+        // savedInstanceState->GetParcelable(Activity::FRAGMENTS_TAG, (IParcelable**)&p);
         if (p != NULL) {
             if (mChildFragmentManager == NULL) {
                 InstantiateChildFragmentManager();
@@ -2200,7 +2065,8 @@ ECode Fragment::PerformStart()
         mChildFragmentManager->DispatchStart();
     }
     if (mLoaderManager != NULL) {
-        mLoaderManager->DoReportStart();
+        assert(0 && "TODO");
+        // ((LoaderManagerImpl*)mLoaderManager.Get())->DoReportStart();
     }
     return NOERROR;
 }
@@ -2372,7 +2238,8 @@ ECode Fragment::PerformSaveInstanceState(
         AutoPtr<IParcelable> p;
         mChildFragmentManager->SaveAllState((IParcelable**)&p);
         if (p != NULL) {
-            outState->PutParcelable(Activity::FRAGMENTS_TAG, p);
+            assert(0 && "TODO");
+            // outState->PutParcelable(Activity::FRAGMENTS_TAG, p);
         }
     }
     return NOERROR;
@@ -2406,18 +2273,19 @@ ECode Fragment::PerformStop()
 
     if (mLoadersStarted) {
         mLoadersStarted = FALSE;
-        AutoPtr<Activity> act = reinterpret_cast<Activity*>(mActivity->Probe(EIID_Activity));
-        if (!mCheckedForLoaderManager) {
-            mCheckedForLoaderManager = TRUE;
-            mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
-        }
-        if (mLoaderManager != NULL) {
-            if (mActivity == NULL || !act->mChangingConfigurations) {
-                mLoaderManager->DoStop();
-            } else {
-                mLoaderManager->DoRetain();
-            }
-        }
+        assert(0 && "TODO");
+        // AutoPtr<Activity> act = (Activity*)mActivity.Get();;
+        // if (!mCheckedForLoaderManager) {
+        //     mCheckedForLoaderManager = TRUE;
+        //     mLoaderManager = act->GetLoaderManager(mWho, mLoadersStarted, FALSE);
+        // }
+        // if (mLoaderManager != NULL) {
+        //     if (mActivity == NULL || !act->mChangingConfigurations) {
+        //         ILoaderManager::Probe(mLoaderManager)->DoStop();
+        //     } else {
+        //         ILoaderManager::Probe(mLoaderManager)->DoRetain();
+        //     }
+        // }
     }
     return NOERROR;
 }
@@ -2434,7 +2302,8 @@ ECode Fragment::PerformDestroyView()
 //                 + " did not call through to super.onDestroyView()");
     }
     if (mLoaderManager != NULL) {
-        mLoaderManager->DoReportNextStart();
+        assert(0 && "TODO");
+        // ((LoaderManagerImpl*)mLoaderManager.Get())->DoReportNextStart();
     }
     return NOERROR;
 }
@@ -2463,14 +2332,22 @@ AutoPtr<ITransition> Fragment::LoadTransition(
     if (currentValue != defaultValue) {
         return currentValue;
     }
-    int transitionId = typedArray.getResourceId(id, 0);
-    Transition transition = defaultValue;
-    if (transitionId != 0 && transitionId != com.android.internal.R.transition.no_transition) {
-        TransitionInflater inflater = TransitionInflater.from(context);
-        transition = inflater.inflateTransition(transitionId);
-        if (transition instanceof TransitionSet &&
-                ((TransitionSet)transition).getTransitionCount() == 0) {
-            transition = null;
+
+    Int32 transitionId;
+    typedArray->GetResourceId(id, 0, &transitionId);
+    AutoPtr<ITransition> transition = defaultValue;
+    if (transitionId != 0 && transitionId != R::transition::no_transition) {
+        AutoPtr<ITransitionInflater> inflater = TransitionInflater::From(context);
+        transition = NULL;
+        inflater->InflateTransition(transitionId, (ITransition**)&transition);
+
+        ITransitionSet* ts = ITransitionSet::Probe(transition);
+        if (ts != NULL) {
+            Int32 count;
+            ts->GetTransitionCount(&count);
+            if (count == 0) {
+                transition = NULL;
+            }
         }
     }
     return transition;

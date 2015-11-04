@@ -216,12 +216,6 @@ module
         SetActivity(
             [in] IActivity* activity);
 
-        SetChildFragmentManager(
-            [in] IFragmentManagerImpl* cfManager);
-
-        GetChildFragmentManagerValue(
-            [out] IFragmentManagerImpl** cfManager);
-
         SetParentFragment(
             [in] IFragment* pFragment);
 
@@ -325,8 +319,6 @@ module
         SetIndex(
             [in] Int32 index,
             [in] IFragment* parent);
-
-        //========================================================
 
         /**
          * Return the identifier this fragment is known by.  This is either

@@ -28,6 +28,7 @@ module
     merge("app/IActivityContainerCallback.car");
     merge("app/IActivityController.car");
     merge("app/IActivityManager.car");
+    merge("app/ActivityManagerInternal.car");
     merge("app/IAlarmManager.car");
     merge("app/IAppTask.car");
     merge("app/IApplicationThread.car");
@@ -625,13 +626,17 @@ module
 //     }
 
 //     class CApplicationThread {
+//         constructor();
+
 //         interface IApplicationThread;
 //         interface IBinder;
 //     }
 
-//     class CApplication {
-//         interface IApplication;
-//     }
+    class CApplication {
+        constructor();
+
+        interface IApplication;
+    }
 
 //     class CInstrumentation {
 //         interface IInstrumentation;
@@ -809,6 +814,22 @@ module
 
         interface IFragmentSavedState;
         interface IParcelable;
+    }
+
+    class CFragmentState {
+        constructor();
+
+        constructor(
+            [in] IFragment* frag);
+
+        interface IFragmentState;
+        interface IParcelable;
+    }
+
+    class CFragmentHelper {
+        constructor();
+
+        interface IFragmentHelper;
     }
 
 //     [local]

@@ -9,25 +9,24 @@ namespace Elastos{
 namespace Droid{
 namespace App{
 
-static AutoPtr<IConcurrentLinkedQueue> InitPendingWorkFinishers()
+static AutoPtr<IQueue> InitPendingWorkFinishers()
 {
-    AutoPtr<IConcurrentLinkedQueue> queue;
-    CConcurrentLinkedQueue::New((IConcurrentLinkedQueue**)&queue);
+    AutoPtr<IQueue> queue;
+    CConcurrentLinkedQueue::New((IQueue**)&queue);
     return queue;
 }
 
-AutoPtr<IConcurrentLinkedQueue> QueuedWork::sPendingWorkFinishers = InitPendingWorkFinishers();
+AutoPtr<IQueue> QueuedWork::sPendingWorkFinishers = InitPendingWorkFinishers();
 AutoPtr<IExecutorService> QueuedWork::sSingleThreadExecutor;
 Object QueuedWork::sClassLock;
 
-
 ECode QueuedWork::SingleThreadExecutor(
-    /* [out] */ IExecutorService *singleThreadExecutor)
+    /* [out] */ IExecutorService** singleThreadExecutor)
 {
     VALIDATE_NOT_NULL(singleThreadExecutor)
     *singleThreadExecutor = NULL;
     synchronized (sClassLock) {
-        if (sSingleThreadExecutor == null) {
+        if (sSingleThreadExecutor == NULL) {
             AutoPtr<IExecutors> executors;
             CExecutors::AcquireSingleton((IExecutors**)&executors);
             // TODO: can we give this single thread a thread name?
@@ -41,22 +40,22 @@ ECode QueuedWork::SingleThreadExecutor(
 }
 
 ECode QueuedWork::Add(
-    /* [in] */ IRunnable *finisher)
+    /* [in] */ IRunnable* finisher)
 {
     return sPendingWorkFinishers->Add(finisher);
 }
 
 ECode QueuedWork::Remove(
-    /* [in] */ IRunnable *finisher)
+    /* [in] */ IRunnable* finisher)
 {
-    return sPendingWorkFinishers->Remove(finisher);
+    Boolean result;
+    return sPendingWorkFinishers->Remove(IInterface::Probe(finisher), &result);
 }
 
 ECode QueuedWork::WaitToFinish()
 {
     AutoPtr<IInterface> obj;
     sPendingWorkFinishers->Poll((IInterface**)&obj);
-    IRunnable* toFinish = NULL;
     while (obj != NULL) {
         IRunnable::Probe(obj)->Run();
         obj = NULL;
@@ -66,7 +65,7 @@ ECode QueuedWork::WaitToFinish()
 }
 
 ECode QueuedWork::HasPendingWork(
-    /* [out] */ Boolean result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     Boolean isEmpty;

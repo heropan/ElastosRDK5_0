@@ -4,6 +4,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Core::IRunnable;
+using Elastos::Utility::IQueue;
 using Elastos::Utility::Concurrent::IExecutorService;
 using Elastos::Utility::Concurrent::IConcurrentLinkedQueue;
 
@@ -30,7 +31,7 @@ public:
      * creating it if necessary.
      */
     static CARAPI SingleThreadExecutor(
-        /* [out] */ IExecutorService* singleThreadExecutor);
+        /* [out] */ IExecutorService** singleThreadExecutor);
 
         /**
      * Add a runnable to finish (or wait for) a deferred operation
@@ -66,13 +67,13 @@ public:
      * use it.
      */
     static CARAPI HasPendingWork(
-        /* [out] */ Boolean result);
+        /* [out] */ Boolean* result);
 
 public:
     // The set of Runnables that will finish or wait on any async
     // activities started by the application.
     //static ConcurrentLinkedQueue<Runnable> sPendingWorkFinishers;
-    static AutoPtr<IConcurrentLinkedQueue> sPendingWorkFinishers;
+    static AutoPtr<IQueue> sPendingWorkFinishers;//IConcurrentLinkedQueue
     static AutoPtr<IExecutorService> sSingleThreadExecutor; // lazy, guarded by class
     static Object sClassLock;
 private:

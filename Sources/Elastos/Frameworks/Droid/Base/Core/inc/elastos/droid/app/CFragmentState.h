@@ -3,7 +3,7 @@
 #ifndef __ELASTOS_DROID_APP_CFRAGMENTSTATE_H__
 #define __ELASTOS_DROID_APP_CFRAGMENTSTATE_H__
 
-#include "_Elastos_Droid_App_CFragmentHelper.h"
+#include "_Elastos_Droid_App_CFragmentState.h"
 #include "elastos/droid/app/Fragment.h"
 
 using Elastos::Droid.Os::IBundle;

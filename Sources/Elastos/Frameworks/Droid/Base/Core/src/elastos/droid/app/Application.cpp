@@ -1,6 +1,7 @@
 
 #include "elastos/droid/app/Application.h"
-#include "elastos/droid/content/CContextImpl.h"
+// #include "elastos/droid/app/CContextImpl.h"
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Content::EIID_IComponentCallbacks2;
@@ -21,7 +22,7 @@ Application::~Application()
 
 ECode Application::constructor()
 {
-    return ContextWrapper::constructor();
+    return ContextWrapper::constructor(NULL);
 }
 
 ECode Application::OnCreate()
@@ -128,7 +129,7 @@ ECode Application::UnregisterOnProvideAssistDataListener(
 {
     synchronized (this) {
         if (mAssistCallbacks != NULL) {
-            mAssistCallbacks.Remove(callback);
+            mAssistCallbacks->Remove(callback);
         }
     }
     return NOERROR;
@@ -239,19 +240,19 @@ ECode Application::DispatchOnProvideAssistData(
             return NOERROR;
         }
 
-        Int32 size = mAssistCallbacks.GetSize();
+        Int32 size = mAssistCallbacks->GetSize();
         if (size > 0) {
             callbacks = ArrayOf<IOnProvideAssistDataListener*>::Alloc(size);
             List< AutoPtr<IOnProvideAssistDataListener> >::Iterator it;
             Int32 i;
-            for (it = mAssistCallbacks.Begin(), i = 0; it != mAssistCallbacks.End(); ++it, ++i) {
+            for (it = mAssistCallbacks->Begin(), i = 0; it != mAssistCallbacks->End(); ++it, ++i) {
                 callbacks->Set(i, *it);
             }
         }
     }
 
     if (callbacks != NULL) {
-        for (Int32 i=0; i<callbacks.length; i++) {
+        for (Int32 i = 0; i< callbacks->GetLength(); i++) {
             (*callbacks)[i]->OnProvideAssistData(activity, data);
         }
     }

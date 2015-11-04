@@ -13,6 +13,7 @@ using Elastos::Droid::Content::ContextWrapper;
 using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IComponentCallbacks2;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

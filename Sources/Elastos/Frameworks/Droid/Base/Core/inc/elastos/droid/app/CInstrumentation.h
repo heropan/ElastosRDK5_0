@@ -10,46 +10,12 @@ namespace Droid {
 namespace App {
 
 CarClass(CInstrumentation)
-    , public ElRefBase
     , public Instrumentation
-    , public IObject
-    , public IInstrumentation
 {
 public:
     using Instrumentation::CheckStartActivityResult;
 
     using Instrumentation::NewApplication;
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI ToString(
-        /* [out] */ String* str);
 
     /**
      * Called when the instrumentation is starting, before any application code
