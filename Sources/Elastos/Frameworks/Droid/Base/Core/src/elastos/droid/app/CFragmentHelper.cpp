@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
+CAR_INTERFACE_IMPL(CFragmentHelper, Singleton, IFragmentHelper)
+
+CAR_SINGLETON_IMPL(CFragmentHelper)
+
 ECode CFragmentHelper::Instantiate(
     /* [in] */ IContext* context,
     /* [in] */ const String& fname,

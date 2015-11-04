@@ -1,19 +1,27 @@
 
-package android.app;
+#ifndef __ELASTOS_DROID_APP_SHARED_ELEMENT_CALLBACK_H__
+#define __ELASTOS_DROID_APP_SHARED_ELEMENT_CALLBACK_H__
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Parcelable;
-import android.transition.TransitionUtils;
-import android.view.View;
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-import java.util.List;
-import java.util.Map;
+namespace Elastos {
+namespace Droid {
+namespace App {
+
+// import android.content.Context;
+// import android.content.res.Resources;
+// import android.graphics.Bitmap;
+// import android.graphics.Canvas;
+// import android.graphics.Matrix;
+// import android.graphics.RectF;
+// import android.graphics.drawable.BitmapDrawable;
+// import android.os.Parcelable;
+// import android.transition.TransitionUtils;
+// import android.view.View;
+
+// import java.util.List;
+// import java.util.Map;
 
 /**
  * Listener provided in
@@ -24,11 +32,16 @@ import java.util.Map;
  * to monitor the Shared element transitions. The events can be used to customize Activity
  * and Fragment Transition behavior.
  */
-public abstract class SharedElementCallback {
-    private Matrix mTempMatrix;
+class SharedElementCallback
+    : public Object
+    , public ISharedElementCallback
+{
+public:
+    CAR_INTERFACE_DECL()
 
-    static final SharedElementCallback NULL_CALLBACK = new SharedElementCallback() {
-    };
+    SharedElementCallback()
+
+    virtual ~SharedElementCallback();
 
     /**
      * Called immediately after the start state is set for the shared element.
@@ -44,8 +57,12 @@ public abstract class SharedElementCallback {
      *                               to the Window decor View. This list is null for Fragment
      *                               Transitions.
      */
-    public void onSharedElementStart(List<String> sharedElementNames,
-            List<View> sharedElements, List<View> sharedElementSnapshots) {}
+    CARAPI OnSharedElementStart(
+        /* [in] */ IList* sharedElementNames, //List<String>
+        /* [in] */ IList* sharedElements, //List<View>
+        /* [in] */ IList* sharedElementSnapshots) //List<View>
+    {
+    }
 
     /**
      * Called after the end state is set for the shared element, but before the end state
@@ -69,8 +86,12 @@ public abstract class SharedElementCallback {
      *                               to the Window decor View. This list will be null for
      *                               Fragment Transitions.
      */
-    public void onSharedElementEnd(List<String> sharedElementNames,
-            List<View> sharedElements, List<View> sharedElementSnapshots) {}
+    CARAPI OnSharedElementEnd(
+        /* [in] */ IList* sharedElementNames, //List<String>
+        /* [in] */ IList* sharedElements, //List<View>
+        /* [in] */ IList* sharedElementSnapshots) //List<View>
+    {
+    }
 
     /**
      * Called after {@link #onMapSharedElements(java.util.List, java.util.Map)} when
@@ -94,7 +115,10 @@ public abstract class SharedElementCallback {
      *                               View removed from this list will not be transitioned
      *                               automatically.
      */
-    public void onRejectSharedElements(List<View> rejectedSharedElements) {}
+    CARAPI OnRejectSharedElements(
+        /* [in] */ IList* rejectedSharedElements) // List<View>
+    {
+    }
 
     /**
      * Lets the SharedElementCallback adjust the mapping of shared element names to
@@ -105,7 +129,12 @@ public abstract class SharedElementCallback {
      * @param sharedElements The mapping of shared element names to Views. The best guess
      *                       will be filled into sharedElements based on the transitionNames.
      */
-    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {}
+    CARAPI OnMapSharedElements(
+        /* [in] */ IList* names, //List<String>
+        /* [in] */ IMap* sharedElements) //Map<String, View>
+    {
+        return NOERROR;
+    }
 
     /**
      * Creates a snapshot of a shared element to be used by the remote Activity and reconstituted
@@ -126,8 +155,12 @@ public abstract class SharedElementCallback {
      * into {@link #onSharedElementStart(java.util.List, java.util.List, java.util.List)} and
      * {@link #onSharedElementEnd(java.util.List, java.util.List, java.util.List)}.
      */
-    public Parcelable onCaptureSharedElementSnapshot(View sharedElement, Matrix viewToGlobalMatrix,
-            RectF screenBounds) {
+    CARAPI OnCaptureSharedElementSnapshot(
+        /* [in] */ IView* sharedElement,
+        /* [in] */ IMatrix* viewToGlobalMatrix,
+        /* [in] */ IRectF* screenBounds,
+        /* [out] */ IParcelable** parcleable)
+    {
         if (mTempMatrix == null) {
             mTempMatrix = new Matrix(viewToGlobalMatrix);
         } else {
@@ -153,7 +186,11 @@ public abstract class SharedElementCallback {
      * java.util.List)} and {@link #onSharedElementEnd(java.util.List, java.util.List,
      * java.util.List)}. A null value will produce a null snapshot value for those two methods.
      */
-    public View onCreateSnapshotView(Context context, Parcelable snapshot) {
+    CARAPI OnCreateSnapshotView(
+        /* [in] */ IContext* context,
+        /* [in] */ IParcelable* snapshot,
+        /* [out] */ IView** view)
+    {
         View view = null;
         if (snapshot instanceof Bitmap) {
             Bitmap bitmap = (Bitmap) snapshot;
@@ -163,4 +200,15 @@ public abstract class SharedElementCallback {
         }
         return view;
     }
-}
+
+private:
+    AutoPtr<IMatrix> mTempMatrix;
+
+    static const AutoPtr<ISharedElementCallback> NULL_CALLBACK;// = new SharedElementCallback()
+};
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_APP_SHARED_ELEMENT_CALLBACK_H__

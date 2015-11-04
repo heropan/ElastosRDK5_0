@@ -31,6 +31,8 @@ SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
+#SOURCES += ActivityTransitionCoordinator.cpp
+
 SOURCES += AppGlobals.cpp
 
 SOURCES += Application.cpp
@@ -49,6 +51,7 @@ SOURCES += CBackStackRecordTransitionState.cpp
 SOURCES += CContentProviderHolder.cpp
 
 SOURCES += Fragment.cpp
+SOURCES += CFragmentHelper.cpp
 SOURCES += FragmentManager.cpp
 SOURCES += CFragmentManagerHelper.cpp
 SOURCES += FragmentManagerImpl.cpp

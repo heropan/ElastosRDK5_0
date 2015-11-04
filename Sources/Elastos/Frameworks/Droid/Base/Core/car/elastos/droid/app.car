@@ -8,6 +8,7 @@ module
     merge("app/ActivityOptions.car");
     merge("app/ActivityThread.car");
     merge("app/ActivityTransitionCoordinator.car");
+    merge("app/ActivityView.car");
     merge("app/AlarmManager.car");
     merge("app/AlertDialog.car");
     merge("app/AliasActivity.car");
@@ -187,7 +188,7 @@ module
 
 //     namespace Admin {
 
-//         [local]
+//         [local, parcelable]
 //         class CDeviceAdminInfo {
 //             constructor();
 
@@ -379,7 +380,7 @@ module
 //         interface IActivityNonConfigurationInstances;
 //     }
 
-    [local]
+    [local, parcelable]
     class CActionKeyInfo{
         constructor();
 
@@ -391,7 +392,7 @@ module
         interface IParcelable;
     }
 
-//     [local]
+//     [local, parcelable]
 //     class CSearchableInfo{
 //         constructor();
 
@@ -723,7 +724,7 @@ module
 //         interface INotificationInboxStyle;
 //     }
 
-//     [local]
+//     [local, parcelable]
 //     class CNotification {
 //         constructor();
 
@@ -801,7 +802,7 @@ module
 //         interface IAccessibilityEventSource;
 //     }
 
-    [local]
+    [local, parcelable]
     class CFragmentSavedState {
         constructor();
 
@@ -816,6 +817,7 @@ module
         interface IParcelable;
     }
 
+    [local, parcelable]
     class CFragmentState {
         constructor();
 
@@ -826,9 +828,7 @@ module
         interface IParcelable;
     }
 
-    class CFragmentHelper {
-        constructor();
-
+    singleton class CFragmentHelper {
         interface IFragmentHelper;
     }
 
@@ -904,7 +904,7 @@ module
 //         interface IAlertDialogBuilder;
 //     }
 
-//     [local]
+//     [local, parcelable]
 //     class CWallpaperInfo {
 //         constructor(
 //             [in] IContext* ctx,
@@ -1059,7 +1059,7 @@ module
 //         interface IOnKeyguardExitResult;
 //     }
 
-    [local]
+    [local, parcelable]
     class CBackStackState {
         constructor();
 

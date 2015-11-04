@@ -1,6 +1,8 @@
 
 
-
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 package android.app;
 

@@ -6,14 +6,12 @@
 #include "_Elastos_Droid_App_CFragmentState.h"
 #include "elastos/droid/app/Fragment.h"
 
-using Elastos::Droid.Os::IBundle;
-
 namespace Elastos {
 namespace Droid {
 namespace App {
 
 CarClass(CFragmentState)
-    : public FragmentState
+    , public FragmentState
 {
 public:
     CAR_OBJECT_DECL()

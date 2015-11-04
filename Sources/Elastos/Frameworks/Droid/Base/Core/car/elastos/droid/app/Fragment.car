@@ -14,6 +14,7 @@ module
     interface Elastos.Droid.View.ILayoutInflater;
     interface Elastos.Droid.View.IContextMenu;
     interface Elastos.Droid.View.IContextMenuInfo;
+    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Res.IConfiguration;
@@ -1377,6 +1378,20 @@ module
 
         FindFragmentByWho(
             [in] String who,
+            [out] IFragment** fragment);
+    }
+
+    [local]
+    interface IFragmentHelper {
+        Instantiate(
+            [in] IContext* context,
+            [in] String fname,
+            [out] IFragment** fragment);
+
+        Instantiate(
+            [in] IContext* context,
+            [in] String fname,
+            [in] IBundle* args,
             [out] IFragment** fragment);
     }
 

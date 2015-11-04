@@ -1,6 +1,6 @@
 module
 {
-    using Elastos.Core.IRunnable;
+    using interface Elastos.Core.IRunnable;
 
     namespace Elastos {
     namespace Droid {

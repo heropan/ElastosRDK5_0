@@ -2,6 +2,7 @@
 #include "elastos/droid/app/FragmentManagerImpl.h"
 #include "elastos/droid/app/CFragmentSavedState.h"
 #include "elastos/droid/app/CFragmentManagerState.h"
+#include "elastos/droid/app/Fragment.h"
 // #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/app/CBackStackState.h"
 #include "elastos/droid/os/CBundle.h"
@@ -744,9 +745,8 @@ ECode FragmentManagerImpl::MoveToState(
                 f->SetActivity(mActivity);
                 f->SetParentFragment(mParent);
                 if (mParent != NULL) {
-                    AutoPtr<IFragmentManagerImpl> pFragmentManagerImpl;
-                    mParent->GetChildFragmentManagerValue((IFragmentManagerImpl**)&pFragmentManagerImpl);
-                    f->SetFragmentManager(pFragmentManagerImpl);
+                    Fragment* fragment = (Fragment*)mParent.Get();
+                    f->SetFragmentManager(fragment->mChildFragmentManager);
                 }
                 else {
                     // AutoPtr<Activity> activity = (Activity*)mActivity;
@@ -968,7 +968,8 @@ ECode FragmentManagerImpl::MoveToState(
                                 f->SetActivity(NULL);
                                 f->SetParentFragment(NULL);
                                 f->SetFragmentManager(NULL);
-                                f->SetChildFragmentManager(NULL);
+                                Fragment* fragment = (Fragment*)f;
+                                fragment->mChildFragmentManager = NULL;
                             }
                         }
                     }

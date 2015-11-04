@@ -5,6 +5,9 @@
 #include "_Elastos_Droid_App_CFragmentHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IBundle;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
@@ -14,6 +17,10 @@ CarClass(CFragmentHelper)
     , public IFragmentHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Instantiate(
         /* [in] */ IContext* context,
         /* [in] */ const String& fname,
