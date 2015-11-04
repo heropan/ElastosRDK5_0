@@ -1,5 +1,7 @@
-
 #include "elastos/droid/location/Criteria.h"
+#include <elastos/core/StringBuilder.h>
+
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -18,20 +20,6 @@ Criteria::Criteria()
     , mSpeedRequired(FALSE)
     , mCostAllowed(FALSE)
 {
-}
-
-Criteria::Criteria(
-    /* [in] */ ICriteria* criteria)
-{
-    criteria->GetHorizontalAccuracy(&mHorizontalAccuracy);
-    criteria->GetVerticalAccuracy(&mVerticalAccuracy);
-    criteria->GetSpeedAccuracy(&mSpeedAccuracy);
-    criteria->GetBearingAccuracy(&mBearingAccuracy);
-    criteria->GetPowerRequirement(&mPowerRequirement);
-    criteria->IsAltitudeRequired(&mAltitudeRequired);
-    criteria->IsBearingRequired(&mBearingRequired);
-    criteria->IsSpeedRequired(&mSpeedRequired);
-    criteria->IsCostAllowed(&mCostAllowed);
 }
 
 ECode Criteria::constructor()
@@ -59,10 +47,8 @@ ECode Criteria::SetHorizontalAccuracy(
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("accuracy=" + accuracy);
     }
     mHorizontalAccuracy = accuracy;
-
     return NOERROR;
 }
 
@@ -71,7 +57,6 @@ ECode Criteria::GetHorizontalAccuracy(
 {
     VALIDATE_NOT_NULL(accuracy);
     *accuracy = mHorizontalAccuracy;
-
     return NOERROR;
 }
 
@@ -80,10 +65,8 @@ ECode Criteria::SetVerticalAccuracy(
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("accuracy=" + accuracy);
     }
     mVerticalAccuracy = accuracy;
-
     return NOERROR;
 }
 
@@ -92,7 +75,6 @@ ECode Criteria::GetVerticalAccuracy(
 {
     VALIDATE_NOT_NULL(accuracy);
     *accuracy = mVerticalAccuracy;
-
     return NOERROR;
 }
 
@@ -101,10 +83,8 @@ ECode Criteria::SetSpeedAccuracy(
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("accuracy=" + accuracy);
     }
     mSpeedAccuracy = accuracy;
-
     return NOERROR;
 }
 
@@ -113,7 +93,6 @@ ECode Criteria::GetSpeedAccuracy(
 {
     VALIDATE_NOT_NULL(accuracy);
     *accuracy = mSpeedAccuracy;
-
     return NOERROR;
 }
 
@@ -122,10 +101,8 @@ ECode Criteria::SetBearingAccuracy(
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("accuracy=" + accuracy);
     }
     mBearingAccuracy = accuracy;
-
     return NOERROR;
 }
 
@@ -134,7 +111,6 @@ ECode Criteria::GetBearingAccuracy(
 {
     VALIDATE_NOT_NULL(accuracy);
     *accuracy = mBearingAccuracy;
-
     return NOERROR;
 }
 
@@ -143,7 +119,6 @@ ECode Criteria::SetAccuracy(
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_COARSE) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("accuracy=" + accuracy);
     }
     if (accuracy == Criteria_ACCURACY_FINE) {
         mHorizontalAccuracy = Criteria_ACCURACY_HIGH;
@@ -151,7 +126,6 @@ ECode Criteria::SetAccuracy(
     else {
         mHorizontalAccuracy = Criteria_ACCURACY_LOW;
     }
-
     return NOERROR;
 }
 
@@ -166,7 +140,6 @@ ECode Criteria::GetAccuracy(
     else {
         *accuracy = Criteria_ACCURACY_COARSE;
     }
-
     return NOERROR;
 }
 
@@ -175,10 +148,8 @@ ECode Criteria::SetPowerRequirement(
 {
     if (level < Criteria_NO_REQUIREMENT || level > Criteria_POWER_HIGH) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("level=" + level);
     }
     mPowerRequirement = level;
-
     return NOERROR;
 }
 
@@ -187,7 +158,6 @@ ECode Criteria::GetPowerRequirement(
 {
     VALIDATE_NOT_NULL(requirement);
     *requirement = mPowerRequirement;
-
     return NOERROR;
 }
 
@@ -195,7 +165,6 @@ ECode Criteria::SetCostAllowed(
     /* [in] */ Boolean costAllowed)
 {
     mCostAllowed = costAllowed;
-
     return NOERROR;
 }
 
@@ -204,7 +173,6 @@ ECode Criteria::IsCostAllowed(
 {
     VALIDATE_NOT_NULL(costAllowed);
     *costAllowed = mCostAllowed;
-
     return NOERROR;
 }
 
@@ -212,7 +180,6 @@ ECode Criteria::SetAltitudeRequired(
     /* [in] */ Boolean altitudeRequired)
 {
     mAltitudeRequired = altitudeRequired;
-
     return NOERROR;
 }
 
@@ -221,7 +188,6 @@ ECode Criteria::IsAltitudeRequired(
 {
     VALIDATE_NOT_NULL(altitudeRequired);
     *altitudeRequired = mAltitudeRequired;
-
     return NOERROR;
 }
 
@@ -229,7 +195,6 @@ ECode Criteria::SetSpeedRequired(
     /* [in] */ Boolean speedRequired)
 {
     mSpeedRequired = speedRequired;
-
     return NOERROR;
 }
 
@@ -238,7 +203,6 @@ ECode Criteria::IsSpeedRequired(
 {
     VALIDATE_NOT_NULL(speedRequired);
     *speedRequired = mSpeedRequired;
-
     return NOERROR;
 }
 
@@ -246,7 +210,6 @@ ECode Criteria::SetBearingRequired(
     /* [in] */ Boolean bearingRequired)
 {
     mBearingRequired = bearingRequired;
-
     return NOERROR;
 }
 
@@ -255,15 +218,7 @@ ECode Criteria::IsBearingRequired(
 {
     VALIDATE_NOT_NULL(bearingRequired);
     *bearingRequired = mBearingRequired;
-
     return NOERROR;
-}
-
-ECode Criteria::GetDescription(
-    /* [out] */ String* str)
-{
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode Criteria::ReadFromParcel(
@@ -275,7 +230,6 @@ ECode Criteria::ReadFromParcel(
     source->ReadInt32(&mSpeedAccuracy);
     source->ReadInt32(&mBearingAccuracy);
     source->ReadInt32(&mPowerRequirement);
-
     return NOERROR;
 }
 
@@ -291,7 +245,6 @@ ECode Criteria::WriteToParcel(
     dest->WriteInt32(mBearingRequired ? 1 : 0);
     dest->WriteInt32(mSpeedRequired ? 1 : 0);
     dest->WriteInt32(mCostAllowed ? 1 : 0);
-
     return NOERROR;
 }
 
@@ -371,6 +324,22 @@ ECode Criteria::AccuracyToString(
                 return NOERROR;
             }
     }
+}
+
+ECode Criteria::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info)
+    StringBuilder s("Criteria[power=");
+    String str;
+    PowerToString(mPowerRequirement, &str);
+    s += str;
+    s += " acc=";
+    AccuracyToString(mHorizontalAccuracy, &str);
+    s += str;
+    s += ']';
+    *info = s.ToString();
+    return NOERROR;
 }
 
 }//namespace Location

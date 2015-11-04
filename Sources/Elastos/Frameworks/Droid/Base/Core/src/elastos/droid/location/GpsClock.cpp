@@ -1,14 +1,17 @@
 
 #include "elastos/droid/location/GpsClock.h"
+#include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 const String GpsClock::TAG("GpsClock");
 
 const Byte GpsClock::TYPE_UNKNOWN = 0;
@@ -18,13 +21,13 @@ const Byte GpsClock::TYPE_LOCAL_HW_TIME = 1;
 const Byte GpsClock::TYPE_GPS_TIME = 2;
 
 const Int16 GpsClock::HAS_NO_FLAGS = 0;
-const Int16 GpsClock::HAS_LEAP_SECOND = (1<<0);
-const Int16 GpsClock::HAS_TIME_UNCERTAINTY = (1<<1);
-const Int16 GpsClock::HAS_FULL_BIAS = (1<<2);
-const Int16 GpsClock::HAS_BIAS = (1<<3);
-const Int16 GpsClock::HAS_BIAS_UNCERTAINTY = (1<<4);
-const Int16 GpsClock::HAS_DRIFT = (1<<5);
-const Int16 GpsClock::HAS_DRIFT_UNCERTAINTY = (1<<6);
+const Int16 GpsClock::HAS_LEAP_SECOND = 1 << 0;
+const Int16 GpsClock::HAS_TIME_UNCERTAINTY = 1 << 1;
+const Int16 GpsClock::HAS_FULL_BIAS = 1 << 2;
+const Int16 GpsClock::HAS_BIAS = 1 << 3;
+const Int16 GpsClock::HAS_BIAS_UNCERTAINTY = 1 << 4;
+const Int16 GpsClock::HAS_DRIFT = 1 << 5;
+const Int16 GpsClock::HAS_DRIFT_UNCERTAINTY = 1 << 6;
 
 CAR_INTERFACE_IMPL_2(GpsClock, Object, IGpsClock, IParcelable)
 
@@ -35,7 +38,6 @@ GpsClock::GpsClock()
 
 ECode GpsClock::constructor()
 {
-    Initialize();
     return NOERROR;
 }
 
@@ -128,7 +130,7 @@ ECode GpsClock::SetLeapSecond(
 ECode GpsClock::ResetLeapSecond()
 {
     ResetFlag(HAS_LEAP_SECOND);
-    mLeapSecond = (Int16) 0x8000;//Short.MIN_VALUE;
+    mLeapSecond = Elastos::Core::Math::INT16_MIN_VALUE;
     return NOERROR;
 }
 
@@ -174,7 +176,7 @@ ECode GpsClock::SetTimeUncertaintyInNs(
 ECode GpsClock::ResetTimeUncertaintyInNs()
 {
     ResetFlag(HAS_TIME_UNCERTAINTY);
-    mTimeUncertaintyInNs = 0.0 / 0.0;//Double.NaN;
+    mTimeUncertaintyInNs = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -205,7 +207,7 @@ ECode GpsClock::SetFullBiasInNs(
 ECode GpsClock::ResetFullBiasInNs()
 {
     ResetFlag(HAS_FULL_BIAS);
-    mFullBiasInNs = 0x8000000000000000L;//Long.MIN_VALUE;
+    mFullBiasInNs = Elastos::Core::Math::INT64_MIN_VALUE;
     return NOERROR;
 }
 
@@ -235,7 +237,7 @@ ECode GpsClock::SetBiasInNs(
 ECode GpsClock::ResetBiasInNs()
 {
     ResetFlag(HAS_BIAS);
-    mBiasInNs = 0.0 / 0.0;//Double.NaN;
+    mBiasInNs = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -266,7 +268,7 @@ ECode GpsClock::SetBiasUncertaintyInNs(
 ECode GpsClock::ResetBiasUncertaintyInNs()
 {
     ResetFlag(HAS_BIAS_UNCERTAINTY);
-    mBiasUncertaintyInNs = 0.0/0.0;//Double.NaN;
+    mBiasUncertaintyInNs = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -297,7 +299,7 @@ ECode GpsClock::SetDriftInNsPerSec(
 ECode GpsClock::ResetDriftInNsPerSec()
 {
     ResetFlag(HAS_DRIFT);
-    mDriftInNsPerSec = 0.0/0.0;//Double.NaN;
+    mDriftInNsPerSec = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -328,7 +330,7 @@ ECode GpsClock::SetDriftUncertaintyInNsPerSec(
 ECode GpsClock::ResetDriftUncertaintyInNsPerSec()
 {
     ResetFlag(HAS_DRIFT_UNCERTAINTY);
-    mDriftUncertaintyInNsPerSec = 0.0/0.0;//Double.NaN;
+    mDriftUncertaintyInNsPerSec = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -359,41 +361,43 @@ ECode GpsClock::ToString(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info)
+#if 0 //To be translated
     const String format("   %-15s = %s\n");
     const String formatWithUncertainty("   %-15s = %-25s   %-26s = %s\n");
     StringBuilder builder("GpsClock:\n");
 
-    // builder.append(String.format(format, "Type", getTypeString()));
+    builder.append(String.format(format, "Type", getTypeString()));
 
-    // builder.append(String.format(format, "LeapSecond", hasLeapSecond() ? mLeapSecond : null));
+    builder.append(String.format(format, "LeapSecond", hasLeapSecond() ? mLeapSecond : null));
 
-    // builder.append(String.format(
-    //         formatWithUncertainty,
-    //         "TimeInNs",
-    //         mTimeInNs,
-    //         "TimeUncertaintyInNs",
-    //         hasTimeUncertaintyInNs() ? mTimeUncertaintyInNs : null));
+    builder.append(String.format(
+            formatWithUncertainty,
+            "TimeInNs",
+            mTimeInNs,
+            "TimeUncertaintyInNs",
+            hasTimeUncertaintyInNs() ? mTimeUncertaintyInNs : null));
 
-    // builder.append(String.format(
-    //         format,
-    //         "FullBiasInNs",
-    //         hasFullBiasInNs() ? mFullBiasInNs : null));
+    builder.append(String.format(
+            format,
+            "FullBiasInNs",
+            hasFullBiasInNs() ? mFullBiasInNs : null));
 
-    // builder.append(String.format(
-    //         formatWithUncertainty,
-    //         "BiasInNs",
-    //         hasBiasInNs() ? mBiasInNs : null,
-    //         "BiasUncertaintyInNs",
-    //         hasBiasUncertaintyInNs() ? mBiasUncertaintyInNs : null));
+    builder.append(String.format(
+            formatWithUncertainty,
+            "BiasInNs",
+            hasBiasInNs() ? mBiasInNs : null,
+            "BiasUncertaintyInNs",
+            hasBiasUncertaintyInNs() ? mBiasUncertaintyInNs : null));
 
-    // builder.append(String.format(
-    //         formatWithUncertainty,
-    //         "DriftInNsPerSec",
-    //         hasDriftInNsPerSec() ? mDriftInNsPerSec : null,
-    //         "DriftUncertaintyInNsPerSec",
-    //         hasDriftUncertaintyInNsPerSec() ? mDriftUncertaintyInNsPerSec : null));
+    builder.append(String.format(
+            formatWithUncertainty,
+            "DriftInNsPerSec",
+            hasDriftInNsPerSec() ? mDriftInNsPerSec : null,
+            "DriftUncertaintyInNsPerSec",
+            hasDriftUncertaintyInNsPerSec() ? mDriftUncertaintyInNsPerSec : null));
 
-    // return builder.toString();
+    return builder.toString();
+#endif
     return NOERROR;
 }
 
@@ -402,7 +406,7 @@ void GpsClock::Initialize()
     mFlags = HAS_NO_FLAGS;
     ResetLeapSecond();
     SetType(TYPE_UNKNOWN);
-    SetTimeInNs(0x8000000000000000L/*Long.MIN_VALUE*/);
+    SetTimeInNs(Elastos::Core::Math::Math::INT64_MIN_VALUE);
     ResetTimeUncertaintyInNs();
     ResetBiasInNs();
     ResetBiasUncertaintyInNs();

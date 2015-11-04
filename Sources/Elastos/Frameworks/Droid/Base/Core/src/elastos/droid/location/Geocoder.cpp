@@ -1,6 +1,6 @@
 
 #include "elastos/droid/location/Geocoder.h"
-#include "elastos/droid/location/GeocoderParams.h"
+#include "elastos/droid/location/CGeocoderParams.h"
 #include "elastos/droid/os/CServiceManager.h"
 
 using Elastos::Droid::Os::IServiceManager;
@@ -19,36 +19,12 @@ CAR_INTERFACE_IMPL(Geocoder, Object, IGeocoder);
 Geocoder::Geocoder()
 {}
 
-Geocoder::Geocoder(
-    /* [in] */ IContext* context,
-    /* [in] */ ILocale* locale)
-{
-    if (locale != NULL) {
-        AutoPtr<GeocoderParams> gp = new GeocoderParams(context, locale);
-        mParams = IGeocoderParams::Probe(gp);
-        AutoPtr<IServiceManager> serviceManager;
-        ASSERT_SUCCEEDED(CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager));
-        ASSERT_SUCCEEDED(serviceManager->GetService(IContext::LOCATION_SERVICE, (IInterface**)&mService));
-    }
-}
-
-Geocoder::Geocoder(
-    /* [in] */ IContext* context)
-{
-    AutoPtr<ILocaleHelper> localeHelper;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
-    AutoPtr<ILocale> locale;
-    localeHelper->GetDefault((ILocale**)&locale);
-    Geocoder(context, locale);
-}
-
 ECode Geocoder::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ILocale* locale)
 {
     if (locale != NULL) {
-        AutoPtr<GeocoderParams> gp = new GeocoderParams(context, locale);
-        mParams = IGeocoderParams::Probe(gp);
+        CGeocoderParams::New(context, locale, (IGeocoderParams**)&mParams);
         AutoPtr<IServiceManager> serviceManager;
         ASSERT_SUCCEEDED(CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager));
         ASSERT_SUCCEEDED(serviceManager->GetService(IContext::LOCATION_SERVICE, (IInterface**)&mService));

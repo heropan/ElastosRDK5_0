@@ -6,24 +6,11 @@ using Elastos::Utility::CLocale;
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 CAR_INTERFACE_IMPL_2(GeocoderParams, Object, IGeocoderParams, IParcelable)
 
 GeocoderParams::GeocoderParams()
-{
-}
-
-GeocoderParams::GeocoderParams(
-    /* [in] */ IContext* context,
-    /* [in] */ ILocale* locale)
-        : mLocale(locale)
-{
-    context->GetPackageName(&mPackageName);
-}
-
-ECode GeocoderParams::constructor()
-{
-    return NOERROR;
-}
+{}
 
 ECode GeocoderParams::constructor(
     /* [in] */ IContext* context,
@@ -48,17 +35,13 @@ ECode GeocoderParams::GetClientPackage(
 {
     VALIDATE_NOT_NULL(packageName);
     *packageName = mPackageName;
-
     return NOERROR;
 }
 
 ECode GeocoderParams::DescribeContents(
     /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
-
-    return NOERROR;
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode GeocoderParams::ReadFromParcel(
@@ -67,14 +50,11 @@ ECode GeocoderParams::ReadFromParcel(
     String language;
     String country;
     String variant;
-
     parcel->ReadString(&language);
     parcel->ReadString(&country);
     parcel->ReadString(&variant);
-
     CLocale::New(language, country, variant, (ILocale**)&mLocale);
     parcel->ReadString(&mPackageName);
-
     return NOERROR;
 }
 
@@ -82,17 +62,14 @@ ECode GeocoderParams::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
     VALIDATE_NOT_NULL(parcel);
-
     String language, country, variant;
     mLocale->GetLanguage(&language);
     mLocale->GetCountry(&country);
     mLocale->GetVariant(&variant);
-
     parcel->WriteString(language);
     parcel->WriteString(country);
     parcel->WriteString(variant);
     parcel->WriteString(mPackageName);
-
     return NOERROR;
 }
 

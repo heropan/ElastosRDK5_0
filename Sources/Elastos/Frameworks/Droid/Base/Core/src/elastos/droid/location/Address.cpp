@@ -2,13 +2,16 @@
 #include "elastos/droid/location/Address.h"
 #include "elastos/droid/os/CBundle.h"
 #include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::CLocale;
 using Elastos::Droid::Os::CBundle;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 CAR_INTERFACE_IMPL_2(Address, Object, IAddress, IParcelable)
 
 Address::Address()
@@ -20,15 +23,12 @@ Address::Address()
 
 Address::~Address()
 {
-    mAddressLines = NULL;
 }
-
 
 ECode Address::constructor(
     /* [in] */ ILocale* locale)
 {
     mLocale = locale;
-
     return NOERROR;
 }
 
@@ -38,7 +38,6 @@ ECode Address::GetLocale(
     VALIDATE_NOT_NULL(locale);
     *locale = mLocale;
     REFCOUNT_ADD(mLocale);
-
     return NOERROR;
 }
 
@@ -47,7 +46,6 @@ ECode Address::GetMaxAddressLineIndex(
 {
     VALIDATE_NOT_NULL(index);
     *index = mMaxAddressLineIndex;
-
     return NOERROR;
 }
 
@@ -58,7 +56,6 @@ ECode Address::GetAddressLine(
     VALIDATE_NOT_NULL(line);
     if (index < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("index = " + index + " < 0");
     }
 
     if (mAddressLines != NULL) {
@@ -70,7 +67,6 @@ ECode Address::GetAddressLine(
     else {
         *line = String(NULL);
     }
-
     return NOERROR;
 }
 
@@ -80,7 +76,6 @@ ECode Address::SetAddressLine(
 {
     if (index < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalArgumentException("index = " + index + " < 0");
     }
     if (mAddressLines == NULL) {
         mAddressLines = new HashMap<Int32, String>();
@@ -106,7 +101,6 @@ ECode Address::GetFeatureName(
 {
     VALIDATE_NOT_NULL(featureName);
     *featureName = mFeatureName;
-
     return NOERROR;
 }
 
@@ -114,7 +108,6 @@ ECode Address::SetFeatureName(
     /* [in] */ const String& featureName)
 {
     mFeatureName = featureName;
-
     return NOERROR;
 }
 
@@ -123,7 +116,6 @@ ECode Address::GetAdminArea(
 {
     VALIDATE_NOT_NULL(adminArea);
     *adminArea = mAdminArea;
-
     return NOERROR;
 }
 
@@ -131,7 +123,6 @@ ECode Address::SetAdminArea(
     /* [in] */ const String& adminArea)
 {
     mAdminArea = adminArea;
-
     return NOERROR;
 }
 
@@ -140,7 +131,6 @@ ECode Address::GetSubAdminArea(
 {
     VALIDATE_NOT_NULL(subAdminArea);
     *subAdminArea = mSubAdminArea;
-
     return NOERROR;
 }
 
@@ -148,7 +138,6 @@ ECode Address::SetSubAdminArea(
     /* [in] */ const String& subAdminArea)
 {
     mSubAdminArea = subAdminArea;
-
     return NOERROR;
 }
 
@@ -157,7 +146,6 @@ ECode Address::GetLocality(
 {
     VALIDATE_NOT_NULL(locality);
     *locality = mLocality;
-
     return NOERROR;
 }
 
@@ -165,7 +153,6 @@ ECode Address::SetLocality(
     /* [in] */ const String& locality)
 {
     mLocality = locality;
-
     return NOERROR;
 }
 
@@ -174,7 +161,6 @@ ECode Address::GetSubLocality(
 {
     VALIDATE_NOT_NULL(sublocality);
     *sublocality = mSubLocality;
-
     return NOERROR;
 }
 
@@ -182,7 +168,6 @@ ECode Address::SetSubLocality(
     /* [in] */ const String& sublocality)
 {
     mSubLocality = sublocality;
-
     return NOERROR;
 }
 
@@ -191,7 +176,6 @@ ECode Address::GetThoroughfare(
 {
     VALIDATE_NOT_NULL(thoroughfare);
     *thoroughfare = mThoroughfare;
-
     return NOERROR;
 }
 
@@ -199,7 +183,6 @@ ECode Address::SetThoroughfare(
     /* [in] */ const String& thoroughfare)
 {
     mThoroughfare = thoroughfare;
-
     return NOERROR;
 }
 
@@ -208,7 +191,6 @@ ECode Address::GetSubThoroughfare(
 {
     VALIDATE_NOT_NULL(subthoroughfare);
     *subthoroughfare = mSubThoroughfare;
-
     return NOERROR;
 }
 
@@ -216,7 +198,6 @@ ECode Address::SetSubThoroughfare(
     /* [in] */ const String& subthoroughfare)
 {
     mSubThoroughfare = subthoroughfare;
-
     return NOERROR;
 }
 
@@ -225,7 +206,6 @@ ECode Address::GetPremises(
 {
     VALIDATE_NOT_NULL(premises);
     *premises = mPremises;
-
     return NOERROR;
 }
 
@@ -233,7 +213,6 @@ ECode Address::SetPremises(
     /* [in] */ const String& premises)
 {
     mPremises = premises;
-
     return NOERROR;
 }
 
@@ -242,7 +221,6 @@ ECode Address::GetPostalCode(
 {
     VALIDATE_NOT_NULL(postalCode);
     *postalCode = mPostalCode;
-
     return NOERROR;
 }
 
@@ -250,7 +228,6 @@ ECode Address::SetPostalCode(
     /* [in] */ const String& postalCode)
 {
     mPostalCode = postalCode;
-
     return NOERROR;
 }
 
@@ -259,7 +236,6 @@ ECode Address::GetCountryCode(
 {
     VALIDATE_NOT_NULL(countryCode);
     *countryCode = mCountryCode;
-
     return NOERROR;
 }
 
@@ -267,7 +243,6 @@ ECode Address::SetCountryCode(
     /* [in] */ const String& countryCode)
 {
     mCountryCode = countryCode;
-
     return NOERROR;
 }
 
@@ -276,7 +251,6 @@ ECode Address::GetCountryName(
 {
     VALIDATE_NOT_NULL(countryName);
     *countryName = mCountryName;
-
     return NOERROR;
 }
 
@@ -284,7 +258,6 @@ ECode Address::SetCountryName(
     /* [in] */ const String& countryName)
 {
     mCountryName = countryName;
-
     return NOERROR;
 }
 
@@ -293,7 +266,6 @@ ECode Address::HasLatitude(
 {
     VALIDATE_NOT_NULL(hasLatitude);
     *hasLatitude = mHasLatitude;
-
     return NOERROR;
 }
 
@@ -301,14 +273,12 @@ ECode Address::GetLatitude(
     /* [out] */ Double* latitude)
 {
     VALIDATE_NOT_NULL(latitude);
-
     if (mHasLatitude) {
         *latitude = mLatitude;
         return NOERROR;
     }
     else {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalStateException();
     }
 }
 
@@ -317,14 +287,12 @@ ECode Address::SetLatitude(
 {
     mLatitude = latitude;
     mHasLatitude = TRUE;
-
     return NOERROR;
 }
 
 ECode Address::ClearLatitude()
 {
     mHasLatitude = FALSE;
-
     return NOERROR;
 }
 
@@ -333,7 +301,6 @@ ECode Address::HasLongitude(
 {
     VALIDATE_NOT_NULL(hasLongitude);
     *hasLongitude = mHasLongitude;
-
     return NOERROR;
 }
 
@@ -348,7 +315,6 @@ ECode Address::GetLongitude(
     }
     else {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//        throw new IllegalStateException();
     }
 }
 
@@ -357,14 +323,12 @@ ECode Address::SetLongitude(
 {
     mLongitude = longitude;
     mHasLongitude = TRUE;
-
     return NOERROR;
 }
 
 ECode Address::ClearLongitude()
 {
     mHasLongitude = FALSE;
-
     return NOERROR;
 }
 
@@ -373,7 +337,6 @@ ECode Address::GetPhone(
 {
     VALIDATE_NOT_NULL(phone);
     *phone = mPhone;
-
     return NOERROR;
 }
 
@@ -381,7 +344,6 @@ ECode Address::SetPhone(
     /* [in] */ const String& phone)
 {
     mPhone = phone;
-
     return NOERROR;
 }
 
@@ -390,7 +352,6 @@ ECode Address::GetUrl(
 {
     VALIDATE_NOT_NULL(url);
     *url = mUrl;
-
     return NOERROR;
 }
 
@@ -398,7 +359,6 @@ ECode Address::SetUrl(
     /* [in] */ const String& Url)
 {
     mUrl = Url;
-
     return NOERROR;
 }
 
@@ -408,7 +368,6 @@ ECode Address::GetExtras(
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras.Get();
     REFCOUNT_ADD(*extras);
-
     return NOERROR;
 }
 
@@ -421,15 +380,62 @@ ECode Address::SetExtras(
     else {
         mExtras = NULL;
     }
-
     return NOERROR;
 }
 
-ECode Address::GetDescription(
-    /* [out] */ String* str)
+ECode Address::ToString(
+    /* [out] */ String* result)
 {
-    // TODO: Add your code here
-    return E_NOT_IMPLEMENTED;
+    StringBuilder sb("Address[addressLines=[");
+    for (int i = 0; i <= mMaxAddressLineIndex; i++) {
+        if (i > 0) {
+            sb += ',';
+        }
+        sb += i;
+        sb += ':';
+        String line = (*mAddressLines)[i];
+        if (line.IsNull()) {
+            sb += "null";
+        } else {
+            sb += '\"';
+            sb += line;
+            sb += '\"';
+        }
+    }
+    sb += ']';
+    sb += ",feature=";
+    sb += mFeatureName;
+    sb += ",admin=";
+    sb += mAdminArea;
+    sb += ",sub-admin=";
+    sb += mSubAdminArea;
+    sb += ",locality=";
+    sb += mLocality;
+    sb += ",thoroughfare=";
+    sb += mThoroughfare;
+    sb += ",postalCode=";
+    sb += mPostalCode;
+    sb += ",countryCode=";
+    sb += mCountryCode;
+    sb += ",countryName=";
+    sb += mCountryName;
+    sb += ",hasLatitude=";
+    sb += mHasLatitude;
+    sb += ",latitude=";
+    sb += mLatitude;
+    sb += ",hasLongitude=";
+    sb += mHasLongitude;
+    sb += ",longitude=";
+    sb += mLongitude;
+    sb += ",phone=";
+    sb += mPhone;
+    sb += ",url=";
+    sb += mUrl;
+    sb += ",extras=";
+    sb += mExtras;
+    sb += ']';
+    *result = sb.ToString();
+    return NOERROR;
 }
 
 ECode Address::ReadFromParcel(

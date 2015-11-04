@@ -3,12 +3,9 @@
 #define __ELASTOS_DROID_LOCATION_GPSSTATUS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IIterable;
-using Elastos::Utility::EIID_IIterator;
-using Elastos::Utility::EIID_IIterable;
 
 namespace Elastos {
 namespace Droid {
@@ -21,6 +18,51 @@ class GpsStatus
     : public Object
     , public IGpsStatus
 {
+private:
+    class SatelliteIterator
+        : public Object
+        , public IIterator
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        SatelliteIterator(
+            /* [in] */ ArrayOf<IGpsSatellite* >* satellites);
+
+        CARAPI HasNext(
+            /* [out] */ Boolean* result);
+
+        //@Override
+        CARAPI GetNext(
+            /* [out] */ IInterface** object);
+
+        CARAPI Remove();
+
+    private:
+        AutoPtr<ArrayOf<IGpsSatellite* > > mSatellites;
+        Int32 mIndex;
+    };
+
+    class StatelliteList
+        : public Object
+        , public IIterable
+    {
+    public:
+        friend class GpsStatus;
+
+        CAR_INTERFACE_DECL()
+
+        StatelliteList(
+            /* [in] */ GpsStatus* host);
+
+        //@Override
+        CARAPI GetIterator(
+            /* [out] */ IIterator** it);
+
+    private:
+        GpsStatus* mHost;
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -83,59 +125,11 @@ public:
         /* [out] */ Int32* maxNumber);
 
 private:
-    class SatelliteIterator
-        : public Object
-        , public IIterator
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        SatelliteIterator(
-            /* [in] */ ArrayOf<IGpsSatellite* >* satellites);
-
-        CARAPI HasNext(
-            /* [out] */ Boolean* result);
-
-        //@Override
-        CARAPI GetNext(
-            /* [out] */ IInterface** object);
-
-        CARAPI GetNext(
-            /* [out] */ IGpsSatellite** object);
-
-        CARAPI Remove();
-
-    private:
-        AutoPtr<ArrayOf<IGpsSatellite* > > mSatellites;
-        Int32 mIndex;
-    };
-
-    class StatelliteList
-        : public Object
-        , public IIterable
-    {
-    public:
-        friend class GpsStatus;
-
-        CAR_INTERFACE_DECL()
-
-        StatelliteList(
-            /* [in] */ GpsStatus* host);
-
-        //@Override
-        CARAPI GetIterator(
-            /* [out] */ IIterator** it);
-
-    private:
-        AutoPtr<GpsStatus> mHost;
-    };
-
-private:
     static const Int32 NUM_SATELLITES = 255;
 
     /* These package private values are modified by the LocationManager class */
     Int32 mTimeToFirstFix;
-    AutoPtr<ArrayOf<IGpsSatellite*> > mSatellites;//GpsSatellite mSatellites[] = new GpsSatellite[NUM_SATELLITES];
+    AutoPtr<ArrayOf<IGpsSatellite*> > mSatellites;
     AutoPtr<IIterable> mSatelliteList;
 
 };

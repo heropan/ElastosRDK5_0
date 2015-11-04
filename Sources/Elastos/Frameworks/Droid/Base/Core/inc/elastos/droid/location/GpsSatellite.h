@@ -21,9 +21,6 @@ public:
 
     GpsSatellite();
 
-    GpsSatellite(
-        /* [in] */ Int32 prn);
-
     CARAPI constructor(
         /* [in] */ Int32 prn);
 

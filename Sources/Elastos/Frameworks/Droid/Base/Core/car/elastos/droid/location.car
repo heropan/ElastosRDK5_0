@@ -72,6 +72,12 @@ module
             constructor(
                 [in] ICountry* country);
 
+            //@private
+            constructor(
+                [in] String countryIso,
+                [in] Int32 source,
+                [in] Int64 timestamp);
+
             interface ICountry;
             interface IParcelable;
         }
@@ -119,8 +125,6 @@ module
 
         [deprecated, local]
         class CGeocoderParams {
-            constructor();
-
             constructor(
                 [in] IContext* ctx,
                 [in] ILocale* locale);
@@ -130,7 +134,6 @@ module
         }
 
         singleton class CGeofenceHelper {
-
             interface IGeofenceHelper;
         }
 

@@ -1,7 +1,6 @@
 
 #include "elastos/droid/location/Country.h"
 #include "elastos/droid/os/SystemClock.h"
-
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::ILocale;
@@ -13,25 +12,11 @@ namespace Droid {
 namespace Location {
 CAR_INTERFACE_IMPL_2(Country, Object, ICountry, IParcelable)
 
-Country::Country(
-    /* [in] */ const String& countryIso,
-    /* [in] */ const Int32 source)
+Country::Country()
+    : mSource(0)
+    , mHashCode(0)
+    , mTimestamp(0L)
 {
-    Init(countryIso, source);
-}
-
-Country::Country(
-    /* [in] */ const String& countryIso,
-    /* [in] */ const Int32 source,
-    /* [in] */ Int64 timestamp)
-{
-    Init(countryIso, source, timestamp);
-}
-
-Country::Country(
-    /* [in] */ ICountry* country)
-{
-    Init(country);
 }
 
 ECode Country::constructor()
@@ -41,20 +26,50 @@ ECode Country::constructor()
 
 ECode Country::constructor(
     /* [in] */ const String& countryIso,
-    /* [in] */ const Int32 source)
+    /* [in] */ Int32 source)
 {
-    return Init(countryIso, source);
+    if (countryIso.IsNull() || source < ICountry::COUNTRY_SOURCE_NETWORK
+            || source > ICountry::COUNTRY_SOURCE_LOCALE) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    //mCountryIso = countryIso.ToUpperCase(ILocale::US);
+    mCountryIso = countryIso.ToUpperCase();
+
+    mSource = source;
+    mTimestamp = SystemClock::GetElapsedRealtime();
+    return NOERROR;
+}
+
+ECode Country::constructor(
+    /* [in] */ const String& countryIso,
+    /* [in] */ Int32 source,
+    /* [in] */ Int64 timestamp)
+{
+    if (countryIso.IsNull() || source < ICountry::COUNTRY_SOURCE_NETWORK
+            || source > ICountry::COUNTRY_SOURCE_LOCALE) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    //mCountryIso = countryIso.ToUpperCase(Locale.US);
+    mCountryIso = countryIso.ToUpperCase();
+
+    mSource = source;
+    mTimestamp = timestamp;
+    return NOERROR;
 }
 
 ECode Country::constructor(
     /* [in] */ ICountry* country)
 {
-    return Init(country);
+    VALIDATE_NOT_NULL(country);
+    Country* _country = (Country*)country;
+
+    mCountryIso = _country->mCountryIso;
+    mSource = _country->mSource;
+    mTimestamp = _country->mTimestamp;
+
+    return NOERROR;
 }
 
-/**
- * @return the ISO 3166-1 two letters country code
- */
 ECode Country::GetCountryIso(
     /* [out] */ String* strOut)
 {
@@ -64,44 +79,19 @@ ECode Country::GetCountryIso(
     return NOERROR;
 }
 
-/**
- * @return where the country code came from, could be one of below values
- *         <p>
- *         <ul>
- *         <li>{@link #COUNTRY_SOURCE_NETWORK}</li>
- *         <li>{@link #COUNTRY_SOURCE_LOCATION}</li>
- *         <li>{@link #COUNTRY_SOURCE_SIM}</li>
- *         <li>{@link #COUNTRY_SOURCE_LOCALE}</li>
- *         </ul>
- */
 ECode Country::GetSource(
     /* [out] */ Int32* source)
 {
     VALIDATE_NOT_NULL(source);
     *source = mSource;
-
     return NOERROR;
 }
 
-/**
- * Returns the time that this object was created (which we assume to be the time that the source
- * was consulted).
- */
 ECode Country::GetTimestamp(
     /* [out] */ Int64* timestamp)
 {
     VALIDATE_NOT_NULL(timestamp);
     *timestamp = mTimestamp;
-
-    return NOERROR;
-}
-
-ECode Country::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
-
     return NOERROR;
 }
 
@@ -126,99 +116,68 @@ ECode Country::WriteToParcel(
     return NOERROR;
 }
 
-/**
- * Compare the specified country to this country object ignoring the source
- * and timestamp fields, return true if the countryIso fields are equal
- *
- * @param country the country to compare
- * @return true if the specified country's countryIso field is equal to this
- *         country's, false otherwise.
- */
+ECode Country::Equals(
+    /* [in] */ IInterface* object,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    if (object == THIS_PROBE(IInterface)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    AutoPtr<ICountry> c = ICountry::Probe(object);
+    if (c != NULL) {
+        // No need to check the equivalence of the timestamp
+        String str;
+        c->GetCountryIso(&str);
+        Int32 source;
+        c->GetSource(&source);
+        *result = mCountryIso.Equals(str) && mSource == source;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode Country::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    VALIDATE_NOT_NULL(hashCode)
+    Int32 hash = mHashCode;
+    if (hash == 0) {
+        hash = 17;
+        hash = hash * 13 + mCountryIso.GetHashCode();
+        hash = hash * 13 + mSource;
+        mHashCode = hash;
+    }
+    *hashCode = mHashCode;
+    return NOERROR;
+}
+
 ECode Country::EqualsIgnoreSource(
     /* [in] */ ICountry* country,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(country);
     VALIDATE_NOT_NULL(result);
-
-//    *result = country != NULL && mCountryIso.equals(country.getCountryIso());
-
+    String str;
+    country->GetCountryIso(&str);
+   *result = country != NULL && mCountryIso.Equals(str);
     return NOERROR;
 }
 
-//@Override
 ECode Country::ToString(
     /* [out] */ String* strOut)
 {
     VALIDATE_NOT_NULL(strOut);
-    //return "Country {ISO=" + mCountryIso + ", source=" + mSource + ", time=" + mTimestamp + "}";
-    // StringBuilder sbc("Country {ISO=");
-    // sbc.AppendString(mCountryIso);
-    // sbc.AppendCStr(", source=");
-    // sbc.AppendInt32(mSource);
-    // sbc.AppendCStr(", time=");
-    // sbc.AppendInt64(mTimestamp);
-    // sbc.AppendCStr("}");
-    // sbc.ToString(strOut);
-
-    return NOERROR;
-}
-
-ECode Country::Init(
-    /* [in] */ const String& countryIso,
-    /* [in] */ const Int32 source)
-{
-    //if (countryIso == null || source < COUNTRY_SOURCE_NETWORK
-    //        || source > COUNTRY_SOURCE_LOCALE) {
-    //    throw new IllegalArgumentException();
-    //}
-    if (countryIso.IsNullOrEmpty() || source < ICountry::COUNTRY_SOURCE_NETWORK
-            || source > ICountry::COUNTRY_SOURCE_LOCALE) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    //mCountryIso = countryIso.ToUpperCase(ILocale::US);
-    mCountryIso = countryIso.ToUpperCase();
-
-    mSource = source;
-    mTimestamp = SystemClock::GetElapsedRealtime();
-
-    return NOERROR;
-}
-
-ECode Country::Init(
-    /* [in] */ const String& countryIso,
-    /* [in] */ const Int32 source,
-    /* [in] */ Int64 timestamp)
-{
-    //if (countryIso == null || source < COUNTRY_SOURCE_NETWORK
-    //        || source > COUNTRY_SOURCE_LOCALE) {
-    //    throw new IllegalArgumentException();
-    //}
-    if (countryIso.IsNullOrEmpty() || source < ICountry::COUNTRY_SOURCE_NETWORK
-            || source > ICountry::COUNTRY_SOURCE_LOCALE) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    //mCountryIso = countryIso.ToUpperCase(Locale.US);
-    mCountryIso = countryIso.ToUpperCase();
-
-    mSource = source;
-    mTimestamp = timestamp;
-
-    return NOERROR;
-}
-
-ECode Country::Init(
-    /* [in] */ ICountry* country)
-{
-    VALIDATE_NOT_NULL(country);
-    Country* _country = (Country*)country;
-
-    mCountryIso = _country->mCountryIso;
-    mSource = _country->mSource;
-    mTimestamp = _country->mTimestamp;
-
+    StringBuilder sb("Country {ISO=");
+    sb += mCountryIso;
+    sb += ", source=";
+    sb += mSource;
+    sb += ", time=";
+    sb += mTimestamp;
+    sb += "}";
+    *strOut = sb.ToString();
     return NOERROR;
 }
 

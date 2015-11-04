@@ -8,11 +8,36 @@ namespace Elastos {
 namespace Droid {
 namespace Location {
 
+/**
+ * A data class representing a set of options to configure batching sessions.
+ * @hide
+ */
 class FusedBatchOptions
     : public Object
     , public IFusedBatchOptions
     , public IParcelable
 {
+public:
+    /**
+     * Definition of enum flag sets needed by this class.
+     * Such values need to be kept in sync with the ones in fused_location.h
+     */
+    class SourceTechnologies {
+    public:
+        static Int32 GNSS;
+        static Int32 WIFI;
+        static Int32 SENSORS;
+        static Int32 CELL;
+        static Int32 BLUETOOTH;
+    };
+
+    class BatchFlags {
+    public:
+        // follow the definitions to the letter in fused_location.h
+        static Int32 WAKEUP_ON_FIFO_FULL;
+        static Int32 CALLBACK_ON_LOCATION_FIX;
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -58,9 +83,6 @@ public:
     CARAPI GetFlags(
         /* [out] */ Int32* result);
 
-    CARAPI GetDescription(
-        /* [out] */ String* str);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
@@ -74,23 +96,6 @@ private:
 
     // the default value is set to request fixes at no cost
     Double mMaxPowerAllocationInMW;
-
-public:
-    class SourceTechnologies {
-    public:
-        static Int32 GNSS;// = 1<<0;
-        static Int32 WIFI;// = 1<<1;
-        static Int32 SENSORS;// = 1<<2;
-        static Int32 CELL;// = 1<<3;
-        static Int32 BLUETOOTH;// = 1<<4;
-    };
-
-    class BatchFlags {
-    public:
-        // follow the definitions to the letter in fused_location.h
-        static Int32 WAKEUP_ON_FIFO_FULL;// = 0x0000001;
-        static Int32 CALLBACK_ON_LOCATION_FIX;// =0x0000002;
-    };
 };
 
 }//namespace Location

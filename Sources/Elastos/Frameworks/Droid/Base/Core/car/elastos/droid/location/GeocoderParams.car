@@ -19,7 +19,6 @@ module
      * @ Involve interface IParcelable
      */
     interface IGeocoderParams {
-
         /**
          * returns the Geocoder's locale
          */

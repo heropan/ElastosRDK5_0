@@ -421,6 +421,7 @@ module
             [in] String key,
             [in] ILocation* value);
     }
+
     [deprecated]
     interface ILocationHelper {
         /**

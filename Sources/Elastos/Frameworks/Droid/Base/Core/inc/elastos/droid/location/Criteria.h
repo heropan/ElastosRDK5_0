@@ -18,9 +18,6 @@ public:
 
     Criteria();
 
-    Criteria(
-        /* [in] */ ICriteria* criteria);
-
     CARAPI constructor();
 
     CARAPI constructor(
@@ -130,14 +127,15 @@ public:
     CARAPI IsBearingRequired(
         /* [out] */ Boolean* bearingRequired);
 
-    CARAPI GetDescription(
-        /* [out] */ String* str);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
+
+    // @Override
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     static CARAPI PowerToString(

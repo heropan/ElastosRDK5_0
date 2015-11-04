@@ -1,4 +1,4 @@
-// IGeofenceProvider.car
+
 module
 {
     interface Elastos.Droid.Hardware.Location.IIGeofenceHardware;
@@ -16,7 +16,6 @@ module
     interface IIGeofenceProvider {
         SetGeofenceHardware(
             [in] IIGeofenceHardware* proxy);
-
     }
 
     } // namespace Location

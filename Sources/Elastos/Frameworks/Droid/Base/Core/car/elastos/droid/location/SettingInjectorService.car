@@ -1,9 +1,10 @@
-// SettingInjectorService.car
+
 module
 {
     namespace Elastos {
     namespace Droid {
     namespace Location {
+
     /**
      * @Involve
      * interface Elastos.Droid.App.IService

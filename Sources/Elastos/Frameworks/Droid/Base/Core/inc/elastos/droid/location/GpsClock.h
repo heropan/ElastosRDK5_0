@@ -8,6 +8,12 @@ namespace Elastos {
 namespace Droid {
 namespace Location {
 
+/**
+ * A class containing a GPS clock timestamp.
+ * It represents a measurement of the GPS receiver's clock.
+ *
+ * @hide
+ */
 class GpsClock
     : public Object
     , public IGpsClock

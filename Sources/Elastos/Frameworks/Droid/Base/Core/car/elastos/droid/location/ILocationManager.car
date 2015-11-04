@@ -21,8 +21,7 @@ module
      * @hide
      */
     [local,deprecated]
-    interface IILocationManager
-    {
+    interface IILocationManager {
         RequestLocationUpdates(
             [in] ILocationRequest* request,
             [in] IILocationListener* listener,

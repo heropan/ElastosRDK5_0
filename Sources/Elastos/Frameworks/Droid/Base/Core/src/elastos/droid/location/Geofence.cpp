@@ -8,6 +8,7 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 CAR_INTERFACE_IMPL_2(Geofence, Object, IGeofence, IParcelable)
 
 Geofence::Geofence()
@@ -17,17 +18,9 @@ Geofence::Geofence()
     , mRadius(0.0f)
 {}
 
-Geofence::Geofence(
-    /* [in] */ Double latitude,
-    /* [in] */ Double longitude,
-    /* [in] */ Float radius)
-    : mType(IGeofence::TYPE_HORIZONTAL_CIRCLE)
-    , mLatitude(latitude)
-    , mLongitude(longitude)
-    , mRadius(radius)
+ECode Geofence::constructor()
 {
-    CheckRadius(radius);
-    CheckLatLong(latitude, longitude);
+    return NOERROR;
 }
 
 ECode Geofence::CreateCircle(
@@ -42,12 +35,24 @@ ECode Geofence::CreateCircle(
     return NOERROR;
 }
 
+Geofence::Geofence(
+    /* [in] */ Double latitude,
+    /* [in] */ Double longitude,
+    /* [in] */ Float radius)
+    : mType(IGeofence::TYPE_HORIZONTAL_CIRCLE)
+    , mLatitude(latitude)
+    , mLongitude(longitude)
+    , mRadius(radius)
+{
+    CheckRadius(radius);
+    CheckLatLong(latitude, longitude);
+}
+
 ECode Geofence::GetType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type);
     *type = mType;
-
     return NOERROR;
 }
 
@@ -56,7 +61,6 @@ ECode Geofence::GetLatitude(
 {
     VALIDATE_NOT_NULL(latitude);
     *latitude = mLatitude;
-
     return NOERROR;
 }
 
@@ -65,7 +69,6 @@ ECode Geofence::GetLongitude(
 {
     VALIDATE_NOT_NULL(longitude);
     *longitude = mLongitude;
-
     return NOERROR;
 }
 
@@ -74,15 +77,6 @@ ECode Geofence::GetRadius(
 {
     VALIDATE_NOT_NULL(radius);
     *radius = mRadius;
-
-    return NOERROR;
-}
-
-ECode Geofence::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
     return NOERROR;
 }
 
@@ -103,7 +97,6 @@ ECode Geofence::ReadFromParcel(
 
     CheckRadius(radius);
     CheckLatLong(latitude, longitude);
-
     return NOERROR;
 }
 
@@ -115,7 +108,6 @@ ECode Geofence::WriteToParcel(
     parcel->WriteDouble(mLatitude);
     parcel->WriteDouble(mLongitude);
     parcel->WriteFloat(mRadius);
-
     return NOERROR;
 }
 
@@ -125,34 +117,39 @@ ECode Geofence::Equals(
 {
     VALIDATE_NOT_NULL(rst);
 
-    if(o == NULL) {
-        *rst = FALSE;
-        return NOERROR;
-    }
-    if(o->Probe(EIID_IGeofence) == NULL) {
-        *rst = FALSE;
-        return NOERROR;
-    }
-    IGeofence* obj = (IGeofence*)(o->Probe(EIID_IGeofence));
-    Geofence* other = (Geofence*)obj;
-    if (this == other) {
+    if (THIS_PROBE(IInterface) == o) {
         *rst = TRUE;
         return NOERROR;
     }
-
-    if (mRadius != other->mRadius) {
+    if (o == NULL) {
         *rst = FALSE;
         return NOERROR;
     }
-    if (mLatitude != other->mLatitude) {
+    if (IGeofence::Probe(o) == NULL) {
         *rst = FALSE;
         return NOERROR;
     }
-    if (mLongitude != other->mLongitude) {
+    AutoPtr<IGeofence> other = IGeofence::Probe(o);
+    Float other_mRadius;
+    other->GetRadius(&other_mRadius);
+    Double other_mLatitude, other_mLongitude;
+    other->GetLatitude(&other_mLatitude);
+    other->GetLongitude(&other_mLongitude);
+    Int32 other_mType;
+    other->GetType(&other_mType);
+    if (mRadius != other_mRadius) {
         *rst = FALSE;
         return NOERROR;
     }
-    if (mType != other->mType) {
+    if (mLatitude != other_mLatitude) {
+        *rst = FALSE;
+        return NOERROR;
+    }
+    if (mLongitude != other_mLongitude) {
+        *rst = FALSE;
+        return NOERROR;
+    }
+    if (mType != other_mType) {
         *rst = FALSE;
         return NOERROR;
     }
@@ -184,7 +181,9 @@ ECode Geofence::ToString(
 {
     VALIDATE_NOT_NULL(strOut);
     StringBuilder sbc("Geofence[");
-    sbc += TypeToString(mType);
+    String str;
+    TypeToString(mType, &str);
+    sbc += str;
     sbc += " ";
     sbc += mLatitude;
     sbc += ", ";
@@ -200,54 +199,54 @@ ECode Geofence::ToString(
     return NOERROR;
 }
 
-void Geofence::CheckRadius(
+ECode Geofence::CheckRadius(
     /* [in] */ Float radius)
 {
     if (radius <= 0) {
-    //    throw new IllegalArgumentException("invalid radius: " + radius);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
-void Geofence::CheckLatLong(
+ECode Geofence::CheckLatLong(
     /* [in] */ Double latitude,
     /* [in] */ Double longitude)
 {
     if (latitude > 90.0 || latitude < -90.0) {
-    //    throw new IllegalArgumentException("invalid latitude: " + latitude);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (longitude > 180.0 || longitude < -180.0) {
-    //    throw new IllegalArgumentException("invalid longitude: " + longitude);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
-void Geofence::CheckType(
+ECode Geofence::CheckType(
     /* [in] */ Int32 type)
 {
     if (type != TYPE_HORIZONTAL_CIRCLE) {
-    //    throw new IllegalArgumentException("invalid type: " + type);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
-String Geofence::TypeToString(
-    /* [in] */ Int32 type)
+ECode Geofence::TypeToString(
+    /* [in] */ Int32 type,
+    /* [out] */ String* result)
 {
-    String str;
     switch (type) {
         case IGeofence::TYPE_HORIZONTAL_CIRCLE:
-            {
-                str = "CIRCLE";
-                return str;
-            }
-
+        {
+            *result = "CIRCLE";
+            return NOERROR;
+        }
         default:
+        {
             CheckType(type);
-            str = "";
-            return str;
+            *result = "";
+            return NOERROR;
+        }
     }
 }
 

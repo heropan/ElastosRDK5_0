@@ -18,30 +18,10 @@ GpsSatellite::GpsSatellite()
 {
 }
 
-GpsSatellite::GpsSatellite(
-    /* [in] */ Int32 prn)
-    : mValid(FALSE)
-    , mHasEphemeris(FALSE)
-    , mHasAlmanac(FALSE)
-    , mUsedInFix(FALSE)
-    , mPrn(prn)
-    , mSnr(0.0f)
-    , mElevation(0.0f)
-    , mAzimuth(0.0f)
-{
-}
-
 ECode GpsSatellite::constructor(
     /* [in] */ Int32 prn)
 {
-    mValid = FALSE;
-    mHasEphemeris = FALSE;
-    mHasAlmanac = FALSE;
-    mUsedInFix = FALSE;
     mPrn = prn;
-    mSnr = 0.0f;
-    mElevation = 0.0f;
-    mAzimuth = 0.0f;
     return NOERROR;
 }
 
@@ -49,36 +29,13 @@ ECode GpsSatellite::SetStatus(
     /* [in] */ IGpsSatellite* satellite)
 {
     VALIDATE_NOT_NULL(satellite);
-
-    PFL_EX("DEBUG")
-    Boolean valid;
-    satellite->IsValid(&valid);
-    mValid = valid;
-
-    Boolean hasEphemeris;
-    satellite->HasEphemeris(&hasEphemeris);
-    mHasEphemeris = hasEphemeris;
-
-    Boolean hasAlmanac;
-    satellite->HasAlmanac(&hasAlmanac);
-    mHasAlmanac = hasAlmanac;
-
-    Boolean usedInFix;
-    satellite->UsedInFix(&usedInFix);
-    mUsedInFix = usedInFix;
-
-    Float snr;
-    satellite->GetSnr(&snr);
-    mSnr = snr;
-
-    Float elevation;
-    satellite->GetElevation(&elevation);
-    mElevation = elevation;
-
-    Float azimuth;
-    satellite->GetAzimuth(&azimuth);
-    mAzimuth = azimuth;
-
+    satellite->IsValid(&mValid);
+    satellite->HasEphemeris(&mHasEphemeris);
+    satellite->HasAlmanac(&mHasAlmanac);
+    satellite->UsedInFix(&mUsedInFix);
+    satellite->GetSnr(&mSnr);
+    satellite->GetElevation(&mElevation);
+    satellite->GetAzimuth(&mAzimuth);
     return NOERROR;
 }
 

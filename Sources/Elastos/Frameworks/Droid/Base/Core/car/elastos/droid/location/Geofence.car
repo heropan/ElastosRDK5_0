@@ -35,7 +35,6 @@ module
     }
 
     interface IGeofenceHelper {
-
         /**
          * Create a circular geofence (on a flat, horizontal plane).
          *
