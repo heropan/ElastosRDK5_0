@@ -1,9 +1,12 @@
 
 #include "elastos/droid/webkit/webview/chromium/UnimplementedWebViewApi.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::IThrowable;
 using Elastos::Core::CThrowable;
 using Elastos::Core::IStackTraceElement;
+using Elastos::Core::IThrowable;
+using Elastos::Utility::Logging::Logger;
+
 
 namespace Elastos {
 namespace Droid {
@@ -53,8 +56,9 @@ ECode UnimplementedWebViewApi::Invoke()
     }
     else {
         if (FULL_TRACE) {
-            // Log.w(TAG, "Unimplemented WebView method called in: " +
-            //       Log.getStackTraceString(new Throwable()));
+            assert(0);
+            Logger::W(TAG, String("Unimplemented WebView method called in: "));// +
+                // Log.getStackTraceString(new Throwable()));
         }
         else {
             AutoPtr<IThrowable> throwable;
@@ -65,10 +69,17 @@ ECode UnimplementedWebViewApi::Invoke()
             // The stack trace [0] index is this method (invoke()).
             AutoPtr<IStackTraceElement> unimplementedMethod = (*trace)[1];
             AutoPtr<IStackTraceElement> caller = (*trace)[2];
-            // Log.w(TAG, "Unimplemented WebView method " + unimplementedMethod.getMethodName() +
-            //         " called from: " + caller.toString());
+
+            String methodName;
+            //unimplementedMethod->GetMethodName(&methodName);
+            IObject* objTmp = IObject::Probe(caller);
+            String callerStr;
+            objTmp->ToString(&callerStr);
+            Logger::W(TAG, String("Unimplemented WebView method ") + methodName +
+                String(" called from: ") + callerStr);
         }
     }
+
     return NOERROR;
 }
 

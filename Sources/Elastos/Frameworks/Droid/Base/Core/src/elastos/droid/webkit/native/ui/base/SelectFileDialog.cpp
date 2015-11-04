@@ -1,35 +1,35 @@
 
-#include "elastos/droid/webkit/native/ui/base/SelectFileDialog.h"
-#include "elastos/droid/webkit/native/ui/api/SelectFileDialog_dec.h"
-#include "elastos/utility/Arrays.h"
-#include "elastos/core/IntegralToString.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/os/CEnvironment.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
+#include "elastos/droid/webkit/native/ui/base/SelectFileDialog.h"
+#include "elastos/droid/webkit/native/ui/api/SelectFileDialog_dec.h"
+#include "elastos/core/IntegralToString.h"
+#include "elastos/utility/Arrays.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::IntegralToString;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Os::IEnvironment;
+using Elastos::Droid::Provider::IMediaStore;
+using Elastos::Droid::Provider::IMediaStoreAudioMedia;
+using Elastos::Droid::Provider::IMediaStoreMediaColumns;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Webkit::Base::ContentUriUtils;
 using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IntegralToString;
+using Elastos::Core::ISystem;
+using Elastos::IO::CFile;
+using Elastos::IO::CFileHelper;
+using Elastos::IO::IFile;
+using Elastos::IO::IFileHelper;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::CArrayList;
-using Elastos::IO::IFile;
-using Elastos::IO::CFile;
-using Elastos::IO::IFileHelper;
-using Elastos::IO::CFileHelper;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Os::IEnvironment;
-using Elastos::Droid::Os::CEnvironment;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Provider::IMediaStore;
-using Elastos::Droid::Provider::IMediaStoreMediaColumns;
-using Elastos::Droid::Provider::IMediaStoreAudioMedia;
-using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Webkit::Base::ContentUriUtils;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -78,11 +78,11 @@ ECode SelectFileDialog::GetDisplayNameTask::DoInBackground(
 
     String sTmp;
     for (Int32 i = 0; i < params->GetLength(); ++i) {
-        AutoPtr<ICharSequence> charSequecneTmp = ICharSequence::Probe((*params)[i]);
+        ICharSequence* charSequecneTmp = ICharSequence::Probe((*params)[i]);
         charSequecneTmp->ToString(&sTmp);
         mFilePaths->Set(i, sTmp);
 
-        AutoPtr<IUri> uriTmp = IUri::Probe((*params)[i]);
+        IUri* uriTmp = IUri::Probe((*params)[i]);
         sTmp = ContentUriUtils::GetDisplayName(uriTmp, mContentResolver, IMediaStoreMediaColumns::DISPLAY_NAME);
         AutoPtr<ICharSequence> charSequenceTmp1;
         CString::New(sTmp, (ICharSequence**)&charSequenceTmp1);
@@ -105,10 +105,10 @@ ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
 
     assert(NULL == mOwner);
     if (!mIsMultiple) {
-        AutoPtr<IList> list = IList::Probe(result);
+        IList* list = IList::Probe(result);
         AutoPtr<IInterface> interfaceTmp;
         list->Get(0, (IInterface**)&interfaceTmp);
-        AutoPtr<ICharSequence> charSequecneTmp = ICharSequence::Probe(interfaceTmp);
+        ICharSequence* charSequecneTmp = ICharSequence::Probe(interfaceTmp);
         String displayName;
         charSequecneTmp->ToString(&displayName);
         mOwner->NativeOnFileSelected(mOwner->mNativeSelectFileDialog, (*mFilePaths)[0], displayName);
@@ -207,7 +207,7 @@ ECode SelectFileDialog::OnIntentCompleted(
     results->GetScheme(&scheme);
     if (IContentResolver::SCHEME_CONTENT == scheme) {
         AutoPtr<GetDisplayNameTask> task = new GetDisplayNameTask(this, contentResolver, FALSE);
-        AutoPtr<IRunnable> runnable = IRunnable::Probe(url);
+        IRunnable* runnable = IRunnable::Probe(url);
         task->Execute(runnable);
         return NOERROR;
     }
@@ -597,13 +597,12 @@ void SelectFileDialog::SelectFile(
     /* [in] */ Boolean capture,
     /* [in] */ IInterface* window)
 {
-    AutoPtr<SelectFileDialog> mObj = (SelectFileDialog*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    SelectFileDialog* mObj = (SelectFileDialog*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("SelectFileDialog", "SelectFileDialog::SelectFile, mObj is NULL");
         return;
     }
-    AutoPtr<WindowElastos> w = (WindowElastos*)(IObject::Probe(window));
+    WindowElastos* w = (WindowElastos*)(IObject::Probe(window));
     mObj->SelectFile(fileTypes, capture, w);
 }
 

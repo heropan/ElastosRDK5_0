@@ -18,7 +18,7 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_GEOLOCATIONPERMISSIONSADAPTER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/webkit/GeolocationPermissions.h"
+#include "elastos/droid/webkit/GeolocationPermissions.h"
 #include "elastos/droid/webkit/native/android_webview/AwGeolocationPermissions.h"
 
 // package com.android.webview.chromium;
@@ -27,9 +27,9 @@
 // import org.chromium.android_webview.AwGeolocationPermissions;
 // import java.util.Set;
 
-//using Elastos::Droid::Webkit::IValueCallback;
-//using Elastos::Droid::Webkit::GeolocationPermissions;
 using Elastos::Droid::Webkit::AndroidWebview::AwGeolocationPermissions;
+using Elastos::Droid::Webkit::GeolocationPermissions;
+using Elastos::Droid::Webkit::IValueCallback;
 
 namespace Elastos {
 namespace Droid {
@@ -42,8 +42,7 @@ namespace Chromium {
   * chromium internal implementation.
   */
 class GeolocationPermissionsAdapter
-    : public Object
-    //, public GeolocationPermissions
+    : public GeolocationPermissions
 {
 public:
     GeolocationPermissionsAdapter(
@@ -63,11 +62,11 @@ public:
     // @Override
     CARAPI GetAllowed(
         /* [in] */ const String& origin,
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     CARAPI GetOrigins(
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
 private:
     AutoPtr<AwGeolocationPermissions> mChromeGeolocationPermissions;

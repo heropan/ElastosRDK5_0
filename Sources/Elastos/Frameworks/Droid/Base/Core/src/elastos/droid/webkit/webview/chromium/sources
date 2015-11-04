@@ -1,5 +1,5 @@
 TARGET_NAME = chromium
-TARGET_TYPE = lib
+TARGET_TYPE = lib 
 
 include $(MAKEDIR)/../../../../../../../../sources.inc
 
@@ -7,9 +7,13 @@ INCLUDES += ../../../
 INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
+#CAR_FLAGS += -u
+#LUBE_FLAGS += -n -u
+#EXPORT_ALL_SYMBOLS = 1
 
 SOURCES = ContentSettingsAdapter.cpp
 SOURCES += CookieManagerAdapter.cpp 
+SOURCES += DebugFlags.cpp
 SOURCES += DrawGLFunctor.cpp 
 SOURCES += FileChooserParamsAdapter.cpp
 SOURCES += GeolocationPermissionsAdapter.cpp
@@ -22,5 +26,23 @@ SOURCES += WebIconDatabaseAdapter.cpp
 SOURCES += WebStorageAdapter.cpp
 SOURCES += WebViewChromium.cpp
 SOURCES += WebViewChromiumFactoryProvider.cpp
+SOURCES += CWebViewChromiumFactoryProvider.cpp
 SOURCES += WebViewContentsClientAdapter.cpp
 SOURCES += WebViewDatabaseAdapter.cpp
+
+LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+LIBRARIES += $(XDK_USER_LIB)/DroidRuntime.lib
+LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
+#LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+#LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+LIBRARIES += $(PREBUILD_LIB)/libm.a
+LIBRARIES += $(PREBUILD_LIB)/libxml2.a
+LIBRARIES += $(PREBUILD_LIB)/libstdc++.a
+LIBRARIES += $(PREBUILD_LIB)/cxx-stl/gnu-libstdc++/armeabi/libstdc++.a
+LIBRARIES += $(PREBUILD_LIB)/libc++.a
+LIBRARIES += $(PREBUILD_LIB)/libstagefright_amrnbenc.a
+
+#LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -landroidfw -lselinux -lz -lusbhost 
+#LIBRARIES += -lnativebridge -lprocessgroup -lmtp -lexif -lmedia -lcamera_client -lminikin -lhwui -lgui -lsoundtrigger -lhardware_legacy -lelwebviewchromium
+
+#APPPACK = 1

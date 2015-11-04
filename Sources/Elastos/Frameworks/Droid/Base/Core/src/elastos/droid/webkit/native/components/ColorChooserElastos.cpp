@@ -133,9 +133,8 @@ ECode ColorChooserElastos::NativeOnColorChosen(
 void ColorChooserElastos::CloseColorChooser(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ColorChooserElastos> mObj = (ColorChooserElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ColorChooserElastos* mObj = (ColorChooserElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ColorChooserElastos", "ColorChooserElastos::CloseColorChooser, mObj is NULL");
         return;
     }
@@ -148,7 +147,7 @@ AutoPtr<IInterface> ColorChooserElastos::CreateColorChooserElastos(
     /* [in] */ Int32 initialColor,
     /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
-    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    ContentViewCore* cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
     return TO_IINTERFACE(CreateColorChooserElastos(nativeColorChooserElastos, cvc, initialColor, suggestions));
 }
 

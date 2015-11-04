@@ -18,7 +18,6 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_FILECHOOSERPARAMSADAPTER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/webkit/WebChromeClient.h"
 #include "elastos/droid/webkit/native/android_webview/AwContentsClient.h"
 
 // package com.android.webview.chromium;
@@ -29,12 +28,12 @@
 // import android.webkit.WebChromeClient.FileChooserParams;
 // import org.chromium.android_webview.AwContentsClient;
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Net::IUri;
-//using Elastos::Droid::Webkit::WebChromeClient;
 using Elastos::Droid::Webkit::AndroidWebview::AwContentsClient;
+using Elastos::Droid::Webkit::IWebChromeClientFileChooserParams;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -44,9 +43,11 @@ namespace Chromium {
 
 class FileChooserParamsAdapter
     : public Object
-    //, public WebChromeClient::FileChooserParams
+    , public IWebChromeClientFileChooserParams
 {
 public:
+    CAR_INTERFACE_DECL()
+
     FileChooserParamsAdapter(
         /* [in] */ AwContentsClient::FileChooserParams* params,
         /* [in] */ IContext* context);

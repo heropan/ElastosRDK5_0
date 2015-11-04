@@ -17,9 +17,9 @@
 // import org.chromium.base.JNINamespace;
 // import org.chromium.ui.R;
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IClipData;
 using Elastos::Droid::Content::IClipboardManager;
+using Elastos::Droid::Content::IClipData;
+using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
 namespace Droid {

@@ -1,10 +1,12 @@
 
-#include "elastos/droid/webkit/webview/chromium/FileChooserParamsAdapter.h"
 #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/webkit/webview/chromium/FileChooserParamsAdapter.h"
+#include "elastos/core/StringUtils.h"
 
-using Elastos::Core::CString;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +17,8 @@ namespace Chromium {
 //=====================================================================
 //                       FileChooserParamsAdapter
 //=====================================================================
+CAR_INTERFACE_IMPL(FileChooserParamsAdapter, Object, IWebChromeClientFileChooserParams)
+
 FileChooserParamsAdapter::FileChooserParamsAdapter(
     /* [in] */ AwContentsClient::FileChooserParams* params,
     /* [in] */ IContext* context)
@@ -89,8 +93,7 @@ ECode FileChooserParamsAdapter::GetAcceptTypes(
         REFCOUNT_ADD(*acceptTypes);
     }
     else {
-        //*acceptTypes = mParams->acceptTypes.split(";");
-        //REFCOUNT_ADD(*acceptTypes);
+        StringUtils::Split(mParams->acceptTypes, String(";"), acceptTypes);
     }
 
     return NOERROR;
@@ -152,7 +155,11 @@ ECode FileChooserParamsAdapter::CreateIntent(
 
     String mimeType("*/*");
     if (!mParams->acceptTypes.Trim().IsEmpty()) {
-        mimeType = mParams->acceptTypes;//.Split(";")[0];
+        AutoPtr< ArrayOf<String> > arrayTmp;
+        StringUtils::Split(mParams->acceptTypes, String(";"), (ArrayOf<String>**)&arrayTmp);
+        if (arrayTmp->GetLength() > 0) {
+            mimeType = (*arrayTmp)[0];
+        }
     }
 
     AutoPtr<IIntent> i;
@@ -162,7 +169,6 @@ ECode FileChooserParamsAdapter::CreateIntent(
 
     *intent = i;
     REFCOUNT_ADD(*intent);
-
     return NOERROR;
 }
 

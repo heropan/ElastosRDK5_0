@@ -1,19 +1,19 @@
 
 #include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 #include "elastos/droid/webkit/native/ui/api/WindowElastos_dec.h"
-#include <elastos/utility/logging/Logger.h>
 //#include "elastos/droid/widget/CToastHelper.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Widget::IToast;
-using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 //using Elastos::Droid::Widget::CToastHelper;
-using Elastos::IO::ISerializable;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IInteger32;
+using Elastos::Droid::Widget::IToast;
+using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::IO::ISerializable;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
 
@@ -109,7 +109,10 @@ Int32 WindowElastos::ShowCancelableIntent(
     // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
     // return START_INTENT_FAILURE;
 
-    // Logger::D(TAG, "Can't show intent as context is not an Activity: " + intent);
+    String intentStr;
+    IObject* objTmp = IObject::Probe(intent);
+    objTmp->ToString(&intentStr);
+    Logger::D(TAG, String("Can't show intent as context is not an Activity: ") + intentStr);
     return START_INTENT_FAILURE;
 }
 
@@ -122,7 +125,10 @@ Int32 WindowElastos::ShowCancelableIntent(
     // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
     // return START_INTENT_FAILURE;
 
-    // Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
+    String intentStr;
+    IObject* objTmp = IObject::Probe(intent);
+    objTmp->ToString(&intentStr);
+    Logger::D(TAG, String("Can't show intent as context is not an Activity: ") + intentStr);
     return START_INTENT_FAILURE;
 }
 
@@ -132,7 +138,7 @@ ECode WindowElastos::CancelIntent(
     // ==================before translated======================
     // Log.d(TAG, "Can't cancel intent as context is not an Activity: " + requestCode);
 
-    // Log.d(TAG, "Can't cancel intent as context is not an Activity: " + requestCode);
+    Logger::D(TAG, "Can't cancel intent as context is not an Activity: %d", requestCode);
     return NOERROR;
 }
 
@@ -230,7 +236,7 @@ ECode WindowElastos::SaveInstanceState(
     // ==================before translated======================
     // bundle.putSerializable(WINDOW_CALLBACK_ERRORS, mIntentErrors);
 
-    AutoPtr<ISerializable> serialize = ISerializable::Probe(mIntentErrors);
+    ISerializable* serialize = ISerializable::Probe(mIntentErrors);
     bundle->PutSerializable(WINDOW_CALLBACK_ERRORS, (ISerializable*)serialize);
     return NOERROR;
 }
@@ -254,7 +260,7 @@ ECode WindowElastos::RestoreInstanceState(
     bundle->GetSerializable(WINDOW_CALLBACK_ERRORS, (ISerializable**)&errors);
 
     IInterface* interfaceTmp = (IInterface*)errors;
-    AutoPtr<IHashMap> hashMap = IHashMap::Probe(interfaceTmp);
+    IHashMap* hashMap = IHashMap::Probe(interfaceTmp);
     if (hashMap != NULL) {
         mIntentErrors = hashMap;
     }
@@ -359,9 +365,8 @@ ECode WindowElastos::NativeDestroy(
 void WindowElastos::RequestVSyncUpdate(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<WindowElastos> mObj = (WindowElastos*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    WindowElastos* mObj = (WindowElastos*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E(TAG, "WindowElastos::RequestVSyncUpdate, mObj is NULL");
         return;
     }

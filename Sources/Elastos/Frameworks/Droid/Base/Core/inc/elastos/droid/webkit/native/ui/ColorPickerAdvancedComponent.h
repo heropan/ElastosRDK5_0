@@ -18,11 +18,11 @@
 // import android.widget.TextView;
 // import org.chromium.base.ApiCompatibilityUtils;
 
+using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::ISeekBar;
-using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
-using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
+using Elastos::Droid::Widget::ITextView;
 
 namespace Elastos {
 namespace Droid {

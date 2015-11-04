@@ -18,8 +18,8 @@
 // import org.chromium.base.JNINamespace;
 // import org.chromium.ui.R;
 
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentCallbacks;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::View::IViewConfiguration;
 

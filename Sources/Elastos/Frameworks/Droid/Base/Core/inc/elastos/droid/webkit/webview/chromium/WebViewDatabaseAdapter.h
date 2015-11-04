@@ -27,9 +27,9 @@
 // import org.chromium.android_webview.AwFormDatabase;
 // import org.chromium.android_webview.HttpAuthDatabase;
 
-//using Elastos::Droid::Webkit::IWebViewDatabase;
 using Elastos::Droid::Webkit::AndroidWebview::AwFormDatabase;
 using Elastos::Droid::Webkit::AndroidWebview::HttpAuthDatabase;
+using Elastos::Droid::Webkit::IWebViewDatabase;
 
 namespace Elastos {
 namespace Droid {
@@ -43,27 +43,32 @@ namespace Chromium {
   */
 class WebViewDatabaseAdapter
     : public Object
-    //, public IWebViewDatabase
+    , public IWebViewDatabase
 {
 public:
+    CAR_INTERFACE_DECL()
+
     WebViewDatabaseAdapter(
         /* [in] */ AwFormDatabase* formDatabase,
         /* [in] */ HttpAuthDatabase* httpAuthDatabase);
 
     // @Override
-    CARAPI_(Boolean) HasUsernamePassword();
+    CARAPI HasUsernamePassword(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI ClearUsernamePassword();
 
     // @Override
-    CARAPI_(Boolean) HasHttpAuthUsernamePassword();
+    CARAPI HasHttpAuthUsernamePassword(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI ClearHttpAuthUsernamePassword();
 
     // @Override
-    CARAPI_(Boolean) HasFormData();
+    CARAPI HasFormData(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI ClearFormData();

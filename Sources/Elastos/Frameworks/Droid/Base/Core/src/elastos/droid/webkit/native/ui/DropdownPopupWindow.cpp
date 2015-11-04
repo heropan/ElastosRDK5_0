@@ -1,19 +1,19 @@
 
-#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
-#include "elastos/core/Math.h"
 //#include "elastos/droid/view/View.h"
+#include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
 //#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/core/Math.h"
 
-using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
-using Elastos::Droid::Widget::IListView;
-//using Elastos::Droid::View::View;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+//using Elastos::Droid::View::View;
 //using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
+using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
+using Elastos::Droid::Widget::IListView;
 
 namespace Elastos {
 namespace Droid {
@@ -293,7 +293,7 @@ Int32 DropdownPopupWindow::MeasureContentWidth()
         AutoPtr<ILinearLayoutLayoutParams> params;
         //CLinearLayoutLayoutParams::New(ILinearLayoutLayoutParams::WRAP_CONTENT, ILinearLayoutLayoutParams::WRAP_CONTENT, (ILinearLayoutLayoutParams**)&params);
 
-        AutoPtr<IViewGroupLayoutParams> layoutParamsTmp = IViewGroupLayoutParams::Probe(params);
+        IViewGroupLayoutParams* layoutParamsTmp = IViewGroupLayoutParams::Probe(params);
         itemView->SetLayoutParams(layoutParamsTmp);
         itemView->Measure(widthMeasureSpec, heightMeasureSpec);
         itemView->GetMeasuredWidth(&mearsureWidth);

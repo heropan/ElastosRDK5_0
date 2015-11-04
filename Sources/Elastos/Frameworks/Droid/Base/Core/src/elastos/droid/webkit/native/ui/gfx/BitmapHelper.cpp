@@ -1,26 +1,26 @@
 
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
+//#include "elastos/droid/graphics/CBitmapHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/BitmapHelper.h"
+#include "elastos/droid/webkit/native/ui/gfx/BitmapFormat.h"
 #include "elastos/droid/webkit/native/ui/api/BitmapHelper_dec.h"
 #include "elastos/core/Math.h"
-//#include "elastos/droid/graphics/CBitmapHelper.h"
-#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/droid/content/res/CResourcesHelper.h"
-#include "elastos/droid/webkit/native/ui/gfx/BitmapFormat.h"
 
-using Elastos::Droid::Graphics::IBitmapHelper;
-//using Elastos::Droid::Graphics::CBitmapHelper;
-using Elastos::Droid::Graphics::IBitmapFactory;
-using Elastos::Droid::Graphics::CBitmapFactory;
-using Elastos::Droid::Graphics::IBitmapFactoryOptions;
-using Elastos::Droid::Graphics::CBitmapFactoryOptions;
-using Elastos::Droid::Graphics::BitmapConfig_ALPHA_8;
-using Elastos::Droid::Graphics::BitmapConfig_RGB_565;
-using Elastos::Droid::Graphics::BitmapConfig_ARGB_4444;
-using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
-using Elastos::Droid::Content::Res::CResourcesHelper;
+using Elastos::Droid::Graphics::BitmapConfig_ALPHA_8;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_4444;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Graphics::BitmapConfig_RGB_565;
+using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::CBitmapFactoryOptions;
+//using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactoryOptions;
+using Elastos::Droid::Graphics::IBitmapHelper;
 using Elastos::Droid::Webkit::Ui::Gfx::BitmapFormat;
 using Elastos::Core::Math;
 

@@ -1,10 +1,10 @@
 
-#include "elastos/droid/webkit/native/ui/ColorPickerMoreButton.h"
 #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerMoreButton.h"
 
 using Elastos::Droid::Graphics::CPaint;
-using Elastos::Droid::Graphics::PaintStyle_STROKE;
 using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::PaintStyle_STROKE;
 
 namespace Elastos {
 namespace Droid {

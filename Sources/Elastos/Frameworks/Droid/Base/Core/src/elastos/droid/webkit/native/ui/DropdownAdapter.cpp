@@ -1,24 +1,24 @@
 
-#include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
 #include "elastos/droid/webkit/native/ui/DropdownDividerDrawable.h"
 #include "elastos/droid/webkit/native/ui/DropdownItem.h"
-#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::CString;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::ITypeface;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Graphics::ITypeface;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 using Elastos::Droid::Webkit::Ui::DropdownDividerDrawable;
 using Elastos::Droid::Webkit::Ui::DropdownItem;
-using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -127,7 +127,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     if (NULL == convertView) {
         AutoPtr<IInterface> interfaceTmp;
         mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&interfaceTmp);
-        AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(interfaceTmp);
+        ILayoutInflater* inflater = ILayoutInflater::Probe(interfaceTmp);
 
         inflater->Inflate(-1/*R::layout::dropdown_item*/, NULL, (IView**)&layout);
         AutoPtr<DropdownDividerDrawable> drawable = new DropdownDividerDrawable();
@@ -138,7 +138,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     AutoPtr<DropdownItem> item;// = GetItem(position);
     AutoPtr<IView> viewTmp;
     layout->FindViewById(-1/*R::id::dropdown_label*/, (IView**)&viewTmp);
-    AutoPtr<ITextView> labelView = ITextView::Probe(viewTmp);
+    ITextView* labelView = ITextView::Probe(viewTmp);
 
     String label = item->GetLabel();
     AutoPtr<ICharSequence> charSequence;
@@ -193,12 +193,12 @@ AutoPtr<IView> DropdownAdapter::GetView(
 
     //AutoPtr<ILayoutParams> params;
     //CLayoutParams::New(ILayoutParams::MATCH_PARENT, height, (ILayoutParams**)&params);
-    AutoPtr<IViewGroupLayoutParams> layoutParamsTmp;// = IViewGroupLayoutParams::Probe(params);
+    IViewGroupLayoutParams* layoutParamsTmp;// = IViewGroupLayoutParams::Probe(params);
     layout->SetLayoutParams(layoutParamsTmp);
 
     AutoPtr<IView> viewTmp1;
     layout->FindViewById(-1/*R::id::dropdown_sublabel*/, (IView**)&viewTmp1);
-    AutoPtr<ITextView> sublabelView = ITextView::Probe(viewTmp1);
+    ITextView* sublabelView = ITextView::Probe(viewTmp1);
 
     String subLabelTmp = item->GetSublabel();
     AutoPtr<ICharSequence> sublabel;

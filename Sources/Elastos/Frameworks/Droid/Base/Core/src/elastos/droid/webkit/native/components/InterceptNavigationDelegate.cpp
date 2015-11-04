@@ -16,13 +16,13 @@ Boolean InterceptNavigationDelegate::ShouldIgnoreNavigation(
     /* [in] */ IInterface* obj,
     /* [in] */ IInterface* navigationParams)
 {
-    AutoPtr<InterceptNavigationDelegate> mObj = (InterceptNavigationDelegate*)(IObject::Probe(obj));
+    InterceptNavigationDelegate* mObj = (InterceptNavigationDelegate*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E("InterceptNavigationDelegate", "InterceptNavigationDelegate::ShouldIgnoreNavigation, mObj is NULL");
         return FALSE;
     }
-    AutoPtr<NavigationParams> np = (NavigationParams*)(IObject::Probe(navigationParams));
+    NavigationParams* np = (NavigationParams*)(IObject::Probe(navigationParams));
     return mObj->ShouldIgnoreNavigation(np);
 }
 

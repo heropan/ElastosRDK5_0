@@ -6,9 +6,9 @@
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 
 // #include "elastos/droid/ext/frameworkext.h"
+// #include "elastos/droid/webkit/native/base/ObserverList.h" /* ObserverList cannot compile */
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
 #include <elastos/utility/etl/List.h>
-// #include "elastos/droid/webkit/native/base/ObserverList.h" /* ObserverList cannot compile */
 
 // package org.chromium.net;
 // import android.content.Context;
@@ -18,9 +18,9 @@
 // import org.chromium.base.ObserverList;
 // import java.util.ArrayList;
 
-using Elastos::Utility::CArrayList;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Webkit::Net::NetworkChangeNotifierAutoDetect;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {

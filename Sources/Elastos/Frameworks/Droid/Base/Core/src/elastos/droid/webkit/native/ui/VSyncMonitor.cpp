@@ -1,22 +1,22 @@
 
-#include "elastos/droid/webkit/native/ui/VSyncMonitor.h"
-#include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CHandler.h"
 //#include "elastos/droid/view/CChoreographerHelper.h"
 #include "elastos/droid/webkit/native/base/TraceEvent.h"
+#include "elastos/droid/webkit/native/ui/VSyncMonitor.h"
 
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::View::IWindowManager;
-using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::View::IChoreographer;
-using Elastos::Droid::View::IChoreographerHelper;
+using Elastos::Droid::Os::CHandler;
 //using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Droid::View::EIID_IFrameCallback;
+using Elastos::Droid::View::IChoreographer;
+using Elastos::Droid::View::IChoreographerHelper;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::Webkit::Base::TraceEvent;
+using Elastos::Core::CSystem;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::ISystem;
 
 namespace Elastos {
 namespace Droid {
@@ -193,7 +193,7 @@ VSyncMonitor::VSyncMonitor(
 
     AutoPtr<IInterface> interfaceTmp;
     context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&interfaceTmp);
-    AutoPtr<IWindowManager> winManager = IWindowManager::Probe(interfaceTmp);
+    IWindowManager* winManager = IWindowManager::Probe(interfaceTmp);
 
     AutoPtr<IDisplay> defaultDisplay;
     winManager->GetDefaultDisplay((IDisplay**)&defaultDisplay);

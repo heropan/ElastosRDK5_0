@@ -2,8 +2,8 @@
 #include "elastos/droid/webkit/native/ui/base/ResourceBundle.h"
 #include "elastos/droid/webkit/native/ui/api/ResourceBundle_dec.h"
 
-using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
+using Elastos::Droid::Content::Res::IAssetManager;
 
 namespace Elastos {
 namespace Droid {
@@ -46,7 +46,7 @@ Boolean ResourceBundle::AssetContainedInApk(
     /* [in] */ IInterface* ctx,
     /* [in] */ const String& filename)
 {
-    AutoPtr<IContext> c = IContext::Probe(ctx);
+    IContext* c = IContext::Probe(ctx);
     return AssetContainedInApk(c, filename);
 }
 

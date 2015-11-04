@@ -5,9 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIERAUTODETECT_H_
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIERAUTODETECT_H_
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/IntentFilter.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 
 // package org.chromium.net;

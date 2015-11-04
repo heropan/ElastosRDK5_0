@@ -18,8 +18,7 @@
 #define _ELASTOS_DROID_WEBKIT_CHROMIUM_COOKIEMANAGERADAPTER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/net/WebAddress.h"
-//#include "elastos/droid/webkit/CookieManager.h"
+#include "elastos/droid/webkit/CookieManager.h"
 #include "elastos/droid/webkit/native/android_webview/AwCookieManager.h"
 
 // package com.android.webview.chromium;
@@ -31,11 +30,11 @@
 // import android.webkit.WebView;
 // import org.chromium.android_webview.AwCookieManager;
 
-using Elastos::Droid::Net::WebAddress;
-//using Elastos::Droid::Webkit::CookieManager;
+using Elastos::Droid::Net::IWebAddress;
 using Elastos::Droid::Webkit::AndroidWebview::AwCookieManager;
-
-class WebView;
+using Elastos::Droid::Webkit::CookieManager;
+using Elastos::Droid::Webkit::IValueCallback;
+using Elastos::Droid::Webkit::IWebView;
 
 namespace Elastos {
 namespace Droid {
@@ -44,7 +43,7 @@ namespace Webview {
 namespace Chromium {
 
 class CookieManagerAdapter
-    : public Object// CookieManager
+    : public CookieManager
 {
 public:
     CookieManagerAdapter(
@@ -57,18 +56,20 @@ public:
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) AcceptCookie();
+    CARAPI AcceptCookie(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
     CARAPI SetAcceptThirdPartyCookies(
-        /* [in] */ WebView* webView,
+        /* [in] */ IWebView* webView,
         /* [in] */ Boolean accept);
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) AcceptThirdPartyCookies(
-        /* [in] */ WebView* webView);
+    CARAPI AcceptThirdPartyCookies(
+        /* [in] */ IWebView* webView,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetCookie(
@@ -79,57 +80,62 @@ public:
     CARAPI SetCookie(
         /* [in] */ const String& url,
         /* [in] */ const String& value,
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
-    CARAPI_(String) GetCookie(
-        /* [in] */ const String& url);
-
-    // @Override
-    CARAPI_(String) GetCookie(
+    CARAPI GetCookie(
         /* [in] */ const String& url,
-        /* [in] */ Boolean privateBrowsing);
+        /* [out] */ String* result);
+
+    // @Override
+    CARAPI GetCookie(
+        /* [in] */ const String& url,
+        /* [in] */ Boolean privateBrowsing,
+        /* [out] */ String* result);
 
     // @Override
     // synchronized
-    CARAPI_(String) GetCookie(
-        /* [in] */ WebAddress* uri);
+    CARAPI GetCookie(
+        /* [in] */ IWebAddress* uri,
+        /* [out] */ String* result);
 
     // @Override
     CARAPI RemoveSessionCookie();
 
     // @Override
     CARAPI RemoveSessionCookies(
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     CARAPI RemoveAllCookie();
 
     // @Override
     CARAPI RemoveAllCookies(
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) HasCookies();
+    CARAPI HasCookies(
+        /* [out] */ Boolean* result);
 
     // @Override
     // synchronized
-    CARAPI_(Boolean) HasCookies(
-        /* [in] */ Boolean privateBrowsing);
+    CARAPI HasCookies(
+        /* [in] */ Boolean privateBrowsing,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI RemoveExpiredCookie();
 
 protected:
     // @Override
-    CARAPI FlushCookieStore();
+    CARAPI_(void) FlushCookieStore();
 
     // @Override
     CARAPI_(Boolean) AllowFileSchemeCookiesImpl();
 
     // @Override
-    CARAPI SetAcceptFileSchemeCookiesImpl(
+    CARAPI_(void) SetAcceptFileSchemeCookiesImpl(
         /* [in] */ Boolean accept);
 
 private:

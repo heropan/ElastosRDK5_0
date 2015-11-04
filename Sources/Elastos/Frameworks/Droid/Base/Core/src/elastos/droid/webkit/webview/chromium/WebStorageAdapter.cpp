@@ -1,10 +1,10 @@
 
 #include "elastos/droid/webkit/webview/chromium/WebStorageAdapter.h"
 
-using Elastos::Utility::IMap;
-using Elastos::Utility::CHashMap;
-using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -13,13 +13,13 @@ namespace Webview {
 namespace Chromium {
 
 //=====================================================================
-//  WebStorageAdapter::InnerValueCallback<AwQuotaManagerBridgeOrigins>
+//              WebStorageAdapter::InnerValueCallback
 //=====================================================================
-//CAR_INTERFACE_IMPL(WebStorageAdapter::InnerValueCallback, Object, IValueCallback)
+CAR_INTERFACE_IMPL(WebStorageAdapter::InnerValueCallback, Object, IValueCallback)
 
 WebStorageAdapter::InnerValueCallback::InnerValueCallback(
     /* [in] */ WebStorageAdapter* owner,
-    /* [in] */ const IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
     : mOwner(owner)
     , mCallback(callback)
 {
@@ -28,7 +28,7 @@ WebStorageAdapter::InnerValueCallback::InnerValueCallback(
 }
 
 ECode WebStorageAdapter::InnerValueCallback::OnReceiveValue(
-    /* [in] */ AwQuotaManagerBridge::Origins* origins)
+    /* [in] */ IInterface* origins)
 {
     // ==================before translated======================
     // Map<String, Origin> originsMap = new HashMap<String, Origin>();
@@ -46,30 +46,37 @@ ECode WebStorageAdapter::InnerValueCallback::OnReceiveValue(
     assert(NULL == mOwner);
     assert(NULL == mCallback);
 
+    IObject* objTmp = IObject::Probe(origins);
+    AwQuotaManagerBridge::Origins* bridgeOrigins = (AwQuotaManagerBridge::Origins*)objTmp;
+    assert (NULL == bridgeOrigins);
+
     AutoPtr<IMap> originsMap;
     CHashMap::New((IMap**)&originsMap);
 
-    for (int i = 0; i < origins->mOrigins->GetLength(); ++i) {
+    for (int i = 0; i < bridgeOrigins->mOrigins->GetLength(); ++i) {
         AutoPtr< ArrayOf<String> > itemOrigins = ArrayOf<String>::Alloc(1);
         AutoPtr< ArrayOf<Int64> > itemUsages = ArrayOf<Int64>::Alloc(1);
         AutoPtr< ArrayOf<Int64> > itemQuotas = ArrayOf<Int64>::Alloc(1);
-        itemOrigins->Set(0, (*origins->mOrigins)[i]);
-        itemUsages->Set(0, (*origins->mQuotas)[i]);
-        itemQuotas->Set(0, (*origins->mUsages)[i]);
+        itemOrigins->Set(0, (*bridgeOrigins->mOrigins)[i]);
+        itemUsages->Set(0, (*bridgeOrigins->mQuotas)[i]);
+        itemQuotas->Set(0, (*bridgeOrigins->mUsages)[i]);
         AutoPtr<AwQuotaManagerBridge::Origins> origin = new AwQuotaManagerBridge::Origins(itemOrigins, itemUsages, itemQuotas);
 
         AutoPtr<ICharSequence> keyTmp;
-        CString::New((*origins->mOrigins)[i], (ICharSequence**)&keyTmp);
-        AutoPtr<IInterface> valueTmp = origin->Probe(EIID_IInterface);
+        CString::New((*bridgeOrigins->mOrigins)[i], (ICharSequence**)&keyTmp);
+        IInterface* valueTmp = TO_IINTERFACE(origin);
         originsMap->Put(keyTmp, valueTmp);
     }
-    //mCallback->OnReceiveValue(originsMap);
-    return NOERROR;
+
+    IInterface* interfaceTmp = TO_IINTERFACE(originsMap);
+    return mCallback->OnReceiveValue(interfaceTmp);
 }
 
 //=====================================================================
 //                          WebStorageAdapter
 //=====================================================================
+CAR_INTERFACE_IMPL(WebStorageAdapter, Object, IWebStorage)
+
 WebStorageAdapter::WebStorageAdapter(
     /* [in] */ AwQuotaManagerBridge* quotaManagerBridge)
     : mQuotaManagerBridge(quotaManagerBridge)
@@ -79,7 +86,7 @@ WebStorageAdapter::WebStorageAdapter(
 }
 
 ECode WebStorageAdapter::GetOrigins(
-    /* [in] */ const IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================
@@ -101,14 +108,14 @@ ECode WebStorageAdapter::GetOrigins(
 
     assert(0);
     AutoPtr<InnerValueCallback> valueCallback = new InnerValueCallback(this, callback);
-    AutoPtr<IInterface> interfaceTmp = valueCallback->Probe(EIID_IInterface);
+    IInterface* interfaceTmp = TO_IINTERFACE(valueCallback);
     mQuotaManagerBridge->GetOrigins(interfaceTmp);
     return NOERROR;
 }
 
 ECode WebStorageAdapter::GetUsageForOrigin(
     /* [in] */ const String& origin,
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================
@@ -120,7 +127,7 @@ ECode WebStorageAdapter::GetUsageForOrigin(
 
 ECode WebStorageAdapter::GetQuotaForOrigin(
     /* [in] */ const String& origin,
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================

@@ -1,8 +1,8 @@
 
+#include "elastos/droid/webkit/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/webview/chromium/WebIconDatabaseAdapter.h"
-//#include "elastos/droid/webkit/native/android_webview/AwContents.h"
 
-//using Elastos::Droid::Webkit::AndroidWebview::AwContents;
+using Elastos::Droid::Webkit::AndroidWebview::AwContents;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +22,7 @@ ECode WebIconDatabaseAdapter::Open(
     // AwContents.setShouldDownloadFavicons();
 
     assert(0); // parm is unused, is that ok?
-    //AwContents::SetShouldDownloadFavicons();
+    AwContents::SetShouldDownloadFavicons();
     return NOERROR;
 }
 
@@ -44,7 +44,7 @@ ECode WebIconDatabaseAdapter::RemoveAllIcons()
 
 ECode WebIconDatabaseAdapter::RequestIconForPageUrl(
     /* [in] */ const String& url,
-    /* [in] */ IInterface/*IIconListener*/* listener)
+    /* [in] */ IWebIconDatabaseIconListener* listener)
 {
     VALIDATE_NOT_NULL(listener);
     // ==================before translated======================
@@ -54,9 +54,9 @@ ECode WebIconDatabaseAdapter::RequestIconForPageUrl(
 }
 
 ECode WebIconDatabaseAdapter::BulkRequestIconForPageUrl(
-    /* [in] */ IInterface/*IContentResolver*/* cr,
+    /* [in] */ IContentResolver* cr,
     /* [in] */ const String& where,
-    /* [in] */ IInterface/*IIconListener*/* listener)
+    /* [in] */ IWebIconDatabaseIconListener* listener)
 {
     VALIDATE_NOT_NULL(cr);
     VALIDATE_NOT_NULL(listener);

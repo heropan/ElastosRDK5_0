@@ -1,15 +1,15 @@
 
-#include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
 //#include "elastos/droid/view/CLayoutInflater.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerDialog.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::Content::EIID_IDialogInterface;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 //using Elastos::Droid::View::CLayoutInflater;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
-using Elastos::Droid::Content::EIID_IDialogInterface;
-using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
-using Elastos::Droid::Content::EIID_IDialogInterfaceOnCancelListener;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 
 namespace Elastos {
@@ -211,7 +211,7 @@ ColorPickerDialog::ColorPickerDialog(
     // Initialize title
     AutoPtr<IInterface> interfaceTmp;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&interfaceTmp);
-    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(interfaceTmp);
+    ILayoutInflater* inflater = ILayoutInflater::Probe(interfaceTmp);
 
     AutoPtr<IView> title;
     inflater->Inflate(-1/*R::layout::color_picker_dialog_title*/, NULL, (IView**)&title);
@@ -221,7 +221,7 @@ ColorPickerDialog::ColorPickerDialog(
 
     AutoPtr<IView> titleTextTmp;
     title->FindViewById(-1/*R::id::title*/, (IView**)&titleTextTmp);
-    AutoPtr<ITextView> titleText = ITextView::Probe(titleTextTmp);
+    ITextView* titleText = ITextView::Probe(titleTextTmp);
 
     AutoPtr<ICharSequence> charSequence;
     CString::New(String("")/*R::string::color_picker_dialog_title*/, (ICharSequence**)&charSequence);

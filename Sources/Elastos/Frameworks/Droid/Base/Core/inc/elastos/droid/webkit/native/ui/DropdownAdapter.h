@@ -25,12 +25,12 @@
 // import java.util.List;
 // import java.util.Set;
 
-using Elastos::Utility::IList;
-using Elastos::Utility::ISet;
-using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
+using Elastos::Core::IInteger32;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
 // TODO using Elastos::Droid::Widget::ArrayAdapter;
 
 namespace Elastos {

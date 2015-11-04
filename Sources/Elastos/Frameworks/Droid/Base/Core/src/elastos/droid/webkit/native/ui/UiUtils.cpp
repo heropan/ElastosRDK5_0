@@ -1,22 +1,22 @@
 
-#include "elastos/droid/webkit/native/ui/UiUtils.h"
-#include "elastos/core/Math.h"
-#include "elastos/droid/graphics/CRect.h"
 //#include "elastos/droid/graphics/CBitmapHelper.h"
 #include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/webkit/native/ui/UiUtils.h"
+#include "elastos/core/Math.h"
 
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::BitmapConfig;
+//using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::IBitmapHelper;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::View::ISurfaceView;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Droid::Graphics::IBitmapHelper;
-//using Elastos::Droid::Graphics::CBitmapHelper;
-using Elastos::Droid::Graphics::BitmapConfig;
-using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::CCanvas;
 
 namespace Elastos {
 namespace Droid {
@@ -57,7 +57,7 @@ ECode UiUtils::ShowKeyboard(
 
     AutoPtr<IInterface> interfaceTmp;
     context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&interfaceTmp);
-    AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(interfaceTmp);
+    IInputMethodManager* imm = IInputMethodManager::Probe(interfaceTmp);
 
     // Only shows soft keyboard if there isn't an open physical keyboard.
     Boolean funcRet = FALSE;
@@ -79,7 +79,7 @@ Boolean UiUtils::HideKeyboard(
 
     AutoPtr<IInterface> interfaceTmp;
     context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&interfaceTmp);
-    AutoPtr<IInputMethodManager> imm = IInputMethodManager::Probe(interfaceTmp);
+    IInputMethodManager* imm = IInputMethodManager::Probe(interfaceTmp);
 
     AutoPtr<IBinder> binder;
     view->GetWindowToken((IBinder**)&binder);
@@ -367,8 +367,8 @@ ECode UiUtils::PrepareViewHierarchyForScreenshot(
     //     view.setWillNotDraw(!takingScreenshot);
     // }
 
-    AutoPtr<IViewGroup> viewGroup = IViewGroup::Probe(view);
-    AutoPtr<ISurfaceView> surfaceView = ISurfaceView::Probe(view);
+    IViewGroup* viewGroup = IViewGroup::Probe(view);
+    ISurfaceView* surfaceView = ISurfaceView::Probe(view);
     if (NULL != viewGroup) {
         Int32 childCount = 0;
         viewGroup->GetChildCount(&childCount);

@@ -25,15 +25,15 @@
 // import java.lang.ref.WeakReference;
 // import java.util.HashMap;
 
-using Elastos::Utility::IHashMap;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IPendingIntent;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Webkit::Ui::VSyncMonitor;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {

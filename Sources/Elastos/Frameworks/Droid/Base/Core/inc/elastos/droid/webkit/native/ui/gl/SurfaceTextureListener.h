@@ -11,8 +11,8 @@
 // import android.graphics.SurfaceTexture;
 // import org.chromium.base.JNINamespace;
 
-using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Graphics::IOnFrameAvailableListener;
+using Elastos::Droid::Graphics::ISurfaceTexture;
 
 namespace Elastos {
 namespace Droid {

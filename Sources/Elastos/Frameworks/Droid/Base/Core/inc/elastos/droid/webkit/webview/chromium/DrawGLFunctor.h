@@ -18,8 +18,7 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_DRAWGLFUNCTOR_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/view/ViewRootImpl.h"
-// has no now: #include "elastos/droid/webkit/native/content/common/CleanupReference.h"
+#include "elastos/droid/webkit/native/content/common/CleanupReference.h"
 
 // package com.android.webview.chromium;
 // import android.view.HardwareCanvas;
@@ -27,10 +26,10 @@
 // import android.util.Log;
 // import org.chromium.content.common.CleanupReference;
 
-using Elastos::Core::IRunnable;
 using Elastos::Droid::View::IHardwareCanvas;
-//using Elastos::Droid::View::ViewRootImpl;
-//using Elastos::Droid::Webkit::Content::Common::CleanupReference;
+using Elastos::Droid::View::IViewRootImpl;
+using Elastos::Droid::Webkit::Content::Common::CleanupReference;
+using Elastos::Core::IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -43,10 +42,10 @@ namespace Chromium {
 // and then drawn and detached from the view tree any number of times (using requestDrawGL and
 // detach respectively). Then when finished with, it can be explicitly released by calling
 // destroy() or will clean itself up as required via finalizer / CleanupReference.
-class DrawGLFunctor 
+class DrawGLFunctor
     : public Object
 {
-public:
+private:
     // Holds the core resources of the class, everything required to correctly cleanup.
     // IMPORTANT: this class must not hold any reference back to the outer DrawGLFunctor
     // instance, as that will defeat GC of that object.
@@ -67,7 +66,7 @@ public:
         virtual CARAPI DetachNativeFunctor();
 
     public:
-        AutoPtr<IInterface/*ViewRootImpl*/> mViewRootImpl;
+        AutoPtr<IViewRootImpl> mViewRootImpl;
         Int64 mNativeDrawGLFunctor;
     };
 
@@ -81,7 +80,7 @@ public:
 
     virtual CARAPI_(Boolean) RequestDrawGL(
         /* [in] */ IHardwareCanvas* canvas,
-        /* [in] */ IInterface/*ViewRootImpl*/* viewRootImpl,
+        /* [in] */ IViewRootImpl* viewRootImpl,
         /* [in] */ Boolean waitForCompletion);
 
     static CARAPI SetChromiumAwDrawGLFunction(
@@ -100,7 +99,7 @@ private:
 private:
     static const String TAG;
     // Pointer to native side instance
-    AutoPtr<IInterface/*CleanupReference*/> mCleanupReference;
+    AutoPtr<CleanupReference> mCleanupReference;
     AutoPtr<DestroyRunnable> mDestroyRunnable;
 };
 

@@ -26,8 +26,8 @@
 // import android.webkit.WebHistoryItem;
 
 using Elastos::Droid::Graphics::IBitmap;
-//using Elastos::Droid::Webkit::IWebHistoryItem;
 using Elastos::Droid::Webkit::Content::Browser::NavigationEntry;
+using Elastos::Droid::Webkit::IWebHistoryItem;
 
 namespace Elastos {
 namespace Droid {
@@ -41,9 +41,11 @@ namespace Chromium {
   */
 class WebHistoryItemChromium
     : public Object
-    //, public IWebHistoryItem
+    , public IWebHistoryItem
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /* package */
     WebHistoryItemChromium(
         /* [in] */ NavigationEntry* entry);

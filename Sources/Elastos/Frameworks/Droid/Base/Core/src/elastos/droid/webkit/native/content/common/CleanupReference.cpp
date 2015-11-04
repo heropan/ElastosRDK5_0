@@ -198,7 +198,7 @@ AutoPtr<ISet> CleanupReference::sRefs = sRefsInit();
  * @param cleanupTask the task to run once obj loses reachability.
  */
 CleanupReference::CleanupReference(
-    /* [in] */ Object& obj,
+    /* [in] */ Object* obj,
     /* [in] */ IRunnable* cleanupTask)
 {
     assert(0);

@@ -18,15 +18,15 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUMFACTORYPROVIDER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/webkit/WebViewFactoryProvider.h"
-//#include "elastos/droid/webkit/WebView.h"
 #include "elastos/droid/webkit/native/android_webview/AwBrowserContext.h"
 #include "elastos/droid/webkit/native/android_webview/AwDevToolsServer.h"
+//#include "elastos/droid/webkit/WebView.h"
 #include "elastos/droid/webkit/webview/chromium/CookieManagerAdapter.h"
-#include "elastos/droid/webkit/webview/chromium/WebViewDatabaseAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/GeolocationPermissionsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/WebIconDatabaseAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/WebStorageAdapter.h"
+#include "elastos/droid/webkit/webview/chromium/WebViewDatabaseAdapter.h"
+//#include "elastos/droid/webkit/WebViewFactoryProvider.h"
 
 // package com.android.webview.chromium;
 // import android.content.pm.PackageManager;
@@ -80,26 +80,30 @@
 // import java.lang.ref.WeakReference;
 // import java.util.ArrayList;
 
-using Elastos::Core::IRunnable;
-using Elastos::Utility::IList;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Net::IUri;
-//using Elastos::Droid::Webkit::IWebViewFactoryProvider;
-//using Elastos::Droid::Webkit::IWebViewProvider;
-//using Elastos::Droid::Webkit::IGeolocationPermissions;
+using Elastos::Droid::Webkit::AndroidWebview::AwBrowserContext;
+using Elastos::Droid::Webkit::AndroidWebview::AwDevToolsServer;
 //using Elastos::Droid::Webkit::ICookieManager;
 //using Elastos::Droid::Webkit::IWebIconDatabase;
 //using Elastos::Droid::Webkit::IWebStorage;
-//using Elastos::Droid::Webkit::WebView;
-using Elastos::Droid::Webkit::AndroidWebview::AwBrowserContext;
-using Elastos::Droid::Webkit::AndroidWebview::AwDevToolsServer;
+//using Elastos::Droid::Webkit::IWebViewFactoryProvider;
+//using Elastos::Droid::Webkit::IWebViewProvider;
+using Elastos::Droid::Webkit::IWebViewFactoryProvider;
+using Elastos::Droid::Webkit::IWebViewFactoryProviderStatics;
 using Elastos::Droid::Webkit::Webview::Chromium::CookieManagerAdapter;
-using Elastos::Droid::Webkit::Webview::Chromium::WebViewDatabaseAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::GeolocationPermissionsAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::WebIconDatabaseAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::WebStorageAdapter;
+using Elastos::Droid::Webkit::Webview::Chromium::WebViewDatabaseAdapter;
+using Elastos::Droid::Webkit::IWebView;
+using Elastos::Droid::Webkit::IWebViewPrivateAccess;
+using Elastos::Droid::Webkit::IWebViewProvider;
+using Elastos::Droid::Webkit::IGeolocationPermissions;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -107,9 +111,9 @@ namespace Webkit {
 namespace Webview {
 namespace Chromium {
 
-class WebViewChromiumFactoryProvider
+class ECO_PUBLIC WebViewChromiumFactoryProvider
     : public Object
-    //, public IWebViewFactoryProvider
+    , public IWebViewFactoryProvider
 {
 private:
     class InnerSyncATraceStateRunnable
@@ -144,21 +148,23 @@ private:
 
     class InnerWebViewFactoryProviderStatics
         : public Object
-        //, public IWebViewFactoryProvider::IStatics
+        , public IWebViewFactoryProviderStatics
     {
     public:
-        //CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL()
 
         InnerWebViewFactoryProviderStatics(
             /* [in] */ WebViewChromiumFactoryProvider* owner);
 
         // @Override
-        CARAPI_(String) FindAddress(
-            /* [in] */ const String& addr);
+        CARAPI FindAddress(
+            /* [in] */ const String& addr,
+            /* [out] */ String* result);
 
         // @Override
-        CARAPI_(String) GetDefaultUserAgent(
-            /* [in] */ IContext* context);
+        CARAPI GetDefaultUserAgent(
+            /* [in] */ IContext* context,
+            /* [out] */ String* result);
 
         // @Override
         CARAPI SetWebContentsDebuggingEnabled(
@@ -176,9 +182,10 @@ private:
         CARAPI EnableSlowWholeDocumentDraw();
 
         // @Override
-        CARAPI_(AutoPtr< ArrayOf<IUri*> >) ParseFileChooserResult(
+        CARAPI ParseFileChooserResult(
             /* [in] */ Int32 resultCode,
-            /* [in] */ IIntent* intent);
+            /* [in] */ IIntent* intent,
+            /* [out] */ ArrayOf<IUri*>** result);
 
     private:
         WebViewChromiumFactoryProvider* mOwner;
@@ -189,36 +196,47 @@ public:
 
     WebViewChromiumFactoryProvider();
 
-    virtual CARAPI_(Boolean) HasStarted();
+    CARAPI constructor();
+
+    virtual CARAPI HasStarted(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI StartYourEngines(
         /* [in] */ Boolean onMainThread);
 
-    virtual CARAPI_(AutoPtr<AwBrowserContext>) GetBrowserContext();
+    virtual CARAPI GetBrowserContext(
+        /* [out] */ IInterface** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebViewFactoryProvider::IStatics*/>) GetStatics();
+    CARAPI GetStatics(
+        /* [out] */ IWebViewFactoryProviderStatics** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebViewProvider*/>) CreateWebView(
-        /* [in] */ IInterface/*WebView*/* webView,
-        /* [in] */ IInterface/*WebView::PrivateAccess*/* privateAccess);
+    CARAPI CreateWebView(
+        /* [in] */ IWebView* webView,
+        /* [in] */ IWebViewPrivateAccess* privateAccess,
+        /* [out] */ IWebViewProvider** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IGeolocationPermissions*/>) GetGeolocationPermissions();
+    CARAPI GetGeolocationPermissions(
+        /* [out] */ IGeolocationPermissions** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*ICookieManager*/>) GetCookieManager();
+    CARAPI GetCookieManager(
+        /* [out] */ ICookieManager** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebIconDatabase*/>) GetWebIconDatabase();
+    CARAPI GetWebIconDatabase(
+        /* [out] */ IWebIconDatabase** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebStorage*/>) GetWebStorage();
+    CARAPI GetWebStorage(
+        /* [out] */ IWebStorage** result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebIconDatabase*/>) GetWebViewDatabase(
-        /* [in] */ IContext* context);
+    CARAPI GetWebViewDatabase(
+        /* [in] */ IContext* context,
+        /* [out] */ IWebViewDatabase** result);
 
 private:
     CARAPI InitPlatSupportLibrary();
@@ -250,7 +268,7 @@ private:
     /*const*/ AutoPtr<Object> mLock;
     // Initialization guarded by mLock.
     AutoPtr<AwBrowserContext> mBrowserContext;
-    AutoPtr<IInterface/*IWebViewFactoryProvider::IStatics*/> mStaticMethods;
+    AutoPtr<IWebViewFactoryProviderStatics> mStaticMethods;
     AutoPtr<GeolocationPermissionsAdapter> mGeolocationPermissions;
     AutoPtr<CookieManagerAdapter> mCookieManager;
     AutoPtr<WebIconDatabaseAdapter> mWebIconDatabase;

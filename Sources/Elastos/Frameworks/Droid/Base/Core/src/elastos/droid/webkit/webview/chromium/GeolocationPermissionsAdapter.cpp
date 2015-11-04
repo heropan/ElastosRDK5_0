@@ -49,7 +49,7 @@ ECode GeolocationPermissionsAdapter::ClearAll()
 
 ECode GeolocationPermissionsAdapter::GetAllowed(
     /* [in] */ const String& origin,
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================
@@ -60,7 +60,7 @@ ECode GeolocationPermissionsAdapter::GetAllowed(
 }
 
 ECode GeolocationPermissionsAdapter::GetOrigins(
-    /* [in] */ IInterface/*IValueCallback*/* callback)
+    /* [in] */ IValueCallback* callback)
 {
     VALIDATE_NOT_NULL(callback);
     // ==================before translated======================

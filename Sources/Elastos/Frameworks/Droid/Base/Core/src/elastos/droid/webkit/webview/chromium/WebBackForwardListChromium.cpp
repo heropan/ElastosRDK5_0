@@ -1,11 +1,11 @@
 
 #include "elastos/droid/webkit/webview/chromium/WebBackForwardListChromium.h"
-#include "elastos/core/AutoLock.h"
 #include "elastos/droid/webkit/webview/chromium/WebHistoryItemChromium.h"
+#include "elastos/core/AutoLock.h"
 
+using Elastos::Droid::Webkit::Webview::Chromium::WebHistoryItemChromium;
 using Elastos::Core::AutoLock;
 using Elastos::Utility::CArrayList;
-using Elastos::Droid::Webkit::Webview::Chromium::WebHistoryItemChromium;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +16,8 @@ namespace Chromium {
 //=====================================================================
 //                      WebBackForwardListChromium
 //=====================================================================
+CAR_INTERFACE_IMPL(WebBackForwardListChromium, Object, IWebBackForwardList)
+
 WebBackForwardListChromium::WebBackForwardListChromium(
     /* [in] */ NavigationHistory* nav_history)
 {
@@ -32,14 +34,14 @@ WebBackForwardListChromium::WebBackForwardListChromium(
     CArrayList::New(nav_history->GetEntryCount(), (IList**)&mHistroryItemList);
     for (Int32 i = 0; i < nav_history->GetEntryCount(); ++i) {
         AutoPtr<WebHistoryItemChromium> itemChromium = new WebHistoryItemChromium(nav_history->GetEntryAtIndex(i));
-        IInterface* interfaceTmp = itemChromium->Probe(EIID_IInterface);
+        IInterface* interfaceTmp = TO_IINTERFACE(itemChromium);
         mHistroryItemList->Set(i, interfaceTmp);
     }
 }
 
 // synchronized
 ECode WebBackForwardListChromium::GetCurrentItem(
-    /* [out] */ IInterface/*IWebHistoryItem*/** item)
+    /* [out] */ IWebHistoryItem** item)
 
 {
     AutoLock lock(this);
@@ -80,7 +82,7 @@ ECode WebBackForwardListChromium::GetCurrentIndex(
 // synchronized
 ECode WebBackForwardListChromium::GetItemAtIndex(
     /* [in] */ Int32 index,
-    /* [out] */ IInterface/*IWebHistoryItem*/** item)
+    /* [out] */ IWebHistoryItem** item)
 {
     AutoLock lock(this);
     VALIDATE_NOT_NULL(item);
@@ -99,7 +101,7 @@ ECode WebBackForwardListChromium::GetItemAtIndex(
     else {
         AutoPtr<IInterface> interfaceTmp;
         mHistroryItemList->Get(index, (IInterface**)&interfaceTmp);
-        //*item = IWebHistoryItem::Probe(interfaceTmps);
+        *item = IWebHistoryItem::Probe(interfaceTmp);
         REFCOUNT_ADD(*item);
     }
     return NOERROR;
@@ -141,12 +143,12 @@ ECode WebBackForwardListChromium::Clone(
     for (Int32 i = 0; i < size; ++i) {
         AutoPtr<IInterface> itemTmp;
         mHistroryItemList->Get(i, (IInterface**)&itemTmp);
-        AutoPtr<IObject> objectTmp = IObject::Probe(itemTmp);
-        AutoPtr<WebHistoryItemChromium> itemChromiumTmp = (WebHistoryItemChromium*)objectTmp.Get();
+        IObject* objectTmp = IObject::Probe(itemTmp);
+        WebHistoryItemChromium* itemChromiumTmp = (WebHistoryItemChromium*)(objectTmp);
 
         AutoPtr<WebHistoryItemChromium> cloneItem;
         itemChromiumTmp->Clone((WebHistoryItemChromium**)&cloneItem);
-        IInterface* interfaceTmp = cloneItem->Probe(EIID_IInterface);
+        IInterface* interfaceTmp = TO_IINTERFACE(cloneItem);
         list->Set(i, interfaceTmp);
     }
 

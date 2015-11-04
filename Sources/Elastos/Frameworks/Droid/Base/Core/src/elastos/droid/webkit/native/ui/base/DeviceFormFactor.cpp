@@ -2,8 +2,8 @@
 #include "elastos/droid/webkit/native/ui/base/DeviceFormFactor.h"
 #include "elastos/droid/webkit/native/ui/api/DeviceFormFactor_dec.h"
 
-using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResources;
 
 namespace Elastos {
 namespace Droid {
@@ -44,7 +44,7 @@ Boolean DeviceFormFactor::IsTablet(
 Boolean DeviceFormFactor::IsTablet(
     /* [in] */ IInterface* context)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return IsTablet(c);
 }
 

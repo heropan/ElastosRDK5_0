@@ -16,11 +16,11 @@
 // import android.graphics.Rect;
 // import android.graphics.drawable.Drawable;
 
+using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IColorFilter;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Graphics::IColorFilter;
-using Elastos::Droid::Graphics::Drawable::Drawable;
 
 namespace Elastos {
 namespace Droid {

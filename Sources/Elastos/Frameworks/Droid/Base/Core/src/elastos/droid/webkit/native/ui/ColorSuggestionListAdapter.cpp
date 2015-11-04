@@ -1,30 +1,30 @@
 
+#include "elastos/droid/text/TextUtils.h"
+//#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
 //#include "elastos/droid/widget/CLinearLayout.h"
-//#include "elastos/droid/view/CViewGroupLayoutParams.h"
 //#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
-#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 
-using Elastos::Core::CString;
-using Elastos::Droid::Widget::ILinearLayout;
-//using Elastos::Droid::Widget::CLinearLayout;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-//using Elastos::Droid::View::CViewGroupLayoutParams;
-using Elastos::Droid::View::EIID_IViewOnClickListener;
-using Elastos::Droid::View::IViewManager;
-using Elastos::Droid::View::IViewGroupMarginLayoutParams;
-using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
-//using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
-using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
 using Elastos::Droid::Graphics::Drawable::ILayerDrawable;
-using Elastos::Droid::Webkit::Ui::ColorSuggestion;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Text::TextUtils;
+//using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewGroupMarginLayoutParams;
+using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Webkit::Ui::ColorSuggestion;
+//using Elastos::Droid::Widget::CLinearLayout;
+//using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Widget::ILinearLayout;
+using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -129,7 +129,7 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
 
     assert(0);
     AutoPtr<ILinearLayout> layout;
-    AutoPtr<ILinearLayout> maybelinear = ILinearLayout::Probe(convertView);
+    ILinearLayout* maybelinear = ILinearLayout::Probe(convertView);
     if (NULL != convertView && NULL != maybelinear) {
         layout = maybelinear;
     }
@@ -147,7 +147,7 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
         mContext->GetResources((IResources**)&resource);
         resource->GetDimensionPixelOffset(-1/*R::dimen::color_button_height*/, &buttonHeight);
 
-        AutoPtr<IViewManager> viewManager = IViewManager::Probe(layout);
+        IViewManager* viewManager = IViewManager::Probe(layout);
 
         for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
             AutoPtr<IView> button;
@@ -156,26 +156,26 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
             AutoPtr<ILinearLayoutLayoutParams> layoutParams;
             //CLinearLayoutLayoutParams::New(0, buttonHeight, 1f, (ILinearLayoutLayoutParams**)&layoutParams);
 
-            AutoPtr<IViewGroupMarginLayoutParams> viewGroupParams = IViewGroupMarginLayoutParams::Probe(layoutParams);
+            IViewGroupMarginLayoutParams* viewGroupParams = IViewGroupMarginLayoutParams::Probe(layoutParams);
             ApiCompatibilityUtils::SetMarginStart(viewGroupParams, -1);
             if (i == COLORS_PER_ROW - 1) {
                 ApiCompatibilityUtils::SetMarginEnd(viewGroupParams, -1);
             }
-            AutoPtr<IViewGroupLayoutParams> viewGroupLayoutParams = IViewGroupLayoutParams::Probe(layoutParams);
+            IViewGroupLayoutParams* viewGroupLayoutParams = IViewGroupLayoutParams::Probe(layoutParams);
             button->SetLayoutParams(viewGroupLayoutParams);
             button->SetBackgroundResource(-1/*R::drawable::color_button_background*/);
             viewManager->AddView(button, NULL); // is addView(Parm1) or addView(Parm1, Param2)
         }
     }
 
-    AutoPtr<IViewGroup> viewGroup = IViewGroup::Probe(layout);
+    IViewGroup* viewGroup = IViewGroup::Probe(layout);
     for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
         AutoPtr<IView> child;
         viewGroup->GetChildAt(i, (IView**)&child);
         SetUpColorButton(child, position * COLORS_PER_ROW + i);
     }
 
-    AutoPtr<IView> result = IView::Probe(layout);
+    IView* result = IView::Probe(layout);
     return result;
 }
 
@@ -231,7 +231,7 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     // button.setContentDescription(description);
     // button.setOnClickListener(this);
 
-    AutoPtr<IView> viewTmp = IView::Probe(button);
+    IView* viewTmp = IView::Probe(button);
     if (index >= mSuggestions->GetLength()) {
         viewTmp->SetTag(NULL);
         viewTmp->SetContentDescription(NULL);
@@ -243,14 +243,14 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     viewTmp->SetTag(interfaceTmp);
     viewTmp->SetVisibility(IView::VISIBLE);
 
-    AutoPtr<ColorSuggestion> suggestion = (ColorSuggestion*)(IObject::Probe((*mSuggestions)[index]));
+    ColorSuggestion* suggestion = (ColorSuggestion*)(IObject::Probe((*mSuggestions)[index]));
     AutoPtr<IDrawable> layersTmp;
     viewTmp->GetBackground((IDrawable**)&layersTmp);
-    AutoPtr<ILayerDrawable> layers = ILayerDrawable::Probe(layersTmp);
+    ILayerDrawable* layers = ILayerDrawable::Probe(layersTmp);
 
     AutoPtr<IDrawable> swatchTmp;
     layers->FindDrawableByLayerId(-1/*R::id::color_button_swatch*/, (IDrawable**)&swatchTmp);
-    AutoPtr<IGradientDrawable> swatch = IGradientDrawable::Probe(swatchTmp);
+    IGradientDrawable* swatch = IGradientDrawable::Probe(swatchTmp);
 
     swatch->SetColor(suggestion->mColor);
     String description = suggestion->mLabel;

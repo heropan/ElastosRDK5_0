@@ -27,9 +27,9 @@
 // import java.util.Map;
 // import org.chromium.android_webview.AwQuotaManagerBridge;
 
-//using Elastos::Droid::Webkit::IWebStorage;
-//using Elastos::Droid::Webkit::IValueCallback;
 using Elastos::Droid::Webkit::AndroidWebview::AwQuotaManagerBridge;
+using Elastos::Droid::Webkit::IValueCallback;
+using Elastos::Droid::Webkit::IWebStorage;
 
 namespace Elastos {
 namespace Droid {
@@ -43,46 +43,48 @@ namespace Chromium {
   */
 class WebStorageAdapter
     : public Object
-    //, public IWebStorage
+    , public IWebStorage
 {
 private:
     class InnerValueCallback
         : public Object
-        //, public IValueCallback
+        , public IValueCallback
     {
     public:
-        //CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL()
 
         InnerValueCallback(
             /* [in] */ WebStorageAdapter* owner,
-            /* [in] */ const IInterface/*IValueCallback*/* callback);
+            /* [in] */ IValueCallback* callback);
 
         // @Override
         CARAPI OnReceiveValue(
-            /* [in] */ AwQuotaManagerBridge::Origins* origins);
+            /* [in] */ IInterface* origins);
 
     private:
         WebStorageAdapter* mOwner;
-        const IInterface/*IValueCallback*/* mCallback;
+        IValueCallback* mCallback;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     WebStorageAdapter(
         /* [in] */ AwQuotaManagerBridge* quotaManagerBridge);
 
     // @Override
     CARAPI GetOrigins(
-        /* [in] */ const IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     CARAPI GetUsageForOrigin(
         /* [in] */ const String& origin,
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     CARAPI GetQuotaForOrigin(
         /* [in] */ const String& origin,
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     CARAPI SetQuotaForOrigin(

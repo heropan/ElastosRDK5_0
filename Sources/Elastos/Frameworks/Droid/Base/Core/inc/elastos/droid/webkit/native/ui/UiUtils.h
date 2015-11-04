@@ -19,10 +19,10 @@
 // import android.view.inputmethod.InputMethodManager;
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Graphics::BitmapConfig;
 using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
 
 namespace Elastos {
 namespace Droid {

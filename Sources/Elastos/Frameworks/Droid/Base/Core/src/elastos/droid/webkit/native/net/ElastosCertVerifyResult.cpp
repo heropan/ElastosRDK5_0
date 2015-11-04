@@ -3,9 +3,9 @@
 #include "elastos/droid/webkit/native/net/api/ElastosCertVerifyResult_dec.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::IArrayList;
-using Elastos::Utility::CArrayList;
 using Elastos::Security::Cert::ICertificate;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -87,7 +87,7 @@ AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > ElastosCertVerifyResult::GetCerti
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> item;
             mCertificateChain->Get(i, (IInterface**)&item);
-            AutoPtr<ICertificate> x509 = ICertificate::Probe(item);
+            ICertificate* x509 = ICertificate::Probe(item);
             AutoPtr< ArrayOf<Byte> > encoded;
             x509->GetEncoded((ArrayOf<Byte>**)&encoded);
             verifiedChainArray->Set(i, encoded);
@@ -101,9 +101,8 @@ AutoPtr< ArrayOf< AutoPtr< ArrayOf<Byte> > > > ElastosCertVerifyResult::GetCerti
 Int32 ElastosCertVerifyResult::GetStatus(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ElastosCertVerifyResult> mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ElastosCertVerifyResult* mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ElastosCertVerifyResult", "ElastosCertVerifyResult::GetStatus, mObj is NULL");
         return 0;
     }
@@ -113,9 +112,8 @@ Int32 ElastosCertVerifyResult::GetStatus(
 Boolean ElastosCertVerifyResult::IsIssuedByKnownRoot(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ElastosCertVerifyResult> mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ElastosCertVerifyResult* mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ElastosCertVerifyResult", "ElastosCertVerifyResult::IsIssuedByKnownRoot, mObj is NULL");
         return FALSE;
     }
@@ -125,9 +123,8 @@ Boolean ElastosCertVerifyResult::IsIssuedByKnownRoot(
 AutoPtr<ArrayOf<AutoPtr<ArrayOf<Byte> > > > ElastosCertVerifyResult::GetCertificateChainEncoded(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ElastosCertVerifyResult> mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    ElastosCertVerifyResult* mObj = (ElastosCertVerifyResult*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("ElastosCertVerifyResult", "ElastosCertVerifyResult::GetCertificateChainEncoded, mObj is NULL");
         return NULL;
     }

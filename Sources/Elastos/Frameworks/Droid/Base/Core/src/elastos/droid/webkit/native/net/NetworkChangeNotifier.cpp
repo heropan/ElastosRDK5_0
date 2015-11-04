@@ -324,16 +324,15 @@ ECode NetworkChangeNotifier::NativeNotifyConnectionTypeChanged(
 AutoPtr<IInterface> NetworkChangeNotifier::Init(
     /* [in] */ IInterface* context)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return TO_IINTERFACE(Init(c));
 }
 
 Int32 NetworkChangeNotifier::GetCurrentConnectionType(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<NetworkChangeNotifier> mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    NetworkChangeNotifier* mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("NetworkChangeNotifier", "NetworkChangeNotifier::GetCurrentConnectionType, mObj is NULL");
         return 0;
     }
@@ -344,9 +343,8 @@ void NetworkChangeNotifier::AddNativeObserver(
     /* [in] */ IInterface* obj,
     /* [in] */ Int64 nativeChangeNotifier)
 {
-    AutoPtr<NetworkChangeNotifier> mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    NetworkChangeNotifier* mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("NetworkChangeNotifier", "NetworkChangeNotifier::AddNativeObserver, mObj is NULL");
         return;
     }
@@ -357,9 +355,8 @@ void NetworkChangeNotifier::RemoveNativeObserver(
     /* [in] */ IInterface* obj,
     /* [in] */ Int64 nativeChangeNotifier)
 {
-    AutoPtr<NetworkChangeNotifier> mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
-    if (NULL == mObj)
-    {
+    NetworkChangeNotifier* mObj = (NetworkChangeNotifier*)(IObject::Probe(obj));
+    if (NULL == mObj) {
         Logger::E("NetworkChangeNotifier", "NetworkChangeNotifier::RemoveNativeObserver, mObj is NULL");
         return;
     }

@@ -1,37 +1,35 @@
 
-#include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
-#include "elastos/droid/webkit/native/components/api/ValidationMessageBubble_dec.h"
-//#include "elastos/droid/view/View.h"
-#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/graphics/CPoint.h"
 #include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
+#include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
+#include "elastos/droid/webkit/native/components/api/ValidationMessageBubble_dec.h"
+#include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
 //#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
 //#include "elastos/droid/widget/PopupWindow.h"
-#include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
-#include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::View::IViewManager;
-using Elastos::Droid::View::IViewParent;
-using Elastos::Droid::View::IViewGroupLayoutParams;
-//using Elastos::Droid::View::View;
-using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::EIID_IViewParent;
-using Elastos::Droid::View::EIID_IViewManager;
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Widget::IRelativeLayoutLayoutParams;
-//using Elastos::Droid::Widget::CRelativeLayoutLayoutParams;
-using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::CRectF;
-//using Elastos::Droid::Widget::PopupWindow;
-using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::EIID_IViewManager;
+using Elastos::Droid::View::EIID_IViewParent;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
+//using Elastos::Droid::Widget::CRelativeLayoutLayoutParams;
+using Elastos::Droid::Widget::IRelativeLayoutLayoutParams;
+using Elastos::Droid::Widget::ITextView;
+//using Elastos::Droid::Widget::PopupWindow;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -63,7 +61,7 @@ ValidationMessageBubble::ValidationMessageBubble(
 
     AutoPtr<IView> view;
     //View::Inflate(contentViewCore->GetContext(), -1/*R::layout::validation_message_bubble*/, NULL, (IView**)&view);
-    AutoPtr<IViewGroup> root = IViewGroup::Probe(view);
+    IViewGroup* root = IViewGroup::Probe(view);
 
     //mPopup = new PopupWindow(root);
     UpdateTextViews(root, mainText, subText);
@@ -76,7 +74,7 @@ ValidationMessageBubble::ValidationMessageBubble(
     AutoPtr<IPoint> origin = AdjustWindowPosition(contentViewCore, (Int32)(centerX - GetAnchorOffset()), (Int32)bottom);
 
     AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
-    AutoPtr<IView> viewTmp = IView::Probe(viewGroup);
+    IView* viewTmp = IView::Probe(viewGroup);
     Int32 originX = 0;
     Int32 originY = 0;
     origin->GetX(&originX);
@@ -212,10 +210,10 @@ ECode ValidationMessageBubble::UpdateTextViews(
     //     ((ViewGroup) subTextView.getParent()).removeView(subTextView);
     // }
 
-    AutoPtr<IView> rootView = IView::Probe(root);
+    IView* rootView = IView::Probe(root);
     AutoPtr<IView> viewTmp;
     FAIL_RETURN(rootView->FindViewById(/*R::id::main_text*/-1, (IView**)&viewTmp));
-    AutoPtr<ITextView> textView = ITextView::Probe(viewTmp);
+    ITextView* textView = ITextView::Probe(viewTmp);
 
     AutoPtr<ICharSequence> charSequence;
     CString::New(mainText, (ICharSequence**)&charSequence);
@@ -223,7 +221,7 @@ ECode ValidationMessageBubble::UpdateTextViews(
 
     AutoPtr<IView> viewTmp1;
     FAIL_RETURN(rootView->FindViewById(/*R::id::sub_text*/-1, (IView**)&viewTmp1));
-    AutoPtr<ITextView> subTextView = ITextView::Probe(viewTmp1);
+    ITextView* subTextView = ITextView::Probe(viewTmp1);
 
     AutoPtr<ICharSequence> charSequence1;
     CString::New(subText, (ICharSequence**)&charSequence1);
@@ -231,10 +229,10 @@ ECode ValidationMessageBubble::UpdateTextViews(
         subTextView->SetText(charSequence1);
     }
     else {
-        AutoPtr<IView> viewTmp2 = IView::Probe(subTextView);
+        IView* viewTmp2 = IView::Probe(subTextView);
         AutoPtr<IViewParent> parent;
         viewTmp2->GetParent((IViewParent**)&parent);
-        AutoPtr<IViewManager> viewManager = IViewManager::Probe(parent);
+        IViewManager* viewManager = IViewManager::Probe(parent);
         viewManager->RemoveView(viewTmp2);
     }
 
@@ -268,14 +266,13 @@ ECode ValidationMessageBubble::Measure(
     //    IRelativeLayoutLayoutParams::WRAP_CONTENT,
     //    (IRelativeLayoutLayoutParams**)&layoutParams
     //);
-    AutoPtr<IViewGroupLayoutParams> layoutParamsTmp = IViewGroupLayoutParams::Probe(layoutParams);
+    IViewGroupLayoutParams* layoutParamsTmp = IViewGroupLayoutParams::Probe(layoutParams);
     contentView->SetLayoutParams(layoutParamsTmp);
 
     //AutoPtr<View::MeasureSpec> measureSpec = new View::MeasureSpec;
     Int32 measureWidth = 0;// = measureSpec->MakeMeasureSpec(coordinates->GetLastFrameViewportWidthPixInt(), View::MeasureSpec::AT_MOST);
     Int32 measureHeight = 0;// = measureSpec->MakeMeasureSpec(coordinates->GetLastFrameViewportHeightPixInt(), View::MeasureSpec::AT_MOST);
     contentView->Measure(measureWidth, measureHeight);
-
     return NOERROR;
 }
 
@@ -361,14 +358,14 @@ AutoPtr<IInterface> ValidationMessageBubble::CreateAndShow(
     /* [in] */ const String& mainText,
     /* [in] */ const String& subText)
 {
-    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    ContentViewCore* cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
     return TO_IINTERFACE(CreateAndShow(cvc, anchorX, anchorY, anchorWidth, anchorHeight, mainText, subText));
 }
 
 void ValidationMessageBubble::Close(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<ValidationMessageBubble> mObj = (ValidationMessageBubble*)(IObject::Probe(obj));
+    ValidationMessageBubble* mObj = (ValidationMessageBubble*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E("ValidationMessageBubble", "ValidationMessageBubble::Close, mObj is NULL");
@@ -385,13 +382,13 @@ void ValidationMessageBubble::SetPositionRelativeToAnchor(
     /* [in] */ Int32 anchorWidth,
     /* [in] */ Int32 anchorHeight)
 {
-    AutoPtr<ValidationMessageBubble> mObj = (ValidationMessageBubble*)(IObject::Probe(obj));
+    ValidationMessageBubble* mObj = (ValidationMessageBubble*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
         Logger::E("ValidationMessageBubble", "ValidationMessageBubble::SetPositionRelativeToAnchor, mObj is NULL");
         return;
     }
-    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    ContentViewCore* cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
     mObj->SetPositionRelativeToAnchor(cvc, anchorX, anchorY, anchorWidth, anchorHeight);
 }
 

@@ -18,16 +18,15 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUM_H_
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/utility/concurrent/FutureTask.h"
-//#include "elastos/droid/webkit/WebView.h"
-//#include "elastos/droid/webkit/WebSettings.h"
-#include "elastos/droid/webkit/native/content/browser/SmartClipProvider.h"
-#include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
 #include "elastos/droid/webkit/native/android_webview/AwContents.h"
-//#include "elastos/droid/webkit/webview/chromium/WebViewChromiumFactoryProvider.h"
-//#include "elastos/droid/webkit/webview/chromium/WebViewContentsClientAdapter.h"
+#include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
+#include "elastos/droid/webkit/native/content/browser/SmartClipProvider.h"
+//#include "elastos/droid/webkit/WebSettings.h"
+//#include "elastos/droid/webkit/WebView.h"
 #include "elastos/droid/webkit/webview/chromium/ContentSettingsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/DrawGLFunctor.h"
+#include "elastos/droid/webkit/webview/chromium/WebViewContentsClientAdapter.h"
+#include "elastos/utility/concurrent/FutureTask.h"
 
 // package com.android.webview.chromium;
 // import android.content.Context;
@@ -98,51 +97,53 @@
 // import java.util.Map;
 // import java.util.Queue;
 
-using Elastos::Core::IRunnable;
-using Elastos::Core::IClassLoader;
-using Elastos::Core::IInteger32;
-using Elastos::IO::IFile;
-using Elastos::IO::IBufferedWriter;
-using Elastos::Utility::IQueue;
-using Elastos::Utility::IMap;
-using Elastos::Utility::Concurrent::ICallable;
-using Elastos::Utility::Concurrent::FutureTask;
 using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Graphics::IPicture;
 using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IPaint;
-using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Graphics::IPicture;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Net::Http::ISslCertificate;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessage;
+//using Elastos::Droid::Print::IPrintDocumentAdapter;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::InputMethod::IEditorInfo;
+using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
-using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::InputMethod::IInputConnection;
-using Elastos::Droid::View::InputMethod::IEditorInfo;
-using Elastos::Droid::Net::Http::ISslCertificate;
-//using Elastos::Droid::Print::IPrintDocumentAdapter;
-//using Elastos::Droid::Webkit::IWebViewProvider;
-//using Elastos::Droid::Webkit::IWebChromeClient;
-//using Elastos::Droid::Webkit::IWebViewProviderScrollDelegate;
-//using Elastos::Droid::Webkit::IWebViewProviderViewDelegate;
-//using Elastos::Droid::Webkit::IWebBackForwardList;
-//using Elastos::Droid::Webkit::IWebViewClient;
-//using Elastos::Droid::Webkit::IDownloadListener;
-//using Elastos::Droid::Webkit::WebView;
-//using Elastos::Droid::Webkit::WebSettings;
-using Elastos::Droid::Webkit::Content::Browser::SmartClipProvider;
+using Elastos::Droid::Webkit::AndroidWebview::AwContents;
 using Elastos::Droid::Webkit::Content::Browser::LoadUrlParams;
-//using Elastos::Droid::Webkit::Webview::Chromium::WebViewChromiumFactoryProvider;
-//using Elastos::Droid::Webkit::Webview::Chromium::WebViewContentsClientAdapter;
+using Elastos::Droid::Webkit::Content::Browser::SmartClipProvider;
+using Elastos::Droid::Webkit::IDownloadListener;
+using Elastos::Droid::Webkit::IWebBackForwardList;
+using Elastos::Droid::Webkit::IWebChromeClient;
+using Elastos::Droid::Webkit::IWebSettings;
+using Elastos::Droid::Webkit::IWebView;
+using Elastos::Droid::Webkit::IWebViewClient;
+using Elastos::Droid::Webkit::IWebViewHitTestResult;
+using Elastos::Droid::Webkit::IWebViewPictureListener;
+using Elastos::Droid::Webkit::IWebViewProvider;
+using Elastos::Droid::Webkit::IWebViewProviderScrollDelegate;
+using Elastos::Droid::Webkit::IWebViewProviderViewDelegate;
 using Elastos::Droid::Webkit::Webview::Chromium::ContentSettingsAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::DrawGLFunctor;
-using Elastos::Droid::Webkit::AndroidWebview::AwContents;
+using Elastos::Droid::Webkit::Webview::Chromium::WebViewContentsClientAdapter;
+using Elastos::Core::IClassLoader;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IBufferedWriter;
+using Elastos::IO::IFile;
+using Elastos::Utility::Concurrent::FutureTask;
+using Elastos::Utility::Concurrent::ICallable;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IQueue;
 
 namespace Elastos {
 namespace Droid {
@@ -160,12 +161,12 @@ namespace Chromium {
   */
 class WebViewChromium
     : public SmartClipProvider
-    //, public IWebViewProvider
-    //, public IWebViewProviderScrollDelegate
-    //, public IWebViewProviderViewDelegate
+    , public IWebViewProvider
+    , public IWebViewProviderScrollDelegate
+    , public IWebViewProviderViewDelegate
 {
 private:
-    class WebViewChromiumRunQueue 
+    class WebViewChromiumRunQueue
         : public Object
     {
     private:
@@ -209,7 +210,7 @@ private:
 
         InnerInitForRealRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Boolean privateBrowsing);
+            /* [in] */ Boolean privateBrowsing);
 
         // @Override
         CARAPI Run();
@@ -245,7 +246,7 @@ private:
             // @Override
             CARAPI LoadClass(
                 /* [in] */ const String& name,
-                /* [out] */ IClassInfo ** klass);
+                /* [out] */ IClassInfo** klass);
 
         private:
             InnerContextWrapper* mOwner;
@@ -259,7 +260,8 @@ private:
         InnerContextWrapper();
 
         // @Override
-        CARAPI_(AutoPtr<IClassLoader>) GetClassLoader();
+        CARAPI GetClassLoader(
+            /* [out] */ IClassLoader** result);
 
         // @Override
         //CARAPI GetSystemService(
@@ -298,7 +300,7 @@ private:
 
         InnerSetHorizontalScrollbarOverlayRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Boolean overlay);
+            /* [in] */ Boolean overlay);
 
         // @Override
         CARAPI Run();
@@ -317,7 +319,7 @@ private:
 
         InnerSetVerticalScrollbarOverlayRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Boolean overlay);
+            /* [in] */ Boolean overlay);
 
         // @Override
         CARAPI Run();
@@ -454,7 +456,7 @@ private:
 
         InnerSetNetworkAvailableRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Boolean networkUp);
+            /* [in] */ Boolean networkUp);
 
         // @Override
         CARAPI Run();
@@ -554,8 +556,8 @@ private:
         InnerSaveWebArchiveRunnable(
             /* [in] */ WebViewChromium* owner,
             /* [in] */ const String& basename,
-            /* [in] */ const Boolean autoname,
-            /* [in] */ IInterface/*IValueCallback*/* callback);
+            /* [in] */ Boolean autoname,
+            /* [in] */ IValueCallback* callback);
 
         // @Override
         CARAPI Run();
@@ -564,7 +566,7 @@ private:
         WebViewChromium* mOwner;
         const String mBasename;
         const Boolean mAutoname;
-        IInterface/*IValueCallback*/* mCallback;
+        IValueCallback* mCallback;
     };
 
     class InnerStopLoadingRunnable
@@ -680,7 +682,7 @@ private:
 
         InnerCanGoBackOrForwardCallable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& steps);
+            /* [in] */ Int32 steps);
 
         // @Override
         CARAPI Call(
@@ -700,7 +702,7 @@ private:
 
         InnerGoBackOrForwardRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& steps);
+            /* [in] */ Int32 steps);
 
         // @Override
         CARAPI Run();
@@ -1204,14 +1206,14 @@ private:
 
         InnerSetPictureListenerRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ IInterface/*IWebViewPictureListener*/* listener);
+            /* [in] */ IWebViewPictureListener* listener);
 
         // @Override
         CARAPI Run();
 
     private:
         WebViewChromium* mOwner;
-        IInterface/*IWebViewPictureListener*/* mListener;
+        IWebViewPictureListener* mListener;
     };
 
     class InnerAddJavascriptInterfaceRunnable
@@ -1263,8 +1265,8 @@ private:
 
         InnerFlingScrollRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& vx,
-            /* [in] */ const Int32& vy);
+            /* [in] */ Int32 vx,
+            /* [in] */ Int32 vy);
 
         // @Override
         CARAPI Run();
@@ -1394,7 +1396,7 @@ private:
 
         InnerPerformAccessibilityActionCallable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32 action,
+            /* [in] */ Int32 action,
             /* [in] */ IBundle* arguments);
 
         // @Override
@@ -1416,7 +1418,7 @@ private:
 
         InnerSetOverScrollModeRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& mode);
+            /* [in] */ Int32 mode);
 
         // @Override
         CARAPI Run();
@@ -1435,7 +1437,7 @@ private:
 
         InnerSetScrollBarStyleRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& style);
+            /* [in] */ Int32 style);
 
         // @Override
         CARAPI Run();
@@ -1454,8 +1456,8 @@ private:
 
         InnerOnOverScrolledRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& scrollX,
-            /* [in] */ const Int32& scrollY,
+            /* [in] */ Int32 scrollX,
+            /* [in] */ Int32 scrollY,
             /* [in] */ Boolean clampedX,
             /* [in] */ Boolean clampedY);
 
@@ -1479,7 +1481,7 @@ private:
 
         InnerOnWindowVisibilityChangedRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& visibility);
+            /* [in] */ Int32 visibility);
 
         // @Override
         CARAPI Run();
@@ -1536,8 +1538,8 @@ private:
 
         InnerOnKeyMultipleCallable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& keyCode,
-            /* [in] */ const Int32& repeatCount,
+            /* [in] */ Int32 keyCode,
+            /* [in] */ Int32 repeatCount,
             /* [in] */ IKeyEvent* event);
 
         // @Override
@@ -1560,7 +1562,7 @@ private:
 
         InnerOnKeyDownCallable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& keyCode,
+            /* [in] */ Int32 keyCode,
             /* [in] */ IKeyEvent* event);
 
         // @Override
@@ -1582,7 +1584,7 @@ private:
 
         InnerOnKeyUpCallable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& keyCode,
+            /* [in] */ Int32 keyCode,
             /* [in] */ IKeyEvent* event);
 
         // @Override
@@ -1622,7 +1624,7 @@ private:
         InnerOnVisibilityChangedRunnable(
             /* [in] */ WebViewChromium* owner,
             /* [in] */ IView* changedView,
-            /* [in] */ const Int32& visibility);
+            /* [in] */ Int32 visibility);
 
         // @Override
         CARAPI Run();
@@ -1662,7 +1664,7 @@ private:
         InnerOnFocusChangedRunnable(
             /* [in] */ WebViewChromium* owner,
             /* [in] */ Boolean focused,
-            /* [in] */ const Int32& direction,
+            /* [in] */ Int32 direction,
             /* [in] */ IRect* previouslyFocusedRect);
 
         // @Override
@@ -1684,10 +1686,10 @@ private:
 
         InnerOnSizeChangedRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& w,
-            /* [in] */ const Int32& h,
-            /* [in] */ const Int32& ow,
-            /* [in] */ const Int32& oh);
+            /* [in] */ Int32 w,
+            /* [in] */ Int32 h,
+            /* [in] */ Int32 ow,
+            /* [in] */ Int32 oh);
 
         // @Override
         CARAPI Run();
@@ -1789,7 +1791,7 @@ private:
 
         InnerRequestFocusCallable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& direction,
+            /* [in] */ Int32 direction,
             /* [in] */ IRect* previouslyFocusedRect);
 
         // @Override
@@ -1811,8 +1813,8 @@ private:
 
         InnerOnMeasureRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& widthMeasureSpec,
-            /* [in] */ const Int32& heightMeasureSpec);
+            /* [in] */ Int32 widthMeasureSpec,
+            /* [in] */ Int32 heightMeasureSpec);
 
         // @Override
         CARAPI Run();
@@ -1856,7 +1858,7 @@ private:
 
         InnerSetBackgroundColorRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& color);
+            /* [in] */ Int32 color);
 
         // @Override
         CARAPI Run();
@@ -1875,7 +1877,7 @@ private:
 
         InnerSetLayerTypeRunnable(
             /* [in] */ WebViewChromium* owner,
-            /* [in] */ const Int32& layerType,
+            /* [in] */ Int32 layerType,
             /* [in] */ IPaint* paint);
 
         // @Override
@@ -2014,7 +2016,7 @@ private:
         WebViewChromium* mOwner;
     };
 
-    class InternalAccessAdapter 
+    class InternalAccessAdapter
         : public AwContents::InternalAccessDelegate
     {
     public:
@@ -2097,18 +2099,20 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     // This does not touch any global / non-threadsafe state, but note that
     // init is ofter called right after and is NOT threadsafe.
     WebViewChromium(
-        /* [in] */ IInterface/*WebViewChromiumFactoryProvider*/* factory,
-        /* [in] */ IInterface/*WebView*/* webView,
-        /* [in] */ IInterface/*WebView::PrivateAccess*/* webViewPrivate);
+        /* [in] */ IWebViewChromiumFactoryProvider* factory,
+        /* [in] */ IWebView* webView,
+        /* [in] */ IWebViewPrivateAccess* webViewPrivate);
 
     static CARAPI EnableSlowWholeDocumentDraw();
 
     static CARAPI CompleteWindowCreation(
-        /* [in] */ IInterface/*WebView*/* parent,
-        /* [in] */ IInterface/*WebView*/* child);
+        /* [in] */ IWebView* parent,
+        /* [in] */ IWebView* child);
 
     // WebViewProvider methods --------------------------------------------------------------------
     // @Override
@@ -2129,16 +2133,20 @@ public:
         /* [in] */ Boolean overlay);
 
     // @Override
-    CARAPI_(Boolean) OverlayHorizontalScrollbar();
+    CARAPI OverlayHorizontalScrollbar(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OverlayVerticalScrollbar();
+    CARAPI OverlayVerticalScrollbar(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Int32) GetVisibleTitleHeight();
+    CARAPI GetVisibleTitleHeight(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(AutoPtr<ISslCertificate>) GetCertificate();
+    CARAPI GetCertificate(
+        /* [out] */ ISslCertificate** result);
 
     // @Override
     CARAPI SetCertificate(
@@ -2158,9 +2166,10 @@ public:
         /* [in] */ const String& password);
 
     // @Override
-    CARAPI_(AutoPtr< ArrayOf<String> >) GetHttpAuthUsernamePassword(
+    CARAPI GetHttpAuthUsernamePassword(
         /* [in] */ const String& host,
-        /* [in] */ const String& realm);
+        /* [in] */ const String& realm,
+        /* [out] */ ArrayOf<String>** result);
 
     // @Override
     CARAPI Destroy();
@@ -2170,22 +2179,26 @@ public:
         /* [in] */ Boolean networkUp);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebBackForwardList*/>) SaveState(
-        /* [in] */ IBundle* outState);
+    CARAPI SaveState(
+        /* [in] */ IBundle* outState,
+        /* [out] */ IWebBackForwardList** result);
 
     // @Override
-    CARAPI_(Boolean) SavePicture(
+    CARAPI SavePicture(
         /* [in] */ IBundle* b,
-        /* [in] */ IFile* dest);
+        /* [in] */ IFile* dest,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) RestorePicture(
+    CARAPI RestorePicture(
         /* [in] */ IBundle* b,
-        /* [in] */ IFile* src);
+        /* [in] */ IFile* src,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebBackForwardList*/>) RestoreState(
-        /* [in] */ IBundle* inState);
+    CARAPI RestoreState(
+        /* [in] */ IBundle* inState,
+        /* [out] */ IWebBackForwardList** result);
 
     // @Override
     CARAPI LoadUrl(
@@ -2217,7 +2230,7 @@ public:
 
     virtual CARAPI EvaluateJavaScript(
         /* [in] */ const String& script,
-        /* [in] */ IInterface/*IValueCallback*/* resultCallback);
+        /* [in] */ IValueCallback* resultCallback);
 
     // @Override
     CARAPI SaveWebArchive(
@@ -2227,7 +2240,7 @@ public:
     CARAPI SaveWebArchive(
         /* [in] */ const String& basename,
         /* [in] */ Boolean autoname,
-        /* [in] */ IInterface/*IValueCallback*/* callback);
+        /* [in] */ IValueCallback* callback);
 
     // @Override
     CARAPI StopLoading();
@@ -2236,54 +2249,63 @@ public:
     CARAPI Reload();
 
     // @Override
-    CARAPI_(Boolean) CanGoBack();
+    CARAPI CanGoBack(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI GoBack();
 
     // @Override
-    CARAPI_(Boolean) CanGoForward();
+    CARAPI CanGoForward(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI GoForward();
 
     // @Override
-    CARAPI_(Boolean) CanGoBackOrForward(
-        /* [in] */ const Int32& steps);
+    CARAPI CanGoBackOrForward(
+        /* [in] */ Int32 steps,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI GoBackOrForward(
-        /* [in] */ const Int32& steps);
+        /* [in] */ Int32 steps);
 
     // @Override
-    CARAPI_(Boolean) IsPrivateBrowsingEnabled();
+    CARAPI IsPrivateBrowsingEnabled(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) PageUp(
-        /* [in] */ Boolean top);
+    CARAPI PageUp(
+        /* [in] */ Boolean top,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) PageDown(
-        /* [in] */ Boolean bottom);
+    CARAPI PageDown(
+        /* [in] */ Boolean bottom,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI ClearView();
 
     // @Override
-    CARAPI_(AutoPtr<IPicture>) CapturePicture();
+    CARAPI CapturePicture(
+        /* [out] */ IPicture** result);
 
     // @Override
-    CARAPI_(Float) GetScale();
+    CARAPI GetScale(
+        /* [out] */ Float* result);
 
     // @Override
     CARAPI SetInitialScale(
-        /* [in] */ const Int32& scaleInPercent);
+        /* [in] */ Int32 scaleInPercent);
 
     // @Override
     CARAPI InvokeZoomPicker();
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*WebView::HitTestResult*/>) GetHitTestResult();
+    CARAPI GetHitTestResult(
+        /* [out] */ IWebViewHitTestResult** result);
 
     // @Override
     CARAPI RequestFocusNodeHref(
@@ -2294,28 +2316,36 @@ public:
         /* [in] */ IMessage* msg);
 
     // @Override
-    CARAPI_(String) GetUrl();
+    CARAPI GetUrl(
+        /* [out] */ String* result);
 
     // @Override
-    CARAPI_(String) GetOriginalUrl();
+    CARAPI GetOriginalUrl(
+        /* [out] */ String* result);
 
     // @Override
-    CARAPI_(String) GetTitle();
+    CARAPI GetTitle(
+        /* [out] */ String* result);
 
     // @Override
-    CARAPI_(AutoPtr<IBitmap>) GetFavicon();
+    CARAPI GetFavicon(
+        /* [out] */ IBitmap** result);
 
     // @Override
-    CARAPI_(String) GetTouchIconUrl();
+    CARAPI GetTouchIconUrl(
+        /* [out] */ String* result);
 
     // @Override
-    CARAPI_(Int32) GetProgress();
+    CARAPI GetProgress(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(Int32) GetContentHeight();
+    CARAPI GetContentHeight(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(Int32) GetContentWidth();
+    CARAPI GetContentWidth(
+        /* [out] */ Int32* result);
 
     // @Override
     CARAPI PauseTimers();
@@ -2330,7 +2360,8 @@ public:
     CARAPI OnResume();
 
     // @Override
-    CARAPI_(Boolean) IsPaused();
+    CARAPI IsPaused(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI FreeMemory();
@@ -2352,28 +2383,31 @@ public:
     CARAPI ClearSslPreferences();
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*IWebBackForwardList*/>) CopyBackForwardList();
+    CARAPI CopyBackForwardList(
+        /* [out] */ IWebBackForwardList** result);
 
     // @Override
     CARAPI SetFindListener(
-        /* [in] */ IInterface/*WebView::FindListener*/* listener);
+        /* [in] */ IWebViewFindListener* listener);
 
     // @Override
     CARAPI FindNext(
         /* [in] */ Boolean forwards);
 
     // @Override
-    CARAPI_(Int32) FindAll(
-        /* [in] */ const String& searchString);
+    CARAPI FindAll(
+        /* [in] */ const String& searchString,
+        /* [out] */ Int32* result);
 
     // @Override
     CARAPI FindAllAsync(
         /* [in] */ const String& searchString);
 
     // @Override
-    CARAPI_(Boolean) ShowFindDialog(
+    CARAPI ShowFindDialog(
         /* [in] */ const String& text,
-        /* [in] */ Boolean showIme);
+        /* [in] */ Boolean showIme,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI NotifyFindDialogDismissed();
@@ -2387,23 +2421,23 @@ public:
 
     // @Override
     CARAPI SetWebViewClient(
-        /* [in] */ IInterface/*IWebViewClient*/* client);
+        /* [in] */ IWebViewClient* client);
 
     // @Override
     CARAPI SetDownloadListener(
-        /* [in] */ IInterface/*IDownloadListener*/* listener);
+        /* [in] */ IDownloadListener* listener);
 
     // @Override
     CARAPI SetWebChromeClient(
-        /* [in] */ IInterface/*WebChromeClient*/* client);
+        /* [in] */ IWebChromeClient* client);
 
     // @Override
     CARAPI SetPictureListener(
-        /* [in] */ IInterface/*WebView::PictureListener*/* listener);
+        /* [in] */ IWebViewPictureListener* listener);
 
     // @Override
     CARAPI AddJavascriptInterface(
-        /* [in] */ Object* obj,
+        /* [in] */ IInterface* obj,
         /* [in] */ const String& interfaceName);
 
     // @Override
@@ -2411,7 +2445,8 @@ public:
         /* [in] */ const String& interfaceName);
 
     // @Override
-    CARAPI_(AutoPtr<IInterface/*WebSettings*/>) GetSettings();
+    CARAPI GetSettings(
+        /* [out] */ IWebSettings** result);
 
     // @Override
     CARAPI SetMapTrackballToArrowKeys(
@@ -2419,27 +2454,33 @@ public:
 
     // @Override
     CARAPI FlingScroll(
-        /* [in] */ const Int32& vx,
-        /* [in] */ const Int32& vy);
+        /* [in] */ Int32 vx,
+        /* [in] */ Int32 vy);
 
     // @Override
-    CARAPI_(AutoPtr<IView>) GetZoomControls();
+    CARAPI GetZoomControls(
+        /* [out] */ IView** result);
 
     // @Override
-    CARAPI_(Boolean) CanZoomIn();
+    CARAPI CanZoomIn(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) CanZoomOut();
+    CARAPI CanZoomOut(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) ZoomIn();
+    CARAPI ZoomIn(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) ZoomOut();
+    CARAPI ZoomOut(
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) ZoomBy(
-        /* [in] */ Float factor);
+    CARAPI ZoomBy(
+        /* [in] */ Float factor,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI DumpViewHierarchyWithProperties(
@@ -2447,27 +2488,32 @@ public:
         /* [in] */ Int32 level);
 
     // @Override
-    CARAPI_(AutoPtr<IView>) FindHierarchyView(
+    CARAPI FindHierarchyView(
         /* [in] */ const String& className,
-        /* [in] */ Int32 hashCode);
+        /* [in] */ Int32 hashCode,
+        /* [out] */ IView** result);
 
     // WebViewProvider glue methods ---------------------------------------------------------------
     // @Override
     // This needs to be kept thread safe!
-    virtual CARAPI_(AutoPtr<IInterface/*IWebViewProviderViewDelegate*/>) GetViewDelegate();
+    CARAPI GetViewDelegate(
+        /* [out] */ IWebViewProviderViewDelegate** result);
 
     // @Override
     // This needs to be kept thread safe!
-    virtual CARAPI_(AutoPtr<IInterface/*IWebViewProviderScrollDelegate*/>) GetScrollDelegate();
+    CARAPI GetScrollDelegate(
+        /* [out] */ IWebViewProviderScrollDelegate** result);
 
     // WebViewProvider.ViewDelegate implementation ------------------------------------------------
     // TODO: remove from WebViewProvider and use default implementation from
     // ViewGroup.
     // @Override
-    virtual CARAPI_(Boolean) ShouldDelayChildPressedState();
+    CARAPI ShouldDelayChildPressedState(
+        /* [out] */ Boolean* result);
 
     // @Override
-    virtual CARAPI_(AutoPtr<IAccessibilityNodeProvider>) GetAccessibilityNodeProvider();
+    CARAPI GetAccessibilityNodeProvider(
+        /* [out] */ IAccessibilityNodeProvider** result);
 
     // @Override
     CARAPI OnInitializeAccessibilityNodeInfo(
@@ -2478,37 +2524,38 @@ public:
         /* [in] */ IAccessibilityEvent* event);
 
     // @Override
-    CARAPI_(Boolean) PerformAccessibilityAction(
-        /* [in] */ const Int32& action,
-        /* [in] */ IBundle* arguments);
+    CARAPI PerformAccessibilityAction(
+        /* [in] */ Int32 action,
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetOverScrollMode(
-        /* [in] */ const Int32& mode);
+        /* [in] */ Int32 mode);
 
     // @Override
     CARAPI SetScrollBarStyle(
-        /* [in] */ const Int32& style);
+        /* [in] */ Int32 style);
 
     // @Override
     CARAPI OnDrawVerticalScrollBar(
         /* [in] */ ICanvas* canvas,
         /* [in] */ IDrawable* scrollBar,
-        /* [in] */ const Int32& l,
-        /* [in] */ const Int32& t,
-        /* [in] */ const Int32& r,
-        /* [in] */ const Int32& b);
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b);
 
     // @Override
     CARAPI OnOverScrolled(
-        /* [in] */ const Int32& scrollX,
-        /* [in] */ const Int32& scrollY,
+        /* [in] */ Int32 scrollX,
+        /* [in] */ Int32 scrollY,
         /* [in] */ Boolean clampedX,
         /* [in] */ Boolean clampedY);
 
     // @Override
     CARAPI OnWindowVisibilityChanged(
-        /* [in] */ const Int32& visibility);
+        /* [in] */ Int32 visibility);
 
     // @Override
     CARAPI OnDraw(
@@ -2519,31 +2566,36 @@ public:
         /* [in] */ IViewGroupLayoutParams* layoutParams);
 
     // @Override
-    CARAPI_(Boolean) PerformLongClick();
+    CARAPI PerformLongClick(
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI OnConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);
 
     // @Override
-    CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
-        /* [in] */ IEditorInfo* outAttrs);
+    CARAPI OnCreateInputConnection(
+        /* [in] */ IEditorInfo* outAttrs,
+        /* [out] */ IInputConnection** result);
 
     // @Override
-    CARAPI_(Boolean) OnKeyMultiple(
-        /* [in] */ const Int32& keyCode,
-        /* [in] */ const Int32& repeatCount,
-        /* [in] */ IKeyEvent* event);
+    CARAPI OnKeyMultiple(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ Int32 repeatCount,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnKeyDown(
-        /* [in] */ const Int32& keyCode,
-        /* [in] */ IKeyEvent* event);
+    CARAPI OnKeyDown(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnKeyUp(
-        /* [in] */ const Int32& keyCode,
-        /* [in] */ IKeyEvent* event);
+    CARAPI OnKeyUp(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI OnAttachedToWindow();
@@ -2554,7 +2606,7 @@ public:
     // @Override
     CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
-        /* [in] */ const Int32& visibility);
+        /* [in] */ Int32 visibility);
 
     // @Override
     CARAPI OnWindowFocusChanged(
@@ -2563,22 +2615,23 @@ public:
     // @Override
     CARAPI OnFocusChanged(
         /* [in] */ Boolean focused,
-        /* [in] */ const Int32& direction,
+        /* [in] */ Int32 direction,
         /* [in] */ IRect* previouslyFocusedRect);
 
     // @Override
-    CARAPI_(Boolean) SetFrame(
-        /* [in] */ const Int32& left,
-        /* [in] */ const Int32& top,
-        /* [in] */ const Int32& right,
-        /* [in] */ const Int32& bottom);
+    CARAPI SetFrame(
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI OnSizeChanged(
-        /* [in] */ const Int32& w,
-        /* [in] */ const Int32& h,
-        /* [in] */ const Int32& ow,
-        /* [in] */ const Int32& oh);
+        /* [in] */ Int32 w,
+        /* [in] */ Int32 h,
+        /* [in] */ Int32 ow,
+        /* [in] */ Int32 oh);
 
     // @Override
     CARAPI OnScrollChanged(
@@ -2588,48 +2641,55 @@ public:
         /* [in] */ Int32 oldt);
 
     // @Override
-    CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnHoverEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnHoverEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     // @Override
-    CARAPI_(Boolean) RequestFocus(
-        /* [in] */ const Int32& direction,
-        /* [in] */ IRect* previouslyFocusedRect);
+    CARAPI RequestFocus(
+        /* [in] */ Int32 direction,
+        /* [in] */ IRect* previouslyFocusedRect,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI OnMeasure(
-        /* [in] */ const Int32& widthMeasureSpec,
-        /* [in] */ const Int32& heightMeasureSpec);
+        /* [in] */ Int32 widthMeasureSpec,
+        /* [in] */ Int32 heightMeasureSpec);
 
     // @Override
-    CARAPI_(Boolean) RequestChildRectangleOnScreen(
+    CARAPI RequestChildRectangleOnScreen(
         /* [in] */ IView* child,
         /* [in] */ IRect* rect,
-        /* [in] */ Boolean immediate);
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* result);
 
     // @Override
     CARAPI SetBackgroundColor(
-        /* [in] */ const Int32& color);
+        /* [in] */ Int32 color);
 
     // @Override
     CARAPI SetLayerType(
-        /* [in] */ const Int32& layerType,
+        /* [in] */ Int32 layerType,
         /* [in] */ IPaint* paint);
 
     // Remove from superclass
@@ -2642,19 +2702,24 @@ public:
 
     // WebViewProvider.ScrollDelegate implementation ----------------------------------------------
     // @Override
-    CARAPI_(Int32) ComputeHorizontalScrollRange();
+    CARAPI ComputeHorizontalScrollRange(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(Int32) ComputeHorizontalScrollOffset();
+    CARAPI ComputeHorizontalScrollOffset(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(Int32) ComputeVerticalScrollRange();
+    CARAPI ComputeVerticalScrollRange(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(Int32) ComputeVerticalScrollOffset();
+    CARAPI ComputeVerticalScrollOffset(
+        /* [out] */ Int32* result);
 
     // @Override
-    CARAPI_(Int32) ComputeVerticalScrollExtent();
+    CARAPI ComputeVerticalScrollExtent(
+        /* [out] */ Int32* result);
 
     // @Override
     CARAPI ComputeScroll();
@@ -2677,13 +2742,13 @@ public:
     // Implements SmartClipProvider
     // @Override
     CARAPI SetSmartClipResultHandler(
-        /* [in] */ IHandler* resultHandler);
+        /* [in] */ const IHandler* resultHandler);
 
 public:
     // The WebView that this WebViewChromium is the provider for.
-    AutoPtr<IInterface/*IWebView*/> mWebView;
+    AutoPtr<IWebView> mWebView;
     // Lets us access protected View-derived methods on the WebView instance we're backing.
-    AutoPtr<IInterface/*IWebViewPrivateAccess*/> mWebViewPrivate;
+    AutoPtr<IWebViewPrivateAccess> mWebViewPrivate;
 
 private:
     CARAPI_(AutoPtr<IInterface>) RunBlockingFuture(
@@ -2737,22 +2802,22 @@ private:
      * and {@link WebChromeClient#onHideCustomView()} are required.
      */
     CARAPI_(Boolean) DoesSupportFullscreen(
-        /* [in] */ IInterface/*IWebChromeClient*/* client);
+        /* [in] */ IWebChromeClient* client);
 
 private:
     AutoPtr<WebViewChromiumRunQueue> mRunQueue;
     static const String TAG;
     // The client adapter class.
-    AutoPtr<IInterface/*WebViewContentsClientAdapter*/> mContentsClientAdapter;
+    AutoPtr<WebViewContentsClientAdapter> mContentsClientAdapter;
     // Variables for functionality provided by this adapter ---------------------------------------
     AutoPtr<ContentSettingsAdapter> mWebSettings;
     // The WebView wrapper for ContentViewCore and required browser compontents.
     AutoPtr<AwContents> mAwContents;
     // Non-null if this webview is using the GL accelerated draw path.
     AutoPtr<DrawGLFunctor> mGLfunctor;
-    /*const*/ AutoPtr<IInterface/*WebView::HitTestResult*/> mHitTestResult;
+    /*const*/ AutoPtr<IWebViewHitTestResult> mHitTestResult;
     /*const*/ Int32 mAppTargetSdkVersion;
-    AutoPtr<IInterface/*WebViewChromiumFactoryProvider*/> mFactory;
+    AutoPtr<IWebViewChromiumFactoryProvider> mFactory;
     static Boolean sRecordWholeDocumentEnabledByApi;
 };
 

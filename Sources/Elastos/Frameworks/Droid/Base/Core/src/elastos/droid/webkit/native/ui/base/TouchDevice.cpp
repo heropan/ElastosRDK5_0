@@ -77,7 +77,7 @@ Int32 TouchDevice::MaxTouchPoints(
 Int32 TouchDevice::MaxTouchPoints(
     /* [in] */ IInterface* context)
 {
-    AutoPtr<IContext> c = IContext::Probe(context);
+    IContext* c = IContext::Probe(context);
     return MaxTouchPoints(c);
 }
 
