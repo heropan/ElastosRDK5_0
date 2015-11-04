@@ -6,6 +6,7 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Internal::Os::IHandlerCaller;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::View::IKeyEvent;
@@ -17,8 +18,8 @@ namespace AccessibilityService {
 
 CarClass(CAccessibilityServiceClientWrapper)
     , public Object
-    , public IAccessibilityServiceClientWrapper
     , public IIAccessibilityServiceClient
+    , public IBinder
     //, public IHandlerCallerCallback
 {
 public:

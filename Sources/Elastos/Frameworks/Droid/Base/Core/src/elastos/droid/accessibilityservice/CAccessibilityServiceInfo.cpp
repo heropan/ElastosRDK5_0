@@ -84,7 +84,7 @@ static AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >
     return availableCapabilityInfos;
 }
 
-const AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > CAccessibilityServiceInfo::sAvailableCapabilityInfos = InitsAvailableCapabilityInfos();
+const AutoPtr< HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > CAccessibilityServiceInfo::sAvailableCapabilityInfos = InitsAvailableCapabilityInfos();
 
 CAccessibilityServiceInfo::CAccessibilityServiceInfo()
     : mEventTypes(0)
@@ -434,7 +434,7 @@ ECode CAccessibilityServiceInfo::WriteToParcel(
 
     if (NULL != mResolveInfo) {
         dest->WriteInt32(1);
-        dest->WriteInterfacePtr((IInterface*)mResolveInfo);
+        dest->WriteInterfacePtr(mResolveInfo);
     }
     else {
         dest->WriteInt32(0);

@@ -3,18 +3,18 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityNodeInfo.h"
+#include "elastos/droid/utility/CInt64Array.h"
 #include "elastos/droid/utility/Pools.h"
-#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Utility::CInt64Array;
+using Elastos::Droid::Utility::IInt64Array;
 using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::View::IView;
 using Elastos::Core::ICharSequence;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
-using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +26,7 @@ CarClass(CAccessibilityNodeInfo)
     , public IAccessibilityNodeInfo
     , public IParcelable
 {
-    friend class CAccessibilityAction;
+    friend class CAccessibilityNodeInfoAccessibilityAction;
 
 public:
 
@@ -190,7 +190,7 @@ public:
      * @hide
      */
     CARAPI GetChildNodeIds(
-        /* [out] */ IMap** ids);
+        /* [out] */ IInt64Array** ids);
 
     /**
      * Returns the id of the child at the specified index.
@@ -356,7 +356,7 @@ public:
      * @throws IllegalStateException If called from an AccessibilityService.
      */
     CARAPI AddAction(
-        /* [in] */ IAccessibilityAction* action);
+        /* [in] */ IAccessibilityNodeInfoAccessibilityAction* action);
 
     /**
      * Adds an action that can be performed on the node.
@@ -408,7 +408,7 @@ public:
      * @throws IllegalStateException If called from an AccessibilityService.
      */
     CARAPI RemoveAction(
-        /* [in] */ IAccessibilityAction* action,
+        /* [in] */ IAccessibilityNodeInfoAccessibilityAction* action,
         /* [out] */ Boolean* result);
 
     /**
@@ -959,7 +959,7 @@ public:
      * @return The collection info.
      */
     CARAPI GetCollectionInfo(
-        /* [out] */ ICollectionInfo** info);
+        /* [out] */ IAccessibilityNodeInfoCollectionInfo** info);
 
     /**
      * Sets the collection info if the node is a collection. A collection
@@ -973,7 +973,7 @@ public:
      * @param collectionInfo The collection info.
      */
     CARAPI SetCollectionInfo(
-        /* [in] */ ICollectionInfo* collectionInfo);
+        /* [in] */ IAccessibilityNodeInfoCollectionInfo* collectionInfo);
 
     /**
      * Gets the collection item info if the node is a collection item. A collection
@@ -982,7 +982,7 @@ public:
      * @return The collection item info.
      */
     CARAPI GetCollectionItemInfo(
-        /* [out] */ ICollectionItemInfo** info);
+        /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info);
 
     /**
      * Sets the collection item info if the node is a collection item. A collection
@@ -994,7 +994,7 @@ public:
      * </p>
      */
     CARAPI SetCollectionItemInfo(
-        /* [in] */ ICollectionItemInfo* collectionItemInfo);
+        /* [in] */ IAccessibilityNodeInfoCollectionItemInfo* collectionItemInfo);
 
     /**
      * Gets the range info if this node is a range.
@@ -1002,7 +1002,7 @@ public:
      * @return The range.
      */
     CARAPI GetRangeInfo(
-        /* [out] */ IRangeInfo** info);
+        /* [out] */ IAccessibilityNodeInfoRangeInfo** info);
 
     /**
      * Sets the range info if this node is a range.
@@ -1015,7 +1015,7 @@ public:
      * @param rangeInfo The range info.
      */
     CARAPI SetRangeInfo(
-        /* [in] */ IRangeInfo* rangeInfo);
+        /* [in] */ IAccessibilityNodeInfoRangeInfo* rangeInfo);
 
     /**
      * Gets if the content of this node is invalid. For example,
@@ -1575,6 +1575,7 @@ private:
         /* [in] */ IView* root,
         /* [in] */ Int32 virtualDescendantId,
         /* [in] */ Boolean checked);
+
     /**
      * Gets the value of a boolean property.
      *
@@ -1609,7 +1610,7 @@ private:
      */
     // @SuppressWarnings("unchecked")
     CARAPI_(void) Init(
-        /* [in] */ CAccessibilityNodeInfo* other);
+        /* [in] */ IAccessibilityNodeInfo* other);
 
     /**
      * Creates a new instance from a {@link Parcel}.
@@ -1625,9 +1626,9 @@ private:
     CARAPI_(void) Clear();
 
     static CARAPI_(Boolean) IsDefaultLegacyStandardAction(
-        /* [in] */ IAccessibilityAction* action);
+        /* [in] */ IAccessibilityNodeInfoAccessibilityAction* action);
 
-    static CARAPI_(AutoPtr<IAccessibilityAction>) GetActionSingleton(
+    static CARAPI_(AutoPtr<IAccessibilityNodeInfoAccessibilityAction>) GetActionSingleton(
         /* [in] */ Int32 actionId);
 
     CARAPI_(void) AddLegacyStandardActions(
@@ -1737,7 +1738,7 @@ private:
     AutoPtr<ICharSequence> mContentDescription;
     String mViewIdResourceName;
 
-    AutoPtr<IMap> mChildNodeIds;
+    AutoPtr<IInt64Array> mChildNodeIds;
     AutoPtr<IArrayList> mActions;
     Int32 mMaxTextLength;
     Int32 mMovementGranularities;
@@ -1749,9 +1750,9 @@ private:
     AutoPtr<IBundle> mExtras;
 
     Int32 mConnectionId;
-    AutoPtr<IRangeInfo> mRangeInfo;
-    AutoPtr<ICollectionInfo> mCollectionInfo;
-    AutoPtr<ICollectionItemInfo> mCollectionItemInfo;
+    AutoPtr<IAccessibilityNodeInfoRangeInfo> mRangeInfo;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfo> mCollectionInfo;
+    AutoPtr<IAccessibilityNodeInfoCollectionItemInfo> mCollectionItemInfo;
 };
 
 } // Accessibility

@@ -1,37 +1,18 @@
 
-#include "elastos/droid/view/accessibility/CRangeInfo.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoRangeInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const Int32 CRangeInfo::MAX_POOL_SIZE = 10;
-AutoPtr<Pools::SynchronizedPool<IRangeInfo> > CRangeInfo::sPool =
-        new Pools::SynchronizedPool<IRangeInfo>(MAX_POOL_SIZE);
+const Int32 AccessibilityNodeInfoRangeInfo::MAX_POOL_SIZE = 10;
+AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfoRangeInfo> > AccessibilityNodeInfoRangeInfo::sPool =
+        new Pools::SynchronizedPool<IAccessibilityNodeInfoRangeInfo>(MAX_POOL_SIZE);
 
-CAR_INTERFACE_IMPL(CRangeInfo, Object, IRangeInfo)
+CAR_INTERFACE_IMPL(AccessibilityNodeInfoRangeInfo, Object, IAccessibilityNodeInfoRangeInfo)
 
-CAR_OBJECT_IMPL(CRangeInfo)
-
-CRangeInfo::CRangeInfo()
-    : mType(0)
-    , mMin(0.0f)
-    , mMax(0.0f)
-    , mCurrent(0.0f)
-{
-}
-
-CRangeInfo::~CRangeInfo()
-{
-}
-
-ECode CRangeInfo::constructor()
-{
-    return NOERROR;
-}
-
-ECode CRangeInfo::constructor(
+AccessibilityNodeInfoRangeInfo::AccessibilityNodeInfoRangeInfo(
     /* [in] */ Int32 type,
     /* [in] */ Float min,
     /* [in] */ Float max,
@@ -41,12 +22,11 @@ ECode CRangeInfo::constructor(
     mMin = min;
     mMax = max;
     mCurrent = current;
-    return NOERROR;
 }
 
-ECode CRangeInfo::Obtain(
-    /* [in] */ IRangeInfo* other,
-    /* [out] */ IRangeInfo** info)
+ECode AccessibilityNodeInfoRangeInfo::Obtain(
+    /* [in] */ IAccessibilityNodeInfoRangeInfo* other,
+    /* [out] */ IAccessibilityNodeInfoRangeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     Int32 type;
@@ -59,15 +39,15 @@ ECode CRangeInfo::Obtain(
     return Obtain(type, min, max, current, info);
 }
 
-ECode CRangeInfo::Obtain(
+ECode AccessibilityNodeInfoRangeInfo::Obtain(
     /* [in] */ Int32 type,
     /* [in] */ Float min,
     /* [in] */ Float max,
     /* [in] */ Float current,
-    /* [out] */ IRangeInfo** info)
+    /* [out] */ IAccessibilityNodeInfoRangeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    AutoPtr<IRangeInfo> _info = sPool->AcquireItem();
+    AutoPtr<IAccessibilityNodeInfoRangeInfo> _info = sPool->AcquireItem();
 
     if (_info != NULL) {
         *info = _info;
@@ -75,15 +55,14 @@ ECode CRangeInfo::Obtain(
         return NOERROR;
     }
 
-    AutoPtr<IRangeInfo> rangeInfo;
-    CRangeInfo::New(type, min, max, current, (IRangeInfo**)&rangeInfo);
-    *info = rangeInfo;
+    AutoPtr<AccessibilityNodeInfoRangeInfo> rangeInfo = new AccessibilityNodeInfoRangeInfo(type, min, max, current);
+    *info = (IAccessibilityNodeInfoRangeInfo*)rangeInfo.Get();
     REFCOUNT_ADD(*info);
 
     return NOERROR;
 }
 
-ECode CRangeInfo::GetType(
+ECode AccessibilityNodeInfoRangeInfo::GetType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type)
@@ -91,7 +70,7 @@ ECode CRangeInfo::GetType(
     return NOERROR;
 }
 
-ECode CRangeInfo::GetMin(
+ECode AccessibilityNodeInfoRangeInfo::GetMin(
     /* [out] */ Float* min)
 {
     VALIDATE_NOT_NULL(min)
@@ -99,7 +78,7 @@ ECode CRangeInfo::GetMin(
     return NOERROR;
 }
 
-ECode CRangeInfo::GetMax(
+ECode AccessibilityNodeInfoRangeInfo::GetMax(
     /* [out] */ Float* max)
 {
     VALIDATE_NOT_NULL(max)
@@ -107,7 +86,7 @@ ECode CRangeInfo::GetMax(
     return NOERROR;
 }
 
-ECode CRangeInfo::GetCurrent(
+ECode AccessibilityNodeInfoRangeInfo::GetCurrent(
     /* [out] */ Float* current)
 {
     VALIDATE_NOT_NULL(current)
@@ -115,14 +94,14 @@ ECode CRangeInfo::GetCurrent(
     return NOERROR;
 }
 
-ECode CRangeInfo::Recycle()
+ECode AccessibilityNodeInfoRangeInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem(THIS_PROBE(IRangeInfo));
+    sPool->ReleaseItem((IAccessibilityNodeInfoRangeInfo*)this);
     return NOERROR;
 }
 
-void CRangeInfo::Clear()
+void AccessibilityNodeInfoRangeInfo::Clear()
 {
     mType = 0;
     mMin = 0;

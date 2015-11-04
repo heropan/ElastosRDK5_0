@@ -17,7 +17,7 @@ module
      *
      * @hide
      */
-    [local, oneway]
+    [oneway]
     interface IIAccessibilityInteractionConnection {
         FindAccessibilityNodeInfoByAccessibilityId(
             [in] Int64 accessibilityNodeId,

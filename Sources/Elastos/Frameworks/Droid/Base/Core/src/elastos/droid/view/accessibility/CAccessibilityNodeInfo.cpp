@@ -1,31 +1,29 @@
 
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
-#include "elastos/droid/view/accessibility/CRangeInfo.h"
-#include "elastos/droid/view/accessibility/CCollectionInfo.h"
-#include "elastos/droid/view/accessibility/CCollectionItemInfo.h"
-#include "elastos/droid/view/accessibility/CAccessibilityAction.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionInfo.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionItemInfo.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoRangeInfo.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfoAccessibilityAction.h"
 //#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/Math.h>
-#include <elastos/core/CoreUtils.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::IInputType;
-using Elastos::Droid::Utility::CArrayMap;
-using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
-using Elastos::Core::CoreUtils;
+using Elastos::Core::IInteger64;
 using Elastos::Core::Math;
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
-using Elastos::Utility::CHashMap;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::Logging::Slogger;
 // using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 
@@ -158,7 +156,6 @@ ECode CAccessibilityNodeInfo::FindFocus(
     FAIL_RETURN(EnforceSealed());
     FAIL_RETURN(EnforceValidFocusType(focus));
     if (!CanPerformRequestOverConnection(mSourceNodeId)) {
-
         return NOERROR;
     }
 
@@ -234,7 +231,7 @@ ECode CAccessibilityNodeInfo::Refresh(
 }
 
 ECode CAccessibilityNodeInfo::GetChildNodeIds(
-    /* [out] */ IMap** ids)
+    /* [out] */ IInt64Array** ids)
 {
     VALIDATE_NOT_NULL(ids);
     *ids = mChildNodeIds;
@@ -252,11 +249,7 @@ ECode CAccessibilityNodeInfo::GetChildId(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    AutoPtr<IInterface> obj;
-    mChildNodeIds->Get(TO_IINTERFACE(CoreUtils::Convert(index)), (IInterface**)&obj);
-    AutoPtr<IInteger64> obj64 = IInteger64::Probe(obj);
-
-    return obj64->GetValue(id);
+    return mChildNodeIds->Get(index, id);
 }
 
 ECode CAccessibilityNodeInfo::GetChildCount(
@@ -288,11 +281,8 @@ ECode CAccessibilityNodeInfo::GetChild(
         return NOERROR;
     }
 
-    AutoPtr<IInterface> obj;
-    mChildNodeIds->Get(TO_IINTERFACE(CoreUtils::Convert(index)), (IInterface**)&obj);
-    AutoPtr<IInteger64> obj64 = IInteger64::Probe(obj);
     Int64 childId;
-    obj64->GetValue(&childId);
+    mChildNodeIds->Get(index, &childId);
 
     // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     // client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
@@ -334,7 +324,7 @@ ECode CAccessibilityNodeInfo::AddChildInternal(
 {
     FAIL_RETURN(EnforceNotSealed());
     if (mChildNodeIds == NULL) {
-        CHashMap::New((IMap**)&mChildNodeIds);
+        CInt64Array::New((IInt64Array**)&mChildNodeIds);
     }
 
     Int32 rootAccessibilityViewId = UNDEFINED_ITEM_ID;
@@ -344,13 +334,13 @@ ECode CAccessibilityNodeInfo::AddChildInternal(
     Int64 childNodeId = MakeNodeId(rootAccessibilityViewId, virtualDescendantId);
     // If we're checking uniqueness and the ID already exists, abort.
     Int32 key;
-    IList::Probe(TO_IINTERFACE(mChildNodeIds))->IndexOf(TO_IINTERFACE(CoreUtils::Convert(childNodeId)), &key);
+    mChildNodeIds->IndexOf(childNodeId, &key);
 
     if (checked && key >= 0) {
         return NOERROR;
     }
 
-    IList::Probe(TO_IINTERFACE(mChildNodeIds))->Add(TO_IINTERFACE(CoreUtils::Convert(childNodeId)));
+    mChildNodeIds->Add(childNodeId);
     return NOERROR;
 }
 
@@ -361,7 +351,7 @@ ECode CAccessibilityNodeInfo::RemoveChild(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(EnforceNotSealed());
-    AutoPtr<IMap> childIds = mChildNodeIds;
+    AutoPtr<IInt64Array> childIds = mChildNodeIds;
     if (childIds == NULL) {
         *result = FALSE;
         return NOERROR;
@@ -373,14 +363,14 @@ ECode CAccessibilityNodeInfo::RemoveChild(
 
     Int64 childNodeId = MakeNodeId(rootAccessibilityViewId, virtualDescendantId);
     Int32 index;
-    IList::Probe(TO_IINTERFACE(childIds))->IndexOf(TO_IINTERFACE(CoreUtils::Convert(childNodeId)), &index);
+    childIds->IndexOf(childNodeId, &index);
 
     if (index < 0) {
         *result = FALSE;
         return NOERROR;
     }
 
-    childIds->Remove(TO_IINTERFACE(CoreUtils::Convert(index)));
+    childIds->Remove(index);
     *result = TRUE;
     return NOERROR;
 }
@@ -417,7 +407,7 @@ ECode CAccessibilityNodeInfo::GetActions(
         AutoPtr<IInterface> obj;
         mActions->Get(i, (IInterface**)&obj);
         Int32 actionId;
-        IAccessibilityAction::Probe(obj)->GetId(&actionId);
+        IAccessibilityNodeInfoAccessibilityAction::Probe(obj)->GetId(&actionId);
         if (actionId <= LAST_LEGACY_STANDARD_ACTION) {
             returnValue |= actionId;
         }
@@ -428,7 +418,7 @@ ECode CAccessibilityNodeInfo::GetActions(
 }
 
 ECode CAccessibilityNodeInfo::AddAction(
-    /* [in] */ IAccessibilityAction* action)
+    /* [in] */ IAccessibilityNodeInfoAccessibilityAction* action)
 {
     FAIL_RETURN(EnforceNotSealed());
 
@@ -440,8 +430,8 @@ ECode CAccessibilityNodeInfo::AddAction(
         CArrayList::New((IArrayList**)&mActions);
     }
 
-    mActions->Remove(TO_IINTERFACE(action));
-    mActions->Add(TO_IINTERFACE(action));
+    mActions->Remove(action);
+    mActions->Add(action);
 
     return NOERROR;
 }
@@ -466,12 +456,11 @@ ECode CAccessibilityNodeInfo::RemoveAction(
     FAIL_RETURN(EnforceNotSealed());
 
     Boolean res;
-    RemoveAction(GetActionSingleton(action), &res);
-    return NOERROR;
+    return RemoveAction(GetActionSingleton(action), &res);
 }
 
 ECode CAccessibilityNodeInfo::RemoveAction(
-    /* [in] */ IAccessibilityAction* action,
+    /* [in] */ IAccessibilityNodeInfoAccessibilityAction* action,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -482,8 +471,7 @@ ECode CAccessibilityNodeInfo::RemoveAction(
         return NOERROR;
     }
 
-    mActions->Remove(TO_IINTERFACE(action));
-    return NOERROR;
+    return mActions->Remove(action, result);
 }
 
 ECode CAccessibilityNodeInfo::SetMaxTextLength(
@@ -893,7 +881,7 @@ ECode CAccessibilityNodeInfo::SetEditable(
 }
 
 ECode CAccessibilityNodeInfo::GetCollectionInfo(
-    /* [out] */ ICollectionInfo** info)
+    /* [out] */ IAccessibilityNodeInfoCollectionInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     *info = mCollectionInfo;
@@ -902,7 +890,7 @@ ECode CAccessibilityNodeInfo::GetCollectionInfo(
 }
 
 ECode CAccessibilityNodeInfo::SetCollectionInfo(
-    /* [in] */ ICollectionInfo* collectionInfo)
+    /* [in] */ IAccessibilityNodeInfoCollectionInfo* collectionInfo)
 {
     FAIL_RETURN(EnforceNotSealed())
     mCollectionInfo = collectionInfo;
@@ -910,7 +898,7 @@ ECode CAccessibilityNodeInfo::SetCollectionInfo(
 }
 
 ECode CAccessibilityNodeInfo::GetCollectionItemInfo(
-    /* [out] */ ICollectionItemInfo** info)
+    /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     *info = mCollectionItemInfo;
@@ -919,7 +907,7 @@ ECode CAccessibilityNodeInfo::GetCollectionItemInfo(
 }
 
 ECode CAccessibilityNodeInfo::SetCollectionItemInfo(
-    /* [in] */ ICollectionItemInfo* collectionItemInfo)
+    /* [in] */ IAccessibilityNodeInfoCollectionItemInfo* collectionItemInfo)
 {
     FAIL_RETURN(EnforceNotSealed())
     mCollectionItemInfo = collectionItemInfo;
@@ -927,7 +915,7 @@ ECode CAccessibilityNodeInfo::SetCollectionItemInfo(
 }
 
 ECode CAccessibilityNodeInfo::GetRangeInfo(
-    /* [out] */ IRangeInfo** info)
+    /* [out] */ IAccessibilityNodeInfoRangeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     *info = mRangeInfo;
@@ -936,7 +924,7 @@ ECode CAccessibilityNodeInfo::GetRangeInfo(
 }
 
 ECode CAccessibilityNodeInfo::SetRangeInfo(
-    /* [in] */ IRangeInfo* rangeInfo)
+    /* [in] */ IAccessibilityNodeInfoRangeInfo* rangeInfo)
 {
     FAIL_RETURN(EnforceNotSealed())
     mRangeInfo = rangeInfo;
@@ -1390,9 +1378,9 @@ ECode CAccessibilityNodeInfo::Obtain(
     VALIDATE_NOT_NULL(info);
     AutoPtr<IAccessibilityNodeInfo> _info = sPool->AcquireItem();
     if (_info == NULL) {
-        AutoPtr<CAccessibilityNodeInfo> cinfo;
-        CAccessibilityNodeInfo::NewByFriend((CAccessibilityNodeInfo**)&cinfo);
-        *info = cinfo;
+        AutoPtr<IAccessibilityNodeInfo> accInfo;
+        CAccessibilityNodeInfo::New((IAccessibilityNodeInfo**)&accInfo);
+        *info = accInfo;
         REFCOUNT_ADD(*info);
         return NOERROR;
     }
@@ -1408,14 +1396,14 @@ ECode CAccessibilityNodeInfo::Obtain(
 {
     VALIDATE_NOT_NULL(infoClone);
     FAIL_RETURN(Obtain(infoClone));
-    ((CAccessibilityNodeInfo*)(*infoClone))->Init((CAccessibilityNodeInfo*)info);
+    ((CAccessibilityNodeInfo*)(*infoClone))->Init(info);
     return NOERROR;
 }
 
 ECode CAccessibilityNodeInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem(THIS_PROBE(IAccessibilityNodeInfo));
+    sPool->ReleaseItem((IAccessibilityNodeInfo*)this);
     return NOERROR;
 }
 
@@ -1432,19 +1420,17 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
     dest->WriteInt64(mLabeledById);
     dest->WriteInt32(mConnectionId);
 
-    AutoPtr<IMap> childIds = mChildNodeIds;
+    AutoPtr<IInt64Array> childIds = mChildNodeIds;
     if (childIds == NULL) {
         dest->WriteInt32(0);
-    } else {
+    }
+    else {
         Int32 childIdsSize;
         childIds->GetSize(&childIdsSize);
         dest->WriteInt32(childIdsSize);
-        for (Int32 i = 0; i < childIdsSize; ++i)
-        {
-            AutoPtr<IInterface> obj;
-            childIds->Get(TO_IINTERFACE(CoreUtils::Convert(i)), (IInterface**)&obj);
+        for (Int32 i = 0; i < childIdsSize; ++i) {
             Int64 id;
-            IInteger64::Probe(obj)->GetValue(&id);
+            childIds->Get(i, &id);
             dest->WriteInt64(id);
         }
     }
@@ -1462,7 +1448,7 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
     dest->WriteInt32(inScreenCls->mRight);
 
     Boolean res;
-    if (mActions != NULL && !(mActions->IsEmpty(&res), res)) {
+    if (mActions != NULL && (mActions->IsEmpty(&res), !res)) {
         Int32 actionCount;
         mActions->GetSize(&actionCount);
         dest->WriteInt32(actionCount);
@@ -1471,7 +1457,7 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
         for (Int32 i = 0; i < actionCount; i++) {
             AutoPtr<IInterface> obj;
             mActions->Get(i, (IInterface**)&obj);
-            AutoPtr<IAccessibilityAction> action = IAccessibilityAction::Probe(obj);
+            AutoPtr<IAccessibilityNodeInfoAccessibilityAction> action = IAccessibilityNodeInfoAccessibilityAction::Probe(obj);
             if (IsDefaultLegacyStandardAction(action)) {
                 Int32 id;
                 action->GetId(&id);
@@ -1483,17 +1469,18 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
         for (Int32 i = 0; i < actionCount; i++) {
             AutoPtr<IInterface> obj;
             mActions->Get(i, (IInterface**)&obj);
-            AutoPtr<IAccessibilityAction> action = IAccessibilityAction::Probe(obj);
+            AutoPtr<IAccessibilityNodeInfoAccessibilityAction> action = IAccessibilityNodeInfoAccessibilityAction::Probe(obj);
             if (!IsDefaultLegacyStandardAction(action)) {
                 Int32 id;
                 action->GetId(&id);
                 dest->WriteInt32(id);
                 AutoPtr<ICharSequence> cs;
                 action->GetLabel((ICharSequence**)&cs);
-                dest->WriteInterfacePtr((IInterface*)cs);
+                dest->WriteInterfacePtr(cs);
             }
         }
-    } else {
+    }
+    else {
         dest->WriteInt32(0);
     }
 
@@ -1501,11 +1488,11 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
     dest->WriteInt32(mMovementGranularities);
     dest->WriteInt32(mBooleanProperties);
 
-    dest->WriteInterfacePtr((IInterface*)mPackageName);
-    dest->WriteInterfacePtr((IInterface*)mClassName);
-    dest->WriteInterfacePtr((IInterface*)mText);
-    dest->WriteInterfacePtr((IInterface*)mError);
-    dest->WriteInterfacePtr((IInterface*)mContentDescription);
+    dest->WriteInterfacePtr(mPackageName);
+    dest->WriteInterfacePtr(mClassName);
+    dest->WriteInterfacePtr(mText);
+    dest->WriteInterfacePtr(mError);
+    dest->WriteInterfacePtr(mContentDescription);
     dest->WriteString(mViewIdResourceName);
 
     dest->WriteInt32(mTextSelectionStart);
@@ -1515,8 +1502,9 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
 
     if (mExtras != NULL) {
         dest->WriteInt32(1);
-        dest->WriteInterfacePtr((IInterface*)mExtras);
-    } else {
+        dest->WriteInterfacePtr(mExtras);
+    }
+    else {
         dest->WriteInt32(0);
     }
 
@@ -1532,7 +1520,8 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
         dest->WriteFloat(min);
         dest->WriteFloat(max);
         dest->WriteFloat(current);
-    } else {
+    }
+    else {
         dest->WriteInt32(0);
     }
 
@@ -1548,7 +1537,8 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
         dest->WriteInt32(columnCount);
         dest->WriteBoolean(hierarchical);
         dest->WriteInt32(selectionMode);
-    } else {
+    }
+    else {
         dest->WriteInt32(0);
     }
 
@@ -1568,7 +1558,8 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
         dest->WriteInt32(columnSpan);
         dest->WriteBoolean(heading);
         dest->WriteBoolean(selected);
-    } else {
+    }
+    else {
         dest->WriteInt32(0);
     }
 
@@ -1587,78 +1578,79 @@ ECode CAccessibilityNodeInfo::ReadFromParcel(
 }
 
 void CAccessibilityNodeInfo::Init(
-    /* [in] */ CAccessibilityNodeInfo* other)
+    /* [in] */ IAccessibilityNodeInfo* other)
 {
-    mSealed = other->mSealed;
-    mSourceNodeId = other->mSourceNodeId;
-    mParentNodeId = other->mParentNodeId;
-    mLabelForId = other->mLabelForId;
-    mLabeledById = other->mLabeledById;
-    mWindowId = other->mWindowId;
-    mConnectionId = other->mConnectionId;
-    mBoundsInParent->Set(other->mBoundsInParent);
-    mBoundsInScreen->Set(other->mBoundsInScreen);
-    mPackageName = other->mPackageName;
-    mClassName = other->mClassName;
-    mText = other->mText;
-    mText = other->mError;
-    mContentDescription = other->mContentDescription;
-    mViewIdResourceName = other->mViewIdResourceName;
+    AutoPtr<CAccessibilityNodeInfo> cAother = (CAccessibilityNodeInfo*)other;
+    mSealed = cAother->mSealed;
+    mSourceNodeId = cAother->mSourceNodeId;
+    mParentNodeId = cAother->mParentNodeId;
+    mLabelForId = cAother->mLabelForId;
+    mLabeledById = cAother->mLabeledById;
+    mWindowId = cAother->mWindowId;
+    mConnectionId = cAother->mConnectionId;
+    mBoundsInParent->Set(cAother->mBoundsInParent);
+    mBoundsInScreen->Set(cAother->mBoundsInScreen);
+    mPackageName = cAother->mPackageName;
+    mClassName = cAother->mClassName;
+    mText = cAother->mText;
+    mText = cAother->mError;
+    mContentDescription = cAother->mContentDescription;
+    mViewIdResourceName = cAother->mViewIdResourceName;
 
-    AutoPtr<IArrayList> otherActions = other->mActions;
+    AutoPtr<IArrayList> otherActions = cAother->mActions;
     Int32 size;
-    otherActions->GetSize(&size);
-    if (otherActions != NULL && size > 0) {
+    if (otherActions != NULL && (otherActions->GetSize(&size), size) > 0) {
         if (mActions == NULL) {
             CArrayList::New(ICollection::Probe(otherActions), (IArrayList**)&mActions);
-        } else {
+        }
+        else {
             mActions->Clear();
             mActions->AddAll(ICollection::Probe(mActions));
         }
     }
-    mBooleanProperties = other->mBooleanProperties;
-    mMaxTextLength = other->mMaxTextLength;
-    mMovementGranularities = other->mMovementGranularities;
+    mBooleanProperties = cAother->mBooleanProperties;
+    mMaxTextLength = cAother->mMaxTextLength;
+    mMovementGranularities = cAother->mMovementGranularities;
 
-    AutoPtr<IMap> otherChildNodeIds = other->mChildNodeIds;
-    otherChildNodeIds->GetSize(&size);
-    if (mChildNodeIds != NULL &&  size > 0) {
-        if (mActions == NULL) {
-            CHashMap::New(otherChildNodeIds, (IMap**)&mChildNodeIds);
-        } else {
+    AutoPtr<IInt64Array> otherChildNodeIds = cAother->mChildNodeIds;
+    if (otherChildNodeIds != NULL && (otherChildNodeIds->GetSize(&size), size) > 0) {
+        if (mChildNodeIds == NULL) {
+            AutoPtr<IInterface> obj;
+            ICloneable::Probe(otherChildNodeIds)->Clone((IInterface**)&obj);
+            mChildNodeIds = IInt64Array::Probe(obj);
+        }
+        else {
             mChildNodeIds->Clear();
-            mChildNodeIds->PutAll(otherChildNodeIds);
+            mChildNodeIds->AddAll(otherChildNodeIds);
         }
     }
 
-    mTextSelectionStart = other->mTextSelectionStart;
-    mTextSelectionEnd = other->mTextSelectionEnd;
-    mInputType = other->mInputType;
-    mLiveRegion = other->mLiveRegion;
+    mTextSelectionStart = cAother->mTextSelectionStart;
+    mTextSelectionEnd = cAother->mTextSelectionEnd;
+    mInputType = cAother->mInputType;
+    mLiveRegion = cAother->mLiveRegion;
 
     Boolean res;
-    other->mExtras->IsEmpty(&res);
-    if (other->mExtras != NULL && !res) {
+    if (cAother->mExtras != NULL && (cAother->mExtras->IsEmpty(&res), !res)) {
         AutoPtr<IBundle> bundle;
         GetExtras((IBundle**)&bundle);
-        bundle->PutAll(other->mExtras);
+        bundle->PutAll(cAother->mExtras);
     }
 
     mRangeInfo = NULL;
-    if (other->mRangeInfo != NULL) {
-        CRangeInfo::Obtain(other->mRangeInfo, (IRangeInfo**)&mRangeInfo);
+    if (cAother->mRangeInfo != NULL) {
+        AccessibilityNodeInfoRangeInfo::Obtain(cAother->mRangeInfo, (IAccessibilityNodeInfoRangeInfo**)&mRangeInfo);
     }
 
     mCollectionInfo = NULL;
-    if (other->mCollectionInfo != NULL) {
-        CCollectionInfo::Obtain(other->mCollectionInfo, (ICollectionInfo**)&mCollectionInfo);
+    if (cAother->mCollectionInfo != NULL) {
+        AccessibilityNodeInfoCollectionInfo::Obtain(cAother->mCollectionInfo, (IAccessibilityNodeInfoCollectionInfo**)&mCollectionInfo);
     }
 
     mCollectionItemInfo = NULL;
-    if (other->mCollectionItemInfo != NULL) {
-        CCollectionItemInfo::Obtain(other->mCollectionItemInfo, (ICollectionItemInfo**)&mCollectionItemInfo);
+    if (cAother->mCollectionItemInfo != NULL) {
+        AccessibilityNodeInfoCollectionItemInfo::Obtain(cAother->mCollectionItemInfo, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
     }
-
 }
 
 void CAccessibilityNodeInfo::InitFromParcel(
@@ -1677,12 +1669,11 @@ void CAccessibilityNodeInfo::InitFromParcel(
     if (childrenSize <= 0) {
         mChildNodeIds = NULL;
     } else {
-        CHashMap::New(childrenSize, (IMap**)&mChildNodeIds);
+        CInt64Array::New(childrenSize, (IInt64Array**)&mChildNodeIds);
         for (Int32 i = 0; i < childrenSize; i++) {
             Int64 childId;
             parcel->ReadInt64(&childId);
-            mChildNodeIds->Put(TO_IINTERFACE(CoreUtils::Convert(i)),
-                    TO_IINTERFACE(CoreUtils::Convert(childId)));
+            mChildNodeIds->Add(childId);
         }
     }
 
@@ -1705,15 +1696,14 @@ void CAccessibilityNodeInfo::InitFromParcel(
         parcel->ReadInt32(&legacyStandardActions);
         AddLegacyStandardActions(legacyStandardActions);
         Int32 nonLegacyActionCount = actionCount - Elastos::Core::Math::BitCount(legacyStandardActions);
-        for (Int32 i = 0; i < nonLegacyActionCount; ++i)
-        {
+        for (Int32 i = 0; i < nonLegacyActionCount; ++i) {
             Int32 data;
             parcel->ReadInt32(&data);
             AutoPtr<IInterface> obj;
             parcel->ReadInterfacePtr((Handle32*)&obj);
             AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
-            AutoPtr<IAccessibilityAction> action;
-            CAccessibilityAction::New(data, cs, (IAccessibilityAction**)&action);
+            AutoPtr<IAccessibilityNodeInfoAccessibilityAction> action;
+            CAccessibilityNodeInfoAccessibilityAction::New(data, cs, (IAccessibilityNodeInfoAccessibilityAction**)&action);
             AddAction(action);
         }
     }
@@ -1760,7 +1750,7 @@ void CAccessibilityNodeInfo::InitFromParcel(
         parcel->ReadFloat(&min);
         parcel->ReadFloat(&max);
         parcel->ReadFloat(&current);
-        CRangeInfo::Obtain(type, min, max, current, (IRangeInfo**)&mRangeInfo);
+        AccessibilityNodeInfoRangeInfo::Obtain(type, min, max, current, (IAccessibilityNodeInfoRangeInfo**)&mRangeInfo);
     }
 
     parcel->ReadInt32(&data);
@@ -1771,7 +1761,7 @@ void CAccessibilityNodeInfo::InitFromParcel(
         parcel->ReadInt32(&columnCount);
         parcel->ReadBoolean(&hierarchical);
         parcel->ReadInt32(&selectionMode);
-        CCollectionInfo::Obtain(rowCount, columnCount, hierarchical, selectionMode, (ICollectionInfo**)&mCollectionInfo);
+        AccessibilityNodeInfoCollectionInfo::Obtain(rowCount, columnCount, hierarchical, selectionMode, (IAccessibilityNodeInfoCollectionInfo**)&mCollectionInfo);
     }
 
     parcel->ReadInt32(&data);
@@ -1784,8 +1774,8 @@ void CAccessibilityNodeInfo::InitFromParcel(
         parcel->ReadInt32(&columnSpan);
         parcel->ReadBoolean(&heading);
         parcel->ReadBoolean(&selected);
-        CCollectionItemInfo::Obtain(rowIndex, rowSpan, columnIndex, columnSpan,
-                heading, selected, (ICollectionItemInfo**)&mCollectionItemInfo);
+        AccessibilityNodeInfoCollectionItemInfo::Obtain(rowIndex, rowSpan, columnIndex, columnSpan,
+                heading, selected, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
     }
 
 }
@@ -1802,7 +1792,7 @@ void CAccessibilityNodeInfo::Clear()
     mMaxTextLength = -1;
     mMovementGranularities = 0;
     if (mChildNodeIds != NULL) {
-        mChildNodeIds.Clear();
+        mChildNodeIds->Clear();
     }
     mBoundsInParent->Set(0, 0, 0, 0);
     mBoundsInScreen->Set(0, 0, 0, 0);
@@ -1838,7 +1828,7 @@ void CAccessibilityNodeInfo::Clear()
 }
 
 Boolean CAccessibilityNodeInfo::IsDefaultLegacyStandardAction(
-    /* [in] */ IAccessibilityAction* action)
+    /* [in] */ IAccessibilityNodeInfoAccessibilityAction* action)
 {
     Int32 id;
     action->GetId(&id);
@@ -1847,15 +1837,15 @@ Boolean CAccessibilityNodeInfo::IsDefaultLegacyStandardAction(
     return id <= LAST_LEGACY_STANDARD_ACTION && TextUtils::IsEmpty(cs);
 }
 
-AutoPtr<IAccessibilityAction> CAccessibilityNodeInfo::GetActionSingleton(
+AutoPtr<IAccessibilityNodeInfoAccessibilityAction> CAccessibilityNodeInfo::GetActionSingleton(
     /* [in] */ Int32 actionId)
 {
     Int32 actions;
-    ICollection::Probe(CAccessibilityAction::sStandardActions)->GetSize(&actions);
+    ICollection::Probe(CAccessibilityNodeInfoAccessibilityAction::sStandardActions)->GetSize(&actions);
     for (Int32 i = 0; i < actions; i++) {
         AutoPtr<IInterface> obj;
-        CAccessibilityAction::sStandardActions->GetValueAt(i, (IInterface**)&obj);
-        AutoPtr<IAccessibilityAction> currentAction = IAccessibilityAction::Probe(obj);
+        CAccessibilityNodeInfoAccessibilityAction::sStandardActions->GetValueAt(i, (IInterface**)&obj);
+        AutoPtr<IAccessibilityNodeInfoAccessibilityAction> currentAction = IAccessibilityNodeInfoAccessibilityAction::Probe(obj);
         Int32 id;
         currentAction->GetId(&id);
         if (actionId == id) {
@@ -1873,7 +1863,7 @@ void CAccessibilityNodeInfo::AddLegacyStandardActions(
     while (remainingIds > 0) {
         Int32 id = 1 << Elastos::Core::Math::NumberOfTrailingZeros(remainingIds);
         remainingIds &= ~id;
-        AutoPtr<IAccessibilityAction> action = GetActionSingleton(id);
+        AutoPtr<IAccessibilityNodeInfoAccessibilityAction> action = GetActionSingleton(id);
         AddAction(action);
     }
 }
@@ -2004,66 +1994,94 @@ ECode CAccessibilityNodeInfo::ToString(
 {
     VALIDATE_NOT_NULL(s);
 
-    // StringBuilder builder = new StringBuilder();
+    AutoPtr<StringBuilder> builder = new StringBuilder();
     // builder.append(super.toString());
 
-    // if (DEBUG) {
-    //     builder.append("; sourceNodeId: " + mSourceNodeId);
-    //     builder.append("; accessibilityViewId: " + getAccessibilityViewId(mSourceNodeId));
-    //     builder.append("; virtualDescendantId: " + getVirtualDescendantId(mSourceNodeId));
-    //     builder.append("; mParentNodeId: " + mParentNodeId);
+    if (DEBUG) {
+        builder->Append("; sourceNodeId: ");
+        builder->Append(mSourceNodeId);
+        builder->Append("; accessibilityViewId: ");
+        builder->Append(GetAccessibilityViewId(mSourceNodeId));
+        builder->Append("; virtualDescendantId: ");
+        builder->Append(GetVirtualDescendantId(mSourceNodeId));
+        builder->Append("; mParentNodeId: ");
+        builder->Append( + mParentNodeId);
 
-    //     int granularities = mMovementGranularities;
-    //     builder.append("; MovementGranularities: [");
-    //     while (granularities != 0) {
-    //         final int granularity = 1 << Integer.numberOfTrailingZeros(granularities);
-    //         granularities &= ~granularity;
-    //         builder.append(getMovementGranularitySymbolicName(granularity));
-    //         if (granularities != 0) {
-    //             builder.append(", ");
-    //         }
-    //     }
-    //     builder.append("]");
+        Int32 granularities = mMovementGranularities;
+        builder->Append("; MovementGranularities: [");
+        while (granularities != 0) {
+            const Int32 granularity = 1 << Elastos::Core::Math::NumberOfTrailingZeros(granularities);
+            granularities &= ~granularity;
+            builder->Append(GetMovementGranularitySymbolicName(granularity));
+            if (granularities != 0) {
+                builder->Append(", ");
+            }
+        }
+        builder->Append("]");
 
-    //     builder.append("; childAccessibilityIds: [");
-    //     final LongArray childIds = mChildNodeIds;
-    //     if (childIds != null) {
-    //         for (int i = 0, count = childIds.size(); i < count; i++) {
-    //             builder.append(childIds.get(i));
-    //             if (i < count - 1) {
-    //                 builder.append(", ");
-    //             }
-    //         }
-    //     }
-    //     builder.append("]");
-    // }
+        builder->Append("; childAccessibilityIds: [");
+        AutoPtr<IInt64Array> childIds = mChildNodeIds;
+        if (childIds != NULL) {
+            Int32 count;
+            childIds->GetSize(&count);
+            for (Int32 i = 0; i < count; i++) {
+                Int64 id;
+                childIds->Get(i, &id);
+                builder->Append(id);
+                if (i < count - 1) {
+                    builder->Append(", ");
+                }
+            }
+        }
+        builder->Append("]");
+    }
 
-    // builder.append("; boundsInParent: " + mBoundsInParent);
-    // builder.append("; boundsInScreen: " + mBoundsInScreen);
+    builder->Append("; boundsInParent: ");
+    builder->Append(mBoundsInParent);
+    builder->Append("; boundsInScreen: ");
+    builder->Append(mBoundsInScreen);
 
-    // builder.append("; packageName: ").append(mPackageName);
-    // builder.append("; className: ").append(mClassName);
-    // builder.append("; text: ").append(mText);
-    // builder.append("; error: ").append(mError);
-    // builder.append("; maxTextLength: ").append(mMaxTextLength);
-    // builder.append("; contentDescription: ").append(mContentDescription);
-    // builder.append("; viewIdResName: ").append(mViewIdResourceName);
+    builder->Append("; packageName: ");
+    builder->Append(mPackageName);
+    builder->Append("; className: ");
+    builder->Append(mClassName);
+    builder->Append("; text: ");
+    builder->Append(mText);
+    builder->Append("; error: ");
+    builder->Append(mError);
+    builder->Append("; maxTextLength: ");
+    builder->Append(mMaxTextLength);
+    builder->Append("; contentDescription: ");
+    builder->Append(mContentDescription);
+    builder->Append("; viewIdResName: ");
+    builder->Append(mViewIdResourceName);
 
-    // builder.append("; checkable: ").append(isCheckable());
-    // builder.append("; checked: ").append(isChecked());
-    // builder.append("; focusable: ").append(isFocusable());
-    // builder.append("; focused: ").append(isFocused());
-    // builder.append("; selected: ").append(isSelected());
-    // builder.append("; clickable: ").append(isClickable());
-    // builder.append("; longClickable: ").append(isLongClickable());
-    // builder.append("; enabled: ").append(isEnabled());
-    // builder.append("; password: ").append(isPassword());
-    // builder.append("; scrollable: ").append(isScrollable());
-    // builder.append("; actions: ").append(mActions);
+    builder->Append("; checkable: ");
+    Boolean res;
+    builder->Append((IsCheckable(&res), res));
+    builder->Append("; checked: ");
+    builder->Append((IsChecked(&res), res));
+    builder->Append("; focusable: ");
+    builder->Append((IsFocusable(&res), res));
+    builder->Append("; focused: ");
+    builder->Append((IsFocused(&res), res));
+    builder->Append("; selected: ");
+    builder->Append((IsSelected(&res), res));
+    builder->Append("; clickable: ");
+    builder->Append((IsClickable(&res), res));
+    builder->Append("; longClickable: ");
+    builder->Append((IsLongClickable(&res), res));
+    builder->Append("; enabled: ");
+    builder->Append((IsEnabled(&res), res));
+    builder->Append("; password: ");
+    builder->Append((IsPassword(&res), res));
+    builder->Append("; scrollable: ");
+    builder->Append((IsScrollable(&res), res));
+    builder->Append("; actions: ");
+    builder->Append(mActions);
 
-    // return builder.toString();
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    *s = builder->ToString();
+    return NOERROR;
 }
 
 } // Accessibility

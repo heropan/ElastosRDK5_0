@@ -1,8 +1,7 @@
-#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CCOLLECTIONITEMINFO_H__
-#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CCOLLECTIONITEMINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONITEMINFO_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONITEMINFO_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "_Elastos_Droid_View_Accessibility_CCollectionItemInfo.h"
 #include "elastos/droid/utility/Pools.h"
 
 using Elastos::Droid::Utility::Pools;
@@ -12,22 +11,14 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
-CarClass(CCollectionItemInfo)
-    , public Object
-    , public ICollectionItemInfo
+class AccessibilityNodeInfoCollectionItemInfo
+    : public Object
+    , public IAccessibilityNodeInfoCollectionItemInfo
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
-
-    CCollectionItemInfo();
-
-    ~CCollectionItemInfo();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
+    AccessibilityNodeInfoCollectionItemInfo(
         /* [in] */ Int32 rowIndex,
         /* [in] */ Int32 rowSpan,
         /* [in] */ Int32 columnIndex,
@@ -42,8 +33,8 @@ public:
      * @hide
      */
     static CARAPI Obtain(
-        /* [in] */ ICollectionItemInfo* other,
-        /* [out] */ ICollectionItemInfo** info);
+        /* [in] */ IAccessibilityNodeInfoCollectionItemInfo* other,
+        /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info);
 
     /**
      * Obtains a pooled instance.
@@ -60,7 +51,7 @@ public:
         /* [in] */ Int32 columnIndex,
         /* [in] */ Int32 columnSpan,
         /* [in] */ Boolean heading,
-        /* [out] */ ICollectionItemInfo** info);
+        /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info);
 
     /**
      * Obtains a pooled instance.
@@ -79,7 +70,7 @@ public:
         /* [in] */ Int32 columnSpan,
         /* [in] */ Boolean heading,
         /* [in] */ Boolean selected,
-        /* [out] */ ICollectionItemInfo** info);
+        /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info);
 
 
     /**
@@ -147,8 +138,8 @@ private:
     Int32 mRowSpan;
     Boolean mSelected;
 
-    static  const Int32 MAX_POOL_SIZE;
-    static AutoPtr<Pools::SynchronizedPool<ICollectionItemInfo> > sPool;
+    static const Int32 MAX_POOL_SIZE;
+    static AutoPtr< Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionItemInfo> > sPool;
 };
 
 } // Accessibility
@@ -156,4 +147,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CCOLLECTIONITEMINFO_H__
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONITEMINFO_H__

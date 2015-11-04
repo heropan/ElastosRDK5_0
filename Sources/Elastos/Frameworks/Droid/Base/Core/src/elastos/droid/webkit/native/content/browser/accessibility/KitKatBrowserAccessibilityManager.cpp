@@ -2,8 +2,8 @@
 #include "elastos/droid/webkit/native/content/browser/accessibility/KitKatBrowserAccessibilityManager.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 
-using Elastos::Droid::View::Accessibility::ICollectionInfo;
-using Elastos::Droid::View::Accessibility::ICollectionInfoHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoCollectionInfoHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -46,12 +46,12 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionInfo(
     /* [in] */ Int32 columnCount,
     /* [in] */ Boolean hierarchical)
 {
-    AutoPtr<ICollectionInfo> info;
-    AutoPtr<ICollectionInfoHelper> help;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfo> info;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfoHelper> help;
     assert(0);
     // TODO
-    // CCollectionInfoHelper::AcquireSingleton((ICollectionInfoHelper**)&help);
-    // help->Obtain(rowCount, columnCount, hierarchical, (ICollectionInfo**)&info);
+    // CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
+    // help->Obtain(rowCount, columnCount, hierarchical, (IAccessibilityNodeInfoCollectionInfo**)&info);
     node->SetCollectionInfo(info);
 }
 
@@ -64,12 +64,12 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionItemIn
     /* [in] */ Int32 columnSpan,
     /* [in] */ Boolean heading)
 {
-    AutoPtr<ICollectionInfo> info;
-    AutoPtr<ICollectionInfoHelper> help;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfo> info;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfoHelper> help;
     assert(0);
     // TODO
-    // CCollectionInfoHelper::AcquireSingleton((ICollectionInfoHelper**)&help);
-    // help->Obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading, (ICollectionInfo**)&info);
+    // CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
+    // help->Obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading, (IAccessibilityNodeInfoCollectionInfo**)&info);
     // node->SetCollectionItemInfo(info);
 }
 
@@ -81,12 +81,12 @@ void KitKatBrowserAccessibilityManager::SetAccessibilityNodeInfoRangeInfo(
     /* [in] */ Float max,
     /* [in] */ Float current)
 {
-    AutoPtr<ICollectionInfo> info;
-    AutoPtr<ICollectionInfoHelper> help;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfo> info;
+    AutoPtr<IAccessibilityNodeInfoCollectionInfoHelper> help;
     assert(0);
     // TODO
-    // CCollectionInfoHelper::AcquireSingleton((ICollectionInfoHelper**)&help);
-    // help->Obtain(rangeType, min, max, current, (ICollectionInfo**)&info);
+    // CAccessibilityNodeInfoCollectionInfoHelper::AcquireSingleton((IAccessibilityNodeInfoCollectionInfoHelper**)&help);
+    // help->Obtain(rangeType, min, max, current, (IAccessibilityNodeInfoCollectionInfo**)&info);
     // node->SetRangeInfo(info);
 }
 

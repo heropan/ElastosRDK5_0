@@ -27,6 +27,15 @@ public:
         /* [in] */ Int32 titleResId,
         /* [in] */ Int32 descResId);
 
+    CARAPI GetCapability(
+        /*[out]*/ Int32* capability);
+
+    CARAPI GetTitleResId(
+        /*[out]*/ Int32* titleResId);
+
+    CARAPI GetDescResId(
+        /*[out]*/ Int32* descResId);
+
 public:
     Int32 mCapability;
     Int32 mTitleResId;

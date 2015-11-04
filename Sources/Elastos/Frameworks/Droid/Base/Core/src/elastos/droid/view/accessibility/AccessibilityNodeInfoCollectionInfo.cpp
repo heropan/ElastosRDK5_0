@@ -1,37 +1,18 @@
 
-#include "elastos/droid/view/accessibility/CCollectionInfo.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const Int32 CCollectionInfo::MAX_POOL_SIZE = 20;
-AutoPtr<Pools::SynchronizedPool<ICollectionInfo> > CCollectionInfo::sPool =
-        new Pools::SynchronizedPool<ICollectionInfo>(MAX_POOL_SIZE);
+const Int32 AccessibilityNodeInfoCollectionInfo::MAX_POOL_SIZE = 20;
+AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionInfo> > AccessibilityNodeInfoCollectionInfo::sPool =
+        new Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionInfo>(MAX_POOL_SIZE);
 
-CAR_INTERFACE_IMPL(CCollectionInfo, Object, ICollectionInfo)
+CAR_INTERFACE_IMPL(AccessibilityNodeInfoCollectionInfo, Object, IAccessibilityNodeInfoCollectionInfo)
 
-CAR_OBJECT_IMPL(CCollectionInfo)
-
-CCollectionInfo::CCollectionInfo()
-    : mRowCount(0)
-    , mColumnCount(0)
-    , mHierarchical(FALSE)
-    , mSelectionMode(0)
-{
-}
-
-CCollectionInfo::~CCollectionInfo()
-{
-}
-
-ECode CCollectionInfo::constructor()
-{
-    return NOERROR;
-}
-
-ECode CCollectionInfo::constructor(
+AccessibilityNodeInfoCollectionInfo::AccessibilityNodeInfoCollectionInfo(
     /* [in] */ Int32 rowCount,
     /* [in] */ Int32 columnCount,
     /* [in] */ Boolean hierarchical,
@@ -41,12 +22,11 @@ ECode CCollectionInfo::constructor(
     mColumnCount = columnCount;
     mHierarchical = hierarchical;
     mSelectionMode = selectionMode;
-    return NOERROR;
 }
 
-ECode CCollectionInfo::Obtain(
-    /* [in] */ ICollectionInfo* other,
-    /* [out] */ ICollectionInfo** info)
+ECode AccessibilityNodeInfoCollectionInfo::Obtain(
+    /* [in] */ IAccessibilityNodeInfoCollectionInfo* other,
+    /* [out] */ IAccessibilityNodeInfoCollectionInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     Int32 rowCount, columnCount, selectionMode;
@@ -59,49 +39,45 @@ ECode CCollectionInfo::Obtain(
     return Obtain(rowCount, columnCount, hierarchical, selectionMode, info);
 }
 
-ECode CCollectionInfo::Obtain(
+ECode AccessibilityNodeInfoCollectionInfo::Obtain(
     /* [in] */ Int32 rowCount,
     /* [in] */ Int32 columnCount,
     /* [in] */ Boolean hierarchical,
-    /* [out] */ ICollectionInfo** info)
+    /* [out] */ IAccessibilityNodeInfoCollectionInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     return Obtain(rowCount, columnCount, hierarchical, SELECTION_MODE_NONE, info);
 }
 
-ECode CCollectionInfo::Obtain(
+ECode AccessibilityNodeInfoCollectionInfo::Obtain(
     /* [in] */ Int32 rowCount,
     /* [in] */ Int32 columnCount,
     /* [in] */ Boolean hierarchical,
     /* [in] */ Int32 selectionMode,
-    /* [out] */ ICollectionInfo** info)
+    /* [out] */ IAccessibilityNodeInfoCollectionInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    AutoPtr<ICollectionInfo> _info = sPool->AcquireItem();
+    AutoPtr<IAccessibilityNodeInfoCollectionInfo> _info = sPool->AcquireItem();
 
     if (_info == NULL) {
-        AutoPtr<CCollectionInfo> collectionInfo;
-        CCollectionInfo::NewByFriend(rowCount, columnCount, hierarchical, selectionMode, (CCollectionInfo**)&collectionInfo);
-        *info = (ICollectionInfo*)collectionInfo.Get();
+        AutoPtr<AccessibilityNodeInfoCollectionInfo> collectionInfo = new AccessibilityNodeInfoCollectionInfo(rowCount, columnCount, hierarchical, selectionMode);
+        *info = (IAccessibilityNodeInfoCollectionInfo*)collectionInfo.Get();
         REFCOUNT_ADD(*info);
         return NOERROR;
     }
 
-    AutoPtr<CCollectionInfo> cinfo = (CCollectionInfo*)_info.Get();
+    AutoPtr<AccessibilityNodeInfoCollectionInfo> cinfo = (AccessibilityNodeInfoCollectionInfo*)_info.Get();
     cinfo->mRowCount = rowCount;
     cinfo->mColumnCount = columnCount;
     cinfo->mHierarchical = hierarchical;
     cinfo->mSelectionMode = selectionMode;
 
-    AutoPtr<ICollectionInfo> info2 = (ICollectionInfo*)cinfo.Get();
-
-    *info = info2;
+    *info = (IAccessibilityNodeInfoCollectionInfo*)cinfo.Get();
     REFCOUNT_ADD(*info);
-
     return NOERROR;
 }
 
-ECode CCollectionInfo::GetRowCount(
+ECode AccessibilityNodeInfoCollectionInfo::GetRowCount(
     /* [out] */ Int32* rowCount)
 {
     VALIDATE_NOT_NULL(rowCount)
@@ -109,7 +85,7 @@ ECode CCollectionInfo::GetRowCount(
     return NOERROR;
 }
 
-ECode CCollectionInfo::GetColumnCount(
+ECode AccessibilityNodeInfoCollectionInfo::GetColumnCount(
     /* [out] */ Int32* columnCount)
 {
     VALIDATE_NOT_NULL(columnCount)
@@ -117,7 +93,7 @@ ECode CCollectionInfo::GetColumnCount(
     return NOERROR;
 }
 
-ECode CCollectionInfo::IsHierarchical(
+ECode AccessibilityNodeInfoCollectionInfo::IsHierarchical(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -125,7 +101,7 @@ ECode CCollectionInfo::IsHierarchical(
     return NOERROR;
 }
 
-ECode CCollectionInfo::GetSelectionMode(
+ECode AccessibilityNodeInfoCollectionInfo::GetSelectionMode(
     /* [out] */ Int32* mode)
 {
     VALIDATE_NOT_NULL(mode)
@@ -133,14 +109,14 @@ ECode CCollectionInfo::GetSelectionMode(
     return NOERROR;
 }
 
-ECode CCollectionInfo::Recycle()
+ECode AccessibilityNodeInfoCollectionInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem(THIS_PROBE(ICollectionInfo));
+    sPool->ReleaseItem((IAccessibilityNodeInfoCollectionInfo*)this);
     return NOERROR;
 }
 
-void CCollectionInfo::Clear()
+void AccessibilityNodeInfoCollectionInfo::Clear()
 {
     mRowCount = 0;
     mColumnCount = 0;

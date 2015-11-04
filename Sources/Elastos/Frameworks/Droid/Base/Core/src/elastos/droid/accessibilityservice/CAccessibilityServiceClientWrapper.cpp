@@ -4,6 +4,7 @@
 
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::Os::CHandlerCaller;
+using Elastos::Droid::Os::EIID_IBinder;
 // using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 // using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
 // using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
@@ -19,8 +20,8 @@ const Int32 CAccessibilityServiceClientWrapper::DO_ON_GESTURE = 4;
 const Int32 CAccessibilityServiceClientWrapper::DO_CLEAR_ACCESSIBILITY_CACHE = 5;
 const Int32 CAccessibilityServiceClientWrapper::DO_ON_KEY_EVENT = 6;
 
-CAR_INTERFACE_IMPL_2(CAccessibilityServiceClientWrapper, Object, IAccessibilityServiceClientWrapper,
-        IIAccessibilityServiceClient/*, IHandlerCallerCallback*/)
+CAR_INTERFACE_IMPL_2(CAccessibilityServiceClientWrapper, Object, IIAccessibilityServiceClient,
+        IBinder/*, IHandlerCallerCallback*/)
 
 CAR_OBJECT_IMPL(CAccessibilityServiceClientWrapper)
 

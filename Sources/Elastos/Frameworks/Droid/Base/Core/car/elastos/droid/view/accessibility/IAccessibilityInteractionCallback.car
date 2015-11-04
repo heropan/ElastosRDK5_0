@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Utility.IList;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -14,7 +15,7 @@ module
      *
      * @hide
      */
-    [local, oneway]
+    [oneway]
     interface IIAccessibilityInteractionCallback {
         /**
          * Sets the result of an async request that returns an {@link AccessibilityNodeInfo}.

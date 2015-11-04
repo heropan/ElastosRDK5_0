@@ -617,7 +617,7 @@ module
                 [out] IAccessibilityNodeInfo** res);
         }
 
-        [local, deprecated]
+        [deprecated]
         interface IView {
             /**
              * When set to true, apps will draw debugging information about their layouts.

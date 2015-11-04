@@ -41,7 +41,7 @@ module
      * @Involve
      * interface IParcelable
      */
-    [deprecated, local]
+    [local, parcelable, deprecated]
     interface IAccessibilityServiceInfo {
         /**
          * Capability: This accessibility service can retrieve the active window content.
@@ -444,6 +444,14 @@ module
     }
 
     interface IAccessibilityServiceInfoCapabilityInfo {
+        GetCapability(
+            [out] Int32* capability);
+
+        GetTitleResId(
+            [out] Int32* titleResId);
+
+        GetDescResId(
+            [out] Int32* descResId);
     }
 
     } // namespace AccessibilityService

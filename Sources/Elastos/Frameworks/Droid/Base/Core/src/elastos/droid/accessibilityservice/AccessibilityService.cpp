@@ -196,9 +196,9 @@ ECode AccessibilityService::OnBind(
     // AutoPtr<ILooper> looper;
     // Service::GetMainLooper((ILooper**)&looper);
     // AutoPtr<MyAccessibilityServiceCallbacks> callbacks = new MyAccessibilityServiceCallbacks(this);
-    // AutoPtr<IAccessibilityServiceClientWrapper> wrapper;
+    // AutoPtr<IIAccessibilityServiceClient> wrapper;
     // CAccessibilityServiceClientWrapper::New(THIS_PROBE(IContext), looper, callbacks,
-    //         (IAccessibilityServiceClientWrapper**)&wrapper);
+    //         (IIAccessibilityServiceClient**)&wrapper);
     // *binder = IBinder::Probe(wrapper);
     // REFCOUNT_ADD(*binder);
     return NOERROR;

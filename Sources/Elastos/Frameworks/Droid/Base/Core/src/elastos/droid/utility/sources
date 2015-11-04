@@ -13,6 +13,7 @@ SOURCES += CArrayMap.cpp
 SOURCES += CArraySet.cpp
 SOURCES += CAtomicFile.cpp
 SOURCES += CBase64.cpp
+SOURCES += CInt64Array.cpp
 SOURCES += Base64InputStream.cpp
 SOURCES += Base64OutputStream.cpp
 SOURCES += DayOfMonthCursor.cpp

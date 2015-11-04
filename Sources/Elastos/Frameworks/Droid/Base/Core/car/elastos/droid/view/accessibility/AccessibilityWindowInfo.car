@@ -19,7 +19,7 @@ module
      * @Involve
      * interface IParcelable
      */
-    [local]
+    [local, parcelable]
     interface IAccessibilityWindowInfo {
         /**
          * Window type: This is an application window. Such a window shows UI for

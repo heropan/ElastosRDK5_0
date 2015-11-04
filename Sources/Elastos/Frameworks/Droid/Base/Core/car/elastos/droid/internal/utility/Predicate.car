@@ -16,7 +16,6 @@ module
      * Implementors of Predicate which may cause side effects upon evaluation are
      * strongly encouraged to state this fact clearly in their API documentation.
      */
-    [local]
     interface IPredicate {
         Apply(
             [in] IInterface* t,

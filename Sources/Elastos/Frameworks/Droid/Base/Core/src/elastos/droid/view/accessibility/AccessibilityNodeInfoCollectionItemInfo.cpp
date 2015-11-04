@@ -1,39 +1,18 @@
 
-#include "elastos/droid/view/accessibility/CCollectionItemInfo.h"
+#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionItemInfo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const Int32 CCollectionItemInfo::MAX_POOL_SIZE = 20;
-AutoPtr<Pools::SynchronizedPool<ICollectionItemInfo> > CCollectionItemInfo::sPool =
-        new Pools::SynchronizedPool<ICollectionItemInfo>(MAX_POOL_SIZE);
+const Int32 AccessibilityNodeInfoCollectionItemInfo::MAX_POOL_SIZE = 20;
+AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionItemInfo> > AccessibilityNodeInfoCollectionItemInfo::sPool =
+        new Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionItemInfo>(MAX_POOL_SIZE);
 
-CAR_INTERFACE_IMPL(CCollectionItemInfo, Object, ICollectionItemInfo)
+CAR_INTERFACE_IMPL(AccessibilityNodeInfoCollectionItemInfo, Object, IAccessibilityNodeInfoCollectionItemInfo)
 
-CAR_OBJECT_IMPL(CCollectionItemInfo)
-
-CCollectionItemInfo::CCollectionItemInfo()
-    : mHeading(FALSE)
-    , mColumnIndex(0)
-    , mRowIndex(0)
-    , mColumnSpan(0)
-    , mRowSpan(0)
-    , mSelected(FALSE)
-{
-}
-
-CCollectionItemInfo::~CCollectionItemInfo()
-{
-}
-
-ECode CCollectionItemInfo::constructor()
-{
-    return NOERROR;
-}
-
-ECode CCollectionItemInfo::constructor(
+AccessibilityNodeInfoCollectionItemInfo::AccessibilityNodeInfoCollectionItemInfo(
     /* [in] */ Int32 rowIndex,
     /* [in] */ Int32 rowSpan,
     /* [in] */ Int32 columnIndex,
@@ -47,13 +26,11 @@ ECode CCollectionItemInfo::constructor(
     mColumnSpan = columnSpan;
     mHeading = heading;
     mSelected = selected;
-
-    return NOERROR;
 }
 
-ECode CCollectionItemInfo::Obtain(
-    /* [in] */ ICollectionItemInfo* other,
-    /* [out] */ ICollectionItemInfo** info)
+ECode AccessibilityNodeInfoCollectionItemInfo::Obtain(
+    /* [in] */ IAccessibilityNodeInfoCollectionItemInfo* other,
+    /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     Int32 rowIndex, rowSpan, columnIndex, columnSpan;
@@ -68,41 +45,39 @@ ECode CCollectionItemInfo::Obtain(
     return Obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading, selected, info);
 }
 
-ECode CCollectionItemInfo::Obtain(
+ECode AccessibilityNodeInfoCollectionItemInfo::Obtain(
     /* [in] */ Int32 rowIndex,
     /* [in] */ Int32 rowSpan,
     /* [in] */ Int32 columnIndex,
     /* [in] */ Int32 columnSpan,
     /* [in] */ Boolean heading,
-    /* [out] */ ICollectionItemInfo** info)
+    /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     return Obtain(rowIndex, rowSpan, columnIndex, columnSpan, heading, FALSE, info);
 }
 
-ECode CCollectionItemInfo::Obtain(
+ECode AccessibilityNodeInfoCollectionItemInfo::Obtain(
     /* [in] */ Int32 rowIndex,
     /* [in] */ Int32 rowSpan,
     /* [in] */ Int32 columnIndex,
     /* [in] */ Int32 columnSpan,
     /* [in] */ Boolean heading,
     /* [in] */ Boolean selected,
-    /* [out] */ ICollectionItemInfo** info)
+    /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    AutoPtr<ICollectionItemInfo> _info = sPool->AcquireItem();
+    AutoPtr<IAccessibilityNodeInfoCollectionItemInfo> _info = sPool->AcquireItem();
 
     if (_info == NULL) {
-        AutoPtr<CCollectionItemInfo> collectionItemInfo;
-        CCollectionItemInfo::NewByFriend(rowIndex, rowSpan, columnIndex, columnSpan, heading, selected,
-                (CCollectionItemInfo**)&collectionItemInfo);
-        *info = (ICollectionItemInfo*)collectionItemInfo.Get();
+        AutoPtr<AccessibilityNodeInfoCollectionItemInfo> collectionItemInfo = new AccessibilityNodeInfoCollectionItemInfo(
+                rowIndex, rowSpan, columnIndex, columnSpan, heading, selected);
+        *info = (IAccessibilityNodeInfoCollectionItemInfo*)collectionItemInfo.Get();
         REFCOUNT_ADD(*info);
         return NOERROR;
     }
 
-
-    AutoPtr<CCollectionItemInfo> cinfo = (CCollectionItemInfo*)_info.Get();
+    AutoPtr<AccessibilityNodeInfoCollectionItemInfo> cinfo = (AccessibilityNodeInfoCollectionItemInfo*)_info.Get();
     cinfo->mRowIndex = rowIndex;
     cinfo->mRowSpan = rowSpan;
     cinfo->mColumnIndex = columnIndex;
@@ -110,15 +85,13 @@ ECode CCollectionItemInfo::Obtain(
     cinfo->mHeading = heading;
     cinfo->mSelected = selected;
 
-    AutoPtr<ICollectionItemInfo> info2 = (ICollectionItemInfo*)cinfo.Get();
-
-    *info = info2;
+    *info = (IAccessibilityNodeInfoCollectionItemInfo*)cinfo.Get();
     REFCOUNT_ADD(*info);
 
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::GetColumnIndex(
+ECode AccessibilityNodeInfoCollectionItemInfo::GetColumnIndex(
     /* [out] */ Int32* columnIndex)
 {
     VALIDATE_NOT_NULL(columnIndex)
@@ -126,7 +99,7 @@ ECode CCollectionItemInfo::GetColumnIndex(
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::GetRowIndex(
+ECode AccessibilityNodeInfoCollectionItemInfo::GetRowIndex(
     /* [out] */ Int32* rowIndex)
 {
     VALIDATE_NOT_NULL(rowIndex)
@@ -134,7 +107,7 @@ ECode CCollectionItemInfo::GetRowIndex(
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::GetColumnSpan(
+ECode AccessibilityNodeInfoCollectionItemInfo::GetColumnSpan(
     /* [out] */ Int32* columnSpan)
 {
     VALIDATE_NOT_NULL(columnSpan)
@@ -142,7 +115,7 @@ ECode CCollectionItemInfo::GetColumnSpan(
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::GetRowSpan(
+ECode AccessibilityNodeInfoCollectionItemInfo::GetRowSpan(
     /* [out] */ Int32* rowSpan)
 {
     VALIDATE_NOT_NULL(rowSpan)
@@ -150,7 +123,7 @@ ECode CCollectionItemInfo::GetRowSpan(
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::IsHeading(
+ECode AccessibilityNodeInfoCollectionItemInfo::IsHeading(
     /* [out] */ Boolean* heading)
 {
     VALIDATE_NOT_NULL(heading)
@@ -158,7 +131,7 @@ ECode CCollectionItemInfo::IsHeading(
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::IsSelected(
+ECode AccessibilityNodeInfoCollectionItemInfo::IsSelected(
     /* [out] */ Boolean* selected)
 {
     VALIDATE_NOT_NULL(selected)
@@ -166,14 +139,14 @@ ECode CCollectionItemInfo::IsSelected(
     return NOERROR;
 }
 
-ECode CCollectionItemInfo::Recycle()
+ECode AccessibilityNodeInfoCollectionItemInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem(THIS_PROBE(ICollectionItemInfo));
+    sPool->ReleaseItem((IAccessibilityNodeInfoCollectionItemInfo*)this);
     return NOERROR;
 }
 
-void CCollectionItemInfo::Clear()
+void AccessibilityNodeInfoCollectionItemInfo::Clear()
 {
     mColumnIndex = 0;
     mColumnSpan = 0;

@@ -1,22 +1,22 @@
-#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYACTION_H__
-#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYACTION_H__
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFOACCESSIBILITYACTION_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFOACCESSIBILITYACTION_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "_Elastos_Droid_View_Accessibility_CAccessibilityAction.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityNodeInfoAccessibilityAction.h"
 #include "elastos/droid/utility/Pools.h"
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Droid::Utility::Pools;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-CarClass(CAccessibilityAction)
+CarClass(CAccessibilityNodeInfoAccessibilityAction)
     , public Object
-    , public IAccessibilityAction
+    , public IAccessibilityNodeInfoAccessibilityAction
 {
     friend class CAccessibilityNodeInfo;
 public:
@@ -24,9 +24,9 @@ public:
 
     CAR_OBJECT_DECL()
 
-    CAccessibilityAction();
+    CAccessibilityNodeInfoAccessibilityAction();
 
-    ~CAccessibilityAction();
+    ~CAccessibilityNodeInfoAccessibilityAction();
 
     CARAPI constructor();
 
@@ -65,42 +65,42 @@ public:
     /**
      * Action that gives input focus to the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_FOCUS;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_FOCUS;
 
     /**
      * Action that clears input focus of the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_CLEAR_FOCUS;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_CLEAR_FOCUS;
 
     /**
      *  Action that selects the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_SELECT;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_SELECT;
 
     /**
      * Action that deselects the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_CLEAR_SELECTION;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_CLEAR_SELECTION;
 
     /**
      * Action that clicks on the node info.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_CLICK;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_CLICK;
 
     /**
      * Action that long clicks on the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_LONG_CLICK;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_LONG_CLICK;
 
     /**
      * Action that gives accessibility focus to the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_ACCESSIBILITY_FOCUS;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_ACCESSIBILITY_FOCUS;
 
     /**
      * Action that clears accessibility focus of the node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_CLEAR_ACCESSIBILITY_FOCUS;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_CLEAR_ACCESSIBILITY_FOCUS;
 
     /**
      * Action that requests to go to the next entity in this node's text
@@ -145,7 +145,7 @@ public:
      * @see AccessibilityNodeInfo#MOVEMENT_GRANULARITY_PAGE
      *  AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 
     /**
      * Action that requests to go to the previous entity in this node's text
@@ -190,7 +190,7 @@ public:
      * @see AccessibilityNodeInfo#MOVEMENT_GRANULARITY_PAGE
      *  AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY;
     /**
      * Action to move to the next HTML element of a given type. For example, move
      * to the BUTTON, INPUT, TABLE, etc.
@@ -206,7 +206,7 @@ public:
      * </code></pre></p>
      * </p>
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_NEXT_HTML_ELEMENT;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_NEXT_HTML_ELEMENT;
 
     /**
      * Action to move to the previous HTML element of a given type. For example, move
@@ -223,32 +223,32 @@ public:
      * </code></pre></p>
      * </p>
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_PREVIOUS_HTML_ELEMENT;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_PREVIOUS_HTML_ELEMENT;
 
     /**
      * Action to scroll the node content forward.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_SCROLL_FORWARD;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_SCROLL_FORWARD;
 
     /**
      * Action to scroll the node content backward.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_SCROLL_BACKWARD;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_SCROLL_BACKWARD;
 
     /**
      * Action to copy the current selection to the clipboard.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_COPY;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_COPY;
 
     /**
      * Action to paste the current clipboard content.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_PASTE;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_PASTE;
 
     /**
      * Action to cut the current selection and place it to the clipboard.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_CUT;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_CUT;
 
     /**
      * Action to set the selection. Performing this action with no arguments
@@ -273,22 +273,22 @@ public:
      * @see AccessibilityNodeInfo#ACTION_ARGUMENT_SELECTION_END_INT
      *  AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_SET_SELECTION;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_SET_SELECTION;
 
     /**
      * Action to expand an expandable node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_EXPAND;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_EXPAND;
 
     /**
      * Action to collapse an expandable node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_COLLAPSE;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_COLLAPSE;
 
     /**
      * Action to dismiss a dismissable node.
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_DISMISS;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_DISMISS;
 
     /**
      * Action that sets the text of the node. Performing the action without argument,
@@ -306,7 +306,7 @@ public:
      *   info.performAction(AccessibilityAction.ACTION_SET_TEXT.getId(), arguments);
      * </code></pre></p>
      */
-    static const AutoPtr<IAccessibilityAction> ACTION_SET_TEXT;
+    static const AutoPtr<IAccessibilityNodeInfoAccessibilityAction> ACTION_SET_TEXT;
 
 private:
     static const AutoPtr<IArraySet> sStandardActions;
@@ -319,4 +319,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYACTION_H__
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFOACCESSIBILITYACTION_H__

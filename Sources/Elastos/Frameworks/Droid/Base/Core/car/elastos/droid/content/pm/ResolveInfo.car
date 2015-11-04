@@ -23,7 +23,7 @@ module
      * @Involve
      * interface IParcelable
      */
-    [local]
+    [local, parcelable]
     interface IResolveInfo {
         /**
          * Retrieve the current textual label associated with this resolution.  This

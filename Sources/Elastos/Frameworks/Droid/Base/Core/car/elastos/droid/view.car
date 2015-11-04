@@ -177,14 +177,14 @@ module
     // interface Elastos.Droid.View.IAccessibilityInteractionController;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityAction;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityActionHelper;
-    interface Elastos.Droid.View.Accessibility.ICollectionInfo;
-    interface Elastos.Droid.View.Accessibility.ICollectionInfoHelper;
-    interface Elastos.Droid.View.Accessibility.ICollectionItemInfo;
-    interface Elastos.Droid.View.Accessibility.ICollectionItemInfoHelper;
-    interface Elastos.Droid.View.Accessibility.IRangeInfo;
-    interface Elastos.Droid.View.Accessibility.IRangeInfoHelper;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoAccessibilityAction;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoAccessibilityActionHelper;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoCollectionInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoCollectionInfoHelper;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoCollectionItemInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoCollectionItemInfoHelper;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoRangeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoRangeInfoHelper;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
@@ -1619,68 +1619,30 @@ module
         interface IAccessibilityNodeInfoHelper;
     }
 
-    class CAccessibilityAction {
+    class CAccessibilityNodeInfoAccessibilityAction {
         constructor();
 
         constructor(
             [in] Int32 actionId,
             [in] ICharSequence* label);
 
-        interface IAccessibilityAction;
+        interface IAccessibilityNodeInfoAccessibilityAction;
     }
 
-    singleton class CAccessibilityActionHelper {
-        interface IAccessibilityActionHelper;
+    singleton class CAccessibilityNodeInfoAccessibilityActionHelper {
+        interface IAccessibilityNodeInfoAccessibilityActionHelper;
     }
 
-    class CCollectionInfo {
-        constructor();
-
-        constructor(
-            [in] Int32 rowCount,
-            [in] Int32 columnCount,
-            [in] Boolean hierarchical,
-            [in] Int32 selectionMode);
-
-        interface ICollectionInfo;
+    singleton class CAccessibilityNodeInfoCollectionInfoHelper {
+        interface IAccessibilityNodeInfoCollectionInfoHelper;
     }
 
-    singleton class CCollectionInfoHelper {
-        interface ICollectionInfoHelper;
+    singleton class CAccessibilityNodeInfoCollectionItemInfoHelper {
+        interface IAccessibilityNodeInfoCollectionItemInfoHelper;
     }
 
-    class CCollectionItemInfo {
-        constructor();
-
-        constructor(
-            [in] Int32 rowIndex,
-            [in] Int32 rowSpan,
-            [in] Int32 columnIndex,
-            [in] Int32 columnSpan,
-            [in] Boolean heading,
-            [in] Boolean selected);
-
-        interface ICollectionItemInfo;
-    }
-
-    singleton class CCollectionItemInfoHelper {
-        interface ICollectionItemInfoHelper;
-    }
-
-    class CRangeInfo {
-        constructor();
-
-        constructor(
-            [in] Int32 type,
-            [in] Float min,
-            [in] Float max,
-            [in] Float current);
-
-        interface IRangeInfo;
-    }
-
-    singleton class CRangeInfoHelper {
-        interface IRangeInfoHelper;
+    singleton class CAccessibilityNodeInfoRangeInfoHelper {
+        interface IAccessibilityNodeInfoRangeInfoHelper;
     }
 
     // class CAccessibilityRecord {

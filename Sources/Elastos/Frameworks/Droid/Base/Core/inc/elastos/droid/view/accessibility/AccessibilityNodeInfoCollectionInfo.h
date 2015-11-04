@@ -1,8 +1,7 @@
-#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CCOLLECTIONINFO_H__
-#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CCOLLECTIONINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONINFO_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONINFO_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "_Elastos_Droid_View_Accessibility_CCollectionInfo.h"
 #include "elastos/droid/utility/Pools.h"
 
 using Elastos::Droid::Utility::Pools;
@@ -12,22 +11,14 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
-CarClass(CCollectionInfo)
-    , public Object
-    , public ICollectionInfo
+class AccessibilityNodeInfoCollectionInfo
+    : public Object
+    , public IAccessibilityNodeInfoCollectionInfo
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
-
-    CCollectionInfo();
-
-    ~CCollectionInfo();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
+    AccessibilityNodeInfoCollectionInfo(
         /* [in] */ Int32 rowCount,
         /* [in] */ Int32 columnCount,
         /* [in] */ Boolean hierarchical,
@@ -40,8 +31,8 @@ public:
      * @hide
      */
     static CARAPI Obtain(
-        /* [in] */ ICollectionInfo* other,
-        /* [out] */ ICollectionInfo** info);
+        /* [in] */ IAccessibilityNodeInfoCollectionInfo* other,
+        /* [out] */ IAccessibilityNodeInfoCollectionInfo** info);
 
     /**
      * Obtains a pooled instance.
@@ -54,7 +45,7 @@ public:
         /* [in] */ Int32 rowCount,
         /* [in] */ Int32 columnCount,
         /* [in] */ Boolean hierarchical,
-        /* [out] */ ICollectionInfo** info);
+        /* [out] */ IAccessibilityNodeInfoCollectionInfo** info);
 
     /**
      * Obtains a pooled instance.
@@ -74,7 +65,7 @@ public:
         /* [in] */ Int32 columnCount,
         /* [in] */ Boolean hierarchical,
         /* [in] */ Int32 selectionMode,
-        /* [out] */ ICollectionInfo** info);
+        /* [out] */ IAccessibilityNodeInfoCollectionInfo** info);
 
     /**
      * Gets the number of rows.
@@ -127,8 +118,8 @@ private:
     Boolean mHierarchical;
     Int32 mSelectionMode;
 
-    static  const Int32 MAX_POOL_SIZE;
-    static AutoPtr<Pools::SynchronizedPool<ICollectionInfo> > sPool;
+    static const Int32 MAX_POOL_SIZE;
+    static AutoPtr< Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionInfo> > sPool;
 };
 
 } // Accessibility
@@ -136,4 +127,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CCOLLECTIONINFO_H__
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONINFO_H__

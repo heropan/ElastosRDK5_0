@@ -39,7 +39,7 @@ module
          * Returns the value at the specified position in this array.
          */
         Get(
-            [in] Int32* index,
+            [in] Int32 index,
             [out] Int64* value);
 
         /**
@@ -48,7 +48,7 @@ module
          */
         IndexOf(
             [in] Int64 value,
-            [out] Int32* outval);
+            [out] Int32* index);
 
         /**
          * Removes the value at the specified index from this array.

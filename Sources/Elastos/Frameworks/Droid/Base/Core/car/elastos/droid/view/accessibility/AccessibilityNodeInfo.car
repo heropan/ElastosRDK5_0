@@ -3,16 +3,12 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
-    using interface Elastos.Utility.IMap;
 
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Utility.IInt64Array;
+    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.Accessibility.IAccessibilityWindowInfo;
-    interface Elastos.Droid.View.Accessibility.ICollectionInfo;
-    interface Elastos.Droid.View.Accessibility.ICollectionItemInfo;
-    interface Elastos.Droid.View.Accessibility.IRangeInfo;
-
 
     namespace Elastos {
     namespace Droid {
@@ -31,7 +27,7 @@ module
      * as many rows as the first level children.
      * </p>
      */
-    interface ICollectionInfo {
+    interface IAccessibilityNodeInfoCollectionInfo {
         /** Selection mode where items are not selectable. */
         const Int32 SELECTION_MODE_NONE = 0;
 
@@ -84,7 +80,7 @@ module
         Recycle();
     }
 
-    interface ICollectionInfoHelper {
+    interface IAccessibilityNodeInfoCollectionInfoHelper {
         /**
          * Obtains a pooled instance that is a clone of another one.
          *
@@ -92,8 +88,8 @@ module
          * @hide
          */
         Obtain(
-            [in] ICollectionInfo* other,
-            [out] ICollectionInfo** info);
+            [in] IAccessibilityNodeInfoCollectionInfo* other,
+            [out] IAccessibilityNodeInfoCollectionInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -106,7 +102,7 @@ module
             [in] Int32 rowCount,
             [in] Int32 columnCount,
             [in] Boolean hierarchical,
-            [out] ICollectionInfo** info);
+            [out] IAccessibilityNodeInfoCollectionInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -126,7 +122,7 @@ module
             [in] Int32 columnCount,
             [in] Boolean hierarchical,
             [in] Int32 selectionMode,
-            [out] ICollectionInfo** info);
+            [out] IAccessibilityNodeInfoCollectionInfo** info);
     }
 
     /**
@@ -141,7 +137,7 @@ module
      * spans one row and two columns.
      * </p>
      */
-    interface ICollectionItemInfo {
+    interface IAccessibilityNodeInfoCollectionItemInfo {
         /**
          * Gets the column index at which the item is located.
          *
@@ -197,7 +193,7 @@ module
         Recycle();
     }
 
-    interface ICollectionItemInfoHelper {
+    interface IAccessibilityNodeInfoCollectionItemInfoHelper {
         /**
          * Obtains a pooled instance that is a clone of another one.
          *
@@ -205,8 +201,8 @@ module
          * @hide
          */
         Obtain(
-            [in] ICollectionItemInfo* other,
-            [out] ICollectionItemInfo** info);
+            [in] IAccessibilityNodeInfoCollectionItemInfo* other,
+            [out] IAccessibilityNodeInfoCollectionItemInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -223,7 +219,7 @@ module
             [in] Int32 columnIndex,
             [in] Int32 columnSpan,
             [in] Boolean heading,
-            [out] ICollectionItemInfo** info);
+            [out] IAccessibilityNodeInfoCollectionItemInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -242,7 +238,7 @@ module
             [in] Int32 columnSpan,
             [in] Boolean heading,
             [in] Boolean selected,
-            [out] ICollectionItemInfo** info);
+            [out] IAccessibilityNodeInfoCollectionItemInfo** info);
     }
 
     /**
@@ -265,7 +261,7 @@ module
      * </ul>
      * </p>
      */
-    interface IAccessibilityAction {
+    interface IAccessibilityNodeInfoAccessibilityAction {
         /**
          * Gets the id for this action.
          *
@@ -284,76 +280,76 @@ module
             [out] ICharSequence** seq);
     }
 
-    interface IAccessibilityActionHelper {
+    interface IAccessibilityNodeInfoAccessibilityActionHelper {
 
         GetACTION_FOCUS(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_CLEAR_FOCUS(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_SELECT(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_CLEAR_SELECTION(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_CLICK(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_LONG_CLICK(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_ACCESSIBILITY_FOCUS(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_CLEAR_ACCESSIBILITY_FOCUS(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_NEXT_AT_MOVEMENT_GRANULARITY(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_NEXT_HTML_ELEMENT(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_PREVIOUS_HTML_ELEMENT(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_SCROLL_FORWARD(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_SCROLL_BACKWARD(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_COPY(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_PASTE(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_CUT(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_SET_SELECTION(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_EXPAND(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_COLLAPSE(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_DISMISS(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
 
         GetACTION_SET_TEXT(
-            [out] IAccessibilityAction** action);
+            [out] IAccessibilityNodeInfoAccessibilityAction** action);
     }
 
-    interface IRangeInfo {
+    interface IAccessibilityNodeInfoRangeInfo {
         /** Range type: integer. */
         const Int32 RANGE_TYPE_INT = 0;
         /** Range type: float. */
@@ -379,7 +375,7 @@ module
         Recycle();
     }
 
-    interface IRangeInfoHelper {
+    interface IAccessibilityNodeInfoRangeInfoHelper {
         /**
          * Obtains a pooled instance that is a clone of another one.
          *
@@ -388,8 +384,8 @@ module
          * @hide
          */
         Obtain(
-            [in] IRangeInfo* other,
-            [out] IRangeInfo** info);
+            [in] IAccessibilityNodeInfoRangeInfo* other,
+            [out] IAccessibilityNodeInfoRangeInfo** info);
 
         /**
          * Obtains a pooled instance.
@@ -404,14 +400,13 @@ module
             [in] Float min,
             [in] Float max,
             [in] Float current,
-            [out] IRangeInfo** info);
+            [out] IAccessibilityNodeInfoRangeInfo** info);
     }
 
     /**
      * @Involve
      * interface IParcelable
      */
-    [local]
     interface IAccessibilityNodeInfo {
 
         /** @hide */
@@ -894,7 +889,7 @@ module
          * @hide
          */
         GetChildNodeIds(
-            [out] IMap** ids);
+            [out] IInt64Array** ids);
 
         /**
          * Returns the id of the child at the specified index.
@@ -1060,7 +1055,7 @@ module
          * @throws IllegalStateException If called from an AccessibilityService.
          */
         AddAction(
-            [in] IAccessibilityAction* action);
+            [in] IAccessibilityNodeInfoAccessibilityAction* action);
         /**
          * Adds an action that can be performed on the node.
          * <p>
@@ -1111,7 +1106,7 @@ module
          * @throws IllegalStateException If called from an AccessibilityService.
          */
         RemoveAction(
-            [in] IAccessibilityAction* action,
+            [in] IAccessibilityNodeInfoAccessibilityAction* action,
             [out] Boolean* result);
 
         /**
@@ -1662,7 +1657,7 @@ module
          * @return The collection info.
          */
         GetCollectionInfo(
-            [out] ICollectionInfo** info);
+            [out] IAccessibilityNodeInfoCollectionInfo** info);
 
         /**
          * Sets the collection info if the node is a collection. A collection
@@ -1676,7 +1671,7 @@ module
          * @param collectionInfo The collection info.
          */
         SetCollectionInfo(
-            [in] ICollectionInfo* collectionInfo);
+            [in] IAccessibilityNodeInfoCollectionInfo* collectionInfo);
 
         /**
          * Gets the collection item info if the node is a collection item. A collection
@@ -1685,7 +1680,7 @@ module
          * @return The collection item info.
          */
         GetCollectionItemInfo(
-            [out] ICollectionItemInfo** info);
+            [out] IAccessibilityNodeInfoCollectionItemInfo** info);
 
         /**
          * Sets the collection item info if the node is a collection item. A collection
@@ -1697,7 +1692,7 @@ module
          * </p>
          */
         SetCollectionItemInfo(
-            [in] ICollectionItemInfo* collectionItemInfo);
+            [in] IAccessibilityNodeInfoCollectionItemInfo* collectionItemInfo);
 
         /**
          * Gets the range info if this node is a range.
@@ -1705,7 +1700,7 @@ module
          * @return The range.
          */
         GetRangeInfo(
-            [out] IRangeInfo** info);
+            [out] IAccessibilityNodeInfoRangeInfo** info);
 
         /**
          * Sets the range info if this node is a range.
@@ -1718,7 +1713,7 @@ module
          * @param rangeInfo The range info.
          */
         SetRangeInfo(
-            [in] IRangeInfo* rangeInfo);
+            [in] IAccessibilityNodeInfoRangeInfo* rangeInfo);
 
         /**
          * Gets if the content of this node is invalid. For example,
@@ -2194,7 +2189,6 @@ module
         Recycle();
     }
 
-    [local]
     interface IAccessibilityNodeInfoHelper {
         /**
          * Gets the accessibility view id which identifies a View in the view three.

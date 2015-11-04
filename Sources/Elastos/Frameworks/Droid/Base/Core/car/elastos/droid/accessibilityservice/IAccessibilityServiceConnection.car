@@ -17,7 +17,6 @@ module
      *
      * @hide
      */
-    [deprecated, local]
     interface IIAccessibilityServiceConnection {
         SetServiceInfo(
             [in] IAccessibilityServiceInfo* info);

@@ -97,7 +97,6 @@ module
         FindFocus(
             [in] Int32 focus,
             [out] IAccessibilityNodeInfo** info);
-
     }
 
     } // namespace Accessibility

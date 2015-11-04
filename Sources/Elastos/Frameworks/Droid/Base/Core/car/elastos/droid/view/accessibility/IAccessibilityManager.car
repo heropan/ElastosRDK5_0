@@ -21,7 +21,6 @@ module
      *
      * @hide
      */
-    [local, deprecated]
     interface IIAccessibilityManager {
         AddClient(
             [in] IIAccessibilityManagerClient* client,

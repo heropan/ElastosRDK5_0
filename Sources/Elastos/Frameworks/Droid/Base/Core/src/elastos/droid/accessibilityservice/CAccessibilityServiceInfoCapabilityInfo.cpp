@@ -25,7 +25,30 @@ ECode CAccessibilityServiceInfoCapabilityInfo::constructor(
     mCapability = capability;
     mTitleResId = titleResId;
     mDescResId = descResId;
+    return NOERROR;
+}
 
+ECode CAccessibilityServiceInfoCapabilityInfo::GetCapability(
+    /*[out]*/ Int32* capability)
+{
+    VALIDATE_NOT_NULL(capability);
+    *capability = mCapability;
+    return NOERROR;
+}
+
+ECode CAccessibilityServiceInfoCapabilityInfo::GetTitleResId(
+    /*[out]*/ Int32* titleResId)
+{
+    VALIDATE_NOT_NULL(titleResId);
+    *titleResId = mTitleResId;
+    return NOERROR;
+}
+
+ECode CAccessibilityServiceInfoCapabilityInfo::GetDescResId(
+    /*[out]*/ Int32* descResId)
+{
+    VALIDATE_NOT_NULL(descResId);
+    *descResId = mDescResId;
     return NOERROR;
 }
 

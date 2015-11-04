@@ -489,13 +489,6 @@ module
             [out] Boolean* result);
     }
 
-    /**
-     * @Involve
-     * interface IHandlerCallerCallback
-     * interface IIAccessibilityServiceClient
-     */
-    interface IAccessibilityServiceClientWrapper {}
-
     }
     }
     }

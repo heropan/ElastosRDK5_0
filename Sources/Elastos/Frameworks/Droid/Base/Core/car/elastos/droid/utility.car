@@ -43,6 +43,7 @@ module
 
     using interface Elastos.Core.INumber;
     using interface Elastos.Core.IComparable;
+    using interface Elastos.Core.ICloneable;
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IWriter;
     using interface Elastos.IO.ICloseable;
@@ -250,6 +251,17 @@ module
     }
 
 */
+
+    class CInt64Array {
+        constructor();
+
+        constructor(
+            [in] Int32 initialCapacity);
+
+        interface IInt64Array;
+        interface ICloneable;
+    }
+
     } // namespace Utility
     } // namespace Droid
     } // namespace Elastos

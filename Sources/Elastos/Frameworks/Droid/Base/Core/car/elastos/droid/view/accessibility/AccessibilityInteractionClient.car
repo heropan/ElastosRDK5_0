@@ -20,8 +20,8 @@ module
     /**
      * @Involve
      * interface IIAccessibilityInteractionConnectionCallback
+     * interface IBinder
      */
-    [local]
     interface IAccessibilityInteractionClient {
         const Int32 NO_ID = -1;
 

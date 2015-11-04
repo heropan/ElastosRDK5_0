@@ -1,8 +1,7 @@
-#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CRANGEINFO_H__
-#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CRANGEINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFORANGEINFO_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFORANGEINFO_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "_Elastos_Droid_View_Accessibility_CRangeInfo.h"
 #include "elastos/droid/utility/Pools.h"
 
 using Elastos::Droid::Utility::Pools;
@@ -12,22 +11,14 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
-CarClass(CRangeInfo)
-    , public Object
-    , public IRangeInfo
+class AccessibilityNodeInfoRangeInfo
+    : public Object
+    , public IAccessibilityNodeInfoRangeInfo
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
-
-    CRangeInfo();
-
-    ~CRangeInfo();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
+    AccessibilityNodeInfoRangeInfo(
         /* [in] */ Int32 type,
         /* [in] */ Float min,
         /* [in] */ Float max,
@@ -41,8 +32,8 @@ public:
      * @hide
      */
     static CARAPI Obtain(
-        /* [in] */ IRangeInfo* other,
-        /* [out] */ IRangeInfo** info);
+        /* [in] */ IAccessibilityNodeInfoRangeInfo* other,
+        /* [out] */ IAccessibilityNodeInfoRangeInfo** info);
 
     /**
      * Obtains a pooled instance.
@@ -57,7 +48,7 @@ public:
         /* [in] */ Float min,
         /* [in] */ Float max,
         /* [in] */ Float current,
-        /* [out] */ IRangeInfo** info);
+        /* [out] */ IAccessibilityNodeInfoRangeInfo** info);
 
     /**
      * Gets the range type.
@@ -101,16 +92,22 @@ public:
     CARAPI Recycle();
 
 private:
+    RangeInfo(
+        /* [in] */ Int32 type,
+        /* [in] */ Float min,
+        /* [in] */ Float max,
+        /* [in] */ Float current);
+
     CARAPI_(void) Clear();
 
 private:
-    static  const Int32 MAX_POOL_SIZE;
+    static const Int32 MAX_POOL_SIZE;
     Int32 mType;
     Float mMin;
     Float mMax;
     Float mCurrent;
 
-    static AutoPtr<Pools::SynchronizedPool<IRangeInfo> > sPool;
+    static AutoPtr< Pools::SynchronizedPool<IAccessibilityNodeInfoRangeInfo> > sPool;
 };
 
 } // Accessibility
@@ -118,4 +115,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CRANGEINFO_H__
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFORANGEINFO_H__

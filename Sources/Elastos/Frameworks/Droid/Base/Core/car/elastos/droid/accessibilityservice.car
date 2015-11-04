@@ -9,22 +9,22 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     //interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.ILooper;
 
     namespace Elastos {
     namespace Droid {
     namespace AccessibilityService {
+
     [local]
     class CAccessibilityServiceClientWrapper {
-        constructor();
-
         constructor(
             [in] IContext* ctx,
             [in] ILooper* looper,
             [in] IAccessibilityServiceCallbacks* cb);
 
-        interface IAccessibilityServiceClientWrapper;
         interface IIAccessibilityServiceClient;
+        interface IBinder;
         //interface IHandlerCallerCallback;
     }
 
