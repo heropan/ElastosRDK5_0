@@ -3,3 +3,4 @@ DIRS += display
 DIRS += input
 DIRS += usb
 DIRS += soundtrigger
+DIRS += location

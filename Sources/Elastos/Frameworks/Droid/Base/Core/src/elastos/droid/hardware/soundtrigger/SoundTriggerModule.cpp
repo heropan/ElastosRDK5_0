@@ -295,7 +295,7 @@ ECode SoundTriggerModule::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     Int32 what = 0;
-    msg->GetWhat(&what);
+    FAIL_RETURN(msg->GetWhat(&what))
     switch(what) {
         case EVENT_RECOGNITION:
             if (mListener != NULL) {
