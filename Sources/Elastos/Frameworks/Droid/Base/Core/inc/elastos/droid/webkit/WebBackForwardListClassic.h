@@ -123,18 +123,17 @@ private:
     static AutoPtr<IInterface> CreateWebHistoryItem(
         /* [in] */ Int32 nativeBridge);
 
-    static void AddHistoryItem(
+    static CARAPI_(void) AddHistoryItem(
         /* [in] */ IInterface* obj,
         /* [in] */ IInterface* webHistoryItem);
 
-    static void RemoveHistoryItem(
+    static CARAPI_(void) RemoveHistoryItem(
         /* [in] */ IInterface* obj,
         /* [in] */ Int32 index);
 
-    static void SetCurrentIndex(
+    static CARAPI_(void) SetCurrentIndex(
         /* [in] */ IInterface* obj,
         /* [in] */ Int32 newIndex);
-
 
     static ElaWebHistoryCallback* Init_WebHistory_Callback();
 

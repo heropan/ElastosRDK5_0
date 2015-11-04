@@ -13,7 +13,6 @@ module
      * class from {@link WebViewClient#shouldInterceptRequest} to provide a custom
      * response when the WebView requests a particular resource.
      */
-    [deprecated]
     interface IWebResourceResponse {
 
         /**

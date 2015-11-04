@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CWebStorageHelper, Object, IWebStorageHelper);
+
+CAR_SINGLETON_IMPL(CWebStorageHelper);
+
 ECode CWebStorageHelper::GetInstance(
     /* [out] */ IWebStorage ** ppInstance)
 {

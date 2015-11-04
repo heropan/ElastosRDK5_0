@@ -5,6 +5,13 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(WebChromeClient, Object, IWebChromeClient);
+
+ECode WebChromeClient::constructor()
+{
+    return NOERROR;
+}
+
 /**
  * Tell the host application the current progress of loading a page.
  * @param view The WebView that initiated the callback.
@@ -122,13 +129,16 @@ ECode WebChromeClient::OnHideCustomView()
  *         false from this method but also sending resultMsg will result in
  *         undefined behavior.
  */
-Boolean WebChromeClient::OnCreateWindow(
+ECode WebChromeClient::OnCreateWindow(
     /* [in] */ IWebView* view,
     /* [in] */ Boolean isDialog,
     /* [in] */ Boolean isUserGesture,
-    /* [in] */ IMessage* resultMsg)
+    /* [in] */ IMessage* resultMsg,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -166,13 +176,16 @@ ECode WebChromeClient::OnCloseWindow(
  * @param result A JsResult to confirm that the user hit enter.
  * @return boolean Whether the client will handle the alert dialog.
  */
-Boolean WebChromeClient::OnJsAlert(
+ECode WebChromeClient::OnJsAlert(
     /* [in] */ IWebView* view,
     /* [in] */ const String& url,
     /* [in] */ const String& message,
-    /* [in] */ IJsResult* result)
+    /* [in] */ IJsResult* result,
+    /* [out] */ Boolean* flag)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(flag);
+    *flag = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -188,13 +201,16 @@ Boolean WebChromeClient::OnJsAlert(
  *               javascript.
  * @return boolean Whether the client will handle the confirm dialog.
  */
-Boolean WebChromeClient::OnJsConfirm(
+ECode WebChromeClient::OnJsConfirm(
     /* [in] */ IWebView* view,
     /* [in] */ const String& url,
     /* [in] */ const String& message,
-    /* [in] */ IJsResult* result)
+    /* [in] */ IJsResult* result,
+    /* [out] */ Boolean* flag)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(flag);
+    *flag = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -211,14 +227,17 @@ Boolean WebChromeClient::OnJsConfirm(
  *               javascript.
  * @return boolean Whether the client will handle the prompt dialog.
  */
-Boolean WebChromeClient::OnJsPrompt(
+ECode WebChromeClient::OnJsPrompt(
     /* [in] */ IWebView* view,
     /* [in] */ const String& url,
     /* [in] */ const String& message,
     /* [in] */ const String& defaultValue,
-    /* [in] */ IJsPromptResult* result)
+    /* [in] */ IJsPromptResult* result,
+    /* [out] */ Boolean* flag)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(flag);
+    *flag = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -237,13 +256,16 @@ Boolean WebChromeClient::OnJsPrompt(
  *               javascript.
  * @return boolean Whether the client will handle the confirm dialog.
  */
-Boolean WebChromeClient::OnJsBeforeUnload(
+ECode WebChromeClient::OnJsBeforeUnload(
     /* [in] */ IWebView* view,
     /* [in] */ const String& url,
     /* [in] */ const String& message,
-    /* [in] */ IJsResult* result)
+    /* [in] */ IJsResult* result,
+    /* [out] */ Boolean* flag)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(flag);
+    *flag = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -334,6 +356,28 @@ ECode WebChromeClient::OnGeolocationPermissionsHidePrompt()
     return NOERROR;
 }
 
+ECode WebChromeClient::OnPermissionRequest(
+    /* [in] */ IPermissionRequest* request)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+/**
+ * Notify the host application that the given permission request
+ * has been canceled. Any related UI should therefore be hidden.
+ *
+ * @param request the PermissionRequest that needs be canceled.
+ */
+ECode WebChromeClient::OnPermissionRequestCanceled(
+    /* [in] */ IPermissionRequest* request)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
 /**
  * Tell the client that a JavaScript execution timeout has occured. And the
  * client may decide whether or not to interrupt the execution. If the
@@ -349,9 +393,12 @@ ECode WebChromeClient::OnGeolocationPermissionsHidePrompt()
 // the default JS engine with Froyo and support for building with JSC was
 // removed in b/5495373. V8 does not have a mechanism for making a callback such
 // as this.
-Boolean WebChromeClient::OnJsTimeout()
+ECode WebChromeClient::OnJsTimeout(
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    return NOERROR;
 }
 
 /**
@@ -378,9 +425,12 @@ ECode WebChromeClient::OnConsoleMessage(
  * @param consoleMessage Object containing details of the console message.
  * @return true if the message is handled by the client.
  */
-Boolean WebChromeClient::OnConsoleMessage(
-    /* [in] */ IConsoleMessage* consoleMessage)
+ECode WebChromeClient::OnConsoleMessage(
+    /* [in] */ IConsoleMessage* consoleMessage,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     assert(consoleMessage);
 
     // Call the old version of this function for backwards compatability.
@@ -391,7 +441,10 @@ Boolean WebChromeClient::OnConsoleMessage(
     consoleMessage->LineNumber(&lineNumber);
     consoleMessage->SourceId(&sourceID);
     OnConsoleMessage(message, lineNumber, sourceID);
-    return FALSE;
+
+    *result = FALSE;
+
+    return NOERROR;
 }
 
 /**
@@ -403,9 +456,12 @@ Boolean WebChromeClient::OnConsoleMessage(
  * @return Bitmap The image to use as a default poster, or null if no such image is
  * available.
  */
-AutoPtr<IBitmap> WebChromeClient::GetDefaultVideoPoster()
+ECode WebChromeClient::GetDefaultVideoPoster(
+    /* [out] */ IBitmap** bitmap)
 {
-    return NULL;
+    VALIDATE_NOT_NULL(bitmap);
+    *bitmap = NULL;
+    return NOERROR;
 }
 
 /**
@@ -416,9 +472,12 @@ AutoPtr<IBitmap> WebChromeClient::GetDefaultVideoPoster()
  *
  * @return View The View to be displayed whilst the video is loading.
  */
-AutoPtr<IView> WebChromeClient::GetVideoLoadingProgressView()
+ECode WebChromeClient::GetVideoLoadingProgressView(
+    /* [out] */ IView** view)
 {
-    return NULL;
+    VALIDATE_NOT_NULL(view);
+    *view = NULL;
+    return NOERROR;
 }
 
 /** Obtains a list of all visited history items, used for link coloring
@@ -427,6 +486,17 @@ ECode WebChromeClient::GetVisitedHistory(
     /* [in] */ IValueCallback* callBack)
 {
     return NOERROR;
+}
+
+ECode WebChromeClient::OnShowFileChooser(
+    /* [in] */ IWebView* webView,
+    /* [in] */ IValueCallback* filePathCallback,
+    /* [in] */ IWebChromeClientFileChooserParams* fileChooserParams,
+    /* [out] */ Boolean* result)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 /**

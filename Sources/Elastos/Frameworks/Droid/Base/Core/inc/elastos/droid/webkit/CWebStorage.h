@@ -13,26 +13,6 @@ CarClass(CWebStorage), public WebStorage
 {
 public:
     CAR_OBJECT_DECL()
-
-    CARAPI GetOrigins(
-        /* [in] */ IValueCallback* callBack);
-
-    CARAPI GetUsageForOrigin(
-        /* [in] */ const String& origin,
-        /* [in] */ IValueCallback* callBack);
-
-    CARAPI GetQuotaForOrigin(
-        /* [in] */ const String& origin,
-        /* [in] */ IValueCallback* callBack);
-
-    CARAPI SetQuotaForOrigin(
-        /* [in] */ const String& origin,
-        /* [in] */ Int64 quota);
-
-    CARAPI DeleteOrigin(
-        /* [in] */ const String& origin);
-
-    CARAPI DeleteAllData();
 };
 
 } // namespace Webkit

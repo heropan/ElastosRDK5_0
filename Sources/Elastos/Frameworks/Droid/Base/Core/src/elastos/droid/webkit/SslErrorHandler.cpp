@@ -9,7 +9,8 @@ namespace Webkit {
  * @hide Only for use by WebViewProvider implementations.
  */
 SslErrorHandler::SslErrorHandler()
-{}
+{
+}
 
 /**
  * Proceed with the SSL certificate.

@@ -26,44 +26,6 @@ CarClass(CPlugin) , public Plugin
 {
 public:
     CAR_OBJECT_DECL()
-
-    /**
-     * @hide
-     * @deprecated This interface was intended to be used by Gears. Since Gears was
-     * deprecated, so is this class.
-     */
-    CARAPI ToString(
-        /* [out] */ String* name);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetPath(
-        /* [out] */ String* path);
-
-    CARAPI GetFileName(
-        /* [out] */ String* fileName);
-
-    CARAPI GetDescription(
-        /* [out] */ String* desc);
-
-    CARAPI SetName(
-        /* [in] */ const String& name);
-
-    CARAPI SetPath(
-        /* [in] */ const String& path);
-
-    CARAPI SetFileName(
-        /* [in] */ const String& fileName);
-
-    CARAPI SetDescription(
-        /* [in] */ const String& description);
-
-    CARAPI SetClickHandler(
-        /* [in] */ IPreferencesClickHandler* handler);
-
-    CARAPI DispatchClickEvent(
-        /* [in] */ IContext* context);
 };
 
 } // namespace Webkit

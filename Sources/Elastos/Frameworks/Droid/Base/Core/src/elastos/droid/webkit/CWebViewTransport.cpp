@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_OBJECT_IMPL(CWebViewTransport);
+
 ECode CWebViewTransport::SetWebView(
     /* [in] */ IWebView * webview)
 {

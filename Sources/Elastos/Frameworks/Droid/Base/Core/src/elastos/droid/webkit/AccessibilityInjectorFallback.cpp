@@ -1,13 +1,12 @@
 
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/os/CMessage.h"
-#include "elastos/droid/provider/CSettingsSecure.h"
+// TODO #include "elastos/droid/provider/CSettingsSecure.h"
 #include "elastos/droid/text/CSimpleStringSplitter.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
-#include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
+// TODO #include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+// TODO #include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
 #include "elastos/droid/webkit/AccessibilityInjectorFallback.h"
-#include "elastos/droid/webkit/CWebViewCore.h"
 #include "elastos/droid/webkit/CWebViewClassic.h"
 
 using Elastos::Core::StringBuilder;
@@ -15,15 +14,15 @@ using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Os::CMessage;
-using Elastos::Droid::Provider::CSettingsSecure;
+// TODO using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Text::CSimpleStringSplitter;
 using Elastos::Droid::Text::ISimpleStringSplitter;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
+// TODO using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
+// TODO using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
 
 namespace Elastos {
@@ -504,7 +503,9 @@ Boolean AccessibilityInjectorFallback::TraverseGivenAxis(
 
     AutoPtr<IMessage> msg;
     CMessage::New((IMessage**)&msg);
-    msg->SetWhat(CWebViewCore::EventHub::MODIFY_SELECTION);
+    assert(0);
+    // TODO
+    // msg->SetWhat(CWebViewCore::EventHub::MODIFY_SELECTION);
     msg->SetArg1(direction);
     msg->SetArg2(axis);
     webViewCore->SendMessage(msg);
@@ -555,7 +556,9 @@ void AccessibilityInjectorFallback::SendAccessibilityEvent(
     AutoPtr<IAccessibilityManager> accessibilityManager;
     AutoPtr<IContext> context;
 
-    CAccessibilityManagerHelper::AcquireSingleton((IAccessibilityManagerHelper**)&accessibilityManagerHelper);
+    assert(0);
+    // TODO
+    // CAccessibilityManagerHelper::AcquireSingleton((IAccessibilityManagerHelper**)&accessibilityManagerHelper);
     context = mWebView->GetContext();
     accessibilityManagerHelper->GetInstance(context, (IAccessibilityManager**)&accessibilityManager);
     Boolean enable = FALSE;
@@ -572,7 +575,9 @@ AutoPtr<IAccessibilityEvent> AccessibilityInjectorFallback::GetPartialyPopulated
     /* [in] */ Int32 eventType)
 {
     AutoPtr<IAccessibilityEventHelper> eventHelper;
-    CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&eventHelper);
+    assert(0);
+    // TODO
+    // CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&eventHelper);
     AutoPtr<IAccessibilityEvent> event;
     eventHelper->Obtain(eventType, (IAccessibilityEvent**)&event);
     mWebViewInternal->OnInitializeAccessibilityEvent(event);
@@ -593,7 +598,9 @@ void AccessibilityInjectorFallback::EnsureWebContentKeyBindings()
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
     AutoPtr<ISettingsSecure> settingsSecure;
-    CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+    assert(0);
+    // TODO
+    // CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
     settingsSecure->GetString(cr,
             ISettingsSecure::ACCESSIBILITY_WEB_CONTENT_KEY_BINDINGS, &webContentKeyBindingsString);
 

@@ -11,50 +11,7 @@ namespace Webkit {
 //                    Plugin::DefaultClickHandler
 //===============================================================
 
-UInt32 Plugin::DefaultClickHandler::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Plugin::DefaultClickHandler::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Plugin::DefaultClickHandler::GetInterfaceID(
-    /* [in] */ IInterface *Object,
-    /* [out] */ InterfaceID *IID)
-{
-    VALIDATE_NOT_NULL(IID);
-
-    if (Object == (IInterface*)(IPreferencesClickHandler*)this) {
-        *IID = EIID_IPreferencesClickHandler;
-    }
-    else if (Object == (IInterface*)(IDialogInterfaceOnClickListener*)this) {
-        *IID = EIID_IDialogInterfaceOnClickListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
-PInterface Plugin::DefaultClickHandler::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IPreferencesClickHandler*)this;
-    }
-    else if (riid == EIID_IPreferencesClickHandler) {
-        return (IPreferencesClickHandler*)this;
-    }
-    else if (riid == EIID_IDialogInterfaceOnClickListener) {
-        return (IDialogInterfaceOnClickListener*)this;
-    }
-
-    return NULL;
-}
+CAR_INTERFACE_IMPL_2(Plugin::DefaultClickHandler, Object, IPreferencesClickHandler, IDialogInterfaceOnClickListener);
 
 ECode Plugin::DefaultClickHandler::HandleClickEvent(
     /* [in] */ IContext* context)
@@ -82,7 +39,7 @@ ECode Plugin::DefaultClickHandler::OnClick(
     /* [in] */ IDialogInterface* dialog,
     /* [in] */ Int32 which)
 {
-    mDialog->Dismiss();
+    IDialogInterface::Probe(mDialog)->Dismiss();
     mDialog = NULL;
     return NOERROR;
 }
@@ -98,6 +55,8 @@ ECode Plugin::DefaultClickHandler::ToString(
 //===============================================================
 //                             Plugin
 //===============================================================
+
+CAR_INTERFACE_IMPL(Plugin, Object, IPlugin);
 
 Plugin::Plugin()
 {
@@ -117,6 +76,17 @@ Plugin::Plugin(
     Init(name, path, fileName, description);
 }
 
+ECode Plugin::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ const String& path,
+    /* [in] */ const String& fileName,
+    /* [in] */ const String& description)
+{
+    Init(name, path, fileName, description);
+    return NOERROR;
+}
+
+
 void Plugin::Init(
     /* [in] */ const String& name,
     /* [in] */ const String& path,
@@ -135,9 +105,12 @@ void Plugin::Init(
  * @deprecated This interface was intended to be used by Gears. Since Gears was
  * deprecated, so is this class.
  */
-String Plugin::ToString()
+ECode Plugin::ToString(
+    /* [out] */ String* info)
 {
-    return mName;
+    VALIDATE_NOT_NULL(info);
+    *info = mName;
+    return NOERROR;
 }
 
 /**
@@ -145,9 +118,12 @@ String Plugin::ToString()
  * @deprecated This interface was intended to be used by Gears. Since Gears was
  * deprecated, so is this class.
  */
-String Plugin::GetName()
+ECode Plugin::GetName(
+    /* [out] */ String* name)
 {
-    return mName;
+    VALIDATE_NOT_NULL(name);
+    *name = mName;
+    return NOERROR;
 }
 
 /**
@@ -155,9 +131,12 @@ String Plugin::GetName()
  * @deprecated This interface was intended to be used by Gears. Since Gears was
  * deprecated, so is this class.
  */
-String Plugin::GetPath()
+ECode Plugin::GetPath(
+    /* [out] */ String* path)
 {
-    return mPath;
+    VALIDATE_NOT_NULL(path);
+    *path = mPath;
+    return NOERROR;
 }
 
 /**
@@ -165,9 +144,12 @@ String Plugin::GetPath()
  * @deprecated This interface was intended to be used by Gears. Since Gears was
  * deprecated, so is this class.
  */
-String Plugin::GetFileName()
+ECode Plugin::GetFileName(
+    /* [out] */ String* fileName)
 {
-    return mFileName;
+    VALIDATE_NOT_NULL(fileName);
+    *fileName = mFileName;
+    return NOERROR;
 }
 
 /**
@@ -175,9 +157,12 @@ String Plugin::GetFileName()
  * @deprecated This interface was intended to be used by Gears. Since Gears was
  * deprecated, so is this class.
  */
-String Plugin::GetDescription()
+ECode Plugin::GetDescription(
+    /* [out] */ String* description)
 {
-    return mDescription;
+    VALIDATE_NOT_NULL(description);
+    *description = mDescription;
+    return NOERROR;
 }
 
 /**
@@ -253,14 +238,6 @@ ECode Plugin::DispatchClickEvent(
     if (mHandler != NULL) {
         mHandler->HandleClickEvent(context);
     }
-    return NOERROR;
-}
-
-ECode Plugin::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    *info = "Plugin";
     return NOERROR;
 }
 

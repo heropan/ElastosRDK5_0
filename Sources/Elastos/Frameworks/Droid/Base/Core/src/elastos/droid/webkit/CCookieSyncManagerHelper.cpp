@@ -1,11 +1,17 @@
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/CookieSyncManager.h"
 #include "elastos/droid/webkit/CCookieSyncManagerHelper.h"
+#include "elastos/droid/webkit/CookieSyncManager.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
+
+CAR_INTERFACE_IMPL(CCookieSyncManagerHelper, Object, ICookieSyncManagerHelper);
+
+CAR_SINGLETON_IMPL(CCookieSyncManagerHelper);
 
 ECode CCookieSyncManagerHelper::GetInstance(
     /* [out] */ ICookieSyncManager** instance)

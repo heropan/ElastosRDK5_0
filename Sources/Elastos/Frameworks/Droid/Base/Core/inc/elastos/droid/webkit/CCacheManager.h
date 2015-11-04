@@ -56,11 +56,7 @@ public:
         , public ICacheManagerCacheResult
     {
     public:
-        CacheResult()
-            : mHttpStatusCode(0)
-            , mContentLength(0)
-            , mExpires(0)
-        {}
+        CacheResult();
 
         CAR_INTERFACE_DECL()
 
@@ -138,15 +134,17 @@ private:
         : public Runnable
     {
     public:
-        InnerRunnable() {}
+        InnerRunnable();
 
         CARAPI Run();
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_OBJECT_DECL()
 
-    CAR_INTERFACE_DECL()
+    CARAPI constructor();
 
     /**
      * Initializes the HTTP cache. This method must be called before any

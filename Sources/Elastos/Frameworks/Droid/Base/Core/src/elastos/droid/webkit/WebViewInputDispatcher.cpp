@@ -74,6 +74,14 @@ ECode WebViewInputDispatcher::UiHandler::HandleMessage(
     return NOERROR;
 }
 
+ECode WebViewInputDispatcher::UiHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewInputDispatcher::UiHandler";
+    return NOERROR;
+}
+
 //===============================================================
 //          WebViewInputDispatcher::WebKitHandler
 //===============================================================
@@ -103,6 +111,14 @@ ECode WebViewInputDispatcher::WebKitHandler::HandleMessage(
             assert(0);
     }
 
+    return NOERROR;
+}
+
+ECode WebViewInputDispatcher::WebKitHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewInputDispatcher::WebKitHandler";
     return NOERROR;
 }
 
@@ -155,6 +171,14 @@ AutoPtr<WebViewInputDispatcher::DispatchEvent> WebViewInputDispatcher::DispatchE
     }
 
     return d;
+}
+
+ECode WebViewInputDispatcher::DispatchEventQueue::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewInputDispatcher::DispatchEventQueue";
+    return NOERROR;
 }
 
 //===============================================================
@@ -250,6 +274,14 @@ void WebViewInputDispatcher::TouchStream::UpdateLastEvent(
     else {
         mLastEvent = NULL;
     }
+}
+
+ECode WebViewInputDispatcher::TouchStream::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewInputDispatcher::TouchStream";
+    return NOERROR;
 }
 
 //===============================================================
@@ -1333,6 +1365,14 @@ void WebViewInputDispatcher::RecycleDispatchEventLocked(
         d->mNext = mDispatchEventPool;
         mDispatchEventPool = d;
     }
+}
+
+ECode WebViewInputDispatcher::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewInputDispatcher";
+    return NOERROR;
 }
 
 } // namespace Webkit

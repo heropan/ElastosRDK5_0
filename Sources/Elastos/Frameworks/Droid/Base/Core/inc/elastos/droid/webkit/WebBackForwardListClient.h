@@ -22,9 +22,7 @@ public:
      * @param item The newly created WebHistoryItem
      */
     virtual CARAPI_(void) OnNewHistoryItem(
-        /* [in] */ IWebHistoryItem* item)
-    {
-    }
+        /* [in] */ IWebHistoryItem* item);
 
     /**
      * Notify the client that the <var>item</var> at <var>index</var> is now
@@ -34,9 +32,7 @@ public:
      */
     virtual CARAPI_(void) OnIndexChanged(
         /* [in] */ IWebHistoryItem* item,
-        /* [in] */ Int32 index)
-    {
-    }
+        /* [in] */ Int32 index);
 
     CARAPI ToString(
         /* [out] */ String* info);

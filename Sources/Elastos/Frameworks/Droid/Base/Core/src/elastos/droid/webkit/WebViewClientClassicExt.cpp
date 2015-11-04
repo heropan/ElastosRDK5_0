@@ -44,6 +44,14 @@ ECode WebViewClientClassicExt::OnReceivedClientCertRequest(
     return NOERROR;
 }
 
+ECode WebViewClientClassicExt::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewClientClassicExt";
+    return NOERROR;
+}
+
 } // namespace Webkit
 } // namepsace Droid
 } // namespace Elastos

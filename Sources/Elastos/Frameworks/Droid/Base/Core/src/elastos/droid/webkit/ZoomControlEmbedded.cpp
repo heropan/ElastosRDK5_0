@@ -56,6 +56,13 @@ ECode ZoomControlEmbedded::ZoomListener::OnZoom(
     return mOwner->Update();
 }
 
+ECode ZoomControlEmbedded::ZoomListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlEmbedded::ZoomListener";
+    return NOERROR;
+}
 
 //===============================================================
 //                    ZoomControlEmbedded
@@ -177,6 +184,14 @@ AutoPtr<IZoomButtonsController> ZoomControlEmbedded::GetControls()
        }
     }
     return mZoomButtonsController;
+}
+
+ECode ZoomControlEmbedded::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlEmbedded";
+    return NOERROR;
 }
 
 } // namespace Webkit

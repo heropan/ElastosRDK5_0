@@ -13,22 +13,6 @@ CarClass(CMimeTypeMap), public MimeTypeMap
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI HasMimeType(
-        /* [in] */ const String& mimeType,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetMimeTypeFromExtension(
-        /* [in] */ const String& extension,
-        /* [out] */ String* mimeType);
-
-    CARAPI HasExtension(
-        /* [in] */ const String& extension,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetExtensionFromMimeType(
-        /* [in] */ const String& mimeType,
-        /* [out] */ String* extension);
 };
 
 } // namespace Webkit

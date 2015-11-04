@@ -2,12 +2,13 @@
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
-#include "elastos/droid/webkit/CWebViewClassic.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemProperties;
+using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +27,7 @@ const Boolean WebViewFactory::DEBUG;
 // Cache the factory both for efficiency, and ensure any one process gets all webviews from the
 // same provider.
 AutoPtr<IWebViewFactoryProvider> WebViewFactory::sProviderInstance;
-Mutex WebViewFactory::sProviderLock;
+Object WebViewFactory::sProviderLock;
 
 AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetProvider()
 {
@@ -39,7 +40,8 @@ AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetProvider()
     // For debug builds, we allow a system property to specify that we should use the
     // Chromium powered WebView. This enables us to switch between implementations
     // at runtime. For user (release) builds, don't allow this.
-    if (Build::IS_DEBUGGABLE && SystemProperties::GetBoolean(String("webview.use_chromium"), FALSE)) {
+    Boolean bFlag;
+    if (Build::IS_DEBUGGABLE && (SystemProperties::GetBoolean(String("webview.use_chromium"), FALSE, &bFlag), bFlag)) {
         assert(0);
 //        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
 //        try {
@@ -57,7 +59,9 @@ AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetProvider()
                 NULL/*WebViewFactory.class.GetClassLoader()*/);
         if (sProviderInstance == NULL) {
             if (DEBUG) Logger::V(LOGTAG, "Falling back to explicit linkage");
-            sProviderInstance = new CWebViewClassic::Factory();
+            assert(0);
+            // TODO
+            // sProviderInstance = new CWebViewClassic::Factory();
         }
     }
     return sProviderInstance;
@@ -92,9 +96,19 @@ AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetFactoryByName(
 //    }
     AutoPtr<IWebViewFactoryProvider> provider;
     if (providerName.Equals(DEFAULT_WEBVIEW_FACTORY)) {
-        provider = new CWebViewClassic::Factory();
+        assert(0);
+        // TODO
+        // provider = new CWebViewClassic::Factory();
     }
     return provider;
+}
+
+ECode WebViewFactory::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewFactory";
+    return NOERROR;
 }
 
 } // namespace Webkit

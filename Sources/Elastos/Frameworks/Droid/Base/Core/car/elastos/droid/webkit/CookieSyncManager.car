@@ -75,7 +75,7 @@ module
      *             replacement for {@link #sync}.
      */
     //@Deprecated
-    interface ICookieSyncManager /*extends WebSyncManager*/ {
+    interface ICookieSyncManager {
         /**
          * sync() forces sync manager to sync now
          * @deprecated Use {@link CookieManager#flush} instead.

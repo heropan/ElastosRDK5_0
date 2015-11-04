@@ -1,6 +1,8 @@
 
 #include "elastos/droid/webkit/CPluginManagerHelper.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
+
 //#include <unistd.h>
 //#include <sys/syscall.h>
 
@@ -9,14 +11,19 @@
 //    return syscall(__NR_gettid);
 //}
 
+using Elastos::Core::AutoLock;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-Mutex CPluginManagerHelper::sLock;
+Object CPluginManagerHelper::sLock;
 AutoPtr<CPluginManager> CPluginManagerHelper::mInstance;
+
+CAR_INTERFACE_IMPL(CPluginManagerHelper, Object, IPluginManagerHelper);
+
+CAR_SINGLETON_IMPL(CPluginManagerHelper);
 
 ECode CPluginManagerHelper::GetInstance(
     /* [in] */ IContext* context,

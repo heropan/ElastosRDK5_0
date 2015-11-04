@@ -18,9 +18,13 @@ namespace Webkit {
  * call either {@link #proceed} or {@link #cancel} to set the WebView's
  * response to the request.
  */
-class HttpAuthHandler : public Handler
+class HttpAuthHandler
+    : public Handler
+    , public IHttpAuthHandler
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * @hide Only for use by WebViewProvider implementations.
      */

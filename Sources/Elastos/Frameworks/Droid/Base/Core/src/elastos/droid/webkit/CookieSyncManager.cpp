@@ -7,13 +7,50 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CookieSyncManager, Object, ICookieSyncManager);
+
+CookieSyncManager::CookieSyncManager()
+{
+}
+
 CookieSyncManager::CookieSyncManager(
     /* [in] */ IContext* context)
     : WebSyncManager(context, String("CookieSyncManager"))
 {
 }
 
-CAR_INTERFACE_IMPL(CookieSyncManager, ICookieSyncManager);
+ECode CookieSyncManager::constructor()
+{
+    return NOERROR;
+}
+
+ECode CookieSyncManager::Sync()
+{
+    return CookieManager::GetInstance()->Flush();
+}
+
+ECode CookieSyncManager::ResetSync()
+{
+    return NOERROR;
+}
+
+ECode CookieSyncManager::StartSync()
+{
+    return NOERROR;
+}
+
+ECode CookieSyncManager::StopSync()
+{
+    return NOERROR;
+}
+
+ECode CookieSyncManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "CookieSyncManager";
+    return NOERROR;
+}
 
 void CookieSyncManager::SyncFromRamToFlash()
 {
@@ -33,14 +70,6 @@ void CookieSyncManager::SyncFromRamToFlash()
 //    if (DebugFlags.COOKIE_SYNC_MANAGER) {
 //        Log.v(LOGTAG, "CookieSyncManager::syncFromRamToFlash DONE");
 //    }
-}
-
-ECode CookieSyncManager::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    *info = "CookieSyncManager";
-    return NOERROR;
 }
 
 } // namespace Webkit

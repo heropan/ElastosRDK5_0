@@ -255,9 +255,15 @@ public:
     /**
      *  Transportation object for returning WebView across thread boundaries.
      */
-    class WebViewTransport : public Object
+    class WebViewTransport
+        : public Object
+        , public IWebViewTransport
     {
     public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor();
+
         /**
          * Sets the WebView to the transportation object.
          *
@@ -279,7 +285,6 @@ public:
 
     private:
         AutoPtr<IWebView> mWebview;
-        Object mLock;
     };
 
     /**
@@ -381,6 +386,14 @@ public:
 
         CARAPI GetHorizontalScrollbarHeight(
             /* [out] */ Int32* height);
+
+        CARAPI Super_onDrawVerticalScrollBar(
+            /* [in] */ ICanvas* canvas,
+            /* [in] */ IDrawable* scrollBar,
+            /* [in] */ Int32 l,
+            /* [in] */ Int32 t,
+            /* [in] */ Int32 r,
+            /* [in] */ Int32 b);
 
         // ---- Access to (non-public) fields ----
         /** Raw setter for the scroll X value, without invoking onScrollChanged handlers etc. */
@@ -490,14 +503,16 @@ public:
      *
      * @return true if horizontal scrollbar has overlay style
      */
-    virtual CARAPI_(Boolean) OverlayHorizontalScrollbar();
+    virtual CARAPI OverlayHorizontalScrollbar(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets whether vertical scrollbar has overlay style.
      *
      * @return true if vertical scrollbar has overlay style
      */
-    virtual CARAPI_(Boolean) OverlayVerticalScrollbar();
+    virtual CARAPI OverlayVerticalScrollbar(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets the visible height (in pixels) of the embedded title bar (if any).
@@ -505,7 +520,8 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Int32) GetVisibleTitleHeight();
+    virtual CARAPI GetVisibleTitleHeight(
+        /* [out] */ Int32* height);
 
     /**
      * Gets the SSL certificate for the main top-level page or null if there is
@@ -513,7 +529,8 @@ public:
      *
      * @return the SSL certificate for the main top-level page
      */
-    virtual CARAPI_(AutoPtr<ISslCertificate>) GetCertificate();
+    virtual CARAPI GetCertificate(
+        /* [out] */ ISslCertificate** cer);
 
     /**
      * Sets the SSL certificate for the main top-level page.
@@ -578,9 +595,10 @@ public:
      * @see WebViewDatabase#hasHttpAuthUsernamePassword
      * @see WebViewDatabase#clearHttpAuthUsernamePassword
      */
-    virtual CARAPI_(AutoPtr< ArrayOf<String> >) GetHttpAuthUsernamePassword(
+    virtual CARAPI GetHttpAuthUsernamePassword(
         /* [in] */ const String& host,
-        /* [in] */ const String& realm);
+        /* [in] */ const String& realm,
+        /* [out, callee] */ ArrayOf<String>** up);
 
     /**
      * Destroys the internal state of this WebView. This method should be called
@@ -628,8 +646,9 @@ public:
      * @return the same copy of the back/forward list used to save the state. If
      *         saveState fails, the returned list will be null.
      */
-    virtual CARAPI_(AutoPtr<IWebBackForwardList>) SaveState(
-        /* [in] */ IBundle* outState);
+    virtual CARAPI SaveState(
+        /* [in] */ IBundle* outState,
+        /* [out] */ IWebBackForwardList** wfl);
 
     /**
      * Saves the current display data to the Bundle given. Used in conjunction
@@ -641,9 +660,10 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Boolean) SavePicture(
+    virtual CARAPI SavePicture(
         /* [in] */ IBundle* b,
-        /* [in] */ IFile* dest);
+        /* [in] */ IFile* dest,
+        /* [out] */ Boolean* result);
 
     /**
      * Restores the display data that was saved in {@link #savePicture}. Used in
@@ -656,9 +676,10 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Boolean) RestorePicture(
+    virtual CARAPI RestorePicture(
         /* [in] */ IBundle* b,
-        /* [in] */ IFile* src);
+        /* [in] */ IFile* src,
+        /* [out] */ Boolean* result);
 
     /**
      * Restores the state of this WebView from the given Bundle. This method is
@@ -672,8 +693,9 @@ public:
      * @param inState the incoming Bundle of state
      * @return the restored back/forward list or null if restoreState failed
      */
-    virtual CARAPI_(AutoPtr<IWebBackForwardList>) RestoreState(
-        /* [in] */ IBundle* inState);
+    virtual CARAPI RestoreState(
+        /* [in] */ IBundle* inState,
+        /* [out] */ IWebBackForwardList** wfl);
 
     /**
      * Loads the given URL with the specified additional HTTP headers.
@@ -829,7 +851,8 @@ public:
      *
      * @return true iff this WebView has a back history item
      */
-    virtual CARAPI_(Boolean) CanGoBack();
+    virtual CARAPI CanGoBack(
+        /* [out] */ Boolean* result);
 
     /**
      * Goes back in the history of this WebView.
@@ -841,7 +864,8 @@ public:
      *
      * @return true iff this Webview has a forward history item
      */
-    virtual CARAPI_(Boolean) CanGoForward();
+    virtual CARAPI CanGoForward(
+        /* [out] */ Boolean* result);
 
     /**
      * Goes forward in the history of this WebView.
@@ -855,8 +879,9 @@ public:
      * @param steps the negative or positive number of steps to move the
      *              history
      */
-    virtual CARAPI_(Boolean) CanGoBackOrForward(
-        /* [in] */ Int32 steps);
+    virtual CARAPI CanGoBackOrForward(
+        /* [in] */ Int32 steps,
+        /* [out] */ Boolean* result);
 
     /**
      * Goes to the history item that is the number of steps away from
@@ -872,7 +897,8 @@ public:
     /**
      * Gets whether private browsing is enabled in this WebView.
      */
-    virtual CARAPI_(Boolean) IsPrivateBrowsingEnabled();
+    virtual CARAPI IsPrivateBrowsingEnabled(
+        /* [out] */ Boolean* enabled);
 
     /**
      * Scrolls the contents of this WebView up by half the view size.
@@ -880,8 +906,9 @@ public:
      * @param top true to jump to the top of the page
      * @return true if the page was scrolled
      */
-    virtual CARAPI_(Boolean) PageUp(
-        /* [in] */ Boolean top);
+    virtual CARAPI PageUp(
+        /* [in] */ Boolean top,
+        /* [out] */ Boolean* result);
 
     /**
      * Scrolls the contents of this WebView down by half the page size.
@@ -889,8 +916,9 @@ public:
      * @param bottom true to jump to bottom of page
      * @return true if the page was scrolled
      */
-    virtual CARAPI_(Boolean) PageDown(
-        /* [in] */ Boolean bottom);
+    virtual CARAPI PageDown(
+        /* [in] */ Boolean bottom,
+        /* [out] */ Boolean* result);
 
     /**
      * Clears this WebView so that onDraw() will draw nothing but white background,
@@ -912,7 +940,8 @@ public:
      *
      * @return a picture that captures the current contents of this WebView
      */
-    virtual CARAPI_(AutoPtr<IPicture>) CapturePicture();
+    virtual CARAPI CapturePicture(
+        /* [out] */ IPicture** pic);
 
     /**
      * Gets the current scale of this WebView.
@@ -923,7 +952,8 @@ public:
      * between the web rendering and UI threads; prefer
      * {@link WebViewClient#onScaleChanged}.
      */
-    virtual CARAPI_(Float) GetScale();
+    virtual CARAPI GetScale(
+        /* [out] */ Float* scale);
 
     /**
      * Sets the initial scale for this WebView. 0 means default. If
@@ -963,7 +993,8 @@ public:
      * and the email is set in the "extra" field of HitTestResult. Otherwise,
      * HitTestResult type is set to UNKNOWN_TYPE.
      */
-    virtual CARAPI_(AutoPtr<IWebViewHitTestResult>) GetHitTestResult();
+    virtual CARAPI GetHitTestResult(
+        /* [out] */ IWebViewHitTestResult** tr);
 
     /**
      * Requests the anchor or image element URL at the last tapped point.
@@ -998,7 +1029,8 @@ public:
      *
      * @return the URL for the current page
      */
-    virtual CARAPI_(String) GetUrl();
+    virtual CARAPI GetUrl(
+        /* [out] */ String* url);
 
     /**
      * Gets the original URL for the current page. This is not always the same
@@ -1009,7 +1041,8 @@ public:
      *
      * @return the URL that was originally requested for the current page
      */
-    virtual CARAPI_(String) GetOriginalUrl();
+    virtual CARAPI GetOriginalUrl(
+        /* [out] */ String* url);
 
     /**
      * Gets the title for the current page. This is the title of the current page
@@ -1017,7 +1050,8 @@ public:
      *
      * @return the title for the current page
      */
-    virtual CARAPI_(String) GetTitle();
+    virtual CARAPI GetTitle(
+        /* [out] */ String* title);
 
     /**
      * Gets the favicon for the current page. This is the favicon of the current
@@ -1025,7 +1059,8 @@ public:
      *
      * @return the favicon for the current page
      */
-    virtual CARAPI_(AutoPtr<IBitmap>) GetFavicon();
+    virtual CARAPI GetFavicon(
+        /* [out] */ IBitmap** bitmap);
 
     /**
      * Gets the touch icon URL for the apple-touch-icon <link> element, or
@@ -1034,21 +1069,24 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(String) GetTouchIconUrl();
+    virtual CARAPI GetTouchIconUrl(
+        /* [out] */ String* url);
 
     /**
      * Gets the progress for the current page.
      *
      * @return the progress for the current page between 0 and 100
      */
-    virtual CARAPI_(Int32) GetProgress();
+    virtual CARAPI GetProgress(
+        /* [out] */ Int32* progress);
 
     /**
      * Gets the height of the HTML content.
      *
      * @return the height of the HTML content
      */
-    virtual CARAPI_(Int32) GetContentHeight();
+    virtual CARAPI GetContentHeight(
+        /* [out] */ Int32* height);
 
     /**
      * Gets the width of the HTML content.
@@ -1056,7 +1094,8 @@ public:
      * @return the width of the HTML content
      * @hide
      */
-    virtual CARAPI_(Int32) GetContentWidth();
+    virtual CARAPI GetContentWidth(
+        /* [out] */ Int32* width);
 
     /**
      * Pauses all layout, parsing, and JavaScript timers for all WebViews. This
@@ -1091,7 +1130,8 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(Boolean) IsPaused();
+    virtual CARAPI IsPaused(
+        /* [out] */ Boolean* result);
 
     /**
      * Informs this WebView that memory is low so that it can free any available
@@ -1135,7 +1175,8 @@ public:
      * different objects. The object returned from this method will not be
      * updated to reflect any new state.
      */
-    virtual CARAPI_(AutoPtr<IWebBackForwardList>) CopyBackForwardList();
+    virtual CARAPI CopyBackForwardList(
+        /* [out] */ IWebBackForwardList** wfl);
 
     /**
      * Registers the listener to be notified as find-on-page operations
@@ -1168,8 +1209,9 @@ public:
      * @deprecated {@link #findAllAsync} is preferred.
      * @see #setFindListener
      */
-    virtual CARAPI_(Int32) FindAll(
-        /* [in] */ const String& find);
+    virtual CARAPI FindAll(
+        /* [in] */ const String& find,
+        /* [out] */ Int32* all);
 
     /**
      * Finds all instances of find on the page and highlights them,
@@ -1193,9 +1235,10 @@ public:
      *                If false and text is non-null, perform a find all.
      * @return true if the find dialog is shown, false otherwise
      */
-    virtual CARAPI_(Boolean) ShowFindDialog(
+    virtual CARAPI ShowFindDialog(
         /* [in] */ const String& text,
-        /* [in] */ Boolean showIme);
+        /* [in] */ Boolean showIme,
+        /* [out] */ Boolean* result);
 
     /**
      * Gets the first substring consisting of the address of a physical
@@ -1342,7 +1385,8 @@ public:
      * @return a WebSettings object that can be used to control this WebView's
      *         settings
      */
-    virtual CARAPI_(AutoPtr<IWebSettings>) GetSettings();
+    virtual CARAPI GetSettings(
+        /* [out] */ IWebSettings** webSetting);
 
     /**
      * Gets the list of currently loaded plugins.
@@ -1421,7 +1465,8 @@ public:
      * @deprecated the built-in zoom mechanisms are preferred
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN}
      */
-    virtual CARAPI_(AutoPtr<IView>) GetZoomControls();
+    virtual CARAPI GetZoomControls(
+        /* [out] */ IView** view);
 
     /**
      * Gets whether this WebView can be zoomed in.
@@ -1432,7 +1477,8 @@ public:
      * between the web rendering and UI threads; prefer
      * {@link WebViewClient#onScaleChanged}.
      */
-    virtual CARAPI_(Boolean) CanZoomIn();
+    virtual CARAPI CanZoomIn(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets whether this WebView can be zoomed out.
@@ -1443,7 +1489,8 @@ public:
      * between the web rendering and UI threads; prefer
      * {@link WebViewClient#onScaleChanged}.
      */
-    virtual CARAPI_(Boolean) CanZoomOut();
+    virtual CARAPI CanZoomOut(
+        /* [out] */ Boolean* result);
 
     /**
      * Performs a zoom operation in this WebView.
@@ -1459,14 +1506,16 @@ public:
      *
      * @return true if zoom in succeeds, false if no zoom changes
      */
-    virtual CARAPI_(Boolean) ZoomIn();
+    virtual CARAPI ZoomIn(
+        /* [out] */ Boolean* result);
 
     /**
      * Performs zoom out in this WebView.
      *
      * @return true if zoom out succeeds, false if no zoom changes
      */
-    virtual CARAPI_(Boolean) ZoomOut();
+    virtual CARAPI ZoomOut(
+        /* [out] */ Boolean* result);
 
     /**
      * @deprecated This method is now obsolete.
@@ -1501,7 +1550,8 @@ public:
      *
      * @hide WebViewProvider is not public API.
      */
-    virtual CARAPI_(AutoPtr<IWebViewProvider>) GetWebViewProvider();
+    virtual CARAPI GetWebViewProvider(
+        /* [out] */ IWebViewProvider** provider);
 
     //-------------------------------------------------------------------------
     // Override View methods

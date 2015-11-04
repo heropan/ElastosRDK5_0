@@ -12,11 +12,7 @@ namespace Webkit {
 CarClass(CWebViewTransport), public WebView::WebViewTransport
 {
 public:
-    CARAPI SetWebView(
-        /* [in] */ IWebView* webview);
-
-    CARAPI GetWebView(
-        /* [out] */ IWebView** webView);
+    CAR_OBJECT_DECL();
 };
 
 } // namespace Webkit

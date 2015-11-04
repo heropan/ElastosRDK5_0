@@ -20,18 +20,13 @@ class JsResult
 public:
     CAR_INTERFACE_DECL();
 
-    JsResult()
-        : mResult(FALSE)
-    {}
+    JsResult();
 
     /**
      * @hide Only for use by WebViewProvider implementations
      */
     JsResult(
-        /* [in] */ IJsResultReceiver* receiver)
-        : mReceiver(receiver)
-        , mResult(FALSE)
-    {}
+        /* [in] */ IJsResultReceiver* receiver);
 
     CARAPI constructor(
         /* [in] */ IJsResultReceiver* receiver);
@@ -49,21 +44,16 @@ public:
     /**
      * @hide Only for use by WebViewProvider implementations
      */
-    virtual CARAPI_(Boolean) GetResult();
+    virtual CARAPI GetResult(
+        /* [out] */ Boolean* result);
 
     CARAPI ToString(
         /* [out] */ String* info);
 
 protected:
-    CARAPI Init(
-       /* [in] */ IJsResultReceiver* receiver)
-    {
-        mReceiver = receiver;
-        return NOERROR;
-    }
-
     /* Notify the caller that the JsResult has completed */
-    virtual CARAPI_(void) WakeUp() = 0;
+    virtual CARAPI_(void) WakeUp();
+
     // This is the caller of the prompt and is the object that is waiting.
     AutoPtr<IJsResultReceiver> mReceiver;
 

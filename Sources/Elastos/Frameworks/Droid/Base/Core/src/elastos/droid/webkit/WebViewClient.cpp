@@ -40,6 +40,13 @@ const Int32 WebViewClient::ERROR_FILE_NOT_FOUND;
 /** Too many requests during this load */
 const Int32 WebViewClient::ERROR_TOO_MANY_REQUESTS;
 
+CAR_INTERFACE_IMPL(WebViewClient, Object, IWebViewClient);
+
+ECode WebViewClient::constructor()
+{
+    return NOERROR;
+}
+
 /**
  * Give the host application a chance to take over the control when a new
  * url is about to be loaded in the current WebView. If WebViewClient is not
@@ -53,11 +60,14 @@ const Int32 WebViewClient::ERROR_TOO_MANY_REQUESTS;
  * @return True if the host application wants to leave the current WebView
  *         and handle the url itself, otherwise return false.
  */
-Boolean WebViewClient::ShouldOverrideUrlLoading(
+ECode WebViewClient::ShouldOverrideUrlLoading(
     /* [in] */ IWebView* view,
-    /* [in] */ const String& url)
+    /* [in] */ const String& url,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -125,11 +135,24 @@ ECode WebViewClient::OnLoadResource(
  *         response information or null if the WebView should load the
  *         resource itself.
  */
-AutoPtr<IWebResourceResponse> WebViewClient::ShouldInterceptRequest(
+ECode WebViewClient::ShouldInterceptRequest(
     /* [in] */ IWebView* view,
-    /* [in] */ const String& url)
+    /* [in] */ const String& url,
+    /* [out] */ IWebResourceResponse** wrr)
 {
-    return NULL;
+    VALIDATE_NOT_NULL(wrr);
+    *wrr = NULL;
+    return NOERROR;
+}
+
+ECode WebViewClient::ShouldInterceptRequest(
+    /* [in] */ IWebView* view,
+    /* [in] */ IWebResourceRequest* request,
+    /* [out] */ IWebResourceResponse** wrr)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 /**
@@ -223,6 +246,15 @@ ECode WebViewClient::OnReceivedSslError(
     return handler->Cancel();
 }
 
+ECode WebViewClient::OnReceivedClientCertRequest(
+    /* [in] */ IWebView* view,
+    /* [in] */ IClientCertRequest* request)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
 /**
  * Notifies the host application that the WebView received an HTTP
  * authentication request. The host application can use the supplied
@@ -256,11 +288,14 @@ ECode WebViewClient::OnReceivedHttpAuthRequest(
  * @return True if the host application wants to handle the key event
  *         itself, otherwise return false
  */
-Boolean WebViewClient::ShouldOverrideKeyEvent(
+ECode WebViewClient::ShouldOverrideKeyEvent(
     /* [in] */ IWebView* view,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -285,6 +320,15 @@ ECode WebViewClient::OnUnhandledKeyEvent(
     }
 #endif
     return NOERROR;
+}
+
+ECode WebViewClient::OnUnhandledInputEvent(
+    /* [in] */ IWebView* view,
+    /* [in] */ IInputEvent* event)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 /**
@@ -319,6 +363,14 @@ ECode WebViewClient::OnReceivedLoginRequest(
     /* [in] */ const String& account,
     /* [in] */ const String& args)
 {
+    return NOERROR;
+}
+
+ECode WebViewClient::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewClient";
     return NOERROR;
 }
 

@@ -94,6 +94,13 @@ void ZoomControlExternal::ExtendedZoomControls::SetOnZoomOutClickListener(
     mPlusMinusZoomControls->SetOnZoomOutClickListener(listener);
 }
 
+ECode ZoomControlExternal::ExtendedZoomControls::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlExternal::ExtendedZoomControls";
+    return NOERROR;
+}
 
 //===============================================================
 //            ZoomControlExternal::ZoomInClickListener
@@ -117,6 +124,13 @@ ECode ZoomControlExternal::ZoomInClickListener::OnClick(
     return NOERROR;
 }
 
+ECode ZoomControlExternal::ZoomInClickListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlExternal::ZoomInClickListener";
+    return NOERROR;
+}
 
 //===============================================================
 //            ZoomControlExternal::ZoomOutClickListener
@@ -140,6 +154,13 @@ ECode ZoomControlExternal::ZoomOutClickListener::OnClick(
     return NOERROR;
 }
 
+ECode ZoomControlExternal::ZoomOutClickListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlExternal::ZoomOutClickListener";
+    return NOERROR;
+}
 
 //===============================================================
 //            ZoomControlExternal::ZoomControlRunnable
@@ -147,7 +168,8 @@ ECode ZoomControlExternal::ZoomOutClickListener::OnClick(
 ZoomControlExternal::ZoomControlRunnable::ZoomControlRunnable(
     /* [in] */ ZoomControlExternal* owner)
     : mOwner(owner)
-{}
+{
+}
 
 ECode ZoomControlExternal::ZoomControlRunnable::Run()
 {
@@ -165,6 +187,13 @@ ECode ZoomControlExternal::ZoomControlRunnable::Run()
     return NOERROR;
 }
 
+ECode ZoomControlExternal::ZoomControlRunnable::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlExternal::ZoomControlRunnable";
+    return NOERROR;
+}
 
 //===============================================================
 //                     ZoomControlExternal
@@ -264,6 +293,14 @@ AutoPtr<ZoomControlExternal::ExtendedZoomControls> ZoomControlExternal::CreateZo
     AutoPtr<IViewOnClickListener> outListener = new ZoomOutClickListener(this);
     zoomControls->SetOnZoomOutClickListener(outListener);
     return zoomControls;
+}
+
+ECode ZoomControlExternal::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomControlExternal";
+    return NOERROR;
 }
 
 } // namespace Webkit

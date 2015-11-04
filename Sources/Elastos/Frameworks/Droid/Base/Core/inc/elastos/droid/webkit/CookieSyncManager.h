@@ -52,18 +52,54 @@ class CookieSyncManager
     , public WebSyncManager
 {
     friend class CCookieSyncManagerHelper;
-private:
-    CookieSyncManager(
-        /* [in] */ IContext* context);
-
 public:
     CAR_INTERFACE_DECL();
+
+    CARAPI constructor();
+
+    /**
+     * sync() forces sync manager to sync now
+     * @deprecated Use {@link CookieManager#flush} instead.
+     */
+    //@Deprecated
+    CARAPI Sync();
+
+    /**
+     * resetSync() resets sync manager's timer.
+     * @deprecated Calling resetSync is no longer necessary as the WebView automatically
+     *             syncs cookies.
+     */
+    //@Deprecated
+    CARAPI ResetSync();
+
+    /**
+     * startSync() requests sync manager to start sync.
+     * @deprecated Calling startSync is no longer necessary as the WebView automatically
+     *             syncs cookies.
+     */
+    //@Deprecated
+    CARAPI StartSync();
+
+    /**
+     * stopSync() requests sync manager to stop sync. remove any SYNC_MESSAGE in
+     * the queue to break the sync loop
+     * @deprecated Calling stopSync is no longer useful as the WebView
+     *             automatically syncs cookies.
+     */
+    //@Deprecated
+    CARAPI StopSync();
 
     CARAPI ToString(
         /* [out] */ String* info);
 
 protected:
+    CookieSyncManager();
+
     CARAPI_(void) SyncFromRamToFlash();
+
+private:
+    CookieSyncManager(
+        /* [in] */ IContext* context);
 };
 
 } // namespace Webkit

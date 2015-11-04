@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CWebViewHelper, Object, IWebViewHelper);
+
+CAR_SINGLETON_IMPL(CWebViewHelper);
+
 ECode CWebViewHelper::EnablePlatformNotifications()
 {
     WebView::EnablePlatformNotifications();
@@ -37,6 +41,29 @@ ECode CWebViewHelper::GetPluginList(
     REFCOUNT_ADD(*pluginList);
 
     return NOERROR;
+}
+
+ECode CWebViewHelper::ClearClientCertPreferences(
+    /* [in] */ IRunnable* onCleared)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CWebViewHelper::EnableSlowWholeDocumentDraw()
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CWebViewHelper::SetWebContentsDebuggingEnabled(
+    /* [in] */ Boolean enabled)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 } // namespace Webkit

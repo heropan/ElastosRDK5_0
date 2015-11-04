@@ -12,20 +12,7 @@ namespace Webkit {
 CarClass(CWebViewDatabase), public WebViewDatabase
 {
 public:
-    CARAPI HasUsernamePassword(
-        /* [out] */ Boolean* result);
-
-    CARAPI ClearUsernamePassword();
-
-    CARAPI HasHttpAuthUsernamePassword(
-        /* [out] */ Boolean* result);
-
-    CARAPI ClearHttpAuthUsernamePassword();
-
-    CARAPI HasFormData(
-        /* [out] */ Boolean* result);
-
-    CARAPI ClearFormData();
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Webkit

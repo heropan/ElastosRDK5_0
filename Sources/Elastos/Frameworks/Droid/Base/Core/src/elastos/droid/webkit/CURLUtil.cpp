@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CURLUtil, Object, IURLUtil);
+
+CAR_SINGLETON_IMPL(CURLUtil);
+
 ECode CURLUtil::GuessUrl(
     /* [in] */ const String& _inUrl,
     /* [out] */ String* url)

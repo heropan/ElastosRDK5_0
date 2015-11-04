@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_WEBKIT_COOKIEMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/Core/Object.h>
 
 using Elastos::Core::Object;
 using Elastos::Droid::Net::IWebAddress;
@@ -52,7 +51,8 @@ public:
      * @return true if {@link WebView} instances send and accept cookies
      */
     //synchronized
-    virtual CARAPI_(Boolean) AcceptCookie();
+    virtual CARAPI AcceptCookie(
+        /* [out] */ Boolean* result);
 
      /**
      * Sets a cookie for the given URL. Any existing cookie with the same host,

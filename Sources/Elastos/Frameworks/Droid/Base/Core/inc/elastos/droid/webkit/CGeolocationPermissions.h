@@ -13,21 +13,6 @@ CarClass(CGeolocationPermissions), public GeolocationPermissions
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI GetOrigins(
-        /* [in] */ IValueCallback* callBack);
-
-    CARAPI GetAllowed(
-        /* [in] */ const String& origin,
-        /* [in] */ IValueCallback* callBack);
-
-    CARAPI Clear(
-        /* [in] */ const String& origin);
-
-    CARAPI Allow(
-        /* [in] */ const String& origin);
-
-    CARAPI ClearAll();
 };
 
 } // namespace Webkit

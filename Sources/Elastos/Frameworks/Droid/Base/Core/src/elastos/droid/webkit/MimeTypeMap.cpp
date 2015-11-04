@@ -6,8 +6,8 @@
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Net::CMimeUtils;
-using Elastos::Net::IMimeUtils;
+// TODO using Elastos::Net::CMimeUtils;
+using Libcore::Net::IMimeUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -15,11 +15,11 @@ namespace Webkit {
 
 AutoPtr<MimeTypeMap> MimeTypeMap::sMimeTypeMap = new MimeTypeMap();
 
+CAR_INTERFACE_IMPL(MimeTypeMap, Object, IMimeTypeMap);
+
 MimeTypeMap::MimeTypeMap()
 {
 }
-
-CAR_INTERFACE_IMPL(MimeTypeMap, IMimeTypeMap);
 
 /**
  * Returns the file extension or an empty string iff there is no
@@ -75,7 +75,9 @@ ECode MimeTypeMap::HasMimeType(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<IMimeUtils> utils;
-    CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
+    assert(0);
+    // TODO
+    // CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
     return utils->HasMineType(mimeType, result);
 }
 
@@ -90,7 +92,9 @@ ECode MimeTypeMap::GetMimeTypeFromExtension(
 {
     VALIDATE_NOT_NULL(mimeType)
     AutoPtr<IMimeUtils> utils;
-    CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
+    assert(0);
+    // TODO
+    // CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
     return utils->GuessMimeTypeFromExtension(extension, mimeType);
 }
 
@@ -105,7 +109,9 @@ ECode MimeTypeMap::HasExtension(
 {
     VALIDATE_NOT_NULL(result);
     AutoPtr<IMimeUtils> utils;
-    CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
+    assert(0);
+    // TODO
+    // CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
     return utils->HasExtension(extension, result);
 }
 
@@ -122,7 +128,9 @@ ECode MimeTypeMap::GetExtensionFromMimeType(
 {
     VALIDATE_NOT_NULL(extension);
     AutoPtr<IMimeUtils> utils;
-    CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
+    assert(0);
+    // TODO
+    // CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
     return utils->GuessExtensionFromMimeType(mimeType, extension);
 }
 
@@ -195,7 +203,9 @@ String MimeTypeMap::MimeTypeFromExtension(
     /* [in] */ const String& extension)
 {
     AutoPtr<IMimeUtils> utils;
-    CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
+    assert(0);
+    // TODO
+    // CMimeUtils::AcquireSingleton((IMimeUtils**)&utils);
     String mimeType;
     utils->GuessMimeTypeFromExtension(extension, &mimeType);
     return mimeType;

@@ -22,6 +22,8 @@ namespace Webkit {
 const String DateSorter::LOGTAG("webkit");
 const Int32 DateSorter::NUM_DAYS_AGO;
 
+CAR_INTERFACE_IMPL(DateSorter, Object, IDateSorter);
+
 DateSorter::DateSorter()
 {
 }
@@ -33,6 +35,13 @@ DateSorter::DateSorter(
     /* [in] */ IContext* context)
 {
     Init(context);
+}
+
+ECode DateSorter::constructor(
+    /* [in] */ IContext* context)
+{
+    Init(context);
+    return NOERROR;
 }
 
 /**
@@ -98,42 +107,65 @@ void DateSorter::Init(
  * @return an index from 0 to (DAY_COUNT - 1) that identifies which
  * date bin this date belongs to
  */
-Int32 DateSorter::GetIndex(
-    /* [in] */ Int64 time)
+ECode DateSorter::GetIndex(
+    /* [in] */ Int64 time,
+    /* [out] */ Int32* index)
 {
+    VALIDATE_NOT_NULL(index);
+
     Int32 lastDay = IDateSorter::DAY_COUNT - 1;
     for (Int32 i = 0; i < lastDay; i++) {
         if (time > (*mBins)[i]) return i;
     }
 
-    return lastDay;
+    *index = lastDay;
+
+    return NOERROR;
 }
 
 /**
  * @param index date bin index as returned by getIndex()
  * @return string label suitable for display to user
  */
-String DateSorter::GetLabel(
-    /* [in] */ Int32 index)
+ECode DateSorter::GetLabel(
+    /* [in] */ Int32 index,
+    /* [out] */ String* label)
 {
-    if (index < 0 || index >= IDateSorter::DAY_COUNT) return String("");
-    return (*mLabels)[index];
+    VALIDATE_NOT_NULL(label);
+
+    if (index < 0 || index >= IDateSorter::DAY_COUNT) {
+        *label = String("");
+        return NOERROR;
+    }
+
+    *label = (*mLabels)[index];
+
+    return NOERROR;
 }
 
 /**
  * @param index date bin index as returned by getIndex()
  * @return date boundary at given index
  */
-Int64 DateSorter::GetBoundary(
-    /* [in] */ Int32 index)
+ECode DateSorter::GetBoundary(
+    /* [in] */ Int32 index,
+    /* [out] */ Int64* boundary)
 {
+    VALIDATE_NOT_NULL(boundary);
+
     Int32 lastDay = IDateSorter::DAY_COUNT - 1;
     // Error case
     if (index < 0 || index > lastDay) index = 0;
     // Since this provides a lower boundary on dates that will be included
     // in the given bin, provide the smallest value
-    if (index == lastDay) return Elastos::Core::Math::INT64_MIN_VALUE;
-    return (*mBins)[index];
+    if (index == lastDay) {
+        *boundary = Elastos::Core::Math::INT64_MIN_VALUE;
+        return NOERROR;
+    }
+
+    *boundary = (*mBins)[index];
+
+    return NOERROR;
 }
 
 /**

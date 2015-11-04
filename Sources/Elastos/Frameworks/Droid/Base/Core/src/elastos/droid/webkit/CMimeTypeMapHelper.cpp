@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CMimeTypeMapHelper, Object, IMimeTypeMapHelper);
+
+CAR_SINGLETON_IMPL(CMimeTypeMapHelper);
+
 ECode CMimeTypeMapHelper::GetFileExtensionFromUrl(
     /* [in] */ const String& url,
     /* [out] */ String* fileExtension)

@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(HttpAuthHandler, Object, IHttpAuthHandler);
+
 /**
  * @hide Only for use by WebViewProvider implementations.
  */

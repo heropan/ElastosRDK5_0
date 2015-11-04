@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CGeolocationPermissionsHelper, Object, IGeolocationPermissionsHelper);
+
+CAR_SINGLETON_IMPL(CGeolocationPermissionsHelper);
+
 ECode CGeolocationPermissionsHelper::GetInstance(
     /* [out] */ IGeolocationPermissions** instance)
 {

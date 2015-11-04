@@ -18,6 +18,9 @@ class WebViewFactory
 public:
     static CARAPI_(AutoPtr<IWebViewFactoryProvider>) GetProvider();
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     // TODO: This allows us to have the legacy and Chromium WebView coexist for development
     // and side-by-side testing. After transition, remove this when no longer required.

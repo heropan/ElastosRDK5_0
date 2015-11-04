@@ -37,22 +37,22 @@ public:
 
     CARAPI_(String) GoString();
 
-    static void SetQuadFP1(
+    static CARAPI_(void) SetQuadFP1(
         /* [in] */ IInterface* obj,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    static void SetQuadFP2(
+    static CARAPI_(void) SetQuadFP2(
         /* [in] */ IInterface* obj,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    static void SetQuadFP3(
+    static CARAPI_(void) SetQuadFP3(
         /* [in] */ IInterface* obj,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    static void SetQuadFP4(
+    static CARAPI_(void) SetQuadFP4(
         /* [in] */ IInterface* obj,
         /* [in] */ Float x,
         /* [in] */ Float y);

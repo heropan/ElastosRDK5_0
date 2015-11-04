@@ -56,6 +56,8 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     /**
      * Give the host application a chance to take over the control when a new
      * url is about to be loaded in the current WebView. If WebViewClient is not
@@ -69,9 +71,10 @@ public:
      * @return True if the host application wants to leave the current WebView
      *         and handle the url itself, otherwise return false.
      */
-    virtual CARAPI_(Boolean) ShouldOverrideUrlLoading(
+    virtual CARAPI ShouldOverrideUrlLoading(
         /* [in] */ IWebView* view,
-        /* [in] */ const String& url);
+        /* [in] */ const String& url,
+        /* [out] */ Boolean* result);
 
     /**
      * Notify the host application that a page has started loading. This method
@@ -129,9 +132,10 @@ public:
      *         response information or null if the WebView should load the
      *         resource itself.
      */
-    virtual CARAPI_(AutoPtr<IWebResourceResponse>) ShouldInterceptRequest(
+    virtual CARAPI ShouldInterceptRequest(
         /* [in] */ IWebView* view,
-        /* [in] */ const String& url);
+        /* [in] */ const String& url,
+        /* [out] */ IWebResourceResponse** wrr);
 
     /**
      * Notify the host application of a resource request and allow the
@@ -148,9 +152,10 @@ public:
      *         response information or null if the WebView should load the
      *         resource itself.
      */
-    virtual CARAPI_(AutoPtr<IWebResourceResponse>) ShouldInterceptRequest(
+    virtual CARAPI ShouldInterceptRequest(
         /* [in] */ IWebView* view,
-        /* [in] */ IWebResourceRequest* request);
+        /* [in] */ IWebResourceRequest* request,
+        /* [out] */ IWebResourceResponse** wrr);
 
     /**
      * Notify the host application that there have been an excessive number of
@@ -279,9 +284,10 @@ public:
      * @return True if the host application wants to handle the key event
      *         itself, otherwise return false
      */
-    virtual CARAPI_(Boolean) ShouldOverrideKeyEvent(
+    virtual CARAPI ShouldOverrideKeyEvent(
         /* [in] */ IWebView* view,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Notify the host application that a key was not handled by the WebView.

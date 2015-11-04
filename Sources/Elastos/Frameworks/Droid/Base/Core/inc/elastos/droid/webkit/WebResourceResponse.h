@@ -39,10 +39,10 @@ public:
         /* [in] */ IInputStream* data);
 
     WebResourceResponse(
-        /* [in] */ String mimeType,
-        /* [in] */ String encoding,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& encoding,
         /* [in] */ Int32 statusCode,
-        /* [in] */ String reasonPhrase,
+        /* [in] */ const String& reasonPhrase,
         /* [in] */ IMap* responseHeaders,
         /* [in] */ IInputStream* data);
 
@@ -72,7 +72,8 @@ public:
      *
      * @return the resource response's MIME type
      */
-    virtual CARAPI_(String) GetMimeType();
+    virtual CARAPI GetMimeType(
+        /* [out] */ String* type);
 
     /**
      * Sets the resource response's encoding, for example UTF-8. This is used
@@ -88,7 +89,8 @@ public:
      *
      * @return the resource response's encoding
      */
-    virtual CARAPI_(String) GetEncoding();
+    virtual CARAPI GetEncoding(
+        /* [out] */ String* encoding);
 
     /**
      * Sets the resource response's status code and reason phrase.
@@ -148,7 +150,8 @@ public:
      *
      * @return the input stream that provides the resource response's data
      */
-    virtual CARAPI_(AutoPtr<IInputStream>) GetData();
+    virtual CARAPI GetData(
+        /* [out] */ IInputStream** data);
 
     CARAPI ToString(
         /* [out] */ String* info);
@@ -159,6 +162,14 @@ protected:
     CARAPI Init(
         /* [in] */ const String& mimeType,
         /* [in] */ const String& encoding,
+        /* [in] */ IInputStream* data);
+
+    CARAPI Init(
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& encoding,
+        /* [in] */ Int32 statusCode,
+        /* [in] */ const String& reasonPhrase,
+        /* [in] */ IMap* responseHeaders,
         /* [in] */ IInputStream* data);
 
 protected:

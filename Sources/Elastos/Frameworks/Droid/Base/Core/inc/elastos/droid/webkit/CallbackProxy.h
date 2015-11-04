@@ -65,7 +65,6 @@ private:
     private:
         // Private result object
         AutoPtr<IInterface> mResult;
-        Object mLock;
     };
 
     class JsResultReceiver

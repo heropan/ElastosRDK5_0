@@ -60,7 +60,7 @@ module
          */
         Proceed(
             [in] IPrivateKey* privateKey,
-            [in] ArrayOf<IX509Certificate>* chain);
+            [in] ArrayOf<IX509Certificate*>* chain);
 
         /**
          * Ignore the request for now. Do not remember user's choice.

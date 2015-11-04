@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CL10nUtilsHelper, Object, IL10nUtilsHelper);
+
+CAR_SINGLETON_IMPL(CL10nUtilsHelper);
+
 ECode CL10nUtilsHelper::SetApplicationContext(
     /* [in] */ IContext* applicationContext)
 {

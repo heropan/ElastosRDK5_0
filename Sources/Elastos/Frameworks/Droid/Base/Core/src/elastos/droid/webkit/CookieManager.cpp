@@ -1,12 +1,17 @@
 
 #include "elastos/droid/webkit/CookieManager.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-Mutex CookieManager::sLock;
+Object CookieManager::sLock;
+
+CAR_INTERFACE_IMPL(CookieManager, Object, ICookieManager);
 
 /**
  * @hide Only for use by WebViewProvider implementations
@@ -14,8 +19,6 @@ Mutex CookieManager::sLock;
 CookieManager::CookieManager()
 {
 }
-
-CAR_INTERFACE_IMPL(CookieManager, ICookieManager);
 
 /**
  * Gets the singleton CookieManager instance. If this method is used
@@ -57,11 +60,14 @@ ECode CookieManager::SetAcceptCookie(
  * @return true if {@link WebView} instances send and accept cookies
  */
 //synchronized
-Boolean CookieManager::AcceptCookie()
+ECode CookieManager::AcceptCookie(
+    /* [out] */ Boolean* result)
 {
     AutoLock lock(this);
+    VALIDATE_NOT_NULL(result);
     assert(0);
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
  /**

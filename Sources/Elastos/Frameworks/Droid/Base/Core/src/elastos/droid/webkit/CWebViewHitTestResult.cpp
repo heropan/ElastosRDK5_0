@@ -5,9 +5,19 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CWebViewHitTestResult, Object, IWebViewHitTestResult);
+
+CAR_OBJECT_IMPL(CWebViewHitTestResult);
+
 CWebViewHitTestResult::CWebViewHitTestResult()
     : mType(UNKNOWN_TYPE)
-{}
+{
+}
+
+ECode CWebViewHitTestResult::constructor()
+{
+    return NOERROR;
+}
 
 ECode CWebViewHitTestResult::SetType(
     /* [in] */ Int32 type)

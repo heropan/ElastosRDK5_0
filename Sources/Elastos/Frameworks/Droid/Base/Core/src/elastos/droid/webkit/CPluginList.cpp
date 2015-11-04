@@ -1,13 +1,20 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/CPluginList.h"
+#include <elastos/core/AutoLock.h>
+// TODO #include <elastos/utility/Clist.h>
 #include <elastos/utility/etl/Algorithm.h>
 
-
+using Elastos::Core::AutoLock;
+// TODOusing Elastos::Utility::CList;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
+
+CAR_INTERFACE_IMPL(CPluginList, Object, IPluginList);
+
+CAR_OBJECT_IMPL(CPluginList);
 
 ECode CPluginList::constructor()
 {
@@ -15,11 +22,13 @@ ECode CPluginList::constructor()
 }
 
 ECode CPluginList::GetList(
-    /* [out] */ IObjectContainer** plugins)
+    /* [out] */ IList** plugins)
 {
     VALIDATE_NOT_NULL(plugins);
     AutoLock lock(this);
-    FAIL_RETURN(CObjectContainer::New(plugins));
+    assert(0);
+    // TODO
+    // FAIL_RETURN(CList::New(plugins));
     List< AutoPtr<CPlugin> >::Iterator it;
     for (it = mPlugins.Begin(); it != mPlugins.End(); ++it) {
         (*plugins)->Add((IPlugin*)it->Get());

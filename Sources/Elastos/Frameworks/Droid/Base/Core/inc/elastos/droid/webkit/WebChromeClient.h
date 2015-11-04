@@ -34,6 +34,8 @@ public:
 public:
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     /**
      * Tell the host application the current progress of loading a page.
      * @param view The WebView that initiated the callback.
@@ -130,11 +132,12 @@ public:
      *         false from this method but also sending resultMsg will result in
      *         undefined behavior.
      */
-    virtual CARAPI_(Boolean) OnCreateWindow(
+    virtual CARAPI OnCreateWindow(
         /* [in] */ IWebView* view,
         /* [in] */ Boolean isDialog,
         /* [in] */ Boolean isUserGesture,
-        /* [in] */ IMessage* resultMsg);
+        /* [in] */ IMessage* resultMsg,
+        /* [out] */ Boolean* result);
 
     /**
      * Request display and focus for this WebView. This may happen due to
@@ -165,11 +168,12 @@ public:
      * @param result A JsResult to confirm that the user hit enter.
      * @return boolean Whether the client will handle the alert dialog.
      */
-    virtual CARAPI_(Boolean) OnJsAlert(
+    virtual CARAPI OnJsAlert(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
-        /* [in] */ IJsResult* result);
+        /* [in] */ IJsResult* result,
+        /* [out] */ Boolean* flag);
 
     /**
      * Tell the client to display a confirm dialog to the user. If the client
@@ -184,11 +188,12 @@ public:
      *               javascript.
      * @return boolean Whether the client will handle the confirm dialog.
      */
-    virtual CARAPI_(Boolean) OnJsConfirm(
+    virtual CARAPI OnJsConfirm(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
-        /* [in] */ IJsResult* result);
+        /* [in] */ IJsResult* result,
+        /* [out] */ Boolean* flag);
 
     /**
      * Tell the client to display a prompt dialog to the user. If the client
@@ -204,12 +209,13 @@ public:
      *               javascript.
      * @return boolean Whether the client will handle the prompt dialog.
      */
-    virtual CARAPI_(Boolean) OnJsPrompt(
+    virtual CARAPI OnJsPrompt(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
         /* [in] */ const String& defaultValue,
-        /* [in] */ IJsPromptResult* result);
+        /* [in] */ IJsPromptResult* result,
+        /* [out] */ Boolean* flag);
 
     /**
      * Tell the client to display a dialog to confirm navigation away from the
@@ -227,11 +233,12 @@ public:
      *               javascript.
      * @return boolean Whether the client will handle the confirm dialog.
      */
-    virtual CARAPI_(Boolean) OnJsBeforeUnload(
+    virtual CARAPI OnJsBeforeUnload(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
-        /* [in] */ IJsResult* result);
+        /* [in] */ IJsResult* result,
+        /* [out] */ Boolean* flag);
 
    /**
     * Tell the client that the quota has been exceeded for the Web SQL Database
@@ -344,7 +351,8 @@ public:
     // the default JS engine with Froyo and support for building with JSC was
     // removed in b/5495373. V8 does not have a mechanism for making a callback such
     // as this.
-    virtual CARAPI_(Boolean) OnJsTimeout();
+    virtual CARAPI OnJsTimeout(
+        /* [out] */ Boolean* result);
 
     /**
      * Report a JavaScript error message to the host application. The ChromeClient
@@ -367,8 +375,9 @@ public:
      * @param consoleMessage Object containing details of the console message.
      * @return true if the message is handled by the client.
      */
-    virtual CARAPI_(Boolean) OnConsoleMessage(
-        /* [in] */ IConsoleMessage* consoleMessage);
+    virtual CARAPI OnConsoleMessage(
+        /* [in] */ IConsoleMessage* consoleMessage,
+        /* [out] */ Boolean* result);
 
     /**
      * When not playing, video elements are represented by a 'poster' image. The
@@ -379,7 +388,8 @@ public:
      * @return Bitmap The image to use as a default poster, or null if no such image is
      * available.
      */
-    virtual CARAPI_(AutoPtr<IBitmap>) GetDefaultVideoPoster();
+    virtual CARAPI GetDefaultVideoPoster(
+        /* [out] */ IBitmap** bitmap);
 
     /**
      * When the user starts to playback a video element, it may take time for enough
@@ -389,7 +399,8 @@ public:
      *
      * @return View The View to be displayed whilst the video is loading.
      */
-    virtual CARAPI_(AutoPtr<IView>) GetVideoLoadingProgressView();
+    virtual CARAPI GetVideoLoadingProgressView(
+        /* [out] */ IView** view);
 
     /** Obtains a list of all visited history items, used for link coloring
      */

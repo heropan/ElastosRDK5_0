@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CCookieManagerHelper, Object, ICookieManagerHelper);
+
+CAR_SINGLETON_IMPL(CCookieManagerHelper);
+
 ECode CCookieManagerHelper::GetInstance(
     /* [out] */ ICookieManager** cookieManager)
 {

@@ -10,6 +10,8 @@ namespace Webkit {
 //                       WebStorage::Origin
 //===============================================================
 
+CAR_INTERFACE_IMPL(WebStorage::Origin, Object, IWebStorageOrigin);
+
 /** @hide */
 WebStorage::Origin::Origin(
     /* [in] */ const String& origin,
@@ -39,8 +41,6 @@ WebStorage::Origin::Origin(
     , mUsage(0)
 {
 }
-
-CAR_INTERFACE_IMPL(WebStorage::Origin, IWebStorageOrigin);
 
 /**
  * Gets the string representation of this origin.
@@ -89,9 +89,20 @@ ECode WebStorage::Origin::GetUsage(
     return NOERROR;
 }
 
+ECode WebStorage::Origin::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebStorage::Origin";
+    return NOERROR;
+}
+
 //===============================================================
 //                           WebStorage
 //===============================================================
+
+CAR_INTERFACE_IMPL(WebStorage, Object, IWebStorage);
+
 /**
  * This class should not be instantiated directly, applications must only use
  * {@link #getInstance()} to obtain the instance.
@@ -102,6 +113,11 @@ ECode WebStorage::Origin::GetUsage(
  */
 WebStorage::WebStorage()
 {
+}
+
+ECode WebStorage::constructor()
+{
+    return NOERROR;
 }
 
 /**
@@ -195,6 +211,14 @@ AutoPtr<IWebStorage> WebStorage::GetInstance()
     AutoPtr<IWebStorage> webStorage;
     WebViewFactory::GetProvider()->GetWebStorage((IWebStorage**)&webStorage);
     return webStorage;
+}
+
+ECode WebStorage::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebStorage";
+    return NOERROR;
 }
 
 } // namespace Webkit

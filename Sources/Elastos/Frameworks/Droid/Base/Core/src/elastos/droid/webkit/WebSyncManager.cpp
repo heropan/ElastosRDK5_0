@@ -5,13 +5,14 @@
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Process.h"
 
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::IProcess;
+using Elastos::Core::CThread;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -47,6 +48,14 @@ ECode WebSyncManager::SyncHandler::HandleMessage(
         Boolean result = FALSE;
         SendMessageDelayed(newmsg, SYNC_LATER_INTERVAL, &result);
     }
+    return NOERROR;
+}
+
+ECode WebSyncManager::SyncHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebSyncManager::SyncHandler";
     return NOERROR;
 }
 
@@ -86,8 +95,6 @@ WebSyncManager::WebSyncManager(
     }
 }
 
-CAR_INTERFACE_IMPL(WebSyncManager, IRunnable);
-
 ECode WebSyncManager::Run()
 {
     // prepare Looper for sync handler
@@ -112,14 +119,14 @@ ECode WebSyncManager::Run()
 /**
  * sync() forces sync manager to sync now
  */
-void WebSyncManager::Sync()
+ECode WebSyncManager::Sync()
 {
     //if (DebugFlags.WEB_SYNC_MANAGER) {
     //    Log.v(LOGTAG, "*** WebSyncManager sync ***");
     //}
 
     if (mHandler == NULL) {
-        return;
+        return NOERROR;
     }
 
     mHandler->RemoveMessages(SYNC_MESSAGE);
@@ -129,19 +136,21 @@ void WebSyncManager::Sync()
     mh->Obtain(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
     Boolean result = FALSE;
     mHandler->SendMessageDelayed(msg, SYNC_NOW_INTERVAL, &result);
+
+    return NOERROR;
 }
 
 /**
  * resetSync() resets sync manager's timer
  */
-void WebSyncManager::ResetSync()
+ECode WebSyncManager::ResetSync()
 {
     //if (DebugFlags.WEB_SYNC_MANAGER) {
     //    Log.v(LOGTAG, "*** WebSyncManager resetSync ***");
     //}
 
     if (mHandler == NULL) {
-        return;
+        return NOERROR;
     }
 
     mHandler->RemoveMessages(SYNC_MESSAGE);
@@ -151,12 +160,14 @@ void WebSyncManager::ResetSync()
     mh->Obtain(mHandler, SYNC_MESSAGE, (IMessage**)&msg);
     Boolean result = FALSE;
     mHandler->SendMessageDelayed(msg, SYNC_LATER_INTERVAL, &result);
+
+    return NOERROR;
 }
 
 /**
  * startSync() requests sync manager to start sync
  */
-void WebSyncManager::StartSync()
+ECode WebSyncManager::StartSync()
 {
     //if (DebugFlags.WEB_SYNC_MANAGER) {
     //    Log.v(LOGTAG, "***  WebSyncManager startSync ***, Ref count:" +
@@ -164,7 +175,7 @@ void WebSyncManager::StartSync()
     //}
 
     if (mHandler == NULL) {
-        return;
+        return NOERROR;
     }
 
     if (++mStartSyncRefCount == 1) {
@@ -175,13 +186,15 @@ void WebSyncManager::StartSync()
         Boolean result = FALSE;
         mHandler->SendMessageDelayed(msg, SYNC_LATER_INTERVAL, &result);
     }
+
+    return NOERROR;
 }
 
 /**
  * stopSync() requests sync manager to stop sync. remove any SYNC_MESSAGE in
  * the queue to break the sync loop
  */
-void WebSyncManager::StopSync()
+ECode WebSyncManager::StopSync()
 {
     //if (DebugFlags.WEB_SYNC_MANAGER) {
     //    Log.v(LOGTAG, "*** WebSyncManager stopSync ***, Ref count:" +
@@ -189,12 +202,14 @@ void WebSyncManager::StopSync()
     //}
 
     if (mHandler == NULL) {
-        return;
+        return NOERROR;
     }
 
     if (--mStartSyncRefCount == 0) {
         mHandler->RemoveMessages(SYNC_MESSAGE);
     }
+
+    return NOERROR;
 }
 
 AutoPtr<IInterface> WebSyncManager::Clone()
@@ -205,6 +220,14 @@ AutoPtr<IInterface> WebSyncManager::Clone()
 
 void WebSyncManager::OnSyncInit()
 {
+}
+
+ECode WebSyncManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebSyncManager";
+    return NOERROR;
 }
 
 } // namespace Webkit

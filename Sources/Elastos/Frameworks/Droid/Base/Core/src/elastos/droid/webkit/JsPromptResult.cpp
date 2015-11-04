@@ -5,6 +5,25 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(JsPromptResult, Object, IJsPromptResult);
+
+JsPromptResult::JsPromptResult()
+{
+}
+
+JsPromptResult::JsPromptResult(
+    /* [in] */ IJsResultReceiver* receiver)
+    : JsResult(receiver)
+{
+}
+
+ECode JsPromptResult::constructor(
+    /* [in] */ IJsResultReceiver* receiver)
+{
+    return JsResult::constructor(receiver);
+}
+
+
 /**
  * Handle a confirmation response from the user.
  */
@@ -18,9 +37,12 @@ ECode JsPromptResult::Confirm(
 /**
  * @hide Only for use by WebViewProvider implementations
  */
-String JsPromptResult::GetStringResult()
+ECode JsPromptResult::GetStringResult(
+    /* [out] */ String* result)
 {
-    return mStringResult;
+    VALIDATE_NOT_NULL(result);
+    *result = mStringResult;
+    return NOERROR;
 }
 
 ECode JsPromptResult::ToString(

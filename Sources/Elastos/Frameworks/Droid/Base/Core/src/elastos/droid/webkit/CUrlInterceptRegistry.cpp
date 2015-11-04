@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CUrlInterceptRegistry, Object, IUrlInterceptRegistry);
+
+CAR_SINGLETON_IMPL(CUrlInterceptRegistry);
+
 ECode CUrlInterceptRegistry::SetUrlInterceptDisabled(
     /* [in] */ Boolean disabled)
 {

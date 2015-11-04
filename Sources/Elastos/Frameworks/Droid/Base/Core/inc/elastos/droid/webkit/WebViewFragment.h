@@ -86,7 +86,8 @@ public:
     /**
      * Gets the WebView.
      */
-    virtual CARAPI_(AutoPtr<IWebView>) GetWebView();
+    virtual CARAPI GetWebView(
+        /* [out] */ IWebView** webView);
 
     CARAPI ToString(
         /* [out] */ String* info);

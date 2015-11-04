@@ -142,6 +142,8 @@ const String PluginManager::PLUGIN_SYSTEM_LIB("/system/lib/plugins/");
 const String PluginManager::PLUGIN_TYPE("type");
 const String PluginManager::TYPE_NATIVE("native");
 
+CAR_INTERFACE_IMPL(PluginManager, Object, IPluginManager);
+
 PluginManager::PluginManager()
 {
 }
@@ -152,7 +154,21 @@ PluginManager::PluginManager(
 {
 }
 
-void PluginManager::SetContext(IContext* context)
+ECode PluginManager::constructor()
+{
+    // TODO: Add your code here
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode PluginManager::constructor(
+    /* [in] */ IContext* pCtx)
+{
+    SetContext(pCtx);
+    return NOERROR;
+}
+
+void PluginManager::SetContext(
+    /* [in] */ IContext* context)
 {
     mContext = context;
 }

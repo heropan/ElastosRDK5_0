@@ -1,21 +1,25 @@
 
 #include "elastos/droid/webkit/FindActionModeCallback.h"
-#include "elastos/droid/webkit/CWebViewClassic.h"
+#include "elastos/droid/webkit/CWebView.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CInteger32;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::EIID_ITextWatcher;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::ISpanned;
+using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::EIID_IActionModeCallback;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::ILayoutInflater;
-using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::View::IMenuInflater;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IString;
 
 namespace Elastos {
 namespace Droid {
@@ -25,7 +29,7 @@ namespace Webkit {
 //              FindActionModeCallback::NoAction
 //===============================================================
 
-CAR_INTERFACE_IMPL(FindActionModeCallback::NoAction, IActionModeCallback);
+CAR_INTERFACE_IMPL(FindActionModeCallback::NoAction, Object, IActionModeCallback);
 
 ECode FindActionModeCallback::NoAction::OnCreateActionMode(
     /* [in] */ IActionMode* mode,
@@ -72,6 +76,8 @@ ECode FindActionModeCallback::NoAction::ToString(
 //                   FindActionModeCallback
 //===============================================================
 
+CAR_INTERFACE_IMPL_3(FindActionModeCallback, Object, IActionModeCallback, ITextWatcher, IViewOnClickListener);
+
 FindActionModeCallback::FindActionModeCallback(
     /* [in] */ IContext* context)
     : mMatchesFound(FALSE)
@@ -83,60 +89,12 @@ FindActionModeCallback::FindActionModeCallback(
     inflate->Inflate(R::layout::webview_find, NULL, (IView**)&mCustomView);
     mCustomView->FindViewById(R::id::edit, (IView**)&mEditText);
     AutoPtr<NoAction> action = new NoAction();
-    mEditText->SetCustomSelectionActionModeCallback(action);
-    mEditText->SetOnClickListener(this);
+    ITextView::Probe(mEditText)->SetCustomSelectionActionModeCallback(action);
+    IView::Probe(mEditText)->SetOnClickListener(this);
     SetText(String(""));
     mCustomView->FindViewById(R::id::matches, (IView**)&mMatches);
     context->GetSystemService(IContext::INPUT_METHOD_SERVICE, (IInterface**)&mInput);
     context->GetResources((IResources**)&mResources);
-}
-
-UInt32 FindActionModeCallback::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 FindActionModeCallback::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode FindActionModeCallback::GetInterfaceID(
-    /* [in] */ IInterface *Object,
-    /* [out] */ InterfaceID *IID)
-{
-    VALIDATE_NOT_NULL(IID);
-
-    if (Object == (IInterface*)(IActionModeCallback*)this) {
-        *IID = EIID_IActionModeCallback;
-    }
-    else if (Object == (IInterface*)(ITextWatcher*)this) {
-        *IID = EIID_ITextWatcher;
-    }
-    else if (Object == (IInterface*)(IViewOnClickListener*)this) {
-        *IID = EIID_IViewOnClickListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
-PInterface FindActionModeCallback::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IActionModeCallback) {
-        return (IActionModeCallback*)this;
-    }
-    else if (riid == EIID_ITextWatcher) {
-        return (ITextWatcher*)this;
-    }
-    else if (riid == EIID_IViewOnClickListener) {
-        return (IViewOnClickListener*)this;
-    }
-
-    return NULL;
 }
 
 void FindActionModeCallback::Finish()
@@ -152,20 +110,19 @@ void FindActionModeCallback::SetText(
     /* [in] */ const String& text)
 {
     AutoPtr<ICharSequence> textWrapper;
-    CStringWrapper::New(text, (ICharSequence**)&textWrapper);
-    mEditText->SetText(textWrapper);
+    CString::New(text, (ICharSequence**)&textWrapper);
+    ITextView::Probe(mEditText)->SetText(textWrapper);
     AutoPtr<ISpannable> span;
-    mEditText->GetText((ICharSequence**)&span);
+    ITextView::Probe(mEditText)->GetText((ICharSequence**)&span);
     Int32 length;
-    span->GetLength(&length);
+    ICharSequence::Probe(span)->GetLength(&length);
     // Ideally, we would like to set the selection to the whole field,
     // but this brings up the Text selection CAB, which dismisses this
     // one.
     Selection::SetSelection(span, length, length);
     // Necessary each time we set the text, so that this will watch
     // changes to it.
-    assert(0);
-//    span->SetSpan(this, 0, length, ISpannable::SPAN_INCLUSIVE_INCLUSIVE);
+    span->SetSpan((IObject*)this, 0, length, ISpanned::SPAN_INCLUSIVE_INCLUSIVE);
     mMatchesFound = FALSE;
 }
 
@@ -174,7 +131,7 @@ void FindActionModeCallback::SetText(
  * startActionMode.
  */
 void FindActionModeCallback::SetWebView(
-    /* [in] */ CWebViewClassic* webView)
+    /* [in] */ CWebView* webView)
 {
     if (NULL == webView) {
         //throw new AssertionError("WebView supplied to "
@@ -196,19 +153,19 @@ void FindActionModeCallback::FindAll()
     }
 
     AutoPtr<ICharSequence> find;
-    mEditText->GetText((ICharSequence**)&find);
+    ITextView::Probe(mEditText)->GetText((ICharSequence**)&find);
     Int32 length = 0;
     find->GetLength(&length);
     if (0 == length) {
         mWebView->ClearMatches();
-        mMatches->SetVisibility(IView::GONE);
+        IView::Probe(mMatches)->SetVisibility(IView::GONE);
         mMatchesFound = FALSE;
         Int32 all;
         mWebView->FindAll(String(NULL), &all);
     }
     else {
         mMatchesFound = TRUE;
-        mMatches->SetVisibility(IView::INVISIBLE);
+        IView::Probe(mMatches)->SetVisibility(IView::INVISIBLE);
         mNumberOfMatches = 0;
         String str;
         find->ToString(&str);
@@ -219,10 +176,11 @@ void FindActionModeCallback::FindAll()
 void FindActionModeCallback::ShowSoftInput()
 {
     AutoPtr<IView> view;
-    mEditText->GetRootView((IView**)&view);
+    IView::Probe(mEditText)->GetRootView((IView**)&view);
     mInput->StartGettingWindowFocus(view);
-    mInput->FocusIn(mEditText);
-    mInput->ShowSoftInput(mEditText, 0, NULL);
+    mInput->FocusIn(IView::Probe(mEditText));
+    Boolean result;
+    mInput->ShowSoftInput(IView::Probe(mEditText), 0, &result);
 }
 
 void FindActionModeCallback::UpdateMatchCount(
@@ -236,7 +194,7 @@ void FindActionModeCallback::UpdateMatchCount(
         UpdateMatchesString();
     }
     else {
-        mMatches->SetVisibility(IView::INVISIBLE);
+        IView::Probe(mMatches)->SetVisibility(IView::INVISIBLE);
         mNumberOfMatches = 0;
     }
 }
@@ -276,16 +234,18 @@ ECode FindActionModeCallback::OnCreateActionMode(
     menuInflater->Inflate(R::menu::webview_find, menu);
     mActionMode = mode;
     AutoPtr<IEditable> edit;
-    mEditText->GetText((ICharSequence**)&edit);
+    ITextView::Probe(mEditText)->GetText((ICharSequence**)&edit);
     Int32 length;
-    edit->GetLength(&length);
-    Selection::SetSelection(edit, length);
-    mMatches->SetVisibility(IView::GONE);
+    ICharSequence::Probe(edit)->GetLength(&length);
+    Selection::SetSelection(ISpannable::Probe(edit), length);
+    IView::Probe(mMatches)->SetVisibility(IView::GONE);
     mMatchesFound = FALSE;
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(String("0"), (ICharSequence**)&text);
+    CString::New(String("0"), (ICharSequence**)&text);
     mMatches->SetText(text);
-    mEditText->RequestFocus(NULL);
+    assert(0);
+    // TODO don't find RequestFocus
+    // mEditText->RequestFocus(NULL);
 
     if (result) {
         *result = TRUE;
@@ -298,7 +258,9 @@ ECode FindActionModeCallback::OnDestroyActionMode(
     /* [in] */ IActionMode* mode)
 {
     mActionMode = NULL;
-    mWebView->NotifyFindDialogDismissed();
+    assert(0);
+    // TODO
+    // mWebView->NotifyFindDialogDismissed();
     AutoPtr<IBinder> binder;
 //    mWebView->GetWebView()->GetWindowToken((IBinder**)&binder);
     mInput->HideSoftInputFromWindow(binder, 0, NULL);
@@ -452,11 +414,11 @@ void FindActionModeCallback::UpdateMatchesString()
             R::plurals::matches_found, mNumberOfMatches,
             formatArgs, &str);
         AutoPtr<ICharSequence> strCS;
-        CStringWrapper::New(str, (ICharSequence**)&strCS);
+        CString::New(str, (ICharSequence**)&strCS);
         mMatches->SetText(strCS);
     }
 
-    mMatches->SetVisibility(IView::VISIBLE);
+    IView::Probe(mMatches)->SetVisibility(IView::VISIBLE);
 }
 
 ECode FindActionModeCallback::ToString(

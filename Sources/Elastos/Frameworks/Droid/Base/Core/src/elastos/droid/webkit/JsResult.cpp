@@ -5,6 +5,28 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(JsResult, Object, IJsResult);
+
+JsResult::JsResult()
+    : mResult(FALSE)
+{
+}
+
+JsResult::JsResult(
+    /* [in] */ IJsResultReceiver* receiver)
+    : mReceiver(receiver)
+    , mResult(FALSE)
+{
+}
+
+ECode JsResult::constructor(
+    /* [in] */ IJsResultReceiver* receiver)
+{
+    mReceiver = receiver;
+    mResult = FALSE;
+    return NOERROR;
+}
+
 /**
  * Handle the result if the user cancelled the dialog.
  */
@@ -28,9 +50,12 @@ ECode JsResult::Confirm()
 /**
  * @hide Only for use by WebViewProvider implementations
  */
-Boolean JsResult::GetResult()
+ECode JsResult::GetResult(
+    /* [out] */ Boolean* result)
 {
-    return mResult;
+    VALIDATE_NOT_NULL(result);
+    *result = mResult;
+    return NOERROR;
 }
 
 /* Notify the caller that the JsResult has completed */

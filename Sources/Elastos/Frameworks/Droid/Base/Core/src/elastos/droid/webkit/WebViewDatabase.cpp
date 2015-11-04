@@ -15,9 +15,10 @@ const String WebViewDatabase::LOGTAG("webviewdatabase");
  * @hide Only for use by WebViewProvider implementations.
  */
 WebViewDatabase::WebViewDatabase()
-{}
+{
+}
 
-CAR_INTERFACE_IMPL(WebViewDatabase, IWebViewDatabase);
+CAR_INTERFACE_IMPL(WebViewDatabase, Object, IWebViewDatabase);
 
 AutoPtr<IWebViewDatabase> WebViewDatabase::GetInstance(
     /* [in] */ IContext* context)
@@ -101,6 +102,13 @@ ECode WebViewDatabase::ClearFormData()
     return E_MUST_OVERRIDE_EXCEPTION;
 }
 
+ECode WebViewDatabase::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewDatabase";
+    return NOERROR;
+}
 
 } // namespace Webkit
 } // namepsace Droid

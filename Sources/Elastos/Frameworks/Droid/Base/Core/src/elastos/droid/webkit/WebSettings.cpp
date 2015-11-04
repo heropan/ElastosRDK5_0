@@ -1,21 +1,26 @@
 
 #include "elastos/droid/webkit/WebSettings.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
 WebSettings::WebSettings()
-{}
+{
+}
 
 WebSettings::~WebSettings()
-{}
+{
+}
 
 TextSize WebSettings::GetTextSize()
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     TextSize closestSize = -1;
     Int32 smallestDelta = Elastos::Core::Math::INT32_MAX_VALUE;
     Int32 textSize = GetTextZoom();

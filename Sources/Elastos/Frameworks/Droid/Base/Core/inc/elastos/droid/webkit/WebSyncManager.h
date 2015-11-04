@@ -3,12 +3,14 @@
 #define __ELASTOS_DROID_WEBKIT_WEBSYNCMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {
 namespace Droid {
@@ -16,12 +18,10 @@ namespace Webkit {
 
 class WebViewDatabase;
 
-class WebSyncManager
-    : public Object
-    , public IRunnable
+class WebSyncManager : public Runnable
 {
 private:
-    class SyncHandler : public HandlerBase
+    class SyncHandler : public Handler
     {
     public:
         SyncHandler(
@@ -40,30 +40,31 @@ private:
 public:
     CARAPI Run();
 
-    CAR_INTERFACE_DECL();
-
     /**
      * sync() forces sync manager to sync now
      */
-    virtual CARAPI_(void) Sync();
+    virtual CARAPI Sync();
 
     /**
      * resetSync() resets sync manager's timer
      */
-    virtual CARAPI_(void) ResetSync();
+    virtual CARAPI ResetSync();
 
     /**
      * startSync() requests sync manager to start sync
      */
-    virtual CARAPI_(void) StartSync();
+    virtual CARAPI StartSync();
 
     /**
      * stopSync() requests sync manager to stop sync. remove any SYNC_MESSAGE in
      * the queue to break the sync loop
      */
-    virtual CARAPI_(void) StopSync();
+    virtual CARAPI StopSync();
 
     virtual CARAPI_(void) SyncFromRamToFlash() = 0;
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 protected:
     WebSyncManager();

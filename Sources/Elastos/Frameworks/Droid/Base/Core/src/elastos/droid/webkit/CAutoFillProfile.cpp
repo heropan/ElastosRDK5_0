@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CAutoFillProfile, Object, IAutoFillProfile);
+
+CAR_OBJECT_IMPL(CAutoFillProfile);
+
 ECode CAutoFillProfile::constructor(
     /* [in] */ Int32 uniqueId,
     /* [in] */ const String& fullName,

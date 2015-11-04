@@ -36,13 +36,17 @@ public:
         /* [in] */ Int32 lineNumber,
         /* [in] */ Elastos::Droid::Webkit::MessageLevel msgLevel);
 
-    virtual CARAPI_(/*MessageLevel*/Int32) MessageLevel();
+    virtual CARAPI MessageLevel(
+        /* [out] */ Int32* level);
 
-    virtual CARAPI_(String) Message();
+    virtual CARAPI Message(
+        /* [out] */ String* message);
 
-    virtual CARAPI_(String) SourceId();
+    virtual CARAPI SourceId(
+        /* [out] */ String* id);
 
-    virtual CARAPI_(Int32) LineNumber();
+    virtual CARAPI LineNumber(
+        /* [out] */ Int32* number);
 
     CARAPI ToString(
         /* [out] */ String* info);

@@ -13,11 +13,6 @@ CarClass(CWebViewFragment) , public WebViewFragment
 {
 public:
     CAR_OBJECT_DECL();
-
-    IFRAGMENT_METHODS_DECL();
-
-    CARAPI GetWebView(
-        /* [out] */ IWebView** webView);
 };
 
 } // namespace Webkit

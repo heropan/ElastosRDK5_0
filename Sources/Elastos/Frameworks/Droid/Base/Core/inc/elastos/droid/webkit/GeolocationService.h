@@ -110,13 +110,13 @@ public:
         /* [in] */ IInterface* context,
         /* [in] */ Int64 nativeObject);
 
-    static Boolean Start(
+    static CARAPI_(Boolean) Start(
         /* [in] */ IInterface* obj);
 
-    static void Stop(
+    static CARAPI_(void) Stop(
         /* [in] */ IInterface* obj);
 
-    static void SetEnableGps(
+    static CARAPI_(void) SetEnableGps(
         /* [in] */ IInterface* obj,
         /* [in] */ Boolean enable);
 

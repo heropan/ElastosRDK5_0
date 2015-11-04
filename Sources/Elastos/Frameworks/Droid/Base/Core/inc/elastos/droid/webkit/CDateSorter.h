@@ -15,19 +15,6 @@ CarClass(CDateSorter), public DateSorter
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI GetIndex(
-        /* [in] */ Int64 time,
-        /* [out] */ Int32* index);
-
-    CARAPI GetLabel(
-        /* [in] */ Int32 index,
-        /* [out] */ String* lable);
-
-    CARAPI GetBoundary(
-        /* [in] */ Int32 index,
-        /* [out] */ Int64* boundary);
-
 };
 
 } // namespace Webkit

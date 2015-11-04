@@ -13,17 +13,6 @@ CarClass(CJsResult), public JsResult
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI Cancel();
-
-    CARAPI Confirm();
-
-    CARAPI GetResult(
-        /* [out] */ Boolean* result);
-
-protected:
-    /* Notify the caller that the JsResult has completed */
-    CARAPI_(void) WakeUp();
 };
 
 } // namespace Webkit

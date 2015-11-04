@@ -20,9 +20,6 @@ class MimeTypeMap
     , public IMimeTypeMap
 {
     friend class CMimeTypeMapHelper;
-private:
-    MimeTypeMap();
-
 public:
     CAR_INTERFACE_DECL();
 
@@ -104,6 +101,9 @@ public:
     // Static method called by jni.
     static CARAPI_(String) MimeTypeFromExtension(
         /* [in] */ const String& extension);
+
+private:
+    MimeTypeMap();
 
 private:
     static AutoPtr<MimeTypeMap> sMimeTypeMap;

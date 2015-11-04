@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CWebIconDatabaseHelper, Object, IWebIconDatabaseHelper);
+
+CAR_SINGLETON_IMPL(CWebIconDatabaseHelper);
+
 ECode CWebIconDatabaseHelper::GetInstance(
     /* [out] */ IWebIconDatabase** database)
 {

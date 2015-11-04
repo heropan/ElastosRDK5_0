@@ -23,40 +23,6 @@ CarClass(CWebResourceResponse), public WebResourceResponse
 public:
     CAR_OBJECT_DECL();
 
-    CARAPI SetMimeType(
-        /* [in] */ const String& mimeType);
-
-    CARAPI GetMimeType(
-        /* [out] */ String* mimeType);
-
-    CARAPI SetEncoding(
-        /* [in] */ const String& encoding);
-
-    CARAPI GetEncoding(
-        /* [out] */ String* encoding);
-
-    CARAPI SetStatusCodeAndReasonPhrase(
-        /* [in] */ Int32 statusCode,
-        /* [in] */ const String& reasonPhrase);
-
-    CARAPI GetStatusCode(
-        /* [out] */ Int32* statusCode);
-
-    CARAPI GetReasonPhrase(
-        /* [out] */ String* reasonPhrase);
-
-    CARAPI SetResponseHeaders(
-        /* [in] */ IMap* headers);
-
-    CARAPI GetResponseHeaders(
-        /* [out] */ IMap** headers);
-
-    CARAPI SetData(
-        /* [in] */ IInputStream* data);
-
-    CARAPI GetData(
-        /* [out] */ IInputStream** inputStream);
-
     static String GetMimeType(
         /* [in] */ IInterface* obj);
 

@@ -9,9 +9,6 @@
 #include <elastos/Core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::IRunnable;
-using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
@@ -21,6 +18,9 @@ using Elastos::Droid::Speech::Tts::IUtteranceProgressListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Core::IRunnable;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

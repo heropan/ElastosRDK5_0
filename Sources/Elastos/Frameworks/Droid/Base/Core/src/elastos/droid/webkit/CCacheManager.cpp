@@ -3,14 +3,17 @@
 #include "elastos/droid/webkit/DebugFlags.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::CThread;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::IString;
 using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
+using Elastos::Core::IThread;
 using Elastos::IO::CFile;
-using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFileInputStream;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -37,7 +40,15 @@ struct ElaCacheManagerCallback CCacheManager::sElaCacheManagerCallback = {
 //===============================================================
 //              CCacheManager::CacheResult
 //===============================================================
-CAR_INTERFACE_IMPL_LIGHT(CCacheManager::CacheResult, ICacheManagerCacheResult)
+
+CAR_INTERFACE_IMPL(CCacheManager::CacheResult, Object, ICacheManagerCacheResult)
+
+CCacheManager::CacheResult::CacheResult()
+    : mHttpStatusCode(0)
+    , mContentLength(0)
+    , mExpires(0)
+{
+}
 
 ECode CCacheManager::CacheResult::GetHttpStatusCode(
     /* [out] */ Int32* statusCode)
@@ -170,6 +181,10 @@ ECode CCacheManager::CacheResult::SetContentLength(
 //===============================================================
 //              CCacheManager::InnerRunnable
 //===============================================================
+CCacheManager::InnerRunnable::InnerRunnable()
+{
+}
+
 ECode CCacheManager::InnerRunnable::Run()
 {
     // delete all cache files
@@ -206,6 +221,15 @@ const String CCacheManager::HEADER_KEY_IFMODIFIEDSINCE("if-modified-since");
 const String CCacheManager::HEADER_KEY_IFNONEMATCH("if-none-match");
 AutoPtr<IFile> CCacheManager::sBaseDir;
 
+CAR_INTERFACE_IMPL(CCacheManager, Object, ICacheManager);
+
+CAR_OBJECT_IMPL(CCacheManager);
+
+ECode CCacheManager::constructor()
+{
+    return NOERROR;
+}
+
 /**
  * Initializes the HTTP cache. This method must be called before any
  * CacheManager methods are used. Note that this is called automatically
@@ -217,7 +241,9 @@ void CCacheManager::Init(
     /* [in] */ IContext* context)
 {
     //initialize the callbacks
-    Elastos_CacheManager_Init((Int32)&CCacheManager::sElaCacheManagerCallback);
+    assert(0);
+    // TODO
+    // Elastos_CacheManager_Init((Int32)&CCacheManager::sElaCacheManagerCallback);
 
     // This isn't actually where the real cache lives, but where we put files for the
     // purpose of getCacheFile().
@@ -351,15 +377,15 @@ AutoPtr<ICacheManagerCacheResult> CCacheManager::GetCacheFile(
         // Return HEADER_KEY_IFNONEMATCH or HEADER_KEY_IFMODIFIEDSINCE
         // for requesting validation.
         if (!result->mEtag.IsNull()) {
-            AutoPtr<ICharSequence> key, value, oldValue;
-            CStringWrapper::New(HEADER_KEY_IFNONEMATCH, (ICharSequence**)&key);
-            CStringWrapper::New(result->mEtag, (ICharSequence**)&value);
+            AutoPtr<IString> key, value, oldValue;
+            CString::New(HEADER_KEY_IFNONEMATCH, (IString**)&key);
+            CString::New(result->mEtag, (IString**)&value);
             headers->Put(key, value, (IInterface**)&oldValue);
         }
         if (!result->mLastModified.IsNull()) {
-            AutoPtr<ICharSequence> key, value, oldValue;
-            CStringWrapper::New(HEADER_KEY_IFMODIFIEDSINCE, (ICharSequence**)&key);
-            CStringWrapper::New(result->mLastModified, (ICharSequence**)&value);
+            AutoPtr<IString> key, value, oldValue;
+            CString::New(HEADER_KEY_IFMODIFIEDSINCE, (IString**)&key);
+            CString::New(result->mLastModified, (IString**)&value);
             headers->Put(key, value, (IInterface**)&oldValue);
         }
     }
@@ -459,7 +485,10 @@ AutoPtr<CCacheManager::CacheResult> CCacheManager::NativeGetCacheResult(
     /* [in] */ const String& url)
 {
     //got the object created by CreateCCacheManagerCacheResult
-    Int32 obj = Elastos_CacheManager_GetCacheResult(url);
+    Int32 obj;
+    assert(0);
+    // TODO
+    // obj = Elastos_CacheManager_GetCacheResult(url);
     //check if the CacheResult got
     if (0 == obj) {
         return NULL;

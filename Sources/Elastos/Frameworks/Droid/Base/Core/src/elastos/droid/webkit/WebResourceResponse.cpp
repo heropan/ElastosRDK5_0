@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(WebResourceResponse, Object, IWebResourceResponse);
+
 /**
  * Constructs a resource response with the given MIME type, encoding, and
  * input stream. Callers must implement
@@ -23,8 +25,38 @@ WebResourceResponse::WebResourceResponse(
     Init(mimeType, encoding, data);
 }
 
+WebResourceResponse::WebResourceResponse(
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
+    /* [in] */ Int32 statusCode,
+    /* [in] */ const String& reasonPhrase,
+    /* [in] */ IMap* responseHeaders,
+    /* [in] */ IInputStream* data)
+{
+    Init(mimeType, encoding, statusCode, reasonPhrase, responseHeaders, data);
+}
+
 WebResourceResponse::WebResourceResponse()
 {
+}
+
+ECode WebResourceResponse::constructor(
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
+    /* [in] */ IInputStream* data)
+{
+    return Init(mimeType, encoding, data);
+}
+
+ECode WebResourceResponse::constructor(
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
+    /* [in] */ Int32 statusCode,
+    /* [in] */ const String& reasonPhrase,
+    /* [in] */ IMap* responseHeaders,
+    /* [in] */ IInputStream* data)
+{
+    return Init(mimeType, encoding, statusCode, reasonPhrase, responseHeaders, data);
 }
 
 ECode WebResourceResponse::Init(
@@ -35,6 +67,20 @@ ECode WebResourceResponse::Init(
     mMimeType = mimeType;
     mEncoding = encoding;
     mInputStream = data;
+    return NOERROR;
+}
+
+CARAPI WebResourceResponse::Init(
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& encoding,
+    /* [in] */ Int32 statusCode,
+    /* [in] */ const String& reasonPhrase,
+    /* [in] */ IMap* responseHeaders,
+    /* [in] */ IInputStream* data)
+{
+    Init(mimeType, encoding, data);
+    SetStatusCodeAndReasonPhrase(statusCode, reasonPhrase);
+    SetResponseHeaders(responseHeaders);
     return NOERROR;
 }
 
@@ -55,9 +101,12 @@ ECode WebResourceResponse::SetMimeType(
  *
  * @return the resource response's MIME type
  */
-String WebResourceResponse::GetMimeType()
+ECode WebResourceResponse::GetMimeType(
+    /* [out] */ String* type)
 {
-    return mMimeType;
+    VALIDATE_NOT_NULL(type);
+    *type = mMimeType;
+    return NOERROR;
 }
 
 /**
@@ -78,9 +127,63 @@ ECode WebResourceResponse::SetEncoding(
  *
  * @return the resource response's encoding
  */
-String WebResourceResponse::GetEncoding()
+ECode WebResourceResponse::GetEncoding(
+    /* [out] */ String* encoding)
 {
-    return mEncoding;
+    VALIDATE_NOT_NULL(encoding);
+    *encoding = mEncoding;
+    return NOERROR;
+}
+
+ECode WebResourceResponse::SetStatusCodeAndReasonPhrase(
+    /* [in] */ Int32 statusCode,
+    /* [in] */ const String& reasonPhrase)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode WebResourceResponse::GetStatusCode(
+    /* [out] */ Int32* statusCode)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+/**
+ * Gets the description of the resource response's status code.
+ *
+ * @return the description of the resource response's status code.
+ */
+ECode WebResourceResponse::GetReasonPhrase(
+    /* [out] */ String* reasonPhrase)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode WebResourceResponse::SetResponseHeaders(
+    /* [in] */ IMap* headers)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
+}
+
+/**
+ * Gets the headers for the resource response.
+ *
+ * @return the headers for the resource response.
+ */
+ECode WebResourceResponse::GetResponseHeaders(
+    /* [out] */ IMap** headers)
+{
+    assert(0);
+    // TODO
+    return E_NOT_IMPLEMENTED;
 }
 
 /**
@@ -101,9 +204,20 @@ ECode WebResourceResponse::SetData(
  *
  * @return the input stream that provides the resource response's data
  */
-AutoPtr<IInputStream> WebResourceResponse::GetData()
+ECode WebResourceResponse::GetData(
+    /* [out] */ IInputStream** data)
 {
-    return mInputStream;
+    VALIDATE_NOT_NULL(data);
+    *data = mInputStream;
+    return NOERROR;
+}
+
+ECode WebResourceResponse::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebResourceResponse";
+    return NOERROR;
 }
 
 } // namespace Webkit

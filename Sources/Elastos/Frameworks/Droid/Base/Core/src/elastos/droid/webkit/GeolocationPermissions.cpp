@@ -6,6 +6,13 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(GeolocationPermissions, Object, IGeolocationPermissions);
+
+ECode GeolocationPermissions::constructor()
+{
+    return NOERROR;
+}
+
 AutoPtr<IGeolocationPermissions> GeolocationPermissions::GetInstance()
 {
     AutoPtr<IGeolocationPermissions> gp;

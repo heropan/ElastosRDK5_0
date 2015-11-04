@@ -22,16 +22,13 @@ class JsPromptResult
 public:
     CAR_INTERFACE_DECL();
 
-    JsPromptResult()
-    {}
+    JsPromptResult();
 
     /**
      * @hide Only for use by WebViewProvider implementations
      */
     JsPromptResult(
-        /* [in] */ IJsResultReceiver* receiver)
-        : JsResult(receiver)
-    {}
+        /* [in] */ IJsResultReceiver* receiver);
 
     CARAPI constructor(
         /* [in] */ IJsResultReceiver* receiver);
@@ -45,17 +42,11 @@ public:
     /**
      * @hide Only for use by WebViewProvider implementations
      */
-    virtual CARAPI_(String) GetStringResult();
+    virtual CARAPI GetStringResult(
+        /* [out] */ String* result);
 
     CARAPI ToString(
         /* [out] */ String* info);
-
-protected:
-    CARAPI Init(
-        /* [in] */ IJsResultReceiver* receiver)
-    {
-        return JsResult::Init(receiver);
-    }
 
 private:
     // String result of the prompt

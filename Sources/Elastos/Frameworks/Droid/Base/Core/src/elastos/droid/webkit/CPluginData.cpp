@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(CPluginData, Object, IPluginData);
+
+CAR_OBJECT_IMPL(CPluginData);
+
 ECode CPluginData::constructor(
     /* [in] */ IInputStream* stream,
     /* [in] */ Int64 length,

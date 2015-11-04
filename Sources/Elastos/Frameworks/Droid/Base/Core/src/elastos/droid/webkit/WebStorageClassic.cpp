@@ -83,6 +83,14 @@ ECode WebStorageClassic::InnerUIHandler::HandleMessage(
     return NOERROR;
 }
 
+ECode WebStorageClassic::InnerUIHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebStorageClassic::InnerUIHandler";
+    return NOERROR;
+}
+
 //===============================================================
 //               WebStorageClassic::InnerHandler
 //===============================================================
@@ -223,6 +231,14 @@ ECode WebStorageClassic::InnerHandler::HandleMessage(
             break;
     }
 
+    return NOERROR;
+}
+
+ECode WebStorageClassic::InnerHandler::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebStorageClassic::InnerHandler";
     return NOERROR;
 }
 
@@ -769,6 +785,14 @@ void WebStorageClassic::NativeSetAppCacheMaximumSize(
     /*
     WebCore::cacheStorage().setMaximumSize(size);
     */
+}
+
+ECode WebStorageClassic::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebStorageClassic";
+    return NOERROR;
 }
 
 } // namespace Webkit

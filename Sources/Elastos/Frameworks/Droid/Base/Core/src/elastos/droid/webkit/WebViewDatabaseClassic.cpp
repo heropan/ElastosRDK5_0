@@ -44,6 +44,13 @@ ECode WebViewDatabaseClassic::MyThread::Run()
     return NOERROR;
 }
 
+ECode WebViewDatabaseClassic::MyThread::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewDatabaseClassic::MyThread";
+    return NOERROR;
+}
 
 //===============================================================
 //                  WebViewDatabaseClassic
@@ -858,6 +865,14 @@ ECode WebViewDatabaseClassic::ClearFormData()
         sDatabase->Delete(mTableNames[TABLE_FORMURL_ID], String(NULL), NULL, &result);
         sDatabase->Delete(mTableNames[TABLE_FORMDATA_ID], String(NULL), NULL, &result);
     }
+    return NOERROR;
+}
+
+ECode WebViewDatabaseClassic::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "WebViewDatabaseClassic";
     return NOERROR;
 }
 

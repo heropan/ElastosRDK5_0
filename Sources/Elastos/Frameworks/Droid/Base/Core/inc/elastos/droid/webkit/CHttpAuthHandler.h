@@ -15,22 +15,7 @@ CarClass(CHttpAuthHandler), public HttpAuthHandler
 public:
     CAR_OBJECT_DECL()
 
-    IHANDLER_METHODS_DECL();
-
-    CARAPI HandleMessage(
-        /* [in] */ IMessage* msg);
-
-    CARAPI UseHttpAuthUsernamePassword(
-        /* [out] */ Boolean* result);
-
-    CARAPI Cancel();
-
-    CARAPI Proceed(
-        /* [in] */ const String& username,
-        /* [in] */ const String& password);
-
-    CARAPI SuppressDialog(
-        /* [out] */ Boolean* result);
+//    IHANDLER_METHODS_DECL();
 };
 
 } // namespace Webkit

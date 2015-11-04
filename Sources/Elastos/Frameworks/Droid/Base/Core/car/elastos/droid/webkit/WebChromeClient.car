@@ -31,7 +31,6 @@ module
     /**
      * Parameters used in the {@link #onShowFileChooser} method.
      */
-    [deprecated]
     interface IWebChromeClientFileChooserParams {
         /** Open single file. Requires that the file exists before allowing the user to pick it. */
         const Int32 MODE_OPEN = 0;
@@ -121,7 +120,7 @@ module
             [out] IIntent** intent);
     }
 
-    [deprecated, local]
+    [local]
     interface IWebChromeClient {
         /**
          * Tell the host application the current progress of loading a page.

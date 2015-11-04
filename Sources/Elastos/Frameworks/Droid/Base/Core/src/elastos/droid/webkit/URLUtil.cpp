@@ -106,7 +106,9 @@ String URLUtil::ComposeSearchUrl(
 
     String query;
     StringBuilder buffer;
-    buffer.AppendString(templateStr.Substring(0, placeHolderIndex));
+    assert(0);
+    // TODO
+    // buffer.AppendString(templateStr.Substring(0, placeHolderIndex));
 
     //try {
     //    query = java.net.URLEncoder.encode(inQuery, "utf-8");
@@ -116,13 +118,18 @@ String URLUtil::ComposeSearchUrl(
     if (FAILED(URLEncoder->Encode(inQuery, String("utf-8"), &query))){
         return String(NULL);
     }
-    buffer.AppendString(query);
+    assert(0);
+    // TODO
+    // buffer.AppendString(query);
+
     //} catch (UnsupportedEncodingException ex) {
     //    return null;
     //}
 
-    buffer.AppendString(templateStr.Substring(
-            placeHolderIndex + queryPlaceHolder.GetLength()));
+    assert(0);
+    // TODO
+    // buffer.AppendString(templateStr.Substring(
+    //         placeHolderIndex + queryPlaceHolder.GetLength()));
 
     return buffer.ToString();
 }
@@ -437,21 +444,15 @@ String URLUtil::ParseContentDisposition(
     Boolean bFind = FALSE;
     if (m->Find(&bFind), bFind) {
         String str;
-        m->Group(2, &str);
+        assert(0);
+        // TODO
+        // m->Group(2, &str);
         return str;
     }
     //} catch (IllegalStateException ex) {
          // This function is defined as returning null when it can't parse the header
     //}
     return String(NULL);
-}
-
-ECode URLUtil::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    *info = "URLUtil";
-    return NOERROR;
 }
 
 } // namespace Webkit

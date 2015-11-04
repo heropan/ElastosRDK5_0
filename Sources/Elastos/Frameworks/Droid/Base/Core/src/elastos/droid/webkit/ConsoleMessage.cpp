@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+CAR_INTERFACE_IMPL(ConsoleMessage, Object, IConsoleMessage);
+
 ConsoleMessage::ConsoleMessage()
     : mLevel(0)
     , mLineNumber(0)
@@ -20,6 +22,16 @@ ConsoleMessage::ConsoleMessage(
     Init(message, sourceId, lineNumber, msgLevel);
 }
 
+ECode ConsoleMessage::constructor(
+    /* [in] */ const String& message,
+    /* [in] */ const String& sourceId,
+    /* [in] */ Int32 lineNumber,
+    /* [in] */ Elastos::Droid::Webkit::MessageLevel msgLevel)
+{
+    Init(message, sourceId, lineNumber, msgLevel);
+    return NOERROR;
+}
+
 void ConsoleMessage::Init(
     /* [in] */ const String& message,
     /* [in] */ const String& sourceId,
@@ -32,24 +44,36 @@ void ConsoleMessage::Init(
     mLevel = msgLevel;
 }
 
-/*MessageLevel*/Int32 ConsoleMessage::MessageLevel()
+ECode ConsoleMessage::MessageLevel(
+    /* [out] */ /*MessageLevel*/Int32* level)
 {
-    return mLevel;
+    VALIDATE_NOT_NULL(level);
+    *level = mLevel;
+    return NOERROR;
 }
 
-String ConsoleMessage::Message()
+ECode ConsoleMessage::Message(
+    /* [out] */ String* message)
 {
-    return mMessage;
+    VALIDATE_NOT_NULL(message);
+    *message = mMessage;
+    return NOERROR;
 }
 
-String ConsoleMessage::SourceId()
+ECode ConsoleMessage::SourceId(
+    /* [out] */ String* id)
 {
-    return mSourceId;
+    VALIDATE_NOT_NULL(id);
+    *id = mSourceId;
+    return NOERROR;
 }
 
-Int32 ConsoleMessage::LineNumber()
+ECode ConsoleMessage::LineNumber(
+    /* [out] */ Int32* number)
 {
-    return mLineNumber;
+    VALIDATE_NOT_NULL(number);
+    *number = mLineNumber;
+    return NOERROR;
 }
 
 ECode ConsoleMessage::ToString(

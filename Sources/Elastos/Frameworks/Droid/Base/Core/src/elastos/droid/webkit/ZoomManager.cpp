@@ -66,6 +66,14 @@ Float ZoomManager::FocusMovementQueue::GetSum()
     return mSum;
 }
 
+ECode ZoomManager::FocusMovementQueue::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomManager::FocusMovementQueue";
+    return NOERROR;
+}
+
 //===============================================================
 //                 ZoomManager::ScaleDetectorListener
 //===============================================================
@@ -199,6 +207,13 @@ ECode ZoomManager::ScaleDetectorListener::OnScaleEnd(
     mOwner->mWebView->OnPinchToZoomAnimationEnd(detector);
 }
 
+ECode ZoomManager::ScaleDetectorListener::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomManager::ScaleDetectorListener";
+    return NOERROR;
+}
 
 //===============================================================
 //                     ZoomManager::PostScale
@@ -238,6 +253,13 @@ ECode ZoomManager::PostScale::Run()
     return NOERROR;
 }
 
+ECode ZoomManager::PostScale::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomManager::PostScale";
+    return NOERROR;
+}
 
 //===============================================================
 //                          ZoomManager
@@ -1342,6 +1364,14 @@ void ZoomManager::OnPageFinished(
 {
     // Turn off initial zoom overview flag when a page is fully loaded.
     mInitialZoomOverview = FALSE;
+}
+
+ECode ZoomManager::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = "ZoomManager";
+    return NOERROR;
 }
 
 } // namespace Webkit

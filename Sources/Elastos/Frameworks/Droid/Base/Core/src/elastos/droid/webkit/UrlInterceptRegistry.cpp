@@ -1,6 +1,9 @@
 
 #include "elastos/droid/webkit/UrlInterceptRegistry.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/etl/Algorithm.h>
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -12,7 +15,7 @@ Boolean UrlInterceptRegistry::mDisabled = FALSE;
 
 List< AutoPtr<IInterface> > UrlInterceptRegistry::mHandlerList;
 
-Mutex UrlInterceptRegistry::sLock;
+Object UrlInterceptRegistry::sLock;
 
 void UrlInterceptRegistry::SetUrlInterceptDisabled(
     /* [in] */ Boolean disabled)
@@ -94,14 +97,6 @@ AutoPtr<IPluginData> UrlInterceptRegistry::GetPluginData(
     }
 
     return NULL;
-}
-
-ECode UrlInterceptRegistry::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    *info = "UrlInterceptRegistry";
-    return NOERROR;
 }
 
 } // namespace Webkit

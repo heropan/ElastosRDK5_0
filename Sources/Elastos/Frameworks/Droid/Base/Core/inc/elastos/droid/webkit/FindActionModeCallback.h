@@ -25,7 +25,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-class CWebViewClassic;
+class CWebView;
 
 class FindActionModeCallback
     : public Object
@@ -83,7 +83,7 @@ public:
      * startActionMode.
      */
     virtual CARAPI_(void) SetWebView(
-        /* [in] */ CWebViewClassic* webView);
+        /* [in] */ CWebView* webView);
 
     /*
      * Highlight all the instances of the string from mEditText in mWebView.
@@ -165,7 +165,7 @@ private:
     AutoPtr<IView> mCustomView;
     AutoPtr<IEditText> mEditText;
     AutoPtr<ITextView> mMatches;
-    AutoPtr<CWebViewClassic> mWebView;
+    AutoPtr<CWebView> mWebView;
     AutoPtr<IInputMethodManager> mInput;
     AutoPtr<IResources> mResources;
     Boolean mMatchesFound;

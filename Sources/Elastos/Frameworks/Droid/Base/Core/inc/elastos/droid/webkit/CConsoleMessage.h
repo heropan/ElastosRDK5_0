@@ -13,18 +13,6 @@ CarClass(CConsoleMessage), public ConsoleMessage
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI MessageLevel(
-        /* [out] */ Elastos::Droid::Webkit::MessageLevel* level);
-
-    CARAPI Message(
-        /* [out] */ String* message);
-
-    CARAPI SourceId(
-        /* [out] */ String* sourceId);
-
-    CARAPI LineNumber(
-        /* [out] */ Int32* lineNumber);
 };
 
 } // namespace Webkit

@@ -13,18 +13,7 @@ CarClass(CJsPromptResult)
     , public JsPromptResult
 {
 public:
-    CARAPI Cancel();
-
-    CARAPI Confirm();
-
-    CARAPI GetResult(
-        /* [out] */ Boolean* result);
-
-    CARAPI Confirm(
-        /* [in] */ const String& result);
-
-    CARAPI GetStringResult(
-        /* [out] */ String* stringResult);
+    CAR_OBJECT_DECL()
 
 protected:
     CARAPI_(void) WakeUp();

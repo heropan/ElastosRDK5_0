@@ -13,9 +13,6 @@ CarClass(CPluginManager), public PluginManager
 {
 public:
     CAR_OBJECT_DECL();
-
-    CARAPI RefreshPlugins(
-        /* [in] */ Boolean reloadOpenPages);
 };
 
 } // namespace Webkit

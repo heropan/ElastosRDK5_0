@@ -1027,9 +1027,6 @@ protected:
     WebSettings();
 
     virtual ~WebSettings();
-
-protected:
-    Object mLock;
 };
 
 } // namespace Webkit

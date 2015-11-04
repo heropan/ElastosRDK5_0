@@ -40,7 +40,7 @@ private:
     {
     public:
         DefaultClickHandler(
-            /* [in] */ CPlugin* owner)
+            /* [in] */ Plugin* owner)
             : mOwner(owner)
         {}
 
@@ -63,7 +63,7 @@ private:
 
     private:
         AutoPtr<IAlertDialog> mDialog;
-        CPlugin* mOwner;
+        Plugin* mOwner;
     };
 
 public:
@@ -91,33 +91,40 @@ public:
         /* [in] */ const String& fileName,
         /* [in] */ const String& description);
 
-    /**
-     * @hide
-     * @deprecated This interface was intended to be used by Gears. Since Gears was
-     * deprecated, so is this class.
-     */
-    virtual CARAPI_(String) GetName();
+    virtual CARAPI ToString(
+        /* [out] */ String* info);
 
     /**
      * @hide
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI_(String) GetPath();
+    virtual CARAPI GetName(
+        /* [out] */ String* name);
 
     /**
      * @hide
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI_(String) GetFileName();
+    virtual CARAPI GetPath(
+        /* [out] */ String* path);
 
     /**
      * @hide
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI_(String) GetDescription();
+    virtual CARAPI GetFileName(
+        /* [out] */ String* fileName);
+
+    /**
+     * @hide
+     * @deprecated This interface was intended to be used by Gears. Since Gears was
+     * deprecated, so is this class.
+     */
+    virtual CARAPI GetDescription(
+        /* [out] */ String* description);
 
     /**
      * @hide
@@ -169,11 +176,14 @@ public:
     virtual CARAPI DispatchClickEvent(
         /* [in] */ IContext* context);
 
-    CARAPI ToString(
-        /* [out] */ String* info);
-
 protected:
     Plugin();
+
+    void Init(
+        /* [in] */ const String& name,
+        /* [in] */ const String& path,
+        /* [in] */ const String& fileName,
+        /* [in] */ const String& description);
 
 private:
     String mName;
