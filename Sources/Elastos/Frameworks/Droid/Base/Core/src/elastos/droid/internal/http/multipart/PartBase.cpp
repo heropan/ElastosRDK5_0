@@ -1,33 +1,31 @@
 
-#include "PartBase.h"
+#include "elastos/droid/internal/http/multipart/PartBase.h"
 #include <elastos/utility/logging/Logger.h>
-#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
 
-ECode PartBase::Init(
+CAR_INTERFACE_IMPL(PartBase, Object, IPartBase)
+
+ECode PartBase::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& contentType,
     /* [in] */ const String& charSet,
     /* [in] */ const String& transferEncoding)
 {
-
+    if (name.IsNull()) {
+        Logger::E("PartBase", "Name must not be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     mName = name;
     mContentType = contentType;
     mCharSet = charSet;
     mTransferEncoding = transferEncoding;
-
-    if (name.IsNullOrEmpty()) {
-        Logger::E(String("PartBase"), String("Name must not be null"));
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
 
     return NOERROR;
 }
@@ -81,6 +79,10 @@ ECode PartBase::SetContentType(
 ECode PartBase::SetName(
     /* [in] */ const String& name)
 {
+    if (name.IsNull()) {
+        Logger::E("PartBase", "Name must not be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     mName = name;
     return NOERROR;
 }
@@ -92,9 +94,8 @@ ECode PartBase::SetTransferEncoding(
     return NOERROR;
 }
 
-}
-}
-}
-}
-}
-}
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos

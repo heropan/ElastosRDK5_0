@@ -2,11 +2,10 @@
 #ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PARTBASE_H__
 #define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PARTBASE_H__
 
-#include "Part.h"
+#include "elastos/droid/internal/http/multipart/Part.h"
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
@@ -19,6 +18,8 @@ namespace Multipart {
 class PartBase : public Part
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructor.
      *
@@ -27,7 +28,7 @@ public:
      * @param charSet The character encoding, or <code>null</code>
      * @param transferEncoding The transfer encoding, or <code>null</code>
      */
-    Init(
+    CARAPI constructor(
         /* [in] */ const String& name,
         /* [in] */ const String& contentType,
         /* [in] */ const String& charSet,
@@ -110,11 +111,10 @@ private:
     String mTransferEncoding;
 };
 
-}
-}
-}
-}
-}
-}
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PARTBASE_H__

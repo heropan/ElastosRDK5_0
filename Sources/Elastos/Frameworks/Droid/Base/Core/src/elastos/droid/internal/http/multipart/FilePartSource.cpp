@@ -1,24 +1,23 @@
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "CFilePartSource.h"
+#include "elastos/droid/internal/http/multipart/FilePartSource.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
 
-ECode CFilePartSource::constructor(
+CAR_INTERFACE_IMPL_2(FilePartSource, Object, IFilePartSource, IPartSource)
+
+ECode FilePartSource::constructor(
     /* [in] */ IFile* file)
 {
     mFile = file;
@@ -26,14 +25,14 @@ ECode CFilePartSource::constructor(
         Boolean isFile;
         file->IsFile(&isFile);
         if (!isFile) {
-            Logger::E(String("CFilePartSource"), String("File is not a normal file."));
+            Logger::E(String("FilePartSource"), String("File is not a normal file."));
             return E_FILE_NOT_FOUND_EXCEPTION;
         }
 
         Boolean canRead;
         file->CanRead(&canRead);
         if (!canRead) {
-            Logger::E(String("CFilePartSource"), String("File is not readable."));
+            Logger::E(String("FilePartSource"), String("File is not readable."));
             return E_FILE_NOT_FOUND_EXCEPTION;
         }
 
@@ -43,7 +42,7 @@ ECode CFilePartSource::constructor(
     return NOERROR;
 }
 
-ECode CFilePartSource::constructor(
+ECode FilePartSource::constructor(
     /* [in] */ const String& fileName,
     /* [in] */ IFile* file)
 {
@@ -56,7 +55,7 @@ ECode CFilePartSource::constructor(
     return NOERROR;
 }
 
-ECode CFilePartSource::GetLength(
+ECode FilePartSource::GetLength(
     /* [out] */ Int64* length)
 {
     VALIDATE_NOT_NULL(length);
@@ -69,7 +68,7 @@ ECode CFilePartSource::GetLength(
     return NOERROR;
 }
 
-ECode CFilePartSource::GetFileName(
+ECode FilePartSource::GetFileName(
     /* [out] */ String* fileName)
 {
     VALIDATE_NOT_NULL(fileName);
@@ -78,23 +77,21 @@ ECode CFilePartSource::GetFileName(
     return NOERROR;
 }
 
-ECode CFilePartSource::CreateInputStream(
+ECode FilePartSource::CreateInputStream(
     /* [out] */ IInputStream** stream)
 {
     VALIDATE_NOT_NULL(stream);
 
     if (mFile != NULL) {
-        return CFileInputStream::New(mFile, (IFileInputStream**)stream);
+        return CFileInputStream::New(mFile, stream);
     }
 
     AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(0);
-    return CByteArrayInputStream::New(bytes, (IByteArrayInputStream**)stream);
+    return CByteArrayInputStream::New(bytes, stream);
 }
 
-}
-}
-}
-}
-}
-}
-
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos

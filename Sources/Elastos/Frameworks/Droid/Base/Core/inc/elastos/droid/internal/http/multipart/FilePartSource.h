@@ -1,36 +1,42 @@
 
-#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
-#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_FILEPARTSOURCE_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_FILEPARTSOURCE_H__
 
-#include "_Elastos_Droid_Net_Internal_Http_Multipart_CFilePartSource.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
 
 /**
  * A PartSource that reads from a File.
- * 
+ *
  * @author <a href="mailto:becke@u.washington.edu">Michael Becke</a>
  * @author <a href="mailto:mdiggory@latte.harvard.edu">Mark Diggory</a>
  * @author <a href="mailto:mbowler@GargoyleSoftware.com">Mike Bowler</a>
- *   
- * @since 2.0 
+ *
+ * @since 2.0
  */
-CarClass(CFilePartSource)
+class FilePartSource
+    : public Object
+    , public IFilePartSource
+    , public IPartSource
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructor for FilePartSource.
-     * 
-     * @param file the FilePart source File. 
      *
-     * @throws FileNotFoundException if the file does not exist or 
+     * @param file the FilePart source File.
+     *
+     * @throws FileNotFoundException if the file does not exist or
      * cannot be read
      */
     CARAPI constructor(
@@ -38,11 +44,11 @@ public:
 
     /**
      * Constructor for FilePartSource.
-     * 
+     *
      * @param fileName the file name of the FilePart
      * @param file the source File for the FilePart
      *
-     * @throws FileNotFoundException if the file does not exist or 
+     * @throws FileNotFoundException if the file does not exist or
      * cannot be read
      */
     CARAPI constructor(
@@ -82,11 +88,10 @@ private:
     String mFileName;
 };
 
-}
-}
-}
-}
-}
-}
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPARTSOURCE_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_FILEPARTSOURCE_H__

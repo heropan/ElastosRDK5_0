@@ -1,3 +1,5 @@
 DIRS += content
+DIRS += database
+DIRS += http
 DIRS += os
 DIRS += utility

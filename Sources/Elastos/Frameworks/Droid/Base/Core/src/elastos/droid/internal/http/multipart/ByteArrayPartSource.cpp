@@ -1,18 +1,18 @@
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "CByteArrayPartSource.h"
+#include "elastos/droid/internal/http/multipart/ByteArrayPartSource.h"
 
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
 
-ECode CByteArrayPartSource::constructor(
+CAR_INTERFACE_IMPL_2(ByteArrayPartSource, Object, IByteArrayPartSource, IPartSource)
+
+ECode ByteArrayPartSource::constructor(
     /* [in] */ const String& fileName,
     /* [in] */ ArrayOf<Byte>* bytes)
 {
@@ -21,7 +21,7 @@ ECode CByteArrayPartSource::constructor(
     return NOERROR;
 }
 
-ECode CByteArrayPartSource::GetLength(
+ECode ByteArrayPartSource::GetLength(
     /* [out] */ Int64* length)
 {
     VALIDATE_NOT_NULL(length);
@@ -29,7 +29,7 @@ ECode CByteArrayPartSource::GetLength(
     return NOERROR;
 }
 
-ECode CByteArrayPartSource::GetFileName(
+ECode ByteArrayPartSource::GetFileName(
     /* [out] */ String* fileName)
 {
     VALIDATE_NOT_NULL(fileName);
@@ -37,16 +37,14 @@ ECode CByteArrayPartSource::GetFileName(
     return NOERROR;
 }
 
-ECode CByteArrayPartSource::CreateInputStream(
+ECode ByteArrayPartSource::CreateInputStream(
     /* [out] */ IInputStream** stream)
 {
     return CByteArrayInputStream::New(mBytes, stream);
 }
 
-}
-}
-}
-}
-}
-}
-
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos

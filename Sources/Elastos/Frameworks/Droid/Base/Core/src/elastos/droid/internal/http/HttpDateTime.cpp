@@ -1,41 +1,45 @@
 
-#include "CHttpDateTime.h"
-// #include "Pattern.h"
-// #include "Matcher.h"
+#include "elastos/droid/internal/http/HttpDateTime.h"
+#include "elastos/droid/text/format/CTime.h"
 #include <elastos/core/Character.h>
-#include "elastos/droid/ext/frameworkext.h"
 
-using namespace Elastos::Core;
-
-using Elastos::Core::ICharSequence;
-using Elastos::Core::ICalendar;
-// using Elastos::Utility::Regex::IPattern;
+using Elastos::Droid::Text::Format::CTime;
+using Elastos::Droid::Text::Format::ITime;
+using Elastos::Core::Character;
+using Elastos::Utility::ICalendar;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::IPattern;
 using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::IMatchResult;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 
-const String CHttpDateTime::HTTP_DATE_RFC_REGEXP =
+const String HttpDateTime::HTTP_DATE_RFC_REGEXP =
     String("([0-9]{1,2})[- ]([A-Za-z]{3,9})[- ]([0-9]{2,4})[ ]")
     + String("([0-9]{1,2}:[0-9][0-9]:[0-9][0-9])");
 
-const String CHttpDateTime::HTTP_DATE_ANSIC_REGEXP =
+const String HttpDateTime::HTTP_DATE_ANSIC_REGEXP =
     String("[ ]([A-Za-z]{3,9})[ ]+([0-9]{1,2})[ ]")
     + String("([0-9]{1,2}:[0-9][0-9]:[0-9][0-9])[ ]([0-9]{2,4})");
 
-const AutoPtr<IPattern> CHttpDateTime::HTTP_DATE_RFC_PATTERN;
-const AutoPtr<IPattern> CHttpDateTime::HTTP_DATE_ANSIC_PATTERN;
-void CHttpDateTime::InitStaticHttpDatePattern()
+static AutoPtr<IPattern> InitPattern(
+    /* [in] */ const String& regularExpression)
 {
-    // TODO:
-    // Pattern::Compile(HTTP_DATE_RFC_REGEXP, (IPattern**)&HTTP_DATE_RFC_PATTERN);
-    // Pattern::Compile(HTTP_DATE_ANSIC_REGEXP, (IPattern**)&HTTP_DATE_ANSIC_PATTERN);
+    AutoPtr<IPatternHelper> patternHelper;
+    CPatternHelper::AcquireSingleton((IPatternHelper**)&patternHelper);
+    AutoPtr<IPattern> pattern;
+    patternHelper->Compile(regularExpression, (IPattern**)&pattern);
+    return pattern;
 }
 
-CHttpDateTime::TimeOfDay::TimeOfDay(
+const AutoPtr<IPattern> HttpDateTime::HTTP_DATE_RFC_PATTERN = InitPattern(HTTP_DATE_RFC_REGEXP);
+const AutoPtr<IPattern> HttpDateTime::HTTP_DATE_ANSIC_PATTERN = InitPattern(HTTP_DATE_ANSIC_REGEXP);
+
+HttpDateTime::TimeOfDay::TimeOfDay(
     /* [in] */ Int32 h,
     /* [in] */  Int32 m,
     /* [in] */  Int32 s)
@@ -44,7 +48,7 @@ CHttpDateTime::TimeOfDay::TimeOfDay(
     , mSecond(s)
 {}
 
-ECode CHttpDateTime::Parse(
+ECode HttpDateTime::Parse(
     /* [in] */ const String& timeString,
     /* [out] */ Int64* time)
 {
@@ -54,49 +58,52 @@ ECode CHttpDateTime::Parse(
     AutoPtr<TimeOfDay> timeOfDay;
 
     AutoPtr<IMatcher> rfcMatcher;
-    AutoPtr<ICharSequence> cTimesString;
-    CString::New(timeString, (ICharSequence**)&cTimesString);
-    HTTP_DATE_RFC_PATTERN->Matcher(cTimesString, (IMatcher**)&rfcMatcher);
+    HTTP_DATE_RFC_PATTERN->Matcher(timeString, (IMatcher**)&rfcMatcher);
+    AutoPtr<IMatchResult> matchResult;
     Boolean isFind;
     rfcMatcher->Find(&isFind);
     if (isFind) {
+        matchResult = IMatchResult::Probe(rfcMatcher);
         String sD;
-        rfcMatcher->Group(1, &sD);
+        matchResult->Group(1, &sD);
         date = GetDate(sD);
 
         String sM;
-        rfcMatcher->Group(2, &sM);
+        matchResult->Group(2, &sM);
         FAIL_RETURN(GetMonth(sM, &month));
 
         String sY;
-        rfcMatcher->Group(3, &sY);
+        matchResult->Group(3, &sY);
         year = GetYear(sY);
 
         String sT;
-        rfcMatcher->Group(4, &sT);
+        matchResult->Group(4, &sT);
         timeOfDay = GetTime(sT);
-    } else {
+    }
+    else {
         AutoPtr<IMatcher> ansicMatcher;
-        HTTP_DATE_ANSIC_PATTERN->Matcher(cTimesString, (IMatcher**)&ansicMatcher);
+        HTTP_DATE_ANSIC_PATTERN->Matcher(timeString, (IMatcher**)&ansicMatcher);
         Boolean isFind;
         ansicMatcher->Find(&isFind);
         if (isFind) {
+            matchResult = IMatchResult::Probe(ansicMatcher);
             String sM;
-            ansicMatcher->Group(1, &sM);
+            matchResult->Group(1, &sM);
             FAIL_RETURN(GetMonth(sM, &month));
 
             String sD;
-            ansicMatcher->Group(2, &sD);
+            matchResult->Group(2, &sD);
             date = GetDate(sD);
 
             String sT;
-            ansicMatcher->Group(3, &sT);
+            matchResult->Group(3, &sT);
             timeOfDay = GetTime(sT);
 
             String sY;
-            ansicMatcher->Group(4, &sY);
+            matchResult->Group(4, &sY);
             year = GetYear(sY);
-        } else {
+        }
+        else {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
@@ -108,17 +115,15 @@ ECode CHttpDateTime::Parse(
         date = 1;
     }
 
-    // TODO:
-    // AutoPtr<ITime> itime;
-    // CTime(ITime::TIMEZONE_UTC, (ITime**)&itime);
-    // itime->Set(timeOfDay->mSecond, timeOfDay->mMinute, timeOfDay->mHour,
-    //     date, month, year);
+    AutoPtr<ITime> itime;
+    CTime::New(ITime::TIMEZONE_UTC, (ITime**)&itime);
+    itime->Set(timeOfDay->mSecond, timeOfDay->mMinute, timeOfDay->mHour,
+        date, month, year);
 
-    // *time = itime->ToMillis(FALSE /* use isDst */);
-    return NOERROR;
+    return itime->ToMillis(FALSE /* use isDst */, time);
 }
 
-Int32 CHttpDateTime::GetDate(
+Int32 HttpDateTime::GetDate(
     /* [in] */ const String& dateString)
 {
     if (dateString.GetLength() == 2) {
@@ -129,7 +134,7 @@ Int32 CHttpDateTime::GetDate(
     return (dateString.GetChar(0) - '0');
 }
 
-ECode CHttpDateTime::GetMonth(
+ECode HttpDateTime::GetMonth(
     /* [in] */ const String& monthString,
     /* [out] */ Int32* month)
 {
@@ -170,7 +175,7 @@ ECode CHttpDateTime::GetMonth(
     return NOERROR;
 }
 
-Int32 CHttpDateTime::GetYear(
+Int32 HttpDateTime::GetYear(
     /* [in] */ const String& yearString)
 {
     if (yearString.GetLength() == 2) {
@@ -178,16 +183,19 @@ Int32 CHttpDateTime::GetYear(
                 + (yearString.GetChar(1) - '0');
         if (year >= 70) {
             return year + 1900;
-        } else {
+        }
+        else {
             return year + 2000;
         }
-    } else if (yearString.GetLength() == 3) {
+    }
+    else if (yearString.GetLength() == 3) {
         // According to RFC 2822, three digit years should be added to 1900.
         Int32 year = (yearString.GetChar(0) - '0') * 100
                 + (yearString.GetChar(1) - '0') * 10
                 + (yearString.GetChar(2) - '0');
         return year + 1900;
-    } else if (yearString.GetLength() == 4) {
+    }
+    else if (yearString.GetLength() == 4) {
          return (yearString.GetChar(0) - '0') * 1000
                 + (yearString.GetChar(1) - '0') * 100
                 + (yearString.GetChar(2) - '0') * 10
@@ -197,7 +205,7 @@ Int32 CHttpDateTime::GetYear(
     return 1970;
 }
 
-AutoPtr<CHttpDateTime::TimeOfDay> CHttpDateTime::GetTime(
+AutoPtr<HttpDateTime::TimeOfDay> HttpDateTime::GetTime(
     /* [in] */ const String& timeString)
 {
     // HH might be H
@@ -208,21 +216,19 @@ AutoPtr<CHttpDateTime::TimeOfDay> CHttpDateTime::GetTime(
     // Skip ':'
     i++;
 
-    Int32 minute = (timeString.GetChar(i++) - '0') * 10
-                + (timeString.GetChar(i++) - '0');
+    Int32 minute = (timeString.GetChar(i++) - '0') * 10;
+    minute += (timeString.GetChar(i++) - '0');
     // Skip ':'
     i++;
 
-    Int32 second = (timeString.GetChar(i++) - '0') * 10
-              + (timeString.GetChar(i++) - '0');
+    Int32 second = (timeString.GetChar(i++) - '0') * 10;
+    second += (timeString.GetChar(i++) - '0');
 
     AutoPtr<TimeOfDay> td = new TimeOfDay(hour, minute, second);
     return td;
 }
 
-}
-}
-}
-}
-}
-
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos

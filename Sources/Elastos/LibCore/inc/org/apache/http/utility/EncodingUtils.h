@@ -22,7 +22,7 @@ namespace Utility {
  *
  * @since 4.0
  */
-class EncodingUtils
+class ECO_PUBLIC EncodingUtils
 {
 public:
     /**

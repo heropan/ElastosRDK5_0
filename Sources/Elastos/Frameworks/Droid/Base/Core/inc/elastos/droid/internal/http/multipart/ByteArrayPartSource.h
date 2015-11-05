@@ -1,12 +1,14 @@
 
-#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CBYTEARRAYPARTSOURCE_H__
-#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CBYTEARRAYPARTSOURCE_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_BYTEARRAYPARTSOURCE_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_BYTEARRAYPARTSOURCE_H__
 
-#include "_Elastos_Droid_Net_Internal_Http_Multipart_CByteArrayPartSource.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
@@ -14,17 +16,22 @@ namespace Multipart {
 /**
  * A PartSource that reads from a byte array.  This class should be used when
  * the data to post is already loaded into memory.
- * 
+ *
  * @author <a href="mailto:becke@u.washington.edu">Michael Becke</a>
- *   
- * @since 2.0 
+ *
+ * @since 2.0
  */
-CarClass(CByteArrayPartSource)
+class ByteArrayPartSource
+    : public Object
+    , public IByteArrayPartSource
+    , public IPartSource
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructor for ByteArrayPartSource.
-     * 
+     *
      * @param fileName the name of the file these bytes represent
      * @param bytes the content of this part
      */
@@ -58,11 +65,10 @@ private:
     AutoPtr<ArrayOf<Byte> > mBytes;
 };
 
-}
-}
-}
-}
-}
-}
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CBYTEARRAYPARTSOURCE_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_BYTEARRAYPARTSOURCE_H__

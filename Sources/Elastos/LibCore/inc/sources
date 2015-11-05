@@ -108,3 +108,6 @@ EXPORT_HEADERS += elastos/droid/system/OsConstants.h
 
 EXPORT_HEADERS += elastosx/net/SocketFactory.h
 EXPORT_HEADERS += elastosx/net/ssl/SSLSocketFactory.h
+
+EXPORT_HEADERS += org/apache/http/entity/AbstractHttpEntity.h
+EXPORT_HEADERS += org/apache/http/utility/EncodingUtils.h

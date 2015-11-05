@@ -169,6 +169,9 @@
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app/backup
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/app
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/content
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/database
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/http/multipart
+> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/http
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/os
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal/utility
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/internal

@@ -12,27 +12,27 @@ module
     namespace Internal {
     namespace Content {
 
-        [deprecated]
-        class CNativeLibraryHelperHandle {
-            constructor(
-                [in] ArrayOf<Int64>* apkHandles,
-                [in] Boolean multiArch);
+    [deprecated]
+    class CNativeLibraryHelperHandle {
+        constructor(
+            [in] ArrayOf<Int64>* apkHandles,
+            [in] Boolean multiArch);
 
-            interface INativeLibraryHelperHandle;
-            interface ICloseable;
-        }
+        interface INativeLibraryHelperHandle;
+        interface ICloseable;
+    }
 
-        singleton class CNativeLibraryHelperHandleHelper {
-            interface INativeLibraryHelperHandleHelper;
-        }
+    singleton class CNativeLibraryHelperHandleHelper {
+        interface INativeLibraryHelperHandleHelper;
+    }
 
-        singleton class CNativeLibraryHelper {
-            interface INativeLibraryHelper;
-        }
+    singleton class CNativeLibraryHelper {
+        interface INativeLibraryHelper;
+    }
 
-        singleton class CPackageHelper {
-            interface IPackageHelper;
-        }
+    singleton class CPackageHelper {
+        interface IPackageHelper;
+    }
 
     } // namespace Content
     } // namespace Internal

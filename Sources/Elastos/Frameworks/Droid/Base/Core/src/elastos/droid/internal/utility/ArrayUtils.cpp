@@ -308,63 +308,6 @@ Boolean ArrayUtils::Contains(
     return contains;
 }
 
-void ArrayUtils::Sort(
-    /* [in] */ ArrayOf<Int32> *array)
-{
-    if (array != NULL) {
-        return QuickSort(array, 0, array->GetLength() - 1);
-    }
-}
-
-void ArrayUtils::Sort(
-    /* [in] */ ArrayOf<Int32> *array,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 length)
-{
-    if (array != NULL) {
-        return QuickSort(array, offset, offset + length - 1);
-    }
-}
-
-void ArrayUtils::QuickSort(
-    /* [in] */ ArrayOf<Int32> *array,
-    /* [in] */ Int32 low,
-    /* [in] */ Int32 high)
-{
-    if (array == NULL || low >= high || low < 0)
-        return;
-
-    high = Elastos::Core::Math::Min(high, array->GetLength() - 1);
-    Int32 privot = (*array)[low];
-    Int32 i = low, j = high;
-    while (i < j) {
-        while (i < j) {
-            if ((*array)[j] >= privot){
-                --j;
-            }
-        }
-
-        if (i < j) {
-            (*array)[i++] = (*array)[j];
-        }
-
-        while (i < j) {
-            if ((*array)[i] <= privot){
-                ++i;
-            }
-        }
-
-        if (i < j) {
-            (*array)[j--] = (*array)[i];
-        }
-    }
-
-    (*array)[i] = privot;
-
-    QuickSort(array, low, i - 1);
-    QuickSort(array, i + 1, high);
-}
-
 } // namespace Utility
 } // namespace Internal
 } // namespace Droid

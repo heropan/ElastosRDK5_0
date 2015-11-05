@@ -204,19 +204,6 @@ public:
         /* [in] */ IArrayList* cur,
         /* [in] */ IInterface* val);
 
-    static CARAPI_(void) Sort(
-        /* [in] */ ArrayOf<Int32> *array);
-
-    static CARAPI_(void) Sort(
-        /* [in] */ ArrayOf<Int32> *array,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length);
-
-    static CARAPI_(void) QuickSort(
-        /* [in] */ ArrayOf<Int32> *array,
-        /* [in] */ Int32 low,
-        /* [in] */ Int32 high);
-
 private:
     ArrayUtils() {}
 };

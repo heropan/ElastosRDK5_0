@@ -22,7 +22,7 @@ namespace Entity {
  *
  * @since 4.0
  */
-class AbstractHttpEntity
+class ECO_PUBLIC AbstractHttpEntity
     : public Object
     , public IAbstractHttpEntity
     , public IHttpEntity
@@ -144,21 +144,21 @@ protected:
      * Returned by {@link #getContentType getContentType},
      * unless that method is overridden.
      */
-    AutoPtr<IHeader> mContentType;
+    ECO_PUBLIC AutoPtr<IHeader> mContentType;
 
     /**
      * The Content-Encoding header.
      * Returned by {@link #getContentEncoding getContentEncoding},
      * unless that method is overridden.
      */
-    AutoPtr<IHeader> mContentEncoding;
+    ECO_PUBLIC AutoPtr<IHeader> mContentEncoding;
 
     /**
      * The 'chunked' flag.
      * Returned by {@link #isChunked isChunked},
      * unless that method is overridden.
      */
-    Boolean mChunked;
+    ECO_PUBLIC Boolean mChunked;
 
 };
 

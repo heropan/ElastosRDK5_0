@@ -1,55 +1,58 @@
 
-#include "Part.h"
-#include "elastos/droid/ext/frameworkext.h"
-// #include "EncodingUtils.h"
+#include "elastos/droid/internal/http/multipart/Part.h"
 #include <elastos/utility/logging/Logger.h>
+#include <org/apache/http/utility/EncodingUtils.h>
 
+using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Commons::Logging::ILogFactory;
+// using Org::Apache::Commons::Logging::ILogFactory;
+using Org::Apache::Http::Utility::EncodingUtils;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
 
-const AutoPtr<ILog> Part::LOG;
-void Part::InitStaticLOG()
+// TODO:
+// static AutoPtr<ILog> InitStaticLOG()
+// {
+//     AutoPtr<ILogFactory> factory;
+//     CLogFactory::AcquireSingleton((ILogFactory**)&factory);
+//     AutoPtr<ILog> log;
+//     factory->GetLog(String("Part"), (ILog**)&log)
+//     return log;
+// }
+// const AutoPtr<ILog> Part::LOG = InitStaticLOG();
+
+AutoPtr<ArrayOf<Byte> > GetAsciiBytes(
+        /* [in] */ const String& data)
 {
-    AutoPtr<ILogFactory> factory;
-    // TODO:
-    // CLogFactory::AcquireSingleton((ILogFactory**)&factory);
-    // factory->GetLog(String("Part"), (ILog**)&LOG)
+    AutoPtr<ArrayOf<Byte> > bytes;
+    EncodingUtils::GetAsciiBytes(data, (ArrayOf<Byte>**)&bytes);
+    return bytes;
 }
 
 const String Part::BOUNDARY = String("----------------314159265358979323846");
-// TODO:
-const AutoPtr<ArrayOf<Byte> > Part::BOUNDARY_BYTES/* =
-    EncodingUtils::GetAsciiBytes(BOUNDARY)*/;
+const AutoPtr<ArrayOf<Byte> > Part::BOUNDARY_BYTES = GetAsciiBytes(BOUNDARY);
 const AutoPtr<ArrayOf<Byte> > Part::DEFAULT_BOUNDARY_BYTES = BOUNDARY_BYTES;
 const String Part::CRLF = String("\r\n");
-const AutoPtr<ArrayOf<Byte> > Part::CRLF_BYTES/* =
-    EncodingUtils::GetAsciiBytes(CRLF)*/;
+const AutoPtr<ArrayOf<Byte> > Part::CRLF_BYTES = GetAsciiBytes(CRLF);
 const String Part::QUOTE = String("\"");
-const AutoPtr<ArrayOf<Byte> > Part::QUOTE_BYTES/* =
-    EncodingUtils::GetAsciiBytes(QUOTE)*/;
+const AutoPtr<ArrayOf<Byte> > Part::QUOTE_BYTES = GetAsciiBytes(QUOTE);
 const String Part::EXTRA = String("--");
-const AutoPtr<ArrayOf<Byte> > Part::EXTRA_BYTES/* =
-    EncodingUtils::GetAsciiBytes(EXTRA)*/;
+const AutoPtr<ArrayOf<Byte> > Part::EXTRA_BYTES = GetAsciiBytes(EXTRA);
 const String Part::CONTENT_DISPOSITION = String("Content-Disposition: form-data; name=");
-const AutoPtr<ArrayOf<Byte> > Part::CONTENT_DISPOSITION_BYTES/* =
-    EncodingUtils::GetAsciiBytes(CONTENT_DISPOSITION)*/;
+const AutoPtr<ArrayOf<Byte> > Part::CONTENT_DISPOSITION_BYTES = GetAsciiBytes(CONTENT_DISPOSITION);
 const String Part::CONTENT_TYPE = String("Content-Type: ");
-const AutoPtr<ArrayOf<Byte> > Part::CONTENT_TYPE_BYTES/* =
-    EncodingUtils::GetAsciiBytes(CONTENT_TYPE)*/;
+const AutoPtr<ArrayOf<Byte> > Part::CONTENT_TYPE_BYTES = GetAsciiBytes(CONTENT_TYPE);
 const String Part::CHARSET = String("; charset=");
-const AutoPtr<ArrayOf<Byte> > Part::CHARSET_BYTES/* =
-    EncodingUtils::GetAsciiBytes(CHARSET)*/;
+const AutoPtr<ArrayOf<Byte> > Part::CHARSET_BYTES = GetAsciiBytes(CHARSET);
 const String Part::CONTENT_TRANSFER_ENCODING = String("Content-Transfer-Encoding: ");
-const AutoPtr<ArrayOf<Byte> > Part::CONTENT_TRANSFER_ENCODING_BYTES/* =
-    EncodingUtils::GetAsciiBytes(CONTENT_TRANSFER_ENCODING)*/;
+const AutoPtr<ArrayOf<Byte> > Part::CONTENT_TRANSFER_ENCODING_BYTES = GetAsciiBytes(CONTENT_TRANSFER_ENCODING);
+
+CAR_INTERFACE_IMPL(Part, Object, IPart)
 
 ECode Part::GetBoundary(
         /* [out] */ String* boundary)
@@ -88,9 +91,9 @@ ECode Part::SendStart(
     /* [in] */ IOutputStream* outStream)
 {
     // LOG->Trace(String("enter sendStart(OutputStream out)"));
-    FAIL_RETURN(outStream->WriteBytes(*EXTRA_BYTES));
-    FAIL_RETURN(outStream->WriteBytes(*(GetPartBoundary())));
-    FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
+    FAIL_RETURN(outStream->Write(EXTRA_BYTES));
+    FAIL_RETURN(outStream->Write(GetPartBoundary()));
+    FAIL_RETURN(outStream->Write(CRLF_BYTES));
 
     return NOERROR;
 }
@@ -99,13 +102,12 @@ ECode Part::SendDispositionHeader(
     /* [in] */ IOutputStream* outStream)
 {
     // LOG->Trace(String("enter sendDispositionHeader(OutputStream out)"));
-    FAIL_RETURN(outStream->WriteBytes(*CONTENT_DISPOSITION_BYTES));
-    FAIL_RETURN(outStream->WriteBytes(*QUOTE_BYTES));
+    FAIL_RETURN(outStream->Write(CONTENT_DISPOSITION_BYTES));
+    FAIL_RETURN(outStream->Write(QUOTE_BYTES));
     String name;
     GetName(&name);
-    // TODO:
-    // FAIL_RETURN(outStream->WriteBytes(EncodingUtils::GetAsciiBytes(name)));
-    FAIL_RETURN(outStream->WriteBytes(*QUOTE_BYTES));
+    FAIL_RETURN(outStream->Write(GetAsciiBytes(name)));
+    FAIL_RETURN(outStream->Write(QUOTE_BYTES));
 
     return NOERROR;
 }
@@ -117,16 +119,14 @@ ECode Part::SendContentTypeHeader(
     String contentType;
     GetContentType(&contentType);
     if (contentType != NULL) {
-        FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
-        FAIL_RETURN(outStream->WriteBytes(*CONTENT_TYPE_BYTES));
-        // TODO:
-        // FAIL_RETURN(outStream->WriteBytes(EncodingUtils::GetAsciiBytes(contentType)));
+        FAIL_RETURN(outStream->Write(CRLF_BYTES));
+        FAIL_RETURN(outStream->Write(CONTENT_TYPE_BYTES));
+        FAIL_RETURN(outStream->Write(GetAsciiBytes(contentType)));
         String charSet;
         GetCharSet(&charSet);
         if (charSet != NULL) {
-            FAIL_RETURN(outStream->WriteBytes(*CHARSET_BYTES));
-            // TODO:
-            // FAIL_RETURN(outStream->WriteBytes(EncodingUtils::GetAsciiBytes(charSet)));
+            FAIL_RETURN(outStream->Write(CHARSET_BYTES));
+            FAIL_RETURN(outStream->Write(GetAsciiBytes(charSet)));
         }
     }
 
@@ -140,10 +140,9 @@ ECode Part::SendTransferEncodingHeader(
     String transferEncoding;
     GetTransferEncoding(&transferEncoding);
     if (transferEncoding != NULL) {
-        FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
-        FAIL_RETURN(outStream->WriteBytes(*CONTENT_TRANSFER_ENCODING_BYTES));
-        // TODO:
-        // FAIL_RETURN(outStream->WriteBytes(EncodingUtils::GetAsciiBytes(transferEncoding)));
+        FAIL_RETURN(outStream->Write(CRLF_BYTES));
+        FAIL_RETURN(outStream->Write(CONTENT_TRANSFER_ENCODING_BYTES));
+        FAIL_RETURN(outStream->Write(GetAsciiBytes(transferEncoding)));
     }
 
     return NOERROR;
@@ -153,8 +152,8 @@ ECode Part::SendEndOfHeader(
     /* [in] */ IOutputStream* outStream)
 {
     // LOG->Trace(String("enter sendEndOfHeader(OutputStream out)"));
-    FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
-    FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
+    FAIL_RETURN(outStream->Write(CRLF_BYTES));
+    FAIL_RETURN(outStream->Write(CRLF_BYTES));
 
     return NOERROR;
 }
@@ -163,7 +162,7 @@ ECode Part::SendEnd(
     /* [in] */ IOutputStream* outStream)
 {
     // LOG->Tace(String("enter sendEnd(OutputStream out)"));
-    FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
+    FAIL_RETURN(outStream->Write(CRLF_BYTES));
 
     return NOERROR;
 }
@@ -195,8 +194,8 @@ ECode Part::Length(
         return NOERROR;
     }
 
-    AutoPtr<IByteArrayOutputStream> overhead;
-    CByteArrayOutputStream::New((IByteArrayOutputStream**)&overhead);
+    AutoPtr<IOutputStream> overhead;
+    CByteArrayOutputStream::New((IOutputStream**)&overhead);
     FAIL_RETURN(SendStart(overhead));
     FAIL_RETURN(SendDispositionHeader(overhead));
     FAIL_RETURN(SendContentTypeHeader(overhead));
@@ -206,7 +205,7 @@ ECode Part::Length(
 
     FAIL_RETURN(LengthOfData(length));
     Int32 ovSize;
-    overhead->GetSize(&ovSize);
+    IByteArrayOutputStream::Probe(overhead)->GetSize(&ovSize);
     *length += ovSize;
 
     return NOERROR;
@@ -220,14 +219,14 @@ ECode Part::ToString(
 
 ECode Part::SendParts(
     /* [in] */ IOutputStream* outStream,
-    /* [in] */ ArrayOf<Part*>* parts)
+    /* [in] */ ArrayOf<IPart*>* parts)
 {
     return SendParts(outStream, parts, DEFAULT_BOUNDARY_BYTES);
 }
 
 ECode Part::SendParts(
     /* [in] */ IOutputStream* outStream,
-    /* [in] */ ArrayOf<Part*>* parts,
+    /* [in] */ ArrayOf<IPart*>* parts,
     /* [in] */ ArrayOf<Byte>* partBoundary)
 {
     if (parts == NULL) {
@@ -240,26 +239,26 @@ ECode Part::SendParts(
     }
     for (Int32 i = 0; i < parts->GetLength(); i++) {
         // set the part boundary before the part is sent
-        FAIL_RETURN(((*parts)[i])->SetPartBoundary(partBoundary));
+        FAIL_RETURN(((Part*)(*parts)[i])->SetPartBoundary(partBoundary));
         FAIL_RETURN(((*parts)[i])->Send(outStream));
     }
-    FAIL_RETURN(outStream->WriteBytes(*EXTRA_BYTES));
-    FAIL_RETURN(outStream->WriteBytes(*partBoundary));
-    FAIL_RETURN(outStream->WriteBytes(*EXTRA_BYTES));
-    FAIL_RETURN(outStream->WriteBytes(*CRLF_BYTES));
+    FAIL_RETURN(outStream->Write(EXTRA_BYTES));
+    FAIL_RETURN(outStream->Write(partBoundary));
+    FAIL_RETURN(outStream->Write(EXTRA_BYTES));
+    FAIL_RETURN(outStream->Write(CRLF_BYTES));
 
     return NOERROR;
 }
 
 ECode Part::GetLengthOfParts(
-    /* [in] */ ArrayOf<Part*>* parts,
+    /* [in] */ ArrayOf<IPart*>* parts,
     /* [out] */ Int64* length)
 {
     return GetLengthOfParts(parts, DEFAULT_BOUNDARY_BYTES, length);
 }
 
 ECode Part::GetLengthOfParts(
-    /* [in] */ ArrayOf<Part*>* parts,
+    /* [in] */ ArrayOf<IPart*>* parts,
     /* [in] */ ArrayOf<Byte>* partBoundary,
     /* [out] */ Int64* length)
 {
@@ -274,7 +273,7 @@ ECode Part::GetLengthOfParts(
     Int64 total = 0;
     for (Int32 i = 0; i < parts->GetLength(); i++) {
         // set the part boundary before we calculate the part's length
-        FAIL_RETURN(((*parts)[i])->SetPartBoundary(partBoundary));
+        FAIL_RETURN(((Part*)(*parts)[i])->SetPartBoundary(partBoundary));
         Int64 l;
         FAIL_RETURN(((*parts)[i])->Length(&l));
         if (l < 0) {
@@ -292,9 +291,8 @@ ECode Part::GetLengthOfParts(
     return NOERROR;
 }
 
-}
-}
-}
-}
-}
-}
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos

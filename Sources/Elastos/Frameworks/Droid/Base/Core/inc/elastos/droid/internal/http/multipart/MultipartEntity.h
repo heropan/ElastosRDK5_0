@@ -1,16 +1,19 @@
 
-#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CMULTIPARTENTITY_H__
-#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CMULTIPARTENTITY_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_MULTIPARTENTITY_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_MULTIPARTENTITY_H__
 
-#include "_Elastos_Droid_Net_Internal_Http_Multipart_CMultipartEntity.h"
-#include "elautoptr.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <org/apache/http/entity/AbstractHttpEntity.h>
 
-using Org::Apache::Commons::Logging::ILog;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Org::Apache::Http::IHeader;
+// using Org::Apache::Commons::Logging::ILog;
+using Org::Apache::Http::Entity::AbstractHttpEntity;
 using Org::Apache::Http::Params::IHttpParams;
 
 namespace Elastos {
 namespace Droid {
-namespace Net {
 namespace Internal {
 namespace Http {
 namespace Multipart {
@@ -50,12 +53,14 @@ namespace Multipart {
  *
  * @since 3.0
  */
-CarClass(CMultipartEntity)/*, public AbstractHttpEntity*/
+class MultipartEntity
+    : public AbstractHttpEntity
+    , public IMultipartEntity
 {
 public:
-    CMultipartEntity();
+    MultipartEntity();
 
-    ~CMultipartEntity();
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates a new multipart entity containing the given parts.
@@ -64,7 +69,7 @@ public:
      */
     CARAPI constructor(
         /* [in] */ ArrayOf<IPart *>* parts,
-        /* [in] */ Org::Apache::Http::Params::IHttpParams* params);
+        /* [in] */ IHttpParams* params);
 
     CARAPI constructor(
         /* [in] */ ArrayOf<IPart *>* parts);
@@ -78,13 +83,13 @@ public:
     /* (non-Javadoc)
      */
     CARAPI WriteTo(
-        /* [in] */ Elastos::IO::IOutputStream* outStream);
+        /* [in] */ IOutputStream* outStream);
 
     /* (non-Javadoc)
      * @see org.apache.commons.http.AbstractHttpEntity.#getContentType()
      */
     CARAPI GetContentType(
-        /* [out] */ Org::Apache::Http::IHeader** header);
+        /* [out] */ IHeader** header);
 
     /* (non-Javadoc)
      */
@@ -92,33 +97,10 @@ public:
         /* [out] */ Int64* length);
 
     CARAPI GetContent(
-        /* [out] */ Elastos::IO::IInputStream** stream);
+        /* [out] */ IInputStream** stream);
 
     CARAPI IsStreaming(
         /* [out] */ Boolean* isStreaming);
-
-    CARAPI GetContentEncoding(
-        /* [out] */ Org::Apache::Http::IHeader** header);
-
-    CARAPI IsChunked(
-        /* [out] */ Boolean* isChunked);
-
-    CARAPI SetContentType(
-        /* [in] */ Org::Apache::Http::IHeader* contentType);
-
-    CARAPI SetContentType(
-        /* [in] */ const String& ctString);
-
-    CARAPI SetContentEncoding(
-        /* [in] */ Org::Apache::Http::IHeader* contentEncoding);
-
-    CARAPI SetContentEncoding(
-        /* [in] */ const String& ceString);
-
-    CARAPI SetChunked(
-        /* [in] */ Boolean chunked);
-
-    CARAPI ConsumeContent();
 
 protected:
     /**
@@ -133,8 +115,6 @@ protected:
     CARAPI_(AutoPtr<ArrayOf<Byte> >) GetMultipartBoundary();
 
 private:
-    CARAPI_(void) InitStaticLOG();
-
     /**
      * Generates a random multipart boundary string.
     */
@@ -146,7 +126,7 @@ protected:
 
 private:
     /** Log object for this class. */
-    static const AutoPtr<ILog> LOG;
+    // static const AutoPtr<ILog> LOG;
 
     /** The Content-Type for multipart/form-data. */
     static const String MULTIPART_FORM_CONTENT_TYPE;
@@ -163,11 +143,10 @@ private:
     Boolean mContentConsumed;
 };
 
-}
-}
-}
-}
-}
-}
+} // namespace Multipart
+} // namespace Http
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CMULTIPARTENTITY_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_MULTIPARTENTITY_H__
