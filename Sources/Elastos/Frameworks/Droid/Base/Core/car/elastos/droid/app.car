@@ -15,6 +15,7 @@ module
     merge("app/AppOpsManager.car");
     merge("app/Application.car");
     merge("app/ApplicationErrorReport.car");
+    merge("app/AppImportanceMonitor.car");
     merge("app/BackStackRecord.car");
     merge("app/ContextImpl.car");
     merge("app/DatePickerDialog.car");

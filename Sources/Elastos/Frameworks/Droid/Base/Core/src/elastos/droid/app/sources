@@ -67,6 +67,7 @@ SOURCES += CPendingIntentHelper.cpp
 SOURCES += QueuedWork.cpp
 
 SOURCES += CResultInfo.cpp
+#SOURCES += Service.cpp
 
 SOURCES += CTaskStackBuilder.cpp
 SOURCES += CTaskStackBuilderHelper.cpp
@@ -125,7 +126,6 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += LoadedPkg.cpp
 #SOURCES += CInnerReceiver.cpp
 #SOURCES += ProgressDialog.cpp
-#SOURCES += Service.cpp
 
 #SOURCES += DialogFragment.cpp
 #SOURCES += CActionBarImpl.cpp

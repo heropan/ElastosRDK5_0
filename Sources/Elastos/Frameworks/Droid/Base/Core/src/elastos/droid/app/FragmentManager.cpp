@@ -1,6 +1,6 @@
 
 #include "elastos/droid/app/FragmentManager.h"
-// #include "elastos/droid/app/FragmentManagerImpl.h"
+#include "elastos/droid/app/FragmentManagerImpl.h"
 
 namespace Elastos {
 namespace Droid {
@@ -25,8 +25,7 @@ ECode FragmentManager::OpenTransaction(
 ECode FragmentManager::EnableDebugLogging(
     /* [in] */ Boolean enabled)
 {
-    assert(0 && "TODO");
-    // FragmentManagerImpl::DEBUG = enabled;
+    FragmentManagerImpl::DEBUG = enabled;
     return NOERROR;
 }
 

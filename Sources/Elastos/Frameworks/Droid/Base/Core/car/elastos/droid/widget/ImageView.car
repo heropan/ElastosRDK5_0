@@ -17,38 +17,40 @@ module
      * Options for scaling the bounds of an image to the bounds of this view.
      */
     enum ImageViewScaleType {
+        ImageViewScaleType_NULL = -1,
+
         /**
          * Scale using the image matrix when drawing. The image matrix can be set using
          * {@link ImageView#setImageMatrix(Matrix)}. From XML, use this syntax:
          * <code>android:scaleType="matrix"</code>.
          */
-        ImageViewScaleType_MATRIX ,
+        ImageViewScaleType_MATRIX,
         /**
          * Scale the image using {@link Matrix.ScaleToFit#FILL}.
          * From XML, use this syntax: <code>android:scaleType="fitXY"</code>.
          */
-        ImageViewScaleType_FIT_XY ,
+        ImageViewScaleType_FIT_XY,
         /**
          * Scale the image using {@link Matrix.ScaleToFit#START}.
          * From XML, use this syntax: <code>android:scaleType="fitStart"</code>.
          */
-        ImageViewScaleType_FIT_START ,
+        ImageViewScaleType_FIT_START,
         /**
          * Scale the image using {@link Matrix.ScaleToFit#CENTER}.
          * From XML, use this syntax:
          * <code>android:scaleType="fitCenter"</code>.
          */
-        ImageViewScaleType_FIT_CENTER ,
+        ImageViewScaleType_FIT_CENTER,
         /**
          * Scale the image using {@link Matrix.ScaleToFit#END}.
          * From XML, use this syntax: <code>android:scaleType="fitEnd"</code>.
          */
-        ImageViewScaleType_FIT_END ,
+        ImageViewScaleType_FIT_END,
         /**
          * Center the image in the view, but perform no scaling.
          * From XML, use this syntax: <code>android:scaleType="center"</code>.
          */
-        ImageViewScaleType_CENTER ,
+        ImageViewScaleType_CENTER,
         /**
          * Scale the image uniformly (maintain the image's aspect ratio) so
          * that both dimensions (width and height) of the image will be equal
@@ -56,7 +58,7 @@ module
          * (minus padding). The image is then centered in the view.
          * From XML, use this syntax: <code>android:scaleType="centerCrop"</code>.
          */
-        ImageViewScaleType_CENTER_CROP ,
+        ImageViewScaleType_CENTER_CROP,
         /**
          * Scale the image uniformly (maintain the image's aspect ratio) so
          * that both dimensions (width and height) of the image will be equal
