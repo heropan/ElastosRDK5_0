@@ -176,7 +176,7 @@ module
             [out, callee] ArrayOf<Float>* ret);
     }
 
-    }//namespace Gesture
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Gesture
+    } // namespace Droid
+    } // namespace Elastos
 }

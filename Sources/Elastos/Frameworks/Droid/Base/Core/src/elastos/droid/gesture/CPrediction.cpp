@@ -6,33 +6,14 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-ECode CPrediction::constructor(
-    /* [in] */ const String& label,
-    /* [in] */ Double predictionScore)
-{
-    mName = label;
-    mScore = predictionScore;
-    return NOERROR;
-}
+CAR_OBJECT_IMPL(CPrediction);
 
-ECode CPrediction::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name);
+CPrediction::CPrediction()
+{}
 
-    *name = mName;
-    return NOERROR;
-}
+CPrediction::~CPrediction()
+{}
 
-ECode CPrediction::GetScore(
-    /* [out] */ Double* score)
-{
-    VALIDATE_NOT_NULL(score);
-
-    *score = mScore;
-    return NOERROR;
-}
-
-}
-}
-}
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

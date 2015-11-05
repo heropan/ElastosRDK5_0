@@ -12,10 +12,12 @@ namespace Gesture {
 
 class InstanceLearner
     : public Learner
+    , public ILearner
+    , public IInstanceLearner
 {
 private:
     class PredictionComparator
-        : public ElRefBase
+        : public Object
         , public IComparator
     {
     public:
@@ -29,6 +31,7 @@ private:
 
 public:
     InstanceLearner();
+    virtual ~InstanceLearner();
 
     //@Override
     CARAPI_(AutoPtr<IArrayList>) Classify(
@@ -41,8 +44,8 @@ private:
 
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 
 #endif //__ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__

@@ -9,63 +9,68 @@ namespace Droid {
 namespace Gesture {
 
 class GestureLibrary
+    : public Object
+    , public IGestureLibrary
 {
 public:
-    virtual CARAPI Save(
+    CAR_INTERFACE_DECL();
+
+    GestureLibrary();
+    virtual ~GestureLibrary();
+
+    CARAPI Save(
         /* [out] */ Boolean *isSaved) = 0;
 
-    virtual CARAPI Load(
+    CARAPI Load(
         /* [out] */ Boolean *isLoaded) = 0;
 
-    virtual CARAPI IsReadOnly(
+    CARAPI IsReadOnly(
         /* [out] */ Boolean *isReadOnly);
 
     /** @hide */
-    virtual CARAPI_(AutoPtr<Learner>) GetLearner();
+    CARAPI_(AutoPtr<Learner>) GetLearner();
 
-    virtual CARAPI SetOrientationStyle(
+    CARAPI SetOrientationStyle(
         /* [in] */ Int32 style);
 
-    virtual CARAPI GetOrientationStyle(
+    CARAPI GetOrientationStyle(
         /* [out] */ Int32 *style);
 
-    virtual CARAPI SetSequenceType(
+    CARAPI SetSequenceType(
         /* [in] */ Int32 type);
 
-    virtual CARAPI GetSequenceType(
+    CARAPI GetSequenceType(
         /* [out] */ Int32 *type);
 
-    virtual CARAPI GetGestureEntries(
+    CARAPI GetGestureEntries(
         /* [out] */ IObjectContainer **entries);
 
-    virtual CARAPI Recognize(
+    CARAPI Recognize(
         /* [in] */ IGesture *gesture,
         /* [out] */ IArrayList** list);
 
-    virtual CARAPI AddGesture(
+    CARAPI AddGesture(
         /* [in] */  const String& entryName,
         /* [in] */  IGesture *gesture);
 
-    virtual CARAPI RemoveGesture(
+    CARAPI RemoveGesture(
         /* [in] */ const String& entryName,
         /* [in] */ IGesture *gesture);
 
-    virtual CARAPI RemoveEntry(
+    CARAPI RemoveEntry(
         /* [in] */ const String& entryName);
 
-    virtual CARAPI GetGestures(
+    CARAPI GetGestures(
         /* [in] */ const String& entryName,
         /* [out] */ IObjectContainer** gestures);
 
-protected:
-    GestureLibrary();
-
-public:
+private:
     AutoPtr<IGestureStore> mStore;
 
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
+
 #endif //__ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__

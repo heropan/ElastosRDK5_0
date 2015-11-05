@@ -8,30 +8,18 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CarClass(CInstanceLearner), public InstanceLearner
+CarClass(CInstanceLearner)
+    , public InstanceLearner
 {
 public:
-    CARAPI AddInstance(
-        /* [in] */ IInstance *instance);
+    CAR_OBJECT_DECL();
 
-    CARAPI GetInstance(
-        /* [out] */ IObjectContainer **instances);
-
-    CARAPI RemoveInstance(
-        /* [in] */ Int64 id);
-
-    CARAPI RemoveInstances(
-        /* [in] */ const String& name);
-
-    CARAPI Classify(
-        /* [in] */ Int32 sequenceType,
-        /* [in] */ Int32 orientationType,
-        /* [in] */ ArrayOf<Float> *vec,
-        /* [out] */ IObjectContainer **predictions);
+    CInstanceLearner();
+    virtual ~CInstanceLearner();
 };
 
-}
-}
-}
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_GESTURE_CINSTANCELEARNER_H__

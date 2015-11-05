@@ -1,47 +1,20 @@
 
-#include "CFadeOutRunnable.h"
+#include "elastos/droid/gesture/CFadeOutRunnable.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-ECode CGestureOverlayView::constructor()
-{
-    GestureOverlayView::FadeOutRunnable::FadeOutRunnable();
-    return NOERROR;
-}
 
-CARAPI CGestureOverlayView::SetFireActionPerformed(
-    /* [in] */ Boolean fireActionPerformed)
-{
-    return GestureOverlayView::FadeOutRunnable::SetFireActionPerformed(
-        fireActionPerformed);
-}
+CAR_OBJECT_IMPL(CFadeOutRunnable);
 
-CARAPI CGestureOverlayView::SetResetMultipleStrokes(
-    /* [in] */ Boolean resetMultipleStrokes)
-{
-    return GestureOverlayView::FadeOutRunnable::SetResetMultipleStrokes(
-        resetMultipleStrokes);
-}
+CFadeOutRunnable::CFadeOutRunnable()
+{}
 
-CARAPI CGestureOverlayView::GetFireActionPerformed(
-    /* [out] */ Boolean *fireActionPerformed)
-{
-    return GestureOverlayView::FadeOutRunnable::GetFireActionPerformed(fireActionPerformed);
-}
+CFadeOutRunnable::~CFadeOutRunnable()
+{}
 
-CARAPI CGestureOverlayView::GetResetMultipleStrokes(
-    /* [out] */ Boolean *resetMultipleStrokes)
-{
-    return GestureOverlayView::FadeOutRunnable::GetResetMultipleStrokes(resetMultipleStrokes);
-}
-
-CARAPI CGestureOverlayView::Run()
-{
-    return GestureOverlayView::FadeOutRunnable::Run();
-}
-}
-}
-}
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 

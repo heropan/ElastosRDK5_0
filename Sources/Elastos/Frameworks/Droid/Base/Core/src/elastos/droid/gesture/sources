@@ -8,21 +8,44 @@ include $(MAKEDIR)/../../../../../../sources.inc
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
 
-SOURCES += CPrediction.cpp
-SOURCES += CGesturePoint.cpp
-SOURCES += COrientedBoundingBox.cpp
-SOURCES += GestureUtils.cpp
-SOURCES += CGestureStroke.cpp
+SOURCES += CFadeOutRunnable.cpp
+
 SOURCES += CGesture.cpp
-SOURCES += GestureConstants.cpp
-SOURCES += Instance.cpp
-#SOURCES += CInstance.cpp
-#SOURCES += CInstanceHelper.cpp
-SOURCES += Learner.cpp
-SOURCES += InstanceLearner.cpp
-SOURCES += GestureLibrary.cpp
-SOURCES += CGestureStore.cpp
+SOURCES += Gesture.cpp
 SOURCES += CGestureLibraries.cpp
-#SOURCES += GestureOverlayView.cpp
-#SOURCES += CGestureOverlayView.cpp
-#SOURCES += CFadeOutRunnable.cpp
+SOURCES += GestureLibraries.cpp
+SOURCES += CResourceGestureLibrary.cpp
+SOURCES += CFileGestureLibrary.cpp
+SOURCES += GestureLibrary.cpp
+
+SOURCES += CGestureOverlayView.cpp
+SOURCES += GestureOverlayView.cpp
+
+SOURCES += CGesturePoint.cpp
+SOURCES += GesturePoint.cpp
+
+SOURCES += CGestureStore.cpp
+SOURCES += GestureStore.cpp
+
+SOURCES += GestureStroke.cpp
+SOURCES += CGestureStroke.cpp
+
+SOURCES += CInstance.cpp
+SOURCES += Instance.cpp
+
+SOURCES += CInstanceHelper.cpp
+
+SOURCES += CInstanceLearner.cpp
+SOURCES += InstanceLearner.cpp
+SOURCES += Learner.cpp
+
+SOURCES += COrientedBoundingBox.cpp
+SOURCES += OrientedBoundingBox.cpp
+
+SOURCES += CPrediction.cpp
+SOURCES += Prediction.cpp
+
+SOURCES += GestureUtils.cpp
+SOURCES += CGestureUtils.cpp
+
+SOURCES += GestureConstants.cpp

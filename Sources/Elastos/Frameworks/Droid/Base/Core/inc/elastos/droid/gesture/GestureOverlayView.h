@@ -5,151 +5,167 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-class GestureOverlayView {
+class GestureOverlayView
+    : public Object
+    , public IGestureOverlayView
+    , public FrameLayout
+{
 public:
-    CARAPI Init(
+    CAR_INTERFACE_DECL();
+
+    GestureOverlayView();
+
+    virtual ~GestureOverlayView();
+
+    CARAPI constructor(
         /* [in] */ IContext *context);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext *context,
         /* [in] */ IAttributeSet *attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext *context,
         /* [in] */ IAttributeSet *attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI GetCurrentStroke(
+    CARAPI constructor(
+        /* [in] */ IContext *context,
+        /* [in] */ IAttributeSet *attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI GetCurrentStroke(
         /* [out] */ IObjectContainer **stroke);
 
-    virtual CARAPI GetOrientation(
+    CARAPI GetOrientation(
         /* [out] */ Int32 *orientation);
 
-    virtual CARAPI SetOrientation(
+    CARAPI SetOrientation(
         /* [in] */ Int32 orientation);
 
-    virtual CARAPI SetGestureColor(
+    CARAPI SetGestureColor(
         /* [in] */ Int32 color);
 
-    virtual CARAPI SetUncertainGestureColor(
+    CARAPI SetUncertainGestureColor(
         /* [in] */ Int32 color);
 
-    virtual CARAPI GetUncertainGestureColor(
+    CARAPI GetUncertainGestureColor(
         /* [out] */ Int32 *color);
 
-    virtual CARAPI GetGestureColor(
+    CARAPI GetGestureColor(
         /* [out] */ Int32 *color);
 
-    virtual CARAPI GetGestureStrokeWidth(
+    CARAPI GetGestureStrokeWidth(
         /* [out] */ Float *gestureStrokeWidth);
 
-    virtual CARAPI SetGestureStrokeWidth(
+    CARAPI SetGestureStrokeWidth(
         /* [in] */ Float gestureStrokeWidth);
 
-    virtual CARAPI GetGestureStrokeType(
+    CARAPI GetGestureStrokeType(
         /* [out] */ Int32 *gestureStrokeType);
 
-    virtual CARAPI SetGestureStrokeType(
+    CARAPI SetGestureStrokeType(
         /* [in] */ Int32 gestureStrokeType);
 
-    virtual CARAPI GetGestureStrokeLengthThreshold(
+    CARAPI GetGestureStrokeLengthThreshold(
         /* [out] */ Float *gestureStrokeLengthThreshold);
 
-    virtual CARAPI SetGestureStrokeLengthThreshold(
+    CARAPI SetGestureStrokeLengthThreshold(
         /* [in] */ Float gestureStrokeLengthThreshold);
 
-    virtual CARAPI GetGestureStrokeSquarenessTreshold(
+    CARAPI GetGestureStrokeSquarenessTreshold(
         /* [out] */ Float *gestureStrokeSquarenessTreshold);
 
-    virtual CARAPI SetGestureStrokeSquarenessTreshold(
+    CARAPI SetGestureStrokeSquarenessTreshold(
         /* [in] */ Float gestureStrokeSquarenessTreshold);
 
-    virtual CARAPI GetGestureStrokeAngleThreshold(
+    CARAPI GetGestureStrokeAngleThreshold(
         /* [out] */ Float *gestureStrokeAngleThreshold);
 
-    virtual CARAPI SetGestureStrokeAngleThreshold(
+    CARAPI SetGestureStrokeAngleThreshold(
         /* [in] */ Float gestureStrokeAngleThreshold);
 
-    virtual CARAPI IsEventsInterceptionEnabled(
+    CARAPI IsEventsInterceptionEnabled(
         /* [out] */ Boolean *isEventsInterceptionEnabled);
 
-    virtual CARAPI SetEventsInterceptionEnabled(
+    CARAPI SetEventsInterceptionEnabled(
         /* [in] */ Boolean enabled);
 
-    virtual CARAPI IsFadeEnabled(
+    CARAPI IsFadeEnabled(
         /* [out] */ Boolean *isFadeEnabled);
 
-    virtual CARAPI SetFadeEnabled(
+    CARAPI SetFadeEnabled(
         /* [in] */ Boolean fadeEnabled);
 
-    virtual CARAPI GetGesture(
+    CARAPI GetGesture(
         /* [out] */ IGesture **gesture);
 
-    virtual CARAPI SetGesture(
+    CARAPI SetGesture(
         /* [in] */ IGesture *gesture);
 
-    virtual CARAPI GetGesturePath(
+    CARAPI GetGesturePath(
         /* [out] */ IPath **gesturePath);
 
-    virtual CARAPI GetGesturePath(
+    CARAPI GetGesturePath(
         /* [in] */ IPath *path,
         /* [out] */ IPath **gesturePath);
 
-    virtual CARAPI IsGestureVisible(
+    CARAPI IsGestureVisible(
         /* [out] */ Boolean *isGestureVisible);
 
-    virtual CARAPI SetGestureVisible(
+    CARAPI SetGestureVisible(
        /* [in] */ Boolean visible);
 
-    virtual CARAPI GetFadeOffset(
+    CARAPI GetFadeOffset(
         /* [out] */ Int64 *fadeOffset);
 
-    virtual CARAPI SetFadeOffset(
+    CARAPI SetFadeOffset(
         /* [in] */ Int64 fadeOffset);
 
-    virtual CARAPI AddOnGestureListener(
+    CARAPI AddOnGestureListener(
         /* [in] */ IOnGestureListener *listener);
 
-    virtual CARAPI RemoveOnGestureListener(
+    CARAPI RemoveOnGestureListener(
         /* [in] */ IOnGestureListener *listener);
 
-    virtual CARAPI RemoveAllOnGestureListeners();
+    CARAPI RemoveAllOnGestureListeners();
 
-    virtual CARAPI AddOnGesturePerformedListener(
+    CARAPI AddOnGesturePerformedListener(
         /* [in] */ IOnGesturePerformedListener *listener);
 
-    virtual CARAPI RemoveOnGesturePerformedListener(
+    CARAPI RemoveOnGesturePerformedListener(
         /* [in] */ IOnGesturePerformedListener *listener);
 
-    virtual CARAPI RemoveAllOnGesturePerformedListeners();
+    CARAPI RemoveAllOnGesturePerformedListeners();
 
-    virtual CARAPI AddOnGesturingListener(
+    CARAPI AddOnGesturingListener(
         /* [in] */ IOnGesturingListener *listener);
 
-    virtual CARAPI RemoveOnGesturingListener(
+    CARAPI RemoveOnGesturingListener(
         /* [in] */ IOnGesturingListener *listener);
 
-    virtual CARAPI RemoveAllOnGesturingListeners();
+    CARAPI RemoveAllOnGesturingListeners();
 
-    virtual CARAPI IsGesturing(
+    CARAPI IsGesturing(
         /* [out] */ Boolean *isGesturing);
 
     /**
      * @hide
      */
-    virtual CARAPI GetGesturePaint(
+    CARAPI GetGesturePaint(
         /* [out] */ IPaint **gesturePaint);
 
     //@Override
     CARAPI Draw(
         /* [in] */ ICanvas *canvas);
 
-    virtual CARAPI Clear(
+    CARAPI Clear(
         /* [in] */ Boolean animated);
 
-    virtual CARAPI CancelClearAnimation();
+    CARAPI CancelClearAnimation();
 
-    virtual CARAPI CancelGesture();
+    CARAPI CancelGesture();
 
     //@Override
     CARAPI DispatchTouchEvent(
@@ -161,8 +177,6 @@ protected:
     CARAPI OnDetachedFromWindow();
 
 private:
-    GestureOverlayView();
-
     CARAPI_(void) init();
 
     CARAPI SetCurrentColor(
@@ -241,31 +255,32 @@ private:
 
     // current gesture
     AutoPtr<IGesture> mCurrentGesture;
-    //const AutoPtr<List<IGesturePoint *> > mStrokeBuffer = new ArrayList<GesturePoint>(100);
     const AutoPtr<IObjectContainer> mStrokeBuffer;
 
-    // TODO: Make this a list of WeakReferences
-    const AutoPtr< List<IOnGestureListener *> > >mOnGestureListeners; //= new ArrayList<OnGestureListener>();
-    // TODO: Make this a list of WeakReferences
-    const AutoPtr< List<IOnGesturePerformedListener *> > mOnGesturePerformedListeners; //=
-            //new ArrayList<OnGesturePerformedListener>();
-    // TODO: Make this a list of WeakReferences
-    const AutoPtr< List<IOnGesturingListener *> > mOnGesturingListeners;// =
-            //new ArrayList<OnGesturingListener>();
+    const AutoPtr<List<IOnGestureListener *> > mOnGestureListeners;
+    const AutoPtr<List<IOnGesturePerformedListener *> > mOnGesturePerformedListeners;
+    const AutoPtr<List<IOnGesturingListener *> > mOnGesturingListeners;
 
     Boolean mHandleGestureActions;
 
     // fading out effect
     Boolean mIsFadingOut;
     Float mFadingAlpha;
-    const AutoPtr<IAccelerateDecelerateInterpolator> mInterpolator;// =
-            //new AccelerateDecelerateInterpolator();
-
-    const AutoPtr<IFadeOutRunnable *> mFadingOut;// = new FadeOutRunnable();
+    const AutoPtr<IAccelerateDecelerateInterpolator> mInterpolator;
+    const AutoPtr<IFadeOutRunnable *> mFadingOut;
 private:
-    class FadeOutRunnable {
+    /*
+     * Android: private class FadeOutRunnable implements Runnable
+     */
+    class FadeOutRunnable
+        : public Object
+        , public IRunnable
+    {
     public:
         FadeOutRunnable();
+        virtual ~FadeOutRunnable();
+
+        CARAPI constructor();
 
         CARAPI Run();
 
@@ -287,8 +302,8 @@ private:
     };
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 
 #endif //__ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__

@@ -8,29 +8,18 @@ namespace Droid {
 namespace Gesture {
 
 CarClass(CPrediction)
+    , public Prediction
 {
 public:
-    CPrediction()
-        : mScore(0)
-    {}
+    CAR_OBJECT_DECL();
 
-    CARAPI constructor(
-        /* [in] */ const String& label,
-        /* [in] */ Double predictionScore);
+    CPrediction();
+    virtual ~CPrediction();
 
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetScore(
-        /* [out] */ Double* score);
-
-private:
-    String mName;
-    Double mScore;
 };
 
-}
-}
-}
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_GESTURE_CPREDICTION_H__

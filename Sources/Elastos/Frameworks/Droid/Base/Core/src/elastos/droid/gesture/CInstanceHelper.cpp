@@ -3,6 +3,7 @@
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
+
 ECode CInstanceHelper::CreateInstance(
     /* [in] */ Int32 sequenceType,
     /* [in] */ Int32 orientationType,
@@ -27,6 +28,7 @@ ECode CInstanceHelper::TemporalSampler(
 {
     return Instance::TemporalSampler(orientationType, gesture, sampler);
 }
-}
-}
-}
+
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

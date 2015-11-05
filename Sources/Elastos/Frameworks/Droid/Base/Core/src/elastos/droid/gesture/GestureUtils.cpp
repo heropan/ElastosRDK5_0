@@ -4,17 +4,26 @@
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::IRectF;
+using Elastos::Core::Math;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
 const Float GestureUtils::SCALING_THRESHOLD = 0.26f;
-const Float GestureUtils::NONUNIFORM_SCALE = (Float) Elastos::Core::Math::Sqrt(2);
+const Float GestureUtils::NONUNIFORM_SCALE = (Float)Sqrt(2);
 const Float GestureUtils::MIN_VALUE = 1.40129846432481707e-25f;
 const Float GestureUtils::MAX_VALUE = 3.40282346638528860e38f;
 
-GestureUtils::GestureUtils(){}
+CAR_INTERFACE_IMPL(GestureUtils, Object, IGestureUtils);
+
+GestureUtils::GestureUtils()
+{
+}
+
+GestureUtils::~GestureUtils()
+{
+}
 
 void GestureUtils::CloseStream(
     /* [in] */ ICloseable *stream) {
@@ -35,18 +44,21 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
     /* [in] */ Int32 bitmapSize,
     /* [in] */ Boolean keepAspectRatio)
 {
-    const Float targetPatchSize = bitmapSize - 1;
-    AutoPtr<ArrayOf<Float> > sample = ArrayOf<Float>::Alloc(bitmapSize * bitmapSize);
-    for (Int32 i = 0; i < sample->GetLength(); ++i) {
+    Float targetPatchSize = bitmapSize - 1;
+    Int32 len = bitmapSize * bitmapSize;
+    AutoPtr<ArrayOf<Float> > sample = ArrayOf<Float>::Alloc(len);
+    for (Int32 i = 0; i < len; ++i) {
         (*sample)[i] = 0;
     }
 
     AutoPtr<IRectF> rect;
-    gesture->GetBoundingBox((IRectF**)&rect);
     Float gestureWidth = 0;
-    rect->GetWidth(&gestureWidth);
     Float gestureHeight = 0;
+
+    gesture->GetBoundingBox((IRectF**)&rect);
+    rect->GetWidth(&gestureWidth);
     rect->GetHeight(&gestureHeight);
+
     Float sx = targetPatchSize / gestureWidth;
     Float sy = targetPatchSize / gestureHeight;
 
@@ -78,6 +90,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
             }
         }
     }
+
     Float fx, fy;
     rect->GetCenterX(&fx);
     Float preDx = -fx;
@@ -85,28 +98,37 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
     Float preDy = -fy;
     Float postDx = targetPatchSize / 2;
     Float postDy = targetPatchSize / 2;
+
     AutoPtr<IObjectContainer> strokes;
-    gesture->GetStrokes((IObjectContainer**)&strokes);
     Int32 count;
-    strokes->GetObjectCount(&count);
     AutoPtr<IObjectEnumerator> enumerator;
+
+    gesture->GetStrokes((IObjectContainer**)&strokes);
+    strokes->GetObjectCount(&count);
     strokes->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+
     Int32 size;
     Float xpos;
     Float ypos;
     Boolean hasNext = FALSE;
     while (enumerator->MoveNext(&hasNext), hasNext) {
+
         AutoPtr<IInterface> item;
-        enumerator->Current((IInterface**)&item);
-        AutoPtr<IGestureStroke> stroke = IGestureStroke::Probe(item);
+        AutoPtr<IGestureStroke> stroke;
         AutoPtr<ArrayOf<Float> > strokepoints;
+        AutoPtr<ArrayOf<Float> > pts;
+
+        enumerator->Current((IInterface**)&item);
+        stroke = IGestureStroke::Probe(item);
         stroke->GetPoints((ArrayOf<Float>**)&strokepoints);
         size = strokepoints->GetLength();
-        AutoPtr<ArrayOf<Float> > pts = ArrayOf<Float>::Alloc(size);
+        pts = ArrayOf<Float>::Alloc(size);
+
         for (Int32 i = 0; i < size; i += 2) {
             (*pts)[i] = ((*strokepoints)[i] + preDx) * sx + postDx;
             (*pts)[i + 1] = ((*strokepoints)[i + 1] + preDy) * sy + postDy;
         }
+
         Float segmentEndX = -1;
         Float segmentEndY = -1;
         for (Int32 i = 0; i < size; i += 2) {
@@ -122,7 +144,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
             if (segmentEndX != -1) {
                 // Evaluate horizontally
                 if (segmentEndX > segmentStartX) {
-                    xpos = (Float) Elastos::Core::Math::Ceil(segmentStartX);
+                    xpos = (Float)Ceil(segmentStartX);
                     Float slope = (segmentEndY - segmentStartY) /
                                   (segmentEndX - segmentStartX);
                     while (xpos < segmentEndX) {
@@ -131,7 +153,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
                         xpos++;
                     }
                 } else if (segmentEndX < segmentStartX){
-                    xpos = (Float) Elastos::Core::Math::Ceil(segmentEndX);
+                    xpos = (Float)Ceil(segmentEndX);
                     Float slope = (segmentEndY - segmentStartY) /
                                   (segmentEndX - segmentStartX);
                     while (xpos < segmentStartX) {
@@ -142,7 +164,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
                 }
                 // Evaluate vertically
                 if (segmentEndY > segmentStartY) {
-                    ypos = (Float) Elastos::Core::Math::Ceil(segmentStartY);
+                    ypos = (Float)Ceil(segmentStartY);
                     Float invertSlope = (segmentEndX - segmentStartX) /
                                         (segmentEndY - segmentStartY);
                     while (ypos < segmentEndY) {
@@ -151,7 +173,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::SpatialSampling(
                         ypos++;
                     }
                 } else if (segmentEndY < segmentStartY) {
-                    ypos = (Float) Elastos::Core::Math::Ceil(segmentEndY);
+                    ypos = (Float)Ceil(segmentEndY);
                     Float invertSlope = (segmentEndX - segmentStartX) /
                                         (segmentEndY - segmentStartY);
                     while (ypos < segmentStartY) {
@@ -176,10 +198,10 @@ void GestureUtils::Plot(
 {
     x = x < 0 ? 0 : x;
     y = y < 0 ? 0 : y;
-    Int32 xFloor = (Int32) Elastos::Core::Math::Floor(x);
-    Int32 xCeiling = (Int32) Elastos::Core::Math::Ceil(x);
-    Int32 yFloor = (Int32) Elastos::Core::Math::Floor(y);
-    Int32 yCeiling = (Int32) Elastos::Core::Math::Ceil(y);
+    Int32 xFloor = (Int32)Floor(x);
+    Int32 xCeiling = (Int32)Ceil(x);
+    Int32 yFloor = (Int32)Floor(y);
+    Int32 yCeiling = (Int32)Ceil(y);
 
     // if it's an integer
     if (x == xFloor && y == yFloor) {
@@ -188,14 +210,14 @@ void GestureUtils::Plot(
             (*sample)[index] = 1;
         }
     } else {
-        const Double xFloorSq = Elastos::Core::Math::Pow(xFloor - x, 2);
-        const Double yFloorSq = Elastos::Core::Math::Pow(yFloor - y, 2);
-        const Double xCeilingSq = Elastos::Core::Math::Pow(xCeiling - x, 2);
-        const Double yCeilingSq = Elastos::Core::Math::Pow(yCeiling - y, 2);
-        Float topLeft = (Float) Elastos::Core::Math::Sqrt(xFloorSq + yFloorSq);
-        Float topRight = (Float) Elastos::Core::Math::Sqrt(xCeilingSq + yFloorSq);
-        Float btmLeft = (Float) Elastos::Core::Math::Sqrt(xFloorSq + yCeilingSq);
-        Float btmRight = (Float) Elastos::Core::Math::Sqrt(xCeilingSq + yCeilingSq);
+        Double xFloorSq =Pow(xFloor - x, 2);
+        Double yFloorSq =Pow(yFloor - y, 2);
+        Double xCeilingSq =Pow(xCeiling - x, 2);
+        Double yCeilingSq =Pow(yCeiling - y, 2);
+        Float topLeft = (Float)Sqrt(xFloorSq + yFloorSq);
+        Float topRight = (Float)Sqrt(xCeilingSq + yFloorSq);
+        Float btmLeft = (Float)Sqrt(xFloorSq + yCeilingSq);
+        Float btmRight = (Float)Sqrt(xCeilingSq + yCeilingSq);
         Float sum = topLeft + topRight + btmLeft + btmRight;
 
         Float value = topLeft / sum;
@@ -229,18 +251,24 @@ AutoPtr<ArrayOf<Float> > GestureUtils::TemporalSampling(
     /* [in] */ Int32 numPoints)
 {
     Float length;
-    stroke->GetLength(&length);
-    const Float increment = length / (numPoints - 1);
-    Int32 vectorLength = numPoints * 2;
-    AutoPtr<ArrayOf<Float> >vector = ArrayOf<Float>::Alloc(vectorLength);
-    Float distanceSoFar = 0;
+    Float increment;
+    Int32 vectorLength;
+    AutoPtr<ArrayOf<Float> >vector;
+    Float distanceSoFar;
     AutoPtr<ArrayOf<Float> > pts;
+
+    stroke->GetLength(&length);
+    increment = length / (numPoints - 1);
+    vectorLength = numPoints * 2;
+    vector = ArrayOf<Float>::Alloc(vectorLength);
+    distanceSoFar = 0;
     stroke->GetPoints((ArrayOf<Float>**)&pts);
+
     Float lstPointX = (*pts)[0];
     Float lstPointY = (*pts)[1];
     Int32 index = 0;
-    Float currentPointX = MIN_VALUE;//Float.MIN_VALUE;
-    Float currentPointY = MIN_VALUE;//Float.MIN_VALUE;
+    Float currentPointX = MIN_VALUE;    //Float.MIN_VALUE;
+    Float currentPointY = MIN_VALUE;    //Float.MIN_VALUE;
     (*vector)[index] = lstPointX;
     index++;
     (*vector)[index] = lstPointY;
@@ -258,7 +286,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::TemporalSampling(
         }
         Float deltaX = currentPointX - lstPointX;
         Float deltaY = currentPointY - lstPointY;
-        Float distance = (Float) Elastos::Core::Math::Sqrt(deltaX * deltaX + deltaY * deltaY);
+        Float distance = (Float)Sqrt(deltaX * deltaX + deltaY * deltaY);
         if (distanceSoFar + distance >= increment) {
             Float ratio = (increment - distanceSoFar) / distance;
             Float nx = lstPointX + ratio * deltaX;
@@ -287,7 +315,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::TemporalSampling(
 }
 
 AutoPtr<ArrayOf<Float> > GestureUtils::ComputeCentroid(
-        /* [in] */ ArrayOf<Float> * points)
+        /* [in] */ ArrayOf<Float> *points)
 {
     Float centerX = 0;
     Float centerY = 0;
@@ -305,7 +333,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::ComputeCentroid(
 }
 
 AutoPtr<ArrayOf<FloatArray> > GestureUtils::ComputeCoVariance(
-    /* [in] */ ArrayOf<Float> * points)
+    /* [in] */ ArrayOf<Float> *points)
 {
     AutoPtr<ArrayOf<FloatArray> > array = ArrayOf<FloatArray>::Alloc(2);
     AutoPtr<ArrayOf<Float> > array0 = ArrayOf<Float>::Alloc(2);
@@ -337,39 +365,39 @@ AutoPtr<ArrayOf<FloatArray> > GestureUtils::ComputeCoVariance(
 }
 
 Float GestureUtils::ComputeTotalLength(
-    /* [in] */ ArrayOf<Float> * points)
+    /* [in] */ ArrayOf<Float> *points)
 {
     Float sum = 0;
     Int32 count = points->GetLength() - 4;
     for (Int32 i = 0; i < count; i += 2) {
         Float dx = (*points)[i + 2] - (*points)[i];
         Float dy = (*points)[i + 3] - (*points)[i + 1];
-        sum += Elastos::Core::Math::Sqrt(dx * dx + dy * dy);
+        sum +=Sqrt(dx * dx + dy * dy);
     }
     return sum;
 }
 
 Float GestureUtils::ComputeStraightness(
-    /* [in] */ ArrayOf<Float> * points)
+    /* [in] */ ArrayOf<Float> *points)
 {
     Float totalLen = ComputeTotalLength(points);
     Float dx = (*points)[2] - (*points)[0];
     Float dy = (*points)[3] - (*points)[1];
-    return (Float) Elastos::Core::Math::Sqrt(dx * dx + dy * dy) / totalLen;
+    return (Float)Sqrt(dx * dx + dy * dy) / totalLen;
 }
 
 Float GestureUtils::ComputeStraightness(
-    /* [in] */ ArrayOf<Float> * points,
+    /* [in] */ ArrayOf<Float> *points,
     /* [in] */ Float totalLen)
 {
     Float dx = (*points)[2] - (*points)[0];
     Float dy = (*points)[3] - (*points)[1];
-    return (Float) Elastos::Core::Math::Sqrt(dx * dx + dy * dy) / totalLen;
+    return (Float)Sqrt(dx * dx + dy * dy) / totalLen;
 }
 
 Float GestureUtils::SquaredEuclideanDistance(
-    /* [in] */ ArrayOf<Float> * vector1,
-    /* [in] */ ArrayOf<Float> * vector2)
+    /* [in] */ ArrayOf<Float> *vector1,
+    /* [in] */ ArrayOf<Float> *vector2)
 {
     Float squaredDistance = 0;
     Int32 size = vector1->GetLength();
@@ -381,20 +409,20 @@ Float GestureUtils::SquaredEuclideanDistance(
 }
 
 Float GestureUtils::CosineDistance(
-    /* [in] */ ArrayOf<Float> * vector1,
-    /* [in] */ ArrayOf<Float> * vector2)
+    /* [in] */ ArrayOf<Float> *vector1,
+    /* [in] */ ArrayOf<Float> *vector2)
 {
     Float sum = 0;
     Int32 len = vector1->GetLength();
     for (Int32 i = 0; i < len; i++) {
         sum += (*vector1)[i] * (*vector2)[i];
     }
-    return (Float) Elastos::Core::Math::Acos(sum);
+    return (Float)Acos(sum);
 }
 
 Float GestureUtils::MinimumCosineDistance(
-    /* [in] */ ArrayOf<Float> * vector1,
-    /* [in] */ ArrayOf<Float> * vector2,
+    /* [in] */ ArrayOf<Float> *vector1,
+    /* [in] */ ArrayOf<Float> *vector2,
     /* [in] */ Int32 numOrientations)
 {
     const Int32 len = vector1->GetLength();
@@ -406,16 +434,16 @@ Float GestureUtils::MinimumCosineDistance(
     }
     if (a != 0) {
         const Float tan = b/a;
-        const Double angle = Elastos::Core::Math::Atan(tan);
-        if (numOrientations > 2 && Elastos::Core::Math::Abs(angle) >= Elastos::Core::Math::DOUBLE_PI / numOrientations) {
-            return (Float) Elastos::Core::Math::Acos(a);
+        const Double angle =Atan(tan);
+        if (numOrientations > 2 &&Abs(angle) >=DOUBLE_PI / numOrientations) {
+            return (Float)Acos(a);
         } else {
-            const Double cosine = Elastos::Core::Math::Cos(angle);
+            const Double cosine =Cos(angle);
             const Double sine = cosine * tan;
-            return (Float) Elastos::Core::Math::Acos(a * cosine + b * sine);
+            return (Float)Acos(a * cosine + b * sine);
         }
     } else {
-        return (Float) Elastos::Core::Math::DOUBLE_PI / 2;
+        return (Float)DOUBLE_PI / 2;
     }
 }
 
@@ -451,8 +479,8 @@ AutoPtr<IOrientedBoundingBox> GestureUtils::ComputeOrientedBoundingBox(
 }
 
 AutoPtr<IOrientedBoundingBox> GestureUtils::ComputeOrientedBoundingBox(
-    /* [in] */ ArrayOf<Float> * points,
-    /* [in] */ ArrayOf<Float> * centroid)
+    /* [in] */ ArrayOf<Float> *points,
+    /* [in] */ ArrayOf<Float> *centroid)
 {
     Translate(points, -(*centroid)[0], -(*centroid)[1]);
 
@@ -463,7 +491,7 @@ AutoPtr<IOrientedBoundingBox> GestureUtils::ComputeOrientedBoundingBox(
     if ((*targetVector)[0] == 0 && (*targetVector)[1] == 0) {
         angle = (Float) -Elastos::Core::Math::DOUBLE_PI/2;
     } else { // -PI<alpha<PI
-        angle = (Float) Elastos::Core::Math::Atan2((*targetVector)[1], (*targetVector)[0]);
+        angle = (Float)Atan2((*targetVector)[1], (*targetVector)[0]);
         Rotate(points, -angle);
     }
 
@@ -488,14 +516,14 @@ AutoPtr<IOrientedBoundingBox> GestureUtils::ComputeOrientedBoundingBox(
         }
     }
     AutoPtr<IOrientedBoundingBox> box;
-    COrientedBoundingBox::New((Float) (angle * 180 / Elastos::Core::Math::DOUBLE_PI),
+    COrientedBoundingBox::New((Float) (angle * 180 /DOUBLE_PI),
             (*centroid)[0], (*centroid)[1], maxx - minx,
             maxy - miny, (IOrientedBoundingBox**)&box);
     return box;
 }
 
-AutoPtr<ArrayOf<Float> >  GestureUtils::ComputeOrientation(
-        /* [in] */ ArrayOf<FloatArray>* covarianceMatrix)
+AutoPtr<ArrayOf<Float> > GestureUtils::ComputeOrientation(
+        /* [in] */ ArrayOf<FloatArray> *covarianceMatrix)
 {
     AutoPtr<ArrayOf<Float> > covarianceMatrix0 = (*covarianceMatrix)[0];
     AutoPtr<ArrayOf<Float> > covarianceMatrix1 = (*covarianceMatrix)[1];
@@ -509,7 +537,7 @@ AutoPtr<ArrayOf<Float> >  GestureUtils::ComputeOrientation(
     Float b = (*covarianceMatrix0)[0] * (*covarianceMatrix1)[1] - (*covarianceMatrix0)[1]
             * (*covarianceMatrix1)[0];
     Float value = a / 2;
-    Float rightside = (Float) Elastos::Core::Math::Sqrt(Elastos::Core::Math::Pow(value, 2) - b);
+    Float rightside = (Float)Sqrt(Pow(value, 2) - b);
     Float lambda1 = -value + rightside;
     Float lambda2 = -value - rightside;
     if (lambda1 == lambda2) {
@@ -524,11 +552,11 @@ AutoPtr<ArrayOf<Float> >  GestureUtils::ComputeOrientation(
 }
 
 AutoPtr<ArrayOf<Float> > GestureUtils::Rotate(
-    /* [in] */ ArrayOf<Float> * points,
+    /* [in] */ ArrayOf<Float> *points,
     /* [in] */ Float angle)
 {
-    Float cos = (Float) Elastos::Core::Math::Cos(angle);
-    Float sin = (Float) Elastos::Core::Math::Sin(angle);
+    Float cos = (Float)Cos(angle);
+    Float sin = (Float)Sin(angle);
     Int32 size = points->GetLength();
     for (Int32 i = 0; i < size; i += 2) {
         Float x = (*points)[i] * cos - (*points)[i + 1] * sin;
@@ -541,7 +569,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::Rotate(
 }
 
 AutoPtr<ArrayOf<Float> > GestureUtils::Translate(
-    /* [in] */ ArrayOf<Float> * points,
+    /* [in] */ ArrayOf<Float> *points,
     /* [in] */ Float dx,
     /* [in] */ Float dy)
 {
@@ -555,7 +583,7 @@ AutoPtr<ArrayOf<Float> > GestureUtils::Translate(
 }
 
 AutoPtr<ArrayOf<Float> > GestureUtils::Scale(
-    /* [in] */ ArrayOf<Float> * points,
+    /* [in] */ ArrayOf<Float> *points,
     /* [in] */ Float sx,
     /* [in] */ Float sy)
 {
@@ -568,6 +596,6 @@ AutoPtr<ArrayOf<Float> > GestureUtils::Scale(
     return result;
 }
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

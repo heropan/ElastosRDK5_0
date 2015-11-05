@@ -90,6 +90,6 @@ ECode GestureLibrary::GetGestures(
     return mStore->GetGestures(entryName, gestures);
 }
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
