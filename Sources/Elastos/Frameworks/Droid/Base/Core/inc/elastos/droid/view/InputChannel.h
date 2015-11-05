@@ -11,8 +11,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class InputEventReceiver;
-
 class InputChannel
     : public Object
     , public IInputChannel

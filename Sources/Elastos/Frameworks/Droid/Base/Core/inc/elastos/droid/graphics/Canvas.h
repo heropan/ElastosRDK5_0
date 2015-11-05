@@ -14,6 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
     class GraphicBuffer;
+    class Surface;
 }
 }
 }
@@ -29,6 +30,7 @@ class Canvas
     , public ICanvas
 {
     friend class Elastos::Droid::View::GraphicBuffer;
+    friend class Elastos::Droid::View::Surface;
 
 public:
     CAR_INTERFACE_DECL();
