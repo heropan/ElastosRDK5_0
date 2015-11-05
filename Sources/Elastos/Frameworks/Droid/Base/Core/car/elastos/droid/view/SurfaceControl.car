@@ -213,8 +213,12 @@ module
          */
         const Int32 POWER_MODE_DOZE_SUSPEND = 3;
 
+        ReleaseSurfaceControl();
+
         SetLayer(
             [in] Int32 zorder);
+
+        Destroy();
 
         SetPosition(
             [in] Float x,
