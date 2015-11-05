@@ -1,14 +1,5 @@
 
-#ifndef __ELASTOS_DROID_APP_APP_IMPORTANCE_MONITOR_H__
-#define __ELASTOS_DROID_APP_APP_IMPORTANCE_MONITOR_H__
-
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/view/ViewGroup.h"
-#include <elastos/utility/etl/HashMap.h>
-
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Content::IContext;
-using Elastos::Utility::HashMap;
+#include "elastos/droid/app/AppImportanceMonitor.h"
 
 namespace Elastos {
 namespace Droid {
@@ -99,30 +90,97 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ ILooper* looper);
+        /* [in] */ ILooper* looper)
+    {
+        mContext = context;
+        mHandler = new Handler(looper) {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MSG_UPDATE:
+                        onImportanceChanged(msg.arg1, msg.arg2&0xffff, msg.arg2>>16);
+                        break;
+                    default:
+                        super.handleMessage(msg);
+                }
+            }
+        };
+        ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+        try {
+            ActivityManagerNative.getDefault().registerProcessObserver(mProcessObserver);
+        } catch (RemoteException e) {
+        }
+        List<ActivityManager.RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+        if (apps != null) {
+            for (int i=0; i<apps.size(); i++) {
+                ActivityManager.RunningAppProcessInfo app = apps.get(i);
+                updateImportanceLocked(app.uid, app.pid, app.importance, false);
+            }
+        }
+    }
 
-    CARAPI GetImportance(
+    public CARAPI GetImportance(
         /* [in] */ Int32 uid,
-        /* [out] */ Int32* result);
+        /* [out] */ Int32* result)
+    {
+        AppEntry ent = mApps.get(uid);
+        if (ent == null) {
+            return ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE;
+        }
+        return ent.importance;
+    }
 
-private:
     /**
      * Report when an app's importance changed. Called on looper given to constructor.
      */
     CARAPI OnImportanceChanged(
         /* [in] */ Int32 uid,
         /* [in] */ Int32 importance,
-        /* [in] */ Int32 oldImportance);
+        /* [in] */ Int32 oldImportance)
+    {
+    }
 
     void UpdateImportanceLocked(
         /* [in] */ Int32 uid,
         /* [in] */ Int32 pid,
         /* [in] */ Int32 importance,
-        /* [in] */ Boolean repChange);
+        /* [in] */ Boolean repChange)
+    {
+        AppEntry ent = mApps.get(uid);
+        if (ent == null) {
+            ent = new AppEntry(uid);
+            mApps.put(uid, ent);
+        }
+        if (importance >= ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE) {
+            ent.procs.remove(pid);
+        } else {
+            ent.procs.put(pid, importance);
+        }
+        updateImportanceLocked(ent, repChange);
+    }
 
     void UpdateImportanceLocked(
         /* [in] */ AppEntry* ent,
-        /* [in] */ Boolean repChange);
+        /* [in] */ Boolean repChange)
+    {
+        int appImp = ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE;
+        for (int i=0; i<ent.procs.size(); i++) {
+            int procImp = ent.procs.valueAt(i);
+            if (procImp < appImp) {
+                appImp = procImp;
+            }
+        }
+        if (appImp != ent.importance) {
+            int impCode = appImp | (ent.importance<<16);
+            ent.importance = appImp;
+            if (appImp >= ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE) {
+                mApps.remove(ent.uid);
+            }
+            if (repChange) {
+                mHandler.obtainMessage(MSG_UPDATE, ent.uid, impCode).sendToTarget();
+            }
+        }
+    }
 
 private:
     AutoPtr<IContext> mContext;
@@ -131,7 +189,7 @@ private:
 
     AutoPtr<IProcessObserver> mProcessObserver;
 
-    static const Int32 MSG_UPDATE;// = 1;
+    static const Int32 MSG_UPDATE = 1;
 
     AutoPtr<IHandler> mHandler;
 };
@@ -140,6 +198,3 @@ private:
 } // namespace App
 } // namespace Droid
 } // namespace Elastos
-
-#endif //__ELASTOS_DROID_APP_APP_IMPORTANCE_MONITOR_H__
-

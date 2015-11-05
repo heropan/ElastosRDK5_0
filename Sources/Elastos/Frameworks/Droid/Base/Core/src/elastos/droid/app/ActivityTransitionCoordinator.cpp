@@ -1,133 +1,240 @@
 
 #include "elastos/droid/app/ActivityTransitionCoordinator.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/View/View.h"
+//#include "elastos/droid/View/GhostView.h"
+
+#include <elastos/core/Math.h>
+
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRectF;
+//using Elastos::Droid::View::GhostView;
+using Elastos::Droid::View::View;
+using Elastos::Droid::View::IGhostView;
+using Elastos::Droid::Transition::ITransitionSet;
+using Elastos::Droid::Transition::CTransitionSet;
+
+// using Elastos::Droid::content.Context;
+// using Elastos::Droid::graphics.Matrix;
+// using Elastos::Droid::graphics.Rect;
+// using Elastos::Droid::graphics.RectF;
+// using Elastos::Droid::os.Bundle;
+// using Elastos::Droid::os.Handler;
+// using Elastos::Droid::os.Parcelable;
+// using Elastos::Droid::os.ResultReceiver;
+
+// using Elastos::Droid::util.ArrayMap;
+// using Elastos::Droid::View::IView;
+// using Elastos::Droid::View::IViewGroup;
+// using Elastos::Droid::View::IViewGroupOverlay;
+// using Elastos::Droid::View::IViewParent;
+// using Elastos::Droid::View::IViewTreeObserver;
+// using Elastos::Droid::View::IWindow;
+// using Elastos::Droid::widget.ImageView;
+
+// import java.util.ArrayList;
+// import java.util.Collection;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-// import android.content.Context;
-// import android.graphics.Matrix;
-// import android.graphics.Rect;
-// import android.graphics.RectF;
-// import android.os.Bundle;
-// import android.os.Handler;
-// import android.os.Parcelable;
-// import android.os.ResultReceiver;
-// import android.transition.Transition;
-// import android.transition.TransitionSet;
-// import android.util.ArrayMap;
-// import android.view.GhostView;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.ViewGroupOverlay;
-// import android.view.ViewParent;
-// import android.view.ViewTreeObserver;
-// import android.view.Window;
-// import android.widget.ImageView;
-
-// import java.util.ArrayList;
-// import java.util.Collection;
-
-
-class ActivityTransitionCoordinator
-    : ResultReceiver
-    , IActivityTransitionCoordinator
+//========================================================================
+// ActivityTransitionCoordinator::ContinueTransitionListener
+//========================================================================
+ActivityTransitionCoordinator::ContinueTransitionListener::ContinueTransitionListener(
+    /* [in] */ ActivityTransitionCoordinator* host)
+    : mHost(host)
 {
+}
 
-    protected:
-    class ContinueTransitionListener extends Transition.TransitionListenerAdapter {
-        @Override
-        void onTransitionStart(Transition transition) {
-            mIsStartingTransition = false;
-            Runnable pending = mPendingTransition;
-            mPendingTransition = null;
-            if (pending != null) {
-                startTransition(pending);
-            }
-        }
-    };
+ECode ActivityTransitionCoordinator::ContinueTransitionListener::OnTransitionStart(
+    /* [in] */ ITransition* transition)
+{
+    mHost->mIsStartingTransition = FALSE;
+    AutoPtr<IRunnable> pending = mHost->mPendingTransition;
+    mHost->mPendingTransition = NULL;
+    if (pending != NULL) {
+        return mHost->StartTransition(pending);
+    }
 
+    return NOERROR;
+}
 
+//========================================================================
+// ActivityTransitionCoordinator::FixedEpicenterCallback
+//========================================================================
+CAR_INTERFACE_IMPL(ActivityTransitionCoordinator::FixedEpicenterCallback, Object, IEpicenterCallback)
 
-    private:
-     static class FixedEpicenterCallback extends Transition.EpicenterCallback {
-        Rect mEpicenter;
+void ActivityTransitionCoordinator::FixedEpicenterCallback::SetEpicenter(
+    /* [in] */ IRect* epicenter)
+{
+    mEpicenter = epicenter;
+}
 
-        void setEpicenter(Rect epicenter) { mEpicenter = epicenter; }
-
-        @Override
-        Rect onGetEpicenter(Transition transition) {
-            return mEpicenter;
-        }
-    };
-
-    static class GhostViewListeners implements ViewTreeObserver.OnPreDrawListener {
-        View mView;
-        ViewGroup mDecor;
-        View mParent;
-        Matrix mMatrix = new Matrix();
-
-        GhostViewListeners(View view, View parent, ViewGroup decor) {
-            mView = view;
-            mParent = parent;
-            mDecor = decor;
-        }
-
-        View getView() {
-            return mView;
-        }
-
-        @Override
-        boolean onPreDraw() {
-            GhostView ghostView = GhostView.getGhost(mView);
-            if (ghostView == null) {
-                mParent.getViewTreeObserver().removeOnPreDrawListener(this);
-            } else {
-                GhostView.calculateMatrix(mView, mDecor, mMatrix);
-                ghostView.setMatrix(mMatrix);
-            }
-            return true;
-        }
-    };
-
-    static class SharedElementOriginalState {
-        int mLeft;
-        int mTop;
-        int mRight;
-        int mBottom;
-        int mMeasuredWidth;
-        int mMeasuredHeight;
-        ImageView.ScaleType mScaleType;
-        Matrix mMatrix;
-        float mTranslationZ;
-        float mElevation;
-    };
+ECode ActivityTransitionCoordinator::FixedEpicenterCallback::OnGetEpicenter(
+    /* [in] */ ITransition* transition,
+    /* [out] */ IRect** rect)
+{
+    VALIDATE_NOT_NULL(rect)
+    *rect = mEpicenter;
+    REFCOUNT_ADD(*rect)
+    return NOERROR;
+}
 
 
 //========================================================================
-//
+// ActivityTransitionCoordinator::GhostViewListeners
+//========================================================================
+CAR_INTERFACE_IMPL(ActivityTransitionCoordinator::GhostViewListeners, Object, IOnPreDrawListener)
+
+ActivityTransitionCoordinator::GhostViewListenersGhostViewListeners(
+    /* [in] */ IView* view,
+    /* [in] */ IView* parent,
+    /* [in] */ IViewGroup* decor)
+    : mView(view)
+    , mParent(parent)
+    , mDecor(decor)
+{}
+
+AutoPtr<IView> ActivityTransitionCoordinator::GhostViewListenersGetView()
+{
+    return mView;
+}
+
+ECode ActivityTransitionCoordinator::GhostViewListenersOnPreDraw(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    assert(0 && "TODO");
+    // AutoPtr<IGhostView> ghostView = GhostView::GetGhost(mView);
+    // if (ghostView == NULL) {
+    //     AutoPtr<IViewTreeObserver> vto;
+    //     mParent->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    //     vto->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
+    // }
+    // else {
+    //     GhostView::CalculateMatrix(mView, mDecor, mMatrix);
+    //     ghostView->SetMatrix(mMatrix);
+    // }
+    *result = TRUE;
+    return NOERROR;
+}
 
 //========================================================================
-static const String KEY_SCREEN_LEFT;// = "shared_element:screenLeft";
-static const String KEY_SCREEN_TOP;// = "shared_element:screenTop";
-static const String KEY_SCREEN_RIGHT;// = "shared_element:screenRight";
-static const String KEY_SCREEN_BOTTOM;//= "shared_element:screenBottom";
-static const String KEY_TRANSLATION_Z;// = "shared_element:translationZ";
-static const String KEY_SNAPSHOT;// = "shared_element:bitmap";
-static const String KEY_SCALE_TYPE;// = "shared_element:scaleType";
-static const String KEY_IMAGE_MATRIX;// = "shared_element:imageMatrix";
-static const String KEY_ELEVATION;// = "shared_element:elevation";
+// ActivityTransitionCoordinator::SharedElementOriginalState
+//========================================================================
+ActivityTransitionCoordinator::SharedElementOriginalState::SharedElementOriginalState()
+    : mLeft(0)
+    , mTop(0)
+    , mRight(0)
+    , mBottom(0)
+    , mMeasuredWidth(0)
+    , mMeasuredHeight(0)
+    , mTranslationZ(0)
+    , mElevation(0)
+{}
 
-static const String TAG;// = "ActivityTransitionCoordinator";
+ECode ActivityTransitionCoordinator::SharedElementOriginalState::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ActivityTransitionCoordinator::SharedElementOriginalState");
+    return NOERROR;
+}
+
+//========================================================================
+// ActivityTransitionCoordinator::DecorViewOnPreDrawListener
+//========================================================================
+ActivityTransitionCoordinator::DecorViewOnPreDrawListener::DecorViewOnPreDrawListener(
+    /* [in] */ ActivityTransitionCoordinator* host,
+    /* [in] */ IView* decorView)
+    : mHost(host)
+    , mDecorView(decorView)
+{
+}
+
+ECode ActivityTransitionCoordinator::DecorViewOnPreDrawListener::OnPreDraw(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IViewTreeObserver> vto;
+    mDecorView->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    vto->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
+    mHost->NotifySharedElementEnd(snapshots);
+
+    *result= TRUE;
+    return NOERROR;
+}
+
+//========================================================================
+// ActivityTransitionCoordinator::GhostVisibilityOnPreDrawListener
+//========================================================================
+ActivityTransitionCoordinator::GhostVisibilityOnPreDrawListener::GhostVisibilityOnPreDrawListener(
+    /* [in] */ ActivityTransitionCoordinator* host,
+    /* [in] */ IView* decorView,
+    /* [in] */ Int32 visibility)
+    : mHost(host)
+    , mDecorView(decorView)
+    , mVisibility(visibility)
+{
+}
+
+ECode ActivityTransitionCoordinator::GhostVisibilityOnPreDrawListener::OnPreDraw(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IViewTreeObserver> vto;
+    mDecorView->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    vto->RemoveOnPreDrawListener(THIS_PROBE(IOnPreDrawListener));
+    mHost->SetGhostVisibility(mVisibility);
+
+    *result= TRUE;
+    return NOERROR;
+}
+
+//========================================================================
+// ActivityTransitionCoordinator
+//========================================================================
+static const String ActivityTransitionCoordinator::KEY_SCREEN_LEFT("shared_element:screenLeft");
+static const String ActivityTransitionCoordinator::KEY_SCREEN_TOP("shared_element:screenTop");
+static const String ActivityTransitionCoordinator::KEY_SCREEN_RIGHT("shared_element:screenRight");
+static const String ActivityTransitionCoordinator::KEY_SCREEN_BOTTOM("shared_element:screenBottom");
+static const String ActivityTransitionCoordinator::KEY_TRANSLATION_Z("shared_element:translationZ");
+static const String ActivityTransitionCoordinator::KEY_SNAPSHOT("shared_element:bitmap");
+static const String ActivityTransitionCoordinator::KEY_SCALE_TYPE("shared_element:scaleType");
+static const String ActivityTransitionCoordinator::KEY_IMAGE_MATRIX("shared_element:imageMatrix");
+static const String ActivityTransitionCoordinator::KEY_ELEVATION("shared_element:elevation");
+
+static const String ActivityTransitionCoordinator::TAG("ActivityTransitionCoordinator");
 
 /**
  * For Activity transitions, the called Activity's listener to receive calls
  * when transitions complete.
  */
-static const String KEY_REMOTE_RECEIVER;// = "android:remoteReceiver";
+static const String ActivityTransitionCoordinator::KEY_REMOTE_RECEIVER("android:remoteReceiver");
 
-static const AutoPtr<ArrayOf<ImageViewScaleType> > SCALE_TYPE_VALUES;// = ImageView.ScaleType.values();
+static AutoPtr<ArrayOf<ImageViewScaleType> > InitSCALE_TYPE_VALUES()
+{
+    AutoPtr<ArrayOf<ImageViewScaleType> > values = ArrayOf<ImageViewScaleType>::Alloc(8);
+    values->Set(0, ImageViewScaleType_MATRIX);
+    values->Set(1, ImageViewScaleType_FIT_XY);
+    values->Set(2, ImageViewScaleType_FIT_START);
+    values->Set(3, ImageViewScaleType_FIT_CENTER);
+    values->Set(4, ImageViewScaleType_FIT_END);
+    values->Set(5, ImageViewScaleType_CENTER);
+    values->Set(6, ImageViewScaleType_CENTER_CROP);
+    values->Set(7, ImageViewScaleType_CENTER_INSIDE);
+    return values;
+}
 
+static const AutoPtr<ArrayOf<ImageViewScaleType> > ActivityTransitionCoordinator::SCALE_TYPE_VALUES;// = ImageView.ScaleType.values();
 
 CAR_INTERFACE_IMPL(ActivityTransitionCoordinator, ResultReceiver, IActivityTransitionCoordinator::)
 
@@ -135,11 +242,12 @@ ActivityTransitionCoordinator::ActivityTransitionCoordinator()
     : mIsReturning(FALSE)
     , mIsStartingTransition(FALSE)
 {
-    AutoPtr<IArrayList> mAllSharedElementNames; //ArrayList<String>
-    AutoPtr<IArrayList> mSharedElements;// = new ArrayList<View>();
-    AutoPtr<IArrayList> mSharedElementNames;// = new ArrayList<String>();
-    AutoPtr<IArrayList> mTransitioningViews;// = new ArrayList<View>();
-    mEpicenterCallback;// = new FixedEpicenterCallback();
+    CArrayList::New((IArrayList**)&mAllSharedElementNames);
+    CArrayList::New((IArrayList**)&mSharedElements);
+    CArrayList::New((IArrayList**)&mSharedElementNames);
+    CArrayList::New((IArrayList**)&mTransitioningViews);
+
+    mEpicenterCallback = new FixedEpicenterCallback();
 }
 
 ActivityTransitionCoordinator::~ActivityTransitionCoordinator()
@@ -158,178 +266,270 @@ ECode ActivityTransitionCoordinator::constructor(
     mListener = listener;
     mAllSharedElementNames = allSharedElementNames;
     mIsReturning = isReturning;
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::ViewsReady(
     /* [in] */ IArrayMap* sharedElements) //ArrayMap<String, View>
 {
-    sharedElements.retainAll(mAllSharedElementNames);
-    if (mListener != null) {
-        mListener.onMapSharedElements(mAllSharedElementNames, sharedElements);
+    sharedElements->RetainAll(ICollection::Probe(mAllSharedElementNames));
+    if (mListener != NULL) {
+        mListener->OnMapSharedElements(mAllSharedElementNames, sharedElements);
     }
-    mSharedElementNames.addAll(sharedElements.keySet());
-    mSharedElements.addAll(sharedElements.values());
-    if (getViewsTransition() != null && mTransitioningViews != null) {
-        ViewGroup decorView = getDecor();
-        if (decorView != null) {
-            decorView.captureTransitioningViews(mTransitioningViews);
+    AutoPtr<ISet> keyset;
+    sharedElements->GetKeySet((ISet**)&keyset);
+    mSharedElementNames->AddAll(ICollection::Probe(keyset));
+    AutoPtr<ICollection> values;
+    sharedElements->GetValues((ICollection**)&values);
+    mSharedElements->AddAll(values;
+
+    if (GetViewsTransition() != NULL && mTransitioningViews != NULL) {
+        AutoPtr<IViewGroup> decorView;
+        GetDecor((IViewGroup**)&decorView);
+        if (decorView != NULL) {
+            decorView->CaptureTransitioningViews(mTransitioningViews);
         }
-        mTransitioningViews.removeAll(mSharedElements);
+        mTransitioningViews->RemoveAll(ICollection::Probe(mSharedElements));
     }
-    setEpicenter();
+
+    return SetEpicenter();
 }
 
 ECode ActivityTransitionCoordinator::StripOffscreenViews()
 {
-    if (mTransitioningViews == null) {
-        return;
+    if (mTransitioningViews == NULL) {
+        return NOERROR;
     }
-    Rect r = new Rect();
-    for (int i = mTransitioningViews.size() - 1; i >= 0; i--) {
-        View view = mTransitioningViews.get(i);
-        if (!view.getGlobalVisibleRect(r)) {
-            mTransitioningViews.remove(i);
-            showView(view, true);
+
+    AutoPtr<IRect> r;
+    CRect::New((IRect**)&r);
+    Int32 size;
+    Boolean bval;
+    mTransitioningViews->GetSize(&size);
+    for (Int32 i = size - 1; i >= 0; i--) {
+        AutoPtr<IInterface> obj;
+        mTransitioningViews->Get(i, (IView**)&obj);
+        IView* view = IView::Probe(obj);
+        view->GetGlobalVisibleRect(r, &bval);
+        if (!bval) {
+            mTransitioningViews->Remove(i);
+            ShowView(view, TRUE);
         }
     }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::GetWindow(
     /* [out] */ IWindow** window)
 {
-    return mWindow;
+    VALIDATE_NOT_NULL(window)
+    *window = mWindow;
+    REFCOUNT_ADD(*window)
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::GetDecor(
     /* [out] */ IViewGroup** vg)
 {
-    return (mWindow == null) ? null : (ViewGroup) mWindow.getDecorView();
+    VALIDATE_NOT_NULL(vg)
+    if (mWindow != NULL) {
+        AutoPtr<IView> view;
+        mWindow->GetDecorView((IView**)&view)
+        *vg = IViewGroup::Probe(view)
+        REFCOUNT_ADD(*vg)
+    }
+    else {
+        *vg = NULL;
+    }
+
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::SetEpicenter()
 {
-    View epicenter = null;
-    if (!mAllSharedElementNames.isEmpty() && !mSharedElementNames.isEmpty()) {
-        int index = mSharedElementNames.indexOf(mAllSharedElementNames.get(0));
+    AutoPtr<IView> epicenter;
+    Boolean b1, b2;
+    mAllSharedElementNames->IsEmpty(&b1);
+    mSharedElementNames->IsEmpty(&b2);
+    if (!b1 && !b2) {
+        AutoPtr<IInterface> obj;
+        mAllSharedElementNames->Get(0, (IInterface**)&obj);
+        Int32 index;
+        mSharedElementNames->IndexOf(obj, &index);
         if (index >= 0) {
-            epicenter = mSharedElements.get(index);
+            obj = NULL;
+            mSharedElements->Get(index, (IInterface**)&obj);
+            epicenter = IView::Probe(obj);
         }
     }
-    setEpicenter(epicenter);
+    return SetEpicenter(epicenter);
 }
 
 ECode ActivityTransitionCoordinator::SetEpicenter(
     /* [in] */ IView* view)
 {
-    if (view == null) {
-        mEpicenterCallback.setEpicenter(null);
-    } else {
-        Rect epicenter = new Rect();
-        view.getBoundsOnScreen(epicenter);
-        mEpicenterCallback.setEpicenter(epicenter);
+    if (view == NULL) {
+        mEpicenterCallback->SetEpicenter(NULL);
     }
+    else {
+        AutoPtr<IRect> epicenter;
+        CRect::New((IRect**)&epicenter);
+        view->GetBoundsOnScreen(epicenter);
+        mEpicenterCallback->SetEpicenter(epicenter);
+    }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::GetAcceptedNames(
-    /* [out] */ IArrayList** list) //ArrayList<String>
+    /* [out] */ IArrayList** list)
 {
-    return mSharedElementNames;
+    VALIDATE_NOT_NULL(list)
+    *list = mSharedElementNames;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::GetMappedNames(
-    /* [out] */ IArrayList** list) //ArrayList<String>
+    /* [out] */ IArrayList** list)
 {
-    ArrayList<String> names = new ArrayList<String>(mSharedElements.size());
-    for (int i = 0; i < mSharedElements.size(); i++) {
-        names.add(mSharedElements.get(i).getTransitionName());
+    VALIDATE_NOT_NULL(list)
+    Int32 size;
+    mSharedElements->GetSize(&size);
+    AutoPtr<IArrayList> names;
+    CArrayList::New(size, (IArrayList**)&names);
+    String name;
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        mSharedElements->Get(i, (IInterface**)&obj);
+        IView::Probe(obj)->GetTransitionName(&name);
+        AutoPtr<ICharsequence> seq = CoreUtils::Convert(name);
+        names->Add(IInterface::Probe(seq));
     }
-    return names;
+
+    *list = names;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::CopyMappedViews(
-    /* [out] */ IArrayList** list) //ArrayList<View>
+    /* [out] */ IArrayList** list)
 {
-    return new ArrayList<View>(mSharedElements);
+    VALIDATE_NOT_NULL(list)
+    return CArrayList::New(ICollection::Probe(mSharedElements), (IArrayList**)&list);
 }
 
 ECode ActivityTransitionCoordinator::GetAllSharedElementNames(
-    /* [out] */ IArrayList** list) //ArrayList<String>
-{ return mAllSharedElementNames; }
+    /* [out] */ IArrayList** list)
+{
+    VALIDATE_NOT_NULL(list)
+    *list = mAllSharedElementNames;
+    REFCOUNT_ADD(*list)
+    return NOERROR;
+}
 
 AutoPtr<ITransition> ActivityTransitionCoordinator::SetTargets(
     /* [in] */ ITransition* transition,
     /* [in] */ Boolean add)
 {
-    if (transition == null || (add &&
-            (mTransitioningViews == null || mTransitioningViews.isEmpty()))) {
-        return null;
+    Boolean bval;
+    if (transition == NULL ||
+        (add &&
+            (mTransitioningViews == NULL || (mTransitioningViews->IsEmpty(&bval), bval)))) {
+        return NULL;
     }
+
     // Add the targets to a set containing transition so that transition
     // remains unaffected. We don't want to modify the targets of transition itself.
-    TransitionSet set = new TransitionSet();
-    if (mTransitioningViews != null) {
-        for (int i = mTransitioningViews.size() - 1; i >= 0; i--) {
-            View view = mTransitioningViews.get(i);
+    AutoPtr<ITransitionSet> set;
+    CTransitionSet::New((ITransitionSet**)&set);
+    if (mTransitioningViews != NULL) {
+        Int32 size;
+        mTransitioningViews->GetSize(&size);
+        for (Int32 i = size - 1; i >= 0; i--) {
+            AutoPtr<IInterface> obj;
+            mTransitioningViews->Get(i, (IInterface**)&obj);
+            IView* view = IView::Probe(obj);
             if (add) {
-                set.addTarget(view);
-            } else {
-                set.excludeTarget(view, true);
+                set->AddTarget(view);
+            }
+            else {
+                set->ExcludeTarget(view, TRUE);
             }
         }
     }
     // By adding the transition after addTarget, we prevent addTarget from
     // affecting transition.
-    set.addTransition(transition);
+    set->AddTransition(transition);
 
-    if (!add && mTransitioningViews != null && !mTransitioningViews.isEmpty()) {
+    if (!add && mTransitioningViews != NULL && (mTransitioningViews->IsEmpty(&bval), bval)) {
         // Allow children of excluded transitioning views, but not the views themselves
-        set = new TransitionSet().addTransition(set);
+        AutoPtr<ITransitionSet> ts;
+        CTransitionSet::New((ITransitionSet**)&ts);
+        ts->AddTransition(set);
+
+        set = ts;
     }
 
-    return set;
+    return ITransition::Probe(set);
 }
 
 AutoPtr<ITransition> ActivityTransitionCoordinator::ConfigureTransition(
     /* [in] */ ITransition* transition,
     /* [in] */ Boolean includeTransitioningViews)
 {
-    if (transition != null) {
-        transition = transition.clone();
-        transition.setEpicenterCallback(mEpicenterCallback);
-        transition = setTargets(transition, includeTransitioningViews);
+    AutoPtr<ITransition> result = transition;
+    if (result != NULL) {
+        AutoPtr<IInterface> obj;
+        ICloneable::Probe(transition)->Clone((IInterface**)&obj);
+        result = ITransition::Probe(obj);
+        result->SetEpicenterCallback(mEpicenterCallback);
+        AutoPtr<ITransition> tmp = result;
+        result = SetTargets(tmp, includeTransitioningViews);
     }
-    return transition;
+    return result;
 }
 
 AutoPtr<ITransition> ActivityTransitionCoordinator::MergeTransitions(
     /* [in] */ ITransition* transition1,
     /* [in] */ ITransition* transition2)
 {
-    if (transition1 == null) {
+    if (transition1 == NULL) {
         return transition2;
-    } else if (transition2 == null) {
+    }
+    else if (transition2 == NULL) {
         return transition1;
-    } else {
-        TransitionSet transitionSet = new TransitionSet();
-        transitionSet.addTransition(transition1);
-        transitionSet.addTransition(transition2);
-        return transitionSet;
+    }
+    else {
+        AutoPtr<ITransitionSet> transitionSet;
+        CTransitionSet::New((ITransitionSet**)&transitionSet);
+        transitionSet->AddTransition(transition1);
+        transitionSet->AddTransition(transition2);
+        return ITransition::Probe(transitionSet);
     }
 }
 
-AutoPtr<IArrayMap> ActivityTransitionCoordinator::MapSharedElements( //ArrayMap<String, View>
+AutoPtr<IArrayMap> ActivityTransitionCoordinator::MapSharedElements(
     /* [in] */ IArrayList* accepted, //ArrayList<String>
     /* [in] */ IArrayList* localViews) //ArrayList<View>
 {
-    ArrayMap<String, View> sharedElements = new ArrayMap<String, View>();
-    if (accepted != null) {
-        for (int i = 0; i < accepted.size(); i++) {
-            sharedElements.put(accepted.get(i), localViews.get(i));
+    AutoPtr<IArrayMap> sharedElements;
+    CArrayMap::New((IArrayMap**)&sharedElements);
+
+    Int32 size;
+    if (accepted != NULL) {
+        accepted->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> key, value;
+            accepted->Get(i, (IInterface**)&key);
+            localViews->Get(i, (IInterface**)&value);
+            sharedElements->Put(key, value);
         }
-    } else {
-        ViewGroup decorView = getDecor();
-        if (decorView != null) {
-            decorView.findNamedViews(sharedElements);
+    }
+    else {
+        AutoPtr<IViewGroup> decorView;
+        GetDecor((IViewGroup**)&decorView);
+        if (decorView != NULL) {
+            decorView->FindNamedViews(sharedElements);
         }
     }
     return sharedElements;
@@ -339,6 +539,7 @@ ECode ActivityTransitionCoordinator::SetResultReceiver(
     /* [in] */ IResultReceiver* resultReceiver)
 {
     mResultReceiver = resultReceiver;
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::SetSharedElementState(
@@ -349,78 +550,101 @@ ECode ActivityTransitionCoordinator::SetSharedElementState(
     /* [in] */ IRectF* tempRect,
     /* [in] */ ArrayOf<Int32>* decorLoc)
 {
-    Bundle sharedElementBundle = transitionArgs.getBundle(name);
-    if (sharedElementBundle == null) {
-        return;
+    AutoPtr<IBundle> sharedElementBundle;
+    transitionArgs->GetBundle(name, (IBundle**)&sharedElementBundle);
+    if (sharedElementBundle == NULL) {
+        return NOERROR;
     }
 
-    if (view instanceof ImageView) {
-        int scaleTypeInt = sharedElementBundle.getInt(KEY_SCALE_TYPE, -1);
+    if (IImageView::Probe(view)) {
+        Int32 scaleTypeInt;
+        sharedElementBundle->GetInt32(KEY_SCALE_TYPE, -1, &scaleTypeInt);
         if (scaleTypeInt >= 0) {
-            ImageView imageView = (ImageView) view;
-            ImageView.ScaleType scaleType = SCALE_TYPE_VALUES[scaleTypeInt];
-            imageView.setScaleType(scaleType);
-            if (scaleType == ImageView.ScaleType.MATRIX) {
-                float[] matrixValues = sharedElementBundle.getFloatArray(KEY_IMAGE_MATRIX);
-                tempMatrix.setValues(matrixValues);
-                imageView.setImageMatrix(tempMatrix);
+            IImageView* imageView = IImageView::Probe(view);
+            ImageViewScaleType scaleType = (*SCALE_TYPE_VALUES)[scaleTypeInt];
+            imageView->SetScaleType(scaleType);
+            if (scaleType == ImageViewScaleType_MATRIX) {
+                AutoPtr<ArrayOf<Float> > matrixValues;
+                sharedElementBundle->GetFloatArray(KEY_IMAGE_MATRIX, (ArrayOf<Float>**)&matrixValues);
+                tempMatrix->SetValues(matrixValues);
+                imageView->SetImageMatrix(tempMatrix);
             }
         }
     }
 
-    float z = sharedElementBundle.getFloat(KEY_TRANSLATION_Z);
-    view.setTranslationZ(z);
-    float elevation = sharedElementBundle.getFloat(KEY_ELEVATION);
-    view.setElevation(elevation);
+    Float z;
+    sharedElementBundle->GetFloat(KEY_TRANSLATION_Z, &z);
+    view->SetTranslationZ(z);
+    Float elevation;
+    sharedElementBundle->GetFloat(KEY_ELEVATION, &elevation);
+    view->SetElevation(elevation);
 
-    float left = sharedElementBundle.getFloat(KEY_SCREEN_LEFT);
-    float top = sharedElementBundle.getFloat(KEY_SCREEN_TOP);
-    float right = sharedElementBundle.getFloat(KEY_SCREEN_RIGHT);
-    float bottom = sharedElementBundle.getFloat(KEY_SCREEN_BOTTOM);
+    Float left, top, right, bottom;
+    sharedElementBundle->GetFloat(KEY_SCREEN_LEFT, &left);
+    sharedElementBundle->GetFloat(KEY_SCREEN_TOP, &top);
+    sharedElementBundle->GetFloat(KEY_SCREEN_RIGHT, &right);
+    sharedElementBundle->GetFloat(KEY_SCREEN_BOTTOM, &bottom);
 
-    if (decorLoc != null) {
-        left -= decorLoc[0];
-        top -= decorLoc[1];
-        right -= decorLoc[0];
-        bottom -= decorLoc[1];
-    } else {
+    if (decorLoc != NULL) {
+        left -= (*decorLoc)[0];
+        top -= (*decorLoc)[1];
+        right -= (*decorLoc)[0];
+        bottom -= (*decorLoc)[1];
+    }
+    else {
         // Find the location in the view's parent
-        getSharedElementParentMatrix(view, tempMatrix);
-        tempRect.set(left, top, right, bottom);
-        tempMatrix.mapRect(tempRect);
+        GetSharedElementParentMatrix(view, tempMatrix);
+        tempRect->Set(left, top, right, bottom);
+        tempMatrix->MapRect(tempRect);
 
-        float leftInParent = tempRect.left;
-        float topInParent = tempRect.top;
+        Float leftInParent, topInParent;
+        tempRect->GetLeft(&leftInParent);
+        tempRect->GetTop(&topInParent);
 
         // Find the size of the view
-        view.getInverseMatrix().mapRect(tempRect);
-        float width = tempRect.width();
-        float height = tempRect.height();
+        AutoPtr<IMatrix> im;
+        view->GetInverseMatrix((IMatrix**)&im);
+        im->MapRect(tempRect);
+        Float width, height;
+        tempRect->GetWidth(&width);
+        tempRect->GetHeight(&height);
 
         // Now determine the offset due to view transform:
-        view.setLeft(0);
-        view.setTop(0);
-        view.setRight(Math.round(width));
-        view.setBottom(Math.round(height));
-        tempRect.set(0, 0, width, height);
-        view.getMatrix().mapRect(tempRect);
+        view->SetLeft(0);
+        view->SetTop(0);
+        view->SetRight(Elastos::Core::Math::Round(width));
+        view->SetBottom(Elastos::Core::Math::round(height));
+        tempRect->Set(0, 0, width, height);
 
-        ViewGroup parent = (ViewGroup) view.getParent();
-        left = leftInParent - tempRect.left + parent.getScrollX();
-        top = topInParent - tempRect.top + parent.getScrollY();
+        im = NULL;
+        view->GetMatrix((IMatrix**)&im);
+        im->MapRect(tempRect);
+
+        AutoPtr<IViewParent> pv;
+        view->GetParent((IViewParent**)&pv);
+        AutoPtr<IView> parent = IView::Probe(pv);
+
+        Float l, t;
+        tempRect->GetLeft(&l);
+        tempRect->GetTop(&t);
+        Int32 x, y;
+        parent->GetScrollX(&x);
+        parent->GetScrollY(&y);
+        left = leftInParent - l + x;
+        top = topInParent - t + y;
         right = left + width;
         bottom = top + height;
     }
 
-    int x = Math.round(left);
-    int y = Math.round(top);
-    int width = Math.round(right) - x;
-    int height = Math.round(bottom) - y;
-    int widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
-    int heightSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY);
-    view.measure(widthSpec, heightSpec);
+    Int32 x = Elastos::Core::Math::Round(left);
+    Int32 y = Elastos::Core::Math::Round(top);
+    Int32 width = Elastos::Core::Math::Round(right) - x;
+    Int32 height = Elastos::Core::Math::Round(bottom) - y;
+    Int32 widthSpec = View::MeasureSpec::MakeMeasureSpec(width, View::MeasureSpec::EXACTLY);
+    Int32 heightSpec = View::MeasureSpec::MakeMeasureSpec(height, View::MeasureSpec::EXACTLY);
+    view->Measure(widthSpec, heightSpec);
 
-    view.layout(x, y, x + width, y + height);
+    return view->Layout(x, y, x + width, y + height);
 }
 
 ECode ActivityTransitionCoordinator::GetSharedElementParentMatrix(
@@ -428,94 +652,105 @@ ECode ActivityTransitionCoordinator::GetSharedElementParentMatrix(
     /* [in] */ IMatrix* matrix)
 {
     // Find the location in the view's parent
-    ViewGroup parent = (ViewGroup) view.getParent();
-    matrix.reset();
-    parent.transformMatrixToLocal(matrix);
+    AutoPtr<IViewParent> pv;
+    view->GetParent((IViewParent**)&pv);
+    IView* parent = IView::Probe(pv);
+    matrix->Reset();
+    parent->TransformMatrixToLocal(matrix);
+    return NOERROR;
 }
 
-AutoPtr<List<SharedElementOriginalState> > ActivityTransitionCoordinator::SetSharedElementState(
+AutoPtr<List<AutoPtr<SharedElementOriginalState> > > ActivityTransitionCoordinator::SetSharedElementState(
     /* [in] */ IBundle* sharedElementState,
     /* [in] */ IArrayList* snapshots) //ArrayList<View>
 {
-    ArrayList<SharedElementOriginalState> originalImageState =
-            new ArrayList<SharedElementOriginalState>();
-    if (sharedElementState != null) {
-        Matrix tempMatrix = new Matrix();
-        RectF tempRect = new RectF();
-        final int numSharedElements = mSharedElements.size();
-        for (int i = 0; i < numSharedElements; i++) {
-            View sharedElement = mSharedElements.get(i);
-            String name = mSharedElementNames.get(i);
-            SharedElementOriginalState originalState = getOldSharedElementState(sharedElement,
+    AutoPtr<List<AutoPtr<SharedElementOriginalState> > > originalImageState = new List<AutoPtr<SharedElementOriginalState> >();
+    if (sharedElementState != NULL) {
+        AutoPtr<IMatrix> tempMatrix;
+        CMatrix::New((IMatrix**)&tempMatrix);
+        AutoPtr<IRectF> tempRect;
+        CRectF::New((IRectF**)&tempRect);
+        Int32 numSharedElements;
+        mSharedElements->GetSize(&numSharedElements);
+        for (Int32 i = 0; i < numSharedElements; i++) {
+            AutoPtr<IInterface> obj, nameObj;
+            mSharedElements->Get(i, (IInterface**)&obj);
+            mSharedElementNames->Get(i, (IInterface**)&nameObj);
+            IView* sharedElement = IView::Probe(obj);
+            String name = Object::ToString(nameObj);
+            AutoPtr<SharedElementOriginalState> originalState = GetOldSharedElementState(sharedElement,
                     name, sharedElementState);
-            originalImageState.add(originalState);
-            setSharedElementState(sharedElement, name, sharedElementState,
-                    tempMatrix, tempRect, null);
+            originalImageState->PushBack(originalState);
+            SetSharedElementState(sharedElement, name, sharedElementState,
+                    tempMatrix, tempRect, NULL);
         }
     }
-    if (mListener != null) {
-        mListener.onSharedElementStart(mSharedElementNames, mSharedElements, snapshots);
+    if (mListener != NULL) {
+        mListener->OnSharedElementStart(mSharedElementNames, mSharedElements, snapshots);
     }
     return originalImageState;
 }
 
 ECode ActivityTransitionCoordinator::NotifySharedElementEnd(
-    /* [in] */ IArrayList* snapshots) //ArrayList<View>
+    /* [in] */ IArrayList* snapshots)
 {
-    if (mListener != null) {
-        mListener.onSharedElementEnd(mSharedElementNames, mSharedElements, snapshots);
+    if (mListener != NULL) {
+        mListener->OnSharedElementEnd(mSharedElementNames, mSharedElements, snapshots);
     }
 }
 
 ECode ActivityTransitionCoordinator::ScheduleSetSharedElementEnd(
     /* [in] */ IArrayList* snapshots) //ArrayList<View>
 {
-    final View decorView = getDecor();
-    if (decorView != null) {
-        decorView.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    boolean onPreDraw() {
-                        decorView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        notifySharedElementEnd(snapshots);
-                        return true;
-                    }
-                }
-        );
+    AutoPtr<IView> decorView;
+    GetDecor((IView**)&decorView);
+    if (decorView != NULL) {
+        AutoPtr<IViewTreeObserver> vto;
+        decorView->GetViewTreeObserver((IViewTreeObserver**)&vto);
+        AutoPtr<IOnPreDrawListener> listener = new DecorViewOnPreDrawListener(decorView, this);
+        vto->AddOnPreDrawListener(listener);
     }
+
+    return NOERROR;
 }
 
-static AutoPtr<SharedElementOriginalState> ActivityTransitionCoordinator::GetOldSharedElementState(
+AutoPtr<SharedElementOriginalState> ActivityTransitionCoordinator::GetOldSharedElementState(
     /* [in] */ IView* view,
     /* [in] */ const String& name,
     /* [in] */ IBundle* transitionArgs)
 {
+    AutoPtr<SharedElementOriginalState> state = new SharedElementOriginalState();
+     = view->getLeft(&state->mLeft);
+     = view->getTop(&state->mTop);
+     = view->getRight(&state->mRight);
+     = view->getBottom(&state->mBottom);
+     = view->getMeasuredWidth(&state->mMeasuredWidth);
+     = view->getMeasuredHeight(&state->mMeasuredHeight);
+     = view->getTranslationZ(&state->mTranslationZ);
+     = view->getElevation(&state->mElevation);
 
-    SharedElementOriginalState state = new SharedElementOriginalState();
-    state.mLeft = view.getLeft();
-    state.mTop = view.getTop();
-    state.mRight = view.getRight();
-    state.mBottom = view.getBottom();
-    state.mMeasuredWidth = view.getMeasuredWidth();
-    state.mMeasuredHeight = view.getMeasuredHeight();
-    state.mTranslationZ = view.getTranslationZ();
-    state.mElevation = view.getElevation();
-    if (!(view instanceof ImageView)) {
+    IImageView* imageView = IImageView::Probe(view);
+    if (imageView == NULL) {
         return state;
     }
-    Bundle bundle = transitionArgs.getBundle(name);
-    if (bundle == null) {
+
+    AutoPtr<IBundle> bundle;
+    transitionArgs->GetBundle(name, (IBundle**)&bundle);
+    if (bundle == NULL) {
         return state;
     }
-    int scaleTypeInt = bundle.getInt(KEY_SCALE_TYPE, -1);
+    Int32 scaleTypeInt;
+    bundle->GetInt32(KEY_SCALE_TYPE, -1, &scaleTypeInt);
     if (scaleTypeInt < 0) {
         return state;
     }
 
-    ImageView imageView = (ImageView) view;
-    state.mScaleType = imageView.getScaleType();
-    if (state.mScaleType == ImageView.ScaleType.MATRIX) {
-        state.mMatrix = new Matrix(imageView.getImageMatrix());
+    imageView->GetScaleType(＆state->mScaleType);
+    if (state->mScaleType == ImageViewScaleType_MATRIX) {
+        AutoPtr<IMatrix> m;
+        imageView->GetImageMatrix((IMatrix**)&m);
+        state->mMatrix = NULL;
+        CMatrix::New(m, (IMatrix**)&state->mMatrix);
     }
     return state;
 }
@@ -524,121 +759,177 @@ AutoPtr<IArrayList> ActivityTransitionCoordinator::CreateSnapshots( //ArrayList<
     /* [in] */ IBundle* state,
     /* [in] */ ICollection* names) //Collection<String>
 {
-    int numSharedElements = names.size();
+    Int32 numSharedElements;
+    names->GetSize(&numSharedElements);
     if (numSharedElements == 0) {
-        return null;
+        return NULL;
     }
-    ArrayList<View> snapshots = new ArrayList<View>(numSharedElements);
-    Context context = getWindow().getContext();
-    int[] decorLoc = new int[2];
-    ViewGroup decorView = getDecor();
-    if (decorView != null) {
-        decorView.getLocationOnScreen(decorLoc);
+
+    AutoPtr<IArrayList> snapshots;
+    CArrayList::New(numSharedElements, (IArrayList**)&snapshots);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    AutoPtr<IContext> context;
+    window->GetContext((IContext**)&context);
+    AutoPtr<ArrayOf<Int32> > decorLoc = ArrayOf<Int32>::Alloc(2);
+
+    AutoPtr<IViewGroup> decorView;
+    GetDecor((IViewGroup**)&decorView);
+    if (decorView != NULL) {
+        decorView->GetLocationOnScreen(decorLoc);
     }
-    for (String name: names) {
-        Bundle sharedElementBundle = state.getBundle(name);
-        if (sharedElementBundle != null) {
-            Parcelable parcelable = sharedElementBundle.getParcelable(KEY_SNAPSHOT);
-            View snapshot = null;
-            if (parcelable != null && mListener != null) {
-                snapshot = mListener.onCreateSnapshotView(context, parcelable);
+
+    AutoPtr<IIterator> it;
+    names->GetIterator((IIterator)&&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        String name = Object::ToString(obj);
+        AutoPtr<IBundle> sharedElementBundle;
+        state->GetBundle(name, (IBundle**)&sharedElementBundle);
+        if (sharedElementBundle != NULL) {
+            AutoPtr<IParcelable> parcelable;
+            sharedElementBundle->GetParcelable(KEY_SNAPSHOT, (IParcelable**)&parcelable);
+            AutoPtr<IView> snapshot;
+            if (parcelable != NULL && mListener != NULL) {
+                mListener->OnCreateSnapshotView(context, parcelable, (IView**)&snapshot);
             }
-            if (snapshot != null) {
-                setSharedElementState(snapshot, name, state, null, null, decorLoc);
+            if (snapshot != NULL) {
+                SetSharedElementState(snapshot, name, state, NULL, NULL, decorLoc);
             }
-            snapshots.add(snapshot);
+            snapshots->Add(snapshot);
         }
     }
     return snapshots;
 }
 
-static ECode ActivityTransitionCoordinator::SetOriginalSharedElementState(
+ECode ActivityTransitionCoordinator::SetOriginalSharedElementState(
     /* [in] */ IArrayList* sharedElements, //ArrayList<View>
-    /* [in] */ List<SharedElementOriginalState>* originalState)
+    /* [in] */ List<AutoPtr<SharedElementOriginalState> >* originalState)
 {
-    for (int i = 0; i < originalState.size(); i++) {
-        View view = sharedElements.get(i);
-        SharedElementOriginalState state = originalState.get(i);
-        if (view instanceof ImageView && state.mScaleType != null) {
-            ImageView imageView = (ImageView) view;
-            imageView.setScaleType(state.mScaleType);
-            if (state.mScaleType == ImageView.ScaleType.MATRIX) {
-              imageView.setImageMatrix(state.mMatrix);
+    List<AutoPtr<SharedElementOriginalState> >::Iterator it;
+    Int32 i = 0;
+    for (it = originalState->Begin(); it != originalState->End(); ++it, ++i) {
+        AutoPtr<IInterface> viewObj;
+        sharedElements->Get(i, (IInterface**)&viewObj);
+        IView* view = IView::Probe(viewObj);
+        AutoPtr<SharedElementOriginalState> state = *it;
+
+        ImageView* imageView = IImageView::Probe(view);
+        if (imageView != NULL && state->mScaleType != ImageViewScaleType_NULL) {
+            imageView->SetScaleType(state->mScaleType);
+            if (state->mScaleType == ImageViewScaleType_MATRIX) {
+              imageView->SetImageMatrix(state->mMatrix);
             }
         }
-        view.setElevation(state.mElevation);
-        view.setTranslationZ(state.mTranslationZ);
-        int widthSpec = View.MeasureSpec.makeMeasureSpec(state.mMeasuredWidth,
-                View.MeasureSpec.EXACTLY);
-        int heightSpec = View.MeasureSpec.makeMeasureSpec(state.mMeasuredHeight,
-                View.MeasureSpec.EXACTLY);
-        view.measure(widthSpec, heightSpec);
-        view.layout(state.mLeft, state.mTop, state.mRight, state.mBottom);
+        view->SetElevation(state->mElevation);
+        view->SetTranslationZ(state->mTranslationZ);
+        Int32 widthSpec = View::MeasureSpec::MakeMeasureSpec(state->mMeasuredWidth,
+                View::MeasureSpec::EXACTLY);
+        Int32 heightSpec = View::MeasureSpec::MakeMeasureSpec(state->mMeasuredHeight,
+                View::MeasureSpec::EXACTLY);
+        view->Measure(widthSpec, heightSpec);
+        view->Layout(state->mLeft, state->mTop, state->mRight, state->mBottom);
     }
+    return NOERROR;
 }
 
 AutoPtr<IBundle> ActivityTransitionCoordinator::CaptureSharedElementState()
 {
-    Bundle bundle = new Bundle();
-    RectF tempBounds = new RectF();
-    Matrix tempMatrix = new Matrix();
-    for (int i = 0; i < mSharedElements.size(); i++) {
-        View sharedElement = mSharedElements.get(i);
-        String name = mSharedElementNames.get(i);
-        captureSharedElementState(sharedElement, name, bundle, tempMatrix, tempBounds);
+    AutoPtr<IBundle> bundle;
+    CBundle::New((IBundle**)&bundle);
+    AutoPtr<IRectF> tempBounds;
+    CRectF::New((IRectF**)&tempBounds);
+    AutoPtr<IMatrix> tempMatrix;
+    CMatrix::New((IMatrix**)&tempMatrix);
+
+    Int32 size;
+    mSharedElements->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj, nameObj;
+        mSharedElements->Get(i, (IInterface**)&obj);
+        sharedElement = IView::Probe(obj);
+        mSharedElementNames->Get(i, (IInterface**)&nameObj);
+        String name = Object::ToString(nameObj);
+        CaptureSharedElementState(sharedElement, name, bundle, tempMatrix, tempBounds);
     }
     return bundle;
 }
 
-ECode ActivityTransitionCoordinator::ClearState() {
+ECode ActivityTransitionCoordinator::ClearState()
+{
     // Clear the state so that we can't hold any references accidentally and leak memory.
-    mWindow = null;
-    mSharedElements.clear();
-    mTransitioningViews = null;
-    mOriginalAlphas.clear();
-    mResultReceiver = null;
-    mPendingTransition = null;
-    mListener = null;
+    mWindow = NULL;
+    mSharedElements->Clear();
+    mTransitioningViews = NULL;
+    mOriginalAlphas.Clear();
+    mResultReceiver = NULL;
+    mPendingTransition = NULL;
+    mListener = NULL;
+    return NOERROR;
 }
 
-Int64 ActivityTransitionCoordinator::GetFadeDuration() {
-    return getWindow().getTransitionBackgroundFadeDuration();
+Int64 ActivityTransitionCoordinator::GetFadeDuration()
+{
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
+    Int64 duration;
+    window->GetTransitionBackgroundFadeDuration(&duration);
+    return duration;
 }
 
 ECode ActivityTransitionCoordinator::HideViews(
     /* [in] */ IArrayList* views) //ArrayList<View>
 {
-    int count = views.size();
-    for (int i = 0; i < count; i++) {
-        View view = views.get(i);
-        if (!mOriginalAlphas.containsKey(view)) {
-            mOriginalAlphas.put(view, view.getAlpha());
+    Int32 count;
+    views->GetSize(&count);
+    Float alpha;
+    HashMap<AutoPtr<IView>, Float> > it;
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        views->Get(i, (IInterface**)&obj);
+        AutoPtr<IView> view = IView::Probe(obj);
+        it = mOriginalAlphas.Find(view);
+        if (it == mOriginalAlphas.End()) {
+            view->GetAlpha(&alpha);
+            mOriginalAlphas[view] = alpha;
         }
-        view.setAlpha(0f);
+        view->SetAlpha(0.0f);
     }
+
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::ShowViews(
     /* [in] */ IArrayList* views, //ArrayList<View>
     /* [in] */ Boolean setTransitionAlpha)
 {
-    int count = views.size();
-    for (int i = 0; i < count; i++) {
-        showView(views.get(i), setTransitionAlpha);
+    Int32 count;
+    views->GetSize(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        views->Get(i, (IInterface**)&obj);
+        AutoPtr<IView> view = IView::Probe(obj);
+        ShowView(view, setTransitionAlpha);
     }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::ShowView(
     /* [in] */ IView* view,
     /* [in] */ Boolean setTransitionAlpha)
 {
-    Float alpha = mOriginalAlphas.remove(view);
-    if (alpha != null) {
-        view.setAlpha(alpha);
+    HashMap<AutoPtr<IView>, Float> > it = mOriginalAlphas.Find(view);
+    if (it != mOriginalAlphas.End()) {
+        view->SetAlpha(it->mSecond);
+        mOriginalAlphas.Erase(it);
     }
+
     if (setTransitionAlpha) {
-        view.setTransitionAlpha(1f);
+        view->SetTransitionAlpha(1.0f);
     }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::CaptureSharedElementState(
@@ -648,40 +939,54 @@ ECode ActivityTransitionCoordinator::CaptureSharedElementState(
     /* [in] */ IMatrix* tempMatrix,
     /* [in] */ IRectF* tempBounds)
 {
-    Bundle sharedElementBundle = new Bundle();
-    tempMatrix.reset();
-    view.transformMatrixToGlobal(tempMatrix);
-    tempBounds.set(0, 0, view.getWidth(), view.getHeight());
-    tempMatrix.mapRect(tempBounds);
+    AutoPtr<IBundle> sharedElementBundle;
+    CBundle::New((IBundle**)&sharedElementBundle);
+    tempMatrix->Reset();
+    view->TransformMatrixToGlobal(tempMatrix);
+    Int32 w, h;
+    view->GetWidth(&w);
+    view->GetHeight(&h);
+    tempBounds->Set(0, 0, w, h);
+    tempMatrix->MapRect(tempBounds);
 
-    sharedElementBundle.putFloat(KEY_SCREEN_LEFT, tempBounds.left);
-    sharedElementBundle.putFloat(KEY_SCREEN_RIGHT, tempBounds.right);
-    sharedElementBundle.putFloat(KEY_SCREEN_TOP, tempBounds.top);
-    sharedElementBundle.putFloat(KEY_SCREEN_BOTTOM, tempBounds.bottom);
-    sharedElementBundle.putFloat(KEY_TRANSLATION_Z, view.getTranslationZ());
-    sharedElementBundle.putFloat(KEY_ELEVATION, view.getElevation());
+    Float l, r, t, b;
+    tempBounds->Get(&l, &t, &r, &b);
+    sharedElementBundle->PutFloat(KEY_SCREEN_LEFT, l);
+    sharedElementBundle->PutFloat(KEY_SCREEN_RIGHT, &r);
+    sharedElementBundle->PutFloat(KEY_SCREEN_TOP, &t);
+    sharedElementBundle->PutFloat(KEY_SCREEN_BOTTOM, &b);
+    Float z, e;
+    view->GetTranslationZ(&z);
+    view->GetElevation(&e);
+    sharedElementBundle->PutFloat(KEY_TRANSLATION_Z, z);
+    sharedElementBundle->PutFloat(KEY_ELEVATION, e);
 
-    Parcelable bitmap = null;
-    if (mListener != null) {
-        bitmap = mListener.onCaptureSharedElementSnapshot(view, tempMatrix, tempBounds);
+    AutoPtr<IParcelable> bitmap;
+    if (mListener != NULL) {
+        mListener->OnCaptureSharedElementSnapshot(view, tempMatrix, tempBounds, (IParcelable**)&bitmap);
     }
 
-    if (bitmap != null) {
-        sharedElementBundle.putParcelable(KEY_SNAPSHOT, bitmap);
+    if (bitmap != NULL) {
+        sharedElementBundle->PutParcelable(KEY_SNAPSHOT, bitmap);
     }
 
-    if (view instanceof ImageView) {
-        ImageView imageView = (ImageView) view;
-        int scaleTypeInt = scaleTypeToInt(imageView.getScaleType());
-        sharedElementBundle.putInt(KEY_SCALE_TYPE, scaleTypeInt);
-        if (imageView.getScaleType() == ImageView.ScaleType.MATRIX) {
-            float[] matrix = new float[9];
-            imageView.getImageMatrix().getValues(matrix);
-            sharedElementBundle.putFloatArray(KEY_IMAGE_MATRIX, matrix);
+    ImageView* imageView = IImageView::Probe(view);
+    if (imageView) {
+        ImageViewScaleType type;
+        imageView->GetScaleType(&type);
+        Int32 scaleTypeInt = ScaleTypeToInt(type);
+        sharedElementBundle->PutInt32(KEY_SCALE_TYPE, scaleTypeInt);
+        if (type == ImageViewScaleType_MATRIX) {
+            AutoPtr<ArrayOf<Float> > matrix = ArrayOf<Float>::Alloc(9);
+            AutoPtr<IMatrix> m;
+            imageView->GetImageMatrix((IMatrix**)&m);
+            m->GetValues((ArrayOf<Float>**)&matrix);
+            sharedElementBundle->PutFloatArray(KEY_IMAGE_MATRIX, matrix);
         }
     }
 
-    transitionArgs.putBundle(name, sharedElementBundle);
+    transitionArgs-PutBundle(name, sharedElementBundle);
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::StartTransition(
@@ -690,122 +995,161 @@ ECode ActivityTransitionCoordinator::StartTransition(
     if (mIsStartingTransition) {
         mPendingTransition = runnable;
     } else {
-        mIsStartingTransition = true;
-        runnable.run();
+        mIsStartingTransition = TRUE;
+        runnable->Run();
     }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::TransitionStarted()
 {
-    mIsStartingTransition = false;
+    mIsStartingTransition = FALSE;
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::MoveSharedElementsToOverlay()
 {
-    if (!mWindow.getSharedElementsUseOverlay()) {
-        return;
+    Boolean bval;
+    mWindow->GetSharedElementsUseOverlay(&bval);
+    if (!bval) {
+        return NOERROR;
     }
-    int numSharedElements = mSharedElements.size();
-    ViewGroup decor = getDecor();
-    if (decor != null) {
-        boolean moveWithParent = moveSharedElementWithParent();
-        for (int i = 0; i < numSharedElements; i++) {
-            View view = mSharedElements.get(i);
-            GhostView.addGhost(view, decor);
-            ViewGroup parent = (ViewGroup) view.getParent();
-            if (moveWithParent && !isInTransitionGroup(parent, decor)) {
-                GhostViewListeners listener = new GhostViewListeners(view, parent, decor);
-                parent.getViewTreeObserver().addOnPreDrawListener(listener);
-                mGhostViewListeners.add(listener);
+
+    Int32 numSharedElements;
+    mSharedElements->GetSize(&numSharedElements);
+    AutoPtr<IViewGroup> decor;
+    GetDecor((IViewGroup**)&decor);
+    if (decor != NULL) {
+        Boolean moveWithParent = MoveSharedElementWithParent();
+        for (Int32 i = 0; i < numSharedElements; i++) {
+            AutoPtr<IInterface> obj;
+            mSharedElements->Get(i, (IInterface**)&obj);
+            IView* view = IView::Probe(obj);
+            assert(0 && "TODO");
+            // GhostView::AddGhost(view, decor);
+            AutoPtr<IViewParent> vp;
+            view->GetParent((IViewParent**)&vp);
+            IViewGroup* parent = IViewGroup::Probe(vp);
+            if (moveWithParent && !IsInTransitionGroup(parent, decor)) {
+                AutoPtr<GhostViewListeners> listener = new GhostViewListeners(view, parent, decor);
+                AutoPtr<IViewTreeObserver> vto;
+                parent->GetViewTreeObserver((IViewTreeObserver**)&vto);
+                vto->AddOnPreDrawListener((IOnPreDrawListener*)listener.Get());
+                mGhostViewListeners.PushBack(listener);
             }
         }
     }
+    return NOERROR;
 }
 
 Boolean ActivityTransitionCoordinator::MoveSharedElementWithParent()
 {
-    return true;
+    return TRUE;
 }
 
-static Boolean ActivityTransitionCoordinator::IsInTransitionGroup(
+Boolean ActivityTransitionCoordinator::IsInTransitionGroup(
     /* [in] */ IViewParent* viewParent,
     /* [in] */ IViewGroup* decor)
 {
-    if (viewParent == decor || !(viewParent instanceof ViewGroup)) {
-        return false;
+    IViewGroup parent = IViewGroup::Probe(viewParent);
+    if (viewParent == decor || parent == NULL) {
+        return FALSE;
     }
-    ViewGroup parent = (ViewGroup) viewParent;
-    if (parent.isTransitionGroup()) {
-        return true;
-    } else {
-        return isInTransitionGroup(parent.getParent(), decor);
+    Boolean bval;
+    parent->IsInTransitionGroup(&bval);
+    if (bval) {
+        return TRUE;
+    }
+    else {
+        AutoPtr<IViewParent> vp;
+        parent->GetParent((IViewParent**)&vp)
+        return IsInTransitionGroup(vp, decor);
     }
 }
 
 ECode ActivityTransitionCoordinator::MoveSharedElementsFromOverlay()
 {
-    int numListeners = mGhostViewListeners.size();
-    for (int i = 0; i < numListeners; i++) {
-        GhostViewListeners listener = mGhostViewListeners.get(i);
-        ViewGroup parent = (ViewGroup) listener.getView().getParent();
-        parent.getViewTreeObserver().removeOnPreDrawListener(listener);
+    List<AutoPtr<GhostViewListeners> >::Iterator it;
+    for (it = mGhostViewListeners.Begin(); it != mGhostViewListeners.End(); ++it) {
+        AutoPtr<GhostViewListeners> listener = *it;
+        AutoPtr<IView> view;
+        listener-GetView((IView**)&View);
+        AutoPtr<IViewParent> vp;
+        View->GetParent((IViewParent**)&vp);
+        IViewGroup* parent = IViewGroup::Probe(vp);
+        AutoPtr<IViewTreeObserver> vto;
+        parent->GetViewTreeObserver((IViewTreeObserver**)&vto);
+        vto->RemoveOnPreDrawListener((IOnPreDrawListener*)listener.Get());
     }
-    mGhostViewListeners.clear();
+    mGhostViewListeners.Clear();
 
-    if (mWindow == null || !mWindow.getSharedElementsUseOverlay()) {
-        return;
+    Boolean bval;
+    if (mWindow == NULL || (mWindow->GetSharedElementsUseOverlay(&bval), !bval)) {
+        return NOERROR;
     }
-    ViewGroup decor = getDecor();
-    if (decor != null) {
-        ViewGroupOverlay overlay = decor.getOverlay();
-        int count = mSharedElements.size();
-        for (int i = 0; i < count; i++) {
-            View sharedElement = mSharedElements.get(i);
-            GhostView.removeGhost(sharedElement);
+
+    AutoPtr<IViewGroup> decor;
+    GetDecor((IViewGroup**)&decor);
+    if (decor != NULL) {
+        AutoPtr<IViewGroupOverlay> overlay;
+        decor->GetOverlay((IViewGroupOverlay**)&overlay);
+        Int32 count;
+        mSharedElements->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> obj;
+            mSharedElements->Get(i, (IInterface**)&obj);
+            IView* sharedElement = IView::Probe(obj);
+            assert(0 && "TODO");
+            // GhostView::RemoveGhost(sharedElement);
         }
     }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::SetGhostVisibility(
     /* [in] */ Int32 visibility)
 {
-    int numSharedElements = mSharedElements.size();
-    for (int i = 0; i < numSharedElements; i++) {
-        GhostView ghostView = GhostView.getGhost(mSharedElements.get(i));
-        if (ghostView != null) {
-            ghostView.setVisibility(visibility);
-        }
+    Int32 numSharedElements;
+    mSharedElements->GetSize(&numSharedElements);
+    for (Int32 i = 0; i < numSharedElements; i++) {
+        AutoPtr<IInterface> obj;
+        mSharedElements->Get(i, (IInterface**)&obj);
+        IView* view = IView::Probe(obj);
+        assert(0 && "TODO");
+        // AutoPtr<GhostView> ghostView = GhostView::GetGhost(view);
+        // if (ghostView != NULL) {
+        //     ghostView->SetVisibility(visibility);
+        // }
     }
+    return NOERROR;
 }
 
 ECode ActivityTransitionCoordinator::ScheduleGhostVisibilityChange(
     /* [in] */ Int32 visibility)
 {
-    final View decorView = getDecor();
-    if (decorView != null) {
-        decorView.getViewTreeObserver()
-                .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    boolean onPreDraw() {
-                        decorView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        setGhostVisibility(visibility);
-                        return true;
-                    }
-                });
+    AutoPtr<IViewGroup> decor;
+    GetDecor((IViewGroup**)&decor);
+    if (decor != NULL) {
+        IView* decorView = IView::Probe(decor);
+        AutoPtr<IViewTreeObserver> vto;
+        decorView->GetViewTreeObserver((IViewTreeObserver**)&vto);
+
+        AutoPtr<IOnPreDrawListener> listener = new GhostVisibilityOnPreDrawListener(this, decorView, visibility);
+        vto->AddOnPreDrawListener(listener);
     }
+    return NOERROR;
 }
 
-static Int32 ActivityTransitionCoordinator::ScaleTypeToInt(
+Int32 ActivityTransitionCoordinator::ScaleTypeToInt(
     /* [in] */ ImageViewScaleType scaleType)
 {
-    for (int i = 0; i < SCALE_TYPE_VALUES.length; i++) {
-        if (scaleType == SCALE_TYPE_VALUES[i]) {
+    for (Int32 i = 0; i < SCALE_TYPE_VALUES->GetLength(); i++) {
+        if (scaleType == (*SCALE_TYPE_VALUES)[i]) {
             return i;
         }
     }
     return -1;
 }
-
 
 } // namespace App
 } // namespace Droid

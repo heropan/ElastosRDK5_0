@@ -1,12 +1,10 @@
 
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/app/Service.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/content/CComponentName.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
-#include "elastos/droid/R.h"
-#ifdef DROID_CORE
-#include "elastos/droid/content/CComponentName.h"
-#endif
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;

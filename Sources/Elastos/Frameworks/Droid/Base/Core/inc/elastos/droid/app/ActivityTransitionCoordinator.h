@@ -4,11 +4,33 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/ResultReceiver.h"
+#include "elastos/droid/transition/Transition.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::ResultReceiver;
+using Elastos::Droid::Widget::ImageViewScaleType;
+using Elastos::Droid::Transition::Transition;
 using Elastos::Droid::Utility::IArrayMap;
+
+// using Elastos::Droid::content.Context;
+// using Elastos::Droid::graphics.Matrix;
+// using Elastos::Droid::graphics.Rect;
+// using Elastos::Droid::graphics.RectF;
+// using Elastos::Droid::os.Bundle;
+// using Elastos::Droid::os.Handler;
+// using Elastos::Droid::os.Parcelable;
+// using Elastos::Droid::os.ResultReceiver;
+// using Elastos::Droid::transition.Transition;
+// using Elastos::Droid::transition.TransitionSet;
+// using Elastos::Droid::View::IGhostView;
+// using Elastos::Droid::View::IView;
+// using Elastos::Droid::View::IViewGroup;
+// using Elastos::Droid::View::IViewGroupOverlay;
+// using Elastos::Droid::View::IViewParent;
+// using Elastos::Droid::View::IViewTreeObserver;
+// using Elastos::Droid::View::IWindow;
+
 using Elastos::Utility::List;
 using Elastos::Utility::HashMap;
 using Elastos::Utility::ICollection;
@@ -17,25 +39,6 @@ using Elastos::Utility::IArrayList;
 namespace Elastos {
 namespace Droid {
 namespace App {
-
-// import android.content.Context;
-// import android.graphics.Matrix;
-// import android.graphics.Rect;
-// import android.graphics.RectF;
-// import android.os.Bundle;
-// import android.os.Handler;
-// import android.os.Parcelable;
-// import android.os.ResultReceiver;
-// import android.transition.Transition;
-// import android.transition.TransitionSet;
-// import android.view.GhostView;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.ViewGroupOverlay;
-// import android.view.ViewParent;
-// import android.view.ViewTreeObserver;
-// import android.view.Window;
-// import android.widget.ImageView;
 
 /**
  * Base class for ExitTransitionCoordinator and EnterTransitionCoordinator, classes
@@ -111,76 +114,122 @@ namespace App {
  *      by setting entering views to VISIBLE.
  */
 class ActivityTransitionCoordinator
-    : ResultReceiver
-    , IActivityTransitionCoordinator
+    : public ResultReceiver
+    , public IActivityTransitionCoordinator
 {
 public:
-    static class SharedElementOriginalState {
+    static class SharedElementOriginalState
+        : public Object
+    {
     public:
-        int mLeft;
-        int mTop;
-        int mRight;
-        int mBottom;
-        int mMeasuredWidth;
-        int mMeasuredHeight;
-        ImageView.ScaleType mScaleType;
-        Matrix mMatrix;
-        float mTranslationZ;
-        float mElevation;
+        SharedElementOriginalState();
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+        Int32 mLeft;
+        Int32 mTop;
+        Int32 mRight;
+        Int32 mBottom;
+        Int32 mMeasuredWidth;
+        Int32 mMeasuredHeight;
+        ImageViewScaleType mScaleType;
+        AutoPtr<IMatrix> mMatrix;
+        Float mTranslationZ;
+        Float mElevation;
     };
 
 protected:
-    class ContinueTransitionListener extends Transition.TransitionListenerAdapter {
-        @Override
-        void onTransitionStart(Transition transition) {
-            mIsStartingTransition = false;
-            Runnable pending = mPendingTransition;
-            mPendingTransition = null;
-            if (pending != null) {
-                startTransition(pending);
-            }
-        }
+    class ContinueTransitionListener
+        : public Transition::TransitionListenerAdapter
+    {
+    public:
+        ContinueTransitionListener(
+            /* [in] */ ActivityTransitionCoordinator* host);
+
+        CARAPI OnTransitionStart(
+            /* [in] */ ITransition* transition);
+    private:
+        ActivityTransitionCoordinator* mHost;
+    };
+
+Ghost
+
+    class DecorViewOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        DecorViewOnPreDrawListener(
+            /* [in] */ ActivityTransitionCoordinator* host,
+            /* [in] */ IView* decorView);
+
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
+
+    private:
+        ActivityTransitionCoordinator* mHost;
+        AutoPtr<IView> mDecorView;
+    };
+
+    class GhostVisibilityOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        GhostVisibilityOnPreDrawListener(
+            /* [in] */ ActivityTransitionCoordinator* host,
+            /* [in] */ IView* decorView,
+            /* [in] */ Int32 visibility);
+
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
+
+    private:
+        ActivityTransitionCoordinator* mHost;
+        AutoPtr<IView> mDecorView;
+        Int32 mVisibility;
     };
 
 private:
-     static class FixedEpicenterCallback extends Transition.EpicenterCallback {
-        Rect mEpicenter;
+    class FixedEpicenterCallback
+        : public Object
+        , public IEpicenterCallback
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-        void setEpicenter(Rect epicenter) { mEpicenter = epicenter; }
+        void SetEpicenter(
+            /* [in] */ IRect* epicenter);
 
-        @Override
-        Rect onGetEpicenter(Transition transition) {
-            return mEpicenter;
-        }
+        CARAPI OnGetEpicenter(
+            /* [in] */ ITransition* transition,
+            /* [out] */ IRect** rect);
+
+    private:
+        AutoPtr<IRect> mEpicenter;
     };
 
-    static class GhostViewListeners implements ViewTreeObserver.OnPreDrawListener {
-        View mView;
-        ViewGroup mDecor;
-        View mParent;
-        Matrix mMatrix = new Matrix();
+    class GhostViewListeners
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        GhostViewListeners(
+            /* [in] */ IView* view,
+            /* [in] */ IView* parent,
+            /* [in] */ IViewGroup* decor);
 
-        GhostViewListeners(View view, View parent, ViewGroup decor) {
-            mView = view;
-            mParent = parent;
-            mDecor = decor;
-        }
+        AutoPtr<IView> GetView();
 
-        View getView() {
-            return mView;
-        }
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
 
-        @Override
-        boolean onPreDraw() {
-            GhostView ghostView = GhostView.getGhost(mView);
-            if (ghostView == null) {
-                mParent.getViewTreeObserver().removeOnPreDrawListener(this);
-            } else {
-                GhostView.calculateMatrix(mView, mDecor, mMatrix);
-                ghostView.setMatrix(mMatrix);
-            }
-            return true;
-        }
+    private:
+        AutoPtr<IView> mView;
+        AutoPtr<IViewGroup> mDecor;
+        AutoPtr<IView> mParent;
+        AutoPtr<IAutoPtr<IMatrix> mMatrix;// = new Matrix();
     };
 
 public:
