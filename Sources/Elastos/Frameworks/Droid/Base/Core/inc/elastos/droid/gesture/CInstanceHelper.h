@@ -26,8 +26,9 @@ public:
         /* [in] */ IGesture *gesture,
         /* [out, callee] */ ArrayOf<Float> **sampler);
 };
-}
-}
-}
 
-#endif
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
+
+#endif // __ELASTOS_DROID_GESTURE_CINSTANCEHELPER_H__

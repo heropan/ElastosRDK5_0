@@ -2,35 +2,26 @@
 #define __GFADEOUTRUNNABLE_H__
 
 #include "_Elastos_Droid_Gesture_CFadeOutRunnable.h"
-#include "GestureOverlayView.h"
+#include "elastos/droid/gesture/GestureOverlayView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CarClass(CFadeOutRunnable), public GestureOverlayView::FadeOutRunnable
+CarClass(CFadeOutRunnable)
+    , public GestureOverlayView::FadeOutRunnable
 {
 public:
-    CARAPI constructor();
+    CAR_OBJECT_DECL();
 
-    CARAPI SetFireActionPerformed(
-        /* [in] */ Boolean fireActionPerformed);
+    CFadeOutRunnable();
 
-    CARAPI SetResetMultipleStrokes(
-        /* [in] */ Boolean resetMultipleStrokes);
-
-    CARAPI GetFireActionPerformed(
-        /* [out] */ Boolean *fireActionPerformed);
-
-    CARAPI GetResetMultipleStrokes(
-        /* [out] */ Boolean *resetMultipleStrokes);
-
-    CARAPI Run();
+    virtual ~CFadeOutRunnable();
 
 };
 
-}
-}
-}
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 
 #endif

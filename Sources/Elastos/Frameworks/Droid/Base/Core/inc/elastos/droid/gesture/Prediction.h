@@ -6,20 +6,29 @@ namespace Droid {
 namespace Gesture {
 
 class Prediction
+	: Object
 {
 public:
-    CARAPI Init(
+    Prediction();
+    virtual ~Prediction();
+
+    CARAPI constructor(
         /* [in] */ const String& label,
         /* [in] */ Double predictionScore);
 
-public:
-    const String mName;
+    CARAPI GetName(
+        /* [out] */ String* name);
 
+    CARAPI GetScore(
+        /* [out] */ Double* score);
+
+private:
+    String mName;
     Double mScore;
-
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
+
 #endif //__ELASTOS_DROID_GESTURE_PREDICTION_H__

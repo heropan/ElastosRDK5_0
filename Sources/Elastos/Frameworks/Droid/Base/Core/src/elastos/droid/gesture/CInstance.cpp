@@ -1,15 +1,17 @@
-#include "CInstance.h"
+#include "elastos/droid/gesture/CInstance.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-ECode CInstance::Normalize()
-{
-    return Instance::Normalize();
-}
+CAR_OBJECT_IMPL(CInstance);
 
+CInstance::CInstance()
+{}
 
-}
-}
-}
+CInstance::~CInstance()
+{}
+
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

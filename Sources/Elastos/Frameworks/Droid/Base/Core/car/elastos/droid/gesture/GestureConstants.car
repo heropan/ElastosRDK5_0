@@ -14,7 +14,7 @@ module
         //const String LOG_TAG = "Gestures";
     }
 
-    }//namespace Gesture
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Gesture
+    } // namespace Droid
+    } // namespace Elastos
 }

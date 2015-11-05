@@ -49,6 +49,6 @@ void Learner::RemoveInstances(
     }
 }
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

@@ -15,9 +15,13 @@ namespace Gesture {
  * The abstract class of a gesture learner
  */
 class Learner
-    : public ElRefBase
+    : public Object
 {
 public:
+
+    Learner();
+    virtual ~Learner();
+
     /**
      * Add an instance to the learner
      *
@@ -58,7 +62,8 @@ private:
     AutoPtr< List< AutoPtr<Instance> > > mInstances;
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
+
 #endif //__ELASTOS_DROID_GESTURE_LEARNER_H__

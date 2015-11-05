@@ -98,6 +98,6 @@ AutoPtr<IArrayList> InstanceLearner::Classify(
     return predictions;
 }
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

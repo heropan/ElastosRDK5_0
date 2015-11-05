@@ -7,7 +7,7 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-struct  GestureConstants
+class GestureConstants
 {
 public:
     static const Int32 STROKE_STRING_BUFFER_SIZE = 1024;
@@ -18,8 +18,8 @@ public:
     static const String LOG_TAG;
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_GESTURE_GESTURECONSTANTS_H__

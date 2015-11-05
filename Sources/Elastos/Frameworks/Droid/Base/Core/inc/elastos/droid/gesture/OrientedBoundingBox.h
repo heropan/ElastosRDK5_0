@@ -3,18 +3,21 @@
 
 #include "_Elastos_Droid_Gesture_COrientedBoundingBox.h"
 
+using Elastos::Droid::Graphics::IPath;
+
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CarClass(COrientedBoundingBox)
-    , public OrientedBoundingBox
+class OrientedBoundingBox
+    : public Object
+    , public IOrientedBoundingBox
 {
 public:
-    CAR_OBJECT_DECL();
+    CAR_INTERFACE_DECL();
 
-    COrientedBoundingBox();
-    virtual ~COrientedBoundingBox();
+    OrientedBoundingBox();
+    virtual ~OrientedBoundingBox();
 };
 
 } // namespace Gesture

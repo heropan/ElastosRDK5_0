@@ -12,7 +12,7 @@ module
             [out] Double* score);
     }
 
-    }//namespace Gesture
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Gesture
+    } // namespace Droid
+    } // namespace Elastos
 }

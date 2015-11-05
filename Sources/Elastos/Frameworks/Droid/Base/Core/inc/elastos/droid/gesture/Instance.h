@@ -13,9 +13,15 @@ namespace Gesture {
  * label is null.
  */
 class Instance
-    : public ElRefBase
+    : public Object
+    , public IInstance
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    Instance();
+    virtual ~Instance();
+
     /**
      * create a learning instance for a single stroke gesture
      *
@@ -65,7 +71,8 @@ private:
 
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
+
 #endif //__ELASTOS_DROID_GESTURE_INSTANCE_H__

@@ -22,8 +22,15 @@ namespace Gesture {
  * </ul>
  */
 class GestureUtils
+    : public Object
+    , public IGestureUtils
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    GestureUtils();
+    virtual ~GestureUtils();
+
     /**
      * Samples the gesture spatially by rendering the gesture into a 2D
      * grayscale bitmap. Scales the gesture to fit the size of the bitmap.
@@ -103,16 +110,16 @@ public:
      * @return the centroid
      */
     static CARAPI_(AutoPtr<ArrayOf<Float> >) ComputeCentroid(
-        /* [in] */ ArrayOf<Float> * points);
+        /* [in] */ ArrayOf<Float> *points);
 
     static CARAPI_(Float) ComputeTotalLength(
-        /* [in] */ ArrayOf<Float> * points);
+        /* [in] */ ArrayOf<Float> *points);
 
     static CARAPI_(Float) ComputeStraightness(
-        /* [in] */ ArrayOf<Float> * points);
+        /* [in] */ ArrayOf<Float> *points);
 
     static CARAPI_(Float) ComputeStraightness(
-        /* [in] */ ArrayOf<Float> * points,
+        /* [in] */ ArrayOf<Float> *points,
         /* [in] */ Float totalLen);
 
     /**
@@ -123,8 +130,8 @@ public:
      * @return the distance
      */
     static CARAPI_(Float) SquaredEuclideanDistance(
-        /* [in] */ ArrayOf<Float> * vector1,
-        /* [in] */ ArrayOf<Float> * vector2);
+        /* [in] */ ArrayOf<Float> *vector1,
+        /* [in] */ ArrayOf<Float> *vector2);
 
     /**
      * Calculates the cosine distance between two instances.
@@ -134,8 +141,8 @@ public:
      * @return the distance between 0 and Math.PI
      */
     static CARAPI_(Float) CosineDistance(
-        /* [in] */ ArrayOf<Float> * vector1,
-        /* [in] */ ArrayOf<Float> * vector2);
+        /* [in] */ ArrayOf<Float> *vector1,
+        /* [in] */ ArrayOf<Float> *vector2);
 
     /**
      * Calculates the "minimum" cosine distance between two instances.
@@ -146,21 +153,21 @@ public:
      * @return the distance between the two instances (between 0 and Math.PI)
      */
     static CARAPI_(Float) MinimumCosineDistance(
-        /* [in] */ ArrayOf<Float> * vector1,
-        /* [in] */ ArrayOf<Float> * vector2,
+        /* [in] */ ArrayOf<Float> *vector1,
+        /* [in] */ ArrayOf<Float> *vector2,
         /* [in] */ Int32 numOrientations);
 
     static CARAPI_(AutoPtr<ArrayOf<Float> >) Rotate(
-        /* [in] */ ArrayOf<Float> * points,
+        /* [in] */ ArrayOf<Float> *points,
         /* [in] */ Float angle);
 
     static CARAPI_(AutoPtr<ArrayOf<Float> >) Translate(
-        /* [in] */ ArrayOf<Float> * points,
+        /* [in] */ ArrayOf<Float> *points,
         /* [in] */ Float dx,
         /* [in] */ Float dy);
 
     static CARAPI_(AutoPtr<ArrayOf<Float> >) Scale(
-        /* [in] */ ArrayOf<Float> * points,
+        /* [in] */ ArrayOf<Float> *points,
         /* [in] */ Float sx,
         /* [in] */ Float sy);
 
@@ -181,11 +188,11 @@ private:
      * @return the variance-covariance matrix
      */
     static CARAPI_(AutoPtr<ArrayOf<FloatArray> >) ComputeCoVariance(
-        /* [in] */ ArrayOf<Float> * points);
+        /* [in] */ ArrayOf<Float> *points);
 
     static CARAPI_(AutoPtr<IOrientedBoundingBox>) ComputeOrientedBoundingBox(
-        /* [in] */ ArrayOf<Float> * points,
-        /* [in] */ ArrayOf<Float> * centroid);
+        /* [in] */ ArrayOf<Float> *points,
+        /* [in] */ ArrayOf<Float> *centroid);
 
     static CARAPI_(AutoPtr<ArrayOf<Float> >) ComputeOrientation(
         /* [in] */ ArrayOf<FloatArray>* covarianceMatrix);
@@ -198,7 +205,8 @@ private:
 
 };
 
-}//namespace Gesture
-}//namespace Droid
-}//namespace Elastos
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos
+
 #endif //__ELASTOS_DROID_GESTURE_GESTUREUTILS_H__

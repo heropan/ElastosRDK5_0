@@ -38,6 +38,6 @@ ECode CInsatnceLearner::Classify(
 }
 
 
-}
-}
-}
+} // namespace Gesture
+} // namespace Droid
+} // namespace Elastos

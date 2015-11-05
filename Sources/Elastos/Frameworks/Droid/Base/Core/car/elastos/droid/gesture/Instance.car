@@ -25,10 +25,9 @@ module
             [in] IGesture* gesture,
             [in] String label,
             [out] IInstance** obj);
-
     }
 
-    }//namespace Gesture
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Gesture
+    } // namespace Droid
+    } // namespace Elastos
 }
