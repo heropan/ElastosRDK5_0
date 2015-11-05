@@ -44,6 +44,11 @@ public:
     CARAPI constructor(
         /* [in] */ ICountry* country);
 
+    CARAPI constructor(
+        /* [in] */ const String& countryIso,
+        /* [in] */ Int32 source,
+        /* [in] */ Int64 timestamp);
+
     /**
      * @return the ISO 3166-1 two letters country code
      */
@@ -105,11 +110,6 @@ public:
     //@Override
     CARAPI ToString(
         /* [out] */ String* strOut);
-
-    CARAPI constructor(
-        /* [in] */ const String& countryIso,
-        /* [in] */ Int32 source,
-        /* [in] */ Int64 timestamp);
 
 private:
     /**

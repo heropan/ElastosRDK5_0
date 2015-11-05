@@ -22,7 +22,8 @@ public:
      * Definition of enum flag sets needed by this class.
      * Such values need to be kept in sync with the ones in fused_location.h
      */
-    class SourceTechnologies {
+    class SourceTechnologies
+    {
     public:
         static Int32 GNSS;
         static Int32 WIFI;
@@ -31,7 +32,8 @@ public:
         static Int32 BLUETOOTH;
     };
 
-    class BatchFlags {
+    class BatchFlags
+    {
     public:
         // follow the definitions to the letter in fused_location.h
         static Int32 WAKEUP_ON_FIFO_FULL;

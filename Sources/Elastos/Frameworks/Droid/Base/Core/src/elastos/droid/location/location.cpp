@@ -9,6 +9,9 @@
 #include "elastos/droid/location/CGpsMeasurement.h"
 #include "elastos/droid/location/CGpsSatellite.h"
 #include "elastos/droid/location/CGpsStatus.h"
+#include "elastos/droid/location/CLocation.h"
+#include "elastos/droid/location/CLocationProvider.h"
+#include "elastos/droid/location/CLocationRequest.h"
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +28,9 @@ CAR_OBJECT_IMPL(CGpsClock)
 CAR_OBJECT_IMPL(CGpsMeasurement)
 CAR_OBJECT_IMPL(CGpsSatellite)
 CAR_OBJECT_IMPL(CGpsStatus)
+CAR_OBJECT_IMPL(CLocation)
+CAR_OBJECT_IMPL(CLocationProvider)
+CAR_OBJECT_IMPL(CLocationRequest)
 
 } // Location
 } // Droid

@@ -38,12 +38,6 @@ ECode GeocoderParams::GetClientPackage(
     return NOERROR;
 }
 
-ECode GeocoderParams::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode GeocoderParams::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {

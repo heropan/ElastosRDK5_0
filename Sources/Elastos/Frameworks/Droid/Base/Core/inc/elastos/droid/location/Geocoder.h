@@ -11,6 +11,7 @@ using Elastos::Utility::IList;
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 /**
  * A class for handling geocoding and reverse geocoding.  Geocoding is
  * the process of transforming a street address or other description
