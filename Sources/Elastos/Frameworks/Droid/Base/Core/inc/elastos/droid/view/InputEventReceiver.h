@@ -2,20 +2,18 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 #define __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 
-#include <utils/Looper.h>
-#include <elastos/core/Object.h>
-#include <input/InputTransport.h>
-#include <elastos/utility/etl/HashMap.h>
-#include <utils/Vector.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/NativeMessageQueue.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <input/InputTransport.h>
+#include <utils/Vector.h>
 
-using Elastos::Core::Object;
-using Elastos::Utility::Etl::HashMap;
-using android::Vector;
 using Elastos::Droid::Os::MessageQueue;
 using Elastos::Droid::Os::NativeMessageQueue;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Core::Object;
+using Elastos::Utility::Etl::HashMap;
+using android::Vector;
 
 namespace Elastos {
 namespace Droid {
@@ -41,7 +39,7 @@ private:
         android::status_t initialize();
         void dispose();
         android::status_t finishInputEvent(uint32_t seq, bool handled);
-        android::status_t consumeEvents(bool consumeBatches, nsecs_t frameTime, bool* outConsumedBatch);
+        android::status_t consumeEvents(bool consumeBatches, nsecs_t frameTime, Boolean* outConsumedBatch);
 
     protected:
         virtual ~NativeInputEventReceiver();
@@ -56,7 +54,7 @@ private:
         android::InputConsumer mInputConsumer;
         AutoPtr<MessageQueue> mMessageQueue;
         android::PreallocatedInputEventFactory mInputEventFactory;
-        bool mBatchedInputEventPending;
+        Boolean mBatchedInputEventPending;
         int mFdEvents;
         Vector<Finish> mFinishQueue;
 

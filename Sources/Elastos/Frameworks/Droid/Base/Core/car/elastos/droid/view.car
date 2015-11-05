@@ -59,6 +59,7 @@ module
     merge("view/Surface.car");
     merge("view/SurfaceHolder.car");
     merge("view/SurfaceSession.car");
+    merge("view/SurfaceControl.car");
     merge("view/SurfaceView.car");
     merge("view/TextureView.car");
     merge("view/TouchDelegate.car");
