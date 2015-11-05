@@ -2,10 +2,14 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IActionModeCallback;
+    interface Elastos.Droid.View.IActionMode;
+    interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Widget.ISpinnerAdapter;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IConfiguration;
 
     namespace Elastos {
     namespace Droid {
@@ -928,6 +932,48 @@ module
          */
         GetElevation(
             [out] Float* elevation);
+
+        /** @hide */
+        SetDefaultDisplayHomeAsUpEnabled(
+            [in] Boolean enabled);
+
+        /** @hide */
+        SetShowHideAnimationEnabled(
+            [in] Boolean enabled);
+
+        /** @hide */
+        OnConfigurationChanged(
+            [in] IConfiguration* config);
+
+        /** @hide */
+        DispatchMenuVisibilityChanged(
+            [in] Boolean visible);
+
+        /** @hide */
+        StartActionMode(
+            [in] IActionModeCallback* cb,
+            [out] IActionMode** mode);
+
+        /** @hide */
+        OpenOptionsMenu(
+            [out] Boolean* result);
+
+        /** @hide */
+        InvalidateOptionsMenu(
+            [out] Boolean* result);
+
+        /** @hide */
+        OnMenuKeyEvent(
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /** @hide */
+        CollapseActionView(
+            [out] Boolean* result);
+
+        /** @hide */
+        SetWindowTitle(
+            [in] ICharSequence* title);
     }
 
     /**

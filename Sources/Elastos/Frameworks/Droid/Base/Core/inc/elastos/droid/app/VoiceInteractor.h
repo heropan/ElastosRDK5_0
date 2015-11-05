@@ -2,15 +2,15 @@
 
 package android.app;
 
-import android.annotation.SystemApi;
-import android.content.Context;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.RemoteException;
-import android.util.ArrayMap;
-import android.util.Log;
+using Elastos::Droid::annotation.SystemApi;
+using Elastos::Droid::content.Context;
+using Elastos::Droid::os.Bundle;
+using Elastos::Droid::os.IBinder;
+using Elastos::Droid::os.Looper;
+using Elastos::Droid::os.Message;
+using Elastos::Droid::os.RemoteException;
+using Elastos::Droid::util.ArrayMap;
+using Elastos::Droid::util.Log;
 import com.android.internal.app.IVoiceInteractor;
 import com.android.internal.app.IVoiceInteractorCallback;
 import com.android.internal.app.IVoiceInteractorRequest;

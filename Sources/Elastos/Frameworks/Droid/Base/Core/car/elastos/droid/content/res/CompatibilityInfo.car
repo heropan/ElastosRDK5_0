@@ -171,13 +171,9 @@ module
         ApplyToConfiguration(
             [in] Int32 displayDensity,
             [in] IConfiguration* inoutConfig);
-
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* result);
     }
 
-    interface ICompatibilityInfoHelper{
+    interface ICompatibilityInfoHelper {
         /**
         * Compute the frame Rect for applications runs under compatibility mode.
         *

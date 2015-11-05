@@ -153,8 +153,6 @@ protected:
         ActivityTransitionCoordinator* mHost;
     };
 
-Ghost
-
     class DecorViewOnPreDrawListener
         : public Object
         , public IOnPreDrawListener
@@ -363,7 +361,7 @@ protected:
 
     CARAPI_(Boolean) MoveSharedElementWithParent();
 
-    CARAPI MoveSharedElementsFromOverlay();
+    virtual CARAPI MoveSharedElementsFromOverlay();
 
     CARAPI SetGhostVisibility(
         /* [in] */ Int32 visibility);

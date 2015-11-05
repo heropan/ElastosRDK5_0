@@ -689,7 +689,7 @@ module
      * interface IOnCreateContextMenuListener
      * interface IComponentCallbacks
      * interface IComponentCallbacks2
-     * interface IWindowOnWindowDismissedCallback
+     * interface IOnWindowDismissedCallback
      */
     [deprecated, local]
     interface IActivity {
@@ -2074,7 +2074,7 @@ module
          * @param view The view to show the context menu for.
          */
         OpenContextMenu(
-                [in] IView* view);
+            [in] IView* view);
 
         /**
          * Programmatically closes the most recently opened context menu, if showing.
@@ -2302,7 +2302,7 @@ module
          * @see android.view.Window#requestFeature
          */
         RequestWindowFeature(
-                [in] Int32 featureId,
+            [in] Int32 featureId,
                 [out] Boolean* result);
 
         /**
@@ -2571,9 +2571,9 @@ module
          * @see #startActivityForResult
          */
         StartActivityFromChild(
-                [in] IActivity* child,
-                [in] IIntent* intent,
-                [in] Int32 requestCode);
+            [in] IActivity* child,
+            [in] IIntent* intent,
+            [in] Int32 requestCode);
 
         /**
          * This is called when a child activity of this one calls its
@@ -2597,10 +2597,10 @@ module
          * @see #startActivityForResult
          */
         StartActivityFromChild(
-                [in] IActivity* child,
-                [in] IIntent* intent,
-                [in] Int32 requestCode,
-                [in] IBundle* options);
+            [in] IActivity* child,
+            [in] IIntent* intent,
+            [in] Int32 requestCode,
+            [in] IBundle* options);
 
         /**
          * Same as calling {@sa #startActivityFromFragment(Fragment, Intent, int, Bundle)}

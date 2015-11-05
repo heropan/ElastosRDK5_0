@@ -26,7 +26,7 @@ module
      * interface IWindowCallback
      * interface IKeyEventCallback
      * interface IOnCreateContextMenuListener
-     * interface IWindowOnWindowDismissedCallback
+     * interface IOnWindowDismissedCallback
      * interface IDialog
      */
     [local]

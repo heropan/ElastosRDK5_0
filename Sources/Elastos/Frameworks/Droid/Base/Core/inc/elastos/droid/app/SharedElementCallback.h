@@ -9,16 +9,16 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-// import android.content.Context;
-// import android.content.res.Resources;
-// import android.graphics.Bitmap;
-// import android.graphics.Canvas;
-// import android.graphics.Matrix;
-// import android.graphics.RectF;
-// import android.graphics.drawable.BitmapDrawable;
-// import android.os.Parcelable;
-// import android.transition.TransitionUtils;
-// import android.view.View;
+// using Elastos::Droid::content.Context;
+// using Elastos::Droid::content.res.Resources;
+// using Elastos::Droid::graphics.Bitmap;
+// using Elastos::Droid::graphics.Canvas;
+// using Elastos::Droid::graphics.Matrix;
+// using Elastos::Droid::graphics.RectF;
+// using Elastos::Droid::graphics.drawable.BitmapDrawable;
+// using Elastos::Droid::os.Parcelable;
+// using Elastos::Droid::transition.TransitionUtils;
+// using Elastos::Droid::view.View;
 
 // import java.util.List;
 // import java.util.Map;

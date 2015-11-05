@@ -1,10 +1,13 @@
 module
 {
     using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.ISet;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Droid {
     namespace Utility {
+
     /**
      * ArrayMap is a generic key->value mapping data structure that is
      * designed to be more memory efficient than a traditional {@link java.util.HashMap}.
@@ -151,6 +154,64 @@ module
         RetainAll(
             [in] ICollection* collection,
             [out] Boolean* value);
+
+        /**
+         * interfaces from IMap
+         */
+        Clear();
+
+        ContainsKey(
+            [in] IInterface* key,
+            [out] Boolean* result);
+
+        ContainsValue(
+            [in] IInterface* value,
+            [out] Boolean* result);
+
+        GetEntrySet(
+            [out] ISet** entries);
+
+        Equals(
+            [in] IInterface* object,
+            [out] Boolean* result);
+
+        Get(
+            [in] IInterface* key,
+            [out] IInterface** value);
+
+        GetHashCode(
+            [out] Int32* hashCode);
+
+        IsEmpty(
+            [out] Boolean* result);
+
+        GetKeySet(
+            [out] ISet** keySet);
+
+        Put(
+            [in] IInterface* key,
+            [in] IInterface* value,
+            [out] IInterface** oldValue);
+
+        Put(
+            [in] IInterface* key,
+            [in] IInterface* value);
+
+        PutAll(
+            [in] IMap* map);
+
+        Remove(
+            [in] IInterface* key,
+            [out] IInterface** value);
+
+        Remove(
+            [in] IInterface* key);
+
+        GetSize(
+            [out] Int32* size);
+
+        GetValues(
+            [out] ICollection** value);
     }
 
     } // namespace Utility

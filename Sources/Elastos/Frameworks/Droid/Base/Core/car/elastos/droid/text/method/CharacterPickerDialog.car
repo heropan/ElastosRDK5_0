@@ -14,7 +14,7 @@ module
      * @Involve
      * interface IViewOnClickListener;
      * interface IAdapterViewOnItemClickListener;
-     * interface IWindowOnWindowDismissedCallback;
+     * interface IOnWindowDismissedCallback;
      * interface IViewOnCreateContextMenuListener;
      * interface IKeyEventCallback;
      * interface IWindowCallback;

@@ -2,9 +2,9 @@
 
 package android.app;
 
-import android.content.Intent;
-import android.content.pm.IPackageInstallObserver2;
-import android.os.Bundle;
+using Elastos::Droid::content.Intent;
+using Elastos::Droid::content.pm.IPackageInstallObserver2;
+using Elastos::Droid::os.Bundle;
 
 /** {@hide} */
 public class PackageInstallObserver {

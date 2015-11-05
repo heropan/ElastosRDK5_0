@@ -2,7 +2,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/CActivityNonConfigurationInstances.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace App {
@@ -45,14 +44,14 @@ ECode CActivityNonConfigurationInstances::GetActivity(
 }
 
 ECode CActivityNonConfigurationInstances::SetChildren(
-    /* [in] */ IObjectStringMap* children)
+    /* [in] */ IHashMap* children)
 {
     mChildren = children;
     return NOERROR;
 }
 
 ECode CActivityNonConfigurationInstances::GetChildren(
-    /* [out] */ IObjectStringMap** children)
+    /* [out] */ IHashMap** children)
 {
     VALIDATE_NOT_NULL(children);
     *children = mChildren;
@@ -61,14 +60,14 @@ ECode CActivityNonConfigurationInstances::GetChildren(
 }
 
 ECode CActivityNonConfigurationInstances::SetFragments(
-    /* [in] */ IObjectContainer* fragments)
+    /* [in] */ IArrayList* fragments)
 {
     mFragments = fragments;
     return NOERROR;
 }
 
 ECode CActivityNonConfigurationInstances::GetFragments(
-    /* [out] */ IObjectContainer** fragments)
+    /* [out] */ IArrayList** fragments)
 {
     VALIDATE_NOT_NULL(fragments);
     *fragments = mFragments;
@@ -77,18 +76,34 @@ ECode CActivityNonConfigurationInstances::GetFragments(
 }
 
 ECode CActivityNonConfigurationInstances::SetLoaders(
-    /* [in] */ IObjectStringMap* loaders)
+    /* [in] */ IArrayMap* loaders)
 {
     mLoaders = loaders;
     return NOERROR;
 }
 
 ECode CActivityNonConfigurationInstances::GetLoaders(
-    /* [out] */ IObjectStringMap** loaders)
+    /* [out] */ IArrayMap** loaders)
 {
     VALIDATE_NOT_NULL(loaders);
     *loaders = mLoaders;
     REFCOUNT_ADD(*loaders);
+    return NOERROR;
+}
+
+ECode CActivityNonConfigurationInstances::SetVoiceInteractor(
+    /* [in] */ IVoiceInteractor* vi)
+{
+    mVoiceInteractor = vi;
+    return NOERROR;
+}
+
+ECode CActivityNonConfigurationInstances::GetVoiceInteractor(
+    /* [out] */ IVoiceInteractor** vi)
+{
+    VALIDATE_NOT_NULL(vi)
+    *vi = mVoiceInteractor;
+    REFCOUNT_ADD(*vi)
     return NOERROR;
 }
 

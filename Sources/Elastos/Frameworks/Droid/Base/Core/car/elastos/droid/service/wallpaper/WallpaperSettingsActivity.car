@@ -12,7 +12,7 @@ module
      * @hide
      *
      * @Involve
-     * interface IWindowOnWindowDismissedCallback
+     * interface IOnWindowDismissedCallback
      * interface IComponentCallbacks2
      * interface IOnCreateContextMenuListener
      * interface IKeyEventCallback

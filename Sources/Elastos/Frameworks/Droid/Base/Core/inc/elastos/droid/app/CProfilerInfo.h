@@ -1,8 +1,8 @@
 package android.app;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.os.ParcelFileDescriptor;
+using Elastos::Droid::os.Parcel;
+using Elastos::Droid::os.Parcelable;
+using Elastos::Droid::os.ParcelFileDescriptor;
 
 /**
  * System private API for passing profiler settings.

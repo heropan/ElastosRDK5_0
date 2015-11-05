@@ -164,6 +164,7 @@ module
             [in] IBinder* token,
             [in] Int32 code,
             [in] IIntent* data,
+            [in] Boolean finishTask,
             [out] Boolean* result);
 
         FinishSubActivity(

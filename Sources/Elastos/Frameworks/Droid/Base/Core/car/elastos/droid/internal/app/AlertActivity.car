@@ -24,7 +24,7 @@ module
      * interface IOnCreateContextMenuListener
      * interface IComponentCallbacks
      * interface IComponentCallbacks2
-     * interface IWindowOnWindowDismissedCallback
+     * interface IOnWindowDismissedCallback
      * interface IActivity
      * interface IDialogInterface
      */

@@ -12,7 +12,7 @@ SOURCES += app.cpp
 SOURCES += ActionBar.cpp
 SOURCES += CActionKeyInfo.cpp
 
-#SOURCES = Activity.cpp
+SOURCES = Activity.cpp
 SOURCES += ActivityManagerNative.cpp
 
 SOURCES += CActivityManager.cpp
@@ -27,11 +27,13 @@ SOURCES += CActivityManagerTaskDescription.cpp
 SOURCES += CActivityManagerTaskThumbnail.cpp
 SOURCES += CActivityManagerWaitResult.cpp
 SOURCES += CActivityManagerStackInfo.cpp
+SOURCES += CActivityNonConfigurationInstances.cpp
 SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
 #SOURCES += ActivityTransitionCoordinator.cpp
+#SOURCES += ActivityTransitionState.cpp
 
 SOURCES += AppGlobals.cpp
 
@@ -50,6 +52,9 @@ SOURCES += CBackStackRecordTransitionState.cpp
 
 SOURCES += CContentProviderHolder.cpp
 
+#SOURCES += EnterTransitionCoordinator.cpp
+#SOURCES += ExitTransitionCoordinator.cpp
+
 SOURCES += Fragment.cpp
 SOURCES += CFragmentHelper.cpp
 SOURCES += FragmentManager.cpp
@@ -67,7 +72,7 @@ SOURCES += CPendingIntentHelper.cpp
 SOURCES += QueuedWork.cpp
 
 SOURCES += CResultInfo.cpp
-#SOURCES += Service.cpp
+SOURCES += Service.cpp
 
 SOURCES += CTaskStackBuilder.cpp
 SOURCES += CTaskStackBuilderHelper.cpp
@@ -81,7 +86,6 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += ApplicationPackageManager.cpp
 #SOURCES += CActionBarLayoutParams.cpp
 
-#SOURCES += CActivityNonConfigurationInstances.cpp
 #SOURCES += CActivityThread.cpp
 #SOURCES += CActivityThreadHelper.cpp
 #SOURCES += CAlarmManager.cpp

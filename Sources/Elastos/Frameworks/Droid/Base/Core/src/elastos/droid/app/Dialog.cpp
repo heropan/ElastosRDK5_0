@@ -225,7 +225,7 @@ ECode Dialog::Init(
     pm->MakeNewWindow(mContext, (IWindow**)&mWindow);
 
     mWindow->SetCallback(THIS_PROBE(IWindowCallback));
-    mWindow->SetOnWindowDismissedCallback(THIS_PROBE(IWindowOnWindowDismissedCallback));
+    mWindow->SetOnWindowDismissedCallback(THIS_PROBE(IOnWindowDismissedCallback));
     mWindow->SetWindowManager(mWindowManager, NULL, String(NULL));
     mWindow->SetGravity(IGravity::CENTER);
 

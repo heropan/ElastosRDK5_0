@@ -14,7 +14,14 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+
+CAR_INTERFACE_IMPL(ContextThemeWrapper, ContextWrapper, IContextThemeWrapper)
+
 ContextThemeWrapper::ContextThemeWrapper()
+{
+}
+
+ContextThemeWrapper::~ContextThemeWrapper()
 {
 }
 
@@ -22,7 +29,7 @@ ECode ContextThemeWrapper::constructor(
     /* [in] */ IContext* base,
     /* [in] */ Int32 themeres)
 {
-    ContextWrapper::constructor(base);
+    FAIL_RETURN(ContextWrapper::constructor(base));
     mThemeResource = themeres;
     return NOERROR;
 }
@@ -81,6 +88,7 @@ ECode ContextThemeWrapper::SetTheme(
 ECode ContextThemeWrapper::GetThemeResId(
     /* [out] */ Int32* resId)
 {
+    VALIDATE_NOT_NULL(resid))
     *resId = mThemeResource;
     return NOERROR;
 }
@@ -115,6 +123,7 @@ ECode ContextThemeWrapper::GetSystemService(
     /* [in] */ const String& name,
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object)
     if (IContext::LAYOUT_INFLATER_SERVICE.Equals(name)) {
         if (mInflater == NULL) {
             AutoPtr<ILayoutInflater> inflater;

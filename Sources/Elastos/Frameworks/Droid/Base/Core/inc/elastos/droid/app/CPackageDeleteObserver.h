@@ -2,8 +2,8 @@
 
 package android.app;
 
-import android.content.Intent;
-import android.content.pm.IPackageDeleteObserver2;
+using Elastos::Droid::content.Intent;
+using Elastos::Droid::content.pm.IPackageDeleteObserver2;
 
 /** {@hide} */
 public class PackageDeleteObserver {

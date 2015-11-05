@@ -14,13 +14,13 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-// import android.content.Context;
-// import android.os.Handler;
-// import android.os.Looper;
-// import android.os.Message;
-// import android.os.RemoteException;
-// import android.util.SparseArray;
-// import android.util.SparseIntArray;
+// using Elastos::Droid::content.Context;
+// using Elastos::Droid::os.Handler;
+// using Elastos::Droid::os.Looper;
+// using Elastos::Droid::os.Message;
+// using Elastos::Droid::os.RemoteException;
+// using Elastos::Droid::util.SparseArray;
+// using Elastos::Droid::util.SparseIntArray;
 
 // import java.util.List;
 

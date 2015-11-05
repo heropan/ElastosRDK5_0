@@ -1147,6 +1147,16 @@ module
             [in] Int32 resId);
 
         /**
+         * Set the default icon for this window.
+         * This will be overridden by any other icon set operation which could come from the
+         * theme or another explicit set.
+         *
+         * @hide
+         */
+        SetDefaultIcon(
+            [in] Int32 resId);
+
+        /**
          * Set the logo for this window. A logo is often shown in place of an
          * {@link #setIcon(int) icon} but is generally wider and communicates window title information
          * as well.
@@ -1154,6 +1164,16 @@ module
          * @param resId resource ID of a drawable to set
          */
         SetLogo(
+            [in] Int32 resId);
+
+        /**
+         * Set the default logo for this window.
+         * This will be overridden by any other logo set operation which could come from the
+         * theme or another explicit set.
+         *
+         * @hide
+         */
+        SetDefaultLogo(
             [in] Int32 resId);
 
         /**

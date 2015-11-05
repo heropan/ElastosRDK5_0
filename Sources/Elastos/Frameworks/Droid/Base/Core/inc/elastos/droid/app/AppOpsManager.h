@@ -5,18 +5,18 @@ namespace App {
 
 package android.app;
 
-import android.annotation.SystemApi;
-import android.app.usage.UsageStatsManager;
-import android.content.Context;
-import android.media.AudioAttributes.AttributeUsage;
-import android.os.Binder;
-import android.os.IBinder;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.os.Process;
-import android.os.RemoteException;
-import android.os.UserManager;
-import android.util.ArrayMap;
+using Elastos::Droid::annotation.SystemApi;
+using Elastos::Droid::app.usage.UsageStatsManager;
+using Elastos::Droid::content.Context;
+using Elastos::Droid::media.AudioAttributes.AttributeUsage;
+using Elastos::Droid::os.Binder;
+using Elastos::Droid::os.IBinder;
+using Elastos::Droid::os.Parcel;
+using Elastos::Droid::os.Parcelable;
+using Elastos::Droid::os.Process;
+using Elastos::Droid::os.RemoteException;
+using Elastos::Droid::os.UserManager;
+using Elastos::Droid::util.ArrayMap;
 
 import com.android.internal.app.IAppOpsCallback;
 import com.android.internal.app.IAppOpsService;

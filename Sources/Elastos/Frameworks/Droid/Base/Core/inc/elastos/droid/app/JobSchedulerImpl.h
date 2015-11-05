@@ -3,10 +3,10 @@
 // in android.app so ContextImpl has package access
 package android.app;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.app.job.IJobScheduler;
-import android.os.RemoteException;
+using Elastos::Droid::app.job.JobInfo;
+using Elastos::Droid::app.job.JobScheduler;
+using Elastos::Droid::app.job.IJobScheduler;
+using Elastos::Droid::os.RemoteException;
 
 import java.util.List;
 

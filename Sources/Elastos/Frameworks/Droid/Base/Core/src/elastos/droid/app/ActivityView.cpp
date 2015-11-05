@@ -1,26 +1,26 @@
 
 #include "elastos/droid/app/ActivityView.h"
 
-// import android.content.Context;
-// import android.content.ContextWrapper;
-// import android.content.IIntentSender;
-// import android.content.Intent;
-// import android.content.IntentSender;
-// import android.graphics.SurfaceTexture;
-// import android.os.IBinder;
-// import android.os.RemoteException;
-// import android.util.AttributeSet;
-// import android.util.DisplayMetrics;
-// import android.util.Log;
-// import android.view.InputDevice;
-// import android.view.InputEvent;
-// import android.view.MotionEvent;
-// import android.view.Surface;
-// import android.view.TextureView;
-// import android.view.TextureView.SurfaceTextureListener;
-// import android.view.View;
-// import android.view.ViewGroup;
-// import android.view.WindowManager;
+// using Elastos::Droid::content.Context;
+// using Elastos::Droid::content.ContextWrapper;
+// using Elastos::Droid::content.IIntentSender;
+// using Elastos::Droid::content.Intent;
+// using Elastos::Droid::content.IntentSender;
+// using Elastos::Droid::graphics.SurfaceTexture;
+// using Elastos::Droid::os.IBinder;
+// using Elastos::Droid::os.RemoteException;
+// using Elastos::Droid::util.AttributeSet;
+// using Elastos::Droid::util.DisplayMetrics;
+// using Elastos::Droid::util.Log;
+// using Elastos::Droid::view.InputDevice;
+// using Elastos::Droid::view.InputEvent;
+// using Elastos::Droid::view.MotionEvent;
+// using Elastos::Droid::view.Surface;
+// using Elastos::Droid::view.TextureView;
+// using Elastos::Droid::view.TextureView.SurfaceTextureListener;
+// using Elastos::Droid::view.View;
+// using Elastos::Droid::view.ViewGroup;
+// using Elastos::Droid::view.WindowManager;
 // import dalvik.system.CloseGuard;
 
 // import java.lang.ref.WeakReference;

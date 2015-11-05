@@ -4,19 +4,19 @@ package android.app;
 
 import static android.app.ActivityThread.DEBUG_CONFIGURATION;
 
-import android.content.pm.ActivityInfo;
-import android.content.res.AssetManager;
-import android.content.res.CompatibilityInfo;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.content.res.ResourcesKey;
-import android.hardware.display.DisplayManagerGlobal;
-import android.os.IBinder;
-import android.util.ArrayMap;
-import android.util.DisplayMetrics;
-import android.util.Slog;
-import android.view.Display;
-import android.view.DisplayAdjustments;
+using Elastos::Droid::content.pm.ActivityInfo;
+using Elastos::Droid::content.res.AssetManager;
+using Elastos::Droid::content.res.CompatibilityInfo;
+using Elastos::Droid::content.res.Configuration;
+using Elastos::Droid::content.res.Resources;
+using Elastos::Droid::content.res.ResourcesKey;
+using Elastos::Droid::hardware.display.DisplayManagerGlobal;
+using Elastos::Droid::os.IBinder;
+using Elastos::Droid::util.ArrayMap;
+using Elastos::Droid::util.DisplayMetrics;
+using Elastos::Droid::util.Slog;
+using Elastos::Droid::view.Display;
+using Elastos::Droid::view.DisplayAdjustments;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;

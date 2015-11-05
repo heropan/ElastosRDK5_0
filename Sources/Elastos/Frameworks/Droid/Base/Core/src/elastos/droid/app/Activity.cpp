@@ -4,18 +4,24 @@
 #include "elastos/droid/app/ActivityManagerNative.h"
 //#include "elastos/droid/app/CSearchManager.h"
 // #include "elastos/droid/app/CInstrumentationHelper.h"
+// #include "elastos/droid/app/SharedElementCallback.h"
+// #include "elastos/droid/app/CVoiceInteractor.h"
 #include "elastos/droid/app/FragmentManagerImpl.h"
 #include "elastos/droid/app/CApplication.h"
 #include "elastos/droid/app/CPendingIntent.h"
 #include "elastos/droid/app/CTaskStackBuilderHelper.h"
 #include "elastos/droid/app/CActivityNonConfigurationInstances.h"
+#include "elastos/droid/app/CActivityManagerTaskDescription.h"
+#include "elastos/droid/app/CActivityManager.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/view/CWindowManagerGlobal.h"
-#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/graphics/CBitmap.h"
+// #include "elastos/droid/view/CWindowManagerGlobal.h"
+// #include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/method/CTextKeyListenerHelper.h"
@@ -26,11 +32,14 @@
 #include "elastos/droid/content/res/CConfiguration.h"
 // #include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/R.h"
 
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/Thread.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
@@ -41,52 +50,59 @@ using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Os::IUserHandleHelper;
-using Elastos::Droid::Os::CUserHandleHelper;
-using Elastos::Droid::Os::ILooperHelper;
-using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Build;
+using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::CIntentHelper;
 using Elastos::Droid::Content::IIIntentSender;
-using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::EIID_IContextWrapper;
 using Elastos::Droid::Content::EIID_IComponentCallbacks2;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::CSpannableStringBuilder;
-using Elastos::Droid::Text::ISelectionHelper;
-//using Elastos::Droid::Text::CSelectionHelper;
+using Elastos::Droid::Text::Selection;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::Method::ITextKeyListenerHelper;
 using Elastos::Droid::Text::Method::CTextKeyListenerHelper;
 using Elastos::Droid::Text::Method::IKeyListener;
 using Elastos::Droid::Text::Method::EIID_IKeyListener;
 using Elastos::Droid::Text::Method::ITextKeyListener;
+using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::CWindowManagerGlobal;
-using Elastos::Droid::View::CMenuInflater;
+// using Elastos::Droid::View::CWindowManagerGlobal;
+// using Elastos::Droid::View::CMenuInflater;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::IWindowManagerGlobal;
+using Elastos::Droid::View::EIID_IOnWindowDismissedCallback;
 using Elastos::Droid::View::EIID_IWindowCallback;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::EIID_IContextThemeWrapper;
 using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 using Elastos::Droid::View::EIID_ILayoutInflaterFactory2;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
 // using Elastos::Droid::Internal::Policy::CPolicyManager;
+using Elastos::Droid::Internal::App::IWindowDecorActionBar;
+using Elastos::Droid::Internal::App::IToolbarActionBar;
 
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IRunnable;
 using Elastos::Core::StringBuffer;
@@ -94,6 +110,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Thread;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
@@ -101,46 +118,46 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class FragmentContainerLocal
-    : public Object
-    , public IFragmentContainer
+//=============================================================================
+// Activity::FragmentContainerLocal
+//=============================================================================
+
+CAR_INTERFACE_IMPL(Activity::FragmentContainerLocal, Object, IFragmentContainer)
+
+Activity::FragmentContainerLocal::FragmentContainerLocal(
+    /* [in] */ Activity* host)
+    : mHost(host)
+{}
+
+ECode Activity::FragmentContainerLocal::FindViewById(
+    /* [in] */ Int32 id,
+    /* [out] */ IView** view)
 {
-public:
-    FragmentContainerLocal(
-        /* [in] */ Activity* host)
-        : mHost(host)
-    {}
+    return mHost->FindViewById(id, view);
+}
 
-    ECode FindViewById(
-        /* [in] */ Int32 id,
-        /* [out] */ IView** view)
-    {
-        return mHost->FindViewById(id, view);
-    }
+ECode Activity::FragmentContainerLocal::HasView(
+    /* [out] */ Boolean* hasView)
+{
+    VALIDATE_NOT_NULL(hasView)
+    *hasView = FALSE;
+    AutoPtr<IWindow> window;
+    mHost->GetWindow((IWindow**)&window);
 
-    ECode HasView(
-        /* [out] */ Boolean* hasView)
-    {
-        VALIDATE_NOT_NULL(hasView)
-        *hasView = FALSE;
-        AutoPtr<IWindow> window;
-        mHost->GetWindow((IWindow**)&window);
-
-        if (window) {
-            AutoPtr<IView> decorView;
-            window->PeekDecorView((IView**)&decorView);
-            if (decorView != NULL) {
-                *hasView = TRUE;
-            }
+    if (window) {
+        AutoPtr<IView> decorView;
+        window->PeekDecorView((IView**)&decorView);
+        if (decorView != NULL) {
+            *hasView = TRUE;
         }
-
-        return NOERROR;
     }
 
-private:
-    Activity* mHost;
-};
+    return NOERROR;
+}
 
+//=============================================================================
+// Activity
+//=============================================================================
 const String Activity::TAG("Activity");
 const Boolean Activity::DEBUG_LIFECYCLE = FALSE;
 const String Activity::FRAGMENTS_TAG("android:fragments");
@@ -151,7 +168,7 @@ const String Activity::SAVED_DIALOGS_TAG("android:savedDialogs");
 const String Activity::SAVED_DIALOG_KEY_PREFIX("android:dialog_");
 const String Activity::SAVED_DIALOG_ARGS_KEY_PREFIX("android:dialog_args_");
 
-CAR_INTERFACE_IMPL_12(Activity, Object, IActivity, IContext, IContextWrapper, IContextThemeWrapper, ILayoutInflaterFactory, ILayoutInflaterFactory2, IWindowCallback, IKeyEventCallback, IViewOnCreateContextMenuListener, IComponentCallbacks, IComponentCallbacks2, IWindowOnWindowDismissedCallback)
+CAR_INTERFACE_IMPL_9(Activity, ContextThemeWrapper, IActivity, ILayoutInflaterFactory, ILayoutInflaterFactory2, IWindowCallback, IKeyEventCallback, IViewOnCreateContextMenuListener, IComponentCallbacks, IComponentCallbacks2, IOnWindowDismissedCallback)
 
 Activity::Activity()
     : mCalled(FALSE)
@@ -172,6 +189,7 @@ Activity::Activity()
     , mVisibleBehind(FALSE)
     , mIdent(0)
     , mDestroyed(FALSE)
+    , mDoReportFullyDrawn(TRUE)
     , mEnableDefaultActionBarUp(FALSE)
     , mTitleColor(0)
     , mTitleReady(FALSE)
@@ -188,34 +206,6 @@ Activity::~Activity()
     mInflater = NULL;
     mManagedDialogs.Clear();
     mManagedCursors.Clear();
-}
-
-ECode Activity::Initialize()
-{
-    return NOERROR;
-}
-
-ECode Activity::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IActivity * o = IActivity::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IActivity));
-    }
-    return NOERROR;
-}
-
-ECode Activity::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IActivity);
-    return NOERROR;
 }
 
 ECode Activity::ToString(
@@ -323,7 +313,7 @@ ECode Activity::GetLoaderManager(
         mLoaderManager = GetLoaderManager(str, mLoadersStarted, TRUE);
     }
 
-    *manager = mLoaderManager.Get();
+    *manager = ILoaderManager::Probe(mLoaderManager);
     REFCOUNT_ADD(*manager);
     return NOERROR;
 }
@@ -337,8 +327,9 @@ AutoPtr<ILoaderManagerImpl> Activity::GetLoaderManager(
         CArrayMap::New((IArrayMap**)&mAllLoaderManagers);
     }
 
+    AutoPtr<ICharSequence> key = CoreUtils::Convert(who);
     AutoPtr<ILoaderManagerImpl> lm;
-    mAllLoaderManagers->Get(who, (IInterface**)&lm);
+    mAllLoaderManagers->Get(IInterface::Probe(key), (IInterface**)&lm);
     if (lm == NULL) {
         if (create) {
             // TODO
@@ -346,8 +337,10 @@ AutoPtr<ILoaderManagerImpl> Activity::GetLoaderManager(
 //                    THIS_PROBE(IActivity), started, (ILoaderManagerImpl**)&lm);
 //            mAllLoaderManagers->Put(who, (IInterface*)lm.Get());
         }
-    } else {
-        lm->UpdateActivity(THIS_PROBE(IActivity));
+    }
+    else {
+        // LoaderManagerImpl* lmi = (LoaderManagerImpl*)lm.Get();
+        // lmi->UpdateActivity(THIS_PROBE(IActivity));
     }
 
     return lm;
@@ -370,14 +363,13 @@ ECode Activity::OnCreate(
     if (DEBUG_LIFECYCLE) {
         StringBuilder sb("onCreate ");
         sb.Append(ToString());
-        String temp;
-        savedInstanceState->ToString(&temp);
+        String temp = Object::ToString(savedInstanceState);
         sb.Append(temp);
         Slogger::V(TAG, sb.ToString());
     }
 
     if (mLastNonConfigurationInstances != NULL) {
-        mLastNonConfigurationInstances->GetLoaders((IObjectStringMap**)&mAllLoaderManagers);
+        mLastNonConfigurationInstances->GetLoaders((IArrayMap**)&mAllLoaderManagers);
     }
 
     String parentActivityName;
@@ -398,8 +390,8 @@ ECode Activity::OnCreate(
             FAIL_RETURN(mFragments->RestoreAllState(p, NULL));
         }
         else {
-            AutoPtr<IObjectContainer> fragments;
-            mLastNonConfigurationInstances->GetFragments((IObjectContainer**)&fragments);
+            AutoPtr<IArrayList> fragments;
+            mLastNonConfigurationInstances->GetFragments((IArrayList**)&fragments);
             FAIL_RETURN(mFragments->RestoreAllState(p, fragments));
         }
     }
@@ -410,7 +402,9 @@ ECode Activity::OnCreate(
     FAIL_RETURN(app->DispatchActivityCreated(THIS_PROBE(IActivity), savedInstanceState));
 
     if (mVoiceInteractor != NULL) {
-        mVoiceInteractor->AttachActivity(THIS_PROBE(IActivity));
+        assert(0 && "TODO");
+        // VoiceInteractor* vi = (VoiceInteractor*)mVoiceInteractor.Get();
+        // vi->AttachActivity(THIS_PROBE(IActivity));
     }
 
     mCalled = TRUE;
@@ -568,8 +562,11 @@ ECode Activity::OnStart()
     if (!mLoadersStarted) {
         mLoadersStarted = TRUE;
         if (mLoaderManager != NULL) {
-            mLoaderManager->DoStart();
-        } else if (!mCheckedForLoaderManager) {
+            assert(0 && "TODO");
+            // LoaderManagerImpl* lmi = (LoaderManagerImpl*)mLoaderManager.Get();
+            // lmi->DoStart();
+        }
+        else if (!mCheckedForLoaderManager) {
             String str("(root)");
             mLoaderManager = GetLoaderManager(str, mLoadersStarted, FALSE);
         }
@@ -689,7 +686,7 @@ ECode Activity::OnSaveInstanceState(
     return app->DispatchActivitySaveInstanceState(THIS_PROBE(IActivity), outState);
 }
 
-ECode Activity::ECode Activity::OnSaveInstanceState(
+ECode Activity::OnSaveInstanceState(
     /* [in] */ IBundle* outState,
     /* [in] */ IPersistableBundle* outPersistentState)
 {
@@ -803,7 +800,7 @@ ECode Activity::OnDestroy()
             Boolean isShowing;
             iter->mSecond->mDialog->IsShowing(&isShowing);
             if (isShowing) {
-                iter->mSecond->mDialog->Dismiss();
+                IDialogInterface::Probe(iter->mSecond->mDialog)->Dismiss();
             }
         }
         mManagedDialogs.Clear();
@@ -817,7 +814,7 @@ ECode Activity::OnDestroy()
         for (; it != mManagedCursors.End(); ++it) {
             cursor = *it;
             if (cursor != NULL) {
-               cursor->mCursor->Close();
+               ICloseable::Probe(cursor->mCursor)->Close();
             }
         }
         mManagedCursors.Clear();
@@ -902,7 +899,7 @@ ECode Activity::OnRetainNonConfigurationInstance(
 }
 
 ECode Activity::GetLastNonConfigurationChildInstances(
-    /* [out] */ IObjectStringMap** data)
+    /* [out] */ IHashMap** data)
 {
     VALIDATE_NOT_NULL(data);
     *data = NULL;
@@ -914,10 +911,10 @@ ECode Activity::GetLastNonConfigurationChildInstances(
 }
 
 ECode Activity::OnRetainNonConfigurationChildInstances(
-    /* [out] */ IObjectStringMap** objectStringMap)
+    /* [out] */ IHashMap** map)
 {
-    VALIDATE_NOT_NULL(objectStringMap);
-    *objectStringMap = NULL;
+    VALIDATE_NOT_NULL(map);
+    *map = NULL;
     return NOERROR;
 }
 
@@ -930,37 +927,38 @@ ECode Activity::RetainNonConfigurationInstances(
     AutoPtr<IInterface> activity;
     OnRetainNonConfigurationInstance((IInterface**)&activity);
 
-    AutoPtr<IObjectStringMap> children;
-    OnRetainNonConfigurationChildInstances((IObjectStringMap**)&children);
+    AutoPtr<IHashMap> children;
+    OnRetainNonConfigurationChildInstances((IHashMap**)&children);
 
-    AutoPtr<IObjectContainer> fragments;
-    FAIL_RETURN(mFragments->RetainNonConfig((IObjectContainer**)&fragments));
+    AutoPtr<IArrayList> fragments;
+    FAIL_RETURN(mFragments->RetainNonConfig((IArrayList**)&fragments));
 
     Boolean retainLoaders = FALSE;
 
-    if (mAllLoaderManagers != null) {
+    if (mAllLoaderManagers != NULL) {
         // prune out any loader managers that were already stopped and so
         // have nothing useful to retain.
         Int32 N;
-        mAllLoaderManagers->GetSize(&n);
+        mAllLoaderManagers->GetSize(&N);
         AutoPtr<ArrayOf<ILoaderManagerImpl*> > loaders = ArrayOf<ILoaderManagerImpl*>::Alloc(N);
         for (Int32 i = N - 1; i >= 0; i--) {
             AutoPtr<IInterface> obj;
             mAllLoaderManagers->GetValueAt(i, (IInterface**)&obj);
             loaders->Set(i, ILoaderManagerImpl::Probe(obj));
         }
-        for (Int32 i = 0; i < N; i++) {
-            ILoaderManagerImpl* lm = (*loaders)[i];
-            lm->IsRetaining(&isRetaining);
-            if (isRetaining) {
-                retainLoaders = TRUE;
-            }
-            else {
-                lm->DoDestroy();
-                lm->GetName(&who);
-                mAllLoaderManagers->Remove(who);
-            }
-        }
+        assert(0 && "TODO");
+        // for (Int32 i = 0; i < N; i++) {
+        //     LoaderManagerImpl* lm = (LoaderManagerImpl*)(*loaders)[i];
+        //     lm->IsRetaining(&isRetaining);
+        //     if (isRetaining) {
+        //         retainLoaders = TRUE;
+        //     }
+        //     else {
+        //         lm->DoDestroy();
+        //         lm->GetName(&who);
+        //         mAllLoaderManagers->Remove(who);
+        //     }
+        // }
     }
 
     if (activity == NULL && children == NULL && fragments == NULL
@@ -995,7 +993,7 @@ ECode Activity::GetFragmentManager(
     /* [out] */ IFragmentManager** fmanager)
 {
     VALIDATE_NOT_NULL(fmanager);
-    *fmanager = mFragments;
+    *fmanager = IFragmentManager::Probe(mFragments);
     REFCOUNT_ADD(*fmanager)
     return NOERROR;
 }
@@ -1005,15 +1003,19 @@ ECode Activity::InvalidateFragment(
 {
     //Log.v(TAG, "invalidateFragmentIndex: index=" + index);
     if (mAllLoaderManagers != NULL) {
+        AutoPtr<ICharSequence> key = CoreUtils::Convert(who);
+        IInterface* keyObj = IInterface::Probe(key);
         AutoPtr<ILoaderManagerImpl> lm;
-        mAllLoaderManagers->Get(who, (IInterface**)&lm);
+        mAllLoaderManagers->Get(keyObj, (IInterface**)&lm);
         if (lm != NULL) {
-            Boolean retaining;
-            lm->IsRetaining(&retaining);
-            if (!retaining) {
-                lm->DoDestroy();
-                mAllLoaderManagers->Remove(who);
-            }
+            assert(0 && "TODO");
+            // LoaderManagerImpl* lmi = (LoaderManagerImpl*)lm.Get();
+            // Boolean retaining;
+            // lmi->IsRetaining(&retaining);
+            // if (!retaining) {
+            //     lmi->DoDestroy();
+            //     mAllLoaderManagers->Remove(keyObj);
+            // }
         }
     }
 
@@ -1131,12 +1133,14 @@ ECode Activity::SetActionBar(
     AutoPtr<ICharSequence> title;
     GetTitle((ICharSequence**)&title);
     AutoPtr<IToolbarActionBar> tbab;
-    CToolbarActionBar::New(toolbar, title, THIS_PROBE(IActivity), (IToolbarActionBar**)&tbab);
-    mActionBar = tbab;
+    assert(0 && "TODO");
+    // CToolbarActionBar::New(toolbar, title, THIS_PROBE(IActivity), (IToolbarActionBar**)&tbab);
+    mActionBar = IActionBar::Probe(tbab);
     AutoPtr<IWindowCallback> cb;
     tbab->GetWrappedWindowCallback((IWindowCallback**)&cb);
     mWindow->SetCallback(cb);
-    return mActionBar->InvalidateOptionsMenu();
+    Boolean result;
+    return mActionBar->InvalidateOptionsMenu(&result);
 }
 
 ECode Activity::GetActionBar(
@@ -1176,8 +1180,8 @@ ECode Activity::InitWindowDecorActionBar()
          return NOERROR;
      }
 
-    FAIL_RETURN(CWindowDecorActionBar::New(THIS_PROBE(IActivity),
-            (IActionBarImpl**)&mActionBar));
+     assert(0 && "TODO");
+    // FAIL_RETURN(CWindowDecorActionBar::New(THIS_PROBE(IActivity), (IActionBarImpl**)&mActionBar));
     FAIL_RETURN(mActionBar->SetDefaultDisplayHomeAsUpEnabled(mEnableDefaultActionBarUp))
 
     IComponentInfo* ci = IComponentInfo::Probe(mActivityInfo);
@@ -1270,9 +1274,7 @@ ECode Activity::SetDefaultKeyMode(
     case IActivity::DEFAULT_KEYS_SEARCH_GLOBAL: {
         mDefaultKeySsb = NULL;
         CSpannableStringBuilder::New((ISpannableStringBuilder**)&mDefaultKeySsb);
-        AutoPtr<ISelectionHelper> helper;
-        //CSelectionHelper::AcquireSingleton((ISelectionHelper**)&helper);
-        FAIL_RETURN(helper->SetSelection(mDefaultKeySsb, 0));
+        Selection::SetSelection(ISpannable::Probe(mDefaultKeySsb), 0);
         break;
     }
     default:
@@ -1342,15 +1344,14 @@ ECode Activity::OnKeyDown(
             CTextKeyListenerHelper::AcquireSingleton((ITextKeyListenerHelper**)&listenerHelper);
             AutoPtr<ITextKeyListener> listener;
             listenerHelper->GetInstance((ITextKeyListener**)&listener);
-            IKeyListener* listenerK = (IKeyListener*)(listener->Probe(EIID_IKeyListener));
-            FAIL_RETURN(listenerK->OnKeyDown(NULL, mDefaultKeySsb, keyCode, event, &handled));
+            IKeyListener* listenerK = IKeyListener::Probe(listener);
+            FAIL_RETURN(listenerK->OnKeyDown(NULL, IEditable::Probe(mDefaultKeySsb), keyCode, event, &handled));
             Int32 length = 0;
-            mDefaultKeySsb->GetLength(&length);
+            ICharSequence::Probe(mDefaultKeySsb)->GetLength(&length);
             if (handled && length > 0) {
                 // something useable has been typed - dispatch it now.
 
-                String str;
-                mDefaultKeySsb->ToString(&str);
+                String str = Object::ToString(mDefaultKeySsb);
                 clearSpannable = TRUE;
 
                 switch (mDefaultKeyMode) {
@@ -1379,12 +1380,10 @@ ECode Activity::OnKeyDown(
             }
         }
         if (clearSpannable) {
-            FAIL_RETURN(mDefaultKeySsb->Clear());
-            FAIL_RETURN(mDefaultKeySsb->ClearSpans());
-
-            AutoPtr<ISelectionHelper> helper;
-            //CSelectionHelper::AcquireSingleton((ISelectionHelper**)&helper);
-            FAIL_RETURN(helper->SetSelection(mDefaultKeySsb, 0));
+            IEditable* e = IEditable::Probe(mDefaultKeySsb);
+            FAIL_RETURN(e->Clear());
+            FAIL_RETURN(e->ClearSpans());
+            Selection::SetSelection(ISpannable::Probe(mDefaultKeySsb), 0);
         }
 
         *result = handled;
@@ -1444,15 +1443,15 @@ ECode Activity::OnKeyMultiple(
 ECode Activity::OnBackPressed()
 {
     Boolean actionBar = FALSE;
-    if (mActionBar != NULl) {
-        mActionBar->collapseActionView(&actionbar);
+    if (mActionBar != NULL) {
+        mActionBar->CollapseActionView(&actionBar);
     }
-    if (actionbar) {
+    if (actionBar) {
         return NOERROR;
     }
 
     Boolean val = FALSE;
-    FAIL_RETURN(mFragments->PopBackStackImmediate(&val));
+    FAIL_RETURN(IFragmentManager::Probe(mFragments)->PopBackStackImmediate(&val));
     if (!val) {
         return FinishAfterTransition();
     }
@@ -1477,7 +1476,7 @@ ECode Activity::OnTouchEvent(
     *result = FALSE;
 
     Boolean val;
-    FAIL_RETURN(mWindow->ShouldCloseOnTouch(THIS_PROBE(IActivity), event, &val));
+    FAIL_RETURN(mWindow->ShouldCloseOnTouch(THIS_PROBE(IContext), event, &val));
     if (val) {
         FAIL_RETURN(Finish());
         *result = TRUE;
@@ -1521,7 +1520,8 @@ ECode Activity::OnWindowAttributesChanged(
             FAIL_RETURN(decor->GetParent((IViewParent**)&parent));
             if (parent != NULL) {
                 AutoPtr<IWindowManager> winmanager = GetWindowManager();
-                return winmanager->UpdateViewLayout(decor, params);
+                return IViewManager::Probe(winmanager)->UpdateViewLayout(
+                    decor, IViewGroupLayoutParams::Probe(params));
             }
         }
     }
@@ -1567,7 +1567,7 @@ ECode Activity::HasWindowFocus(
     return NOERROR;
 }
 
-ECode Activity::OnWindowDismissed();
+ECode Activity::OnWindowDismissed()
 {
     return Finish();
 }
@@ -1708,6 +1708,7 @@ ECode Activity::DispatchPopulateAccessibilityEvent(
     /* [out] */ Boolean* isConsumed)
 {
     VALIDATE_NOT_NULL(isConsumed);
+    IAccessibilityRecord* ar = IAccessibilityRecord::Probe(event);
     // TODO
     // event.setClassName(getClass().getName());
     String pkgName;
@@ -1718,19 +1719,20 @@ ECode Activity::DispatchPopulateAccessibilityEvent(
 
     AutoPtr<IWindowManagerLayoutParams> params;
     GetWindow()->GetAttributes((IWindowManagerLayoutParams**)&params);
+    IViewGroupLayoutParams* vglp = IViewGroupLayoutParams::Probe(params);
     Int32 width, height;
-    params->GetWidth(&width);
-    params->GetHeight(&height);
-    Boolean isFullScreen = (width == IWindowManagerLayoutParams::MATCH_PARENT) &&
-        (height == IWindowManagerLayoutParams::MATCH_PARENT);
-    event->SetFullScreen(isFullScreen);
+    vglp->GetWidth(&width);
+    vglp->GetHeight(&height);
+    Boolean isFullScreen = (width == IViewGroupLayoutParams::MATCH_PARENT) &&
+        (height == IViewGroupLayoutParams::MATCH_PARENT);
+    ar->SetFullScreen(isFullScreen);
 
     AutoPtr<ICharSequence> title;
     GetTitle((ICharSequence**)&title);
     if (!TextUtils::IsEmpty(title)) {
-        AutoPtr<IObjectContainer> txtContainer;
-       event->GetText((IObjectContainer**)&txtContainer);
-       txtContainer->Add(title);
+        AutoPtr<IList> txtContainer;
+        ar->GetText((IList**)&txtContainer);
+        txtContainer->Add(IInterface::Probe(title));
     }
 
     *isConsumed = TRUE;
@@ -2036,6 +2038,7 @@ ECode Activity::OpenOptionsMenu()
     if (mActionBar == NULL || (mActionBar->OpenOptionsMenu(&bval), !bval)) {
         return mWindow->OpenPanel(IWindow::FEATURE_OPTIONS_PANEL, NULL);
     }
+    return NOERROR;
 }
 
 ECode Activity::CloseOptionsMenu()
@@ -2182,7 +2185,7 @@ ECode Activity::DismissDialog(
         //throw missingDialog(id);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return find->mSecond->mDialog->Dismiss();
+    return IDialogInterface::Probe(find->mSecond->mDialog)->Dismiss();
 }
 
 ECode Activity::RemoveDialog(
@@ -2191,7 +2194,7 @@ ECode Activity::RemoveDialog(
     if (!mManagedDialogs.IsEmpty()) {
         ManagedDialogHashMapIter find = mManagedDialogs.Find(id);
         if (find != mManagedDialogs.End()) {
-            find->mSecond->mDialog->Dismiss();
+            IDialogInterface::Probe(find->mSecond->mDialog)->Dismiss();
             mManagedDialogs.Erase(find);
         }
     }
@@ -2210,7 +2213,7 @@ ECode Activity::OnSearchRequested(
     AutoPtr<IConfiguration> cfg;
     res->GetConfiguration((IConfiguration**)&cfg);
     Int32 uiMode;
-    GetUiMode(&uiMode);
+    cfg->GetUiMode(&uiMode);
     if ((uiMode & IConfiguration::UI_MODE_TYPE_MASK) != IConfiguration::UI_MODE_TYPE_TELEVISION) {
         String nullStr;
         ECode ec = StartSearch(nullStr, FALSE, NULL, FALSE);
@@ -2305,15 +2308,16 @@ ECode Activity::GetMenuInflater (
     VALIDATE_NOT_NULL(menuInflater);
 
     // mMenuInflater and Activity have circular reference, modified by xihao
-    InitWindowDecorActionBar();
-    if (mActionBar != NULL) {
-        AutoPtr<IContext> context;
-        mActionBar->GetThemedContext((IContext**)&context);
-        return CMenuInflater::New(context, THIS_PROBE(IActivity), menuInflater);
-    }
-    else {
-        return CMenuInflater::New(THIS_PROBE(IActivity), menuInflater);
-    }
+    assert(0 && "TODO");
+    // InitWindowDecorActionBar();
+    // if (mActionBar != NULL) {
+    //     AutoPtr<IContext> context;
+    //     mActionBar->GetThemedContext((IContext**)&context);
+    //     return CMenuInflater::New(context, THIS_PROBE(IActivity), menuInflater);
+    // }
+    // else {
+    //     return CMenuInflater::New(THIS_PROBE(IActivity), menuInflater);
+    // }
 
     // Make sure that action views can get an appropriate theme.
     // if (mMenuInflater == NULL) {
@@ -2345,7 +2349,7 @@ ECode Activity::OnApplyThemeResource(
     }
     else {
         AutoPtr<IResourcesTheme> parentTheme;
-        FAIL_RETURN(mParent->GetTheme((IResourcesTheme**)&parentTheme));
+        FAIL_RETURN(IContext::Probe(mParent)->GetTheme((IResourcesTheme**)&parentTheme));
         theme->SetTo(parentTheme);
         FAIL_RETURN(theme->ApplyStyle(resid, FALSE));
     }
@@ -2363,7 +2367,7 @@ ECode Activity::OnApplyThemeResource(
         a->Recycle();
         if (colorPrimary != 0) {
             AutoPtr<IActivityManagerTaskDescription> v;
-            CActivityManagerTaskDescription::New(NULL, NULL, colorPrimary, (IActivityManagerTaskDescription**)&v);
+            CActivityManagerTaskDescription::New(String(NULL), NULL, colorPrimary, (IActivityManagerTaskDescription**)&v);
             SetTaskDescription(v);
         }
     }
@@ -2388,15 +2392,15 @@ ECode Activity::StartActivityForResult(
         AutoPtr<IApplicationThread> at;
         FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
         FAIL_RETURN(mInstrumentation->ExecStartActivity(
-                mBase, IBinder::Probe(at.Get()), mToken, THIS_PROBE(IActivity),
-                intent, requestCode, options, (IInstrumentationActivityResult**)&result));
+            mBase, IBinder::Probe(at), mToken, THIS_PROBE(IActivity),
+            intent, requestCode, options, (IInstrumentationActivityResult**)&result))
         if (result != NULL) {
             Int32 resultCode;
             AutoPtr<IIntent> resultData;
             result->GetResultCode(&resultCode);
             result->GetResultData((IIntent**)&resultData);
             FAIL_RETURN(mMainThread->SendActivityResult(
-                mToken, mEmbeddedID, requestCode, resultCode, resultData));
+                mToken, mEmbeddedID, requestCode, resultCode, resultData))
         }
         if (requestCode >= 0) {
             // If this start is requesting a result, we can avoid making
@@ -2440,7 +2444,7 @@ ECode Activity::StartActivityForResult(
 ECode Activity::StartActivityForResultAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
-    /* [in] */ IUserHandle* user);
+    /* [in] */ IUserHandle* user)
 {
     return StartActivityForResultAsUser(intent, requestCode, NULL, user);
 }
@@ -2449,7 +2453,7 @@ ECode Activity::StartActivityForResultAsUser(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 requestCode,
     /* [in] */ IBundle* options,
-    /* [in] */ IUserHandle* user);
+    /* [in] */ IUserHandle* user)
 {
     if (options != NULL) {
         mActivityTransitionState->StartExitOutTransition(THIS_PROBE(IActivity), options);
@@ -2464,7 +2468,7 @@ ECode Activity::StartActivityForResultAsUser(
 
     AutoPtr<IInstrumentationActivityResult> ar;
     mInstrumentation->ExecStartActivity(
-        THIS_PROBE(IContext), at, mToken, THIS_PROBE(IActivity),
+        THIS_PROBE(IContext), IBinder::Probe(at), mToken, THIS_PROBE(IActivity),
         intent, requestCode, options, user, (IInstrumentationActivityResult**)&ar);
     if (ar != NULL) {
         Int32 code;
@@ -2544,7 +2548,8 @@ ECode Activity::StartIntentSenderForResultInner(
     if (fillInIntent != NULL) {
         AutoPtr<IContentResolver> resolver;
         GetContentResolver((IContentResolver**)&resolver);
-        FAIL_RETURN(fillInIntent->MigrateExtraStreamToClipData())
+        Boolean bval;
+        FAIL_RETURN(fillInIntent->MigrateExtraStreamToClipData(&bval))
         FAIL_RETURN(fillInIntent->PrepareToLeaveProcess())
         FAIL_RETURN(fillInIntent->ResolveTypeIfNeeded(resolver, &resolvedType));
     }
@@ -2605,7 +2610,8 @@ ECode Activity::StartActivityIfNeeded(
     if (mParent == NULL) {
         Int32 result = IActivityManager::START_RETURN_INTENT_TO_CALLER;
         //try {
-        FAIL_RETURN(intent->MigrateExtraStreamToClipData())
+        Boolean bval;
+        FAIL_RETURN(intent->MigrateExtraStreamToClipData(&bval))
         FAIL_RETURN(intent->PrepareToLeaveProcess())
 
         AutoPtr<IContentResolver> resolver;
@@ -2670,7 +2676,8 @@ ECode Activity::StartNextMatchingActivity(
 
     if (mParent == NULL) {
 //        try {
-        FAIL_RETURN(intent->MigrateExtraStreamToClipData())
+        Boolean bval;
+        FAIL_RETURN(intent->MigrateExtraStreamToClipData(&bval))
         FAIL_RETURN(intent->PrepareToLeaveProcess())
 
         AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
@@ -2711,7 +2718,7 @@ ECode Activity::StartActivityFromChild(
     FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
 
     FAIL_RETURN(mInstrumentation->ExecStartActivity(
-            mBase, IBinder::Probe(at.Get()), mToken, child, intent, requestCode, options,
+            mBase, IBinder::Probe(at), mToken, child, intent, requestCode, options,
             (IInstrumentationActivityResult**)&result));
     if (result != NULL) {
         String id;
@@ -2749,7 +2756,7 @@ ECode Activity::StartActivityFromFragment(
     FAIL_RETURN(mMainThread->GetApplicationThread((IApplicationThread**)&at));
 
     FAIL_RETURN(mInstrumentation->ExecStartActivity(
-            mBase, IBinder::Probe(at.Get()), mToken, fragment, intent, requestCode, options,
+            mBase, IBinder::Probe(at), mToken, fragment, intent, requestCode, options,
             (IInstrumentationActivityResult**)&result));
     if (result != NULL) {
         Int32 resultCode;
@@ -2879,9 +2886,10 @@ ECode Activity::MakeVisible()
 {
     if (!mWindowAdded) {
         AutoPtr<IWindowManagerLayoutParams> wmlp;
-        FAIL_RETURN(GetWindow()->GetAttributes((IWindowManagerLayoutParams**)&wmlp));
-        AutoPtr<IViewManager> wm = GetWindowManager();
-        FAIL_RETURN(wm->AddView(mDecor, wmlp));
+        FAIL_RETURN(GetWindow()->GetAttributes((IWindowManagerLayoutParams**)&wmlp))
+        AutoPtr<IWindowManager> wm = GetWindowManager();
+        IViewManager* vm = IViewManager::Probe(wm);
+        FAIL_RETURN(vm->AddView(mDecor, IViewGroupLayoutParams::Probe(wmlp)))
         mWindowAdded = TRUE;
     }
     return mDecor->SetVisibility(IView::VISIBLE);
@@ -3010,7 +3018,7 @@ ECode Activity::FinishAffinity()
 //    }
 }
 
-ECode Activity::FinishAfterTransition();
+ECode Activity::FinishAfterTransition()
 {
     Boolean bval;
     if (mActivityTransitionState->StartExitBackTransition(THIS_PROBE(IActivity), &bval), !bval) {
@@ -3063,13 +3071,13 @@ ECode Activity::FinishActivityFromChild(
 //    }
 }
 
-ECode Activity::FinishAndRemoveTask();
+ECode Activity::FinishAndRemoveTask()
 {
     return Finish(TRUE);
 }
 
 ECode Activity::ReleaseInstance(
-    /* [out] */ Boolean* result);
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
@@ -3083,7 +3091,7 @@ ECode Activity::ReleaseInstance(
 
 ECode Activity::OnActivityReenter(
     /* [in] */ Int32 resultCode,
-    /* [in] */ IIntent* data);
+    /* [in] */ IIntent* data)
 {
     return NOERROR;
 }
@@ -3287,7 +3295,8 @@ ECode Activity::SetTitle(
     FAIL_RETURN(OnTitleChanged(title, mTitleColor));
 
     if (mParent != NULL) {
-        return mParent->OnChildTitleChanged(THIS_PROBE(IActivity), title);
+        Activity* p = (Activity*)mParent.Get();
+        return p->OnChildTitleChanged(THIS_PROBE(IActivity), title);
     }
     return NOERROR;
 }
@@ -3353,7 +3362,7 @@ ECode Activity::OnChildTitleChanged(
 }
 
 ECode Activity::SetTaskDescription(
-    /* [in] */ IActivityManagerTaskDescription* taskDescription);
+    /* [in] */ IActivityManagerTaskDescription* taskDescription)
 {
     AutoPtr<IActivityManagerTaskDescription> td;
     // Scale the icon down to something reasonable if it is provided
@@ -3361,12 +3370,12 @@ ECode Activity::SetTaskDescription(
     taskDescription->GetIconFilename(&iconFilename);
     AutoPtr<IBitmap> icon;
     taskDescription->GetIcon((IBitmap**)&icon);
-    if (!iconFilename.IsNull() && icon != null) {
+    if (!iconFilename.IsNull() && icon != NULL) {
         Int32 size = CActivityManager::GetLauncherLargeIconSizeInner(this);
         AutoPtr<IBitmap> bmp;
         CBitmap::CreateScaledBitmap(icon, size, size, TRUE, (IBitmap**)&bmp);
-        AutoPtr<ICharSequence> label;
-        taskDescription->GetLabel((ICharSequence**)&label);
+        String label;
+        taskDescription->GetLabel(&label);
         Int32 color;
         taskDescription->GetPrimaryColor(&color);
         CActivityManagerTaskDescription::New(label, icon, color, (IActivityManagerTaskDescription**)&td);
@@ -3444,7 +3453,7 @@ ECode Activity::SetMediaController(
 }
 
 ECode Activity::GetMediaController(
-    /* [out] */ IMediaController** mc);
+    /* [out] */ IMediaController** mc)
 {
     AutoPtr<IWindow> win = GetWindow();
     return win->GetMediaController(mc);
@@ -3486,11 +3495,12 @@ ECode Activity::OnCreateView(
     *view = NULL;
     VALIDATE_NOT_NULL(attrs);
 
-    if (name != "Fragment") {
+    if (!name.Equals("Fragment")) {
         return OnCreateView(name, context, attrs, view);
     }
 
-    return mFragments->OnCreateView(parent, name, context, attrs, view);
+    FragmentManagerImpl* fmi = (FragmentManagerImpl*)mFragments.Get();
+    return fmi->OnCreateView(parent, name, context, attrs, view);
 }
 
 ECode Activity::Dump(
@@ -3508,30 +3518,31 @@ ECode Activity::DumpInner(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ ArrayOf<String>* args)
 {
-    writer->PrintString(prefix); writer->PrintString(String("Local Activity "));
-            //writer->PrintString(Integer.toHexString(System.identityHashCode(this)));
-            writer->PrintStringln(String(" State:"));
+    writer->Print(prefix); writer->Print(String("Local Activity "));
+            //writer->Print(Integer.toHexString(System.identityHashCode(this)));
+            writer->Println(String(" State:"));
     String innerPrefix = prefix + "  ";
-    writer->PrintString(innerPrefix); writer->PrintString(String("mResumed="));
-            writer->PrintBoolean(mResumed); writer->PrintString(String(" mStopped="));
-            writer->PrintBoolean(mStopped); writer->PrintString(String(" mFinished="));
-            writer->PrintBooleanln(mFinished);
-    writer->PrintString(innerPrefix); writer->PrintString(String("mLoadersStarted="));
-            writer->PrintBooleanln(mLoadersStarted);
-    writer->PrintString(innerPrefix); writer->PrintString(String("mChangingConfigurations="));
-            writer->PrintBooleanln(mChangingConfigurations);
-    writer->PrintString(innerPrefix); writer->PrintString(String("mCurrentConfig="));
-            String temp;
-            mCurrentConfig->ToString(&temp);
-            writer->PrintStringln(temp);
+    writer->Print(innerPrefix); writer->Print(String("mResumed="));
+            writer->Print(mResumed); writer->Print(String(" mStopped="));
+            writer->Print(mStopped); writer->Print(String(" mFinished="));
+            writer->Println(mFinished);
+    writer->Print(innerPrefix); writer->Print(String("mLoadersStarted="));
+            writer->Println(mLoadersStarted);
+    writer->Print(innerPrefix); writer->Print(String("mChangingConfigurations="));
+            writer->Println(mChangingConfigurations);
+    writer->Print(innerPrefix); writer->Print(String("mCurrentConfig="));
+            String temp = Object::ToString(mCurrentConfig);
+            writer->Println(temp);
     if (mLoaderManager != NULL) {
-        writer->PrintString(prefix); writer->PrintString(String("Loader Manager "));
+        writer->Print(prefix); writer->Print(String("Loader Manager "));
                 //writer->print(Integer.toHexString(System.identityHashCode(mLoaderManager)));
-                writer->PrintStringln(String(":"));
-        mLoaderManager->Dump(String(prefix + "  "), fd, writer, args);
+                writer->Println(String(":"));
+        String str(prefix);
+        str += "  ";
+        ILoaderManager::Probe(mLoaderManager)->Dump(str, fd, writer, args);
     }
-    FAIL_RETURN(mFragments->Dump(prefix, fd, writer, args));
-    writer->PrintString(prefix); writer->PrintStringln(String("View Hierarchy:"));
+    FAIL_RETURN(IFragmentManager::Probe(mFragments)->Dump(prefix, fd, writer, args));
+    writer->Print(prefix); writer->Println(String("View Hierarchy:"));
     AutoPtr<IView> decorView;
     GetWindow()->GetDecorView((IView**)&decorView);
     DumpViewHierarchy(String(prefix + "  "), writer, decorView);
@@ -3543,17 +3554,18 @@ ECode Activity::DumpViewHierarchy(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ IView* view)
 {
-    writer->PrintString(prefix);
+    writer->Print(prefix);
     if (view == NULL) {
-        writer->PrintStringln(String("NULL"));
+        writer->Println(String("NULL"));
         return NOERROR;
     }
 
 //    writer->println(view.toString());
-    if (!(view->Probe(EIID_IViewGroup))) {
+    AutoPtr<IViewGroup> grp = IViewGroup::Probe(view);
+    if (grp == NULL) {
         return NOERROR;
     }
-    AutoPtr<IViewGroup> grp = (IViewGroup*)view->Probe(EIID_IViewGroup);
+
     Int32 N;
     grp->GetChildCount(&N);
     if (N <= 0) {
@@ -3585,15 +3597,16 @@ ECode Activity::IsImmersive(
 //    }
 }
 
-ECode Activity::ConvertFromTranslucent();
+ECode Activity::ConvertFromTranslucent()
 {
     // try {
     AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
     mTranslucentCallback = NULL;
     Boolean bval;
     if (defaultAM->ConvertFromTranslucent(mToken, &bval), bval) {
-        AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
-        return wmg->ChangeCanvasOpacity(mToken, TRUE);
+        assert(0 && "TODO");
+        // AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+        // return wmg->ChangeCanvasOpacity(mToken, TRUE);
     }
 
     return NOERROR;
@@ -3602,23 +3615,24 @@ ECode Activity::ConvertFromTranslucent();
     // }
 }
 
-Boolean ConvertToTranslucent(
+Boolean Activity::ConvertToTranslucent(
     /* [in] */ ITranslucentConversionListener* callback,
-    /* [in] */ IActivityOptions* options);
+    /* [in] */ IActivityOptions* options)
 {
     Boolean drawComplete;
 
     AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
     mTranslucentCallback = callback;
-    ECode ec = defaultAM->ConvertToTranslucent(mToken, options, mChangeCanvasToTranslucent);
-    if (ec == E_REMOTE_EXCEPTION) {
+    ECode ec = defaultAM->ConvertToTranslucent(mToken, options, &mChangeCanvasToTranslucent);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         // Make callback return as though it timed out.
         mChangeCanvasToTranslucent = FALSE;
         drawComplete = FALSE;
     }
     else {
-        AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
-        wmg->ChangeCanvasOpacity(mToken, FALSE);
+        assert(0 && "TODO");
+        // AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+        // wmg->ChangeCanvasOpacity(mToken, FALSE);
         drawComplete = TRUE;
     }
 
@@ -3630,21 +3644,22 @@ Boolean ConvertToTranslucent(
 }
 
 ECode Activity::OnTranslucentConversionComplete(
-    /* [in] */ Boolean drawComplete);
+    /* [in] */ Boolean drawComplete)
 {
     if (mTranslucentCallback != NULL) {
         mTranslucentCallback->OnTranslucentConversionComplete(drawComplete);
         mTranslucentCallback = NULL;
     }
     if (mChangeCanvasToTranslucent) {
-        AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
-        wmg->ChangeCanvasOpacity(mToken, FALSE);
+        assert(0 && "TODO");
+        // AutoPtr<IWindowManagerGlobal> wmg = CWindowManagerGlobal::GetInstance();
+        // wmg->ChangeCanvasOpacity(mToken, FALSE);
     }
     return NOERROR;
 }
 
 ECode Activity::OnNewActivityOptions(
-    /* [in] */ IActivityOptions* options);
+    /* [in] */ IActivityOptions* options)
 {
     mActivityTransitionState->SetEnterActivityOptions(THIS_PROBE(IActivity), options);
     if (!mStopped) {
@@ -3654,7 +3669,7 @@ ECode Activity::OnNewActivityOptions(
 }
 
 ECode Activity::GetActivityOptions(
-    /* [out] */ IActivityOptions** options);
+    /* [out] */ IActivityOptions** options)
 {
     VALIDATE_NOT_NULL(options)
     // try {
@@ -3666,7 +3681,7 @@ ECode Activity::GetActivityOptions(
 
 ECode Activity::RequestVisibleBehind(
     /* [in] */ Boolean visible,
-    /* [out] */ Boolean* result);
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     if (!mResumed) {
@@ -3677,7 +3692,7 @@ ECode Activity::RequestVisibleBehind(
         AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
         ECode ec = defaultAM->RequestVisibleBehind(mToken, visible, &mVisibleBehind);
         mVisibleBehind = mVisibleBehind && visible;
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             mVisibleBehind = FALSE;
             ec = NOERROR;
         }
@@ -3688,13 +3703,14 @@ ECode Activity::RequestVisibleBehind(
     return ec;
 }
 
-ECode Activity::OnVisibleBehindCanceled();
+ECode Activity::OnVisibleBehindCanceled()
 {
-    mCalled = true;
+    mCalled = TRUE;
+    return NOERROR;
 }
 
 ECode Activity::IsBackgroundVisibleBehind(
-    /* [out] */ Boolean* result);
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -3901,7 +3917,7 @@ ECode Activity::GetParentActivityIntent(
 
     // If the parent itself has no parent, generate a main activity intent.
     AutoPtr<IComponentName> target;
-    CComponentName::New(THIS_PROBE(IActivity), parentName, (IComponentName**)&target);
+    CComponentName::New(THIS_PROBE(IContext), parentName, (IComponentName**)&target);
 //    try {
     AutoPtr<IPackageManager> pm;
     FAIL_RETURN(GetPackageManager((IPackageManager**)&pm));
@@ -3929,38 +3945,39 @@ ECode Activity::GetParentActivityIntent(
 //    } catch (NameNotFoundException e) {
 //        Log.e(TAG, "getParentActivityIntent: bad parentActivityName '" + parentName +
 //                "' in manifest");
-//        return null;
+//        return NULL;
 //    }
 }
 
 ECode Activity::SetEnterSharedElementCallback(
-    /* [in] */ ISharedElementCallback* callback);
+    /* [in] */ ISharedElementCallback* callback)
 {
     AutoPtr<ISharedElementCallback> cb = callback;
     if (cb == NULL) {
-        cb = SharedElementCallback::NULL_CALLBACK;
+        assert(0 && "TODO");
+        // cb = SharedElementCallback::NULL_CALLBACK;
     }
     mEnterTransitionListener = cb;
     return NOERROR;
 }
 
 ECode Activity::SetExitSharedElementCallback(
-    /* [in] */ ISharedElementCallback* callback);
+    /* [in] */ ISharedElementCallback* callback)
 {
     AutoPtr<ISharedElementCallback> cb = callback;
     if (cb == NULL) {
-        cb = SharedElementCallback::NULL_CALLBACK;
+        // cb = SharedElementCallback::NULL_CALLBACK;
     }
     mExitTransitionListener = cb;
     return NOERROR;
 }
 
-ECode Activity::PostponeEnterTransition();
+ECode Activity::PostponeEnterTransition()
 {
     return mActivityTransitionState->PostponeEnterTransition();
 }
 
-ECode Activity::StartPostponedEnterTransition();
+ECode Activity::StartPostponedEnterTransition()
 {
     return mActivityTransitionState->StartPostponedEnterTransition();
 }
@@ -3986,7 +4003,7 @@ ECode Activity::Attach(
     /* [in] */ const String& id,
     /* [in] */ IInterface* lastNonConfigurationInstances,
     /* [in] */ IConfiguration* config,
-    /* [in] */ IIVoiceInteractor* voiceInteractor))
+    /* [in] */ IIVoiceInteractor* voiceInteractor)
 {
     FAIL_RETURN(AttachBaseContext(context));
 
@@ -3998,7 +4015,7 @@ ECode Activity::Attach(
     mWindow = NULL;
     FAIL_RETURN(pm->MakeNewWindow(THIS_PROBE(IContext), (IWindow**)&mWindow));
     FAIL_RETURN(mWindow->SetCallback(THIS_PROBE(IWindowCallback)));
-    FAIL_RETURN(mWindow->SetOnWindowDismissedCallback(THIS_PROBE(IWindowOnWindowDismissedCallback));
+    FAIL_RETURN(mWindow->SetOnWindowDismissedCallback(THIS_PROBE(IOnWindowDismissedCallback)))
     AutoPtr<ILayoutInflater> inflater;
     mWindow->GetLayoutInflater((ILayoutInflater**)&inflater);
     inflater->SetPrivateFactory(THIS_PROBE(ILayoutInflaterFactory2));
@@ -4034,13 +4051,14 @@ ECode Activity::Attach(
 
     if (voiceInteractor != NULL) {
         mVoiceInteractor = NULL;
-        if (lastNonConfigurationInstances != NULL) {
-            lastNonConfigurationInstances->GetVoiceInteractor((IVoiceInteractor**)&mVoiceInteractor);
+        if (mLastNonConfigurationInstances != NULL) {
+            mLastNonConfigurationInstances->GetVoiceInteractor((IVoiceInteractor**)&mVoiceInteractor);
         }
         else {
             AutoPtr<ILooper> looper = Looper::GetMyLooper();
-            CVoiceInteractor::New(voiceInteractor, THIS_PROBE(IContext), THIS_PROBE(IActivity),
-                looper, (IVoiceInteractor**)&mVoiceInteractor);
+            assert(0 && "TODO");
+            // CVoiceInteractor::New(voiceInteractor, THIS_PROBE(IContext), THIS_PROBE(IActivity),
+            //     looper, (IVoiceInteractor**)&mVoiceInteractor);
         }
     }
 
@@ -4133,23 +4151,8 @@ ECode Activity::PerformStart()
 
     FAIL_RETURN(mFragments->DispatchStart());
     if (mAllLoaderManagers != NULL) {
-        AutoPtr<IObjectContainer> values;
-        mAllLoaderManagers->GetValues((IObjectContainer**)&values);
-
-        if (values != NULL) {
-            AutoPtr<IObjectEnumerator> it;
-            values->GetObjectEnumerator((IObjectEnumerator**)&it);
-            Boolean succeeded;
-            while (it->MoveNext(&succeeded), succeeded) {
-                AutoPtr<ILoaderManagerImpl> lm;
-                it->Current((IInterface**)&lm);
-                lm->FinishRetain();
-                lm->DoReportStart();
-            }
-        }
-
         Int32 N;
-        mAllLoaderManagers->GetSize(&n);
+        mAllLoaderManagers->GetSize(&N);
         AutoPtr<ArrayOf<ILoaderManagerImpl*> > loaders = ArrayOf<ILoaderManagerImpl*>::Alloc(N);
         for (Int32 i = N - 1; i >= 0; i--) {
             AutoPtr<IInterface> obj;
@@ -4157,15 +4160,14 @@ ECode Activity::PerformStart()
             loaders->Set(i, ILoaderManagerImpl::Probe(obj));
         }
         for (Int32 i = 0; i < N; i++) {
-            ILoaderManagerImpl* lm = (*loaders)[i];
-            lm->FinishRetain();
-            lm->DoReportStart();
+            assert(0 && "TODO");
+            // LoaderManagerImpl* lm = (LoaderManagerImpl*)(*loaders)[i];
+            // lm->FinishRetain();
+            // lm->DoReportStart();
         }
     }
 
-    mActivityTransitionState->EnterReady(THIS_PROBE(IActivity));
-
-    return NOERROR;
+    return mActivityTransitionState->EnterReady(THIS_PROBE(IActivity));
 }
 
 ECode Activity::PerformRestart()
@@ -4177,8 +4179,9 @@ ECode Activity::PerformRestart()
 
         if (mToken != NULL && mParent == NULL) {
             AutoPtr<IWindowManagerGlobal> wmg;
-            CWindowManagerGlobal::AcquireSingleton((IWindowManagerGlobal**)&wmg);
-            FAIL_RETURN(wmg->SetStoppedState(mToken, FALSE));
+            assert(0 && "TODO");
+            // CWindowManagerGlobal::AcquireSingleton((IWindowManagerGlobal**)&wmg);
+            // FAIL_RETURN(wmg->SetStoppedState(mToken, FALSE));
         }
 
         {
@@ -4308,11 +4311,13 @@ ECode Activity::PerformStop()
     if (mLoadersStarted) {
         mLoadersStarted = FALSE;
         if (mLoaderManager != NULL) {
-            if (!mChangingConfigurations) {
-                mLoaderManager->DoStop();
-            } else {
-                mLoaderManager->DoRetain();
-            }
+            assert(0 && "TODO");
+            // LoaderManagerImpl* lmi = (LoaderManagerImpl*)mLoaderManager.Get();
+            // if (!mChangingConfigurations) {
+            //     lmi->DoStop();
+            // } else {
+            //     lmi->DoRetain();
+            // }
         }
     }
 
@@ -4322,8 +4327,9 @@ ECode Activity::PerformStop()
         }
         if (mToken != NULL && mParent == NULL) {
             AutoPtr<IWindowManagerGlobal> wmg;
-            CWindowManagerGlobal::AcquireSingleton((IWindowManagerGlobal**)&wmg);
-            FAIL_RETURN(wmg->SetStoppedState(mToken, TRUE));
+            assert(0 && "TODO");
+            // CWindowManagerGlobal::AcquireSingleton((IWindowManagerGlobal**)&wmg);
+            // FAIL_RETURN(wmg->SetStoppedState(mToken, TRUE));
         }
 
         FAIL_RETURN(mFragments->DispatchStop());
@@ -4366,13 +4372,19 @@ ECode Activity::PerformDestroy()
 {
     mDestroyed = true;
     mWindow->Destroy();
-    FAIL_RETURN(mFragments->DispatchDestroy());
+
+    assert(0 && "TODO");
+    // FragmentManagerImpl* fmi = (FragmentManagerImpl*)mFragments.Get();
+    // FAIL_RETURN(fmi->DispatchDestroy());
     OnDestroy();
     if (mLoaderManager != NULL) {
-        mLoaderManager->DoDestroy();
+        //LoaderManagerImpl* lmi = (LoaderManagerImpl*)mLoaderManager.Get();
+        //lmi->DoDestroy();
     }
     if (mVoiceInteractor != NULL) {
-        mVoiceInteractor->DetachActivity();
+        assert(0 && "TODO");
+        // VoiceInteractor* vi = (VoiceInteractor*)mVoiceInteractor.Get();
+        // vi->DetachActivity();
     }
     return NOERROR;
 }
@@ -4410,7 +4422,7 @@ ECode Activity::DispatchActivityResult(
     return NOERROR;
 }
 
-ECode Activity::StartLockTask();
+ECode Activity::StartLockTask()
 {
     // try {
     AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
@@ -4419,7 +4431,7 @@ ECode Activity::StartLockTask();
     // }
 }
 
-ECode Activity::StopLockTask();
+ECode Activity::StopLockTask()
 {
     // try {
     AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
@@ -4528,15 +4540,6 @@ ECode Activity::IsStartedActivity(
     return NOERROR;
 }
 
-ECode Activity::GetWindow(
-    /* [out] */ IWindow** window)
-{
-    VALIDATE_NOT_NULL(window);
-    *window = mWindow.Get();
-    REFCOUNT_ADD(*window)
-    return NOERROR;
-}
-
 ECode Activity::SetDecorView(
     /* [in] */ IView* decor)
 {
@@ -4588,15 +4591,6 @@ ECode Activity::IsWindowAdded(
 {
     VALIDATE_NOT_NULL(added);
     *added = mWindowAdded;
-    return NOERROR;
-}
-
-ECode Activity::GetWindowManager(
-    /* [out] */ IWindowManager** mgr)
-{
-    VALIDATE_NOT_NULL(mgr);
-    *mgr = mWindowManager.Get();
-    REFCOUNT_ADD(*mgr)
     return NOERROR;
 }
 
@@ -4687,7 +4681,7 @@ ECode Activity::StartActivityAsUser(
     AutoPtr<IApplicationThread> at;
     mMainThread->GetApplicationThread((IApplicationThread**)&at);
     FAIL_RETURN(mInstrumentation->ExecStartActivity(
-            mBase, IBinder::Probe(at.Get()), mToken, THIS_PROBE(IActivity),
+            mBase, IBinder::Probe(at), mToken, THIS_PROBE(IActivity),
             intent, -1, options, user,
             (IInstrumentationActivityResult**)&result));
     if (result != NULL) {
@@ -4711,14 +4705,14 @@ ECode Activity::StartActivityAsCaller(
         return E_RUNTIME_EXCEPTION;
     }
 
-    AutoPtr<IInstrumentationActivityResult> ar;
+    AutoPtr<IInstrumentationActivityResult> result;
     AutoPtr<IApplicationThread> at;
     mMainThread->GetApplicationThread((IApplicationThread**)&at);
 
-    FAIL_RETURN(mInstrumentation->ExecStartActivity(
-        THIS_PROBE(IContext), IBinder::Probe(at.Get()), mToken, THIS_PROBE(IActivity),
-        intent, -1, options, user, (IInstrumentationActivityResult**)&result));
-    if (ar != NULL) {
+    FAIL_RETURN(mInstrumentation->ExecStartActivityAsCaller(
+        THIS_PROBE(IContext), IBinder::Probe(at), mToken, THIS_PROBE(IActivity),
+        intent, -1, options, userId, (IInstrumentationActivityResult**)&result));
+    if (result != NULL) {
         Int32 resultCode;
         AutoPtr<IIntent> resultData;
         result->GetResultCode(&resultCode);

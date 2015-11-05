@@ -1,24 +1,24 @@
 
 #include "elastos/droid/app/UiAutomationConnection.h"
 
-// import android.accessibilityservice.AccessibilityServiceInfo;
-// import android.accessibilityservice.IAccessibilityServiceClient;
-// import android.content.Context;
-// import android.graphics.Bitmap;
-// import android.hardware.input.InputManager;
-// import android.os.Binder;
-// import android.os.IBinder;
-// import android.os.ParcelFileDescriptor;
-// import android.os.Process;
-// import android.os.RemoteException;
-// import android.os.ServiceManager;
-// import android.view.IWindowManager;
-// import android.view.InputEvent;
-// import android.view.SurfaceControl;
-// import android.view.WindowAnimationFrameStats;
-// import android.view.WindowContentFrameStats;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.IAccessibilityManager;
+// using Elastos::Droid::accessibilityservice.AccessibilityServiceInfo;
+// using Elastos::Droid::accessibilityservice.IAccessibilityServiceClient;
+// using Elastos::Droid::content.Context;
+// using Elastos::Droid::graphics.Bitmap;
+// using Elastos::Droid::hardware.input.InputManager;
+// using Elastos::Droid::os.Binder;
+// using Elastos::Droid::os.IBinder;
+// using Elastos::Droid::os.ParcelFileDescriptor;
+// using Elastos::Droid::os.Process;
+// using Elastos::Droid::os.RemoteException;
+// using Elastos::Droid::os.ServiceManager;
+// using Elastos::Droid::view.IWindowManager;
+// using Elastos::Droid::view.InputEvent;
+// using Elastos::Droid::view.SurfaceControl;
+// using Elastos::Droid::view.WindowAnimationFrameStats;
+// using Elastos::Droid::view.WindowContentFrameStats;
+// using Elastos::Droid::view.accessibility.AccessibilityEvent;
+// using Elastos::Droid::view.accessibility.IAccessibilityManager;
 // import libcore.io.IoUtils;
 
 // import java.io.FileOutputStream;

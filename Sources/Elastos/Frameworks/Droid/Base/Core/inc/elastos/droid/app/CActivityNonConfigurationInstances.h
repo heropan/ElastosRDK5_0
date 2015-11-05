@@ -5,6 +5,9 @@
 #include "_Elastos_Droid_App_CActivityNonConfigurationInstances.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -52,7 +55,13 @@ public:
     CARAPI GetLoaders(
         /* [out] */ IArrayMap** loaders);
 
-private:
+    CARAPI SetVoiceInteractor(
+        /* [in] */ IVoiceInteractor* vi);
+
+    CARAPI GetVoiceInteractor(
+        /* [out] */ IVoiceInteractor** vi);
+
+public:
     AutoPtr<IInterface> mActivity;
     AutoPtr<IHashMap> mChildren; //HashMap<String, Object>
     AutoPtr<IArrayList> mFragments; //ArrayList<Fragment>

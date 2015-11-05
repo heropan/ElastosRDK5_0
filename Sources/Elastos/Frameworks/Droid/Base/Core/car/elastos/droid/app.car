@@ -8,6 +8,8 @@ module
     merge("app/ActivityOptions.car");
     merge("app/ActivityThread.car");
     merge("app/ActivityTransitionCoordinator.car");
+    merge("app/ExitTransitionCoordinator.car");
+    merge("app/ActivityTransitionState.car");
     merge("app/ActivityView.car");
     merge("app/AlarmManager.car");
     merge("app/AlertDialog.car");
@@ -124,6 +126,8 @@ module
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IClassLoader;
+    using interface Elastos.Utility.IHashMap;
+    using interface Elastos.Utility.IArrayList;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
@@ -137,6 +141,7 @@ module
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Utility.IArrayMap;
 
 //     using interface Elastos.Core.ICharSequence;
 //     interface Elastos.Droid.Os.ILooper;
@@ -367,19 +372,19 @@ module
 //         interface IBinder;
 //     }
 
+    [local]
+    class CActivityNonConfigurationInstances {
+        constructor();
 
-//     class CActivityNonConfigurationInstances {
-//         constructor();
+        constructor(
+            [in] IInterface* activity,
+            [in] IHashMap* children,
+            [in] IArrayList* fragments,
+            [in] IArrayMap* loaders,
+            [in] IVoiceInteractor* vi);
 
-//        constructor(
-//            [in] IInterface* activity,
-//            [in] IHashMap* children,
-//            [in] IArrayList* fragments,
-//            [in] IArrayMap* loaders,
-//            [in] IVoiceInteractor* vi);
-
-//         interface IActivityNonConfigurationInstances;
-//     }
+        interface IActivityNonConfigurationInstances;
+    }
 
     [local, parcelable]
     class CActionKeyInfo{
@@ -857,7 +862,7 @@ module
             //interface IWindowCallback
             //interface IKeyEventCallback
             //interface IViewOnCreateContextMenuListener
-            //interface IWindowOnWindowDismissedCallback
+            //interface IOnWindowDismissedCallback
 //     }
 
 //     [local]

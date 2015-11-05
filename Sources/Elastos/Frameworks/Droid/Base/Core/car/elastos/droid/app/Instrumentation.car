@@ -1004,7 +1004,7 @@ module
             [in] IContext* who,
             [in] IBinder* contextThread,
             [in] IBinder* token,
-            [in] IActivity* target,
+            [in] IActivity* activity,
             [in] IIntent* intent,
             [in] Int32 requestCode,
             [in] IBundle* options,

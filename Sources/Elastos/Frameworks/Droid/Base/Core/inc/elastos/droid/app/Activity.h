@@ -2,38 +2,24 @@
 #ifndef __ELASTOS_DROID_APP_ACTIVITY_H__
 #define __ELASTOS_DROID_APP_ACTIVITY_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/ContextThemeWrapper.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IPersistableBundle;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Text::ISpannableStringBuilder;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentSender;
-using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::ISharedPreferences;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IContextWrapper;
-using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IComponentCallbacks2;
-using Elastos::Droid::Content::IServiceConnection;
-using Elastos::Droid::Content::ISharedPreferences;
-using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IResourcesTheme;
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::IAssetManager;
+using Elastos::Droid::Transition::IScene;
+using Elastos::Droid::Transition::ITransitionManager;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::View::ContextThemeWrapper;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IActionModeCallback;
 using Elastos::Droid::View::IView;
@@ -51,32 +37,23 @@ using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IViewOnCreateContextMenuListener;
-using Elastos::Droid::View::ICompatibilityInfoHolder;
+using Elastos::Droid::View::ILayoutInflaterFactory;
 using Elastos::Droid::View::ILayoutInflaterFactory2;
+using Elastos::Droid::View::IOnWindowDismissedCallback;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Widget::IToolbar;
 using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Database::IDatabaseErrorHandler;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
-using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseCursorFactory;
-using Elastos::Droid::App::ILoaderManagerImpl;
-using Elastos::Droid::App::IActivityNonConfigurationInstances;
-using Elastos::Droid::Internal::App::IActionBarImpl;
+using Elastos::Droid::Media::Session::IMediaController;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Internal::App::IIVoiceInteractor;
 
-using Elastos::Core::IClassLoader;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
-using Elastos::IO::IFile;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::IFileOutputStream;
 using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IInputStream;
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::IHashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 
@@ -85,11 +62,8 @@ namespace Droid {
 namespace App {
 
 class Activity
-    : public Object
+    : public ContextThemeWrapper
     , public IActivity
-    , public IContext
-    , public IContextWrapper
-    , public IContextThemeWrapper
     , public ILayoutInflaterFactory
     , public ILayoutInflaterFactory2
     , public IWindowCallback
@@ -97,16 +71,36 @@ class Activity
     , public IViewOnCreateContextMenuListener
     , public IComponentCallbacks
     , public IComponentCallbacks2
-    , public IWindowOnWindowDismissedCallback
+    , public IOnWindowDismissedCallback
 {
+private:
+    class FragmentContainerLocal
+        : public Object
+        , public IFragmentContainer
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        FragmentContainerLocal(
+            /* [in] */ Activity* host);
+
+        CARAPI FindViewById(
+            /* [in] */ Int32 id,
+            /* [out] */ IView** view);
+
+        CARAPI HasView(
+            /* [out] */ Boolean* hasView);
+
+    private:
+        Activity* mHost;
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
     Activity();
 
     virtual ~Activity();
-
-    virtual CARAPI Initialize();
 
     /** Return the intent that started this activity. */
     CARAPI GetIntent(
@@ -595,7 +589,7 @@ public:
      * @param toolbar Toolbar to set as the Activity's action bar
      */
     CARAPI SetActionBar(
-        /* [in] */ IActionBar* actionbar);
+        /* [in] */ IToolbar* actionbar);
 
     /**
      * Retrieve a reference to this activity's ActionBar.
@@ -2532,9 +2526,7 @@ public:
      *            media keys and volume changes.
      */
     CARAPI SetMediaController(
-        /* [in] */ IMediaController* controller) {
-        getWindow().setMediaController(controller);
-    }
+        /* [in] */ IMediaController* controller);
 
     /**
      * Gets the controller which should be receiving media key and volume events
@@ -2545,9 +2537,6 @@ public:
      */
     CARAPI GetMediaController(
         /* [out] */ IMediaController** mc);
-    {
-        return getWindow().getMediaController();
-    }
 
     /**
      * Runs the specified action on the UI thread. If the current thread is the UI
@@ -3141,9 +3130,6 @@ public:
     CARAPI IsStartedActivity(
         /* [out] */ Boolean* isStartedActivity);
 
-    CARAPI GetWindow(
-        /* [out] */ IWindow** window);
-
     CARAPI SetDecorView(
         /* [in] */ IView* decor);
 
@@ -3164,9 +3150,6 @@ public:
 
     CARAPI IsWindowAdded(
         /* [out] */ Boolean* added);
-
-    CARAPI GetWindowManager(
-        /* [out] */ IWindowManager** mgr);
 
     CARAPI SetConfigChangeFlags(
         /* [in] */ Int32 configChangeFlags);
@@ -3202,13 +3185,6 @@ public:
     CARAPI SetResumed(
         /* [in] */ Boolean resumed);
 
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
     CARAPI ToString(
         /* [out] */ String* str);
 
@@ -3229,6 +3205,19 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,
         /* [in] */ IUserHandle* user);
+
+    /**
+     * Start a new activity as if it was started by the activity that started our
+     * current activity.  This is for the resolver and chooser activities, which operate
+     * as intermediaries that dispatch their intent to the target the user selects -- to
+     * do this, they must perform all security checks including permission grants as if
+     * their launch had come from the original activity.
+     * @hide
+     */
+    CARAPI StartActivityAsCaller(
+        /* [in] */ IIntent* intent,
+        /* [in] */ IBundle* options,
+        /* [in] */ Int32 userId);
 
     CARAPI StartActivities(
         /* [in] */ ArrayOf<IIntent*>* intents);
@@ -3614,7 +3603,8 @@ public:
         /* [in] */ IBundle* args);
 
 private:
-    class ManagedDialog : public ElRefBase
+    class ManagedDialog
+        : public Object
     {
     public:
         AutoPtr<IDialog> mDialog;
@@ -3622,7 +3612,7 @@ private:
     };
 
     class ManagedCursor
-        : public ElRefBase
+        : public Object
     {
     friend class Activity;
 
@@ -3633,15 +3623,6 @@ private:
             , mReleased(FALSE)
             , mUpdated(FALSE)
         {}
-
-        UInt32 AddRef()
-        {
-            return ElRefBase::AddRef();
-        }
-        UInt32 Release()
-        {
-            return ElRefBase::Release();
-        }
 
     private:
         AutoPtr<ICursor> mCursor;
@@ -3766,10 +3747,9 @@ public:
     // Most recent call to requestVisibleBehind().
     Boolean mVisibleBehind;
 
-    AutoPtr<ActivityTransitionState> mActivityTransitionState;// = new ActivityTransitionState();
+    AutoPtr<IActivityTransitionState> mActivityTransitionState;// = new ActivityTransitionState();
     AutoPtr<ISharedElementCallback> mEnterTransitionListener;// = SharedElementCallback.NULL_CALLBACK;
     AutoPtr<ISharedElementCallback> mExitTransitionListener;// = SharedElementCallback.NULL_CALLBACK;
-
 
 protected:
     AutoPtr<IContext> mBase;
@@ -3800,6 +3780,7 @@ private:
 
     AutoPtr<IComponentName> mComponent;
     Boolean mDestroyed;
+    Boolean mDoReportFullyDrawn;
 
     AutoPtr<ISearchManager> mSearchManager;
     AutoPtr<IMenuInflater> mMenuInflater;

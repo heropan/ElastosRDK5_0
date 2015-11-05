@@ -3,12 +3,12 @@
 
 package android.app;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
+using Elastos::Droid::content.ClipData;
+using Elastos::Droid::content.ClipDescription;
+using Elastos::Droid::content.Intent;
+using Elastos::Droid::os.Bundle;
+using Elastos::Droid::os.Parcel;
+using Elastos::Droid::os.Parcelable;
 
 /**
  * A {@code RemoteInput} object specifies input to be collected from a user to be passed along with

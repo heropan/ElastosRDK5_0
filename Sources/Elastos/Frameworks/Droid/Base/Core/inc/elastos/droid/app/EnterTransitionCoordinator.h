@@ -3,22 +3,22 @@
 
 package android.app;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.graphics.Matrix;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.ResultReceiver;
-import android.text.TextUtils;
-import android.transition.Transition;
-import android.transition.TransitionManager;
-import android.util.ArrayMap;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroupOverlay;
-import android.view.ViewTreeObserver;
-import android.view.Window;
+using Elastos::Droid::animation.Animator;
+using Elastos::Droid::animation.AnimatorListenerAdapter;
+using Elastos::Droid::animation.ObjectAnimator;
+using Elastos::Droid::graphics.Matrix;
+using Elastos::Droid::graphics.drawable.Drawable;
+using Elastos::Droid::os.Bundle;
+using Elastos::Droid::os.ResultReceiver;
+using Elastos::Droid::text.TextUtils;
+using Elastos::Droid::transition.Transition;
+using Elastos::Droid::transition.TransitionManager;
+using Elastos::Droid::util.ArrayMap;
+using Elastos::Droid::view.View;
+using Elastos::Droid::view.ViewGroup;
+using Elastos::Droid::view.ViewGroupOverlay;
+using Elastos::Droid::view.ViewTreeObserver;
+using Elastos::Droid::view.Window;
 
 import java.util.ArrayList;
 

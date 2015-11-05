@@ -12,9 +12,14 @@ namespace View {
 
 class ContextThemeWrapper
     : public ContextWrapper
+    , public IContextThemeWrapper
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ContextThemeWrapper();
+
+    virtual ~ContextThemeWrapper();
 
     CARAPI constructor(
         /* [in] */ IContext* base,

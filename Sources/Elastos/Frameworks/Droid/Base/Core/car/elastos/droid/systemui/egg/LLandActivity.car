@@ -14,7 +14,7 @@ module
      * interface IKeyEventCallback
      * interface IOnCreateContextMenuListener
      * interface IComponentCallbacks2
-     * interface IWindowOnWindowDismissedCallback
+     * interface IOnWindowDismissedCallback
      */
     interface ILLandActivity {}
 
