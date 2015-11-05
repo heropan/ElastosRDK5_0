@@ -90,7 +90,7 @@ public:
     CARAPI constructor(
         /* [in] */ Int64 nativeObject);
 
-    CARAPI SurfaceRelease();
+    CARAPI ReleaseSurface();
 
     CARAPI Destroy();
 
