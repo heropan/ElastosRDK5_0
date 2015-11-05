@@ -117,7 +117,7 @@ ECode Geofence::Equals(
 {
     VALIDATE_NOT_NULL(rst);
 
-    if (THIS_PROBE(IInterface) == o) {
+    if (THIS_PROBE(IInterface) == IInterface::Probe(o)) {
         *rst = TRUE;
         return NOERROR;
     }

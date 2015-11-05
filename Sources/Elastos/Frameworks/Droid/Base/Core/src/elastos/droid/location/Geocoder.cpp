@@ -29,7 +29,8 @@ ECode Geocoder::constructor(
         ASSERT_SUCCEEDED(CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager));
         ASSERT_SUCCEEDED(serviceManager->GetService(IContext::LOCATION_SERVICE, (IInterface**)&mService));
         return NOERROR;
-    } else {
+    }
+    else {
         return E_NULL_POINTER_EXCEPTION;
     }
 }

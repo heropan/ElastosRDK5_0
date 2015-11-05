@@ -46,8 +46,8 @@ ECode GpsStatus::SatelliteIterator::GetNext(
         Boolean valid = FALSE;
         satellite->IsValid(&valid);
         if (valid) {
-            // *object = IInterface::Probe(satellite);
-            // REFCOUNT_ADD(*object)
+            *object = satellite;
+            REFCOUNT_ADD(*object)
             return NOERROR;
         }
     }

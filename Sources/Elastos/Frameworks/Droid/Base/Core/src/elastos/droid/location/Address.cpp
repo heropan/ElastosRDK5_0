@@ -4,9 +4,9 @@
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Utility::CLocale;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::CLocale;
 
 namespace Elastos {
 namespace Droid {
@@ -314,7 +314,7 @@ ECode Address::GetLongitude(
         return NOERROR;
     }
     else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
 }
 
@@ -387,7 +387,7 @@ ECode Address::ToString(
     /* [out] */ String* result)
 {
     StringBuilder sb("Address[addressLines=[");
-    for (int i = 0; i <= mMaxAddressLineIndex; i++) {
+    for (Int32 i = 0; i <= mMaxAddressLineIndex; i++) {
         if (i > 0) {
             sb += ',';
         }
@@ -396,7 +396,8 @@ ECode Address::ToString(
         String line = (*mAddressLines)[i];
         if (line.IsNull()) {
             sb += "null";
-        } else {
+        }
+        else {
             sb += '\"';
             sb += line;
             sb += '\"';

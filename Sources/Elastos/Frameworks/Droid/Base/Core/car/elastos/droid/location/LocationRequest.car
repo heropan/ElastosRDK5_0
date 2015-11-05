@@ -373,6 +373,12 @@ module
         //@SystemApi
         GetHideFromAppOps(
             [out] Boolean* result);
+
+        SetExplicitFastestInterval(
+            [in] Boolean explicitFastestInterval);
+
+        GetExplicitFastestInterval(
+            [out] Boolean* explicitFastestInterval);
     }
 
     interface ILocationRequestHelper {

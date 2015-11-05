@@ -52,9 +52,6 @@ public:
     CARAPI GetClientPackage(
         /* [out] */ String* packageName);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

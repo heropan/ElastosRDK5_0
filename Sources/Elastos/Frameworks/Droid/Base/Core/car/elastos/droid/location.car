@@ -72,12 +72,6 @@ module
             constructor(
                 [in] ICountry* country);
 
-            //@private
-            constructor(
-                [in] String countryIso,
-                [in] Int32 source,
-                [in] Int64 timestamp);
-
             interface ICountry;
             interface IParcelable;
         }
@@ -125,6 +119,8 @@ module
 
         [deprecated, local]
         class CGeocoderParams {
+            constructor();
+
             constructor(
                 [in] IContext* ctx,
                 [in] ILocale* locale);
@@ -134,6 +130,7 @@ module
         }
 
         singleton class CGeofenceHelper {
+
             interface IGeofenceHelper;
         }
 
@@ -164,18 +161,21 @@ module
             interface IGpsStatus;
         }
 
-//        class CLocation {
-//            constructor();
+        class CLocation {
+            constructor(
+                [in] String provider);
 
-//            constructor(
-//                [in] String provider);
+            constructor(
+                [in] ILocation* l);
 
-//            constructor(
-//                [in] ILocation* l);
+            interface ILocation;
+            interface IParcelable;
+        }
 
-//            interface ILocation;
-//            interface IParcelable;
-//        }
+        singleton class CLocationHelper {
+
+            interface ILocationHelper;
+        }
 
 //        [deprecated, local]
 //        class CLocationManager {
@@ -186,17 +186,17 @@ module
 //            interface ILocationManager;
 //        }
 
-//        class CLocationProvider {
-//            constructor(
-//                [in] String name,
-//                [in] IProviderProperties* properties);
+        class CLocationProvider {
+            constructor(
+                [in] String name,
+                [in] IProviderProperties* properties);
 
-//            interface ILocationProvider;
-//        }
+            interface ILocationProvider;
+        }
 
-//        singleton class CLocationProviderHelper{
-//            interface ILocationProviderHelper;
-//        }
+        singleton class CLocationProviderHelper{
+            interface ILocationProviderHelper;
+        }
 
 //        class CGpsStatusListenerTransport {
 //            constructor(
@@ -221,15 +221,19 @@ module
 //            interface IBinder;
 //        }
 
-//        class CLocationRequest {
-//            constructor();
+        class CLocationRequest {
+            constructor();
 
-//            constructor(
-//                [in] ILocationRequest* src);
+            constructor(
+                [in] ILocationRequest* src);
 
-//            interface ILocationRequest;
-//            interface IParcelable;
-//        }
+            interface ILocationRequest;
+            interface IParcelable;
+        }
+
+        singleton class CLocationRequestHelper {
+            interface ILocationRequestHelper;
+        }
 
 //        class CProviderProperties {
 //            constructor();

@@ -10,12 +10,13 @@ using Elastos::Droid::Os::SystemClock;
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 CAR_INTERFACE_IMPL_2(Country, Object, ICountry, IParcelable)
 
 Country::Country()
     : mSource(0)
     , mHashCode(0)
-    , mTimestamp(0L)
+    , mTimestamp(0LL)
 {
 }
 
@@ -32,8 +33,7 @@ ECode Country::constructor(
             || source > ICountry::COUNTRY_SOURCE_LOCALE) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    //mCountryIso = countryIso.ToUpperCase(ILocale::US);
-    mCountryIso = countryIso.ToUpperCase();
+    mCountryIso = countryIso.ToUpperCase(/*ILocale::US*/);
 
     mSource = source;
     mTimestamp = SystemClock::GetElapsedRealtime();
@@ -49,8 +49,7 @@ ECode Country::constructor(
             || source > ICountry::COUNTRY_SOURCE_LOCALE) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    //mCountryIso = countryIso.ToUpperCase(Locale.US);
-    mCountryIso = countryIso.ToUpperCase();
+    mCountryIso = countryIso.ToUpperCase(/*ILocale::US*/);
 
     mSource = source;
     mTimestamp = timestamp;
@@ -66,7 +65,6 @@ ECode Country::constructor(
     mCountryIso = _country->mCountryIso;
     mSource = _country->mSource;
     mTimestamp = _country->mTimestamp;
-
     return NOERROR;
 }
 
@@ -112,7 +110,6 @@ ECode Country::WriteToParcel(
     parcel->WriteString(mCountryIso);
     parcel->WriteInt32(mSource);
     parcel->WriteInt64(mTimestamp);
-
     return NOERROR;
 }
 
@@ -121,7 +118,7 @@ ECode Country::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if (object == THIS_PROBE(IInterface)) {
+    if (IInterface::Probe(object) == THIS_PROBE(IInterface)) {
         *result = TRUE;
         return NOERROR;
     }
@@ -162,7 +159,7 @@ ECode Country::EqualsIgnoreSource(
     VALIDATE_NOT_NULL(result);
     String str;
     country->GetCountryIso(&str);
-   *result = country != NULL && mCountryIso.Equals(str);
+    *result = country != NULL && mCountryIso.Equals(str);
     return NOERROR;
 }
 

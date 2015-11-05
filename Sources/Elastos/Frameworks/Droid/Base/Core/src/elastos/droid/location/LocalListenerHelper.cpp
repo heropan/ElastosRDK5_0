@@ -30,7 +30,7 @@ ECode LocalListenerHelper::Add(
     VALIDATE_NOT_NULL(result)
     // Preconditions.checkNotNull(listener);
 
-    synchronized (this) {
+    synchronized(this) {
         // we need to register with the service first, because we need to find out if the
         // service will actually support the request before we attempt anything
         Boolean isEmpty = FALSE;
@@ -67,7 +67,7 @@ ECode LocalListenerHelper::Remove(
 {
     // Preconditions.checkNotNull(listener);
 
-    synchronized (this) {
+    synchronized(this) {
         Boolean removed = FALSE;
         mListeners->Remove(listener, &removed);
         Boolean isEmpty = FALSE;
@@ -87,7 +87,7 @@ ECode LocalListenerHelper::Foreach(
     /* [in] */ ILocalListenerHelperListenerOperation* operation)
 {
     AutoPtr<ICollection> listeners;
-    synchronized (this) {
+    synchronized(this) {
         AutoPtr<ICollection> coll = ICollection::Probe(mListeners);
         AutoPtr<IArrayList> al;
         CArrayList::New(coll, (IArrayList**)&al);

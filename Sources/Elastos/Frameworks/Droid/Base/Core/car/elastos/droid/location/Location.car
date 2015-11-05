@@ -449,7 +449,7 @@ module
          * in one of the valid formats.
          */
         Convert(
-            [in] String coordinate,
+            [in] String* coordinate,
             [out] Double* d);
 
         /**
