@@ -28,8 +28,6 @@ class GeofenceHardwareImpl
     , public IGeofenceHardwareImpl
 {
 private:
-    class GeofenceHandler;
-
     class GeofenceTransition
         : public Object
     {
@@ -41,10 +39,10 @@ private:
             /* [in] */ ILocation* location,
             /* [in] */ Int32 monitoringType,
             /* [in] */ Int32 sourcesUsed);
-    private:
-        friend class GeofenceHandler;
 
-        Int32 mGeofenceId, mTransition;
+    public:
+        Int32 mGeofenceId;
+        Int32 mTransition;
         Int64 mTimestamp;
         AutoPtr<ILocation> mLocation;
         Int32 mMonitoringType;
@@ -84,7 +82,6 @@ private:
         AutoPtr<IIGeofenceHardwareMonitorCallback> mMonitorCallback;
         AutoPtr<IIGeofenceHardwareCallback> mCallback;
         Int32 mMonitoringType;
-
         GeofenceHardwareImpl* mHost;
     };
 
@@ -97,6 +94,7 @@ private:
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         GeofenceHardwareImpl* mHost;
     };
@@ -110,6 +108,7 @@ private:
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         GeofenceHardwareImpl* mHost;
     };
@@ -123,6 +122,7 @@ private:
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         GeofenceHardwareImpl* mHost;
     };
@@ -134,7 +134,7 @@ public:
 
     virtual ~GeofenceHardwareImpl();
 
-    static AutoPtr<IGeofenceHardwareImpl> GetInstance(
+    static CARAPI_(AutoPtr<IGeofenceHardwareImpl>) GetInstance(
         /* [in] */ IContext* context);
 
     CARAPI SetGpsHardwareGeofence(
@@ -269,10 +269,6 @@ private:
         /* [in] */ Int32 val);
 
 private:
-    friend class GeofenceHandler;
-    friend class CallbacksHandler;
-    friend class ReaperHandler;
-
     static const String TAG;
     static const Boolean DEBUG;
 

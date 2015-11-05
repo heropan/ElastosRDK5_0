@@ -79,6 +79,6 @@ LIBRARIES += $(PREBUILD_LIB)/libstdc++.a
 #LIBRARIES += $(PREBUILD_LIB)/libc++.a
 LIBRARIES += $(PREBUILD_LIB)/libstagefright_amrnbenc.a
 
-LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -landroidfw -lselinux -lz -lusbhost -lnativebridge -lprocessgroup -lmtp -lexif -lmedia -lcamera_client -lminikin -lhwui -lgui -lsoundtrigger -lhardware_legacy -lelwebviewchromium
+LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -landroidfw -lselinux -lz -lusbhost -lnativebridge -lprocessgroup -lmtp -lexif -lmedia -lcamera_client -lminikin -lhwui -lgui -lsoundtrigger -lhardware_legacy -lelwebviewchromium -lhardware
 
 //LIBRARIES += -licuuc -licui18n -lbinder -lutils -lcutils -lsqlite -lskia -lgui -lui -lhwui -landroidfw -lharfbuzz -ljpeg -lz -lmedia -lhardware_legacy -lstagefright -lstagefright_foundation -lstagefright_amrnb_common -lsqlite -lcamera_client -lnetutils -lusbhost -lselinux -lgpioservice -lelwebcore -lelchromium_net -lcrypto -lstlport -lEGL -lGLESv1_CM -lETC1 -lGLESv2 -ldrm1 -lmtp -lexif -lminikin -lc++ -lharfbuzz_ng -linput

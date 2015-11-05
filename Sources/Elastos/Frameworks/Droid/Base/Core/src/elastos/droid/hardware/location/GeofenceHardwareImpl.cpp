@@ -81,20 +81,21 @@ ECode GeofenceHardwareImpl::Reaper::ProxyDied()
     AutoPtr<IMessage> m;
     Boolean result;
     if (mCallback != NULL) {
-        FAIL_RETURN(mHost->mGeofenceHandler->ObtainMessage(GeofenceHardwareImpl::GEOFENCE_CALLBACK_BINDER_DIED,
-                mCallback, (IMessage**)&m))
-        FAIL_RETURN(m->SetArg1(mMonitoringType))
-        FAIL_RETURN(mHost->mGeofenceHandler->SendMessage(m, &result))
-    } else if (mMonitorCallback != NULL) {
-        FAIL_RETURN(mHost->mCallbacksHandler->ObtainMessage(GeofenceHardwareImpl::MONITOR_CALLBACK_BINDER_DIED,
-                mMonitorCallback, (IMessage**)&m))
-        FAIL_RETURN(m->SetArg1(mMonitoringType))
-        FAIL_RETURN(mHost->mCallbacksHandler->SendMessage(m, &result))
+        mHost->mGeofenceHandler->ObtainMessage(GeofenceHardwareImpl::GEOFENCE_CALLBACK_BINDER_DIED,
+                mCallback, (IMessage**)&m);
+        m->SetArg1(mMonitoringType);
+        mHost->mGeofenceHandler->SendMessage(m, &result);
+    }
+    else if (mMonitorCallback != NULL) {
+        mHost->mCallbacksHandler->ObtainMessage(GeofenceHardwareImpl::MONITOR_CALLBACK_BINDER_DIED,
+                mMonitorCallback, (IMessage**)&m);
+        m->SetArg1(mMonitoringType);
+        mHost->mCallbacksHandler->SendMessage(m, &result);
     }
     AutoPtr<IMessage> reaperMessage;
-    FAIL_RETURN(mHost->mReaperHandler->ObtainMessage(GeofenceHardwareImpl::REAPER_REMOVED, THIS_PROBE(IInterface),
-            (IMessage**)&reaperMessage))
-    FAIL_RETURN(mHost->mReaperHandler->SendMessage(reaperMessage, &result))
+    mHost->mReaperHandler->ObtainMessage(GeofenceHardwareImpl::REAPER_REMOVED, THIS_PROBE(IInterface),
+            (IMessage**)&reaperMessage);
+    mHost->mReaperHandler->SendMessage(reaperMessage, &result);
     return NOERROR;
 }
 
@@ -106,7 +107,7 @@ ECode GeofenceHardwareImpl::Reaper::GetHashCode(
     Int32 result = 17;
     if (mCallback != NULL) {
         Int32 callbackHashCode;
-        FAIL_RETURN((IObject::Probe(mCallback))->GetHashCode(&callbackHashCode))
+        (IObject::Probe(mCallback))->GetHashCode(&callbackHashCode);
         result = 31 * result + callbackHashCode;
     }
     else {
@@ -115,7 +116,7 @@ ECode GeofenceHardwareImpl::Reaper::GetHashCode(
 
     if (mMonitorCallback != NULL) {
         Int32 monitorCallbackHashCode;
-        FAIL_RETURN((IObject::Probe(mMonitorCallback))->GetHashCode(&monitorCallbackHashCode))
+        (IObject::Probe(mMonitorCallback))->GetHashCode(&monitorCallbackHashCode);
         result = 31 * result + monitorCallbackHashCode;
     }
     else {
@@ -164,44 +165,39 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
     AutoPtr<IIGeofenceHardwareCallback> _callback;
     Object& lockObj = mHost->mGeofencesLock;
 
-    AutoPtr<IInterface> obj;
-    Int32 monitoringType;
-    AutoPtr<GeofenceTransition> geofenceTransition;
     Int32 what = 0;
-    FAIL_RETURN(msg->GetWhat(&what))
+    msg->GetWhat(&what);
     switch (what) {
         case GeofenceHardwareImpl::ADD_GEOFENCE_CALLBACK:
-            FAIL_RETURN(msg->GetArg1(&geofenceId))
+            msg->GetArg1(&geofenceId);
             synchronized (lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
 
             if (_callback != NULL) {
                 //try {
-                ECode ec = NOERROR;
                 Int32 arg2;
                 msg->GetArg2(&arg2);
-                ec = _callback->OnGeofenceAdd(geofenceId, arg2);
+                ECode ec = _callback->OnGeofenceAdd(geofenceId, arg2);
                 //} catch (RemoteException e) {
                 if (FAILED(ec)) {
                     Slogger::I(TAG, "Remote Exception:"/* + e*/);
                 }
                 //}
             }
-            FAIL_RETURN(mHost->ReleaseWakeLock());
+            mHost->ReleaseWakeLock();
             break;
         case GeofenceHardwareImpl::REMOVE_GEOFENCE_CALLBACK:
-            FAIL_RETURN(msg->GetArg1(&geofenceId))
+            msg->GetArg1(&geofenceId);
             synchronized (lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
 
             if (_callback != NULL) {
                 //try {
-                ECode ec = NOERROR;
                 Int32 arg2;
                 msg->GetArg2(&arg2);
-                ec = _callback->OnGeofenceRemove(geofenceId, arg2);
+                ECode ec = _callback->OnGeofenceRemove(geofenceId, arg2);
                 //} catch (RemoteException e) {}
                 if (FAILED(ec)) {
                     synchronized (lockObj) {
@@ -209,11 +205,11 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
                     }
                 }
             }
-            FAIL_RETURN(mHost->ReleaseWakeLock());
+            mHost->ReleaseWakeLock();
             break;
 
         case GeofenceHardwareImpl::PAUSE_GEOFENCE_CALLBACK:
-            FAIL_RETURN(msg->GetArg1(&geofenceId))
+            msg->GetArg1(&geofenceId);
             synchronized (lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
@@ -225,11 +221,11 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
                 _callback->OnGeofencePause(geofenceId, arg2);
                 //} catch (RemoteException e) {}
             }
-            FAIL_RETURN(mHost->ReleaseWakeLock());
+            mHost->ReleaseWakeLock();
             break;
 
         case GeofenceHardwareImpl::RESUME_GEOFENCE_CALLBACK:
-            FAIL_RETURN(msg->GetArg1(&geofenceId))
+            msg->GetArg1(&geofenceId);
             synchronized (lockObj) {
                 _callback = (mHost->mGeofences)[geofenceId];
             }
@@ -241,12 +237,14 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
                 _callback->OnGeofenceResume(geofenceId, arg2);
                 //} catch (RemoteException e) {}
             }
-            FAIL_RETURN(mHost->ReleaseWakeLock());
+            mHost->ReleaseWakeLock();
             break;
 
         case GeofenceHardwareImpl::GEOFENCE_TRANSITION_CALLBACK:
-            obj =  NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
+            AutoPtr<GeofenceTransition> geofenceTransition;
             geofenceTransition = (GeofenceTransition*)IObject::Probe(obj);
             synchronized (lockObj) {
                 _callback = (mHost->mGeofences)[geofenceTransition->mGeofenceId];
@@ -275,12 +273,14 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
                         geofenceTransition->mMonitoringType);
                 //} catch (RemoteException e) {}
             }
-            FAIL_RETURN(mHost->ReleaseWakeLock());
+            mHost->ReleaseWakeLock();
             break;
+        }
         case GeofenceHardwareImpl::GEOFENCE_CALLBACK_BINDER_DIED:
+        {
             // Find all geofences associated with this callback and remove them.
-            obj =  NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             _callback = IIGeofenceHardwareCallback::Probe(obj);
             if (DEBUG) {
                 StringBuilder sb;
@@ -288,17 +288,19 @@ ECode GeofenceHardwareImpl::GeofenceHandler::HandleMessage(
                 sb += Object::ToString(_callback);
                 Slogger::D(TAG, sb.ToString());
             }
-            FAIL_RETURN(msg->GetArg1(&monitoringType))
+            Int32 monitoringType;
+            msg->GetArg1(&monitoringType);
             synchronized (lockObj) {
                 for (UInt32 i = 0; i < (mHost->mGeofences).GetSize(); i++) {
                     Boolean result;
-                    FAIL_RETURN(IObject::Probe(mHost->mGeofences[i])->Equals(_callback, &result))
+                    IObject::Probe(mHost->mGeofences[i])->Equals(_callback, &result);
                     if (result) {
-                        FAIL_RETURN(mHost->RemoveGeofence(i, monitoringType, &result))
+                        mHost->RemoveGeofence(i, monitoringType, &result);
                         (mHost->mGeofences).Erase(i);
                     }
                }
            }
+        }
     }
 
     return NOERROR;
@@ -318,17 +320,16 @@ ECode GeofenceHardwareImpl::CallbacksHandler::HandleMessage(
     AutoPtr<IIGeofenceHardwareMonitorCallback> _callback;
 
     Int32 what = 0;
-    FAIL_RETURN(msg->GetWhat(&what))
-    AutoPtr<IInterface> obj;
-    Boolean result;
-    Int32 type;
+    msg->GetWhat(&what);
     AutoPtr<IGeofenceHardwareMonitorEvent> event;
     switch (what) {
         case GeofenceHardwareImpl::GEOFENCE_STATUS:
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
-            event = IGeofenceHardwareMonitorEvent::Probe(obj);
-            FAIL_RETURN(event->GetMonitoringType(&type))
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
+            AutoPtr<IGeofenceHardwareMonitorEvent> event = IGeofenceHardwareMonitorEvent::Probe(obj);
+            Int32 type;
+            event->GetMonitoringType(&type);
             callbackList = (*(mHost->mCallbacks))[type];
             if (callbackList != NULL) {
                 if (DEBUG) {
@@ -341,14 +342,13 @@ ECode GeofenceHardwareImpl::CallbacksHandler::HandleMessage(
                 }
 
                 Int32 size;
-                FAIL_RETURN(callbackList->GetSize(&size))
+                callbackList->GetSize(&size);
                 for (Int32 i = 0; i < size; i++) {
                     AutoPtr<IInterface> _obj;
-                    FAIL_RETURN(callbackList->Get(i, (IInterface**)&_obj))
+                    callbackList->Get(i, (IInterface**)&_obj);
                     AutoPtr<IIGeofenceHardwareMonitorCallback> c = IIGeofenceHardwareMonitorCallback::Probe(_obj);
                     //try {
-                    ECode ec = NOERROR;
-                    ec = c->OnMonitoringSystemChange(event);
+                    ECode ec = c->OnMonitoringSystemChange(event);
                     //} catch (RemoteException e) {
                     if (FAILED(ec)) {
                         Slogger::D(TAG, "Error reporting onMonitoringSystemChange."/*, e*/);
@@ -356,12 +356,14 @@ ECode GeofenceHardwareImpl::CallbacksHandler::HandleMessage(
                     //}
                 }
             }
-            FAIL_RETURN(mHost->ReleaseWakeLock());
+            mHost->ReleaseWakeLock();
             break;
+        }
         case GeofenceHardwareImpl::CALLBACK_ADD:
-            FAIL_RETURN(msg->GetArg1(&monitoringType))
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            msg->GetArg1(&monitoringType);
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             _callback = IIGeofenceHardwareMonitorCallback::Probe(obj);
             callbackList = (*(mHost->mCallbacks))[monitoringType];
             if (callbackList == NULL) {
@@ -369,24 +371,29 @@ ECode GeofenceHardwareImpl::CallbacksHandler::HandleMessage(
                 //mCallbacks[monitoringType] = callbackList;
                 mHost->mCallbacks->Set(monitoringType, callbackList);
             }
-            FAIL_RETURN(callbackList->Contains(TO_IINTERFACE(_callback), &result))
+            Boolean result;
+            callbackList->Contains(TO_IINTERFACE(_callback), &result);
             if (!result) {
                 callbackList->Add(TO_IINTERFACE(_callback));
             }
             break;
+        }
         case GeofenceHardwareImpl::CALLBACK_REMOVE:
-            FAIL_RETURN(msg->GetArg1(&monitoringType))
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            msg->GetArg1(&monitoringType);
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             _callback = IIGeofenceHardwareMonitorCallback::Probe(obj);
             callbackList = (*(mHost->mCallbacks))[monitoringType];
             if (callbackList != NULL) {
                 callbackList->Remove(TO_IINTERFACE(_callback));
             }
             break;
+        }
         case GeofenceHardwareImpl::MONITOR_CALLBACK_BINDER_DIED:
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             _callback = IIGeofenceHardwareMonitorCallback::Probe(obj);
             if (DEBUG) {
                 StringBuilder sb;
@@ -398,13 +405,15 @@ ECode GeofenceHardwareImpl::CallbacksHandler::HandleMessage(
             }
 
             Int32 arg1;
-            FAIL_RETURN(msg->GetArg1(&arg1))
+            msg->GetArg1(&arg1);
             if (callbackList != NULL) {
-                FAIL_RETURN(callbackList->Contains(TO_IINTERFACE(_callback), &result))
+                Boolean result;
+                callbackList->Contains(TO_IINTERFACE(_callback), &result);
                 if (result) {
                     callbackList->Remove(TO_IINTERFACE(_callback));
                 }
             }
+        }
     }
 
     return NOERROR;
@@ -426,53 +435,56 @@ ECode GeofenceHardwareImpl::ReaperHandler::HandleMessage(
     Boolean result;
 
     Int32 what = 0;
-    FAIL_RETURN(msg->GetWhat(&what))
-    AutoPtr<IInterface> obj;
+    msg->GetWhat(&what);
     switch (what) {
         case GeofenceHardwareImpl::REAPER_GEOFENCE_ADDED:
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             _callback = IIGeofenceHardwareCallback::Probe(obj);
-            FAIL_RETURN(msg->GetArg1(&monitoringType))
+            msg->GetArg1(&monitoringType);
             r = new Reaper(_callback, monitoringType, mHost);
-            FAIL_RETURN(mHost->mReapers->Contains(TO_IINTERFACE(r), &result))
+            mHost->mReapers->Contains(TO_IINTERFACE(r), &result);
             if (!result) {
                 mHost->mReapers->Add(TO_IINTERFACE(r));
-                //IBinder b = _callback.asBinder();
                 AutoPtr<IProxy> proxy = (IProxy*)_callback->Probe(EIID_IProxy);
                 //try {
-                    proxy->LinkToDeath(r, 0);
+                proxy->LinkToDeath(r, 0);
                 //} catch (RemoteException e) {}
             }
             break;
+        }
         case GeofenceHardwareImpl::REAPER_MONITOR_CALLBACK_ADDED:
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             monitorCallback = IIGeofenceHardwareMonitorCallback::Probe(obj);
-            FAIL_RETURN(msg->GetArg1(&monitoringType))
+            msg->GetArg1(&monitoringType);
 
             r = new Reaper(monitorCallback, monitoringType, mHost);
-            FAIL_RETURN(mHost->mReapers->Contains(TO_IINTERFACE(r), &result))
+            mHost->mReapers->Contains(TO_IINTERFACE(r), &result);
             if (!result) {
                 mHost->mReapers->Add(TO_IINTERFACE(r));
-                //AutoPtr<IBinder> b = monitorCallback->AsBinder();
                 AutoPtr<IProxy> proxy = (IProxy*)monitorCallback->Probe(EIID_IProxy);
                 //try {
-                    proxy->LinkToDeath(r, 0);
+                proxy->LinkToDeath(r, 0);
                 //} catch (RemoteException e) {}
             }
             break;
+        }
         case GeofenceHardwareImpl::REAPER_REMOVED:
-            obj = NULL;
-            FAIL_RETURN(msg->GetObj((IInterface**)&obj))
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
             r = (Reaper*)IObject::Probe(obj);
             mHost->mReapers->Remove(TO_IINTERFACE(r));
+        }
     }
 
     return NOERROR;
 }
 
-const String GeofenceHardwareImpl::TAG = String("GeofenceHardwareImpl");
+const String GeofenceHardwareImpl::TAG("GeofenceHardwareImpl");
 const Boolean GeofenceHardwareImpl::DEBUG = FALSE;// TODO: = Log.isLoggable(TAG, Log.DEBUG);
 
 Object GeofenceHardwareImpl::sLock;
@@ -534,20 +546,19 @@ ECode GeofenceHardwareImpl::AcquireWakeLock()
 {
     if (mWakeLock == NULL) {
         AutoPtr<IPowerManager> powerManager;
-        FAIL_RETURN(mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&powerManager))
-        FAIL_RETURN(powerManager->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, TAG,
-                (IPowerManagerWakeLock**&)mWakeLock))
+        mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&powerManager);
+        powerManager->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, TAG,
+                (IPowerManagerWakeLock**&)mWakeLock);
     }
-    FAIL_RETURN(mWakeLock->AcquireLock())
-    return NOERROR;
+    return mWakeLock->AcquireLock();
 }
 
 ECode GeofenceHardwareImpl::ReleaseWakeLock()
 {
     Boolean isHeld;
-    FAIL_RETURN(mWakeLock->IsHeld(&isHeld))
+    mWakeLock->IsHeld(&isHeld);
     if (isHeld) {
-        FAIL_RETURN(mWakeLock->ReleaseLock())
+        mWakeLock->ReleaseLock();
     }
     return NOERROR;
 }
@@ -557,8 +568,7 @@ void GeofenceHardwareImpl::UpdateGpsHardwareAvailability()
     //Check which monitors are available.
     Boolean gpsSupported;
     //try {
-    ECode ec = NOERROR;
-    ec = mGpsService->IsHardwareGeofenceSupported(&gpsSupported);
+    ECode ec = mGpsService->IsHardwareGeofenceSupported(&gpsSupported);
     //} catch (RemoteException e) {
     if (FAILED(ec)) {
         Slogger::E(TAG, "Remote Exception calling LocationManagerService");
@@ -593,7 +603,7 @@ void GeofenceHardwareImpl::UpdateFusedHardwareAvailability()
     }
     //}
 
-    if(fusedSupported) {
+    if (fusedSupported) {
         SetMonitorAvailability(
                 IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE,
                 IGeofenceHardware::MONITOR_CURRENTLY_AVAILABLE);
@@ -607,10 +617,12 @@ ECode GeofenceHardwareImpl::SetGpsHardwareGeofence(
     if (mGpsService == NULL) {
         mGpsService = service;
         UpdateGpsHardwareAvailability();
-    } else if (service == NULL) {
+    }
+    else if (service == NULL) {
         mGpsService = NULL;
         Slogger::W(TAG, "GPS Geofence Hardware service seems to have crashed");
-    } else {
+    }
+    else {
         Slogger::E(TAG, "Error: GpsService being set again.");
     }
     return NOERROR;
@@ -619,13 +631,15 @@ ECode GeofenceHardwareImpl::SetGpsHardwareGeofence(
 ECode GeofenceHardwareImpl::SetFusedGeofenceHardware(
     /* [in] */ IIFusedGeofenceHardware* service)
 {
-    if(mFusedService == NULL) {
+    if (mFusedService == NULL) {
         mFusedService = service;
         UpdateFusedHardwareAvailability();
-    } else if(service == NULL) {
+    }
+    else if (service == NULL) {
         mFusedService = NULL;
         Slogger::W(TAG, "Fused Geofence Hardware service seems to have crashed");
-    } else {
+    }
+    else {
         Slogger::E(TAG, "Error: FusedService being set again");
     }
     return NOERROR;
@@ -645,34 +659,32 @@ ECode GeofenceHardwareImpl::GetMonitoringTypes(
                 != IGeofenceHardware::MONITOR_UNSUPPORTED;
     }
 
-    if(gpsSupported) {
-        if(fusedSupported) {
-            AutoPtr<ArrayOf<Int32> > array;
-            array = ArrayOf<Int32>::Alloc(2);
+    if (gpsSupported) {
+        if (fusedSupported) {
+            AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(2);
             (*array)[0] = IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE;
             (*array)[1] = IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE;
             *types = array;
             REFCOUNT_ADD(*types);
             return NOERROR;
-
-        } else {
-            AutoPtr<ArrayOf<Int32> > array;
-            array = ArrayOf<Int32>::Alloc(1);
+        }
+        else {
+            AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(1);
             (*array)[0] = IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE;
             *types = array;
             REFCOUNT_ADD(*types);
             return NOERROR;
         }
-    } else if (fusedSupported) {
-        AutoPtr<ArrayOf<Int32> > array;
-        array = ArrayOf<Int32>::Alloc(1);
+    }
+    else if (fusedSupported) {
+        AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(1);
         (*array)[0] = IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE;
         *types = array;
         REFCOUNT_ADD(*types);
         return NOERROR;
-    } else {
-        AutoPtr<ArrayOf<Int32> > array;
-        array = ArrayOf<Int32>::Alloc(0);
+    }
+    else {
+        AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(0);
         *types = array;
         REFCOUNT_ADD(*types);
         return NOERROR;
@@ -705,12 +717,11 @@ ECode GeofenceHardwareImpl::AddCircularFence(
     VALIDATE_NOT_NULL(result);
 
     Int32 geofenceId;
-    FAIL_RETURN(request->GetId(&geofenceId))
+    request->GetId(&geofenceId);
 
     // This API is not thread safe. Operations on the same geofence need to be serialized
     // by upper layers
     if (DEBUG) {
-        String message;
         StringBuilder sb;
         sb += "addCircularFence: monitoringType=";
         sb += monitoringType;
@@ -718,8 +729,7 @@ ECode GeofenceHardwareImpl::AddCircularFence(
         String tmp;
         IObject::Probe(request)->ToString(&tmp);
         sb += tmp;
-        sb.ToString(&message);
-        Slogger::D(TAG, message);
+        Slogger::D(TAG, sb.ToString());
     }
     Boolean _result;
 
@@ -731,10 +741,10 @@ ECode GeofenceHardwareImpl::AddCircularFence(
         mGeofences[geofenceId] = _callback;
     }
 
-    ECode ec = NOERROR;
     AutoPtr<ArrayOf<IGeofenceHardwareRequestParcelable*> > req;
     switch (monitoringType) {
         case IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE:
+        {
             if (mGpsService == NULL) {
                 *result = FALSE;
                 return NOERROR;
@@ -742,22 +752,22 @@ ECode GeofenceHardwareImpl::AddCircularFence(
             //try {
             _result = FALSE;
             Int32 id;
-            FAIL_RETURN(request->GetId(&id))
+            request->GetId(&id);
             Double latitude;
-            FAIL_RETURN(request->GetLatitude(&latitude))
+            request->GetLatitude(&latitude);
             Double longitude;
-            FAIL_RETURN(request->GetLongitude(&longitude))
+            request->GetLongitude(&longitude);
             Double radius;
-            FAIL_RETURN(request->GetRadius(&radius))
+            request->GetRadius(&radius);
             Int32 transition;
-            FAIL_RETURN(request->GetLastTransition(&transition))
+            request->GetLastTransition(&transition);
             Int32 transitions;
-            FAIL_RETURN(request->GetMonitorTransitions(&transitions))
+            request->GetMonitorTransitions(&transitions);
             Int32 responsiveness;
-            FAIL_RETURN(request->GetNotificationResponsiveness(&responsiveness))
+            request->GetNotificationResponsiveness(&responsiveness);
             Int32 timer;
-            FAIL_RETURN(request->GetUnknownTimer(&timer))
-            ec = mGpsService->AddCircularHardwareGeofence(id, latitude, longitude, radius, transition,
+            request->GetUnknownTimer(&timer);
+            ECode ec = mGpsService->AddCircularHardwareGeofence(id, latitude, longitude, radius, transition,
                     transitions, responsiveness, timer, &_result);
             //} catch (RemoteException e) {
             if (FAILED(ec)) {
@@ -766,16 +776,18 @@ ECode GeofenceHardwareImpl::AddCircularFence(
             }
             //}
             break;
+        }
         case IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE:
-            if(mFusedService == NULL) {
+        {
+            if (mFusedService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-                req = ArrayOf<IGeofenceHardwareRequestParcelable*>::Alloc(1);
-                req->Set(0, request);
-                ec = mFusedService->AddGeofences(req);
-                _result = TRUE;
+            req = ArrayOf<IGeofenceHardwareRequestParcelable*>::Alloc(1);
+            req->Set(0, request);
+            ECode ec = mFusedService->AddGeofences(req);
+            _result = TRUE;
             //} catch(RemoteException e) {
             if (FAILED(ec)) {
                 Slogger::E(TAG, "AddGeofence: RemoteException calling LocationManagerService");
@@ -783,16 +795,18 @@ ECode GeofenceHardwareImpl::AddCircularFence(
             }
             //}
             break;
+        }
         default:
             _result = FALSE;
     }
     if (_result) {
         AutoPtr<IMessage> m;
-        FAIL_RETURN(mReaperHandler->ObtainMessage(REAPER_GEOFENCE_ADDED, _callback, (IMessage**)&m))
-        FAIL_RETURN(m->SetArg1(monitoringType))
+        mReaperHandler->ObtainMessage(REAPER_GEOFENCE_ADDED, _callback, (IMessage**)&m);
+        m->SetArg1(monitoringType);
         Boolean success;
-        FAIL_RETURN(mReaperHandler->SendMessage(m, &success))
-    } else {
+        mReaperHandler->SendMessage(m, &success);
+    }
+    else {
         synchronized (mGeofencesLock) {
             mGeofences.Erase(geofenceId);
         }
@@ -833,16 +847,15 @@ ECode GeofenceHardwareImpl::RemoveGeofence(
         }
     }
 
-    ECode ec = NOERROR;
-    AutoPtr<ArrayOf<Int32> > arrays;
     switch (monitoringType) {
         case IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE:
+        {
             if (mGpsService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-            ec = mGpsService->RemoveHardwareGeofence(geofenceId, &_result);
+            ECode ec = mGpsService->RemoveHardwareGeofence(geofenceId, &_result);
             //} catch (RemoteException e) {
             if (FAILED(ec)) {
                 Slogger::E(TAG, "RemoveGeofence: Remote Exception calling LocationManagerService");
@@ -850,15 +863,17 @@ ECode GeofenceHardwareImpl::RemoveGeofence(
             }
             //}
             break;
+        }
         case IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE:
-            if(mFusedService == NULL) {
+        {
+            if (mFusedService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-            arrays = ArrayOf<Int32>::Alloc(1);
+            AutoPtr<ArrayOf<Int32> > arrays = ArrayOf<Int32>::Alloc(1);
             (*arrays)[0] = geofenceId;
-            ec = mFusedService->RemoveGeofences(arrays);
+            ECode ec = mFusedService->RemoveGeofences(arrays);
             _result = TRUE;
             //} catch(RemoteException e) {
             if (FAILED(ec)) {
@@ -867,6 +882,7 @@ ECode GeofenceHardwareImpl::RemoveGeofence(
             }
             //}
             break;
+        }
         default:
             _result = FALSE;
     }
@@ -903,15 +919,15 @@ ECode GeofenceHardwareImpl::PauseGeofence(
         }
     }
 
-    ECode ec = NOERROR;
     switch (monitoringType) {
         case IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE:
+        {
             if (mGpsService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-            ec = mGpsService->PauseHardwareGeofence(geofenceId, &_result);
+            ECode ec = mGpsService->PauseHardwareGeofence(geofenceId, &_result);
             //} catch (RemoteException e) {
             if (FAILED(ec)) {
                 Slogger::E(TAG, "PauseGeofence: Remote Exception calling LocationManagerService");
@@ -919,13 +935,15 @@ ECode GeofenceHardwareImpl::PauseGeofence(
             }
             //}
             break;
+        }
         case IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE:
-            if(mFusedService == NULL) {
+        {
+            if (mFusedService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-            ec = mFusedService->PauseMonitoringGeofence(geofenceId);
+            ECode ec = mFusedService->PauseMonitoringGeofence(geofenceId);
             _result = TRUE;
             //} catch(RemoteException e) {
             if (FAILED(ec)) {
@@ -934,6 +952,7 @@ ECode GeofenceHardwareImpl::PauseGeofence(
             }
             //}
             break;
+        }
         default:
             _result = FALSE;
     }
@@ -971,15 +990,15 @@ ECode GeofenceHardwareImpl::ResumeGeofence(
         }
     }
 
-    ECode ec = NOERROR;
     switch (monitoringType) {
         case IGeofenceHardware::MONITORING_TYPE_GPS_HARDWARE:
+        {
             if (mGpsService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-            ec = mGpsService->ResumeHardwareGeofence(geofenceId, monitorTransition, &_result);
+            ECode ec = mGpsService->ResumeHardwareGeofence(geofenceId, monitorTransition, &_result);
             //} catch (RemoteException e) {
             if (FAILED(ec)) {
                 Slogger::E(TAG, "ResumeGeofence: Remote Exception calling LocationManagerService");
@@ -987,13 +1006,15 @@ ECode GeofenceHardwareImpl::ResumeGeofence(
             }
             //}
             break;
+        }
         case IGeofenceHardware::MONITORING_TYPE_FUSED_HARDWARE:
-            if(mFusedService == NULL) {
+        {
+            if (mFusedService == NULL) {
                 *result = FALSE;
                 return NOERROR;
             }
             //try {
-            ec = mFusedService->ResumeMonitoringGeofence(geofenceId, monitorTransition);
+            ECode ec = mFusedService->ResumeMonitoringGeofence(geofenceId, monitorTransition);
             _result = TRUE;
             //} catch(RemoteException e) {
             if (FAILED(ec)) {
@@ -1002,6 +1023,7 @@ ECode GeofenceHardwareImpl::ResumeGeofence(
             }
             //}
             break;
+        }
         default:
             _result = FALSE;
     }
@@ -1024,15 +1046,15 @@ ECode GeofenceHardwareImpl::RegisterForMonitorStateChangeCallback(
 
     AutoPtr<IMessage> reaperMessage;
     Boolean _result;
-    FAIL_RETURN(mReaperHandler->ObtainMessage(REAPER_MONITOR_CALLBACK_ADDED,
-            _callback, (IMessage**)&reaperMessage))
-    FAIL_RETURN(reaperMessage->SetArg1(monitoringType))
-    FAIL_RETURN(mReaperHandler->SendMessage(reaperMessage, &_result))
+    mReaperHandler->ObtainMessage(REAPER_MONITOR_CALLBACK_ADDED,
+            _callback, (IMessage**)&reaperMessage);
+    reaperMessage->SetArg1(monitoringType);
+    mReaperHandler->SendMessage(reaperMessage, &_result);
 
     AutoPtr<IMessage> m;
-    FAIL_RETURN(mCallbacksHandler->ObtainMessage(CALLBACK_ADD, _callback, (IMessage**)&m))
-    FAIL_RETURN(m->SetArg1(monitoringType))
-    FAIL_RETURN(mCallbacksHandler->SendMessage(m, &_result))
+    mCallbacksHandler->ObtainMessage(CALLBACK_ADD, _callback, (IMessage**)&m);
+    m->SetArg1(monitoringType);
+    mCallbacksHandler->SendMessage(m, &_result);
     *result = TRUE;
     return NOERROR;
 }
@@ -1045,10 +1067,10 @@ ECode GeofenceHardwareImpl::UnregisterForMonitorStateChangeCallback(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IMessage> m;
-    FAIL_RETURN(mCallbacksHandler->ObtainMessage(CALLBACK_REMOVE, _callback, (IMessage**)&m))
-    FAIL_RETURN(m->SetArg1(monitoringType))
+    mCallbacksHandler->ObtainMessage(CALLBACK_REMOVE, _callback, (IMessage**)&m);
+    m->SetArg1(monitoringType);
     Boolean _result;
-    FAIL_RETURN(mCallbacksHandler->SendMessage(m, &_result))
+    mCallbacksHandler->SendMessage(m, &_result);
     *result = TRUE;
     return NOERROR;
 }
@@ -1061,14 +1083,14 @@ ECode GeofenceHardwareImpl::ReportGeofenceTransition(
     /* [in] */ Int32 monitoringType,
     /* [in] */ Int32 sourcesUsed)
 {
-    if(location == NULL) {
+    if (location == NULL) {
         StringBuilder sb;
         sb += "Invalid Geofence Transition: location=";
         sb += location;
         Slogger::E(TAG, sb.ToString());
         return NOERROR;
     }
-    if(DEBUG) {
+    if (DEBUG) {
         StringBuilder sb;
         sb += "GeofenceTransition| ";
         sb += location;
@@ -1090,13 +1112,13 @@ ECode GeofenceHardwareImpl::ReportGeofenceTransition(
             location,
             monitoringType,
             sourcesUsed);
-    FAIL_RETURN(AcquireWakeLock())
+    AcquireWakeLock();
 
     AutoPtr<IMessage> message;
-    FAIL_RETURN(mGeofenceHandler->ObtainMessage(
+    mGeofenceHandler->ObtainMessage(
             GEOFENCE_TRANSITION_CALLBACK,
-            TO_IINTERFACE(geofenceTransition), (IMessage**)&message))
-    FAIL_RETURN(message->SendToTarget())
+            TO_IINTERFACE(geofenceTransition), (IMessage**)&message);
+    message->SendToTarget();
     return NOERROR;
 }
 
@@ -1107,16 +1129,12 @@ ECode GeofenceHardwareImpl::ReportGeofenceMonitorStatus(
     /* [in] */ Int32 source)
 {
     SetMonitorAvailability(monitoringType, monitoringStatus);
-    FAIL_RETURN(AcquireWakeLock())
-    AutoPtr<IGeofenceHardwareMonitorEvent> event = new GeofenceHardwareMonitorEvent();
-    FAIL_RETURN(((GeofenceHardwareMonitorEvent*)event.Get())->constructor(
-            monitoringType,
-            monitoringStatus,
-            source,
-            location))
+    AcquireWakeLock();
+    AutoPtr<GeofenceHardwareMonitorEvent> event = new GeofenceHardwareMonitorEvent();
+    FAIL_RETURN(event->constructor( monitoringType, monitoringStatus, source, location))
     AutoPtr<IMessage> message;
-    FAIL_RETURN(mCallbacksHandler->ObtainMessage(GEOFENCE_STATUS, TO_IINTERFACE(event), (IMessage**)&message))
-    FAIL_RETURN(message->SendToTarget())
+    mCallbacksHandler->ObtainMessage(GEOFENCE_STATUS, TO_IINTERFACE(event), (IMessage**)&message);
+    message->SendToTarget();
     return NOERROR;
 }
 
@@ -1125,12 +1143,12 @@ ECode GeofenceHardwareImpl::ReportGeofenceOperationStatus(
     /* [in] */ Int32 geofenceId,
     /* [in] */ Int32 operationStatus)
 {
-    FAIL_RETURN(AcquireWakeLock())
+    AcquireWakeLock();
     AutoPtr<IMessage> message;
-    FAIL_RETURN(mGeofenceHandler->ObtainMessage(operation, (IMessage**)&message))
-    FAIL_RETURN(message->SetArg1(geofenceId))
-    FAIL_RETURN(message->SetArg2(operationStatus))
-    FAIL_RETURN(message->SendToTarget())
+    mGeofenceHandler->ObtainMessage(operation, (IMessage**)&message);
+    message->SetArg1(geofenceId);
+    message->SetArg2(operationStatus);
+    message->SendToTarget();
     return NOERROR;
 }
 
@@ -1138,7 +1156,7 @@ ECode GeofenceHardwareImpl::ReportGeofenceAddStatus(
     /* [in] */ Int32 geofenceId,
     /* [in] */ Int32 status)
 {
-    if(DEBUG) {
+    if (DEBUG) {
         StringBuilder sb;
         sb += "AddCallback| id:";
         sb += geofenceId;
@@ -1146,15 +1164,14 @@ ECode GeofenceHardwareImpl::ReportGeofenceAddStatus(
         sb += status;
         Slogger::D(TAG, sb.ToString());
     }
-    FAIL_RETURN(ReportGeofenceOperationStatus(ADD_GEOFENCE_CALLBACK, geofenceId, status))
-    return NOERROR;
+    return ReportGeofenceOperationStatus(ADD_GEOFENCE_CALLBACK, geofenceId, status);
 }
 
 ECode GeofenceHardwareImpl::ReportGeofenceRemoveStatus(
     /* [in] */ Int32 geofenceId,
     /* [in] */ Int32 status)
 {
-    if(DEBUG) {
+    if (DEBUG) {
         StringBuilder sb;
         sb += "RemoveCallback| id:";
         sb += geofenceId;
@@ -1162,15 +1179,14 @@ ECode GeofenceHardwareImpl::ReportGeofenceRemoveStatus(
         sb += status;
         Slogger::D(TAG, sb.ToString());
     }
-    FAIL_RETURN(ReportGeofenceOperationStatus(REMOVE_GEOFENCE_CALLBACK, geofenceId, status))
-    return NOERROR;
+    return ReportGeofenceOperationStatus(REMOVE_GEOFENCE_CALLBACK, geofenceId, status);
 }
 
 ECode GeofenceHardwareImpl::ReportGeofencePauseStatus(
     /* [in] */ Int32 geofenceId,
     /* [in] */ Int32 status)
 {
-    if(DEBUG) {
+    if (DEBUG) {
         StringBuilder sb;
         sb += "PauseCallbac| id:";
         sb += geofenceId;
@@ -1178,15 +1194,14 @@ ECode GeofenceHardwareImpl::ReportGeofencePauseStatus(
         sb += status;
         Slogger::D(TAG, sb.ToString());
     }
-    FAIL_RETURN(ReportGeofenceOperationStatus(PAUSE_GEOFENCE_CALLBACK, geofenceId, status));
-    return NOERROR;
+    return ReportGeofenceOperationStatus(PAUSE_GEOFENCE_CALLBACK, geofenceId, status);
 }
 
 ECode GeofenceHardwareImpl::ReportGeofenceResumeStatus(
     /* [in] */ Int32 geofenceId,
     /* [in] */ Int32 status)
 {
-    if(DEBUG) {
+    if (DEBUG) {
         StringBuilder sb;
         sb += "ResumeCallback| id:";
         sb += geofenceId;
@@ -1194,8 +1209,7 @@ ECode GeofenceHardwareImpl::ReportGeofenceResumeStatus(
         sb += status;
         Slogger::D(TAG, sb.ToString());
     }
-    FAIL_RETURN(ReportGeofenceOperationStatus(RESUME_GEOFENCE_CALLBACK, geofenceId, status))
-    return NOERROR;
+    return ReportGeofenceOperationStatus(RESUME_GEOFENCE_CALLBACK, geofenceId, status);
 }
 
 void GeofenceHardwareImpl::SetMonitorAvailability(
@@ -1235,15 +1249,15 @@ ECode GeofenceHardwareImpl::GetAllowedResolutionLevel(
     VALIDATE_NOT_NULL(level);
 
     Int32 result;
-    FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION,
-            pid, uid, &result))
+    mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION,
+            pid, uid, &result);
     if (result == IPackageManager::PERMISSION_GRANTED) {
         *level = RESOLUTION_LEVEL_FINE;
         return NOERROR;
     }
     else {
-        FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_COARSE_LOCATION,
-            pid, uid, &result))
+        mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_COARSE_LOCATION,
+            pid, uid, &result);
         if (result == IPackageManager::PERMISSION_GRANTED) {
             *level = RESOLUTION_LEVEL_COARSE;
             return NOERROR;

@@ -38,8 +38,8 @@ ECode GeofenceHardwareService::MyBinder::GetMonitoringTypes(
 {
     VALIDATE_NOT_NULL(types);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
     return mHost->mGeofenceHardwareImpl->GetMonitoringTypes(types);
 }
@@ -50,8 +50,8 @@ ECode GeofenceHardwareService::MyBinder::GetStatusOfMonitoringType(
 {
     VALIDATE_NOT_NULL(type);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
     return mHost->mGeofenceHardwareImpl->GetStatusOfMonitoringType(monitoringType, type);
 }
@@ -64,10 +64,10 @@ ECode GeofenceHardwareService::MyBinder::AddCircularFence(
 {
     VALIDATE_NOT_NULL(result);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
-    FAIL_RETURN(mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType))
+    mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType);
     return mHost->mGeofenceHardwareImpl->AddCircularFence(monitoringType, request, _callback, result);
 }
 
@@ -78,10 +78,10 @@ ECode GeofenceHardwareService::MyBinder::RemoveGeofence(
 {
     VALIDATE_NOT_NULL(result);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
-    FAIL_RETURN(mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType))
+    mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType);
     return mHost->mGeofenceHardwareImpl->RemoveGeofence(id, monitoringType, result);
 }
 
@@ -92,10 +92,10 @@ ECode GeofenceHardwareService::MyBinder::PauseGeofence(
 {
     VALIDATE_NOT_NULL(result);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
-    FAIL_RETURN(mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType))
+    mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType);
     return mHost->mGeofenceHardwareImpl->PauseGeofence(id, monitoringType, result);
 }
 
@@ -107,10 +107,10 @@ ECode GeofenceHardwareService::MyBinder::ResumeGeofence(
 {
     VALIDATE_NOT_NULL(result);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
-    FAIL_RETURN(mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType))
+    mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType);
     return mHost->mGeofenceHardwareImpl->ResumeGeofence(id, monitoringType, monitorTransitions, result);
 }
 
@@ -121,10 +121,10 @@ ECode GeofenceHardwareService::MyBinder::RegisterForMonitorStateChangeCallback(
 {
     VALIDATE_NOT_NULL(result);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
-    FAIL_RETURN(mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType))
+    mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType);
     return mHost->mGeofenceHardwareImpl->RegisterForMonitorStateChangeCallback(monitoringType,
             _callback, result);
 }
@@ -136,10 +136,10 @@ ECode GeofenceHardwareService::MyBinder::UnregisterForMonitorStateChangeCallback
 {
     VALIDATE_NOT_NULL(result);
 
-    FAIL_RETURN(mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
-            String("Location Hardware permission not granted to access hardware geofence")))
+    mHost->mContext->EnforceCallingPermission(Elastos::Droid::Manifest::permission::LOCATION_HARDWARE,
+            String("Location Hardware permission not granted to access hardware geofence"));
 
-    FAIL_RETURN(mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType))
+    mHost->CheckPermission(Binder::GetCallingPid(), Binder::GetCallingUid(), monitoringType);
     return mHost->mGeofenceHardwareImpl->UnregisterForMonitorStateChangeCallback(monitoringType,
             _callback, result);
 }
@@ -149,7 +149,6 @@ ECode GeofenceHardwareService::MyBinder::ToString(
 {
     return NOERROR;
 }
-
 
 CAR_INTERFACE_IMPL(GeofenceHardwareService, Object, IGeofenceHardwareService)
 
@@ -209,8 +208,8 @@ ECode GeofenceHardwareService::CheckPermission(
     /* [in] */ Int32 monitoringType)
 {
     Int32 AllowedLevel, MonitoringLevel;
-    FAIL_RETURN(mGeofenceHardwareImpl->GetAllowedResolutionLevel(pid, uid, &AllowedLevel))
-    FAIL_RETURN(mGeofenceHardwareImpl->GetMonitoringResolutionLevel(monitoringType, &MonitoringLevel))
+    mGeofenceHardwareImpl->GetAllowedResolutionLevel(pid, uid, &AllowedLevel);
+    mGeofenceHardwareImpl->GetMonitoringResolutionLevel(monitoringType, &MonitoringLevel);
 
     if (AllowedLevel < MonitoringLevel) {
         // throw new SecurityException("Insufficient permissions to access hardware geofence for"

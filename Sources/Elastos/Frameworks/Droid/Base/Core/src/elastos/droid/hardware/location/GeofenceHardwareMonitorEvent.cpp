@@ -16,7 +16,6 @@ GeofenceHardwareMonitorEvent::GeofenceHardwareMonitorEvent()
     : mMonitoringType(0)
     , mMonitoringStatus(0)
     , mSourceTechnologies(0)
-    , mLocation(NULL)
 {
 }
 
@@ -79,34 +78,23 @@ ECode GeofenceHardwareMonitorEvent::GetLocation(
     return NOERROR;
 }
 
-ECode GeofenceHardwareMonitorEvent::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode GeofenceHardwareMonitorEvent::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    FAIL_RETURN(dest->WriteInt32(mMonitoringType))
-    FAIL_RETURN(dest->WriteInt32(mMonitoringStatus))
-    FAIL_RETURN(dest->WriteInt32(mSourceTechnologies))
-    FAIL_RETURN(dest->WriteInterfacePtr(mLocation))
-
+    dest->WriteInt32(mMonitoringType);
+    dest->WriteInt32(mMonitoringStatus);
+    dest->WriteInt32(mSourceTechnologies);
+    dest->WriteInterfacePtr(mLocation);
     return NOERROR;
 }
 
 ECode GeofenceHardwareMonitorEvent::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    FAIL_RETURN(source->ReadInt32(&mMonitoringType))
-    FAIL_RETURN(source->ReadInt32(&mMonitoringStatus))
-    FAIL_RETURN(source->ReadInt32(&mSourceTechnologies))
-    FAIL_RETURN(source->ReadInterfacePtr((Handle32*)(ILocation**)&mLocation))
-
+    source->ReadInt32(&mMonitoringType);
+    source->ReadInt32(&mMonitoringStatus);
+    source->ReadInt32(&mSourceTechnologies);
+    source->ReadInterfacePtr((Handle32*)&mLocation);
     return NOERROR;
 }
 

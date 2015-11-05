@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_LOCATION_GEOFENCEHARDWAREREQUESTPARCELABLE_H__
 #define __ELASTOS_DROID_HARDWARE_LOCATION_GEOFENCEHARDWAREREQUESTPARCELABLE_H__
 
+#include "elastos/droid/hardware/location/GeofenceHardwareRequest.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 
@@ -29,7 +30,7 @@ public:
 
     CARAPI constructor(
         /* [in] */ Int32 id,
-        /* [in] */ IGeofenceHardwareRequest* request);
+        /* [in] */ GeofenceHardwareRequest* request);
 
     /**
      * Returns the id of this request.
@@ -92,10 +93,6 @@ public:
         /* [out] */ Int32* technologies);
 
     //@Override
-    CARAPI DescribeContents(
-        /* [out] */ Int32* val);
-
-    //@Override
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
@@ -143,7 +140,7 @@ public:
     // };
 
 private:
-    AutoPtr<IGeofenceHardwareRequest> mRequest;
+    AutoPtr<GeofenceHardwareRequest> mRequest;
 
     Int32 mId;
 };

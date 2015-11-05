@@ -15,7 +15,6 @@ CAR_INTERFACE_IMPL_2(GeofenceHardwareRequestParcelable, Object, IGeofenceHardwar
 
 GeofenceHardwareRequestParcelable::GeofenceHardwareRequestParcelable()
     : mId(0)
-    , mRequest(NULL)
 {
 }
 
@@ -30,7 +29,7 @@ ECode GeofenceHardwareRequestParcelable::constructor()
 
 ECode GeofenceHardwareRequestParcelable::constructor(
     /* [in] */ Int32 id,
-    /* [in] */ IGeofenceHardwareRequest* request)
+    /* [in] */ GeofenceHardwareRequest* request)
 {
     mId = id;
     mRequest = request;
@@ -118,55 +117,46 @@ ECode GeofenceHardwareRequestParcelable::GetSourceTechnologies(
     return mRequest->GetSourceTechnologies(technologies);
 }
 
-ECode GeofenceHardwareRequestParcelable::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode GeofenceHardwareRequestParcelable::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     Int32 type;
-    FAIL_RETURN(GetType(&type))
-    FAIL_RETURN(dest->WriteInt32(type))
+    GetType(&type);
+    dest->WriteInt32(type);
 
     Double latitude;
-    FAIL_RETURN(GetLatitude(&latitude))
-    FAIL_RETURN(dest->WriteDouble(latitude))
+    GetLatitude(&latitude);
+    dest->WriteDouble(latitude);
 
     Double longitude;
-    FAIL_RETURN(GetLongitude(&longitude))
-    FAIL_RETURN(dest->WriteDouble(longitude))
+    GetLongitude(&longitude);
+    dest->WriteDouble(longitude);
 
     Double radius;
-    FAIL_RETURN(GetRadius(&radius))
-    FAIL_RETURN(dest->WriteDouble(radius))
+    GetRadius(&radius);
+    dest->WriteDouble(radius);
 
     Int32 transition;
-    FAIL_RETURN(GetLastTransition(&transition))
-    FAIL_RETURN(dest->WriteInt32(transition))
+    GetLastTransition(&transition);
+    dest->WriteInt32(transition);
 
     Int32 transitions;
-    FAIL_RETURN(GetMonitorTransitions(&transitions))
-    FAIL_RETURN(dest->WriteInt32(transitions))
+    GetMonitorTransitions(&transitions);
+    dest->WriteInt32(transitions);
 
     Int32 timer;
-    FAIL_RETURN(GetUnknownTimer(&timer))
-    FAIL_RETURN(dest->WriteInt32(timer))
+    GetUnknownTimer(&timer);
+    dest->WriteInt32(timer);
 
     Int32 responsiveness;
-    FAIL_RETURN(GetNotificationResponsiveness(&responsiveness))
-    FAIL_RETURN(dest->WriteInt32(responsiveness))
+    GetNotificationResponsiveness(&responsiveness);
+    dest->WriteInt32(responsiveness);
 
     Int32 technologies;
-    FAIL_RETURN(GetSourceTechnologies(&technologies))
-    FAIL_RETURN(dest->WriteInt32(technologies))
+    GetSourceTechnologies(&technologies);
+    dest->WriteInt32(technologies);
 
-    FAIL_RETURN(dest->WriteInt32(mId))
+    dest->WriteInt32(mId);
 
     return NOERROR;
 }
@@ -175,42 +165,42 @@ ECode GeofenceHardwareRequestParcelable::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     Int32 type;
-    FAIL_RETURN(source->ReadInt32(&type))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mType = type;
+    source->ReadInt32(&type);
+    mRequest->mType = type;
 
     Double latitude;
-    FAIL_RETURN(source->ReadDouble(&latitude))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mLatitude = latitude;
+    source->ReadDouble(&latitude);
+    mRequest->mLatitude = latitude;
 
     Double longitude;
-    FAIL_RETURN(source->ReadDouble(&longitude))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mLongitude = longitude;
+    source->ReadDouble(&longitude);
+    mRequest->mLongitude = longitude;
 
     Double radius;
-    FAIL_RETURN(source->ReadDouble(&radius))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mRadius = radius;
+    source->ReadDouble(&radius);
+    mRequest->mRadius = radius;
 
     Int32 transition;
-    FAIL_RETURN(source->ReadInt32(&transition))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mLastTransition = transition;
+    source->ReadInt32(&transition);
+    mRequest->mLastTransition = transition;
 
     Int32 transitions;
-    FAIL_RETURN(source->ReadInt32(&transitions))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mMonitorTransitions = transitions;
+    source->ReadInt32(&transitions);
+    mRequest->mMonitorTransitions = transitions;
 
     Int32 timer;
-    FAIL_RETURN(source->ReadInt32(&timer))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mUnknownTimer = timer;
+    source->ReadInt32(&timer);
+    mRequest->mUnknownTimer = timer;
 
     Int32 responsiveness;
-    FAIL_RETURN(source->ReadInt32(&responsiveness))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mNotificationResponsiveness = responsiveness;
+    source->ReadInt32(&responsiveness);
+    mRequest->mNotificationResponsiveness = responsiveness;
 
     Int32 technologies;
-    FAIL_RETURN(source->ReadInt32(&technologies))
-    ((GeofenceHardwareRequest*)mRequest.Get())->mSourceTechnologies = technologies;
+    source->ReadInt32(&technologies);
+    mRequest->mSourceTechnologies = technologies;
 
-    FAIL_RETURN(source->ReadInt32(&mId))
+    source->ReadInt32(&mId);
 
     return NOERROR;
 }
@@ -225,39 +215,39 @@ ECode GeofenceHardwareRequestParcelable::ToString(
     builder += mId;
     builder += ", type=";
     Int32 type;
-    FAIL_RETURN(mRequest->GetType(&type))
+    mRequest->GetType(&type);
     builder += type;
     builder += ", latitude=";
     Double latitude;
-    FAIL_RETURN(mRequest->GetLatitude(&latitude))
+    mRequest->GetLatitude(&latitude);
     builder += latitude;
     builder += ", longitude=";
     Double longitude;
-    FAIL_RETURN(mRequest->GetLongitude(&longitude))
+    mRequest->GetLongitude(&longitude);
     builder += longitude;
     builder += ", radius=";
     Double radius;
-    FAIL_RETURN(mRequest->GetRadius(&radius))
+    mRequest->GetRadius(&radius);
     builder += radius;
     builder += ", lastTransition=";
     Int32 transition;
-    FAIL_RETURN(mRequest->GetLastTransition(&transition))
+    mRequest->GetLastTransition(&transition);
     builder += transition;
     builder += ", unknownTimer=";
     Int32 timer;
-    FAIL_RETURN(mRequest->GetUnknownTimer(&timer))
+    mRequest->GetUnknownTimer(&timer);
     builder += timer;
     builder += ", monitorTransitions=";
     Int32 transitions;
-    FAIL_RETURN(mRequest->GetMonitorTransitions(&transitions))
+    mRequest->GetMonitorTransitions(&transitions);
     builder += transitions;
     builder += ", notificationResponsiveness=";
     Int32 responsiveness;
-    FAIL_RETURN(mRequest->GetNotificationResponsiveness(&responsiveness))
+    mRequest->GetNotificationResponsiveness(&responsiveness);
     builder += responsiveness;
     builder += ", sourceTechnologies=";
     Int32 technologies;
-    FAIL_RETURN(mRequest->GetSourceTechnologies(&technologies))
+    mRequest->GetSourceTechnologies(&technologies);
     builder += technologies;
 
     return builder.ToString(str);

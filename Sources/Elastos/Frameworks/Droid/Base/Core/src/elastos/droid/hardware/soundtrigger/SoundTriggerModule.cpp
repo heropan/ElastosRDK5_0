@@ -295,32 +295,32 @@ ECode SoundTriggerModule::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     Int32 what = 0;
-    FAIL_RETURN(msg->GetWhat(&what))
+    msg->GetWhat(&what);
     switch(what) {
         case EVENT_RECOGNITION:
             if (mListener != NULL) {
                 AutoPtr<IInterface> obj;
-                FAIL_RETURN(msg->GetObj((IInterface**)&obj))
-                FAIL_RETURN(mListener->OnRecognition(ISoundTriggerRecognitionEvent::Probe(obj)))
+                msg->GetObj((IInterface**)&obj);
+                mListener->OnRecognition(ISoundTriggerRecognitionEvent::Probe(obj));
             }
             break;
         case EVENT_SOUNDMODEL:
             if (mListener != NULL) {
                 AutoPtr<IInterface> obj;
-                FAIL_RETURN(msg->GetObj((IInterface**)&obj))
-                FAIL_RETURN(mListener->OnSoundModelUpdate(ISoundTriggerSoundModelEvent::Probe(obj)))
+                msg->GetObj((IInterface**)&obj);
+                mListener->OnSoundModelUpdate(ISoundTriggerSoundModelEvent::Probe(obj));
             }
             break;
         case EVENT_SERVICE_STATE_CHANGE:
             if (mListener != NULL) {
                 Int32 arg1;
-                FAIL_RETURN(msg->GetArg1(&arg1))
-                FAIL_RETURN(mListener->OnServiceStateChange(arg1))
+                msg->GetArg1(&arg1);
+                mListener->OnServiceStateChange(arg1);
             }
             break;
         case EVENT_SERVICE_DIED:
             if (mListener != NULL) {
-                FAIL_RETURN(mListener->OnServiceDied())
+                mListener->OnServiceDied();
             }
             break;
         default:
@@ -489,43 +489,29 @@ ECode SoundTriggerModule::NativeLoadSoundModel(
         type = SOUND_MODEL_TYPE_UNKNOWN;
     }
 
-    //jUuid = env->GetObjectField(jSoundModel, gSoundModelFields.uuid);
     model->GetUuid((IUUID**)&jUuid);
-    //jUuidString = (jstring)env->CallObjectMethod(jUuid, gUUIDMethods.toString);
     jUuid->ToString(&jUuidString);
-    //nUuidString = env->GetStringUTFChars(jUuidString, NULL);
     nUuidString = jUuidString.string();
     sound_trigger_uuid_t nUuid;
     android::SoundTrigger::stringToGuid(nUuidString, &nUuid);
-    //env->ReleaseStringUTFChars(jUuidString, nUuidString);
-    //env->DeleteLocalRef(jUuidString);
 
     sound_trigger_uuid_t nVendorUuid;
-    //jUuid = env->GetObjectField(jSoundModel, gSoundModelFields.vendorUuid);
     jUuid = NULL;
     model->GetVendorUuid((IUUID**)&jUuid);
     if (jUuid != NULL) {
-        //jUuidString = (jstring)env->CallObjectMethod(jUuid, gUUIDMethods.toString);
         jUuid->ToString(&jUuidString);
-        //nUuidString = env->GetStringUTFChars(jUuidString, NULL);
         nUuidString = jUuidString.string();
         android::SoundTrigger::stringToGuid(nUuidString, &nVendorUuid);
-        // env->ReleaseStringUTFChars(jUuidString, nUuidString);
-        // env->DeleteLocalRef(jUuidString);
     } else {
         android::SoundTrigger::stringToGuid("00000000-0000-0000-0000-000000000000", &nVendorUuid);
     }
 
-    //jData = (jbyteArray)env->GetObjectField(jSoundModel, gSoundModelFields.data);
     model->Getdata((ArrayOf<Byte>**)&jData);
     if (jData == NULL) {
         status = SOUNDTRIGGER_STATUS_BAD_VALUE;
         goto exit;
     }
-    //size = env->GetArrayLength(jData);
     size = jData->GetLength();
-
-    //nData = env->GetByteArrayElements(jData, NULL);
     nData = jData->GetPayload();
     if (jData == NULL) {
         status = SOUNDTRIGGER_STATUS_ERROR;
@@ -555,8 +541,6 @@ ECode SoundTriggerModule::NativeLoadSoundModel(
         struct sound_trigger_phrase_sound_model *phraseModel =
                 (struct sound_trigger_phrase_sound_model *)nSoundModel;
 
-        // jobjectArray jPhrases =
-        //     (jobjectArray)env->GetObjectField(jSoundModel, gKeyphraseSoundModelFields.keyphrases);
         AutoPtr<ArrayOf<ISoundTriggerKeyphrase*> > jPhrases;
         ISoundTriggerKeyphraseSoundModel::Probe(model)->GetKeyphrases((ArrayOf<ISoundTriggerKeyphrase*>**)&jPhrases);
         if (jPhrases == NULL) {
@@ -568,20 +552,15 @@ ECode SoundTriggerModule::NativeLoadSoundModel(
         phraseModel->num_phrases = numPhrases;
         ALOGV("loadSoundModel numPhrases %zu", numPhrases);
         for (size_t i = 0; i < numPhrases; i++) {
-            // /jobject jPhrase = env->GetObjectArrayElement(jPhrases, i);
             AutoPtr<ISoundTriggerKeyphrase> jPhrase = (*jPhrases)[i];
-            // phraseModel->phrases[i].id =
-            //                         env->GetIntField(jPhrase,gKeyphraseFields.id);
             Int32 id;
             jPhrase->GetId(&id);
             phraseModel->phrases[i].id = id;
-            // phraseModel->phrases[i].recognition_mode =
-            //                         env->GetIntField(jPhrase,gKeyphraseFields.recognitionModes);
+
             Int32 modes;
             jPhrase->GetRecognitionModes(&modes);
             phraseModel->phrases[i].recognition_mode = modes;
 
-            //jintArray jUsers = (jintArray)env->GetObjectField(jPhrase, gKeyphraseFields.users);
             AutoPtr<ArrayOf<Int32> > jUsers;
             jPhrase->GetUsers((ArrayOf<Int32>**)&jUsers);
             phraseModel->phrases[i].num_users = jUsers->GetLength();
@@ -589,17 +568,13 @@ ECode SoundTriggerModule::NativeLoadSoundModel(
             memcpy(phraseModel->phrases[i].users,
                    nUsers,
                    phraseModel->phrases[i].num_users * sizeof(int));
-            // env->ReleaseIntArrayElements(jUsers, nUsers, 0);
-            // env->DeleteLocalRef(jUsers);
 
-            //jstring jLocale = (jstring)env->GetObjectField(jPhrase, gKeyphraseFields.locale);
             String jLocale;
             jPhrase->GetLocale(&jLocale);
             const char *nLocale = jLocale.string();
             strncpy(phraseModel->phrases[i].locale,
                     nLocale,
                     SOUND_TRIGGER_MAX_LOCALE_LEN);
-            //jstring jText = (jstring)env->GetObjectField(jPhrase, gKeyphraseFields.text);
             String jText;
             jPhrase->GetText(&jText);
             const char *nText = jText.string();
@@ -607,15 +582,9 @@ ECode SoundTriggerModule::NativeLoadSoundModel(
                     nText,
                     SOUND_TRIGGER_MAX_STRING_LEN);
 
-            // env->ReleaseStringUTFChars(jLocale, nLocale);
-            // env->DeleteLocalRef(jLocale);
-            // env->ReleaseStringUTFChars(jText, nText);
-            // env->DeleteLocalRef(jText);
             ALOGV("loadSoundModel phrases %zu text %s locale %s",
                   i, phraseModel->phrases[i].text, phraseModel->phrases[i].locale);
-            //env->DeleteLocalRef(jPhrase);
         }
-        //env->DeleteLocalRef(jPhrases);
     }
     status = module->loadSoundModel(memory, &handle);
     ALOGV("loadSoundModel status %d handle %d", status, handle);
@@ -623,11 +592,7 @@ ECode SoundTriggerModule::NativeLoadSoundModel(
 exit:
     if (nHandle != NULL) {
         nHandle[0] = (Int32)handle;
-        //env->ReleaseIntArrayElements(soundModelHandle, nHandle, NULL);
     }
-    // if (nData != NULL) {
-    //     env->ReleaseByteArrayElements(jData, nData, NULL);
-    // }
     *result = status;
     return NOERROR;
 }
@@ -666,11 +631,6 @@ ECode SoundTriggerModule::NativeStartRecognition(
         return NOERROR;
     }
 
-    // if (!env->IsInstanceOf(jConfig, gRecognitionConfigClass)) {
-    //     return SOUNDTRIGGER_STATUS_BAD_VALUE;
-    // }
-
-    //jbyteArray jData = (jbyteArray)env->GetObjectField(jConfig, gRecognitionConfigFields.data);
     AutoPtr<ArrayOf<Byte> > jData;
     jConfig->GetData((ArrayOf<Byte>**)&jData);
     size_t dataSize = 0;
@@ -704,15 +664,11 @@ ECode SoundTriggerModule::NativeStartRecognition(
         memcpy((char *)memory->pointer() + sizeof(struct sound_trigger_recognition_config),
                 nData,
                 dataSize);
-        //env->ReleaseByteArrayElements(jData, nData, 0);
     }
-    //env->DeleteLocalRef(jData);
     struct sound_trigger_recognition_config *config =
                                     (struct sound_trigger_recognition_config *)memory->pointer();
     config->data_size = dataSize;
     config->data_offset = sizeof(struct sound_trigger_recognition_config);
-    // config->capture_requested = env->GetIntField(jConfig,
-    //                                              gRecognitionConfigFields.captureRequested);
 
     Boolean requested;
     jConfig->GetCaptureRequested(&requested);
@@ -721,8 +677,6 @@ ECode SoundTriggerModule::NativeStartRecognition(
     }
 
     config->num_phrases = 0;
-    // jobjectArray jPhrases =
-    //     (jobjectArray)env->GetObjectField(jConfig, gRecognitionConfigFields.keyphrases);
     AutoPtr<ArrayOf<ISoundTriggerKeyphraseRecognitionExtra*> > jPhrases;
     jConfig->GetKeyphrases((ArrayOf<ISoundTriggerKeyphraseRecognitionExtra*>**)&jPhrases);
     if (jPhrases != NULL) {
@@ -730,26 +684,20 @@ ECode SoundTriggerModule::NativeStartRecognition(
     }
     ALOGV("startRecognition num phrases %d", config->num_phrases);
     for (size_t i = 0; i < config->num_phrases; i++) {
-        //jobject jPhrase = env->GetObjectArrayElement(jPhrases, i);
         AutoPtr<ISoundTriggerKeyphraseRecognitionExtra> jPhrase = (*jPhrases)[i];
-        // config->phrases[i].id = env->GetIntField(jPhrase,
-        //                                         gKeyphraseRecognitionExtraFields.id);
         Int32 id;
         jPhrase->GetId(&id);
         config->phrases[i].id = id;
-        // config->phrases[i].recognition_modes = env->GetIntField(jPhrase,
-        //                                         gKeyphraseRecognitionExtraFields.recognitionModes);
+
         Int32 modes;
         jPhrase->GetRecognitionModes(&modes);
         config->phrases[i].recognition_modes = modes;
-        // config->phrases[i].confidence_level = env->GetIntField(jPhrase,
-        //                                     gKeyphraseRecognitionExtraFields.coarseConfidenceLevel);
+
         Int32 level;
         jPhrase->GetCoarseConfidenceLevel(&level);
         config->phrases[i].confidence_level = level;
         config->phrases[i].num_levels = 0;
-        // jobjectArray jConfidenceLevels = (jobjectArray)env->GetObjectField(jPhrase,
-        //                                         gKeyphraseRecognitionExtraFields.confidenceLevels);
+
         AutoPtr<ArrayOf<ISoundTriggerConfidenceLevel*> > jConfidenceLevels;
         jPhrase->GetConfidenceLevels((ArrayOf<ISoundTriggerConfidenceLevel*>**)&jConfidenceLevels);
         if (jConfidenceLevels != NULL) {
@@ -757,25 +705,16 @@ ECode SoundTriggerModule::NativeStartRecognition(
         }
         ALOGV("startRecognition phrase %zu num_levels %d", i, config->phrases[i].num_levels);
         for (size_t j = 0; j < config->phrases[i].num_levels; j++) {
-            //jobject jConfidenceLevel = env->GetObjectArrayElement(jConfidenceLevels, j);
             AutoPtr<ISoundTriggerConfidenceLevel> jConfidenceLevel = (*jConfidenceLevels)[j];
-            // config->phrases[i].levels[j].user_id = env->GetIntField(jConfidenceLevel,
-            //                                                         gConfidenceLevelFields.userId);
             Int32 userId;
             jConfidenceLevel->GetUserId(&userId);
             config->phrases[i].levels[j].user_id = userId;
-            // config->phrases[i].levels[j].level = env->GetIntField(jConfidenceLevel,
-            //                                               gConfidenceLevelFields.confidenceLevel);
             Int32 confidenceLevel;
             jConfidenceLevel->GetConfidenceLevel(&confidenceLevel);
             config->phrases[i].levels[j].level = confidenceLevel;
-            // env->DeleteLocalRef(jConfidenceLevel);
         }
         ALOGV("startRecognition phrases %zu", i);
-        // env->DeleteLocalRef(jConfidenceLevels);
-        // env->DeleteLocalRef(jPhrase);
     }
-    //env->DeleteLocalRef(jPhrases);
 
     status = module->startRecognition(soundModelHandle, memory);
     return status;
@@ -845,12 +784,12 @@ ECode SoundTriggerModule::PostEventFromNative(
     AutoPtr<NativeEventHandlerDelegate> delegate = ((SoundTriggerModule*)module.Get())->mEventHandlerDelegate;
     if (delegate != NULL) {
         AutoPtr<IHandler> handler;
-        FAIL_RETURN(delegate->GetHandler((IHandler**)&handler))
+        delegate->GetHandler((IHandler**)&handler);
         if (handler != NULL) {
             AutoPtr<IMessage> m;
-            FAIL_RETURN(handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&m))
+            handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&m);
             Boolean result;
-            FAIL_RETURN(handler->SendMessage(m, &result))
+            handler->SendMessage(m, &result);
         }
     }
     return NOERROR;

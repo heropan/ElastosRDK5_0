@@ -136,6 +136,7 @@ public:
 
     CARAPI GetType(
         /* [out] */ Int32* type);
+
 private:
     CARAPI_(void) SetCircularGeofence(
         /* [in] */ Double latitude,
@@ -143,11 +144,12 @@ private:
         /* [in] */ Double radius);
 
 protected:
-    friend class GeofenceHardware;
     static const Int32 GEOFENCE_TYPE_CIRCLE;
 
 private:
+    friend class GeofenceHardware;
     friend class GeofenceHardwareRequestParcelable;
+
     Int32 mType;
     Double mLatitude;
     Double mLongitude;

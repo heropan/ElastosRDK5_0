@@ -7,6 +7,8 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Location::ILocation;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 
@@ -26,6 +28,7 @@ private:
     class GeofenceHardwareMonitorCallbackWrapper
         : public Object
         , public IIGeofenceHardwareMonitorCallback
+        , public IBinder
     {
     public:
         CAR_INTERFACE_DECL()
@@ -36,14 +39,17 @@ private:
         CARAPI OnMonitoringSystemChange(
             /* [in] */ IGeofenceHardwareMonitorEvent* event);
 
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IWeakReference> mCallback;
-        //WeakReference<GeofenceHardwareMonitorCallback> mCallback;
     };
 
     class GeofenceHardwareCallbackWrapper
         : public Object
         , public IIGeofenceHardwareCallback
+        , public IBinder
     {
     public:
         CAR_INTERFACE_DECL()
@@ -74,12 +80,15 @@ private:
         CARAPI OnGeofenceResume(
             /* [in] */ Int32 geofenceId,
             /* [in] */ Int32 status);
+
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         AutoPtr<IWeakReference> mCallback;
-        //WeakReference<GeofenceHardwareCallback> mCallback;
-
         GeofenceHardware* mHost;
     };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -312,6 +321,7 @@ public:
         /* [in] */ Int32 monitoringType,
         /* [in] */ IGeofenceHardwareMonitorCallback* _callback,
         /* [out] */ Boolean* result);
+
 private:
     CARAPI_(void) RemoveCallback(
         /* [in] */ IGeofenceHardwareCallback* _callback);

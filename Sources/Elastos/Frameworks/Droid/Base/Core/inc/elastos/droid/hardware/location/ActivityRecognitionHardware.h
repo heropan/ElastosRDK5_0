@@ -3,9 +3,15 @@
 #define __ELASTOS_DROID_HARDWARE_LOCATION_ACTIVITYRECOGNITIONHARDWARE_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include "elastos/droid/app/Service.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Hardware::Location::IActivityRecognitionHardware;
+using Elastos::Droid::Hardware::Location::IIActivityRecognitionHardware;
+using Elastos::Droid::Hardware::Location::IIActivityRecognitionHardwareSink;
+using Elastos::Droid::Os::IRemoteCallbackList;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Core::Object;
 
 namespace Elastos {
@@ -17,8 +23,9 @@ class ActivityRecognitionHardware
     : public Object
     , public IActivityRecognitionHardware
     , public IIActivityRecognitionHardware
+    , public IBinder
 {
-private:
+public:
     class Event : public Object
     {
     public:
@@ -26,7 +33,7 @@ private:
         Int32 mType;
         Int64 mTimestamp;
     };
-public:
+
     CAR_INTERFACE_DECL()
 
     virtual ~ActivityRecognitionHardware();
@@ -88,15 +95,18 @@ public:
     CARAPI Flush(
         /* [out] */ Boolean* result);
 
-private:
-    ActivityRecognitionHardware(
-        /* [in] */ IContext* context);
+    CARAPI ToString(
+            /* [out] */ String* info);
 
     /**
      * Called by the Activity-Recognition HAL.
      */
-    CARAPI_(void) OnActivityChanged(
-        /* [in] */ ArrayOf<Event*>* events)
+    CARAPI OnActivityChanged(
+        /* [in] */ ArrayOf<Event*>* events);
+
+private:
+    ActivityRecognitionHardware(
+        /* [in] */ IContext* context);
 
     CARAPI_(String) GetActivityName(
         /* [in] */ Int32 activityType);
@@ -112,7 +122,7 @@ private:
     /**
      * Initializes the ActivityRecognitionHardware class from the native side.
      */
-    static void NativeClassInit();
+    static CARAPI NativeClassInit();
 
     /**
      * Returns true if ActivityRecognition HAL is supported, false otherwise.
@@ -122,7 +132,8 @@ private:
     /**
      * Initializes and connect the callbacks handlers in the HAL.
      */
-    CARAPI_(void) NativeInitialize();
+    CARAPI_(void) NativeInitialize(
+        /* [in] */ ActivityRecognitionHardware* mHost);
 
     /**
      * De-initializes the ActivityRecognitionHardware from the native side.
@@ -162,10 +173,10 @@ private:
     static const Int32 NATIVE_SUCCESS_RESULT;
 
     static AutoPtr<IActivityRecognitionHardware> sSingletonInstance;
-    static const Object sSingletonInstanceLock;
+    static Object sSingletonInstanceLock;
 
     // native bindings
-    static void staInit;
+    static ECode sStaticBlockInit;
 
     AutoPtr<IContext> mContext;
     AutoPtr<ArrayOf<String> > mSupportedActivities;
@@ -177,5 +188,7 @@ private:
 } //Hardware
 } //Droid
 } //Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Hardware::Location::ActivityRecognitionHardware::Event, IInterface)
 
 #endif  //__ELASTOS_DROID_HARDWARE_LOCATION_ACTIVITYRECOGNITIONHARDWARE_H__

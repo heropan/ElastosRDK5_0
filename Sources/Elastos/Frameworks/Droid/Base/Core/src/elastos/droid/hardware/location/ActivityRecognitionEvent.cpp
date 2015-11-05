@@ -66,32 +66,21 @@ ECode ActivityRecognitionEvent::GetTimestampNs(
     return NOERROR;
 }
 
-ECode ActivityRecognitionEvent::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode ActivityRecognitionEvent::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    FAIL_RETURN(dest->WriteString(mActivity))
-    FAIL_RETURN(dest->WriteInt32(mEventType))
-    FAIL_RETURN(dest->WriteInt64(mTimestampNs))
-
+    dest->WriteString(mActivity);
+    dest->WriteInt32(mEventType);
+    dest->WriteInt64(mTimestampNs);
     return NOERROR;
 }
 
 ECode ActivityRecognitionEvent::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    FAIL_RETURN(source->ReadString(&mActivity))
-    FAIL_RETURN(source->ReadInt32(&mEventType))
-    FAIL_RETURN(source->ReadInt64(&mTimestampNs))
-
+    source->ReadString(&mActivity);
+    source->ReadInt32(&mEventType);
+    source->ReadInt64(&mTimestampNs);
     return NOERROR;
 }
 

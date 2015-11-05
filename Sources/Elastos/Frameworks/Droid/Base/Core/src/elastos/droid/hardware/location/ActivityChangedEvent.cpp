@@ -51,22 +51,13 @@ ECode ActivityChangedEvent::GetActivityRecognitionEvents(
     return NOERROR;
 }
 
-ECode ActivityChangedEvent::DescribeContents(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-
-    *val = 0;
-    return NOERROR;
-}
-
 ECode ActivityChangedEvent::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     AutoPtr<ArrayOf<IActivityRecognitionEvent*> > activityRecognitionEventArray;
-    FAIL_RETURN(mActivityRecognitionEvents->ToArray((ArrayOf<IInterface*>**)&activityRecognitionEventArray))
-    FAIL_RETURN(dest->WriteInt32(activityRecognitionEventArray->GetLength()))
-    FAIL_RETURN(dest->WriteArrayOf((Handle32)activityRecognitionEventArray.Get()))
+    mActivityRecognitionEvents->ToArray((ArrayOf<IInterface*>**)&activityRecognitionEventArray);
+    dest->WriteInt32(activityRecognitionEventArray->GetLength());
+    dest->WriteArrayOf((Handle32)activityRecognitionEventArray.Get());
     return NOERROR;
 }
 
@@ -74,11 +65,10 @@ ECode ActivityChangedEvent::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     Int32 length;
-    FAIL_RETURN(source->ReadInt32(&length))
-    AutoPtr<ArrayOf<IActivityRecognitionEvent*> > data;
-    data = ArrayOf<IActivityRecognitionEvent*>::Alloc(length);
-    FAIL_RETURN(source->ReadArrayOf((Handle32*)&data))
-    FAIL_RETURN(Arrays::AsList(data, (IList**)&mActivityRecognitionEvents))
+    source->ReadInt32(&length);
+    AutoPtr<ArrayOf<IActivityRecognitionEvent*> > data  = ArrayOf<IActivityRecognitionEvent*>::Alloc(length);
+    source->ReadArrayOf((Handle32*)&data);
+    Arrays::AsList(data, (IList**)&mActivityRecognitionEvents);
     return NOERROR;
 }
 
@@ -90,10 +80,10 @@ ECode ActivityChangedEvent::ToString(
     StringBuilder builder;
     builder += "[ ActivityChangedEvent:";
 
-    AutoPtr<IInterface> obj;
     Int32 size;
-    FAIL_RETURN(mActivityRecognitionEvents->GetSize(&size))
+    mActivityRecognitionEvents->GetSize(&size);
     for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
         mActivityRecognitionEvents->Get(i, (IInterface**)&obj);
         builder += "\n    ";
         String tmp = Object::ToString(obj);

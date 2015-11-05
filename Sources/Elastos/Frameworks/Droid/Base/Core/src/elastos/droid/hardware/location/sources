@@ -14,5 +14,5 @@ SOURCES += GeofenceHardwareRequestParcelable.cpp
 SOURCES += GeofenceHardwareRequest.cpp
 SOURCES += GeofenceHardwareService.cpp
 SOURCES += GeofenceHardware.cpp
-#SOURCES += ActivityRecognitionHardware.cpp
+SOURCES += ActivityRecognitionHardware.cpp
 SOURCES += GeofenceHardwareImpl.cpp

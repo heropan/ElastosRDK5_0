@@ -42,9 +42,9 @@ ECode GeofenceHardwareRequest::CreateCircularGeofence(
     /* [in] */ Double radius,
     /* [out] */ IGeofenceHardwareRequest** geofence)
 {
-    AutoPtr<IGeofenceHardwareRequest> geofenceRequest = new GeofenceHardwareRequest();
-    ((GeofenceHardwareRequest*)geofenceRequest.Get())->SetCircularGeofence(latitude, longitude, radius);
-    *geofence = geofenceRequest;
+    AutoPtr<GeofenceHardwareRequest> geofenceRequest = new GeofenceHardwareRequest();
+    geofenceRequest->SetCircularGeofence(latitude, longitude, radius);
+    *geofence = (IGeofenceHardwareRequest*)geofenceRequest.Get();
     REFCOUNT_ADD(*geofence);
     return NOERROR;
 }
