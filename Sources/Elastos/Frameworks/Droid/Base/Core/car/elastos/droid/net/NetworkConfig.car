@@ -69,7 +69,6 @@ module
 
         SetRestoreTime(
             [in] Int32 restoretime);
-
     }
 
     } // namespace Net

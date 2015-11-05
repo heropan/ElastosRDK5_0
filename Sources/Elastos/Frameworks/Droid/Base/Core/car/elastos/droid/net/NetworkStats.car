@@ -255,7 +255,6 @@ module
         Dump(
             [in] String prefix,
             [in] IPrintWriter* pw);
-
     }
 
     interface INetworkStatsEntry {
@@ -321,7 +320,6 @@ module
 
         Add(
             [in] INetworkStatsEntry* another);
-
     }
 
     interface INetworkStatsNonMonotonicObserver {
@@ -331,7 +329,6 @@ module
             [in] INetworkStats* right,
             [in] Int32 rightIndex,
             [in] IInterface* cookie);
-
     }
 
     } // namespace Net

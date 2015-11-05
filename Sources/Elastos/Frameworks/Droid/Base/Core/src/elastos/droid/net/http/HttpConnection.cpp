@@ -1,83 +1,35 @@
 
-#include "HttpConnection.h"
-#include "Request.h"
-#include "HttpLog.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/http/HttpConnection.h"
 
 using Elastos::Net::ISocket;
 using Org::Apache::Http::Params::IBasicHttpParams;
+using Org::Apache::Http::Params::IHttpConnectionParams;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-CAR_INTERFACE_IMPL(HttpConnection, IConnection);
-
-ECode HttpConnection::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpConnection::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpConnection::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpConnection::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IConnection * o = IConnection::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IConnection));
-    }
-    return NOERROR;
-}
-
-ECode HttpConnection::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IConnection);
-    return NOERROR;
-}
-
-ECode HttpConnection::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    StringBuilder sb("HttpConnection:(");
-    sb += (Int32)THIS_PROBE(IConnection);
-    sb += ")";
-    sb.ToString(info);
-    return NOERROR;
-}
-
-HttpConnection::HttpConnection(
-    /* [in] */ IContext* context,
-    /* [in] */ IHttpHost* host,
-    /* [in] */ RequestFeeder* requestFeeder)
-    : Connection(context, host, requestFeeder)
+HttpConnection::HttpConnection()
 {}
 
-ECode HttpConnection::OpenConnection(
-    /* [in] */ Request* req,
-    /* [out] */ IElastosHttpClientConnection** connection)
+ECode HttpConnection::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IHttpHost* host,
+    /* [in] */ IRequestFeeder* requestFeeder)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        super(context, host, requestFeeder);
+#endif
+}
+
+ECode HttpConnection::OpenConnection(
+    /* [in] */ IRequest* req,
+    /* [out] */ IElastosHttpClientConnection** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     // Update the certificate info (connection not secure - set to null)
     AutoPtr<IEventHandler> eventHandler = req->GetEventHandler();
     mCertificate = NULL;
@@ -100,10 +52,13 @@ ECode HttpConnection::OpenConnection(
     *connection = conn;
     REFCOUNT_ADD(*connection);
     return NOERROR;
+#endif
 }
 
 ECode HttpConnection::CloseConnection()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     ECode ec = NOERROR;
     // TODO:
     if (mHttpClientConnection != NULL/* && mHttpClientConnection->IsOpen()*/) {
@@ -118,6 +73,7 @@ ECode HttpConnection::CloseConnection()
     }
 
     return NOERROR;
+#endif
 }
 
 ECode HttpConnection::RestartConnection(
@@ -128,21 +84,18 @@ ECode HttpConnection::RestartConnection(
 }
 
 ECode HttpConnection::GetScheme(
-    /* [out] */ String* scheme)
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(scheme);
     *scheme = String("http");
     return NOERROR;
-}
-
-ECode HttpConnection::ToString(
-    /* [out] */ String* str)
-{
-    return E_NOT_IMPLEMENTED;
+#endif
 }
 
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

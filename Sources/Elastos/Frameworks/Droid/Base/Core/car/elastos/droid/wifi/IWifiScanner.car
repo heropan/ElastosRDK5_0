@@ -22,7 +22,6 @@ module
         GetAvailableChannels(
             [in] Int32 band,
             [out] IBundle** result);
-
     }
 
     } // namespace Wifi

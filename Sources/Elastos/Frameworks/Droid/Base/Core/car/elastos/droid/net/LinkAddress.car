@@ -81,7 +81,6 @@ module
          */
         IsGlobalPreferred(
             [out] Boolean* result);
-
     }
 
     } // namespace Net

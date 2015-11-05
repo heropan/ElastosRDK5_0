@@ -38,7 +38,6 @@ module
         /** @hide */
         GetHexString(
             [out] String* result);
-
     }
 
     interface IWifiSsidHelper {
@@ -49,7 +48,6 @@ module
         CreateFromHex(
             [in] String hexStr,
             [out] IWifiSsid** result);
-
     }
 
     } // namespace Wifi

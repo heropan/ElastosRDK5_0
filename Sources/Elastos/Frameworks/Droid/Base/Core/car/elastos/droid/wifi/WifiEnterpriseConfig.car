@@ -309,7 +309,6 @@ module
         SetFieldValue(
             [in] String key,
             [in] String value);
-
     }
 
     /** The Extensible Authentication Protocol method used */
@@ -336,7 +335,6 @@ module
         /** @hide */
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
 
@@ -362,7 +360,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
     } // namespace Wifi

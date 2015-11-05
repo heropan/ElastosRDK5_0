@@ -29,7 +29,6 @@ module
         /** check for validity */
         IsValid(
             [out] Boolean* result);
-
     }
 
     } // namespace Wifi

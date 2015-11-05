@@ -26,7 +26,6 @@ module
 
         SetNumUsage(
             [in] Int32 numUsage);
-
     }
 
     } // namespace Wifi

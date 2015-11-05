@@ -161,7 +161,6 @@ module
          */
         GetHeaders(
             [in] IHeaderCallback* hcb);
-
     }
 
     /**
@@ -172,7 +171,6 @@ module
         Header(
             [in] String name,
             [in] String value);
-
     }
 
     } // namespace Http

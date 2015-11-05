@@ -17,7 +17,6 @@ module
     interface IIRttManager {
         GetMessenger(
             [out] IMessenger** result);
-
     }
 
     } // namespace Wifi

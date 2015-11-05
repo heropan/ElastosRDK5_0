@@ -306,7 +306,6 @@ module
          */
         GetHiddenSSID(
             [out] Boolean* result);
-
     }
 
     interface IWifiInfoHelper {
@@ -323,7 +322,6 @@ module
         RemoveDoubleQuotes(
             [in] String string,
             [out] String* result);
-
     }
 
     } // namespace Wifi

@@ -64,7 +64,6 @@ module
 
         /** @hide */
         Invalidate();
-
     }
 
     } // namespace P2p

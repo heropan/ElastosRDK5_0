@@ -1,65 +1,32 @@
 
-#include "CHttpResponseCacheHelper.h"
-#include "CHttpResponseCache.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/http/CHttpResponseCache.h"
+#include "elastos/droid/net/http/CHttpResponseCacheHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-ECode CHttpResponseCacheHelper::GetInstalled(
-    /* [out] */ IHttpResponseCache** cache)
-{
-    // AutoPtr<Elastos::Net::Http::IResponseCacheHelper> helper;
-    // Elastos::Net::Http::CResponseCacheHelper::AcquireSingleton(
-    //     (Elastos::Net::Http::IResponseCacheHelper**)&helper);
-    // AutoPtr<Elastos::Net::Http::IResponseCache> installed;
-    // helper->GetDefault(&installed);
+CAR_INTERFACE_IMPL(CHttpResponseCacheHelper, Singleton, IHttpResponseCacheHelper)
 
-    // *cache = installed->Probe(EIID_IHttpResponseCache);
-    return NOERROR;
+CAR_SINGLETON_IMPL(CHttpResponseCacheHelper)
+
+ECode CHttpResponseCacheHelper::GetInstalled(
+    /* [out] */ IHttpResponseCache** result)
+{
+    return HttpResponseCache::GetInstalled(result);
 }
 
 ECode CHttpResponseCacheHelper::Install(
-    /* [in] */ Elastos::IO::IFile* directory,
-    /* [in] */ Int64 maxSize,
-    /* [out] */ Elastos::Droid::Net::Http::IHttpResponseCache** cache)
+        /* [in] */ IFile* directory,
+        /* [in] */ Int64 maxSize,
+    /* [out] */ IHttpResponseCache** result)
 {
-    VALIDATE_NOT_NULL(cache);
-
-    AutoPtr<IHttpResponseCache> installed;
-    GetInstalled((IHttpResponseCache**)&installed);
-    if (installed != NULL) {
-    //     // don't close and reopen if an equivalent cache is already installed
-    //     AutoPtr<Elastos::IO::IDiskLruCache> installedCache;
-    //     installed->mDelegate->GetCache((Elastos::IO::IDiskLruCache**)&installedCache);
-        AutoPtr<Elastos::IO::IFile> file;
-    //     installedCache->GetDirectory((IFile**)&file)
-    //     if (file->Equals(directory)
-    //             && installedCache->MaxSize() == maxSize
-    //             && !installedCache->IsClosed()) {
-    //         *cache = installed;
-    //     } else {
-    //         IoUtils::CloseQuietly(installed);
-    //     }
-    }
-
-    AutoPtr<IHttpResponseCache> result;
-    CHttpResponseCache* cresult = new CHttpResponseCache(directory, maxSize);
-    result = (IHttpResponseCache*)cresult;
-
-    // AutoPtr<Elastos::Net::Http::IResponseCacheHelper> helper;
-    // Elastos::Net::Http::CResponseCacheHelper::AcquireSingleton(
-    //     (Elastos::Net::Http::IResponseCacheHelper**)&helper);
-    // helper->SetDefault(result);
-
-    *cache = result;
-    REFCOUNT_ADD(*cache);
-    return NOERROR;
+    return HttpResponseCache::Installed(directory, maxSize, result);
 }
 
-}
-}
-}
-}
-
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

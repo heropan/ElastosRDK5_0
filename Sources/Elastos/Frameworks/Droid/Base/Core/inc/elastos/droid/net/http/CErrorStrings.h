@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Net_Http_CErrorStrings.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Content::IContext;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {

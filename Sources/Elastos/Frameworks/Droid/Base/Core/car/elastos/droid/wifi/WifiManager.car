@@ -1461,7 +1461,6 @@ module
          */
         GetAllowScansWithTraffic(
             [out] Int32* result);
-
     }
 
 
@@ -1494,7 +1493,6 @@ module
             [in] Int32 rssiA,
             [in] Int32 rssiB,
             [out] Int32* result);
-
     }
 
 
@@ -1517,7 +1515,6 @@ module
          */
         OnFailure(
             [in] Int32 reason);
-
     }
 
 
@@ -1543,7 +1540,6 @@ module
          */
         OnFailed(
             [in] Int32 reason);
-
     }
 
 
@@ -1567,7 +1563,6 @@ module
          */
         OnFailure(
             [in] Int32 reason);
-
     }
 
 
@@ -1633,7 +1628,6 @@ module
 
         SetWorkSource(
             [in] IWorkSource* ws);
-
     }
 
 
@@ -1697,7 +1691,6 @@ module
          */
         IsHeld(
             [out] Boolean* result);
-
     }
 
     } // namespace Wifi

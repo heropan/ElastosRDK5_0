@@ -25,7 +25,6 @@ module
 
         GetHardLimitBytes(
             [out] Int64* result);
-
     }
 
     } // namespace Net

@@ -40,7 +40,6 @@ module
          */
         GetWifiKey(
             [out] IWifiKey** result);
-
     }
 
     } // namespace Net

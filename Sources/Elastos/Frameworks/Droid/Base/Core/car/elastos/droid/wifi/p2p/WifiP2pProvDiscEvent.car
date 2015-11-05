@@ -44,7 +44,6 @@ module
 
         SetPin(
             [in] String pin);
-
     }
 
     } // namespace P2p

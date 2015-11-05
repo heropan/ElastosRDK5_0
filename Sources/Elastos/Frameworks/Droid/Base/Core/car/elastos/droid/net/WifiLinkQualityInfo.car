@@ -82,7 +82,6 @@ module
          */
         SetTxBad(
             [in] Int64 txBad);
-
     }
 
     interface IWifiLinkQualityInfoHelper {
@@ -92,7 +91,6 @@ module
         CreateFromParcelBody(
             [in] IParcel* inParcel,
             [out] IWifiLinkQualityInfo** result);
-
     }
 
     } // namespace Net

@@ -129,7 +129,6 @@ module
          */
         GetMetrics(
             [out] IHttpConnectionMetrics** result);
-
     }
 
     } // namespace Http

@@ -27,7 +27,6 @@ module
 
         SetPin(
             [in] String pin);
-
     }
 
     enum WpsResultStatus {

@@ -97,7 +97,6 @@ module
 
         SetCapabilityFilter(
             [in] INetworkCapabilities* netCap);
-
     }
 
     } // namespace Net

@@ -60,7 +60,6 @@ module
          */
         GetSupplicantQuery(
             [out] String* result);
-
     }
 
     interface IWifiP2pServiceRequestHelper {
@@ -95,7 +94,6 @@ module
         NewInstance(
             [in] Int32 protocolType,
             [out] IWifiP2pServiceRequest** result);
-
     }
 
     } // namespace Nsd

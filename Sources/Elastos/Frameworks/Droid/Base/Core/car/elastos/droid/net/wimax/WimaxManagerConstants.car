@@ -106,7 +106,6 @@ module
          * Indicatates wimax state is disconnected.
          */
         const Int32 WIMAX_STATE_DISCONNECTED = 9;
-
     }
 
     } // namespace Wimax

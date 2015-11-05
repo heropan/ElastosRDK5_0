@@ -64,7 +64,6 @@ module
         DumpRules(
             [in] IPrintWriter* fout,
             [in] Int32 rules);
-
     }
 
     } // namespace Net

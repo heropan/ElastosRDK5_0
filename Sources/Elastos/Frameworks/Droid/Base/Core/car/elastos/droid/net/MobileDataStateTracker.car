@@ -140,14 +140,12 @@ module
          */
         SupplyMessenger(
             [in] IMessenger* messenger);
-
     }
 
     interface IMobileDataStateTrackerHelper {
         NetworkTypeToApnType(
             [in] Int32 netType,
             [out] String* result);
-
     }
 
     } // namespace Net

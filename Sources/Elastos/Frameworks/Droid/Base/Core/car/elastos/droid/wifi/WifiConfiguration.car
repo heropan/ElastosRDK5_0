@@ -832,7 +832,6 @@ module
         SetProxy(
             [in] IpConfigurationProxySettings* settings,
             [in] IProxyInfo* proxy);
-
     }
 
 
@@ -1001,7 +1000,6 @@ module
         ConfigKey(
             [in] IScanResult* scanResult,
             [out] String* result);
-
     }
 
     /**
@@ -1032,7 +1030,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
     /**
@@ -1051,7 +1048,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
     /**
@@ -1072,7 +1068,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
     /**
@@ -1094,7 +1089,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
 
@@ -1124,7 +1118,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
 
@@ -1143,7 +1136,6 @@ module
 
         GetStrings(
             [out, callee] ArrayOf<String>* result);
-
     }
 
 
@@ -1210,7 +1202,6 @@ module
 
         SetBSSID5(
             [in] String BSSID5);
-
     }
 
     } // namespace Wifi

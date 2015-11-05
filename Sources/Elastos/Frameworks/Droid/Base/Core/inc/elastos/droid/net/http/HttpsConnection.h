@@ -2,12 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 #define __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 
-#include "Connection.h"
-
-using namespace Elastos::Net::Ssl;
-
-using Elastos::Security::Cert::IX509Certificate;
-using Elastos::IO::IFile;
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,94 +10,19 @@ namespace Net {
 namespace Http {
 
 /**
- * A requestConnection connecting to a normal (non secure) http server
+ * A Connection connecting to a secure http server or tunneling through
+ * a http proxy server to a https server.
  *
- * {@hide}
+ * @hide
  */
 class HttpsConnection
-    : public IHttpsConnection
-    , public ElRefBase
-    , public Connection
-    , public IObject
+    : public Connection
+    , public IHttpsConnection
 {
 public:
-    class LocalCX509TrustManager
-        : public ElRefBase
-        , public IObject
-        , public IX509TrustManager
-    {
-    public:
-        CAR_INTERFACE_DECL();
+    CAR_INTERFACE_DECL()
 
-        CARAPI Aggregate(
-            /* [in] */ AggrType aggrType,
-            /* [in] */ PInterface pObject);
-
-        CARAPI GetDomain(
-            /* [out] */ PInterface *ppObject);
-
-        CARAPI GetClassID(
-            /* [out] */ ClassID *pCLSID);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* other,
-            /* [out] */ Boolean * result);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* hash);
-
-        CARAPI ToString(
-            /* [out] */ String* info);
-
-        LocalCX509TrustManager();
-
-        ~LocalCX509TrustManager();
-
-        CARAPI GetAcceptedIssuers(
-            /* [out, callee] */ ArrayOf<IX509Certificate>** certs);
-
-        CARAPI CheckClientTrusted(
-            /* [in] */ ArrayOf<IX509Certificate>* certs,
-            /* [in] */ const String& authType);
-
-        CARAPI CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate>* certs,
-            /* [in] */ const String& authType);
-    };
-
-public:
-    CAR_INTERFACE_DECL();
-
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI ToString(
-        /* [out] */ String* info);
-
-    /**
-     * Contructor for a https connection.
-     */
-    HttpsConnection(
-        /* [in] */ IContext* context,
-        /* [in] */ IHttpHost* host,
-        /* [in] */ IHttpHost* proxy,
-        /* [in] */ RequestFeeder* requestFeeder);
-
-    ~HttpsConnection();
+    HttpsConnection();
 
     /**
      * @hide
@@ -113,10 +33,15 @@ public:
         /* [in] */ IFile* sessionDir);
 
     /**
-     * Sets the server SSL certificate associated with this
-     * connection.
-     * @param certificate The SSL certificate
+     * Contructor for a https connection.
      */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IHttpHost* host,
+        /* [in] */ IHttpHost* proxy,
+        /* [in] */ IRequestFeeder* requestFeeder);
+
+    /* package */
     CARAPI SetCertificate(
         /* [in] */ ISslCertificate* certificate);
 
@@ -126,9 +51,10 @@ public:
      * @return the opened low level connection
      * @throws IOException if the connection fails for any reason.
      */
+    // @Override
     CARAPI OpenConnection(
-        /* [in] */ Request* req,
-        /* [out] */ IElastosHttpClientConnection** scheme);
+        /* [in] */ IRequest* req,
+        /* [out] */ IAndroidHttpClientConnection** result);
 
     /**
      * Closes the low level connection.
@@ -138,6 +64,7 @@ public:
      * need to take any further action.
      *
      */
+    // @Override
     CARAPI CloseConnection();
 
     /**
@@ -146,15 +73,13 @@ public:
     CARAPI RestartConnection(
         /* [in] */ Boolean proceed);
 
+    // @Override
     CARAPI GetScheme(
-        /* [out] */ String* scheme);
+        /* [out] */ String* result);
 
 private:
-    static ISSLSocketFactory* GetSocketFactory();
-
-    CARAPI CheckErrorAndClose(
-        /* [in] */ ECode ec,
-        /* [in] */ IElastosHttpClientConnection* connection);
+    static CARAPI GetSocketFactory(
+        /* [out] */ ISSLSocketFactory** result);
 
 private:
     /**
@@ -165,7 +90,7 @@ private:
     /**
      * Object to wait on when suspending the SSL connection
      */
-    Object mSuspendLock;
+    AutoPtr<IInterface> mSuspendLock;
 
     /**
      * True if the connection is suspended pending the result of asking the
@@ -181,11 +106,13 @@ private:
 
     // Used when connecting through a proxy.
     AutoPtr<IHttpHost> mProxyHost;
+
+    static ECode mEnableStaticBlock;
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __HTTPCONNECTION_H__
+#endif // __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__

@@ -68,7 +68,6 @@ module
 
         GetDeviceInfoHex(
             [out] String* result);
-
     }
 
     } // namespace P2p

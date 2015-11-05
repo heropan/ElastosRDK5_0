@@ -1,26 +1,33 @@
 
-#include "HttpsConnection.h"
-#include "Request.h"
-#include "HttpLog.h"
-#include <elastos/utility/logging/Logger.h>
-
-using namespace Org::Apache::Harmony::Xnet::Provider::Jsse;
-using namespace Org::Apache::Http::Params;
-
-using Elastos::Utility::Logging::Logger;
-using Elastos::Net::ISocket;
-using Org::Apache::Http::Message::IBasicHttpRequest;
+#include "elastos/droid/net/http/HttpsConnection.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+CAR_INTERFACE_IMPL(HttpsConnection, $SUPER_CLASS$, IHttpsConnection)
 
-AutoPtr<ISSLSocketFactory> HttpsConnection::mSslSocketFactory;
-ECode HttpsConnection::InitializeEngine(
-        /* [in] */ IFile* sessionDir)
+// This initialization happens in the zygote. It triggers some
+// lazy initialization that can will benefit later invocations of
+// initializeEngine().
+ECode HttpsConnection::mEnableStaticBlock = InitializeEngine(NULL);
+AutoPtr<ISSLSocketFactory> HttpsConnection::mSslSocketFactory = NULL;
+
+HttpsConnection::HttpsConnection()
+    : mSuspended(FALSE)
+    , mAborted(FALSE)
 {
+#if 0 // TODO: Translated before. Need check.
+        private Object mSuspendLock = new Object();
+#endif
+}
+
+ECode HttpsConnection::InitializeEngine(
+    /* [in] */ IFile* sessionDir)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     AutoPtr<ISSLClientSessionCache> cache;
     if (sessionDir != NULL) {
         String sSessionDir;
@@ -57,168 +64,55 @@ ECode HttpsConnection::InitializeEngine(
     // }
 
     return NOERROR;
+#endif
 }
 
-CAR_INTERFACE_IMPL(HttpsConnection::LocalCX509TrustManager, IX509TrustManager);
-
-ECode HttpsConnection::LocalCX509TrustManager::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
+ECode HttpsConnection::GetSocketFactory(
+    /* [out] */ ISSLSocketFactory** result)
 {
     return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+        return mSslSocketFactory;
+#endif
 }
 
-ECode HttpsConnection::LocalCX509TrustManager::GetDomain(
-    /* [out] */ PInterface *ppObject)
+ECode HttpsConnection::Object(
+    /* [out] */ Inew** result)
 {
     return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+#endif
 }
 
-ECode HttpsConnection::LocalCX509TrustManager::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpsConnection::LocalCX509TrustManager::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IHttpsConnection * o = IHttpsConnection::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IHttpsConnection));
-    }
-    return NOERROR;
-}
-
-ECode HttpsConnection::LocalCX509TrustManager::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IHttpsConnection);
-    return NOERROR;
-}
-
-ECode HttpsConnection::LocalCX509TrustManager::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    StringBuilder sb("LocalCX509TrustManager:(");
-    sb += (Int32)THIS_PROBE(IHttpsConnection);
-    sb += ")";
-    sb.ToString(info);
-    return NOERROR;
-}
-
-ECode HttpsConnection::LocalCX509TrustManager::GetAcceptedIssuers(
-    /* [out, callee] */ ArrayOf<IX509Certificate>** certs)
-{
-    return NOERROR;
-}
-
-ECode HttpsConnection::LocalCX509TrustManager::CheckClientTrusted(
-    /* [in] */ ArrayOf<IX509Certificate>* certs,
-    /* [in] */ const String& authType)
-{
-    return NOERROR;
-}
-
-ECode HttpsConnection::LocalCX509TrustManager::CheckServerTrusted(
-    /* [in] */ ArrayOf<IX509Certificate>* certs,
-    /* [in] */ const String& authType)
-{
-    return NOERROR;
-}
-
-CAR_INTERFACE_IMPL(HttpsConnection, IHttpsConnection);
-
-ECode HttpsConnection::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpsConnection::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpsConnection::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode HttpsConnection::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IHttpsConnection * o = IHttpsConnection::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IHttpsConnection));
-    }
-    return NOERROR;
-}
-
-ECode HttpsConnection::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IHttpsConnection);
-    return NOERROR;
-}
-
-ECode HttpsConnection::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    StringBuilder sb("HttpsConnection:(");
-    sb += (Int32)THIS_PROBE(IHttpsConnection);
-    sb += ")";
-    sb.ToString(info);
-    return NOERROR;
-}
-
-HttpsConnection::HttpsConnection(
+ECode HttpsConnection::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHttpHost* host,
     /* [in] */ IHttpHost* proxy,
-    /* [in] */ RequestFeeder* requestFeeder)
-    : Connection(context, host, requestFeeder)
-    , mProxyHost(proxy)
-    , mSuspended(FALSE)
-    , mAborted(FALSE)
-{}
-
-HttpsConnection::~HttpsConnection()
-{}
-
-ISSLSocketFactory* HttpsConnection::GetSocketFactory()
+    /* [in] */ IRequestFeeder* requestFeeder)
 {
-    return mSslSocketFactory;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
+        super(context, host, requestFeeder);
+        mProxyHost = proxy;
+#endif
 }
 
 ECode HttpsConnection::SetCertificate(
-        /* [in] */ ISslCertificate* certificate)
+    /* [in] */ ISslCertificate* certificate)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     mCertificate = certificate;
     return NOERROR;
+#endif
 }
 
 ECode HttpsConnection::OpenConnection(
-    /* [in] */ Request* req,
-    /* [out] */ IElastosHttpClientConnection** connection)
+    /* [in] */ IRequest* req,
+    /* [out] */ IAndroidHttpClientConnection** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     AutoPtr<ISSLSocket> sslSock;
 
     if (mProxyHost != NULL) {
@@ -275,7 +169,7 @@ ECode HttpsConnection::OpenConnection(
                 h = (*reqHeaders)[i];
                 String headerName;
                 // h->GetName(&headerName);
-                // h->ToLowerCase();
+                // h->ToLowerCase(ILocale::ROOT);
 
                 if (headerName.StartWith("proxy")
                         || headerName.Equals("keep-alive")
@@ -450,10 +344,13 @@ ECode HttpsConnection::OpenConnection(
     *connection = conn;
     REFCOUNT_ADD(*connection);
     return NOERROR;
+#endif
 }
 
 ECode HttpsConnection::CloseConnection()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     // if the connection has been suspended due to an SSL error
     if (mSuspended) {
         // wake up the network thread
@@ -475,11 +372,14 @@ ECode HttpsConnection::CloseConnection()
     }
 
     return ec;
+#endif
 }
 
 ECode HttpsConnection::RestartConnection(
     /* [in] */ Boolean proceed)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     if (HttpLog::LOGV) {
         HttpLog::V(String("HttpsConnection.restartConnection(): proceed: ") + StringUtils::BooleanToString(proceed));
     }
@@ -494,32 +394,21 @@ ECode HttpsConnection::RestartConnection(
     }
 
     return NOERROR;
+#endif
 }
 
 ECode HttpsConnection::GetScheme(
-    /* [out] */ String* scheme)
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(scheme);
     *scheme = String("https");
     return NOERROR;
+#endif
 }
 
-ECode HttpsConnection::CheckErrorAndClose(
-        /* [in] */ ECode ec,
-        /* [in] */ IElastosHttpClientConnection* connection)
-{
-    if (FAILED(ec))    {
-        if (connection != NULL) {
-            // TODO:
-            // connection->Close();
-        }
-        Logger::E("HttpsConnection", "failed to establish a connection to the proxy");
-    }
-
-    return ec;
-}
-
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

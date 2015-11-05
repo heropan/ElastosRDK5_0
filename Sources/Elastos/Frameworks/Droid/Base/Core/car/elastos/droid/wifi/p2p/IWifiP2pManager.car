@@ -26,7 +26,6 @@ module
 
         SetMiracastMode(
             [in] Int32 mode);
-
     }
 
     } // namespace P2p

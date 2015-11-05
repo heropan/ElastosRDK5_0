@@ -158,7 +158,6 @@ module
         /** Updates details obtained from supplicant @hide */
         UpdateSupplicantDetails(
             [in] IWifiP2pDevice* device);
-
     }
 
     } // namespace P2p

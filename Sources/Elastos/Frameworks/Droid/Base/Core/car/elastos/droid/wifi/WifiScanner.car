@@ -227,7 +227,6 @@ module
          */
         StopTrackingBssids(
             [in] IWifiScannerBssidListener* listener);
-
     }
 
 
@@ -246,7 +245,6 @@ module
         OnFailure(
             [in] Int32 reason,
             [in] String description);
-
     }
 
 
@@ -287,7 +285,6 @@ module
 
         SetDwellTimeMS(
             [in] Int32 dwellTimeMS);
-
     }
 
     /**
@@ -333,7 +330,6 @@ module
 
         SetNumBssidsPerScan(
             [in] Int32 numBssidsPerScan);
-
     }
 
     /** @hide */
@@ -348,7 +344,6 @@ module
 
         GetResults(
             [out, callee] ArrayOf<IScanResult*>* result);
-
     }
 
 
@@ -379,7 +374,6 @@ module
          */
         OnFullResult(
             [in] IScanResult* fullScanResult);
-
     }
 
 
@@ -416,7 +410,6 @@ module
 
         SetFrequencyHint(
             [in] Int32 frequencyHint);
-
     }
 
     /** @hide */
@@ -467,7 +460,6 @@ module
 
         SetBssidInfos(
             [in] ArrayOf<IWifiScannerBssidInfo*>* bssidInfos);
-
     }
 
 
@@ -491,7 +483,6 @@ module
          */
         OnQuiescence(
             [in] ArrayOf<IScanResult*>* results);
-
     }
 
     /** interface to receive hotlist events on; use this on {@link #setHotlist} */
@@ -506,7 +497,6 @@ module
          */
         OnFound(
             [in] ArrayOf<IScanResult*>* results);
-
     }
 
     /** @hide */
@@ -528,7 +518,6 @@ module
 
         SetApLostThreshold(
             [in] Int32 apLostThreshold);
-
     }
 
     /** @hide */
@@ -548,7 +537,6 @@ module
 
         SetDescription(
             [in] String description);
-
     }
 
     } // namespace Wifi

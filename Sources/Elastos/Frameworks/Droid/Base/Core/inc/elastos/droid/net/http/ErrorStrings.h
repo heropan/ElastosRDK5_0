@@ -4,6 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Droid::Content::IContext;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {

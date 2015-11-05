@@ -60,7 +60,6 @@ module
         TagToString(
             [in] Int32 tag,
             [out] String* result);
-
     }
 
     } // namespace Net

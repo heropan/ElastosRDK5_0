@@ -64,7 +64,6 @@ module
          */
         GetHeaders(
             [out] IMap** result);
-
     }
 
     interface IMailToHelper {
@@ -87,7 +86,6 @@ module
         Parse(
             [in] String url,
             [out] IMailTo** result);
-
     }
 
     } // namespace Net

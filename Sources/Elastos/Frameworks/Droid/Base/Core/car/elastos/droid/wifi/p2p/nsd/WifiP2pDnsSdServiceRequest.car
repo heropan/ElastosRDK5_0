@@ -62,7 +62,6 @@ module
             [in] String instanceName,
             [in] String serviceType,
             [out] IWifiP2pDnsSdServiceRequest** result);
-
     }
 
     } // namespace Nsd

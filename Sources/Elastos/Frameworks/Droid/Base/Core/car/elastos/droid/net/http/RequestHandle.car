@@ -97,7 +97,6 @@ module
         WaitUntilComplete();
 
         ProcessRequest();
-
     }
 
     interface IRequestHandleHelper {
@@ -115,7 +114,6 @@ module
         AuthorizationHeader(
             [in] Boolean isProxy,
             [out] String* result);
-
     }
 
     } // namespace Http

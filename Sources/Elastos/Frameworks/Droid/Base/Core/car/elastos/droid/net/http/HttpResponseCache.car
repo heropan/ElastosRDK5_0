@@ -179,7 +179,6 @@ module
          * Uninstalls the cache and deletes all of its stored contents.
          */
         Delete();
-
     }
 
     interface IHttpResponseCacheHelper {
@@ -205,7 +204,6 @@ module
             [in] IFile* directory,
             [in] Int64 maxSize,
             [out] IHttpResponseCache** result);
-
     }
 
     } // namespace Http

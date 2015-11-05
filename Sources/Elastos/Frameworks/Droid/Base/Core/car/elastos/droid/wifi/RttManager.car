@@ -70,7 +70,6 @@ module
 
         StopRanging(
             [in] IRttManagerRttListener* listener);
-
     }
 
 
@@ -131,7 +130,6 @@ module
 
         SetNum_retries(
             [in] Int32 num_retries);
-
     }
 
 
@@ -151,7 +149,6 @@ module
 
         SetSupportedPeerType(
             [in] Int32 supportedPeerType);
-
     }
 
 
@@ -167,7 +164,6 @@ module
 
         SetParams(
             [in] ArrayOf<IRttManagerRttParams*>* mParams);
-
     }
 
     /** specifies RTT results */
@@ -266,7 +262,6 @@ module
 
         SetDistance_spread_cm(
             [in] Int32 distance_spread_cm);
-
     }
 
     /** pseudo-private class used to parcel results */
@@ -290,7 +285,6 @@ module
         WriteToParcel(
             [in] IParcel* dest,
             [in] Int32 flags);
-
     }
 
     /**
@@ -307,7 +301,6 @@ module
             [in] String description);
 
         OnAborted();
-
     }
 
     } // namespace Wifi

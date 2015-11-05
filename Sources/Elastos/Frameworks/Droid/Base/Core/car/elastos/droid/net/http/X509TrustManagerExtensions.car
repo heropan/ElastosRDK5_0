@@ -52,7 +52,6 @@ module
         IsUserAddedCertificate(
             [in] IX509Certificate* cert,
             [out] Boolean* result);
-
     }
 
     } // namespace Http

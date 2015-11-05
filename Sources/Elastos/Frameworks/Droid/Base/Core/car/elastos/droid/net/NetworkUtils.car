@@ -261,7 +261,6 @@ module
         TrimV4AddrZeros(
             [in] String addr,
             [out] String* result);
-
     }
 
     } // namespace Net

@@ -259,7 +259,6 @@ module
          */
         GetNetwork(
             [out] INetwork** result);
-
     }
 
     } // namespace Net

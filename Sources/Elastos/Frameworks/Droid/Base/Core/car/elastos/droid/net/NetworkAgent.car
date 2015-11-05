@@ -140,7 +140,6 @@ module
          * Network can be given special treatment at that time.
          */
         ExplicitlySelected();
-
     }
 
     } // namespace Net

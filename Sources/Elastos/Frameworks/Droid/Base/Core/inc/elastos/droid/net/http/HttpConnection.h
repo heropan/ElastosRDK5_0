@@ -2,8 +2,11 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_HTTPCONNECTION_H__
 #define __ELASTOS_DROID_NET_HTTP_HTTPCONNECTION_H__
 
-#include "Connection.h"
-#include "RequestFeeder.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/http/Connection.h"
+
+using Elastos::Droid::Content::IContext;
+using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {
 namespace Droid {
@@ -16,41 +19,26 @@ namespace Http {
  * {@hide}
  */
 class HttpConnection
-    : public IConnection
-    , public ElRefBase
-    , public Connection
-    , public IObject
+    : public Connection
 {
 public:
-    CAR_INTERFACE_DECL();
+    HttpConnection();
 
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI ToString(
-        /* [out] */ String* info);
-
-    HttpConnection(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IHttpHost* host,
-        /* [in] */ RequestFeeder* requestFeeder);
+        /* [in] */ IRequestFeeder* requestFeeder);
 
-    CARAPI GetScheme(
-        /* [out] */ String* scheme);
+    /**
+     * Opens the connection to a http server
+     *
+     * @return the opened low level connection
+     * @throws IOException if the connection fails for any reason.
+     */
+    // @Override
+    CARAPI OpenConnection(
+        /* [in] */ IRequest* req,
+        /* [out] */ IElastosHttpClientConnection** result);
 
     /**
      * Closes the low level connection.
@@ -63,30 +51,18 @@ public:
     CARAPI CloseConnection();
 
     /**
-     * Opens the connection to a http server
-     *
-     * @return the opened low level connection
-     * @throws IOException if the connection fails for any reason.
-     */
-    CARAPI OpenConnection(
-        /* [in] */ Request* req,
-        /* [out] */ IElastosHttpClientConnection** scheme);
-
-    /**
      * Restart a secure connection suspended waiting for user interaction.
      */
     CARAPI RestartConnection(
         /* [in] */ Boolean abort);
 
-    CARAPI ToString(
-        /* [out] */ String* str);
-
-private:
+    CARAPI GetScheme(
+        /* [out] */ String* result);
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_HTTPCONNECTION_H__

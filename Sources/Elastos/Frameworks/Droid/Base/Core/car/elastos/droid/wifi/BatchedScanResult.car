@@ -27,7 +27,6 @@ module
         /** The result of this particular scan. */
         GetScanResults(
             [out] IList** result);
-
     }
 
     } // namespace Wifi

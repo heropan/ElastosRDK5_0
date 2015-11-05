@@ -17,7 +17,6 @@ module
             [in] Int64 start,
             [in] Int64 end,
             [out] Int64* result);
-
     }
 
     /**
@@ -53,7 +52,6 @@ module
             [in] IDataOutputStream* dos,
             [in] ArrayOf<Int64>* values,
             [in] Int32 size);
-
     }
 
     /**
@@ -70,7 +68,6 @@ module
             [in] IParcel* parcel,
             [in] ArrayOf<Int64>* values,
             [in] Int32 size);
-
     }
 
     } // namespace Net

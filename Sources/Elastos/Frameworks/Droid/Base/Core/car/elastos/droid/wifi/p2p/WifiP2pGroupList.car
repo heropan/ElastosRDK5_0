@@ -103,7 +103,6 @@ module
         Contains(
             [in] Int32 netId,
             [out] Boolean* result);
-
     }
 
     /**
@@ -113,7 +112,6 @@ module
     interface IWifiP2pGroupListGroupDeleteListener {
         OnDeleteGroup(
             [in] Int32 netId);
-
     }
 
     } // namespace P2p

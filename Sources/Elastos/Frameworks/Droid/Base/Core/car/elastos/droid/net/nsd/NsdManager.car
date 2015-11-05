@@ -299,7 +299,6 @@ module
         /** Internal use only @hide */
         SetEnabled(
             [in] Boolean enabled);
-
     }
 
 
@@ -328,7 +327,6 @@ module
 
         OnServiceLost(
             [in] INsdServiceInfo* serviceInfo);
-
     }
 
     /** Interface for callback invocation for service registration */
@@ -350,7 +348,6 @@ module
 
         OnServiceUnregistered(
             [in] INsdServiceInfo* serviceInfo);
-
     }
 
     /** Interface for callback invocation for service resolution */
@@ -365,7 +362,6 @@ module
 
         OnServiceResolved(
             [in] INsdServiceInfo* serviceInfo);
-
     }
 
     } // namespace Nsd

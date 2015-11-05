@@ -3,11 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_CHTTPRESPONSECACHE_H__
 
 #include "_Elastos_Droid_Net_Http_CHttpResponseCache.h"
-
-using namespace Elastos::Core;
-
-using Elastos::IO::IFile;
-using Elastos::Net::Http::IHttpResponseCache;
+#include "elastos/droid/net/http/HttpResponseCache.h"
 
 namespace Elastos {
 namespace Droid {
@@ -130,101 +126,16 @@ namespace Http {
  *       } catch (Exception httpResponseCacheNotAvailable) {
  *       }}</pre>
  */
-CarClass(CHttpResponseCache)//, public ResponseCache
+CarClass(CHttpResponseCache)
+    , public HttpResponseCache
 {
-    friend class CHttpResponseCacheHelper;
-
 public:
-    CHttpResponseCache();
-
-    CARAPI Get(
-        /* [in] */ Elastos::Net::IURI* uri,
-        /* [in] */ const String& requestMethod,
-        /* [in] */ IObjectStringMap* requestHeaders,
-        /* [out] */ Elastos::Net::ICacheResponse** response);
-
-    CARAPI Put(
-        /* [in] */ Elastos::Net::IURI* uri,
-        /* [in] */ Elastos::Net::IURLConnection* urlConnection,
-        /* [out] */ Elastos::Net::ICacheRequest** request);
-
-    /**
-     * Returns the number of bytes currently being used to store the values in
-     * this cache. This may be greater than the {@link #maxSize} if a background
-     * deletion is pending.
-     */
-    CARAPI Size(
-        /* [out] */ Int64* size);
-
-    /**
-     * Returns the maximum number of bytes that this cache should use to store
-     * its data.
-     */
-    CARAPI MaxSize(
-        /* [out] */ Int64* maxSize);
-
-    /**
-     * Force buffered operations to the filesystem. This ensures that responses
-     * written to the cache will be available the next time the cache is opened,
-     * even if this process is killed.
-     */
-    CARAPI Flush();
-
-    /**
-     * Returns the number of HTTP requests that required the network to either
-     * supply a response or validate a locally cached response.
-     */
-    CARAPI GetNetworkCount(
-        /* [out] */ Int32* count);
-
-    /**
-     * Returns the number of HTTP requests whose response was provided by the
-     * cache. This may include conditional {@code GET} requests that were
-     * validated over the network.
-     */
-    CARAPI GetHitCount(
-        /* [out] */ Int32* count);
-
-    /**
-     * Returns the total number of HTTP requests that were made. This includes
-     * both client requests and requests that were made on the client's behalf
-     * to handle a redirects and retries.
-     */
-    CARAPI GetRequestCount(
-        /* [out] */ Int32* count);
-
-    CARAPI TrackResponse(
-        /* [in] */ Elastos::Net::IResponseSource* source);
-
-    CARAPI TrackConditionalCacheHit();
-
-    CARAPI Update(
-        /* [in] */ Elastos::Net::ICacheResponse* conditionalCacheHit,
-        /* [in] */Elastos::Net::IHttpURLConnection* connection);
-
-    /**
-     * Uninstalls the cache and releases any active resources. Stored contents
-     * will remain on the filesystem.
-     */
-    CARAPI Close();
-
-    /**
-     * Uninstalls the cache and deletes all of its stored contents.
-     */
-    CARAPI Delete();
-
-private:
-    CHttpResponseCache(
-        /* [in] */ IFile* directory,
-        /* [in] */ Int64 maxSize);
-
-private:
-    AutoPtr<Elastos::Net::Http::IHttpResponseCache> mDelegate;
+    CAR_OBJECT_DECL()
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_CHTTPRESPONSECACHE_H__

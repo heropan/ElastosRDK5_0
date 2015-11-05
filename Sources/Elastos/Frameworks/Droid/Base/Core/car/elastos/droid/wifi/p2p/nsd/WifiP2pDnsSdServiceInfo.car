@@ -41,7 +41,6 @@ module
          * @hide
          */
         const Int32 DNS_TYPE_TXT = 16;
-
     }
 
     interface IWifiP2pDnsSdServiceInfoHelper {
@@ -61,7 +60,6 @@ module
             [in] String serviceType,
             [in] IMap* txtMap,
             [out] IWifiP2pDnsSdServiceInfo** result);
-
     }
 
     } // namespace Nsd

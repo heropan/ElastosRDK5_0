@@ -270,7 +270,6 @@ module
             [in] String address,
             [in] Int32 prefixLength,
             [out] Boolean* result);
-
     }
 
     } // namespace Net

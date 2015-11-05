@@ -13,7 +13,6 @@ module
      */
     interface IPacProxySelector {
         const String PROXY_SERVICE = "com.android.net.IProxyService";
-
     }
 
 

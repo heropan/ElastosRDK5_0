@@ -62,7 +62,6 @@ module
         RegisterNetworkScoreCache(
             [in] Int32 networkType,
             [in] IINetworkScoreCache* scoreCache);
-
     }
 
     } // namespace Net

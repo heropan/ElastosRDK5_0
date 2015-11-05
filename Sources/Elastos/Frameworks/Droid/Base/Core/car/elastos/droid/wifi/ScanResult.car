@@ -239,7 +239,6 @@ module
          */
         Is5GHz(
             [out] Boolean* result);
-
     }
 
     interface IScanResultHelper {
@@ -258,7 +257,6 @@ module
         Is5GHz(
             [in] Int32 freq,
             [out] Boolean* result);
-
     }
 
     /** information element from beacon
@@ -281,7 +279,6 @@ module
 
         SetBytes(
             [in] ArrayOf<Byte>* bytes);
-
     }
 
     } // namespace Wifi

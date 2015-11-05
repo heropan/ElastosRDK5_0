@@ -69,7 +69,6 @@ module
             [in] String SSID,
             [in] Int32 connection,
             [in] Int32 usage);
-
     }
 
     } // namespace Wifi

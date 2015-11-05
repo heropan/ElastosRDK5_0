@@ -404,7 +404,6 @@ module
         IsPathPrefixMatch(
             [in] IUri* prefix,
             [out] Boolean* result);
-
     }
 
     interface IUriHelper {
@@ -520,7 +519,6 @@ module
             [in] IUri* baseUri,
             [in] String pathSegment,
             [out] IUri** result);
-
     }
 
     /**
@@ -661,7 +659,6 @@ module
          */
         Build(
             [out] IUri** result);
-
     }
 
     } // namespace Net

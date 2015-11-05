@@ -914,7 +914,6 @@ module
             [in] IWifiP2pManagerChannel* c,
             [in] String handoverRequest,
             [in] IWifiP2pManagerActionListener* listener);
-
     }
 
     /** Interface for callback invocation when framework channel is lost */
@@ -928,7 +927,6 @@ module
          * Application could try re-initializing using {@link #initialize}
          */
         OnChannelDisconnected();
-
     }
 
 
@@ -948,7 +946,6 @@ module
           */
         OnFailure(
             [in] Int32 reason);
-
     }
 
     /** Interface for callback invocation when peer list is available */
@@ -963,7 +960,6 @@ module
          */
         OnPeersAvailable(
             [in] IWifiP2pDeviceList* peers);
-
     }
 
     /** Interface for callback invocation when connection info is available */
@@ -978,7 +974,6 @@ module
          */
         OnConnectionInfoAvailable(
             [in] IWifiP2pInfo* info);
-
     }
 
     /** Interface for callback invocation when group info is available */
@@ -993,7 +988,6 @@ module
          */
         OnGroupInfoAvailable(
             [in] IWifiP2pGroup* group);
-
     }
 
     /**
@@ -1019,7 +1013,6 @@ module
             [in] Int32 protocolType,
             [in] ArrayOf<Byte>* responseData,
             [in] IWifiP2pDevice* srcDevice);
-
     }
 
 
@@ -1047,7 +1040,6 @@ module
             [in] String instanceName,
             [in] String registrationType,
             [in] IWifiP2pDevice* srcDevice);
-
     }
 
     /**
@@ -1074,7 +1066,6 @@ module
             [in] String fullDomainName,
             [in] IMap* txtRecordMap,
             [in] IWifiP2pDevice* srcDevice);
-
     }
 
     /**
@@ -1099,7 +1090,6 @@ module
         OnUpnpServiceAvailable(
             [in] IList* uniqueServiceNames,
             [in] IWifiP2pDevice* srcDevice);
-
     }
 
     /** Interface for callback invocation when stored group info list is available {@hide}*/
@@ -1114,7 +1104,6 @@ module
          */
         OnPersistentGroupInfoAvailable(
             [in] IWifiP2pGroupList* groups);
-
     }
 
     /**
@@ -1128,7 +1117,6 @@ module
     interface IWifiP2pManagerHandoverMessageListener {
         OnHandoverMessageAvailable(
             [in] String handoverMessage);
-
     }
 
 

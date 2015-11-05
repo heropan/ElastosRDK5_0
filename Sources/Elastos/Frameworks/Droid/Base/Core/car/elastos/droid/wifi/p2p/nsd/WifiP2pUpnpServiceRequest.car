@@ -49,7 +49,6 @@ module
         NewInstance(
             [in] String st,
             [out] IWifiP2pUpnpServiceRequest** result);
-
     }
 
     } // namespace Nsd

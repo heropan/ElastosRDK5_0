@@ -65,13 +65,11 @@ module
 
         SetCommonLinkQualityInfoFields(
             [in] ILinkQualityInfo* li);
-
     }
 
     interface ISamplingDataTrackerHelper {
         GetSamplingSnapshots(
             [in] IMap* mapIfaceToSample);
-
     }
 
     interface ISamplingDataTrackerSamplingSnapshot {
@@ -116,7 +114,6 @@ module
 
         SetTimestamp(
             [in] Int64 mTimestamp);
-
     }
 
     } // namespace Net

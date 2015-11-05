@@ -50,7 +50,6 @@ module
 
         SetPin(
             [in] String pin);
-
     }
 
     } // namespace Wifi

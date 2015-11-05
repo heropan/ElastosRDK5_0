@@ -181,7 +181,6 @@ module
          */
         GetFileDescriptor(
             [out] IFileDescriptor** result);
-
     }
 
     } // namespace Net

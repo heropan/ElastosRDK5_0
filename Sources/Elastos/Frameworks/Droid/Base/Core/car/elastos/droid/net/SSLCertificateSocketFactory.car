@@ -182,7 +182,6 @@ module
         SetSoWriteTimeout(
             [in] ISocket* socket,
             [in] Int32 writeTimeoutMilliseconds);
-
     }
 
     interface ISSLCertificateSocketFactoryHelper {
@@ -262,7 +261,6 @@ module
         VerifyHostname(
             [in] ISocket* socket,
             [in] String hostname);
-
     }
 
     } // namespace Net

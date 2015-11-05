@@ -39,7 +39,6 @@ module
         Install(
             [in] ISSLSessionCache* cache,
             [in] ISSLContext* context);
-
     }
 
     } // namespace Net

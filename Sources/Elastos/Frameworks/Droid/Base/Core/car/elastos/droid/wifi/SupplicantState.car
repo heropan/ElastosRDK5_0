@@ -184,7 +184,6 @@ module
         IsDriverActive(
             [in] SupplicantState state,
             [out] Boolean* result);
-
     }
 
     } // namespace Wifi

@@ -25,6 +25,9 @@ Connection::Connection()
     : mActive(sSTATE_NORMAL)
 {}
 
+Connection::~Connection()
+{}
+
 AutoPtr<ArrayOf<String> > Connection::InitSTATES()
 {
     AutoPtr<ArrayOf<String> > sArray = ArrayOf<String>::Alloc(4);

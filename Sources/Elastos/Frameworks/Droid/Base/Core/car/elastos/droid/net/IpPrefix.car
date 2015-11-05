@@ -57,7 +57,6 @@ module
          */
         GetPrefixLength(
             [out] Int32* result);
-
     }
 
     } // namespace Net

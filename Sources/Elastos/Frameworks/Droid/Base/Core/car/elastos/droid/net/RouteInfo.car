@@ -137,7 +137,6 @@ module
         Matches(
             [in] IInetAddress* destination,
             [out] Boolean* result);
-
     }
 
     interface IRouteInfoHelper {
@@ -171,7 +170,6 @@ module
             [in] ICollection* routes,
             [in] IInetAddress* dest,
             [out] IRouteInfo** result);
-
     }
 
     } // namespace Net

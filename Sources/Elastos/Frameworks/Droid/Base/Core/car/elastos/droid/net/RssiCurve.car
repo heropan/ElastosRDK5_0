@@ -61,7 +61,6 @@ module
         LookupScore(
             [in] Int32 rssi,
             [out] Byte* result);
-
     }
 
     } // namespace Net

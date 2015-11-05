@@ -15,13 +15,17 @@ SOURCES += CharArrayBuffers.cpp
 SOURCES += Connection.cpp
 SOURCES += ConnectionThread.cpp
 SOURCES += DelegatingSSLSession.cpp
-#SOURCES += ErrorStrings.cpp
-#SOURCES += CErrorStrings.cpp
-
-#SOURCES += CHeaders.cpp
-#SOURCES += CHttpAuthHeader.cpp
-#SOURCES += CHttpResponseCache.cpp
+SOURCES += ErrorStrings.cpp
+SOURCES += CErrorStrings.cpp
+SOURCES += Headers.cpp
+SOURCES += HttpAuthHeader.cpp
+SOURCES += HttpConnection.cpp
+SOURCES += HttpLog.cpp
+#SOURCES += HttpResponseCache.cpp
 #SOURCES += CHttpResponseCacheHelper.cpp
+#SOURCES += HttpsConnection.cpp
+#SOURCES += CHttpsConnectionHelper.cpp
+
 #SOURCES += CLoggingEventHandler.cpp
 #SOURCES += CRequestHandle.cpp
 #SOURCES += CRequestHandleHelper.cpp

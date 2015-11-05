@@ -30,7 +30,6 @@ module
          */
         SetConfiguration(
             [in] IIpConfiguration* config);
-
     }
 
     } // namespace Net

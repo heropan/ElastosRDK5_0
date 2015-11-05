@@ -1,6 +1,9 @@
 
 #include "elastos/droid/net/http/ErrorStrings.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::ILog;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {

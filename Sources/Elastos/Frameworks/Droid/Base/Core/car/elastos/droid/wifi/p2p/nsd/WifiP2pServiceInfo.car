@@ -55,7 +55,6 @@ module
         */
         GetSupplicantQueryList(
             [out] IList** result);
-
     }
 
     } // namespace Nsd

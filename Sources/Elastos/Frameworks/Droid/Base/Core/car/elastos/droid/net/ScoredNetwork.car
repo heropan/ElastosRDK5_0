@@ -29,7 +29,6 @@ module
          */
         GetRssiCurve(
             [out] IRssiCurve** result);
-
     }
 
     } // namespace Net

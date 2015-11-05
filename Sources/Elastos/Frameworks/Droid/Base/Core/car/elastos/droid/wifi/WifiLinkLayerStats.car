@@ -189,7 +189,6 @@ module
         /** {@hide} */
         GetPrintableSsid(
             [out] String* result);
-
     }
 
     } // namespace Wifi

@@ -55,7 +55,6 @@ module
 
         GetAuthInfo(
             [out] String* result);
-
     }
 
     } // namespace Net

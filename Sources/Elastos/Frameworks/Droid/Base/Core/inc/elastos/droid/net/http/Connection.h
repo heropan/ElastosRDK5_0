@@ -29,6 +29,8 @@ public:
 
     Connection();
 
+    virtual ~Connection();
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IHttpHost* host,

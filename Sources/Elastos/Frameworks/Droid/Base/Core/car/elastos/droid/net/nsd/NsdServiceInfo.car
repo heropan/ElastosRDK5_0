@@ -87,7 +87,6 @@ module
         /** @hide */
         GetTxtRecord(
             [out, callee] ArrayOf<Byte>* result);
-
     }
 
     } // namespace Nsd

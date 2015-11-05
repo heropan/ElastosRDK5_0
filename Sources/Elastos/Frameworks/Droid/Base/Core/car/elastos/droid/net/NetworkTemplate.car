@@ -47,7 +47,6 @@ module
         Matches(
             [in] INetworkIdentity* ident,
             [out] Boolean* result);
-
     }
 
     interface INetworkTemplateHelper {
@@ -112,7 +111,6 @@ module
          */
         BuildTemplateEthernet(
             [out] INetworkTemplate** result);
-
     }
 
     } // namespace Net

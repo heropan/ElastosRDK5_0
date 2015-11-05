@@ -32,7 +32,6 @@ module
          * @hide
          */
         const Int32 VERSION_1_0 = 0x10;
-
     }
 
     interface IWifiP2pUpnpServiceInfoHelper {
@@ -59,7 +58,6 @@ module
             [in] String device,
             [in] IList* services,
             [out] IWifiP2pUpnpServiceInfo** result);
-
     }
 
     } // namespace Nsd

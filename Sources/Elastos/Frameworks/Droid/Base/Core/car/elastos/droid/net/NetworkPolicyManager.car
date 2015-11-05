@@ -93,7 +93,6 @@ module
 
         GetRestrictBackground(
             [out] Boolean* result);
-
     }
 
     } // namespace Net

@@ -64,7 +64,6 @@ module
         /* Gets the raw data in bytes */
         GetRawData(
             [out, callee] ArrayOf<Byte>* result);
-
     }
 
     } // namespace Nsd

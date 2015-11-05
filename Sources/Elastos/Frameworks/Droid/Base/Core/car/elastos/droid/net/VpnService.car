@@ -196,7 +196,6 @@ module
          * @see #prepare
          */
         OnRevoke();
-
     }
 
     interface IVpnServiceHelper {
@@ -226,7 +225,6 @@ module
         Prepare(
             [in] IContext* context,
             [out] IIntent** result);
-
     }
 
     /**
@@ -503,7 +501,6 @@ module
          */
         Establish(
             [out] IParcelFileDescriptor** result);
-
     }
 
     } // namespace Net

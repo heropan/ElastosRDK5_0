@@ -130,7 +130,6 @@ module
          */
         IsSupportedScheme(
             [out] Boolean* result);
-
     }
 
     } // namespace Http

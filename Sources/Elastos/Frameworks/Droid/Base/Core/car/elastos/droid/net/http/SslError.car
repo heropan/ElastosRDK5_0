@@ -90,7 +90,6 @@ module
          */
         GetPrimaryError(
             [out] Int32* result);
-
     }
 
     [local]
@@ -107,7 +106,6 @@ module
             [in] ISslCertificate* cert,
             [in] String url,
             [out] ISslError** result);
-
     }
 
     } // namespace Http

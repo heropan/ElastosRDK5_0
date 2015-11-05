@@ -64,7 +64,6 @@ module
          * @hide
          */
         DoQuit();
-
     }
 
     } // namespace Net

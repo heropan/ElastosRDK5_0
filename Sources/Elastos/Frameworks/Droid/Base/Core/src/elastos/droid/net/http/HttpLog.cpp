@@ -1,36 +1,40 @@
 
-#include "HttpLog.h"
-// #include <SystemClock.h>
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/Thread.h>
+#include "elastos/droid/net/http/HttpLog.h"
 
-using namespace Elastos::Core;
-using namespace Elastos::Utility::Logging;
-
+using Elastos::Droid::Os::ISystemClock;
+using Elastos::Droid::Utility::ILog;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-const String HttpLog::LOGTAG = String("http");
-const Boolean HttpLog::DEBUG = FALSE;
-const Boolean HttpLog::LOGV = FALSE;
+const String HttpLog::LOGTAG("http");
+const Boolean HttpLog::DEBUG = false;
+const Boolean HttpLog::LOGV = false;
 
-void HttpLog::V(
-    /* [in] */ const String& logMe) {
+ECode HttpLog::V(
+    /* [in] */ String logMe)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<IThread> thread = Thread::GetCurrentThread();
     String name;
     thread->GetName(&name);
     Logger::V(LOGTAG, /*SystemClock::uptimeMillis() +*/ String(" ") + name + String(" ") + logMe);
+#endif
 }
 
-void HttpLog::E(
-    /* [in] */ const String& logMe) {
+ECode HttpLog::E(
+    /* [in] */ String logMe)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     Logger::E(LOGTAG, logMe);
+#endif
 }
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

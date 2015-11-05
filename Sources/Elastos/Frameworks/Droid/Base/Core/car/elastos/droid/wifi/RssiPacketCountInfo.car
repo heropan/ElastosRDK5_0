@@ -40,7 +40,6 @@ module
 
         SetRxgood(
             [in] Int32 rxgood);
-
     }
 
     } // namespace Wifi

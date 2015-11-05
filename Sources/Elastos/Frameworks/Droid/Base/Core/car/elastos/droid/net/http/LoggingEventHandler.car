@@ -46,7 +46,6 @@ module
         HandleSslErrorRequest(
             [in] ISslError* error,
             [out] Boolean* result);
-
     }
 
     } // namespace Http

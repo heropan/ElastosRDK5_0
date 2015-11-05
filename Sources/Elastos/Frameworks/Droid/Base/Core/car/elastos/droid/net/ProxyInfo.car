@@ -91,7 +91,6 @@ module
          */
         MakeProxy(
             [out] Elastos.Net.IProxy** result);
-
     }
 
     interface IProxyInfoHelper {
@@ -126,7 +125,6 @@ module
         BuildPacProxy(
             [in] IUri* pacUri,
             [out] IProxyInfo** result);
-
     }
 
     } // namespace Net

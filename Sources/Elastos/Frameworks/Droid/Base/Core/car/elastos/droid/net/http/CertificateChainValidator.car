@@ -37,7 +37,6 @@ module
             [in] ISSLSocket* sslSocket,
             [in] String sDomain,
             [out] ISslError** result);
-
     }
 
     [deprecated]
@@ -66,7 +65,6 @@ module
          * Handles updates to credential storage.
          */
         HandleTrustStorageUpdate();
-
     }
 
     } // namespace Http

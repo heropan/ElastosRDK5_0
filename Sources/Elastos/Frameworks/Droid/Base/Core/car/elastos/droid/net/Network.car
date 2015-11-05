@@ -91,7 +91,6 @@ module
          */
         BindSocket(
             [in] ISocket* socket);
-
     }
 
     } // namespace Net

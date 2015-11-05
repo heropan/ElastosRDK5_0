@@ -32,7 +32,6 @@ module
 
         GetNetworkId(
             [out] String* result);
-
     }
 
     } // namespace Net

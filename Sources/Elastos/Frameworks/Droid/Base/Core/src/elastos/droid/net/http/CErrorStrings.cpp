@@ -1,6 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/net/http/CErrorStrings.h"
+#include "elastos/droid/net/http/ErrorStrings.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1423,7 +1423,6 @@ module
          */
         UnregisterNetworkCallback(
             [in] IConnectivityManagerNetworkCallback* networkCallback);
-
     }
 
     interface IConnectivityManagerHelper {
@@ -1535,7 +1534,6 @@ module
         SetProcessDefaultNetworkForHostResolution(
             [in] INetwork* network,
             [out] Boolean* result);
-
     }
 
     interface IConnectivityManagerOnNetworkActiveListener {
@@ -1652,7 +1650,6 @@ module
         OnLinkPropertiesChanged(
             [in] INetwork* network,
             [in] ILinkProperties* linkProperties);
-
     }
 
     } // namespace Net

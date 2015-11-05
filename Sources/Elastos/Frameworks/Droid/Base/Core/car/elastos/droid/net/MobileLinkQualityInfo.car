@@ -184,7 +184,6 @@ module
          */
         SetLteCqi(
             [in] Int32 lteCqi);
-
     }
 
     interface IMobileLinkQualityInfoHelper {
@@ -194,7 +193,6 @@ module
         CreateFromParcelBody(
             [in] IParcel* parcel,
             [out] IMobileLinkQualityInfo** result);
-
     }
 
     } // namespace Net

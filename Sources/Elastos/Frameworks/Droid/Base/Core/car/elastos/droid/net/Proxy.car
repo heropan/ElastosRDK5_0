@@ -156,7 +156,6 @@ module
             [in] String port,
             [in] String exclList,
             [in] IUri* pacFileUrl);
-
     }
 
     } // namespace Net

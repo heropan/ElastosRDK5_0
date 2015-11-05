@@ -22,7 +22,6 @@ module
          */
         HandleSslErrorResponse(
             [in] Boolean proceed);
-
     }
 
     } // namespace Http

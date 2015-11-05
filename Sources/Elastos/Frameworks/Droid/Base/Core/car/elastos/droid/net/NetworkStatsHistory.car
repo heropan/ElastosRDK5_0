@@ -171,7 +171,6 @@ module
         EstimateResizeBuckets(
             [in] Int64 newBucketDuration,
             [out] Int32* result);
-
     }
 
     interface INetworkStatsHistoryEntry {
@@ -224,7 +223,6 @@ module
 
         SetOperations(
             [in] Int64 operations);
-
     }
 
     } // namespace Net

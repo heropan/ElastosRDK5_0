@@ -60,7 +60,6 @@ module
             [out] Int32* result);
 
         CancelPings();
-
     }
 
     } // namespace Net

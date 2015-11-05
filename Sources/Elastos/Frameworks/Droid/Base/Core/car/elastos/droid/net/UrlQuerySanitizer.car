@@ -243,7 +243,6 @@ module
         Unescape(
             [in] String string,
             [out] String* result);
-
     }
 
     interface IUrlQuerySanitizerHelper {
@@ -322,7 +321,6 @@ module
          */
         GetAllButNulAndAngleBracketsLegal(
             [out] IUrlQuerySanitizerValueSanitizer** result);
-
     }
 
 
@@ -348,7 +346,6 @@ module
 
         SetValue(
             [in] String mValue);
-
     }
 
     /**
@@ -364,7 +361,6 @@ module
         Sanitize(
             [in] String value,
             [out] String* result);
-
     }
 
     /**
@@ -549,7 +545,6 @@ module
         Sanitize(
             [in] String value,
             [out] String* result);
-
     }
 
     } // namespace Net

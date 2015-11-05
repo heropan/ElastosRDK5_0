@@ -106,7 +106,6 @@ module
          * Disables cURL logging for this client.
          */
         DisableCurlLogging();
-
     }
 
     [deprecated]
@@ -197,7 +196,6 @@ module
         ParseDate(
             [in] String dateString,
             [out] Int64* result);
-
     }
 
     } // namespace Http

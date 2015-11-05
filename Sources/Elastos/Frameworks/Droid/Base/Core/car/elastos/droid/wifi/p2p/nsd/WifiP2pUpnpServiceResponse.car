@@ -45,7 +45,6 @@ module
          */
         GetUniqueServiceNames(
             [out] IList** result);
-
     }
 
     } // namespace Nsd

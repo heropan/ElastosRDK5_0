@@ -28,7 +28,6 @@ module
          */
         InitializeEngine(
             [in] IFile* sessionDir);
-
     }
 
     } // namespace Http

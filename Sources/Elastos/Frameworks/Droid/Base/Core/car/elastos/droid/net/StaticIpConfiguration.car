@@ -77,7 +77,6 @@ module
         ToLinkProperties(
             [in] String iface,
             [out] ILinkProperties** result);
-
     }
 
     } // namespace Net

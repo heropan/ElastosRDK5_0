@@ -98,7 +98,6 @@ module
 
         /** Maximum supported length (in bytes) for PSK. */
         const Int32 MAX_KEY_LENGTH_BYTES = 256;
-
     }
 
     } // namespace Net

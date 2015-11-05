@@ -520,7 +520,6 @@ module
         CompareAllInterfaceNames(
             [in] ILinkProperties* target,
             [out] ILinkPropertiesCompareResult** result);
-
     }
 
    interface ILinkPropertiesHelper {
@@ -532,7 +531,6 @@ module
             [in] Int32 mtu,
             [in] Boolean ipv6,
             [out] Boolean* result);
-
     }
 
     interface ILinkPropertiesCompareResult {
