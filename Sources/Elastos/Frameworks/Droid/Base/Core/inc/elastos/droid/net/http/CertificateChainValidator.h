@@ -4,6 +4,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::Core::IArrayOf;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastosx::Net::Ssl::ISSLSocket;
+using Elastosx::Net::Ssl::IX509TrustManager;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -35,6 +40,8 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
+    CertificateChainValidator();
+
     /**
      * @return The singleton instance of the certificates chain validator
      */
@@ -54,7 +61,7 @@ public:
     CARAPI DoHandshakeAndValidateServerCertificates(
         /* [in] */ IHttpsConnection* connection,
         /* [in] */ ISSLSocket* sslSocket,
-        /* [in] */ String domain,
+        /* [in] */ const String& domain,
         /* [out] */ ISslError** result);
 
     /**
@@ -67,8 +74,8 @@ public:
      */
     static CARAPI VerifyServerCertificates(
         /* [in] */ ArrayOf<IArrayOf>* certChain,
-        /* [in] */ String domain,
-        /* [in] */ String authType,
+        /* [in] */ const String& domain,
+        /* [in] */ const String& authType,
         /* [out] */ ISslError** result);
 
     /**
@@ -81,7 +88,7 @@ private:
      * Creates a new certificate chain validator. This is a private constructor.
      * If you need a Certificate chain validator, call getInstance().
      */
-    CertificateChainValidator();
+    CARAPI constructor();
 
     /**
      * Common code of doHandshakeAndValidateServerCertificates and verifyServerCertificates.
@@ -93,8 +100,8 @@ private:
      */
     static CARAPI VerifyServerDomainAndCertificates(
         /* [in] */ ArrayOf<IX509Certificate*>* chain,
-        /* [in] */ String domain,
-        /* [in] */ String authType,
+        /* [in] */ const String& domain,
+        /* [in] */ const String& authType,
         /* [out] */ ISslError** result);
 
     /**
@@ -105,17 +112,16 @@ private:
 
     CARAPI CloseSocketThrowException(
         /* [in] */ ISSLSocket* socket,
-        /* [in] */ String errorMessage,
-        /* [in] */ String defaultErrorMessage);
+        /* [in] */ const String& errorMessage,
+        /* [in] */ const String& defaultErrorMessage);
 
     CARAPI CloseSocketThrowException(
         /* [in] */ ISSLSocket* socket,
-        /* [in] */ String errorMessage);
+        /* [in] */ const String& errorMessage);
 
     static const String TAG;
 
     AutoPtr<IX509TrustManager> mTrustManager;
-
 };
 
 } // namespace Http

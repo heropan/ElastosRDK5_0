@@ -142,7 +142,6 @@ private:
     static const Boolean ALLOW_PLATFORM_APP_POLICY;
 
     AutoPtr<IINetworkPolicyManager> mService;
-
 };
 
 } // namespace Net

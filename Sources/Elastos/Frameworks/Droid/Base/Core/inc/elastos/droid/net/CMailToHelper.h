@@ -37,7 +37,6 @@ public:
     CARAPI Parse(
         /* [in] */ const String& url,
         /* [out] */ IMailTo** result);
-
 };
 
 } // namespace Net

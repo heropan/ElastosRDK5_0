@@ -268,7 +268,6 @@ private:
     ArrayOf<Int64>* mOperations;
 
     Int64 mTotalBytes;
-
 };
 
 class NetworkStatsHistoryEntry
@@ -344,7 +343,6 @@ private:
     Int64 mTxPackets;
 
     Int64 mOperations;
-
 };
 
 
@@ -382,9 +380,7 @@ public:
         /* [in] */ IDataOutputStream* out,
         /* [in] */ ArrayOf<Int64>* values,
         /* [in] */ Int32 size);
-
 };
-
 
 /**
  * Utility methods for interacting with {@link Parcel} structures, mostly
@@ -401,7 +397,6 @@ public:
         /* [in] */ IParcel* out,
         /* [in] */ ArrayOf<Int64>* values,
         /* [in] */ Int32 size);
-
 };
 
 } // namespace Net

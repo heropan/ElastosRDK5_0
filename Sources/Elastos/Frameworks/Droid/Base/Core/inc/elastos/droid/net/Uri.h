@@ -839,10 +839,10 @@ protected:
     String mUriString;
 
     /** Cached scheme separator index. */
-    volatile Int32 mCachedSsi;// = NOT_CALCULATED;
+    /* volatile */ Int32 mCachedSsi;// = NOT_CALCULATED;
 
     /** Cached fragment separator index. */
-    volatile Int32 mCachedFsi;// = NOT_CALCULATED;
+    /* volatile */ Int32 mCachedFsi;// = NOT_CALCULATED;
 
     /* volatile */ String mScheme;
     AutoPtr<Uri::Part> mSsp;

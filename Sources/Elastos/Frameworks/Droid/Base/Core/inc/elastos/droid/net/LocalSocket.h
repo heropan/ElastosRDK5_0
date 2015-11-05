@@ -230,7 +230,7 @@ private:
 
     AutoPtr<ILocalSocketImpl> mImpl;
 
-    volatile Boolean mImplCreated;
+    /* volatile */ Boolean mImplCreated;
 
     AutoPtr<ILocalSocketAddress> mLocalAddress;
 
@@ -248,7 +248,6 @@ private:
 
     /** Sequential packet socket type */
     static const Int32 SOCKET_SEQPACKET;
-
 };
 
 } // namespace Net

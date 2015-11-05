@@ -96,7 +96,6 @@ module
          */
         GetConfigurationActivityClassName(
             [out] String* result);
-
     }
 
     } // namespace Net

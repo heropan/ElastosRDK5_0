@@ -417,9 +417,9 @@ public:
      * proposed by the client (from an earlier DHCP negotiation) or
      * supplied by the server.
      */
-    const AutoPtr<IInetAddress> mClientIp;
+    /* const */ AutoPtr<IInetAddress> mClientIp;
 
-    const AutoPtr<IInetAddress> mYourIp;
+    /* const */ AutoPtr<IInetAddress> mYourIp;
 
     /**
      * Does the client request a broadcast response?
@@ -429,7 +429,7 @@ public:
     /**
      * The six-octet MAC of the client.
      */
-    const AutoPtr<ArrayOf<Byte> > mClientMac;
+    /* const */ AutoPtr<ArrayOf<Byte> > mClientMac;
 
     /**
      * The client DHCP port.
@@ -486,10 +486,9 @@ private:
      */
     static const Byte IP_TTL;
 
-    const AutoPtr<IInetAddress> mNextIp;
+    /* const */ AutoPtr<IInetAddress> mNextIp;
 
-    const AutoPtr<IInetAddress> mRelayIp;
-
+    /* const */ AutoPtr<IInetAddress> mRelayIp;
 };
 
 } // namespace Dhcp

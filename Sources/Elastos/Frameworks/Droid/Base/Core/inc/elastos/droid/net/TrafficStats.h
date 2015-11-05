@@ -484,7 +484,6 @@ private:
     static const Int32 TYPE_TCP_RX_PACKETS;
 
     static const Int32 TYPE_TCP_TX_PACKETS;
-
 };
 
 } // namespace Net

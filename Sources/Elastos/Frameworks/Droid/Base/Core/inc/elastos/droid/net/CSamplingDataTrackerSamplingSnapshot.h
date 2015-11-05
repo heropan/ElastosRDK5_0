@@ -14,7 +14,6 @@ CarClass(CSamplingDataTrackerSamplingSnapshot)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Net

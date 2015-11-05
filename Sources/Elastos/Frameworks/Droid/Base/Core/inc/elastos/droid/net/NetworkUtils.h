@@ -272,7 +272,6 @@ public:
 
 private:
     static const String TAG;
-
 };
 
 } // namespace Net

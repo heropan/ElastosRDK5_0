@@ -226,7 +226,6 @@ private:
     Int32 mLteRssnr;
 
     Int32 mLteCqi;
-
 };
 
 } // namespace Net

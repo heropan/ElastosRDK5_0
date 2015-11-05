@@ -30,7 +30,6 @@ public:
         /* [in] */ IParcel* out,
         /* [in] */ ArrayOf<Int64>* values,
         /* [in] */ Int32 size);
-
 };
 
 } // namespace Net

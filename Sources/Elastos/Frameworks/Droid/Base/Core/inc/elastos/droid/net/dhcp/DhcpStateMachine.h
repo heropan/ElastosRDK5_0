@@ -86,7 +86,6 @@ public:
     virtual CARAPI OnDeclineReceived(
         /* [in] */ ArrayOf<Byte>* clientMac,
         /* [in] */ IInetAddress* declinedIp) = 0;
-
 };
 
 } // namespace Dhcp

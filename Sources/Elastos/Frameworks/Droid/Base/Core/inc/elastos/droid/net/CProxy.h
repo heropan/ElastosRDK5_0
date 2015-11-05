@@ -124,7 +124,6 @@ public:
         /* [in] */ const String& port,
         /* [in] */ const String& exclList,
         /* [in] */ IUri* pacFileUrl);
-
 };
 
 } // namespace Net

@@ -96,7 +96,6 @@ private:
      * @hide
      */
     Int32 mLegacyType;
-
 };
 
 
@@ -207,7 +206,7 @@ public:
 
 private:
     CARAPI_(AutoPtr<INetworkCapabilities>) CreateNetworkCapabilities();
-    const AutoPtr<INetworkCapabilities> mNetworkCapabilities;
+    /* const */ AutoPtr<INetworkCapabilities> mNetworkCapabilities;
 };
 
 } // namespace Net

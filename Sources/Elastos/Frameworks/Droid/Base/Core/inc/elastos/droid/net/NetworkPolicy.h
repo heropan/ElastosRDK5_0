@@ -150,7 +150,7 @@ public:
         /* [in] */ Boolean inferred);
 
 private:
-    const AutoPtr<INetworkTemplate> mTemplate;
+    /* const */ AutoPtr<INetworkTemplate> mTemplate;
 
     Int32 mCycleDay;
 
@@ -169,7 +169,6 @@ private:
     Boolean mInferred;
 
     static const Int64 DEFAULT_MTU;
-
 };
 
 } // namespace Net

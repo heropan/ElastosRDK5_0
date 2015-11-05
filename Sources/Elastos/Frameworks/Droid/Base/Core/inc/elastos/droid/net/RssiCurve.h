@@ -120,7 +120,6 @@ private:
 
     /** The score for each RSSI bucket. */
     AutoPtr<ArrayOf<Byte> > mRssiBuckets;
-
 };
 
 } // namespace Net

@@ -430,13 +430,12 @@ private:
     static AutoPtr<IUrlQuerySanitizerValueSanitizer> CreateValueSanitizer(
         /* [in] */ Int32 value);
 
-    const AutoPtr<IHashMap> mSanitizers;
-    const AutoPtr<IHashMap> mEntries;
-    const AutoPtr<IArrayList> mEntriesList;
+    /* const */ AutoPtr<IHashMap> mSanitizers;
+    /* const */ AutoPtr<IHashMap> mEntries;
+    /* const */ AutoPtr<IArrayList> mEntriesList;
     Boolean mAllowUnregisteredParamaters;
     Boolean mPreferFirstRepeatedParameter;
     AutoPtr<IUrlQuerySanitizerValueSanitizer> mUnregisteredParameterValueSanitizer;
-
 };
 
 /**
@@ -493,7 +492,6 @@ private:
      * The unencoded value
      */
     String mValue;
-
 };
 
 /**
@@ -578,7 +576,6 @@ private:
     static const String VBSCRIPT_PREFIX;
 
     static const Int32 MIN_SCRIPT_PREFIX_LENGTH;
-
 };
 
 } // namespace Net

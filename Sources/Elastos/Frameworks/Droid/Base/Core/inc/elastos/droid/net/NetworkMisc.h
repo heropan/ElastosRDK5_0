@@ -81,7 +81,6 @@ private:
      * as we want apps to use the multinetwork apis.
      */
     Boolean mExplicitlySelected;
-
 };
 
 } // namespace Net

@@ -401,7 +401,7 @@ private:
         /* [out] */ IOpenSSLSocketImpl** result);
 
 private:
-    const AutoPtr<ArrayOf<ITrustManager*> > TRANS_MANAGER;
+    /* const */ AutoPtr<ArrayOf<ITrustManager*> > INSECURE_TRUST_MANAGER;
 
     static const String TAG;
 
@@ -424,7 +424,6 @@ private:
     AutoPtr<ISSLClientSessionCache> mSessionCache;
 
     Boolean mSecure;
-
 };
 
 } // namespace Net

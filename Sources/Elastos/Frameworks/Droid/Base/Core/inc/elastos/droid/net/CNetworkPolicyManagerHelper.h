@@ -53,7 +53,6 @@ public:
     CARAPI DumpRules(
         /* [in] */ IPrintWriter* fout,
         /* [in] */ Int32 rules);
-
 };
 
 } // namespace Net

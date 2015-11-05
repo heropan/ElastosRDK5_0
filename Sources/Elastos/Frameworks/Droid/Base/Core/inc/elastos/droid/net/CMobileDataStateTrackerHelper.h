@@ -28,7 +28,6 @@ public:
     CARAPI NetworkTypeToApnType(
         /* [in] */ Int32 netType,
         /* [out] */ String* result);
-
 };
 
 } // namespace Net

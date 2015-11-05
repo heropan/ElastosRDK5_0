@@ -81,7 +81,6 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ const String& packageName,
         /* [out] */ INetworkScorerAppData** result);
-
 };
 
 } // namespace Net

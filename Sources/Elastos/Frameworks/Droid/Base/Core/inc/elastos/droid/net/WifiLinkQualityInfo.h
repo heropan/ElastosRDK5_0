@@ -110,7 +110,6 @@ private:
     Int64 mTxGood;
 
     Int64 mTxBad;
-
 };
 
 } // namespace Net

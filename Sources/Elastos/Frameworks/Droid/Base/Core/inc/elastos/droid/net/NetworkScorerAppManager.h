@@ -87,7 +87,6 @@ private:
     NetworkScorerAppManager();
 
     static const String TAG;
-
 };
 
 class NetworkScorerAppData
@@ -133,7 +132,6 @@ private:
      * @see NetworkScoreManager#ACTION_CUSTOM_ENABLE
      */
     String mConfigurationActivityClassName;
-
 };
 
 } // namespace Net

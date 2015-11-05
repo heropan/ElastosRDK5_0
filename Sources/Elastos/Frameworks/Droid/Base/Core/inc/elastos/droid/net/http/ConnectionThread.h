@@ -3,59 +3,31 @@
 #define __ELASTOS_DROID_NET_HTTP_CONNECTIONTHREAD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "RequestFeeder.h"
-#include "RequestQueue.h"
-
-using namespace Elastos::Core;
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::Content::IContext;
+
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+/**
+ * {@hide}
+ */
 class ConnectionThread
-    : public ThreadBase
+    : public Thread
 {
 public:
-    ConnectionThread(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 id,
-        /* [in] */ RequestQueue::ConnectionManager* connectionManager,
-        /* [in] */ RequestFeeder* requestFeeder);
-
     ConnectionThread();
 
-    ConnectionThread(
-        /* [in] */ IRunnable* runnable);
-
-    ConnectionThread(
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ const String& threadName);
-
-    ConnectionThread(
-        /* [in] */ const String& threadName);
-
-    ConnectionThread(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ IRunnable* runnable);
-
-    ConnectionThread(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ const String& threadName);
-
-    ConnectionThread(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ const String& threadName);
-
-    ConnectionThread(
-        /* [in] */ IThreadGroup* group,
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ const String& threadName,
-        /* [in] */ Int64 stackSize);
-
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 id,
+        /* [in] */ IRequestQueueConnectionManager* connectionManager,
+        /* [in] */ IRequestFeeder* requestFeeder);
 
     CARAPI RequestStop();
 
@@ -63,10 +35,10 @@ public:
      * Loop until app shutdown. Runs connections in priority
      * order.
      */
-    virtual CARAPI Run();
+    CARAPI Run();
 
     CARAPI ToString(
-        /* [out] */ String* str);
+        /* [out] */ String* result);
 
 public:
     static const Int32 WAIT_TIMEOUT;
@@ -78,25 +50,25 @@ public:
 
     Int64 mTotalThreadTime;
 
-    Connection* mConnection;
+    AutoPtr<IConnection> mConnection;
 
 private:
     Boolean mWaiting;
 
-    /*volatile*/ Boolean mRunning;
+    /* volatile */ Boolean mRunning;
 
     AutoPtr<IContext> mContext;
 
-    RequestQueue::ConnectionManager* mConnectionManager;
+    AutoPtr<IRequestQueueConnectionManager> mConnectionManager;
 
-    RequestFeeder* mRequestFeeder;
+    AutoPtr<IRequestFeeder> mRequestFeeder;
 
     Int32 mId;
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_CONNECTIONTHREAD_H__

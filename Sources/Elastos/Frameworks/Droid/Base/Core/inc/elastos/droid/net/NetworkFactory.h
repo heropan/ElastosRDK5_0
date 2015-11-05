@@ -36,15 +36,16 @@ class NetworkFactory
 private:
     class NetworkRequestInfo {
     public:
+        NetworkRequestInfo(INetworkRequest* request, Int32 score)
+            : mRequest(request)
+            , mScore(score)
+            , mRequested(FALSE)
+        {}
+
+    public:
         const AutoPtr<INetworkRequest> mRequest;
         Int32 mScore;
         Boolean mRequested; // do we have a request outstanding, limited by score
-        NetworkRequestInfo(INetworkRequest* request, Int32 score)
-            : mRequest(request)
-        {
-            mScore = score;
-            mRequested = FALSE;
-        }
     };
 
 public:
@@ -164,7 +165,7 @@ private:
     // LOG_TAG has duplicated macro
     const String mLOG_TAG;
 
-    const AutoPtr<ISparseArray> mNetworkRequests;
+    /* const */ AutoPtr<ISparseArray> mNetworkRequests;
 
     Int32 mScore;
 
@@ -173,7 +174,6 @@ private:
     Int32 mRefCount;
 
     AutoPtr<IMessenger> mMessenger;
-
 };
 
 } // namespace Net

@@ -125,7 +125,6 @@ private:
     Int64 mTxPackets;
 
     Int64 mOperations;
-
 };
 
 } // namespace Net

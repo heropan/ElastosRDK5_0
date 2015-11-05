@@ -62,7 +62,6 @@ private:
     AutoPtr<IIProxyService> mProxyService;
 
     AutoPtr<IList> mDefaultList;
-
 };
 
 } // namespace Net

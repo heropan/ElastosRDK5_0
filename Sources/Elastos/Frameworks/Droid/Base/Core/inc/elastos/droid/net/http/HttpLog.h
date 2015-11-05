@@ -25,7 +25,6 @@ private:
     static const String LOGTAG;
 
     static const Boolean DEBUG;
-
 };
 
 }

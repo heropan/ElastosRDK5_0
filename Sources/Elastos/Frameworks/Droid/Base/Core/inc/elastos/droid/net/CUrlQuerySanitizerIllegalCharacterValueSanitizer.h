@@ -19,7 +19,6 @@ CarClass(CUrlQuerySanitizerIllegalCharacterValueSanitizer)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Net

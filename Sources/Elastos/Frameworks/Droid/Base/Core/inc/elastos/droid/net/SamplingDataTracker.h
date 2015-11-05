@@ -99,8 +99,7 @@ private:
     const Int32 MINIMUM_SAMPLED_PACKETS;
 
     // Protects sampling data from concurrent access
-    const AutoPtr<IInterface> SAMPLING_DATA_LOCK;
-
+    /* const */ AutoPtr<IInterface> SAMPLING_DATA_LOCK;
 };
 
 //===================================================
@@ -171,7 +170,6 @@ private:
     Int64 mRxPacketErrorCount;
 
     Int64 mTimestamp;
-
 };
 
 } // namespace Net

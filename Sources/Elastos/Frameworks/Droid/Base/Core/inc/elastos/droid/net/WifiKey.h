@@ -91,7 +91,6 @@ private:
      * hexadecimal digit.
      */
     const String BSSID;
-
 };
 
 } // namespace Net

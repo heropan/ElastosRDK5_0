@@ -32,7 +32,6 @@ module
          */
         GetBssid(
             [out] String* result);
-
     }
 
     } // namespace Net

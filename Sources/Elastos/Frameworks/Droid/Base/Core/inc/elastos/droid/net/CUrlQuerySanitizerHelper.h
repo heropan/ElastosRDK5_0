@@ -80,7 +80,6 @@ public:
 
     CARAPI GetAllButNulAndAngleBracketsLegal(
         /* [out] */ IUrlQuerySanitizerValueSanitizer** result);
-
 };
 
 } // namespace Net

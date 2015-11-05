@@ -142,7 +142,6 @@ private:
      * -1 indicates no restoration of default
      */
     Int32 mRestoreTime;
-
 };
 
 } // namespace Net

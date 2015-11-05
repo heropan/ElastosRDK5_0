@@ -160,7 +160,6 @@ public:
     CARAPI GetUidUdpRxPackets(
         /* [in] */ Int32 uid,
         /* [out] */ Int64* result);
-
 };
 
 } // namespace Net

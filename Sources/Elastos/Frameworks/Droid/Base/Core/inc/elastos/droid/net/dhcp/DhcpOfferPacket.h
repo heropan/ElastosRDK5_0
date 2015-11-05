@@ -58,7 +58,6 @@ private:
      * The IP address of the server which sent this packet.
      */
     AutoPtr<IInetAddress> mSrcIp;
-
 };
 
 } // namespace Dhcp

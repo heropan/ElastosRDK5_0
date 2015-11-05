@@ -38,7 +38,6 @@ public:
         /* [in] */ Int32 mtu,
         /* [in] */ Boolean ipv6,
         /* [out] */ Boolean* result);
-
 };
 
 } // namespace Net

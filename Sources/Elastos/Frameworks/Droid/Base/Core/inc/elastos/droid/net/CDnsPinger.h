@@ -30,15 +30,17 @@ CarClass(CDnsPinger)
     , public IDnsPinger
 {
 private:
-    class DnsArg;
-
     class ActivePing
         : public Object
     {
     public:
-        ActivePing() {
-            mStart = SystemClock::GetElapsedRealtime();
-        }
+        ActivePing()
+            : mInternalId(0)
+            , mPacketId(0)
+            , mTimeout(0)
+            , mResult(0)
+            , mStart(SystemClock::GetElapsedRealtime())
+        {}
 
     public:
         AutoPtr<IDatagramSocket> mSocket;
@@ -46,7 +48,7 @@ private:
         Int16 mPacketId;
         Int32 mTimeout;
         Int32 mResult;
-        Int64 mStart;// = SystemClock::GetElapsedRealtime();
+        Int64 mStart;
     };
 
     /* Message argument for ACTION_PING_DNS */
@@ -133,6 +135,7 @@ private:
 
     static CARAPI_(AutoPtr<ArrayOf<Byte> >) InitDnsQuery();
 
+private:
     static const Boolean DBG;
 
     static const Int32 RECEIVE_POLL_INTERVAL_MS;
@@ -167,7 +170,7 @@ private:
     AutoPtr<IList> mActivePings;
     Int32 mEventCounter;
 
-    static const AutoPtr<ArrayOf<Byte> > mDnsQuery;
+    static const AutoPtr<ArrayOf<Byte> > DNS_QUERY;
 };
 
 } // namespace Net

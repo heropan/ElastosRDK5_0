@@ -69,7 +69,6 @@ public:
 
     CARAPI GetEmpty(
             /* [out] */ IUri** result);
-
 };
 
 } // namespace Net

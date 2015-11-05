@@ -129,7 +129,6 @@ private:
 
     /** The String value of this part. */
     String mValue;
-
 };
 
 }

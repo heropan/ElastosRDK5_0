@@ -5,11 +5,10 @@ module
     namespace Net {
     namespace Pppoe {
 
-        interface IPppoeMonitor
-        {
-            StartMonitoring();
-
-        }
+    interface IPppoeMonitor
+    {
+        StartMonitoring();
+    }
 
     }
     }

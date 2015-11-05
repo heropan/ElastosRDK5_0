@@ -220,7 +220,6 @@ private:
 
 private:
     AutoPtr<Elastos::Net::Http::IHttpResponseCache> mDelegate;
-
 };
 
 }

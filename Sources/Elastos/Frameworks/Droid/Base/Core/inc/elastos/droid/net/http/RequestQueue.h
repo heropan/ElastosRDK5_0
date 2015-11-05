@@ -278,7 +278,6 @@ private:
     IBroadcastReceiver* mProxyChangeReceiver;
 
     Object mLock;
-
 };
 
 }

@@ -163,7 +163,6 @@ private:
     AutoPtr<IHandler> mTarget;
 
     AutoPtr<IMessenger> mProxyStatusService;
-
 };
 
 } // namespace Net

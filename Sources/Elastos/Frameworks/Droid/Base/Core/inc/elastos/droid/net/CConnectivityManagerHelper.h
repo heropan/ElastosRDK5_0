@@ -129,7 +129,6 @@ public:
     CARAPI SetProcessDefaultNetworkForHostResolution(
         /* [in] */ INetwork* network,
         /* [out] */ Boolean* result);
-
 };
 
 } // namespace Net

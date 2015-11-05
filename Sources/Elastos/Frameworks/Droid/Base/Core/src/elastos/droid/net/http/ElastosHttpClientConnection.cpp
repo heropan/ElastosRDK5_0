@@ -3,22 +3,6 @@
 
 using Org::Apache::Http::EIID_IHttpConnection;
 using Org::Apache::Http::EIID_IHttpInetConnection;
-// using Org::Apache::Http::IHttpClientConnection;
-// using Org::Apache::Http::IHttpResponse;
-// using Org::Apache::Http::Entity::IBasicHttpEntity;
-// using Org::Apache::Http::Entity::IContentLengthStrategy;
-// using Org::Apache::Http::Impl::Entity::IStrictContentLengthStrategy;
-// using Org::Apache::Http::Impl::IO::IChunkedInputStream;
-// using Org::Apache::Http::Impl::IO::IContentLengthInputStream;
-// using Org::Apache::Http::Impl::IO::IHttpRequestWriter;
-// using Org::Apache::Http::Impl::IO::IIdentityInputStream;
-// using Org::Apache::Http::Impl::IO::ISocketInputBuffer;
-// using Org::Apache::Http::Impl::IO::ISocketOutputBuffer;
-// using Org::Apache::Http::Message::IBasicLineParser;
-// using Org::Apache::Http::Message::IParserCursor;
-// using Org::Apache::Http::Params::ICoreConnectionPNames;
-// using Org::Apache::Http::Params::IHttpConnectionParams;
-// using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -28,14 +12,9 @@ namespace Http {
 CAR_INTERFACE_IMPL_3(ElastosHttpClientConnection, Object, IHttpInetConnection, IHttpConnection, IElastosHttpClientConnection)
 
 ElastosHttpClientConnection::ElastosHttpClientConnection()
-    : mInbuffer(NULL)
-    , mOutbuffer(NULL)
-    , mMaxHeaderCount(0)
+    : mMaxHeaderCount(0)
     , mMaxLineLength(0)
-    , mRequestWriter(NULL)
-    , mMetrics(NULL)
     , mOpen(FALSE)
-    , mSocket(NULL)
 {}
 
 ECode ElastosHttpClientConnection::constructor()

@@ -25,7 +25,6 @@ CarClass(CNetworkStatsHistory)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Net

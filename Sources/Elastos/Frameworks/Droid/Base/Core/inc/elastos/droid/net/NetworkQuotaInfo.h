@@ -52,7 +52,6 @@ private:
     Int64 mSoftLimitBytes;
 
     Int64 mHardLimitBytes;
-
 };
 
 } // namespace Net

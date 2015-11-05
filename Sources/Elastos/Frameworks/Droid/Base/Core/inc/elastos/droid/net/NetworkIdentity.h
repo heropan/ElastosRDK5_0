@@ -84,7 +84,6 @@ private:
     String mNetworkId;
 
     Boolean mRoaming;
-
 };
 
 } // namespace Net

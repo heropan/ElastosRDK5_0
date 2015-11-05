@@ -202,7 +202,6 @@ private:
     List<String> mExtraHeaderNames;
 
     List<String> mExtraHeaderValues;
-
 };
 
 }

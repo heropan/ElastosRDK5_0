@@ -181,7 +181,6 @@ private:
 
     // Used when connecting through a proxy.
     AutoPtr<IHttpHost> mProxyHost;
-
 };
 
 }

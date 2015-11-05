@@ -91,7 +91,6 @@ private:
     Int32 mReused;
 
     Object mLock;
-
 };
 
 }

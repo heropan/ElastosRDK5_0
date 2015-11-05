@@ -106,20 +106,23 @@ module
     merge("net/wimax/WimaxManagerConstants.car");
 
     interface Elastos.Droid.App.IService;
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IComponentCallbacks2;
+    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContextWrapper;
-    interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.ILooper;
 
-    using interface Elastos.Core.IComparable;
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.IComparable;
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInterfaceAddress;
+    using interface Elastos.Security.Cert.ICertificate;
     using interface Elastosx.Net.ISocketFactory;
+    using interface Elastosx.Net.Ssl.ISSLSession;
     using interface Elastosx.Net.Ssl.ISSLSocketFactory;
+
     using interface Org.Apache.Http.Client.IHttpClient;
     using interface Org.Apache.Http.IHttpConnection;
     using interface Org.Apache.Http.IHttpInetConnection;
@@ -948,25 +951,34 @@ module
         interface IHttpConnection;
     }
 
-//    singleton class CCertificateChainValidatorHelper {
-//        interface ICertificateChainValidatorHelper;
-//    }
-//
-//    /**
-//     * Utility methods for working on CharArrayBuffers.
-//     *
-//     * {@hide}
-//     */
-//    class CCharArrayBuffers {
-//        constructor();
-//
-//        interface ICharArrayBuffers;
-//    }
-//
-//    singleton class CCharArrayBuffersHelper {
-//        interface ICharArrayBuffersHelper;
-//    }
-//
+    class CCertificateChainValidator {
+        interface ICertificateChainValidator;
+    }
+
+    singleton class CCertificateChainValidatorHelper {
+        interface ICertificateChainValidatorHelper;
+    }
+
+    class CDelegatingSSLSession {
+        constructor();
+
+        interface ISSLSession;
+        interface IDelegatingSSLSession;
+    }
+
+    class CDelegatingSSLSessionCertificateWrap {
+        constructor(
+            [in] ICertificate* certificate);
+
+        interface ISSLSession;
+        interface IDelegatingSSLSession;
+        interface IDelegatingSSLSessionCertificateWrap;
+    }
+
+    // singleton class CErrorStrings {
+        // interface IErrorStrings;
+    // }
+
 //    /**
 //     * Localized strings for the error codes defined in EventHandler.
 //     *

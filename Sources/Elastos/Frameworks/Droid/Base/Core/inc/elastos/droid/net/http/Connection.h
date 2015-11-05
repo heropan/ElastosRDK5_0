@@ -3,14 +3,13 @@
 #define __ELASTOS_DROID_NET_HTTP_CONNECTION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
-#include "RequestFeeder.h"
-
-using namespace Elastos::Core;
-using namespace Elastos::Utility;
-using namespace Org::Apache::Http;
 
 using Elastos::Droid::Content::IContext;
+
+using Elastos::Utility::ILinkedList;
+using Org::Apache::Http::IHttpEntity;
+using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::IProtocolVersion;
 using Org::Apache::Http::Protocol::IHttpContext;
 
 namespace Elastos {
@@ -18,25 +17,40 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-class Request;
-
 /**
  * {@hide}
  */
 class Connection
+    : public Object
+    , public IConnection
 {
 public:
-    CARAPI_(AutoPtr<IHttpHost>) GetHost();
+    CAR_INTERFACE_DECL()
+
+    Connection();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IHttpHost* host,
+        /* [in] */ IRequestFeeder* requestFeeder);
+
+    CARAPI GetHost(
+        /* [out] */ IHttpHost** result);
 
     /**
      * connection factory: returns an HTTP or HTTPS connection as
      * necessary
      */
-    static IConnection* GetConnection(
+    static CARAPI GetConnection(
         /* [in] */ IContext* context,
         /* [in] */ IHttpHost* host,
         /* [in] */ IHttpHost* proxy,
-        /* [in] */ RequestFeeder* requestFeeder);
+        /* [in] */ IRequestFeeder* requestFeeder,
+        /* [out] */ IConnection** result);
+
+    /* package */
+    CARAPI GetCertificate(
+        /* [out] */ ISslCertificate** result);
 
     /**
      * Close current network connection
@@ -49,10 +63,10 @@ public:
      * pipelines requests
      */
     CARAPI ProcessRequests(
-        /* [in] */ Request* firstRequest);
+        /* [in] */ IRequest* firstRequest);
 
     CARAPI GetHttpContext(
-        /* [out] */ IHttpContext** context);
+        /* [out] */ IHttpContext** result);
 
     CARAPI SetCanPersist(
         /* [in] */ IHttpEntity* entity,
@@ -63,50 +77,44 @@ public:
         /* [in] */ Boolean canPersist);
 
     CARAPI GetCanPersist(
-        /* [out] */ Boolean* canPersist);
+        /* [out] */ Boolean* result);
 
     /** typically http or https... set by subclass */
     virtual CARAPI GetScheme(
-        /* [out] */ String* scheme) = 0;
+        /* [out] */ String* result) = 0;
 
     virtual CARAPI CloseConnection() = 0;
 
     virtual CARAPI OpenConnection(
-        /* [in] */ Request* req,
-        /* [out] */ IElastosHttpClientConnection** scheme) = 0;
+        /* [in] */ IRequest* req,
+        /* [out] */ IElastosHttpClientConnection** result) = 0;
 
     /**
      * Prints request queue to log, for debugging.
      * returns request count
      */
     CARAPI ToString(
-        /* [out] */ String* str);
+        /* [out] */ String* result);
 
     CARAPI GetBuf(
-        /* [out, callee] */ ArrayOf<Byte>** buf);
-
-protected:
-    Connection(
-        /* [in] */ IContext* context,
-        /* [in] */ IHttpHost* host,
-        /* [in] */ RequestFeeder* requestFeeder);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
 private:
-    static AutoPtr<ArrayOf<String> > InitSTATES();
-
     /**
      * After a send/receive failure, any pipelined requests must be
      * cleared back to the mRequest queue
      * @return true if mRequests is empty after pipe cleared
      */
-    CARAPI_(Boolean) ClearPipe(
-        /* [in] */ /*LinkedList<Request>*/ List<AutoPtr<Request> >& pipe);
+    CARAPI ClearPipe(
+        /* [in] */ ILinkedList* pipe,
+        /* [out] */ Boolean* result);
 
     /**
      * @return true on success
      */
-    CARAPI_(Boolean) OpenHttpConnection(
-        /* [in] */ Request* req);
+    CARAPI OpenHttpConnection(
+        /* [in] */ IRequest* req,
+        /* [out] */ Boolean* result);
 
     /**
      * Helper.  Calls the mEventHandler's error() method only if
@@ -118,20 +126,24 @@ private:
      * @return true if request can be retried (less than
      * RETRY_REQUEST_LIMIT failures have occurred).
      */
-    CARAPI_(Boolean) HttpFailure(
-        /* [in] */ Request* req,
+    CARAPI HttpFailure(
+        /* [in] */ IRequest* req,
         /* [in] */ Int32 errorId,
-        /* [in] */ Boolean isException);
+        /* [in] */ ECode e,
+        /* [out] */ Boolean* result);
 
     /**
      * Use same logic as ConnectionReuseStrategy
      * @see ConnectionReuseStrategy
      */
-    CARAPI_(Boolean) KeepAlive(
+    CARAPI KeepAlive(
         /* [in] */ IHttpEntity* entity,
         /* [in] */ IProtocolVersion* ver,
         /* [in] */ Int32 connType,
-        /* [in] */ IHttpContext* context);
+        /* [in] */ const IHttpContext* context,
+        /* [out] */ Boolean* result);
+
+    static CARAPI_(AutoPtr<ArrayOf<String> >) InitSTATES();
 
 public:
     /**
@@ -141,15 +153,6 @@ public:
 
     AutoPtr<IContext> mContext;
 
-    /**
-     * The host this connection is connected to.  If using proxy,
-     * this is set to the proxy address
-     */
-    AutoPtr<IHttpHost> mHost;
-
-    RequestFeeder* mRequestFeeder;
-
-protected:
     /** The low level connection */
     AutoPtr<IElastosHttpClientConnection> mHttpClientConnection;
 
@@ -161,7 +164,17 @@ protected:
      */
     AutoPtr<ISslCertificate> mCertificate;
 
+    /**
+     * The host this connection is connected to.  If using proxy,
+     * this is set to the proxy address
+     */
+    AutoPtr<IHttpHost> mHost;
+
+    AutoPtr<IRequestFeeder> mRequestFeeder;
+
 private:
+    static const AutoPtr<ArrayOf<String> > STATES;
+
     static const Int32 SEND;
 
     static const Int32 READ;
@@ -170,8 +183,6 @@ private:
 
     static const Int32 DONE;
 
-    static const AutoPtr<ArrayOf<String> >STATES;
-
     /** true if the connection can be reused for sending more requests */
     Boolean mCanPersist;
 
@@ -179,9 +190,9 @@ private:
     AutoPtr<IHttpContext> mHttpContext;
 
     /** set when cancelled */
-    static Int32 STATE_NORMAL;
+    static Int32 sSTATE_NORMAL;
 
-    static Int32 STATE_CANCEL_REQUESTED;
+    static Int32 sSTATE_CANCEL_REQUESTED;
 
     Int32 mActive;
 
@@ -202,12 +213,11 @@ private:
      * connection reduces memory churn.
      */
     AutoPtr<ArrayOf<Byte> > mBuf;
-
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_CONNECTION_H__

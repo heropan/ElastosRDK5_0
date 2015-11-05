@@ -123,7 +123,6 @@ public:
     CARAPI ParseDate(
         /* [in] */ const String& dateString,
         /* [out] */ Int64* result);
-
 };
 
 } // namespace Http

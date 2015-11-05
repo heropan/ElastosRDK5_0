@@ -24,7 +24,6 @@ public:
         /* [in] */ ISslCertificate* cert,
         /* [in] */ const String& url,
         /* [out] */ ISslError** sslError);
-
 };
 
 }

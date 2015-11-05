@@ -80,8 +80,8 @@ private:
             /* [in] */ ISocketAddress* localAddress,
             /* [out] */ ISocket** result);
 
+    private:
         const Int32 mNetId;
-
     };
 
 public:
@@ -230,16 +230,15 @@ private:
 
     // Objects used to perform per-network operations such as getSocketFactory
     // and openConnection, and a lock to protect access to them.
-    volatile AutoPtr<NetworkBoundSocketFactory> mNetworkBoundSocketFactory;
+    /* volatile */ AutoPtr<NetworkBoundSocketFactory> mNetworkBoundSocketFactory;
 
 #if 0 // TODO: Waiting for ConnectionPool, HostResolver
     // mLock should be used to control write access to mConnectionPool and mHostResolver.
     // maybeInitHttpClient() must be called prior to reading either variable.
-    volatile AutoPtr<IConnectionPool> mConnectionPool;
+    /* volatile */ AutoPtr<IConnectionPool> mConnectionPool;
 
-    volatile AutoPtr<IHostResolver> mHostResolver;
+    /* volatile */ AutoPtr<IHostResolver> mHostResolver;
 #endif
-
 };
 
 } // namespace Net

@@ -29,7 +29,6 @@ public:
     CARAPI CreateFromParcelBody(
         /* [in] */ IParcel* parcel,
         /* [out] */ IMobileLinkQualityInfo** result);
-
 };
 
 } // namespace Net

@@ -277,7 +277,6 @@ private:
     static CARAPI Check(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 prefixLength);
-
 };
 
 
@@ -572,10 +571,11 @@ private:
 
     CARAPI_(AutoPtr<IVpnConfig>) CreateConfig();
     CARAPI_(AutoPtr<IList>) CreateList();
-    const AutoPtr<IVpnConfig> mConfig;
-    const AutoPtr<IList> mAddresses;
-    const AutoPtr<IList> mRoutes;
 
+private:
+    AutoPtr<IVpnConfig> mConfig;
+    AutoPtr<IList> mAddresses;
+    AutoPtr<IList> mRoutes;
 };
 
 } // namespace Net

@@ -14,7 +14,6 @@ public:
     CARAPI CreateNeedsMap(
         /* [in] */ const String& applicationRole,
         /* [out] */ ILinkCapabilities** result);
-
 };
 
 } // namespace Net

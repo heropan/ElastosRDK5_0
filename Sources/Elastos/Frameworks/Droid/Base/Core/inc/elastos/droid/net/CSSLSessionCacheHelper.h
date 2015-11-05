@@ -46,7 +46,6 @@ public:
     CARAPI Install(
         /* [in] */ ISSLSessionCache* cache,
         /* [in] */ ISSLContext* context);
-
 };
 
 } // namespace Net

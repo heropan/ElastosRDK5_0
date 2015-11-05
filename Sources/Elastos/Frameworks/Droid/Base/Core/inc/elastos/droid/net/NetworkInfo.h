@@ -276,7 +276,6 @@ private:
      * Indicates whether network connectivity is possible:
      */
     Boolean mIsAvailable;
-
 };
 
 } // namespace Net

@@ -184,7 +184,6 @@ private:
      * The URL associated with the error set.
      */
     String mUrl;
-
 };
 
 }

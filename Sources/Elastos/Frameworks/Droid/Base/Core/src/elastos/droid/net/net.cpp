@@ -58,6 +58,9 @@
 
 #include "elastos/droid/net/http/CElastosHttpClient.h"
 #include "elastos/droid/net/http/CElastosHttpClientConnection.h"
+#include "elastos/droid/net/http/CCertificateChainValidator.h"
+#include "elastos/droid/net/http/CDelegatingSSLSession.h"
+#include "elastos/droid/net/http/CDelegatingSSLSessionCertificateWrap.h"
 
 namespace Elastos {
 namespace Droid {
@@ -188,6 +191,11 @@ CAR_OBJECT_IMPL(CElastosHttpClient)
 
 CAR_OBJECT_IMPL(CElastosHttpClientConnection)
 
+CAR_OBJECT_IMPL(CCertificateChainValidator)
+
+CAR_OBJECT_IMPL(CDelegatingSSLSession)
+
+CAR_OBJECT_IMPL(CDelegatingSSLSessionCertificateWrap)
 
 } // namespace Http
 } // namespace Net

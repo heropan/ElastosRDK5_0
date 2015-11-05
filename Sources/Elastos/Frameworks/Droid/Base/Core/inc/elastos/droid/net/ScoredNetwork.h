@@ -87,7 +87,6 @@ private:
      * responded, are always prioritized below scored networks, regardless of the score.
      */
     AutoPtr<IRssiCurve> mRssiCurve;
-
 };
 
 } // namespace Net

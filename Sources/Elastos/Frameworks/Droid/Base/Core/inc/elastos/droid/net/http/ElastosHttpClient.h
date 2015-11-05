@@ -287,11 +287,10 @@ private:
     AutoPtr<IHttpClient> mDelegate;
 
     /** cURL logging configuration. */
-    volatile AutoPtr<LoggingConfiguration> mCurlConfiguration;
+    /* volatile */ AutoPtr<LoggingConfiguration> mCurlConfiguration;
 
     /** Interceptor throws an exception if the executing thread is blocked */
     static const AutoPtr<IHttpRequestInterceptor> THREAD_CHECK_INTERCEPTOR;
-
 };
 
 } // namespace Http

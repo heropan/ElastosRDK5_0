@@ -94,7 +94,6 @@ private:
     static const String BODY;
     static const String CC;
     static const String SUBJECT;
-
 };
 
 } // namespace Net

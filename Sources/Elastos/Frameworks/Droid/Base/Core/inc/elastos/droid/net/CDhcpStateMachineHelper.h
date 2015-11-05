@@ -42,7 +42,6 @@ public:
         /* [in] */ IStateMachine* controller,
         /* [in] */ const String& intf,
         /* [out] */ IDhcpStateMachine** result);
-
 };
 
 } // namespace Net

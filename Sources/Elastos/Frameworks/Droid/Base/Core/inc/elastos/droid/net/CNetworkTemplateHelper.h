@@ -53,7 +53,6 @@ public:
 
     CARAPI BuildTemplateEthernet(
         /* [out] */ INetworkTemplate** result);
-
 };
 
 } // namespace Net

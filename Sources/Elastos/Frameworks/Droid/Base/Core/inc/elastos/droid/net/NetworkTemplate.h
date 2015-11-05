@@ -193,7 +193,6 @@ private:
     String mSubscriberId;
 
     String mNetworkId;
-
 };
 
 } // namespace Net

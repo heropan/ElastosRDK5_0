@@ -363,7 +363,6 @@ private:
 
     /** whether fd is created internally */
     Boolean mFdCreatedInternally;
-
 };
 
 } // namespace Net

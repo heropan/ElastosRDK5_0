@@ -204,7 +204,6 @@ public:
         /* [in] */ const String& identity,
         /* [in] */ ISSLEngine* engine,
         /* [out] */ ISecretKey** result);
-
 };
 
 } // namespace Net

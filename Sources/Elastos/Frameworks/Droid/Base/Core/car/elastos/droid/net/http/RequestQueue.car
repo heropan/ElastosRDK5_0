@@ -1,6 +1,7 @@
 
 module
 {
+    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IWebAddress;
 
     using interface Elastos.IO.IInputStream;
@@ -123,7 +124,27 @@ module
         StartTiming();
 
         StopTiming();
+    }
 
+    /**
+     * This interface is exposed to each connection
+     */
+    /**
+     * @Involved
+     * no super interface ;
+     */
+    interface IRequestQueueConnectionManager {
+        GetProxyHost(
+            [out] IHttpHost** result);
+
+        GetConnection(
+            [in] IContext* context,
+            [in] IHttpHost* host,
+            [out] IConnection** result);
+
+        RecycleConnection(
+            [in] IConnection* connection,
+            [out] Boolean* result);
     }
 
     } // namespace Http

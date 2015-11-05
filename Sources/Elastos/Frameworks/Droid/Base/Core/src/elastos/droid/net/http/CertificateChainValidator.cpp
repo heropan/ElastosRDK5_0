@@ -8,7 +8,10 @@ namespace Http {
 
 CAR_INTERFACE_IMPL(CertificateChainValidator, Object, ICertificateChainValidator)
 
-const String CertificateChainValidator::TAG = "CertificateChainValidator";
+const String CertificateChainValidator::TAG("CertificateChainValidator");
+
+CertificateChainValidator::CertificateChainValidator()
+{}
 
 ECode CertificateChainValidator::GetInstance(
     /* [out] */ ICertificateChainValidator** result)
@@ -20,7 +23,7 @@ ECode CertificateChainValidator::GetInstance(
 #endif
 }
 
-CertificateChainValidator::CertificateChainValidator()
+ECode CertificateChainValidator::constructor()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -48,7 +51,7 @@ CertificateChainValidator::CertificateChainValidator()
 ECode CertificateChainValidator::DoHandshakeAndValidateServerCertificates(
     /* [in] */ IHttpsConnection* connection,
     /* [in] */ ISSLSocket* sslSocket,
-    /* [in] */ String domain,
+    /* [in] */ const String& domain,
     /* [out] */ ISslError** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -80,8 +83,8 @@ ECode CertificateChainValidator::DoHandshakeAndValidateServerCertificates(
 
 ECode CertificateChainValidator::VerifyServerCertificates(
     /* [in] */ ArrayOf<IArrayOf>* certChain,
-    /* [in] */ String domain,
-    /* [in] */ String authType,
+    /* [in] */ const String& domain,
+    /* [in] */ const String& authType,
     /* [out] */ ISslError** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -139,8 +142,8 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
 
 ECode CertificateChainValidator::VerifyServerDomainAndCertificates(
     /* [in] */ ArrayOf<IX509Certificate*>* chain,
-    /* [in] */ String domain,
-    /* [in] */ String authType,
+    /* [in] */ const String& domain,
+    /* [in] */ const String& authType,
     /* [out] */ ISslError** result)
 {
     return E_NOT_IMPLEMENTED;
@@ -202,8 +205,8 @@ ECode CertificateChainValidator::GetTrustManager(
 
 ECode CertificateChainValidator::CloseSocketThrowException(
     /* [in] */ ISSLSocket* socket,
-    /* [in] */ String errorMessage,
-    /* [in] */ String defaultErrorMessage)
+    /* [in] */ const String& errorMessage,
+    /* [in] */ const String& defaultErrorMessage)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.
@@ -214,7 +217,7 @@ ECode CertificateChainValidator::CloseSocketThrowException(
 
 ECode CertificateChainValidator::CloseSocketThrowException(
     /* [in] */ ISSLSocket* socket,
-    /* [in] */ String errorMessage)
+    /* [in] */ const String& errorMessage)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

@@ -117,7 +117,6 @@ private:
     AutoPtr<IArrayList> mDnsServers;
 
     String mDomains;
-
 };
 
 } // namespace Net

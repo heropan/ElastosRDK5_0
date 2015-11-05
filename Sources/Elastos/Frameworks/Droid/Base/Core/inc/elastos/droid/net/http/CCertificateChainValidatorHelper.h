@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Net_Http_CCertificateChainValidatorHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Core::IArrayOf;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -40,15 +42,14 @@ public:
      */
     CARAPI VerifyServerCertificates(
         /* [in] */ ArrayOf<IArrayOf>* certChain,
-        /* [in] */ String domain,
-        /* [in] */ String authType,
+        /* [in] */ const String& domain,
+        /* [in] */ const String& authType,
         /* [out] */ ISslError** result);
 
     /**
      * Handles updates to credential storage.
      */
     CARAPI HandleTrustStorageUpdate();
-
 };
 
 } // namespace Http

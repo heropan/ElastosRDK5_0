@@ -25,7 +25,6 @@ CarClass(CElastosHttpClient)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Http

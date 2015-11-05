@@ -141,9 +141,9 @@ private:
     // to initialize mPreConnectedQueue
     CARAPI_(AutoPtr<IArrayList>) CreatePreConnectQueue();
 
-    const AutoPtr<IArrayList> mPreConnectedQueue;
+    /* const */ AutoPtr<IArrayList> mPreConnectedQueue;
 
-    volatile AutoPtr<IAsyncChannel> mAsyncChannel;
+    /* volatile */ AutoPtr<IAsyncChannel> mAsyncChannel;
 
     // LOG_TAG has duplicated macro
     String mLOG_TAG;
@@ -152,7 +152,7 @@ private:
 
     static const Boolean VDBG;
 
-    const AutoPtr<IContext> mContext;
+    /* const */ AutoPtr<IContext> mContext;
 
     static const Int32 BASE;
 
@@ -230,7 +230,6 @@ private:
      * CONNECTED so it can be given special treatment at that time.
      */
     static const Int32 EVENT_SET_EXPLICITLY_SELECTED;
-
 };
 
 } // namespace Net

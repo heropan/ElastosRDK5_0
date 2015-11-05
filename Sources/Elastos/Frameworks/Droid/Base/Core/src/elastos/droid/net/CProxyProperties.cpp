@@ -6,10 +6,11 @@
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::StringUtils;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::TextUtils;
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
 using Elastos::Net::CInetSocketAddress;
 using Elastos::Net::IInetSocketAddress;
 using Elastos::Net::IProxyHelper;

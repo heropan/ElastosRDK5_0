@@ -60,7 +60,6 @@ private:
     String mName;
 
     AutoPtr<ILocalSocketAddressNamespace> mNamespace;
-
 };
 
 /**

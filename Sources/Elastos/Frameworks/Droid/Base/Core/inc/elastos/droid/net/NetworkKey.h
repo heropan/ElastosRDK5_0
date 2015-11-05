@@ -85,7 +85,6 @@ private:
      * {@link #TYPE_WIFI}.
      */
     AutoPtr<IWifiKey> mWifiKey;
-
 };
 
 } // namespace Net

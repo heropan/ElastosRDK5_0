@@ -51,16 +51,18 @@ public:
 
     class NetworkDataEntry {
     public:
-        Int32 networkType;
-        Int32 downloadBandwidth;               // in kbps
-        Int32 uploadBandwidth;                 // in kbps
-        Int32 latency;                         // in millisecond
-        NetworkDataEntry(Int32 i1, Int32 i2, Int32 i3, Int32 i4) {
-            networkType = i1;
-            downloadBandwidth = i2;
-            uploadBandwidth = i3;
-            latency = i4;
-        }
+        NetworkDataEntry(Int32 i1, Int32 i2, Int32 i3, Int32 i4)
+            : mNetworkType(i1)
+            , mDownloadBandwidth(i2)
+            , mUploadBandwidth(i3)
+            , mLatency(i4)
+        {}
+
+    public:
+        Int32 mNetworkType;
+        Int32 mDownloadBandwidth;               // in kbps
+        Int32 mUploadBandwidth;                 // in kbps
+        Int32 mLatency;                         // in millisecond
     };
 
 private:
@@ -350,7 +352,6 @@ private:
     static const Int32 UNKNOWN;
 
     static AutoPtr<ArrayOf<NetworkDataEntry> > mTheoreticalBWTable;
-
 };
 
 } // namespace Net

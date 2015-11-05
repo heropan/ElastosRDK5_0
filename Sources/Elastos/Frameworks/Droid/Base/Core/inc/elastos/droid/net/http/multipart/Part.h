@@ -317,7 +317,6 @@ private:
      * The ASCII bytes to use as the multipart boundary.
      */
     AutoPtr<ArrayOf<Byte> > mBoundaryBytes;
-
 };
 
 }

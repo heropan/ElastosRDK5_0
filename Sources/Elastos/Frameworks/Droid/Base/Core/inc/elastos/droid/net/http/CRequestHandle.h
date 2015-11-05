@@ -221,7 +221,6 @@ private:
 
     static const String AUTHORIZATION_HEADER;
     static const String PROXY_AUTHORIZATION_HEADER;
-
 };
 
 }

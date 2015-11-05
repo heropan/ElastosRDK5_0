@@ -275,7 +275,6 @@ public:
     CARAPI TrimV4AddrZeros(
         /* [in] */ const String& addr,
         /* [out] */ String* result);
-
 };
 
 } // namespace Net

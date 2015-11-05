@@ -179,10 +179,9 @@ private:
 
     AutoPtr<IHttpConnectionMetricsImpl> mMetrics;
 
-    volatile Boolean mOpen;
+    Boolean mOpen;
 
     AutoPtr<ISocket> mSocket;
-
 };
 
 } // namespace Http

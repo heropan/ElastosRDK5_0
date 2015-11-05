@@ -140,7 +140,6 @@ public:
 
     private:
         AutoPtr<INetworkRequest> mNetworkRequest;
-
     };
 
 private:
@@ -148,12 +147,6 @@ private:
         : public Object
     {
     public:
-        LegacyRequest();
-        AutoPtr<INetworkCapabilities> mNetworkCapabilities;
-        AutoPtr<INetworkRequest> mNetworkRequest;
-        Int32 mExpireSequenceNumber;
-        AutoPtr<INetwork> mCurrentNetwork;
-        Int32 mDelay;
         class InnerSub_ConnectivityManagerNetworkCallback
             : public ConnectivityManagerNetworkCallback
         {
@@ -165,13 +158,20 @@ private:
                 /* [in] */ INetwork* network);
 
             // @Override
-            ECode OnLost(
+            CARAPI OnLost(
                 /* [in] */ INetwork* network);
 
         private:
             LegacyRequest* const mHost;
         };
 
+        LegacyRequest();
+
+        AutoPtr<INetworkCapabilities> mNetworkCapabilities;
+        AutoPtr<INetworkRequest> mNetworkRequest;
+        Int32 mExpireSequenceNumber;
+        AutoPtr<INetwork> mCurrentNetwork;
+        Int32 mDelay;
         AutoPtr<InnerSub_ConnectivityManagerNetworkCallback> mNetworkCallback;
     };
 
@@ -188,9 +188,10 @@ private:
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* message);
+
     private:
-        const AutoPtr<IHashMap> mCallbackMap;
-        const AutoPtr<IAtomicInteger32> mRefCount;
+        /* const */ AutoPtr<IHashMap> mCallbackMap;
+        /* const */ AutoPtr<IAtomicInteger32> mRefCount;
         static const String TAG;
 
         CConnectivityManager* const mCm;
@@ -204,7 +205,6 @@ private:
         CARAPI GetCallbacks(
             /* [in] */ INetworkRequest* req,
             /* [out] */ IConnectivityManagerNetworkCallback** result);
-
     };
 
 public:

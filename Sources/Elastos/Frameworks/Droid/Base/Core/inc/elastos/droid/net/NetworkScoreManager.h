@@ -147,7 +147,6 @@ private:
     AutoPtr<IContext> mContext;
 
     AutoPtr<IINetworkScoreService> mService;
-
 };
 
 } // namespace Net

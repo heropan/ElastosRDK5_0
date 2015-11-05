@@ -61,7 +61,6 @@ private:
     Int32 mStart;
 
     Int32 mStop;
-
 };
 
 } // namespace Net

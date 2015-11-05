@@ -136,7 +136,6 @@ public:
     CARAPI ToLengthPrefixedList(
         /* [in] */ ArrayOf<Byte>* items,
         /* [out, callee] */ ArrayOf<Byte>** result);
-
 };
 
 } //namespace Net

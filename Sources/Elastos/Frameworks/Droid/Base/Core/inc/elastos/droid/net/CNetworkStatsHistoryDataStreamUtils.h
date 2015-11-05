@@ -52,7 +52,6 @@ public:
         /* [in] */ IDataOutputStream* out,
         /* [in] */ ArrayOf<Int64>* values,
         /* [in] */ Int32 size);
-
 };
 
 } // namespace Net

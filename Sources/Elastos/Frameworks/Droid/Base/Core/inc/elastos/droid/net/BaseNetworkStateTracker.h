@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessenger;
 
 using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;

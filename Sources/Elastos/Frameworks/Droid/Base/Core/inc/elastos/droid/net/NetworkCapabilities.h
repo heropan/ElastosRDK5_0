@@ -330,7 +330,6 @@ private:
      * by any Network that matches all of them.
      */
     Int64 mNetworkCapabilities;
-
 };
 
 } // namespace Net

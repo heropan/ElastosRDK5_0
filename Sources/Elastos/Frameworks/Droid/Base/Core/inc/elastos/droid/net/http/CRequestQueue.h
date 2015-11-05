@@ -149,7 +149,6 @@ public:
 private:
     /* default simultaneous connection count */
     static const Int32 CONNECTION_COUNT;
-
 };
 
 }

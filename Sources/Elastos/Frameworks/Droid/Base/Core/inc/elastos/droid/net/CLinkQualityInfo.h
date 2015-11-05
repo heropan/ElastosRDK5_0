@@ -23,7 +23,6 @@ CarClass(CLinkQualityInfo)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Net

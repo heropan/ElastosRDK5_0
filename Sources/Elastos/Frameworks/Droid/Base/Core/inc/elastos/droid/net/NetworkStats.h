@@ -365,7 +365,6 @@ private:
     AutoPtr<ArrayOf<Int64> > mTxPackets;
 
     AutoPtr<ArrayOf<Int64> > mOperations;
-
 };
 
 } // namespace Net

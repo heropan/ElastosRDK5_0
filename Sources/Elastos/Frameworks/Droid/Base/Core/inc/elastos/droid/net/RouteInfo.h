@@ -322,7 +322,6 @@ private:
     // TODO: remove these.
     Boolean mIsHost;
     Boolean mHasGateway;
-
 };
 
 } // namespace Net

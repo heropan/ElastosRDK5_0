@@ -193,7 +193,6 @@ private:
     ArrayOf<String>* mParsedExclusionList;
 
     AutoPtr<IUri> mPacFileUrl;
-
 };
 
 } // namespace Net

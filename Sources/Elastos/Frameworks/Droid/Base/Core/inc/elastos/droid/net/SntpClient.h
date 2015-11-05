@@ -117,7 +117,6 @@ private:
 
     // round trip time in milliseconds
     Int64 mRoundTripTime;
-
 };
 
 } // namespace Net

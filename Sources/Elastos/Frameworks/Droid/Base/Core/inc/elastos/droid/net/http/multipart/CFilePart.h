@@ -17,7 +17,7 @@ namespace Multipart {
 
 /**
  * This class implements a part of a Multipart post object that
- * consists of a file.  
+ * consists of a file.
  *
  * @author <a href="mailto:mattalbright@yahoo.com">Matthew Albright</a>
  * @author <a href="mailto:jsdever@apache.org">Jeff Dever</a>
@@ -26,8 +26,8 @@ namespace Multipart {
  * @author <a href="mailto:mdiggory@latte.harvard.edu">Mark Diggory</a>
  * @author <a href="mailto:mbowler@GargoyleSoftware.com">Mike Bowler</a>
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
- *   
- * @since 2.0 
+ *
+ * @since 2.0
  *
  */
 
@@ -41,9 +41,9 @@ public:
      *
      * @param name the name for this part
      * @param partSource the source for this part
-     * @param contentType the content type for this part, if <code>null</code> the 
+     * @param contentType the content type for this part, if <code>null</code> the
      * {@link #DEFAULT_CONTENT_TYPE default} is used
-     * @param charset the charset encoding for this part, if <code>null</code> the 
+     * @param charset the charset encoding for this part, if <code>null</code> the
      * {@link #DEFAULT_CHARSET default} is used
      */
     CARAPI constructor(
@@ -80,9 +80,9 @@ public:
      *
      * @param name the name of the file part
      * @param file the file to post
-     * @param contentType the content type for this part, if <code>null</code> the 
+     * @param contentType the content type for this part, if <code>null</code> the
      * {@link #DEFAULT_CONTENT_TYPE default} is used
-     * @param charset the charset encoding for this part, if <code>null</code> the 
+     * @param charset the charset encoding for this part, if <code>null</code> the
      * {@link #DEFAULT_CHARSET default} is used
      *
      * @throws FileNotFoundException if the <i>file</i> is not a normal
@@ -98,7 +98,7 @@ public:
      * FilePart Constructor.
      *
      * @param name the name of the file part
-     * @param fileName the file name 
+     * @param fileName the file name
      * @param file the file to post
      *
      * @throws FileNotFoundException if the <i>file</i> is not a normal
@@ -113,11 +113,11 @@ public:
      * FilePart Constructor.
      *
      * @param name the name of the file part
-     * @param fileName the file name 
+     * @param fileName the file name
      * @param file the file to post
-     * @param contentType the content type for this part, if <code>null</code> the 
+     * @param contentType the content type for this part, if <code>null</code> the
      * {@link #DEFAULT_CONTENT_TYPE default} is used
-     * @param charset the charset encoding for this part, if <code>null</code> the 
+     * @param charset the charset encoding for this part, if <code>null</code> the
      * {@link #DEFAULT_CHARSET default} is used
      *
      * @throws FileNotFoundException if the <i>file</i> is not a normal
@@ -176,9 +176,9 @@ protected:
     CARAPI SendData(
         /* [in] */ IOutputStream* outStream);
 
-    /** 
+    /**
      * Returns the source of the file part.
-     *  
+     *
      * @return The source.
      */
     CARAPI GetSource(
@@ -188,7 +188,7 @@ protected:
      * Return the length of the data.
      * @return The length.
      * @see Part#lengthOfData()
-     */ 
+     */
     CARAPI LengthOfData(
         /* [out] */ Int64* length);
 
@@ -214,7 +214,6 @@ private:
 
     /** Source of the file part. */
     AutoPtr<IPartSource> mSource;
-
 };
 
 }

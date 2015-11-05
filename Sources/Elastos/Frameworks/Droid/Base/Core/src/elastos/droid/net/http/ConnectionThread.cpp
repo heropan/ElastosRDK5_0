@@ -1,7 +1,5 @@
 
-#include "ConnectionThread.h"
-#include "elastos/droid/ext/frameworkext.h"
-// #include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/net/http/ConnectionThread.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,36 +9,47 @@ namespace Http {
 const Int32 ConnectionThread::WAIT_TIMEOUT = 5000;
 const Int32 ConnectionThread::WAIT_TICK = 1000;
 
-ConnectionThread::ConnectionThread(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 id,
-    /* [in] */ RequestQueue::ConnectionManager* connectionManager,
-    /* [in] */ RequestFeeder* requestFeeder)
+ConnectionThread::ConnectionThread()
     : mCurrentThreadTime(0)
     , mTotalThreadTime(0)
     , mWaiting(FALSE)
     , mRunning(TRUE)
-    , mContext(context)
-    , mId(id)
-    , mConnection(NULL)
-    , mConnectionManager(connectionManager)
-    , mRequestFeeder(requestFeeder)
+    , mId(0)
+{}
+
+ECode ConnectionThread::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 id,
+    /* [in] */ IRequestQueueConnectionManager* connectionManager,
+    /* [in] */ IRequestFeeder* requestFeeder)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Thread::constructor();
+    mContext = context;
     SetName(String("http") + StringUtils::Int32ToString(id));
+    mId = id;
+    mConnectionManager = connectionManager;
+    mRequestFeeder = requestFeeder;
+#endif
 }
 
 ECode ConnectionThread::RequestStop()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     AutoLock lock(this);
 
     mRunning = FALSE;
     // return mRequestFeeder->Notify();
     return NOERROR;
+#endif
 }
 
 ECode ConnectionThread::Run()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     // TODO:
     // AutoPtr<IProcessHelper> process;
     // CProcessHelper::AcquireSingleton((IProcessHelper**)&process);
@@ -101,11 +110,14 @@ ECode ConnectionThread::Run()
 
     // }
     return NOERROR;
+#endif
 }
 
 ECode ConnectionThread::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(str);
 
     String con;
@@ -113,104 +125,11 @@ ECode ConnectionThread::ToString(
     String active = mWaiting ? String("w") : String("a");
     *str = String("cid ") + StringUtils::Int32ToString(mId) + String(" ") + active + String(" ")  + con;
     return NOERROR;
+#endif
 }
 
-ConnectionThread::ConnectionThread()
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor();
-}
 
-ConnectionThread::ConnectionThread(
-    /* [in] */ IRunnable* runnable)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(runnable);
-}
-
-ConnectionThread::ConnectionThread(
-    /* [in] */ IRunnable* runnable,
-    /* [in] */ const String& threadName)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(runnable, threadName);
-}
-
-ConnectionThread::ConnectionThread(
-    /* [in] */ const String& threadName)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(threadName);
-}
-
-ConnectionThread::ConnectionThread(
-    /* [in] */ IThreadGroup* group,
-    /* [in] */ IRunnable* runnable)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(group, runnable);
-}
-
-ConnectionThread::ConnectionThread(
-    /* [in] */ IThreadGroup* group,
-    /* [in] */ IRunnable* runnable,
-    /* [in] */ const String& threadName)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(group, runnable, threadName);
-}
-
-ConnectionThread::ConnectionThread(
-    /* [in] */ IThreadGroup* group,
-    /* [in] */ const String& threadName)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(group, threadName);
-}
-
-ConnectionThread::ConnectionThread(
-    /* [in] */ IThreadGroup* group,
-    /* [in] */ IRunnable* runnable,
-    /* [in] */ const String& threadName,
-    /* [in] */ Int64 stackSize)
-    : mCurrentThreadTime(0)
-    , mTotalThreadTime(0)
-    , mWaiting(FALSE)
-    , mRunning(TRUE)
-    , mId(0)
-{
-    Thread::constructor(group, runnable, threadName, stackSize);
-}
-
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

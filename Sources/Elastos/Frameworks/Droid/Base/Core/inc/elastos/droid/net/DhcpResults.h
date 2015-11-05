@@ -121,7 +121,6 @@ private:
     String mVendorInfo;
 
     Int32 mLeaseDuration;
-
 };
 
 } // namespace Net

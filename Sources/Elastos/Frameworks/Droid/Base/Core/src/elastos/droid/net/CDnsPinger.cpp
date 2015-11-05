@@ -64,7 +64,7 @@ const Int32 CDnsPinger::BASE = IProtocol::BASE_DNS_PINGER; //Protocol.BASE_DNS_P
 const Int32 CDnsPinger::ACTION_PING_DNS = CDnsPinger::BASE + 1; //0x00050001; // = BASE + 1;
 const Int32 CDnsPinger::ACTION_LISTEN_FOR_RESPONSE = CDnsPinger::BASE + 2; //0x00050002; // = BASE + 2;
 const Int32 CDnsPinger::ACTION_CANCEL_ALL_PINGS = CDnsPinger::BASE + 3; //0x00050003; // = BASE + 3;
-const AutoPtr<ArrayOf<Byte> > CDnsPinger::mDnsQuery = InitDnsQuery();
+const AutoPtr<ArrayOf<Byte> > CDnsPinger::DNS_QUERY = InitDnsQuery();
 
 AutoPtr<ArrayOf<Byte> > CDnsPinger::InitDnsQuery()
 {
@@ -90,10 +90,9 @@ AutoPtr<ArrayOf<Byte> > CDnsPinger::InitDnsQuery()
 CDnsPinger::DnsArg::DnsArg(
     /* [in] */ IInetAddress* dns,
     /* [in] */ Int32 seq)
-{
-    mDns = dns;
-    mSeq = seq;
-}
+    : mDns(dns)
+    , mSeq(seq)
+{}
 
 CDnsPinger::CDnsPinger()
 {

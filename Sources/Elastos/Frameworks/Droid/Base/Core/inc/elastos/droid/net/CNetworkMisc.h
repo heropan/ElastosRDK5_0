@@ -19,7 +19,6 @@ CarClass(CNetworkMisc)
 {
 public:
     CAR_OBJECT_DECL()
-
 };
 
 } // namespace Net

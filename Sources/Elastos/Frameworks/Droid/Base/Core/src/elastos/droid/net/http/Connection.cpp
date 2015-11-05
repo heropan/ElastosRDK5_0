@@ -1,91 +1,108 @@
 
-#include "Connection.h"
-#include "Request.h"
-#include "elastos/droid/os/SystemClock.h"
-#include <elastos/utility/etl/List.h>
-#include <elastos/core/Thread.h>
-
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Core::Thread;
+#include "elastos/droid/net/http/Connection.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+CAR_INTERFACE_IMPL(Connection, Object, IConnection)
+
+const AutoPtr<ArrayOf<String> > Connection::STATES = InitSTATES();
 const Int32 Connection::SOCKET_TIMEOUT = 60000;
 const Int32 Connection::SEND = 0;
 const Int32 Connection::READ = 1;
 const Int32 Connection::DRAIN = 2;
 const Int32 Connection::DONE = 3;
+Int32 Connection::sSTATE_NORMAL = 0;
+Int32 Connection::sSTATE_CANCEL_REQUESTED = 1;
+const Int32 Connection::RETRY_REQUEST_LIMIT = 2;
+const Int32 Connection::MIN_PIPE = 2;
+const Int32 Connection::MAX_PIPE = 3;
+const String Connection::HTTP_CONNECTION("http.connection");
 
-const AutoPtr<ArrayOf<String> > Connection::STATES = InitSTATES();
+Connection::Connection()
+    : mActive(sSTATE_NORMAL)
+{}
+
 AutoPtr<ArrayOf<String> > Connection::InitSTATES()
 {
     AutoPtr<ArrayOf<String> > sArray = ArrayOf<String>::Alloc(4);
 
     (*sArray)[0] = "SEND";
-    (*sArray)[0] = "READ";
-    (*sArray)[0] = "DRAIN";
-    (*sArray)[0] = "DONE";
+    (*sArray)[1] = "READ";
+    (*sArray)[2] = "DRAIN";
+    (*sArray)[3] = "DONE";
 
     return sArray;
 }
 
-Int32 Connection::STATE_NORMAL = 0;
-Int32 Connection::STATE_CANCEL_REQUESTED = 1;
-const Int32 Connection::RETRY_REQUEST_LIMIT = 2;
-const Int32 Connection::MIN_PIPE = 2;
-const Int32 Connection::MAX_PIPE = 3;
-const String Connection::HTTP_CONNECTION = String("http.connection");
-
-Connection::Connection(
+ECode Connection::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHttpHost* host,
-    /* [in] */ RequestFeeder* requestFeeder)
-    : mCanPersist(FALSE)
-    , mActive(STATE_NORMAL)
-    , mContext(context)
-    , mHost(host)
-    , mRequestFeeder(requestFeeder)
+    /* [in] */ IRequestFeeder* requestFeeder)
 {
-    //TODO:
-    // CBasicHttpContext::New(NULL, (IHttpContext**)&mHttpContext);
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        mContext = context;
+        mHost = host;
+        mRequestFeeder = requestFeeder;
+        mCanPersist = false;
+        mHttpContext = new BasicHttpContext(null);
+#endif
 }
 
-AutoPtr<IHttpHost> Connection::GetHost()
+ECode Connection::GetHost(
+    /* [out] */ IHttpHost** result)
 {
-    return mHost;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mHost;
+#endif
 }
 
-IConnection* Connection::GetConnection(
+ECode Connection::GetConnection(
     /* [in] */ IContext* context,
     /* [in] */ IHttpHost* host,
     /* [in] */ IHttpHost* proxy,
-    /* [in] */ RequestFeeder* requestFeeder)
+    /* [in] */ IRequestFeeder* requestFeeder,
+    /* [out] */ IConnection** result)
 {
-    // String name;
-    // host->GetSchemeName(&name);
-    // if (name.Equals("http")) {
-    //     return new HttpConnection(context, host, requestFeeder);
-    // }
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        if (host.getSchemeName().equals("http")) {
+            return new HttpConnection(context, host, requestFeeder);
+        }
+        // Otherwise, default to https
+        return new HttpsConnection(context, host, proxy, requestFeeder);
+#endif
+}
 
-    // // Otherwise, default to https
-    // return new HttpsConnection(context, host, proxy, requestFeeder);
-    return NULL;
+ECode Connection::GetCertificate(
+    /* [out] */ ISslCertificate** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mCertificate;
+#endif
 }
 
 ECode Connection::Cancel()
 {
-    mActive = STATE_CANCEL_REQUESTED;
-    // if (HttpLog.LOGV) HttpLog.v(
-    //     "Connection.cancel(): connection closed " + mHost);
-    return CloseConnection();
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        mActive = STATE_CANCEL_REQUESTED;
+        closeConnection();
+        if (HttpLog.LOGV) HttpLog.v(
+            "Connection.cancel(): connection closed " + mHost);
+#endif
 }
 
 ECode Connection::ProcessRequests(
-        /* [in] */ Request* firstRequest)
+    /* [in] */ IRequest* firstRequest)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Request* req;
     Boolean empty;
     Int32 error = IEventHandler::OK;
@@ -254,11 +271,15 @@ ECode Connection::ProcessRequests(
             }
         }
     }
+#endif
 }
 
-Boolean Connection::ClearPipe(
-        /* [in] */ List<AutoPtr<Request> >& pipe)
+ECode Connection::ClearPipe(
+    /* [in] */ ILinkedList* pipe,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Boolean empty = TRUE;
     // if (HttpLog.LOGV) HttpLog.v(
     //         "Connection.clearPipe(): clearing pipe " + pipe.size());
@@ -279,11 +300,15 @@ Boolean Connection::ClearPipe(
         }
     // }
     return empty;
+#endif
 }
 
-Boolean Connection::OpenHttpConnection(
-        /* [in] */ Request* req)
+ECode Connection::OpenHttpConnection(
+    /* [in] */ IRequest* req,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     // TODO:
     Int64 now/* = SystemClock::GetUptimeMillis()*/;
     Int32 error = IEventHandler::OK;
@@ -351,13 +376,17 @@ Boolean Connection::OpenHttpConnection(
         }
         return error == IEventHandler::OK;
     }
+#endif
 }
 
-Boolean Connection::HttpFailure(
-        /* [in] */ Request* req,
-        /* [in] */ Int32 errorId,
-        /* [in] */ Boolean isException)
+ECode Connection::HttpFailure(
+    /* [in] */ IRequest* req,
+    /* [in] */ Int32 errorId,
+    /* [in] */ ECode e,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     Boolean ret = TRUE;
 
     // if (HttpLog.LOGV) HttpLog.v(
@@ -384,23 +413,30 @@ Boolean Connection::HttpFailure(
     // mHttpContext->RemoveAttribute(HTTP_CONNECTION);
 
     return ret;
+#endif
 }
 
 ECode Connection::GetHttpContext(
-    /* [out] */ IHttpContext** context)
+    /* [out] */ IHttpContext** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(context);
     *context = mHttpContext;
     REFCOUNT_ADD(*context);
     return NOERROR;
+#endif
 }
 
-Boolean Connection::KeepAlive(
+ECode Connection::KeepAlive(
     /* [in] */ IHttpEntity* entity,
     /* [in] */ IProtocolVersion* ver,
     /* [in] */ Int32 connType,
-    /* [in] */ IHttpContext* context)
+    /* [in] */ const IHttpContext* context,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<IHttpConnection> conn;
     // TODO:
     // context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IHttpConnection**)&conn);
@@ -426,6 +462,7 @@ Boolean Connection::KeepAlive(
     // Resorting to protocol version default close connection policy
     // return !ver->LessEquals(IHttpVersion::HTTP_1_0);
     return FALSE;
+#endif
 }
 
 ECode Connection::SetCanPersist(
@@ -433,35 +470,48 @@ ECode Connection::SetCanPersist(
     /* [in] */ IProtocolVersion* ver,
     /* [in] */ Int32 connType)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     mCanPersist = KeepAlive(entity, ver, connType, mHttpContext);
     return NOERROR;
+#endif
 }
 
 ECode Connection::SetCanPersist(
     /* [in] */ Boolean canPersist)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     mCanPersist = canPersist;
     return NOERROR;
+#endif
 }
 
 ECode Connection::GetCanPersist(
-    /* [out] */ Boolean* canPersist)
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(canPersist);
     *canPersist = mCanPersist;
     return NOERROR;
+#endif
 }
 
 ECode Connection::ToString(
-        /* [out] */ String* str)
+    /* [out] */ String* result)
 {
-    // return mHost->ToString(str);
     return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mHost.toString();
+#endif
 }
 
 ECode Connection::GetBuf(
-    /* [out, callee] */ ArrayOf<Byte>** buf)
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (mBuf == NULL) {
         mBuf = ArrayOf<Byte>::Alloc(8192);
     }
@@ -469,9 +519,11 @@ ECode Connection::GetBuf(
     *buf = mBuf;
     REFCOUNT_ADD(*buf);
     return NOERROR;
+#endif
 }
 
-}
-}
-}
-}
+
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

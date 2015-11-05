@@ -50,7 +50,6 @@ public:
      */
     CARAPI DoNextOp(
         /* [in] */ DhcpStateMachine* machine);
-
 };
 
 } // namespace Dhcp

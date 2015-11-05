@@ -69,7 +69,6 @@ public:
         /* [in] */ ICollection* routes,
         /* [in] */ IInetAddress* dest,
         /* [out] */ IRouteInfo** info);
-
 };
 
 } //namespace Net
