@@ -43,8 +43,8 @@ TextSize WebSettings::GetTextSize()
 String WebSettings::GetDefaultUserAgent(
     /* [in] */ IContext* context)
 {
-    AutoPtr<IWebViewFactoryProvider::IStatics> stat;
-    WebViewFactory::GetProvider()->GetStatics((IWebViewFactoryProvider::IStatics**)&stat);
+    AutoPtr<IWebViewFactoryProviderStatics> stat;
+    WebViewFactory::GetProvider()->GetStatics((IWebViewFactoryProviderStatics**)&stat);
     String userAgent;
     stat->GetDefaultUserAgent(context, &userAgent);
     return userAgent;

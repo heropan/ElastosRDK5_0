@@ -14,8 +14,7 @@ CAR_SINGLETON_IMPL(CUrlInterceptRegistry);
 ECode CUrlInterceptRegistry::SetUrlInterceptDisabled(
     /* [in] */ Boolean disabled)
 {
-    UrlInterceptRegistry::SetUrlInterceptDisabled(disabled);
-    return NOERROR;
+    return UrlInterceptRegistry::SetUrlInterceptDisabled(disabled);
 }
 
 ECode CUrlInterceptRegistry::UrlInterceptDisabled(

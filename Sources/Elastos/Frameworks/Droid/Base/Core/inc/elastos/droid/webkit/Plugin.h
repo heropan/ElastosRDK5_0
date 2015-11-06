@@ -91,7 +91,7 @@ public:
         /* [in] */ const String& fileName,
         /* [in] */ const String& description);
 
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* info);
 
     /**
@@ -99,7 +99,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI GetName(
+    CARAPI GetName(
         /* [out] */ String* name);
 
     /**
@@ -107,7 +107,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI GetPath(
+    CARAPI GetPath(
         /* [out] */ String* path);
 
     /**
@@ -115,7 +115,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI GetFileName(
+    CARAPI GetFileName(
         /* [out] */ String* fileName);
 
     /**
@@ -123,7 +123,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI GetDescription(
+    CARAPI GetDescription(
         /* [out] */ String* description);
 
     /**
@@ -131,7 +131,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI SetName(
+    CARAPI SetName(
         /* [in] */ const String& name);
 
     /**
@@ -139,7 +139,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI SetPath(
+    CARAPI SetPath(
         /* [in] */ const String& path);
 
     /**
@@ -147,7 +147,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI SetFileName(
+    CARAPI SetFileName(
         /* [in] */ const String& fileName);
 
     /**
@@ -155,7 +155,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI SetDescription(
+    CARAPI SetDescription(
         /* [in] */ const String& description);
 
     /**
@@ -163,7 +163,7 @@ public:
      * @deprecated This interface was intended to be used by Gears. Since Gears was
      * deprecated, so is this class.
      */
-    virtual CARAPI SetClickHandler(
+    CARAPI SetClickHandler(
         /* [in] */ IPreferencesClickHandler* handler);
 
    /**
@@ -173,13 +173,13 @@ public:
     * @deprecated This interface was intended to be used by Gears. Since Gears was
     * deprecated, so is this class.
     */
-    virtual CARAPI DispatchClickEvent(
+    CARAPI DispatchClickEvent(
         /* [in] */ IContext* context);
 
 protected:
     Plugin();
 
-    void Init(
+    CARAPI_(void) Init(
         /* [in] */ const String& name,
         /* [in] */ const String& path,
         /* [in] */ const String& fileName,

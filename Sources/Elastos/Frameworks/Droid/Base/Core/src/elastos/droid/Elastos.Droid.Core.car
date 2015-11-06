@@ -59,7 +59,7 @@ module
     //merge("../../../car/elastos/droid/pppoe.car");
     //merge("../../../car/elastos/droid/ethernet.car");
     merge("../../../car/elastos/droid/speech.car");
-    //merge("../../../car/elastos/droid/webkit.car");
+    merge("../../../car/elastos/droid/webkit.car");
     //merge("../../../car/elastos/droid/privacy.car");
     merge("../../../car/elastos/droid/service.car");
 

@@ -14,9 +14,6 @@ CarClass(CJsPromptResult)
 {
 public:
     CAR_OBJECT_DECL()
-
-protected:
-    CARAPI_(void) WakeUp();
 };
 
 } // namespace Webkit

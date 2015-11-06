@@ -17,11 +17,12 @@ List< AutoPtr<IInterface> > UrlInterceptRegistry::mHandlerList;
 
 Object UrlInterceptRegistry::sLock;
 
-void UrlInterceptRegistry::SetUrlInterceptDisabled(
+ECode UrlInterceptRegistry::SetUrlInterceptDisabled(
     /* [in] */ Boolean disabled)
 {
     AutoLock lock(sLock);
     mDisabled = disabled;
+    return NOERROR;
 }
 
 Boolean UrlInterceptRegistry::UrlInterceptDisabled()

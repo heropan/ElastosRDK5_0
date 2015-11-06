@@ -15,7 +15,7 @@ namespace Webkit {
 class UrlInterceptRegistry
 {
 public:
-    static CARAPI_(void) SetUrlInterceptDisabled(
+    static CARAPI SetUrlInterceptDisabled(
         /* [in] */ Boolean disabled);
 
     static CARAPI_(Boolean) UrlInterceptDisabled();

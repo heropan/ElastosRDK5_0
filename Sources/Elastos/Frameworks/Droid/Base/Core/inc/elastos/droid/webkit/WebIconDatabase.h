@@ -28,13 +28,7 @@ public:
      *         instance for the current process each time this method is
      *         called.
      */
-    static CARAPI_(AutoPtr<IWebIconDatabase>) GetInstance()
-    {
-        // XXX: Must be created in the UI thread.
-        AutoPtr<IWebIconDatabase> temp;
-        WebViewFactory::GetProvider()->GetWebIconDatabase((IWebIconDatabase**)&temp);
-        return temp;
-    }
+    static CARAPI_(AutoPtr<IWebIconDatabase>) GetInstance();
 };
 
 } // namespace Webkit

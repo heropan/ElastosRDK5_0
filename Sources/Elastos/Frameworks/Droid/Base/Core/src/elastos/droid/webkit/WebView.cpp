@@ -343,7 +343,7 @@ WebView::WebView()
 WebView::WebView(
     /* [in] */ IContext* context)
 {
-    ASSERT_SUCCEEDED(Init(context, NULL));
+    ASSERT_SUCCEEDED(constructor(context, NULL));
 }
 
 /**
@@ -356,7 +356,7 @@ WebView::WebView(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ASSERT_SUCCEEDED(Init(context, attrs, R::attr::webViewStyle));
+    ASSERT_SUCCEEDED(constructor(context, attrs, R::attr::webViewStyle));
 }
 
 /**
@@ -371,7 +371,7 @@ WebView::WebView(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    ASSERT_SUCCEEDED(Init(context, attrs, defStyle, FALSE));
+    ASSERT_SUCCEEDED(constructor(context, attrs, defStyle, FALSE));
 }
 
 /**
@@ -428,14 +428,14 @@ WebView::WebView(
 ECode WebView::constructor(
     /* [in] */ IContext * context)
 {
-    return Init(context);
+    return constructor(context, NULL);
 }
 
 ECode WebView::constructor(
     /* [in] */ IContext * context,
     /* [in] */ IAttributeSet * attrs)
 {
-    return Init(context, attrs);
+    return constructor(context, attrs, R::attr::webViewStyle);
 }
 
 ECode WebView::constructor(
@@ -443,75 +443,12 @@ ECode WebView::constructor(
     /* [in] */ IAttributeSet * attrs,
     /* [in] */ Int32 defStyle)
 {
-    return Init(context, attrs, defStyle);
+    return constructor(context, attrs, defStyle, FALSE);
 }
 
 ECode WebView::constructor(
     /* [in] */ IContext * context,
     /* [in] */ IAttributeSet * attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Boolean privateBrowsing)
-{
-    return Init(context, attrs, defStyle, privateBrowsing);
-}
-
-//////////////////////////////////////////////////////////////
-/**
- * Constructs a new WebView with a Context object.
- *
- * @param context a Context object used to access application assets
- */
-ECode WebView::Init(
-    /* [in] */ IContext* context)
-{
-    return Init(context, NULL);
-}
-
-/**
- * Constructs a new WebView with layout parameters.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- */
-ECode WebView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return Init(context, attrs, R::attr::webViewStyle);
-}
-
-/**
- * Constructs a new WebView with layout parameters and a default style.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- * @param defStyle the default style resource ID
- */
-ECode WebView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    return Init(context, attrs, defStyle, FALSE);
-}
-
-/**
- * Constructs a new WebView with layout parameters and a default style.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- * @param defStyle the default style resource ID
- * @param privateBrowsing whether this WebView will be initialized in
- *                        private mode
- *
- * @deprecated Private browsing is no longer supported directly via
- * WebView and will be removed in a future release. Prefer using
- * {@link WebSettings}, {@link WebViewDatabase}, {@link CookieManager}
- * and {@link WebStorage} for fine-grained control of privacy data.
- */
-ECode WebView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle,
     /* [in] */ Boolean privateBrowsing)
 {
@@ -532,7 +469,7 @@ ECode WebView::Init(
     assert(0);
     // TODO
     // FAIL_RETURN(AbsoluteLayout::Init(context, attrs, defStyle));
-    CheckThread();
+    FAIL_RETURN(CheckThread());
 
     EnsureProviderCreated();
     return mProvider->Init(javaScriptInterfaces, privateBrowsing);
@@ -546,7 +483,7 @@ ECode WebView::Init(
 ECode WebView::SetHorizontalScrollbarOverlay(
     /* [in] */ Boolean overlay)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetHorizontalScrollbarOverlay(overlay);
 }
 
@@ -558,7 +495,7 @@ ECode WebView::SetHorizontalScrollbarOverlay(
 ECode WebView::SetVerticalScrollbarOverlay(
     /* [in] */ Boolean overlay)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetVerticalScrollbarOverlay(overlay);
 }
 
@@ -571,7 +508,7 @@ ECode WebView::OverlayHorizontalScrollbar(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->OverlayHorizontalScrollbar(result);
 }
 
@@ -584,7 +521,7 @@ ECode WebView::OverlayVerticalScrollbar(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->OverlayVerticalScrollbar(result);
 }
 
@@ -598,7 +535,7 @@ ECode WebView::GetVisibleTitleHeight(
     /* [out] */ Int32* height)
 {
     VALIDATE_NOT_NULL(height);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetVisibleTitleHeight(height);
 }
 
@@ -612,7 +549,7 @@ ECode WebView::GetCertificate(
     /* [out] */ ISslCertificate** cert)
 {
     VALIDATE_NOT_NULL(cert);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetCertificate(cert);
 }
 
@@ -626,7 +563,7 @@ ECode WebView::GetCertificate(
 ECode WebView::SetCertificate(
     /* [in] */ ISslCertificate* certificate)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetCertificate(certificate);
 }
 
@@ -651,7 +588,7 @@ ECode WebView::SavePassword(
     /* [in] */ const String& username,
     /* [in] */ const String& password)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SavePassword(host, username, password);
 }
 
@@ -674,7 +611,7 @@ ECode WebView::SetHttpAuthUsernamePassword(
     /* [in] */ const String& username,
     /* [in] */ const String& password)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetHttpAuthUsernamePassword(host, realm, username, password);
 }
 
@@ -698,7 +635,7 @@ ECode WebView::GetHttpAuthUsernamePassword(
     /* [out, callee] */ ArrayOf<String>** up)
 {
     VALIDATE_NOT_NULL(up);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetHttpAuthUsernamePassword(host, realm, up);
 }
 
@@ -709,7 +646,7 @@ ECode WebView::GetHttpAuthUsernamePassword(
  */
 ECode WebView::Destroy()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->Destroy();
 }
 
@@ -723,8 +660,8 @@ ECode WebView::Destroy()
 void WebView::EnablePlatformNotifications()
 {
     CheckThread();
-    AutoPtr<IWebViewFactoryProvider::IStatics> starts;
-    GetFactory()->GetStatics((IWebViewFactoryProvider::IStatics**)&starts);
+    AutoPtr<IWebViewFactoryProviderStatics> starts;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&starts);
     starts->SetPlatformNotificationsEnabled(TRUE);
 }
 
@@ -738,8 +675,8 @@ void WebView::EnablePlatformNotifications()
 void WebView::DisablePlatformNotifications()
 {
     CheckThread();
-    AutoPtr<IWebViewFactoryProvider::IStatics> starts;
-    GetFactory()->GetStatics((IWebViewFactoryProvider::IStatics**)&starts);
+    AutoPtr<IWebViewFactoryProviderStatics> starts;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&starts);
     starts->SetPlatformNotificationsEnabled(FALSE);
 }
 
@@ -753,7 +690,7 @@ void WebView::DisablePlatformNotifications()
 ECode WebView::SetNetworkAvailable(
     /* [in] */ Boolean networkUp)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetNetworkAvailable(networkUp);
 }
 
@@ -773,7 +710,7 @@ ECode WebView::SaveState(
     /* [out] */ IWebBackForwardList** wfl)
 {
     VALIDATE_NOT_NULL(wfl);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SaveState(outState, wfl);
 }
 
@@ -793,7 +730,7 @@ ECode WebView::SavePicture(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SavePicture(b, dest, result);
 }
 
@@ -813,7 +750,7 @@ ECode WebView::RestorePicture(
     /* [in] */ IFile* src,
     /* [out] */ Boolean* result)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->RestorePicture(b, src, result);
 }
 
@@ -834,7 +771,7 @@ ECode WebView::RestoreState(
     /* [out] */ IWebBackForwardList** wfl)
 {
     VALIDATE_NOT_NULL(wfl);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->RestoreState(inState, wfl);
 }
 
@@ -853,7 +790,7 @@ ECode WebView::LoadUrl(
     /* [in] */ const String& url,
     /* [in] */ IMap* additionalHttpHeaders)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->LoadUrl(url, additionalHttpHeaders);
 }
 
@@ -865,7 +802,7 @@ ECode WebView::LoadUrl(
 ECode WebView::LoadUrl(
     /* [in] */ const String& url)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->LoadUrl(url);
 }
 
@@ -881,7 +818,7 @@ ECode WebView::PostUrl(
     /* [in] */ const String& url,
     /* [in] */ ArrayOf<Byte>* postData)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->PostUrl(url, postData);
 }
 
@@ -919,7 +856,7 @@ ECode WebView::LoadData(
     /* [in] */ const String& mimeType,
     /* [in] */ const String& encoding)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->LoadData(data, mimeType, encoding);
 }
 
@@ -953,7 +890,7 @@ ECode WebView::LoadDataWithBaseURL(
     /* [in] */ const String& encoding,
     /* [in] */ const String& historyUrl)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->LoadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
 }
 
@@ -974,7 +911,7 @@ ECode WebView::EvaluateJavascript(
 ECode WebView::SaveWebArchive(
     /* [in] */ const String& filename)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SaveWebArchive(filename);
 }
 
@@ -995,7 +932,7 @@ ECode WebView::SaveWebArchive(
     /* [in] */ Boolean autoname,
     /* [in] */ IValueCallback* callback)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SaveWebArchive(basename, autoname, callback);
 }
 
@@ -1004,7 +941,7 @@ ECode WebView::SaveWebArchive(
  */
 ECode WebView::StopLoading()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->StopLoading();
 }
 
@@ -1013,7 +950,7 @@ ECode WebView::StopLoading()
  */
 ECode WebView::Reload()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->Reload();
 }
 
@@ -1026,7 +963,7 @@ ECode WebView::CanGoBack(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CanGoBack(result);
 }
 
@@ -1035,7 +972,7 @@ ECode WebView::CanGoBack(
  */
 ECode WebView::GoBack()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GoBack();
 }
 
@@ -1048,7 +985,7 @@ ECode WebView::CanGoForward(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CanGoForward(result);
 }
 
@@ -1057,7 +994,7 @@ ECode WebView::CanGoForward(
  */
 ECode WebView::GoForward()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GoForward();
 }
 
@@ -1073,7 +1010,7 @@ ECode WebView::CanGoBackOrForward(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CanGoBackOrForward(steps, result);
 }
 
@@ -1088,7 +1025,7 @@ ECode WebView::CanGoBackOrForward(
 ECode WebView::GoBackOrForward(
     /* [in] */ Int32 steps)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GoBackOrForward(steps);
 }
 
@@ -1099,7 +1036,7 @@ ECode WebView::IsPrivateBrowsingEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->IsPrivateBrowsingEnabled(result);
 }
 
@@ -1114,7 +1051,7 @@ ECode WebView::PageUp(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->PageUp(top, result);
 }
 
@@ -1129,7 +1066,7 @@ ECode WebView::PageDown(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->PageDown(bottom, result);
 }
 
@@ -1139,7 +1076,7 @@ ECode WebView::PageDown(
  */
 ECode WebView::ClearView()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ClearView();
 }
 
@@ -1161,7 +1098,7 @@ ECode WebView::CapturePicture(
     /* [out] */ IPicture** picture)
 {
     VALIDATE_NOT_NULL(picture);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CapturePicture(picture);
 }
 
@@ -1178,7 +1115,7 @@ ECode WebView::GetScale(
     /* [out] */ Float* scale)
 {
     VALIDATE_NOT_NULL(scale);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetScale(scale);
 }
 
@@ -1195,7 +1132,7 @@ ECode WebView::GetScale(
 ECode WebView::SetInitialScale(
     /* [in] */ Int32 scaleInPercent)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetInitialScale(scaleInPercent);
 }
 
@@ -1206,7 +1143,7 @@ ECode WebView::SetInitialScale(
  */
 ECode WebView::InvokeZoomPicker()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->InvokeZoomPicker();
 }
 
@@ -1232,7 +1169,7 @@ ECode WebView::GetHitTestResult(
     /* [out] */ IWebViewHitTestResult** result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetHitTestResult(result);
 }
 
@@ -1252,7 +1189,7 @@ ECode WebView::GetHitTestResult(
 ECode WebView::RequestFocusNodeHref(
     /* [in] */ IMessage* hrefMsg)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->RequestFocusNodeHref(hrefMsg);
 }
 
@@ -1266,7 +1203,7 @@ ECode WebView::RequestFocusNodeHref(
 ECode WebView::RequestImageRef(
     /* [in] */ IMessage* msg)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->RequestImageRef(msg);
 }
 
@@ -1281,7 +1218,7 @@ ECode WebView::GetUrl(
     /* [out] */ String* url)
 {
     VALIDATE_NOT_NULL(url);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetUrl(url);
 }
 
@@ -1298,7 +1235,7 @@ ECode WebView::GetOriginalUrl(
     /* [out] */ String* url)
 {
     VALIDATE_NOT_NULL(url);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetOriginalUrl(url);
 }
 
@@ -1312,7 +1249,7 @@ ECode WebView::GetTitle(
     /* [out] */ String* title)
 {
     VALIDATE_NOT_NULL(title);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetTitle(title);
 }
 
@@ -1326,7 +1263,7 @@ ECode WebView::GetFavicon(
     /* [out] */ IBitmap** bitmap)
 {
     VALIDATE_NOT_NULL(bitmap);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetFavicon(bitmap);
 }
 
@@ -1353,7 +1290,7 @@ ECode WebView::GetProgress(
     /* [out] */ Int32* progress)
 {
     VALIDATE_NOT_NULL(progress);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetProgress(progress);
 }
 
@@ -1366,7 +1303,7 @@ ECode WebView::GetContentHeight(
     /* [out] */ Int32* height)
 {
     VALIDATE_NOT_NULL(height);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetContentHeight(height);
 }
 
@@ -1390,7 +1327,7 @@ ECode WebView::GetContentWidth(
  */
 ECode WebView::PauseTimers()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->PauseTimers();
 }
 
@@ -1400,7 +1337,7 @@ ECode WebView::PauseTimers()
  */
 ECode WebView::ResumeTimers()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ResumeTimers();
 }
 
@@ -1413,7 +1350,7 @@ ECode WebView::ResumeTimers()
  */
 ECode WebView::OnPause()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->OnPause();
 }
 
@@ -1422,7 +1359,7 @@ ECode WebView::OnPause()
  */
 ECode WebView::OnResume()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->OnResume();
 }
 
@@ -1445,7 +1382,7 @@ ECode WebView::IsPaused(
  */
 ECode WebView::FreeMemory()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->FreeMemory();
 }
 
@@ -1458,7 +1395,7 @@ ECode WebView::FreeMemory()
 ECode WebView::ClearCache(
     /* [in] */ Boolean includeDiskFiles)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ClearCache(includeDiskFiles);
 }
 
@@ -1470,7 +1407,7 @@ ECode WebView::ClearCache(
  */
 ECode WebView::ClearFormData()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ClearFormData();
 }
 
@@ -1479,7 +1416,7 @@ ECode WebView::ClearFormData()
  */
 ECode WebView::ClearHistory()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ClearHistory();
 }
 
@@ -1489,7 +1426,7 @@ ECode WebView::ClearHistory()
  */
 ECode WebView::ClearSslPreferences()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ClearSslPreferences();
 }
 
@@ -1505,7 +1442,7 @@ ECode WebView::CopyBackForwardList(
     /* [out] */ IWebBackForwardList** wfl)
 {
     VALIDATE_NOT_NULL(wfl);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CopyBackForwardList(wfl);
 }
 
@@ -1518,7 +1455,7 @@ ECode WebView::CopyBackForwardList(
 ECode WebView::SetFindListener(
     /* [in] */ IWebViewFindListener* listener)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetFindListener(listener);
 }
 
@@ -1535,7 +1472,7 @@ ECode WebView::SetFindListener(
 ECode WebView::FindNext(
     /* [in] */ Boolean forward)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->FindNext(forward);
 }
 
@@ -1553,8 +1490,10 @@ ECode WebView::FindAll(
     /* [out] */ Int32* all)
 {
     VALIDATE_NOT_NULL(all);
-    CheckThread();
-//    StrictMode.noteSlowCall("findAll blocks UI: prefer findAllAsync");
+    FAIL_RETURN(CheckThread());
+    assert(0);
+    // TODO
+    // StrictMode.noteSlowCall("findAll blocks UI: prefer findAllAsync");
     return mProvider->FindAll(find, all);
 }
 
@@ -1569,7 +1508,7 @@ ECode WebView::FindAll(
 ECode WebView::FindAllAsync(
     /* [in] */ const String& find)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->FindAllAsync(find);
 }
 
@@ -1590,7 +1529,7 @@ ECode WebView::ShowFindDialog(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ShowFindDialog(text, showIme, result);
 }
 
@@ -1619,8 +1558,8 @@ ECode WebView::ShowFindDialog(
 String WebView::FindAddress(
     /* [in] */ const String& addr)
 {
-    AutoPtr<IWebViewFactoryProvider::IStatics> starts;
-    GetFactory()->GetStatics((IWebViewFactoryProvider::IStatics**)&starts);
+    AutoPtr<IWebViewFactoryProviderStatics> starts;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&starts);
     String str;
     starts->FindAddress(addr, &str);
     return str;
@@ -1632,7 +1571,7 @@ String WebView::FindAddress(
  */
 ECode WebView::ClearMatches()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ClearMatches();
 }
 
@@ -1646,7 +1585,7 @@ ECode WebView::ClearMatches()
 ECode WebView::DocumentHasImages(
    /* [in] */ IMessage* response)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->DocumentHasImages(response);
 }
 
@@ -1659,7 +1598,7 @@ ECode WebView::DocumentHasImages(
 ECode WebView::SetWebViewClient(
     /* [in] */ IWebViewClient* client)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetWebViewClient(client);
 }
 
@@ -1673,7 +1612,7 @@ ECode WebView::SetWebViewClient(
 ECode WebView::SetDownloadListener(
     /* [in] */ IDownloadListener* listener)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetDownloadListener(listener);
 }
 
@@ -1687,7 +1626,7 @@ ECode WebView::SetDownloadListener(
 ECode WebView::SetWebChromeClient(
     /* [in] */ IWebChromeClient* client)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetWebChromeClient(client);
 }
 
@@ -1701,7 +1640,7 @@ ECode WebView::SetWebChromeClient(
 ECode WebView::SetPictureListener(
     /* [in] */ IWebViewPictureListener* listener)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetPictureListener(listener);
 }
 
@@ -1753,7 +1692,7 @@ ECode WebView::AddJavascriptInterface(
     /* [in] */ IInterface* object,
     /* [in] */ const String& name)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->AddJavascriptInterface(object, name);
 }
 
@@ -1767,7 +1706,7 @@ ECode WebView::AddJavascriptInterface(
 ECode WebView::RemoveJavascriptInterface(
     /* [in] */ const String& name)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->RemoveJavascriptInterface(name);
 }
 
@@ -1782,7 +1721,7 @@ ECode WebView::GetSettings(
     /* [out] */ IWebSettings** webSettings)
 {
     VALIDATE_NOT_NULL(webSettings);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetSettings(webSettings);
 }
 
@@ -1809,7 +1748,7 @@ AutoPtr<IPluginList> WebView::GetPluginList()
 ECode WebView::RefreshPlugins(
     /* [in] */ Boolean reloadOpenPages)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return NOERROR;
 }
 
@@ -1822,7 +1761,7 @@ ECode WebView::RefreshPlugins(
  */
 ECode WebView::EmulateShiftHeld()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return NOERROR;
 }
 
@@ -1868,7 +1807,7 @@ ECode WebView::OnGlobalFocusChanged(
 ECode WebView::SetMapTrackballToArrowKeys(
     /* [in] */ Boolean setMap)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->SetMapTrackballToArrowKeys(setMap);
 }
 
@@ -1876,7 +1815,7 @@ ECode WebView::FlingScroll(
     /* [in] */ Int32 vx,
     /* [in] */ Int32 vy)
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->FlingScroll(vx, vy);
 }
 
@@ -1896,7 +1835,7 @@ ECode WebView::GetZoomControls(
     /* [out] */ IView** view)
 {
     VALIDATE_NOT_NULL(view);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->GetZoomControls(view);
 }
 
@@ -1913,7 +1852,7 @@ ECode WebView::CanZoomIn(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CanZoomIn(result);
 }
 
@@ -1930,7 +1869,7 @@ ECode WebView::CanZoomOut(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->CanZoomOut(result);
 }
 
@@ -1951,7 +1890,7 @@ ECode WebView::ZoomIn(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ZoomIn(result);
 }
 
@@ -1964,7 +1903,7 @@ ECode WebView::ZoomOut(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return mProvider->ZoomOut(result);
 }
 
@@ -1974,7 +1913,7 @@ ECode WebView::ZoomOut(
  */
 ECode WebView::DebugDump()
 {
-    CheckThread();
+    FAIL_RETURN(CheckThread());
     return NOERROR;
 }
 
@@ -2018,6 +1957,7 @@ ECode WebView::GetWebViewProvider(
 {
     VALIDATE_NOT_NULL(provider);
     *provider = mProvider;
+    REFCOUNT_ADD(*provider);
     return NOERROR;
 }
 
@@ -2048,7 +1988,7 @@ AutoPtr<IWebViewFactoryProvider> WebView::GetFactory()
     return WebViewFactory::GetProvider();
 }
 
-void WebView::CheckThread()
+ECode WebView::CheckThread()
 {
     if (Looper::GetMyLooper() != Looper::GetMainLooper()) {
         assert(0);
@@ -2060,6 +2000,8 @@ void WebView::CheckThread()
 //        Log.w(LOGTAG, Log.getStackTraceString(throwable));
 //        StrictMode.onWebViewMethodCalledOnWrongThread(throwable);
     }
+
+    return E_NOT_IMPLEMENTED;
 }
 
 //-------------------------------------------------------------------------

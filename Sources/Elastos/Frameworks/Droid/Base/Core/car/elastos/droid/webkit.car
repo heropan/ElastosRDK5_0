@@ -1,7 +1,6 @@
 module
 {
     merge("webkit/DownloadListener.car");
-    merge("webkit/BrowserDownloadListener.car");
     merge("webkit/ClientCertRequest.car");
     merge("webkit/CacheManager.car");
     merge("webkit/ConsoleMessage.car");
@@ -13,39 +12,30 @@ module
     merge("webkit/HttpAuthHandler.car");
     merge("webkit/JsResult.car");
     merge("webkit/JsPromptResult.car");
-//    merge("webkit/L10nUtilsHelper.car");
     merge("webkit/MimeTypeMap.car");
-//    merge("webkit/MockGeolocation.car");
-    merge("webkit/OverScrollGlow.car");
     merge("webkit/PermissionRequest.car");
     merge("webkit/Plugin.car");
     merge("webkit/PluginData.car");
     merge("webkit/PluginList.car");
-//    merge("webkit/PluginManager.car");
     merge("webkit/PluginStub.car");
     merge("webkit/SslErrorHandler.car");
     merge("webkit/UrlInterceptHandler.car");
     merge("webkit/UrlInterceptRegistry.car");
     merge("webkit/URLUtil.car");
-    merge("webkit/WebBackForwardListClient.car");
     merge("webkit/WebChromeClient.car");
     merge("webkit/WebHistoryItem.car");
     merge("webkit/WebIconDatabase.car");
     merge("webkit/WebResourceRequest.car");
     merge("webkit/WebResourceResponse.car");
     merge("webkit/WebSettings.car");
-//    merge("webkit/WebSettingsClassic.car");
     merge("webkit/WebStorage.car");
-    merge("webkit/WebStorageClassic.car");
     merge("webkit/WebBackForwardList.car");
     merge("webkit/WebView.car");
     merge("webkit/WebViewProvider.car");
-//    merge("webkit/WebViewClassic.car");
     merge("webkit/WebViewClient.car");
-//    merge("webkit/WebViewClientClassicExt.car");
-//    merge("webkit/WebViewCore.car");
     merge("webkit/WebViewDatabase.car");
     merge("webkit/WebViewFragment.car");
+    merge("webkit/WebViewFactoryProvider.car");
 
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IMap;
@@ -117,20 +107,6 @@ module
             interface IGeolocationPermissions;
         }
 
-//        class CHTML5VideoFullScreen {
-//
-//            interface IHTML5VideoFullScreen;
-//        }
-
-//        singleton class CHTML5VideoInlineHelper {
-//            interface IHTML5VideoInlineHelper;
-//        }
-
-//        class CHTML5VideoInline {
-//
-//            interface IHTML5VideoInline;
-//        }
-
         class CHttpAuthHandler {
             constructor();
 
@@ -153,31 +129,9 @@ module
             interface IJsResult;
         }
 
-//        singleton class CL10nUtilsHelper {
-//            interface IL10nUtilsHelper;
-//        }
-
         singleton class CMimeTypeMapHelper {
             interface IMimeTypeMapHelper;
         }
-
-//        class CMimeTypeMap {
-//            interface IMimeTypeMap;
-//        }
-
-//        class CMockGeolocation {
-//            constructor(
-//                [in] IWebViewCore* webViewCore);
-//
-//            interface IMockGeolocation;
-//        }
-
-//        class COverScrollGlow {
-//            constructor(
-//                [in] IWebViewClassic* host);
-//
-//            interface IOverScrollGlow;
-//        }
 
         class CPlugin {
             constructor(
@@ -205,26 +159,6 @@ module
             interface IPluginList;
         }
 
-//        singleton class CPluginManagerHelper {
-//            interface IPluginManagerHelper;
-//        }
-
-//        [local]
-//        class CPluginManager {
-//            constructor();
-//
-//            constructor(
-//                [in] IContext* ctx);
-//
-//            interface IPluginManager;
-//        }
-
-//        class CSslErrorHandler {
-//            constructor();
-//
-//            interface ISslErrorHandler;
-//        }
-
         singleton class CURLUtil {
             interface IURLUtil;
         }
@@ -233,31 +167,15 @@ module
             interface IUrlInterceptRegistry;
         }
 
-//        class CWebBackForwardList {
-//            constructor();
-//
-//            interface IWebBackForwardList;
-//        }
-
         class CWebChromeClient {
             constructor();
 
             interface IWebChromeClient;
         }
 
-//        class CWebHistoryItem {
-//            constructor();
-//
-//            interface IWebHistoryItem;
-//        }
-
         singleton class CWebIconDatabaseHelper {
             interface IWebIconDatabaseHelper;
         }
-
-//        class CWebIconDatabase {
-//            interface IWebIconDatabase;
-//        }
 
         class CWebResourceResponse {
             constructor(
@@ -279,35 +197,6 @@ module
         singleton class CWebSettingsHelper {
             interface IWebSettingsHelper;
         }
-
-//        class CWebSettings {
-//            interface IWebSettings;
-//        }
-
-//        singleton class CWebSettingsClassicHelper {
-//            interface IWebSettingsClassicHelper;
-//        }
-
-//        class CWebSettingsClassic {
-//            interface IWebSettingsClassic;
-//        }
-
-//        class CAutoFillProfile {
-//            constructor(
-//                [in] Int32 uniqueId,
-//                [in] String fullName,
-//                [in] String email,
-//                [in] String companyName,
-//                [in] String addressLine1,
-//                [in] String addressLine2,
-//                [in] String city,
-//                [in] String state,
-//                [in] String zipCode,
-//                [in] String country,
-//                [in] String phoneNumber);
-//
-//            interface IAutoFillProfile;
-//        }
 
 //        class CWebStorageOrigin {
 //            interface IWebStorageOrigin;
@@ -371,53 +260,13 @@ module
             interface IViewGroupOnHierarchyChangeListener;
         }
 
-//        singleton class CWebViewClassicHelper {
-//            interface IWebViewClassicHelper;
-//        }
-
-//        [local]
-//        class CWebViewClassic {
-//            constructor(
-//                [in] IWebView* webView,
-//                [in] IWebViewPrivateAccess* privateAccess);
-//
-//            interface IWebViewClassic;
-//            interface IWebViewProvider;
-//            interface IWebViewProviderScrollDelegate;
-//            interface IWebViewProviderViewDelegate;
-//        }
-
         class CWebViewClient {
             interface IWebViewClient;
         }
 
-//        class CWebViewClientClassicExt {
-//            interface IWebViewClientClassicExt;
-//            interface IWebViewClient;
-//        }
-
-//        singleton class CWebViewCoreHelper {
-//            interface IWebViewCoreHelper;
-//        }
-
-//        [local]
-//        class CWebViewCore {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] IWebViewClassic* w,
-//                [in] IHandler* proxy,
-//                [in] IMap* javascriptInterfaces);
-//
-//            interface IWebViewCore;
-//        }
-
         singleton class CWebViewDatabaseHelper {
             interface IWebViewDatabaseHelper;
         }
-
-//        class CWebViewDatabase {
-//            interface IWebViewDatabase;
-//        }
 
         class CWebViewFragment {
             constructor();

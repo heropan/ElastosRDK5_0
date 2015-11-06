@@ -22,7 +22,7 @@ WebResourceResponse::WebResourceResponse(
     /* [in] */ const String& encoding,
     /* [in] */ IInputStream* data)
 {
-    Init(mimeType, encoding, data);
+    constructor(mimeType, encoding, data);
 }
 
 WebResourceResponse::WebResourceResponse(
@@ -33,7 +33,7 @@ WebResourceResponse::WebResourceResponse(
     /* [in] */ IMap* responseHeaders,
     /* [in] */ IInputStream* data)
 {
-    Init(mimeType, encoding, statusCode, reasonPhrase, responseHeaders, data);
+    constructor(mimeType, encoding, statusCode, reasonPhrase, responseHeaders, data);
 }
 
 WebResourceResponse::WebResourceResponse()
@@ -45,7 +45,10 @@ ECode WebResourceResponse::constructor(
     /* [in] */ const String& encoding,
     /* [in] */ IInputStream* data)
 {
-    return Init(mimeType, encoding, data);
+    mMimeType = mimeType;
+    mEncoding = encoding;
+    mInputStream = data;
+    return NOERROR;
 }
 
 ECode WebResourceResponse::constructor(
@@ -56,29 +59,7 @@ ECode WebResourceResponse::constructor(
     /* [in] */ IMap* responseHeaders,
     /* [in] */ IInputStream* data)
 {
-    return Init(mimeType, encoding, statusCode, reasonPhrase, responseHeaders, data);
-}
-
-ECode WebResourceResponse::Init(
-    /* [in] */ const String& mimeType,
-    /* [in] */ const String& encoding,
-    /* [in] */ IInputStream* data)
-{
-    mMimeType = mimeType;
-    mEncoding = encoding;
-    mInputStream = data;
-    return NOERROR;
-}
-
-CARAPI WebResourceResponse::Init(
-    /* [in] */ const String& mimeType,
-    /* [in] */ const String& encoding,
-    /* [in] */ Int32 statusCode,
-    /* [in] */ const String& reasonPhrase,
-    /* [in] */ IMap* responseHeaders,
-    /* [in] */ IInputStream* data)
-{
-    Init(mimeType, encoding, data);
+    constructor(mimeType, encoding, data);
     SetStatusCodeAndReasonPhrase(statusCode, reasonPhrase);
     SetResponseHeaders(responseHeaders);
     return NOERROR;
@@ -209,6 +190,7 @@ ECode WebResourceResponse::GetData(
 {
     VALIDATE_NOT_NULL(data);
     *data = mInputStream;
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 

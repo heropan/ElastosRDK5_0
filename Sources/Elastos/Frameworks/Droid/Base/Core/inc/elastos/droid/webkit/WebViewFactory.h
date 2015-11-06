@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEWFACTORY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/WebViewFactoryProvider.h"
 
 using Elastos::Core::IClassLoader;
 namespace Elastos {

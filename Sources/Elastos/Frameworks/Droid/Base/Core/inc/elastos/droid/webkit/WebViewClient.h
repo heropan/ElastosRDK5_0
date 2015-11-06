@@ -71,7 +71,7 @@ public:
      * @return True if the host application wants to leave the current WebView
      *         and handle the url itself, otherwise return false.
      */
-    virtual CARAPI ShouldOverrideUrlLoading(
+    CARAPI ShouldOverrideUrlLoading(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [out] */ Boolean* result);
@@ -88,7 +88,7 @@ public:
      * @param favicon The favicon for this page if it already exists in the
      *            database.
      */
-    virtual CARAPI OnPageStarted(
+    CARAPI OnPageStarted(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ IBitmap* favicon);
@@ -102,7 +102,7 @@ public:
      * @param view The WebView that is initiating the callback.
      * @param url The url of the page.
      */
-    virtual CARAPI OnPageFinished(
+    CARAPI OnPageFinished(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url);
 
@@ -113,7 +113,7 @@ public:
      * @param view The WebView that is initiating the callback.
      * @param url The url of the resource the WebView will load.
      */
-    virtual CARAPI OnLoadResource(
+    CARAPI OnLoadResource(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url);
 
@@ -132,7 +132,7 @@ public:
      *         response information or null if the WebView should load the
      *         resource itself.
      */
-    virtual CARAPI ShouldInterceptRequest(
+    CARAPI ShouldInterceptRequest(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [out] */ IWebResourceResponse** wrr);
@@ -152,7 +152,7 @@ public:
      *         response information or null if the WebView should load the
      *         resource itself.
      */
-    virtual CARAPI ShouldInterceptRequest(
+    CARAPI ShouldInterceptRequest(
         /* [in] */ IWebView* view,
         /* [in] */ IWebResourceRequest* request,
         /* [out] */ IWebResourceResponse** wrr);
@@ -169,7 +169,7 @@ public:
      * @deprecated This method is no longer called. When the WebView encounters
      *             a redirect loop, it will cancel the load.
      */
-    virtual CARAPI OnTooManyRedirects(
+    CARAPI OnTooManyRedirects(
         /* [in] */ IWebView* view,
         /* [in] */ IMessage* cancelMsg,
         /* [in] */ IMessage* continueMsg);
@@ -183,7 +183,7 @@ public:
      * @param description A String describing the error.
      * @param failingUrl The url that failed to load.
      */
-    virtual CARAPI OnReceivedError(
+    CARAPI OnReceivedError(
         /* [in] */ IWebView* view,
         /* [in] */ Int32 errorCode,
         /* [in] */ const String& description,
@@ -198,7 +198,7 @@ public:
      * @param dontResend The message to send if the browser should not resend
      * @param resend The message to send if the browser should resend data
      */
-    virtual CARAPI OnFormResubmission(
+    CARAPI OnFormResubmission(
         /* [in] */ IWebView* view,
         /* [in] */ IMessage* dontResend,
         /* [in] */ IMessage* resend);
@@ -210,7 +210,7 @@ public:
      * @param url The url being visited.
      * @param isReload True if this url is being reloaded.
      */
-    virtual CARAPI DoUpdateVisitedHistory(
+    CARAPI DoUpdateVisitedHistory(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ Boolean isReload);
@@ -227,7 +227,7 @@ public:
      *            response.
      * @param error The SSL error object.
      */
-    virtual CARAPI OnReceivedSslError(
+    CARAPI OnReceivedSslError(
         /* [in] */ IWebView* view,
         /* [in] */ ISslErrorHandler* handler,
         /* [in] */ ISslError* error);
@@ -250,7 +250,7 @@ public:
      * @param request An instance of a {@link ClientCertRequest}
      *
      */
-    virtual CARAPI OnReceivedClientCertRequest(
+    CARAPI OnReceivedClientCertRequest(
         /* [in] */ IWebView* view,
         /* [in] */ IClientCertRequest* request);
 
@@ -266,7 +266,7 @@ public:
      * @param realm the realm for which authentication is required
      * @see Webview#getHttpAuthUsernamePassword
      */
-    virtual CARAPI OnReceivedHttpAuthRequest(
+    CARAPI OnReceivedHttpAuthRequest(
         /* [in] */ IWebView* view,
         /* [in] */ IHttpAuthHandler* handler,
         /* [in] */ const String& host,
@@ -284,7 +284,7 @@ public:
      * @return True if the host application wants to handle the key event
      *         itself, otherwise return false
      */
-    virtual CARAPI ShouldOverrideKeyEvent(
+    CARAPI ShouldOverrideKeyEvent(
         /* [in] */ IWebView* view,
         /* [in] */ IKeyEvent* event,
         /* [out] */ Boolean* result);
@@ -299,7 +299,7 @@ public:
      * @param view The WebView that is initiating the callback.
      * @param event The key event.
      */
-    virtual CARAPI OnUnhandledKeyEvent(
+    CARAPI OnUnhandledKeyEvent(
         /* [in] */ IWebView* view,
         /* [in] */ IKeyEvent* event);
 
@@ -321,7 +321,7 @@ public:
      * @param view The WebView that is initiating the callback.
      * @param event The input event.
      */
-    virtual CARAPI OnUnhandledInputEvent(
+    CARAPI OnUnhandledInputEvent(
         /* [in] */ IWebView* view,
         /* [in] */ IInputEvent* event);
 
@@ -333,7 +333,7 @@ public:
      * @param oldScale The old scale factor
      * @param newScale The new scale factor
      */
-    virtual CARAPI OnScaleChanged(
+    CARAPI OnScaleChanged(
         /* [in] */ IWebView* view,
         /* [in] */ Float oldScale,
         /* [in] */ Float newScale);
@@ -348,7 +348,7 @@ public:
      *                account, it should be used to log in the user.
      * @param args Authenticator specific arguments used to log in the user.
      */
-    virtual CARAPI OnReceivedLoginRequest(
+    CARAPI OnReceivedLoginRequest(
         /* [in] */ IWebView* view,
         /* [in] */ const String& realm,
         /* [in] */ const String& account,

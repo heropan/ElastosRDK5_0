@@ -41,7 +41,7 @@ public:
      *               cookies
      */
     //synchronized
-    virtual CARAPI SetAcceptCookie(
+    CARAPI SetAcceptCookie(
         /* [in] */ Boolean accept);
 
     /**
@@ -51,7 +51,7 @@ public:
      * @return true if {@link WebView} instances send and accept cookies
      */
     //synchronized
-    virtual CARAPI AcceptCookie(
+    CARAPI AcceptCookie(
         /* [out] */ Boolean* result);
 
      /**
@@ -64,7 +64,7 @@ public:
      * @param value the cookie as a string, using the format of the 'Set-Cookie'
      *              HTTP response header
      */
-    virtual CARAPI SetCookie(
+    CARAPI SetCookie(
         /* [in] */ const String& url,
         /* [in] */ const String& value);
 
@@ -88,7 +88,7 @@ public:
      *               HTTP request header
      * @hide Used by Browser, no intention to publish.
      */
-    virtual CARAPI GetCookie(
+    CARAPI GetCookie(
         /* [in] */ const String& url,
         /* [in] */ Boolean privateBrowsing,
         /* [out] */ String* cookie);
@@ -103,7 +103,7 @@ public:
      * @hide Used by RequestHandle, no intention to publish.
      */
     //synchronized
-    virtual CARAPI GetCookie(
+    CARAPI GetCookie(
         /* [in] */ IWebAddress* uri,
         /* [out] */ String* cookie);
 
@@ -111,12 +111,12 @@ public:
      * Removes all session cookies, which are cookies without an expiration
      * date.
      */
-    virtual CARAPI RemoveSessionCookie();
+    CARAPI RemoveSessionCookie();
 
     /**
      * Removes all cookies.
      */
-    virtual CARAPI RemoveAllCookie();
+    CARAPI RemoveAllCookie();
 
     /**
      * Gets whether there are stored cookies.
@@ -124,7 +124,7 @@ public:
      * @return true if there are stored cookies
      */
     //synchronized
-    virtual CARAPI HasCookies(
+    CARAPI HasCookies(
         /* [out] */ Boolean* result);
 
     /**
@@ -134,14 +134,14 @@ public:
      * @hide Used by Browser, no intention to publish.
      */
     //synchronized
-    virtual CARAPI HasCookies(
+    CARAPI HasCookies(
         /* [in] */ Boolean privateBrowsing,
         /* [out] */ Boolean* result);
 
     /**
      * Removes all expired cookies.
      */
-    virtual CARAPI RemoveExpiredCookie();
+    CARAPI RemoveExpiredCookie();
 
     /**
      * Gets whether the application's {@link WebView} instances send and accept

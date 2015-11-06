@@ -64,7 +64,7 @@ public:
      *
      * @param mimeType the resource response's MIME type
      */
-    virtual CARAPI SetMimeType(
+    CARAPI SetMimeType(
         /* [in] */ const String& mimeType);
 
     /**
@@ -72,7 +72,7 @@ public:
      *
      * @return the resource response's MIME type
      */
-    virtual CARAPI GetMimeType(
+    CARAPI GetMimeType(
         /* [out] */ String* type);
 
     /**
@@ -81,7 +81,7 @@ public:
      *
      * @param encoding the resource response's encoding
      */
-    virtual CARAPI SetEncoding(
+    CARAPI SetEncoding(
         /* [in] */ const String& encoding);
 
     /**
@@ -89,7 +89,7 @@ public:
      *
      * @return the resource response's encoding
      */
-    virtual CARAPI GetEncoding(
+    CARAPI GetEncoding(
         /* [out] */ String* encoding);
 
     /**
@@ -100,7 +100,7 @@ public:
      * @param reasonPhrase the phrase describing the status code, for example "OK". Must be non-null
      *                     and not empty.
      */
-    virtual CARAPI SetStatusCodeAndReasonPhrase(
+    CARAPI SetStatusCodeAndReasonPhrase(
         /* [in] */ Int32 statusCode,
         /* [in] */ const String& reasonPhrase);
 
@@ -109,7 +109,7 @@ public:
      *
      * @return the resource response's status code.
      */
-    virtual CARAPI GetStatusCode(
+    CARAPI GetStatusCode(
         /* [out] */ Int32* statusCode);
 
     /**
@@ -117,7 +117,7 @@ public:
      *
      * @return the description of the resource response's status code.
      */
-    virtual CARAPI GetReasonPhrase(
+    CARAPI GetReasonPhrase(
         /* [out] */ String* reasonPhrase);
 
     /**
@@ -125,7 +125,7 @@ public:
      *
      * @param headers mapping of header name -> header value.
      */
-    virtual CARAPI SetResponseHeaders(
+    CARAPI SetResponseHeaders(
         /* [in] */ IMap* headers);
 
     /**
@@ -133,7 +133,7 @@ public:
      *
      * @return the headers for the resource response.
      */
-    virtual CARAPI GetResponseHeaders(
+    CARAPI GetResponseHeaders(
         /* [out] */ IMap** headers);
 
     /**
@@ -142,7 +142,7 @@ public:
      *
      * @param data the input stream that provides the resource response's data
      */
-    virtual CARAPI SetData(
+    CARAPI SetData(
         /* [in] */ IInputStream* data);
 
     /**
@@ -150,7 +150,7 @@ public:
      *
      * @return the input stream that provides the resource response's data
      */
-    virtual CARAPI GetData(
+    CARAPI GetData(
         /* [out] */ IInputStream** data);
 
     CARAPI ToString(
@@ -158,19 +158,6 @@ public:
 
 protected:
     WebResourceResponse();
-
-    CARAPI Init(
-        /* [in] */ const String& mimeType,
-        /* [in] */ const String& encoding,
-        /* [in] */ IInputStream* data);
-
-    CARAPI Init(
-        /* [in] */ const String& mimeType,
-        /* [in] */ const String& encoding,
-        /* [in] */ Int32 statusCode,
-        /* [in] */ const String& reasonPhrase,
-        /* [in] */ IMap* responseHeaders,
-        /* [in] */ IInputStream* data);
 
 protected:
     // Accessed by jni, do not rename without modifying the jni code.

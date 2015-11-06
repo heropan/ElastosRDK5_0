@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_WEBKIT_WEBVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/WebViewFactoryProvider.h"
 // TODO #include "elastos/droid/widget/AbsoluteLayout.h"
 
 using Elastos::IO::IBufferedWriter;
@@ -269,7 +268,7 @@ public:
          *
          * @param webview the WebView to transport
          */
-        virtual CARAPI SetWebView(
+        CARAPI SetWebView(
             /* [in] */ IWebView* webview);
 
         /**
@@ -277,7 +276,7 @@ public:
          *
          * @return the transported WebView object
          */
-        virtual CARAPI GetWebView(
+        CARAPI GetWebView(
             /* [out] */ IWebView** webView);
 
         CARAPI ToString(
@@ -487,7 +486,7 @@ public:
      *
      * @param overlay true if horizontal scrollbar should have overlay style
      */
-    virtual CARAPI SetHorizontalScrollbarOverlay(
+    CARAPI SetHorizontalScrollbarOverlay(
         /* [in] */ Boolean overlay);
 
     /**
@@ -495,7 +494,7 @@ public:
      *
      * @param overlay true if vertical scrollbar should have overlay style
      */
-    virtual CARAPI SetVerticalScrollbarOverlay(
+    CARAPI SetVerticalScrollbarOverlay(
         /* [in] */ Boolean overlay);
 
     /**
@@ -503,7 +502,7 @@ public:
      *
      * @return true if horizontal scrollbar has overlay style
      */
-    virtual CARAPI OverlayHorizontalScrollbar(
+    CARAPI OverlayHorizontalScrollbar(
         /* [out] */ Boolean* result);
 
     /**
@@ -511,7 +510,7 @@ public:
      *
      * @return true if vertical scrollbar has overlay style
      */
-    virtual CARAPI OverlayVerticalScrollbar(
+    CARAPI OverlayVerticalScrollbar(
         /* [out] */ Boolean* result);
 
     /**
@@ -520,7 +519,7 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI GetVisibleTitleHeight(
+    CARAPI GetVisibleTitleHeight(
         /* [out] */ Int32* height);
 
     /**
@@ -529,7 +528,7 @@ public:
      *
      * @return the SSL certificate for the main top-level page
      */
-    virtual CARAPI GetCertificate(
+    CARAPI GetCertificate(
         /* [out] */ ISslCertificate** cer);
 
     /**
@@ -538,7 +537,7 @@ public:
      * @deprecated Calling this function has no useful effect, and will be
      * ignored in future releases.
      */
-    virtual CARAPI SetCertificate(
+    CARAPI SetCertificate(
         /* [in] */ ISslCertificate* certificate);
 
     //-------------------------------------------------------------------------
@@ -557,7 +556,7 @@ public:
      * @see WebViewDatabase#clearUsernamePassword
      * @see WebViewDatabase#hasUsernamePassword
      */
-    virtual CARAPI SavePassword(
+    CARAPI SavePassword(
         /* [in] */ const String& host,
         /* [in] */ const String& username,
         /* [in] */ const String& password);
@@ -575,7 +574,7 @@ public:
      * @see WebViewDatabase#hasHttpAuthUsernamePassword
      * @see WebViewDatabase#clearHttpAuthUsernamePassword
      */
-    virtual CARAPI SetHttpAuthUsernamePassword(
+    CARAPI SetHttpAuthUsernamePassword(
         /* [in] */ const String& host,
         /* [in] */ const String& realm,
         /* [in] */ const String& username,
@@ -595,7 +594,7 @@ public:
      * @see WebViewDatabase#hasHttpAuthUsernamePassword
      * @see WebViewDatabase#clearHttpAuthUsernamePassword
      */
-    virtual CARAPI GetHttpAuthUsernamePassword(
+    CARAPI GetHttpAuthUsernamePassword(
         /* [in] */ const String& host,
         /* [in] */ const String& realm,
         /* [out, callee] */ ArrayOf<String>** up);
@@ -605,7 +604,7 @@ public:
      * after this WebView has been removed from the view system. No other
      * methods may be called on this WebView after destroy.
      */
-    virtual CARAPI Destroy();
+    CARAPI Destroy();
 
     /**
      * Enables platform notifications of data state and proxy changes.
@@ -632,7 +631,7 @@ public:
      *
      * @param networkUp a boolean indicating if network is available
      */
-    virtual CARAPI SetNetworkAvailable(
+    CARAPI SetNetworkAvailable(
         /* [in] */ Boolean networkUp);
 
     /**
@@ -646,7 +645,7 @@ public:
      * @return the same copy of the back/forward list used to save the state. If
      *         saveState fails, the returned list will be null.
      */
-    virtual CARAPI SaveState(
+    CARAPI SaveState(
         /* [in] */ IBundle* outState,
         /* [out] */ IWebBackForwardList** wfl);
 
@@ -660,7 +659,7 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI SavePicture(
+    CARAPI SavePicture(
         /* [in] */ IBundle* b,
         /* [in] */ IFile* dest,
         /* [out] */ Boolean* result);
@@ -676,7 +675,7 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI RestorePicture(
+    CARAPI RestorePicture(
         /* [in] */ IBundle* b,
         /* [in] */ IFile* src,
         /* [out] */ Boolean* result);
@@ -693,7 +692,7 @@ public:
      * @param inState the incoming Bundle of state
      * @return the restored back/forward list or null if restoreState failed
      */
-    virtual CARAPI RestoreState(
+    CARAPI RestoreState(
         /* [in] */ IBundle* inState,
         /* [out] */ IWebBackForwardList** wfl);
 
@@ -708,7 +707,7 @@ public:
      *            controlling caching, accept types or the User-Agent, their
      *            values may be overriden by this WebView's defaults.
      */
-    virtual CARAPI LoadUrl(
+    CARAPI LoadUrl(
         /* [in] */ const String& url,
         /* [in] */ IMap* additionalHttpHeaders);
 
@@ -717,7 +716,7 @@ public:
      *
      * @param url the URL of the resource to load
      */
-    virtual CARAPI LoadUrl(
+    CARAPI LoadUrl(
         /* [in] */ const String& url);
 
     /**
@@ -728,7 +727,7 @@ public:
      * @param url the URL of the resource to load
      * @param postData the data will be passed to "POST" request
      */
-    virtual CARAPI PostUrl(
+    CARAPI PostUrl(
         /* [in] */ const String& url,
         /* [in] */ ArrayOf<Byte>* postData);
 
@@ -761,7 +760,7 @@ public:
      * @param mimeType the MIME type of the data, e.g. 'text/html'
      * @param encoding the encoding of the data
      */
-    virtual CARAPI LoadData(
+    CARAPI LoadData(
         /* [in] */ const String& data,
         /* [in] */ const String& mimeType,
         /* [in] */ const String& encoding);
@@ -789,7 +788,7 @@ public:
      * @param historyUrl the URL to use as the history entry. If null defaults
      *                   to 'about:blank'.
      */
-    virtual CARAPI LoadDataWithBaseURL(
+    CARAPI LoadDataWithBaseURL(
         /* [in] */ const String& baseUrl,
         /* [in] */ const String& data,
         /* [in] */ const String& mimeType,
@@ -807,7 +806,7 @@ public:
      *                       completes with the result of the execution (if any).
      *                       May be null if no notificaion of the result is required.
      */
-    virtual CARAPI EvaluateJavascript(
+    CARAPI EvaluateJavascript(
         /* [in] */ const String& script,
         /* [in] */ IValueCallback* resultCallback);
 
@@ -816,7 +815,7 @@ public:
      *
      * @param filename the filename where the archive should be placed
      */
-    virtual CARAPI SaveWebArchive(
+    CARAPI SaveWebArchive(
         /* [in] */ const String& filename);
 
     /**
@@ -831,7 +830,7 @@ public:
      *                 under which the file was saved, or null if saving the
      *                 file failed.
      */
-    virtual CARAPI SaveWebArchive(
+    CARAPI SaveWebArchive(
         /* [in] */ const String& basename,
         /* [in] */ Boolean autoname,
         /* [in] */ IValueCallback* callback);
@@ -839,38 +838,38 @@ public:
     /**
      * Stops the current load.
      */
-    virtual CARAPI StopLoading();
+    CARAPI StopLoading();
 
     /**
      * Reloads the current URL.
      */
-    virtual CARAPI Reload();
+    CARAPI Reload();
 
     /**
      * Gets whether this WebView has a back history item.
      *
      * @return true iff this WebView has a back history item
      */
-    virtual CARAPI CanGoBack(
+    CARAPI CanGoBack(
         /* [out] */ Boolean* result);
 
     /**
      * Goes back in the history of this WebView.
      */
-    virtual CARAPI GoBack();
+    CARAPI GoBack();
 
     /**
      * Gets whether this WebView has a forward history item.
      *
      * @return true iff this Webview has a forward history item
      */
-    virtual CARAPI CanGoForward(
+    CARAPI CanGoForward(
         /* [out] */ Boolean* result);
 
     /**
      * Goes forward in the history of this WebView.
      */
-    virtual CARAPI GoForward();
+    CARAPI GoForward();
 
     /**
      * Gets whether the page can go back or forward the given
@@ -879,7 +878,7 @@ public:
      * @param steps the negative or positive number of steps to move the
      *              history
      */
-    virtual CARAPI CanGoBackOrForward(
+    CARAPI CanGoBackOrForward(
         /* [in] */ Int32 steps,
         /* [out] */ Boolean* result);
 
@@ -891,13 +890,13 @@ public:
      * @param steps the number of steps to take back or forward in the back
      *              forward list
      */
-    virtual CARAPI GoBackOrForward(
+    CARAPI GoBackOrForward(
         /* [in] */ Int32 steps);
 
     /**
      * Gets whether private browsing is enabled in this WebView.
      */
-    virtual CARAPI IsPrivateBrowsingEnabled(
+    CARAPI IsPrivateBrowsingEnabled(
         /* [out] */ Boolean* enabled);
 
     /**
@@ -906,7 +905,7 @@ public:
      * @param top true to jump to the top of the page
      * @return true if the page was scrolled
      */
-    virtual CARAPI PageUp(
+    CARAPI PageUp(
         /* [in] */ Boolean top,
         /* [out] */ Boolean* result);
 
@@ -916,7 +915,7 @@ public:
      * @param bottom true to jump to bottom of page
      * @return true if the page was scrolled
      */
-    virtual CARAPI PageDown(
+    CARAPI PageDown(
         /* [in] */ Boolean bottom,
         /* [out] */ Boolean* result);
 
@@ -924,7 +923,7 @@ public:
      * Clears this WebView so that onDraw() will draw nothing but white background,
      * and onMeasure() will return 0 if MeasureSpec is not MeasureSpec.EXACTLY.
      */
-    virtual CARAPI ClearView();
+    CARAPI ClearView();
 
     /**
      * Gets a new picture that captures the current contents of this WebView.
@@ -940,7 +939,7 @@ public:
      *
      * @return a picture that captures the current contents of this WebView
      */
-    virtual CARAPI CapturePicture(
+    CARAPI CapturePicture(
         /* [out] */ IPicture** pic);
 
     /**
@@ -952,7 +951,7 @@ public:
      * between the web rendering and UI threads; prefer
      * {@link WebViewClient#onScaleChanged}.
      */
-    virtual CARAPI GetScale(
+    CARAPI GetScale(
         /* [out] */ Float* scale);
 
     /**
@@ -965,7 +964,7 @@ public:
      *
      * @param scaleInPercent the initial scale in percent
      */
-    virtual CARAPI SetInitialScale(
+    CARAPI SetInitialScale(
         /* [in] */ Int32 scaleInPercent);
 
     /**
@@ -973,7 +972,7 @@ public:
      * result in the zoom widget appearing on the screen to control the zoom
      * level of this WebView.
      */
-    virtual CARAPI InvokeZoomPicker();
+    CARAPI InvokeZoomPicker();
 
     /**
      * Gets a HitTestResult based on the current cursor node. If a HTML::a
@@ -993,7 +992,7 @@ public:
      * and the email is set in the "extra" field of HitTestResult. Otherwise,
      * HitTestResult type is set to UNKNOWN_TYPE.
      */
-    virtual CARAPI GetHitTestResult(
+    CARAPI GetHitTestResult(
         /* [out] */ IWebViewHitTestResult** tr);
 
     /**
@@ -1009,7 +1008,7 @@ public:
      *                returns the anchor's href attribute. "title" returns the
      *                anchor's text. "src" returns the image's src attribute.
      */
-    virtual CARAPI RequestFocusNodeHref(
+    CARAPI RequestFocusNodeHref(
         /* [in] */ IMessage* hrefMsg);
 
     /**
@@ -1019,7 +1018,7 @@ public:
      * @param msg the message to be dispatched with the result of the request
      *            as the data member with "url" as key. The result can be null.
      */
-    virtual CARAPI RequestImageRef(
+    CARAPI RequestImageRef(
         /* [in] */ IMessage* msg);
 
     /**
@@ -1029,7 +1028,7 @@ public:
      *
      * @return the URL for the current page
      */
-    virtual CARAPI GetUrl(
+    CARAPI GetUrl(
         /* [out] */ String* url);
 
     /**
@@ -1041,7 +1040,7 @@ public:
      *
      * @return the URL that was originally requested for the current page
      */
-    virtual CARAPI GetOriginalUrl(
+    CARAPI GetOriginalUrl(
         /* [out] */ String* url);
 
     /**
@@ -1050,7 +1049,7 @@ public:
      *
      * @return the title for the current page
      */
-    virtual CARAPI GetTitle(
+    CARAPI GetTitle(
         /* [out] */ String* title);
 
     /**
@@ -1059,7 +1058,7 @@ public:
      *
      * @return the favicon for the current page
      */
-    virtual CARAPI GetFavicon(
+    CARAPI GetFavicon(
         /* [out] */ IBitmap** bitmap);
 
     /**
@@ -1069,7 +1068,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI GetTouchIconUrl(
+    CARAPI GetTouchIconUrl(
         /* [out] */ String* url);
 
     /**
@@ -1077,7 +1076,7 @@ public:
      *
      * @return the progress for the current page between 0 and 100
      */
-    virtual CARAPI GetProgress(
+    CARAPI GetProgress(
         /* [out] */ Int32* progress);
 
     /**
@@ -1085,7 +1084,7 @@ public:
      *
      * @return the height of the HTML content
      */
-    virtual CARAPI GetContentHeight(
+    CARAPI GetContentHeight(
         /* [out] */ Int32* height);
 
     /**
@@ -1094,7 +1093,7 @@ public:
      * @return the width of the HTML content
      * @hide
      */
-    virtual CARAPI GetContentWidth(
+    CARAPI GetContentWidth(
         /* [out] */ Int32* width);
 
     /**
@@ -1102,13 +1101,13 @@ public:
      * is a global requests, not restricted to just this WebView. This can be
      * useful if the application has been paused.
      */
-    virtual CARAPI PauseTimers();
+    CARAPI PauseTimers();
 
     /**
      * Resumes all layout, parsing, and JavaScript timers for all WebViews.
      * This will resume dispatching all timers.
      */
-    virtual CARAPI ResumeTimers();
+    CARAPI ResumeTimers();
 
     /**
      * Pauses any extra processing associated with this WebView and its
@@ -1117,12 +1116,12 @@ public:
      * network traffic. When this WebView is again "active", call onResume().
      * Note that this differs from pauseTimers(), which affects all WebViews.
      */
-    virtual CARAPI OnPause();
+    CARAPI OnPause();
 
     /**
      * Resumes a WebView after a previous call to onPause().
      */
-    virtual CARAPI OnResume();
+    CARAPI OnResume();
 
     /**
      * Gets whether this WebView is paused, meaning onPause() was called.
@@ -1130,14 +1129,14 @@ public:
      *
      * @hide
      */
-    virtual CARAPI IsPaused(
+    CARAPI IsPaused(
         /* [out] */ Boolean* result);
 
     /**
      * Informs this WebView that memory is low so that it can free any available
      * memory.
      */
-    virtual CARAPI FreeMemory();
+    CARAPI FreeMemory();
 
     /**
      * Clears the resource cache. Note that the cache is per-application, so
@@ -1145,7 +1144,7 @@ public:
      *
      * @param includeDiskFiles if false, only the RAM cache is cleared
      */
-    virtual CARAPI ClearCache(
+    CARAPI ClearCache(
         /* [in] */ Boolean includeDiskFiles);
 
     /**
@@ -1154,18 +1153,18 @@ public:
      * it does not remove any saved form data from this WebView's store. To do
      * that, use {@link WebViewDatabase#clearFormData}.
      */
-    virtual CARAPI ClearFormData();
+    CARAPI ClearFormData();
 
     /**
      * Tells this WebView to clear its internal back/forward list.
      */
-    virtual CARAPI ClearHistory();
+    CARAPI ClearHistory();
 
     /**
      * Clears the SSL preferences table stored in response to proceeding with
      * SSL certificate errors.
      */
-    virtual CARAPI ClearSslPreferences();
+    CARAPI ClearSslPreferences();
 
     /**
      * Gets the WebBackForwardList for this WebView. This contains the
@@ -1175,7 +1174,7 @@ public:
      * different objects. The object returned from this method will not be
      * updated to reflect any new state.
      */
-    virtual CARAPI CopyBackForwardList(
+    CARAPI CopyBackForwardList(
         /* [out] */ IWebBackForwardList** wfl);
 
     /**
@@ -1184,7 +1183,7 @@ public:
      *
      * @param listener an implementation of {@link FindListener}
      */
-    virtual CARAPI SetFindListener(
+    CARAPI SetFindListener(
         /* [in] */ IWebViewFindListener* listener);
 
     /**
@@ -1197,7 +1196,7 @@ public:
      * @param forward the direction to search
      * @see #setFindListener
      */
-    virtual CARAPI FindNext(
+    CARAPI FindNext(
         /* [in] */ Boolean forward);
 
     /**
@@ -1209,7 +1208,7 @@ public:
      * @deprecated {@link #findAllAsync} is preferred.
      * @see #setFindListener
      */
-    virtual CARAPI FindAll(
+    CARAPI FindAll(
         /* [in] */ const String& find,
         /* [out] */ Int32* all);
 
@@ -1221,7 +1220,7 @@ public:
      * @param find the string to find.
      * @see #setFindListener
      */
-    virtual CARAPI FindAllAsync(
+    CARAPI FindAllAsync(
         /* [in] */ const String& find);
 
     /**
@@ -1235,7 +1234,7 @@ public:
      *                If false and text is non-null, perform a find all.
      * @return true if the find dialog is shown, false otherwise
      */
-    virtual CARAPI ShowFindDialog(
+    CARAPI ShowFindDialog(
         /* [in] */ const String& text,
         /* [in] */ Boolean showIme,
         /* [out] */ Boolean* result);
@@ -1269,7 +1268,7 @@ public:
      * Clears the highlighting surrounding text matches created by
      * {@link #findAllAsync}.
      */
-    virtual CARAPI ClearMatches();
+    CARAPI ClearMatches();
 
     /**
      * Queries the document to see if it contains any image references. The
@@ -1278,7 +1277,7 @@ public:
      *
      * @param response the message that will be dispatched with the result
      */
-    virtual CARAPI DocumentHasImages(
+    CARAPI DocumentHasImages(
         /* [in] */ IMessage* response);
 
     /**
@@ -1287,7 +1286,7 @@ public:
      *
      * @param client an implementation of WebViewClient
      */
-    virtual CARAPI SetWebViewClient(
+    CARAPI SetWebViewClient(
         /* [in] */ IWebViewClient* client);
 
     /**
@@ -1297,7 +1296,7 @@ public:
      *
      * @param listener an implementation of DownloadListener
      */
-    virtual CARAPI SetDownloadListener(
+    CARAPI SetDownloadListener(
         /* [in] */ IDownloadListener* listener);
 
     /**
@@ -1307,7 +1306,7 @@ public:
      *
      * @param client an implementation of WebChromeClient
      */
-    virtual CARAPI SetWebChromeClient(
+    CARAPI SetWebChromeClient(
         /* [in] */ IWebChromeClient* client);
 
     /**
@@ -1317,7 +1316,7 @@ public:
      * @param listener an implementation of WebView.PictureListener
      * @deprecated This method is now obsolete.
      */
-    virtual CARAPI SetPictureListener(
+    CARAPI SetPictureListener(
         /* [in] */ IWebViewPictureListener* listener);
 
     /**
@@ -1364,7 +1363,7 @@ public:
      *               context. Null values are ignored.
      * @param name the name used to expose the object in JavaScript
      */
-    virtual CARAPI AddJavascriptInterface(
+    CARAPI AddJavascriptInterface(
         /* [in] */ IInterface* object,
         /* [in] */ const String& name);
 
@@ -1375,7 +1374,7 @@ public:
      *
      * @param name the name used to expose the object in JavaScript
      */
-    virtual CARAPI RemoveJavascriptInterface(
+    CARAPI RemoveJavascriptInterface(
         /* [in] */ const String& name);
 
     /**
@@ -1385,7 +1384,7 @@ public:
      * @return a WebSettings object that can be used to control this WebView's
      *         settings
      */
-    virtual CARAPI GetSettings(
+    CARAPI GetSettings(
         /* [out] */ IWebSettings** webSetting);
 
     /**
@@ -1401,7 +1400,7 @@ public:
      * @deprecated This was used for Gears, which has been deprecated.
      * @hide
      */
-    virtual CARAPI RefreshPlugins(
+    CARAPI RefreshPlugins(
         /* [in] */ Boolean reloadOpenPages);
 
     /**
@@ -1411,7 +1410,7 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI EmulateShiftHeld();
+    CARAPI EmulateShiftHeld();
 
     /**
      * @deprecated WebView no longer needs to implement
@@ -1446,10 +1445,10 @@ public:
     /**
      * @deprecated Only the default case, true, will be supported in a future version.
      */
-    virtual CARAPI SetMapTrackballToArrowKeys(
+    CARAPI SetMapTrackballToArrowKeys(
         /* [in] */ Boolean setMap);
 
-    virtual CARAPI FlingScroll(
+    CARAPI FlingScroll(
         /* [in] */ Int32 vx,
         /* [in] */ Int32 vy);
 
@@ -1465,7 +1464,7 @@ public:
      * @deprecated the built-in zoom mechanisms are preferred
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN}
      */
-    virtual CARAPI GetZoomControls(
+    CARAPI GetZoomControls(
         /* [out] */ IView** view);
 
     /**
@@ -1477,7 +1476,7 @@ public:
      * between the web rendering and UI threads; prefer
      * {@link WebViewClient#onScaleChanged}.
      */
-    virtual CARAPI CanZoomIn(
+    CARAPI CanZoomIn(
         /* [out] */ Boolean* result);
 
     /**
@@ -1489,7 +1488,7 @@ public:
      * between the web rendering and UI threads; prefer
      * {@link WebViewClient#onScaleChanged}.
      */
-    virtual CARAPI CanZoomOut(
+    CARAPI CanZoomOut(
         /* [out] */ Boolean* result);
 
     /**
@@ -1498,7 +1497,7 @@ public:
      * @param zoomFactor the zoom factor to apply. The zoom factor will be clamped to the Webview's
      * zoom limits. This value must be in the range 0.01 to 100.0 inclusive.
      */
-    virtual CARAPI ZoomBy(
+    CARAPI ZoomBy(
         /* [in] */ Float zoomFactor);
 
     /**
@@ -1506,7 +1505,7 @@ public:
      *
      * @return true if zoom in succeeds, false if no zoom changes
      */
-    virtual CARAPI ZoomIn(
+    CARAPI ZoomIn(
         /* [out] */ Boolean* result);
 
     /**
@@ -1514,14 +1513,14 @@ public:
      *
      * @return true if zoom out succeeds, false if no zoom changes
      */
-    virtual CARAPI ZoomOut(
+    CARAPI ZoomOut(
         /* [out] */ Boolean* result);
 
     /**
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI DebugDump();
+    CARAPI DebugDump();
 
     /**
      * See {@link ViewDebug.HierarchyHandler#dumpViewHierarchyWithProperties(BufferedWriter, int)}
@@ -1550,7 +1549,7 @@ public:
      *
      * @hide WebViewProvider is not public API.
      */
-    virtual CARAPI GetWebViewProvider(
+    CARAPI GetWebViewProvider(
         /* [out] */ IWebViewProvider** provider);
 
     //-------------------------------------------------------------------------
@@ -1638,6 +1637,20 @@ public:
     CARAPI ToString(
         /* [out] */ String* info);
 
+public:
+    /**
+     * URI scheme for telephone number.
+     */
+    static const String SCHEME_TEL;
+    /**
+     * URI scheme for email address.
+     */
+    static const String SCHEME_MAILTO;
+    /**
+     * URI scheme for map address.
+     */
+    static const String SCHEME_GEO;
+
 protected:
     WebView();
 
@@ -1659,63 +1672,6 @@ protected:
      *       be added synchronously, before a subsequent loadUrl call takes effect.
      */
     WebView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ IMap* javaScriptInterfaces,
-        /* [in] */ Boolean privateBrowsing);
-
-    /**
-     * Constructs a new WebView with a Context object.
-     *
-     * @param context a Context object used to access application assets
-     */
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    /**
-     * Constructs a new WebView with layout parameters.
-     *
-     * @param context a Context object used to access application assets
-     * @param attrs an AttributeSet passed to our parent
-     */
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    /**
-     * Constructs a new WebView with layout parameters and a default style.
-     *
-     * @param context a Context object used to access application assets
-     * @param attrs an AttributeSet passed to our parent
-     * @param defStyle the default style resource ID
-     */
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-    /**
-     * Constructs a new WebView with layout parameters and a default style.
-     *
-     * @param context a Context object used to access application assets
-     * @param attrs an AttributeSet passed to our parent
-     * @param defStyle the default style resource ID
-     * @param privateBrowsing whether this WebView will be initialized in
-     *                        private mode
-     *
-     * @deprecated Private browsing is no longer supported directly via
-     * WebView and will be removed in a future release. Prefer using
-     * {@link WebSettings}, {@link WebViewDatabase}, {@link CookieManager}
-     * and {@link WebStorage} for fine-grained control of privacy data.
-     */
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Boolean privateBrowsing);
-
-    CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle,
@@ -1793,25 +1749,18 @@ protected:
         /* [in] */ Int32 heightMeasureSpec);
 
 private:
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle,
+        /* [in] */ IMap* javaScriptInterfaces,
+        /* [in] */ Boolean privateBrowsing);
+
     CARAPI_(void) EnsureProviderCreated();
 
     static CARAPI_(AutoPtr<IWebViewFactoryProvider>) GetFactory();
 
-    static CARAPI_(void) CheckThread();
-
-public:
-    /**
-     * URI scheme for telephone number.
-     */
-    static const String SCHEME_TEL;
-    /**
-     * URI scheme for email address.
-     */
-    static const String SCHEME_MAILTO;
-    /**
-     * URI scheme for map address.
-     */
-    static const String SCHEME_GEO;
+    static CARAPI CheckThread();
 
 private:
     static const String LOGTAG;

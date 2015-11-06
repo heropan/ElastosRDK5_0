@@ -118,6 +118,7 @@ ECode WebViewFragment::GetWebView(
 {
     VALIDATE_NOT_NULL(webView);
     *webView = mIsWebViewAvailable ? mWebView : NULL;
+    REFCOUNT_ADD(*webView);
     return NOERROR;
 }
 

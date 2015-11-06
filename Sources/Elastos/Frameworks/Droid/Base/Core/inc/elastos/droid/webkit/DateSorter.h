@@ -41,7 +41,7 @@ public:
      * @return an index from 0 to (DAY_COUNT - 1) that identifies which
      * date bin this date belongs to
      */
-    virtual CARAPI GetIndex(
+    CARAPI GetIndex(
         /* [in] */ Int64 time,
         /* [out] */ Int32* index);
 
@@ -49,7 +49,7 @@ public:
      * @param index date bin index as returned by getIndex()
      * @return string label suitable for display to user
      */
-    virtual CARAPI GetLabel(
+    CARAPI GetLabel(
         /* [in] */ Int32 index,
         /* [out] */ String* label);
 
@@ -57,7 +57,7 @@ public:
      * @param index date bin index as returned by getIndex()
      * @return date boundary at given index
      */
-    virtual CARAPI GetBoundary(
+    CARAPI GetBoundary(
         /* [in] */ Int32 index,
         /* [out] */ Int64* boundary);
 

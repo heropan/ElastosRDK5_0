@@ -36,13 +36,13 @@ public:
     /**
      * Handle a confirmation response from the user.
      */
-    virtual CARAPI Confirm(
+    CARAPI Confirm(
         /* [in] */ const String& result);
 
     /**
      * @hide Only for use by WebViewProvider implementations
      */
-    virtual CARAPI GetStringResult(
+    CARAPI GetStringResult(
         /* [out] */ String* result);
 
     CARAPI ToString(

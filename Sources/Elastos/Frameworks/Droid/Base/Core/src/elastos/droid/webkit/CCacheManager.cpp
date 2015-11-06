@@ -20,23 +20,6 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-struct ElaCacheManagerCallback CCacheManager::sElaCacheManagerCallback = {
-    &CCacheManager::CreateCCacheManagerCacheResult,
-    &CCacheManager::_GetCacheFileBaseDir,
-    &CCacheManager::SetContentdisposition,
-    &CCacheManager::SetContentLength,
-    &CCacheManager::SetEtag,
-    &CCacheManager::SetEncoding,
-    &CCacheManager::SetExpires,
-    &CCacheManager::SetExpiresString,
-    &CCacheManager::SetHttpStatusCode,
-    &CCacheManager::SetLastModified,
-    &CCacheManager::SetLocalPath,
-    &CCacheManager::SetLocation,
-    &CCacheManager::SetMimeType,
-};
-
-
 //===============================================================
 //              CCacheManager::CacheResult
 //===============================================================
@@ -508,6 +491,7 @@ Elastos::String CCacheManager::_GetCacheFileBaseDir()
     }
     return baseDir;
 }
+
 /**
   * create a new CCacheManagerCacheResult object
   * this method is a callback function which will be invoked by lib layer

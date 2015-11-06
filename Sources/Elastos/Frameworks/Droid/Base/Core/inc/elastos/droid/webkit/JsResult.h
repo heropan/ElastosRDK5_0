@@ -34,17 +34,17 @@ public:
     /**
      * Handle the result if the user cancelled the dialog.
      */
-    virtual CARAPI Cancel();
+    CARAPI Cancel();
 
     /**
      * Handle a confirmation response from the user.
      */
-    virtual CARAPI Confirm();
+    CARAPI Confirm();
 
     /**
      * @hide Only for use by WebViewProvider implementations
      */
-    virtual CARAPI GetResult(
+    CARAPI GetResult(
         /* [out] */ Boolean* result);
 
     CARAPI ToString(
@@ -54,6 +54,7 @@ protected:
     /* Notify the caller that the JsResult has completed */
     virtual CARAPI_(void) WakeUp();
 
+protected:
     // This is the caller of the prompt and is the object that is waiting.
     AutoPtr<IJsResultReceiver> mReceiver;
 

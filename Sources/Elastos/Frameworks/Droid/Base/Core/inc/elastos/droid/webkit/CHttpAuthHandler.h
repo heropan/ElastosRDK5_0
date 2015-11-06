@@ -14,8 +14,6 @@ CarClass(CHttpAuthHandler), public HttpAuthHandler
 {
 public:
     CAR_OBJECT_DECL()
-
-//    IHANDLER_METHODS_DECL();
 };
 
 } // namespace Webkit

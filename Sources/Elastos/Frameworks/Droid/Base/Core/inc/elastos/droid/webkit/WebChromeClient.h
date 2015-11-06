@@ -42,7 +42,7 @@ public:
      * @param newProgress Current page loading progress, represented by
      *                    an integer between 0 and 100.
      */
-    virtual CARAPI OnProgressChanged(
+    CARAPI OnProgressChanged(
         /* [in] */ IWebView* view,
         /* [in] */ Int32 newProgress);
 
@@ -51,7 +51,7 @@ public:
      * @param view The WebView that initiated the callback.
      * @param title A String containing the new title of the document.
      */
-    virtual CARAPI OnReceivedTitle(
+    CARAPI OnReceivedTitle(
         /* [in] */ IWebView* view,
         /* [in] */ const String& title);
 
@@ -60,7 +60,7 @@ public:
      * @param view The WebView that initiated the callback.
      * @param icon A Bitmap containing the favicon for the current page.
      */
-    virtual CARAPI OnReceivedIcon(
+    CARAPI OnReceivedIcon(
         /* [in] */ IWebView* view,
         /* [in] */ IBitmap* icon);
 
@@ -70,7 +70,7 @@ public:
      * @param url The icon url.
      * @param precomposed True if the url is for a precomposed touch icon.
      */
-    virtual CARAPI OnReceivedTouchIconUrl(
+    CARAPI OnReceivedTouchIconUrl(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ Boolean precomposed);
@@ -82,7 +82,7 @@ public:
      * @param callback is the callback to be invoked if and when the view
      * is dismissed.
      */
-    virtual CARAPI OnShowCustomView(
+    CARAPI OnShowCustomView(
         /* [in] */ IView* view,
         /* [in] */ IWebChromeClientCustomViewCallback* callback);
 
@@ -95,7 +95,7 @@ public:
      * @param callback is the callback to be invoked if and when the view
      * is dismissed.
      */
-    virtual CARAPI OnShowCustomView(
+    CARAPI OnShowCustomView(
         /* [in] */ IView* view,
         /* [in] */ Int32 requestedOrientation,
         /* [in] */ IWebChromeClientCustomViewCallback* callback);
@@ -104,7 +104,7 @@ public:
      * Notify the host application that the current page would
      * like to hide its custom view.
      */
-    virtual CARAPI OnHideCustomView();
+    CARAPI OnHideCustomView();
 
     /**
      * Request the host application to create a new window. If the host
@@ -132,7 +132,7 @@ public:
      *         false from this method but also sending resultMsg will result in
      *         undefined behavior.
      */
-    virtual CARAPI OnCreateWindow(
+    CARAPI OnCreateWindow(
         /* [in] */ IWebView* view,
         /* [in] */ Boolean isDialog,
         /* [in] */ Boolean isUserGesture,
@@ -145,7 +145,7 @@ public:
      * WebView be displayed.
      * @param view The WebView that needs to be focused.
      */
-    virtual CARAPI OnRequestFocus(
+    CARAPI OnRequestFocus(
         /* [in] */ IWebView* view);
 
     /**
@@ -155,7 +155,7 @@ public:
      * in javascript.
      * @param window The WebView that needs to be closed.
      */
-    virtual CARAPI OnCloseWindow(
+    CARAPI OnCloseWindow(
         /* [in] */ IWebView* window);
 
     /**
@@ -168,7 +168,7 @@ public:
      * @param result A JsResult to confirm that the user hit enter.
      * @return boolean Whether the client will handle the alert dialog.
      */
-    virtual CARAPI OnJsAlert(
+    CARAPI OnJsAlert(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
@@ -188,7 +188,7 @@ public:
      *               javascript.
      * @return boolean Whether the client will handle the confirm dialog.
      */
-    virtual CARAPI OnJsConfirm(
+    CARAPI OnJsConfirm(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
@@ -209,7 +209,7 @@ public:
      *               javascript.
      * @return boolean Whether the client will handle the prompt dialog.
      */
-    virtual CARAPI OnJsPrompt(
+    CARAPI OnJsPrompt(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
@@ -233,7 +233,7 @@ public:
      *               javascript.
      * @return boolean Whether the client will handle the confirm dialog.
      */
-    virtual CARAPI OnJsBeforeUnload(
+    CARAPI OnJsBeforeUnload(
         /* [in] */ IWebView* view,
         /* [in] */ const String& url,
         /* [in] */ const String& message,
@@ -261,7 +261,7 @@ public:
     */
     // Note that the callback must always be executed at some point to ensure
     // that the sleeping WebCore thread is woken up.
-    virtual CARAPI OnExceededDatabaseQuota(
+    CARAPI OnExceededDatabaseQuota(
         /* [in] */ const String& url,
         /* [in] */ const String& databaseIdentifier,
         /* [in] */ Int64 quota,
@@ -286,7 +286,7 @@ public:
     */
     // Note that the callback must always be executed at some point to ensure
     // that the sleeping WebCore thread is woken up.
-    virtual CARAPI OnReachedMaxAppCacheSize(
+    CARAPI OnReachedMaxAppCacheSize(
         /* [in] */ Int64 requiredStorage,
         /* [in] */ Int64 quota,
         /* [in] */ IWebStorageQuotaUpdater* quotaUpdater);
@@ -302,7 +302,7 @@ public:
      * @param callback The callback to use to set the permission state for the
      *                 origin.
      */
-    virtual CARAPI OnGeolocationPermissionsShowPrompt(
+    CARAPI OnGeolocationPermissionsShowPrompt(
         /* [in] */ const String& origin,
         /* [in] */ IGeolocationPermissionsCallback* callBack);
 
@@ -312,7 +312,7 @@ public:
      * {@link #onGeolocationPermissionsShowPrompt(String,GeolocationPermissions.Callback) onGeolocationPermissionsShowPrompt()}
      * has been canceled. Any related UI should therefore be hidden.
      */
-    virtual CARAPI OnGeolocationPermissionsHidePrompt();
+    CARAPI OnGeolocationPermissionsHidePrompt();
 
     /**
      * Notify the host application that web content is requesting permission to
@@ -324,7 +324,7 @@ public:
      *
      * @param request the PermissionRequest from current web content.
      */
-    virtual CARAPI OnPermissionRequest(
+    CARAPI OnPermissionRequest(
         /* [in] */ IPermissionRequest* request);
 
     /**
@@ -333,7 +333,7 @@ public:
      *
      * @param request the PermissionRequest that needs be canceled.
      */
-    virtual CARAPI OnPermissionRequestCanceled(
+    CARAPI OnPermissionRequestCanceled(
         /* [in] */ IPermissionRequest* request);
 
     /**
@@ -351,7 +351,7 @@ public:
     // the default JS engine with Froyo and support for building with JSC was
     // removed in b/5495373. V8 does not have a mechanism for making a callback such
     // as this.
-    virtual CARAPI OnJsTimeout(
+    CARAPI OnJsTimeout(
         /* [out] */ Boolean* result);
 
     /**
@@ -364,7 +364,7 @@ public:
      *      instead.
      */
     //@Deprecated
-    virtual CARAPI OnConsoleMessage(
+    CARAPI OnConsoleMessage(
         /* [in] */ const String& message,
         /* [in] */ Int32 lineNumber,
         /* [in] */ const String& sourceID);
@@ -375,7 +375,7 @@ public:
      * @param consoleMessage Object containing details of the console message.
      * @return true if the message is handled by the client.
      */
-    virtual CARAPI OnConsoleMessage(
+    CARAPI OnConsoleMessage(
         /* [in] */ IConsoleMessage* consoleMessage,
         /* [out] */ Boolean* result);
 
@@ -388,7 +388,7 @@ public:
      * @return Bitmap The image to use as a default poster, or null if no such image is
      * available.
      */
-    virtual CARAPI GetDefaultVideoPoster(
+    CARAPI GetDefaultVideoPoster(
         /* [out] */ IBitmap** bitmap);
 
     /**
@@ -399,12 +399,12 @@ public:
      *
      * @return View The View to be displayed whilst the video is loading.
      */
-    virtual CARAPI GetVideoLoadingProgressView(
+    CARAPI GetVideoLoadingProgressView(
         /* [out] */ IView** view);
 
     /** Obtains a list of all visited history items, used for link coloring
      */
-    virtual CARAPI GetVisitedHistory(
+    CARAPI GetVisitedHistory(
         /* [in] */ IValueCallback* callBack);
 
     /**
@@ -425,7 +425,7 @@ public:
      *
      * @see FileChooserParams
      */
-    virtual CARAPI OnShowFileChooser(
+    CARAPI OnShowFileChooser(
         /* [in] */ IWebView* webView,
         /* [in] */ IValueCallback* filePathCallback,
         /* [in] */ IWebChromeClientFileChooserParams* fileChooserParams,
@@ -441,7 +441,7 @@ public:
      *         associated with this file picker.
      * @hide
      */
-    virtual CARAPI OpenFileChooser(
+    CARAPI OpenFileChooser(
         /* [in] */ IValueCallback* uploadFile,
         /* [in] */ const String& acceptType,
         /* [in] */ const String& capture);
@@ -454,7 +454,7 @@ public:
      *      now autofill using that new profile.
      * @hide
      */
-    virtual CARAPI SetupAutoFill(
+    CARAPI SetupAutoFill(
         /* [in] */ IMessage* msg);
 
     CARAPI ToString(

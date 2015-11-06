@@ -22,17 +22,6 @@ CarClass(CWebResourceResponse), public WebResourceResponse
 {
 public:
     CAR_OBJECT_DECL();
-
-    static String GetMimeType(
-        /* [in] */ IInterface* obj);
-
-    static String GetEncoding(
-        /* [in] */ IInterface* obj);
-
-    static AutoPtr<IInterface> GetData(
-        /* [in] */ IInterface* obj);
-public:
-    static struct ElaWebResourceResponseCallback sWebResourceResponseCallback;
 };
 
 } // namespace Webkit
