@@ -16,15 +16,13 @@ CAR_INTERFACE_IMPL_2(CInt64Array, Object, IInt64Array, ICloneable)
 CAR_OBJECT_IMPL(CInt64Array)
 
 CInt64Array::CInt64Array()
-    : mSize(10)
+    : mSize(0)
 {
-    mValues = ArrayOf<Int64>::Alloc(0);
 }
 
 ECode CInt64Array::constructor()
 {
-    mSize = 10;
-    return NOERROR;
+    return constructor(10);
 }
 
 ECode CInt64Array::constructor(
@@ -68,12 +66,10 @@ ECode CInt64Array::Add(
 ECode CInt64Array::AddAll(
     /* [in] */ IInt64Array* values)
 {
-    Int32 count;
-    values->GetSize(&count);
-    EnsureCapacity(count);
     AutoPtr<CInt64Array> _values = (CInt64Array*)values;
-    mValues->Copy(mSize, _values->mValues, 0, count);
-    mSize += count;
+    EnsureCapacity(_values->mSize);
+    mValues->Copy(mSize, _values->mValues, 0, _values->mSize);
+    mSize += _values->mSize;
     return NOERROR;
 }
 
@@ -104,14 +100,15 @@ ECode CInt64Array::Clone(
     VALIDATE_NOT_NULL(clone);
     *clone = NULL;
 
-    AutoPtr<CInt64Array> _clone;
+    AutoPtr<CInt64Array> cloneObj;
+    CInt64Array::NewByFriend((CInt64Array**)&cloneObj);
     // try {
-        _clone->mValues = mValues->Clone();
-        _clone->mSize = mSize;
+        cloneObj->mValues = mValues->Clone();
+        cloneObj->mSize = mSize;
     // } catch (CloneNotSupportedException cnse) {
     //     /* ignore */
     // }
-    *clone = TO_IINTERFACE((IInt64Array*)_clone.Get());
+    *clone = (IInt64Array*)cloneObj.Get();
     REFCOUNT_ADD(*clone);
     return NOERROR;
 }
@@ -137,8 +134,7 @@ ECode CInt64Array::IndexOf(
 {
     VALIDATE_NOT_NULL(index);
 
-    const Int32 n = mSize;
-    for (Int32 i = 0; i < n; ++i) {
+    for (Int32 i = 0; i < mSize; ++i) {
         if ((*mValues)[i] == value) {
             *index = i;
             return NOERROR;

@@ -7,8 +7,8 @@ namespace View {
 namespace Accessibility {
 
 const Int32 AccessibilityNodeInfoCollectionInfo::MAX_POOL_SIZE = 20;
-AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionInfo> > AccessibilityNodeInfoCollectionInfo::sPool =
-        new Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionInfo>(MAX_POOL_SIZE);
+AutoPtr< Pools::SynchronizedPool<AccessibilityNodeInfoCollectionInfo> > AccessibilityNodeInfoCollectionInfo::sPool =
+        new Pools::SynchronizedPool<AccessibilityNodeInfoCollectionInfo>(MAX_POOL_SIZE);
 
 CAR_INTERFACE_IMPL(AccessibilityNodeInfoCollectionInfo, Object, IAccessibilityNodeInfoCollectionInfo)
 
@@ -57,7 +57,7 @@ ECode AccessibilityNodeInfoCollectionInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfoCollectionInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    AutoPtr<IAccessibilityNodeInfoCollectionInfo> _info = sPool->AcquireItem();
+    AutoPtr<AccessibilityNodeInfoCollectionInfo> _info = sPool->AcquireItem();
 
     if (_info == NULL) {
         AutoPtr<AccessibilityNodeInfoCollectionInfo> collectionInfo = new AccessibilityNodeInfoCollectionInfo(rowCount, columnCount, hierarchical, selectionMode);
@@ -66,13 +66,12 @@ ECode AccessibilityNodeInfoCollectionInfo::Obtain(
         return NOERROR;
     }
 
-    AutoPtr<AccessibilityNodeInfoCollectionInfo> cinfo = (AccessibilityNodeInfoCollectionInfo*)_info.Get();
-    cinfo->mRowCount = rowCount;
-    cinfo->mColumnCount = columnCount;
-    cinfo->mHierarchical = hierarchical;
-    cinfo->mSelectionMode = selectionMode;
+    _info->mRowCount = rowCount;
+    _info->mColumnCount = columnCount;
+    _info->mHierarchical = hierarchical;
+    _info->mSelectionMode = selectionMode;
 
-    *info = (IAccessibilityNodeInfoCollectionInfo*)cinfo.Get();
+    *info = (IAccessibilityNodeInfoCollectionInfo*)_info.Get();
     REFCOUNT_ADD(*info);
     return NOERROR;
 }
@@ -112,7 +111,7 @@ ECode AccessibilityNodeInfoCollectionInfo::GetSelectionMode(
 ECode AccessibilityNodeInfoCollectionInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem((IAccessibilityNodeInfoCollectionInfo*)this);
+    sPool->ReleaseItem(this);
     return NOERROR;
 }
 

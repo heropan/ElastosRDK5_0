@@ -1,7 +1,8 @@
 #include "elastos/droid/utility/CBase64InputStream.h"
 #include "elastos/droid/utility/CBase64OutputStream.h"
+#include "elastos/droid/utility/CInt64SparseArray.h"
 #include "elastos/droid/utility/CMonthDisplayHelper.h"
-
+#include "elastos/droid/utility/CSparseArray.h"
 
 namespace Elastos {
 namespace Droid {
@@ -9,8 +10,9 @@ namespace Utility {
 
 CAR_OBJECT_IMPL(CBase64InputStream)
 CAR_OBJECT_IMPL(CBase64OutputStream)
+CAR_OBJECT_IMPL(CInt64SparseArray)
 CAR_OBJECT_IMPL(CMonthDisplayHelper)
-
+CAR_OBJECT_IMPL(CSparseArray)
 
 } // namespace Utility
 } // namespace Droid

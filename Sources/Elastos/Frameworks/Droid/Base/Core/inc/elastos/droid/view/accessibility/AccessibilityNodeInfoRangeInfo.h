@@ -18,12 +18,6 @@ class AccessibilityNodeInfoRangeInfo
 public:
     CAR_INTERFACE_DECL()
 
-    AccessibilityNodeInfoRangeInfo(
-        /* [in] */ Int32 type,
-        /* [in] */ Float min,
-        /* [in] */ Float max,
-        /* [in] */ Float current);
-
     /**
      * Obtains a pooled instance that is a clone of another one.
      *
@@ -92,7 +86,7 @@ public:
     CARAPI Recycle();
 
 private:
-    RangeInfo(
+    AccessibilityNodeInfoRangeInfo(
         /* [in] */ Int32 type,
         /* [in] */ Float min,
         /* [in] */ Float max,

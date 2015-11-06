@@ -7,7 +7,7 @@ namespace View {
 namespace Accessibility {
 
 const Int32 AccessibilityNodeInfoRangeInfo::MAX_POOL_SIZE = 10;
-AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfoRangeInfo> > AccessibilityNodeInfoRangeInfo::sPool =
+AutoPtr< Pools::SynchronizedPool<IAccessibilityNodeInfoRangeInfo> > AccessibilityNodeInfoRangeInfo::sPool =
         new Pools::SynchronizedPool<IAccessibilityNodeInfoRangeInfo>(MAX_POOL_SIZE);
 
 CAR_INTERFACE_IMPL(AccessibilityNodeInfoRangeInfo, Object, IAccessibilityNodeInfoRangeInfo)

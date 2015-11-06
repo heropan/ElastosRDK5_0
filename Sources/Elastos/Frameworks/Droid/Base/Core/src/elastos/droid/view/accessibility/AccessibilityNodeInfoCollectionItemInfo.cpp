@@ -7,8 +7,8 @@ namespace View {
 namespace Accessibility {
 
 const Int32 AccessibilityNodeInfoCollectionItemInfo::MAX_POOL_SIZE = 20;
-AutoPtr<Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionItemInfo> > AccessibilityNodeInfoCollectionItemInfo::sPool =
-        new Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionItemInfo>(MAX_POOL_SIZE);
+AutoPtr< Pools::SynchronizedPool<AccessibilityNodeInfoCollectionItemInfo> > AccessibilityNodeInfoCollectionItemInfo::sPool =
+        new Pools::SynchronizedPool<AccessibilityNodeInfoCollectionItemInfo>(MAX_POOL_SIZE);
 
 CAR_INTERFACE_IMPL(AccessibilityNodeInfoCollectionItemInfo, Object, IAccessibilityNodeInfoCollectionItemInfo)
 
@@ -67,7 +67,7 @@ ECode AccessibilityNodeInfoCollectionItemInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfoCollectionItemInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    AutoPtr<IAccessibilityNodeInfoCollectionItemInfo> _info = sPool->AcquireItem();
+    AutoPtr<AccessibilityNodeInfoCollectionItemInfo> _info = sPool->AcquireItem();
 
     if (_info == NULL) {
         AutoPtr<AccessibilityNodeInfoCollectionItemInfo> collectionItemInfo = new AccessibilityNodeInfoCollectionItemInfo(
@@ -77,15 +77,14 @@ ECode AccessibilityNodeInfoCollectionItemInfo::Obtain(
         return NOERROR;
     }
 
-    AutoPtr<AccessibilityNodeInfoCollectionItemInfo> cinfo = (AccessibilityNodeInfoCollectionItemInfo*)_info.Get();
-    cinfo->mRowIndex = rowIndex;
-    cinfo->mRowSpan = rowSpan;
-    cinfo->mColumnIndex = columnIndex;
-    cinfo->mColumnSpan = columnSpan;
-    cinfo->mHeading = heading;
-    cinfo->mSelected = selected;
+    _info->mRowIndex = rowIndex;
+    _info->mRowSpan = rowSpan;
+    _info->mColumnIndex = columnIndex;
+    _info->mColumnSpan = columnSpan;
+    _info->mHeading = heading;
+    _info->mSelected = selected;
 
-    *info = (IAccessibilityNodeInfoCollectionItemInfo*)cinfo.Get();
+    *info = (IAccessibilityNodeInfoCollectionItemInfo*)_info.Get();
     REFCOUNT_ADD(*info);
 
     return NOERROR;
@@ -142,7 +141,7 @@ ECode AccessibilityNodeInfoCollectionItemInfo::IsSelected(
 ECode AccessibilityNodeInfoCollectionItemInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem((IAccessibilityNodeInfoCollectionItemInfo*)this);
+    sPool->ReleaseItem(this);
     return NOERROR;
 }
 

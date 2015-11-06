@@ -18,14 +18,6 @@ class AccessibilityNodeInfoCollectionItemInfo
 public:
     CAR_INTERFACE_DECL()
 
-    AccessibilityNodeInfoCollectionItemInfo(
-        /* [in] */ Int32 rowIndex,
-        /* [in] */ Int32 rowSpan,
-        /* [in] */ Int32 columnIndex,
-        /* [in] */ Int32 columnSpan,
-        /* [in] */ Boolean heading,
-        /* [in] */ Boolean selected);
-
     /**
      * Obtains a pooled instance that is a clone of another one.
      *
@@ -128,6 +120,14 @@ public:
     CARAPI Recycle();
 
 private:
+    AccessibilityNodeInfoCollectionItemInfo(
+        /* [in] */ Int32 rowIndex,
+        /* [in] */ Int32 rowSpan,
+        /* [in] */ Int32 columnIndex,
+        /* [in] */ Int32 columnSpan,
+        /* [in] */ Boolean heading,
+        /* [in] */ Boolean selected);
+
     CARAPI_(void) Clear();
 
 private:
@@ -139,12 +139,14 @@ private:
     Boolean mSelected;
 
     static const Int32 MAX_POOL_SIZE;
-    static AutoPtr< Pools::SynchronizedPool<IAccessibilityNodeInfoCollectionItemInfo> > sPool;
+    static AutoPtr< Pools::SynchronizedPool<AccessibilityNodeInfoCollectionItemInfo> > sPool;
 };
 
 } // Accessibility
 } // View
 } // Droid
 } // Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::View::Accessibility::AccessibilityNodeInfoCollectionItemInfo, IInterface)
 
 #endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEINFOCOLLECTIONITEMINFO_H__

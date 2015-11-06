@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
-#define __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
+#ifndef __ELASTOS_DROID_UTILITY_INT64SPARSEARRAY_H__
+#define __ELASTOS_DROID_UTILITY_INT64SPARSEARRAY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
@@ -12,15 +12,15 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-class SparseArray
+class Int64SparseArray
     : public Object
-    , public ISparseArray
+    , public IInt64SparseArray
     , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL();
 
-    SparseArray();
+    Int64SparseArray();
 
     /**
      * Creates a new SparseArray containing no mappings.
@@ -45,15 +45,16 @@ public:
      * if no such mapping has been made.
      */
     CARAPI Get(
-        /* [in] */ Int32 key,
+        /* [in] */ Int64 key,
         /* [out] */ IInterface** outface);
 
     /**
      * Gets the Object mapped from the specified key, or the specified Object
      * if no such mapping has been made.
      */
+    // @SuppressWarnings("unchecked")
     CARAPI Get(
-        /* [in] */ Int32 key,
+        /* [in] */ Int64 key,
         /* [in] */ IInterface* valueIfKeyNotFound,
         /* [out] */ IInterface** outface);
 
@@ -61,30 +62,19 @@ public:
      * Removes the mapping from the specified key, if there was any.
      */
     CARAPI Delete(
-        /* [in] */ Int32 key);
+        /* [in] */ Int64 key);
 
     /**
-     * Alias for {@link #delete(Int32)}.
+     * Alias for {@link #delete(long)}.
      */
     CARAPI Remove(
-        /* [in] */ Int32 key);
+        /* [in] */ Int64 key);
 
     /**
      * Removes the mapping at the specified index.
-     * @hide
      */
     CARAPI RemoveAt(
         /* [in] */ Int32 index);
-
-    /**
-     * Remove a range of mappings as a batch.
-     *
-     * @param index Index to begin at
-     * @param size Number of mappings to remove
-     */
-    CARAPI RemoveAtRange(
-        /* [in] */ Int32 index,
-        /* [in] */ Int32 size);
 
     /**
      * Adds a mapping from the specified key to the specified value,
@@ -92,11 +82,11 @@ public:
      * was one.
      */
     CARAPI Put(
-        /* [in] */ Int32 key,
+        /* [in] */ Int64 key,
         /* [in] */ IInterface* value);
 
     /**
-     * Returns the number of key-value mappings that this SparseArray
+     * Returns the number of key-value mappings that this LongSparseArray
      * currently stores.
      */
     CARAPI GetSize(
@@ -105,7 +95,7 @@ public:
     /**
      * Given an index in the range <code>0...size()-1</code>, returns
      * the key from the <code>index</code>th key-value mapping that this
-     * SparseArray stores.
+     * LongSparseArray stores.
      *
      * <p>The keys corresponding to indices in ascending order are guaranteed to
      * be in ascending order, e.g., <code>keyAt(0)</code> will return the
@@ -114,12 +104,12 @@ public:
      */
     CARAPI KeyAt(
         /* [in] */ Int32 index,
-        /* [out] */ Int32* value);
+        /* [out] */ Int64* value);
 
     /**
      * Given an index in the range <code>0...size()-1</code>, returns
      * the value from the <code>index</code>th key-value mapping that this
-     * SparseArray stores.
+     * LongSparseArray stores.
      *
      * <p>The values corresponding to indices in ascending order are guaranteed
      * to be associated with keys in ascending order, e.g.,
@@ -134,7 +124,7 @@ public:
     /**
      * Given an index in the range <code>0...size()-1</code>, sets a new
      * value for the <code>index</code>th key-value mapping that this
-     * SparseArray stores.
+     * LongSparseArray stores.
      */
     CARAPI SetValueAt(
         /* [in] */ Int32 index,
@@ -146,25 +136,23 @@ public:
      * key is not mapped.
      */
     CARAPI IndexOfKey(
-        /* [in] */ Int32 key,
+        /* [in] */ Int64 key,
         /* [out] */ Int32* value);
 
     /**
      * Returns an index for which {@link #valueAt} would return the
      * specified key, or a negative number if no keys map to the
      * specified value.
-     * <p>Beware that this is a linear search, unlike lookups by key,
+     * Beware that this is a linear search, unlike lookups by key,
      * and that multiple keys can map to the same value and this will
      * find only one of them.
-     * <p>Note also that unlike most collections' {@code indexOf} methods,
-     * this method compares values using {@code ==} rather than {@code equals}.
      */
     CARAPI IndexOfValue(
         /* [in] */ IInterface* value,
         /* [out] */ Int32* outval);
 
     /**
-     * Removes all key-value mappings from this SparseArray.
+     * Removes all key-value mappings from this LongSparseArray.
      */
     CARAPI Clear();
 
@@ -173,7 +161,7 @@ public:
      * the key is greater than all existing keys in the array.
      */
     CARAPI Append(
-        /* [in] */ Int32 key,
+        /* [in] */ Int64 key,
         /* [in] */ IInterface* value);
 
     /**
@@ -193,7 +181,7 @@ private:
 private:
     static const AutoPtr<Object> DELETED;
     Boolean mGarbage;
-    AutoPtr<ArrayOf<Int32> > mKeys;
+    AutoPtr<ArrayOf<Int64> > mKeys;
     AutoPtr<ArrayOf<IInterface*> > mValues;
     Int32 mSize;
 };
@@ -202,4 +190,4 @@ private:
 }
 }
 
-#endif // __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
+#endif // __ELASTOS_DROID_UTILITY_INT64SPARSEARRAY_H__
