@@ -131,7 +131,7 @@ SOURCES += VelocityTracker.cpp
 #SOURCES += CWindowManagerPolicyThread.cpp
 #SOURCES += CWindowInfoHelper.cpp
 
-// LIBRARIES += inputmethod/inputmethod.lib
+// ELASTOS_LIBS += inputmethod/inputmethod.lib
 ELASTOS_LIBS += accessibility/accessibility.lib
-// LIBRARIES += animation/animation.lib
-// LIBRARIES += menu/menu.lib
+// ELASTOS_LIBS += animation/animation.lib
+// ELASTOS_LIBS += menu/menu.lib
