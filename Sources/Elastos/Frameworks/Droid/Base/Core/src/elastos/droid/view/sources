@@ -35,6 +35,8 @@ SOURCES += LayoutInflater.cpp
 SOURCES += HardwareRenderer.cpp
 SOURCES += Surface.cpp
 SOURCES += TextureView.cpp
+SOURCES += PhysicalDisplayInfo.cpp
+SOURCES += CPhysicalDisplayInfo.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
 #SOURCES += CAbsSavedStateHelper.cpp
@@ -130,6 +132,6 @@ SOURCES += VelocityTracker.cpp
 #SOURCES += CWindowInfoHelper.cpp
 
 // LIBRARIES += inputmethod/inputmethod.lib
-LIBRARIES += accessibility/accessibility.lib
+ELASTOS_LIBS += accessibility/accessibility.lib
 // LIBRARIES += animation/animation.lib
 // LIBRARIES += menu/menu.lib
