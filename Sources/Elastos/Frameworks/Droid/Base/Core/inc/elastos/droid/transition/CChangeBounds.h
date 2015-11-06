@@ -199,6 +199,12 @@ public:
         /* [in] */ ITransitionValues* endValues,
         /* [out] */ IAnimator** result);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
+    CARAPI CloneImpl(
+        /* [in] */ IChangeBounds* obj);
+
 private:
     CARAPI_(void) CaptureValues(
         /* [in] */ ITransitionValues* values);

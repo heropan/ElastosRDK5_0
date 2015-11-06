@@ -36,6 +36,12 @@ public:
         /* [in] */ ITransitionValues* endValues,
         /* [out] */ IAnimator** result);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
+    CARAPI CloneImpl(
+        /* [in] */ ITransition* obj);
+
 private:
     static String PROPNAME_SCROLL_X;
     static String PROPNAME_SCROLL_Y;

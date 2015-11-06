@@ -1807,23 +1807,17 @@ ECode Transition::ToString(
     return ToString(String(""), result);
 }
 
-ECode Transition::Clone(
-    /* [out] */ IInterface** result)
+ECode Transition::CloneImpl(
+    /* [in] */ ITransition* transObj)
 {
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(transObj)
+    Transition* trans = (Transition*)transObj;
 
-    AutoPtr<Transition> clone;
-//    try {
-//    clone = (Transition) super.clone();
-    CArrayList::New((IArrayList**)&(clone->mAnimators));
-    clone->mStartValues = new TransitionValuesMaps();
-    clone->mEndValues = new TransitionValuesMaps();
-    clone->mStartValuesList = NULL;
-    clone->mEndValuesList = NULL;
-//    } catch (CloneNotSupportedException e) {}
-
-    *result = clone->Probe(EIID_IInterface);
-    REFCOUNT_ADD(*result)
+    CArrayList::New((IArrayList**)&(trans->mAnimators));
+    trans->mStartValues = new TransitionValuesMaps();
+    trans->mEndValues = new TransitionValuesMaps();
+    trans->mStartValuesList = NULL;
+    trans->mEndValuesList = NULL;
     return NOERROR;
 }
 

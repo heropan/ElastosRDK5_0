@@ -211,6 +211,12 @@ public:
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
+    CARAPI CloneImpl(
+        /* [in] */ IChangeText* obj);
+
 private:
 //    static String LOG_TAG;
 

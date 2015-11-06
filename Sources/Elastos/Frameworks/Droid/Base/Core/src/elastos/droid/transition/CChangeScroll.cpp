@@ -120,6 +120,30 @@ ECode CChangeScroll::CreateAnimator(
     return utils->MergeAnimators(scrollXAnimator, scrollYAnimator, result);
 }
 
+ECode CChangeScroll::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<ITransition> changes;
+    CChangeScroll::New((ITransition**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CChangeScroll::CloneImpl(
+    /* [in] */ ITransition* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 } // namespace Transition
 } // namepsace Droid
 } // namespace Elastos

@@ -461,8 +461,11 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
-    CARAPI Clone(
-        /* [out] */ IInterface** result);
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** result) = 0;
+
+    CARAPI CloneImpl(
+        /* [in] */ ITransition* obj);
 
     CARAPI GetName(
         /* [out] */ String* result);

@@ -156,6 +156,30 @@ ECode CChangeClipBounds::CreateAnimator(
     return NOERROR;
 }
 
+ECode CChangeClipBounds::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<ITransition> changes;
+    CChangeClipBounds::New((ITransition**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CChangeClipBounds::CloneImpl(
+    /* [in] */ ITransition* boundsObj)
+{
+    VALIDATE_NOT_NULL(boundsObj);
+
+    Transition::CloneImpl(ITransition::Probe(boundsObj));
+
+    return NOERROR;
+}
+
 } // namespace Transition
 } // namepsace Droid
 } // namespace Elastos

@@ -429,6 +429,30 @@ void CChangeTransform::SetTransforms(
     view->SetRotation(rotationZ);
 }
 
+ECode CChangeTransform::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IChangeTransform> changes;
+    CChangeTransform::New((IChangeTransform**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CChangeTransform::CloneImpl(
+    /* [in] */ IChangeTransform* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 //===============================================================
 // CChangeTransform::Transforms::
 //===============================================================

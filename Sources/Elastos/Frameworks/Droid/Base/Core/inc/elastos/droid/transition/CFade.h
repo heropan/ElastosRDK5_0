@@ -81,6 +81,12 @@ public:
         /* [in] */ ITransitionValues* endValues,
         /* [out] */ IAnimator** result);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
+    CARAPI CloneImpl(
+        /* [in] */ IFade* obj);
+
 private:
     /**
      * Utility method to handle creating and running the Animator.

@@ -403,6 +403,30 @@ ECode CChangeBounds::CreateAnimator(
     return NOERROR;
 }
 
+ECode CChangeBounds::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IChangeBounds> changes;
+    CChangeBounds::New((IChangeBounds**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CChangeBounds::CloneImpl(
+    /* [in] */ IChangeBounds* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 //===============================================================
 // CChangeBounds::OffsetProperty::
 //===============================================================

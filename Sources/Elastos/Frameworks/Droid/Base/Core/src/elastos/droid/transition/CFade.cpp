@@ -109,6 +109,30 @@ ECode CFade::OnDisappear(
     return NOERROR;
 }
 
+ECode CFade::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IFade> changes;
+    CFade::New((IFade**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CFade::CloneImpl(
+    /* [in] */ IFade* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 //===============================================================
 // CFade::FadeAnimatorListener::
 //===============================================================

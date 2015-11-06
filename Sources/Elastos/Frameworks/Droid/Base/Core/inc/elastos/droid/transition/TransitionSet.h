@@ -181,7 +181,10 @@ public:
         /* [out] */ String* res);
 
     CARAPI Clone(
-        /* [out] */ ITransitionSet** result);
+        /* [out] */ IInterface** obj);
+
+    CARAPI CloneImpl(
+        /* [in] */ ITransitionSet* obj);
 
     CARAPI CreateAnimators(
         /* [in] */ IViewGroup* sceneRoot,

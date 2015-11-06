@@ -251,6 +251,30 @@ AutoPtr<IObjectAnimator> CChangeImageTransform::CreateMatrixAnimator(
             ITypeConverter::Probe(p), ITypeEvaluator::Probe(startMatrix), arr);
 }
 
+ECode CChangeImageTransform::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<ITransition> changes;
+    CChangeImageTransform::New((ITransition**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CChangeImageTransform::CloneImpl(
+    /* [in] */ ITransition* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 //===============================================================
 // CChangeImageTransform::MatrixProperty::
 //===============================================================

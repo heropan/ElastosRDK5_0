@@ -34,6 +34,7 @@ SOURCES += InputEvent.cpp
 SOURCES += LayoutInflater.cpp
 SOURCES += HardwareRenderer.cpp
 SOURCES += Surface.cpp
+SOURCES += TextureView.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
 #SOURCES += CAbsSavedStateHelper.cpp

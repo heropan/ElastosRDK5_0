@@ -1,8 +1,10 @@
 
 #include "elastos/droid/transition/TransitionSet.h"
 #include "elastos/droid/transition/CTransitionValues.h"
+#include "elastos/droid/transition/CTransitionSet.h"
 
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Transition::CTransitionSet;
 
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IListIterator;
@@ -641,30 +643,38 @@ ECode TransitionSet::ToString(
 }
 
 ECode TransitionSet::Clone(
-    /* [out] */ ITransitionSet** result)
+    /* [out] */ IInterface** obj)
 {
-    assert(0 && "TODO");
-    VALIDATE_NOT_NULL(result)
+    VALIDATE_NOT_NULL(obj)
 
-    AutoPtr<IInterface> p;
-    Transition::Clone((IInterface**)&p);
-    AutoPtr<ITransitionSet> clone = ITransitionSet::Probe(p);
-    AutoPtr<TransitionSet> cClone = (TransitionSet*)clone.Get();
-    CArrayList::New((IArrayList**)&(cClone->mTransitions));
+    AutoPtr<ITransitionSet> trans;
+    CTransitionSet::New((ITransitionSet**)&trans);
+
+    CloneImpl(trans);
+    *obj = IInterface::Probe(trans);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode TransitionSet::CloneImpl(
+    /* [in] */ ITransitionSet* transObj)
+{
+    VALIDATE_NOT_NULL(transObj);
+
+    Transition::CloneImpl(ITransition::Probe(transObj));
+    TransitionSet* transSet = (TransitionSet*)transObj;
+
+    CArrayList::New((IArrayList**)&(transSet->mTransitions));
     Int32 numTransitions = 0;
     mTransitions->GetSize(&numTransitions);
     for (Int32 i = 0; i < numTransitions; ++i) {
         AutoPtr<IInterface> t;
         mTransitions->Get(i, (IInterface**)&t);
-        AutoPtr<ITransition> pT = ITransition::Probe(t);
-        AutoPtr<Transition> cPt = (Transition*)pT.Get();
         AutoPtr<IInterface> pInf;
-        cPt->Clone((IInterface**)&pInf);
-        AutoPtr<ITransition> cl = ITransition::Probe(pInf);
-        clone->AddTransition(cl);
+        ICloneable::Probe(t)->Clone((IInterface**)&pInf);
+        transSet->AddTransition(ITransition::Probe(pInf));
     }
-    *result = clone;
-    REFCOUNT_ADD(*result)
+
     return NOERROR;
 }
 

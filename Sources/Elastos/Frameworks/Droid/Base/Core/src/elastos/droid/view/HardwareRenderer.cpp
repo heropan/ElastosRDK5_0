@@ -11,29 +11,29 @@ namespace View {
 //========================================================================================
 //              HardwareRenderer::
 //========================================================================================
-//String HardwareRenderer::LOG_TAG = String("HardwareRenderer");
+//String HardwareRenderer::LOG_TAG("HardwareRenderer");
 
-String HardwareRenderer::CACHE_PATH_SHADERS = String("com.android.opengl.shaders_cache");
+const String HardwareRenderer::CACHE_PATH_SHADERS("com.android.opengl.shaders_cache");
 
-String HardwareRenderer::RENDER_DIRTY_REGIONS_PROPERTY = String("debug.hwui.render_dirty_regions");
+const String HardwareRenderer::RENDER_DIRTY_REGIONS_PROPERTY("debug.hwui.render_dirty_regions");
 
-String HardwareRenderer::PROFILE_PROPERTY = String("debug.hwui.profile");
+const String HardwareRenderer::PROFILE_PROPERTY("debug.hwui.profile");
 
-String HardwareRenderer::PROFILE_PROPERTY_VISUALIZE_BARS = String("visual_bars");
+const String HardwareRenderer::PROFILE_PROPERTY_VISUALIZE_BARS("visual_bars");
 
-String HardwareRenderer::PROFILE_MAXFRAMES_PROPERTY = String("debug.hwui.profile.maxframes");
+const String HardwareRenderer::PROFILE_MAXFRAMES_PROPERTY("debug.hwui.profile.maxframes");
 
-String HardwareRenderer::PRINT_CONFIG_PROPERTY = String("debug.hwui.print_config");
+const String HardwareRenderer::PRINT_CONFIG_PROPERTY("debug.hwui.print_config");
 
-String HardwareRenderer::DEBUG_DIRTY_REGIONS_PROPERTY = String("debug.hwui.show_dirty_regions");
+const String HardwareRenderer::DEBUG_DIRTY_REGIONS_PROPERTY("debug.hwui.show_dirty_regions");
 
-String HardwareRenderer::DEBUG_SHOW_LAYERS_UPDATES_PROPERTY = String("debug.hwui.show_layers_updates");
+const String HardwareRenderer::DEBUG_SHOW_LAYERS_UPDATES_PROPERTY("debug.hwui.show_layers_updates");
 
-String HardwareRenderer::DEBUG_OVERDRAW_PROPERTY = String("debug.hwui.overdraw");
+const String HardwareRenderer::DEBUG_OVERDRAW_PROPERTY("debug.hwui.overdraw");
 
-String HardwareRenderer::OVERDRAW_PROPERTY_SHOW = String("show");
+const String HardwareRenderer::OVERDRAW_PROPERTY_SHOW("show");
 
-String HardwareRenderer::DEBUG_SHOW_NON_RECTANGULAR_CLIP_PROPERTY = String("debug.hwui.show_non_rect_clip");
+const String HardwareRenderer::DEBUG_SHOW_NON_RECTANGULAR_CLIP_PROPERTY("debug.hwui.show_non_rect_clip");
 
 Boolean HardwareRenderer::sRendererDisabled = FALSE;
 
@@ -45,7 +45,6 @@ HardwareRenderer::HardwareRenderer()
     : mEnabled(FALSE)
     , mRequested(TRUE)
 {
-
 }
 
 void HardwareRenderer::Disable(

@@ -25,6 +25,7 @@ public:
      * a hardware renderer instance.
      */
     interface HardwareDrawCallbacks
+        : public IInterface
     {
     public:
         /**
@@ -32,7 +33,7 @@ public:
          *
          * @param canvas The Canvas used to render the view.
          */
-        virtual CARAPI_(void) OnHardwarePreDraw(
+        virtual CARAPI OnHardwarePreDraw(
             /* [in] */ IHardwareCanvas* canvas) = 0;
 
         /**
@@ -40,7 +41,7 @@ public:
          *
          * @param canvas The Canvas used to render the view.
          */
-        virtual CARAPI_(void) OnHardwarePostDraw(
+        virtual CARAPI OnHardwarePostDraw(
             /* [in] */ IHardwareCanvas* canvas) = 0;
     };
 
@@ -52,7 +53,7 @@ public:
      *
      * @hide
      */
-    static void Disable(
+    static CARAPI_(void) Disable(
         /* [in] */ Boolean system);
 
     /**
@@ -61,7 +62,7 @@ public:
      * uses WebView! This should be only used by system_process or similar
      * that do not go into the background.
      */
-    static void EnableForegroundTrimming();
+    static CARAPI_(void) EnableForegroundTrimming();
 
     /**
      * Indicates whether hardware acceleration is available under any form for
@@ -70,7 +71,7 @@ public:
      * @return True if the view hierarchy can potentially be hardware accelerated,
      *         false otherwise
      */
-    static Boolean IsAvailable();
+    static CARAPI_(Boolean) IsAvailable();
 
     /**
      * Sets the directory to use as a persistent storage for hardware rendering
@@ -80,14 +81,14 @@ public:
      *
      * @hide
      */
-    static void SetupDiskCache(
+    static CARAPI_(void) SetupDiskCache(
         /* [in] */ IFile* cacheDir);
 
 protected:
     /**
      * Destroys the hardware rendering context.
      */
-    virtual void Destroy() = 0;
+    virtual CARAPI_(void) Destroy() = 0;
 
     /**
      * Initializes the hardware renderer for the specified surface.
@@ -113,7 +114,7 @@ protected:
      * or not the surface used by the HardwareRenderer will be changing. It
      * Suspends any rendering into the surface, but will not do any destruction
      */
-    virtual void PauseSurface(
+    virtual CARAPI_(void) PauseSurface(
         /* [in] */ ISurface* surface) = 0;
 
     /**
@@ -122,7 +123,7 @@ protected:
      *
      * @param view The root of the view hierarchy
      */
-    virtual void DestroyHardwareResources(
+    virtual CARAPI_(void) DestroyHardwareResources(
         /* [in] */ IView* view) = 0;
 
     /**
@@ -131,14 +132,14 @@ protected:
      *
      * @param surface The surface to hardware accelerate
      */
-    virtual void Invalidate(
+    virtual CARAPI_(void) Invalidate(
         /* [in] */ ISurface* surface) = 0;
 
     /**
      * Detaches the layer's surface texture from the GL context and releases
      * the texture id
      */
-    virtual void DetachSurfaceTexture(
+    virtual CARAPI_(void) DetachSurfaceTexture(
         /* [in] */ Int64 hardwareLayer) = 0;
 
     /**
@@ -147,7 +148,7 @@ protected:
      *
      * @return the current width of the surface
      */
-    virtual Int32 GetWidth() = 0;
+    virtual CARAPI_(Int32) GetWidth() = 0;
 
     /**
      * Gets the current height of the surface. This is the height that the surface
@@ -155,12 +156,12 @@ protected:
      *
      * @return the current width of the surface
      */
-    virtual Int32 GetHeight() = 0;
+    virtual CARAPI_(Int32) GetHeight() = 0;
 
     /**
      * Outputs extra debugging information in the specified file descriptor.
      */
-    virtual void DumpGfxInfo(
+    virtual CARAPI_(void) DumpGfxInfo(
         /* [in] */ IPrintWriter* pw,
         /* [in] */ IFileDescriptor* fd) = 0;
 
@@ -171,7 +172,7 @@ protected:
      *
      * @return True if a property has changed.
      */
-    virtual Boolean LoadSystemProperties() = 0;
+    virtual CARAPI_(Boolean) LoadSystemProperties() = 0;
 
     /**
      * Indicates that the specified hardware layer needs to be updated
@@ -179,21 +180,21 @@ protected:
      *
      * @param layer The hardware layer that needs an update
      */
-    virtual void PushLayerUpdate(
+    virtual CARAPI_(void) PushLayerUpdate(
         /* [in] */ IHardwareLayer* layer) = 0;
 
     /**
      * Tells the HardwareRenderer that the layer is destroyed. The renderer
      * should remove the layer from any update queues.
      */
-    virtual void OnLayerDestroyed(
+    virtual CARAPI_(void) OnLayerDestroyed(
         /* [in] */ IHardwareLayer* layer) = 0;
 
     /**
      *  Indicates that the content drawn by HardwareDrawCallbacks needs to
      *  be updated, which will be done by the next call to draw()
      */
-    virtual void InvalidateRoot() = 0;
+    virtual CARAPI_(void) InvalidateRoot() = 0;
 
     /**
      * Draws the specified view.
@@ -213,12 +214,12 @@ protected:
      *
      * @return A hardware layer
      */
-    virtual AutoPtr<IHardwareLayer> CreateTextureLayer() = 0;
+    virtual CARAPI_(AutoPtr<IHardwareLayer>) CreateTextureLayer() = 0;
 
-    virtual void BuildLayer(
+    virtual CARAPI_(void) BuildLayer(
         /* [in] */ IRenderNode* node) = 0;
 
-    virtual Boolean CopyLayerInto(
+    virtual CARAPI_(Boolean) CopyLayerInto(
         /* [in] */ IHardwareLayer* layer,
         /* [in] */ IBitmap* bitmap) = 0;
 
@@ -251,7 +252,7 @@ protected:
      * @param height The height of the drawing surface.
      * @param surfaceInsets The drawing surface insets to apply
      */
-    virtual void Setup(
+    virtual CARAPI_(void) Setup(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ IRect* surfaceInsets) = 0;
@@ -261,13 +262,13 @@ protected:
      *
      * @param name The name of this renderer, can be null
      */
-    virtual void SetName(
+    virtual CARAPI_(void) SetName(
         /* [in] */ String name) = 0;
 
     /**
      * Change the HardwareRenderer's opacity
      */
-    virtual void SetOpaque(
+    virtual CARAPI_(void) SetOpaque(
         /* [in] */ Boolean opaque) = 0;
 
     /**
@@ -277,7 +278,7 @@ protected:
      *
      * @return A hardware renderer backed by OpenGL.
      */
-    static AutoPtr<HardwareRenderer> Create(
+    static CARAPI_(AutoPtr<HardwareRenderer>) Create(
         /* [in] */ IContext* context,
         /* [in] */ Boolean translucent);
 
@@ -289,7 +290,7 @@ protected:
      * @param level Hint about the amount of memory that should be trimmed,
      *              see {@link android.content.ComponentCallbacks}
      */
-    static void TrimMemory(
+    static CARAPI_(void) TrimMemory(
         /* [in] */ Int32 level);
 
     /**
@@ -297,14 +298,14 @@ protected:
      *
      * @return True if hardware acceleration is in use, false otherwise.
      */
-    Boolean IsEnabled();
+    CARAPI_(Boolean) IsEnabled();
 
     /**
      * Indicates whether hardware acceleration is currently enabled.
      *
      * @param enabled True if the hardware renderer is in use, false otherwise.
      */
-    void SetEnabled(
+    CARAPI_(void) SetEnabled(
         /* [in] */ Boolean enabled);
 
     /**
@@ -313,7 +314,7 @@ protected:
      *
      * @return True if requested, false otherwise.
      */
-    Boolean IsRequested();
+    CARAPI_(Boolean) IsRequested();
 
     /**
      * Indicates whether hardware acceleration is currently requested but not
@@ -321,13 +322,13 @@ protected:
      *
      * @return True to request hardware acceleration, false otherwise.
      */
-    void SetRequested(
+    CARAPI_(void) SetRequested(
         /* [in] */ Boolean requested);
 
     /**
      * Blocks until all previously queued work has completed.
      */
-    virtual void Fence() = 0;
+    virtual CARAPI_(void) Fence() = 0;
 
     /**
      * Prevents any further drawing until draw() is called. This is a signal
@@ -335,14 +336,14 @@ protected:
      * In practice this usually means that there are Functor pointers in the
      * display list that are no longer valid.
      */
-    virtual void StopDrawing() = 0;
+    virtual CARAPI_(void) StopDrawing() = 0;
 
     /**
      * Called by {@link ViewRootImpl} when a new performTraverals is scheduled.
      */
-    virtual void NotifyFramePending() = 0;
+    virtual CARAPI_(void) NotifyFramePending() = 0;
 
-    virtual void RegisterAnimatingRenderNode(
+    virtual CARAPI_(void) RegisterAnimatingRenderNode(
         /* [in] */ IRenderNode* animator) = 0;
 
 public:
@@ -363,7 +364,7 @@ public:
      *
      * @hide
      */
-    static String PROFILE_PROPERTY;
+    static const String PROFILE_PROPERTY;
 
     /**
      * Value for {@link #PROFILE_PROPERTY}. When the property is set to this
@@ -371,7 +372,7 @@ public:
      *
      * @hide
      */
-    static String PROFILE_PROPERTY_VISUALIZE_BARS;
+    static const String PROFILE_PROPERTY_VISUALIZE_BARS;
 
     /**
      * Turn on to draw dirty regions every other frame.
@@ -382,7 +383,7 @@ public:
      *
      * @hide
      */
-    static String DEBUG_DIRTY_REGIONS_PROPERTY;
+    static const String DEBUG_DIRTY_REGIONS_PROPERTY;
 
     /**
      * Turn on to flash hardware layers when they update.
@@ -393,7 +394,7 @@ public:
      *
      * @hide
      */
-    static String DEBUG_SHOW_LAYERS_UPDATES_PROPERTY;
+    static const String DEBUG_SHOW_LAYERS_UPDATES_PROPERTY;
 
     /**
      * Controls overdraw debugging.
@@ -405,7 +406,7 @@ public:
      *
      * @hide
      */
-    static String DEBUG_OVERDRAW_PROPERTY;
+    static const String DEBUG_OVERDRAW_PROPERTY;
 
     /**
      * Value for {@link #DEBUG_OVERDRAW_PROPERTY}. When the property is set to this
@@ -413,7 +414,7 @@ public:
      *
      * @hide
      */
-    static String OVERDRAW_PROPERTY_SHOW;
+    static const String OVERDRAW_PROPERTY_SHOW;
 
     /**
      * Turn on to debug non-rectangular clip operations.
@@ -425,7 +426,7 @@ public:
      *
      * @hide
      */
-    static String DEBUG_SHOW_NON_RECTANGULAR_CLIP_PROPERTY;
+    static const String DEBUG_SHOW_NON_RECTANGULAR_CLIP_PROPERTY;
 
     /**
      * A process can set this flag to false to prevent the use of hardware
@@ -456,7 +457,7 @@ protected:
      * "true", to enable partial invalidates
      * "false", to disable partial invalidates
      */
-    static String RENDER_DIRTY_REGIONS_PROPERTY;
+    static const String RENDER_DIRTY_REGIONS_PROPERTY;
 
     /**
      * System property used to specify the number of frames to be used
@@ -470,7 +471,7 @@ protected:
      * Possible values:
      * "60", to set the limit of frames to 60
      */
-    static String PROFILE_MAXFRAMES_PROPERTY;
+    static const String PROFILE_MAXFRAMES_PROPERTY;
 
     /**
      * System property used to debug EGL configuration choice.
@@ -479,13 +480,13 @@ protected:
      * "choice", print the chosen configuration only
      * "all", print all possible configurations
      */
-    static String PRINT_CONFIG_PROPERTY;
+    static const String PRINT_CONFIG_PROPERTY;
 
 private:
     /**
      * Name of the file that holds the shaders cache.
      */
-    static String CACHE_PATH_SHADERS;
+    static const String CACHE_PATH_SHADERS;
 
     Boolean mEnabled;
     Boolean mRequested;

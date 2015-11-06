@@ -299,6 +299,30 @@ void CChangeText::SetSelection(
     }
 }
 
+ECode CChangeText::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<IChangeText> changes;
+    CChangeText::New((IChangeText**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CChangeText::CloneImpl(
+    /* [in] */ IChangeText* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 //===============================================================
 // CChangeText::TransitionListenerAdapter_1::
 //===============================================================

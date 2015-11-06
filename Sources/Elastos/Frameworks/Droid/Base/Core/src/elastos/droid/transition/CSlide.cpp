@@ -302,6 +302,30 @@ ECode CSlide::OnDisappear(
     return NOERROR;
 }
 
+ECode CSlide::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<ISlide> changes;
+    CSlide::New((ISlide**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CSlide::CloneImpl(
+    /* [in] */ ISlide* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 } // namespace Transition
 } // namepsace Droid
 } // namespace Elastos

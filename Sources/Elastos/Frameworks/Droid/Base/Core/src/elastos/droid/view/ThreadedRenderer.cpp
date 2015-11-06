@@ -33,7 +33,7 @@ namespace View {
 //              ThreadedRenderer::
 //========================================================================================
 
-String ThreadedRenderer::LOGTAG = String("ThreadedRenderer");
+String ThreadedRenderer::LOGTAG("ThreadedRenderer");
 
 Int32 ThreadedRenderer::SYNC_OK = 0;
 

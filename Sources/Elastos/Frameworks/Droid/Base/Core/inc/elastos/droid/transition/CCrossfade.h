@@ -103,6 +103,12 @@ public:
     CARAPI CaptureEndValues(
         /* [in] */ ITransitionValues* transitionValues);
 
+    CARAPI Clone(
+        /* [out] */ IInterface** obj);
+
+    CARAPI CloneImpl(
+        /* [in] */ ICrossfade* obj);
+
 private:
     CARAPI CaptureValues(
         /* [in] */ ITransitionValues* transitionValues);

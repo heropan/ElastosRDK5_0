@@ -309,6 +309,30 @@ ECode CCrossfade::CaptureEndValues(
     return CaptureValues(transitionValues);
 }
 
+ECode CCrossfade::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<ICrossfade> changes;
+    CCrossfade::New((ICrossfade**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CCrossfade::CloneImpl(
+    /* [in] */ ICrossfade* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 //===============================================================
 // CCrossfade::AnimatorUpdateListenerOverride::
 //===============================================================

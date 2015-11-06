@@ -139,6 +139,30 @@ ECode CRecolor::CreateAnimator(
     return NOERROR;
 }
 
+ECode CRecolor::Clone(
+    /* [out] */ IInterface** obj)
+{
+    VALIDATE_NOT_NULL(obj)
+
+    AutoPtr<ITransition> changes;
+    CRecolor::New((ITransition**)&changes);
+
+    CloneImpl(changes);
+    *obj = IInterface::Probe(changes);
+    REFCOUNT_ADD(*obj)
+    return NOERROR;
+}
+
+ECode CRecolor::CloneImpl(
+    /* [in] */ ITransition* obj)
+{
+    VALIDATE_NOT_NULL(obj);
+
+    Transition::CloneImpl(ITransition::Probe(obj));
+
+    return NOERROR;
+}
+
 } // namespace Transition
 } // namepsace Droid
 } // namespace Elastos

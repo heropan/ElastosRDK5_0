@@ -68,7 +68,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Boolean translucent);
 
-    virtual void Destroy();
+    CARAPI_(void) Destroy();
 
     CARAPI_(Boolean) Initialize(
         /* [in] */ ISurface* surface);
@@ -76,37 +76,37 @@ public:
     CARAPI UpdateSurface(
         /* [in] */ ISurface* surface);
 
-    virtual void PauseSurface(
+    CARAPI_(void) PauseSurface(
         /* [in] */ ISurface* surface);
 
-    virtual void DestroyHardwareResources(
+    CARAPI_(void) DestroyHardwareResources(
         /* [in] */ IView* view);
 
-    virtual void Invalidate(
+    CARAPI_(void) Invalidate(
         /* [in] */ ISurface* surface);
 
-    virtual void DetachSurfaceTexture(
+    CARAPI_(void) DetachSurfaceTexture(
         /* [in] */ Int64 hardwareLayer);
 
-    virtual void Setup(
+    CARAPI_(void) Setup(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ IRect* surfaceInsets);
 
-    virtual void SetOpaque(
+    CARAPI_(void) SetOpaque(
         /* [in] */ Boolean opaque);
 
     CARAPI_(Int32) GetWidth();
 
     CARAPI_(Int32) GetHeight();
 
-    virtual void DumpGfxInfo(
+    CARAPI_(void) DumpGfxInfo(
         /* [in] */ IPrintWriter* pw,
         /* [in] */ IFileDescriptor* fd);
 
     CARAPI_(Boolean) LoadSystemProperties();
 
-    virtual void InvalidateRoot();
+    CARAPI_(void) InvalidateRoot();
 
     // CARAPI Draw(
     //     /* [in] */ IView* view,
@@ -119,29 +119,29 @@ public:
 
     CARAPI_(AutoPtr<IHardwareLayer>) CreateTextureLayer();
 
-    virtual void BuildLayer(
+    CARAPI_(void) BuildLayer(
         /* [in] */ IRenderNode* node);
 
     CARAPI_(Boolean) CopyLayerInto(
         /* [in] */ IHardwareLayer* layer,
         /* [in] */ IBitmap* bitmap);
 
-    virtual void PushLayerUpdate(
+    CARAPI_(void) PushLayerUpdate(
         /* [in] */ IHardwareLayer* layer);
 
-    virtual void OnLayerDestroyed(
+    CARAPI_(void) OnLayerDestroyed(
         /* [in] */ IHardwareLayer* layer);
 
-    virtual void SetName(
+    CARAPI_(void) SetName(
         /* [in] */ String name);
 
-    virtual void Fence();
+    CARAPI_(void) Fence();
 
-    virtual void StopDrawing();
+    CARAPI_(void) StopDrawing();
 
-    virtual void NotifyFramePending();
+    CARAPI_(void) NotifyFramePending();
 
-    virtual void RegisterAnimatingRenderNode(
+    CARAPI_(void) RegisterAnimatingRenderNode(
         /* [in] */ IRenderNode* animator);
 
     static CARAPI_(void) TrimMemory(
