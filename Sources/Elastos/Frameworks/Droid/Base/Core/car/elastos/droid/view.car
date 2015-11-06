@@ -767,14 +767,14 @@ module
     //         interface ISurfaceSession;
     //     }
 
-    //     class CPhysicalDisplayInfo {
-    //         constructor();
+    class CPhysicalDisplayInfo {
+        constructor();
 
-    //         constructor(
-    //             [in] IPhysicalDisplayInfo* other);
+        constructor(
+            [in] IPhysicalDisplayInfo* other);
 
-    //         interface IPhysicalDisplayInfo;
-    //     }
+        interface IPhysicalDisplayInfo;
+    }
 
     //     [local]
     //     class CSurfaceView {

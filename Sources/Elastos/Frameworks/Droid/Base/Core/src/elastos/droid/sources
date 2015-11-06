@@ -43,8 +43,7 @@ ELASTOS_LIBS += text/text.lib
 ELASTOS_LIBS += transition/transition.lib
 ELASTOS_LIBS += utility/utility.lib
 ELASTOS_LIBS += location/location.lib
-#todo: should link view.lib
-ELASTOS_LIBS += view/accessibility/accessibility.lib
+ELASTOS_LIBS += view/view.lib
 
 // LIBRARIES += wifi/wifi.lib
 // LIBRARIES += view/view.lib

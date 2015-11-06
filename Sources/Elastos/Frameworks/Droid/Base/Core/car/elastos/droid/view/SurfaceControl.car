@@ -41,7 +41,6 @@ module
         GetPresentationDeadlineNanos(
             [out] Int64* nanos);
 
-
         SetWidth(
             [in] Int32 width);
 
