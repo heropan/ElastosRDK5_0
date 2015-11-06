@@ -1,4 +1,6 @@
 
+DIRS += location
+
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation
@@ -20,7 +22,6 @@ DIRS += systemui
 DIRS += text
 DIRS += transition
 DIRS += utility
-DIRS += location
 
 #DIRS += impl
 #DIRS += bluetooth

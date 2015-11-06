@@ -1,5 +1,10 @@
 module
 {
+    using interface Elastos.Utility.IList;
+
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Internal.App.IIAppOpsService;
+
     namespace Elastos {
     namespace Droid {
     namespace App {
@@ -11,6 +16,47 @@ module
         OnOpChanged(
             [in] String op,
             [in] String packageName);
+    }
+
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    interface IAppOpsManagerPackageOps {
+
+        GetPackageName(
+            [out] String* str);
+
+        GetUid(
+            [out] Int32* uid);
+
+        GetOps(
+            [out] IList** ops);
+    }
+
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    interface IAppOpsManagerOpEntry {
+
+        GetOp(
+            [out] Int32* op);
+
+        GetMode(
+            [out] Int32* mode);
+
+        GetTime(
+            [out] Int64* time);
+
+        GetRejectTime(
+            [out] Int64* time);
+
+        IsRunning(
+            [out] Boolean* running);
+
+        GetDuration(
+            [out] Int32* duration);
     }
 
     /**
@@ -49,6 +95,107 @@ module
          * with appop permissions, and callers must explicitly check for it and deal with it.
          */
         const Int32 MODE_DEFAULT = 3;
+
+        /** @hide No operation specified. */
+        const Int32 OP_NONE = -1;
+        /** @hide Access to coarse location information. */
+        const Int32 OP_COARSE_LOCATION = 0;
+        /** @hide Access to fine location information. */
+        const Int32 OP_FINE_LOCATION = 1;
+        /** @hide Causing GPS to run. */
+        const Int32 OP_GPS = 2;
+        /** @hide */
+        const Int32 OP_VIBRATE = 3;
+        /** @hide */
+        const Int32 OP_READ_CONTACTS = 4;
+        /** @hide */
+        const Int32 OP_WRITE_CONTACTS = 5;
+        /** @hide */
+        const Int32 OP_READ_CALL_LOG = 6;
+        /** @hide */
+        const Int32 OP_WRITE_CALL_LOG = 7;
+        /** @hide */
+        const Int32 OP_READ_CALENDAR = 8;
+        /** @hide */
+        const Int32 OP_WRITE_CALENDAR = 9;
+        /** @hide */
+        const Int32 OP_WIFI_SCAN = 10;
+        /** @hide */
+        const Int32 OP_POST_NOTIFICATION = 11;
+        /** @hide */
+        const Int32 OP_NEIGHBORING_CELLS = 12;
+        /** @hide */
+        const Int32 OP_CALL_PHONE = 13;
+        /** @hide */
+        const Int32 OP_READ_SMS = 14;
+        /** @hide */
+        const Int32 OP_WRITE_SMS = 15;
+        /** @hide */
+        const Int32 OP_RECEIVE_SMS = 16;
+        /** @hide */
+        const Int32 OP_RECEIVE_EMERGECY_SMS = 17;
+        /** @hide */
+        const Int32 OP_RECEIVE_MMS = 18;
+        /** @hide */
+        const Int32 OP_RECEIVE_WAP_PUSH = 19;
+        /** @hide */
+        const Int32 OP_SEND_SMS = 20;
+        /** @hide */
+        const Int32 OP_READ_ICC_SMS = 21;
+        /** @hide */
+        const Int32 OP_WRITE_ICC_SMS = 22;
+        /** @hide */
+        const Int32 OP_WRITE_SETTINGS = 23;
+        /** @hide */
+        const Int32 OP_SYSTEM_ALERT_WINDOW = 24;
+        /** @hide */
+        const Int32 OP_ACCESS_NOTIFICATIONS = 25;
+        /** @hide */
+        const Int32 OP_CAMERA = 26;
+        /** @hide */
+        const Int32 OP_RECORD_AUDIO = 27;
+        /** @hide */
+        const Int32 OP_PLAY_AUDIO = 28;
+        /** @hide */
+        const Int32 OP_READ_CLIPBOARD = 29;
+        /** @hide */
+        const Int32 OP_WRITE_CLIPBOARD = 30;
+        /** @hide */
+        const Int32 OP_TAKE_MEDIA_BUTTONS = 31;
+        /** @hide */
+        const Int32 OP_TAKE_AUDIO_FOCUS = 32;
+        /** @hide */
+        const Int32 OP_AUDIO_MASTER_VOLUME = 33;
+        /** @hide */
+        const Int32 OP_AUDIO_VOICE_VOLUME = 34;
+        /** @hide */
+        const Int32 OP_AUDIO_RING_VOLUME = 35;
+        /** @hide */
+        const Int32 OP_AUDIO_MEDIA_VOLUME = 36;
+        /** @hide */
+        const Int32 OP_AUDIO_ALARM_VOLUME = 37;
+        /** @hide */
+        const Int32 OP_AUDIO_NOTIFICATION_VOLUME = 38;
+        /** @hide */
+        const Int32 OP_AUDIO_BLUETOOTH_VOLUME = 39;
+        /** @hide */
+        const Int32 OP_WAKE_LOCK = 40;
+        /** @hide Continually monitoring location data. */
+        const Int32 OP_MONITOR_LOCATION = 41;
+        /** @hide Continually monitoring location data with a relatively high power request. */
+        const Int32 OP_MONITOR_HIGH_POWER_LOCATION = 42;
+        /** @hide Retrieve current usage stats via {@link UsageStatsManager}. */
+        const Int32 OP_GET_USAGE_STATS = 43;
+        /** @hide */
+        const Int32 OP_MUTE_MICROPHONE = 44;
+        /** @hide */
+        const Int32 OP_TOAST_WINDOW = 45;
+        /** @hide Capture the device's display contents and/or audio */
+        const Int32 OP_PROJECT_MEDIA = 46;
+        /** @hide Activate a VPN connection without user intervention. */
+        const Int32 OP_ACTIVATE_VPN = 47;
+        /** @hide */
+        const Int32 _NUM_OP = 48;
 
         // when adding one of these:
         //  - increment _NUM_OP
@@ -229,6 +376,78 @@ module
             [in] Int32 uid,
             [in] String packageName,
             [out] Int32* mode);
+    }
+
+    interface IAppOpsManagerHelper {
+
+        /**
+         * Retrieve the op switch that controls the given operation.
+         * @hide
+         */
+        OpToSwitch(
+            [in] Int32 op,
+            [out] Int32* result);
+
+        /**
+         * Retrieve a non-localized name for the operation, for debugging output.
+         * @hide
+         */
+        OpToName(
+            [in] Int32 op,
+            [out] String* result);
+
+        /**
+         * Retrieve the permission associated with an operation, or null if there is not one.
+         * @hide
+         */
+        OpToPermission(
+            [in] Int32 op,
+            [out] String* result);
+
+        /**
+         * Retrieve the user restriction associated with an operation, or null if there is not one.
+         * @hide
+         */
+        OpToRestriction(
+            [in] Int32 op,
+            [out] String* result);
+
+        /**
+         * Retrieve whether the op allows the system (and system ui) to
+         * bypass the user restriction.
+         * @hide
+         */
+        OpAllowSystemBypassRestriction(
+            [in] Int32 op,
+            [out] Boolean* result);
+
+        /**
+         * Retrieve the default mode for the operation.
+         * @hide
+         */
+        OpToDefaultMode(
+            [in] Int32 op,
+            [out] Int32* result);
+
+        /**
+         * Retrieve whether the op allows itself to be reset.
+         * @hide
+         */
+        OpAllowsReset(
+            [in] Int32 op,
+            [out] Boolean* result);
+
+        /**
+         * {@hide}
+         */
+        StrOpToOp(
+            [in] String op,
+            [out] Int32* result);
+
+        /** @hide */
+        GetToken(
+            [in] IIAppOpsService* service,
+            [out] IBinder** binder);
     }
 
     } // namespace App

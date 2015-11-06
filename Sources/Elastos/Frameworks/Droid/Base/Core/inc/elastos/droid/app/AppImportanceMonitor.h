@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IBinder;
@@ -14,15 +15,6 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::os.Handler;
-// using Elastos::Droid::os.Looper;
-// using Elastos::Droid::os.Message;
-// using Elastos::Droid::os.RemoteException;
-// using Elastos::Droid::util.SparseArray;
-// using Elastos::Droid::util.SparseIntArray;
-
-// import java.util.List;
 
 /**
  * Helper for monitoring the current importance of applications.
@@ -33,6 +25,21 @@ class AppImportanceMonitor
     , public IAppImportanceMonitor
 {
 private:
+    class MyHandler
+        : public Handler
+    {
+    public:
+        MyHandler(
+            /* [in] */ AppImportanceMonitor* host,
+            /* [in] */ ILooper* looper);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        AppImportanceMonitor* mHost;
+    };
+
     class AppEntry
         : public Object
     {
@@ -46,7 +53,6 @@ private:
             : mUid(uid)
             , mImportance(IActivityManagerRunningAppProcessInfo.IMPORTANCE_GONE)
         {
-            uid = _uid;
         }
     };
 
@@ -58,36 +64,27 @@ private:
     public:
         CAR_INTERFACE_DECL()
 
+        ProcessObserver(
+            /* [in] */ AppImportanceMonitor* host);
+
         virtual ~ProcessObserver();
 
         CARAPI OnForegroundActivitiesChanged(
             /* [in] */ Int32 pid,
             /* [in] */ Int32 uid,
-            /* [in] */ Boolean foregroundActivities)
-        {
-        }
+            /* [in] */ Boolean foregroundActivities);
 
         CARAPI OnProcessStateChanged(
             /* [in] */ Int32 pid,
             /* [in] */ Int32 uid,
-            /* [in] */ Int32 procState)
-        {
-            synchronized (mApps) {
-                updateImportanceLocked(pid, uid,
-                        ActivityManager.RunningAppProcessInfo.procStateToImportance(procState),
-                        true);
-            }
-        }
+            /* [in] */ Int32 procState);
 
         CARAPI OnProcessDied(
             /* [in] */ Int32 pid,
-            /* [in] */ Int32 uid)
-        {
-            synchronized (mApps) {
-                updateImportanceLocked(pid, uid,
-                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE, true);
-            }
-        }
+            /* [in] */ Int32 uid);
+
+    private:
+        AppImportanceMonitor* mHost;
     };
 
 public:
@@ -125,13 +122,17 @@ private:
         /* [in] */ Boolean repChange);
 
 private:
+    friend class MyHandler;
+    friend class AppImportanceMonitor;
+
     AutoPtr<IContext> mContext;
 
     HashMap<Int32, AutoPtr<AppEntry> > mApps;
+    Object mAppsLock;
 
     AutoPtr<IProcessObserver> mProcessObserver;
 
-    static const Int32 MSG_UPDATE;// = 1;
+    static const Int32 MSG_UPDATE;
 
     AutoPtr<IHandler> mHandler;
 };

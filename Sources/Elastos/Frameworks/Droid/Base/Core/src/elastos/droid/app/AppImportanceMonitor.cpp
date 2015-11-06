@@ -1,5 +1,7 @@
 
 #include "elastos/droid/app/AppImportanceMonitor.h"
+#include "elastos/droid/app/CActivityManagerRunningAppProcessInfo.h"
+#include "elastos/droid/app/ActivityManagerNative.h"
 
 namespace Elastos {
 namespace Droid {
@@ -10,17 +12,9 @@ namespace App {
 // using Elastos::Droid::Os::ILooper;
 // using Elastos::Droid::Os::IMessage;
 
-/**
- * Helper for monitoring the current importance of applications.
- * @hide
- */
-class AppImportanceMonitor
-    : public Object
-    , public IAppImportanceMonitor
-{
-private:
+
     class AppEntry
-        : public Object
+        : Object
     {
     public:
         Int32 mUid;
@@ -36,159 +30,201 @@ private:
         }
     };
 
-    class ProcessObserver
-        : public Object
-        , public IProcessObserver
-        , public IBinder
-    {
-    public:
-        CAR_INTERFACE_DECL()
+//=================================================================================
+// AppImportanceMonitor::ProcessObserver
+//=================================================================================
+CAR_INTERFACE_IMPL_2(AppImportanceMonitor::ProcessObserver, Object, IProcessObserver, IBinder)
 
-        virtual ~ProcessObserver();
+AppImportanceMonitor::ProcessObserver::ProcessObserver(
+    /* [in] */ AppImportanceMonitor* host)
+    : mHost(host)
+{}
 
-        CARAPI OnForegroundActivitiesChanged(
-            /* [in] */ Int32 pid,
-            /* [in] */ Int32 uid,
-            /* [in] */ Boolean foregroundActivities)
-        {
+AppImportanceMonitor::ProcessObserver::~ProcessObserver()
+{}
+
+ECode AppImportanceMonitor::ProcessObserver::OnForegroundActivitiesChanged(
+    /* [in] */ Int32 pid,
+    /* [in] */ Int32 uid,
+    /* [in] */ Boolean foregroundActivities)
+{
+    return NOERROR;
+}
+
+ECode AppImportanceMonitor::ProcessObserver::OnProcessStateChanged(
+    /* [in] */ Int32 pid,
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 procState)
+{
+    Object& lock = mHost->mAppsLock;
+    synchronized (lock) {
+        mHost->UpdateImportanceLocked(pid, uid,
+            CActivityManagerRunningAppProcessInfo::procStateToImportance(procState),
+            TRUE);
+    }
+    return NOERROR;
+}
+
+ECode AppImportanceMonitor::ProcessObserver::OnProcessDied(
+    /* [in] */ Int32 pid,
+    /* [in] */ Int32 uid)
+{
+    synchronized (mApps) {
+        mHost->UpdateImportanceLocked(pid, uid,
+            IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE, TRUE);
+    }
+    return NOERROR;
+}
+
+//=================================================================================
+// AppImportanceMonitor::MyHandler
+//=================================================================================
+AppImportanceMonitor::MyHandler::MyHandler(
+    /* [in] */ AppImportanceMonitor* host,
+    /* [in] */ ILooper* looper)
+    : mHost(host)
+    , Handler(looper)
+{}
+
+ECode AppImportanceMonitor::MyHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what, arg1, arg2;
+    msg->GetWhat(&what);
+    msg->GetArg1(&arg1);
+    msg->GetArg2(&arg2);
+
+    switch (what) {
+        case AppImportanceMonitor::MSG_UPDATE:
+            mHost->OnImportanceChanged(arg1, arg2 & 0xffff, arg2 >> 16);
+            break;
+        default:
+            return Handler::HandleMessage(msg);
+    }
+    return NOERROR;
+}
+
+//=================================================================================
+// AppImportanceMonitor
+//=================================================================================
+static const Int32 AppImportanceMonitor::MSG_UPDATE = 1;
+
+CAR_INTERFACE_IMPL(AppImportanceMonitor, Object, IAppImportanceMonitor)
+
+AppImportanceMonitor::AppImportanceMonitor()
+{}
+
+AppImportanceMonitor::~AppImportanceMonitor()
+{}
+
+ECode AppImportanceMonitor::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ ILooper* looper)
+{
+    mContext = context;
+    mHandler = new MyHandler(looper);
+
+    mProcessObserver = new ProcessObserver(this);
+
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::ACTIVITY_SERVICE, (IInterface**)&obj);
+    AutoPtr<IActivityManager> am = IActivityManager::Probe(obj);
+
+    // try {
+    ActivityManagerNative::GetDefault()::RegisterProcessObserver(mProcessObserver);
+    // } catch (RemoteException e) {
+    // }
+    AutoPtr<IList> apps;
+    am->GetRunningAppProcesses((IList**)&apps);
+
+    if (apps != NULL) {
+        Int32 size;
+        apps->GetSize(&size);
+        Int32 uid, pid, importance;
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            apps->Get(i, (IInterface**)&obj);
+            IActivityManagerRunningAppProcessInfo* app = IActivityManagerRunningAppProcessInfo::Probe(obj);
+            app->GetUid(&uid);
+            app->GetPid(&pid);
+            app->GetImportance(&importance);
+            UpdateImportanceLocked(uid, pid, importance, FALSE);
         }
+    }
+    return NOERROR;
+}
 
-        CARAPI OnProcessStateChanged(
-            /* [in] */ Int32 pid,
-            /* [in] */ Int32 uid,
-            /* [in] */ Int32 procState)
-        {
-            synchronized (mApps) {
-                updateImportanceLocked(pid, uid,
-                        ActivityManager.RunningAppProcessInfo.procStateToImportance(procState),
-                        true);
-            }
-        }
+ECode AppImportanceMonitor::GetImportance(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    HashMap<Int32, AutoPtr<AppEntry> >::Iterator it = mApps.Find(uid);
+    if (it == mApps.End()) {
+        *result = IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE;
+        return NOERROR;
+    }
+    *result = it->mSecond->mImportance;
+    return NOERROR;
+}
 
-        CARAPI OnProcessDied(
-            /* [in] */ Int32 pid,
-            /* [in] */ Int32 uid)
-        {
-            synchronized (mApps) {
-                updateImportanceLocked(pid, uid,
-                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE, true);
-            }
-        }
-    };
+ECode AppImportanceMonitor::OnImportanceChanged(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 importance,
+    /* [in] */ Int32 oldImportance)
+{
+    return NOERROR;
+}
 
-public:
-    CAR_INTERFACE_DECL()
+void AppImportanceMonitor::UpdateImportanceLocked(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 pid,
+    /* [in] */ Int32 importance,
+    /* [in] */ Boolean repChange)
+{
+    AutoPtr<AppEntry> ent;
 
-    AppImportanceMonitor();
+    HashMap<Int32, AutoPtr<AppEntry> >::Iterator it = mApps.Find(uid);
+    if (it == mApps.End()) {
+        ent = new AppEntry(uid);
+        mApps[uid] = ent;
+    }
+    if (importance >= IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE) {
+        ent->mProcs.Remove(pid);
+    } else {
+        ent->procs[pid] = importance;
+    }
+    UpdateImportanceLocked(ent, repChange);
+}
 
-    virtual ~AppImportanceMonitor();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ ILooper* looper)
-    {
-        mContext = context;
-        mHandler = new Handler(looper) {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case MSG_UPDATE:
-                        onImportanceChanged(msg.arg1, msg.arg2&0xffff, msg.arg2>>16);
-                        break;
-                    default:
-                        super.handleMessage(msg);
-                }
-            }
-        };
-        ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
-        try {
-            ActivityManagerNative.getDefault().registerProcessObserver(mProcessObserver);
-        } catch (RemoteException e) {
-        }
-        List<ActivityManager.RunningAppProcessInfo> apps = am.getRunningAppProcesses();
-        if (apps != null) {
-            for (int i=0; i<apps.size(); i++) {
-                ActivityManager.RunningAppProcessInfo app = apps.get(i);
-                updateImportanceLocked(app.uid, app.pid, app.importance, false);
-            }
+void AppImportanceMonitor::UpdateImportanceLocked(
+    /* [in] */ AppEntry* ent,
+    /* [in] */ Boolean repChange)
+{
+    Int32 appImp = IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE;
+    HashMap<Int32, Int32>::Iterator it = ent->mProcs.Begin();
+    for (; it != ent->mProcs.End(); ++it) {
+        Int32 procImp = it->mSecond;
+        if (procImp < appImp) {
+            appImp = procImp;
         }
     }
 
-    public CARAPI GetImportance(
-        /* [in] */ Int32 uid,
-        /* [out] */ Int32* result)
-    {
-        AppEntry ent = mApps.get(uid);
-        if (ent == null) {
-            return ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE;
+    if (appImp != ent->mImportance) {
+        Int32 impCode = appImp | (ent->mImportance << 16);
+        ent->mImportance = appImp;
+        if (appImp >= IActivityManagerRunningAppProcessInfo::IMPORTANCE_GONE) {
+            mApps->Remove(ent->mUid);
         }
-        return ent.importance;
-    }
 
-    /**
-     * Report when an app's importance changed. Called on looper given to constructor.
-     */
-    CARAPI OnImportanceChanged(
-        /* [in] */ Int32 uid,
-        /* [in] */ Int32 importance,
-        /* [in] */ Int32 oldImportance)
-    {
-    }
-
-    void UpdateImportanceLocked(
-        /* [in] */ Int32 uid,
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 importance,
-        /* [in] */ Boolean repChange)
-    {
-        AppEntry ent = mApps.get(uid);
-        if (ent == null) {
-            ent = new AppEntry(uid);
-            mApps.put(uid, ent);
-        }
-        if (importance >= ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE) {
-            ent.procs.remove(pid);
-        } else {
-            ent.procs.put(pid, importance);
-        }
-        updateImportanceLocked(ent, repChange);
-    }
-
-    void UpdateImportanceLocked(
-        /* [in] */ AppEntry* ent,
-        /* [in] */ Boolean repChange)
-    {
-        int appImp = ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE;
-        for (int i=0; i<ent.procs.size(); i++) {
-            int procImp = ent.procs.valueAt(i);
-            if (procImp < appImp) {
-                appImp = procImp;
-            }
-        }
-        if (appImp != ent.importance) {
-            int impCode = appImp | (ent.importance<<16);
-            ent.importance = appImp;
-            if (appImp >= ActivityManager.RunningAppProcessInfo.IMPORTANCE_GONE) {
-                mApps.remove(ent.uid);
-            }
-            if (repChange) {
-                mHandler.obtainMessage(MSG_UPDATE, ent.uid, impCode).sendToTarget();
-            }
+        if (repChange) {
+            AutoPtr<IMessage> msg;
+            mHandler->ObtainMessage(MSG_UPDATE, ent->mUid, impCode, (IMessage**)&msg);
+            Boolean result;
+            msg->SendToTarget(&result);
         }
     }
-
-private:
-    AutoPtr<IContext> mContext;
-
-    HashMap<Int32, AutoPtr<AppEntry> > mApps;
-
-    AutoPtr<IProcessObserver> mProcessObserver;
-
-    static const Int32 MSG_UPDATE = 1;
-
-    AutoPtr<IHandler> mHandler;
-};
-
+}
 
 } // namespace App
 } // namespace Droid
