@@ -66,7 +66,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
-    static CARAPI_(void) SetDisplayPowerMode(
+    static CARAPI SetDisplayPowerMode(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 mode);
 
@@ -80,29 +80,31 @@ public:
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 id);
 
-    static CARAPI_(void) SetDisplayProjection(
+    static CARAPI SetDisplayProjection(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 orientation,
         /* [in] */ IRect* layerStackRect,
         /* [in] */ IRect* displayRect);
 
-    static CARAPI_(void) SetDisplayLayerStack(
+    static CARAPI SetDisplayLayerStack(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 layerStack);
 
-    static CARAPI_(void) SetDisplaySurface(
+    static CARAPI SetDisplaySurface(
         /* [in] */ IBinder* displayToken,
         /* [in] */ ISurface* surface);
 
-    static CARAPI_(void) SetDisplaySize(
+    static CARAPI SetDisplaySize(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    static CARAPI_(AutoPtr<IBinder>) CreateDisplay(String name,
-        /* [in] */ Boolean secure);
+    static CARAPI CreateDisplay(
+        /* [in] */ String name,
+        /* [in] */ Boolean secure,
+        /* [out] */ IBinder** token);
 
-    static CARAPI_(void) DestroyDisplay(
+    static CARAPI DestroyDisplay(
         /* [in] */ IBinder* displayToken);
 
     static CARAPI_(AutoPtr<IBinder>) GetBuiltInDisplay(
@@ -189,7 +191,8 @@ public:
      * if an error occurs. Make sure to call Bitmap.recycle() as soon as
      * possible, once its content is not needed anymore.
      */
-    static CARAPI_(AutoPtr<Bitmap>) Screenshot(Rect sourceCrop,
+    static CARAPI_(AutoPtr<Bitmap>) Screenshot(
+        /* [in] */ IRect* sourceCrop,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 minLayer,
@@ -212,6 +215,19 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
+    static CARAPI_(Boolean) ClearAnimationFrameStats();
+
+    static CARAPI_(Boolean) GetAnimationFrameStats(
+        /* [in] */ IWindowAnimationFrameStats* outStats);
+    /** start a transaction */
+
+    static CARAPI_(void) OpenTransaction();
+
+    /** end a transaction */
+    static CARAPI_(void) CloseTransaction();
+
+    /** flag the transaction as an animation */
+    static CARAPI_(void) SetAnimationTransaction();
 
 protected:
     /**
@@ -246,9 +262,7 @@ protected:
         /* [in] */ Int32 flags);
 
 private:
-    static String TAG = "SurfaceControl";
-
-    CARAPI_(void) CheckNotReleased();
+    CARAPI CheckNotReleased();
 
     static CARAPI_(void) Screenshot(
         /* [in] */ IBinder display,
@@ -360,25 +374,25 @@ private:
         /* [in] */ IWindowAnimationFrameStats* outStats);
 
 
-    CARAPI_(AutoPtr<IBinder>) NativeGetBuiltInDisplay(
+    static CARAPI_(AutoPtr<IBinder>) NativeGetBuiltInDisplay(
         /* [in] */ Int32 physicalDisplayId);
 
-    CARAPI_(AutoPtr<IBinder>) NativeCreateDisplay(
+    static CARAPI_(AutoPtr<IBinder>) NativeCreateDisplay(
         /* [in] */ const String& name,
         /* [in] */ Boolean secure);
 
-    CARAPI_(void) NativeDestroyDisplay(
+    static CARAPI_(void) NativeDestroyDisplay(
         /* [in] */ IBinder* displayToken);
 
-    CARAPI_(void) NativeSetDisplaySurface(
+    static CARAPI_(void) NativeSetDisplaySurface(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int64 nativeSurfaceObject);
 
-    CARAPI_(void) NativeSetDisplayLayerStack(
+    static CARAPI_(void) NativeSetDisplayLayerStack(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 layerStack);
 
-    CARAPI_(void) NativeSetDisplayProjection(
+    static CARAPI_(void) NativeSetDisplayProjection(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 orientation,
         /* [in] */ Int32 l,
@@ -390,22 +404,22 @@ private:
         /* [in] */ Int32 R,
         /* [in] */ Int32 B);
 
-    CARAPI_(void) NativeSetDisplaySize(
+    static CARAPI_(void) NativeSetDisplaySize(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    CARAPI_(AutoPtr<ArrayOf<IPhysicalDisplayInfo*> >) NativeGetDisplayConfigs(
+    static CARAPI_(AutoPtr<ArrayOf<IPhysicalDisplayInfo*> >) NativeGetDisplayConfigs(
         /* [in] */ IBinder* displayToken);
 
-    CARAPI_(Int32) NativeGetActiveConfig(
+    static CARAPI_(Int32) NativeGetActiveConfig(
         /* [in] */ IBinder* displayToken);
 
-    CARAPI_(Boolean) NativeSetActiveConfig(
+    static CARAPI_(Boolean) NativeSetActiveConfig(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 id);
 
-    CARAPI_(void) NativeSetDisplayPowerMode(
+    static CARAPI_(void) NativeSetDisplayPowerMode(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 mode);
 
@@ -413,6 +427,7 @@ protected:
     Int64 mNativeObject; // package visibility only for Surface.java access
 
 private:
+    static const String TAG;
     AutoPtr<ICloseGuard> mCloseGuard;
     String mName;
 };
