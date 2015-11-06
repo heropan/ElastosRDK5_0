@@ -220,8 +220,7 @@ module
          * @return the same object, so that setters can be chained
          */
         SetFastestInterval(
-            [in] Int64 millis,
-            [out] ILocationRequest** lr);
+            [in] Int64 millis);
 
         /**
          * Get the fastest interval of this request, in milliseconds.
@@ -252,8 +251,7 @@ module
          * @return the same object, so that setters can be chained
          */
         SetExpireIn(
-            [in] Int64 millis,
-            [out] ILocationRequest** lr);
+            [in] Int64 millis);
 
         /**
          * Set the request expiration time, in millisecond since boot.
@@ -270,8 +268,7 @@ module
          * @return the same object, so that setters can be chained
          */
         SetExpireAt(
-            [in] Int64 millis,
-            [out] ILocationRequest** lr);
+            [in] Int64 millis);
 
         /**
          * Get the request expiration time, in milliseconds since boot.
@@ -298,8 +295,7 @@ module
          * @return the same object, so that setters can be chained
          */
         SetNumUpdates(
-            [in] Int32 numUpdates,
-            [out] ILocationRequest** lr);
+            [in] Int32 numUpdates);
 
         /**
          * Get the number of updates requested.
@@ -316,8 +312,7 @@ module
 
         /** @hide */
         SetProvider(
-            [in] String provider,
-            [out] ILocationRequest** lr);
+            [in] String provider);
 
         /** @hide */
         GetProvider(
@@ -325,8 +320,7 @@ module
 
         /** @hide */
         SetSmallestDisplacement(
-            [in] Float meters,
-            [out] ILocationRequest** lr);
+            [in] Float meters);
 
         /** @hide */
         GetSmallestDisplacement(

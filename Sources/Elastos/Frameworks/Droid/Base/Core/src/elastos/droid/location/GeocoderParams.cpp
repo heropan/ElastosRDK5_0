@@ -12,6 +12,11 @@ CAR_INTERFACE_IMPL_2(GeocoderParams, Object, IGeocoderParams, IParcelable)
 GeocoderParams::GeocoderParams()
 {}
 
+ECode GeocoderParams::constructor()
+{
+    return NOERROR;
+}
+
 ECode GeocoderParams::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ILocale* locale)

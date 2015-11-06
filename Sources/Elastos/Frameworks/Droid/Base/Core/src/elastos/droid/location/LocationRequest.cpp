@@ -54,9 +54,9 @@ ECode LocationRequest::constructor(
 
 AutoPtr<ILocationRequest> LocationRequest::Create()
 {
-    AutoPtr<ILocationRequest> request;
-    CLocationRequest::New((ILocationRequest**)&request);
-    return request;
+    AutoPtr<CLocationRequest> request;
+    CLocationRequest::NewByFriend((CLocationRequest**)&request);
+    return (ILocationRequest*)request.Get();
 }
 
 AutoPtr<ILocationRequest> LocationRequest::CreateFromDeprecatedProvider(
@@ -79,18 +79,18 @@ AutoPtr<ILocationRequest> LocationRequest::CreateFromDeprecatedProvider(
         quality = POWER_LOW;
     }
 
-    AutoPtr<ILocationRequest> request;
-    CLocationRequest::New((ILocationRequest**)&request);
-    request->SetProvider(provider, (ILocationRequest**)&request);
+    AutoPtr<CLocationRequest> request;
+    CLocationRequest::NewByFriend((CLocationRequest**)&request);
+    request->SetProvider(provider);
     request->SetQuality(quality);
     request->SetInterval(minTime);
-    request->SetFastestInterval(minTime, (ILocationRequest**)&request);
-    request->SetSmallestDisplacement(minDistance, (ILocationRequest**)&request);
+    request->SetFastestInterval(minTime);
+    request->SetSmallestDisplacement(minDistance);
 
     if (singleShot) {
-        request->SetNumUpdates(1, (ILocationRequest**)&request);
+        request->SetNumUpdates(1);
     }
-    return request;
+    return (ILocationRequest*)request.Get();
 }
 
 AutoPtr<ILocationRequest> LocationRequest::CreateFromDeprecatedCriteria(
@@ -125,16 +125,16 @@ AutoPtr<ILocationRequest> LocationRequest::CreateFromDeprecatedCriteria(
         }
     }
 
-    AutoPtr<ILocationRequest> request;
-    CLocationRequest::New((ILocationRequest**)&request);
+    AutoPtr<CLocationRequest> request;
+    CLocationRequest::NewByFriend((CLocationRequest**)&request);
     request->SetQuality(quality);
     request->SetInterval(minTime);
-    request->SetFastestInterval(minTime, (ILocationRequest**)&request);
-    request->SetSmallestDisplacement(minDistance, (ILocationRequest**)&request);
+    request->SetFastestInterval(minTime);
+    request->SetSmallestDisplacement(minDistance);
     if (singleShot) {
-        request->SetNumUpdates(1, (ILocationRequest**)&request);
+        request->SetNumUpdates(1);
     }
-    return request;
+    return (ILocationRequest*)request.Get();
 }
 
 ECode LocationRequest::SetQuality(

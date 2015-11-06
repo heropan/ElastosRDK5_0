@@ -31,6 +31,8 @@ public:
 
     GeocoderParams();
 
+    CARAPI constructor();
+
     /**
      * This object is only constructed by the Geocoder class
      *

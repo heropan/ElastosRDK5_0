@@ -420,6 +420,24 @@ module
         SetExtraLocation(
             [in] String key,
             [in] ILocation* value);
+
+        /**
+         * Returns true if the Location came from a mock provider.
+         *
+         * @return true if this Location came from a mock provider, false otherwise
+         */
+        IsFromMockProvider(
+            [out] Boolean* result);
+
+        /**
+         * Flag this Location as having come from a mock provider or not.
+         *
+         * @param isFromMockProvider true if this Location came from a mock provider, false otherwise
+         * @hide
+         */
+        //@SystemApi
+        SetIsFromMockProvider(
+            [in] Boolean isFromMockProvider);
     }
 
     [deprecated]
@@ -476,24 +494,6 @@ module
             [in] Double endLatitude,
             [in] Double endLongitude,
             [in] ArrayOf<Float>* results);
-
-        /**
-         * Returns true if the Location came from a mock provider.
-         *
-         * @return true if this Location came from a mock provider, false otherwise
-         */
-        IsFromMockProvider(
-            [out] Boolean* result);
-
-        /**
-         * Flag this Location as having come from a mock provider or not.
-         *
-         * @param isFromMockProvider true if this Location came from a mock provider, false otherwise
-         * @hide
-         */
-        //@SystemApi
-        SetIsFromMockProvider(
-            [in] Boolean isFromMockProvider);
     }
 
     }//namespace Location
