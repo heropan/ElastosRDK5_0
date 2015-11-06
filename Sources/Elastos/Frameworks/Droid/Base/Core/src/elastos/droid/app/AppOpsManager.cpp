@@ -1,5 +1,5 @@
 
-#include "elastos/droid/app/AppOpsManager.h"
+#include "elastos/droid/app/IAppOpsManager::h"
 
 using Elastos::Droid::annotation.SystemApi;
 using Elastos::Droid::app.usage.UsageStatsManager;
@@ -499,167 +499,157 @@ static String sOpRestrictions[] = {
         IUserManager::DISALLOW_CONFIG_VPN, // ACTIVATE_VPN
 };
 
-Boolean sOpAllowSystemRestrictionBypass[] = {
-        false, //COARSE_LOCATION
-        false, //FINE_LOCATION
-        false, //GPS
-        false, //VIBRATE
-        false, //READ_CONTACTS
-        false, //WRITE_CONTACTS
-        false, //READ_CALL_LOG
-        false, //WRITE_CALL_LOG
-        false, //READ_CALENDAR
-        false, //WRITE_CALENDAR
-        true, //WIFI_SCAN
-        false, //POST_NOTIFICATION
-        false, //NEIGHBORING_CELLS
-        false, //CALL_PHONE
-        false, //READ_SMS
-        false, //WRITE_SMS
-        false, //RECEIVE_SMS
-        false, //RECEIVE_EMERGECY_SMS
-        false, //RECEIVE_MMS
-        false, //RECEIVE_WAP_PUSH
-        false, //SEND_SMS
-        false, //READ_ICC_SMS
-        false, //WRITE_ICC_SMS
-        false, //WRITE_SETTINGS
-        true, //SYSTEM_ALERT_WINDOW
-        false, //ACCESS_NOTIFICATIONS
-        false, //CAMERA
-        false, //RECORD_AUDIO
-        false, //PLAY_AUDIO
-        false, //READ_CLIPBOARD
-        false, //WRITE_CLIPBOARD
-        false, //TAKE_MEDIA_BUTTONS
-        false, //TAKE_AUDIO_FOCUS
-        false, //AUDIO_MASTER_VOLUME
-        false, //AUDIO_VOICE_VOLUME
-        false, //AUDIO_RING_VOLUME
-        false, //AUDIO_MEDIA_VOLUME
-        false, //AUDIO_ALARM_VOLUME
-        false, //AUDIO_NOTIFICATION_VOLUME
-        false, //AUDIO_BLUETOOTH_VOLUME
-        false, //WAKE_LOCK
-        false, //MONITOR_LOCATION
-        false, //MONITOR_HIGH_POWER_LOCATION
-        false, //GET_USAGE_STATS
-        false, //MUTE_MICROPHONE
-        true, //TOAST_WINDOW
-        false, //PROJECT_MEDIA
-        false, //ACTIVATE_VPN
+Boolean AppOpsManager::sOpAllowSystemRestrictionBypass[] = {
+        FALSE, //COARSE_LOCATION
+        FALSE, //FINE_LOCATION
+        FALSE, //GPS
+        FALSE, //VIBRATE
+        FALSE, //READ_CONTACTS
+        FALSE, //WRITE_CONTACTS
+        FALSE, //READ_CALL_LOG
+        FALSE, //WRITE_CALL_LOG
+        FALSE, //READ_CALENDAR
+        FALSE, //WRITE_CALENDAR
+        TRUE, //WIFI_SCAN
+        FALSE, //POST_NOTIFICATION
+        FALSE, //NEIGHBORING_CELLS
+        FALSE, //CALL_PHONE
+        FALSE, //READ_SMS
+        FALSE, //WRITE_SMS
+        FALSE, //RECEIVE_SMS
+        FALSE, //RECEIVE_EMERGECY_SMS
+        FALSE, //RECEIVE_MMS
+        FALSE, //RECEIVE_WAP_PUSH
+        FALSE, //SEND_SMS
+        FALSE, //READ_ICC_SMS
+        FALSE, //WRITE_ICC_SMS
+        FALSE, //WRITE_SETTINGS
+        TRUE, //SYSTEM_ALERT_WINDOW
+        FALSE, //ACCESS_NOTIFICATIONS
+        FALSE, //CAMERA
+        FALSE, //RECORD_AUDIO
+        FALSE, //PLAY_AUDIO
+        FALSE, //READ_CLIPBOARD
+        FALSE, //WRITE_CLIPBOARD
+        FALSE, //TAKE_MEDIA_BUTTONS
+        FALSE, //TAKE_AUDIO_FOCUS
+        FALSE, //AUDIO_MASTER_VOLUME
+        FALSE, //AUDIO_VOICE_VOLUME
+        FALSE, //AUDIO_RING_VOLUME
+        FALSE, //AUDIO_MEDIA_VOLUME
+        FALSE, //AUDIO_ALARM_VOLUME
+        FALSE, //AUDIO_NOTIFICATION_VOLUME
+        FALSE, //AUDIO_BLUETOOTH_VOLUME
+        FALSE, //WAKE_LOCK
+        FALSE, //MONITOR_LOCATION
+        FALSE, //MONITOR_HIGH_POWER_LOCATION
+        FALSE, //GET_USAGE_STATS
+        FALSE, //MUTE_MICROPHONE
+        TRUE, //TOAST_WINDOW
+        FALSE, //PROJECT_MEDIA
+        FALSE, //ACTIVATE_VPN
 };
 
-/**
- * This specifies the default mode for each operation.
- */
-private static Int32[] sOpDefaultMode = new Int32[] {
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_IGNORED, // OP_WRITE_SMS
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_DEFAULT, // OP_GET_USAGE_STATS
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_ALLOWED,
-        AppOpsManager.MODE_IGNORED, // OP_PROJECT_MEDIA
-        AppOpsManager.MODE_IGNORED, // OP_ACTIVATE_VPN
+Int32 AppOpsManager::sOpDefaultMode[] = {
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_IGNORED, // OP_WRITE_SMS
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_DEFAULT, // OP_GET_USAGE_STATS
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_ALLOWED,
+        IAppOpsManager::MODE_IGNORED, // OP_PROJECT_MEDIA
+        IAppOpsManager::MODE_IGNORED, // OP_ACTIVATE_VPN
 };
 
-/**
- * This specifies whether each option is allowed to be reset
- * when resetting all app preferences.  Disable reset for
- * app ops that are under strong control of some part of the
- * system (such as OP_WRITE_SMS, which should be allowed only
- * for whichever app is selected as the current SMS app).
- */
-private static boolean[] sOpDisableReset = new boolean[] {
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,      // OP_WRITE_SMS
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
+Boolean sOpDisableReset[] = {
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        TRUE,      // OP_WRITE_SMS
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
+        FALSE,
 };
 
 private static HashMap<String, Integer> sOpStrToOp = new HashMap<String, Integer>();
@@ -812,7 +802,7 @@ CARAPI constructor(
  */
 ECode GetPackagesForOps(
     /* [in] */ ArrayOf<Int32>* ops,
-    /* [out] */ IList** ops) //List<AppOpsManager.PackageOps>
+    /* [out] */ IList** ops) //List<IAppOpsManager::PackageOps>
 {
     try {
         return mService.getPackagesForOps(ops);
@@ -833,7 +823,7 @@ ECode GetOpsForPackage(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName,
     /* [in] */ ArrayOf<Int32>* ops,
-    /* [out] */ IList** list) //List<AppOpsManager.PackageOps>
+    /* [out] */ IList** list) //List<IAppOpsManager::PackageOps>
 {
     try {
         return mService.getOpsForPackage(uid, packageName, ops);
@@ -1240,7 +1230,7 @@ CARAPI GetToken(
     /* [in] */ IIAppOpsService* service,
     /* [out] */ IBinder** binder)
 {
-    synchronized (AppOpsManager.class) {
+    synchronized (IAppOpsManager::class) {
         if (sToken != null) {
             return sToken;
         }

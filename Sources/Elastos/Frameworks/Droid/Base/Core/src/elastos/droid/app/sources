@@ -12,7 +12,7 @@ SOURCES += app.cpp
 SOURCES += ActionBar.cpp
 SOURCES += CActionKeyInfo.cpp
 
-SOURCES = Activity.cpp
+SOURCES += Activity.cpp
 SOURCES += ActivityManagerNative.cpp
 
 SOURCES += CActivityManager.cpp

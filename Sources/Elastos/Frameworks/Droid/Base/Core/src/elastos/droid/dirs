@@ -1,6 +1,4 @@
 
-DIRS += location
-
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation
@@ -10,6 +8,7 @@ DIRS += graphics
 DIRS += hardware
 DIRS += inputmethodservice
 DIRS += internal
+DIRS += location
 DIRS += media
 DIRS += mtp
 DIRS += net

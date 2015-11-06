@@ -242,7 +242,7 @@ void ThreadedRenderer::DumpGfxInfo(
 
 Int32 ThreadedRenderer::Search(
     /* [in] */ ArrayOf<String>* values,
-    /* [in] */ String value)
+    /* [in] */ const String& value)
 {
     for (Int32 i = 0; i < values->GetLength(); i++) {
         if ((*values)[i].Equals(value)) return i;
@@ -415,7 +415,7 @@ void ThreadedRenderer::OnLayerDestroyed(
 }
 
 void ThreadedRenderer::SetName(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
 {
 }
 
@@ -546,7 +546,7 @@ void ThreadedRenderer::AtlasInitializer::ValidateMap(
 //------------Native Methord-----------
 
 void ThreadedRenderer::NativeSetupShadersDiskCache(
-    /* [in] */ String cacheFile)
+    /* [in] */ const String& cacheFile)
 {
     // Zhangyu JNI TODO
 }

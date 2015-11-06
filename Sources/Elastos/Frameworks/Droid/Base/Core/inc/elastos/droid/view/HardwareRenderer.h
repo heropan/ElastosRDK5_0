@@ -263,7 +263,7 @@ protected:
      * @param name The name of this renderer, can be null
      */
     virtual CARAPI_(void) SetName(
-        /* [in] */ String name) = 0;
+        /* [in] */ const String& name) = 0;
 
     /**
      * Change the HardwareRenderer's opacity

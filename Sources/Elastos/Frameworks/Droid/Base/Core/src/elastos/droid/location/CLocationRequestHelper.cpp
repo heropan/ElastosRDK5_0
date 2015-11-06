@@ -19,7 +19,7 @@ ECode CLocationRequestHelper::Create(
 }
 
 ECode CLocationRequestHelper::CreateFromDeprecatedProvider(
-    /* [in] */ String provider,
+    /* [in] */ const String& provider,
     /* [in] */ Int64 minTime,
     /* [in] */ Float minDistance,
     /* [in] */ Boolean singleShot,

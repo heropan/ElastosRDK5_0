@@ -67,7 +67,7 @@ public:
         /* [in] */ ArrayOf<Byte>* clientMac,
         /* [in] */ IInetAddress* requestedIp,
         /* [in] */ ArrayOf<Byte>* requestedParams,
-        /* [in] */ String clientHostName) = 0;
+        /* [in] */ const String& clientHostName) = 0;
 
     /**
      * Signals that a client's INFORM packet has been received with the

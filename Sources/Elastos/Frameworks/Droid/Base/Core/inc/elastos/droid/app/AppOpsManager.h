@@ -37,8 +37,8 @@ namespace App {
  * {@link Context#APP_OPS_SERVICE Context.APP_OPS_SERVICE}.</p>
  */
 class AppOpsManager
-    : Object
-    , IAppOpsManager
+    : public Object
+    , public IAppOpsManager
 {
     /**
      * <p>App ops allows callers to:</p>
@@ -632,7 +632,6 @@ private:
      */
     static String sOpNames[48];
 
-
     /**
      * This optionally maps a permission to an operation.  If there
      * is no permission associated with an operation, it is null.
@@ -650,13 +649,13 @@ private:
      * This specifies whether each option should allow the system
      * (and system ui) to bypass the user restriction when active.
      */
-    static Boolean sOpAllowSystemRestrictionBypass[];
+    static Boolean sOpAllowSystemRestrictionBypass[48];
 
 
     /**
      * This specifies the default mode for each operation.
      */
-    static Int32 sOpDefaultMode[];
+    static Int32 sOpDefaultMode[48];
 
 
     /**
@@ -666,7 +665,7 @@ private:
      * system (such as OP_WRITE_SMS, which should be allowed only
      * for whichever app is selected as the current SMS app).
      */
-    static Boolean sOpDisableReset[];
+    static Boolean sOpDisableReset[48];
 
     static HashMap<String, Int32> sOpStrToOp;
 

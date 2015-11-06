@@ -25,7 +25,7 @@ const String SettingInjectorService::TAG("SettingInjectorService");
 CAR_INTERFACE_IMPL(SettingInjectorService, Object, ISettingInjectorService)
 
 SettingInjectorService::SettingInjectorService(
-    /* [in] */ String name)
+    /* [in] */ const String& name)
         : mName(name)
 {
 }

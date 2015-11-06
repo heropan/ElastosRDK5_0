@@ -81,14 +81,6 @@ ECode CActionKeyInfo::GetSuggestActionMsgColumn(
     return NOERROR;
 }
 
-ECode CActionKeyInfo::DescribeContents(
-    /* [out] */ Int32* rst)
-{
-    VALIDATE_NOT_NULL(rst)
-    *rst = 0;
-    return NOERROR;
-}
-
 ECode CActionKeyInfo::ReadFromParcel(
     /* [in] */ IParcel *source)
 {

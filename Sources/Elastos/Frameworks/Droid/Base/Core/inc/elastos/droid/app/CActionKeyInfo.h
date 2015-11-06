@@ -26,8 +26,8 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ IContext* activityContext,
-        /* [in] */ IAttributeSet* attr);
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
 
     CARAPI GetKeyCode(
         /* [out] */ Int32* keyCode);
@@ -41,14 +41,12 @@ public:
     CARAPI GetSuggestActionMsgColumn(
         /* [out] */ String* column);
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* rst);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel *source);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel *dest);
+
 private:
     Int32 mKeyCode;
     String mQueryActionMsg;

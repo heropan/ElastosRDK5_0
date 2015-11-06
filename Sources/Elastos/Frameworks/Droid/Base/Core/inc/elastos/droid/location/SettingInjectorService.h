@@ -28,7 +28,7 @@ public:
      * @param name used to identify your subclass in log messages
      */
     SettingInjectorService(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     // @Override
     virtual CARAPI OnBind(

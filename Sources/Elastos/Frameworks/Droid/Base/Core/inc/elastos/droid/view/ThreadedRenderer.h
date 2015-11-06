@@ -133,7 +133,7 @@ public:
         /* [in] */ IHardwareLayer* layer);
 
     CARAPI_(void) SetName(
-        /* [in] */ String name);
+        /* [in] */ const String& name);
 
     CARAPI_(void) Fence();
 
@@ -148,7 +148,7 @@ public:
         /* [in] */ Int32 level);
 
     static CARAPI_(void) NativeSetupShadersDiskCache(
-        /* [in] */ String cacheFile);
+        /* [in] */ const String& cacheFile);
 
     CARAPI Finalize();
 
@@ -161,7 +161,7 @@ private:
 
     static CARAPI_(Int32) Search(
         /* [in] */ ArrayOf<String>* values,
-        /* [in] */ String value);
+        /* [in] */ const String& value);
 
     static CARAPI_(Boolean) CheckIfProfilingRequested();
 

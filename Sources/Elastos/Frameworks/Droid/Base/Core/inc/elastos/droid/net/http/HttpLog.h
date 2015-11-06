@@ -17,10 +17,10 @@ class HttpLog
 {
 public:
     static CARAPI V(
-        /* [in] */ String logMe);
+        /* [in] */ const String& logMe);
 
     static CARAPI E(
-        /* [in] */ String logMe);
+        /* [in] */ const String& logMe);
 
     static const Boolean LOGV;
 
