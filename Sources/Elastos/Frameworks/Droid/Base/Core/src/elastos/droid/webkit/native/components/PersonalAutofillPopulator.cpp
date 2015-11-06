@@ -36,7 +36,7 @@ AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri(
 
     assert(0);
     AutoPtr<IUri> contentUri;
-    ContactsContractProfile::GetCONTENT_URI((IUri**)&contentUri);
+    //TODO ContactsContractProfile::GetCONTENT_URI((IUri**)&contentUri);
     AutoPtr<IUri> uri;
     Uri::WithAppendedPath(contentUri, IContactsContractContactsData::CONTENT_DIRECTORY, (IUri**)&uri);
     return uri;
