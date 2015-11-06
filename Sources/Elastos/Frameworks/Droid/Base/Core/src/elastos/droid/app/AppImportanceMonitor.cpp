@@ -5,15 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::os.Handler;
-// using Elastos::Droid::os.Looper;
-// using Elastos::Droid::os.Message;
-// using Elastos::Droid::os.RemoteException;
-// using Elastos::Droid::util.SparseArray;
-// using Elastos::Droid::util.SparseIntArray;
-
-// import java.util.List;
+// using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Os::IHandler;
+// using Elastos::Droid::Os::ILooper;
+// using Elastos::Droid::Os::IMessage;
 
 /**
  * Helper for monitoring the current importance of applications.

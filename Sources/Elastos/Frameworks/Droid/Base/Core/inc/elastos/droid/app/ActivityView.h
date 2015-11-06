@@ -146,15 +146,15 @@ public:
     virtual ~ActivityView();
 
     CARAPI constructor(
-        /* [in] */ Context context);
+        /* [in] */ IContext* context);
 
     CARAPI constructor(
-        /* [in] */ Context context,
-        /* [in] */ AttributeSet attrs);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
     CARAPI constructor(
-        /* [in] */ Context context,
-        /* [in] */ AttributeSet attrs,
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
 
     CARAPI OnVisibilityChanged(

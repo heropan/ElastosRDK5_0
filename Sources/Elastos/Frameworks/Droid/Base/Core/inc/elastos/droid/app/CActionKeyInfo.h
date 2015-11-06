@@ -1,11 +1,12 @@
-#ifndef __ELASTOS_DROID_APP_CACITONKEYINFO_H__
-#define __ELASTOS_DROID_APP_CACITONKEYINFO_H__
+#ifndef __ELASTOS_DROID_APP_CACTIONKEYINFO_H__
+#define __ELASTOS_DROID_APP_CACTIONKEYINFO_H__
 
 #include "_Elastos_Droid_App_CActionKeyInfo.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
+
 namespace Elastos {
 namespace Droid {
 namespace App {

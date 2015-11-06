@@ -38,12 +38,12 @@ ECode CActionKeyInfo::constructor(
     a->Recycle();
 
     //sanity check
-    if(mKeyCode == 0)
-    {
+    if (mKeyCode == 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    } else if((mQueryActionMsg == NULL) &&
-            (mSuggestActionMsg == NULL) &&
-            (mSuggestActionMsgColumn == NULL)) {
+    }
+    else if((mQueryActionMsg == NULL)
+        && (mSuggestActionMsg == NULL)
+        && (mSuggestActionMsgColumn == NULL)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -52,6 +52,7 @@ ECode CActionKeyInfo::constructor(
 ECode CActionKeyInfo::GetKeyCode(
     /* [out] */ Int32* keyCode)
 {
+    VALIDATE_NOT_NULL(keyCode)
     *keyCode = mKeyCode;
     return NOERROR;
 }
@@ -59,6 +60,7 @@ ECode CActionKeyInfo::GetKeyCode(
 ECode CActionKeyInfo::GetQueryActionMsg(
     /* [out] */ String* actionMsg)
 {
+    VALIDATE_NOT_NULL(actionMsg)
     *actionMsg = mQueryActionMsg;
     return NOERROR;
 }
@@ -66,6 +68,7 @@ ECode CActionKeyInfo::GetQueryActionMsg(
 ECode CActionKeyInfo::GetSuggestActionMsg(
     /* [out] */ String* actionMsg)
 {
+    VALIDATE_NOT_NULL(actionMsg)
     *actionMsg = mSuggestActionMsg;
     return NOERROR;
 }
@@ -73,6 +76,7 @@ ECode CActionKeyInfo::GetSuggestActionMsg(
 ECode CActionKeyInfo::GetSuggestActionMsgColumn(
     /* [out] */ String* column)
 {
+    VALIDATE_NOT_NULL(column)
     *column = mSuggestActionMsgColumn;
     return NOERROR;
 }
@@ -80,6 +84,7 @@ ECode CActionKeyInfo::GetSuggestActionMsgColumn(
 ECode CActionKeyInfo::DescribeContents(
     /* [out] */ Int32* rst)
 {
+    VALIDATE_NOT_NULL(rst)
     *rst = 0;
     return NOERROR;
 }

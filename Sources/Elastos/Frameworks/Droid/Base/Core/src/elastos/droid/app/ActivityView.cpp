@@ -1,547 +1,578 @@
 
 #include "elastos/droid/app/ActivityView.h"
 
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::content.ContextWrapper;
-// using Elastos::Droid::content.IIntentSender;
-// using Elastos::Droid::content.Intent;
-// using Elastos::Droid::content.IntentSender;
-// using Elastos::Droid::graphics.SurfaceTexture;
-// using Elastos::Droid::os.IBinder;
-// using Elastos::Droid::os.RemoteException;
-// using Elastos::Droid::util.AttributeSet;
-// using Elastos::Droid::util.DisplayMetrics;
-// using Elastos::Droid::util.Log;
-// using Elastos::Droid::view.InputDevice;
-// using Elastos::Droid::view.InputEvent;
-// using Elastos::Droid::view.MotionEvent;
-// using Elastos::Droid::view.Surface;
-// using Elastos::Droid::view.TextureView;
-// using Elastos::Droid::view.TextureView.SurfaceTextureListener;
-// using Elastos::Droid::view.View;
-// using Elastos::Droid::view.ViewGroup;
-// using Elastos::Droid::view.WindowManager;
-// import dalvik.system.CloseGuard;
-
-// import java.lang.ref.WeakReference;
+// using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Content::IContextWrapper;
+// using Elastos::Droid::Content::IIIntentSender;
+// using Elastos::Droid::Content::IIntent;
+// using Elastos::Droid::Content::IIntentSender;
+// using Elastos::Droid::Graphics::ISurfaceTexture;
+// using Elastos::Droid::Os::IBinder;
+// using Elastos::Droid::Os::IRemoteException;
+// using Elastos::Droid::Utility::IAttributeSet;
+// using Elastos::Droid::Utility::IDisplayMetrics;
+// using Elastos::Droid::View::IInputDevice;
+// using Elastos::Droid::View::IInputEvent;
+// using Elastos::Droid::View::IMotionEvent;
+// using Elastos::Droid::View::ISurface;
+// using Elastos::Droid::View::ITextureView;
+// using Elastos::Droid::View::ITextureView.SurfaceTextureListener;
+// using Elastos::Droid::View::IView;
+// using Elastos::Droid::View::IViewGroup;
+// using Elastos::Droid::View::IWindowManager;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-/** @hide */
-class ActivityView
-    : public ViewGroup
-    , public IActivityView
+//=========================================================================
+// ActivityView::ActivityViewSurfaceTextureListener
+//=========================================================================
+class ActivityViewSurfaceTextureListener
+    : public Object
+    , public ISurfaceTextureListener
 {
-private:
-
-    class ActivityViewSurfaceTextureListener
-        : public Object
-        , public ISurfaceTextureListener
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        CARAPI OnSurfaceTextureAvailable(
-            /* [in] */ ISurfaceTexture* surfaceTexture,
-            /* [in] */ Int32 width,
-            /* [in] */ Int32 height)
-        {
-            if (mActivityContainer == null) {
-                return;
-            }
-            if (DEBUG) Log.d(TAG, "onSurfaceTextureAvailable: width=" + width + " height="
-                    + height);
-            mWidth = width;
-            mHeight = height;
-            attachToSurfaceWhenReady();
-        }
-
-        CARAPI OnSurfaceTextureSizeChanged(
-            /* [in] */ ISurfaceTexture* surfaceTexture,
-            /* [in] */ Int32 width,
-            /* [in] */ Int32 height)
-        {
-            if (mActivityContainer == null)
-            {
-                return;
-            }
-            if (DEBUG) Log.d(TAG, "onSurfaceTextureSizeChanged: w=" + width + " h=" + height);
-        }
-
-        CARAPI OnSurfaceTextureDestroyed(
-            /* [in] */ ISurfaceTexture* surfaceTexture,
-            /* [out] */ Boolean* bval)
-        {
-            if (mActivityContainer == null) {
-                return true;
-            }
-            if (DEBUG) Log.d(TAG, "onSurfaceTextureDestroyed");
-            mSurface.release();
-            mSurface = null;
-            try {
-                mActivityContainer.setSurface(null, mWidth, mHeight, mMetrics.densityDpi);
-            } catch (RemoteException e) {
-                throw new RuntimeException(
-                        "ActivityView: Unable to set surface of ActivityContainer. " + e);
-            }
-            return true;
-        }
-
-        CARAPI OnSurfaceTextureUpdated(
-            /* [in] */ ISurfaceTexture* surfaceTexture)
-        {
-//            Log.d(TAG, "onSurfaceTextureUpdated");
-        }
-
-    };
-
-    class ActivityContainerCallback
-        : public Object
-        , public IActivityContainerCallback
-        , public IBinder
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        ActivityContainerCallback(
-            /* [in] */ IActivityView* activityView)
-        {
-            mActivityViewWeakReference = new WeakReference<ActivityView>(activityView);
-        }
-
-        CARAPI SetVisible(
-            /* [in] */ IBinder* container,
-            /* [in] */ Boolean visible)
-        {
-            if (DEBUG) Log.v(TAG, "setVisible(): container=" + container + " visible=" + visible +
-                    " ActivityView=" + mActivityViewWeakReference.get());
-        }
-
-        CARAPI OnAllActivitiesComplete(
-            /* [in] */ IBinder* container)
-        {
-            final ActivityView activityView = mActivityViewWeakReference.get();
-            if (activityView != null) {
-                final ActivityViewCallback callback = activityView.mActivityViewCallback;
-                if (callback != null) {
-                    activityView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onAllActivitiesComplete(activityView);
-                        }
-                    });
-                }
-            }
-        }
-
-    private:
-        AutoPtr<IWeakReference> mActivityViewWeakReference;
-    };
-
-    static class ActivityContainerWrapper
-        : public Object
-    {
-    public:
-        ActivityContainerWrapper(
-            /* [in] */ IActivityContainer* container)
-        {
-            mIActivityContainer = container;
-            mOpened = true;
-            mGuard.open("release");
-        }
-
-        virtual ~ActivityContainerWrapper()
-        {
-            Finalize();
-        }
-
-        CARAPI AttachToDisplay(
-            /* [in] */ Int32 displayId)
-        {
-            try {
-                mIActivityContainer.attachToDisplay(displayId);
-            } catch (RemoteException e) {
-            }
-        }
-
-        CARAPI SetSurface(
-            /* [in] */ Surface surface,
-            /* [in] */ Int32 width,
-            /* [in] */ Int32 height,
-            /* [in] */ Int32 density)
-        {
-            mIActivityContainer.setSurface(surface, width, height, density);
-        }
-
-        CARAPI StartActivity(
-            /* [in] */ IIntent* intent,
-            /* [out] */ Int32* status)
-        {
-            try {
-                return mIActivityContainer.startActivity(intent);
-            } catch (RemoteException e) {
-                throw new RuntimeException("ActivityView: Unable to startActivity. " + e);
-            }
-        }
-
-        CARAPI StartActivityIntentSender(
-            /* [in] */ IIIntentSender* intentSender,
-            /* [out] */ Int32* status)
-        {
-            try {
-                return mIActivityContainer.startActivityIntentSender(intentSender);
-            } catch (RemoteException e) {
-                throw new RuntimeException(
-                        "ActivityView: Unable to startActivity from IntentSender. " + e);
-            }
-        }
-
-        CARAPI CheckEmbeddedAllowed(
-            /* [in] */ IIntent* intent)
-        {
-            try {
-                mIActivityContainer.checkEmbeddedAllowed(intent);
-            } catch (RemoteException e) {
-                throw new RuntimeException(
-                        "ActivityView: Unable to startActivity from Intent. " + e);
-            }
-        }
-
-        CARAPI CheckEmbeddedAllowedIntentSender(
-            /* [in] */ IIIntentSender* intentSender)
-        {
-            try {
-                mIActivityContainer.checkEmbeddedAllowedIntentSender(intentSender);
-            } catch (RemoteException e) {
-                throw new RuntimeException(
-                        "ActivityView: Unable to startActivity from IntentSender. " + e);
-            }
-        }
-
-        CARAPI GetDisplayId(
-            /* [out] */ Int32* status)
-        {
-            try {
-                return mIActivityContainer.getDisplayId();
-            } catch (RemoteException e) {
-                return -1;
-            }
-        }
-
-        CARAPI InjectEvent(
-            /* [in] */ IInputEvent* event,
-            /* [out] */ Boolean* bval)
-        {
-            try {
-                return mIActivityContainer.injectEvent(event);
-            } catch (RemoteException e) {
-                return false;
-            }
-        }
-
-        CARAPI ReleaseSources()
-        {
-            synchronized (mGuard) {
-                if (mOpened) {
-                    if (DEBUG) Log.v(TAG, "ActivityContainerWrapper: release called");
-                    try {
-                        mIActivityContainer.release();
-                        mGuard.close();
-                    } catch (RemoteException e) {
-                    }
-                    mOpened = false;
-                }
-            }
-        }
-
-        void Finalize()
-        {
-            if (DEBUG) Log.v(TAG, "ActivityContainerWrapper: finalize called");
-            try {
-                if (mGuard != null) {
-                    mGuard.warnIfOpen();
-                    release();
-                }
-            } finally {
-                super.finalize();
-            }
-        }
-
-    private:
-        AutoPtr<IActivityContainer> mIActivityContainer;
-        AutoPtr<ICloseGuard> mGuard;// = CloseGuard.get();
-        Boolean mOpened; // Protected by mGuard.
-    };
-
 public:
     CAR_INTERFACE_DECL()
 
-    ActivityView();
-
-    virtual ~ActivityView();
-
-    CARAPI constructor(
-        /* [in] */ Context context)
+    CARAPI OnSurfaceTextureAvailable(
+        /* [in] */ ISurfaceTexture* surfaceTexture,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height)
     {
-        this(context, null);
-    }
-
-    CARAPI constructor(
-        /* [in] */ Context context,
-        /* [in] */ AttributeSet attrs)
-    {
-        this(context, attrs, 0);
-    }
-
-    CARAPI constructor(
-        /* [in] */ Context context,
-        /* [in] */ AttributeSet attrs,
-        /* [in] */ Int32 defStyle)
-    {
-        super(context, attrs, defStyle);
-
-        while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                mActivity = (Activity)context;
-                break;
-            }
-            context = ((ContextWrapper)context).getBaseContext();
-        }
-        if (mActivity == null) {
-            throw new IllegalStateException("The ActivityView's Context is not an Activity.");
-        }
-
-        try {
-            mActivityContainer = new ActivityContainerWrapper(
-                    ActivityManagerNative.getDefault().createActivityContainer(
-                            mActivity.getActivityToken(), new ActivityContainerCallback(this)));
-        } catch (RemoteException e) {
-            throw new RuntimeException("ActivityView: Unable to create ActivityContainer. "
-                    + e);
-        }
-
-        mTextureView = new TextureView(context);
-        mTextureView.setSurfaceTextureListener(new ActivityViewSurfaceTextureListener());
-        addView(mTextureView);
-
-        WindowManager wm = (WindowManager)mActivity.getSystemService(Context.WINDOW_SERVICE);
-        mMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(mMetrics);
-
-        mLastVisibility = getVisibility();
-
-        if (DEBUG) Log.v(TAG, "ctor()");
-    }
-
-    protected CARAPI OnLayout(
-        /* [in] */ Boolean changed,
-        /* [in] */ Int32 l,
-        /* [in] */ Int32 t,
-        /* [in] */ Int32 r,
-        /* [in] */ Int32 b)
-    {
-        mTextureView.layout(0, 0, r - l, b - t);
-    }
-
-    CARAPI OnVisibilityChanged(
-        /* [in] */ View changedView,
-        /* [in] */ Int32 visibility)
-    {
-        super.onVisibilityChanged(changedView, visibility);
-
-        if (mSurface != null) {
-            try {
-                if (visibility == View.GONE) {
-                    mActivityContainer.setSurface(null, mWidth, mHeight, mMetrics.densityDpi);
-                } else if (mLastVisibility == View.GONE) {
-                    // Don't change surface when going between View.VISIBLE and View.INVISIBLE.
-                    mActivityContainer.setSurface(mSurface, mWidth, mHeight, mMetrics.densityDpi);
-                }
-            } catch (RemoteException e) {
-                throw new RuntimeException(
-                        "ActivityView: Unable to set surface of ActivityContainer. " + e);
-            }
-        }
-        mLastVisibility = visibility;
-    }
-
-    private Boolean InjectInputEvent(
-        /* [in] */ IInputEvent* event)
-    {
-        return mActivityContainer != null && mActivityContainer.injectEvent(event);
-    }
-
-    public CARAPI OnTouchEvent(
-        /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* bval)
-    {
-        return injectInputEvent(event) || super.onTouchEvent(event);
-    }
-
-    public CARAPI OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* bval)
-    {
-        if (event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
-            if (injectInputEvent(event)) {
-                return true;
-            }
-        }
-        return super.onGenericMotionEvent(event);
-    }
-
-    public CARAPI OnAttachedToWindow()
-    {
-        if (DEBUG) Log.v(TAG, "onAttachedToWindow(): mActivityContainer=" + mActivityContainer +
-                " mSurface=" + mSurface);
-    }
-
-    public CARAPI OnDetachedFromWindow()
-    {
-        if (DEBUG) Log.v(TAG, "onDetachedFromWindow(): mActivityContainer=" + mActivityContainer +
-                " mSurface=" + mSurface);
-    }
-
-    public CARAPI IsAttachedToDisplay(
-        /* [out] */ Boolean* bval)
-    {
-        return mSurface != null;
-    }
-
-    public CARAPI StartActivity(
-        /* [in] */ IIntent* intent)
-    {
-        if (mActivityContainer == null) {
-            throw new IllegalStateException("Attempt to call startActivity after release");
-        }
-        if (DEBUG) Log.v(TAG, "startActivity(): intent=" + intent + " " +
-                (isAttachedToDisplay() ? "" : "not") + " attached");
-        if (mSurface != null) {
-            mActivityContainer.startActivity(intent);
-        } else {
-            mActivityContainer.checkEmbeddedAllowed(intent);
-            mQueuedIntent = intent;
-            mQueuedPendingIntent = null;
-        }
-    }
-
-    public CARAPI StartActivity(
-        /* [in] */ IIntentSender* intentSender)
-    {
-        if (mActivityContainer == null) {
-            throw new IllegalStateException("Attempt to call startActivity after release");
-        }
-        if (DEBUG) Log.v(TAG, "startActivityIntentSender(): intentSender=" + intentSender + " " +
-                (isAttachedToDisplay() ? "" : "not") + " attached");
-        final IIntentSender iIntentSender = intentSender.getTarget();
-        if (mSurface != null) {
-            mActivityContainer.startActivityIntentSender(iIntentSender);
-        } else {
-            mActivityContainer.checkEmbeddedAllowedIntentSender(iIntentSender);
-            mQueuedPendingIntent = iIntentSender;
-            mQueuedIntent = null;
-        }
-    }
-
-    public CARAPI StartActivity(
-        /* [in] */ IPendingIntent* pendingIntent)
-    {
-        if (mActivityContainer == null) {
-            throw new IllegalStateException("Attempt to call startActivity after release");
-        }
-        if (DEBUG) Log.v(TAG, "startActivityPendingIntent(): PendingIntent=" + pendingIntent + " "
-                + (isAttachedToDisplay() ? "" : "not") + " attached");
-        final IIntentSender iIntentSender = pendingIntent.getTarget();
-        if (mSurface != null) {
-            mActivityContainer.startActivityIntentSender(iIntentSender);
-        } else {
-            mActivityContainer.checkEmbeddedAllowedIntentSender(iIntentSender);
-            mQueuedPendingIntent = iIntentSender;
-            mQueuedIntent = null;
-        }
-    }
-
-    public CARAPI ReleaseResources()
-    {
-        if (DEBUG) Log.v(TAG, "release() mActivityContainer=" + mActivityContainer +
-                " mSurface=" + mSurface);
-        if (mActivityContainer == null) {
-            Log.e(TAG, "Duplicate call to release");
+        if (mActivityContainer == NULL) {
             return;
         }
-        mActivityContainer.release();
-        mActivityContainer = null;
-
-        if (mSurface != null) {
-            mSurface.release();
-            mSurface = null;
-        }
-
-        mTextureView.setSurfaceTextureListener(null);
+        if (DEBUG) Log.d(TAG, "onSurfaceTextureAvailable: width=" + width + " height="
+                + height);
+        mWidth = width;
+        mHeight = height;
+        attachToSurfaceWhenReady();
     }
 
-    private CARAPI AttachToSurfaceWhenReady()
+    CARAPI OnSurfaceTextureSizeChanged(
+        /* [in] */ ISurfaceTexture* surfaceTexture,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height)
     {
-        final SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
-        if (surfaceTexture == null || mSurface != null) {
-            // Either not ready to attach, or already attached.
+        if (mActivityContainer == NULL)
+        {
             return;
         }
-
-        mSurface = new Surface(surfaceTexture);
-        try {
-            mActivityContainer.setSurface(mSurface, mWidth, mHeight, mMetrics.densityDpi);
-        } catch (RemoteException e) {
-            mSurface.release();
-            mSurface = null;
-            throw new RuntimeException("ActivityView: Unable to create ActivityContainer. " + e);
-        }
-
-        if (DEBUG) Log.v(TAG, "attachToSurfaceWhenReady: " + (mQueuedIntent != null ||
-                mQueuedPendingIntent != null ? "" : "no") + " queued intent");
-        if (mQueuedIntent != null) {
-            mActivityContainer.startActivity(mQueuedIntent);
-            mQueuedIntent = null;
-        } else if (mQueuedPendingIntent != null) {
-            mActivityContainer.startActivityIntentSender(mQueuedPendingIntent);
-            mQueuedPendingIntent = null;
-        }
+        if (DEBUG) Log.d(TAG, "onSurfaceTextureSizeChanged: w=" + width + " h=" + height);
     }
 
-    /**
-     * Set the callback to use to report certain state changes.
-     * @param callback The callback to report events to.
-     *
-     * @see ActivityViewCallback
-     */
-    public CARAPI SetCallback(
-        /* [in] */ IActivityViewCallback* callback)
+    CARAPI OnSurfaceTextureDestroyed(
+        /* [in] */ ISurfaceTexture* surfaceTexture,
+        /* [out] */ Boolean* bval)
     {
-        mActivityViewCallback = callback;
+        if (mActivityContainer == NULL) {
+            return TRUE;
+        }
+        if (DEBUG) Log.d(TAG, "onSurfaceTextureDestroyed");
+        mSurface->Release();
+        mSurface = NULL;
+        try {
+            mActivityContainer->SetSurface(NULL, mWidth, mHeight, mMetrics.densityDpi);
+        } catch (RemoteException e) {
+            throw new RuntimeException(
+                    "ActivityView: Unable to set surface of ActivityContainer. " + e);
+        }
+        return TRUE;
+    }
+
+    CARAPI OnSurfaceTextureUpdated(
+        /* [in] */ ISurfaceTexture* surfaceTexture)
+    {
+//            Log.d(TAG, "onSurfaceTextureUpdated");
+    }
+
+};
+
+//=========================================================================
+// ActivityView::ActivityContainerCallback
+//=========================================================================
+class ActivityContainerCallback
+    : public Object
+    , public IActivityContainerCallback
+    , public IBinder
+{
+public:
+    CAR_INTERFACE_DECL()
+
+    ActivityContainerCallback(
+        /* [in] */ IActivityView* activityView)
+    {
+        mActivityViewWeakReference = new WeakReference<ActivityView>(activityView);
+    }
+
+    CARAPI SetVisible(
+        /* [in] */ IBinder* container,
+        /* [in] */ Boolean visible)
+    {
+        if (DEBUG) Logger::V(TAG, "setVisible(): container=" + container + " visible=" + visible +
+                " ActivityView=" + mActivityViewWeakReference->Get());
+    }
+
+    CARAPI OnAllActivitiesComplete(
+        /* [in] */ IBinder* container)
+    {
+        final ActivityView activityView = mActivityViewWeakReference->Get();
+        if (activityView != NULL) {
+            final ActivityViewCallback callback = activityView.mActivityViewCallback;
+            if (callback != NULL) {
+                activityView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onAllActivitiesComplete(activityView);
+                    }
+                });
+            }
+        }
     }
 
 private:
-
-    static const String TAG;// = "ActivityView";
-    static const Boolean DEBUG;// = false;
-
-    AutoPtr<IDisplayMetrics> mMetrics;
-    AutoPtr<ITextureView> mTextureView;
-    AutoPtr<IActivityContainerWrapper> mActivityContainer;
-    AutoPtr<IActivity> mActivity; // TODO weak ref ??
-    Int32 mWidth;
-    Int32 mHeight;
-    AutoPtr<ISurface> mSurface;
-    Int32 mLastVisibility;
-    AutoPtr<IActivityViewCallback> mActivityViewCallback;
-
-    // Only one IIntentSender or Intent may be queued at a time. Most recent one wins.
-    AutoPtr<IIIntentSender> mQueuedPendingIntent;
-    AutoPtr<IIntent> mQueuedIntent;
+    AutoPtr<IWeakReference> mActivityViewWeakReference;
 };
 
+
+//=========================================================================
+// ActivityView::ActivityContainerWrapper
+//=========================================================================
+static class ActivityContainerWrapper
+    : public Object
+{
+public:
+    ActivityContainerWrapper(
+        /* [in] */ IActivityContainer* container)
+    {
+        mIActivityContainer = container;
+        mOpened = TRUE;
+        mGuard.open("release");
+    }
+
+    virtual ~ActivityContainerWrapper()
+    {
+        Finalize();
+    }
+
+    CARAPI AttachToDisplay(
+        /* [in] */ Int32 displayId)
+    {
+        try {
+            mIActivityContainer.attachToDisplay(displayId);
+        } catch (RemoteException e) {
+        }
+    }
+
+    CARAPI SetSurface(
+        /* [in] */ Surface surface,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 density)
+    {
+        mIActivityContainer->SetSurface(surface, width, height, density);
+    }
+
+    CARAPI StartActivity(
+        /* [in] */ IIntent* intent,
+        /* [out] */ Int32* status)
+    {
+        try {
+            return mIActivityContainer->StartActivity(intent);
+        } catch (RemoteException e) {
+            throw new RuntimeException("ActivityView: Unable to startActivity. " + e);
+        }
+    }
+
+    CARAPI StartActivityIntentSender(
+        /* [in] */ IIIntentSender* intentSender,
+        /* [out] */ Int32* status)
+    {
+        try {
+            return mIActivityContainer->StartActivityIntentSender(intentSender);
+        } catch (RemoteException e) {
+            throw new RuntimeException(
+                    "ActivityView: Unable to startActivity from IntentSender. " + e);
+        }
+    }
+
+    CARAPI CheckEmbeddedAllowed(
+        /* [in] */ IIntent* intent)
+    {
+        try {
+            mIActivityContainer->CheckEmbeddedAllowed(intent);
+        } catch (RemoteException e) {
+            throw new RuntimeException(
+                    "ActivityView: Unable to startActivity from Intent. " + e);
+        }
+    }
+
+    CARAPI CheckEmbeddedAllowedIntentSender(
+        /* [in] */ IIIntentSender* intentSender)
+    {
+        try {
+            mIActivityContainer->CheckEmbeddedAllowedIntentSender(intentSender);
+        } catch (RemoteException e) {
+            throw new RuntimeException(
+                    "ActivityView: Unable to startActivity from IntentSender. " + e);
+        }
+    }
+
+    CARAPI GetDisplayId(
+        /* [out] */ Int32* status)
+    {
+        try {
+            return mIActivityContainer->GetDisplayId();
+        } catch (RemoteException e) {
+            return -1;
+        }
+    }
+
+    CARAPI InjectEvent(
+        /* [in] */ IInputEvent* event,
+        /* [out] */ Boolean* bval)
+    {
+        try {
+            return mIActivityContainer->InjectEvent(event);
+        } catch (RemoteException e) {
+            return FALSE;
+        }
+    }
+
+    CARAPI ReleaseSources()
+    {
+        synchronized (mGuard) {
+            if (mOpened) {
+                if (DEBUG) Logger::V(TAG, "ActivityContainerWrapper: release called");
+                try {
+                    mIActivityContainer->Release();
+                    mGuard->Close();
+                } catch (RemoteException e) {
+                }
+                mOpened = FALSE;
+            }
+        }
+    }
+
+    void Finalize()
+    {
+        if (DEBUG) Logger::V(TAG, "ActivityContainerWrapper: finalize called");
+        try {
+            if (mGuard != NULL) {
+                mGuard.warnIfOpen();
+                release();
+            }
+        } finally {
+            super.finalize();
+        }
+    }
+
+private:
+    AutoPtr<IActivityContainer> mIActivityContainer;
+    AutoPtr<ICloseGuard> mGuard;// = CloseGuard->Get();
+    Boolean mOpened; // Protected by mGuard.
+};
+
+//=========================================================================
+// ActivityView
+//=========================================================================
+
+static const String ActivityView::TAG("ActivityView");
+static const Boolean ActivityView::DEBUG = FALSE;
+
+CAR_INTERFACE_IMPL(ActivityView, ViewGroup, IActivityView)
+
+ActivityView::ActivityView()
+    : mWidth(0)
+    , mHeight(0)
+    , mLastVisibility(0)
+{}
+
+ActivityView::~ActivityView()
+{}
+
+ECode ActivityView::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode ActivityView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, 0);
+}
+
+ECode ActivityView::constructor(
+    /* [in] */ IContext* ctx,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle)
+{
+    FAIL_RETURN(ViewGroup::constructor(ctx, attrs, defStyle))
+
+    AutoPtr<IContext> context = ctx;
+    while (IContextWrapper::Probe(context) != NULL) {
+        if (IActivity::Probe(context) != NULL) {
+            mActivity = IActivity::Probe(context);
+            break;
+        }
+        AutoPtr<IContextWrapper> cw = IContextWrapper::Probe(context);
+        context = NULL;
+        cw->GetBaseContext((IContext**)&context);
+    }
+    if (mActivity == NULL) {
+        Logger::E(TAG, "The ActivityView's Context is not an Activity.");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    // try {
+    AutoPtr<IBinder> token;
+    mActivity->GetActivityToken((IBinder**)&token);
+    AutoPtr<IActivityContainerCallback> cb = new ActivityContainerCallback(this);
+    AutoPtr<IActivityContainer> ac;
+    ECode ec = ActivityManagerNative::GetDefault()->CreateActivityContainer(
+        token, cb, (IActivityContainer**)&ac);
+
+    // } catch (RemoteException e)
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E(TAG, "ActivityView: Unable to create ActivityContainer. ");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    mActivityContainer = new ActivityContainerWrapper(ac);
+
+    CTextureView::New(context, (ITextureView**)&mTextureView);
+    AutoPtr<ISurfaceTextureListener> listener = new ActivityViewSurfaceTextureListener();
+    mTextureView->SetSurfaceTextureListener(listener);
+    AddView(mTextureView);
+
+
+    AutoPtr<IInterface> obj;
+    mActivity->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+    AutoPtr<IWindowManager> wm = IWindowManager::Probe(obj);
+    CDisplayMetrics::New((IDisplayMetrics**)&mMetrics);
+    AutoPtr<IDisplay> display;
+    wm->GetDefaultDisplay((IDisplay**)&display);
+    display->GetMetrics(mMetrics);
+
+    GetVisibility(&mLastVisibility);
+
+    if (DEBUG) Logger::V(TAG, "ctor()");
+}
+
+ECode ActivityView::OnLayout(
+    /* [in] */ Boolean changed,
+    /* [in] */ Int32 l,
+    /* [in] */ Int32 t,
+    /* [in] */ Int32 r,
+    /* [in] */ Int32 b)
+{
+    return mTextureView->Layout(0, 0, r - l, b - t);
+}
+
+ECode ActivityView::OnVisibilityChanged(
+    /* [in] */ View changedView,
+    /* [in] */ Int32 visibility)
+{
+    FAIL_RETURN(ViewGroup::OnVisibilityChanged(changedView, visibility))
+
+    if (mSurface != NULL) {
+        // try {
+            if (visibility == IView::GONE) {
+                mActivityContainer->SetSurface(NULL, mWidth, mHeight, mMetrics.densityDpi);
+            } else if (mLastVisibility == IView::GONE) {
+                // Don't change surface when going between IView::VISIBLE and IView::INVISIBLE.
+                mActivityContainer->SetSurface(mSurface, mWidth, mHeight, mMetrics.densityDpi);
+            }
+        // } catch (RemoteException e) {
+            Logger::E(TAG, "ActivityView: Unable to set surface of ActivityContainer. ");
+            return E_RUNTIME_EXCEPTION;
+        // }
+    }
+    mLastVisibility = visibility;
+}
+
+Boolean ActivityView::InjectInputEvent(
+    /* [in] */ IInputEvent* event)
+{
+    return mActivityContainer != NULL && mActivityContainer->InjectEvent(event);
+}
+
+ECode ActivityView::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+    *bval = InjectInputEvent(event);
+    if (*bval == FALSE) {
+        return ViewGroup::OnTouchEvent(event, bval);
+    }
+    return NOERROR;
+}
+
+ECode ActivityView::OnGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+    *bval = FALSE;
+
+    Boolean fromSource;
+    event->IsFromSource(IInputDevice::SOURCE_CLASS_POINTER, &fromSource);
+    if (fromSource) {
+        if (InjectInputEvent(event)) {
+            *bval = TRUE;
+            return NOERROR;
+        }
+    }
+    return ViewGroup::OnGenericMotionEvent(event, bval);
+}
+
+ECode ActivityView::OnAttachedToWindow()
+{
+    if (DEBUG) Logger::V(TAG, "onAttachedToWindow(): mActivityContainer=  mSurface=");
+    return NOERROR;
+}
+
+ECode ActivityView::OnDetachedFromWindow()
+{
+    if (DEBUG) Logger::V(TAG, "onDetachedFromWindow(): mActivityContainer= mSurface=");
+    return NOERROR;
+}
+
+ECode ActivityView::IsAttachedToDisplay(
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+    *bval = mSurface != NULL;
+    return NOERROR;
+}
+
+ECode ActivityView::StartActivity(
+    /* [in] */ IIntent* intent)
+{
+    if (mActivityContainer == NULL) {
+        Logger::E(TAG, "Attempt to call startActivity after release");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Boolean bval;
+    IsAttachedToDisplay(&bval);
+    if (DEBUG) Logger::V(TAG, "startActivity(): intent=%s %s attached",
+            Object::ToString(intent).string(), (bval ? "" : "not"));
+    if (mSurface != NULL) {
+        mActivityContainer->StartActivity(intent);
+    }
+    else {
+        mActivityContainer->CheckEmbeddedAllowed(intent);
+        mQueuedIntent = intent;
+        mQueuedPendingIntent = NULL;
+    }
+    return NOERROR;
+}
+
+ECode ActivityView::StartActivity(
+    /* [in] */ IIntentSender* intentSender)
+{
+    if (mActivityContainer == NULL) {
+        Logger::E(TAG, "Attempt to call startActivity after release");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    Boolean bval;
+    IsAttachedToDisplay(&bval);
+    if (DEBUG) Logger::V(TAG, "startActivityIntentSender(): intentSender=%s %s attached",
+        Object::ToString(intentSender).string(), (bval ? "" : "not"));
+    AutoPtr<IIIntentSender> iIntentSender;
+    intentSender->GetTarget((IIIntentSender**)&iIntentSender);
+    if (mSurface != NULL) {
+        mActivityContainer->StartActivityIntentSender(iIntentSender);
+    }
+    else {
+        mActivityContainer->CheckEmbeddedAllowedIntentSender(iIntentSender);
+        mQueuedPendingIntent = iIntentSender;
+        mQueuedIntent = NULL;
+    }
+    return NOERROR;
+}
+
+ECode ActivityView::StartActivity(
+    /* [in] */ IPendingIntent* pendingIntent)
+{
+    if (mActivityContainer == NULL) {
+        throw new IllegalStateException("Attempt to call startActivity after release");
+    }
+    if (DEBUG) Logger::V(TAG, "startActivityPendingIntent(): PendingIntent=" + pendingIntent + " "
+            + (IsAttachedToDisplay() ? "" : "not") + " attached");
+    final IIntentSender iIntentSender = pendingIntent->GetTarget();
+    if (mSurface != NULL) {
+        mActivityContainer->StartActivityIntentSender(iIntentSender);
+    } else {
+        mActivityContainer->CheckEmbeddedAllowedIntentSender(iIntentSender);
+        mQueuedPendingIntent = iIntentSender;
+        mQueuedIntent = NULL;
+    }
+    return NOERROR;
+}
+
+ECode ActivityView::ReleaseResources()
+{
+    if (DEBUG) Logger::V(TAG, "release() mActivityContainer= mSurface=");
+    if (mActivityContainer == NULL) {
+        Logger::E(TAG, "Duplicate call to release");
+        return NOERROR;
+    }
+    mActivityContainer->ReleaseSources();
+    mActivityContainer = NULL;
+
+    if (mSurface != NULL) {
+        mSurface->ReleaseSources();
+        mSurface = NULL;
+    }
+
+    return mTextureView->SetSurfaceTextureListener(NULL);
+}
+
+ECode ActivityView::AttachToSurfaceWhenReady()
+{
+    AutoPtr<ISurfaceTexture> surfaceTexture;
+    mTextureView->GetSurfaceTexture((ISurfaceTexture**)&surfaceTexture);
+    if (surfaceTexture == NULL || mSurface != NULL) {
+        // Either not ready to attach, or already attached.
+        return NOERROR;
+    }
+
+    mSurface = NULL;
+    CSurface::New(surfaceTexture, (ISurface**)&mSurface);
+    // try {
+        mActivityContainer->SetSurface(mSurface, mWidth, mHeight, mMetrics.densityDpi);
+    // } catch (RemoteException e) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        mSurface->ReleaseSources();
+        mSurface = NULL;
+        Logger::E(TAG, "ActivityView: Unable to create ActivityContainer. ");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    if (DEBUG) Logger::V(TAG, "attachToSurfaceWhenReady: %s  queued intent",
+        (mQueuedIntent != NULL || mQueuedPendingIntent != NULL ? "" : "no"));
+    if (mQueuedIntent != NULL) {
+        mActivityContainer->StartActivity(mQueuedIntent);
+        mQueuedIntent = NULL;
+    }
+    else if (mQueuedPendingIntent != NULL) {
+        mActivityContainer->StartActivityIntentSender(mQueuedPendingIntent);
+        mQueuedPendingIntent = NULL;
+    }
+    return NOERROR;
+}
+
+ECode ActivityView::SetCallback(
+    /* [in] */ IActivityViewCallback* callback)
+{
+    mActivityViewCallback = callback;
+    return NOERROR;
+}
 
 } // namespace App
 } // namespace Droid

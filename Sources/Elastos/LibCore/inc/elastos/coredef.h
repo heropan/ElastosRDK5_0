@@ -852,34 +852,34 @@ _ETL_NAMESPACE_END
         /* [in] */ REIID riid)                                                          \
     {                                                                                   \
         if (riid == EIID_IInterface) {                                                  \
-            return (IInterface*)(Interface1*)this;                                      \
+            return (IInterface*)(i1*)this;                                              \
         }                                                                               \
-        else if (riid == EIID_##i) {                                                    \
-            return (Interface1*)this;                                                   \
+        else if (riid == EIID_##i1) {                                                   \
+            return (i1*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i2) {                                                   \
-            return (Interface2*)this;                                                   \
+            return (i2*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i3) {                                                   \
-            return (Interface3*)this;                                                   \
+            return (i3*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i4) {                                                   \
-            return (Interface4*)this;                                                   \
+            return (i4*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i5) {                                                   \
-            return (Interface5*)this;                                                   \
+            return (i5*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i6) {                                                   \
-            return (Interface6*)this;                                                   \
+            return (i6*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i7) {                                                   \
-            return (Interface7*)this;                                                   \
+            return (i7*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i8) {                                                   \
-            return (Interface8*)this;                                                   \
+            return (i8*)this;                                                           \
         }                                                                               \
         else if (riid == EIID_##i9) {                                                   \
-            return (Interface8*)this;                                                   \
+            return (i9*)this;                                                           \
         }                                                                               \
         return SupperClassName::Probe(riid);                                            \
     }                                                                                   \

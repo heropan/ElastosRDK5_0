@@ -122,6 +122,7 @@ ECode Application::RegisterOnProvideAssistDataListener(
         }
         mAssistCallbacks->PushBack(callback);
     }
+    return NOERROR;
 }
 
 ECode Application::UnregisterOnProvideAssistDataListener(

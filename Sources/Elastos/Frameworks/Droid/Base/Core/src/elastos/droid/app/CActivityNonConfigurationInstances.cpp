@@ -17,13 +17,15 @@ ECode CActivityNonConfigurationInstances::constructor()
 
 ECode CActivityNonConfigurationInstances::constructor(
     /* [in] */ IInterface* activity,
-    /* [in] */ IObjectStringMap* children,
-    /* [in] */ IObjectContainer* fragments,
-    /* [in] */ IObjectStringMap* loaders)
+    /* [in] */ IHashMap* children,
+    /* [in] */ IArrayList* fragments,
+    /* [in] */ IArrayMap* loaders,
+    /* [in] */ IVoiceInteractor* vi)
 {
     mActivity = activity;
     mChildren = children;
     mFragments = fragments;
+    mVoiceInteractor = vi;
     return NOERROR;
 }
 

@@ -79,16 +79,16 @@ ECode ContextThemeWrapper::GetResources(
 }
 
 ECode ContextThemeWrapper::SetTheme(
-    /* [in] */ Int32 resid)
+    /* [in] */ Int32 resId)
 {
-    mThemeResource = resid;
+    mThemeResource = resId;
     return InitializeTheme();
 }
 
 ECode ContextThemeWrapper::GetThemeResId(
     /* [out] */ Int32* resId)
 {
-    VALIDATE_NOT_NULL(resid))
+    VALIDATE_NOT_NULL(resId)
     *resId = mThemeResource;
     return NOERROR;
 }

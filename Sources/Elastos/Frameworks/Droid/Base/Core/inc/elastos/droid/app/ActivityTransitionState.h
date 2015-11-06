@@ -4,22 +4,16 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
+
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
-
-// using Elastos::Droid::os.Bundle;
-// using Elastos::Droid::os.ResultReceiver;
-// using Elastos::Droid::transition.Transition;
-// using Elastos::Droid::util.ArrayMap;
-// using Elastos::Droid::util.SparseArray;
-// using Elastos::Droid::view.View;
-// using Elastos::Droid::view.ViewGroup;
-// using Elastos::Droid::view.Window;
-
-// import java.lang.ref.WeakReference;
-// import java.util.ArrayList;
 
 /**
  * This class contains all persistence-related functionality for Activity Transitions.
@@ -80,32 +74,30 @@ private:
 
 private:
 
-    static const String ENTERING_SHARED_ELEMENTS = "android:enteringSharedElements";
-
-    static const String EXITING_MAPPED_FROM = "android:exitingMappedFrom";
-
-    static const String EXITING_MAPPED_TO = "android:exitingMappedTo";
+    static const String ENTERING_SHARED_ELEMENTS;
+    static const String EXITING_MAPPED_FROM;
+    static const String EXITING_MAPPED_TO;
 
     /**
      * The shared elements that the calling Activity has said that they transferred to this
      * Activity.
      */
-    ArrayList<String> mEnteringNames;
+    AutoPtr<IArrayList> mEnteringNames; //ArrayList<String>
 
     /**
      * The names of shared elements that were shared to the called Activity.
      */
-    ArrayList<String> mExitingFrom;
+    AutoPtr<IArrayList> mExitingFrom;//ArrayList<String>
 
     /**
      * The names of local Views that were shared out, mapped to those elements in mExitingFrom.
      */
-    ArrayList<String> mExitingTo;
+    AutoPtr<IArrayList> mExitingTo;//ArrayList<String>
 
     /**
      * The local Views that were shared out, mapped to those elements in mExitingFrom.
      */
-    ArrayList<View> mExitingToView;
+    AutoPtr<IArrayList> mExitingToView;//ArrayList<View>
 
     /**
      * The ExitTransitionCoordinator used to start an Activity. Used to make the elements restore
@@ -143,12 +135,13 @@ private:
     /**
      * Potential exit transition coordinators.
      */
-    SparseArray<WeakReference<ExitTransitionCoordinator>> mExitTransitionCoordinators;
+    AutoPtr<HashMap<Int32, AutoPtr<IWeakReference> > > mExitTransitionCoordinators;
+    //SparseArray<WeakReference<ExitTransitionCoordinator>> mExitTransitionCoordinators;
 
     /**
      * Next key for mExitTransitionCoordinator.
      */
-    Int32 mExitTransitionCoordinatorsKey = 1;
+    Int32 mExitTransitionCoordinatorsKey;
 
     Boolean mIsEnterTriggered;
 };
