@@ -134,6 +134,16 @@ module
         interface IFlushable;
     }
 
+    class CInt64SparseArray {
+        constructor();
+
+        constructor(
+            [in] Int32 initialCapacity);
+
+        interface IInt64SparseArray;
+        interface ICloneable;
+    }
+
     class CMonthDisplayHelper {
 
         constructor(
@@ -204,6 +214,16 @@ module
 
     singleton class CSizeFHelper {
         interface ISizeFHelper;
+    }
+
+    class CSparseArray {
+        constructor();
+
+        constructor(
+            [in] Int32 initialCapacity);
+
+        interface ISparseArray;
+        interface ICloneable;
     }
 
     class CTypedValue {

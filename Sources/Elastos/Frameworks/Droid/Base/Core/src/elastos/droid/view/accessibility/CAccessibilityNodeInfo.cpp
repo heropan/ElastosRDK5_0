@@ -1358,7 +1358,7 @@ ECode CAccessibilityNodeInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    FAIL_RETURN(Obtain(info));
+    Obtain(info);
     return (*info)->SetSource(source);
 }
 
@@ -1368,7 +1368,7 @@ ECode CAccessibilityNodeInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    FAIL_RETURN(Obtain(info));
+    Obtain(info);
     return (*info)->SetSource(root, virtualDescendantId);
 }
 
@@ -1395,7 +1395,7 @@ ECode CAccessibilityNodeInfo::Obtain(
     /* [out] */ IAccessibilityNodeInfo** infoClone)
 {
     VALIDATE_NOT_NULL(infoClone);
-    FAIL_RETURN(Obtain(infoClone));
+    Obtain(infoClone);
     ((CAccessibilityNodeInfo*)(*infoClone))->Init(info);
     return NOERROR;
 }
@@ -1580,24 +1580,24 @@ ECode CAccessibilityNodeInfo::ReadFromParcel(
 void CAccessibilityNodeInfo::Init(
     /* [in] */ IAccessibilityNodeInfo* other)
 {
-    AutoPtr<CAccessibilityNodeInfo> cAother = (CAccessibilityNodeInfo*)other;
-    mSealed = cAother->mSealed;
-    mSourceNodeId = cAother->mSourceNodeId;
-    mParentNodeId = cAother->mParentNodeId;
-    mLabelForId = cAother->mLabelForId;
-    mLabeledById = cAother->mLabeledById;
-    mWindowId = cAother->mWindowId;
-    mConnectionId = cAother->mConnectionId;
-    mBoundsInParent->Set(cAother->mBoundsInParent);
-    mBoundsInScreen->Set(cAother->mBoundsInScreen);
-    mPackageName = cAother->mPackageName;
-    mClassName = cAother->mClassName;
-    mText = cAother->mText;
-    mText = cAother->mError;
-    mContentDescription = cAother->mContentDescription;
-    mViewIdResourceName = cAother->mViewIdResourceName;
+    AutoPtr<CAccessibilityNodeInfo> cOther = (CAccessibilityNodeInfo*)other;
+    mSealed = cOther->mSealed;
+    mSourceNodeId = cOther->mSourceNodeId;
+    mParentNodeId = cOther->mParentNodeId;
+    mLabelForId = cOther->mLabelForId;
+    mLabeledById = cOther->mLabeledById;
+    mWindowId = cOther->mWindowId;
+    mConnectionId = cOther->mConnectionId;
+    mBoundsInParent->Set(cOther->mBoundsInParent);
+    mBoundsInScreen->Set(cOther->mBoundsInScreen);
+    mPackageName = cOther->mPackageName;
+    mClassName = cOther->mClassName;
+    mText = cOther->mText;
+    mText = cOther->mError;
+    mContentDescription = cOther->mContentDescription;
+    mViewIdResourceName = cOther->mViewIdResourceName;
 
-    AutoPtr<IArrayList> otherActions = cAother->mActions;
+    AutoPtr<IArrayList> otherActions = cOther->mActions;
     Int32 size;
     if (otherActions != NULL && (otherActions->GetSize(&size), size) > 0) {
         if (mActions == NULL) {
@@ -1608,11 +1608,11 @@ void CAccessibilityNodeInfo::Init(
             mActions->AddAll(ICollection::Probe(mActions));
         }
     }
-    mBooleanProperties = cAother->mBooleanProperties;
-    mMaxTextLength = cAother->mMaxTextLength;
-    mMovementGranularities = cAother->mMovementGranularities;
+    mBooleanProperties = cOther->mBooleanProperties;
+    mMaxTextLength = cOther->mMaxTextLength;
+    mMovementGranularities = cOther->mMovementGranularities;
 
-    AutoPtr<IInt64Array> otherChildNodeIds = cAother->mChildNodeIds;
+    AutoPtr<IInt64Array> otherChildNodeIds = cOther->mChildNodeIds;
     if (otherChildNodeIds != NULL && (otherChildNodeIds->GetSize(&size), size) > 0) {
         if (mChildNodeIds == NULL) {
             AutoPtr<IInterface> obj;
@@ -1625,31 +1625,31 @@ void CAccessibilityNodeInfo::Init(
         }
     }
 
-    mTextSelectionStart = cAother->mTextSelectionStart;
-    mTextSelectionEnd = cAother->mTextSelectionEnd;
-    mInputType = cAother->mInputType;
-    mLiveRegion = cAother->mLiveRegion;
+    mTextSelectionStart = cOther->mTextSelectionStart;
+    mTextSelectionEnd = cOther->mTextSelectionEnd;
+    mInputType = cOther->mInputType;
+    mLiveRegion = cOther->mLiveRegion;
 
     Boolean res;
-    if (cAother->mExtras != NULL && (cAother->mExtras->IsEmpty(&res), !res)) {
+    if (cOther->mExtras != NULL && (cOther->mExtras->IsEmpty(&res), !res)) {
         AutoPtr<IBundle> bundle;
         GetExtras((IBundle**)&bundle);
-        bundle->PutAll(cAother->mExtras);
+        bundle->PutAll(cOther->mExtras);
     }
 
     mRangeInfo = NULL;
-    if (cAother->mRangeInfo != NULL) {
-        AccessibilityNodeInfoRangeInfo::Obtain(cAother->mRangeInfo, (IAccessibilityNodeInfoRangeInfo**)&mRangeInfo);
+    if (cOther->mRangeInfo != NULL) {
+        AccessibilityNodeInfoRangeInfo::Obtain(cOther->mRangeInfo, (IAccessibilityNodeInfoRangeInfo**)&mRangeInfo);
     }
 
     mCollectionInfo = NULL;
-    if (cAother->mCollectionInfo != NULL) {
-        AccessibilityNodeInfoCollectionInfo::Obtain(cAother->mCollectionInfo, (IAccessibilityNodeInfoCollectionInfo**)&mCollectionInfo);
+    if (cOther->mCollectionInfo != NULL) {
+        AccessibilityNodeInfoCollectionInfo::Obtain(cOther->mCollectionInfo, (IAccessibilityNodeInfoCollectionInfo**)&mCollectionInfo);
     }
 
     mCollectionItemInfo = NULL;
-    if (cAother->mCollectionItemInfo != NULL) {
-        AccessibilityNodeInfoCollectionItemInfo::Obtain(cAother->mCollectionItemInfo, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
+    if (cOther->mCollectionItemInfo != NULL) {
+        AccessibilityNodeInfoCollectionItemInfo::Obtain(cOther->mCollectionItemInfo, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
     }
 }
 

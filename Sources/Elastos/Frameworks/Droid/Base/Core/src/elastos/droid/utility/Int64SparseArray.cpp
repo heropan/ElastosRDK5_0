@@ -1,15 +1,13 @@
 
-#include "elastos/droid/utility/SparseArray.h"
+#include "elastos/droid/utility/Int64SparseArray.h"
 #include "elastos/droid/utility/ContainerHelpers.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
-#include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <libcore/utility/EmptyArray.h>
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
-using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;
 using Libcore::Utility::EmptyArray;
 
@@ -17,43 +15,43 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-const AutoPtr<Object> SparseArray::DELETED = new Object();
+const AutoPtr<Object> Int64SparseArray::DELETED = new Object();
 
-CAR_INTERFACE_IMPL_2(SparseArray, Object, ISparseArray, ICloneable);
+CAR_INTERFACE_IMPL_2(Int64SparseArray, Object, IInt64SparseArray, ICloneable);
 
-SparseArray::SparseArray()
+Int64SparseArray::Int64SparseArray()
     : mGarbage(FALSE)
     , mSize(0)
 {}
 
-ECode SparseArray::constructor()
+ECode Int64SparseArray::constructor()
 {
     return constructor(10);
 }
 
-ECode SparseArray::constructor(
+ECode Int64SparseArray::constructor(
     /* [in] */ Int32 initialCapacity)
 {
     mGarbage = FALSE;
     if (initialCapacity == 0) {
-        mKeys = EmptyArray::INT32;
+        mKeys = EmptyArray::INT64;
         mValues = EmptyArray::OBJECT;
     }
     else {
+        mKeys = ArrayUtils::NewUnpaddedInt64Array(initialCapacity);
         mValues = ArrayUtils::NewUnpaddedObjectArray(initialCapacity);
-        mKeys = ArrayOf<Int32>::Alloc(mValues->GetLength());
     }
     mSize = 0;
     return NOERROR;
 }
 
-ECode SparseArray::Clone(
+ECode Int64SparseArray::Clone(
     /* [out] */ IInterface** clone)
 {
     VALIDATE_NOT_NULL(clone);
     *clone = NULL;
 
-    AutoPtr<SparseArray> cloneObj = new SparseArray();
+    AutoPtr<Int64SparseArray> cloneObj = new Int64SparseArray();
     // try {
         cloneObj->mKeys = mKeys->Clone();
         cloneObj->mValues = mValues->Clone();
@@ -61,21 +59,21 @@ ECode SparseArray::Clone(
     // } catch (CloneNotSupportedException cnse) {
     //     /* ignore */
     // }
-    *clone = (ISparseArray*)cloneObj.Get();
+    *clone = (IInt64SparseArray*)cloneObj.Get();
     REFCOUNT_ADD(*clone);
     return NOERROR;
 }
 
-ECode SparseArray::Get(
-    /* [in] */ Int32 key,
+ECode Int64SparseArray::Get(
+    /* [in] */ Int64 key,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface);
     return Get(key, NULL, outface);
 }
 
-ECode SparseArray::Get(
-    /* [in] */ Int32 key,
+ECode Int64SparseArray::Get(
+    /* [in] */ Int64 key,
     /* [in] */ IInterface* valueIfKeyNotFound,
     /* [out] */ IInterface** outface)
 {
@@ -94,8 +92,8 @@ ECode SparseArray::Get(
     }
 }
 
-ECode SparseArray::Delete(
-    /* [in] */ Int32 key)
+ECode Int64SparseArray::Delete(
+    /* [in] */ Int64 key)
 {
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
 
@@ -108,13 +106,13 @@ ECode SparseArray::Delete(
     return NOERROR;
 }
 
-ECode SparseArray::Remove(
-    /* [in] */ Int32 key)
+ECode Int64SparseArray::Remove(
+    /* [in] */ Int64 key)
 {
     return Delete(key);
 }
 
-ECode SparseArray::RemoveAt(
+ECode Int64SparseArray::RemoveAt(
     /* [in] */ Int32 index)
 {
     if (TO_IINTERFACE((*mValues)[index]) != TO_IINTERFACE(DELETED)) {
@@ -124,22 +122,12 @@ ECode SparseArray::RemoveAt(
     return NOERROR;
 }
 
-ECode SparseArray::RemoveAtRange(
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 size)
+void Int64SparseArray::Gc()
 {
-    for (Int32 i = 0; i < Elastos::Core::Math::Min(mSize, index + size); i++) {
-        RemoveAt(i);
-    }
-    return NOERROR;
-}
-
-void SparseArray::Gc()
-{
-    // Log.e("SparseArray", "gc start with " + mSize);
+    // Log.e("Int64SparseArray", "gc start with " + mSize);
 
     Int32 o = 0;
-    AutoPtr< ArrayOf<Int32> > keys = mKeys;
+    AutoPtr< ArrayOf<Int64> > keys = mKeys;
     AutoPtr< ArrayOf<IInterface*> > values = mValues;
 
     for (Int32 i = 0; i < mSize; i++) {
@@ -159,11 +147,11 @@ void SparseArray::Gc()
     mGarbage = FALSE;
     mSize = o;
 
-    // Log.e("SparseArray", "gc end with " + mSize);
+    // Log.e("Int64SparseArray", "gc end with " + mSize);
 }
 
-ECode SparseArray::Put(
-    /* [in] */ Int32 key,
+ECode Int64SparseArray::Put(
+    /* [in] */ Int64 key,
     /* [in] */ IInterface* value)
 {
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
@@ -189,13 +177,12 @@ ECode SparseArray::Put(
         assert(0 && "TODO");
         // mKeys = GrowingArrayUtils::Insert(mKeys, mSize, i, key);
         // mValues = GrowingArrayUtils::Insert(mValues, mSize, i, value);
-
         mSize++;
     }
     return NOERROR;
 }
 
-ECode SparseArray::GetSize(
+ECode Int64SparseArray::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size);
@@ -207,9 +194,9 @@ ECode SparseArray::GetSize(
     return NOERROR;
 }
 
-ECode SparseArray::KeyAt(
+ECode Int64SparseArray::KeyAt(
     /* [in] */ Int32 index,
-    /* [out] */ Int32* value)
+    /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
     if (mGarbage) {
@@ -220,7 +207,7 @@ ECode SparseArray::KeyAt(
     return NOERROR;
 }
 
-ECode SparseArray::ValueAt(
+ECode Int64SparseArray::ValueAt(
     /* [in] */ Int32 index,
     /* [out] */ IInterface** outface)
 {
@@ -234,7 +221,7 @@ ECode SparseArray::ValueAt(
     return NOERROR;
 }
 
-ECode SparseArray::SetValueAt(
+ECode Int64SparseArray::SetValueAt(
     /* [in] */ Int32 index,
     /* [in] */ IInterface* value)
 {
@@ -246,8 +233,8 @@ ECode SparseArray::SetValueAt(
     return NOERROR;
 }
 
-ECode SparseArray::IndexOfKey(
-    /* [in] */ Int32 key,
+ECode Int64SparseArray::IndexOfKey(
+    /* [in] */ Int64 key,
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
@@ -259,7 +246,7 @@ ECode SparseArray::IndexOfKey(
     return NOERROR;
 }
 
-ECode SparseArray::IndexOfValue(
+ECode Int64SparseArray::IndexOfValue(
     /* [in] */ IInterface* value,
     /* [out] */ Int32* outval)
 {
@@ -279,7 +266,7 @@ ECode SparseArray::IndexOfValue(
     return NOERROR;
 }
 
-ECode SparseArray::Clear()
+ECode Int64SparseArray::Clear()
 {
     AutoPtr< ArrayOf<IInterface*> > values = mValues;
 
@@ -292,8 +279,8 @@ ECode SparseArray::Clear()
     return NOERROR;
 }
 
-ECode SparseArray::Append(
-    /* [in] */ Int32 key,
+ECode Int64SparseArray::Append(
+    /* [in] */ Int64 key,
     /* [in] */ IInterface* value)
 {
     if (mSize != 0 && key <= (*mKeys)[mSize - 1]) {
@@ -313,7 +300,7 @@ ECode SparseArray::Append(
     return NOERROR;
 }
 
-ECode SparseArray::ToString(
+ECode Int64SparseArray::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -329,7 +316,7 @@ ECode SparseArray::ToString(
         if (i > 0) {
             buffer->Append(", ");
         }
-        Int32 key;
+        Int64 key;
         KeyAt(i, &key);
         buffer->Append(key);
         buffer->AppendChar('=');

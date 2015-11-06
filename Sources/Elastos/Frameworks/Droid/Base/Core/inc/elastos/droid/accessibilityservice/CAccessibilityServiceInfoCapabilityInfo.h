@@ -40,7 +40,6 @@ public:
     Int32 mCapability;
     Int32 mTitleResId;
     Int32 mDescResId;
-
 };
 
 }

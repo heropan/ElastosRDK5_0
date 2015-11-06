@@ -131,16 +131,6 @@ module
         Append(
             [in] Int64 key,
             [in] IInterface* value);
-
-        /**
-         * {@inheritDoc}
-         *
-         * <p>This implementation composes a string by iterating over its mappings. If
-         * this map contains itself as a value, the string "(this Map)"
-         * will appear in its place.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Utility

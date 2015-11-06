@@ -38,6 +38,8 @@ SOURCES += CSize.cpp
 SOURCES += CSizeHelper.cpp
 SOURCES += CSizeF.cpp
 SOURCES += CSizeFHelper.cpp
+SOURCES += Int64SparseArray.cpp
+SOURCES += SparseArray.cpp
 SOURCES += Spline.cpp
 SOURCES += StateSet.cpp
 SOURCES += TimeUtils.cpp
@@ -47,7 +49,6 @@ SOURCES += Xml.cpp
 SOURCES += CXmlPullAttributes.cpp
 
 // SOURCES += droid_nio_utils.cpp
-// SOURCES += SparseArray.cpp
 // SOURCES += SparseInt32Array.cpp
 // SOURCES += CParcelableObjectContainer.cpp
 // SOURCES += JournaledFile.cpp
