@@ -171,7 +171,7 @@ Int32 BitmapHelper::GetBitmapFormatForConfig(
     }
 }
 
-BitmapConfig GetBitmapConfigForFormat(
+BitmapConfig BitmapHelper::GetBitmapConfigForFormat(
     /* [in] */ Int32 bitmapFormatValue)
 {
     // ==================before translated======================
