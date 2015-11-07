@@ -103,8 +103,8 @@ ECode CInt64Array::Clone(
     AutoPtr<CInt64Array> cloneObj;
     CInt64Array::NewByFriend((CInt64Array**)&cloneObj);
     // try {
-        cloneObj->mValues = mValues->Clone();
-        cloneObj->mSize = mSize;
+    cloneObj->mValues = mValues->Clone();
+    cloneObj->mSize = mSize;
     // } catch (CloneNotSupportedException cnse) {
     //     /* ignore */
     // }

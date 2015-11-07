@@ -63,7 +63,7 @@ using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Accessibility::CAccessibilityManager;
 using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::View::Accessibility::EIID_IAccessibilityStateChangeListener;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityInteractionConnection;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::View::InputMethod::CInputMethodManager;
@@ -1127,7 +1127,7 @@ void ViewRootImpl::RunQueue::ExecuteActions(
 
 CAR_INTERFACE_IMPL(
     ViewRootImpl::AccessibilityInteractionConnectionManager,
-    IAccessibilityStateChangeListener);
+    IAccessibilityManagerAccessibilityStateChangeListener);
 
 ViewRootImpl::AccessibilityInteractionConnectionManager::AccessibilityInteractionConnectionManager(
     /* [in] */ ViewRootImpl* viewRootImpl)

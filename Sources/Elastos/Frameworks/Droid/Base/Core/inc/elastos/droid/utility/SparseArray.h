@@ -5,7 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICloneable;
 
 namespace Elastos {

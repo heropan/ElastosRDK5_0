@@ -1,16 +1,20 @@
 
 #include "elastos/droid/utility/SparseArray.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/utility/ContainerHelpers.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <libcore/utility/EmptyArray.h>
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
 using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 using Elastos::Core::Math;
+using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Slogger;
 using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
@@ -53,11 +57,12 @@ ECode SparseArray::Clone(
     VALIDATE_NOT_NULL(clone);
     *clone = NULL;
 
-    AutoPtr<SparseArray> cloneObj = new SparseArray();
+    AutoPtr<CSparseArray> cloneObj;
+    CSparseArray::NewByFriend((CSparseArray**)&cloneObj);
     // try {
-        cloneObj->mKeys = mKeys->Clone();
-        cloneObj->mValues = mValues->Clone();
-        cloneObj->mSize = mSize;
+    cloneObj->mKeys = mKeys->Clone();
+    cloneObj->mValues = mValues->Clone();
+    cloneObj->mSize = mSize;
     // } catch (CloneNotSupportedException cnse) {
     //     /* ignore */
     // }
@@ -82,7 +87,7 @@ ECode SparseArray::Get(
     VALIDATE_NOT_NULL(outface);
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
 
-    if (i < 0 || TO_IINTERFACE((*mValues)[i]) == TO_IINTERFACE(DELETED)) {
+    if (i < 0 || (*mValues)[i] == (IObject*)DELETED) {
         *outface = valueIfKeyNotFound;
         REFCOUNT_ADD(*outface);
         return NOERROR;
@@ -100,8 +105,8 @@ ECode SparseArray::Delete(
     Int32 i = ContainerHelpers::BinarySearch(mKeys, mSize, key);
 
     if (i >= 0) {
-        if (TO_IINTERFACE((*mValues)[i]) != TO_IINTERFACE(DELETED)) {
-            mValues->Set(i, TO_IINTERFACE(DELETED));
+        if ((*mValues)[i] != (IObject*)DELETED) {
+            mValues->Set(i, (IObject*)DELETED);
             mGarbage = TRUE;
         }
     }
@@ -117,8 +122,8 @@ ECode SparseArray::Remove(
 ECode SparseArray::RemoveAt(
     /* [in] */ Int32 index)
 {
-    if (TO_IINTERFACE((*mValues)[index]) != TO_IINTERFACE(DELETED)) {
-        mValues->Set(index, TO_IINTERFACE(DELETED));
+    if ((*mValues)[index] != (IObject*)DELETED) {
+        mValues->Set(index, (IObject*)DELETED);
         mGarbage = TRUE;
     }
     return NOERROR;
@@ -128,7 +133,7 @@ ECode SparseArray::RemoveAtRange(
     /* [in] */ Int32 index,
     /* [in] */ Int32 size)
 {
-    for (Int32 i = 0; i < Elastos::Core::Math::Min(mSize, index + size); i++) {
+    for (Int32 i = 0; i < Min(mSize, index + size); i++) {
         RemoveAt(i);
     }
     return NOERROR;
@@ -136,7 +141,7 @@ ECode SparseArray::RemoveAtRange(
 
 void SparseArray::Gc()
 {
-    // Log.e("SparseArray", "gc start with " + mSize);
+    Slogger::E("SparseArray", "gc start with %d", mSize);
 
     Int32 o = 0;
     AutoPtr< ArrayOf<Int32> > keys = mKeys;
@@ -145,7 +150,7 @@ void SparseArray::Gc()
     for (Int32 i = 0; i < mSize; i++) {
         AutoPtr<IInterface> val = (*values)[i];
 
-        if (TO_IINTERFACE(val) != TO_IINTERFACE(DELETED)) {
+        if (val != (IObject*)DELETED) {
             if (i != o) {
                 (*keys)[o] = (*keys)[i];
                 values->Set(o, val);
@@ -159,7 +164,7 @@ void SparseArray::Gc()
     mGarbage = FALSE;
     mSize = o;
 
-    // Log.e("SparseArray", "gc end with " + mSize);
+    Slogger::E("SparseArray", "gc end with %d", mSize);
 }
 
 ECode SparseArray::Put(
@@ -174,8 +179,8 @@ ECode SparseArray::Put(
     else {
         i = ~i;
 
-        if (i < mSize && TO_IINTERFACE((*mValues)[i]) == TO_IINTERFACE(DELETED)) {
-            (*mKeys)[i] = key;
+        if (i < mSize && (*mValues)[i] == (IObject*)DELETED) {
+            mKeys->Set(i, key);
             mValues->Set(i, value);
             return NOERROR;
         }
@@ -186,9 +191,8 @@ ECode SparseArray::Put(
             // Search again because indices may have changed.
             i = ~ContainerHelpers::BinarySearch(mKeys, mSize, key);
         }
-        assert(0 && "TODO");
-        // mKeys = GrowingArrayUtils::Insert(mKeys, mSize, i, key);
-        // mValues = GrowingArrayUtils::Insert(mValues, mSize, i, value);
+        mKeys = GrowingArrayUtils::Insert(mKeys, mSize, i, key);
+        mValues = GrowingArrayUtils::Insert(mValues, mSize, i, value);
 
         mSize++;
     }
@@ -242,7 +246,7 @@ ECode SparseArray::SetValueAt(
         Gc();
     }
 
-    (*mValues)[index] = value;
+    mValues->Set(index, value);
     return NOERROR;
 }
 
@@ -305,9 +309,8 @@ ECode SparseArray::Append(
         Gc();
     }
 
-    assert(0 && "TODO");
-    // mKeys = GrowingArrayUtils::Append(mKeys, mSize, key);
-    // mValues = GrowingArrayUtils::Append(mValues, mSize, value);
+    mKeys = GrowingArrayUtils::Append(mKeys, mSize, key);
+    mValues = GrowingArrayUtils::Append(mValues, mSize, value);
     mSize++;
 
     return NOERROR;
@@ -319,31 +322,31 @@ ECode SparseArray::ToString(
     VALIDATE_NOT_NULL(str);
 
     if (mSize <= 0) {
-        *str = String("{}");
+        *str = "{}";
         return NOERROR;
     }
 
-    AutoPtr<StringBuilder> buffer = new StringBuilder(mSize * 28);
-    buffer->AppendChar('{');
+    StringBuilder buffer(mSize * 28);
+    buffer.AppendChar('{');
     for (Int32 i = 0; i < mSize; i++) {
         if (i > 0) {
-            buffer->Append(", ");
+            buffer.Append(", ");
         }
         Int32 key;
         KeyAt(i, &key);
-        buffer->Append(key);
-        buffer->AppendChar('=');
+        buffer.Append(key);
+        buffer.AppendChar('=');
         AutoPtr<IInterface> value;
         ValueAt(i, (IInterface**)&value);
-        if (value != THIS_PROBE(IInterface)) {
-            buffer->Append(value);
+        if (TO_IINTERFACE(value) != THIS_PROBE(IInterface)) {
+            buffer.Append(value);
         }
         else {
-            buffer->Append("(this Map)");
+            buffer.Append("(this Map)");
         }
     }
-    buffer->AppendChar('}');
-    *str = buffer->ToString();
+    buffer.AppendChar('}');
+    *str = buffer.ToString();
     return NOERROR;
 }
 

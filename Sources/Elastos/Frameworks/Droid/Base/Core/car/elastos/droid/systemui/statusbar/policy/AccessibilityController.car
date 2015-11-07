@@ -15,8 +15,8 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.Accessibility.IAccessibilityStateChangeListener
-     * interface Elastos.Droid.View.Accessibility.ITouchExplorationStateChangeListener
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityManagerAccessibilityStateChangeListener
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityManagerTouchExplorationStateChangeListener
      */
     interface IAccessibilityController {
 

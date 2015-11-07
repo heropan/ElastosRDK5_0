@@ -57,7 +57,7 @@ using Elastos::Droid::Webkit::Base::CommandLine;
 using Elastos::Droid::Webkit::Base::TraceEvent;
 
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
-using Elastos::Droid::View::Accessibility::EIID_IAccessibilityStateChangeListener;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IInputEvent;
@@ -866,7 +866,7 @@ Boolean ContentViewCore::sIsSPenSupported = FALSE;
 // if there is no render process.
 const Int32 ContentViewCore::INVALID_RENDER_PROCESS_PID;
 
-CAR_INTERFACE_IMPL(ContentViewCore, ScreenOrientationListener::ScreenOrientationObserver, IAccessibilityStateChangeListener);
+CAR_INTERFACE_IMPL(ContentViewCore, ScreenOrientationListener::ScreenOrientationObserver, IAccessibilityManagerAccessibilityStateChangeListener);
 
 /**
  * Constructs a new ContentViewCore. Embedders must call initialize() after constructing

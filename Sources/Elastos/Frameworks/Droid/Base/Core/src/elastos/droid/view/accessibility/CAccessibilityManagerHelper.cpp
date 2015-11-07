@@ -6,12 +6,6 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
-ECode CAccessibilityManagerHelper::CreateAsSharedAcrossUsers(
-    /* [in] */ IContext* context)
-{
-    return CAccessibilityManager::CreateAsSharedAcrossUsers(context);
-}
-
 ECode CAccessibilityManagerHelper::GetInstance(
     /* [in] */ IContext* context,
     /* [out] */ IAccessibilityManager** manager)

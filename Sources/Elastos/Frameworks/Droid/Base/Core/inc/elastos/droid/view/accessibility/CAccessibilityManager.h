@@ -40,23 +40,6 @@ public:
         /* [in] */ Int32 state);
 
     /**
-     * Creates the singleton AccessibilityManager to be shared across users. This
-     * has to be called before the local AccessibilityManager is created to ensure
-     * it registers itself in the system correctly.
-     * <p>
-     * Note: Calling this method requires INTERACT_ACROSS_USERS_FULL or
-     *       INTERACT_ACROSS_USERS permission.
-     * </p>
-     * @param context Context in which this manager operates.
-     * @throws IllegalStateException if not called before the local
-     *     AccessibilityManager is instantiated.
-     *
-     * @hide
-     */
-    static CARAPI CreateAsSharedAcrossUsers(
-        /* [in] */ IContext* context);
-
-    /**
      * Get an AccessibilityManager instance (create one if necessary).
      *
      * @param context Context in which this manager operates.
@@ -153,7 +136,7 @@ public:
      * @return True if successfully registered.
      */
     CARAPI AddAccessibilityStateChangeListener(
-        /* [in] */ IAccessibilityStateChangeListener* listener,
+        /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
         /* [out] */ Boolean* add);
 
     /**
@@ -163,7 +146,7 @@ public:
      * @return True if successfully unregistered.
      */
     CARAPI RemoveAccessibilityStateChangeListener(
-        /* [in] */ IAccessibilityStateChangeListener* listener,
+        /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
         /* [out] */ Boolean* remove);
 
     /**
@@ -249,7 +232,7 @@ public:
 
     // CopyOnWriteArrayList<AutoPtr<IAccessibilityStateChangeListener> > mAccessibilityStateChangeListeners =
     //     new CopyOnWriteArrayList<AccessibilityStateChangeListener>();
-    List<AutoPtr<IAccessibilityStateChangeListener> > mAccessibilityStateChangeListeners;
+    List<AutoPtr<IAccessibilityManagerAccessibilityStateChangeListener> > mAccessibilityStateChangeListeners;
 
     AutoPtr<IAccessibilityManagerClient> mClient;
 

@@ -76,7 +76,7 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityStateChangeListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
@@ -151,7 +151,7 @@ namespace Browser {
 //@JNINamespace("content")
 class ContentViewCore
     : public NavigationClient
-    , public IAccessibilityStateChangeListener
+    , public IAccessibilityManagerAccessibilityStateChangeListener
     , public ScreenOrientationListener::ScreenOrientationObserver
 {
 public:

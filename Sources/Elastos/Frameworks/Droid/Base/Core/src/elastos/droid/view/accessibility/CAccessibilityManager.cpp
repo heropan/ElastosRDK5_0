@@ -64,18 +64,6 @@ void CAccessibilityManager::HandleDoSetState(
     SetState(state);
 }
 
-ECode CAccessibilityManager::CreateAsSharedAcrossUsers(
-    /* [in] */ IContext* context)
-{
-    AutoLock lock(sInstanceSync);
-    if (sInstance != NULL) {
-        Slogger::E(localLOG_TAG, "AccessibilityManager already created.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalStateException("AccessibilityManager already created.");
-    }
-    return CreateSingletonInstance(context, IUserHandle::USER_CURRENT);
-}
-
 ECode CAccessibilityManager::GetInstance(
     /* [in] */ IContext* context,
     /* [out] */ IAccessibilityManager** manager)
@@ -260,7 +248,7 @@ ECode CAccessibilityManager::GetEnabledAccessibilityServiceList(
 }
 
 ECode CAccessibilityManager::AddAccessibilityStateChangeListener(
-    /* [in] */ IAccessibilityStateChangeListener* listener,
+    /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
     /* [out] */ Boolean* add)
 {
     VALIDATE_NOT_NULL(add);
@@ -270,7 +258,7 @@ ECode CAccessibilityManager::AddAccessibilityStateChangeListener(
 }
 
 ECode CAccessibilityManager::RemoveAccessibilityStateChangeListener(
-    /* [in] */ IAccessibilityStateChangeListener* listener,
+    /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
     /* [out] */ Boolean* remove)
 {
     VALIDATE_NOT_NULL(remove);
@@ -299,7 +287,7 @@ void CAccessibilityManager::SetAccessibilityState(
 
 void CAccessibilityManager::NotifyAccessibilityStateChanged()
 {
-    List<AutoPtr<IAccessibilityStateChangeListener> >::Iterator it
+    List<AutoPtr<IAccessibilityManagerAccessibilityStateChangeListener> >::Iterator it
             = mAccessibilityStateChangeListeners.Begin();
     for (; it != mAccessibilityStateChangeListeners.End(); ++it) {
         (*it)->OnAccessibilityStateChanged(mIsEnabled);

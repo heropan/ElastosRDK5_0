@@ -13,17 +13,17 @@ module
 
     interface IAccessibilityEvent;
     interface IIAccessibilityInteractionConnection;
+    interface IIAccessibilityManagerClient;
 
     /**
-     * Listener for the system accessibility state. To listen for changes to the accessibility
-     * state on the device, implement this interface and register it with the system by
-     * calling {@link AccessibilityManager#addAccessibilityStateChangeListener
-     * addAccessibilityStateChangeListener()}.
+     * Listener for the system accessibility state. To listen for changes to the
+     * accessibility state on the device, implement this interface and register
+     * it with the system by calling {@link #addAccessibilityStateChangeListener}.
      */
-    interface IAccessibilityStateChangeListener {
+    interface IAccessibilityManagerAccessibilityStateChangeListener {
 
         /**
-         * Called back on change in the accessibility state.
+         *Called when the accessibility enabled state changes.
          *
          * @param enabled Whether accessibility is enabled.
          */
@@ -37,7 +37,7 @@ module
      * register it with the system by calling
      * {@link #addTouchExplorationStateChangeListener}.
      */
-     interface ITouchExplorationStateChangeListener {
+     interface IAccessibilityManagerTouchExplorationStateChangeListener {
 
         /**
          * Called when the touch exploration enabled state changes.
@@ -56,7 +56,7 @@ module
      *
      * @hide
      */
-    interface IHighTextContrastChangeListener {
+    interface IAccessibilityManagerHighTextContrastChangeListener {
 
         /**
          * Called when the high text contrast enabled state changes.
@@ -86,6 +86,12 @@ module
 
         /** @hide */
         const Int32 DALTONIZER_CORRECT_DEUTERANOMALY = 12;
+
+        /**
+         * @hide
+         */
+        GetClient(
+            [out] IIAccessibilityManagerClient** client);
 
         /**
          * Returns if the accessibility in the system is enabled.
@@ -168,6 +174,7 @@ module
          * @see AccessibilityServiceInfo#FEEDBACK_HAPTIC
          * @see AccessibilityServiceInfo#FEEDBACK_SPOKEN
          * @see AccessibilityServiceInfo#FEEDBACK_VISUAL
+         * @see AccessibilityServiceInfo#FEEDBACK_BRAILLE
          */
         GetEnabledAccessibilityServiceList(
             [in] Int32 feedbackTypeFlags,
@@ -181,8 +188,8 @@ module
          * @return True if successfully registered.
          */
         AddAccessibilityStateChangeListener(
-            [in] IAccessibilityStateChangeListener* listener,
-            [out] Boolean* add);
+            [in] IAccessibilityManagerAccessibilityStateChangeListener* listener,
+            [out] Boolean* result);
 
         /**
          * Unregisters an {@link AccessibilityStateChangeListener}.
@@ -191,8 +198,8 @@ module
          * @return True if successfully unregistered.
          */
         RemoveAccessibilityStateChangeListener(
-            [in] IAccessibilityStateChangeListener* listener,
-            [out] Boolean* remove);
+            [in] IAccessibilityManagerAccessibilityStateChangeListener* listener,
+            [out] Boolean* result);
 
         /**
          * Registers a {@link TouchExplorationStateChangeListener} for changes in
@@ -202,7 +209,8 @@ module
          * @return True if successfully registered.
          */
         AddTouchExplorationStateChangeListener(
-            [in] ITouchExplorationStateChangeListener* listener);
+            [in] IAccessibilityManagerTouchExplorationStateChangeListener* listener,
+            [out] Boolean* result);
 
         /**
          * Unregisters a {@link TouchExplorationStateChangeListener}.
@@ -211,7 +219,8 @@ module
          * @return True if successfully unregistered.
          */
         RemoveTouchExplorationStateChangeListener(
-            [in] ITouchExplorationStateChangeListener* listener);
+            [in] IAccessibilityManagerTouchExplorationStateChangeListener* listener,
+            [out] Boolean* result);
 
         /**
          * Registers a {@link HighTextContrastChangeListener} for changes in
@@ -223,7 +232,8 @@ module
          * @hide
          */
         AddHighTextContrastStateChangeListener(
-            [in] IHighTextContrastChangeListener* listener);
+            [in] IAccessibilityManagerHighTextContrastChangeListener* listener,
+            [out] Boolean* result);
 
         /**
          * Unregisters a {@link HighTextContrastChangeListener}.
@@ -234,7 +244,8 @@ module
          * @hide
          */
         RemoveHighTextContrastStateChangeListener(
-            [in] IHighTextContrastChangeListener* listener);
+            [in] IAccessibilityManagerHighTextContrastChangeListener* listener,
+            [out] Boolean* result);
 
         /**
          * Adds an accessibility interaction connection interface for a given window.
@@ -260,9 +271,6 @@ module
 
     [local]
     interface IAccessibilityManagerHelper {
-        CreateAsSharedAcrossUsers(
-            [in] IContext* ctx);
-
         GetInstance(
             [in] IContext* ctx,
             [out] IAccessibilityManager** manager);

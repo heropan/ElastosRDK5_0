@@ -25,7 +25,7 @@ using Elastos::Droid::Content::IClipDescription;
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::View::InputMethod::IInputMethodManagerFinishedEventCallback;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
-using Elastos::Droid::View::Accessibility::IAccessibilityStateChangeListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnectionCallback;
 using Elastos::Droid::Utility::ITypedValue;
@@ -509,7 +509,7 @@ private:
      */
     class AccessibilityInteractionConnectionManager
         : public ElRefBase
-        , public IAccessibilityStateChangeListener
+        , public IAccessibilityManagerAccessibilityStateChangeListener
     {
     public:
         CAR_INTERFACE_DECL()
