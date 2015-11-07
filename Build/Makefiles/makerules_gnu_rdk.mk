@@ -660,8 +660,11 @@ endif
 	fi
 	touch $@
 
-$(TARGET_NAME).lib: $(OBJECTS) $(LIBRARIES) $(MAKEDIR)/sources
+$(TARGET_NAME).lib: $(OBJECTS) $(ELASTOS_LIBS) $(LIBRARIES) $(MAKEDIR)/sources
 ifneq "$(findstring /ElCRuntime.lib,$(LIBRARIES))_$(findstring /ElCRuntime.lib,$(LIBRARIES))" "_"
+	$(error The ElCRuntime.lib can't be Packed)
+endif
+ifneq "$(findstring /ElCRuntime.lib,$(ELASTOS_LIBS))_$(findstring /ElCRuntime.lib,$(ELASTOS_LIBS))" "_"
 	$(error The ElCRuntime.lib can't be Packed)
 endif
 	@echo Packing $@ ...
@@ -672,6 +675,12 @@ ifneq "$(LIBRARIES)" ""
 endif
 ifneq "$(LIBRARIES)" ""
 	$(foreach aaa, $(LIBRARIES), $(AR) x $(aaa) ;)
+endif
+ifneq "$(ELASTOS_LIBS)" ""
+	$(foreach aaa, $(filter %.o, $(ELASTOS_LIBS)), $(CP) $(aaa) . ;)
+endif
+ifneq "$(ELASTOS_LIBS)" ""
+	$(foreach aaa, $(ELASTOS_LIBS), $(AR) x $(aaa) ;)
 endif
 
 	@echo $(AR) $(AR_FLAGS) $@ *.o $(BLACKHOLE)
