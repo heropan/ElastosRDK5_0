@@ -2,7 +2,7 @@
 #include "elastos/droid/content/res/StringBlock.h"
 //#include "elastos/droid/graphics/CPaint.h"
 //#include "elastos/droid/graphics/CRect.h"
-//#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 // #include "elastos/droid/text/CStyleSpan.h"
 // #include "elastos/droid/text/CSpannableString.h"
 // #include "elastos/droid/text/CUnderlineSpan.h"
@@ -31,7 +31,7 @@ using Elastos::Utility::Logging::Slogger;
 //using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::IPaint;
 //using Elastos::Droid::Graphics::CRect;
-//using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::IRect;
 // using Elastos::Droid::Text::TextUtilsTruncateAt;
 // using Elastos::Droid::Text::CAnnotation;
@@ -535,7 +535,7 @@ AutoPtr<ICharacterStyle> StringBlock::GetColor(
     //         }
     //     }
     //     else {
-    //         //CColor::GetHtmlColor(color, &c);
+    //         //c = Color::GetHtmlColor(color);
     //     }
     // }
 

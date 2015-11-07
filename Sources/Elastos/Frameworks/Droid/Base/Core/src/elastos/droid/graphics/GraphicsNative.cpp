@@ -7,7 +7,7 @@
 #include "elastos/droid/graphics/BitmapRegionDecoder.h"
 #include "elastos/droid/graphics/NativeCanvas.h"
 #include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/Paint.h"
 #include <skia/core/SkDither.h>
 
 namespace Elastos {
@@ -421,7 +421,7 @@ NativePaint* GraphicsNative::GetNativePaint(
 {
     SkASSERT(paint);
     // SkASSERT(env->IsInstanceOf(paint, gPaint_class));
-    NativePaint* p = reinterpret_cast<NativePaint*>(((CPaint*)paint)->mNativePaint);
+    NativePaint* p = reinterpret_cast<NativePaint*>(((Paint*)paint)->mNativePaint);
     SkASSERT(p);
     return p;
 }
@@ -431,7 +431,7 @@ TypefaceImpl* GraphicsNative::GetNativeTypeface(
 {
     SkASSERT(paint);
     // SkASSERT(env->IsInstanceOf(paint, gPaint_class));
-    Int64 typefaceHandle = ((CPaint*)paint)->mNativeTypeface;
+    Int64 typefaceHandle = ((Paint*)paint)->mNativeTypeface;
     TypefaceImpl* p = reinterpret_cast<TypefaceImpl*>(typefaceHandle);
     return p;
 }

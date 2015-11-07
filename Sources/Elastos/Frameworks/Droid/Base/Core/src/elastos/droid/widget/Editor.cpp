@@ -14,7 +14,7 @@
 #include "elastos/droid/text/style/CSuggestionRangeSpan.h"
 #include "elastos/droid/text/method/CMetaKeyKeyListenerHelper.h"
 #include "elastos/droid/text/method/CWordIterator.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/view/View.h"
@@ -71,7 +71,7 @@ using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 using Elastos::Droid::Text::Method::IMetaKeyKeyListenerHelper;
 using Elastos::Droid::Text::Method::CMetaKeyKeyListenerHelper;
 using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
@@ -1061,10 +1061,7 @@ Boolean SuggestionsPopupWindow::UpdateSuggestions()
     }
     else {
         Float BACKGROUND_TRANSPARENCY = 0.4f;
-        AutoPtr<IColor> helper;
-        CColor::AcquireSingleton((IColor**)&helper);
-        Int32 alpha;
-        helper->Alpha(underlineColor, &alpha);
+        Int32 alpha = Color::Alpha(underlineColor);
         Int32 newAlpha = (Int32) (alpha * BACKGROUND_TRANSPARENCY);
         mEditor->mSuggestionRangeSpan->SetBackgroundColor(
                 (underlineColor & 0x00FFFFFF) + (newAlpha << 24));
@@ -2865,10 +2862,7 @@ Boolean CorrectionHighlighter::UpdatePaint()
     Int64 duration = SystemClock::GetUptimeMillis() - mFadingStartTime;
     if (duration > FADE_OUT_DURATION) return FALSE;
 
-    AutoPtr<IColor> helper;
-    CColor::AcquireSingleton((IColor**)&helper);
-    Int32 highlightColorAlpha;
-    helper->Alpha(mEditor->mTextView->mHighlightColor, &highlightColorAlpha);
+    Int32 highlightColorAlpha = Color::Alpha(mEditor->mTextView->mHighlightColor);
 
     Float coef = 1.0f - (Float) duration / FADE_OUT_DURATION;
     Int32 color = (mEditor->mTextView->mHighlightColor & 0x00FFFFFF) +

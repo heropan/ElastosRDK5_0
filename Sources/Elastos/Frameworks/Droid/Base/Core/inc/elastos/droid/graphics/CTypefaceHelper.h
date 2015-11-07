@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_GRAPHICS_CTYPEFACEHELPER_H__
 
 #include "_Elastos_Droid_Graphics_CTypefaceHelper.h"
-#include <Elastos.CoreLibrary.h>
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::Res::IAssetManager;
@@ -96,11 +95,11 @@ public:
         /* [out] */ ITypeface** typeface);
 
     CARAPI CreateFromFamilies(
-        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [in]*/ ArrayOf<IFontFamily*>* families,
         /* [out]*/ ITypeface** typeface);
 
     CARAPI CreateFromFamiliesWithDefault(
-        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [in]*/ ArrayOf<IFontFamily*>* families,
         /* [out]*/ ITypeface** typeface);
 };
 

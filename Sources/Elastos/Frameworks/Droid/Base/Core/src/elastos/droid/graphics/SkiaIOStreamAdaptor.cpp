@@ -41,7 +41,7 @@ public:
             }
 
             Int32 n;
-            ECode ec = mInputStream->ReadBytes(mByteArray, 0, requested, &n);
+            ECode ec = mInputStream->Read(mByteArray, 0, requested, &n);
             if (FAILED(ec)) {
                 return 0;
             }

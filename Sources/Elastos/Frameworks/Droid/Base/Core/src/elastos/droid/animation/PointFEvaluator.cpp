@@ -1,8 +1,8 @@
 
 #include "elastos/droid/animation/PointFEvaluator.h"
-// #include "elastos/droid/graphics/CPointF.h"
+#include "elastos/droid/graphics/CPointF.h"
 
-// using Elastos::Droid::Graphics::CPointF;
+using Elastos::Droid::Graphics::CPointF;
 
 namespace Elastos {
 namespace Droid {
@@ -38,12 +38,14 @@ ECode PointFEvaluator::Evaluate(
     if (mPoint != NULL) {
         mPoint->Set(x, y);
         *pf = mPoint;
-        REFCOUNT_ADD(*pf)
+        REFCOUNT_ADD(*pf);
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // return CPointF::New(x, y, pf);
+    AutoPtr<IPointF> obj;
+    CPointF::New(x, y, (IPointF**)&obj);
+    *pf = obj;
+    REFCOUNT_ADD(*pf);
     return NOERROR;
 }
 

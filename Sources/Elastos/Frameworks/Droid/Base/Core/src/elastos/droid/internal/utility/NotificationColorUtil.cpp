@@ -1,7 +1,7 @@
 
 #include "elastos/droid/internal/utility/NotificationColorUtil.h"
 #include "elastos/droid/content/res/CColorStateList.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/style/CTextAppearanceSpan.h"
 #include "elastos/droid/utility/CPairHelper.h"
@@ -12,7 +12,7 @@
 using Elastos::Droid::Content::Res::CColorStateList;
 using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::Drawable::IAnimationDrawable;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
@@ -258,15 +258,10 @@ AutoPtr<ITextAppearanceSpan> NotificationColorUtil::ProcessTextAppearanceSpan(
 Int32 NotificationColorUtil::ProcessColor(
     /* [in] */ Int32 color)
 {
-    AutoPtr<IColor> c;
-    CColor::AcquireSingleton((IColor**)&c);
-    Int32 alpha, red, green, blue, argb;
-    c->Alpha(color, &alpha);
-    c->Red(color, &red);
-    c->Green(color, &green);
-    c->Blue(color, &blue);
-    c->Argb(alpha, 255 - red, 255 - green, 255 - blue, &argb);
-    return argb;
+    return Color::Argb(Color::Alpha(color),
+            255 - Color::Red(color),
+            255 - Color::Green(color),
+            255 - Color::Blue(color));
 }
 
 } // namespace Utility

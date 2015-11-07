@@ -2,13 +2,35 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CRect.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
+#include <elastos/utility/regex/Pattern.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Regex::Pattern;
+using Elastos::Utility::Regex::IMatchResult;
 
 namespace Elastos {
 namespace Droid {
 namespace Graphics {
+
+AutoPtr<IPattern> CRect::UnflattenHelper::FLATTENED_PATTERN = CRect::UnflattenHelper::InitStatic();
+AutoPtr<IMatcher> CRect::UnflattenHelper::GetMatcher(
+    /* [in] */ const String& str)
+{
+    AutoPtr<IMatcher> matcher;
+    FLATTENED_PATTERN->Matcher(str, (IMatcher**)&matcher);
+    return matcher;
+}
+
+AutoPtr<IPattern> CRect::UnflattenHelper::InitStatic()
+{
+    AutoPtr<IPattern> pattern;
+    Pattern::Compile(
+        String("(-?\\d+) (-?\\d+) (-?\\d+) (-?\\d+)"), (IPattern**)&pattern);
+    return pattern;
+}
 
 CAR_OBJECT_IMPL(CRect);
 CAR_INTERFACE_IMPL_2(CRect, Object, IRect, IParcelable);
@@ -128,6 +150,27 @@ ECode CRect::FlattenToString(
     sb += " ";
     sb += mBottom;
     return sb.ToString(str);
+}
+
+AutoPtr<IRect> CRect::UnflattenFromString(
+    /* [in] */ const String& str)
+{
+    AutoPtr<IMatcher> matcher = UnflattenHelper::GetMatcher(str);
+    Boolean matched = FALSE;
+    if (!(matcher->Matches(&matched), matched)) {
+        return NULL;
+    }
+    AutoPtr<IRect> rect;
+    String g1, g2, g3, g4;
+    IMatchResult::Probe(matcher)->Group(1, &g1);
+    IMatchResult::Probe(matcher)->Group(2, &g2);
+    IMatchResult::Probe(matcher)->Group(3, &g3);
+    IMatchResult::Probe(matcher)->Group(4, &g4);
+    CRect::New(StringUtils::ParseInt32(g1),
+            StringUtils::ParseInt32(g2),
+            StringUtils::ParseInt32(g3),
+            StringUtils::ParseInt32(g4), (IRect**)&rect);
+    return rect;
 }
 
 ECode CRect::IsEmpty(
@@ -371,18 +414,14 @@ ECode CRect::Intersects(
     return NOERROR;
 }
 
-ECode CRect::Intersects(
+Boolean CRect::Intersects(
     /* [in] */ IRect* a,
-    /* [in] */ IRect* b,
-    /* [out] */ Boolean* result)
+    /* [in] */ IRect* b)
 {
-    VALIDATE_NOT_NULL(result);
-
     CRect* tempA = (CRect*)a;
     CRect* tempB = (CRect*)b;
-    *result = tempA->mLeft < tempB->mRight && tempB->mLeft < tempA->mRight
+    return tempA->mLeft < tempB->mRight && tempB->mLeft < tempA->mRight
         && tempA->mTop < tempB->mBottom && tempB->mTop < tempA->mBottom;
-    return NOERROR;
 }
 
 ECode CRect::SetIntersect(
@@ -562,6 +601,17 @@ ECode CRect::SetRight(
 {
     mRight = right;
     return NOERROR;
+}
+
+void CRect::ScaleRoundIn(
+    /* [in] */ Float scale)
+{
+    if (scale != 1.0f) {
+        mLeft = (Int32) Elastos::Core::Math::Ceil(mLeft * scale);
+        mTop = (Int32) Elastos::Core::Math::Ceil(mTop * scale);
+        mRight = (Int32) Elastos::Core::Math::Floor(mRight * scale);
+        mBottom = (Int32) Elastos::Core::Math::Floor(mBottom * scale);
+    }
 }
 
 } // namespace Graphics

@@ -17,9 +17,9 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_NATIVECANVAS_H__
 #define __ELASTOS_DROID_GRAPHICS_NATIVECANVAS_H__
 
-#include <SkBitmap.h>
-#include <SkCanvas.h>
-#include <SkMatrix.h>
+#include <skia/core/SkBitmap.h>
+#include <skia/core/SkCanvas.h>
+#include <skia/core/SkMatrix.h>
 
 namespace Elastos {
 namespace Droid {

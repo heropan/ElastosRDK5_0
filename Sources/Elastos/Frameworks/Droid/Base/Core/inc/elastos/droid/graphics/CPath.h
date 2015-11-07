@@ -788,7 +788,7 @@ private:
         /* [in] */ Int64 nPath,
         /* [in] */ Float dx,
         /* [in] */ Float dy,
-        /* [in] */ Int32 dst_path);
+        /* [in] */ Int64 dst_path);
 
     static CARAPI_(void) NativeOffset(
         /* [in] */ Int64 nPath,

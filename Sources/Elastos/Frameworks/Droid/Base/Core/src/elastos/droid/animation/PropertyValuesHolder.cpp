@@ -114,17 +114,6 @@ AutoPtr<ITypeEvaluator> PropertyValuesHolder::InitFloatEvaluator()
     return rst;
 }
 
-AutoPtr<ITypeEvaluator> PropertyValuesHolder::sInt32Evaluator = InitInt32Evaluator();
-AutoPtr<ITypeEvaluator> PropertyValuesHolder::sFloatEvaluator = InitFloatEvaluator();
-Int32 PropertyValuesHolder::FLOAT_VARIANTS[6] = {1/*float.class*/, 4/*Float.class*/, 2/*double.class*/, 0/*int.class*/,
-        5/*Double.class*/, 3/*Integer.class*/};
-Int32 PropertyValuesHolder::INTEGER_VARIANTS[6] = {0/*int.class*/, 3/*Integer.class*/, 1/*float.class*/, 2/*double.class*/,
-        4/*Float.class*/, 5/*Double.class*/};
-Int32 PropertyValuesHolder::DOUBLE_VARIANTS[6] = {2/*double.class*/, 5/*Double.class*/, 1/*float.class*/, 0/*int.class*/,
-        4/*Float.class*/, 3/*Integer.class*/};
-AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sSetterPropertyMap = new ClassMethodMap();
-AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sGetterPropertyMap = new ClassMethodMap();
-
 enum ClassType {
     intclass = 0,
     floatclass = 1,
@@ -133,6 +122,26 @@ enum ClassType {
     Floatclass = 4,
     Doubleclass = 5
 };
+
+AutoPtr<ITypeEvaluator> PropertyValuesHolder::sInt32Evaluator = InitInt32Evaluator();
+AutoPtr<ITypeEvaluator> PropertyValuesHolder::sFloatEvaluator = InitFloatEvaluator();
+Int32 PropertyValuesHolder::FLOAT_VARIANTS[6] = {
+    floatclass/*float.class*/, Floatclass/*Float.class*/,
+    doubleclass/*double.class*/, intclass/*int.class*/,
+    Doubleclass/*Double.class*/, Integerclass/*Integer.class*/};
+
+Int32 PropertyValuesHolder::INTEGER_VARIANTS[6] = {
+    intclass/*int.class*/, Integerclass/*Integer.class*/,
+    floatclass/*float.class*/, doubleclass/*double.class*/,
+    Floatclass/*Float.class*/, Doubleclass/*Double.class*/};
+
+Int32 PropertyValuesHolder::DOUBLE_VARIANTS[6] = {
+    doubleclass/*double.class*/, Doubleclass/*Double.class*/,
+    floatclass/*float.class*/, intclass/*int.class*/,
+    Floatclass/*Float.class*/, Integerclass/*Integer.class*/};
+
+AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sSetterPropertyMap = new ClassMethodMap();
+AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sGetterPropertyMap = new ClassMethodMap();
 
 String GetSignature(
     /* [in] */ Int32 type)
@@ -1131,6 +1140,7 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::GetPropertyFunction(
         // args = new Class[1];
         Int32* typeVariants = NULL;
         Int32 length = 1;
+        String signature;
         if (*valueType == EIID_IFloat) {
             typeVariants = FLOAT_VARIANTS;
             length = sizeof(FLOAT_VARIANTS)/sizeof(FLOAT_VARIANTS[0]);
@@ -1142,23 +1152,27 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::GetPropertyFunction(
             length = sizeof(DOUBLE_VARIANTS)/sizeof(DOUBLE_VARIANTS[0]);
         } else {
             // typeVariants = new Class[1];
-
-            assert(0 && "TODO");
-            length = 1;
-            // typeVariants[0] = valueType;
+            if (*valueType == EIID_IPointF) {
+                length = 1;
+                signature = String("(LElastos/Droid/Graphics/IPointF;)E");
+            } else {
+                assert(0 && "TODO: Not support types, please check or add it.");
+                length = 0;
+            }
         }
 
-        String signature;
         for (Int32 i = 0; i < length; i++) {
-            signature = GetSignature(typeVariants[i]);
+            if (signature == NULL) {
+                signature = GetSignature(typeVariants[i]);
+            }
+
             if (FAILED(targetClass->GetMethodInfo(methodName, signature, (IMethodInfo**)&returnVal)) || returnVal == NULL) {
                 continue;
             }
 
             if (mConverter == NULL) {
                 // change the value type to suit
-                assert(0 && "TODO");
-                // mValueType = typeVariant;
+                mValueType = *valueType;
             }
             return returnVal;
         }

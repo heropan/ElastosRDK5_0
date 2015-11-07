@@ -115,7 +115,7 @@ module
          * @hide
          */
         CreateFromFamilies(
-            [in] ArrayOf<IFontFamily>* families,
+            [in] ArrayOf<IFontFamily*>* families,
             [out] ITypeface** typeface);
 
         /**
@@ -126,7 +126,7 @@ module
          * @hide
          */
         CreateFromFamiliesWithDefault(
-            [in] ArrayOf<IFontFamily>* families,
+            [in] ArrayOf<IFontFamily*>* families,
             [out] ITypeface** typeface);
     }
 

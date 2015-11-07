@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_REGEX_REGEX_PATTERN_H__
 
 #include <unicode/regex.h>
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using U_ICU_NAMESPACE::RegexPattern;
@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Utility {
 namespace Regex {
 
-class Pattern
+class ECO_PUBLIC Pattern
     : public Object
     , public IPattern
 {

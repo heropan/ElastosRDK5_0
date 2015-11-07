@@ -1,11 +1,11 @@
 
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
 #include "elastos/core/Math.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Widget::ILinearLayout;
 
 namespace Elastos {
@@ -136,9 +136,7 @@ ECode ColorPickerAdvanced::SetColor(
     // refreshGradientComponents();
 
     mCurrentColor = color;
-    AutoPtr<IColor> colorHsv;
-    CColor::AcquireSingleton((IColor**)&colorHsv);
-    colorHsv->ColorToHSV(mCurrentColor, mCurrentHsvValues);
+    Color::ColorToHSV(mCurrentColor, mCurrentHsvValues);
     RefreshGradientComponents();
     return NOERROR;
 }
@@ -169,9 +167,7 @@ ECode ColorPickerAdvanced::OnProgressChanged(
         (*mCurrentHsvValues)[1] = mSaturationDetails->GetValue() / 100.0f;
         (*mCurrentHsvValues)[2] = mValueDetails->GetValue() / 100.0f;
 
-        AutoPtr<IColor> color;
-        CColor::AcquireSingleton((IColor**)&color);
-        color->HSVToColor(mCurrentHsvValues, &mCurrentColor);
+        Color::HSVToColor(mCurrentHsvValues, &mCurrentColor);
 
         UpdateHueGradient();
         UpdateSaturationGradient();
@@ -272,12 +268,10 @@ ECode ColorPickerAdvanced::UpdateHueGradient()
     (*tempHsvValues)[2] = (*mCurrentHsvValues)[2];
 
     AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(HUE_COLOR_COUNT);
-    AutoPtr<IColor> color;
-    CColor::AcquireSingleton((IColor**)&color);
     Int32 colorTemp = 0;
     for (Int32 i = 0; i < HUE_COLOR_COUNT; ++i) {
         tempHsvValues->Set(0, i * 60.0f);
-        color->HSVToColor(tempHsvValues, &colorTemp);
+        Color::HSVToColor(tempHsvValues, &colorTemp);
         newColors->Set(i, colorTemp);
     }
     mHueDetails->SetGradientColors(newColors);
@@ -307,13 +301,11 @@ ECode ColorPickerAdvanced::UpdateSaturationGradient()
 
     AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(SATURATION_COLOR_COUNT);
     Int32 hsvColor = 0;
-    AutoPtr<IColor> color;
-    CColor::AcquireSingleton((IColor**)&color);
-    color->HSVToColor(tempHsvValues, &hsvColor);
+    Color::HSVToColor(tempHsvValues, &hsvColor);
     (*newColors)[0] = hsvColor;
 
     (*tempHsvValues)[1] = 1.0f;
-    color->HSVToColor(tempHsvValues, &hsvColor);
+    Color::HSVToColor(tempHsvValues, &hsvColor);
     (*newColors)[1] = hsvColor;
     mSaturationDetails->SetGradientColors(newColors);
     return NOERROR;
@@ -342,13 +334,11 @@ ECode ColorPickerAdvanced::UpdateValueGradient()
 
     AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(VALUE_COLOR_COUNT);
     Int32 hsvColor = 0;
-    AutoPtr<IColor> color;
-    CColor::AcquireSingleton((IColor**)&color);
-    color->HSVToColor(tempHsvValues, &hsvColor);
+    Color::HSVToColor(tempHsvValues, &hsvColor);
     (*newColors)[0] = hsvColor;
 
     (*tempHsvValues)[2] = 1.0f;
-    color->HSVToColor(tempHsvValues, &hsvColor);
+    Color::HSVToColor(tempHsvValues, &hsvColor);
     (*newColors)[1] = hsvColor;
     mValueDetails->SetGradientColors(newColors);
     return NOERROR;

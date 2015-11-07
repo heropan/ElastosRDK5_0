@@ -1,6 +1,6 @@
 
 #include "elastos/droid/graphics/drawable/shapes/PathShape.h"
-// #include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CPath.h"
 
 namespace Elastos {
 namespace Droid {
@@ -61,8 +61,7 @@ ECode PathShape::CloneImpl(
 {
     PathShape* other = (PathShape*)_other;
     Shape::CloneImpl(IShape::Probe(other));
-    assert(0 && "TODO");
-    // CPath::New(mPath, (IPath**)&other->mPath);
+    CPath::New(mPath, (IPath**)&other->mPath);
     other->mStdWidth = mStdWidth;
     other->mStdHeight = mStdHeight;
     other->mScaleX = mScaleX;

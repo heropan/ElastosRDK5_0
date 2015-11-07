@@ -521,7 +521,7 @@ private:
 #endif
 
 #ifndef DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE
-#define DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE(TypeName)                                           \
+#define DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE(TypeName)                          \
 _ETL_NAMESPACE_BEGIN                                                                    \
 template<> struct Hash<TypeName *>                                                      \
 {                                                                                       \
@@ -559,7 +559,6 @@ _ETL_NAMESPACE_END
 #endif // DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE
 
 DEFINE_CONVERSION_FOR(Elastos::Droid::Animation::AnimatorSet::Node, ICloneable)
-// DEFINE_CONVERSION_FOR(Elastos::Droid::Animation::AnimatorSet::Node, IInterface)
 DEFINE_OBJECT_HASH_FUNC_FOR_ANIMATORSET_NODE(Elastos::Droid::Animation::AnimatorSet::Node)
 
 #endif  // __ELASTOS_DROID_ANIMATION_ANIMATORSET_H__

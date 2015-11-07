@@ -23,6 +23,7 @@
 #include <minikin/Layout.h>
 #include <minikin/GraphemeBreak.h>
 #include <skia/core/SkPaint.h>
+#include <skia/core/SkRasterizer.h>
 #include <skia/effects/SkBlurDrawLooper.h>
 #include <unicode/uloc.h>
 
@@ -1616,16 +1617,17 @@ ECode Paint::GetTextBounds(
 
 Int64 Paint::NativeInit()
 {
-    SkPaint* obj = new SkPaint();
+    NativePaint* obj = new NativePaint();
     DefaultSettingsForElastos(obj);
-    return (Int32)obj;
+    return reinterpret_cast<Int64>(obj);
 }
 
 Int64 Paint::NativeInitWithPaint(
-    /* [in] */ Int64 nObj)
+    /* [in] */ Int64 paintHandle)
 {
-    SkPaint* obj = new SkPaint(*(SkPaint*)nObj);
-    return (Int64)obj;
+    NativePaint* paint = reinterpret_cast<NativePaint*>(paintHandle);
+    NativePaint* obj = new NativePaint(*paint);
+    return reinterpret_cast<Int64>(obj);
 }
 
 void Paint::NativeReset(
@@ -1732,10 +1734,12 @@ Int64 Paint::NativeSetTypeface(
 }
 
 Int64 Paint::NativeSetRasterizer(
-    /* [in] */ Int64 nObj,
-    /* [in] */ Int64 rasterizer)
+    /* [in] */ Int64 objHandle,
+    /* [in] */ Int64 rasterizerHandle)
 {
-    return (Int64)((SkPaint*)nObj)->setRasterizer((SkRasterizer*)rasterizer);
+    NativePaint* obj = reinterpret_cast<NativePaint*>(objHandle);
+    SkAutoTUnref<SkRasterizer> rasterizer(GraphicsNative::RefNativeRasterizer(rasterizerHandle));
+    return reinterpret_cast<Int64>(obj->setRasterizer(rasterizer));
 }
 
 Int32 Paint::NativeGetTextAlign(

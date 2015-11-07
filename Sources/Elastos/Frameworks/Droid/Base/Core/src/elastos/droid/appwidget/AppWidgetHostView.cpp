@@ -4,7 +4,7 @@
 #include "elastos/droid/appwidget/CAppWidgetManager.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include "elastos/droid/widget/CTextView.h"
 #include "elastos/droid/os/SystemClock.h"
@@ -641,11 +641,7 @@ AutoPtr<IView> AppWidgetHostView::GetErrorView()
     CTextView::New(mContext, (ITextView**)&tv);
     tv->SetText(R::string::gadget_host_error_inflating);
     // TODO: get this color from somewhere.
-    AutoPtr<IColor> c;
-    CColor::AcquireSingleton((IColor**)&c);
-    Int32 rgb;
-    c->Argb(127, 0, 0, 0, &rgb);
-    tv->SetBackgroundColor(rgb);
+    tv->SetBackgroundColor(Color::Argb(127, 0, 0, 0));
     return IView::Probe(tv);
 }
 

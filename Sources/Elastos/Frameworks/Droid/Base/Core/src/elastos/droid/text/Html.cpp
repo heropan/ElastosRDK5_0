@@ -14,7 +14,7 @@
 // #include "elastos/droid/text/style/CForegroundColorSpan.h"
 // #include "elastos/droid/text/style/CRelativeSizeSpan.h"
 // #include "elastos/droid/text/style/CTextAppearanceSpan.h"
-// #include "elastos/droid/Graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/R.h"
@@ -28,7 +28,7 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::ITypeface;
-// using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::Style::IParagraphStyle;
 using Elastos::Droid::Text::Style::EIID_IParagraphStyle;
@@ -944,7 +944,7 @@ void HtmlToSpannedConverter::EndFont(
             else {
                 Int32 c;
                 assert(0 && "TODO");
-                // c = CColor::GetHtmlColor(f->mColor);
+                c = Color::GetHtmlColor(f->mColor);
                 if (c != -1) {
                     AutoPtr<IForegroundColorSpan> foregroundColorSpan;
                     // CForegroundColorSpan::New(c | 0xFF000000, (IForegroundColorSpan**)&foregroundColorSpan);

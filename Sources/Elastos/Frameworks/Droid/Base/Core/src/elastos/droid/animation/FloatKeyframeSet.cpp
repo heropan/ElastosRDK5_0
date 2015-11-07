@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(FloatKeyframeSet, KeyframeSet, IFloatKeyframeSet)
+CAR_INTERFACE_IMPL_2(FloatKeyframeSet, KeyframeSet, IFloatKeyframeSet, IFloatKeyframes)
 FloatKeyframeSet::FloatKeyframeSet(
     /* [in] */ ArrayOf<IFloatKeyframe*>* keyframes)
     : KeyframeSet((ArrayOf<IKeyframe*>*)keyframes)

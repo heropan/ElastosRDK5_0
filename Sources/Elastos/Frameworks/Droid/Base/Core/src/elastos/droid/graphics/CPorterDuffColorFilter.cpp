@@ -94,18 +94,22 @@ ECode CPorterDuffColorFilter::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* equals)
 {
-    assert(0 && "TODO");
-    // if (this == object) {
-    //     return true;
-    // }
-    // if (object == null || getClass() != object.getClass()) {
-    //     return false;
-    // }
-    // final PorterDuffColorFilter other = (PorterDuffColorFilter) object;
-    // if (mColor != other.mColor || mMode != other.mMode) {
-    //     return false;
-    // }
-    // return true;
+    VALIDATE_NOT_NULL(equals);
+    *equals = TRUE;
+    if (THIS_PROBE(IInterface) == IInterface::Probe(object)) {
+        return NOERROR;
+    }
+    ClassID id1, id2;
+    GetClassID(&id1);
+    if (object == NULL || id1 != (IObject::Probe(object)->GetClassID(&id2), id2)) {
+        *equals = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<IPorterDuffColorFilter> other = IPorterDuffColorFilter::Probe(object);
+    if (mColor != ((CPorterDuffColorFilter*)other.Get())->mColor || mMode != ((CPorterDuffColorFilter*)other.Get())->mMode) {
+        *equals = FALSE;
+        return NOERROR;
+    }
     return NOERROR;
 }
 
@@ -122,7 +126,8 @@ Int64 CPorterDuffColorFilter::NativeCreatePorterDuffFilter(
     /* [in] */ Int32 srcColor,
     /* [in] */ Int32 porterDuffMode)
 {
-    assert(0 && "need jni.");
+    SkPorterDuff::Mode mode = (SkPorterDuff::Mode) porterDuffMode;
+    return reinterpret_cast<Int64>(SkColorFilter::CreateModeFilter(srcColor, SkPorterDuff::ToXfermodeMode(mode)));
 }
 
 } // namespace Graphics

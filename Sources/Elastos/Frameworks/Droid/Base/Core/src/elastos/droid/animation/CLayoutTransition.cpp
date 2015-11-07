@@ -47,15 +47,14 @@ Boolean CLayoutTransition::sInit = CLayoutTransition::InitStatics();
 
 Boolean CLayoutTransition::InitStatics()
 {
-    AutoPtr<IAccelerateDecelerateInterpolator> tmp;
     assert(0 && "TODO");
-    // CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&tmp);
-    ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe(tmp);
+    // AutoPtr<CAccelerateDecelerateInterpolator> cdi;
+    // CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&cdi);
+    // ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IAccelerateDecelerateInterpolator*)cdi.Get());
 
-    AutoPtr<IDecelerateInterpolator> di;
-    assert(0 && "TODO");
-    // CDecelerateInterpolator::New((IDecelerateInterpolator**)&di);
-    DECEL_INTERPOLATOR = ITimeInterpolator::Probe(di);
+    // AutoPtr<CDecelerateInterpolator> di;
+    // CDecelerateInterpolator::NewByFriend((CDecelerateInterpolator**)&di);
+    // DECEL_INTERPOLATOR = ITimeInterpolator::Probe((IDecelerateInterpolator*)di.Get());
     sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
     sChangingAppearingInterpolator = DECEL_INTERPOLATOR;
@@ -258,15 +257,27 @@ ECode CLayoutTransition::ViewOnLayoutChangeListener::OnLayoutChange(
         AutoPtr<ArrayOf<IPropertyValuesHolder*> > oldValues;
         valueAnim->GetValues((ArrayOf<IPropertyValuesHolder*>**)&oldValues);
         for (Int32 i = 0; i < oldValues->GetLength(); ++i) {
-            AutoPtr<IPropertyValuesHolder> pvh = (*oldValues)[i];
-            SLOGGERD("CLayoutTransition", "TODO: Equals function need")
-//            AutoPtr<IKeyframeSet> keyframeSet;// = pvh.mKeyframeSet;
-//            if (keyframeSet.mFirstKeyframe == null ||
-//                    keyframeSet.mLastKeyframe == null ||
-//                    !keyframeSet.mFirstKeyframe.getValue().equals(
-//                    keyframeSet.mLastKeyframe.getValue())) {
-//                valuesDiffer = true;
-//            }
+            PropertyValuesHolder* pvh = (PropertyValuesHolder*)(*oldValues)[i];
+
+            Boolean equals = FALSE;
+            AutoPtr<IInterface> obj1;
+            AutoPtr<IInterface> obj2;
+            if (IKeyframeSet::Probe(pvh->mKeyframes) != NULL) {
+                KeyframeSet* keyframeSet = (KeyframeSet*)IKeyframeSet::Probe(pvh->mKeyframes);
+                if (keyframeSet->mFirstKeyframe == NULL || keyframeSet->mLastKeyframe == NULL) {
+                    keyframeSet->mFirstKeyframe->GetValue((IInterface**)&obj1);
+                    keyframeSet->mLastKeyframe->GetValue((IInterface**)&obj2);
+                    if (!(IObject::Probe(obj1)->Equals(obj2, &equals), equals)) {
+                        valuesDiffer = TRUE;
+                    }
+                }
+            } else {
+                pvh->mKeyframes->GetValue(0, (IInterface**)&obj1);
+                pvh->mKeyframes->GetValue(1, (IInterface**)&obj2);
+                if (!(IObject::Probe(obj1)->Equals(obj2, &equals), equals)) {
+                    valuesDiffer = TRUE;
+                }
+            }
         }
         if (!valuesDiffer) {
             return NOERROR;

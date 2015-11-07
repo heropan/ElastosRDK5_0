@@ -10,6 +10,7 @@
 #include "elastos/droid/animation/PropertyValuesHolder.h"
 #include "elastos/droid/animation/PathKeyframes.h"
 #include "elastos/droid/utility/StateSet.h"
+#include "elastos/droid/utility/Xml.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/R.h"
@@ -23,6 +24,7 @@ using Elastos::Droid::View::Animation::IInterpolator;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::PathParser;
 using Elastos::Droid::Utility::StateSet;
+using Elastos::Droid::Utility::Xml;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Logging::Slogger;
@@ -181,30 +183,9 @@ ECode AnimatorInflater::LoadStateListAnimator(
     context->GetResources((IResources**)&res);
     ec = res->GetAnimation(id, (IXmlResourceParser**)&parser);
     FAIL_GOTO(ec, error);
-    assert(0 && "TODO");
-    // ec = CreateStateListAnimatorFromXml(context, IXmlPullParser::Probe(parser),
-    //             Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), animator);
-    // } catch (XmlPullParserException ex) {
-    //     Resources.NotFoundException rnf =
-    //             new Resources.NotFoundException(
-    //                     "Can't load state list animator resource ID #0x" +
-    //                             Integer.toHexString(id)
-    //             );
-    //     rnf.initCause(ex);
-    //     throw rnf;
-    // } catch (IOException ex) {
-    //     Resources.NotFoundException rnf =
-    //             new Resources.NotFoundException(
-    //                     "Can't load state list animator resource ID #0x" +
-    //                             Integer.toHexString(id)
-    //             );
-    //     rnf.initCause(ex);
-    //     throw rnf;
-    // } finally {
-    //     if (parser != null) {
-    //         parser.close();
-    //     }
-    // }
+    ec = CreateStateListAnimatorFromXml(context, IXmlPullParser::Probe(parser),
+                Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), animator);
+
 error:
     if (parser != NULL) {
         parser->Close();
@@ -436,18 +417,15 @@ ECode AnimatorInflater::SetupObjectAnimator(
 {
     AutoPtr<IObjectAnimator> oa = IObjectAnimator::Probe(anim);
     String pathData;
-    assert(0 && "TODO");
-    // arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_pathData, &pathData);
+    arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_pathData, &pathData);
 
     // Note that if there is a pathData defined in the Object Animator,
     // valueFrom / valueTo will be ignored.
     if (pathData != NULL) {
         String propertyXName;
-        assert(0 && "TODO");
-        // arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyXName, &propertyXName);
+        arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyXName, &propertyXName);
         String propertyYName;
-        assert(0 && "TODO");
-        // arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyYName, &propertyYName);
+        arrayObjectAnimator->GetString(R::styleable::PropertyAnimator_propertyYName, &propertyYName);
 
         if (propertyXName == NULL && propertyYName == NULL) {
             // throw new InflateException(arrayObjectAnimator.getPositionDescription()
@@ -610,8 +588,7 @@ ECode AnimatorInflater::CreateAnimatorFromXml(
     /* [out] */ IAnimator** animator) /*throws XmlPullParserException, IOException */
 {
     VALIDATE_NOT_NULL(animator);
-    assert(0 && "TODO");
-    AutoPtr<IAttributeSet> set/* = Xml::AsAttributeSet(parser)*/;
+    AutoPtr<IAttributeSet> set = Xml::AsAttributeSet(parser);
     return CreateAnimatorFromXml(res, theme, parser, set, NULL, 0,
             pixelSize, animator);
 }
@@ -683,7 +660,7 @@ ECode AnimatorInflater::CreateAnimatorFromXml(
             childAnims.PushBack(*animator);
         }
     }
-    if (parent != NULL/* && childAnims != null*/) {
+    if (parent != NULL && childAnims.GetSize() > 0) {
         AutoPtr<ArrayOf<IAnimator*> > animsArray = ArrayOf<IAnimator*>::Alloc(childAnims.GetSize());
         Int32 index = 0;
         List<AutoPtr<IAnimator> >::Iterator ator = childAnims.Begin();

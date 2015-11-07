@@ -904,6 +904,8 @@ private:
      * Converts from the source Object type to the setter Object type.
      */
     AutoPtr<ITypeConverter> mConverter;
+
+    friend class CLayoutTransition;
 };
 
 } // namespace Animation

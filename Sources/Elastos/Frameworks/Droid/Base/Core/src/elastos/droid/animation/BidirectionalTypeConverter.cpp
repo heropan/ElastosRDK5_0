@@ -11,7 +11,7 @@ InvertedConverter::InvertedConverter(
     InterfaceID targetType, sourceType;
     converter->GetTargetType(&targetType);
     converter->GetSourceType(&sourceType);
-    BidirectionalTypeConverter::constructor(targetType, sourceType);
+    constructor(targetType, sourceType);
     mConverter = converter;
 }
 

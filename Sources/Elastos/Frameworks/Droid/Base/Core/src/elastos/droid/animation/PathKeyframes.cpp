@@ -1,8 +1,9 @@
 
 #include "elastos/droid/animation/PathKeyframes.h"
+#include "elastos/droid/graphics/CPointF.h"
 #include <elastos/core/Math.h>
 
-// using Elastos::Droid::Graphics::CPointF;
+using Elastos::Droid::Graphics::CPointF;
 using Elastos::Droid::Graphics::EIID_IPointF;
 using Elastos::Core::CFloat;
 using Elastos::Core::IFloat;
@@ -45,13 +46,7 @@ ECode PathKeyframes::SimpleKeyframes::Clone(
     /* [out] */ IInterface** values)
 {
     VALIDATE_NOT_NULL(values);
-    AutoPtr<IKeyframes> clone;
-    assert(0 && "TODO");
-    // try {
-    //     clone = (Keyframes) super.clone();
-    // } catch (CloneNotSupportedException e) {}
-    *values = clone;
-    REFCOUNT_ADD(*values);
+    *values = NULL;
     return NOERROR;
 }
 
@@ -173,12 +168,10 @@ ECode PathKeyframes::constructor(
     /* [in] */ IPath* path,
     /* [in] */ Float error)
 {
-    assert(0 && "TODO");
-    // CPointF::New((IPointF**)&mTempPointF);
+    CPointF::New((IPointF**)&mTempPointF);
     Boolean isEmpty = FALSE;
     if (path == NULL || (path->IsEmpty(&isEmpty), isEmpty)) {
         // throw new IllegalArgumentException("The path must not be null or empty");
-        assert(0);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return path->Approximate(error, (ArrayOf<Float>**)&mKeyframeData);
@@ -282,13 +275,7 @@ ECode PathKeyframes::Clone(
     /* [out] */ IInterface** frames)
 {
     VALIDATE_NOT_NULL(frames);
-    AutoPtr<IKeyframes> clone;
-    assert(0 && "TODO");
-    // try {
-    //     clone = (Keyframes) super.clone();
-    // } catch (CloneNotSupportedException e) {}
-    *frames = clone;
-    REFCOUNT_ADD(*frames);
+    *frames = NULL;
     return NOERROR;
 }
 

@@ -10,8 +10,7 @@ namespace Drawable {
 CAR_OBJECT_IMPL(CLayerDrawable);
 ECode CLayerDrawable::constructor()
 {
-    assert(0 && "TODO");
-    return NOERROR;
+    return LayerDrawable::constructor(NULL, NULL, NULL);
 }
 ECode CLayerDrawable::constructor(
     /* [in] */ ArrayOf<IDrawable*>* layers)

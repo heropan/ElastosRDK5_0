@@ -13,6 +13,7 @@
 #include "elastos/droid/animation/CLayoutTransition.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPointF.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/SystemProperties.h"
@@ -20,13 +21,14 @@
 #include <elastos/core/Math.h>
 #include "elastos/droid/R.h"
 
+using Elastos::Droid::Animation::CLayoutTransition;
+using Elastos::Droid::Animation::EIID_ITransitionListener;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::Animation::CLayoutTransition;
-using Elastos::Droid::Animation::EIID_ITransitionListener;
 using Elastos::Droid::View::Animation::CTransformation;
 using Elastos::Droid::View::Animation::LayoutAnimationController;
 using Elastos::Droid::View::Animation::CLayoutAnimationController;
@@ -3524,9 +3526,7 @@ void ViewGroup::OnDebugDraw(
 
     // Draw margins
     {
-        Int32 marginsColor;
-        CColor::Argb(63, 255, 0, 255, &marginsColor);
-        paint->SetColor(marginsColor);
+        paint->SetColor(Color::Argb(63, 255, 0, 255));
         paint->SetStyle(PaintStyle_FILL);
 
         OnDebugDrawMargins(canvas, paint);
@@ -3534,9 +3534,7 @@ void ViewGroup::OnDebugDraw(
 
     // Draw clip bounds
     {
-        Int32 clipColor;
-        CColor::Rgb(63, 127, 255, &clipColor);
-        paint->SetColor(clipColor);
+        paint->SetColor(Color::Rgb(63, 127, 255));
         paint->SetStyle(PaintStyle_FILL);
 
         Int32 lineLength = DipsToPixels(8);

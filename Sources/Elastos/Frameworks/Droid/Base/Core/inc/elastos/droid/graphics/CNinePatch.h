@@ -31,6 +31,10 @@ CarClass(CNinePatch), public NinePatch
 public:
     CAR_OBJECT_DECL();
 
+    CARAPI constructor(
+        /* [in] */ IBitmap* bitmap,
+        /* [in] */ ArrayOf<Byte>* chunk);
+
     /**
      * Create a drawable projection from a bitmap to nine patches.
      *

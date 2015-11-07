@@ -4,14 +4,16 @@
 #include "elastos/droid/graphics/CPorterDuffXfermode.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/content/res/CColorStateList.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/Arrays.h>
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::CColorStateList;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::CTypedArray;
 using Elastos::Utility::Arrays;
 
@@ -125,7 +127,7 @@ ECode RippleDrawable::constructor(
 
     if (color == NULL) {
         // throw new IllegalArgumentException("RippleDrawable requires a non-NULL color");
-        assert(0 && "TODO");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (content != NULL) {
@@ -133,8 +135,7 @@ ECode RippleDrawable::constructor(
     }
 
     if (mask != NULL) {
-        assert(0 && "TODO");
-        // AddLayer(mask, NULL, /*android.*/R::id::mask, 0, 0, 0, 0);
+        AddLayer(mask, NULL, /*android.*/R::id::mask, 0, 0, 0, 0);
     }
 
     SetColor(color);
@@ -381,12 +382,11 @@ ECode RippleDrawable::Inflate(
     /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
 {
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-    // Int32 size = ARRAY_SIZE(R::styleable::RippleDrawable);
-    // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::RippleDrawable, size);
+    Int32 size = ARRAY_SIZE(R::styleable::RippleDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::RippleDrawable, size);
 
-    // FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
     ECode ec = UpdateStateFromTypedArray(a);
     if (FAILED(ec)) {
         a->Recycle();
@@ -413,10 +413,9 @@ ECode RippleDrawable::SetDrawableByLayerId(
     VALIDATE_NOT_NULL(result);
     Boolean tmp = FALSE;
     if ((LayerDrawable::SetDrawableByLayerId(id, drawable, &tmp), tmp)) {
-        assert(0 && "TODO");
-        // if (id == R::id::mask) {
-        //     mMask = drawable;
-        // }
+        if (id == R::id::mask) {
+            mMask = drawable;
+        }
 
         *result = TRUE;
         return NOERROR;
@@ -445,9 +444,8 @@ ECode RippleDrawable::UpdateStateFromTypedArray(
     // Extract the theme attributes, if any.
     ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mTouchThemeAttrs);
 
-    assert(0 && "TODO");
     AutoPtr<IColorStateList> color;
-    // a->GetColorStateList(R::styleable::RippleDrawable_color, (IColorStateList**)&color);
+    a->GetColorStateList(R::styleable::RippleDrawable_color, (IColorStateList**)&color);
     if (color != NULL) {
         mState->mColor = color;
     }
@@ -458,13 +456,12 @@ ECode RippleDrawable::UpdateStateFromTypedArray(
 ECode RippleDrawable::VerifyRequiredAttributes(
     /* [in] */ ITypedArray* a) /*throws XmlPullParserException*/
 {
-    assert(0 && "TODO");
-    // if (mState->mColor == NULL && (mState->mTouchThemeAttrs == NULL
-    //         || mState->mTouchThemeAttrs[R::styleable::RippleDrawable_color] == 0)) {
-    //     // throw new XmlPullParserException(a.getPositionDescription() +
-    //     //         ": <ripple> requires a valid color attribute");
-    //     return E_XML_PULL_PARSER_EXCEPTION;
-    // }
+    if (mState->mColor == NULL && (mState->mTouchThemeAttrs == NULL
+            || mState->mTouchThemeAttrs[R::styleable::RippleDrawable_color] == 0)) {
+        // throw new XmlPullParserException(a.getPositionDescription() +
+        //         ": <ripple> requires a valid color attribute");
+        return E_XML_PULL_PARSER_EXCEPTION;
+    }
     return NOERROR;
 }
 
@@ -490,11 +487,10 @@ ECode RippleDrawable::ApplyTheme(
     }
 
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-    // Int32 size = ARRAY_SIZE(R::styleable::RippleDrawable);
-    // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::RippleDrawable, size);
-    // t->ResolveAttributes(state->mTouchThemeAttrs, layout, (ITypedArray**)&a);
+    Int32 size = ARRAY_SIZE(R::styleable::RippleDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::RippleDrawable, size);
+    ((CResources::Theme*)t)->ResolveAttribute(state->mTouchThemeAttrs, layout, (ITypedArray**)&a);
 
     // try {
     ECode ec = UpdateStateFromTypedArray(a);
@@ -666,12 +662,11 @@ ECode RippleDrawable::GetOutline(
     AutoPtr<ArrayOf<ChildDrawable*> > children = state->mChildren;
     const Int32 N = state->mNum;
     for (Int32 i = 0; i < N; i++) {
-        assert(0 && "TODO");
-        // if ((*children)[i]->mId != R::id::mask) {
-        //     (*children)[i]->mDrawable->GetOutline(outline);
-        //     Boolean empty = FALSE;
-        //     if (!(outline->IsEmpty(&empty), empty)) return NOERROR;
-        // }
+        if ((*children)[i]->mId != R::id::mask) {
+            (*children)[i]->mDrawable->GetOutline(outline);
+            Boolean empty = FALSE;
+            if (!(outline->IsEmpty(&empty), empty)) return NOERROR;
+        }
     }
     return NOERROR;
 }
@@ -779,12 +774,11 @@ Int32 RippleDrawable::DrawContentLayer(
     if ((mExitingRipplesCount > 0 || mBackground != NULL) && mMask == NULL) {
         Int32 iv = 0;
         for (Int32 i = 0; i < count; i++) {
-            assert(0 && "TODO");
-            // if ((*array)[i].mId != R::id::mask
-            //         && ((*array)[i]->mDrawable->GetOpacity(&iv), iv) != IPixelFormat::OPAQUE) {
-            //     needsLayer = TRUE;
-            //     break;
-            // }
+            if ((*array)[i]->mId != R::id::mask
+                    && ((*array)[i]->mDrawable->GetOpacity(&iv), iv) != IPixelFormat::OPAQUE) {
+                needsLayer = TRUE;
+                break;
+            }
         }
     }
 
@@ -798,10 +792,9 @@ Int32 RippleDrawable::DrawContentLayer(
 
     // Draw everything except the mask.
     for (Int32 i = 0; i < count; i++) {
-        assert(0 && "TODO");
-        // if ((*array)[i].mId != R::id::mask) {
-        //     (*array)[i]->mDrawable->Draw(canvas);
-        // }
+        if ((*array)[i]->mId != R::id::mask) {
+            (*array)[i]->mDrawable->Draw(canvas);
+        }
     }
 
     return restoreToCount;
@@ -866,12 +859,7 @@ Int32 RippleDrawable::DrawRippleLayer(
             AutoPtr<ArrayOf<Int32> > states;
             GetState((ArrayOf<Int32>**)&states);
             mState->mColor->GetColorForState(states, IColor::TRANSPARENT, &color);
-
-            AutoPtr<IColor> colorHelper;
-            CColor::AcquireSingleton((IColor**)&colorHelper);
-            Int32 alpha = 0;
-            colorHelper->Alpha(color, &alpha);
-            maskingPaint->SetAlpha(alpha / 2);
+            maskingPaint->SetAlpha(Color::Alpha(color) / 2);
 
             // TODO: We can avoid saveLayer here if we're only drawing one
             // ripple and we don't have content or a translucent mask.
@@ -1050,8 +1038,7 @@ RippleDrawable::RippleDrawable(
 void RippleDrawable::InitializeFromState()
 {
     // Initialize from constant state.
-    assert(0 && "TODO");
-    // FindDrawableByLayerId(R::id::mask, (IDrawable**)&mMask);
+    FindDrawableByLayerId(R::id::mask, (IDrawable**)&mMask);
 }
 
 } // namespace Drawable

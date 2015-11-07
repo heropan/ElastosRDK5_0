@@ -2,6 +2,9 @@
 #include "elastos/droid/graphics/NativePaint.h"
 #include "elastos/droid/graphics/CanvasProperty.h"
 #include "elastos/droid/graphics/Paint.h"
+#include "elastos/droid/internal/utility/CVirtualRefBasePtr.h"
+
+using Elastos::Droid::Internal::Utility::CVirtualRefBasePtr;
 
 namespace Elastos {
 namespace Droid {
@@ -33,16 +36,13 @@ ECode CanvasProperty::GetNativeContainer(
     /* [out] */ Int64* native)
 {
     VALIDATE_NOT_NULL(native);
-    assert(0 && "TODO");
-    // return mProperty.get();
-    return NOERROR;
+    return mProperty->Get(native);
 }
 
 CanvasProperty::CanvasProperty(
     /* [in] */ Int64 nativeContainer)
 {
-    assert(0 && "TODO");
-    // mProperty = new VirtualRefBasePtr(nativeContainer);
+    CVirtualRefBasePtr::New(nativeContainer, (IVirtualRefBasePtr**)&mProperty);
 }
 
 Int64 CanvasProperty::nCreateFloat(

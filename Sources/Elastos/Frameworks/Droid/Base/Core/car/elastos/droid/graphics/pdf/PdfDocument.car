@@ -14,7 +14,6 @@ module
     namespace Graphics {
     namespace Pdf {
 
-
     /**
      * This class represents a PDF document page. It has associated
      * a canvas on which you can draw content and is acquired by a
@@ -22,7 +21,7 @@ module
      * {@link PageInfo} instance that describes its attributes. Also
      * a page has
      */
-     interface IPdfDocumentPage {
+    interface IPdfDocumentPage {
         /**
          * Gets the {@link Canvas} of the page.
          *
@@ -174,78 +173,77 @@ module
      * </pre>
      */
     interface IPdfDocument {
+        /**
+         * Starts a page using the provided {@link PageInfo}. After the page
+         * is created you can draw arbitrary content on the page's canvas which
+         * you can get by calling {@link Page#getCanvas()}. After you are done
+         * drawing the content you should finish the page by calling
+         * {@link #finishPage(Page)}. After the page is finished you should
+         * no longer access the page or its canvas.
+         * <p>
+         * <strong>Note:</strong> Do not call this method after {@link #close()}.
+         * Also do not call this method if the last page returned by this method
+         * is not finished by calling {@link #finishPage(Page)}.
+         * </p>
+         *
+         * @param pageInfo The page info. Cannot be null.
+         * @return A blank page.
+         *
+         * @see #finishPage(Page)
+         */
+        StartPage(
+            [in] IPdfDocumentPageInfo* pageInfo,
+            [out] IPdfDocumentPage** page);
 
-    /**
-     * Starts a page using the provided {@link PageInfo}. After the page
-     * is created you can draw arbitrary content on the page's canvas which
-     * you can get by calling {@link Page#getCanvas()}. After you are done
-     * drawing the content you should finish the page by calling
-     * {@link #finishPage(Page)}. After the page is finished you should
-     * no longer access the page or its canvas.
-     * <p>
-     * <strong>Note:</strong> Do not call this method after {@link #close()}.
-     * Also do not call this method if the last page returned by this method
-     * is not finished by calling {@link #finishPage(Page)}.
-     * </p>
-     *
-     * @param pageInfo The page info. Cannot be null.
-     * @return A blank page.
-     *
-     * @see #finishPage(Page)
-     */
-    StartPage(
-        [in] IPdfDocumentPageInfo* pageInfo,
-        [out] IPdfDocumentPage** page);
+        /**
+         * Finishes a started page. You should always finish the last started page.
+         * <p>
+         * <strong>Note:</strong> Do not call this method after {@link #close()}.
+         * You should not finish the same page more than once.
+         * </p>
+         *
+         * @param page The page. Cannot be null.
+         *
+         * @see #startPage(PageInfo)
+         */
+        FinishPage(
+            [in] IPdfDocumentPage* page);
 
-    /**
-     * Finishes a started page. You should always finish the last started page.
-     * <p>
-     * <strong>Note:</strong> Do not call this method after {@link #close()}.
-     * You should not finish the same page more than once.
-     * </p>
-     *
-     * @param page The page. Cannot be null.
-     *
-     * @see #startPage(PageInfo)
-     */
-    FinishPage(
-        [in] IPdfDocumentPage* page);
+        /**
+         * Writes the document to an output stream. You can call this method
+         * multiple times.
+         * <p>
+         * <strong>Note:</strong> Do not call this method after {@link #close()}.
+         * Also do not call this method if a page returned by {@link #startPage(
+         * PageInfo)} is not finished by calling {@link #finishPage(Page)}.
+         * </p>
+         *
+         * @param out The output stream. Cannot be null.
+         *
+         * @throws IOException If an error occurs while writing.
+         */
+        WriteTo(
+            [in] IOutputStream* oStream);
 
-    /**
-     * Writes the document to an output stream. You can call this method
-     * multiple times.
-     * <p>
-     * <strong>Note:</strong> Do not call this method after {@link #close()}.
-     * Also do not call this method if a page returned by {@link #startPage(
-     * PageInfo)} is not finished by calling {@link #finishPage(Page)}.
-     * </p>
-     *
-     * @param out The output stream. Cannot be null.
-     *
-     * @throws IOException If an error occurs while writing.
-     */
-    WriteTo(
-        [in] IOutputStream* oStream);
+        /**
+         * Gets the pages of the document.
+         *
+         * @return The pages or an empty list.
+         */
+        GetPages(
+            [out] IList** list);
 
-    /**
-     * Gets the pages of the document.
-     *
-     * @return The pages or an empty list.
-     */
-    GetPages(
-        [out] IList** list);
-
-    /**
-     * Closes this document. This method should be called after you
-     * are done working with the document. After this call the document
-     * is considered closed and none of its methods should be called.
-     * <p>
-     * <strong>Note:</strong> Do not call this method if the page
-     * returned by {@link #startPage(PageInfo)} is not finished by
-     * calling {@link #finishPage(Page)}.
-     * </p>
-     */
-    Close();
+        /**
+         * Closes this document. This method should be called after you
+         * are done working with the document. After this call the document
+         * is considered closed and none of its methods should be called.
+         * <p>
+         * <strong>Note:</strong> Do not call this method if the page
+         * returned by {@link #startPage(PageInfo)} is not finished by
+         * calling {@link #finishPage(Page)}.
+         * </p>
+         */
+        Close();
     }
 
     } // namespace Pdf

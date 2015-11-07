@@ -1,11 +1,18 @@
 
 #include "elastos/droid/graphics/Typeface.h"
 #include "elastos/droid/graphics/CTypeface.h"
+#include "elastos/droid/graphics/FontFamily.h"
+#include "elastos/droid/graphics/TypefaceImpl.h"
+#include <elastos/utility/logging/Logger.h>
 #include <skia/core/SkStream.h>
 #include <skia/core/SkTypeface.h>
 #include <androidfw/AssetManager.h>
 
 using Elastos::IO::CFile;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IInputStream;
+using Elastos::Utility::Logging::Logger;
 
 extern void skia_set_text_gamma(float, float);
 
@@ -27,8 +34,8 @@ AutoPtr<ITypeface> Typeface::MONOSPACE;
 AutoPtr< ArrayOf<ITypeface*> > Typeface::sDefaults = StaticInit();
 HashMap<Int32, AutoPtr<Typeface::TypefaceMap> > Typeface::sTypefaceCache(3);
 AutoPtr<ITypeface> Typeface::sDefaultTypeface;
-AutoPtr<IMap> Typeface::sSystemFontMap;
-AutoPtr<ArrayOf<AutoPtr<IFontFamily> > > Typeface::sFallbackFonts;
+HashMap<String, AutoPtr<ITypeface> > Typeface::sSystemFontMap;
+AutoPtr<ArrayOf<IFontFamily*> > Typeface::sFallbackFonts;
 
 AutoPtr< ArrayOf<ITypeface*> > Typeface::StaticInit()
 {
@@ -91,29 +98,35 @@ ECode Typeface::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* e)
 {
-    assert(0 && "TODO");
-    // if (this == o) return true;
-    // if (o == null || getClass() != o.getClass()) return false;
+    VALIDATE_NOT_NULL(e);
+    if (THIS_PROBE(IInterface) == IInterface::Probe(o)) {
+        *e = TRUE;
+        return NOERROR;
+    }
+    if (o == NULL/* || getClass() != o.getClass()*/) {
+        *e = FALSE;
+        return NOERROR;
+    }
 
-    // Typeface typeface = (Typeface) o;
+    Typeface* typeface = (Typeface*) ITypeface::Probe(o);
 
-    // return mStyle == typeface.mStyle && native_instance == typeface.native_instance;
+    *e = mStyle == typeface->mStyle && mNativeInstance == typeface->mNativeInstance;
     return NOERROR;
 }
 
 ECode Typeface::GetHashCode(
     /* [out] */ Int32* code)
 {
-    assert(0 && "TODO");
+    VALIDATE_NOT_NULL(code);
     /*
      * Modified method for hashCode with long native_instance derived from
      * http://developer.android.com/reference/java/lang/Object.html
      */
-    // int result = 17;
-    // result = 31 * result + (int) (native_instance ^ (native_instance >>> 32));
-    // result = 31 * result + mStyle;
-    // return result;
-     return NOERROR;
+    Int32 result = 17;
+    result = 31 * result + (Int32) (mNativeInstance ^ (mNativeInstance >> 32));
+    result = 31 * result + mStyle;
+    *code = result;
+    return NOERROR;
 }
 
 ECode Typeface::Create(
@@ -123,10 +136,14 @@ ECode Typeface::Create(
 {
     VALIDATE_NOT_NULL(typeface);
 
-    assert(0 && "TODO");
-    // if (sSystemFontMap != NULL) {
-    //     return create(sSystemFontMap.get(familyName), style);
-    // }
+    if (sSystemFontMap.GetSize() > 0) {
+        HashMap<String, AutoPtr<ITypeface> >::Iterator ator = sSystemFontMap.Find(familyName);
+        AutoPtr<ITypeface> t;
+        if (ator != sSystemFontMap.End()) {
+            t = ator->mSecond;
+        }
+        return Create(t, style, typeface);
+    }
     *typeface = NULL;
     return NOERROR;
 }
@@ -203,14 +220,17 @@ ECode Typeface::CreateFromAsset(
     /* [in] */ const String& path,
     /* [out] */ ITypeface** typeface)
 {
-    assert(0 && "TODO");
-    // if (sFallbackFonts != null) {
-    //     FontFamily fontFamily = new FontFamily();
-    //     if (fontFamily.addFontFromAsset(mgr, path)) {
-    //         FontFamily[] families = { fontFamily };
-    //         return createFromFamiliesWithDefault(families);
-    //     }
-    // }
+    VALIDATE_NOT_NULL(typeface);
+    if (sFallbackFonts != NULL) {
+        AutoPtr<IFontFamily> fontFamily = new FontFamily();
+        Boolean result = FALSE;
+        if (fontFamily->AddFontFromAsset(mgr, path, &result), result) {
+            AutoPtr<ArrayOf<IFontFamily*> > families = ArrayOf<IFontFamily*>::Alloc(1);
+            families->Set(0, fontFamily);
+            return CreateFromFamiliesWithDefault(families, typeface);
+        }
+    }
+    *typeface = NULL;
     // throw new RuntimeException("Font asset not found " + path);
     return E_RUNTIME_EXCEPTION;
 }
@@ -228,45 +248,45 @@ ECode Typeface::CreateFromFile(
     /* [in]*/ const String& path,
     /* [out] */ ITypeface** typeface)
 {
-    assert(0 && "TODO");
-    // if (sFallbackFonts != null) {
-    //     FontFamily fontFamily = new FontFamily();
-    //     if (fontFamily.addFont(path)) {
-    //         FontFamily[] families = { fontFamily };
-    //         return createFromFamiliesWithDefault(families);
-    //     }
-    // }
+    VALIDATE_NOT_NULL(typeface);
+    if (sFallbackFonts != NULL) {
+        AutoPtr<IFontFamily> fontFamily = new FontFamily();
+        Boolean result = FALSE;
+        if (fontFamily->AddFont(path, &result), result) {
+            AutoPtr<ArrayOf<IFontFamily*> > families = ArrayOf<IFontFamily*>::Alloc(1);
+            families->Set(0, fontFamily);
+            return CreateFromFamiliesWithDefault(families, typeface);
+        }
+    }
+    *typeface = NULL;
     // throw new RuntimeException("Font not found " + path);
     return E_RUNTIME_EXCEPTION;
 }
 
 ECode Typeface::CreateFromFamilies(
-    /* [in]*/ ArrayOf<IFontFamily>* families,
+    /* [in]*/ ArrayOf<IFontFamily*>* families,
     /* [out]*/ ITypeface** typeface)
 {
-    assert(0 && "TODO");
-    // long[] ptrArray = new long[families.length];
-    // for (int i = 0; i < families.length; i++) {
-    //     ptrArray[i] = families[i].mNativePtr;
-    // }
-    // return new Typeface(nativeCreateFromArray(ptrArray));
-    return NOERROR;
+    AutoPtr<ArrayOf<Int64> > ptrArray = ArrayOf<Int64>::Alloc(families->GetLength());
+    for (Int32 i = 0; i < families->GetLength(); i++) {
+        (*ptrArray)[i] = ((FontFamily*)(*families)[i])->mNativePtr;
+    }
+    return CTypeface::New(NativeCreateFromArray(ptrArray), typeface);
 }
 
 ECode Typeface::CreateFromFamiliesWithDefault(
-    /* [in]*/ ArrayOf<IFontFamily>* families,
+    /* [in]*/ ArrayOf<IFontFamily*>* families,
     /* [out]*/ ITypeface** typeface)
 {
-    assert(0 && "TODO");
-    // long[] ptrArray = new long[families.length + sFallbackFonts.length];
-    // for (int i = 0; i < families.length; i++) {
-    //     ptrArray[i] = families[i].mNativePtr;
-    // }
-    // for (int i = 0; i < sFallbackFonts.length; i++) {
-    //     ptrArray[i + families.length] = sFallbackFonts[i].mNativePtr;
-    // }
-    // return new Typeface(nativeCreateFromArray(ptrArray));
-    return NOERROR;
+    Int32 len = families->GetLength();
+    AutoPtr<ArrayOf<Int64> > ptrArray = ArrayOf<Int64>::Alloc(len + sFallbackFonts->GetLength());
+    for (Int32 i = 0; i < len; i++) {
+        (*ptrArray)[i] = ((FontFamily*)(*families)[i])->mNativePtr;
+    }
+    for (Int32 i = 0; i < sFallbackFonts->GetLength(); i++) {
+        (*ptrArray)[i + len] = ((FontFamily*)(*sFallbackFonts)[i])->mNativePtr;
+    }
+    return CTypeface::New(NativeCreateFromArray(ptrArray), typeface);
 }
 
 ECode Typeface::constructor(
@@ -289,45 +309,56 @@ void Typeface::SetDefault(
 }
 
 Int64 Typeface::NativeCreateFromTypeface(
-    /* [in] */ Int64 native_instance,
+    /* [in] */ Int64 familyHandle,
     /* [in] */ Int32 style)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    TypefaceImpl* family = reinterpret_cast<TypefaceImpl*>(familyHandle);
+    TypefaceImpl* face = TypefaceImpl_createFromTypeface(family, (SkTypeface::Style)style);
+    // TODO: the following logic shouldn't be necessary, the above should always succeed.
+    // Try to find the closest matching font, using the standard heuristic
+    if (NULL == face) {
+        face = TypefaceImpl_createFromTypeface(family, (SkTypeface::Style)(style ^ SkTypeface::kItalic));
+    }
+    for (int i = 0; NULL == face && i < 4; i++) {
+        face = TypefaceImpl_createFromTypeface(family, (SkTypeface::Style)i);
+    }
+    return reinterpret_cast<Int64>(face);
 }
 
 Int64 Typeface::NativeCreateWeightAlias(
-    /* [in] */ Int64 native_instance,
+    /* [in] */ Int64 familyHandle,
     /* [in] */ Int32 weight)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    TypefaceImpl* family = reinterpret_cast<TypefaceImpl*>(familyHandle);
+    TypefaceImpl* face = TypefaceImpl_createWeightAlias(family, weight);
+    return reinterpret_cast<Int64>(face);
 }
 
 void Typeface::NativeUnref(
-    /* [in] */ Int64 native_instance)
+    /* [in] */ Int64 faceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    TypefaceImpl* face = reinterpret_cast<TypefaceImpl*>(faceHandle);
+    TypefaceImpl_unref(face);
 }
 
 Int32 Typeface::NativeGetStyle(
-    /* [in] */ Int64 native_instance)
+    /* [in] */ Int64 faceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    TypefaceImpl* face = reinterpret_cast<TypefaceImpl*>(faceHandle);
+    return TypefaceImpl_getStyle(face);
 }
 
 Int64 Typeface::NativeCreateFromArray(
     /* [in] */ ArrayOf<Int64>* familyArray)
 {
-    assert(0 && "TODO: need jni codes.");
-    return -1;
+    return reinterpret_cast<Int64>(TypefaceImpl_createFromFamilies(familyArray->GetPayload(), familyArray->GetLength()));
 }
 
 void Typeface::NativeSetDefault(
-    /* [in] */ Int64 native_instance)
+    /* [in] */ Int64 faceHandle)
 {
-    assert(0 && "TODO: need jni codes.");
+    TypefaceImpl* face = reinterpret_cast<TypefaceImpl*>(faceHandle);
+    return TypefaceImpl_setDefault(face);
 }
 
 class AssetStream : public SkStream
@@ -403,66 +434,110 @@ static float pinGamma(float gamma)
     return gamma;
 }
 
+AutoPtr<IFontFamily> Typeface::MakeFamilyFromParsed(
+    /* [in] */ FontListParser::Family* family)
+{
+    AutoPtr<FontFamily> fontFamily = new FontFamily(family->mLang, family->mVariant);
+    List<FontListParser::Font*>::Iterator ator = family->mFonts->Begin();
+    Boolean result = FALSE;
+    for (; ator != family->mFonts->End(); ++ator) {
+        AutoPtr<FontListParser::Font> font = *ator;
+        fontFamily->AddFontWeightStyle(font->mFontName, font->mWeight, font->mIsItalic, &result);
+    }
+    return fontFamily;
+}
+
 void Typeface::Init()
 {
-    assert(0 && "TODO");
-    // // Load font config and initialize Minikin state
-    // File systemFontConfigLocation = getSystemFontConfigLocation();
-    // File configFilename = new File(systemFontConfigLocation, FONTS_CONFIG);
+    // Load font config and initialize Minikin state
+    AutoPtr<IFile> systemFontConfigLocation = GetSystemFontConfigLocation();
+    AutoPtr<IFile> configFilename;
+    CFile::New(systemFontConfigLocation, FONTS_CONFIG, (IFile**)&configFilename);
     // try {
-    //     FileInputStream fontsIn = new FileInputStream(configFilename);
-    //     FontListParser.Config fontConfig = FontListParser.parse(fontsIn);
+    ECode ec = NOERROR;
+    Int32 i = 0;
+    List<IFontFamily*> familyList;
+    AutoPtr<ITypeface> tmp;
+    List<IFontFamily*>::Iterator iter;
+    HashMap<String, AutoPtr<ITypeface> >::Iterator sfIter;
+    List<FontListParser::Alias*>::Iterator aIter;
+    List<FontListParser::Family*>::Iterator ator;
+    AutoPtr<FontListParser::Config> fontConfig;
+    AutoPtr<IFileInputStream> fontsIn;
+    ec = CFileInputStream::New(configFilename, (IFileInputStream**)&fontsIn);
+    FAIL_GOTO(ec, Error);
+    ec = FontListParser::Parse(IInputStream::Probe(fontsIn), (FontListParser::Config**)&fontConfig);
+    FAIL_GOTO(ec, Error);
 
-    //     List<FontFamily> familyList = new ArrayList<FontFamily>();
-    //     // Note that the default typeface is always present in the fallback list;
-    //     // this is an enhancement from pre-Minikin behavior.
-    //     for (int i = 0; i < fontConfig.families.size(); i++) {
-    //         Family f = fontConfig.families.get(i);
-    //         if (i == 0 || f.name == null) {
-    //             familyList.add(makeFamilyFromParsed(f));
-    //         }
-    //     }
-    //     sFallbackFonts = familyList.toArray(new FontFamily[familyList.size()]);
-    //     setDefault(Typeface.createFromFamilies(sFallbackFonts));
+    // Note that the default typeface is always present in the fallback list;
+    // this is an enhancement from pre-Minikin behavior.
+    ator = fontConfig->mFamilies.Begin();
+    for (; ator != fontConfig->mFamilies.End(); ++ator, i++) {
+        AutoPtr<FontListParser::Family> f = *ator;
+        if (i == 0 || f->mName == NULL) {
+            familyList.PushBack(MakeFamilyFromParsed(f));
+        }
+    }
+    sFallbackFonts = ArrayOf<IFontFamily*>::Alloc(familyList.GetSize());
+    iter = familyList.Begin();
+    for (i = 0; iter != familyList.End(); ++iter, i++) {
+        sFallbackFonts->Set(i, *iter);
+    }
 
-    //     Map<String, Typeface> systemFonts = new HashMap<String, Typeface>();
-    //     for (int i = 0; i < fontConfig.families.size(); i++) {
-    //         Typeface typeface;
-    //         Family f = fontConfig.families.get(i);
-    //         if (f.name != null) {
-    //             if (i == 0) {
-    //                 // The first entry is the default typeface; no sense in
-    //                 // duplicating the corresponding FontFamily.
-    //                 typeface = sDefaultTypeface;
-    //             } else {
-    //                 FontFamily fontFamily = makeFamilyFromParsed(f);
-    //                 FontFamily[] families = { fontFamily };
-    //                 typeface = Typeface.createFromFamiliesWithDefault(families);
-    //             }
-    //             systemFonts.put(f.name, typeface);
-    //         }
-    //     }
-    //     for (FontListParser.Alias alias : fontConfig.aliases) {
-    //         Typeface base = systemFonts.get(alias.toName);
-    //         Typeface newFace = base;
-    //         int weight = alias.weight;
-    //         if (weight != 400) {
-    //             newFace = new Typeface(nativeCreateWeightAlias(base.native_instance, weight));
-    //         }
-    //         systemFonts.put(alias.name, newFace);
-    //     }
-    //     sSystemFontMap = systemFonts;
+    ec = Typeface::CreateFromFamilies(sFallbackFonts, (ITypeface**)&tmp);
+    FAIL_GOTO(ec, Error);
+    SetDefault(tmp);
 
-    // } catch (RuntimeException e) {
-    //     Log.w(TAG, "Didn't create default family (most likely, non-Minikin build)", e);
-    //     // TODO: normal in non-Minikin case, remove or make error when Minikin-only
-    // } catch (FileNotFoundException e) {
-    //     Log.e(TAG, "Error opening " + configFilename);
-    // } catch (IOException e) {
-    //     Log.e(TAG, "Error reading " + configFilename);
-    // } catch (XmlPullParserException e) {
-    //     Log.e(TAG, "XML parse exception for " + configFilename);
-    // }
+    ator = fontConfig->mFamilies.Begin();
+    i = 0;
+    for (; ator != fontConfig->mFamilies.End(); ++ator, i++) {
+        AutoPtr<ITypeface> typeface;
+        AutoPtr<FontListParser::Family> f = *ator;
+        if (f->mName != NULL) {
+            if (i == 0) {
+                // The first entry is the default typeface; no sense in
+                // duplicating the corresponding FontFamily.
+                typeface = sDefaultTypeface;
+            } else {
+                AutoPtr<IFontFamily> fontFamily = MakeFamilyFromParsed(f);
+                AutoPtr<ArrayOf<IFontFamily*> > families = ArrayOf<IFontFamily*>::Alloc(1);
+                families->Set(0, fontFamily);
+                Typeface::CreateFromFamiliesWithDefault(families, (ITypeface**)&typeface);
+            }
+            sSystemFontMap[f->mName] = typeface;
+        }
+    }
+
+    aIter = fontConfig->mAliases.Begin();
+    for (; aIter != fontConfig->mAliases.End(); ++aIter) {
+        AutoPtr<FontListParser::Alias> alias = *aIter;
+        sfIter = sSystemFontMap.Find(alias->mToName);
+        AutoPtr<ITypeface> base;
+        if (sfIter != sSystemFontMap.End()) {
+            base = sfIter->mSecond;
+        }
+        AutoPtr<ITypeface> newFace = base;
+        Int32 weight = alias->mWeight;
+        if (weight != 400) {
+            CTypeface::New(NativeCreateWeightAlias(((Typeface*)base.Get())->mNativeInstance, weight), (ITypeface**)&newFace);
+        }
+        sSystemFontMap[alias->mName] = newFace;
+    }
+    return;
+
+Error:
+    String filename;
+    configFilename->GetName(&filename);
+    if (E_RUNTIME_EXCEPTION == ec) {
+        Logger::W(TAG, String("Didn't create default family (most likely, non-Minikin build)"));
+        // TODO: normal in non-Minikin case, remove or make error when Minikin-only
+    } else if (E_FILE_NOT_FOUND_EXCEPTION == ec) {
+        Logger::E(TAG, String("Error opening: %s"), filename.string());
+    } else if (E_IO_EXCEPTION == ec) {
+        Logger::E(TAG, String("Error reading: %s"), filename.string());
+    } else if (E_XML_PULL_PARSER_EXCEPTION == ec) {
+        Logger::E(TAG, String("XML parse exception for: %s"), filename.string());
+    }
 }
 
 AutoPtr<IFile> Typeface::GetSystemFontConfigLocation()

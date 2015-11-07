@@ -273,7 +273,7 @@ ECode Animator::Reverse()
 }
 
 ECode Animator::SetAllowRunningAsynchronously(
-        /* [in] */ Boolean mayRunAsync)
+    /* [in] */ Boolean mayRunAsync)
 {
     // It is up to subclasses to support this, if they can.
     return NOERROR;

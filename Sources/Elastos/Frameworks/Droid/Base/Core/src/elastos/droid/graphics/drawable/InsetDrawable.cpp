@@ -4,11 +4,13 @@
 #include "elastos/droid/graphics/drawable/CInsetDrawable.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -205,7 +207,6 @@ ECode InsetDrawable::UpdateStateFromTypedArray(
 
     Int32 N = 0, inset = 0, attr = 0;;
     AutoPtr<IDrawable> dr;
-    assert(0 && "TODO");
     FAIL_RETURN(a->GetIndexCount(&N));
     for (Int32 i = 0; i < N; i++) {
         attr = 0;
@@ -219,15 +220,15 @@ ECode InsetDrawable::UpdateStateFromTypedArray(
                     dr->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
                 }
                 break;
-            // case R::styleable::InsetDrawable_inset:
-            //     FAIL_RETURN(a->GetDimensionPixelOffset(attr, Elastos::Core::Math::INT32_MIN_VALUE, &inset));
-            //     if (inset != Elastos::Core::Math::INT32_MIN_VALUE) {
-            //         state->mInsetLeft = inset;
-            //         state->mInsetTop = inset;
-            //         state->mInsetRight = inset;
-            //         state->mInsetBottom = inset;
-            //     }
-            //     break;
+            case R::styleable::InsetDrawable_inset:
+                FAIL_RETURN(a->GetDimensionPixelOffset(attr, Elastos::Core::Math::INT32_MIN_VALUE, &inset));
+                if (inset != Elastos::Core::Math::INT32_MIN_VALUE) {
+                    state->mInsetLeft = inset;
+                    state->mInsetTop = inset;
+                    state->mInsetRight = inset;
+                    state->mInsetBottom = inset;
+                }
+                break;
             case R::styleable::InsetDrawable_insetLeft:
                 FAIL_RETURN(a->GetDimensionPixelOffset(attr, state->mInsetLeft, &state->mInsetLeft));
                 break;
@@ -259,8 +260,7 @@ ECode InsetDrawable::ApplyTheme(
     Int32 size = ARRAY_SIZE(R::styleable::InsetDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::InsetDrawable, size);
-    assert(0 && "TODO");
-    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+    ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
     // try {
     if (FAILED(UpdateStateFromTypedArray(a))) {
         a->Recycle();

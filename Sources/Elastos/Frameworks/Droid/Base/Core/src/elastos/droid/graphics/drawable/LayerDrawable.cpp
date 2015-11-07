@@ -4,10 +4,12 @@
 #include "elastos/droid/graphics/drawable/CLayerDrawable.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::R;
 
@@ -282,9 +284,8 @@ void LayerDrawable::UpdateStateFromTypedArray(
 
     a->GetInt32(R::styleable::LayerDrawable_opacity, mOpacityOverride, &mOpacityOverride);
 
-    assert(0 && "TODO");
-    // a->GetBoolean(R::styleable::LayerDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
-    // a->GetInteger(R::styleable::LayerDrawable_paddingMode, state->mPaddingMode, &state->mPaddingMode);
+    a->GetBoolean(R::styleable::LayerDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
+    a->GetInteger(R::styleable::LayerDrawable_paddingMode, state->mPaddingMode, &state->mPaddingMode);
 }
 
 ECode LayerDrawable::InflateLayers(
@@ -387,8 +388,7 @@ ECode LayerDrawable::ApplyTheme(
         Int32 size = ARRAY_SIZE(R::styleable::LayerDrawable);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::LayerDrawable, size);
-        assert(0 && "TODO");
-        // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
         UpdateStateFromTypedArray(a);
         a->Recycle();
     }
@@ -403,8 +403,7 @@ ECode LayerDrawable::ApplyTheme(
             Int32 size = ARRAY_SIZE(R::styleable::LayerDrawableItem);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::LayerDrawableItem, size);
-            assert(0 && "TODO");
-            // t->ResolveAttributes(layer->mThemeAttrs, layout, (ITypedArray**)&a);
+            ((CResources::Theme*)t)->ResolveAttribute(layer->mThemeAttrs, layout, (ITypedArray**)&a);
             UpdateLayerFromTypedArray(layer, a);
             a->Recycle();
         }

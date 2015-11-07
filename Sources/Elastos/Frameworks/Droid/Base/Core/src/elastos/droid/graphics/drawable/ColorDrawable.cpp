@@ -2,10 +2,14 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/ColorDrawable.h"
 #include "elastos/droid/graphics/drawable/CColorDrawable.h"
-// #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/content/res/CResources.h"
+#include "elastos/droid/content/res/CTypedArray.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::CTypedArray;
 
 namespace Elastos {
 namespace Droid {
@@ -288,8 +292,7 @@ void ColorDrawable::UpdateStateFromTypedArray(
     state->mChangingConfigurations |= (a->GetChangingConfigurations(&value), value);
 
     // Extract the theme attributes, if any.
-    assert(0 && "TODO");
-    // a->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
+    ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
 
     state->mBaseColor = (a->GetColor(R::styleable::ColorDrawable_color, state->mBaseColor, &value), value);
     state->mUseColor = state->mBaseColor;
@@ -310,8 +313,7 @@ ECode ColorDrawable::ApplyTheme(
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ColorDrawable, size);
 
-    assert(0 && "TODO");
-    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a));
+    ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
     UpdateStateFromTypedArray(a);
     return a->Recycle();
 }
@@ -327,8 +329,7 @@ ECode ColorDrawable::GetConstantState(
 
 ECode ColorDrawable::constructor()
 {
-    assert(0 && "TODO");
-    // CPaint::New((IPaint**)&mPaint);
+    CPaint::New((IPaint**)&mPaint);
     mColorState = new ColorState();
     return NOERROR;
 }
@@ -336,8 +337,7 @@ ECode ColorDrawable::constructor()
 ECode ColorDrawable::constructor(
     /* [in] */ Int32 color)
 {
-    assert(0 && "TODO");
-    // CPaint::New((IPaint**)&mPaint);
+    CPaint::New((IPaint**)&mPaint);
     mColorState = new ColorState();
     SetColor(color);
     return NOERROR;
@@ -348,8 +348,7 @@ ECode ColorDrawable::constructor(
     /* [in] */ IResources* res,
     /* [in] */ IResourcesTheme* theme)
 {
-    assert(0 && "TODO");
-    // CPaint::New((IPaint**)&mPaint);
+    CPaint::New((IPaint**)&mPaint);
     Boolean can = FALSE;
     if (theme != NULL && (state->CanApplyTheme(&can), can)) {
         mColorState = new ColorState((ColorState*)state);

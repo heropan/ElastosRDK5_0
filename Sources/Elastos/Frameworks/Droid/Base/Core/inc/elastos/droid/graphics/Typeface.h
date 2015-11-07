@@ -3,15 +3,15 @@
 #define __ELASTOS_DROID_GRAPHICS_TYPEFACE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Core_server.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "elastos/droid/graphics/FontListParser.h"
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Core::Object;
+using Elastos::IO::IFile;
 using Elastos::Utility::IMap;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {
@@ -132,7 +132,7 @@ public:
      * @hide
      */
     static CARAPI CreateFromFamilies(
-        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [in]*/ ArrayOf<IFontFamily*>* families,
         /* [out]*/ ITypeface** typeface);
 
     /**
@@ -143,7 +143,7 @@ public:
      * @hide
      */
     static CARAPI CreateFromFamiliesWithDefault(
-        /* [in]*/ ArrayOf<IFontFamily>* families,
+        /* [in]*/ ArrayOf<IFontFamily*>* families,
         /* [out]*/ ITypeface** typeface);
 
 protected:
@@ -181,15 +181,8 @@ private:
 
     static CARAPI_(AutoPtr< ArrayOf<ITypeface*> >) StaticInit();
 
-    // static CARAPI_(AutoPtr<IFontFamily>) MakeFamilyFromParsed(
-    //     /* [in] */ FontListParser.Family family)
-    // {
-    //     FontFamily fontFamily = new FontFamily(family.lang, family.variant);
-    //     for (FontListParser.Font font : family.fonts) {
-    //         fontFamily.addFontWeightStyle(font.fontName, font.weight, font.isItalic);
-    //     }
-    //     return fontFamily;
-    // }
+    static CARAPI_(AutoPtr<IFontFamily>) MakeFamilyFromParsed(
+        /* [in] */ FontListParser::Family* family);
 
     /*
      * (non-Javadoc)
@@ -224,8 +217,8 @@ public:
     static HashMap<Int32, AutoPtr<TypefaceMap> > sTypefaceCache;
 
     static AutoPtr<ITypeface> sDefaultTypeface;
-    static AutoPtr<IMap> sSystemFontMap;
-    static AutoPtr<ArrayOf<AutoPtr<IFontFamily> > > sFallbackFonts;
+    static HashMap<String, AutoPtr<ITypeface> > sSystemFontMap;
+    static AutoPtr<ArrayOf<IFontFamily*> > sFallbackFonts;
 
     static const String FONTS_CONFIG;
 

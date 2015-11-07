@@ -21,16 +21,22 @@
 #include "elastos/droid/graphics/drawable/CScaleDrawable.h"
 #include "elastos/droid/graphics/drawable/CRotateDrawable.h"
 #include "elastos/droid/graphics/drawable/CInsetDrawable.h"
+#include "elastos/droid/graphics/drawable/CAnimatedStateListDrawable.h"
+#include "elastos/droid/graphics/drawable/CAnimatedVectorDrawable.h"
+#include "elastos/droid/graphics/drawable/CRippleDrawable.h"
+#include "elastos/droid/graphics/drawable/CVectorDrawable.h"
+#include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/utility/StateSet.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
 
+using Elastos::Droid::Graphics::PorterDuffMode_NONE;
+using Elastos::Droid::Content::Res::CColorStateList;
 using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::R;
-using Elastos::Droid::Graphics::PorterDuffMode_NONE;
 
 namespace Elastos {
 namespace Droid {
@@ -300,8 +306,7 @@ ECode Drawable::SetTint(
     /* [in] */ Int32 tint)
 {
     AutoPtr<IColorStateList> list;
-    assert(0 && "TODO");
-    // CColorStateList::ValueOf(tint, (IColorStateList**)&list);
+    CColorStateList::ValueOf(tint, (IColorStateList**)&list);
     return SetTintList(list);
 }
 
@@ -330,8 +335,7 @@ ECode Drawable::SetColorFilter(
     /* [in] */ PorterDuffMode mode)
 {
     AutoPtr<IPorterDuffColorFilter> filter;
-    assert(0 && "TODO");
-    // CPorterDuffColorFilter::New(color, mode, (IPorterDuffColorFilter**)&filter);
+    CPorterDuffColorFilter::New(color, mode, (IPorterDuffColorFilter**)&filter);
     return SetColorFilter(IColorFilter::Probe(filter));
 }
 
@@ -611,8 +615,7 @@ ECode Drawable::GetOpticalInsets(
     /* [out] */ IInsets** sets)
 {
     VALIDATE_NOT_NULL(sets);
-    assert(0 && "TODO");
-    // *sets = Insets::NONE;
+    *sets = Insets::NONE;
     REFCOUNT_ADD(*sets);
     return NOERROR;
 }
@@ -700,8 +703,7 @@ ECode Drawable::CreateFromResourceStream(
     // drawn to the screen.
     AutoPtr<IBitmapFactoryOptions> opts = _opts;
     if (opts == NULL) {
-        assert(0 && "TODO");
-        // CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&opts);
+        CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&opts);
     }
 
     if (res != NULL) {
@@ -718,8 +720,7 @@ ECode Drawable::CreateFromResourceStream(
 
     AutoPtr<IBitmap> bm;
     AutoPtr<IBitmapFactory> factory;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     FAIL_RETURN(factory->DecodeResourceStream(
             res, value, is, pad, opts, (IBitmap**)&bm));
     if (bm != NULL) {
@@ -811,8 +812,7 @@ ECode Drawable::CreateFromXmlInner(
         FAIL_RETURN(CLevelListDrawable::New((ILevelListDrawable**)drawable));
     }
     else if (name.Equals("animated-selector")) {
-        assert(0 && "TODO");
-        // FAIL_RETURN(CAnimatedStateListDrawable::New((IAnimatedStateListDrawable**)drawable));
+        FAIL_RETURN(CAnimatedStateListDrawable::New((IAnimatedStateListDrawable**)drawable));
     }
     else if (name.Equals("layer-list")) {
         FAIL_RETURN(CLayerDrawable::New((ILayerDrawable**)drawable));
@@ -821,8 +821,7 @@ ECode Drawable::CreateFromXmlInner(
         FAIL_RETURN(CTransitionDrawable::New((ITransitionDrawable**)drawable));
     }
     else if (name.Equals("ripple")) {
-        assert(0 && "TODO");
-        // CRippleDrawable::New((IRippleDrawable**)drawable);
+        CRippleDrawable::New((IRippleDrawable**)drawable);
     }
     else if (name.Equals("color")) {
         FAIL_RETURN(CColorDrawable::New((IColorDrawable**)drawable));
@@ -831,12 +830,10 @@ ECode Drawable::CreateFromXmlInner(
         FAIL_RETURN(CGradientDrawable::New((IGradientDrawable**)drawable));
     }
     else if (name.Equals("vector")) {
-        assert(0 && "TODO");
-        // CVectorDrawable::New((IVectorDrawable**)drawable);
+        CVectorDrawable::New((IVectorDrawable**)drawable);
     }
     else if (name.Equals("animated-vector")) {
-        assert(0 && "TODO");
-        // CAnimatedVectorDrawable::New((IAnimatedVectorDrawable**)drawable);
+        CAnimatedVectorDrawable::New((IAnimatedVectorDrawable**)drawable);
     }
     else if (name.Equals("scale")) {
         FAIL_RETURN(CScaleDrawable::New((IScaleDrawable**)drawable));
@@ -896,8 +893,7 @@ ECode Drawable::CreateFromPath(
     // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, pathName);
     // try {
     AutoPtr<IBitmapFactory> factory;
-    assert(0 && "TODO");
-    // FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
+    FAIL_RETURN(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
     AutoPtr<IBitmap> bm;
     FAIL_RETURN(factory->DecodeFile(pathName, (IBitmap**)&bm));
     if (bm != NULL) {
@@ -1008,14 +1004,12 @@ AutoPtr<IPorterDuffColorFilter> Drawable::UpdateTintFilter(
     tint->GetColorForState(state, IColor::TRANSPARENT, &color);
     if (tintFilter == NULL) {
         AutoPtr<IPorterDuffColorFilter> filter;
-        assert(0 && "TODO");
-        // CPorterDuffColorFilter::New(color, tintMode, (IPorterDuffColorFilter**)&filter);
+        CPorterDuffColorFilter::New(color, tintMode, (IPorterDuffColorFilter**)&filter);
         return filter;
     }
 
-    assert(0 && "TODO");
-    // tintFilter->SetColor(color);
-    // tintFilter->SetMode(tintMode);
+    ((CPorterDuffColorFilter*)tintFilter)->SetColor(color);
+    ((CPorterDuffColorFilter*)tintFilter)->SetMode(tintMode);
     return tintFilter;
 }
 

@@ -7,17 +7,21 @@
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CPathMeasure.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Logger.h>
 #include <math.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::Utility::ILayoutDirection;
@@ -593,11 +597,9 @@ void VectorDrawable::VGroup::Inflate(
     /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = 0;
-    assert(0 && "TODO");
-    // size = ARRAY_SIZE(R::styleable::VectorDrawableGroup);
+    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawableGroup);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::VectorDrawableGroup, size);
+    layout->Copy(R::styleable::VectorDrawableGroup, size);
     ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a);
     UpdateStateFromTypedArray(a);
     a->Recycle();
@@ -613,17 +615,16 @@ void VectorDrawable::VGroup::UpdateStateFromTypedArray(
 
     // Extract the theme attributes, if any.
     ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&mThemeAttrs);
-    assert(0 && "TODO");
-    // a->GetFloat(R::styleable::VectorDrawableGroup_rotation, mRotate, &mRotate);
-    // a->GetFloat(R::styleable::VectorDrawableGroup_pivotX, mPivotX, &mPivotX);
-    // a->GetFloat(R::styleable::VectorDrawableGroup_pivotY, mPivotY, &mPivotY);
-    // a->GetFloat(R::styleable::VectorDrawableGroup_scaleX, mScaleX, &mScaleX);
-    // a->GetFloat(R::styleable::VectorDrawableGroup_scaleY, mScaleY, &mScaleY);
-    // a->GetFloat(R::styleable::VectorDrawableGroup_translateX, mTranslateX, &mTranslateX);
-    // a->GetFloat(R::styleable::VectorDrawableGroup_translateY, mTranslateY, &mTranslateY);
+    a->GetFloat(R::styleable::VectorDrawableGroup_rotation, mRotate, &mRotate);
+    a->GetFloat(R::styleable::VectorDrawableGroup_pivotX, mPivotX, &mPivotX);
+    a->GetFloat(R::styleable::VectorDrawableGroup_pivotY, mPivotY, &mPivotY);
+    a->GetFloat(R::styleable::VectorDrawableGroup_scaleX, mScaleX, &mScaleX);
+    a->GetFloat(R::styleable::VectorDrawableGroup_scaleY, mScaleY, &mScaleY);
+    a->GetFloat(R::styleable::VectorDrawableGroup_translateX, mTranslateX, &mTranslateX);
+    a->GetFloat(R::styleable::VectorDrawableGroup_translateY, mTranslateY, &mTranslateY);
 
     String groupName;
-    // a->GetString(R::styleable::VectorDrawableGroup_name, &groupName);
+    a->GetString(R::styleable::VectorDrawableGroup_name, &groupName);
     if (groupName != NULL) {
         mGroupName = groupName;
     }
@@ -645,11 +646,10 @@ void VectorDrawable::VGroup::ApplyTheme(
 
     AutoPtr<ITypedArray> a;
     Int32 size = 0;
-    assert(0 && "TODO");
-    // size = ARRAY_SIZE(R::styleable::VectorDrawableGroup);
-    // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::VectorDrawableGroup, size);
-    // t->ResolveAttributes(mThemeAttrs, layout, (ITypedArray**)&a);
+    size = ARRAY_SIZE(R::styleable::VectorDrawableGroup);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::VectorDrawableGroup, size);
+    ((CResources::Theme*)t)->ResolveAttribute(mThemeAttrs, layout, (ITypedArray**)&a);
     UpdateStateFromTypedArray(a);
     a->Recycle();
 }
@@ -845,11 +845,9 @@ void VectorDrawable::VClipPath::Inflate(
     /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = 0;
-    assert(0 && "TODO");
-    // size = ARRAY_SIZE(R::styleable::VectorDrawableClipPath);
+    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawableClipPath);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::VectorDrawableClipPath, size);
+    layout->Copy(R::styleable::VectorDrawableClipPath, size);
     ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
     UpdateStateFromTypedArray(a);
     a->Recycle();
@@ -864,15 +862,13 @@ void VectorDrawable::VClipPath::UpdateStateFromTypedArray(
     mChangingConfigurations |= config;
 
     String pathName;
-    assert(0 && "TODO");
-    // a->GetString(R::styleable::VectorDrawableClipPath_name, &pathName);
+    a->GetString(R::styleable::VectorDrawableClipPath_name, &pathName);
     if (pathName != NULL) {
         mPathName = pathName;
     }
 
     String pathData;
-    assert(0 && "TODO");
-    // a->GetString(R::styleable::VectorDrawableClipPath_pathData, &pathData);
+    a->GetString(R::styleable::VectorDrawableClipPath_pathData, &pathData);
     if (pathData != NULL) {
         mNodes = PathParser::CreateNodesFromPathData(pathData);
     }
@@ -966,11 +962,9 @@ void VectorDrawable::VFullPath::Inflate(
     /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = 0;
-    assert(0 && "TODO");
-    // size = ARRAY_SIZE(R::styleable::VectorDrawablePath);
+    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawablePath);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::VectorDrawablePath, size);
+    layout->Copy(R::styleable::VectorDrawablePath, size);
     ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
     UpdateStateFromTypedArray(a);
     a->Recycle();
@@ -988,35 +982,32 @@ void VectorDrawable::VFullPath::UpdateStateFromTypedArray(
     ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&mThemeAttrs);
 
     String pathName;
-    assert(0 && "TODO");
-    // a->GetString(R::styleable::VectorDrawablePath_name, &pathName);
+    a->GetString(R::styleable::VectorDrawablePath_name, &pathName);
     if (pathName != NULL) {
         mPathName = pathName;
     }
 
     String pathData;
-    assert(0 && "TODO");
-    // a->GetString(R::styleable::VectorDrawablePath_pathData, &pathData);
+    a->GetString(R::styleable::VectorDrawablePath_pathData, &pathData);
     if (pathData != NULL) {
         mNodes = PathParser::CreateNodesFromPathData(pathData);
     }
 
-    assert(0 && "TODO");
-    // a->GetColor(R::styleable::VectorDrawablePath_fillColor, mFillColor, &mFillColor);
-    // a->GetFloat(R::styleable::VectorDrawablePath_fillAlpha, mFillAlpha, &mFillAlpha);
-    // Int32 value = 0;
-    // a->GetInt32(R::styleable::VectorDrawablePath_strokeLineCap, -1, &value);
-    // mStrokeLineCap = GetStrokeLineCap(value, mStrokeLineCap);
+    a->GetColor(R::styleable::VectorDrawablePath_fillColor, mFillColor, &mFillColor);
+    a->GetFloat(R::styleable::VectorDrawablePath_fillAlpha, mFillAlpha, &mFillAlpha);
+    Int32 value = 0;
+    a->GetInt32(R::styleable::VectorDrawablePath_strokeLineCap, -1, &value);
+    mStrokeLineCap = GetStrokeLineCap(value, mStrokeLineCap);
 
-    // a->GetInt32(R::styleable::VectorDrawablePath_strokeLineJoin, -1, &value);
-    // mStrokeLineJoin = GetStrokeLineJoin(value, mStrokeLineJoin);
-    // a->GetFloat(R::styleable::VectorDrawablePath_strokeMiterLimit, mStrokeMiterlimit, &mStrokeMiterlimit);
-    // a->GetColor(R::styleable::VectorDrawablePath_strokeColor, mStrokeColor, &mStrokeColor);
-    // a->GetFloat(R::styleable::VectorDrawablePath_strokeAlpha, mStrokeAlpha, &mStrokeAlpha);
-    // a->GetFloat(R::styleable::VectorDrawablePath_strokeWidth, mStrokeWidth, &mStrokeWidth);
-    // a->GetFloat(R::styleable::VectorDrawablePath_trimPathEnd, mTrimPathEnd, &mTrimPathEnd);
-    // a->GetFloat(R::styleable::VectorDrawablePath_trimPathOffset, mTrimPathOffset, &mTrimPathOffset);
-    // a->GetFloat(R::styleable::VectorDrawablePath_trimPathStart, mTrimPathStart, &mTrimPathStart);
+    a->GetInt32(R::styleable::VectorDrawablePath_strokeLineJoin, -1, &value);
+    mStrokeLineJoin = GetStrokeLineJoin(value, mStrokeLineJoin);
+    a->GetFloat(R::styleable::VectorDrawablePath_strokeMiterLimit, mStrokeMiterlimit, &mStrokeMiterlimit);
+    a->GetColor(R::styleable::VectorDrawablePath_strokeColor, mStrokeColor, &mStrokeColor);
+    a->GetFloat(R::styleable::VectorDrawablePath_strokeAlpha, mStrokeAlpha, &mStrokeAlpha);
+    a->GetFloat(R::styleable::VectorDrawablePath_strokeWidth, mStrokeWidth, &mStrokeWidth);
+    a->GetFloat(R::styleable::VectorDrawablePath_trimPathEnd, mTrimPathEnd, &mTrimPathEnd);
+    a->GetFloat(R::styleable::VectorDrawablePath_trimPathOffset, mTrimPathOffset, &mTrimPathOffset);
+    a->GetFloat(R::styleable::VectorDrawablePath_trimPathStart, mTrimPathStart, &mTrimPathStart);
 }
 
 void VectorDrawable::VFullPath::ApplyTheme(
@@ -1027,11 +1018,10 @@ void VectorDrawable::VFullPath::ApplyTheme(
     }
 
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-    // Int32 size = ARRAY_SIZE(R::styleable::VectorDrawablePath);
-    // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::VectorDrawablePath, size);
-    // t->ResolveAttributes(mThemeAttrs, layout, (ITypedArray**)a);
+    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawablePath);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::VectorDrawablePath, size);
+    ((CResources::Theme*)t)->ResolveAttribute(mThemeAttrs, layout, (ITypedArray**)&a);
     UpdateStateFromTypedArray(a);
     a->Recycle();
 }
@@ -1355,11 +1345,10 @@ ECode VectorDrawable::ApplyTheme(
     AutoPtr<VectorDrawableState> state = mVectorState;
     if (state.Get() != NULL && state->mThemeAttrs.Get() != NULL) {
         AutoPtr<ITypedArray> a;
-        assert(0 && "TODO");
-        // Int32 size = ARRAY_SIZE(R::styleable::VectorDrawable);
-        // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-        // layout->Copy(R::styleable::VectorDrawable, size);
-        // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+        Int32 size = ARRAY_SIZE(R::styleable::VectorDrawable);
+        AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+        layout->Copy(R::styleable::VectorDrawable, size);
+        ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
 
         // try {
         state->mCacheDirty = TRUE;
@@ -1446,12 +1435,8 @@ Int32 VectorDrawable::ApplyAlpha(
     /* [in] */ Int32 color,
     /* [in] */ Float alpha)
 {
-    Int32 alphaBytes = 0;
-    AutoPtr<IColor> colorHelper;
-    CColor::AcquireSingleton((IColor**)&colorHelper);
-    colorHelper->Alpha(color, &alphaBytes);
     color &= 0x00FFFFFF;
-    color |= ((Int32) (alphaBytes * alpha)) << 24;
+    color |= ((Int32) (Color::Alpha(color) * alpha)) << 24;
     return color;
 }
 
@@ -1466,11 +1451,9 @@ ECode VectorDrawable::Inflate(
     state->mVPathRenderer = pathRenderer;
 
     AutoPtr<ITypedArray> a;
-    Int32 size = 0;
-    assert(0 && "TODO");
-    // size = ARRAY_SIZE(R::styleable::VectorDrawable);
+    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::VectorDrawable, size);
+    layout->Copy(R::styleable::VectorDrawable, size);
     ECode ec = ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a);
     if (FAILED(ec)) {
         return ec;
@@ -1504,23 +1487,20 @@ ECode VectorDrawable::UpdateStateFromTypedArray(
     ((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs);
 
     Int32 tintMode = 0;
-    assert(0 && "TODO");
-    // a->GetInt32(R::styleable::VectorDrawable_tintMode, -1, &tintMode);
+    a->GetInt32(R::styleable::VectorDrawable_tintMode, -1, &tintMode);
     if (tintMode != -1) {
         FAIL_RETURN(Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode));
     }
 
     AutoPtr<IColorStateList> tint;
-    assert(0 && "TODO");
-    // a->GetColorStateList(R::styleable::VectorDrawable_tint, (IColorStateList**)&tint);
+    a->GetColorStateList(R::styleable::VectorDrawable_tint, (IColorStateList**)&tint);
     if (tint != NULL) {
         state->mTint = tint;
     }
 
-    assert(0 && "TODO");
-    // a->GetBoolean(R::styleable::VectorDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
-    // a->GetFloat(R::styleable::VectorDrawable_viewportWidth, pathRenderer->mViewportWidth, &pathRenderer->mViewportWidth);
-    // a->GetFloat(R::styleable::VectorDrawable_viewportHeight, pathRenderer->mViewportHeight, &pathRenderer->mViewportHeight);
+    a->GetBoolean(R::styleable::VectorDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored);
+    a->GetFloat(R::styleable::VectorDrawable_viewportWidth, pathRenderer->mViewportWidth, &pathRenderer->mViewportWidth);
+    a->GetFloat(R::styleable::VectorDrawable_viewportHeight, pathRenderer->mViewportHeight, &pathRenderer->mViewportHeight);
 
     if (pathRenderer->mViewportWidth <= 0) {
         // throw new XmlPullParserException(a.getPositionDescription() +
@@ -1532,9 +1512,8 @@ ECode VectorDrawable::UpdateStateFromTypedArray(
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
-    assert(0 && "TODO");
-    // a->GetDimension(R::styleable::VectorDrawable_width, pathRenderer->mBaseWidth, &pathRenderer->mBaseWidth);
-    // a->GetDimension(R::styleable::VectorDrawable_height, pathRenderer->mBaseHeight, &pathRenderer->mBaseHeight);
+    a->GetDimension(R::styleable::VectorDrawable_width, pathRenderer->mBaseWidth, &pathRenderer->mBaseWidth);
+    a->GetDimension(R::styleable::VectorDrawable_height, pathRenderer->mBaseHeight, &pathRenderer->mBaseHeight);
 
     if (pathRenderer->mBaseWidth <= 0) {
         // throw new XmlPullParserException(a.getPositionDescription() +
@@ -1547,13 +1526,11 @@ ECode VectorDrawable::UpdateStateFromTypedArray(
     }
 
     Float alphaInFloat = 0;
-    assert(0 && "TODO");
-    // a->GetFloat(R::styleable::VectorDrawable_alpha, pathRenderer->GetAlpha(), &alphaInFloat);
+    a->GetFloat(R::styleable::VectorDrawable_alpha, pathRenderer->GetAlpha(), &alphaInFloat);
     pathRenderer->SetAlpha(alphaInFloat);
 
     String name;
-    assert(0 && "TODO");
-    // a->GetString(R::styleable::VectorDrawable_name, &name);
+    a->GetString(R::styleable::VectorDrawable_name, &name);
     if (name != NULL) {
         pathRenderer->mRootName = name;
         AutoPtr<ICharSequence> cs;

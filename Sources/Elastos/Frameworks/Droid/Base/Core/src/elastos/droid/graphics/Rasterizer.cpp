@@ -2,6 +2,7 @@
 #include "elastos/droid/graphics/Rasterizer.h"
 #include "elastos/droid/graphics/CLayerRasterizer.h"
 #include "elastos/droid/graphics/NativePaint.h"
+#include "elastos/droid/graphics/GraphicsNative.h"
 #include <skia/core/SkRasterizer.h>
 #include <skia/effects/SkLayerRasterizer.h>
 
@@ -28,6 +29,13 @@ public:
         return fBuilder.snapshotRasterizer();
     }
 };
+
+SkRasterizer* GraphicsNative::RefNativeRasterizer(
+    /* [in] */ Int64 rasterizerHandle)
+{
+    NativeRasterizer* nr = reinterpret_cast<NativeRasterizer*>(rasterizerHandle);
+    return nr ? nr->refRasterizer() : NULL;
+}
 
 // {2D3A6B44-0939-4A44-A9C2-6C1E9E71D8FC}
 extern const InterfaceID EIID_Rasterizer =

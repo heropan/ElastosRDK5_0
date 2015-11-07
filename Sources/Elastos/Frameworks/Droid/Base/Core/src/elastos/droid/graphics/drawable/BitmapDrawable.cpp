@@ -7,6 +7,8 @@
 #include "elastos/droid/graphics/CBitmapShader.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 // #include "view/CGravity.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
@@ -15,6 +17,8 @@ using Elastos::Droid::View::IGravity;
 // using Elastos::Droid::View::CGravity;
 using Elastos::Droid::Utility::ILayoutDirection;
 using Elastos::Droid::R;
+using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -774,8 +778,7 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     state->mChangingConfigurations |= (a->GetChangingConfigurations(&config), config);
 
     // Extract the theme attributes, if any.
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->ExtractThemeAttrs((ITypedArray**)&state->mThemeAttrs));
+    FAIL_RETURN(((CTypedArray*)a)->ExtractThemeAttrs((ArrayOf<Int32>**)&state->mThemeAttrs));
 
     Int32 srcResId = 0;
     FAIL_RETURN(a->GetResourceId(R::styleable::BitmapDrawable_src, 0, &srcResId));
@@ -799,24 +802,20 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
 
     Boolean value = FALSE;
     Boolean defMipMap = state->mBitmap != NULL ? (state->mBitmap->HasMipMap(&value), value) : FALSE;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_mipMap, defMipMap, &value));
+    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_mipMap, defMipMap, &value));
     SetMipMap(value);
 
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
-    // FAIL_RETURN(a->GetFloat(R::styleable::BitmapDrawable_alpha, state->mBaseAlphai, &state->mBaseAlpha));
+    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
+    FAIL_RETURN(a->GetFloat(R::styleable::BitmapDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha));
 
     Int32 tintMode = 0;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tintMode, -1, &tintMode));
+    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tintMode, -1, &tintMode));
     if (tintMode != -1) {
         Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
     }
 
     AutoPtr<IColorStateList> tint;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetColorStateList(R::styleable::BitmapDrawable_tint, (IColorStateList**)&tint));
+    FAIL_RETURN(a->GetColorStateList(R::styleable::BitmapDrawable_tint, (IColorStateList**)&tint));
     if (tint != NULL) {
         state->mTint = tint;
     }
@@ -824,15 +823,14 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     AutoPtr<IPaint> paint = mBitmapState->mPaint;
     Boolean res = FALSE;
     paint->IsAntiAlias(&res);
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_antialias, res, &value));
-    // paint->SetAntiAlias(value);
-    // paint->IsFilterBitmap(&res);
-    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_filter, res, &value));
-    // paint->SetFilterBitmap(value);
-    // paint->IsDither(&res);
-    // FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_dither, res, &value));
-    // paint->SetDither(value);
+    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_antialias, res, &value));
+    paint->SetAntiAlias(value);
+    paint->IsFilterBitmap(&res);
+    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_filter, res, &value));
+    paint->SetFilterBitmap(value);
+    paint->IsDither(&res);
+    FAIL_RETURN(a->GetBoolean(R::styleable::BitmapDrawable_dither, res, &value));
+    paint->SetDither(value);
 
     Int32 gravity = 0;
     FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_gravity, state->mGravity, &gravity));
@@ -846,15 +844,13 @@ ECode BitmapDrawable::UpdateStateFromTypedArray(
     }
 
     Int32 tileModeX = 0;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeX, TILE_MODE_UNDEFINED, &tileModeX));
+    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeX, TILE_MODE_UNDEFINED, &tileModeX));
     if (tileModeX != TILE_MODE_UNDEFINED) {
         SetTileModeX(ParseTileMode(tileModeX));
     }
 
     Int32 tileModeY = 0;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeY, TILE_MODE_UNDEFINED, &tileModeY));
+    FAIL_RETURN(a->GetInt32(R::styleable::BitmapDrawable_tileModeY, TILE_MODE_UNDEFINED, &tileModeY));
     if (tileModeY != TILE_MODE_UNDEFINED) {
         SetTileModeY(ParseTileMode(tileModeY));
     }
@@ -878,8 +874,7 @@ ECode BitmapDrawable::ApplyTheme(
     layout->Copy(R::styleable::BitmapDrawable, size);
 
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+    ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
     // try {
     if (UpdateStateFromTypedArray(a) == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
         a->Recycle();
@@ -890,7 +885,7 @@ ECode BitmapDrawable::ApplyTheme(
     // } finally {
         // a.recycle();
     // }
-    return NOERROR;
+    return a->Recycle();
 }
 
 ShaderTileMode BitmapDrawable::ParseTileMode(
