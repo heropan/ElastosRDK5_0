@@ -6,7 +6,6 @@
 #include "elastos/droid/graphics/NativeCanvas.h"
 #include "elastos/droid/os/CSystemProperties.h"
 #include "elastos/droid/os/NativeBinder.h"
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -26,6 +25,7 @@
 #include <binder/IMemory.h>
 #include <binder/Parcel.h>
 #include <android/native_window.h>
+#include <gui/Surface.h>
 
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
@@ -33,7 +33,6 @@ using Elastos::Droid::Os::DroidObjectForIBinder;
 using Elastos::Droid::Graphics::CSurfaceTexture;
 using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Graphics::NativeCanvas;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Core::AutoLock;
 using Elastos::Core::ICloseGuardHelper;
 using Elastos::Core::CCloseGuardHelper;
@@ -118,13 +117,13 @@ ECode Surface::NativeCreateFromSurfaceTexture(
     /* [in] */ ISurfaceTexture* surfaceTexture,
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     *result = 0;
     CSurfaceTexture* stImp = (CSurfaceTexture*)surfaceTexture;
     sp<android::IGraphicBufferProducer> producer = (android::IGraphicBufferProducer*)(stImp->mProducer);
     if (producer == NULL) {
         SLOGGERD("Surface", "SurfaceTexture has already been released")
-        // jniThrowException(env, "java/lang/IllegalArgumentException",
-                // "SurfaceTexture has already been released");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -161,6 +160,8 @@ ECode Surface::NativeLockCanvas(
     /* [in] */ IRect* dirty,
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     sp<android::Surface> surface(reinterpret_cast<android::Surface *>(mNativeObject));
 
     if (!isSurfaceValid(surface) || canvas == NULL) {
@@ -195,7 +196,12 @@ ECode Surface::NativeLockCanvas(
         //         "java/lang/IllegalArgumentException";
         // jniThrowException(env, exception, NULL);
         *result = 0;
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        if (err == android::NO_MEMORY) {
+            return E_OUT_OF_RESOURCES_EXCEPTION;
+        }
+        else {
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
     }
 
     // Associate a SkCanvas object to this surface
@@ -258,7 +264,6 @@ ECode Surface::NativeUnlockCanvasAndPost(
     // unlock surface
     android::status_t err = surface->unlockAndPost();
     if (err < 0) {
-        // doThrowIAE(env);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -280,6 +285,8 @@ Boolean Surface::NativeIsValid()
 ECode Surface::NativeIsConsumerRunningBehind(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     sp<android::Surface> sur(reinterpret_cast<android::Surface *>(mNativeObject));
     if (!isSurfaceValid(sur)) {
         *result = FALSE;
@@ -296,8 +303,9 @@ ECode Surface::NativeReadFromParcel(
     /* [in] */ IParcel* source,
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (source == NULL) {
-        // doThrowNPE(env);
         *result = 0;
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
@@ -305,7 +313,6 @@ ECode Surface::NativeReadFromParcel(
     android::Parcel* parcel;
     source->GetElementPayload((Handle32*)&parcel);
     if (parcel == NULL) {
-        // doThrowNPE(env);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     sp<android::Surface> self(reinterpret_cast<android::Surface *>(mNativeObject));
@@ -342,18 +349,16 @@ ECode Surface::NativeWriteToParcel(
     /* [in] */ IParcel* dest)
 {
     if (dest == NULL) {
-        // doThrowNPE(env);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
     }
     android::Parcel* parcel;
     dest->GetElementPayload((Handle32*)&parcel);
     if (parcel == NULL) {
-        // doThrowNPE(env);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     sp<android::Surface> self(reinterpret_cast<android::Surface *>(mNativeObject));
-    parcel->writeStrongBinder( self != 0 ? self->getIGraphicBufferProducer()->asBinder() : NULL);
+    parcel->writeStrongBinder(self != 0 ? self->getIGraphicBufferProducer()->asBinder() : NULL);
     return NOERROR;
 }
 
@@ -368,7 +373,7 @@ void Surface::NativeAllocateBuffers()
 }
 
 void Surface::SetNativeObjectLocked(
-        /* [in] */ Int64 ptr)
+    /* [in] */ Int64 ptr)
 {
     if (mNativeObject != ptr) {
         if (mNativeObject == 0 && ptr != 0) {
@@ -386,7 +391,7 @@ ECode Surface::CheckNotReleasedLocked()
     if (mNativeObject == 0) {
         // throw new IllegalStateException("Surface has already been released.");
         SLOGGERE(TAG, "Surface has already been released.")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
     return NOERROR;
 }
@@ -516,6 +521,8 @@ ECode Surface::CopyFrom(
 ECode Surface::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
+
     AutoLock lock(this);
     AutoPtr<ISystem> stm;
     CSystem::AcquireSingleton((ISystem**)&stm);
@@ -590,7 +597,7 @@ ECode Surface::LockCanvas(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
         // throw new IllegalArgumentException("Surface was already locked");
     }
-    FAIL_RETURN(NativeLockCanvas( mCanvas, dirty, &mLockedObject))
+    FAIL_RETURN(NativeLockCanvas(mCanvas, dirty, &mLockedObject))
     *canvas = mCanvas;
     REFCOUNT_ADD(*canvas)
 
@@ -612,13 +619,13 @@ ECode Surface::UnlockCanvasAndPost(
         AutoLock lock(this);
         FAIL_RETURN(CheckNotReleasedLocked())
         if (mNativeObject != mLockedObject) {
-            LOGGERE(TAG, String("WARNING: Surface's mNativeObject (0x") +
+            SLOGGERE(TAG, String("WARNING: Surface's mNativeObject (0x") +
                     StringUtils::ToHexString(mNativeObject) + ") != mLockedObject (0x" +
                     StringUtils::ToHexString(mLockedObject) +")");
         }
         if (mLockedObject == 0) {
             SLOGGERE(TAG, "Surface was not locked")
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            return E_ILLEGAL_STATE_EXCEPTION;
             // throw new IllegalStateException("Surface was not locked");
         }
         // try {
@@ -686,7 +693,7 @@ ECode Surface::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     if (source == NULL) {
-        Logger::E(TAG, "source must not be null");
+        SLOGGERE(TAG, "source must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -701,7 +708,7 @@ ECode Surface::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     if (dest == NULL) {
-        Logger::E(TAG, "dest must not be null");
+        SLOGGERE(TAG, "dest must not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     {

@@ -31,10 +31,6 @@ public:
         /* [in] */ IInterface* other,
         /* [out] */ Boolean* result);
 
-    CARAPI Equals(
-        /* [in] */ IPhysicalDisplayInfo* other,
-        /* [out] */ Boolean* result);
-
     CARAPI ToString(
         /* [out] */ String* info);
 

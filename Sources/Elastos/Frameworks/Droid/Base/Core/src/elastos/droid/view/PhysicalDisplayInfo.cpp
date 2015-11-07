@@ -37,6 +37,8 @@ ECode PhysicalDisplayInfo::constructor(
 ECode PhysicalDisplayInfo::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
+    VALIDATE_NOT_NULL(hashCode)
+
     *hashCode = 0;
     return NOERROR;
 }
@@ -45,20 +47,14 @@ ECode PhysicalDisplayInfo::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     *result = FALSE;
     AutoPtr<IPhysicalDisplayInfo> infoOther = IPhysicalDisplayInfo::Probe(other);
     if (infoOther == NULL) {
         return NOERROR;
     }
-
-    return Equals(infoOther, result);
-}
-
-ECode PhysicalDisplayInfo::Equals(
-    /* [in] */ IPhysicalDisplayInfo* other,
-    /* [out] */ Boolean* result)
-{
-    PhysicalDisplayInfo* impOther = (PhysicalDisplayInfo*)other;
+    PhysicalDisplayInfo* impOther = (PhysicalDisplayInfo*)infoOther.Get();
     *result = impOther != NULL
             && mWidth == impOther->mWidth
             && mHeight == impOther->mHeight
@@ -102,6 +98,8 @@ ECode PhysicalDisplayInfo::ToString(
 ECode PhysicalDisplayInfo::GetWidth(
     /* [out] */ Int32* width)
 {
+    VALIDATE_NOT_NULL(width)
+
     *width = mWidth;
     return NOERROR;
 }
@@ -109,6 +107,8 @@ ECode PhysicalDisplayInfo::GetWidth(
 ECode PhysicalDisplayInfo::GetHeight(
     /* [out] */ Int32* height)
 {
+    VALIDATE_NOT_NULL(height)
+
     *height = mHeight;
     return NOERROR;
 }
@@ -116,6 +116,8 @@ ECode PhysicalDisplayInfo::GetHeight(
 ECode PhysicalDisplayInfo::GetRefreshRate(
     /* [out] */ Float* refreshRate)
 {
+    VALIDATE_NOT_NULL(refreshRate)
+
     *refreshRate = mRefreshRate;
     return NOERROR;
 }
@@ -123,6 +125,8 @@ ECode PhysicalDisplayInfo::GetRefreshRate(
 ECode PhysicalDisplayInfo::GetDensity(
     /* [out] */ Float* density)
 {
+    VALIDATE_NOT_NULL(density)
+
     *density = mDensity;
     return NOERROR;
 }
@@ -130,6 +134,8 @@ ECode PhysicalDisplayInfo::GetDensity(
 ECode PhysicalDisplayInfo::GetXDpi(
     /* [out] */ Float* xDpi)
 {
+    VALIDATE_NOT_NULL(xDpi)
+
     *xDpi = mXDpi;
     return NOERROR;
 }
@@ -137,6 +143,8 @@ ECode PhysicalDisplayInfo::GetXDpi(
 ECode PhysicalDisplayInfo::GetYDpi(
     /* [out] */ Float* yDpi)
 {
+    VALIDATE_NOT_NULL(yDpi)
+
     *yDpi = mYDpi;
     return NOERROR;
 }
@@ -144,6 +152,8 @@ ECode PhysicalDisplayInfo::GetYDpi(
 ECode PhysicalDisplayInfo::GetSecure(
     /* [out] */ Boolean* secure)
 {
+    VALIDATE_NOT_NULL(secure)
+
     *secure = mSecure;
     return NOERROR;
 }
@@ -151,6 +161,8 @@ ECode PhysicalDisplayInfo::GetSecure(
 ECode PhysicalDisplayInfo::GetAppVsyncOffsetNanos(
     /* [out] */ Int64* nanos)
 {
+    VALIDATE_NOT_NULL(nanos)
+
     *nanos = mAppVsyncOffsetNanos;
     return NOERROR;
 }
@@ -158,6 +170,8 @@ ECode PhysicalDisplayInfo::GetAppVsyncOffsetNanos(
 ECode PhysicalDisplayInfo::GetPresentationDeadlineNanos(
     /* [out] */ Int64* nanos)
 {
+    VALIDATE_NOT_NULL(nanos)
+
     *nanos = mPresentationDeadlineNanos;
     return NOERROR;
 }

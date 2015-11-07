@@ -6,8 +6,6 @@
 #include "elastos/droid/graphics/Canvas.h"
 #include <elastos/core/Object.h>
 
-#include <gui/Surface.h>
-
 using Elastos::Droid::Content::Res::ICompatibilityInfoTranslator;
 using Elastos::Droid::Graphics::Canvas;
 using Elastos::Droid::Graphics::ICanvas;
@@ -105,13 +103,13 @@ public:
 
     CARAPI LockCanvas(
         /* [in] */ IRect * pDirty,
-        /* [out] */ ICanvas ** ppCanvas);
+        /* [out] */ ICanvas** ppCanvas);
 
     CARAPI UnlockCanvasAndPost(
-        /* [in] */ ICanvas * pCanvas);
+        /* [in] */ ICanvas* pCanvas);
 
     CARAPI UnlockCanvas(
-        /* [in] */ ICanvas * pCanvas);
+        /* [in] */ ICanvas* pCanvas);
 
     /**
      * Transfer the Native state from 'other' to this surface, releasing it
@@ -224,7 +222,6 @@ private:
     // A matrix to scale the matrix set by application. This is set to null for
     // non compatibility mode.
     AutoPtr<IMatrix> mCompatibleMatrix;
-
 };
 
 } // namespace View

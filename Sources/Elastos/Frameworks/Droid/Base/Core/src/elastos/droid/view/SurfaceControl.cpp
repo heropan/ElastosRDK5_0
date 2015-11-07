@@ -1,4 +1,22 @@
 #include "elastos/droid/view/SurfaceControl.h"
+#include "elastos/droid/view/CSurfaceSession.h"
+
+#include <gui/Surface.h>
+#include <gui/SurfaceComposerClient.h>
+#include <gui/SurfaceControl.h>
+
+#include <ui/DisplayInfo.h>
+#include <ui/FrameStats.h>
+#include <ui/Rect.h>
+#include <ui/Region.h>
+
+#include <utils/Log.h>
+
+#include <utils/String8.h>
+#include "SkTemplates.h"
+
+using android::sp;
+using android::String8;
 
 namespace Elastos {
 namespace Droid {
@@ -570,36 +588,47 @@ void SurfaceControl::Screenshot(
             minLayer, maxLayer, allLayers, useIdentityTransform);
 }
 
-Int64 SurfaceControl::NativeCreate(
+ECode SurfaceControl::NativeCreate(
     /* [in] */ ISurfaceSession* session,
     /* [in] */ const String& name,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Int32 format,
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flags,
+    /* [out] */ Int64* ptr)
 {
     ScopedUtfChars name(env, nameStr);
-    return reinterpret_cast<SurfaceComposerClient*>(
-            env->GetLongField(surfaceSessionObj, gSurfaceSessionClassInfo.mNativeClient));
+    CSurfaceSession* sessionImpl = (CSurfaceSession*)session;
 
-    sp<SurfaceComposerClient> client(android_view_SurfaceSession_getClient(env, sessionObj));
+    sp<SurfaceComposerClient> client(reinterpret_cast<SurfaceComposerClient*>(sessionImpl->mNativeClient));
     sp<SurfaceControl> surface = client->createSurface(
-            String8(name.c_str()), w, h, format, flags);
+            String8(name.string()), w, h, format, flags);
     if (surface == NULL) {
-        jniThrowException(env, OutOfResourcesException, NULL);
-        return 0;
+        // jniThrowException(env, OutOfResourcesException, NULL);
+        *ptr = 0;
+        return E_OUT_OF_RESOURCES_EXCEPTION;
     }
-    surface->incStrong((void *)nativeCreate);
-    return reinterpret_cast<jlong>(surface.get());
+    surface->incStrong((void *)NativeCreate);
+    *ptr = reinterpret_cast<Int64>(surface.get());
+    return NOERROR;
 }
 
-CARAPI_(void) NativeRelease(
-    /* [in] */ Int64 nativeObject);
+void SurfaceControl::NativeRelease(
+    /* [in] */ Int64 nativeObject)
+{
+    sp<android::SurfaceControl> ctrl(reinterpret_cast<android::SurfaceControl *>(nativeObject));
+    ctrl->decStrong((void *)NativeCreate);
+}
 
-CARAPI_(void) NativeDestroy(
-    /* [in] */ Int64 nativeObject);
+void SurfaceControl::NativeDestroy(
+    /* [in] */ Int64 nativeObject)
+{
+    sp<android::SurfaceControl> ctrl(reinterpret_cast<android::SurfaceControl *>(nativeObject));
+    ctrl->clear();
+    ctrl->decStrong((void *)nativeCreate);
+}
 
-CARAPI_(AutoPtr<IBitmap>) NativeScreenshot(
+AutoPtr<IBitmap> SurfaceControl::NativeScreenshot(
     /* [in] */ IBinder* displayToken,
     /* [in] */ IRect* sourceCrop,
     /* [in] */ Int32 width,
