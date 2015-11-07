@@ -480,27 +480,33 @@ AutoPtr<IBinder> SurfaceControl::GetBuiltInDisplay(
             FALSE, ISurface::ROTATION_0);
 }
 
-Boolean SurfaceControl::ClearAnimationFrameStas();
+Boolean SurfaceControl::ClearAnimationFrameStas()
+{
+    return NativeClearAnimationFrameStats();
+}
 
 Boolean SurfaceControl::GetAnimationFrameStats(
-    /* [in] */ IWindowAnimationFrameStats* outStats);
+    /* [in] */ IWindowAnimationFrameStats* outStats)
+{
+    return NativeGetAnimationFrameStats(outStats);
+}
 /** start a transaction */
 
 void SurfaceControl::OpenTransaction()
 {
-
+    NativeOpenTransaction();
 }
 
 /** end a transaction */
 void SurfaceControl::CloseTransaction()
 {
-
+    NativeCloseTransaction();
 }
 
 /** flag the transaction as an animation */
 void SurfaceControl::SetAnimationTransaction()
 {
-
+    NativeSetAnimationTransaction();
 }
 
 /**
@@ -564,13 +570,28 @@ void SurfaceControl::Screenshot(
             minLayer, maxLayer, allLayers, useIdentityTransform);
 }
 
-CARAPI_(Int64) NativeCreate(
+Int64 SurfaceControl::NativeCreate(
     /* [in] */ ISurfaceSession* session,
     /* [in] */ const String& name,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h,
     /* [in] */ Int32 format,
-    /* [in] */ Int32 flags);
+    /* [in] */ Int32 flags)
+{
+    ScopedUtfChars name(env, nameStr);
+    return reinterpret_cast<SurfaceComposerClient*>(
+            env->GetLongField(surfaceSessionObj, gSurfaceSessionClassInfo.mNativeClient));
+
+    sp<SurfaceComposerClient> client(android_view_SurfaceSession_getClient(env, sessionObj));
+    sp<SurfaceControl> surface = client->createSurface(
+            String8(name.c_str()), w, h, format, flags);
+    if (surface == NULL) {
+        jniThrowException(env, OutOfResourcesException, NULL);
+        return 0;
+    }
+    surface->incStrong((void *)nativeCreate);
+    return reinterpret_cast<jlong>(surface.get());
+}
 
 CARAPI_(void) NativeRelease(
     /* [in] */ Int64 nativeObject);

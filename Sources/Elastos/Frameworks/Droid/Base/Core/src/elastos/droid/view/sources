@@ -37,6 +37,7 @@ SOURCES += Surface.cpp
 SOURCES += TextureView.cpp
 SOURCES += PhysicalDisplayInfo.cpp
 SOURCES += CPhysicalDisplayInfo.cpp
+SOURCES += CSurfaceSession.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
 #SOURCES += CAbsSavedStateHelper.cpp

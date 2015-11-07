@@ -4,6 +4,14 @@
 namespace Elastos {
 namespace Droid {
 namespace View {
+CAR_OBJECT_IMPL(CSurfaceSession)
+
+CAR_INTERFACE_IMPL(CSurfaceSession, Object, ISurfaceSession)
+
+ECode CSurfaceSession::constructor()
+{
+    return NOERROR;
+}
 
 CSurfaceSession::CSurfaceSession()
 {
@@ -12,7 +20,10 @@ CSurfaceSession::CSurfaceSession()
 
 CSurfaceSession::~CSurfaceSession()
 {
-    mNativeClient = NULL;
+    if (mNativeClient != NULL) {
+        delete mNativeClient.get();
+        mNativeClient = NULL;
+    }
 }
 
 ECode CSurfaceSession::Kill()

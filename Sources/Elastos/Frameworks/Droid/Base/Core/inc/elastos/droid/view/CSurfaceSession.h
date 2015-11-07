@@ -3,18 +3,30 @@
 #define __ELASTOS_DROID_VIEW_CSURFACESESSION_H__
 
 #include "_Elastos_Droid_View_CSurfaceSession.h"
+#include <elastos/core/Object.h>
+
 #include <gui/SurfaceComposerClient.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CSurfaceSession)
+    , public Object
+    , public ISurfaceSession
 {
-    friend class CSurface;
+    friend class SurfaceControl;
 
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CSurfaceSession();
+
+    CARAPI constructor();
 
     ~CSurfaceSession();
 

@@ -763,9 +763,11 @@ module
     //         interface ISurfaceHelper;
     //     }
 
-    //     class CSurfaceSession {
-    //         interface ISurfaceSession;
-    //     }
+    class CSurfaceSession {
+        constructor();
+
+        interface ISurfaceSession;
+    }
 
     class CPhysicalDisplayInfo {
         constructor();
