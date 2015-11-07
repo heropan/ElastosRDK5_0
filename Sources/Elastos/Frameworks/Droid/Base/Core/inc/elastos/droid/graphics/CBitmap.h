@@ -23,14 +23,6 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-// struct ElaBitmapCallback
-// {
-//     AutoPtr<IInterface> (*createBitmap)(Int32 nativeBitmap, ArrayOf<Byte>* buffer, Boolean isMutable,
-//                                                         ArrayOf<Byte>* ninePatchChunk, Int32 density);
-//     AutoPtr<IInterface> (*createBitmap2)(Int32 nativeBitmap, ArrayOf<Byte>* buffer, Boolean isMutable,
-//                                     ArrayOf<Byte>* ninePatchChunk, ArrayOf<Int32>* layoutbounds, Int32 density);
-// };
-
 CarClass(CBitmap)
     , public Object
     , public IBitmap

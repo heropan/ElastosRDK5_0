@@ -61,19 +61,19 @@ ECode CSweepGradient::constructor(
 AutoPtr<IShader> CSweepGradient::Copy()
 {
     AutoPtr<ISweepGradient> copy;
-    assert(0 && "TODO");
-    // switch (mType) {
-    //     case TYPE_COLORS_AND_POSITIONS:
-    //         copy = new SweepGradient(mCx, mCy, mColors.clone(),
-    //                 mPositions != null ? mPositions.clone() : null);
-    //         break;
-    //     case TYPE_COLOR_START_AND_COLOR_END:
-    //         copy = new SweepGradient(mCx, mCy, mColor0, mColor1);
-    //         break;
-    //     default:
-    //         throw new IllegalArgumentException("SweepGradient should be created with either " +
-    //                 "colors and positions or start color and end color");
-    // }
+    switch (mType) {
+        case TYPE_COLORS_AND_POSITIONS:
+            CSweepGradient::New(mCx, mCy, *mColors->Clone(),
+                    mPositions != NULL ? mPositions->Clone() : NULL, (IShader**)&copy);
+            break;
+        case TYPE_COLOR_START_AND_COLOR_END:
+            CSweepGradient::New(mCx, mCy, mColor0, mColor1, (IShader**)&copy);
+            break;
+        default:
+            // throw new IllegalArgumentException("SweepGradient should be created with either " +
+            //         "colors and positions or start color and end color");
+            assert(0 && "colors and positions or start color and end color");
+    }
     CopyLocalMatrix(IShader::Probe(copy));
     return IShader::Probe(copy);
 }

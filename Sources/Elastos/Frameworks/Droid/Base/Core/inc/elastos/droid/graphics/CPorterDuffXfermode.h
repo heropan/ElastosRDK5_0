@@ -30,7 +30,7 @@ public:
         /* [out] */ PorterDuffMode* mode);
 
 private:
-    static CARAPI_(Int32) NativeCreateXfermode(
+    static CARAPI_(Int64) NativeCreateXfermode(
         /* [in] */ PorterDuffMode mode);
 
 public:

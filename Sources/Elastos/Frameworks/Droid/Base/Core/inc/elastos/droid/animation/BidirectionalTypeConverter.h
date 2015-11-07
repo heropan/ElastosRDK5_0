@@ -19,28 +19,6 @@ class BidirectionalTypeConverter
     : public TypeConverter
     , public IBidirectionalTypeConverter
 {
-// private:
-//     class InvertedConverter
-//         : public BidirectionalTypeConverter
-//     {
-//     public:
-//         InvertedConverter(
-//             /* [in] */ BidirectionalTypeConverter/*<To, From>*/* converter);
-
-//         // @Override
-//         virtual CARAPI ConvertBack(
-//             /* [in] */ IInterface* value,
-//             /* [out] */ IInterface** result);
-
-//         // @Override
-//         virtual CARAPI Convert(
-//             /* [in] */ IInterface* value,
-//             /* [out] */ IInterface** result);
-
-//     private:
-//         AutoPtr<BidirectionalTypeConverter> mConverter;
-//     };
-
 public:
     CAR_INTERFACE_DECL();
 
@@ -49,8 +27,6 @@ public:
     BidirectionalTypeConverter(
         /* [in] */ const InterfaceID& fromClass,
         /* [in] */ const InterfaceID& toClass);
-
-    ~BidirectionalTypeConverter() = 0;
 
     /**
      * Does a conversion from the target type back to the source type. The subclass
@@ -74,7 +50,7 @@ public:
         /* [out] */ IBidirectionalTypeConverter** result);
 
 protected:
-    virtual CARAPI constructor(
+    CARAPI constructor(
         /* [in] */ const InterfaceID& fromClass,
         /* [in] */ const InterfaceID& toClass);
 
@@ -100,7 +76,7 @@ public:
         /* [out] */ IInterface** result);
 
 private:
-    AutoPtr<BidirectionalTypeConverter> mConverter;
+    BidirectionalTypeConverter* mConverter;
 };
 
 }   //namespace Animation

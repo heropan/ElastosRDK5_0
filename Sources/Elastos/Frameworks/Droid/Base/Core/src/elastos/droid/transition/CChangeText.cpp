@@ -3,12 +3,14 @@
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/animation/AnimatorSet.h"
 #include "elastos/droid/animation/ValueAnimator.h"
+#include "elastos/droid/graphics/Color.h"
 
 using Elastos::Droid::Animation::AnimatorSet;
 using Elastos::Droid::Animation::IAnimatorSet;
 using Elastos::Droid::Animation::ValueAnimator;
 using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Animation::EIID_IAnimatorUpdateListener;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Widget::ITextView;
 
 using Elastos::Core::CString;
@@ -519,9 +521,8 @@ ECode CChangeText::AnimatorUpdateListener_2::OnAnimationUpdate(
     animation->GetAnimatedValue((IInterface**)&av);
     Int32 currAlpha;
     IInteger32::Probe(av)->GetValue(&currAlpha);
-    assert(0 && "TODO");
-    // mView->SetTextColor(currAlpha << 24 | CColor::Red(endColor) << 16 |
-    //         CColor::Green(endColor) << 8 | CColor::Red(endColor));
+    mView->SetTextColor(currAlpha << 24 | Color::Red(mEndColor) << 16 |
+            Color::Green(mEndColor) << 8 | Color::Red(mEndColor));
     return NOERROR;
 }
 

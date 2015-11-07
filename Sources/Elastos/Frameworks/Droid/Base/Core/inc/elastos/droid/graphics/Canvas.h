@@ -631,7 +631,7 @@ public:
         /* [in] */ Int32 format);
 
     CARAPI GetNativeCanvas(
-        /* [out] */ Handle32* natvieCanvas);
+        /* [out] */ Int64* natvieCanvas);
 
     /**
      * Releases the resources associated with this canvas.

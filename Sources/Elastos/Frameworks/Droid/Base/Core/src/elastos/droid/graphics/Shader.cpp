@@ -38,7 +38,7 @@ ECode Shader::SetLocalMatrix(
 {
     mLocalMatrix = localM;
     NativeSetLocalMatrix(mNativeInstance,
-            localM == NULL ? 0 : ((Matrix*)(IMatrix*)localM->Probe(EIID_Matrix))->mNativeInstance);
+            localM == NULL ? 0 : ((Matrix*)localM)->mNativeInstance);
     return NOERROR;
 }
 

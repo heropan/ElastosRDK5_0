@@ -1,5 +1,6 @@
 
 #include "elastos/droid/content/res/CColorStateList.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/utility/StateSet.h"
 #include "elastos/droid/utility/MathUtils.h"
 //#include "elastos/droid/internal/utility/ArrayUtils.h"
@@ -8,11 +9,12 @@
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::MathUtils;
 //using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -240,8 +242,7 @@ ECode CColorStateList::Inflate(
         }
 
         // Apply alpha modulation.
-        assert(0 && "TODO");
-        Int32 ca = 0; // = CColor::Alpha(color);
+        Int32 ca = Color::Alpha(color);
         Int32 alphaMod = MathUtils::Constrain((Int32) (ca * alpha), 0, 255);
         color = (color & 0xFFFFFF) | (alphaMod << 24);
 
@@ -293,11 +294,10 @@ ECode CColorStateList::IsOpaque(
 
     Int32 n = mColors->GetLength();
     for (Int32 i = 0; i < n; i++) {
-        assert(0 && "TODO");
-        // if (CColor::Alpha((*mColors)[i]) != 0xFF) {
-        //     *isOpaque = FALSE;
-        //     return NOERROR;
-        // }
+        if (Color::Alpha((*mColors)[i]) != 0xFF) {
+            *isOpaque = FALSE;
+            return NOERROR;
+        }
     }
 
     *isOpaque = TRUE;

@@ -61,7 +61,7 @@ ECode CTypefaceHelper::CreateFromFile(
 }
 
 ECode CTypefaceHelper::CreateFromFamilies(
-    /* [in]*/ ArrayOf<IFontFamily>* families,
+    /* [in]*/ ArrayOf<IFontFamily*>* families,
     /* [out]*/ ITypeface** typeface)
 {
     VALIDATE_NOT_NULL(typeface);
@@ -69,7 +69,7 @@ ECode CTypefaceHelper::CreateFromFamilies(
 }
 
 ECode CTypefaceHelper::CreateFromFamiliesWithDefault(
-    /* [in]*/ ArrayOf<IFontFamily>* families,
+    /* [in]*/ ArrayOf<IFontFamily*>* families,
     /* [out]*/ ITypeface** typeface)
 {
     VALIDATE_NOT_NULL(typeface);

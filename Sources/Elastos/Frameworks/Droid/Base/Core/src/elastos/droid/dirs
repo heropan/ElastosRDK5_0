@@ -1,4 +1,4 @@
-
+DIRS += graphics
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation

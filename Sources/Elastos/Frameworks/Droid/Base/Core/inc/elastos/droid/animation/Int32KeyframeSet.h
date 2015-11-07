@@ -21,6 +21,7 @@ namespace Animation {
 class Int32KeyframeSet
     : public KeyframeSet
     , public IInt32KeyframeSet
+    , public IInt32Keyframes
 {
 public:
     CAR_INTERFACE_DECL();

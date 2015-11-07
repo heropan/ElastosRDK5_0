@@ -1,6 +1,7 @@
 
 #include "elastos/droid/graphics/drawable/Ripple.h"
 #include "elastos/droid/graphics/drawable/CVectorDrawable.h"
+#include "elastos/droid/graphics/drawable/RippleDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 // #include "elastos/droid/view/animation/CLinearInterpolator.h"
@@ -557,8 +558,7 @@ void Ripple::RemoveSelf()
 {
     // The owner will invalidate itself.
     if (!mCanceled) {
-        assert(0 && "TODO");
-        // ((RippleDrawable*)mOwner.Get())->RemoveRipple(this);
+        ((RippleDrawable*)mOwner.Get())->RemoveRipple(this);
     }
 }
 

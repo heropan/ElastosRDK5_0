@@ -1,18 +1,17 @@
 
 #include "elastos/droid/animation/Int32ArrayEvaluator.h"
 
-using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;
+using Elastos::Core::CInteger32;
 using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
+using Elastos::Core::IArrayOf;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
 CAR_INTERFACE_IMPL(Int32ArrayEvaluator, Object, ITypeEvaluator);
-
 Int32ArrayEvaluator::Int32ArrayEvaluator()
 {
 }

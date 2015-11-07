@@ -15,7 +15,6 @@ namespace Droid {
 namespace Animation {
 
 CAR_INTERFACE_IMPL_3(KeyframeSet, Object, IKeyframeSet, IKeyframes, ICloneable)
-
 KeyframeSet::KeyframeSet(
     /* [in] */ ArrayOf<IKeyframe*>* keyframes)
 {

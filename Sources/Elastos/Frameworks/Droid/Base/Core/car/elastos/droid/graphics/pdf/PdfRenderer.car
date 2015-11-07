@@ -12,6 +12,16 @@ module
 
     interface IPdfRendererPage {
         /**
+         * Mode to render the content for display on a screen.
+         */
+        const Int32 RENDER_MODE_FOR_DISPLAY = 1;
+
+        /**
+         * Mode to render the content for printing.
+         */
+        const Int32 RENDER_MODE_FOR_PRINT = 2;
+
+        /**
          * Gets the page index.
          *
          * @return The index.

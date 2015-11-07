@@ -106,19 +106,19 @@ ECode CRadialGradient::GetInterfaceID(
 AutoPtr<IShader> CRadialGradient::Copy()
 {
     AutoPtr<IRadialGradient> copy;
-    assert(0 && "TODO");
-    // switch (mType) {
-    //     case TYPE_COLORS_AND_POSITIONS:
-    //         copy = new RadialGradient(mX, mY, mRadius, mColors.clone(),
-    //                 mPositions != null ? mPositions.clone() : null, mTileMode);
-    //         break;
-    //     case TYPE_COLOR_CENTER_AND_COLOR_EDGE:
-    //         copy = new RadialGradient(mX, mY, mRadius, mCenterColor, mEdgeColor, mTileMode);
-    //         break;
-    //     default:
-    //         throw new IllegalArgumentException("RadialGradient should be created with either " +
-    //                 "colors and positions or center color and edge color");
-    // }
+    switch (mType) {
+        case TYPE_COLORS_AND_POSITIONS:
+            CRadialGradient::New(mX, mY, mRadius, *mColors->Clone(),
+                    mPositions != NULL ? mPositions->Clone() : NULL, mTileMode, (IRadialGradient**)&copy);
+            break;
+        case TYPE_COLOR_CENTER_AND_COLOR_EDGE:
+            CRadialGradient::New(mX, mY, mRadius, mCenterColor, mEdgeColor, mTileMode, (IRadialGradient**)&copy);
+            break;
+        default:
+            // throw new IllegalArgumentException("RadialGradient should be created with either " +
+            //         "colors and positions or center color and edge color");
+            assert(0);
+    }
     CopyLocalMatrix(IShader::Probe(copy));
     return IShader::Probe(copy);
 }

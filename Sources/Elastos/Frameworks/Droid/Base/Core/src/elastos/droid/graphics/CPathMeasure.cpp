@@ -129,19 +129,17 @@ ECode CPathMeasure::NextContour(
 }
 
 Int64 CPathMeasure::NativeCreate(
-    /* [in] */ Int64 nativePath,
-    /* [in] */ Boolean forceClosed)
+    /* [in] */ Int64 pathHandle,
+    /* [in] */ Boolean forceClosedHandle)
 {
-    assert(0 && "TODO");
-    // const SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
-    // bool forceClosed = (forceClosedHandle == JNI_TRUE);
-    // PathMeasurePair* pair;
-    // if(path)
-    //     pair = new PathMeasurePair(*path, forceClosed);
-    // else
-    //     pair = new PathMeasurePair;
-    // return reinterpret_cast<jlong>(pair);
-    return 0;
+    const SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
+    bool forceClosed = (forceClosedHandle == TRUE);
+    PathMeasurePair* pair;
+    if(path)
+        pair = new PathMeasurePair(*path, forceClosed);
+    else
+        pair = new PathMeasurePair;
+    return reinterpret_cast<Int64>(pair);
 }
 
 void CPathMeasure::NativeSetPath(
@@ -208,45 +206,43 @@ Boolean CPathMeasure::NativeGetPosTan(
 
 Boolean CPathMeasure::NativeGetMatrix(
     /* [in] */ Int64 nativeInstance,
-    /* [in] */ Float distance,
-    /* [out] */ Int64 nativeMatrix,
+    /* [in] */ Float dist,
+    /* [out] */ Int64 matrixHandle,
     /* [in] */ Int32 flags)
 {
-    assert(0 && "TODO");
-    // PathMeasurePair* pair = reinterpret_cast<PathMeasurePair*>(pairHandle);
-    // SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
-    // bool result = pair->fMeasure.getMatrix(dist, matrix, (SkPathMeasure::MatrixFlags)flags);
-    // return result ? JNI_TRUE : JNI_FALSE;
-    return FALSE;
+    PathMeasurePair* pair = reinterpret_cast<PathMeasurePair*>(nativeInstance);
+    SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
+    bool result = pair->fMeasure.getMatrix(dist, matrix, (SkPathMeasure::MatrixFlags)flags);
+    return result ? TRUE : FALSE;
 }
 
 Boolean CPathMeasure::NativeGetSegment(
     /* [in] */ Int64 nativeInstance,
     /* [in] */ Float startF,
     /* [in] */ Float stopF,
-    /* [out] */ Int64 nativePath,
+    /* [out] */ Int64 dstHandle,
     /* [in] */ Boolean startWithMoveTo)
 {
-    assert(0 && "TODO");
-    // PathMeasurePair* pair = reinterpret_cast<PathMeasurePair*>(pairHandle);
-    // SkPath* dst = reinterpret_cast<SkPath*>(dstHandle);
-    // bool result = pair->fMeasure.getSegment(startF, stopF, dst, startWithMoveTo);
-    // return result ? JNI_TRUE : JNI_FALSE;
-    return FALSE;
+    PathMeasurePair* pair = reinterpret_cast<PathMeasurePair*>(nativeInstance);
+    SkPath* dst = reinterpret_cast<SkPath*>(dstHandle);
+    bool result = pair->fMeasure.getSegment(startF, stopF, dst, startWithMoveTo);
+    return result ? TRUE : FALSE;
 }
 
 Boolean CPathMeasure::NativeIsClosed(
     /* [in] */ Int64 nativeInstance)
 {
     PathMeasurePair* pair = reinterpret_cast<PathMeasurePair*>(nativeInstance);
-    return pair->fMeasure.isClosed();;
+    bool result = pair->fMeasure.isClosed();
+    return result ? TRUE : FALSE;
 }
 
 Boolean CPathMeasure::NativeNextContour(
     /* [in] */ Int64 nativeInstance)
 {
     PathMeasurePair* pair = reinterpret_cast<PathMeasurePair*>(nativeInstance);
-    return pair->fMeasure.nextContour();;
+    bool result = pair->fMeasure.nextContour();
+    return result ? TRUE : FALSE;
 }
 
 void CPathMeasure::NativeDestroy(

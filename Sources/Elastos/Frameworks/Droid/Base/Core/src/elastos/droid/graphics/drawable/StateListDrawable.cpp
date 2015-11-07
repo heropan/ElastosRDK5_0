@@ -137,8 +137,7 @@ ECode StateListDrawable::Inflate(
 
     a->GetBoolean(R::styleable::StateListDrawable_dither, DEFAULT_DITHER, &value);
     SetDither(value);
-    assert(0 && "TODO");
-    // a->GetBoolean(R::styleable::StateListDrawable_autoMirrored, FALSE, &value);
+    a->GetBoolean(R::styleable::StateListDrawable_autoMirrored, FALSE, &value);
     SetAutoMirrored(value);
 
     a->Recycle();

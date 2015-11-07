@@ -73,20 +73,15 @@ AnimatorSet::DependencyListener::DependencyListener(
     mNode = node;
 }
 
-/**
- * A start event is received - see if this is an event we are listening for
- */
 ECode AnimatorSet::DependencyListener::OnAnimationStart(
     /* [in] */ IAnimator* animation)
 {
-    if(mRule == Dependency::WITH)
+    if(mRule == Dependency::WITH) {
         StartIfReady(animation);
+    }
     return NOERROR;
 }
 
-/**
- * An end event is received - see if this is an event we are listening for
- */
 ECode AnimatorSet::DependencyListener::OnAnimationEnd(
     /* [in] */ IAnimator* animation)
 {
@@ -95,20 +90,12 @@ ECode AnimatorSet::DependencyListener::OnAnimationEnd(
     return NOERROR;
 }
 
-/**
- * Ignore cancel events for now. We may want to handle this eventually,
- * to prevent follow-on animations from running when some dependency
- * animation is canceled.
- */
 ECode AnimatorSet::DependencyListener::OnAnimationCancel(
     /* [in] */ IAnimator* animation)
 {
     return NOERROR;
 }
 
-/**
- * Ignore repeat events for now
- */
 ECode AnimatorSet::DependencyListener::OnAnimationRepeat(
     /* [in] */ IAnimator* animation)
 {
@@ -146,7 +133,6 @@ void AnimatorSet::DependencyListener::StartIfReady(
 //==============================================================================
 //                  AnimatorSet::AnimatorSetListener
 //==============================================================================
-
 PInterface AnimatorSet::AnimatorSetListener::Probe(
     /* [in] */ REIID riid)
 {
@@ -161,14 +147,17 @@ PInterface AnimatorSet::AnimatorSetListener::Probe(
     }
     return Object::Probe(riid);
 }
+
 UInt32 AnimatorSet::AnimatorSetListener::AddRef()
 {
     return ElRefBase::AddRef();
 }
+
 UInt32 AnimatorSet::AnimatorSetListener::Release()
 {
     return ElRefBase::Release();
 }
+
 ECode AnimatorSet::AnimatorSetListener::GetInterfaceID(
     /* [in] */ IInterface* object,
     /* [out] */ InterfaceID* iid)
@@ -209,7 +198,6 @@ ECode AnimatorSet::AnimatorSetListener::OnAnimationEnd(
     /* [in] */ IAnimator* animation)
 {
     // mAnimatorSet's reference may be released to 0 when (*itListeners)->OnAnimationEnd()
-    //
     mAnimatorSet->Probe(EIID_IAnimatorSet)->AddRef();
     animation->RemoveListener(this);
     mAnimatorSet->mPlayingSet.Remove(animation);
@@ -364,7 +352,6 @@ ECode AnimatorSet::AnimatorListenerAdapterIMPL::OnAnimationRepeat(
 //==============================================================================
 //                  AnimatorSet
 //==============================================================================
-
 UInt32 AnimatorSet::AddRef()
 {
     return Animator::AddRef();
@@ -479,12 +466,6 @@ ECode AnimatorSet::PlaySequentially(
     return NOERROR;
 }
 
-/**
- * Sets up this AnimatorSet to play each of the supplied animations when the
- * previous animation ends.
- *
- * @param items The animations that will be started one after another.
- */
 ECode AnimatorSet::PlaySequentially(
     /* [in] */ IList* items)
 {

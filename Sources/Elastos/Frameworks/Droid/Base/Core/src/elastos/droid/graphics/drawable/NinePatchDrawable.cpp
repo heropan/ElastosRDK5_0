@@ -7,11 +7,14 @@
 #include "elastos/droid/graphics/CNinePatch.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/NinePatch.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::ILayoutDirection;
 using Elastos::Droid::R;
@@ -473,19 +476,17 @@ ECode NinePatchDrawable::GetOutline(
         AutoPtr<INinePatchInsetStruct> insets;
         bitmap->GetNinePatchInsets((INinePatchInsetStruct**)&insets);
         if (insets != NULL) {
-            assert(0 && "TODO");
-            // InsetStruct* _insets = (InsetStruct*)insets.Get();
-            // CRect* outlineInsets = (CRect*)_insets->mOutlineRect.Get();
-            // CRect* _bounds = (CRect*)bounds.Get();
-            // outline->SetRoundRect(_bounds->mLeft + outlineInsets->mLeft,
-            //         _bounds->mTop + outlineInsets->mTop,
-            //         _bounds->mRight - outlineInsets->mRight,
-            //         _bounds->mBottom - outlineInsets->mBottom,
-            //         _insets->mOutlineRadius);
-            // Int32 alpha = 0;
-            // GetAlpha(&alpha);
-            // outline->SetAlpha(insets->mOutlineAlpha * (alpha / 255.0f));
-            return NOERROR;
+            NinePatch::InsetStruct* _insets = (NinePatch::InsetStruct*)insets.Get();
+            CRect* outlineInsets = (CRect*)_insets->mOutlineRect.Get();
+            CRect* _bounds = (CRect*)bounds.Get();
+            outline->SetRoundRect(_bounds->mLeft + outlineInsets->mLeft,
+                    _bounds->mTop + outlineInsets->mTop,
+                    _bounds->mRight - outlineInsets->mRight,
+                    _bounds->mBottom - outlineInsets->mBottom,
+                    _insets->mOutlineRadius);
+            Int32 alpha = 0;
+            GetAlpha(&alpha);
+            return outline->SetAlpha(_insets->mOutlineAlpha * (alpha / 255.0f));
         }
     }
     return Drawable::GetOutline(outline);
@@ -669,8 +670,9 @@ ECode NinePatchDrawable::UpdateStateFromTypedArray(
         AutoPtr<IInputStream> is;
         r->OpenRawResource(srcResId, value, (IInputStream**)&is);
 
-        assert(0 && "TODO");
-        // bitmap = CBitmapFactory::DecodeResourceStream(r, value, is, padding, options);
+        AutoPtr<IBitmapFactory> bf;
+        CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bf);
+        bf->DecodeResourceStream(r, value, is, padding, options, (IBitmap**)&bitmap);
 
         is->Close();
         // } catch (IOException e) {
@@ -690,27 +692,25 @@ ECode NinePatchDrawable::UpdateStateFromTypedArray(
 
         bitmap->GetOpticalInsets(opticalInsets);
 
-        assert(0 && "TODO");
-        // CNinePatch::New(bitmap, chunk, (INinePatch**)&state->mNinePatch);
+        CNinePatch::New(bitmap, chunk, (INinePatch**)&state->mNinePatch);
         state->mPadding = padding;
         state->mOpticalInsets = Insets::Of(opticalInsets);
     }
 
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetBoolean(R::styleable::NinePatchDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
-    // FAIL_RETURN(a->GetFloat(R::styleable::NinePatchDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha));
+    FAIL_RETURN(a->GetBoolean(R::styleable::NinePatchDrawable_autoMirrored, state->mAutoMirrored, &state->mAutoMirrored));
+    FAIL_RETURN(a->GetFloat(R::styleable::NinePatchDrawable_alpha, state->mBaseAlpha, &state->mBaseAlpha));
 
-    // Int32 tintMode = 0;
-    // FAIL_RETURN(a->GetInt32(R::styleable::NinePatchDrawable_tintMode, -1, &tintMode));
-    // if (tintMode != -1) {
-    //     Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
-    // }
+    Int32 tintMode = 0;
+    FAIL_RETURN(a->GetInt32(R::styleable::NinePatchDrawable_tintMode, -1, &tintMode));
+    if (tintMode != -1) {
+        Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
+    }
 
-    // AutoPtr<IColorStateList> tint;
-    // FAIL_RETURN(a->GetColorStateList(R::styleable::NinePatchDrawable_tint, (IColorStateList**)&tint));
-    // if (tint != NULL) {
-    //     state->mTint = tint;
-    // }
+    AutoPtr<IColorStateList> tint;
+    FAIL_RETURN(a->GetColorStateList(R::styleable::NinePatchDrawable_tint, (IColorStateList**)&tint));
+    if (tint != NULL) {
+        state->mTint = tint;
+    }
 
     // Update local properties.
     InitializeWithState(state, r);
@@ -734,8 +734,7 @@ ECode NinePatchDrawable::ApplyTheme(
     Int32 size = ARRAY_SIZE(R::styleable::NinePatchDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::NinePatchDrawable, size);
-    assert(0 && "TODO");
-    // t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a);
+    ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
     // try {
     if (FAILED(UpdateStateFromTypedArray(a))) {
         a->Recycle();

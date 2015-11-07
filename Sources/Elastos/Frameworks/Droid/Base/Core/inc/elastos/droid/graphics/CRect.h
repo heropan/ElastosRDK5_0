@@ -6,6 +6,8 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;
+using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
 namespace Droid {
@@ -23,6 +25,26 @@ CarClass(CRect)
     , public IRect
     , public IParcelable
 {
+private:
+    /**
+     * A helper class for flattened rectange pattern recognition. A separate
+     * class to avoid an initialization dependency on a regular expression
+     * causing Rect to not be initializable with an ahead-of-time compilation
+     * scheme.
+     */
+    class UnflattenHelper
+    {
+    public:
+        static CARAPI_(AutoPtr<IMatcher>) GetMatcher(
+            /* [in] */ const String& str);
+
+    private:
+        static CARAPI_(AutoPtr<IPattern>) InitStatic();
+
+    private:
+        static AutoPtr<IPattern> FLATTENED_PATTERN;
+    };
+
 public:
     CAR_OBJECT_DECL();
 
@@ -89,6 +111,13 @@ public:
      */
     CARAPI FlattenToString(
         /* [out] */ String* str);
+
+    /**
+     * Returns a Rect from a string of the form returned by {@link #flattenToString},
+     * or null if the string is not of that form.
+     */
+    static CARAPI_(AutoPtr<IRect>) UnflattenFromString(
+        /* [in] */ const String& str);
 
     /**
      * Returns true if the rectangle is empty (left >= right or top >= bottom)
@@ -327,10 +356,9 @@ public:
      * @return true iff the two specified rectangles intersect. In no event are
      *              either of the rectangles modified.
      */
-    CARAPI Intersects(
+    static CARAPI_(Boolean) Intersects(
         /* [in] */ IRect* a,
-        /* [in] */ IRect* b,
-        /* [out] */ Boolean* result);
+        /* [in] */ IRect* b);
 
     /**
      * If rectangles a and b intersect, return true and set this rectangle to
@@ -442,6 +470,13 @@ public:
 
     CARAPI SetRight(
         /* [in] */ Int32 right);
+
+    /**
+     * Scales up the rect by the given scale, rounding values toward the inside.
+     * @hide
+     */
+    CARAPI_(void) ScaleRoundIn(
+        /* [in] */ Float scale);
 
 public:
     Int32 mLeft;

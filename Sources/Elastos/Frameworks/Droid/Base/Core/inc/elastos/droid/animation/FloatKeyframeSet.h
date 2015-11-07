@@ -20,6 +20,7 @@ namespace Animation {
 class FloatKeyframeSet
     : public KeyframeSet
     , public IFloatKeyframeSet
+    , public IFloatKeyframes
 {
 public:
     CAR_INTERFACE_DECL();

@@ -49,8 +49,7 @@ NinePatch::InsetStruct::InsetStruct(
         mOpticalRect->Scale(decodeScale);
 
         // round inward while scaling outline, as the outline should always be conservative
-        assert(0 && "TODO");
-        // mOutlineRect->ScaleRoundIn(decodeScale);
+        ((CRect*)mOutlineRect.Get())->ScaleRoundIn(decodeScale);
     }
 }
 
@@ -188,7 +187,7 @@ void NinePatch::DrawSoftware(
     /* [in] */ IPaint* paint)
 {
     NativeDraw(((CCanvas*)canvas)->GetNativeCanvasWrapper(), location, ((CBitmap*)mBitmap.Get())->Ni(), mNativeChunk,
-            paint != NULL ? ((CPaint*)paint)->mNativePaint : 0, ((CCanvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
+            paint != NULL ? ((Paint*)paint)->mNativePaint : 0, ((CCanvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
 }
 
 void NinePatch::DrawSoftware(
@@ -197,7 +196,7 @@ void NinePatch::DrawSoftware(
     /* [in] */ IPaint* paint)
 {
     NativeDraw(((CCanvas*)canvas)->GetNativeCanvasWrapper(), location, ((CBitmap*)mBitmap.Get())->Ni(), mNativeChunk,
-            paint != NULL ? ((CPaint*)paint)->mNativePaint  : 0, ((CCanvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
+            paint != NULL ? ((Paint*)paint)->mNativePaint  : 0, ((CCanvas*)canvas)->mDensity, ((CBitmap*)mBitmap.Get())->mDensity);
 }
 
 ECode NinePatch::GetDensity(

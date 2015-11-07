@@ -515,6 +515,17 @@ module
         /**
          * Create a drawable projection from a bitmap to nine patches.
          *
+         * @param bitmap The bitmap describing the patches.
+         * @param chunk The 9-patch data chunk describing how the underlying bitmap
+         *              is split apart and drawn.
+         */
+        constructor(
+            [in] IBitmap* bitmap,
+            [in] ArrayOf<Byte>* chunk);
+
+        /**
+         * Create a drawable projection from a bitmap to nine patches.
+         *
          * @param bitmap    The bitmap describing the patches.
          * @param chunk     The 9-patch data chunk describing how the underlying
          *                  bitmap is split apart and drawn.
@@ -820,6 +831,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CRectHelper{
+        interface IRectHelper;
+    }
+
     class CRectF {
         /**
          * Create a new empty RectF. All coordinates are initialized to 0.
@@ -888,6 +903,10 @@ module
 
         /*private*/ constructor(
             [in] Int64 ni);
+
+        /*private*/ constructor(
+            [in] Int64 ni,
+            [in] Int32 dummy);
 
         interface IRegion;
         interface IParcelable;
@@ -1068,6 +1087,16 @@ module
             [in] ArrayOf<Int32>* strides);
 
         interface IYuvImage;
+    }
+
+    [deprecated]
+    class COutline {
+        constructor();
+
+        constructor(
+            [in] /*@NonNull*/ IOutline* src);
+
+        interface IOutline;
     }
 
     namespace Drawable {
@@ -1510,6 +1539,8 @@ module
     }
 
     class CAnimatedStateListDrawable {
+        constructor();
+
         constructor(
             [in] /*@Nullable*/ IDrawableConstantState* state,
             [in] /*@Nullable*/ IResources* res);
@@ -1650,6 +1681,22 @@ module
 
     } // namespace Drawable
 
+    namespace Pdf {
+    class CPdfDocument {
+        constructor();
+
+        interface IPdfDocument;
+    }
+
+    class CPdfRenderer {
+        constructor(
+            [in] /*@NonNull*/ Elastos.Droid.Os.IParcelFileDescriptor* input);
+
+        interface IPdfRenderer;
+        //intefface IAutoCloseable;
+    }
+
+    } // namespace Pdf
     } // namespace Graphics
     } // namepsace Droid
     } // namespace Elastos

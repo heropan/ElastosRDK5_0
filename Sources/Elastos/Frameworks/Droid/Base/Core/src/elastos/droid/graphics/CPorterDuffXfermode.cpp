@@ -53,10 +53,11 @@ ECode CPorterDuffXfermode::GetMode(
     return NOERROR;
 }
 
-Int32 CPorterDuffXfermode::NativeCreateXfermode(
-    /* [in] */ PorterDuffMode mode)
+Int64 CPorterDuffXfermode::NativeCreateXfermode(
+    /* [in] */ PorterDuffMode modeHandle)
 {
-    return (Int32)SkPorterDuff::CreateXfermode((SkPorterDuff::Mode)mode);
+    SkPorterDuff::Mode mode = static_cast<SkPorterDuff::Mode>(modeHandle);
+    return reinterpret_cast<Int64>(SkPorterDuff::CreateXfermode(mode));
 }
 
 } // namespace Graphics

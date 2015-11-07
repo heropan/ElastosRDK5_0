@@ -1,7 +1,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/drawable/shapes/RoundRectShape.h"
-// #include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CPath.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {
@@ -32,11 +33,10 @@ RoundRectShape::RoundRectShape(
     mOuterRadii = outerRadii;
     mInnerRadii = innerRadii;
 
-    assert(0 && "TODO");
-    // if (inset != NULL) {
-    //     CRectF::New((IRectF**)&mInnerRect);
-    // }
-    // CPath::New((IPath**)&mPath);
+    if (inset != NULL) {
+        CRectF::New((IRectF**)&mInnerRect);
+    }
+    CPath::New((IPath**)&mPath);
 }
 
 ECode RoundRectShape::constructor(
@@ -57,11 +57,10 @@ ECode RoundRectShape::constructor(
     mOuterRadii = outerRadii;
     mInnerRadii = innerRadii;
 
-    assert(0 && "TODO");
-    // if (inset != NULL) {
-    //     CRectF::NewByFriend((CRectF**)&mInnerRect);
-    // }
-    // CPath::New((IPath**)&mPath);
+    if (inset != NULL) {
+        CRectF::NewByFriend((CRectF**)&mInnerRect);
+    }
+    CPath::New((IPath**)&mPath);
     return NOERROR;
 }
 
@@ -139,11 +138,9 @@ ECode RoundRectShape::CloneImpl(
     RectShape::CloneImpl(IRectShape::Probe(other));
     other->mOuterRadii = mOuterRadii != NULL ? mOuterRadii->Clone() : NULL;
     other->mInnerRadii = mInnerRadii != NULL ? mInnerRadii->Clone() : NULL;
-    assert(0 && "TODO");
-    // CRectF::New((IRectF*)mInset.Get(), (IRectF**)&other->mInset);
-    // CRectF::New((IRectF*)mInnerRect.Get(), (IRectF**)&other->mInnerRect);
-    // return CPath::New(mPath, (IPath**)&other->mPath);
-    return NOERROR;
+    CRectF::New((IRectF*)mInset.Get(), (IRectF**)&other->mInset);
+    CRectF::New((IRectF*)mInnerRect.Get(), (IRectF**)&other->mInnerRect);
+    return CPath::New(mPath, (IPath**)&other->mPath);
 }
 
 } // namespace Shapes

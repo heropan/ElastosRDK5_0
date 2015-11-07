@@ -4,10 +4,12 @@
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Core::ICloneable;
 
 namespace Elastos {
@@ -487,8 +489,7 @@ ECode ShapeDrawable::ApplyTheme(
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ShapeDrawable, size);
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-    // FAIL_RETURN(t->ResolveAttributes(state->mThemeAttrs, layout, (ITypedArray**)&a));
+    FAIL_RETURN(((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a));
     ECode ec = UpdateStateFromTypedArray(a);
     if (FAILED(ec)) {
         a->Recycle();
@@ -498,8 +499,7 @@ ECode ShapeDrawable::ApplyTheme(
 
     // Update local properties.
     AutoPtr<IResources> res;
-    assert(0 && "TODO");
-    // t->GetResources((IResources**)&res);
+    ((CResources::Theme*)t)->GetResources((IResources**)&res);
     return InitializeWithState(state, res);
 }
 
@@ -534,15 +534,13 @@ ECode ShapeDrawable::UpdateStateFromTypedArray(
     SetIntrinsicHeight((Int32) value);
 
     Int32 tintMode = 0;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetInt32(R::styleable::ShapeDrawable_tintMode, -1, &tintMode));
+    FAIL_RETURN(a->GetInt32(R::styleable::ShapeDrawable_tintMode, -1, &tintMode));
     if (tintMode != -1) {
         Drawable::ParseTintMode(tintMode, PorterDuffMode_SRC_IN, &state->mTintMode);
     }
 
     AutoPtr<IColorStateList> tint;
-    assert(0 && "TODO");
-    // FAIL_RETURN(a->GetColorStateList(R::styleable::ShapeDrawable_tint, (IColorStateList**)&tint));
+    FAIL_RETURN(a->GetColorStateList(R::styleable::ShapeDrawable_tint, (IColorStateList**)&tint));
     if (tint != NULL) {
         state->mTint = tint;
     }
@@ -598,12 +596,11 @@ ECode ShapeDrawable::Mutate(
     if (!mMutated &&
             (Drawable::Mutate((IDrawable**)&tmp), tmp.Get()) == (IDrawable*)this->Probe(EIID_IDrawable)) {
         AutoPtr<IPaint> paint;
-        assert(0 && "TODO");
-        // if (mShapeState->mPaint != NULL) {
-        //     CPaint::New(mShapeState->mPaint, (IPaint**)&paint);
-        // } else {
-        //     CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&paint);
-        // }
+        if (mShapeState->mPaint != NULL) {
+            CPaint::New(mShapeState->mPaint, (IPaint**)&paint);
+        } else {
+            CPaint::New(IPaint::ANTI_ALIAS_FLAG, (IPaint**)&paint);
+        }
         mShapeState->mPaint = paint;
 
         AutoPtr<IRect> padding;

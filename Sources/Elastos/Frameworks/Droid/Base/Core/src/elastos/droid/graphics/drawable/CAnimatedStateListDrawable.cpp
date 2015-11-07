@@ -7,6 +7,10 @@ namespace Graphics {
 namespace Drawable {
 
 CAR_OBJECT_IMPL(CAnimatedStateListDrawable);
+ECode CAnimatedStateListDrawable::constructor()
+{
+    return AnimatedStateListDrawable::constructor(NULL, NULL);
+}
 
 ECode CAnimatedStateListDrawable::constructor(
     /* [in] */ /*@Nullable*/ IDrawableConstantState* state,

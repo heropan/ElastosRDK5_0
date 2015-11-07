@@ -257,31 +257,30 @@ ECode ObjectAnimator::GetTarget(
     /* [out] */ IInterface** object)
 {
     VALIDATE_NOT_NULL(object);
-    *object = mTarget;
-    REFCOUNT_ADD(*object);
+    if (mTarget == NULL) {
+        *object = NULL;
+        return NOERROR;
+    }
+
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe(mTarget);
+    if (source != NULL) {
+        AutoPtr<IWeakReference> wr;
+        source->GetWeakReference((IWeakReference**)&wr);
+        *object = wr;
+        REFCOUNT_ADD(*object);
+    }
+
     return NOERROR;
 }
 
 ECode ObjectAnimator::SetTarget(
     /* [in] */ IInterface* target)
 {
-    if (target != mTarget) {
-        AutoPtr<IInterface> oldTarget = mTarget;
-        mTarget = IWeakReference::Probe(target);
-        AutoPtr<IObject> old = IObject::Probe(oldTarget);
-        AutoPtr<IObject> now = IObject::Probe(target);
-        assert(now != NULL);
-        EGuid oldId = ECLSID_CDummyObject;
-        EGuid newId;
-        if(old != NULL) {
-            old->GetClassID(&oldId);
-        }
-        now->GetClassID(&newId);
-        if (oldTarget != NULL && target != NULL && oldId == newId) {
-            return NOERROR;
-        }
-
-        // New target type should cause re-initialization prior to starting
+    AutoPtr<IInterface> oldTarget;
+    GetTarget((IInterface**)&oldTarget);
+    if (IInterface::Probe(oldTarget) != IInterface::Probe(target)) {
+        mTarget = target == NULL ? NULL : IWeakReference::Probe(target);/*new WeakReference<Object>(target);*/
+        // New target should cause re-initialization prior to starting
         mInitialized = FALSE;
     }
 

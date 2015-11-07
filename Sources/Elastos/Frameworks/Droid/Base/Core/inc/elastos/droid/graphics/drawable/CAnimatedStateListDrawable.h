@@ -15,6 +15,8 @@ CarClass(CAnimatedStateListDrawable), public AnimatedStateListDrawable
 public:
     CAR_OBJECT_DECL();
 
+    CARAPI constructor();
+
     CARAPI constructor(
         /* [in] */ /*@Nullable*/ IDrawableConstantState* state,
         /* [in] */ /*@Nullable*/ IResources* res);

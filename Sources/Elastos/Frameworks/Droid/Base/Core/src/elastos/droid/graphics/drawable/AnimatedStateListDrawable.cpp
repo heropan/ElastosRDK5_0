@@ -474,38 +474,37 @@ ECode AnimatedStateListDrawable::Inflate(
     /* [in] */ /*@Nullable*/ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
 {
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
     ECode ec = NOERROR;
-    // Int32 size = ARRAY_SIZE(R::styleable::AnimatedStateListDrawable);
-    // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-    // layout->Copy(R::styleable::AnimatedStateListDrawable, size);
-    // FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
+    Int32 size = ARRAY_SIZE(R::styleable::AnimatedStateListDrawable);
+    AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
+    layout->Copy(R::styleable::AnimatedStateListDrawable, size);
+    FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
 
-    // StateListDrawable::InflateWithAttributes(r, parser, a, R::styleable::AnimatedStateListDrawable_visible);
+    StateListDrawable::InflateWithAttributes(r, parser, a, R::styleable::AnimatedStateListDrawable_visible);
 
-    // AutoPtr<StateListState> stateListState = GetStateListState();
-    // Boolean value = FALSE;
-    // Int32 ivalue = 0;
-    // ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_variablePadding, FALSE, &value);
-    // FAIL_GOTO(ec, error);
-    // stateListState->SetVariablePadding(value);
-    // ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_constantSize, FALSE, &value);
-    // FAIL_GOTO(ec, error);
-    // stateListState->SetConstantSize(value);
+    AutoPtr<StateListState> stateListState = GetStateListState();
+    Boolean value = FALSE;
+    Int32 ivalue = 0;
+    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_variablePadding, FALSE, &value);
+    FAIL_GOTO(ec, error);
+    stateListState->SetVariablePadding(value);
+    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_constantSize, FALSE, &value);
+    FAIL_GOTO(ec, error);
+    stateListState->SetConstantSize(value);
 
-    // ec = a->GetInt32(R::styleable::AnimatedStateListDrawable_enterFadeDuration, 0, &ivalue);
-    // FAIL_GOTO(ec, error);
-    // stateListState->SetEnterFadeDuration(ivalue);
-    // ec = a->GetInt32(R::styleable::AnimatedStateListDrawable_exitFadeDuration, 0, &ivalue);
-    // FAIL_GOTO(ec, error);
-    // stateListState->SetExitFadeDuration(ivalue);
+    ec = a->GetInt32(R::styleable::AnimatedStateListDrawable_enterFadeDuration, 0, &ivalue);
+    FAIL_GOTO(ec, error);
+    stateListState->SetEnterFadeDuration(ivalue);
+    ec = a->GetInt32(R::styleable::AnimatedStateListDrawable_exitFadeDuration, 0, &ivalue);
+    FAIL_GOTO(ec, error);
+    stateListState->SetExitFadeDuration(ivalue);
 
-    // ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_dither, TRUE, &value);
-    // FAIL_GOTO(ec, error);
-    // SetDither(value);
-    // ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_autoMirrored, FALSE, &value);
-    // FAIL_GOTO(ec, error);
-    // SetAutoMirrored(value);
+    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_dither, TRUE, &value);
+    FAIL_GOTO(ec, error);
+    SetDither(value);
+    ec = a->GetBoolean(R::styleable::AnimatedStateListDrawable_autoMirrored, FALSE, &value);
+    FAIL_GOTO(ec, error);
+    SetAutoMirrored(value);
 
 error:
     if (FAILED(ec)) {
@@ -566,23 +565,22 @@ ECode AnimatedStateListDrawable::ParseTransition(
     for (Int32 i = 0; i < numAttrs; i++) {
         Int32 stateResId = 0;
         attrs->GetAttributeNameResource(i, &stateResId);
-        assert(0 && "TODO");
-        // switch (stateResId) {
-        //     case 0:
-        //         break;
-        //     case R::attr::fromId:
-        //         attrs->GetAttributeResourceValue(i, 0, &fromId);
-        //         break;
-        //     case R::attr::toId:
-        //         attrs->GetAttributeResourceValue(i, 0, &toId);
-        //         break;
-        //     case R::attr::drawable:
-        //         attrs->GetAttributeResourceValue(i, 0, &drawableRes);
-        //         break;
-        //     case R::attr::reversible:
-        //         attrs->GetAttributeBooleanValue(i, FALSE, &reversible);
-        //         break;
-        // }
+        switch (stateResId) {
+            case 0:
+                break;
+            case R::attr::fromId:
+                attrs->GetAttributeResourceValue(i, 0, &fromId);
+                break;
+            case R::attr::toId:
+                attrs->GetAttributeResourceValue(i, 0, &toId);
+                break;
+            case R::attr::drawable:
+                attrs->GetAttributeResourceValue(i, 0, &drawableRes);
+                break;
+            case R::attr::reversible:
+                attrs->GetAttributeBooleanValue(i, FALSE, &reversible);
+                break;
+        }
     }
 
     AutoPtr<IDrawable> dr;

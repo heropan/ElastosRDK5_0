@@ -98,6 +98,8 @@ public:
         /* [out] */ String* str);
 
 protected:
+    friend class CLayoutTransition;
+
     Int32 mNumKeyframes;
 
     AutoPtr<IKeyframe> mFirstKeyframe;

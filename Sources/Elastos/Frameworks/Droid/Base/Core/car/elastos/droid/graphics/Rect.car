@@ -214,21 +214,6 @@ module
             [out] Boolean* result);
 
         /**
-         * Returns true iff the two specified rectangles intersect. In no event are
-         * either of the rectangles modified. To record the intersection,
-         * use {@link #intersect(Rect)} or {@link #setIntersect(Rect, Rect)}.
-         *
-         * @param a The first rectangle being tested for intersection
-         * @param b The second rectangle being tested for intersection
-         * @param result true iff the two specified rectangles intersect. In no event
-         *             are either of the rectangles modified.
-         */
-        Intersects(
-            [in] IRect* a,
-            [in] IRect* b,
-            [out] Boolean* result);
-
-        /**
          * Returns true if the rectangle is empty (left >= right or top >= bottom)
          */
         IsEmpty(
@@ -388,14 +373,28 @@ module
     }
 
     interface IRectHelper {
-
-    /**
-     * Returns a Rect from a string of the form returned by {@link #flattenToString},
-     * or null if the string is not of that form.
-     */
+        /**
+         * Returns a Rect from a string of the form returned by {@link #flattenToString},
+         * or null if the string is not of that form.
+         */
         UnflattenFromString(
             [in] String str,
             [out] IRect** rect);
+
+        /**
+         * Returns true iff the two specified rectangles intersect. In no event are
+         * either of the rectangles modified. To record the intersection,
+         * use {@link #intersect(Rect)} or {@link #setIntersect(Rect, Rect)}.
+         *
+         * @param a The first rectangle being tested for intersection
+         * @param b The second rectangle being tested for intersection
+         * @param result true iff the two specified rectangles intersect. In no event
+         *             are either of the rectangles modified.
+         */
+        Intersects(
+            [in] IRect* a,
+            [in] IRect* b,
+            [out] Boolean* result);
     }
 
     } // namespace Graphics

@@ -1,11 +1,15 @@
 
 #include "elastos/droid/graphics/drawable/AnimatedVectorDrawable.h"
 #include "elastos/droid/graphics/drawable/CAnimatedVectorDrawable.h"
+#include "elastos/droid/graphics/drawable/CVectorDrawable.h"
+#include "elastos/droid/graphics/drawable/VectorDrawable.h"
+#include "elastos/droid/animation/AnimatorInflater.h"
 #include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::R;
+using Elastos::Droid::Animation::AnimatorInflater;
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -32,8 +36,7 @@ AnimatedVectorDrawable::AnimatedVectorDrawableState::AnimatedVectorDrawableState
             mVectorDrawable = IVectorDrawable::Probe(dr);
             dr = NULL;
             IDrawable::Probe(mVectorDrawable)->Mutate((IDrawable**)&dr);
-            assert(0 && "TODO");
-            // mVectorDrawable->SetAllowCaching(FALSE);
+            ((VectorDrawable*)mVectorDrawable.Get())->SetAllowCaching(FALSE);
             AutoPtr<IRect> r;
             IDrawable::Probe(copy->mVectorDrawable)->GetBounds((IRect**)&r);
             IDrawable::Probe(mVectorDrawable)->SetBounds(r);
@@ -52,9 +55,7 @@ AnimatedVectorDrawable::AnimatedVectorDrawableState::AnimatedVectorDrawableState
                 AutoPtr<ICharSequence> cs;
                 IMap::Probe(copy->mTargetNameMap)->Get(anim, (IInterface**)&cs);
                 cs->ToString(&targetName);
-                AutoPtr<IInterface> targetObject;
-                assert(0 && "TODO");
-                // mVectorDrawable->GetTargetByName(targetName, (IInterface**)&targetObject);
+                AutoPtr<IInterface> targetObject = ((VectorDrawable*)mVectorDrawable.Get())->GetTargetByName(targetName);
                 animClone->SetTarget(targetObject);
                 mAnimators->Add(animClone);
                 cs = NULL;
@@ -63,8 +64,7 @@ AnimatedVectorDrawable::AnimatedVectorDrawableState::AnimatedVectorDrawableState
             }
         }
     } else {
-        assert(0 && "TODO");
-        // CVectorDrawable::New((IVectorDrawable**)&mVectorDrawable);
+        CVectorDrawable::New((IVectorDrawable**)&mVectorDrawable);
     }
 }
 
@@ -315,17 +315,14 @@ ECode AnimatedVectorDrawable::Inflate(
             String tagName;
             parser->GetName(&tagName);
             if (ANIMATED_VECTOR.Equals(tagName)) {
-                assert(0 && "TODO");
-                Int32 size = 0;
-                // size = ARRAY_SIZE(R::styleable::AnimatedVectorDrawable);
+                Int32 size = ARRAY_SIZE(R::styleable::AnimatedVectorDrawable);
                 AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-                // layout->Copy(R::styleable::AnimatedVectorDrawable, size);
+                layout->Copy(R::styleable::AnimatedVectorDrawable, size);
 
                 AutoPtr<ITypedArray> a;
                 FAIL_RETURN(ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a));
                 Int32 drawableRes = 0;
-                assert(0 && "TODO");
-                // ec = a->GetResourceId(R::styleable::AnimatedVectorDrawable_drawable, 0, &drawableRes);
+                ec = a->GetResourceId(R::styleable::AnimatedVectorDrawable_drawable, 0, &drawableRes);
                 if (FAILED(ec)) {
                     a->Recycle();
                     return ec;
@@ -337,40 +334,35 @@ ECode AnimatedVectorDrawable::Inflate(
                     AutoPtr<IVectorDrawable> vectorDrawable;
                     AutoPtr<IDrawable> tmp;
                     dr->Mutate((IDrawable**)&tmp);
-                    assert(0 && "TODO");
-                    // vectorDrawable->SetAllowCaching(FALSE);
-                    // vectorDrawable->GetPixelSize(&pathErrorScale);
+                    ((VectorDrawable*)vectorDrawable.Get())->SetAllowCaching(FALSE);
+                    vectorDrawable->GetPixelSize(&pathErrorScale);
                     mAnimatedVectorState->mVectorDrawable = vectorDrawable;
                 }
                 a->Recycle();
             } else if (TARGET.Equals(tagName)) {
-                assert(0 && "TODO");
-                Int32 size = 0;
-                // size = ARRAY_SIZE(R::styleable::AnimatedVectorDrawableTarget);
+                Int32 size = ARRAY_SIZE(R::styleable::AnimatedVectorDrawableTarget);
                 AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
-                // layout->Copy(R::styleable::AnimatedVectorDrawableTarget, size);
+                layout->Copy(R::styleable::AnimatedVectorDrawableTarget, size);
 
                 AutoPtr<ITypedArray> a;
                 FAIL_RETURN(ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a));
                 String target;
-                assert(0 && "TODO");
-                // ec = a->GetString(R::styleable::AnimatedVectorDrawableTarget_name, &target);
+                ec = a->GetString(R::styleable::AnimatedVectorDrawableTarget_name, &target);
                 if (FAILED(ec)) {
                     a->Recycle();
                     return ec;
                 }
 
                 Int32 id = 0;
-                // ec = a->GetResourceId(R::styleable::AnimatedVectorDrawableTarget_animation, 0, &id);
+                ec = a->GetResourceId(R::styleable::AnimatedVectorDrawableTarget_animation, 0, &id);
                 if (FAILED(ec)) {
                     a->Recycle();
                     return ec;
                 }
                 if (id != 0) {
-                    assert(0 && "TODO");
-                    // AutoPtr<IAnimator> objectAnimator = AnimatorInflater::LoadAnimator(res, theme, id,
-                    //         pathErrorScale);
-                    // SetupAnimatorsForTarget(target, objectAnimator);
+                    AutoPtr<IAnimator> objectAnimator;
+                    AnimatorInflater::LoadAnimator(res, theme, id, pathErrorScale, (IAnimator**)&objectAnimator);
+                    SetupAnimatorsForTarget(target, objectAnimator);
                 }
                 a->Recycle();
             }
@@ -409,9 +401,7 @@ void AnimatedVectorDrawable::SetupAnimatorsForTarget(
     /* [in] */ const String& name,
     /* [in] */ IAnimator* animator)
 {
-    AutoPtr<IInterface> target;
-    assert(0 && "TODO");
-    // mAnimatedVectorState->mVectorDrawable->GetTargetByName(name, (IInterface**)&target);
+    AutoPtr<IInterface> target = ((VectorDrawable*)mAnimatedVectorState->mVectorDrawable.Get())->GetTargetByName(name);
     animator->SetTarget(target);
     if (mAnimatedVectorState->mAnimators == NULL) {
         CArrayList::New((IArrayList**)&mAnimatedVectorState->mAnimators);
@@ -509,11 +499,13 @@ ECode AnimatedVectorDrawable::Reverse()
             Logger::D(LOGTAG, "AnimatedVectorDrawable can't reverse()");
         }
     }
+    return NOERROR;
 }
 
 ECode AnimatedVectorDrawable::CanReverse(
     /* [out] */ Boolean* can)
 {
+    VALIDATE_NOT_NULL(can);
     AutoPtr<IArrayList> animators = mAnimatedVectorState->mAnimators;
     Int32 size = 0;
     IList::Probe(animators)->GetSize(&size);
@@ -521,11 +513,13 @@ ECode AnimatedVectorDrawable::CanReverse(
         AutoPtr<IAnimator> animator;
         animators->Get(i, (IInterface**)&animator);
         Boolean result = FALSE;
-        if (!(animator->CanReverse(&result)), result) {
-            return FALSE;
+        if (!(animator->CanReverse(&result), result)) {
+            *can = FALSE;
+            return NOERROR;
         }
     }
-    return TRUE;
+    *can = TRUE;
+    return NOERROR;
 }
 
 } // namespace Drawable

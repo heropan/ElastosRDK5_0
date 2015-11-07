@@ -55,13 +55,20 @@ ECode CRegion::constructor(
 ECode CRegion::constructor(
     /* [in] */ Int64 ni)
 {
-    if (ni == NULL) {
+    if (ni == 0) {
         //throw new RuntimeException();
         return E_RUNTIME_EXCEPTION;
     }
 
     mNativeRegion = ni;
     return NOERROR;
+}
+
+ECode CRegion::constructor(
+    /* [in] */ Int64 ni,
+    /* [in] */ Int32 dummy)
+{
+    return constructor(ni);
 }
 
 CRegion::~CRegion()
@@ -449,27 +456,25 @@ ECode CRegion::ToString(
 
 AutoPtr<IRegion> CRegion::Obtain()
 {
-    assert(0 && "TODO");
-    // Region region = sPool.acquire();
-    // return (region != null) ? region : new Region();
-    return NULL;
+    AutoPtr<IRegion> region = sPool->AcquireItem();
+    if (region != NULL) return region;
+    CRegion::New((IRegion**)&region);
+    return region;
 }
 
 AutoPtr<IRegion> CRegion::Obtain(
     /* [in] */ IRegion* other)
 {
-    assert(0 && "TODO");
-    // Region region = obtain();
-    // region.set(other);
-    // return region;
-    return NULL;
+    AutoPtr<IRegion> region = Obtain();
+    Boolean result = FALSE;
+    region->Set(other, &result);
+    return region;
 }
 
-ECode CRegionRecycle()
+ECode CRegion::Recycle()
 {
-    assert(0 && "TODO");
-    // SetEmpty();
-    // sPool.release(this);
+    SetEmpty();
+    sPool->ReleaseItem(this);
     return NOERROR;
 }
 
@@ -664,9 +669,10 @@ Boolean CRegion::NativeWriteToParcel(
 }
 
 String CRegion::NativeToString(
-    /* [in] */ Int64 region)
+    /* [in] */ Int64 regionHandle)
 {
-    char* str = ((SkRegion*)region)->toString();
+    SkRegion* region = reinterpret_cast<SkRegion*>(regionHandle);
+    char* str = region->toString();
     if (str == NULL) {
         return String(NULL);
     }

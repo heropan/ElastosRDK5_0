@@ -4,11 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Graphics_CColor.h"
-#include <elastos/core/Object.h>
-#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::Object;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
@@ -27,13 +25,13 @@ namespace Graphics {
  * 0xFFFFFFFF
  */
 CarClass(CColor)
-    , public Object
+    , public Singleton
     , public IColor
 {
 public:
     CAR_INTERFACE_DECL();
 
-    CAR_OBJECT_DECL();
+    CAR_SINGLETON_DECL();
 
     /**
      * Returns the brightness component of a color int.
@@ -248,25 +246,6 @@ public:
      */
     static CARAPI_(Int32) GetHtmlColor(
         /* [in] */ const String& color);
-
-private:
-    static CARAPI_(void) NativeRGBToHSV(
-        /* [in] */ Int32 red,
-        /* [in] */ Int32 green,
-        /* [in] */ Int32 blue,
-        /* [out] */ ArrayOf<Float>* hsv);
-
-    static CARAPI_(Int32) NativeHSVToColor(
-        /* [in] */ Int32 alpha,
-        /* [in] */ ArrayOf<Float>* hsv);
-
-    CARAPI_(Float) Constrain(
-        /* [in] */ Float amount,
-        /* [in] */ Float low,
-        /* [in] */ Float high);
-
-private:
-    static AutoPtr<HashMap<String, Int32> > sColorNameMap;
 };
 
 } // namespace Graphics

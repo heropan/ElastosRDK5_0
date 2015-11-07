@@ -98,8 +98,7 @@ ECode DrawableContainer::GetOpticalInsets(
         return ((Drawable*)mCurrDrawable.Get())->GetOpticalInsets(sets);
     }
 
-    assert(0 && "TODO");
-    // *sets = Insets::NONE;
+    *sets = Insets::NONE;
     REFCOUNT_ADD(*sets);
     return NOERROR;
 }

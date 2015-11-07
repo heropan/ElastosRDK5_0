@@ -2,7 +2,7 @@
 #include "elastos/droid/graphics/drawable/RippleBackground.h"
 #include "elastos/droid/graphics/drawable/RippleDrawable.h"
 #include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 #include "elastos/droid/utility/MathUtils.h"
 // #include "elastos/droid/view/animation/CLinearInterpolator.h"
@@ -107,9 +107,7 @@ void RippleBackground::Setup(
     /* [in] */ Float density)
 {
     mColorOpaque = color | 0xFF000000;
-    AutoPtr<IColor> helper;
-    CColor::AcquireSingleton((IColor**)&helper);
-    helper->Alpha(color, &mColorAlpha);
+    mColorAlpha = Color::Alpha(color);
     mColorAlpha = mColorAlpha / 2;
 
     if (maxRadius != IRippleDrawable::RADIUS_AUTO) {

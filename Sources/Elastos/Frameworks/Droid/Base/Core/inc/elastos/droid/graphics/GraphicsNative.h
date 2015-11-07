@@ -271,6 +271,11 @@ public:
 
     static TypefaceImpl* GetNativeTypeface(
         /* [in] */ IPaint* paint);
+
+    // Given the 'native' long held by the Rasterizer.java object, return a
+    // ref to its SkRasterizer* (or NULL).
+    static SkRasterizer* RefNativeRasterizer(
+        /* [in] */ Int64 rasterizerHandle);
 };
 
 } // namespace Graphics

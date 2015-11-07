@@ -1,7 +1,10 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CPicture.h"
+#include "elastos/droid/graphics/NativePicture.h"
+#include "elastos/droid/graphics/NativeCanvas.h"
 #include "elastos/droid/graphics/SkiaIOStreamAdaptor.h"
+#include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
 #include <skia/core/SkPicture.h>
 #include <skia/core/SkCanvas.h>
 
@@ -60,7 +63,7 @@ ECode CPicture::constructor(
     /* [in] */ IPicture* src)
 {
     return constructor(NativeConstructor(
-            src != NULL ? ((CPicture*)src)->mNativePicture : NULL));
+            src != NULL ? ((CPicture*)src)->mNativePicture : 0));
 }
 
 ECode CPicture::constructor(
@@ -136,8 +139,7 @@ AutoPtr<IPicture> CPicture::CreateFromStream(
     AutoPtr<IPicture> picture;
     AutoPtr< ArrayOf<Byte> > storage = ArrayOf<Byte>::Alloc(WORKING_STREAM_STORAGE);
     Int64 ni = NativeCreateFromStream(stream, storage.Get());
-    assert(0 && "TODO");
-    // CPicture::New((Int64)ni, (IPicture**)&picture);
+    CPicture::New((Int64)ni, (IPicture**)&picture);
     return picture;
 }
 
@@ -180,91 +182,79 @@ Int64 CPicture::NativeCreateFromStream(
     /* [in] */ IInputStream* stream,
     /* [in] */ ArrayOf<Byte>* storage)
 {
-    assert(0 && "TODO");
-    // Picture* picture = NULL;
-    // SkStream* strm = CreateSkiaInputStreamAdaptor(env, jstream, jstorage);
-    // if (strm) {
-    //     picture = Picture::CreateFromStream(strm);
-    //     delete strm;
-    // }
-    // return reinterpret_cast<Int64>(picture);
-    return NOERROR;
+    NativePicture* picture = NULL;
+    SkStream* strm = CreateInputStreamAdaptor(stream, storage);
+    if (strm) {
+        picture = NativePicture::CreateFromStream(strm);
+        delete strm;
+    }
+    return reinterpret_cast<Int64>(picture);
 }
 
 Int32 CPicture::NativeGetWidth(
-    /* [in] */ Int64 nativePicture)
+    /* [in] */ Int64 pictureHandle)
 {
-    assert(0 && "TODO");
-    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
-    // return static_cast<Int32>(pict->width());
-    return -1;
+    NativePicture* pict = reinterpret_cast<NativePicture*>(pictureHandle);
+    return static_cast<Int32>(pict->width());
 }
 
 Int32 CPicture::NativeGetHeight(
-    /* [in] */ Int64 nativePicture)
+    /* [in] */ Int64 pictureHandle)
 {
-    assert(0 && "TODO");
-    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
-    // return static_cast<Int32>(pict->height());
-    return -1;
+    NativePicture* pict = reinterpret_cast<NativePicture*>(pictureHandle);
+    return static_cast<Int32>(pict->height());
 }
 
 Int64 CPicture::NativeBeginRecording(
-    /* [in] */ Int64 nativePicture,
+    /* [in] */ Int64 pictHandle,
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    assert(0 && "TODO");
-    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
-    // Canvas* canvas = pict->beginRecording(w, h);
-    // return reinterpret_cast<Int64>(canvas);
-    return -1;
+    NativePicture* pict = reinterpret_cast<NativePicture*>(pictHandle);
+    NativeCanvas* canvas = pict->beginRecording(w, h);
+    return reinterpret_cast<Int64>(canvas);
 }
 
 void CPicture::NativeEndRecording(
-    /* [in] */ Int64 nativePicture)
+    /* [in] */ Int64 pictHandle)
 {
-    assert(0 && "TODO");
-    // Picture* pict = reinterpret_cast<Picture*>(nativePicture);
-    // pict->endRecording();
+    NativePicture* pict = reinterpret_cast<NativePicture*>(pictHandle);
+    pict->endRecording();
 }
 
 void CPicture::NativeDraw(
-    /* [in] */ Int64 nativeCanvas,
-    /* [in] */ Int64 nativePicture)
+    /* [in] */ Int64 canvasHandle,
+    /* [in] */ Int64 pictureHandle)
 {
-    assert(0 && "TODO");
-    // Canvas* canvas = reinterpret_cast<Canvas*>(nativeCanvas);
-    // Picture* picture = reinterpret_cast<Picture*>(nativePicture);
-    // SkASSERT(canvas);
-    // SkASSERT(picture);
-    // picture->draw(canvas);
+    NativeCanvas* canvas = reinterpret_cast<NativeCanvas*>(canvasHandle);
+    NativePicture* picture = reinterpret_cast<NativePicture*>(pictureHandle);
+    SkASSERT(canvas);
+    SkASSERT(picture);
+    picture->draw(canvas);
 }
 
 Boolean CPicture::NativeWriteToStream(
-    /* [in] */ Int64 nativePicture,
+    /* [in] */ Int64 pictureHandle,
     /* [in] */ IOutputStream* stream,
     /* [in] */ ArrayOf<Byte>* storage)
 {
-    assert(0 && "TODO");
-    // Picture* picture = reinterpret_cast<Picture*>(nativePicture);
-    // SkWStream* strm = CreateSkiaOutputStreamAdaptor(stream, storage);
+    NativePicture* picture = reinterpret_cast<NativePicture*>(pictureHandle);
+    SkWStream* strm = CreateOutputStreamAdaptor(stream, storage);
 
-    // if (NULL != strm) {
-    //     picture->serialize(strm);
-    //     delete strm;
-    //     return TRUE;
-    // }
+    if (NULL != strm) {
+        picture->serialize(strm);
+        delete strm;
+        return TRUE;
+    }
     return FALSE;
 }
 
 void CPicture::NativeDestructor(
-    /* [in] */ Int64 nativePicture)
+    /* [in] */ Int64 pictureHandle)
 {
-    assert(0 && "TODO");
-    // Picture* picture = reinterpret_cast<Picture*>(nativePicture);
-    // SkASSERT(picture);
-    // delete picture;
+    NativePicture* picture = reinterpret_cast<NativePicture*>(pictureHandle);
+    SkASSERT(picture);
+    delete picture;
 }
 
 } // namespace Graphics

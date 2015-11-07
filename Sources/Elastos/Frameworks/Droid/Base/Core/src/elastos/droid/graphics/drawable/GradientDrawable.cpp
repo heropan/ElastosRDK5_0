@@ -13,10 +13,12 @@
 #include "elastos/droid/R.h"
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/content/res/CTypedArray.h"
+#include "elastos/droid/content/res/CResources.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Res::CTypedArray;
+using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::CColorStateList;
 using Elastos::Droid::R;
 using Elastos::Utility::Logging::Logger;
@@ -544,8 +546,7 @@ ECode GradientDrawable::Draw(
     */
     if (useLayer) {
         if (mLayerPaint == NULL) {
-            assert(0 && "TODO");
-            // CPaint::New((IPaint**)&mLayerPaint);
+            CPaint::New((IPaint**)&mLayerPaint);
         }
         mLayerPaint->SetDither(st->mDither);
         mLayerPaint->SetAlpha(mAlpha);
@@ -699,8 +700,7 @@ AutoPtr<IPath> GradientDrawable::BuildRing(
     bounds->Inset(-thickness, -thickness);
 
     if (mRingPath == NULL) {
-        assert(0 && "TODO");
-        // CPath::New((IPath**)&mRingPath);
+        CPath::New((IPath**)&mRingPath);
     }
     else {
         mRingPath->Reset();
@@ -1131,8 +1131,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
         Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSize);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawableSize, size);
-        assert(0 && "TODO");
-        // t->ResolveAttributes(st->mAttrSize, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(st->mAttrSize, layout, (ITypedArray**)&a);
         ECode ec = UpdateGradientDrawableSize(a);
         a->Recycle();
         if (FAILED(ec)) {
@@ -1145,12 +1144,10 @@ ECode GradientDrawable::ApplyThemeChildElements(
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawableGradient, size);
         AutoPtr<ITypedArray> a;
-        assert(0 && "TODO");
-        // t->ResolveAttributes(st->mAttrGradient, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(st->mAttrGradient, layout, (ITypedArray**)&a);
         // try {
         AutoPtr<IResources> res;
-        assert(0 && "TODO");
-        // t->GetResources((IResources**)&res);
+        ((CResources::Theme*)t)->GetResources((IResources**)&res);
         ECode ec = UpdateGradientDrawableGradient(res, a);
         // } catch (XmlPullParserException e) {
         //     throw new RuntimeException(e);
@@ -1168,8 +1165,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
         layout->Copy(R::styleable::GradientDrawableSolid, size);
 
         AutoPtr<ITypedArray> a;
-        assert(0 && "TODO");
-        // t->ResolveAttributes(st->mAttrSolid, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(st->mAttrSolid, layout, (ITypedArray**)&a);
         ECode ec = UpdateGradientDrawableSolid(a);
         a->Recycle();
         if (FAILED(ec)) {
@@ -1183,8 +1179,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
         layout->Copy(R::styleable::GradientDrawableStroke, size);
 
         AutoPtr<ITypedArray> a;
-        assert(0 && "TODO");
-        // t->ResolveAttributes(st->mAttrStroke, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(st->mAttrStroke, layout, (ITypedArray**)&a);
         ECode ec = UpdateGradientDrawableStroke(a);
         a->Recycle();
         if (FAILED(ec)) {
@@ -1198,8 +1193,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
         layout->Copy(R::styleable::DrawableCorners, size);
 
         AutoPtr<ITypedArray> a;
-        assert(0 && "TODO");
-        // t->ResolveAttributes(st->mAttrCorners, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(st->mAttrCorners, layout, (ITypedArray**)&a);
         ECode ec = UpdateDrawableCorners(a);
         a->Recycle();
         if (FAILED(ec)) {
@@ -1213,8 +1207,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
         layout->Copy(R::styleable::GradientDrawablePadding, size);
 
         AutoPtr<ITypedArray> a;
-        assert(0 && "TODO");
-        // t->ResolveAttributes(st->mAttrPadding, layout, (ITypedArray**)&a);
+        ((CResources::Theme*)t)->ResolveAttribute(st->mAttrPadding, layout, (ITypedArray**)&a);
         ECode ec = UpdateGradientDrawablePadding(a);
         a->Recycle();
         if (FAILED(ec)) {

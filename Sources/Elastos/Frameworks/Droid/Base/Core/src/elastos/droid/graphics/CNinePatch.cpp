@@ -9,6 +9,13 @@ namespace Graphics {
 CAR_OBJECT_IMPL(CNinePatch);
 ECode CNinePatch::constructor(
     /* [in] */ IBitmap* bitmap,
+    /* [in] */ ArrayOf<Byte>* chunk)
+{
+    return NinePatch::constructor(bitmap, chunk);
+}
+
+ECode CNinePatch::constructor(
+    /* [in] */ IBitmap* bitmap,
     /* [in] */ ArrayOf<Byte>* chunk,
     /* [in] */ const String& srcName)
 {

@@ -3,7 +3,7 @@
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CColor.h"
+#include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/widget/CGridLayoutLayoutParams.h"
 #include "elastos/droid/view/ViewGroupLayoutParams.h"
 
@@ -16,7 +16,7 @@ using Elastos::Droid::Graphics::IInsets;
 using Elastos::Droid::Graphics::Insets;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::IColor;
-using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Widget::IGridLayoutLayoutParams;
 using Elastos::Droid::Widget::CGridLayoutLayoutParams;
 using Elastos::Droid::Widget::GridLayout;
@@ -497,10 +497,7 @@ void GridLayout::OnDebugDraw(
     AutoPtr<IPaint> paint;
     CPaint::New((IPaint**)&paint);
     paint->SetStyle(PaintStyle_STROKE);
-    Int32 color = 0;
-    AutoPtr<IColor> co;
-    CColor::AcquireSingleton((IColor**)&co);
-    co->Argb(50, 255, 255, 255, &color);
+    Int32 color = Color::Argb(50, 255, 255, 255);
     paint->SetColor(color);
 
     AutoPtr< ArrayOf<Int32> > xs = mHorizontalAxis->mLocations;

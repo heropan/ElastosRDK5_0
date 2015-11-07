@@ -554,7 +554,7 @@ public:
 
     CARAPI_(Int32) GetHashCode();
 
-    CARAPI_(Int32) Ni();
+    CARAPI_(Int64) Ni();
 
 protected:
     CARAPI_(void) Finalize();

@@ -4,7 +4,9 @@
 
 #include "_Elastos_Droid_Graphics_CSurfaceTexture.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
 
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 
@@ -54,6 +56,23 @@ CarClass(CSurfaceTexture)
     , public Object
     , public ISurfaceTexture
 {
+private:
+    class AvailableHandler: public Handler
+    {
+    public:
+        AvailableHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ IOnFrameAvailableListener* listener,
+            /* [in] */ CSurfaceTexture* host);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        CSurfaceTexture* mHost;
+        AutoPtr<IOnFrameAvailableListener> mListener;
+    };
+
 public:
     CAR_INTERFACE_DECL();
 
@@ -309,9 +328,6 @@ private:
     AutoPtr<ILooper> mCreatorLooper;
     AutoPtr<IHandler> mOnFrameAvailableHandler;
 };
-
-// android::sp<android::SurfaceTexture> SurfaceTexture_getSurfaceTexture(
-//     /* [in] */ CSurfaceTexture* thiz);
 
 } // namespace Graphics
 } // namepsace Droid

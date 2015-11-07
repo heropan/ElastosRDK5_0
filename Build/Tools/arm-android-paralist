@@ -156,8 +156,9 @@
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media/session
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/media
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/mtp
-  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable/shapes
   Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/drawable
+  Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics/pdf
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/graphics
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/format
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/text/method

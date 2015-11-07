@@ -2367,7 +2367,7 @@ ECode CAssetManager::Init(
     am->addDefaultAssets();
 
     if (LocalLOGV) Slogger::V(TAG, "Created AssetManager %p for object %p\n", am, this);
-    mObject = (Int32)am;
+    mObject = (Int64)am;
     return NOERROR;
 }
 
@@ -2559,7 +2559,7 @@ Int32 CAssetManager::GetHashCode()
     return (Int32)this;
 }
 
-Int32 CAssetManager::Ni()
+Int64 CAssetManager::Ni()
 {
     return mObject;
 }

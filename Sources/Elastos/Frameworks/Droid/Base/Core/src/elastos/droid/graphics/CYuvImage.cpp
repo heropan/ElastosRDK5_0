@@ -3,7 +3,7 @@
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CYuvImage.h"
 #include "elastos/droid/graphics/CreateOutputStreamAdaptor.h"
-// #include "elastos/droid/graphics/YuvToJpegEncoder.h"
+#include "elastos/droid/graphics/YuvToJpegEncoder.h"
 #include <skia/core/SkStream.h>
 
 namespace Elastos {
@@ -236,15 +236,15 @@ Boolean CYuvImage::NativeCompressToJpeg(
     Int32* imgOffsets = offsets->GetPayload();
     Int32* imgStrides = strides->GetPayload();
 
-    assert(0 && "TODO");
-    // YuvToJpegEncoder* encoder = YuvToJpegEncoder::Create(format, imgStrides);
-    // if (encoder == NULL) {
-    //     return FALSE;
-    // }
-    // encoder->Encode(strm, yuv, width, height, imgOffsets, quality);
+    YuvToJpegEncoder* encoder = YuvToJpegEncoder::Create(format, imgStrides);
+    Boolean result = FALSE;
+    if (encoder != NULL) {
+        encoder->Encode(strm, yuv, width, height, imgOffsets, quality);
+        delete encoder;
+        result = TRUE;
+    }
 
-    // delete encoder;
-    return TRUE;
+    return result;
 }
 
 } // namespace Graphics

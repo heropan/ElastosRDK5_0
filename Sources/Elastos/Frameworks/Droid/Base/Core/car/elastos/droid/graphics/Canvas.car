@@ -1509,7 +1509,9 @@ module
             [in] Int32 format);
 
         GetNativeCanvas(
-            [out] Handle32* natvieCanvas);
+            [out] Int64* natvieCanvas);
+
+        ReleaseResources();
     }
 
     } // namespace Graphics
