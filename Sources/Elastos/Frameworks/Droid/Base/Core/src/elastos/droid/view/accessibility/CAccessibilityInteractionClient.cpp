@@ -1,79 +1,114 @@
 
 #include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
-#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/view/accessibility/CAccessibilityCache.h"
+#include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
+#include "elastos/droid/graphics/CPoint.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CMessage.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/Thread.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/utility/etl/HashSet.h>
 
-
-using Elastos::Core::IInteger64;
-using Elastos::Core::Thread;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::IObjectInt32Map;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
-using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CPoint;
+using Elastos::Droid::Os::CMessage;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::CInt64SparseArray;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Core::Thread;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::CLinkedList;
+using Elastos::Utility::IQueue;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const Int32 CAccessibilityInteractionClient::NO_ID = -1;
 const String CAccessibilityInteractionClient::TAG("CAccessibilityInteractionClient");
-const Boolean CAccessibilityInteractionClient::DEBUG = TRUE;
+const Boolean CAccessibilityInteractionClient::DEBUG = FALSE;
 const Boolean CAccessibilityInteractionClient::CHECK_INTEGRITY = TRUE;
 const Int64 CAccessibilityInteractionClient::TIMEOUT_INTERACTION_MILLIS = 5000;
+const AutoPtr<Object> CAccessibilityInteractionClient::sStaticLock = new Object();
 
-Mutex CAccessibilityInteractionClient::sStaticLock;
-HashMap<Int64, AutoPtr<CAccessibilityInteractionClient> > CAccessibilityInteractionClient::sClients;
-HashMap<Int32, AutoPtr<IIAccessibilityServiceConnection> > CAccessibilityInteractionClient::sConnectionCache;
-Mutex CAccessibilityInteractionClient::sConnectionCacheLock;
-const AutoPtr<AccessibilityNodeInfoCache> CAccessibilityInteractionClient::sAccessibilityNodeInfoCache
-    = new AccessibilityNodeInfoCache();
+static AutoPtr<IInt64SparseArray> InitsClients()
+{
+    AutoPtr<CInt64SparseArray> array;
+    CInt64SparseArray::NewByFriend((CInt64SparseArray**)&array);
+    return (IInt64SparseArray*)array.Get();
+}
+const AutoPtr<IInt64SparseArray> CAccessibilityInteractionClient::sClients = InitsClients();
+
+static AutoPtr<ISparseArray> InitsConnectionCache()
+{
+    AutoPtr<CSparseArray> array;
+    CSparseArray::NewByFriend((CSparseArray**)&array);
+    return (ISparseArray*)array.Get();
+}
+const AutoPtr<ISparseArray> CAccessibilityInteractionClient::sConnectionCache = InitsConnectionCache();
+
+static AutoPtr<IAccessibilityCache> InitsAccessibilityCache()
+{
+    AutoPtr<CAccessibilityCache> cache;
+    CAccessibilityCache::NewByFriend((CAccessibilityCache**)&cache);
+    return (IAccessibilityCache*)cache.Get();
+}
+const AutoPtr<IAccessibilityCache> CAccessibilityInteractionClient::sAccessibilityCache = InitsAccessibilityCache();
+
+CAR_INTERFACE_IMPL_3(CAccessibilityInteractionClient, Object, IAccessibilityInteractionClient, IIAccessibilityInteractionConnectionCallback, IBinder)
+
+CAR_OBJECT_IMPL(CAccessibilityInteractionClient)
 
 CAccessibilityInteractionClient::CAccessibilityInteractionClient()
     : mInteractionId(0)
     , mPerformAccessibilityActionResult(FALSE)
 {
-    mFindAccessibilityNodeInfosResult = new List<AutoPtr<IAccessibilityNodeInfo> >();
     ASSERT_SUCCEEDED(CAtomicInteger32::New((IAtomicInteger32**)&mInteractionIdCounter));
-    ASSERT_SUCCEEDED(CRect::New((IRect**)&mTempBounds));
+    mInstanceLock = new Object();
+    CAccessibilityNodeInfo::New((IAccessibilityNodeInfo**)&mFindAccessibilityNodeInfoResult);
+    CArrayList::New((IList**)&mFindAccessibilityNodeInfosResult);
+    CPoint::New((IPoint**)&mComputeClickPointResult);
+    CMessage::New((IMessage**)&mSameThreadMessage);
 }
 
 CAccessibilityInteractionClient::~CAccessibilityInteractionClient()
 {
 }
 
-AutoPtr<CAccessibilityInteractionClient> CAccessibilityInteractionClient::GetInstance()
+AutoPtr<IAccessibilityInteractionClient> CAccessibilityInteractionClient::GetInstance()
 {
     Int64 threadId;
     Thread::GetCurrentThread()->GetId(&threadId);
     return GetInstanceForThread(threadId);
 }
 
-AutoPtr<CAccessibilityInteractionClient> CAccessibilityInteractionClient::GetInstanceForThread(
+AutoPtr<IAccessibilityInteractionClient> CAccessibilityInteractionClient::GetInstanceForThread(
     /* [in] */ Int64 threadId)
 {
-    AutoLock lock(sStaticLock);
-    AutoPtr<CAccessibilityInteractionClient> client;
-    HashMap<Int64, AutoPtr<CAccessibilityInteractionClient> >::Iterator it =  sClients.Find(threadId);
-    if (it != sClients.End()) {
-        client = it->mSecond;
-    }
-    if (client == NULL) {
-        CAccessibilityInteractionClient::NewByFriend((CAccessibilityInteractionClient**)&client);
-        sClients[threadId] = client;
+    AutoPtr<IAccessibilityInteractionClient> client;
+    synchronized (sStaticLock) {
+        AutoPtr<IInterface> obj;
+        sClients->Get(threadId, (IInterface**)&obj);
+        client = IAccessibilityInteractionClient::Probe(obj);
+        if (client == NULL) {
+            AutoPtr<CAccessibilityInteractionClient> _client;
+            CAccessibilityInteractionClient::NewByFriend((CAccessibilityInteractionClient**)&_client);
+            client = (IAccessibilityInteractionClient*)_client.Get();
+            sClients->Put(threadId, client);
+        }
     }
     return client;
 }
@@ -81,9 +116,11 @@ AutoPtr<CAccessibilityInteractionClient> CAccessibilityInteractionClient::GetIns
 ECode CAccessibilityInteractionClient::SetSameThreadMessage(
     /* [in] */ IMessage* message)
 {
-    AutoLock lock(mInstanceLock);
-    mSameThreadMessage = message;
-    mInstanceLock.NotifyAll();
+    synchronized (mInstanceLock) {
+        AutoLock lock(mInstanceLock);
+        mSameThreadMessage = message;
+        mInstanceLock->NotifyAll();
+    }
     return NOERROR;
 }
 
@@ -91,42 +128,154 @@ ECode CAccessibilityInteractionClient::GetRootInActiveWindow(
     /* [in] */ Int32 connectionId,
     /* [out] */ IAccessibilityNodeInfo** info)
 {
+    VALIDATE_NOT_NULL(info);
     return FindAccessibilityNodeInfoByAccessibilityId(connectionId,
-        IAccessibilityNodeInfo::ACTIVE_WINDOW_ID, IAccessibilityNodeInfo::ROOT_NODE_ID,
-        IAccessibilityNodeInfo::FLAG_PREFETCH_DESCENDANTS,
-        info);
+            IAccessibilityNodeInfo::ACTIVE_WINDOW_ID, IAccessibilityNodeInfo::ROOT_NODE_ID,
+            FALSE, IAccessibilityNodeInfo::FLAG_PREFETCH_DESCENDANTS, info);
+}
+
+ECode CAccessibilityInteractionClient::GetWindow(
+    /* [in] */ Int32 connectionId,
+    /* [in] */ Int32 accessibilityWindowId,
+    /* [out] */ IAccessibilityWindowInfo** info)
+{
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+    // try {
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
+    if (connection != NULL) {
+        AutoPtr<IAccessibilityWindowInfo> window;
+        sAccessibilityCache->GetWindow(accessibilityWindowId, (IAccessibilityWindowInfo**)&window);
+        if (window != NULL) {
+            if (DEBUG) {
+                Slogger::I(LOG_TAG, "Window cache hit");
+            }
+            *info = window;
+            REFCOUNT_ADD(*info);
+            return NOERROR;
+        }
+        if (DEBUG) {
+            Slogger::I(LOG_TAG, "Window cache miss");
+        }
+        connection->GetWindow(accessibilityWindowId, (IAccessibilityWindowInfo**)&window);
+        if (window != NULL) {
+            sAccessibilityCache->AddWindow(window);
+            *info = window;
+            REFCOUNT_ADD(*info);
+            return NOERROR;
+        }
+    }
+    else {
+        if (DEBUG) {
+            Slogger::W(LOG_TAG, "No connection for connection id: %d", connectionId);
+        }
+    }
+    // } catch (RemoteException re) {
+    //     Log.e(LOG_TAG, "Error while calling remote getWindow", re);
+    // }
+    return NOERROR;
+}
+
+ECode CAccessibilityInteractionClient::GetWindows(
+    /* [in] */ Int32 connectionId,
+    /* [out] */ IList** list)
+{
+    VALIDATE_NOT_NULL(list);
+    *list = NULL;
+    // try {
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
+    if (connection != NULL) {
+        AutoPtr<IList> windows;
+        sAccessibilityCache->GetWindows((IList**)&windows);
+        if (windows != NULL) {
+            if (DEBUG) {
+                Slogger::I(LOG_TAG, "Windows cache hit");
+            }
+            *list = windows;
+            REFCOUNT_ADD(*list);
+            return NOERROR;
+        }
+        if (DEBUG) {
+            Slogger::I(LOG_TAG, "Windows cache miss");
+        }
+        connection->GetWindows((IList**)&windows);
+        if (windows != NULL) {
+            Int32 windowCount;
+            windows->GetSize(&windowCount);
+            for (Int32 i = 0; i < windowCount; i++) {
+                AutoPtr<IInterface> obj;
+                windows->Get(i, (IInterface**)&obj);
+                AutoPtr<IAccessibilityWindowInfo> window = IAccessibilityWindowInfo::Probe(obj);
+                sAccessibilityCache->AddWindow(window);
+            }
+            *list = windows;
+            REFCOUNT_ADD(*list);
+            return NOERROR;
+        }
+    }
+    else {
+        if (DEBUG) {
+            Slogger::W(LOG_TAG, "No connection for connection id: %d", connectionId);
+        }
+    }
+    // } catch (RemoteException re) {
+    //     Log.e(LOG_TAG, "Error while calling remote getWindows", re);
+    // }
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    return collections->GetEmptyList(list);
 }
 
 ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByAccessibilityId(
     /* [in] */ Int32 connectionId,
     /* [in] */ Int32 accessibilityWindowId,
     /* [in] */ Int64 accessibilityNodeId,
+    /* [in] */ Boolean bypassCache,
     /* [in] */ Int32 prefetchFlags,
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
+    if ((prefetchFlags & IAccessibilityNodeInfo::FLAG_PREFETCH_SIBLINGS) != 0
+            && (prefetchFlags & IAccessibilityNodeInfo::FLAG_PREFETCH_PREDECESSORS) == 0) {
+        Slogger::I(LOG_TAG, "FLAG_PREFETCH_SIBLINGS requires FLAG_PREFETCH_PREDECESSORS");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        // throw new IllegalArgumentException("FLAG_PREFETCH_SIBLINGS"
+        //     + " requires FLAG_PREFETCH_PREDECESSORS");
+    }
+
     // try {
     AutoPtr<IIAccessibilityServiceConnection> connection;
     GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
-        AutoPtr<IAccessibilityNodeInfo> cachedInfo = sAccessibilityNodeInfoCache->Get(accessibilityNodeId);
-        if (cachedInfo != NULL) {
-            *info = cachedInfo;
-            REFCOUNT_ADD(*info);
-            return NOERROR;
+        if (!bypassCache) {
+            AutoPtr<IAccessibilityNodeInfo> cachedInfo;
+            sAccessibilityCache->GetNode(accessibilityWindowId, accessibilityNodeId, (IAccessibilityNodeInfo**)&cachedInfo);
+            if (cachedInfo != NULL) {
+                if (DEBUG) {
+                    Slogger::I(LOG_TAG, "Node cache hit");
+                }
+                *info = cachedInfo;
+                REFCOUNT_ADD(*info);
+                return NOERROR;
+            }
+            if (DEBUG) {
+                Slogger::I(LOG_TAG, "Node cache miss");
+            }
         }
 
         Int32 interactionId;
         mInteractionIdCounter->GetAndIncrement(&interactionId);
         Int64 id;
         Thread::GetCurrentThread()->GetId(&id);
-        Float windowScale;
+        Boolean success;
         ECode ec = connection->FindAccessibilityNodeInfoByAccessibilityId(
-            accessibilityWindowId, accessibilityNodeId, interactionId,
-            THIS_PROBE(IAccessibilityInteractionConnectionCallback),
-            prefetchFlags, id, &windowScale);
+                accessibilityWindowId, accessibilityNodeId, interactionId,
+                THIS_PROBE(IIAccessibilityInteractionConnectionCallback),
+                prefetchFlags, id, &success);
         if (FAILED(ec)) {
             if (DEBUG) {
                 Slogger::W(TAG, "Error while calling remote" \
@@ -136,12 +285,14 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByAccessibilityI
         }
 
         // If the scale is zero the call has failed.
-        if (windowScale > 0) {
-            AutoPtr< List<AutoPtr<IAccessibilityNodeInfo> > > infos
-                = GetFindAccessibilityNodeInfosResultAndClear(interactionId);
-            FinalizeAndCacheAccessibilityNodeInfos(infos, connectionId, windowScale);
-            if (infos != NULL && !infos->IsEmpty()) {
-                *info = *infos->Begin();
+        if (success) {
+            AutoPtr<IList> infos = GetFindAccessibilityNodeInfosResultAndClear(interactionId);
+            FinalizeAndCacheAccessibilityNodeInfos(infos, connectionId);
+            Boolean res;
+            if (infos != NULL && (infos->IsEmpty(&res), !res)) {
+                AutoPtr<IInterface> obj;
+                infos->Get(0, (IInterface**)&obj);
+                *info = IAccessibilityNodeInfo::Probe(obj);
                 REFCOUNT_ADD(*info);
                 return NOERROR;
             }
@@ -153,23 +304,21 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByAccessibilityI
         }
     }
     // } catch (RemoteException re) {
-    //     if (DEBUG) {
-    //         Slogger::W(TAG, "Error while calling remote"
+    //         Slogger::E(TAG, "Error while calling remote"
     //                 + " findAccessibilityNodeInfoByAccessibilityId", re);
-    //     }
     // }
     return NOERROR;
 }
 
-ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByViewId(
+ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByViewId(
     /* [in] */ Int32 connectionId,
     /* [in] */ Int32 accessibilityWindowId,
     /* [in] */ Int64 accessibilityNodeId,
-    /* [in] */ Int32 viewId,
-    /* [out] */ IAccessibilityNodeInfo** result)
+    /* [in] */ String viewId,
+    /* [out] */ IList** list)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(list);
+    *list = NULL;
 
     // try {
     AutoPtr<IIAccessibilityServiceConnection> connection;
@@ -179,11 +328,10 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByViewId(
         mInteractionIdCounter->GetAndIncrement(&interactionId);
         Int64 id;
         Thread::GetCurrentThread()->GetId(&id);
-        Float windowScale;
-        ECode ec = connection->FindAccessibilityNodeInfoByViewId(
-            accessibilityWindowId, accessibilityNodeId, viewId, interactionId,
-            THIS_PROBE(IAccessibilityInteractionConnectionCallback),
-            id, &windowScale);
+        Boolean success;
+        ECode ec = connection->FindAccessibilityNodeInfosByViewId(
+                accessibilityWindowId, accessibilityNodeId, viewId, interactionId,
+                THIS_PROBE(IIAccessibilityInteractionConnectionCallback), id, &success);
         if (FAILED(ec)) {
             if (DEBUG) {
                 Slogger::W(TAG, "Error while calling remote" \
@@ -191,13 +339,15 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByViewId(
             }
             return NOERROR;
         }
-        // If the scale is zero the call has failed.
-        if (windowScale > 0) {
-            AutoPtr<IAccessibilityNodeInfo> info = GetFindAccessibilityNodeInfoResultAndClear(interactionId);
-            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
-            *result = info;
-            REFCOUNT_ADD(*result);
-            return NOERROR;
+
+        if (success) {
+            AutoPtr<IList> infos = GetFindAccessibilityNodeInfosResultAndClear(interactionId);
+            if (infos != NULL) {
+                FinalizeAndCacheAccessibilityNodeInfos(infos, connectionId);
+                *list = infos;
+                REFCOUNT_ADD(*list);
+                return NOERROR;
+            }
         }
     }
     else {
@@ -206,12 +356,12 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByViewId(
         }
     }
     // } catch (RemoteException re) {
-    //     if (DEBUG) {
     //         Slogger::W(TAG, "Error while calling remote"
     //                 + " findAccessibilityNodeInfoByViewIdInActiveWindow", re);
-    //     }
     // }
-    return NOERROR;
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    return collections->GetEmptyList(list);
 }
 
 ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
@@ -219,14 +369,10 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
     /* [in] */ Int32 accessibilityWindowId,
     /* [in] */ Int64 accessibilityNodeId,
     /* [in] */ const String& text,
-    /* [out] */ IObjectContainer** result)
+    /* [out] */ IList** list)
 {
-    VALIDATE_NOT_NULL(result);
-
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
-    *result = container;
-    REFCOUNT_ADD(*result);
+    VALIDATE_NOT_NULL(list);
+    *list = NULL;
 
     // try {
     AutoPtr<IIAccessibilityServiceConnection> connection;
@@ -236,10 +382,10 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
         mInteractionIdCounter->GetAndIncrement(&interactionId);
         Int64 id;
         Thread::GetCurrentThread()->GetId(&id);
-        Float windowScale;
+        Boolean success;
         ECode ec = connection->FindAccessibilityNodeInfosByText(
-            accessibilityWindowId, accessibilityNodeId, text, interactionId,
-            THIS_PROBE(IAccessibilityInteractionConnectionCallback), id, &windowScale);
+                accessibilityWindowId, accessibilityNodeId, text, interactionId,
+                THIS_PROBE(IIAccessibilityInteractionConnectionCallback), id, &success);
         if (FAILED(ec)) {
             if (DEBUG) {
                 Slogger::W(TAG, "Error while calling remote" \
@@ -248,19 +394,14 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
             return ec;
         }
 
-        // If the scale is zero the call has failed.
-        if (windowScale > 0) {
-            AutoPtr<List<AutoPtr<IAccessibilityNodeInfo> > > infos
-                = GetFindAccessibilityNodeInfosResultAndClear(interactionId);
-            FinalizeAndCacheAccessibilityNodeInfos(infos, connectionId, windowScale);
-            if (infos != NULL && !infos->IsEmpty()) {
-                List<AutoPtr<IAccessibilityNodeInfo> >::Iterator it = infos->Begin();
-                for (; it != infos->End(); ++it) {
-                    container->Add(*it);
-                }
+        if (success) {
+            AutoPtr<IList> infos = GetFindAccessibilityNodeInfosResultAndClear(interactionId);
+            if (infos != NULL) {
+                FinalizeAndCacheAccessibilityNodeInfos(infos, connectionId);
+                *list = infos;
+                REFCOUNT_ADD(*list);
+                return NOERROR;
             }
-
-            return NOERROR;
         }
     }
     else {
@@ -269,12 +410,12 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
         }
     }
     // } catch (RemoteException re) {
-    //     if (DEBUG) {
     //         Slogger::W(TAG, "Error while calling remote"
     //                 + " findAccessibilityNodeInfosByViewText", re);
-    //     }
     // }
-    return NOERROR;
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    return collections->GetEmptyList(list);
 }
 
 ECode CAccessibilityInteractionClient::FindFocus(
@@ -295,20 +436,20 @@ ECode CAccessibilityInteractionClient::FindFocus(
         mInteractionIdCounter->GetAndIncrement(&interactionId);
         Int64 id;
         Thread::GetCurrentThread()->GetId(&id);
-        Float windowScale;
+        Boolean success;
         ECode ec = connection->FindFocus(accessibilityWindowId,
-            accessibilityNodeId, focusType, interactionId,
-            THIS_PROBE(IAccessibilityInteractionConnectionCallback), id, &windowScale);
+                accessibilityNodeId, focusType, interactionId,
+                THIS_PROBE(IIAccessibilityInteractionConnectionCallback), id, &success);
         if (FAILED(ec)) {
             if (DEBUG) {
                 Slogger::W(TAG, "Error while calling remote findAccessibilityFocus, ec=%08x", ec);
             }
             return ec;
         }
-        // If the scale is zero the call has failed.
-        if (windowScale > 0) {
+
+        if (success) {
             AutoPtr<IAccessibilityNodeInfo> info = GetFindAccessibilityNodeInfoResultAndClear(interactionId);
-            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
+            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId);
             *result = info;
             REFCOUNT_ADD(*result);
             return NOERROR;
@@ -320,9 +461,7 @@ ECode CAccessibilityInteractionClient::FindFocus(
         }
     }
     // } catch (RemoteException re) {
-    //     if (DEBUG) {
-    //         Slogger::W(TAG, "Error while calling remote findAccessibilityFocus", re);
-    //     }
+    //         Slogger::W(TAG, "Error while calling remote findFocus", re);
     // }
     return NOERROR;
 }
@@ -344,20 +483,20 @@ ECode CAccessibilityInteractionClient::FocusSearch(
         mInteractionIdCounter->GetAndIncrement(&interactionId);
         Int64 id;
         Thread::GetCurrentThread()->GetId(&id);
-        Float windowScale;
+        Boolean success;
         ECode ec = connection->FindFocus(accessibilityWindowId,
             accessibilityNodeId, direction, interactionId,
-            THIS_PROBE(IAccessibilityInteractionConnectionCallback), id, &windowScale);
+            THIS_PROBE(IIAccessibilityInteractionConnectionCallback), id, &success);
         if (FAILED(ec)) {
             if (DEBUG) {
                 Slogger::W(TAG, "Error while calling remote accessibilityFocusSearch, ec=%08x", ec);
             }
             return ec;
         }
-        // If the scale is zero the call has failed.
-        if (windowScale > 0) {
+
+        if (success) {
             AutoPtr<IAccessibilityNodeInfo> info = GetFindAccessibilityNodeInfoResultAndClear(interactionId);
-            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
+            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId);
             *result = info;
             REFCOUNT_ADD(*result);
             return NOERROR;
@@ -369,9 +508,7 @@ ECode CAccessibilityInteractionClient::FocusSearch(
         }
     }
     // } catch (RemoteException re) {
-    //     if (DEBUG) {
     //         Slogger::W(TAG, "Error while calling remote accessibilityFocusSearch", re);
-    //     }
     // }
     return NOERROR;
 }
@@ -397,10 +534,10 @@ ECode CAccessibilityInteractionClient::PerformAccessibilityAction(
         Boolean success;
         ECode ec = connection->PerformAccessibilityAction(accessibilityWindowId,
             accessibilityNodeId, action, arguments, interactionId,
-            THIS_PROBE(IAccessibilityInteractionConnectionCallback), id, &success);
+            THIS_PROBE(IIAccessibilityInteractionConnectionCallback), id, &success);
         if (FAILED(ec)) {
             if (DEBUG) {
-                Slogger::W(TAG, "Error while calling remote performAccessibilityAction, ec=%08x", ec);
+                Slogger::W(TAG, "Error while calling remote performAccessibilityAction, ec =%08x", ec);
             }
             return ec;
         }
@@ -415,34 +552,78 @@ ECode CAccessibilityInteractionClient::PerformAccessibilityAction(
         }
     }
     // } catch (RemoteException re) {
-    //     if (DEBUG) {
     //         Slogger::W(TAG, "Error while calling remote performAccessibilityAction", re);
-    //     }
+    // }
+    return NOERROR;
+}
+
+ECode CAccessibilityInteractionClient::ComputeClickPointInScreen(
+    /* [in] */ Int32 connectionId,
+    /* [in] */ Int32 accessibilityWindowId,
+    /* [in] */ Int64 accessibilityNodeId,
+    /* [out] */ IPoint** point)
+{
+    VALIDATE_NOT_NULL(point);
+    *point = NULL;
+
+    // try {
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
+    if (connection != NULL) {
+        Int32 interactionId;
+        mInteractionIdCounter->GetAndIncrement(&interactionId);
+        Int64 id;
+        Thread::GetCurrentThread()->GetId(&id);
+        Boolean success;
+        ECode ec = connection->ComputeClickPointInScreen(accessibilityWindowId,
+            accessibilityNodeId, interactionId,
+            THIS_PROBE(IIAccessibilityInteractionConnectionCallback), id, &success);
+        if (FAILED(ec)) {
+            if (DEBUG) {
+                Slogger::W(TAG, "Error while calling remote ComputeClickPointInScreen, ec =%08x", ec);
+            }
+            return ec;
+        }
+        if (success) {
+            AutoPtr<IPoint> _point = GetComputeClickPointInScreenResultAndClear(interactionId);
+            *point = _point;
+            REFCOUNT_ADD(*point);
+            return NOERROR;
+        }
+    }
+    else {
+        if (DEBUG) {
+            Slogger::W(LOG_TAG, "No connection for connection id: %d", connectionId);
+        }
+    }
+    // } catch (RemoteException re) {
+    //     Log.w(LOG_TAG, "Error while calling remote computeClickPointInScreen", re);
     // }
     return NOERROR;
 }
 
 ECode CAccessibilityInteractionClient::ClearCache()
 {
-    sAccessibilityNodeInfoCache->Clear();
+    sAccessibilityCache->Clear();
     return NOERROR;
 }
 
 ECode CAccessibilityInteractionClient::OnAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    sAccessibilityNodeInfoCache->OnAccessibilityEvent(event);
+    sAccessibilityCache->OnAccessibilityEvent(event);
     return NOERROR;
 }
 
-AutoPtr<IAccessibilityNodeInfo>
-CAccessibilityInteractionClient::GetFindAccessibilityNodeInfoResultAndClear(
+AutoPtr<IAccessibilityNodeInfo> CAccessibilityInteractionClient::GetFindAccessibilityNodeInfoResultAndClear(
     /* [in] */ Int32 interactionId)
 {
-    AutoLock lock(mInstanceLock);
-    Boolean success = WaitForResultTimedLocked(interactionId);
-    AutoPtr<IAccessibilityNodeInfo> result = success ? mFindAccessibilityNodeInfoResult : NULL;
-    ClearResultLocked();
+    AutoPtr<IAccessibilityNodeInfo> result;
+    synchronized (mInstanceLock) {
+        Boolean success = WaitForResultTimedLocked(interactionId);
+        result = success ? mFindAccessibilityNodeInfoResult : NULL;
+        ClearResultLocked();
+    }
     return result;
 }
 
@@ -450,84 +631,77 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfoResult(
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [in] */ Int32 interactionId)
 {
-    AutoLock lock(mInstanceLock);
-    if (interactionId > mInteractionId) {
-        mFindAccessibilityNodeInfoResult = info;
-        mInteractionId = interactionId;
+    synchronized (mInstanceLock) {
+        if (interactionId > mInteractionId) {
+            mFindAccessibilityNodeInfoResult = info;
+            mInteractionId = interactionId;
+        }
+        mInstanceLock->NotifyAll();
     }
-    return mInstanceLock.NotifyAll();
+    return NOERROR;
 }
 
-AutoPtr<List<AutoPtr<IAccessibilityNodeInfo> > >
-CAccessibilityInteractionClient::GetFindAccessibilityNodeInfosResultAndClear(
+AutoPtr<IList> CAccessibilityInteractionClient::GetFindAccessibilityNodeInfosResultAndClear(
     /* [in] */ Int32 interactionId)
 {
-    AutoLock lock(mInstanceLock);
-    Boolean success = WaitForResultTimedLocked(interactionId);
-    AutoPtr<List<AutoPtr<IAccessibilityNodeInfo> > > result;
-    if (success) {
-        result = mFindAccessibilityNodeInfosResult;
-    }
+    AutoPtr<IList> result;
+    synchronized (mInstanceLock) {
+        Boolean success = WaitForResultTimedLocked(interactionId);
+        if (success) {
+            result = mFindAccessibilityNodeInfosResult;
+        }
+        else {
+            AutoPtr<ICollections> collections;
+            CCollections::AcquireSingleton((ICollections**)&collections);
+            collections->GetEmptyList((IList**)&result);
+        }
 
-    ClearResultLocked();
-    if (Build::IS_DEBUGGABLE && CHECK_INTEGRITY) {
-        CheckFindAccessibilityNodeInfoResultIntegrity(result);
+        ClearResultLocked();
+        if (Build::IS_DEBUGGABLE && CHECK_INTEGRITY) {
+            CheckFindAccessibilityNodeInfoResultIntegrity(result);
+        }
     }
     return result;
 }
 
 ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfosResult(
-    /* [in] */ IObjectContainer* infos,
+    /* [in] */ IList* infos,
     /* [in] */ Int32 interactionId)
 {
-    AutoLock lock(mInstanceLock);
-    if (interactionId > mInteractionId) {
-        if (infos != NULL) {
-            // If the call is not an IPC, i.e. it is made from the same process, we need to
-            // instantiate new result list to avoid passing internal instances to clients.
-            Boolean isIpcCall = (Binder::GetCallingPid() != Process::MyPid());
-            if (!isIpcCall) {
-                mFindAccessibilityNodeInfosResult->Clear();
-
-                AutoPtr<IObjectEnumerator> enumerator;
-                infos->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-                Boolean hasNext = FALSE;
-                while (enumerator->MoveNext(&hasNext), hasNext) {
-                    AutoPtr<IInterface> info;
-                    enumerator->Current((IInterface**)&info);
-                    mFindAccessibilityNodeInfosResult->PushBack(IAccessibilityNodeInfo::Probe(info));
+    synchronized (mInstanceLock) {
+        if (interactionId > mInteractionId) {
+            if (infos != NULL) {
+                // If the call is not an IPC, i.e. it is made from the same process, we need to
+                // instantiate new result list to avoid passing internal instances to clients.
+                Boolean isIpcCall = (Binder::GetCallingPid() != Process::MyPid());
+                if (!isIpcCall){
+                    CArrayList::New(ICollection::Probe(infos), (IList**)&mFindAccessibilityNodeInfosResult);
+                }
+                else {
+                    mFindAccessibilityNodeInfosResult = infos;
                 }
             }
             else {
-                if (!mFindAccessibilityNodeInfosResult->IsEmpty()) {
-                    mFindAccessibilityNodeInfosResult->Clear();
-                    AutoPtr<IObjectEnumerator> enumerator;
-                    infos->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-                    Boolean hasNext = FALSE;
-                    while (enumerator->MoveNext(&hasNext), hasNext) {
-                        AutoPtr<IInterface> info;
-                        enumerator->Current((IInterface**)&info);
-                        mFindAccessibilityNodeInfosResult->PushBack(IAccessibilityNodeInfo::Probe(info));
-                    }
-                }
-
+                AutoPtr<ICollections> collections;
+                CCollections::AcquireSingleton((ICollections**)&collections);
+                collections->GetEmptyList((IList**)&mFindAccessibilityNodeInfosResult);
             }
+            mInteractionId = interactionId;
         }
-        else {
-            mFindAccessibilityNodeInfosResult->Clear();
-        }
-        mInteractionId = interactionId;
+        mInstanceLock->NotifyAll();
     }
-    return mInstanceLock.NotifyAll();
+    return NOERROR;
 }
 
 Boolean CAccessibilityInteractionClient::GetPerformAccessibilityActionResultAndClear(
     /* [in] */ Int32 interactionId)
 {
-    AutoLock lock(mInstanceLock);
-    Boolean success = WaitForResultTimedLocked(interactionId);
-    Boolean result = success ? mPerformAccessibilityActionResult : FALSE;
-    ClearResultLocked();
+    Boolean result;
+    synchronized (mInstanceLock) {
+        Boolean success = WaitForResultTimedLocked(interactionId);
+        result = success ? mPerformAccessibilityActionResult : FALSE;
+        ClearResultLocked();
+    }
     return result;
 }
 
@@ -535,12 +709,40 @@ ECode CAccessibilityInteractionClient::SetPerformAccessibilityActionResult(
     /* [in] */ Boolean succeeded,
     /* [in] */ Int32 interactionId)
 {
-    AutoLock lock(mInstanceLock);
-    if (interactionId > mInteractionId) {
-        mPerformAccessibilityActionResult = succeeded;
-        mInteractionId = interactionId;
+    synchronized (mInstanceLock) {
+        if (interactionId > mInteractionId) {
+            mPerformAccessibilityActionResult = succeeded;
+            mInteractionId = interactionId;
+        }
+        mInstanceLock->NotifyAll();
     }
-    return mInstanceLock.NotifyAll();
+    return NOERROR;
+}
+
+AutoPtr<IPoint> CAccessibilityInteractionClient::GetComputeClickPointInScreenResultAndClear(
+    /* [in] */ Int32 interactionId)
+{
+    AutoPtr<IPoint> result;
+    synchronized (mInstanceLock) {
+        Boolean success = WaitForResultTimedLocked(interactionId);
+        result = success ? mComputeClickPointResult : NULL;
+        ClearResultLocked();
+    }
+    return result;
+}
+
+ECode CAccessibilityInteractionClient::SetComputeClickPointInScreenActionResult(
+    /* [in] */ IPoint* point,
+    /* [in] */ Int32 interactionId)
+{
+    synchronized (mInstanceLock) {
+        if (interactionId > mInteractionId) {
+            mComputeClickPointResult = point;
+            mInteractionId = interactionId;
+        }
+        mInstanceLock->NotifyAll();
+    }
+    return NOERROR;
 }
 
 void CAccessibilityInteractionClient::ClearResultLocked()
@@ -548,6 +750,7 @@ void CAccessibilityInteractionClient::ClearResultLocked()
     mInteractionId = -1;
     mFindAccessibilityNodeInfoResult = NULL;
     mPerformAccessibilityActionResult = FALSE;
+    mComputeClickPointResult = NULL;
 
     mFindAccessibilityNodeInfosResult->Clear();
 }
@@ -577,62 +780,47 @@ Boolean CAccessibilityInteractionClient::WaitForResultTimedLocked(
         if (waitTimeMillis <= 0) {
             return FALSE;
         }
-        mInstanceLock.Wait(waitTimeMillis);
+        mInstanceLock->Wait(waitTimeMillis);
         // } catch (InterruptedException ie) {
         //     /* ignore */
         // }
     }
 }
 
-void CAccessibilityInteractionClient::ApplyCompatibilityScaleIfNeeded(
-    /* [in] */ IAccessibilityNodeInfo* info,
-    /* [in] */ Float scale)
-{
-    if (scale == 1.0f) {
-        return;
-    }
-    AutoPtr<IRect> bounds = mTempBounds;
-    info->GetBoundsInParent(bounds);
-    bounds->Scale(scale);
-    info->SetBoundsInParent(bounds);
-
-    info->GetBoundsInScreen(bounds);
-    bounds->Scale(scale);
-    info->SetBoundsInScreen(bounds);
-}
-
 void CAccessibilityInteractionClient::FinalizeAndCacheAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info,
-    /* [in] */ Int32 connectionId,
-    /* [in] */ Float windowScale)
+    /* [in] */ Int32 connectionId)
 {
     if (info != NULL) {
-        ApplyCompatibilityScaleIfNeeded(info, windowScale);
         info->SetConnectionId(connectionId);
         info->SetSealed(TRUE);
-        sAccessibilityNodeInfoCache->Add(info);
+        sAccessibilityCache->Add(info);
     }
 }
 
 void CAccessibilityInteractionClient::FinalizeAndCacheAccessibilityNodeInfos(
-    /* [in] */ List<AutoPtr<IAccessibilityNodeInfo> >* infos,
-    /* [in] */ Int32 connectionId,
-    /* [in] */ Float windowScale)
+    /* [in] */ IList* infos,
+    /* [in] */ Int32 connectionId)
 {
     if (infos != NULL) {
-        List<AutoPtr<IAccessibilityNodeInfo> >::Iterator it = infos->Begin();
-        for (; it != infos->End(); ++it) {
-            AutoPtr<IAccessibilityNodeInfo> info = *it;
-            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId, windowScale);
+        Int32 infosCount;
+        infos->GetSize(&infosCount);
+        for (Int32 i = 0; i < infosCount; i++) {
+            AutoPtr<IInterface> obj;
+            infos->Get(i, (IInterface**)&obj);
+            AutoPtr<IAccessibilityNodeInfo> info = IAccessibilityNodeInfo::Probe(obj);
+            FinalizeAndCacheAccessibilityNodeInfo(info, connectionId);
         }
     }
 }
 
 AutoPtr<IMessage> CAccessibilityInteractionClient::GetSameProcessMessageAndClear()
 {
-    AutoLock lock(mInstanceLock);
-    AutoPtr<IMessage> result = mSameThreadMessage;
-    mSameThreadMessage = NULL;
+    AutoPtr<IMessage> result;
+    synchronized (mInstanceLock) {
+        result = mSameThreadMessage;
+        mSameThreadMessage = NULL;
+    }
     return result;
 }
 
@@ -643,11 +831,11 @@ ECode CAccessibilityInteractionClient::GetConnection(
     VALIDATE_NOT_NULL(connection);
     *connection = NULL;
 
-    AutoLock lock(sConnectionCacheLock);
-    HashMap<Int32, AutoPtr<IIAccessibilityServiceConnection> >::Iterator it
-        = sConnectionCache.Find(connectionId);
-    if (it != sConnectionCache.End()) {
-        *connection = it->mSecond.Get();
+    synchronized (sConnectionCache) {
+        AutoPtr<IInterface> obj;
+        sConnectionCache->Get(connectionId, (IInterface**)&obj);
+        AutoPtr<IIAccessibilityServiceConnection> conn = IIAccessibilityServiceConnection::Probe(obj);
+        *connection = conn;
         REFCOUNT_ADD(*connection);
     }
     return NOERROR;
@@ -657,36 +845,40 @@ ECode CAccessibilityInteractionClient::AddConnection(
     /* [in] */ Int32 connectionId,
     /* [in] */ IIAccessibilityServiceConnection* connection)
 {
-    AutoLock lock(sConnectionCacheLock);
-    sConnectionCache[connectionId] = connection;
+    synchronized (sConnectionCache) {
+        sConnectionCache->Put(connectionId, connection);
+    }
     return NOERROR;
 }
 
 ECode CAccessibilityInteractionClient::RemoveConnection(
     /* [in] */ Int32 connectionId)
 {
-    AutoLock lock(sConnectionCacheLock);
-    sConnectionCache.Erase(connectionId);
+    synchronized (sConnectionCache) {
+        sConnectionCache->Remove(connectionId);
+    }
     return NOERROR;
 }
 
 void CAccessibilityInteractionClient::CheckFindAccessibilityNodeInfoResultIntegrity(
-    /* [in] */ List<AutoPtr<IAccessibilityNodeInfo> >* infos)
+    /* [in] */ IList* infos)
 {
-    if (infos->Begin() == infos->End()) {
+    Int32 infoCount;
+    infos->GetSize(&infoCount);
+    if (infoCount == 0) {
         return;
     }
     // Find the root node.
-    AutoPtr<IAccessibilityNodeInfo> root = *infos->Begin();
-    List<AutoPtr<IAccessibilityNodeInfo> >::Iterator it = ++infos->Begin();
-    for (; it != infos->End(); ++it) {
-        List<AutoPtr<IAccessibilityNodeInfo> >::Iterator it1 = it;
-        for (; it1 != infos->End(); ++it1) {
-            AutoPtr<IAccessibilityNodeInfo> candidate = *it1;
+    AutoPtr<IInterface> obj;
+    infos->Get(0, (IInterface**)&obj);
+    AutoPtr<IAccessibilityNodeInfo> root = IAccessibilityNodeInfo::Probe(obj);
+    for (Int32 i = 1; i < infoCount; i++) {
+        for (Int32 j = i; j < infoCount; j++) {
+            obj = NULL;
+            infos->Get(j, (IInterface**)&obj);
+            AutoPtr<IAccessibilityNodeInfo> candidate = IAccessibilityNodeInfo::Probe(obj);
             Int64 id1, id2;
-            root->GetParentNodeId(&id1);
-            candidate->GetSourceNodeId(&id2);
-            if (id1 == id2) {
+            if ((root->GetParentNodeId(&id1), id1) == (candidate->GetSourceNodeId(&id2), id2)) {
                 root = candidate;
                 break;
             }
@@ -696,45 +888,46 @@ void CAccessibilityInteractionClient::CheckFindAccessibilityNodeInfoResultIntegr
         Slogger::E(TAG, "No root.");
     }
     // Check for duplicates.
-    HashSet<AutoPtr<IAccessibilityNodeInfo> > seen;
-    List<AutoPtr<IAccessibilityNodeInfo> > fringe;
-    fringe.PushBack(root);
-
-    List<AutoPtr<IAccessibilityNodeInfo> >::Iterator fringeIt;
-    Int32 childCount;
-    Int64 childId, nodeId;
-    while (fringe.IsEmpty() == FALSE) {
-        fringeIt = fringe.Begin();
-        AutoPtr<IAccessibilityNodeInfo> current = *fringeIt;
-        fringe.PopFront();
-        Elastos::Utility::Pair<HashSet<AutoPtr<IAccessibilityNodeInfo> >::Iterator, Boolean> pair = seen.Insert(current);
-        if (!pair.mSecond) {
+    AutoPtr<IHashSet> seen;
+    CHashSet::New((IHashSet**)&seen);
+    AutoPtr<IQueue> fringe;
+    CLinkedList::New((IQueue**)&fringe);
+    fringe->Add(root);
+    Boolean res;
+    while ((fringe->IsEmpty(&res), !res)) {
+        AutoPtr<IInterface> obj;
+        fringe->Poll((IInterface**)&obj);
+        AutoPtr<IAccessibilityNodeInfo> current = IAccessibilityNodeInfo::Probe(obj);
+        Boolean suc;
+        if ((seen->Add(current, &suc), !suc)) {
             Slogger::E(TAG, "Duplicate node.");
             return;
         }
-
-        AutoPtr<IObjectInt32Map> childIds;
-        current->GetChildNodeIds((IObjectInt32Map**)&childIds);
-        childIds->GetSize(&childCount);
+        Int32 childCount;
+        current->GetChildCount(&childCount);
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IInteger64> childIdInter;
-            childIds->Get(i, (IInterface**)&childIdInter);
-            childIdInter->GetValue(&childId);
-            for (it = infos->Begin(); it != infos->End(); ++it) {
-                AutoPtr<IAccessibilityNodeInfo> child = *it;
+            Int64 childId;
+            current->GetChildId(i, &childId);
+            for (Int32 j = 0; j < infoCount; j++) {
+                obj = NULL;
+                infos->Get(j, (IInterface**)&obj);
+                AutoPtr<IAccessibilityNodeInfo> child = IAccessibilityNodeInfo::Probe(obj);
+                Int64 nodeId;
                 child->GetSourceNodeId(&nodeId);
                 if (nodeId == childId) {
-                    fringe.PushBack(child);
+                    fringe->Add(child);
                 }
             }
         }
     }
-    Int32 disconnectedCount = infos->GetSize() - seen.GetSize();
+
+    Int32 size;
+    seen->GetSize(&size);
+    Int32 disconnectedCount = infoCount - size;
     if (disconnectedCount > 0) {
         Slogger::E(TAG, "%d Disconnected nodes.", disconnectedCount);
     }
 }
-
 
 } // Accessibility
 } // View

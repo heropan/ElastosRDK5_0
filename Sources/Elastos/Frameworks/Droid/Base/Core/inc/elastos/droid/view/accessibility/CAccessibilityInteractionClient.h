@@ -3,19 +3,20 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityInteractionClient.h"
-#include "elastos/droid/view/accessibility/AccessibilityNodeInfoCache.h"
-#include <elastos/Core/Object.h>
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
-using Elastos::Core::Object;
-using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceConnection;
+using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::AccessibilityService::IIAccessibilityServiceConnection;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::IInt64SparseArray;
+using Elastos::Droid::View::Accessibility::IIAccessibilityInteractionConnectionCallback;
+using Elastos::Core::Object;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -23,8 +24,16 @@ namespace View {
 namespace Accessibility {
 
 CarClass(CAccessibilityInteractionClient)
+    , public Object
+    , public IAccessibilityInteractionClient
+    , public IIAccessibilityInteractionConnectionCallback
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAccessibilityInteractionClient();
 
     ~CAccessibilityInteractionClient();
@@ -32,7 +41,7 @@ public:
     /**
      * @return The client for the current thread.
      */
-    static CARAPI_(AutoPtr<CAccessibilityInteractionClient>) GetInstance();
+    static CARAPI_(AutoPtr<IAccessibilityInteractionClient>) GetInstance();
 
     /**
      * <strong>Note:</strong> We keep one instance per interrogating thread since
@@ -42,7 +51,7 @@ public:
      *
      * @return The client for a given <code>threadId</code>.
      */
-    static CARAPI_(AutoPtr<CAccessibilityInteractionClient>) GetInstanceForThread(
+    static CARAPI_(AutoPtr<IAccessibilityInteractionClient>) GetInstanceForThread(
         /* [in] */ Int64 threadId);
 
     /**
@@ -65,6 +74,30 @@ public:
         /* [out] */ IAccessibilityNodeInfo** info);
 
     /**
+     * Gets the info for a window.
+     *
+     * @param connectionId The id of a connection for interacting with the system.
+     * @param accessibilityWindowId A unique window id. Use
+     *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+     *     to query the currently active window.
+     * @return The {@link AccessibilityWindowInfo}.
+     */
+    CARAPI GetWindow(
+        /* [in] */ Int32 connectionId,
+        /* [in] */ Int32 accessibilityWindowId,
+        /* [out] */ IAccessibilityWindowInfo** info);
+
+    /**
+     * Gets the info for all windows.
+     *
+     * @param connectionId The id of a connection for interacting with the system.
+     * @return The {@link AccessibilityWindowInfo} list.
+     */
+    CARAPI GetWindows(
+        /* [in] */ Int32 connectionId,
+        /* [out] */ IList** list);
+
+    /**
      * Finds an {@link AccessibilityNodeInfo} by accessibility id.
      *
      * @param connectionId The id of a connection for interacting with the system.
@@ -75,6 +108,7 @@ public:
      *     where to start the search. Use
      *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
      *     to start from the root.
+     * @param bypassCache Whether to bypass the cache while looking for the node.
      * @param prefetchFlags flags to guide prefetching.
      * @return An {@link AccessibilityNodeInfo} if found, null otherwise.
      */
@@ -82,6 +116,7 @@ public:
         /* [in] */ Int32 connectionId,
         /* [in] */ Int32 accessibilityWindowId,
         /* [in] */ Int64 accessibilityNodeId,
+        /* [in] */ Boolean bypassCache,
         /* [in] */ Int32 prefetchFlags,
         /* [out] */ IAccessibilityNodeInfo** info);
 
@@ -98,15 +133,15 @@ public:
      *     where to start the search. Use
      *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
      *     to start from the root.
-     * @param viewId The id of the view.
-     * @return An {@link AccessibilityNodeInfo} if found, null otherwise.
+     * @param viewId The fully qualified resource name of the view id to find.
+     * @return An list of {@link AccessibilityNodeInfo} if found, empty list otherwise.
      */
-    CARAPI FindAccessibilityNodeInfoByViewId(
+    CARAPI FindAccessibilityNodeInfosByViewId(
         /* [in] */ Int32 connectionId,
         /* [in] */ Int32 accessibilityWindowId,
         /* [in] */ Int64 accessibilityNodeId,
-        /* [in] */ Int32 viewId,
-        /* [out] */ IAccessibilityNodeInfo** info);
+        /* [in] */ String viewId,
+        /* [out] */ IList** list);
 
     /**
      * Finds {@link AccessibilityNodeInfo}s by View text. The match is case
@@ -130,7 +165,7 @@ public:
         /* [in] */ Int32 accessibilityWindowId,
         /* [in] */ Int64 accessibilityNodeId,
         /* [in] */ const String& text,
-        /* [out] */ IObjectContainer** infos);
+        /* [out] */ IList** list);
 
     /**
      * Finds the {@link android.view.accessibility.AccessibilityNodeInfo} that has the
@@ -201,21 +236,57 @@ public:
         /* [in] */ IBundle* arguments,
         /* [out] */ Boolean* result);
 
+    /**
+     * Computes a point in screen coordinates where sending a down/up events would
+     * perform a click on an {@link AccessibilityNodeInfo}.
+     *
+     * @param connectionId The id of a connection for interacting with the system.
+     * @param accessibilityWindowId A unique window id. Use
+     *     {@link android.view.accessibility.AccessibilityNodeInfo#ACTIVE_WINDOW_ID}
+     *     to query the currently active window.
+     * @param accessibilityNodeId A unique view id or virtual descendant id from
+     *     where to start the search. Use
+     *     {@link android.view.accessibility.AccessibilityNodeInfo#ROOT_NODE_ID}
+     *     to start from the root.
+     * @return Point the click point of null if no such point.
+     */
+    CARAPI ComputeClickPointInScreen(
+        /* [in] */ Int32 connectionId,
+        /* [in] */ Int32 accessibilityWindowId,
+        /* [in] */ Int64 accessibilityNodeId,
+        /* [out] */ IPoint** point);
+
     CARAPI ClearCache();
 
     CARAPI OnAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
+    /**
+     * {@inheritDoc}
+     */
     CARAPI SetFindAccessibilityNodeInfoResult(
         /* [in] */ IAccessibilityNodeInfo* info,
         /* [in] */ Int32 interactionId);
 
+    /**
+     * {@inheritDoc}
+     */
     CARAPI SetFindAccessibilityNodeInfosResult(
-        /* [in] */ IObjectContainer* infos,
+        /* [in] */ IList* infos,
         /* [in] */ Int32 interactionId);
 
+    /**
+     * {@inheritDoc}
+     */
     CARAPI SetPerformAccessibilityActionResult(
         /* [in] */ Boolean succeeded,
+        /* [in] */ Int32 interactionId);
+
+    /**
+     * {@inheritDoc}
+     */
+    CARAPI SetComputeClickPointInScreenActionResult(
+        /* [in] */ IPoint* point,
         /* [in] */ Int32 interactionId);
 
     /**
@@ -262,7 +333,7 @@ private:
      * @param interactionId The interaction id to match the result with the request.
      * @return The result {@link AccessibilityNodeInfo}s.
      */
-    CARAPI_(AutoPtr< List<AutoPtr<IAccessibilityNodeInfo> > >) GetFindAccessibilityNodeInfosResultAndClear(
+    CARAPI_(AutoPtr<IList>) GetFindAccessibilityNodeInfosResultAndClear(
         /* [in] */ Int32 interactionId);
 
     /**
@@ -272,6 +343,15 @@ private:
      * @return Whether the action was performed.
      */
     CARAPI_(Boolean) GetPerformAccessibilityActionResultAndClear(
+        /* [in] */ Int32 interactionId);
+
+    /**
+     * Gets the result of a request to compute a point in screen for clicking on a node.
+     *
+     * @param interactionId The interaction id to match the result with the request.
+     * @return The point or null if no such point.
+     */
+    CARAPI_(AutoPtr<IPoint>) GetComputeClickPointInScreenResultAndClear(
         /* [in] */ Int32 interactionId);
 
     /**
@@ -289,38 +369,24 @@ private:
         /* [in] */ Int32 interactionId);
 
     /**
-     * Applies compatibility scale to the info bounds if it is not equal to one.
-     *
-     * @param info The info whose bounds to scale.
-     * @param scale The scale to apply.
-     */
-    CARAPI_(void) ApplyCompatibilityScaleIfNeeded(
-        /* [in] */ IAccessibilityNodeInfo* info,
-        /* [in] */ Float scale);
-
-    /**
      * Finalize an {@link AccessibilityNodeInfo} before passing it to the client.
      *
      * @param info The info.
      * @param connectionId The id of the connection to the system.
-     * @param windowScale The source window compatibility scale.
      */
     CARAPI_(void) FinalizeAndCacheAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info,
-        /* [in] */ Int32 connectionId,
-        /* [in] */ Float windowScale);
+        /* [in] */ Int32 connectionId);
 
     /**
      * Finalize {@link AccessibilityNodeInfo}s before passing them to the client.
      *
      * @param infos The {@link AccessibilityNodeInfo}s.
      * @param connectionId The id of the connection to the system.
-     * @param windowScale The source window compatibility scale.
      */
     CARAPI_(void) FinalizeAndCacheAccessibilityNodeInfos(
-        /* [in] */ List<AutoPtr<IAccessibilityNodeInfo> >* infos,
-        /* [in] */ Int32 connectionId,
-        /* [in] */ Float windowScale);
+        /* [in] */ IList* infos,
+        /* [in] */ Int32 connectionId);
 
     /**
      * Gets the message stored if the interacted and interacting
@@ -336,10 +402,7 @@ private:
      * @param infos The result list to check.
      */
     CARAPI_(void) CheckFindAccessibilityNodeInfoResultIntegrity(
-        /* [in] */ List<AutoPtr<IAccessibilityNodeInfo> >* infos);
-
-public:
-    static const Int32 NO_ID;
+        /* [in] */ IList* infos);
 
 private:
     static const String TAG;
@@ -350,33 +413,29 @@ private:
 
     static const Int64 TIMEOUT_INTERACTION_MILLIS;
 
-    static Object sStaticLock;
+    static const AutoPtr<Object> sStaticLock;
 
-    static HashMap<Int64, AutoPtr<CAccessibilityInteractionClient> > sClients;
+    static const AutoPtr<IInt64SparseArray> sClients;
 
     AutoPtr<IAtomicInteger32> mInteractionIdCounter;
 
-    Object mInstanceLock;
+    AutoPtr<Object> mInstanceLock;
 
     Int32 mInteractionId;
 
     AutoPtr<IAccessibilityNodeInfo> mFindAccessibilityNodeInfoResult;
 
-    AutoPtr<List<AutoPtr<IAccessibilityNodeInfo> > > mFindAccessibilityNodeInfosResult;
+    AutoPtr<IList> mFindAccessibilityNodeInfosResult;
 
     Boolean mPerformAccessibilityActionResult;
 
+    AutoPtr<IPoint> mComputeClickPointResult;
+
     AutoPtr<IMessage> mSameThreadMessage;
 
-    AutoPtr<IRect> mTempBounds;
+    static const AutoPtr<ISparseArray> sConnectionCache;
 
-    // The connection cache is shared between all interrogating threads.
-    static HashMap<Int32, AutoPtr<IIAccessibilityServiceConnection> > sConnectionCache;
-    static Object sConnectionCacheLock;
-
-    // The connection cache is shared between all interrogating threads since
-    // at any given time there is only one window allowing querying.
-    static const AutoPtr<AccessibilityNodeInfoCache> sAccessibilityNodeInfoCache;
+    static const AutoPtr<IAccessibilityCache> sAccessibilityCache;
 };
 
 } // Accessibility

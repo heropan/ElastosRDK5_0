@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityInteractionClientHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,8 +11,14 @@ namespace View {
 namespace Accessibility {
 
 CarClass(CAccessibilityInteractionClientHelper)
+    , public Singleton
+    , public IAccessibilityInteractionClientHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * @return The client for the current thread.
      */

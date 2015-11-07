@@ -28,8 +28,6 @@ public:
 
     ~CAccessibilityNodeInfoAccessibilityAction();
 
-    CARAPI constructor();
-
     CARAPI constructor(
         /* [in] */ Int32 actionId,
         /* [in] */ ICharSequence* label);

@@ -1,14 +1,16 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
+    interface Elastos.Droid.View.Accessibility.IAccessibilityWindowInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Accessibility {
-
-    interface IAccessibilityWindowInfo;
-    interface IAccessibilityEvent;
-    interface IAccessibilityNodeInfo;
 
     /**
      * Cache for AccessibilityWindowInfos and AccessibilityNodeInfos.
@@ -45,7 +47,7 @@ module
 
         GetWindow(
             [in] Int32 windowId,
-            [out] IAccessibilityWindowInfo** list);
+            [out] IAccessibilityWindowInfo** info);
 
         /**
          * Caches an {@link AccessibilityNodeInfo}.

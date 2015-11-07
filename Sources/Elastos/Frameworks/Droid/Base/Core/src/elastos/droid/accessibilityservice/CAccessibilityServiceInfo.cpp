@@ -1,7 +1,7 @@
 #include "elastos/droid/accessibilityservice/CAccessibilityServiceInfo.h"
 #include "elastos/droid/accessibilityservice/CAccessibilityServiceInfoCapabilityInfo.h"
 #include "elastos/droid/content/CComponentName.h"
-// #include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
@@ -18,12 +18,11 @@ using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::R;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-// using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
-// using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityEvent;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CoreUtils;
@@ -45,9 +44,10 @@ CAR_INTERFACE_IMPL_2(CAccessibilityServiceInfo, Object, IAccessibilityServiceInf
 
 CAR_OBJECT_IMPL(CAccessibilityServiceInfo)
 
-static AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > InitsAvailableCapabilityInfos()
+static AutoPtr<ISparseArray> InitsAvailableCapabilityInfos()
 {
-    AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > availableCapabilityInfos = new HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >();
+    AutoPtr<ISparseArray> availableCapabilityInfos;
+    CSparseArray::New((ISparseArray**)&availableCapabilityInfos);
 
     AutoPtr<IAccessibilityServiceInfoCapabilityInfo> info;
     CAccessibilityServiceInfoCapabilityInfo::New(
@@ -55,7 +55,7 @@ static AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >
             R::string::capability_title_canRetrieveWindowContent,
             R::string::capability_desc_canRetrieveWindowContent,
             (IAccessibilityServiceInfoCapabilityInfo**)&info);
-    (*availableCapabilityInfos)[IAccessibilityServiceInfo::CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT] = info;
+    availableCapabilityInfos->Put(IAccessibilityServiceInfo::CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT, info);
 
     AutoPtr<IAccessibilityServiceInfoCapabilityInfo> info2;
     CAccessibilityServiceInfoCapabilityInfo::New(
@@ -63,7 +63,7 @@ static AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >
             R::string::capability_title_canRequestTouchExploration,
             R::string::capability_desc_canRequestTouchExploration,
             (IAccessibilityServiceInfoCapabilityInfo**)&info2);
-    (*availableCapabilityInfos)[IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION] = info2;
+    availableCapabilityInfos->Put(IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION, info2);
 
     AutoPtr<IAccessibilityServiceInfoCapabilityInfo> info3;
     CAccessibilityServiceInfoCapabilityInfo::New(
@@ -71,7 +71,7 @@ static AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >
             R::string::capability_title_canRequestEnhancedWebAccessibility,
             R::string::capability_desc_canRequestEnhancedWebAccessibility,
             (IAccessibilityServiceInfoCapabilityInfo**)&info3);
-    (*availableCapabilityInfos)[IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY] = info3;
+    availableCapabilityInfos->Put(IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_ENHANCED_WEB_ACCESSIBILITY, info3);
 
     AutoPtr<IAccessibilityServiceInfoCapabilityInfo> info4;
     CAccessibilityServiceInfoCapabilityInfo::New(
@@ -79,12 +79,12 @@ static AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >
             R::string::capability_title_canRequestFilterKeyEvents,
             R::string::capability_desc_canRequestFilterKeyEvents,
             (IAccessibilityServiceInfoCapabilityInfo**)&info4);
-    (*availableCapabilityInfos)[IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS] = info4;
+    availableCapabilityInfos->Put(IAccessibilityServiceInfo::CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS, info4);
 
     return availableCapabilityInfos;
 }
 
-const AutoPtr< HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > CAccessibilityServiceInfo::sAvailableCapabilityInfos = InitsAvailableCapabilityInfos();
+const AutoPtr<ISparseArray> CAccessibilityServiceInfo::sAvailableCapabilityInfos = InitsAvailableCapabilityInfos();
 
 CAccessibilityServiceInfo::CAccessibilityServiceInfo()
     : mEventTypes(0)
@@ -607,24 +607,19 @@ void CAccessibilityServiceInfo::AppendEventTypes(
     /* [in] */ StringBuilder* stringBuilder,
     /* [in] */ Int32 eventTypes)
 {
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityEventHelper> helper;
-    // CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
+    stringBuilder->Append("eventTypes:");
+    stringBuilder->Append("[");
 
-    // stringBuilder->Append("eventTypes:");
-    // stringBuilder->Append("[");
-
-    // while (eventTypes != 0) {
-    //     Int32 eventTypeBit = (1 << Elastos::Core::Math::NumberOfTrailingZeros(eventTypes));
-    //     String info;
-    //     helper->EventTypeToString(eventTypeBit, &info);
-    //     stringBuilder->Append(info);
-    //     eventTypes &= ~eventTypeBit;
-    //     if (eventTypes != 0) {
-    //         stringBuilder->Append(", ");
-    //     }
-    // }
-    // stringBuilder->Append("]");
+    while (eventTypes != 0) {
+        Int32 eventTypeBit = (1 << Elastos::Core::Math::NumberOfTrailingZeros(eventTypes));
+        String info = CAccessibilityEvent::EventTypeToString(eventTypeBit);
+        stringBuilder->Append(info);
+        eventTypes &= ~eventTypeBit;
+        if (eventTypes != 0) {
+            stringBuilder->Append(", ");
+        }
+    }
+    stringBuilder->Append("]");
 }
 
 void CAccessibilityServiceInfo::AppendFlags(
@@ -783,7 +778,7 @@ ECode CAccessibilityServiceInfo::CapabilityToString(
 ECode CAccessibilityServiceInfo::GetCapabilityInfos(
     /* [out] */ IList** infos)
 {
-    VALIDATE_NOT_NULL(infos)
+    VALIDATE_NOT_NULL(infos);
     *infos = NULL;
 
     AutoPtr<ICollections> coll;
@@ -798,12 +793,12 @@ ECode CAccessibilityServiceInfo::GetCapabilityInfos(
     while (capabilities != 0) {
         Int32 capabilityBit = 1 << Elastos::Core::Math::NumberOfTrailingZeros(capabilities);
         capabilities &= ~capabilityBit;
-
-        HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> >::Iterator it = sAvailableCapabilityInfos->Find(capabilityBit);
-        if (it != sAvailableCapabilityInfos->End()) {
-            capabilityInfos->Add(it->mSecond);
+        AutoPtr<IInterface> obj;
+        sAvailableCapabilityInfos->Get(capabilityBit, (IInterface**)&obj);
+        AutoPtr<IAccessibilityServiceInfoCapabilityInfo> capabilityInfo = IAccessibilityServiceInfoCapabilityInfo::Probe(obj);
+        if (capabilityInfo != NULL) {
+            capabilityInfos->Add(capabilityInfo);
         }
-
     }
     *infos = capabilityInfos;
     REFCOUNT_ADD(*infos);

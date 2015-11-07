@@ -29,10 +29,19 @@ ECode AccessibilityNodeProvider::PerformAction(
 ECode AccessibilityNodeProvider::FindAccessibilityNodeInfosByText(
     /* [in] */ const String& text,
     /* [in] */ Int32 virtualViewId,
-    /* [out] */ IObjectContainer** nodeInfos)
+    /* [out] */ IList** nodeInfos)
 {
     VALIDATE_NOT_NULL(nodeInfos);
     *nodeInfos = NULL;
+    return NOERROR;
+}
+
+ECode AccessibilityNodeProvider::FindFocus(
+    /* [in] */ Int32 focus,
+    /* [out] */  IAccessibilityNodeInfo** info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = NULL;
     return NOERROR;
 }
 

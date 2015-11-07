@@ -1,16 +1,18 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/view/accessibility/AccessibilityRecord.h"
+#include "elastos/droid/view/accessibility/CAccessibilityRecord.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 #include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::StringUtils;
-
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::EIID_IList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -35,14 +37,16 @@ const Int32 AccessibilityRecord::GET_SOURCE_PREFETCH_FLAGS =
         | IAccessibilityNodeInfo::FLAG_PREFETCH_DESCENDANTS;
 const Int32 AccessibilityRecord::MAX_POOL_SIZE = 10;
 
-AccessibilityRecord* AccessibilityRecord::sPool = NULL;
-Mutex AccessibilityRecord::sPoolLock;
+const AutoPtr<Object> AccessibilityRecord::sPoolLock = new Object();
+AutoPtr<AccessibilityRecord> AccessibilityRecord::sPool;
 Int32 AccessibilityRecord::sPoolSize = 0;
+
+CAR_INTERFACE_IMPL(AccessibilityRecord, Object, IAccessibilityRecord)
 
 AccessibilityRecord::AccessibilityRecord()
     : mIsInPool(FALSE)
     , mSealed(FALSE)
-    , mBooleanProperties(PROPERTY_IMPORTANT_FOR_ACCESSIBILITY)
+    , mBooleanProperties(0)
     , mCurrentItemIndex(UNDEFINED)
     , mItemCount(UNDEFINED)
     , mFromIndex(UNDEFINED)
@@ -58,6 +62,12 @@ AccessibilityRecord::AccessibilityRecord()
     , mConnectionId(UNDEFINED)
 {
     mSourceNodeId = CAccessibilityNodeInfo::MakeNodeId(UNDEFINED, UNDEFINED);
+    CArrayList::New((IList**)&mText);
+}
+
+ECode AccessibilityRecord::constructor()
+{
+    return NOERROR;
 }
 
 ECode AccessibilityRecord::SetSource(
@@ -105,8 +115,8 @@ ECode AccessibilityRecord::GetSource(
 
     AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     return client->FindAccessibilityNodeInfoByAccessibilityId(
-        mConnectionId, mSourceWindowId,
-        mSourceNodeId, GET_SOURCE_PREFETCH_FLAGS, info);
+            mConnectionId, mSourceWindowId,
+            mSourceNodeId, FALSE, GET_SOURCE_PREFETCH_FLAGS, info);
 }
 
 ECode AccessibilityRecord::SetWindowId(
@@ -390,17 +400,11 @@ ECode AccessibilityRecord::SetClassName(
 }
 
 ECode AccessibilityRecord::GetText(
-    /* [out] */ IObjectContainer** container)
+    /* [out] */ IList** list)
 {
-    VALIDATE_NOT_NULL(container);
-    AutoPtr<IObjectContainer> text;
-    CObjectContainer::New((IObjectContainer**)&text);
-    List<AutoPtr<ICharSequence> >::Iterator it = mText.Begin();
-    for (; it != mText.End(); ++it) {
-        text->Add((IInterface*)(*it));
-    }
-    *container = text;
-    REFCOUNT_ADD(*container);
+    VALIDATE_NOT_NULL(list);
+    *list = mText;
+    REFCOUNT_ADD(*list);
     return NOERROR;
 }
 
@@ -524,6 +528,43 @@ void AccessibilityRecord::SetBooleanProperty(
     }
 }
 
+ECode AccessibilityRecord::Obtain(
+    /* [in] */ IAccessibilityRecord* record,
+    /* [out] */ IAccessibilityRecord** newInstance)
+{
+    VALIDATE_NOT_NULL(newInstance);
+    AutoPtr<IAccessibilityRecord> clone;
+    Obtain((IAccessibilityRecord**)&clone);
+    ((AccessibilityRecord*)clone.Get())->Init(record);
+    *newInstance = clone;
+    REFCOUNT_ADD(*newInstance);
+    return NOERROR;
+}
+
+ECode AccessibilityRecord::Obtain(
+    /* [out] */ IAccessibilityRecord** newInstance)
+{
+    VALIDATE_NOT_NULL(newInstance);
+    synchronized (sPoolLock) {
+        if (sPool != NULL) {
+            AutoPtr<AccessibilityRecord> record = sPool;
+            sPool = sPool->mNext;
+            sPoolSize--;
+            record->mNext = NULL;
+            record->mIsInPool = FALSE;
+            *newInstance = (IAccessibilityRecord*)record.Get();
+            REFCOUNT_ADD(*newInstance);
+            return NOERROR;
+        }
+
+        AutoPtr<CAccessibilityRecord> record;
+        CAccessibilityRecord::NewByFriend((CAccessibilityRecord**)&record);
+        *newInstance = (IAccessibilityRecord*)record.Get();
+        REFCOUNT_ADD(*newInstance);
+    }
+    return NOERROR;
+}
+
 ECode AccessibilityRecord::Recycle()
 {
     if (mIsInPool) {
@@ -532,45 +573,47 @@ ECode AccessibilityRecord::Recycle()
         // throw new IllegalStateException("Record already recycled!");
     }
     Clear();
-    AutoLock lock(sPoolLock);
-    if (sPoolSize <= MAX_POOL_SIZE) {
-        mNext = sPool;
-        sPool = this;
-        mIsInPool = TRUE;
-        sPoolSize++;
+    synchronized (sPoolLock) {
+        if (sPoolSize <= MAX_POOL_SIZE) {
+            mNext = sPool;
+            sPool = this;
+            mIsInPool = TRUE;
+            sPoolSize++;
+        }
     }
     return NOERROR;
 }
 
 void AccessibilityRecord::Init(
-    /* [in] */ AccessibilityRecord* record)
+    /* [in] */ IAccessibilityRecord* record)
 {
-    mSealed = record->mSealed;
-    mBooleanProperties = record->mBooleanProperties;
-    mCurrentItemIndex = record->mCurrentItemIndex;
-    mItemCount = record->mItemCount;
-    mFromIndex = record->mFromIndex;
-    mToIndex = record->mToIndex;
-    mScrollX = record->mScrollX;
-    mScrollY = record->mScrollY;
-    mMaxScrollX = record->mMaxScrollX;
-    mMaxScrollY = record->mMaxScrollY;
-    mAddedCount = record->mAddedCount;
-    mRemovedCount = record->mRemovedCount;
-    mClassName = record->mClassName;
-    mContentDescription = record->mContentDescription;
-    mBeforeText = record->mBeforeText;
-    mParcelableData = record->mParcelableData;
-    mText = record->mText;
-    mSourceWindowId = record->mSourceWindowId;
-    mSourceNodeId = record->mSourceNodeId;
-    mConnectionId = record->mConnectionId;
+    AutoPtr<AccessibilityRecord> _record = (AccessibilityRecord*)record;
+    mSealed = _record->mSealed;
+    mBooleanProperties = _record->mBooleanProperties;
+    mCurrentItemIndex = _record->mCurrentItemIndex;
+    mItemCount = _record->mItemCount;
+    mFromIndex = _record->mFromIndex;
+    mToIndex = _record->mToIndex;
+    mScrollX = _record->mScrollX;
+    mScrollY = _record->mScrollY;
+    mMaxScrollX = _record->mMaxScrollX;
+    mMaxScrollY = _record->mMaxScrollY;
+    mAddedCount = _record->mAddedCount;
+    mRemovedCount = _record->mRemovedCount;
+    mClassName = _record->mClassName;
+    mContentDescription = _record->mContentDescription;
+    mBeforeText = _record->mBeforeText;
+    mParcelableData = _record->mParcelableData;
+    mText->AddAll(ICollection::Probe(_record->mText));
+    mSourceWindowId = _record->mSourceWindowId;
+    mSourceNodeId = _record->mSourceNodeId;
+    mConnectionId = _record->mConnectionId;
 }
 
 void AccessibilityRecord::Clear()
 {
     mSealed = FALSE;
-    mBooleanProperties = PROPERTY_IMPORTANT_FOR_ACCESSIBILITY;
+    mBooleanProperties = 0;
     mCurrentItemIndex = UNDEFINED;
     mItemCount = UNDEFINED;
     mFromIndex = UNDEFINED;
@@ -585,7 +628,7 @@ void AccessibilityRecord::Clear()
     mContentDescription = NULL;
     mBeforeText = NULL;
     mParcelableData = NULL;
-    mText.Clear();
+    mText->Clear();
     mSourceNodeId = CAccessibilityNodeInfo::MakeNodeId(UNDEFINED, UNDEFINED);
     mSourceWindowId = UNDEFINED;
     mConnectionId = UNDEFINED;
@@ -594,41 +637,51 @@ void AccessibilityRecord::Clear()
 String AccessibilityRecord::ToString()
 {
     StringBuilder builder;
-    String className, contentDescription;
-    mClassName->ToString(&className);
-    mContentDescription->ToString(&contentDescription);
-    builder.AppendString(String(" [ ClassName: ") + className);
-    // builder.AppendString(String("; Text: ") + mText);
-    builder.AppendString(String("; ContentDescription: ") + contentDescription);
-    builder.AppendString(String("; ItemCount: ") + StringUtils::Int32ToString(mItemCount));
-    builder.AppendString(String("; CurrentItemIndex: ")
-            + StringUtils::Int32ToString(mCurrentItemIndex));
-    builder.AppendString(String("; IsEnabled: ") +
-            StringUtils::BooleanToString(GetBooleanProperty(PROPERTY_ENABLED)));
-    builder.AppendString(String("; IsPassword: ") +
-            StringUtils::BooleanToString(GetBooleanProperty(PROPERTY_PASSWORD)));
-    builder.AppendString(String("; IsChecked: ") +
-            StringUtils::BooleanToString(GetBooleanProperty(PROPERTY_CHECKED)));
-    builder.AppendString(String("; IsFullScreen: ") +
-            StringUtils::BooleanToString(GetBooleanProperty(PROPERTY_FULL_SCREEN)));
-    builder.AppendString(String("; Scrollable: ") +
-            StringUtils::BooleanToString(GetBooleanProperty(PROPERTY_SCROLLABLE)));
-    String beforeText;
-    mBeforeText->ToString(&beforeText);
-    builder.AppendString(String("; BeforeText: ") + beforeText);
-    builder.AppendString(String("; FromIndex: ") + StringUtils::Int32ToString(mFromIndex));
-    builder.AppendString(String("; ToIndex: ") + StringUtils::Int32ToString(mToIndex));
-    builder.AppendString(String("; ScrollX: ") + StringUtils::Int32ToString(mScrollX));
-    builder.AppendString(String("; ScrollY: ") + StringUtils::Int32ToString(mScrollY));
-    builder.AppendString(String("; MaxScrollX: ") + StringUtils::Int32ToString(mMaxScrollX));
-    builder.AppendString(String("; MaxScrollY: ") + StringUtils::Int32ToString(mMaxScrollY));
-    builder.AppendString(String("; AddedCount: ") + StringUtils::Int32ToString(mAddedCount));
-    builder.AppendString(String("; RemovedCount: ") + StringUtils::Int32ToString(mRemovedCount));
-    // builder.AppendString(String("; ParcelableData: ") + mParcelableData);
-    builder.AppendCStr(" ]");
+
+    builder.Append(" [ ClassName: ");
+    builder.Append(mClassName);
+    builder.Append("; Text: ");
+    builder.Append((IInterface*)mText);
+    builder.Append("; ContentDescription: ");
+    builder.Append(mContentDescription);
+    builder.Append("; ItemCount: ");
+    builder.Append(mItemCount);
+    builder.Append("; CurrentItemIndex: ");
+    builder.Append(mCurrentItemIndex);
+    builder.Append("; IsEnabled: ");
+    builder.Append(GetBooleanProperty(PROPERTY_ENABLED));
+    builder.Append("; IsPassword: ");
+    builder.Append(GetBooleanProperty(PROPERTY_PASSWORD));
+    builder.Append("; IsChecked: ");
+    builder.Append(GetBooleanProperty(PROPERTY_CHECKED));
+    builder.Append("; IsFullScreen: ");
+    builder.Append(GetBooleanProperty(PROPERTY_FULL_SCREEN));
+    builder.Append("; Scrollable: ");
+    builder.Append(GetBooleanProperty(PROPERTY_SCROLLABLE));
+    builder.Append("; BeforeText: ");
+    builder.Append(mBeforeText);
+    builder.Append("; FromIndex: ");
+    builder.Append(mFromIndex);
+    builder.Append("; ToIndex: ");
+    builder.Append(mToIndex);
+    builder.Append("; ScrollX: ");
+    builder.Append(mScrollX);
+    builder.Append("; ScrollY: ");
+    builder.Append(mScrollY);
+    builder.Append("; MaxScrollX: ");
+    builder.Append(mMaxScrollX);
+    builder.Append("; MaxScrollY: ");
+    builder.Append(mMaxScrollY);
+    builder.Append("; AddedCount: ");
+    builder.Append(mAddedCount);
+    builder.Append("; RemovedCount: ");
+    builder.Append(mRemovedCount);
+    builder.Append("; ParcelableData: ");
+    builder.Append((IInterface*)mParcelableData);
+    builder.Append(" ]");
+
     return builder.ToString();
 }
-
 
 } // Accessibility
 } // View

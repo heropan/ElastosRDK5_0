@@ -2,11 +2,13 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYRECORD_H__
 
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IView;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::Object;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -18,12 +20,15 @@ extern const InterfaceID EIID_AccessibilityRecord;
 class CAccessibilityRecord;
 
 class AccessibilityRecord
+    : public Object
+    , public IAccessibilityRecord
 {
 public:
+    CAR_INTERFACE_DECL()
+
     AccessibilityRecord();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor();
 
     /**
      * Sets the event source.
@@ -392,7 +397,7 @@ public:
      * @return The text.
      */
     CARAPI GetText(
-        /* [out] */ IObjectContainer** container);
+        /* [out] */ IList** list);
 
     /**
      * Sets the text before a change.
@@ -507,9 +512,9 @@ public:
      *
      * @return An instance.
      */
-    // static CARAPI Obtain(
-    //     /* [in] */ IAccessibilityRecord* record,
-    //     /* [out] */ IAccessibilityRecord** newInstance);
+    static CARAPI Obtain(
+        /* [in] */ IAccessibilityRecord* record,
+        /* [out] */ IAccessibilityRecord** newInstance);
 
     /**
      * Returns a cached instance if such is available or a new one is
@@ -517,8 +522,8 @@ public:
      *
      * @return An instance.
      */
-    // static CARAPI Obtain(
-    //     /* [out] */ IAccessibilityRecord** newInstance);
+    static CARAPI Obtain(
+        /* [out] */ IAccessibilityRecord** newInstance);
 
     /**
      * Return an instance back to be reused.
@@ -535,7 +540,7 @@ public:
      * @param record The to initialize from.
      */
     CARAPI_(void) Init(
-        /* [in] */ AccessibilityRecord* record);
+        /* [in] */ IAccessibilityRecord* record);
 
     /**
      * Clears the state of this instance.
@@ -565,7 +570,7 @@ private:
         /* [in] */ Boolean value);
 
 public:
-    AccessibilityRecord* mNext;
+    AutoPtr<AccessibilityRecord> mNext;
     Boolean mIsInPool;
 
     Boolean mSealed;
@@ -589,7 +594,7 @@ public:
     AutoPtr<ICharSequence> mBeforeText;
     AutoPtr<IParcelable> mParcelableData;
 
-    List<AutoPtr<ICharSequence> > mText;
+    AutoPtr<IList> mText;
 
     Int32 mConnectionId;
 
@@ -608,8 +613,8 @@ private:
 
     // Housekeeping
     static const Int32 MAX_POOL_SIZE;
-    static AccessibilityRecord* sPool;
-    static Object sPoolLock;
+    static const AutoPtr<Object> sPoolLock;
+    static AutoPtr<AccessibilityRecord> sPool;
     static Int32 sPoolSize;
 
     friend class CAccessibilityRecord;

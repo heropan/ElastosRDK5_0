@@ -4,14 +4,14 @@
 #include "_Elastos_Droid_AccessibilityService_CAccessibilityServiceInfo.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
-#include <elastos/utility/etl/HashMap.h>
+#include "elastos/droid/utility/CSparseArray.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IList;
 
 namespace Elastos {
@@ -270,7 +270,7 @@ private:
 
 public:
     static const String TAG_ACCESSIBILITY_SERVICE;
-    static const AutoPtr<HashMap<Int32, AutoPtr<IAccessibilityServiceInfoCapabilityInfo> > > sAvailableCapabilityInfos;
+    static const AutoPtr<ISparseArray> sAvailableCapabilityInfos;
 
     /**
      * The event types an {@link AccessibilityService} is interested in.

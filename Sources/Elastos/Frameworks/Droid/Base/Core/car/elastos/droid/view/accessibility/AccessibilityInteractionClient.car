@@ -1,10 +1,12 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.IRegion;
-    interface Elastos.Droid.View.IMagnificationSpec;
-    interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
+    using interface Elastos.Utility.IList;
+
+    interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceConnection;
+    interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IMessage;
 
     namespace Elastos {
     namespace Droid {

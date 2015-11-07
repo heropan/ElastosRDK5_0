@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYEVENTHELPER_H__
 
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityEventHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -9,8 +10,14 @@ namespace View {
 namespace Accessibility {
 
 CarClass(CAccessibilityEventHelper)
+    , public Singleton
+    , public IAccessibilityEventHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns a cached instance if such is available or a new one is
      * instantiated with its type property set.
@@ -53,7 +60,6 @@ public:
     CARAPI EventTypeToString(
         /* [in] */ Int32 eventType,
         /* [out] */ String* str);
-
 };
 
 } // Accessibility

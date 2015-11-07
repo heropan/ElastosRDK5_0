@@ -8,6 +8,10 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
+CAR_INTERFACE_IMPL(CAccessibilityEventHelper, Singleton, IAccessibilityEventHelper)
+
+CAR_SINGLETON_IMPL(CAccessibilityEventHelper)
+
 ECode CAccessibilityEventHelper::Obtain(
     /* [in] */ Int32 eventType,
     /* [out] */ IAccessibilityEvent** event)

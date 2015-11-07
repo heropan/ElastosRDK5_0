@@ -1,11 +1,10 @@
 #include "elastos/droid/accessibilityservice/AccessibilityService.h"
 #include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
-//#include "elastos/droid/view/accessibility/CAccessibilityInteractionClientHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
 
 using Elastos::Droid::Content::EIID_IContext;
-// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
-// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClientHelper;
-// using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClientHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClient;
+using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 
 namespace Elastos {
 namespace Droid {
@@ -79,16 +78,9 @@ ECode AccessibilityService::GetWindows(
 {
     VALIDATE_NOT_NULL(windows)
     *windows = NULL;
-    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    // AutoPtr<IAccessibilityInteractionClient> client;
-    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
-
-    // client->GetWindows(mConnectionId, windows);
-
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->GetWindows(mConnectionId, windows);
 }
 
 ECode AccessibilityService::GetRootInActiveWindow(
@@ -96,15 +88,9 @@ ECode AccessibilityService::GetRootInActiveWindow(
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
-    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    // AutoPtr<IAccessibilityInteractionClient> client;
-    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
-
-    // client->GetRootInActiveWindow(mConnectionId, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->GetRootInActiveWindow(mConnectionId, info);
 }
 
 ECode AccessibilityService::PerformGlobalAction(
@@ -114,22 +100,17 @@ ECode AccessibilityService::PerformGlobalAction(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
-    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    // AutoPtr<IAccessibilityInteractionClient> client;
-    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    // AutoPtr<IIAccessibilityServiceConnection> connection;
-    // client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
-
-    // if (connection != NULL) {
-    //     // try {
-    //     return connection->PerformGlobalAction(action, result);
-    //     // } catch (RemoteException re) {
-    //     //     Log.w(TAG, "Error while calling performGlobalAction", re);
-    //     // }
-    // }
+    if (connection != NULL) {
+        // try {
+        return connection->PerformGlobalAction(action, result);
+        // } catch (RemoteException re) {
+        //     Log.w(TAG, "Error while calling performGlobalAction", re);
+        // }
+    }
     return NOERROR;
 }
 
@@ -139,18 +120,11 @@ ECode AccessibilityService::FindFocus(
 {
     VALIDATE_NOT_NULL(ret);
     *ret = NULL;
-    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    // AutoPtr<IAccessibilityInteractionClient> client;
-    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
-
-    // client->FindFocus(mConnectionId,
-    //         IAccessibilityNodeInfo::ANY_WINDOW_ID,
-    //         IAccessibilityNodeInfo::ROOT_NODE_ID, focus, ret);
-
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindFocus(mConnectionId,
+            IAccessibilityNodeInfo::ANY_WINDOW_ID,
+            IAccessibilityNodeInfo::ROOT_NODE_ID, focus, ret);
 }
 
 ECode AccessibilityService::GetServiceInfo(
@@ -158,23 +132,19 @@ ECode AccessibilityService::GetServiceInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
-    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
 
-    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    // AutoPtr<IAccessibilityInteractionClient> client;
-    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    // AutoPtr<IIAccessibilityServiceConnection> connection;
-    // client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
-    // if (connection != NULL) {
-    //     // try {
-    //     connection->GetServiceInfo(info);
-    //     return NOERROR;
-    //     // } catch (RemoteException re) {
-    //     //     Log.w(TAG, "Error while getting AccessibilityServiceInfo", re);
-    //     // }
-    // }
+    if (connection != NULL) {
+        // try {
+        connection->GetServiceInfo(info);
+        return NOERROR;
+        // } catch (RemoteException re) {
+        //     Log.w(TAG, "Error while getting AccessibilityServiceInfo", re);
+        // }
+    }
     return NOERROR;
 }
 
@@ -229,24 +199,19 @@ ECode AccessibilityService::OnKeyEvent(
 
 void AccessibilityService::SendServiceInfo()
 {
-    assert(0 && "TODO");// CAccessibilityInteractionClientHelper is not finished
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
-    // AutoPtr<IAccessibilityInteractionClientHelper> helper;
-    // CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
-    // AutoPtr<IAccessibilityInteractionClient> client;
-    // helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    // AutoPtr<IIAccessibilityServiceConnection> connection;
-    // client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
-
-    // if (mInfo != NULL && connection != NULL) {
-    //     // try {
-    //     connection->SetServiceInfo(mInfo);
-    //     mInfo = NULL;
-    //     client->ClearCache();
-    //     // } catch (RemoteException re) {
-    //     //     Log.w(TAG, "Error while setting AccessibilityServiceInfo", re);
-    //     // }
-    // }
+    if (mInfo != NULL && connection != NULL) {
+        // try {
+        connection->SetServiceInfo(mInfo);
+        mInfo = NULL;
+        client->ClearCache();
+        // } catch (RemoteException re) {
+        //     Log.w(TAG, "Error while setting AccessibilityServiceInfo", re);
+        // }
+    }
 }
 
 }

@@ -1,8 +1,12 @@
 
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/view/accessibility/CAccessibilityRecord.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -11,377 +15,64 @@ namespace View {
 namespace Accessibility {
 
 const String CAccessibilityEvent::TAG("AccessibilityEvent");
+const Boolean CAccessibilityEvent::DEBUG = FALSE;
 const Int32 CAccessibilityEvent::MAX_POOL_SIZE = 10;
+AutoPtr< Pools::SynchronizedPool<IAccessibilityEvent> > CAccessibilityEvent::sPool =
+        new Pools::SynchronizedPool<IAccessibilityEvent>(MAX_POOL_SIZE);
 
-AutoPtr<CAccessibilityEvent> CAccessibilityEvent::sPool = NULL;
-Mutex CAccessibilityEvent::sPoolLock;
-Int32 CAccessibilityEvent::sPoolSize = 0;
+CAR_INTERFACE_IMPL_2(CAccessibilityEvent, AccessibilityRecord, IAccessibilityEvent, IParcelable)
+
+CAR_OBJECT_IMPL(CAccessibilityEvent)
 
 CAccessibilityEvent::CAccessibilityEvent()
-    : mIsInPool(FALSE)
-    , mEventType(0)
+    : mEventType(0)
     , mEventTime(0)
     , mMovementGranularity(0)
     , mAction(0)
+    , mContentChangeTypes(0)
 {}
 
-PInterface CAccessibilityEvent::Probe(
-    /* [in] */ REIID riid)
+ECode CAccessibilityEvent::constructor()
 {
-    if (riid == EIID_AccessibilityRecord) {
-        return reinterpret_cast<PInterface>((AccessibilityRecord*)this);
-    }
-    return _CAccessibilityEvent::Probe(riid);
-}
-
-ECode CAccessibilityEvent::SetSource(
-    /* [in] */ IView* source)
-{
-    return AccessibilityRecord::SetSource(source);
-}
-
-ECode CAccessibilityEvent::SetSource(
-    /* [in] */ IView* root,
-    /* [in] */ Int32 virtualDescendantId)
-{
-    return AccessibilityRecord::SetSource(root, virtualDescendantId);
-}
-
-ECode CAccessibilityEvent::GetSource(
-    /* [out] */ IAccessibilityNodeInfo** info)
-{
-    VALIDATE_NOT_NULL(info);
-    return AccessibilityRecord::GetSource(info);
-}
-
-ECode CAccessibilityEvent::SetWindowId(
-    /* [in] */ Int32 windowId)
-{
-    return AccessibilityRecord::SetWindowId(windowId);
-}
-
-ECode CAccessibilityEvent::GetWindowId(
-    /* [out] */ Int32* windowId)
-{
-    VALIDATE_NOT_NULL(windowId);
-    return AccessibilityRecord::GetWindowId(windowId);
-}
-
-ECode CAccessibilityEvent::IsChecked(
-    /* [out] */ Boolean* checked)
-{
-    VALIDATE_NOT_NULL(checked);
-    return AccessibilityRecord::IsChecked(checked);
-}
-
-ECode CAccessibilityEvent::SetChecked(
-    /* [in] */ Boolean isChecked)
-{
-    return AccessibilityRecord::SetChecked(isChecked);
-}
-
-ECode CAccessibilityEvent::IsEnabled(
-    /* [out] */ Boolean* enabled)
-{
-    VALIDATE_NOT_NULL(enabled);
-    return AccessibilityRecord::IsEnabled(enabled);
-}
-
-ECode CAccessibilityEvent::SetEnabled(
-    /* [in] */ Boolean enabled)
-{
-    return AccessibilityRecord::SetEnabled(enabled);
-}
-
-ECode CAccessibilityEvent::IsPassword(
-    /* [out] */ Boolean* password)
-{
-    VALIDATE_NOT_NULL(password);
-    return AccessibilityRecord::IsPassword(password);
-}
-
-ECode CAccessibilityEvent::SetPassword(
-    /* [in] */ Boolean password)
-{
-    return AccessibilityRecord::SetPassword(password);
-}
-
-ECode CAccessibilityEvent::IsFullScreen(
-    /* [out] */ Boolean* isFull)
-{
-    VALIDATE_NOT_NULL(isFull);
-    return AccessibilityRecord::IsFullScreen(isFull);
-}
-
-ECode CAccessibilityEvent::SetFullScreen(
-    /* [in] */ Boolean full)
-{
-    return AccessibilityRecord::SetFullScreen(full);
-}
-
-ECode CAccessibilityEvent::IsScrollable(
-    /* [out] */ Boolean* scrollable)
-{
-    VALIDATE_NOT_NULL(scrollable);
-    return AccessibilityRecord::IsScrollable(scrollable);
-}
-
-ECode CAccessibilityEvent::SetScrollable(
-    /* [in] */ Boolean scrollable)
-{
-    return AccessibilityRecord::SetScrollable(scrollable);
-}
-
-ECode CAccessibilityEvent::IsImportantForAccessibility(
-    /* [out] */ Boolean* important)
-{
-    VALIDATE_NOT_NULL(important);
-    return AccessibilityRecord::IsImportantForAccessibility(important);
-}
-
-ECode CAccessibilityEvent::GetItemCount(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    return AccessibilityRecord::GetItemCount(count);
-}
-
-ECode CAccessibilityEvent::SetItemCount(
-    /* [in] */ Int32 count)
-{
-    return AccessibilityRecord::SetItemCount(count);
-}
-
-ECode CAccessibilityEvent::GetCurrentItemIndex(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    return AccessibilityRecord::GetCurrentItemIndex(index);
-}
-
-ECode CAccessibilityEvent::SetCurrentItemIndex(
-    /* [in] */ Int32 index)
-{
-    return AccessibilityRecord::SetCurrentItemIndex(index);
-}
-
-ECode CAccessibilityEvent::GetFromIndex(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    return AccessibilityRecord::GetFromIndex(index);
-}
-
-ECode CAccessibilityEvent::SetFromIndex(
-    /* [in] */ Int32 index)
-{
-    return AccessibilityRecord::SetFromIndex(index);
-}
-
-ECode CAccessibilityEvent::GetToIndex(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    return AccessibilityRecord::GetToIndex(index);
-}
-
-ECode CAccessibilityEvent::SetToIndex(
-    /* [in] */ Int32 index)
-{
-    return AccessibilityRecord::SetToIndex(index);
-}
-
-ECode CAccessibilityEvent::GetScrollX(
-    /* [out] */ Int32* x)
-{
-    VALIDATE_NOT_NULL(x);
-    return AccessibilityRecord::GetScrollX(x);
-}
-
-ECode CAccessibilityEvent::SetScrollX(
-    /* [in] */ Int32 x)
-{
-    return AccessibilityRecord::SetScrollX(x);
-}
-
-ECode CAccessibilityEvent::GetScrollY(
-    /* [out] */ Int32* y)
-{
-    VALIDATE_NOT_NULL(y);
-    return AccessibilityRecord::GetScrollY(y);
-}
-
-ECode CAccessibilityEvent::SetScrollY(
-    /* [in] */ Int32 y)
-{
-    return AccessibilityRecord::SetScrollY(y);
-}
-
-ECode CAccessibilityEvent::GetMaxScrollX(
-    /* [out] */ Int32* x)
-{
-    VALIDATE_NOT_NULL(x);
-    return AccessibilityRecord::GetMaxScrollX(x);
-}
-
-ECode CAccessibilityEvent::SetMaxScrollX(
-    /* [in] */ Int32 x)
-{
-    return AccessibilityRecord::SetMaxScrollX(x);
-}
-
-ECode CAccessibilityEvent::GetMaxScrollY(
-    /* [out] */ Int32* y)
-{
-    VALIDATE_NOT_NULL(y);
-    return AccessibilityRecord::GetMaxScrollY(y);
-}
-
-ECode CAccessibilityEvent::SetMaxScrollY(
-    /* [in] */ Int32 y)
-{
-    return AccessibilityRecord::SetMaxScrollY(y);
-}
-
-ECode CAccessibilityEvent::GetAddedCount(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    return AccessibilityRecord::GetAddedCount(count);
-}
-
-ECode CAccessibilityEvent::SetAddedCount(
-    /* [in] */ Int32 count)
-{
-    return AccessibilityRecord::SetAddedCount(count);
-}
-
-ECode CAccessibilityEvent::GetRemovedCount(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    return AccessibilityRecord::GetRemovedCount(count);
-}
-
-ECode CAccessibilityEvent::SetRemovedCount(
-    /* [in] */ Int32 count)
-{
-    return AccessibilityRecord::SetRemovedCount(count);
-}
-
-ECode CAccessibilityEvent::GetClassName(
-    /* [out] */ ICharSequence** name)
-{
-    VALIDATE_NOT_NULL(name);
-    return AccessibilityRecord::GetClassName(name);
-}
-
-ECode CAccessibilityEvent::SetClassName(
-    /* [in] */ ICharSequence* name)
-{
-    return AccessibilityRecord::SetClassName(name);
-}
-
-ECode CAccessibilityEvent::GetText(
-    /* [out] */ IObjectContainer** container)
-{
-    VALIDATE_NOT_NULL(container);
-    return AccessibilityRecord::GetText(container);
-}
-
-ECode CAccessibilityEvent::GetBeforeText(
-    /* [out] */ ICharSequence** text)
-{
-    VALIDATE_NOT_NULL(text);
-    return AccessibilityRecord::GetBeforeText(text);
-}
-
-ECode CAccessibilityEvent::SetBeforeText(
-    /* [in] */ ICharSequence* text)
-{
-    return AccessibilityRecord::SetBeforeText(text);
-}
-
-ECode CAccessibilityEvent::GetContentDescription(
-    /* [out] */ ICharSequence** contentDescription)
-{
-    VALIDATE_NOT_NULL(contentDescription);
-    return AccessibilityRecord::GetContentDescription(contentDescription);
-}
-
-ECode CAccessibilityEvent::SetContentDescription(
-    /* [in] */ ICharSequence* contentDescription)
-{
-    return AccessibilityRecord::SetContentDescription(contentDescription);
-}
-
-ECode CAccessibilityEvent::GetParcelableData(
-    /* [out] */ IParcelable** parcelableData)
-{
-    VALIDATE_NOT_NULL(parcelableData);
-    return AccessibilityRecord::GetParcelableData(parcelableData);
-}
-
-ECode CAccessibilityEvent::SetParcelableData(
-    /* [in] */ IParcelable* parcelableData)
-{
-    return AccessibilityRecord::SetParcelableData(parcelableData);
-}
-
-ECode CAccessibilityEvent::GetSourceNodeId(
-    /* [out] */ Int64* nodeId)
-{
-    VALIDATE_NOT_NULL(nodeId);
-    return AccessibilityRecord::GetSourceNodeId(nodeId);
-}
-
-ECode CAccessibilityEvent::SetConnectionId(
-    /* [in] */ Int32 connectionId)
-{
-    return AccessibilityRecord::SetConnectionId(connectionId);
+    return NOERROR;
 }
 
 ECode CAccessibilityEvent::SetSealed(
     /* [in] */ Boolean sealed)
 {
     AccessibilityRecord::SetSealed(sealed);
-    List<AutoPtr<IAccessibilityRecord> > records = mRecords;
-    List<AutoPtr<IAccessibilityRecord> >::Iterator it = mRecords.Begin();
-    for (; it != mRecords.End(); ++it) {
-        AutoPtr<IAccessibilityRecord> record = *it;
-        record->SetSealed(sealed);
+    AutoPtr<IArrayList> records = mRecords;
+    if (records != NULL) {
+        Int32 recordCount;
+        records->GetSize(&recordCount);
+        for (Int32 i = 0; i < recordCount; ++i) {
+            AutoPtr<IInterface> obj;
+            records->Get(i, (IInterface**)&obj);
+            AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(obj);
+            record->SetSealed(sealed);
+        }
     }
     return NOERROR;
 }
 
 ECode CAccessibilityEvent::Recycle()
 {
-    if (mIsInPool) {
-        Slogger::E(TAG, "Event already recycled!");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalStateException("Event already recycled!");
-    }
     Clear();
-    AutoLock lock(sPoolLock);
-    if (sPoolSize <= MAX_POOL_SIZE) {
-        mNext = sPool;
-        sPool = this;
-        mIsInPool = TRUE;
-        sPoolSize++;
-    }
+    sPool->ReleaseItem((IAccessibilityEvent*)this);
     return NOERROR;
 }
 
 void CAccessibilityEvent::Init(
     /* [in] */ IAccessibilityEvent* event)
 {
-    AccessibilityRecord* baseCls = reinterpret_cast<AccessibilityRecord*>(event->Probe(EIID_AccessibilityRecord));
-    AccessibilityRecord::Init(baseCls);
+    AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(event);
+    AccessibilityRecord::Init(record);
 
     AutoPtr<CAccessibilityEvent> cls = (CAccessibilityEvent*)event;
     mEventType = cls->mEventType;
     mMovementGranularity = cls->mMovementGranularity;
     mAction = cls->mAction;
+    mContentChangeTypes = cls->mContentChangeTypes;
     mEventTime = cls->mEventTime;
     mPackageName = cls->mPackageName;
 }
@@ -390,7 +81,11 @@ ECode CAccessibilityEvent::GetRecordCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    *count = mRecords.GetSize();
+    *count = 0;
+
+    if (mRecords != NULL) {
+        mRecords->GetSize(count);
+    }
     return NOERROR;
 }
 
@@ -398,7 +93,10 @@ ECode CAccessibilityEvent::AppendRecord(
     /* [in] */ IAccessibilityRecord* record)
 {
     FAIL_RETURN(EnforceNotSealed());
-    mRecords.PushBack(record);
+    if (mRecords == NULL) {
+        CArrayList::New((IArrayList**)&mRecords);
+    }
+    mRecords->Add(record);
     return NOERROR;
 }
 
@@ -407,7 +105,15 @@ ECode CAccessibilityEvent::GetRecord(
     /* [out] */ IAccessibilityRecord** record)
 {
     VALIDATE_NOT_NULL(record);
-    *record = mRecords[index];
+    *record = NULL;
+    if (mRecords == NULL) {
+        Slogger::E(TAG, "Invalid index: %d , size is 0", index);
+        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
+    }
+
+    AutoPtr<IInterface> obj;
+    mRecords->Get(index, (IInterface**)&obj);
+    *record = IAccessibilityRecord::Probe(obj);
     REFCOUNT_ADD(*record);
     return NOERROR;
 }
@@ -425,6 +131,22 @@ ECode CAccessibilityEvent::SetEventType(
 {
     FAIL_RETURN(EnforceNotSealed());
     mEventType = eventType;
+    return NOERROR;
+}
+
+ECode CAccessibilityEvent::GetContentChangeTypes(
+    /* [out] */ Int32* type)
+{
+    VALIDATE_NOT_NULL(type);
+    *type = mContentChangeTypes;
+    return NOERROR;
+}
+
+ECode CAccessibilityEvent::SetContentChangeTypes(
+    /* [in] */ Int32 changeTypes)
+{
+    FAIL_RETURN(EnforceNotSealed());
+    mContentChangeTypes = changeTypes;
     return NOERROR;
 }
 
@@ -499,7 +221,7 @@ ECode CAccessibilityEvent::Obtain(
 {
     VALIDATE_NOT_NULL(_event);
     AutoPtr<IAccessibilityEvent> event;
-    FAIL_RETURN(Obtain((IAccessibilityEvent**)&event));
+    Obtain((IAccessibilityEvent**)&event);
     event->SetEventType(eventType);
     *_event = event;
     REFCOUNT_ADD(*_event);
@@ -507,26 +229,32 @@ ECode CAccessibilityEvent::Obtain(
 }
 
 ECode CAccessibilityEvent::Obtain(
-    /* [in] */ IAccessibilityEvent* otherEvent,
-    /* [out] */ IAccessibilityEvent** event)
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ IAccessibilityEvent** resultEvent)
 {
-    VALIDATE_NOT_NULL(event);
+    VALIDATE_NOT_NULL(resultEvent);
     AutoPtr<IAccessibilityEvent> eventClone;
-    FAIL_RETURN(Obtain((IAccessibilityEvent**)&eventClone));
-    AutoPtr<CAccessibilityEvent> otherCls = (CAccessibilityEvent*)otherEvent;
-    otherCls->Init(otherEvent);
+    Obtain((IAccessibilityEvent**)&eventClone);
+    AutoPtr<CAccessibilityEvent> eventCloneCls = (CAccessibilityEvent*)eventClone.Get();
+    eventCloneCls->Init(event);
 
-    List<AutoPtr<IAccessibilityRecord> >::Iterator it = otherCls->mRecords.Begin();
-    for (; it != otherCls->mRecords.End(); ++it) {
-        AutoPtr<IAccessibilityRecord> record = *it;
-        AutoPtr<IAccessibilityRecord> recordClone;
-        FAIL_RETURN(CAccessibilityRecord::Obtain(record,
-                (IAccessibilityRecord**)&recordClone));
-        ((CAccessibilityEvent*)eventClone.Get())->mRecords.PushBack(recordClone);
+    AutoPtr<CAccessibilityEvent> eventCls = (CAccessibilityEvent*)event;
+    if (eventCls->mRecords != NULL) {
+        Int32 recordCount;
+        eventCls->mRecords->GetSize(&recordCount);
+        CArrayList::New(recordCount, (IArrayList**)&eventCloneCls->mRecords);
+        for (Int32 i = 0; i < recordCount; i++) {
+            AutoPtr<IInterface> obj;
+            eventCls->mRecords->Get(i, (IInterface**)&obj);
+            AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(obj);
+            AutoPtr<IAccessibilityRecord> recordClone;
+            AccessibilityRecord::Obtain(record, (IAccessibilityRecord**)&recordClone);
+            eventCloneCls->mRecords->Add(recordClone);
+        }
     }
 
-    *event = eventClone;
-    REFCOUNT_ADD(*event);
+    *resultEvent = (IAccessibilityEvent*)eventCloneCls.Get();
+    REFCOUNT_ADD(*resultEvent);
     return NOERROR;
 }
 
@@ -534,20 +262,16 @@ ECode CAccessibilityEvent::Obtain(
     /* [out] */ IAccessibilityEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    AutoLock lock(sPoolLock);
-    if (sPool != NULL) {
-        AutoPtr<CAccessibilityEvent> e = sPool;
-        sPool = sPool->mNext;
-        sPoolSize--;
-        e->mNext = NULL;
-        e->mIsInPool = FALSE;
-        *event = (IAccessibilityEvent*)e;
+    AutoPtr<IAccessibilityEvent> _event = sPool->AcquireItem();
+    if (_event == NULL) {
+        AutoPtr<IAccessibilityEvent> otherEvent;
+        CAccessibilityEvent::New((IAccessibilityEvent**)&otherEvent);
+        *event = otherEvent;
         REFCOUNT_ADD(*event);
         return NOERROR;
     }
-    AutoPtr<CAccessibilityEvent> cevent;
-    CAccessibilityEvent::NewByFriend((CAccessibilityEvent**)&cevent);
-    *event = cevent;
+
+    *event = _event;
     REFCOUNT_ADD(*event);
     return NOERROR;
 }
@@ -558,12 +282,17 @@ void CAccessibilityEvent::Clear()
     mEventType = 0;
     mMovementGranularity = 0;
     mAction = 0;
+    mContentChangeTypes = 0;
     mPackageName = NULL;
     mEventTime = 0;
-    while (mRecords.Begin() != mRecords.End()) {
-        AutoPtr<IAccessibilityRecord> record = *mRecords.Begin();
-        record->Recycle();
-        mRecords.Erase(mRecords.Begin());
+    if (mRecords != NULL) {
+        Boolean res;
+        while(!(mRecords->IsEmpty(&res), res)) {
+            AutoPtr<IInterface> obj;
+            mRecords->Remove(0, (IInterface**)&obj);
+            AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(obj);
+            record->Recycle();
+        }
     }
 }
 
@@ -574,6 +303,7 @@ ECode CAccessibilityEvent::InitFromParcel(
     parcel->ReadInt32(&mEventType);
     parcel->ReadInt32(&mMovementGranularity);
     parcel->ReadInt32(&mAction);
+    parcel->ReadInt32(&mContentChangeTypes);
     // mPackageName = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
     parcel->ReadInt64(&mEventTime);
     parcel->ReadInt32(&mConnectionId);
@@ -582,12 +312,15 @@ ECode CAccessibilityEvent::InitFromParcel(
     // Read the records.
     Int32 recordCount;
     parcel->ReadInt32(&recordCount);
-    for (Int32 i = 0; i < recordCount; i++) {
-        AutoPtr<IAccessibilityRecord> record;
-        CAccessibilityRecord::Obtain((IAccessibilityRecord**)&record);
-        ReadAccessibilityRecordFromParcel(record, parcel);
-        ((CAccessibilityRecord*)record.Get())->mConnectionId = mConnectionId;
-        mRecords.PushBack(record);
+    if (recordCount > 0) {
+        CArrayList::New(recordCount, (IArrayList**)&mRecords);
+        for (Int32 i = 0; i < recordCount; i++) {
+            AutoPtr<IAccessibilityRecord> record;
+            CAccessibilityRecord::Obtain((IAccessibilityRecord**)&record);
+            ReadAccessibilityRecordFromParcel(record, parcel);
+            ((CAccessibilityRecord*)record.Get())->mConnectionId = mConnectionId;
+            mRecords->Add(record);
+        }
     }
     return NOERROR;
 }
@@ -611,15 +344,13 @@ void CAccessibilityEvent::ReadAccessibilityRecordFromParcel(
     // cls->mClassName = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
     // cls->mContentDescription = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
     // cls->mBeforeText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
-    cls->mParcelableData = NULL;
-    parcel->ReadInterfacePtr((Handle32*)(IParcelable**)&cls->mParcelableData);
-    // parcel.readList(record.mText, null);
+    // cls->mParcelableData = parcel.readParcelable(null);
     Int32 count;
     parcel->ReadInt32(&count);
     for (Int32 i = 0; i < count; ++i) {
         AutoPtr<ICharSequence> r;
         parcel->ReadInterfacePtr((Handle32*)(ICharSequence**)&r);
-        cls->mText.PushBack(r);
+        cls->mText->Add(r);
     }
     parcel->ReadInt32(&cls->mSourceWindowId);
     parcel->ReadInt64(&cls->mSourceNodeId);
@@ -633,18 +364,21 @@ ECode CAccessibilityEvent::WriteToParcel(
     parcel->WriteInt32(mEventType);
     parcel->WriteInt32(mMovementGranularity);
     parcel->WriteInt32(mAction);
-    // TextUtils.writeToParcel(mPackageName, parcel, 0);
+    parcel->WriteInt32(mContentChangeTypes);
+    // TextUtils::WriteToParcel(mPackageName, parcel);
     parcel->WriteInt64(mEventTime);
     parcel->WriteInt32(mConnectionId);
-    WriteAccessibilityRecordToParcel((IAccessibilityRecord*)this, parcel);
+    WriteAccessibilityRecordToParcel(THIS_PROBE(IAccessibilityRecord), parcel);
 
     // Write the records.
     Int32 recordCount;
     GetRecordCount(&recordCount);
     parcel->WriteInt32(recordCount);
-    List<AutoPtr<IAccessibilityRecord> >::Iterator it = mRecords.Begin();
-    for (; it != mRecords.End(); ++it) {
-        WriteAccessibilityRecordToParcel(*it, parcel);
+    for (Int32 i = 0; i < recordCount; ++i) {
+        AutoPtr<IInterface> obj;
+        mRecords->Get(i, (IInterface**)&obj);
+        AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(obj);
+        WriteAccessibilityRecordToParcel(record, parcel);
     }
 
     return NOERROR;
@@ -670,13 +404,16 @@ void CAccessibilityEvent::WriteAccessibilityRecordToParcel(
     // TextUtils.writeToParcel(record.mContentDescription, parcel, flags);
     // TextUtils.writeToParcel(record.mBeforeText, parcel, flags);
     // parcel->WriteParcelable(record.mParcelableData, flags);
-    parcel->WriteInterfacePtr((IInterface*)cls->mParcelableData);
-    parcel->WriteInt32(cls->mText.GetSize());
-    List<AutoPtr<ICharSequence> >::Iterator it = mText.Begin();
-    for (; it != mText.End(); ++it) {
-        parcel->WriteInterfacePtr((IInterface*)(*it));
+    Int32 size;
+    cls->mText->GetSize(&size);
+    parcel->WriteInt32(size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> obj;
+        cls->mText->Get(i, (IInterface**)&obj);
+        AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
+        parcel->WriteInterfacePtr(cs);
     }
-    // parcel.writeList(record.mText);
+    parcel->WriteInterfacePtr(cls->mText);
     parcel->WriteInt32(cls->mSourceWindowId);
     parcel->WriteInt64(cls->mSourceNodeId);
     parcel->WriteBoolean(cls->mSealed);
@@ -690,57 +427,270 @@ ECode CAccessibilityEvent::ReadFromParcel(
     return event->InitFromParcel(parcel);
 }
 
+ECode CAccessibilityEvent::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+
+    StringBuilder builder;
+    builder.Append("EventType: ");
+    builder.Append(EventTypeToString(mEventType));
+    builder.Append("; EventTime: ");
+    builder.Append(mEventTime);
+    builder.Append("; PackageName: ");
+    builder.Append(mPackageName);
+    builder.Append("; MovementGranularity: ");
+    builder.Append(mMovementGranularity);
+    builder.Append("; Action: ");
+    builder.Append(mAction);
+    builder.Append(AccessibilityRecord::ToString());
+    Int32 count;
+    if (DEBUG) {
+        builder.Append("\n");
+        builder.Append("; ContentChangeTypes: ");
+        builder.Append(mContentChangeTypes);
+        builder.Append("; sourceWindowId: ");
+        builder.Append(mSourceWindowId);
+        builder.Append("; mSourceNodeId: ");
+        builder.Append(mSourceNodeId);
+        for (Int32 i = 0; i < (GetRecordCount(&count), count); i++) {
+            AutoPtr<IAccessibilityRecord> record;
+            GetRecord(i, (IAccessibilityRecord**)&record);
+            builder.Append("  Record ");
+            builder.Append(i);
+            builder.Append(":");
+            AutoPtr<AccessibilityRecord> _record = (AccessibilityRecord*)record.Get();
+            builder.Append(" [ ClassName: ");
+            builder.Append(_record->mClassName);
+            builder.Append("; Text: ");
+            builder.Append((IInterface*)_record->mText);
+            builder.Append("; ContentDescription: ");
+            builder.Append(_record->mContentDescription);
+            builder.Append("; ItemCount: ");
+            builder.Append(_record->mItemCount);
+            builder.Append("; CurrentItemIndex: ");
+            builder.Append(_record->mCurrentItemIndex);
+            builder.Append("; IsEnabled: ");
+            Boolean res;
+            builder.Append((record->IsEnabled(&res), res));
+            builder.Append("; IsPassword: ");
+            builder.Append((record->IsPassword(&res), res));
+            builder.Append("; IsChecked: ");
+            builder.Append((record->IsChecked(&res), res));
+            builder.Append("; IsFullScreen: ");
+            builder.Append((record->IsFullScreen(&res), res));
+            builder.Append("; Scrollable: ");
+            builder.Append((record->IsScrollable(&res), res));
+            builder.Append("; BeforeText: ");
+            builder.Append(_record->mBeforeText);
+            builder.Append("; FromIndex: ");
+            builder.Append(_record->mFromIndex);
+            builder.Append("; ToIndex: ");
+            builder.Append(_record->mToIndex);
+            builder.Append("; ScrollX: ");
+            builder.Append(_record->mScrollX);
+            builder.Append("; ScrollY: ");
+            builder.Append(_record->mScrollY);
+            builder.Append("; AddedCount: ");
+            builder.Append(_record->mAddedCount);
+            builder.Append("; RemovedCount: ");
+            builder.Append(_record->mRemovedCount);
+            builder.Append("; ParcelableData: ");
+            builder.Append((IInterface*)_record->mParcelableData);
+            builder.Append(" ]");
+            builder.Append("\n");
+        }
+    }
+    else {
+        builder.Append("; recordCount: ");
+        builder.Append((GetRecordCount(&count), count));
+    }
+    *str = builder.ToString();
+    return NOERROR;
+}
+
 String CAccessibilityEvent::EventTypeToString(
     /* [in] */ Int32 eventType)
 {
-    switch (eventType) {
-        case TYPE_VIEW_CLICKED:
-            return String("TYPE_VIEW_CLICKED");
-        case TYPE_VIEW_LONG_CLICKED:
-            return String("TYPE_VIEW_LONG_CLICKED");
-        case TYPE_VIEW_SELECTED:
-            return String("TYPE_VIEW_SELECTED");
-        case TYPE_VIEW_FOCUSED:
-            return String("TYPE_VIEW_FOCUSED");
-        case TYPE_VIEW_TEXT_CHANGED:
-            return String("TYPE_VIEW_TEXT_CHANGED");
-        case TYPE_WINDOW_STATE_CHANGED:
-            return String("TYPE_WINDOW_STATE_CHANGED");
-        case TYPE_VIEW_HOVER_ENTER:
-            return String("TYPE_VIEW_HOVER_ENTER");
-        case TYPE_VIEW_HOVER_EXIT:
-            return String("TYPE_VIEW_HOVER_EXIT");
-        case TYPE_NOTIFICATION_STATE_CHANGED:
-            return String("TYPE_NOTIFICATION_STATE_CHANGED");
-        case TYPE_TOUCH_EXPLORATION_GESTURE_START:
-            return String("TYPE_TOUCH_EXPLORATION_GESTURE_START");
-        case TYPE_TOUCH_EXPLORATION_GESTURE_END:
-            return String("TYPE_TOUCH_EXPLORATION_GESTURE_END");
-        case TYPE_WINDOW_CONTENT_CHANGED:
-            return String("TYPE_WINDOW_CONTENT_CHANGED");
-        case TYPE_VIEW_TEXT_SELECTION_CHANGED:
-            return String("TYPE_VIEW_TEXT_SELECTION_CHANGED");
-        case TYPE_VIEW_SCROLLED:
-            return String("TYPE_VIEW_SCROLLED");
-        case TYPE_ANNOUNCEMENT:
-            return String("TYPE_ANNOUNCEMENT");
-        case TYPE_VIEW_ACCESSIBILITY_FOCUSED:
-            return String("TYPE_VIEW_ACCESSIBILITY_FOCUSED");
-        case TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
-            return String("TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED");
-        case TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
-            return String("TYPE_CURRENT_AT_GRANULARITY_MOVEMENT_CHANGED");
-        case TYPE_GESTURE_DETECTION_START:
-            return String("TYPE_GESTURE_DETECTION_START");
-        case TYPE_GESTURE_DETECTION_END:
-            return String("TYPE_GESTURE_DETECTION_END");
-        case TYPE_TOUCH_INTERACTION_START:
-            return String("TYPE_TOUCH_INTERACTION_START");
-        case TYPE_TOUCH_INTERACTION_END:
-            return String("TYPE_TOUCH_INTERACTION_END");
-        default:
-            return String(NULL);
+    if (eventType == TYPES_ALL_MASK) {
+        return String("TYPES_ALL_MASK");
     }
+    StringBuilder builder;
+    Int32 eventTypeCount = 0;
+    while (eventType != 0) {
+        const Int32 eventTypeFlag = 1 << Elastos::Core::Math::NumberOfTrailingZeros(eventType);
+        eventType &= ~eventTypeFlag;
+        switch (eventTypeFlag) {
+            case TYPE_VIEW_CLICKED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_CLICKED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_LONG_CLICKED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_LONG_CLICKED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_SELECTED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_SELECTED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_FOCUSED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_FOCUSED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_TEXT_CHANGED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_TEXT_CHANGED");
+                eventTypeCount++;
+                break;
+            case TYPE_WINDOW_STATE_CHANGED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_WINDOW_STATE_CHANGED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_HOVER_ENTER:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_HOVER_ENTER");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_HOVER_EXIT:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_HOVER_EXIT");
+                eventTypeCount++;
+                break;
+            case TYPE_NOTIFICATION_STATE_CHANGED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_NOTIFICATION_STATE_CHANGED");
+                eventTypeCount++;
+                break;
+            case TYPE_TOUCH_EXPLORATION_GESTURE_START:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_TOUCH_EXPLORATION_GESTURE_START");
+                eventTypeCount++;
+                break;
+            case TYPE_TOUCH_EXPLORATION_GESTURE_END:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_TOUCH_EXPLORATION_GESTURE_END");
+                eventTypeCount++;
+                break;
+            case TYPE_WINDOW_CONTENT_CHANGED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_WINDOW_CONTENT_CHANGED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_TEXT_SELECTION_CHANGED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_SCROLLED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_SCROLLED");
+                eventTypeCount++;
+                break;
+            case TYPE_ANNOUNCEMENT:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_ANNOUNCEMENT");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_ACCESSIBILITY_FOCUSED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED");
+                eventTypeCount++;
+                break;
+            case TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY");
+                eventTypeCount++;
+                break;
+            case TYPE_GESTURE_DETECTION_START:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_GESTURE_DETECTION_START");
+                eventTypeCount++;
+                break;
+            case TYPE_GESTURE_DETECTION_END:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_GESTURE_DETECTION_END");
+                eventTypeCount++;
+                break;
+            case TYPE_TOUCH_INTERACTION_START:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_TOUCH_INTERACTION_START");
+                eventTypeCount++;
+                break;
+            case TYPE_TOUCH_INTERACTION_END:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_TOUCH_INTERACTION_END");
+                eventTypeCount++;
+                break;
+            case TYPE_WINDOWS_CHANGED:
+                if (eventTypeCount > 0) {
+                    builder.Append(", ");
+                }
+                builder.Append("TYPE_WINDOWS_CHANGED");
+                eventTypeCount++;
+                break;
+            default:
+                break;
+        }
+    }
+    if (eventTypeCount > 1) {
+        builder.InsertChar(0, '[');
+        builder.AppendChar(']');
+    }
+    return builder.ToString();
 }
 
 } // Accessibility

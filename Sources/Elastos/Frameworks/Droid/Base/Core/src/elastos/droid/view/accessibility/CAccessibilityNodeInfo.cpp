@@ -4,7 +4,7 @@
 #include "elastos/droid/view/accessibility/AccessibilityNodeInfoCollectionItemInfo.h"
 #include "elastos/droid/view/accessibility/AccessibilityNodeInfoRangeInfo.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfoAccessibilityAction.h"
-//#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
+#include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -16,8 +16,7 @@ using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::IInputType;
-using Elastos::Core::CInteger64;
-using Elastos::Core::IInteger64;
+using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 using Elastos::Core::Math;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::CArrayList;
@@ -25,7 +24,6 @@ using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::Logging::Slogger;
-// using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 
 namespace Elastos {
 namespace Droid {
@@ -159,10 +157,8 @@ ECode CAccessibilityNodeInfo::FindFocus(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindFocus(mConnectionId, mWindowId, mSourceNodeId, focus, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return  client->FindFocus(mConnectionId, mWindowId, mSourceNodeId, focus, info);
 }
 
 ECode CAccessibilityNodeInfo::FocusSearch(
@@ -178,10 +174,8 @@ ECode CAccessibilityNodeInfo::FocusSearch(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FocusSearch(mConnectionId, mWindowId, mSourceNodeId, direction, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FocusSearch(mConnectionId, mWindowId, mSourceNodeId, direction, info);
 }
 
 ECode CAccessibilityNodeInfo::GetWindowId(
@@ -205,19 +199,17 @@ ECode CAccessibilityNodeInfo::Refresh(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    AutoPtr<IAccessibilityNodeInfo> refreshedInfo;
+    client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
+            mWindowId, mSourceNodeId, bypassCache, 0, (IAccessibilityNodeInfo**)&refreshedInfo);
+    if (refreshedInfo == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
 
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // AutoPtr<IAccessibilityNodeInfo> refreshedInfo;
-    // client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
-    //         mWindowId, mSourceNodeId, bypassCache, 0, (IAccessibilityNodeInfo**)&refreshedInfo);
-    // if (refreshedInfo == NULL) {
-    //     *result = FALSE;
-    //     return NOERROR;
-    // }
-
-    // Init(refreshedInfo);
-    // refreshedInfo->Recycle();
+    Init(refreshedInfo);
+    refreshedInfo->Recycle();
     *result = TRUE;
 
     return NOERROR;
@@ -284,10 +276,9 @@ ECode CAccessibilityNodeInfo::GetChild(
     Int64 childId;
     mChildNodeIds->Get(index, &childId);
 
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
-    //         mWindowId, childId, FALSE, FLAG_PREFETCH_DESCENDANTS, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindAccessibilityNodeInfoByAccessibilityId(mConnectionId,
+            mWindowId, childId, FALSE, FLAG_PREFETCH_DESCENDANTS, info);
 }
 
 ECode CAccessibilityNodeInfo::AddChild(
@@ -517,11 +508,10 @@ ECode CAccessibilityNodeInfo::PerformAction(
         *result = FALSE;
         return NOERROR;
     }
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
-    //         action, NULL, result);
-    return NOERROR;
+
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
+            action, NULL, result);
 }
 
 ECode CAccessibilityNodeInfo::PerformAction(
@@ -537,11 +527,9 @@ ECode CAccessibilityNodeInfo::PerformAction(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
-    //         action, arguments, result);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->PerformAccessibilityAction(mConnectionId, mWindowId, mSourceNodeId,
+            action, arguments, result);
 }
 
 ECode CAccessibilityNodeInfo::FindAccessibilityNodeInfosByText(
@@ -557,11 +545,9 @@ ECode CAccessibilityNodeInfo::FindAccessibilityNodeInfosByText(
         return coll->GetEmptyList(list);
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindAccessibilityNodeInfosByText(
-    //         mConnectionId, mWindowId, mSourceNodeId, text, list);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindAccessibilityNodeInfosByText(
+            mConnectionId, mWindowId, mSourceNodeId, text, list);
 }
 
 ECode CAccessibilityNodeInfo::FindAccessibilityNodeInfosByViewId(
@@ -577,11 +563,9 @@ ECode CAccessibilityNodeInfo::FindAccessibilityNodeInfosByViewId(
         return coll->GetEmptyList(list);
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindAccessibilityNodeInfosByViewId(
-    //         mConnectionId, mWindowId, mSourceNodeId, viewId, list);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindAccessibilityNodeInfosByViewId(
+            mConnectionId, mWindowId, mSourceNodeId, viewId, list);
 }
 
 ECode CAccessibilityNodeInfo::GetWindow(
@@ -595,10 +579,8 @@ ECode CAccessibilityNodeInfo::GetWindow(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->GetWindow(mConnectionId, mWindowId, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->GetWindow(mConnectionId, mWindowId, info);
 }
 
 ECode CAccessibilityNodeInfo::GetParent(
@@ -612,12 +594,10 @@ ECode CAccessibilityNodeInfo::GetParent(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindAccessibilityNodeInfoByAccessibilityId(
-    //         mConnectionId, mWindowId, mParentNodeId, FALSE,
-    //         FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, parent);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindAccessibilityNodeInfoByAccessibilityId(
+            mConnectionId, mWindowId, mParentNodeId, FALSE,
+            FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, parent);
 }
 
 ECode CAccessibilityNodeInfo::GetParentNodeId(
@@ -1119,13 +1099,10 @@ ECode CAccessibilityNodeInfo::GetLabelFor(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindAccessibilityNodeInfoByAccessibilityId(
-    //         mConnectionId, mWindowId, mLabelForId, FALSE,
-    //         FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindAccessibilityNodeInfoByAccessibilityId(
+            mConnectionId, mWindowId, mLabelForId, FALSE,
+            FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
 }
 
 ECode CAccessibilityNodeInfo::SetLabeledBy(
@@ -1159,12 +1136,10 @@ ECode CAccessibilityNodeInfo::GetLabeledBy(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
-    // client->FindAccessibilityNodeInfoByAccessibilityId(
-    //         mConnectionId, mWindowId, mLabeledById, FALSE,
-    //         FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
-    return NOERROR;
+    AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
+    return client->FindAccessibilityNodeInfoByAccessibilityId(
+            mConnectionId, mWindowId, mLabeledById, FALSE,
+            FLAG_PREFETCH_PREDECESSORS | FLAG_PREFETCH_DESCENDANTS | FLAG_PREFETCH_SIBLINGS, info);
 }
 
 ECode CAccessibilityNodeInfo::SetViewIdResourceName(

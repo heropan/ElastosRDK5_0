@@ -9,8 +9,7 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-#SOURCES += AccessibilityNodeProvider.cpp
-#SOURCES += AccessibilityNodeInfoCache.cpp
+SOURCES += AccessibilityNodeProvider.cpp
 SOURCES += CAccessibilityNodeInfo.cpp
 SOURCES += CAccessibilityNodeInfoHelper.cpp
 SOURCES += CAccessibilityNodeInfoAccessibilityAction.cpp
@@ -21,14 +20,16 @@ SOURCES += AccessibilityNodeInfoCollectionItemInfo.cpp
 SOURCES += CAccessibilityNodeInfoCollectionItemInfoHelper.cpp
 SOURCES += AccessibilityNodeInfoRangeInfo.cpp
 SOURCES += CAccessibilityNodeInfoRangeInfoHelper.cpp
-#SOURCES += CAccessibilityInteractionClient.cpp
-#SOURCES += CAccessibilityInteractionClientHelper.cpp
-#SOURCES += AccessibilityRecord.cpp
-#SOURCES += CAccessibilityRecord.cpp
-#SOURCES += CAccessibilityRecordHelper.cpp
-#SOURCES += CAccessibilityEvent.cpp
-#SOURCES += CAccessibilityEventHelper.cpp
+SOURCES += CAccessibilityInteractionClient.cpp
+SOURCES += CAccessibilityInteractionClientHelper.cpp
+SOURCES += AccessibilityRecord.cpp
+SOURCES += CAccessibilityRecord.cpp
+SOURCES += CAccessibilityRecordHelper.cpp
+SOURCES += CAccessibilityCache.cpp
+SOURCES += CAccessibilityEvent.cpp
+SOURCES += CAccessibilityEventHelper.cpp
 #SOURCES += CAccessibilityManagerClient.cpp
 #SOURCES += CAccessibilityManager.cpp
 #SOURCES += CAccessibilityManagerHelper.cpp
-
+SOURCES += CAccessibilityWindowInfo.cpp
+SOURCES += CAccessibilityWindowInfoHelper.cpp

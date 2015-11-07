@@ -3,469 +3,36 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityEvent.h"
+#include "elastos/droid/utility/Pools.h"
 #include "elastos/droid/view/accessibility/AccessibilityRecord.h"
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::Utility::Pools;
+using Elastos::Droid::View::IView;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
-using Elastos::Droid::View::IView;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-CarClass(CAccessibilityEvent), public AccessibilityRecord
+CarClass(CAccessibilityEvent)
+    , public AccessibilityRecord
+    , public IAccessibilityEvent
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAccessibilityEvent();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    ~CAccessibilityEvent();
 
-    /**
-     * Sets the event source.
-     *
-     * @param source The source.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetSource(
-        /* [in] */ IView* source);
-
-    /**
-     * Sets the source to be a virtual descendant of the given <code>root</code>.
-     * If <code>virtualDescendantId</code> equals to {@link View#NO_ID} the root
-     * is set as the source.
-     * <p>
-     * A virtual descendant is an imaginary View that is reported as a part of the view
-     * hierarchy for accessibility purposes. This enables custom views that draw complex
-     * content to report them selves as a tree of virtual views, thus conveying their
-     * logical structure.
-     * </p>
-     *
-     * @param root The root of the virtual subtree.
-     * @param virtualDescendantId The id of the virtual descendant.
-     */
-    CARAPI SetSource(
-        /* [in] */ IView* root,
-        /* [in] */ Int32 virtualDescendantId);
-
-    /**
-     * Gets the {@link AccessibilityNodeInfo} of the event source.
-     * <p>
-     *   <strong>Note:</strong> It is a client responsibility to recycle the received info
-     *   by calling {@link AccessibilityNodeInfo#recycle() AccessibilityNodeInfo#recycle()}
-     *   to avoid creating of multiple instances.
-     * </p>
-     * @return The info of the source.
-     */
-    CARAPI GetSource(
-        /* [out] */ IAccessibilityNodeInfo** info);
-
-    /**
-     * Sets the window id.
-     *
-     * @param windowId The window id.
-     *
-     * @hide
-     */
-    CARAPI SetWindowId(
-        /* [in] */ Int32 windowId);
-
-    /**
-     * Gets the id of the window from which the event comes from.
-     *
-     * @return The window id.
-     */
-    CARAPI GetWindowId(
-        /* [out] */ Int32* windowId);
-
-    /**
-     * Gets if the source is checked.
-     *
-     * @return True if the view is checked, false otherwise.
-     */
-    CARAPI IsChecked(
-        /* [out] */ Boolean* checked);
-
-    /**
-     * Sets if the source is checked.
-     *
-     * @param isChecked True if the view is checked, false otherwise.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetChecked(
-        /* [in] */ Boolean isChecked);
-
-    /**
-     * Gets if the source is enabled.
-     *
-     * @return True if the view is enabled, false otherwise.
-     */
-    CARAPI IsEnabled(
-        /* [out] */ Boolean* enabled);
-
-    /**
-     * Sets if the source is enabled.
-     *
-     * @param isEnabled True if the view is enabled, false otherwise.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetEnabled(
-        /* [in] */ Boolean enabled);
-
-    /**
-     * Gets if the source is a password field.
-     *
-     * @return True if the view is a password field, false otherwise.
-     */
-    CARAPI IsPassword(
-        /* [out] */ Boolean* password);
-
-    /**
-     * Sets if the source is a password field.
-     *
-     * @param isPassword True if the view is a password field, false otherwise.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetPassword(
-        /* [in] */ Boolean password);
-
-    /**
-     * Gets if the source is taking the entire screen.
-     *
-     * @return True if the source is full screen, false otherwise.
-     */
-    CARAPI IsFullScreen(
-        /* [out] */ Boolean* isFull);
-
-    /**
-     * Sets if the source is taking the entire screen.
-     *
-     * @param isFullScreen True if the source is full screen, false otherwise.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetFullScreen(
-        /* [in] */ Boolean full);
-
-    /**
-     * Gets if the source is scrollable.
-     *
-     * @return True if the source is scrollable, false otherwise.
-     */
-    CARAPI IsScrollable(
-        /* [out] */ Boolean* scrollable);
-
-    /**
-     * Sets if the source is scrollable.
-     *
-     * @param scrollable True if the source is scrollable, false otherwise.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetScrollable(
-        /* [in] */ Boolean scrollable);
-
-    /**
-     * Gets if the source is important for accessibility.
-     *
-     * <strong>Note:</strong> Used only internally to determine whether
-     * to deliver the event to a given accessibility service since some
-     * services may want to regard all views for accessibility while others
-     * may want to regard only the important views for accessibility.
-     *
-     * @return True if the source is important for accessibility,
-     *        false otherwise.
-     *
-     * @hide
-     */
-    CARAPI IsImportantForAccessibility(
-        /* [out] */ Boolean* important);
-
-    /**
-     * Gets the number of items that can be visited.
-     *
-     * @return The number of items.
-     */
-    CARAPI GetItemCount(
-        /* [out] */ Int32* count);
-
-    /**
-     * Sets the number of items that can be visited.
-     *
-     * @param itemCount The number of items.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetItemCount(
-        /* [in] */ Int32 count);
-
-    /**
-     * Gets the index of the source in the list of items the can be visited.
-     *
-     * @return The current item index.
-     */
-    CARAPI GetCurrentItemIndex(
-        /* [out] */ Int32* index);
-
-    /**
-     * Sets the index of the source in the list of items that can be visited.
-     *
-     * @param currentItemIndex The current item index.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetCurrentItemIndex(
-        /* [in] */ Int32 index);
-
-    /**
-     * Gets the index of the first character of the changed sequence,
-     * or the beginning of a text selection or the index of the first
-     * visible item when scrolling.
-     *
-     * @return The index of the first character or selection
-     *        start or the first visible item.
-     */
-    CARAPI GetFromIndex(
-        /* [out] */ Int32* index);
-
-    /**
-     * Sets the index of the first character of the changed sequence
-     * or the beginning of a text selection or the index of the first
-     * visible item when scrolling.
-     *
-     * @param fromIndex The index of the first character or selection
-     *        start or the first visible item.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetFromIndex(
-        /* [in] */ Int32 index);
-
-    /**
-     * Gets the index of text selection end or the index of the last
-     * visible item when scrolling.
-     *
-     * @return The index of selection end or last item index.
-     */
-    CARAPI GetToIndex(
-        /* [out] */ Int32* index);
-
-    /**
-     * Sets the index of text selection end or the index of the last
-     * visible item when scrolling.
-     *
-     * @param toIndex The index of selection end or last item index.
-     */
-    CARAPI SetToIndex(
-        /* [in] */ Int32 index);
-
-    /**
-     * Gets the scroll offset of the source left edge in pixels.
-     *
-     * @return The scroll.
-     */
-    CARAPI GetScrollX(
-        /* [out] */ Int32* x);
-
-    /**
-     * Sets the scroll offset of the source left edge in pixels.
-     *
-     * @param scrollX The scroll.
-     */
-    CARAPI SetScrollX(
-        /* [in] */ Int32 x);
-
-    /**
-     * Gets the scroll offset of the source top edge in pixels.
-     *
-     * @return The scroll.
-     */
-    CARAPI GetScrollY(
-        /* [out] */ Int32* y);
-
-    /**
-     * Sets the scroll offset of the source top edge in pixels.
-     *
-     * @param scrollY The scroll.
-     */
-    CARAPI SetScrollY(
-        /* [in] */ Int32 y);
-
-    /**
-     * Gets the max scroll offset of the source left edge in pixels.
-     *
-     * @return The max scroll.
-     */
-    CARAPI GetMaxScrollX(
-        /* [out] */ Int32* x);
-
-    /**
-     * Sets the max scroll offset of the source left edge in pixels.
-     *
-     * @param maxScrollX The max scroll.
-     */
-    CARAPI SetMaxScrollX(
-        /* [in] */ Int32 x);
-
-    /**
-     * Gets the max scroll offset of the source top edge in pixels.
-     *
-     * @return The max scroll.
-     */
-    CARAPI GetMaxScrollY(
-        /* [out] */ Int32* y);
-
-    /**
-     * Sets the max scroll offset of the source top edge in pixels.
-     *
-     * @param maxScrollY The max scroll.
-     */
-    CARAPI SetMaxScrollY(
-        /* [in] */ Int32 y);
-
-    /**
-     * Gets the number of added characters.
-     *
-     * @return The number of added characters.
-     */
-    CARAPI GetAddedCount(
-        /* [out] */ Int32* count);
-
-    /**
-     * Sets the number of added characters.
-     *
-     * @param addedCount The number of added characters.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetAddedCount(
-        /* [in] */ Int32 count);
-
-    /**
-     * Gets the number of removed characters.
-     *
-     * @return The number of removed characters.
-     */
-    CARAPI GetRemovedCount(
-        /* [out] */ Int32* count);
-
-    /**
-     * Sets the number of removed characters.
-     *
-     * @param removedCount The number of removed characters.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetRemovedCount(
-        /* [in] */ Int32 count);
-
-    /**
-     * Gets the class name of the source.
-     *
-     * @return The class name.
-     */
-    CARAPI GetClassName(
-        /* [out] */ ICharSequence** name);
-
-    /**
-     * Sets the class name of the source.
-     *
-     * @param className The lass name.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetClassName(
-        /* [in] */ ICharSequence* name);
-
-    /**
-     * Gets the text of the event. The index in the list represents the priority
-     * of the text. Specifically, the lower the index the higher the priority.
-     *
-     * @return The text.
-     */
-    CARAPI GetText(
-        /* [out] */ IObjectContainer** container);
-
-    /**
-     * Sets the text before a change.
-     *
-     * @return The text before the change.
-     */
-    CARAPI GetBeforeText(
-        /* [out] */ ICharSequence** text);
-
-    /**
-     * Sets the text before a change.
-     *
-     * @param beforeText The text before the change.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetBeforeText(
-        /* [in] */ ICharSequence* text);
-
-    /**
-     * Gets the description of the source.
-     *
-     * @return The description.
-     */
-    CARAPI GetContentDescription(
-        /* [out] */ ICharSequence** contentDescription);
-
-    /**
-     * Sets the description of the source.
-     *
-     * @param contentDescription The description.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetContentDescription(
-        /* [in] */ ICharSequence* contentDescription);
-
-    /**
-     * Gets the {@link Parcelable} data.
-     *
-     * @return The parcelable data.
-     */
-    CARAPI GetParcelableData(
-        /* [out] */ IParcelable** parcelableData);
-
-    /**
-     * Sets the {@link Parcelable} data of the event.
-     *
-     * @param parcelableData The parcelable data.
-     *
-     * @throws IllegalStateException If called from an AccessibilityService.
-     */
-    CARAPI SetParcelableData(
-        /* [in] */ IParcelable* parcelableData);
-
-    /**
-     * Gets the id of the source node.
-     *
-     * @return The id.
-     *
-     * @hide
-     */
-    CARAPI GetSourceNodeId(
-        /* [out] */ Int64* nodeId);
-
-    /**
-     * Sets the unique id of the IIAccessibilityServiceConnection over which
-     * this instance can send requests to the system.
-     *
-     * @param connectionId The connection id.
-     *
-     * @hide
-     */
-    CARAPI SetConnectionId(
-        /* [in] */ Int32 connectionId);
+    CARAPI constructor();
 
     /**
      * Sets if this instance is sealed.
@@ -541,6 +108,33 @@ public:
         /* [in] */ Int32 eventType);
 
     /**
+     * Gets the bit mask of change types signaled by an
+     * {@link #TYPE_WINDOW_CONTENT_CHANGED} event. A single event may represent
+     * multiple change types.
+     *
+     * @return The bit mask of change types. One or more of:
+     *         <ul>
+     *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION}
+     *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_SUBTREE}
+     *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_TEXT}
+     *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_UNDEFINED}
+     *         </ul>
+     */
+    CARAPI GetContentChangeTypes(
+        /* [out] */ Int32* type);
+
+    /**
+     * Sets the bit mask of node tree changes signaled by an
+     * {@link #TYPE_WINDOW_CONTENT_CHANGED} event.
+     *
+     * @param changeTypes The bit mask of change types.
+     * @throws IllegalStateException If called from an AccessibilityService.
+     * @see #getContentChangeTypes()
+     */
+    CARAPI SetContentChangeTypes(
+        /* [in] */ Int32 changeTypes);
+
+    /**
      * Gets the time in which this event was sent.
      *
      * @return The event time.
@@ -596,10 +190,20 @@ public:
 
     /**
      * Sets the performed action that triggered this event.
+     * <p>
+     * Valid actions are defined in {@link AccessibilityNodeInfo}:
+     * <ul>
+     * <li>{@link AccessibilityNodeInfo#ACTION_ACCESSIBILITY_FOCUS}
+     * <li>{@link AccessibilityNodeInfo#ACTION_CLEAR_ACCESSIBILITY_FOCUS}
+     * <li>{@link AccessibilityNodeInfo#ACTION_CLEAR_FOCUS}
+     * <li>{@link AccessibilityNodeInfo#ACTION_CLEAR_SELECTION}
+     * <li>{@link AccessibilityNodeInfo#ACTION_CLICK}
+     * <li>etc.
+     * </ul>
      *
      * @param action The action.
-     *
      * @throws IllegalStateException If called from an AccessibilityService.
+     * @see AccessibilityNodeInfo#performAction(int)
      */
     CARAPI SetAction(
         /* [in] */ Int32 action);
@@ -632,8 +236,8 @@ public:
      * @return An instance.
      */
     static CARAPI Obtain(
-        /* [in] */ IAccessibilityEvent* otherEvent,
-        /* [out] */ IAccessibilityEvent** event);
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ IAccessibilityEvent** resultEvent);
 
     /**
      * Returns a cached instance if such is available or a new one is
@@ -657,6 +261,9 @@ public:
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     /**
      * Returns the string representation of an event type. For example,
@@ -700,20 +307,18 @@ private:
 
 private:
     static const String TAG;
+    static const Boolean DEBUG;
     static const Int32 MAX_POOL_SIZE;
-    static AutoPtr<CAccessibilityEvent> sPool;
-    static Object sPoolLock;
-    static Int32 sPoolSize;
-    AutoPtr<CAccessibilityEvent> mNext;
-    Boolean mIsInPool;
+    static AutoPtr< Pools::SynchronizedPool<IAccessibilityEvent> > sPool;
 
     Int32 mEventType;
     AutoPtr<ICharSequence> mPackageName;
     Int64 mEventTime;
     Int32 mMovementGranularity;
     Int32 mAction;
+    Int32 mContentChangeTypes;
 
-    List<AutoPtr<IAccessibilityRecord> > mRecords;
+    AutoPtr<IArrayList> mRecords;
 };
 
 } // Accessibility

@@ -98,8 +98,10 @@ module
     // merge("view/IDisplayManagerAw.car");
     // merge("view/DispList.car");
 
+    merge("view/accessibility/AccessibilityCache.car");
     merge("view/accessibility/AccessibilityEvent.car");
     merge("view/accessibility/AccessibilityEventSource.car");
+    merge("view/accessibility/AccessibilityInteractionClient.car");
     merge("view/accessibility/AccessibilityManager.car");
     merge("view/accessibility/AccessibilityNodeInfo.car");
     merge("view/accessibility/AccessibilityNodeProvider.car");
@@ -158,7 +160,8 @@ module
     merge("view/textservice/TextServicesManager.car");
 
     using interface Elastos.Core.ICharSequence;
-    // interface Elastos.Droid.Content.IContext;
+
+    interface Elastos.Droid.Content.IContext;
     // interface Elastos.Droid.Content.Pm.IResolveInfo;
     // interface Elastos.Droid.Graphics.ISurfaceTexture;
     // interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
@@ -168,13 +171,19 @@ module
     // interface Elastos.Droid.Internal.View.IInputContextCallback;
     // interface Elastos.Droid.Internal.View.IInputMethodClient;
     // interface Elastos.Droid.Internal.View.IIInputMethodSession;
-    // interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBinder;
     // interface Elastos.Droid.Os.ILooper;
     // interface Elastos.Droid.Os.IHandler;
     // interface Elastos.Droid.View.IKeyEventCallback;
     // interface Elastos.Droid.View.IInputMethodCallback;
     // interface Elastos.Droid.View.IWindowManagerPolicyThread;
     // interface Elastos.Droid.View.IAccessibilityInteractionController;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityCache;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventHelper;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionClient;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionClientHelper;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoAccessibilityAction;
@@ -185,13 +194,10 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoCollectionItemInfoHelper;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoRangeInfo;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoRangeInfoHelper;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityRecord;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityRecordHelper;
+    interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityRecord;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityRecordHelper;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
-    // interface Elastos.Droid.View.Accessibility.IAccessibilityEventHelper;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
     // interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
     // interface Elastos.Droid.Utility.IAttributeSet;
@@ -209,9 +215,9 @@ module
     // } // namespace Droid
     // } // namespace Elastos
 
-    namespace Elastos {
-    namespace Droid {
-    namespace View {
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace View {
     //     singleton class CChoreographerHelper {
     //         interface IChoreographerHelper;
     //     }
@@ -1580,36 +1586,43 @@ module
 
     // }// namespace Animation
 
+    // } // namespace View
+    // } // namepsace Droid
+    // } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
     namespace Accessibility {
 
-    // /**
-    //  * This class represents a node of the window content as well as actions that
-    //  * can be requested from its source. From the point of view of an
-    //  * {@link android.accessibilityservice.AccessibilityService} a window content is
-    //  * presented as tree of accessibility node info which may or may not map one-to-one
-    //  * to the view hierarchy. In other words, a custom view is free to report itself as
-    //  * a tree of accessibility node info.
-    //  * </p>
-    //  * <p>
-    //  * Once an accessibility node info is delivered to an accessibility service it is
-    //  * made immutable and calling a state mutation method generates an error.
-    //  * </p>
-    //  * <p>
-    //  * Please refer to {@link android.accessibilityservice.AccessibilityService} for
-    //  * details about how to obtain a handle to window content as a tree of accessibility
-    //  * node info as well as familiarizing with the security model.
-    //  * </p>
-    //  * <div class="special reference">
-    //  * <h3>Developer Guides</h3>
-    //  * <p>For more information about making applications accessible, read the
-    //  * <a href="{@docRoot}guide/topics/ui/accessibility/index.html">Accessibility</a>
-    //  * developer guide.</p>
-    //  * </div>
-    //  *
-    //  * @see android.accessibilityservice.AccessibilityService
-    //  * @see AccessibilityEvent
-    //  * @see AccessibilityManager
-    //  */
+    /**
+     * This class represents a node of the window content as well as actions that
+     * can be requested from its source. From the point of view of an
+     * {@link android.accessibilityservice.AccessibilityService} a window content is
+     * presented as tree of accessibility node info which may or may not map one-to-one
+     * to the view hierarchy. In other words, a custom view is free to report itself as
+     * a tree of accessibility node info.
+     * </p>
+     * <p>
+     * Once an accessibility node info is delivered to an accessibility service it is
+     * made immutable and calling a state mutation method generates an error.
+     * </p>
+     * <p>
+     * Please refer to {@link android.accessibilityservice.AccessibilityService} for
+     * details about how to obtain a handle to window content as a tree of accessibility
+     * node info as well as familiarizing with the security model.
+     * </p>
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about making applications accessible, read the
+     * <a href="{@docRoot}guide/topics/ui/accessibility/index.html">Accessibility</a>
+     * developer guide.</p>
+     * </div>
+     *
+     * @see android.accessibilityservice.AccessibilityService
+     * @see AccessibilityEvent
+     * @see AccessibilityManager
+     */
     class CAccessibilityNodeInfo {
         constructor();
 
@@ -1622,8 +1635,6 @@ module
     }
 
     class CAccessibilityNodeInfoAccessibilityAction {
-        constructor();
-
         constructor(
             [in] Int32 actionId,
             [in] ICharSequence* label);
@@ -1647,22 +1658,33 @@ module
         interface IAccessibilityNodeInfoRangeInfoHelper;
     }
 
-    // class CAccessibilityRecord {
-    //     interface IAccessibilityRecord;
-    // }
+    class CAccessibilityRecord {
+        constructor();
 
-    // singleton class CAccessibilityRecordHelper {
-    //     interface IAccessibilityRecordHelper;
-    // }
+        interface IAccessibilityRecord;
+    }
 
-    // class CAccessibilityEvent {
-    //     interface IAccessibilityEvent;
-    //     interface IParcelable;
-    // }
+    singleton class CAccessibilityRecordHelper {
+        interface IAccessibilityRecordHelper;
+    }
 
-    // singleton class CAccessibilityEventHelper {
-    //     interface IAccessibilityEventHelper;
-    // }
+    class CAccessibilityCache {
+        constructor();
+
+        interface IAccessibilityCache;
+    }
+
+    class CAccessibilityEvent {
+        constructor();
+
+        interface IAccessibilityEvent;
+        interface IAccessibilityRecord;
+        interface IParcelable;
+    }
+
+    singleton class CAccessibilityEventHelper {
+        interface IAccessibilityEventHelper;
+    }
 
     // [local]
     // class CAccessibilityManager {
@@ -1685,16 +1707,30 @@ module
     //     interface IAccessibilityManagerClient;
     // }
 
-    // class CAccessibilityInteractionClient {
-    //     interface IAccessibilityInteractionClient;
-    // }
+    class CAccessibilityInteractionClient {
+        constructor();
 
-    // singleton class CAccessibilityInteractionClientHelper {
-    //     interface IAccessibilityInteractionClientHelper;
-    // }
+        interface IAccessibilityInteractionClient;
+        interface IIAccessibilityInteractionConnectionCallback;
+        interface IBinder;
+    }
+
+    singleton class CAccessibilityInteractionClientHelper {
+        interface IAccessibilityInteractionClientHelper;
+    }
+
+    class CAccessibilityWindowInfo {
+        constructor();
+
+        interface IAccessibilityWindowInfo;
+        interface IParcelable;
+    }
+
+    singleton class CAccessibilityWindowInfoHelper {
+        interface IAccessibilityWindowInfoHelper;
+    }
 
     } // Accessibility
-
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos

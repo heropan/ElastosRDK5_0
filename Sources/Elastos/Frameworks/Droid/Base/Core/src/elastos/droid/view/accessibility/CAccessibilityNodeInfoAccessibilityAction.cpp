@@ -95,11 +95,6 @@ CAccessibilityNodeInfoAccessibilityAction::~CAccessibilityNodeInfoAccessibilityA
 {
 }
 
-ECode CAccessibilityNodeInfoAccessibilityAction::constructor()
-{
-    return NOERROR;
-}
-
 ECode CAccessibilityNodeInfoAccessibilityAction::constructor(
     /* [in] */ Int32 actionId,
     /* [in] */ ICharSequence* label)

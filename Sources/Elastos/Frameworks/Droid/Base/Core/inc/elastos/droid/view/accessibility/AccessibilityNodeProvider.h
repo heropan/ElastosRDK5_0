@@ -4,6 +4,7 @@
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Droid::Os::IBundle;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -77,7 +78,22 @@ public:
     virtual CARAPI FindAccessibilityNodeInfosByText(
         /* [in] */ const String& text,
         /* [in] */ Int32 virtualViewId,
-        /* [out] */ IObjectContainer** nodeInfos);
+        /* [out] */ IList** nodeInfos);
+
+    /**
+     * Find the virtual view, i.e. a descendant of the host View, that has the
+     * specified focus type.
+     *
+     * @param focus The focus to find. One of
+     *            {@link AccessibilityNodeInfo#FOCUS_INPUT} or
+     *            {@link AccessibilityNodeInfo#FOCUS_ACCESSIBILITY}.
+     * @return The node info of the focused view or null.
+     * @see AccessibilityNodeInfo#FOCUS_INPUT
+     * @see AccessibilityNodeInfo#FOCUS_ACCESSIBILITY
+     */
+    virtual CARAPI FindFocus(
+        /* [in] */ Int32 focus,
+        /* [out] */  IAccessibilityNodeInfo** info);
 };
 
 } // Accessibility
