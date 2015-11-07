@@ -215,9 +215,9 @@ module
     // } // namespace Droid
     // } // namespace Elastos
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace View {
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
     //     singleton class CChoreographerHelper {
     //         interface IChoreographerHelper;
     //     }
@@ -1586,9 +1586,9 @@ module
 
     // }// namespace Animation
 
-    // } // namespace View
-    // } // namepsace Droid
-    // } // namespace Elastos
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
