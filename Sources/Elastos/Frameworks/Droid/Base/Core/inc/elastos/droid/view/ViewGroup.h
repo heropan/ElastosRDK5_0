@@ -5,6 +5,7 @@
 #include "elastos/droid/view/View.h"
 
 using Elastos::Core::IComparable;
+using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Animation::ITransitionListener;
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::View::Animation::IAnimationListener;
@@ -18,7 +19,8 @@ class ViewGroup : public View
 {
     friend class View;
 private:
-    class NotifyAnimationListenerRunnable : public Runnable
+    class NotifyAnimationListenerRunnable
+        : public Runnable
     {
     public:
         NotifyAnimationListenerRunnable(
@@ -30,7 +32,8 @@ private:
         ViewGroup*   mHost;
     };
 
-    class DispatchDrawRunnable : public Runnable
+    class DispatchDrawRunnable
+        : public Runnable
     {
     public:
         DispatchDrawRunnable(
@@ -41,8 +44,9 @@ private:
     private:
         ViewGroup*   mHost;
     };
+
     class LayoutTransitionListener
-        : public ElRefBase
+        : public Object
         , public ITransitionListener
     {
     public:
@@ -110,7 +114,7 @@ private:
 
     /* Describes a hovered view. */
     class HoverTarget
-        : public Obtain
+        : public Object
     {
     public:
         static CARAPI_(AutoPtr<HoverTarget>) Obtain(
@@ -175,7 +179,7 @@ private:
     private:
         static const Int32 MAX_POOL_SIZE;
 
-        static SynchronizedPool<ChildListForAccessibility> sPool;//= new SynchronizedPool<ChildListForAccessibility>(MAX_POOL_SIZE);
+        static AutoPtr< Pools::SynchronizedPool<ChildListForAccessibility> > sPool;//= new SynchronizedPool<ChildListForAccessibility>(MAX_POOL_SIZE);
 
         AutoPtr<IList> mChildren;
 
@@ -222,8 +226,9 @@ private:
 
     private:
         static const Int32 MAX_POOL_SIZE;
-        static SynchronizedPool<ViewLocationHolder> sPool = new SynchronizedPool<ViewLocationHolder>(MAX_POOL_SIZE);
+        static AutoPtr<Pools::SynchronizedPool<ViewLocationHolder> > sPool;// = new SynchronizedPool<ViewLocationHolder>(MAX_POOL_SIZE);
 
+        static Int32 sComparisonStrategy;
         AutoPtr<CRect> mLocation;
 
         Int32 mLayoutDirection;
@@ -279,6 +284,8 @@ public:
         /* [in] */ IView* originalView,
         /* [in] */ IActionModeCallback* callback,
         /* [out] */ IActionMode** res);
+
+    using View::FocusSearch;
 
     virtual CARAPI FocusSearch(
         /* [in] */ IView* focused,
@@ -339,7 +346,7 @@ public:
         /* [out] */ Boolean* res);
 
     CARAPI FindFocus(
-        /* [out] */ IView** focused);
+        /* [out] */ IView** res);
 
     CARAPI HasFocusable(
         /* [out] */ Boolean* res);
@@ -352,16 +359,16 @@ public:
         /* [in] */ Int32 focusableMode);
 
     CARAPI FindViewsWithText(
-        /* [in, out] */ IObjectContainer* outViews,
+        /* [in, out] */ IArrayList* outViews,
         /* [in] */ ICharSequence* searched,
         /* [in] */ Int32 flags);
 
     CARAPI FindViewByAccessibilityIdTraversal(
         /* [in] */ Int32 accessibilityId,
-        /* [out] */ IView** focused);
+        /* [out] */ IView** res);
 
     CARAPI AddTouchables(
-        /* [in] */ IObjectContainer* views);
+        /* [in] */ IArrayList* views);
 
     CARAPI MakeOptionalFitsSystemWindows();
 
@@ -371,7 +378,7 @@ public:
     CARAPI DispatchDisplayHint(
         /* [in] */ Int32 hint);
 
-    CARAPI DispatchVisibilityChanged(
+    CARAPI_(void) DispatchVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
@@ -423,7 +430,7 @@ public:
         /* [out] */ Boolean* res);
 
     virtual CARAPI AddChildrenForAccessibility(
-        /* [in] */ IObjectContainer* childrenForAccessibility);
+        /* [in] */ IArrayList* childrenForAccessibility);
 
     virtual CARAPI OnInterceptHoverEvent(
         /* [in] */ IMotionEvent* event,
@@ -949,7 +956,7 @@ public:
     virtual CARAPI SuppressLayout(
         /* [in] */ Boolean suppress);
 
-    virtual CARAPI isLayoutSuppressed(
+    virtual CARAPI IsLayoutSuppressed(
         /* [out] */ Boolean* res);
 
     virtual CARAPI DispatchApplyWindowInsets(
@@ -1021,7 +1028,7 @@ protected:
         /* [in] */ Int32 bottom);
 
     CARAPI DispatchSaveInstanceState(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     /**
      * Perform dispatching of a {@link #saveHierarchyState(android.util.SparseArray)}  freeze()}
@@ -1032,10 +1039,10 @@ protected:
      * @param container the container
      */
     virtual CARAPI DispatchFreezeSelfOnly(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     CARAPI DispatchRestoreInstanceState(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     /**
      * Perform dispatching of a {@link #restoreHierarchyState(android.util.SparseArray)}
@@ -1046,7 +1053,7 @@ protected:
      * @param container the container
      */
     virtual CARAPI DispatchThawSelfOnly(
-        /* [in] */ IObjectInt32Map* container);
+        /* [in] */ ISparseArray* container);
 
     CARAPI_(void) SetChildrenDrawingCacheEnabled(
         /* [in] */ Boolean enabled);
@@ -1554,9 +1561,9 @@ protected:
         /* [in] */ IView* child,
         /* [in] */ IViewGroupLayoutParams* layoutParams);
 
-    virtual CARAPI_(void) OnAttachedToWindow();
+    virtual CARAPI OnAttachedToWindow();
 
-    virtual CARAPI_(void) OnDetachedFromWindow();
+    virtual CARAPI OnDetachedFromWindow();
 
 private:
     CARAPI_(Boolean) DebugDraw();
@@ -1787,7 +1794,7 @@ private:
 
     CARAPI_(AutoPtr<IList>) BuildOrderedChildList();
 
-    CARAPI_(Boolean) RecreateChildDisplayList(
+    CARAPI_(void) RecreateChildDisplayList(
         /* [in] */ IView* child);
 
     CARAPI_(void) DispatchCancelPendingInputEvents();
@@ -2191,5 +2198,8 @@ private:
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::View::ViewGroup::ChildListForAccessibility, IInterface)
+DEFINE_CONVERSION_FOR(Elastos::Droid::View::ViewGroup::ViewLocationHolder, IInterface)
 
 #endif // __ELASTOS_DROID_VIEW_ViewGroup_H__

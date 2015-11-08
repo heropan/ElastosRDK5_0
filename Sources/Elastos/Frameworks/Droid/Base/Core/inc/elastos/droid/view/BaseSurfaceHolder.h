@@ -16,7 +16,7 @@ namespace Droid {
 namespace View {
 
 class BaseSurfaceHolder
-    : public ElRefBase
+    : public Object
     , public ISurfaceHolder
 {
 public:

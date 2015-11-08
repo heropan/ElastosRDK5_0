@@ -1715,7 +1715,7 @@ public:
         Boolean mHardwareAccelerationRequested;
         AutoPtr<IHardwareRenderer> mHardwareRenderer;
 
-        AutoPtr<IList> mPendingAnimatingRenderNodes;
+        AutoPtr<IArrayList> mPendingAnimatingRenderNodes;
 
         /**
          * The state of the display to which the window is attached, as reported
@@ -4779,6 +4779,14 @@ public:
     virtual CARAPI GetTransitionName(
         /* [out] */ String* name);
 
+    /**
+     * Returns whether this View is accessibility focused.
+     *
+     * @return True if this View is accessibility focused.
+     */
+    virtual CARAPI IsAccessibilityFocused(
+        /* [out] */ Boolean* res);
+
 protected:
     virtual CARAPI_(void) InitializeFadingEdge(
         /* [in] */ ITypedArray* a);
@@ -5019,7 +5027,7 @@ protected:
         /* [in] */ ArrayOf<Int32>* baseState,
         /* [in] */ ArrayOf<Int32>* additionalState);
 
-    virtual CARAPI_(void) DispatchSetSelected(
+    virtual CARAPI DispatchSetSelected(
         /* [in] */ Boolean selected);
 
     virtual CARAPI_(AutoPtr<IView>) FindViewTraversal(
@@ -5161,13 +5169,6 @@ protected:
      */
     virtual CARAPI_(Boolean) IsVisibleToUser(
         /* [in] */ IRect* boundInView);
-
-    /**
-     * Returns whether this View is accessibility focused.
-     *
-     * @return True if this View is accessibility focused.
-     */
-    virtual CARAPI_(Boolean) IsAccessibilityFocused();
 
     /**
      * Clears accessibility focus without calling any callback methods
@@ -5455,7 +5456,7 @@ protected:
      *
      * @param activated The new activated state
      */
-    virtual CARAPI_(void) DispatchSetActivated(
+    virtual CARAPI DispatchSetActivated(
         /* [in] */ Boolean activated);
 
     /**

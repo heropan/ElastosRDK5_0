@@ -2429,7 +2429,8 @@ module
              * @return The provided insets minus the insets that were consumed
              */
             DispatchApplyWindowInsets(
-                [in] IWindowInsets* insets);
+                [in] IWindowInsets* insets,
+                [out] IWindowInsets** res);
 
             /**
              * Compute insets that should be consumed by this view and the ones that should propagate
@@ -5108,7 +5109,9 @@ module
              * @see #postOnAnimation
              * @see #postOnAnimationDelayed
              */
-            RemoveCallbacks();
+            RemoveCallbacks(
+                [in] IRunnable* action,
+                [out] Boolean* result);
 
             /**
              * Cause an invalidate to happen on a subsequent cycle through the event loop.
@@ -5460,7 +5463,8 @@ module
              *
              * @hide
              */
-            ResolveRtlPropertiesIfNeeded();
+            ResolveRtlPropertiesIfNeeded(
+                [out] Boolean* res);
 
             /**
              * Reset resolution of all RTL related properties.

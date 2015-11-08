@@ -518,6 +518,9 @@ module
          */
         DispatchOnComputeInternalInsets(
             [in] IInternalInsetsInfo* inoutInfo);
+
+        DispatchOnWindowAttachedChange(
+            [in] Boolean attached);
     }
 
     }   //namespace View

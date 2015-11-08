@@ -28,7 +28,6 @@
 #include "elastos/droid/graphics/drawable/CColorDrawable.h"
 #include "elastos/droid/graphics/CInterpolator.h"
 #include "elastos/droid/graphics/CLinearGradient.h"
-#include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPoint.h"
 #include "elastos/droid/graphics/CPorterDuffXfermode.h"
 #include "elastos/droid/graphics/CRegion.h"
@@ -1012,106 +1011,6 @@ ECode View::_Predicate::Apply(
     *result = v->mNextFocusForwardId == mId;
     return NOERROR;
 }
-
-// View::_FloatProperty::_FloatProperty(
-//     /* [in] */ const String& name)
-//     : mName(name)
-// {
-// }
-
-// UInt32 View::_FloatProperty::AddRef()
-// {
-//     return ElRefBas::AddRef();
-// }
-
-// UInt32 View::_FloatProperty::Release()
-// {
-//     return ElRefBas::Release();
-// }
-
-// ECode View::_FloatProperty::SetValue(
-//     /* [in] */ IView* object,
-//     /* [in] */ Float value)
-// {
-//     assert(object != NULL);
-//     if (mName.Equals("alpha") == 0) {
-//         object->SetAlpha(value);
-//     }
-//     else if (mName.Equals("translationX") == 0) {
-//         object->SetTranslationX(value);
-//     }
-//     else if (mName.Equals("translationY") == 0) {
-//         object->SetTranslationY(value);
-//     }
-//     else if (mName.Equals("x") == 0) {
-//         object->SetX(value);
-//     }
-//     else if (mName.Equals("y") == 0) {
-//         object->SetY(value);
-//     }
-//     else if (mName.Equals("rotation") == 0) {
-//         object->SetRotation(value);
-//     }
-//     else if (mName.Equals("rotationX") == 0) {
-//         object->SetRotationX(value);
-//     }
-//     else if (mName.Equals("rotationY") == 0) {
-//         object->SetRotationY(value);
-//     }
-//     else if (mName.Equals("scaleX") == 0) {
-//         object->SetScaleX(value);
-//     }
-//     else if (mName.Equals("scaleY") == 0) {
-//         object->SetScaleY(value);
-//     }
-//     else {
-//         assert(0);
-//     }
-
-//     return NOERROR;
-// }
-
-// ECode View::_FloatProperty::Get(
-//     /* [in] */ IView* object,
-//     /* [out] */ Float* value)
-// {
-//     assert(value != NULL && object != NULL);
-//     if (mName.Equals("alpha") == 0) {
-//         object->GetAlpha(value);
-//     }
-//     else if (mName.Equals("translationX") == 0) {
-//         object->GetTranslationX(value);
-//     }
-//     else if (mName.Equals("translationY") == 0) {
-//         object->GetTranslationY(value);
-//     }
-//     else if (mName.Equals("x") == 0) {
-//         object->GetX(value);
-//     }
-//     else if (mName.Equals("y") == 0) {
-//         object->GetY(value);
-//     }
-//     else if (mName.Equals("rotation") == 0) {
-//         object->GetRotation(value);
-//     }
-//     else if (mName.Equals("rotationX") == 0) {
-//         object->GetRotationX(value);
-//     }
-//     else if (mName.Equals("rotationY") == 0) {
-//         object->GetRotationY(value);
-//     }
-//     else if (mName.Equals("scaleX") == 0) {
-//         object->GetScaleX(value);
-//     }
-//     else if (mName.Equals("scaleY") == 0) {
-//         object->GetScaleY(value);
-//     }
-//     else {
-//         assert(0);
-//     }
-
-//     return NOERROR;
-// }
 
 View::SendViewScrolledAccessibilityEvent::SendViewScrolledAccessibilityEvent(
     /* [in] */ View* host)
@@ -2824,7 +2723,9 @@ void View::OnInitializeAccessibilityNodeInfoInternal(
     info->SetClickable((IsClickable(&BTemp), BTemp));
     info->SetFocusable((IsFocusable(&BTemp), BTemp));
     info->SetFocused((IsFocused(&BTemp), BTemp));
-    info->SetAccessibilityFocused(IsAccessibilityFocused());
+    Boolean isAccessibilityFocused;
+    IsAccessibilityFocused(&isAccessibilityFocused);
+    info->SetAccessibilityFocused(isAccessibilityFocused);
     info->SetSelected((IsSelected(&BTemp), BTemp));
     info->SetLongClickable((IsLongClickable(&BTemp), BTemp));
     Int32 ITemp;
@@ -2844,8 +2745,8 @@ void View::OnInitializeAccessibilityNodeInfoInternal(
             info->AddAction(IAccessibilityNodeInfo::ACTION_FOCUS);
         }
     }
-
-    if (!IsAccessibilityFocused()) {
+    IsAccessibilityFocused(&isAccessibilityFocused);
+    if (!isAccessibilityFocused) {
         info->AddAction(IAccessibilityNodeInfo::ACTION_ACCESSIBILITY_FOCUS);
     }
     else {
@@ -4871,9 +4772,12 @@ ECode View::AddTouchables(
     return NOERROR;
 }
 
-Boolean View::IsAccessibilityFocused()
+ECode View::IsAccessibilityFocused(
+    /* [out] */ Boolean* res)
 {
-    return (mPrivateFlags2 & PFLAG2_ACCESSIBILITY_FOCUSED) != 0;
+    VALIDATE_NOT_NULL(res)
+    *res = (mPrivateFlags2 & PFLAG2_ACCESSIBILITY_FOCUSED) != 0;
+    return NOERROR;
 }
 
 ECode View::RequestAccessibilityFocus(
@@ -5479,12 +5383,16 @@ Boolean View::PerformAccessibilityActionInternal(
             }
         } break;
         case IAccessibilityNodeInfo::ACTION_ACCESSIBILITY_FOCUS: {
-            if (!IsAccessibilityFocused()) {
+            Boolean isAccessibilityFocused;
+            IsAccessibilityFocused(&isAccessibilityFocused);
+            if (!isAccessibilityFocused) {
                 return (RequestAccessibilityFocus(&result), result);
             }
         } break;
         case IAccessibilityNodeInfo::ACTION_CLEAR_ACCESSIBILITY_FOCUS: {
-            if (IsAccessibilityFocused()) {
+            Boolean isAccessibilityFocused;
+            IsAccessibilityFocused(&isAccessibilityFocused);
+            if (isAccessibilityFocused) {
                 ClearAccessibilityFocus();
                 return TRUE;
             }
@@ -14916,9 +14824,10 @@ ECode View::SetSelected(
  *
  * @param selected The new selected state
  */
-void View::DispatchSetSelected(
+ECode View::DispatchSetSelected(
     /* [in] */ Boolean selected)
 {
+    return NOERROR;
 }
 
 /**
@@ -14948,9 +14857,10 @@ ECode View::SetActivated(
     return NOERROR;
 }
 
-void View::DispatchSetActivated(
+ECode View::DispatchSetActivated(
     /* [in] */ Boolean activated)
 {
+    return NOERROR;
 }
 
 ECode View::IsActivated(

@@ -66,6 +66,7 @@ module
     merge("view/View.car");
     merge("view/ViewConfiguration.car");
     merge("view/ViewGroup.car");
+    merge("view/ViewRootImpl.car");
     merge("view/ViewGroupOverlay.car");
     merge("view/ViewManager.car");
     merge("view/ViewOutlineProvider.car");

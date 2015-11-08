@@ -14,6 +14,13 @@ module
         Dispose();
     }
 
+    interface IInputQueueFinishedInputEventCallback
+    {
+        OnFinishedInputEvent(
+            [in] IInterface* token,
+            [in] Boolean handled);
+    }
+
     interface IInputQueueCallback {
         /**
          * Called when the given InputQueue is now associated with the

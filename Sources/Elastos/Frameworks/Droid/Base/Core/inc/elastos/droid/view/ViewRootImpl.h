@@ -3,8 +3,12 @@
 #define __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/graphics/CRegion.h"
 #include "elastos/droid/view/View.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/utility/etl/HashSet.h>
+/*#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+
 #include "elastos/droid/view/CSurface.h"
 #include "elastos/droid/view/BaseSurfaceHolder.h"
 #include "elastos/droid/view/CInputQueue.h"
@@ -16,39 +20,62 @@
 #include "elastos/droid/os/HandlerBase.h"
 #include "elastos/droid/widget/CScroller.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/utility/etl/HashSet.h>
+*/
 
-using Elastos::Utility::Etl::HashSet;
+/*using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::IThread;
-using Elastos::Droid::Content::IComponentCallbacks;
+
 using Elastos::Droid::Content::IClipDescription;
 using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::View::InputMethod::IInputMethodManagerFinishedEventCallback;
+<<<<<<< HEAD
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
+=======
+using Elastos::Droid::View::Accessibility::IAccessibilityStateChangeListener;
+>>>>>>> ViewGroup and ViewRootImpl
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnectionCallback;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Widget::CScroller;
+using Elastos::Droid::Media::IAudioManager;*/
+
+using Elastos::Droid::Animation::ILayoutTransition;
+using Elastos::Droid::Content::IComponentCallbacks;
+using Elastos::Droid::Content::IClipDescription;
+using Elastos::Droid::Content::Res::ICompatibilityInfoTranslator;
+using Elastos::Droid::Graphics::CRegion;
+using Elastos::Droid::Graphics::IPointF;
+using Elastos::Droid::Hardware::Display::IDisplayListener;
+using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::View::InputMethod::IInputMethodManagerFinishedInputEventCallback;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityManagerHighTextContrastChangeListener;
+using Elastos::Droid::Widget::IScroller;
 using Elastos::Droid::Media::IAudioManager;
+using Elastos::Core::IStringBuilder;
+using Elastos::IO::IPrintWriter;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::Etl::HashSet;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-extern "C" const InterfaceID EIID_ViewRootImpl;
-
 //class Scroller;
 class CViewRootImplW;
 class CAccessibilityInteractionController;
 
-class ViewRootImpl :
-    public ElRefBase,
-    public IViewParent,
-    public View::AttachInfo::Callbacks,
-    public HardwareRenderer::HardwareDrawCallbacks,
-    public IWeakReferenceSource
+class ViewRootImpl
+    : public Object
+    , public IViewRootImpl
+    , public View::AttachInfo::Callbacks
+    , public IViewParent
+    , public IHardwareDrawCallbacks
 {
     friend class View;
     friend class CWindowManagerGlobal;
@@ -73,10 +100,9 @@ private:
     static const Int32 MSG_RESIZED;// = 4;
     static const Int32 MSG_RESIZED_REPORT;// = 5;
     static const Int32 MSG_WINDOW_FOCUS_CHANGED;// = 6;
-    static const Int32 MSG_DISPATCH_KEY;// = 7;
+    static const Int32 MSG_DISPATCH_INPUT_EVENT;// = 7;
     static const Int32 MSG_DISPATCH_APP_VISIBILITY;// = 8;
     static const Int32 MSG_DISPATCH_GET_NEW_SURFACE;// = 9;
-    static const Int32 MSG_IME_FINISHED_EVENT;// = 10;
     static const Int32 MSG_DISPATCH_KEY_FROM_IME;// = 11;
     static const Int32 MSG_FINISH_INPUT_CONNECTION;// = 12;
     static const Int32 MSG_CHECK_FOCUS;// = 13;
@@ -86,14 +112,13 @@ private:
     static const Int32 MSG_DISPATCH_SYSTEM_UI_VISIBILITY;// = 17;
     static const Int32 MSG_UPDATE_CONFIGURATION;// = 18;
     static const Int32 MSG_PROCESS_INPUT_EVENTS;// = 19;
-    static const Int32 MSG_DISPATCH_SCREEN_STATE;// = 20;
-    static const Int32 MSG_INVALIDATE_DISPLAY_LIST;// = 21;
-    static const Int32 MSG_CLEAR_ACCESSIBILITY_FOCUS_HOST;// = 22;
-    static const Int32 MSG_DISPATCH_DONE_ANIMATING;// = 23;
-    static const Int32 MSG_INVALIDATE_WORLD;// = 24;
-    static const Int32 MSG_WINDOW_MOVED;// = 25;
+    static const Int32 MSG_CLEAR_ACCESSIBILITY_FOCUS_HOST;// = 21;
+    static const Int32 MSG_DISPATCH_DONE_ANIMATING;// = 22;
+    static const Int32 MSG_INVALIDATE_WORLD;// = 23;
+    static const Int32 MSG_WINDOW_MOVED;// = 24;
+    static const Int32 MSG_SYNTHESIZE_INPUT_EVENT;// = 25;
 
-    static const Boolean USE_RENDER_THREAD;
+    static const Boolean DEBUG_INPUT_STAGES;
 
     /**
      * Set this system property to true to force the view hierarchy to render
@@ -101,7 +126,9 @@ private:
      */
     static const String PROPERTY_PROFILE_RENDERING;
 
-    static const Boolean MEASURE_LATENCY;
+    static const String PROPERTY_MEDIA_DISABLED;
+
+    static const String PROPERTY_EMULATOR_CIRCULAR;
 
     /**
     * Maximum time we allow the user to roll the trackball enough to generate
@@ -111,8 +138,6 @@ private:
 
     // Pool of queued input events.
     static const Int32 MAX_QUEUED_INPUT_EVENT_POOL_SIZE;
-
-    //static LatencyTimer mLt;
 
     static pthread_key_t sKeyRunQueues;
     static Boolean sKeyRunQueuesInited;
@@ -125,14 +150,13 @@ private:
     static List<AutoPtr<IComponentCallbacks> > sConfigCallbacks;
     static Object sConfigCallbacksLock;
 
-    static Boolean sUseRenderThread;
-    static Boolean sRenderThreadQueried ;
-    static Object sRenderThreadQueryLock;
+    static AutoPtr<IContext> mContext;
 
     static AutoPtr<Elastos::Droid::View::Animation::IInterpolator> mResizeInterpolator;
 
 private:
-    class ViewRootHandler : public HandlerBase
+    class ViewRootHandler
+        : public Handler
     {
     public:
         ViewRootHandler(
@@ -148,18 +172,13 @@ private:
     };
 
     class SystemUiVisibilityInfo
-        : public ElRefBase
-        , public IInterface
+        : public Object
+        , public ISystemUiVisibilityInfo
     {
     public:
-        CAR_INTERFACE_DECL()
+        SystemUiVisibilityInfo();
 
-        SystemUiVisibilityInfo()
-            : mSeq(0)
-            , mGlobalVisibility(0)
-            , mLocalValue(0)
-            , mLocalChanges(0)
-        {}
+        CAR_INTERFACE_DECL()
 
         Int32 mSeq;
         Int32 mGlobalVisibility;
@@ -179,23 +198,42 @@ private:
      * key events at a time without going through the input dispatcher, we end up
      * needing a queue on the application's side.
      */
-    class QueuedInputEvent : public ElRefBase
+    class QueuedInputEvent
+        : public Object
     {
     public:
-        QueuedInputEvent()
-            : mFlags(0)
-        {}
+        QueuedInputEvent();
 
-        static const Int32 FLAG_DELIVER_POST_IME = 1;
+        CARAPI_(Boolean) ShouldSkipIme();
+
+        CARAPI_(Boolean) ShouldSendToSynthesizer();
+
+        CARAPI_(String) ToString();
+
+    private:
+        CARAPI_(Boolean) FlagToString(
+            /* [in] */ String name,
+            /* [in] */ Int32 flag,
+            /* [in] */ Boolean hasPrevious,
+            /* [in] */ IStringBuilder* sb);
+
+    public:
+        static const Int32 FLAG_DELIVER_POST_IME;
+        static const Int32 FLAG_DEFERRED;
+        static const Int32 FLAG_FINISHED;
+        static const Int32 FLAG_FINISHED_HANDLED;
+        static const Int32 FLAG_RESYNTHESIZED;
+        static const Int32 FLAG_UNHANDLED;
 
         AutoPtr<QueuedInputEvent> mNext;
 
         AutoPtr<IInputEvent> mEvent;
-        AutoPtr<InputEventReceiver> mReceiver;
+        AutoPtr<IInputEventReceiver> mReceiver;
         Int32 mFlags;
     };
 
-    class TraversalRunnable : public Runnable
+    class TraversalRunnable
+        : public Runnable
     {
     public:
         TraversalRunnable(
@@ -208,13 +246,19 @@ private:
     };
 
 
-    class WindowInputEventReceiver : public InputEventReceiver
+    class WindowInputEventReceiver
+        : public Object
+        //: public InputEventReceiver
     {
     public:
         WindowInputEventReceiver(
             /* [in] */ IInputChannel* inputChannel,
             /* [in] */ ILooper* looper,
             /* [in] */ IWeakReference* viewRootImpl);
+
+        CARAPI FinishInputEvent(
+            /* [in] */ IInputEvent* event,
+            /* [in] */ Boolean handled);
 
         //@Override
         CARAPI OnInputEvent(
@@ -224,11 +268,16 @@ private:
 
         CARAPI Dispose();
 
+        CARAPI ConsumeBatchedInputEvents(
+            /* [in] */ Int64 frameTimeNanos,
+            /* [in] */ Boolean* result);
+
     private:
         AutoPtr<IWeakReference> mHost;
     };
 
-    class ConsumeBatchedInputRunnable : public Runnable
+    class ConsumeBatchedInputRunnable
+        : public Runnable
     {
     public:
         ConsumeBatchedInputRunnable(
@@ -240,7 +289,8 @@ private:
         AutoPtr<IWeakReference> mHost;
     };
 
-    class InvalidateOnAnimationRunnable : public Runnable
+    class InvalidateOnAnimationRunnable
+        : public Runnable
     {
     public:
         InvalidateOnAnimationRunnable(
@@ -273,7 +323,9 @@ private:
     };
 
 
-    class TakenSurfaceHolder : public BaseSurfaceHolder
+    class TakenSurfaceHolder
+        : public Object
+        //: public BaseSurfaceHolder
     {
     public:
         TakenSurfaceHolder(
@@ -305,30 +357,12 @@ private:
         ViewRootImpl* mViewRoot;
     };
 
-    class InputMethodCallback
-        : public ElRefBase
-        , public IInputMethodManagerFinishedEventCallback
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        InputMethodCallback(
-            /* [in] */ IWeakReference* viewAncestor);
-
-        //@Override
-        CARAPI FinishedEvent(
-            /* [in] */ Int32 seq,
-            /* [in] */ Boolean handled);
-
-    private:
-        AutoPtr<IWeakReference> mViewAncestor;
-    };
-
     /**
      * Maintains state information for a single trackball axis, generating
      * discrete (DPAD) movements based on raw trackball motion.
      */
-    class TrackballAxis : public ElRefBase
+    class TrackballAxis
+        : public Object
     {
         friend class ViewRootImpl;
     public:
@@ -363,21 +397,20 @@ private:
          * or negative, or 0 if there is not enough trackball movement yet
          * for a discrete movement.
          */
-        CARAPI_(Int32) Generate(
-            /* [in] */ Float precision);
+        CARAPI_(Int32) Generate();
 
     private:
         /**
         * The maximum amount of acceleration we will apply.
         */
-        static const Float MAX_ACCELERATION = 20;
+        static const Float MAX_ACCELERATION;
 
         /**
         * The maximum amount of time (in milliseconds) between events in order
         * for us to consider the user to be doing fast trackball movements,
         * and thus apply an acceleration.
         */
-        static const Int64 FAST_MOVE_TIME = 150;
+        static const Int64 FAST_MOVE_TIME;
 
         /**
         * Scaling factor to the time (in milliseconds) between events to how
@@ -385,10 +418,13 @@ private:
         * is < FAST_MOVE_TIME this multiplies the acceleration; when >
         * FAST_MOVE_TIME it divides it.
         */
-        static const Float ACCEL_MOVE_SCALING_FACTOR = (1.0f/40);
+        static const Float ACCEL_MOVE_SCALING_FACTOR;
+
+        static const Float FIRST_MOVEMENT_THRESHOLD;
+        static const Float SECOND_CUMULATIVE_MOVEMENT_THRESHOLD;
+        static const Float SUBSEQUENT_INCREMENTAL_MOVEMENT_THRESHOLD;
 
         Float mPosition;
-        Float mAbsPosition;
         Float mAcceleration;
         Int64 mLastMoveTime;
         Int32 mStep;
@@ -396,69 +432,523 @@ private:
         Int32 mNonAccelMovement;
     };
 
-    class CSurfaceHolder : public ElRefBase, public ISurfaceHolder
+    class RootDisplayListener
+        : public Object
+        , public IDisplayListener
     {
     public:
-        CSurfaceHolder(
-            /* [in] */ ViewRootImpl* viewRoot);
+        RootDisplayListener(
+            /* [in] */ ViewRootImpl* host);
 
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL()
 
-        CARAPI_(UInt32) AddRef();
+        CARAPI OnDisplayAdded(
+            /* [in] */ Int32 displayId);
 
-        CARAPI_(UInt32) Release();
+        CARAPI OnDisplayRemoved(
+            /* [in] */ Int32 displayId);
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        // we only need a SurfaceHolder for opengl. it would be nice
-        // to implement everything else though, especially the callback
-        // support (opengl doesn't make use of it right now, but eventually
-        // will).
-        CARAPI GetSurface(
-            /* [out] */ ISurface** surface);
-
-        CARAPI IsCreating(
-            /* [out] */ Boolean* result);
-
-        CARAPI AddCallback(
-            /* [in] */ ISurfaceHolderCallback* cback);
-
-        CARAPI RemoveCallback(
-            /* [in] */ ISurfaceHolderCallback* cback);
-
-        CARAPI SetFixedSize(
-            /* [in] */ Int32 width,
-            /* [in] */ Int32 height);
-
-        CARAPI SetSizeFromLayout();
-
-        CARAPI SetFormat(
-            /* [in] */ Int32 format);
-
-        CARAPI SetType(
-            /* [in] */ Int32 type);
-
-        CARAPI SetKeepScreenOn(
-            /* [in] */ Boolean screenOn);
-
-        CARAPI LockCanvas(
-            /* [out] */ ICanvas** canvas);
-
-        CARAPI LockCanvas(
-            /* [in] */ IRect* dirty,
-            /* [out] */ ICanvas** canvas);
-
-        CARAPI UnlockCanvasAndPost(
-            /* [in] */ ICanvas* canvas);
-
-        CARAPI GetSurfaceFrame(
-            /* [out] */ IRect** rect);
+        CARAPI OnDisplayChanged(
+            /* [in] */ Int32 displayId);
 
     private:
-        ViewRootImpl* mViewRoot;
+        CARAPI_(Int32) ToViewScreenState(
+            /* [in] */ Int32 displayState);
+
+    private:
+        ViewRootImpl* mHost;
+    };
+
+    class LayoutRunnable
+        : public Runnable
+    {
+    public:
+        LayoutRunnable(
+            /* [in] */ IArrayList* list);
+
+        CARAPI Run();
+    private:
+        AutoPtr<IArrayList> mList;
+    };
+
+    class ProfileFrameCallback
+        : public Object
+        , public IFrameCallback
+    {
+    public:
+        ProfileFrameCallback(
+            /* [in] */ ViewRootImpl* host);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI DoFrame(
+            /* [in] */ Int64 frameTimeNanos);
+    private:
+        ViewRootImpl* mHost;
+    };
+
+    class InputStage
+        : public Object
+    {
+    public:
+        InputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next);
+
+        CARAPI Deliver(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI Dump(
+            /* [in] */ String prefix,
+            /* [in] */ IPrintWriter* writer);
+
+    protected:
+        CARAPI Finish(
+            /* [in] */ QueuedInputEvent* q,
+            /* [in] */ Boolean handled);
+
+        CARAPI Forward(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI Apply(
+            /* [in] */ QueuedInputEvent* q,
+            /* [in] */ Int32 result);
+
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI OnDeliverToNext(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI_(Boolean) ShouldDropInputEvent(
+            /* [in] */ QueuedInputEvent* q);
+
+    protected:
+        static const Int32 FORWARD;
+        static const Int32 FINISH_HANDLED;
+        static const Int32 FINISH_NOT_HANDLED;
+        ViewRootImpl* mHost;
+
+    private:
+        InputStage* mNext;
+    };
+
+    class AsyncInputStage
+        : public InputStage
+    {
+    public:
+        AsyncInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next,
+            /* [in] */ String traceCounter);
+
+        CARAPI Dump(
+            /* [in] */ String prefix,
+            /* [in] */ IPrintWriter* writer);
+
+    protected:
+        CARAPI Defer(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI Forward(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI Apply(
+            /* [in] */ QueuedInputEvent* q,
+            /* [in] */ Int32 result);
+
+    private:
+        CARAPI_(void) Enqueue(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI_(void) Dequeue(
+            /* [in] */ QueuedInputEvent* q,
+            /* [in] */ QueuedInputEvent* prev);
+
+    protected:
+        static const Int32 DEFER;
+
+    private:
+        String mTraceCounter;
+
+        AutoPtr<QueuedInputEvent> mQueueHead;
+        AutoPtr<QueuedInputEvent> mQueueTail;
+        Int32 mQueueLength;
+    };
+
+    class NativePreImeInputStage
+        : public AsyncInputStage
+        , public IInputQueueFinishedInputEventCallback
+    {
+    public:
+        NativePreImeInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next,
+            /* [in] */ String traceCounter);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnFinishedInputEvent(
+            /* [in] */ IInterface* token,
+            /* [in] */ Boolean handled);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+    };
+
+    class ViewPreImeInputStage
+        : public InputStage
+    {
+    public:
+        ViewPreImeInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+
+    private:
+        CARAPI_(Int32) ProcessKeyEvent(
+            /* [in] */ QueuedInputEvent* q);
+    };
+
+    class ImeInputStage
+        : public AsyncInputStage
+        , public IInputMethodManagerFinishedInputEventCallback
+    {
+    public:
+        ImeInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next,
+            /* [in] */ String traceCounter);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnFinishedInputEvent(
+            /* [in] */ IInterface* token,
+            /* [in] */ Boolean handled);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+    };
+
+    class EarlyPostImeInputStage
+        : public InputStage
+    {
+    public:
+        EarlyPostImeInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+
+    private:
+        CARAPI_(Int32) ProcessKeyEvent(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI_(Int32) ProcessPointerEvent(
+            /* [in] */ QueuedInputEvent* q);
+    };
+
+    class NativePostImeInputStage
+        : public AsyncInputStage
+        , public IInputMethodManagerFinishedInputEventCallback
+    {
+    public:
+        NativePostImeInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next,
+            /* [in] */ String traceCounter);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnFinishedInputEvent(
+            /* [in] */ IInterface* token,
+            /* [in] */ Boolean handled);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+    };
+
+    class ViewPostImeInputStage
+        : public InputStage
+    {
+    public:
+        ViewPostImeInputStage(
+            /* [in] */ ViewRootImpl* host,
+            /* [in] */ InputStage* next);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI OnDeliverToNext(
+            /* [in] */ QueuedInputEvent* q);
+
+    private:
+        CARAPI_(Int32) ProcessKeyEvent(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI_(Int32) ProcessPointerEvent(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI_(Int32) ProcessTrackballEvent(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI_(Int32) ProcessGenericMotionEvent(
+            /* [in] */ QueuedInputEvent* q);
+    };
+
+    class SyntheticTrackballHandler
+        : public Object
+    {
+    public:
+        SyntheticTrackballHandler(
+            /* [in] */ ViewRootImpl* host);
+
+        CARAPI Process(
+            /* [in] */ IMotionEvent* event);
+
+        CARAPI Cancel(
+            /* [in] */ IMotionEvent* event);
+
+    private:
+        ViewRootImpl* mHost;
+        AutoPtr<TrackballAxis> mX;
+        AutoPtr<TrackballAxis> mY;
+        Int64 mLastTime;
+    };
+
+    class SyntheticJoystickHandler
+        : public Handler
+    {
+    public:
+        SyntheticJoystickHandler(
+            /* [in] */ ViewRootImpl* host);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+        CARAPI Process(
+            /* [in] */ IMotionEvent* event);
+
+        CARAPI_(void) Cancel(
+            /* [in] */ IMotionEvent* event);
+
+    private:
+        CARAPI_(void) Update(
+            /* [in] */ IMotionEvent* event,
+            /* [in] */ Boolean synthesizeNewKeys);
+
+        CARAPI_(Int32) JoystickAxisValueToDirection(
+            /* [in] */ Float value);
+
+    private:
+        const static String TAG;
+        const static Int32 MSG_ENQUEUE_X_AXIS_KEY_REPEAT;
+        const static Int32 MSG_ENQUEUE_Y_AXIS_KEY_REPEAT;
+
+        ViewRootImpl* mHost;
+        Int32 mLastXDirection;
+        Int32 mLastYDirection;
+        Int32 mLastXKeyCode;
+        Int32 mLastYKeyCode;
+    };
+
+    class SyntheticTouchNavigationHandler
+        : public Handler
+    {
+    private:
+        class NavigationRun
+            : public Runnable
+        {
+        public:
+            NavigationRun(
+                /* [in] */ SyntheticTouchNavigationHandler* host);
+
+            CARAPI Run();
+        private:
+            SyntheticTouchNavigationHandler* mHost;
+        };
+
+    public:
+        SyntheticTouchNavigationHandler(
+            /* [in] */ ViewRootImpl* host);
+
+        CARAPI Process(
+            /* [in] */ IMotionEvent* event);
+
+        CARAPI Cancel(
+            /* [in] */ IMotionEvent* event);
+
+    private:
+        CARAPI_(void) FinishKeys(
+            /* [in] */ Int64 time);
+
+        CARAPI_(void) FinishTracking(
+            /* [in] */ Int64 time);
+
+        CARAPI_(void) ConsumeAccumulatedMovement(
+            /* [in] */ Int64 time,
+            /* [in] */ Int32 metaState);
+
+        CARAPI_(Float) ConsumeAccumulatedMovement(
+            /* [in] */ Int64 time,
+            /* [in] */ Int32 metaState,
+            /* [in] */ Float accumulator,
+            /* [in] */ Int32 negativeKeyCode,
+            /* [in] */ Int32 positiveKeyCode);
+
+        CARAPI_(void) SendKeyDownOrRepeat(
+            /* [in] */ Int64 time,
+            /* [in] */ Int32 keyCode,
+            /* [in] */ Int32 metaState);
+
+        CARAPI_(void) SendKeyUp(
+            /* [in] */ Int64 time);
+
+        CARAPI_(Boolean) StartFling(
+            /* [in] */ Int64 time,
+            /* [in] */ Float vx,
+            /* [in] */ Float vy);
+
+        CARAPI_(Boolean) PostFling(
+            /* [in] */ Int64 time);
+
+        CARAPI_(void) CancelFling();
+
+    private:
+        static const String LOCAL_TAG;
+        static const Boolean LOCAL_DEBUG;
+
+        // Assumed nominal width and height in millimeters of a touch navigation pad,
+        // if no resolution information is available from the input system.
+        static const Float DEFAULT_WIDTH_MILLIMETERS;
+        static const Float DEFAULT_HEIGHT_MILLIMETERS;
+
+        /* TODO: These constants should eventually be moved to ViewConfiguration. */
+
+        // The nominal distance traveled to move by one unit.
+        static const Int32 TICK_DISTANCE_MILLIMETERS;
+
+        // Minimum and maximum fling velocity in ticks per second.
+        // The minimum velocity should be set such that we perform enough ticks per
+        // second that the fling appears to be fluid.  For example, if we set the minimum
+        // to 2 ticks per second, then there may be up to half a second delay between the next
+        // to last and last ticks which is noticeably discrete and jerky.  This value should
+        // probably not be set to anything less than about 4.
+        // If fling accuracy is a problem then consider tuning the tick distance instead.
+        static const Float MIN_FLING_VELOCITY_TICKS_PER_SECOND;
+        static const Float MAX_FLING_VELOCITY_TICKS_PER_SECOND;
+
+        // Fling velocity decay factor applied after each new key is emitted.
+        // This parameter controls the deceleration and overall duration of the fling.
+        // The fling stops automatically when its velocity drops below the minimum
+        // fling velocity defined above.
+        static const Float FLING_TICK_DECAY;
+
+        /* The input device that we are tracking. */
+        ViewRootImpl* mHost;
+        Int32 mCurrentDeviceId;
+        Int32 mCurrentSource;
+        Boolean mCurrentDeviceSupported;
+
+        /* Configuration for the current input device. */
+
+        // The scaled tick distance.  A movement of this amount should generally translate
+        // into a single dpad event in a given direction.
+        Float mConfigTickDistance;
+
+        // The minimum and maximum scaled fling velocity.
+        Float mConfigMinFlingVelocity;
+        Float mConfigMaxFlingVelocity;
+
+        /* Tracking state. */
+
+        // The velocity tracker for detecting flings.
+        AutoPtr<IVelocityTracker> mVelocityTracker;
+
+        // The active pointer id, or -1 if none.
+        Int32 mActivePointerId;
+
+        // Location where tracking started.
+        Float mStartX;
+        Float mStartY;
+
+        // Most recently observed position.
+        Float mLastX;
+        Float mLastY;
+
+        // Accumulated movement delta since the last direction key was sent.
+        Float mAccumulatedX;
+        Float mAccumulatedY;
+
+        // Set to true if any movement was delivered to the app.
+        // Implies that tap slop was exceeded.
+        Boolean mConsumedMovement;
+
+        // The most recently sent key down event.
+        // The keycode remains set until the direction changes or a fling ends
+        // so that repeated key events may be generated as required.
+        Int64 mPendingKeyDownTime;
+        Int32 mPendingKeyCode;
+        Int32 mPendingKeyRepeatCount;
+        Int32 mPendingKeyMetaState;
+
+        // The current fling velocity while a fling is in progress.
+        Boolean mFlinging;
+        Float mFlingVelocity;
+
+        AutoPtr<Runnable> mFlingRunnable;
+    };
+
+    class SyntheticKeyboardHandler
+        : public Object
+    {
+    public:
+        SyntheticKeyboardHandler();
+
+        CARAPI Process(
+            /* [in] */ IKeyEvent* event);
+    };
+
+    class PropertiesRunnable
+        : public Runnable
+    {
+    public:
+        PropertiesRunnable(
+            /* [in] */ ViewRootImpl* host);
+
+        CARAPI Run();
+    private:
+        ViewRootImpl* mHost;
+    };
+
+    class SyntheticInputStage
+        : public InputStage
+    {
+    public:
+        SyntheticInputStage(
+            /* [in] */ ViewRootImpl* host);
+
+    protected:
+        CARAPI_(Int32) OnProcess(
+            /* [in] */ QueuedInputEvent* q);
+
+        CARAPI OnDeliverToNext(
+            /* [in] */ QueuedInputEvent* q);
+
+    private:
+        AutoPtr<SyntheticTrackballHandler> mTrackball;
+        AutoPtr<SyntheticJoystickHandler> mJoystick;
+        AutoPtr<SyntheticTouchNavigationHandler> mTouchNavigation;
+        AutoPtr<SyntheticKeyboardHandler> mKeyboard;
     };
 
 public:
@@ -468,7 +958,8 @@ public:
      * the thread.
      * @hide
      */
-    class RunQueue : public ElRefBase
+    class RunQueue
+        : public Object
     {
     public:
         CARAPI_(void) Post(
@@ -486,7 +977,7 @@ public:
 
     private:
         class HandlerAction
-            : public ElRefBase
+            : public Object
         {
         public:
             HandlerAction()
@@ -502,13 +993,43 @@ public:
         Object mLock;
     };
 
+    class ConsumeBatchedInputImmediatelyRunnable
+        : public Runnable
+    {
+    public:
+        ConsumeBatchedInputImmediatelyRunnable(
+            /* [in] */ ViewRootImpl* host);
+
+        CARAPI Run();
+    private:
+        ViewRootImpl* mHost;
+    };
+
+    class HighContrastTextManager
+        : public Object
+
+        , public IAccessibilityManagerHighTextContrastChangeListener
+    {
+    public:
+        HighContrastTextManager(
+            /* [in] */ ViewRootImpl* host);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnHighTextContrastStateChanged(
+            /* [in] */ Boolean enabled);
+
+    private:
+        ViewRootImpl* mHost;
+    };
+
 private:
     /**
      * Class for managing the accessibility interaction connection
      * based on the global accessibility state.
      */
     class AccessibilityInteractionConnectionManager
-        : public ElRefBase
+        : public Object
         , public IAccessibilityManagerAccessibilityStateChangeListener
     {
     public:
@@ -532,10 +1053,22 @@ private:
         : public Runnable
     {
     public:
+        SendWindowContentChangedAccessibilityEvent(
+            /* [in] */ ViewRootImpl* host);
+
         CARAPI Run();
+
+        CARAPI RunOrPost(
+            /* [in] */ IView* source,
+            /* [in] */ Int32 changeType);
 
     public:
         AutoPtr<IView> mSource;
+        Int64 mLastEventTimeMillis;
+
+    private:
+        ViewRootImpl* mHost;
+        Int32 mChangeTypes;
     };
 
     class RenderProfileRunnable : public Runnable
@@ -590,12 +1123,6 @@ public:
     static CARAPI_(AutoPtr<RunQueue>) GetRunQueue();
 
 private:
-     /**
-     * @return True if the application requests the use of a separate render thread,
-     *         FALSE otherwise
-     */
-    static Boolean IsRenderThreadRequested(
-        /* [in] */ IContext* context);
 
     /**
     * Figures out the measure spec for the root view in a window based on it's
@@ -650,51 +1177,38 @@ private:
         /* [in] */ ArrayOf<Int32>* info);
 
 public:
-    ViewRootImpl(
+
+    ViewRootImpl();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* ctx,
         /* [in] */ IDisplay* display);
 
-    ~ViewRootImpl();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    virtual ~ViewRootImpl();
 
     /**
     * Call this to profile the next traversal call.
     * FIXME for perf testing only. Remove eventually
     */
-    CARAPI_(void) Profile();
+    CARAPI Profile();
 
     CARAPI SetView(
         /* [in] */ IView* view,
         /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [in] */ IView* panelParentView);
 
-    CARAPI_(Boolean) AttachFunctor(
+
+    CARAPI DetachFunctor(
         /* [in] */ Int32 functor);
 
-    CARAPI_(void) DetachFunctor(
-        /* [in] */ Int32 functor);
-
-    CARAPI_(AutoPtr<IView>) GetView();
+    CARAPI GetView(
+        /* [out] */ IView** res);
 
     CARAPI RequestFitSystemWindows();
 
     CARAPI RequestLayout();
-
-    //in IViewParent
-    CARAPI RequestLayout();
-
-    CARAPI IsLayoutRequested(
-        /* [out] */ Boolean* result);
 
     //in IViewParent
     CARAPI IsLayoutRequested(
@@ -709,10 +1223,6 @@ public:
         /* [in] */ IRect* dirty,
         /* [out] */ IViewParent** parent);
 
-    CARAPI GetParent(
-        /* [out] */ IViewParent** parent);
-
-    //in IViewParent
     CARAPI GetParent(
         /* [out] */ IViewParent** parent);
 
@@ -738,19 +1248,20 @@ public:
      *
      * @hide
      */
-    CARAPI_(void) RequestTransitionStart(
+    CARAPI RequestTransitionStart(
         /* [in] */ ILayoutTransition* transition);
 
     CARAPI RequestTransparentRegion(
         /* [in] */ IView* child);
 
-    CARAPI_(void) OnHardwarePreDraw(
+    CARAPI OnHardwarePreDraw(
         /* [in] */ IHardwareCanvas* canvas);
 
-    CARAPI_(void) OnHardwarePostDraw(
+    CARAPI OnHardwarePostDraw(
         /* [in] */ IHardwareCanvas* canvas);
 
-    CARAPI_(AutoPtr<IAccessibilityNodeInfo>) GetAccessibilityFocusedVirtualView();
+    CARAPI GetAccessibilityFocusedVirtualView(
+        /* [out] */ IAccessibilityNodeInfo** res);
 
     CARAPI RequestChildFocus(
         /* [in] */ IView* child,
@@ -768,18 +1279,19 @@ public:
     CARAPI RecomputeViewAttributes(
         /* [in] */ IView* child);
 
-    CARAPI_(void) HandleDispatchSystemUiVisibilityChanged(
+    CARAPI HandleDispatchSystemUiVisibilityChanged(
         /* [in] */ SystemUiVisibilityInfo* args);
 
-    CARAPI_(void) HandleDispatchDoneAnimating();
+    CARAPI HandleDispatchDoneAnimating();
 
-    CARAPI_(void) GetLastTouchPoint(
+    CARAPI GetLastTouchPoint(
         /* [in] */ IPoint* outLocation);
 
-    CARAPI_(void) SetDragFocus(
+    CARAPI SetDragFocus(
         /* [in] */ IView* newDragTarget);
 
-    CARAPI_(AutoPtr<IAccessibilityInteractionController>) GetAccessibilityInteractionController();
+    CARAPI GetAccessibilityInteractionController(
+        /* [out] */ IAccessibilityInteractionController** res);
 
     CARAPI PlaySoundEffect(
         /* [in] */ Int32 effectId);
@@ -794,40 +1306,37 @@ public:
         /* [in] */ Int32 direction,
         /* [out */ IView** result);
 
-    //in IViewParent
-    CARAPI FocusSearch(
-        /* [in] */ IView* focused,
-        /* [in] */ Int32 direction,
-        /* [out */ IView** result);
+    CARAPI Debug();
 
-    CARAPI_(void) Debug();
-
-    CARAPI_(void) DumpGfxInfo(
+    CARAPI DumpGfxInfo(
         /* [in] */ ArrayOf<Int32>* info);
 
     CARAPI Die(
-        /* [in] */ Boolean immediate);
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(void) RequestUpdateConfiguration(
+    CARAPI RequestUpdateConfiguration(
         /* [in] */ IConfiguration* config);
 
-    CARAPI_(void) LoadSystemProperties();
+    CARAPI LoadSystemProperties();
 
-    CARAPI_(void) DispatchFinishInputConnection(
+    CARAPI DispatchFinishInputConnection(
         /* [in] */ IInputConnection* connection);
 
-    CARAPI_(void) DispatchResized(
+    CARAPI DispatchResized(
         /* [in] */ IRect* frame,
-        /* [in] */ IRect* coveredInsets,
+        /* [in] */ IRect* overscanInsets,
+        /* [in] */ IRect* contentInsets,
         /* [in] */ IRect* visibleInsets,
+        /* [in] */ IRect* stableInsets,
         /* [in] */ Boolean reportDraw,
         /* [in] */ IConfiguration* newConfig);
 
-    CARAPI_(void) DispatchMoved(
+    CARAPI DispatchMoved(
         /* [in] */ Int32 newX,
         /* [in] */ Int32 newY);
 
-    CARAPI_(void) DispatchInvalidateDelayed(
+    CARAPI DispatchInvalidateDelayed(
         /* [in] */ IView* view,
         /* [in] */ Int64 delayMilliseconds);
 
@@ -835,57 +1344,55 @@ public:
         /* [in] */ View::AttachInfo::InvalidateInfo* info,
         /* [in] */ Int64 delayMilliseconds);
 
-    CARAPI_(void) DispatchInvalidateOnAnimation(
+    CARAPI DispatchInvalidateOnAnimation(
         /* [in] */ IView* view);
 
     CARAPI_(void) DispatchInvalidateRectOnAnimation(
         /* [in] */ View::AttachInfo::InvalidateInfo* info);
 
-    CARAPI_(void) EnqueueDisplayList(
-        /* [in] */ IDisplayList* displayList);
-
-    CARAPI_(void) DequeueDisplayList(
-        /* [in] */ IDisplayList* displayList);
-
-    CARAPI_(void) CancelInvalidate(
+    CARAPI CancelInvalidate(
         /* [in] */ IView* view);
 
-    CARAPI_(void) DispatchKey(
+    CARAPI DispatchInputEvent(
+        /* [in] */ IInputEvent* event);
+
+    CARAPI DispatchInputEvent(
+        /* [in] */ IInputEvent* event,
+        /* [in] */ IInputEventReceiver* receiver);
+
+    CARAPI SynthesizeInputEvent(
+        /* [in] */ IInputEvent* event);
+
+    CARAPI DispatchKeyFromIme(
         /* [in] */ IKeyEvent* event);
 
-    CARAPI_(void) DispatchKeyFromIme(
-        /* [in] */ IKeyEvent* event);
+    CARAPI DispatchUnhandledInputEvent(
+        /* [in] */ IInputEvent* event);
 
-    CARAPI_(void) DispatchUnhandledKey(
-        /* [in] */ IKeyEvent* event);
-
-    CARAPI_(void) DispatchAppVisibility(
+    CARAPI DispatchAppVisibility(
         /* [in] */ Boolean visible);
 
-    CARAPI_(void) DispatchScreenStateChange(
-        /* [ijn] */ Boolean on);
+    CARAPI DispatchGetNewSurface();
 
-    CARAPI_(void) DispatchGetNewSurface();
-
-    CARAPI_(void) WindowFocusChanged(
+    CARAPI WindowFocusChanged(
         /* [in] */ Boolean hasFocus,
         /* [in] */ Boolean inTouchMode);
 
-    CARAPI_(void) DispatchCloseSystemDialogs(
+    CARAPI DispatchCloseSystemDialogs(
         /* [in] */ const String& reason);
 
-    CARAPI_(void) DispatchDragEvent(
+    CARAPI DispatchDragEvent(
         /* [in] */ IDragEvent* event);
 
-    CARAPI_(void) DispatchSystemUiVisibilityChanged(
+    CARAPI DispatchSystemUiVisibilityChanged(
         /* [in] */ Int32 seq,
         /* [in] */ Int32 globalVisibility,
         /* [in] */ Int32 localValue,
         /* [in] */ Int32 localChanges);
 
-    CARAPI_(void) DispatchDoneAnimating();
+    CARAPI DispatchDoneAnimating();
 
-    CARAPI_(void) DispatchCheckFocus();
+    CARAPI DispatchCheckFocus();
 
     CARAPI StartActionModeForChild(
         /* [in] */ IView* originalView,
@@ -899,9 +1406,6 @@ public:
     CARAPI CreateContextMenu(
         /* [in] */ IContextMenu* menu);
 
-    CARAPI_(void) CreateContextMenu(
-        /* [in] */ IContextMenu* menu);
-
     CARAPI ChildDrawableStateChanged(
         /* [in] */ IView* child);
 
@@ -910,12 +1414,84 @@ public:
         /* [in] */ IAccessibilityEvent* event,
         /* [out] */ Boolean* res);
 
-    CARAPI ChildAccessibilityStateChanged(
-        /* [in] */ IView* child);
+    CARAPI NotifySubtreeAccessibilityStateChanged(
+        /* [in] */ IView* child,
+        /* [in] */ IView* source,
+        /* [in] */ Int32 changeType);
 
-    CARAPI_(CARAPI) ChildHasTransientStateChanged(
+    CARAPI CanResolveLayoutDirection(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsLayoutDirectionResolved(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetLayoutDirection(
+        /* [out] */ Int32* result);
+
+    CARAPI CanResolveTextDirection(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsTextDirectionResolved(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetTextDirection(
+        /* [out] */ Int32* result);
+
+    CARAPI CanResolveTextAlignment(
+        /* [out] */ Boolean* result);
+
+    CARAPI IsTextAlignmentResolved(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetTextAlignment(
+        /* [out] */ Int32* result);
+
+    CARAPI ChildHasTransientStateChanged(
         /* [in] */ IView* child,
         /* [in] */ Boolean hasTransientState);
+
+    CARAPI OnStartNestedScroll(
+        /* [in] */ IView* child,
+        /* [in] */ IView* target,
+        /* [in] */ Int32 nestedScrollAxes,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnStopNestedScroll(
+        /* [in] */ IView* target);
+
+    CARAPI OnNestedScrollAccepted(
+        /* [in] */ IView* child,
+        /* [in] */ IView* target,
+        /* [in] */ Int32 nestedScrollAxes);
+
+    CARAPI OnNestedScroll(
+        /* [in] */ IView* target,
+        /* [in] */ Int32 dxConsumed,
+        /* [in] */ Int32 dyConsumed,
+        /* [in] */ Int32 dxUnconsumed,
+        /* [in] */ Int32 dyUnconsumed);
+
+    CARAPI OnNestedPreScroll(
+        /* [in] */ IView* target,
+        /* [in] */ Int32 dx,
+        /* [in] */ Int32 dy,
+        /* [in] */ ArrayOf<Int32> * consumed);
+
+    CARAPI OnNestedFling(
+        /* [in] */ IView* target,
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [in] */ Boolean consumed,
+        /* [out] */ Boolean* result);
+
+    CARAPI OnNestedPreFling(
+        /* [in] */ IView* target,
+        /* [in] */ Float velocityX,
+        /* [in] */ Float velocityY,
+        /* [out] */ Boolean* result);
+
+    CARAPI ChangeCanvasOpacity(
+        /* [in] */ Boolean opaque);
 
     CARAPI RequestDisallowInterceptTouchEvent(
         /* [in] */ Boolean disallowIntercept);
@@ -926,57 +1502,141 @@ public:
         /* [in] */ Boolean immediate,
         /* [out] */ Boolean* result);
 
-    CARAPI_(AutoPtr<IView>) GetAccessibilityFocusedHost();
+    CARAPI GetAccessibilityFocusedHost(
+        /* [out] */ IView** res);
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
 
-protected:
-    CARAPI_(void) DestroyHardwareResources();
+    CARAPI DetachFunctor(
+        /* [in] */ Int64 functor);
 
-    CARAPI_(void) TerminateHardwareResources();
+    CARAPI InvokeFunctor(
+        /* [in] */ Int64 functor,
+        /* [in] */ Boolean waitForCompletion);
 
-    CARAPI_(void) DestroyHardwareLayers();
+    CARAPI RegisterAnimatingRenderNode(
+        /* [in] */ IRenderNode* animator);
 
-    CARAPI_(void) PushHardwareLayerUpdate(
-        /* [in] */ IHardwareLayer* layer);
+    CARAPI NotifyRendererOfFramePending();
 
-    CARAPI_(void) SetLayoutParams(
+    CARAPI TransformMatrixToGlobal(
+        /* [in] */ IMatrix* m);
+
+    CARAPI TransformMatrixToLocal(
+        /* [in] */ IMatrix* m);
+
+    CARAPI DispatchApplyInsets(
+        /* [in] */ IView* host);
+
+    CARAPI SetDrawDuringWindowsAnimating(
+        /* [in] */ Boolean value);
+
+    CARAPI Dump(
+        /* [in] */ String prefix,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IPrintWriter* writer,
+        /* [in] */ ArrayOf<String> * args);
+
+    static CARAPI_(Boolean) IsTerminalInputEvent(
+        /* [in] */ IInputEvent* event);
+
+    CARAPI ScheduleConsumeBatchedInputImmediately();
+
+    CARAPI DestroyHardwareResources();
+
+    CARAPI SetLayoutParams(
         /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [in] */ Boolean newView);
 
-    CARAPI_(void) HandleAppVisibility(
+    CARAPI HandleAppVisibility(
         /* [in] */ Boolean visible);
 
-    CARAPI_(void) HandleGetNewSurface();
+    CARAPI HandleGetNewSurface();
 
-    CARAPI_(void) HandleScreenStateChange(
-        /* [in] */ Boolean on);
+    CARAPI Invalidate();
 
-    CARAPI_(void) Invalidate();
-
-    CARAPI_(void) InvalidateWorld(
+    CARAPI InvalidateWorld(
         /* [in] */ IView* view);
 
-    CARAPI_(void) SetStopped(
+    CARAPI SetStopped(
         /* [in] */ Boolean stopped);
 
-    CARAPI_(Int32) GetHostVisibility();
+    CARAPI GetHostVisibility(
+        /* [out] */ Int32* res);
 
-    CARAPI_(void) DisposeResizeBuffer();
+    CARAPI DisposeResizeBuffer();
 
-    CARAPI_(void) ScheduleTraversals();
+    CARAPI ScheduleTraversals();
 
-    CARAPI_(void) UnscheduleTraversals();
+    CARAPI UnscheduleTraversals();
 
-    CARAPI_(void) DoTraversal();
+    CARAPI DoTraversal();
 
-    CARAPI_(Boolean) ScrollToRectOrFocus(
+    CARAPI ScrollToRectOrFocus(
         /* [in] */ IRect* rectangle,
-        /* [in] */ Boolean immediate);
+        /* [in] */ Boolean immediate,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(void) OutputDisplayList(
+    CARAPI OutputDisplayList(
         /* [in] */ IView* view);
+
+    CARAPI SetAccessibilityFocus(
+        /* [in] */ IView* view,
+        /* [in] */ IAccessibilityNodeInfo* node);
+
+    CARAPI DispatchDetachedFromWindow();
+
+    CARAPI UpdateConfiguration(
+        /* [in] */ IConfiguration* config,
+        /* [in] */ Boolean force);
+
+    /**
+    * Something in the current window tells us we need to change the touch mode.  For
+    * example, we are not in touch mode, and the user touches the screen.
+    *
+    * If the touch mode has changed, tell the window manager, and handle it locally.
+    *
+    * @param inTouchMode Whether we want to be in touch mode.
+    * @return True if the touch mode changed and focus changed was changed as a result
+    */
+    CARAPI EnsureTouchMode(
+        /* [in] */ Boolean inTouchMode,
+        /* [out] */ Boolean* res);
+
+    CARAPI SetLocalDragState(
+        /* [in] */ IInterface* obj);
+
+    CARAPI EnqueueInputEvent(
+        /* [in] */ IInputEvent* event);
+
+    CARAPI EnqueueInputEvent(
+        /* [in] */ IInputEvent* event,
+        /* [in] */ IInputEventReceiver* receiver,
+        /* [in] */ Int32 flags,
+        /* [in] */ Boolean processImmediately);
+
+    CARAPI DoProcessInputEvents();
+
+    CARAPI ScheduleConsumeBatchedInput();
+
+    CARAPI UnscheduleConsumeBatchedInput();
+
+    CARAPI DoConsumeBatchedInput(
+        /* [in] */ Int64 frameTimeNanos);
+
+    CARAPI DoDie();
+
+    CARAPI CheckThread();
+
+    CARAPI IsInLayout(
+        /* [out] */ Boolean* res);
+
+    CARAPI RequestLayoutDuringLayout(
+        /* [in] */ IView* view,
+        /* [out] */ Boolean* res);
+
+protected:
 
     /**
      * @see #PROPERTY_PROFILE_RENDERING
@@ -991,76 +1651,18 @@ protected:
      */
     CARAPI_(void) TrackFPS();
 
-    CARAPI_(void) InvalidateDisplayLists();
-
-    CARAPI_(void) SetAccessibilityFocus(
-        /* [in] */ IView* view,
-        /* [in] */ IAccessibilityNodeInfo* node);
-
-    CARAPI_(void) DispatchDetachedFromWindow();
-
-    CARAPI_(void) UpdateConfiguration(
-        /* [in] */ IConfiguration* config,
-        /* [in] */ Boolean force);
-
-    /**
-    * Something in the current window tells us we need to change the touch mode.  For
-    * example, we are not in touch mode, and the user touches the screen.
-    *
-    * If the touch mode has changed, tell the window manager, and handle it locally.
-    *
-    * @param inTouchMode Whether we want to be in touch mode.
-    * @return True if the touch mode changed and focus changed was changed as a result
-    */
-    CARAPI_(Boolean) EnsureTouchMode(
-        /* [in] */ Boolean inTouchMode);
-
-    CARAPI_(void) HandleImeFinishedEvent(
-        /* [in] */ Int32 seq,
-        /* [in] */ Boolean handled);
-
-    CARAPI_(void) SetLocalDragState(
-        /* [in] */ IInterface* obj);
-
-    CARAPI_(void) EnqueueInputEvent(
-        /* [in] */ IInputEvent* event);
-
-    CARAPI_(void) EnqueueInputEvent(
-        /* [in] */ IInputEvent* event,
-        /* [in] */ InputEventReceiver* receiver,
-        /* [in] */ Int32 flags,
-        /* [in] */ Boolean processImmediately);
-
-    CARAPI_(void) DoProcessInputEvents();
-
-    CARAPI_(void) ScheduleConsumeBatchedInput();
-
-    CARAPI_(void) UnscheduleConsumeBatchedInput();
-
-    CARAPI_(void) DoConsumeBatchedInput(
-        /* [in] */ Int64 frameTimeNanos);
-
-    CARAPI DoDie();
-
-    CARAPI_(void) DispatchImeFinishedEvent(
-        /* [in] */ Int32 seq,
-        /* [in] */ Boolean handled);
-
-    CARAPI CheckThread();
-
 private:
     CARAPI_(void) EnableHardwareAcceleration(
-        /* [in] */ IContext* context,
         /* [in] */ IWindowManagerLayoutParams* attrs);
 
     CARAPI_(void) ApplyKeepScreenOnFlag(
-        /* [in] */ CWindowManagerLayoutParams* params);
+        /* [in] */ IWindowManagerLayoutParams* params);
 
     CARAPI_(Boolean) CollectViewAttributes();
 
     CARAPI_(Boolean) MeasureHierarchy(
         /* [in] */ View* host,
-        /* [in] */ CWindowManagerLayoutParams* lp,
+        /* [in] */ IWindowManagerLayoutParams* lp,
         /* [in] */ IResources* res,
         /* [in] */ Int32 desiredWindowWidth,
         /* [in] */ Int32 desiredWindowHeight);
@@ -1071,7 +1673,10 @@ private:
         /* [in] */ Int32 childWidthMeasureSpec,
         /* [in] */ Int32 childHeightMeasureSpec);
 
-    CARAPI_(void) PerformLayout();
+    CARAPI_(void) PerformLayout(
+        /* [in] */ IWindowManagerLayoutParams* lp,
+        /* [in] */ Int32 desiredWindowWidth,
+        /* [in] */ Int32 desiredWindowHeight);
 
     CARAPI_(void) Draw(
         /* [in] */ Boolean fullRedrawNeeded);
@@ -1082,24 +1687,13 @@ private:
     CARAPI_(Boolean) DrawSoftware(
         /* [in] */ ISurface* surface,
         /* [in] */ View::AttachInfo* attachInfo,
+        /* [in] */ Int32 xoff,
         /* [in] */ Int32 yoff,
         /* [in] */ Boolean scalingRequired,
         /* [in] */ CRect* dirty);
 
-    /**
-     * We want to draw a highlight around the current accessibility focused.
-     * Since adding a style for all possible view is not a viable option we
-     * have this specialized drawing method.
-     *
-     * Note: We are doing this here to be able to draw the highlight for
-     *       virtual views in addition to real ones.
-     *
-     * @param canvas The canvas on which to draw.
-     */
-    CARAPI_(void) DrawAccessibilityFocusedDrawableIfNeeded(
-        /* [in] */ ICanvas* canvas);
-
-    CARAPI_(AutoPtr<IDrawable>) GetAccessibilityFocusedDrawable();
+    CARAPI GetAccessibilityFocusedDrawable(
+        /* [out] */ IDrawable** res);
 
     /**
     * Ensure that the touch mode for this window is set, and if it is changing,
@@ -1117,25 +1711,6 @@ private:
     CARAPI_(void) DeliverInputEvent(
         /* [in] */ QueuedInputEvent* q);
 
-    CARAPI_(void) DeliverPointerEvent(
-        /* [in] */ QueuedInputEvent* q);
-
-    CARAPI_(void) DeliverTrackballEvent(
-        /* [in] */ QueuedInputEvent* q);
-
-    CARAPI_(void) DeliverTrackballEventPostIme(
-        /* [in] */ QueuedInputEvent* q);
-
-    CARAPI_(void) DeliverGenericMotionEvent(
-        /* [in] */ QueuedInputEvent* q);
-
-    CARAPI_(void) DeliverGenericMotionEventPostIme(
-        /* [in] */ QueuedInputEvent* q);
-
-    CARAPI_(void) UpdateJoystickDirection(
-        /* [in] */ IMotionEvent* event,
-        /* [in] */ Boolean synthesizeNewKeys);
-
     /**
     * See if the key event means we should leave touch mode (and leave touch
     * mode if so).
@@ -1146,19 +1721,13 @@ private:
     CARAPI_(Boolean) CheckForLeavingTouchModeAndConsume(
         /* [in] */ IKeyEvent* event);
 
-    CARAPI_(void) DeliverKeyEvent(
-        /* [in] */ QueuedInputEvent* q);
-
-    CARAPI_(void) DeliverKeyEventPostIme(
-        /* [in] */ QueuedInputEvent* q);
-
     CARAPI_(void) HandleDragEvent(
         /* [in] */ IDragEvent* event);
 
     CARAPI_(AutoPtr<IAudioManager>) GetAudioManager();
 
     CARAPI_(Int32) RelayoutWindow(
-        /* [in] */ CWindowManagerLayoutParams* params,
+        /* [in] */ IWindowManagerLayoutParams* params,
         /* [in] */ Int32 viewVisibility,
         /* [in] */ Boolean insetsPending);
 
@@ -1166,7 +1735,7 @@ private:
 
     CARAPI_(AutoPtr<QueuedInputEvent>) ObtainQueuedInputEvent(
         /* [in] */ IInputEvent* event,
-        /* [in] */ InputEventReceiver* receiver,
+        /* [in] */ IInputEventReceiver* receiver,
         /* [in] */ Int32 flags);
 
     CARAPI_(void) RecycleQueuedInputEvent(
@@ -1175,8 +1744,7 @@ private:
     CARAPI_(void) ScheduleProcessInputEvents();
 
     CARAPI FinishInputEvent(
-        /* [in] */ QueuedInputEvent* q,
-        /* [in] */ Boolean handled);
+        /* [in] */ QueuedInputEvent* q);
 
     /**
      * Post a callback to send a
@@ -1185,7 +1753,8 @@ private:
      * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}.
      */
     CARAPI_(void) PostSendWindowContentChangedCallback(
-        /* [in] */ IView* source);
+        /* [in] */ IView* source,
+        /* [in] */ Int32 changeType);
 
     /**
      * Remove a posted callback to send a
@@ -1204,30 +1773,39 @@ private:
     CARAPI_(void) LogView(
         /* [in] */ const String& info = String(""));
 
+    CARAPI_(Boolean) IsInLocalFocusMode();
+
+    CARAPI_(Int32) GetImpliedSystemUiVisibility(
+        /* [in] */ IWindowManagerLayoutParams* params);
+
+    CARAPI_(void) HandleOutOfResourcesException(
+        /* [in] */ ECode ec);
+
+    CARAPI_(AutoPtr<IArrayList>) GetValidLayoutRequesters(
+        /* [in] */ IArrayList* layoutRequesters,
+        /* [in] */ Boolean secondLayoutRequests);
+
+    CARAPI_(void) DumpViewHierarchy(
+        /* [in] */ String prefix,
+        /* [in] */ IPrintWriter* writer,
+        /* [in] */ IView* view);
+
 public:
     AutoPtr<IWindowSession> mWindowSession;
     AutoPtr<IDisplay> mDisplay;
 
-    Int32 mLastTrackballTime;
-    AutoPtr<TrackballAxis> mTrackballAxisX;
-    AutoPtr<TrackballAxis> mTrackballAxisY;
-
-    Int32 mLastJoystickXDirection;
-    Int32 mLastJoystickYDirection;
-    Int32 mLastJoystickXKeyCode;
-    Int32 mLastJoystickYKeyCode;
+    AutoPtr<IDisplayManager> mDisplayManager;
+    String mBasePackageName;
 
     Int32 mTmpLocation[2];
 
     AutoPtr<ITypedValue> mTmpValue;
 
-    AutoPtr<InputMethodCallback> mInputMethodCallback;
-
-    Int32 mThreadID; // final Thread mThread;
+    //AutoPtr<IThread> mThread; // final Thread mThread;
 
     // final WindowLeaked mLocation;
 
-    AutoPtr<CWindowManagerLayoutParams> mWindowAttributes;
+    AutoPtr<IWindowManagerLayoutParams> mWindowAttributes;
 
     AutoPtr<IIWindow> mWindow;
 
@@ -1236,9 +1814,6 @@ public:
     Int32 mSeq;
 
     AutoPtr<IView> mView;
-    AutoPtr<IView> mFocusedView;
-    AutoPtr<IView> mRealFocusedView;  // this is not set to null in touch mode
-    AutoPtr<IView> mOldFocusedView;
 
     AutoPtr<IView> mAccessibilityFocusedHost;
     AutoPtr<IAccessibilityNodeInfo> mAccessibilityFocusedVirtualView;
@@ -1254,7 +1829,7 @@ public:
     Boolean mLastInCompatMode;
 
     AutoPtr<ISurfaceHolderCallback2> mSurfaceHolderCallback;
-    AutoPtr<BaseSurfaceHolder> mSurfaceHolder;
+    AutoPtr<TakenSurfaceHolder> mSurfaceHolder;
     Boolean mIsCreating;
     Boolean mDrawingAllowed;
 
@@ -1264,8 +1839,6 @@ public:
     Int32 mWidth;
     Int32 mHeight;
     AutoPtr<CRect> mDirty;    // will be a graphics.Region soon
-    AutoPtr<CRect> mCurrentDirty;
-    AutoPtr<CRect> mPreviousDirty;
     Boolean mIsAnimating;
 
     AutoPtr<ICompatibilityInfoTranslator> mTranslator;
@@ -1286,7 +1859,7 @@ public:
     /** Set to true while in performTraversals for detecting when die(true) is called from internal
      * callbacks such as onMeasure, onPreDraw, onDraw and deferring doDie() until later. */
     Boolean mIsInTraversal;
-    Boolean mFitSystemWindowsRequested;
+    Boolean mApplyInsetsRequested;
     Boolean mLayoutRequested;
     Boolean mFirst;
     Boolean mReportNextDraw;
@@ -1295,14 +1868,24 @@ public:
     Boolean mHasHadWindowFocus;
     Boolean mLastWasImTarget;
     Boolean mWindowsAnimating;
+    Boolean mDrawDuringWindowsAnimating;
     Boolean mIsDrawing;
     Int32 mLastSystemUiVisibility;
     Int32 mClientWindowLayoutFlags;
+    Boolean mLastOverscanRequested;
 
     // Input event queue.
-    AutoPtr<QueuedInputEvent> mFirstPendingInputEvent;
-    AutoPtr<QueuedInputEvent> mCurrentInputEvent;
+    AutoPtr<QueuedInputEvent> mPendingInputEventHead;
+    AutoPtr<QueuedInputEvent> mPendingInputEventTail;
+    Int32 mPendingInputEventCount;
     Boolean mProcessInputEventsScheduled;
+
+    Boolean mUnbufferedInputDispatch;
+    String mPendingInputEventQueueLengthCounterName;// = "pq";
+
+    AutoPtr<InputStage> mFirstInputStage;
+    AutoPtr<InputStage> mFirstPostImeInputStage;
+    AutoPtr<InputStage> mSyntheticInputStage;
 
     Boolean mWindowAttributesChanged;
     Int32 mWindowAttributesChangesFlag;
@@ -1310,33 +1893,40 @@ public:
     Boolean mAdded;
     Boolean mAddedTouchMode;
 
-    AutoPtr<ICompatibilityInfoHolder> mCompatibilityInfo;
+    AutoPtr<IDisplayAdjustments> mDisplayAdjustments;
 
     // These are accessed by multiple threads.
     AutoPtr<CRect> mWinFrame; // frame given by window manager.
-
+    AutoPtr<CRect> mPendingOverscanInsets;
     AutoPtr<CRect> mPendingVisibleInsets;
+    AutoPtr<CRect> mPendingStableInsets;
     AutoPtr<CRect> mPendingContentInsets;
 
     AutoPtr<IInternalInsetsInfo> mLastGivenInsets;
 
-    AutoPtr<CRect> mFitSystemWindowsInsets;
+    AutoPtr<CRect> mDispatchContentInsets;
+    AutoPtr<CRect> mDispatchStableInsets;
 
     AutoPtr<IConfiguration> mLastConfiguration;
     AutoPtr<IConfiguration> mPendingConfiguration;
 
     Boolean mScrollMayChange;
     Int32 mSoftInputMode;
-    AutoPtr<IView> mLastScrolledFocus;
+    AutoPtr<IWeakReference> mLastScrolledFocus;
     Int32 mScrollY;
     Int32 mCurScrollY;
-    AutoPtr<CScroller> mScroller;
+    AutoPtr<IScroller> mScroller;
 
     AutoPtr<IHardwareLayer> mResizeBuffer;
     Int64 mResizeBufferStartTime;
     Int32 mResizeBufferDuration;
 
-    AutoPtr<CViewConfiguration> mViewConfiguration;
+    // Used to block the creation of the ResizeBuffer due to invalidations in
+    // the previous DisplayList tree that must prevent re-execution.
+    // Currently this means a functor was detached.
+    Boolean mBlockResizeBuffer;
+
+    AutoPtr<IViewConfiguration> mViewConfiguration;
 
     /* Drag/drop */
     AutoPtr<IClipDescription> mDragDescription;
@@ -1356,10 +1946,13 @@ public:
 
     AutoPtr<AccessibilityInteractionConnectionManager> mAccessibilityInteractionConnectionManager;
 
+    AutoPtr<HighContrastTextManager> mHighContrastTextManager;
+
     AutoPtr<SendWindowContentChangedAccessibilityEvent> mSendWindowContentChangedAccessibilityEvent;
 
-    HashSet<AutoPtr<IView> > mTempHashSet;
+    //HashSet<AutoPtr<IView> > mTempHashSet;
 
+    Int32 mHardwareXOffset;
     Int32 mHardwareYOffset;
     Int32 mResizeAlpha;
     AutoPtr<IPaint> mResizePaint;
@@ -1374,8 +1967,11 @@ public:
 
     AutoPtr<InvalidateOnAnimationRunnable> mInvalidateOnAnimationRunnable;
 
+    AutoPtr<ConsumeBatchedInputImmediatelyRunnable> mConsumeBatchedInputImmediatelyRunnable;
+    Boolean mConsumeBatchedInputImmediatelyScheduled;
+
 protected:
-    AutoPtr<InputEventConsistencyVerifier> mInputEventConsistencyVerifier;
+    AutoPtr<IInputEventConsistencyVerifier> mInputEventConsistencyVerifier;
 
 private:
     friend class CAccessibilityInteractionController;
@@ -1385,33 +1981,43 @@ private:
 
     // These can be accessed by any thread, must be protected with a lock.
     // Surface can never be reassigned or cleared (use Surface.clear()).
-    AutoPtr<CSurface> mSurface;
+    AutoPtr<ISurface> mSurface;
 
     List<AutoPtr<ILayoutTransition> > mPendingTransitions;
 
     Boolean mProfileRendering;
-    AutoPtr<IThread> mRenderProfiler;
-    volatile Boolean mRenderProfilingEnabled;
+    AutoPtr<IFrameCallback> mRenderProfiler;
+    Boolean mRenderProfilingEnabled;
+    Boolean mMediaDisabled;
 
     // Variables to track frames per second, enabled via DEBUG_FPS flag
     Int64 mFpsStartTime;
     Int64 mFpsPrevTime;
     Int32 mFpsNumFrames;
 
-    List<AutoPtr<IDisplayList> > mDisplayLists;
-
     Int32 mDensity;
     Int32 mNoncompatDensity;
 
+    Boolean mInLayout;
+    AutoPtr<IArrayList> mLayoutRequesters;
+    Boolean mHandlingLayoutInLayoutRequest;
+
     Int32 mViewLayoutDirectionInitial;
+
+    /** Set to true once doDie() has been called. */
+    Boolean mRemoved;
+
+    Boolean mIsEmulator;
+    Boolean mIsCircularEmulator;
+    Boolean mWindowIsRound;
 
     // FIXME for perf testing only
     Boolean mProfile;
 
-    AutoPtr<CSurfaceHolder> mHolder;
-
     AutoPtr<ViewRootHandler> mHandler;
     Object mSyncLock;
+
+    AutoPtr<RootDisplayListener> mDisplayListener;
 };
 
 } // namespace View

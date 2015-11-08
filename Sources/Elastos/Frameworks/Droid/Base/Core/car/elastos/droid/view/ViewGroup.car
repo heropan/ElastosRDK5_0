@@ -9,6 +9,7 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ICanvas;
+    interface Elastos.Droid.Graphics.IPaint;
     interface Elastos.Droid.Utility.IAttributeSet;
 
     namespace Elastos {
@@ -139,7 +140,8 @@ module
              */
             OnDebugDraw(
                 [in] IView* view,
-                [in] ICanvas* canvas);
+                [in] ICanvas* canvas,
+                [in] IPaint* paint);
         }
 
         /**

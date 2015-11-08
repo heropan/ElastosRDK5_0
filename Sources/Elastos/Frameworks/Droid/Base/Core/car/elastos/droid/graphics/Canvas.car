@@ -88,6 +88,17 @@ module
          */
         const Int32 MATRIX_SAVE_FLAG = 0x01;
 
+        /** @hide */
+        IsRecordingFor(
+            [in] IInterface* it,
+            [out] Boolean* res);
+
+        /** @hide */
+        InsertReorderBarrier();
+
+        /** @hide */
+        InsertInorderBarrier();
+
         /**
          * Modify the current clip with the specified path.
          *

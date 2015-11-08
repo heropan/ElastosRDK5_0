@@ -40,6 +40,10 @@ public:
     virtual ~Canvas();
 
 public:
+    virtual CARAPI IsRecordingFor(
+        /* [in] */ IInterface* it,
+        /* [out] */ Boolean* res);
+
     virtual CARAPI IsHardwareAccelerated(
         /* [out] */ Boolean* isAccelerated);
 

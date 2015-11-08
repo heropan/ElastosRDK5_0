@@ -30,9 +30,9 @@ module
      * the IME has been finished.
      * @hide
      */
-    interface IInputMethodManagerFinishedEventCallback {
-        FinishedEvent(
-            [in] Int32 seq,
+    interface IInputMethodManagerFinishedInputEventCallback {
+        OnFinishedInputEvent(
+            [in] IInterface* seq,
             [in] Boolean handled);
     }
 
@@ -433,7 +433,7 @@ module
         /**
          * Request to hide the soft input window from the context of the window
          * that is currently accepting input.  This should be called as a result
-         * of the user doing some actually than fairly explicitly requests to
+         * of the user  doing some actually than fairly explicitly requests to
          * have the input window hidden.
          *
          * @param windowToken The token of the window that is making the request,
@@ -680,7 +680,7 @@ module
             [in] IContext* ctx,
             [in] Int32 seq,
             [in] IKeyEvent* key,
-            [in] IInputMethodManagerFinishedEventCallback* cback);
+            [in] IInputMethodManagerFinishedInputEventCallback* cback);
 
         /**
          * @hide
@@ -689,7 +689,7 @@ module
             [in] IContext* ctx,
             [in] Int32 seq,
             [in] IMotionEvent* motion,
-            [in] IInputMethodManagerFinishedEventCallback* cb);
+            [in] IInputMethodManagerFinishedInputEventCallback* cb);
 
         /**
          * @hide
@@ -698,7 +698,7 @@ module
             [in] IContext* ctx,
             [in] Int32 seq,
             [in] IMotionEvent* motion,
-            [in] IInputMethodManagerFinishedEventCallback* cb);
+            [in] IInputMethodManagerFinishedInputEventCallback* cb);
 
         ShowInputMethodPicker();
 
