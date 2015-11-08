@@ -32,6 +32,9 @@ CAccessibilityEvent::CAccessibilityEvent()
     , mContentChangeTypes(0)
 {}
 
+CAccessibilityEvent::~CAccessibilityEvent()
+{}
+
 ECode CAccessibilityEvent::constructor()
 {
     return NOERROR;

@@ -88,6 +88,17 @@ CAccessibilityInteractionClient::~CAccessibilityInteractionClient()
 {
 }
 
+ECode CAccessibilityInteractionClient::constructor()
+{
+    return NOERROR;
+}
+
+ECode CAccessibilityInteractionClient::ToString(
+    /* [out] */ String* str)
+{
+    return NOERROR;
+}
+
 AutoPtr<IAccessibilityInteractionClient> CAccessibilityInteractionClient::GetInstance()
 {
     Int64 threadId;
@@ -314,7 +325,7 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByViewId(
     /* [in] */ Int32 connectionId,
     /* [in] */ Int32 accessibilityWindowId,
     /* [in] */ Int64 accessibilityNodeId,
-    /* [in] */ String viewId,
+    /* [in] */ const String& viewId,
     /* [out] */ IList** list)
 {
     VALIDATE_NOT_NULL(list);

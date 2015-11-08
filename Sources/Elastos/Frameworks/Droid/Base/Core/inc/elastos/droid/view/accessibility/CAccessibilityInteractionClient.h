@@ -38,6 +38,8 @@ public:
 
     ~CAccessibilityInteractionClient();
 
+    CARAPI constructor();
+
     /**
      * @return The client for the current thread.
      */
@@ -140,7 +142,7 @@ public:
         /* [in] */ Int32 connectionId,
         /* [in] */ Int32 accessibilityWindowId,
         /* [in] */ Int64 accessibilityNodeId,
-        /* [in] */ String viewId,
+        /* [in] */ const String& viewId,
         /* [out] */ IList** list);
 
     /**
@@ -316,6 +318,9 @@ public:
      */
     CARAPI RemoveConnection(
         /* [in] */ Int32 connectionId);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     /**
