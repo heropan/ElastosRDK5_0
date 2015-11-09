@@ -97,9 +97,9 @@ SOURCES += CUserManagerHelper.cpp
 SOURCES += Vibrator.cpp
 SOURCES += CWorkSource.cpp
 
-#SOURCES += BinderProxy.cpp
+SOURCES += BinderProxy.cpp
 #SOURCES += CBinderDeathRecipient.cpp
-#SOURCES += NativeBinder.cpp
+SOURCES += NativeBinder.cpp
 #SOURCES += CProcessStats.cpp
 #SOURCES += ZygoteConnection.cpp
 #SOURCES += CPkgUsageStats.cpp

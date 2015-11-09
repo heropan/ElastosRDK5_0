@@ -3,6 +3,9 @@
 #include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/os/BinderProxy.h"
 #include <binder/Binder.h>
+#include <elastos/core/AutoLock.h>
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -140,10 +143,8 @@ android::sp<android::IBinder> IBinderForDroidObject(IBinder* obj)
 {
     if (obj == NULL) return NULL;
 
-    if (obj->Probe(EIID_Binder) != NULL) {
-        DroidBBinderHolder* dbh = (DroidBBinderHolder*)((CBinder*)obj)->mObject;
-        return dbh != NULL ? dbh->get(obj) : NULL;
-    }
+    DroidBBinderHolder* dbh = (DroidBBinderHolder*)((CBinder*)obj)->mObject;
+    return dbh != NULL ? dbh->get(obj) : NULL;
 
     if (obj->Probe(EIID_BinderProxy) != NULL) {
         return (android::IBinder*)((BinderProxy*)obj)->mObject;

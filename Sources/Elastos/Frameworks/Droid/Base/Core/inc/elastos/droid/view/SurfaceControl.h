@@ -3,6 +3,9 @@
 
 #include "elastos/droid/view/Surface.h"
 
+using Elastos::Droid::Graphics::IRegion;
+using Elastos::Droid::Graphics::IBitmap;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -70,15 +73,18 @@ public:
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 mode);
 
-    static CARAPI_(AutoPtr<ArrayOf<IPhysicalDisplayInfo*> >) GetDisplayConfigs(
-        /* [in] */ IBinder* displayToken);
-
-    static CARAPI_(Int32) GetActiveConfig(
-        /* [in] */ IBinder* displayToken);
-
-    static CARAPI_(Boolean) SetActiveConfig(
+    static CARAPI GetDisplayConfigs(
         /* [in] */ IBinder* displayToken,
-        /* [in] */ Int32 id);
+        /* [out] */ ArrayOf<IPhysicalDisplayInfo*>** infos);
+
+    static CARAPI GetActiveConfig(
+        /* [in] */ IBinder* displayToken,
+        /* [out] */ Int32* res);
+
+    static CARAPI SetActiveConfig(
+        /* [in] */ IBinder* displayToken,
+        /* [in] */ Int32 id,
+        /* [out] */ Boolean* res);
 
     static CARAPI SetDisplayProjection(
         /* [in] */ IBinder* displayToken,
@@ -100,7 +106,7 @@ public:
         /* [in] */ Int32 height);
 
     static CARAPI CreateDisplay(
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Boolean secure,
         /* [out] */ IBinder** token);
 
@@ -191,7 +197,7 @@ public:
      * if an error occurs. Make sure to call Bitmap.recycle() as soon as
      * possible, once its content is not needed anymore.
      */
-    static CARAPI_(AutoPtr<Bitmap>) Screenshot(
+    static CARAPI_(AutoPtr<IBitmap>) Screenshot(
         /* [in] */ IRect* sourceCrop,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
@@ -211,14 +217,16 @@ public:
      * if an error occurs. Make sure to call Bitmap.recycle() as soon as
      * possible, once its content is not needed anymore.
      */
-    static CARAPI_(AutoPtr<Bitmap>) Screenshot(
+    static CARAPI_(AutoPtr<IBitmap>) Screenshot(
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    static CARAPI_(Boolean) ClearAnimationFrameStats();
+    static CARAPI ClearAnimationFrameStats(
+        /* [out] */ Boolean* resutl);
 
-    static CARAPI_(Boolean) GetAnimationFrameStats(
-        /* [in] */ IWindowAnimationFrameStats* outStats);
+    static CARAPI GetAnimationFrameStats(
+        /* [in] */ IWindowAnimationFrameStats* outStats,
+        /* [out] */ Boolean* resutl);
     /** start a transaction */
 
     static CARAPI_(void) OpenTransaction();
@@ -265,30 +273,32 @@ private:
     CARAPI CheckNotReleased();
 
     static CARAPI_(void) Screenshot(
-        /* [in] */ IBinder display,
+        /* [in] */ IBinder* display,
         /* [in] */ ISurface* consumer,
         /* [in] */ IRect* sourceCrop,
-        /* [in] */ width,
+        /* [in] */ Int32 width,
         /* [in] */ Int32  height,
         /* [in] */ Int32  minLayer,
-        /* [in] */ Int32  maxLayer, boolean allLayers,
+        /* [in] */ Int32  maxLayer,
+        /* [in] */ Boolean allLayers,
         /* [in] */ Boolean useIdentityTransform);
 
-    CARAPI_(Int64) NativeCreate(
+    static CARAPI NativeCreate(
         /* [in] */ ISurfaceSession* session,
         /* [in] */ const String& name,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
         /* [in] */ Int32 format,
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 flags,
+        /* [out] */ Int64* ptr);
 
-    CARAPI_(void) NativeRelease(
+    static CARAPI_(void) NativeRelease(
         /* [in] */ Int64 nativeObject);
 
-    CARAPI_(void) NativeDestroy(
+    static CARAPI_(void) NativeDestroy(
         /* [in] */ Int64 nativeObject);
 
-    CARAPI_(AutoPtr<IBitmap>) NativeScreenshot(
+    static CARAPI_(AutoPtr<IBitmap>) NativeScreenshot(
         /* [in] */ IBinder* displayToken,
         /* [in] */ IRect* sourceCrop,
         /* [in] */ Int32 width,
@@ -299,7 +309,7 @@ private:
         /* [in] */ Boolean useIdentityTransform,
         /* [in] */ Int32 rotation);
 
-    CARAPI_(void) NativeScreenshot(
+    static CARAPI_(void) NativeScreenshot(
         /* [in] */ IBinder* displayToken,
         /* [in] */ ISurface* consumer,
         /* [in] */ IRect* sourceCrop,
@@ -310,68 +320,72 @@ private:
         /* [in] */ Boolean allLayers,
         /* [in] */ Boolean useIdentityTransform);
 
-    CARAPI_(void) NativeOpenTransaction();
+    static CARAPI_(void) NativeOpenTransaction();
 
-    CARAPI_(void) NativeCloseTransaction();
+    static CARAPI_(void) NativeCloseTransaction();
 
-    CARAPI_(void) NativeSetAnimationTransaction();
+    static CARAPI_(void) NativeSetAnimationTransaction();
 
-    CARAPI_(void) NativeSetLayer(
+    static CARAPI NativeSetLayer(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Int32 zorder);
 
-    CARAPI_(void) NativeSetPosition(
+    static CARAPI NativeSetPosition(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    CARAPI_(void) NativeSetSize(
+    static CARAPI NativeSetSize(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h);
 
-    CARAPI_(void) NativeSetTransparentRegionHint(
+    static CARAPI NativeSetTransparentRegionHint(
         /* [in] */ Int64 nativeObject,
         /* [in] */ IRegion* region);
 
-    CARAPI_(void) NativeSetAlpha(
+    static CARAPI NativeSetAlpha(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Float alpha);
 
-    CARAPI_(void) NativeSetMatrix(
+    static CARAPI NativeSetMatrix(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Float dsdx,
         /* [in] */ Float dtdx,
         /* [in] */ Float dsdy,
         /* [in] */ Float dtdy);
 
-    CARAPI_(void) NativeSetFlags(
+    static CARAPI NativeSetFlags(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 mask);
 
-    CARAPI_(void) NativeSetWindowCrop(
+    static CARAPI NativeSetWindowCrop(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
         /* [in] */ Int32 r,
         /* [in] */ Int32 b);
 
-    CARAPI_(void) NativeSetLayerStack(
+    static CARAPI NativeSetLayerStack(
         /* [in] */ Int64 nativeObject,
         /* [in] */ Int32 layerStack);
 
-    CARAPI_(Boolean) NativeClearContentFrameStats(
-        /* [in] */ Int64 nativeObject);
-
-    CARAPI_(Boolean) NativeGetContentFrameStats(
+    static CARAPI NativeClearContentFrameStats(
         /* [in] */ Int64 nativeObject,
-        /* [in] */ IWindowContentFrameStats* outStats);
+        /* [out] */ Boolean* resutl);
 
-    CARAPI_(Boolean) NativeClearAnimationFrameStats();
+    static CARAPI NativeGetContentFrameStats(
+        /* [in] */ Int64 nativeObject,
+        /* [in] */ IWindowContentFrameStats* outStats,
+        /* [out] */ Boolean* resutl);
 
-    CARAPI_(Boolean) NativeGetAnimationFrameStats(
-        /* [in] */ IWindowAnimationFrameStats* outStats);
+    static CARAPI NativeClearAnimationFrameStats(
+        /* [out] */ Boolean* resutl);
+
+    static CARAPI NativeGetAnimationFrameStats(
+        /* [in] */ IWindowAnimationFrameStats* outStats,
+        /* [out] */ Boolean* resutl);
 
 
     static CARAPI_(AutoPtr<IBinder>) NativeGetBuiltInDisplay(
@@ -395,29 +409,32 @@ private:
     static CARAPI_(void) NativeSetDisplayProjection(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 orientation,
-        /* [in] */ Int32 l,
-        /* [in] */ Int32 t,
-        /* [in] */ Int32 r,
-        /* [in] */ Int32 b,
-        /* [in] */ Int32 L,
-        /* [in] */ Int32 T,
-        /* [in] */ Int32 R,
-        /* [in] */ Int32 B);
+        /* [in] */ Int32 layerStackRect_left,
+        /* [in] */ Int32 layerStackRect_top,
+        /* [in] */ Int32 layerStackRect_right,
+        /* [in] */ Int32 layerStackRect_bottom,
+        /* [in] */ Int32 displayRect_left,
+        /* [in] */ Int32 displayRect_top,
+        /* [in] */ Int32 displayRect_right,
+        /* [in] */ Int32 displayRect_bottom);
 
     static CARAPI_(void) NativeSetDisplaySize(
         /* [in] */ IBinder* displayToken,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    static CARAPI_(AutoPtr<ArrayOf<IPhysicalDisplayInfo*> >) NativeGetDisplayConfigs(
-        /* [in] */ IBinder* displayToken);
-
-    static CARAPI_(Int32) NativeGetActiveConfig(
-        /* [in] */ IBinder* displayToken);
-
-    static CARAPI_(Boolean) NativeSetActiveConfig(
+    static CARAPI NativeGetDisplayConfigs(
         /* [in] */ IBinder* displayToken,
-        /* [in] */ Int32 id);
+        /* [out] */ ArrayOf<IPhysicalDisplayInfo*>** infos);
+
+    static CARAPI NativeGetActiveConfig(
+        /* [in] */ IBinder* displayToken,
+        /* [out] */ Int32* res);
+
+    static CARAPI NativeSetActiveConfig(
+        /* [in] */ IBinder* displayToken,
+        /* [in] */ Int32 id,
+        /* [out] */ Boolean* res);
 
     static CARAPI_(void) NativeSetDisplayPowerMode(
         /* [in] */ IBinder* displayToken,
@@ -430,6 +447,21 @@ private:
     static const String TAG;
     AutoPtr<ICloseGuard> mCloseGuard;
     String mName;
+
+    /**
+     * Surface flag: Hide the surface.
+     * Equivalent to calling hide().
+     * Updates the value set during Surface creation (see {@link #HIDDEN}).
+     */
+    static const Int32 SURFACE_HIDDEN = 0x01;
+
+    /**
+     * Surface flag: composite without blending when possible.
+     * Updates the value set during Surface creation (see {@link #OPAQUE}).
+     */
+    static const Int32 SURFACE_OPAQUE = 0x02;
+
+    static Object sLock;
 };
 
 } // view

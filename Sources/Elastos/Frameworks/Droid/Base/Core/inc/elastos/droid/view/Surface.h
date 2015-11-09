@@ -24,6 +24,7 @@ class Surface
     , public ISurface
     , public IParcelable
 {
+    friend class SurfaceControl;
 private:
     /**
      * A Canvas class that can handle the compatibility mode.
