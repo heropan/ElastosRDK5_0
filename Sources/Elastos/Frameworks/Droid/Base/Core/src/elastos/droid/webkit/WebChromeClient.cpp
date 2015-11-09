@@ -359,9 +359,8 @@ ECode WebChromeClient::OnGeolocationPermissionsHidePrompt()
 ECode WebChromeClient::OnPermissionRequest(
     /* [in] */ IPermissionRequest* request)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    request->Deny();
+    return NOERROR;
 }
 
 /**
@@ -373,9 +372,7 @@ ECode WebChromeClient::OnPermissionRequest(
 ECode WebChromeClient::OnPermissionRequestCanceled(
     /* [in] */ IPermissionRequest* request)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 /**
@@ -494,9 +491,9 @@ ECode WebChromeClient::OnShowFileChooser(
     /* [in] */ IWebChromeClientFileChooserParams* fileChooserParams,
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
 /**

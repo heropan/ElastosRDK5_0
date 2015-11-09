@@ -2,6 +2,10 @@
 module
 {
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Net.IUri;
+
+    using interface Elastos.Core.IRunnable;
 
     namespace Elastos {
     namespace Droid {
@@ -22,20 +26,46 @@ module
             [out] String* addrOut);
 
         /**
-         * Implements the API methods:
-         * {@link android.webkit.WebView#enablePlatformNotifications()}
-         * {@link android.webkit.WebView#disablePlatformNotifications()}
-         */
-        SetPlatformNotificationsEnabled(
-            [in] Boolean _enable);
-
-        /**
          * Implements the API method:
          * {@link android.webkit.WebSettings#getDefaultUserAgent(Context) }
          */
         GetDefaultUserAgent(
             [in] IContext* context,
-            [out] String* userAgent);
+            [out] String* ua);
+
+        /**
+         * Used for tests only.
+         */
+        FreeMemoryForTests();
+
+        /**
+         * Implements the API method:
+         * {@link android.webkit.WebView#setWebContentsDebuggingEnabled(boolean) }
+         */
+        SetWebContentsDebuggingEnabled(
+            [in] Boolean enabled);
+
+        /**
+         * Implements the API method:
+         * {@link android.webkit.WebView#clearClientCertPreferences(Runnable) }
+         */
+        ClearClientCertPreferences(
+            [in] IRunnable* onCleared);
+
+        /**
+         * Implements the API method:
+         * {@link android.webkit.WebView#setSlowWholeDocumentDrawEnabled(boolean) }
+         */
+        EnableSlowWholeDocumentDraw();
+
+        /**
+         * Implement the API method
+         * {@link android.webkit.WebChromeClient.FileChooserParams#parseResult(int, Intent)}
+         */
+        ParseFileChooserResult(
+            [in] Int32 resultCode,
+            [in] IIntent* intent,
+            [out, callee] ArrayOf<IUri*>* result);
     }
 
     /**

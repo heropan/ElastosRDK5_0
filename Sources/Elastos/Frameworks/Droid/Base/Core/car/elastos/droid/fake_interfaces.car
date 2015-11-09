@@ -41,20 +41,6 @@ module
     }}} // Elastos.Droid.Privacy
 
     //
-    // Elastos.Droid.webkit
-    //
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Webkit {
-//
-//       interface IWebIconDatabase {}
-//
-//       interface IWebIconDatabaseIconListener {}
-//
-//    }}} // Elastos.Droid.Webkit
-
-
-    //
     // Elastos.Droid.telecom
     //
     namespace Elastos {

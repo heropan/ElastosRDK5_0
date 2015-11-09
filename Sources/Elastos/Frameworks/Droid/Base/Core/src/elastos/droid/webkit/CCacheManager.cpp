@@ -160,49 +160,9 @@ ECode CCacheManager::CacheResult::SetContentLength(
     return NOERROR;
 }
 
-
-//===============================================================
-//              CCacheManager::InnerRunnable
-//===============================================================
-CCacheManager::InnerRunnable::InnerRunnable()
-{
-}
-
-ECode CCacheManager::InnerRunnable::Run()
-{
-    // delete all cache files
-    //try {
-    AutoPtr< ArrayOf<String> > files;
-    CCacheManager::sBaseDir->List((ArrayOf<String>**)&files);
-    // if mBaseDir doesn't exist, files can be null.
-    if (files != NULL) {
-        Int32 length = files->GetLength();
-        for (Int32 i = 0; i < length; i++) {
-            AutoPtr<IFile> f;
-            CFile::New(CCacheManager::sBaseDir, (*files)[i], (IFile**)&f);
-            Boolean result = FALSE;
-            f->Delete(&result);
-            if (!result) {
-                String path;
-                f->GetPath(&path);
-                Logger::E(LOGTAG, "%s delete failed.", path.string());
-            }
-        }
-    }
-    //} catch (SecurityException e) {
-    //    // Ignore SecurityExceptions.
-    //}
-    return NOERROR;
-}
-
-
 //===============================================================
 //                       CCacheManager
 //===============================================================
-const String CCacheManager::LOGTAG("cache");
-const String CCacheManager::HEADER_KEY_IFMODIFIEDSINCE("if-modified-since");
-const String CCacheManager::HEADER_KEY_IFNONEMATCH("if-none-match");
-AutoPtr<IFile> CCacheManager::sBaseDir;
 
 CAR_INTERFACE_IMPL(CCacheManager, Object, ICacheManager);
 
@@ -213,42 +173,16 @@ ECode CCacheManager::constructor()
     return NOERROR;
 }
 
-/**
- * Initializes the HTTP cache. This method must be called before any
- * CacheManager methods are used. Note that this is called automatically
- * when a {@link WebView} is created.
- *
- * @param context the application context
- */
-void CCacheManager::Init(
-    /* [in] */ IContext* context)
-{
-    //initialize the callbacks
-    assert(0);
-    // TODO
-    // Elastos_CacheManager_Init((Int32)&CCacheManager::sElaCacheManagerCallback);
-
-    // This isn't actually where the real cache lives, but where we put files for the
-    // purpose of getCacheFile().
-    AutoPtr<IFile> cacheDir;
-    context->GetCacheDir((IFile**)&cacheDir);
-    CFile::New(cacheDir, String("webviewCacheChromiumStaging"), (IFile**)&sBaseDir);
-    Boolean b = FALSE;
-    if (sBaseDir->Exists(&b), !b) {
-        sBaseDir->Mkdirs(&b);
-    }
-}
-
 AutoPtr<IFile> CCacheManager::GetCacheFileBaseDir()
 {
-    return sBaseDir;
+    return NULL;
 }
 
 ECode CCacheManager::GetCacheFileBaseDir(
     /* [out] */ IFile** dir)
 {
     VALIDATE_NOT_NULL(dir);
-    *dir = sBaseDir;
+    *dir = GetCacheFileBaseDir();
     REFCOUNT_ADD(*dir);
     return NOERROR;
 }
@@ -262,7 +196,7 @@ ECode CCacheManager::CacheDisabled(
     /* [out] */ Boolean* disabled)
 {
     VALIDATE_NOT_NULL(disabled);
-    *disabled = FALSE;
+    *disabled = CacheDisabled();
     return NOERROR;
 }
 
@@ -275,7 +209,7 @@ ECode CCacheManager::StartCacheTransaction(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = FALSE;
+    *result = StartCacheTransaction();
     return NOERROR;
 }
 
@@ -288,7 +222,7 @@ ECode CCacheManager::EndCacheTransaction(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = FALSE;
+    *result = EndCacheTransaction();
     return NOERROR;
 }
 
@@ -296,7 +230,7 @@ AutoPtr<ICacheManagerCacheResult> CCacheManager::GetCacheFile(
     /* [in] */ const String& url,
     /* [in] */ IMap* headers)
 {
-    return GetCacheFile(url, 0, headers);
+    return NULL;
 }
 
 ECode CCacheManager::GetCacheFile(
@@ -305,79 +239,9 @@ ECode CCacheManager::GetCacheFile(
     /* [out] */ ICacheManagerCacheResult** cacheResult)
 {
     VALIDATE_NOT_NULL(cacheResult);
-    AutoPtr<ICacheManagerCacheResult> _cacheResult = GetCacheFile(url, headers);
-    *cacheResult = _cacheResult.Get();
+    *cacheResult = GetCacheFile(url,  headers);
     REFCOUNT_ADD(*cacheResult);
     return NOERROR;
-}
-
-AutoPtr<ICacheManagerCacheResult> CCacheManager::GetCacheFile(
-    /* [in] */ const String& url,
-    /* [in] */ Int64 postIdentifier,
-    /* [in] */ IMap* headers)
-{
-    AutoPtr<CacheResult> result = NativeGetCacheResult(url);
-    if (result == NULL) {
-        return NULL;
-    }
-
-    // A temporary local file will have been created native side and localPath set
-    // appropriately.
-    String localPath;
-    result->GetLocalPath(&localPath);
-    AutoPtr<IFile> src;
-    CFile::New(sBaseDir, localPath, (IFile**)&src);
-    //try {
-        // Open the file here so that even if it is deleted, the content
-        // is still readable by the caller until close() is called.
-    AutoPtr<IFileInputStream> inStream;
-    ECode ec = CFileInputStream::New(src, (IFileInputStream**)&inStream);
-    if (FAILED(ec)) {
-        Logger::V(LOGTAG, "getCacheFile(): Failed to open file: %s", localPath.string());
-        // TODO: The files in the cache directory can be removed by the
-        // system. If it is gone, what should we do?
-        return NULL;
-    }
-    result->mInStream = IInputStream::Probe(inStream);
-    //} catch (FileNotFoundException e) {
-       // Log.v(LOGTAG, "getCacheFile(): Failed to open file: " + e);
-        // TODO: The files in the cache directory can be removed by the
-        // system. If it is gone, what should we do?
-    //    return null;
-    //}
-
-    // A null value for headers is used by CACHE_MODE_CACHE_ONLY to imply
-    // that we should provide the cache result even if it is expired.
-    // Note that a negative expires value means a time in the far future.
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    Int64 now;
-    if (headers != NULL && result->mExpires >= 0
-            && result->mExpires <= (system->GetCurrentTimeMillis(&now), now)) {
-        if (result->mLastModified.IsNull() && result->mEtag.IsNull()) {
-            return NULL;
-        }
-        // Return HEADER_KEY_IFNONEMATCH or HEADER_KEY_IFMODIFIEDSINCE
-        // for requesting validation.
-        if (!result->mEtag.IsNull()) {
-            AutoPtr<IString> key, value, oldValue;
-            CString::New(HEADER_KEY_IFNONEMATCH, (IString**)&key);
-            CString::New(result->mEtag, (IString**)&value);
-            headers->Put(key, value, (IInterface**)&oldValue);
-        }
-        if (!result->mLastModified.IsNull()) {
-            AutoPtr<IString> key, value, oldValue;
-            CString::New(HEADER_KEY_IFMODIFIEDSINCE, (IString**)&key);
-            CString::New(result->mLastModified, (IString**)&value);
-            headers->Put(key, value, (IInterface**)&oldValue);
-        }
-    }
-
-    if (DebugFlags::CACHE_MANAGER) {
-        Logger::V(LOGTAG, "getCacheFile for url %s", url.string());
-    }
-
-    return (ICacheManagerCacheResult*)result.Get();
 }
 
 /**
@@ -448,159 +312,6 @@ void CCacheManager::SaveCacheFile(
     // This method is not used from within this package, and for public API
     // use, we should already have thrown an exception above.
     assert(FALSE);
-}
-
-/**
- * Removes all cache files.
- *
- * @return whether the removal succeeded
- */
-Boolean CCacheManager::RemoveAllCacheFiles()
-{
-    AutoPtr<IRunnable> clearCache = new InnerRunnable();
-    AutoPtr<IThread> t;
-    CThread::New(clearCache, (IThread**)&t);
-    t->Start();
-    return TRUE;
-}
-
-AutoPtr<CCacheManager::CacheResult> CCacheManager::NativeGetCacheResult(
-    /* [in] */ const String& url)
-{
-    //got the object created by CreateCCacheManagerCacheResult
-    Int32 obj;
-    assert(0);
-    // TODO
-    // obj = Elastos_CacheManager_GetCacheResult(url);
-    //check if the CacheResult got
-    if (0 == obj) {
-        return NULL;
-    }
-    AutoPtr<CacheResult> cacheResult = (CacheResult*)obj;
-    //handover the lifecycle management to autoptr,release it
-    cacheResult->Release();//the countpart is AddRef in CreateCCacheManagerCacheResult
-    return cacheResult;
-}
-
-Elastos::String CCacheManager::_GetCacheFileBaseDir()
-{
-    static Elastos::String baseDir;
-    if (baseDir.IsNullOrEmpty()) {
-        AutoPtr<IFile> fileObject = CCacheManager::GetCacheFileBaseDir();
-        fileObject->GetPath(&baseDir);
-    }
-    return baseDir;
-}
-
-/**
-  * create a new CCacheManagerCacheResult object
-  * this method is a callback function which will be invoked by lib layer
-  */
-Int32 CCacheManager::CreateCCacheManagerCacheResult()
-{
-    AutoPtr<CacheResult> cacheResult = new CacheResult();
-    //the object should be survived at the end of this function,see NativeGetCacheResult
-    cacheResult->AddRef();//the countpart is Release in NativeGetCacheResult
-    return (Int32)(cacheResult.Get());
-}
-
-void CCacheManager::SetContentdisposition(
-    /* [in] */ Int32 obj,
-    /* [in] */ const String& contentdisposition)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mContentdisposition = contentdisposition;
-   return;
-}
-
-void CCacheManager::SetContentLength(
-    /* [in] */ Int32 obj,
-    /* [in] */ Int64 contentLength)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->SetContentLength(contentLength);
-   return;
-}
-
-void CCacheManager::SetEtag(
-    /* [in] */  Int32 obj,
-    /* [in] */ const String& etag)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mEtag = etag;
-   return;
-}
-
-void CCacheManager::SetEncoding(
-    /* [in] */  Int32 obj,
-    /* [in] */ const String& encoding)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mEncoding = encoding;
-   return;
-}
-
-void CCacheManager::SetExpires(
-    /* [in] */ Int32 obj,
-    /* [in] */ Int64 expires)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mExpires = expires;
-   return;
-}
-
-void CCacheManager::SetExpiresString(
-    /* [in] */  Int32 obj,
-    /* [in] */ const String& expiresString)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mExpiresString = expiresString;
-   return;
-}
-
-void CCacheManager::SetHttpStatusCode(
-    /* [in] */ Int32 obj,
-    /* [in] */ Int32 httpStatusCode)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mHttpStatusCode = httpStatusCode;
-   return;
-}
-
-void CCacheManager::SetLastModified(
-    /* [in] */ Int32 obj,
-    /* [in] */ const String& lastModified)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mLastModified = lastModified;
-   return;
-}
-
-void CCacheManager::SetLocalPath(
-    /* [in] */  Int32 obj,
-    /* [in] */ const String& localPath)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mLocalPath = localPath;
-   return;
-}
-
-void CCacheManager::SetLocation(
-    /* [in] */ Int32 obj,
-    /* [in] */ const String& location)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mLocation = location;
-   return;
-}
-
-void CCacheManager::SetMimeType(
-    /* [in] */ Int32 obj,
-    /* [in] */ const String& mimeType)
-{
-   CacheResult* cacheResult = (CacheResult*)obj;
-   cacheResult->mMimeType = mimeType;
-   return;
 }
 
 } // namespace Webkit

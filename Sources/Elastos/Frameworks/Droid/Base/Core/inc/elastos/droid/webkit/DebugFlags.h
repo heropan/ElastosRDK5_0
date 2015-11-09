@@ -16,30 +16,16 @@ namespace Webkit {
  * The name of each flags maps directly to the name of the class in which that
  * flag is used.
  *
+ * @hide Only used by WebView implementations.
  */
 class DebugFlags
 {
 public:
-    static const Boolean BROWSER_FRAME;
-    static const Boolean CACHE_MANAGER;
-    static const Boolean CALLBACK_PROXY;
-    static const Boolean COOKIE_MANAGER;
     static const Boolean COOKIE_SYNC_MANAGER;
-    static const Boolean FRAME_LOADER;
-    static const Boolean J_WEB_CORE_JAVA_BRIDGE;// HIGHLY VERBOSE
-    static const Boolean LOAD_LISTENER;
-    static const Boolean NETWORK;
-    static const Boolean SSL_ERROR_HANDLER;
-    static const Boolean STREAM_LOADER;
-    static const Boolean URL_UTIL;
-    static const Boolean WEB_BACK_FORWARD_LIST;
-    static const Boolean WEB_SETTINGS;
-    static const Boolean WEB_SYNC_MANAGER;
-    static const Boolean WEB_VIEW;
-    static const Boolean WEB_VIEW_CORE;
-    static const Boolean MEASURE_PAGE_SWAP_FPS;
     static const Boolean TRACE_API;
     static const Boolean TRACE_CALLBACK;
+    static const Boolean URL_UTIL;
+    static const Boolean WEB_SYNC_MANAGER;
 };
 
 } // namespace Webkit

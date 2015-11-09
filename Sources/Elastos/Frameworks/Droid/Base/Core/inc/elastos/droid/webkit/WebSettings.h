@@ -21,9 +21,13 @@ namespace Webkit {
 // This is an abstract base class: concrete WebViewProviders must
 // create a class derived from this, and return an instance of it in the
 // WebViewProvider.getWebSettingsProvider() method implementation.
-class WebSettings : public Object
+class WebSettings
+    : public Object
+    , public IWebSettings
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Enables dumping the pages navigation cache to a text file. The default
      * is false.
@@ -31,8 +35,8 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI SetNavDump(
-        /* [in] */ Boolean enabled) = 0;
+    CARAPI SetNavDump(
+        /* [in] */ Boolean enabled);
 
     /**
      * Gets whether dumping the navigation cache is enabled.
@@ -42,7 +46,8 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Boolean) GetNavDump() = 0;
+    CARAPI GetNavDump(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should support zooming using its on-screen zoom
@@ -53,8 +58,8 @@ public:
      *
      * @param support whether the WebView should support zoom
      */
-    virtual CARAPI SetSupportZoom(
-        /* [in] */ Boolean support) = 0;
+    CARAPI SetSupportZoom(
+        /* [in] */ Boolean support);
 
     /**
      * Gets whether the WebView supports zoom.
@@ -62,7 +67,8 @@ public:
      * @return true if the WebView supports zoom
      * @see #setSupportZoom
      */
-    virtual CARAPI_(Boolean) SupportZoom() = 0;
+    CARAPI SupportZoom(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView requires a user gesture to play media.
@@ -70,8 +76,8 @@ public:
      *
      * @param require whether the WebView requires a user gesture to play media
      */
-    virtual CARAPI SetMediaPlaybackRequiresUserGesture(
-        /* [in] */ Boolean require) = 0;
+    CARAPI SetMediaPlaybackRequiresUserGesture(
+        /* [in] */ Boolean require);
 
     /**
      * Gets whether the WebView requires a user gesture to play media.
@@ -79,7 +85,8 @@ public:
      * @return true if the WebView requires a user gesture to play media
      * @see #setMediaPlaybackRequiresUserGesture
      */
-    virtual CARAPI_(Boolean) GetMediaPlaybackRequiresUserGesture() = 0;
+    CARAPI GetMediaPlaybackRequiresUserGesture(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should use its built-in zoom mechanisms. The
@@ -96,8 +103,9 @@ public:
     // This method was intended to select between the built-in zoom mechanisms
     // and the separate zoom controls. The latter were obtained using
     // {@link WebView#getZoomControls}, which is now hidden.
-    virtual CARAPI SetBuiltInZoomControls(
-        /* [in] */ Boolean enabled) = 0;
+    CARAPI SetBuiltInZoomControls(
+        /* [in] */ Boolean enabled,
+        /* [out] */ Boolean* result);
 
     /**
      * Gets whether the zoom mechanisms built into WebView are being used.
@@ -105,7 +113,8 @@ public:
      * @return true if the zoom mechanisms built into WebView are being used
      * @see #setBuiltInZoomControls
      */
-    virtual CARAPI_(Boolean) GetBuiltInZoomControls() = 0;
+    CARAPI GetBuiltInZoomControls(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should display on-screen zoom controls when
@@ -114,8 +123,8 @@ public:
      *
      * @param enabled whether the WebView should display on-screen zoom controls
      */
-    virtual CARAPI SetDisplayZoomControls(
-        /* [in] */ Boolean enabled) = 0;
+    CARAPI SetDisplayZoomControls(
+        /* [in] */ Boolean enabled);
 
     /**
      * Gets whether the WebView displays on-screen zoom controls when using
@@ -125,7 +134,8 @@ public:
      *         the built-in zoom mechanisms
      * @see #setDisplayZoomControls
      */
-    virtual CARAPI_(Boolean) GetDisplayZoomControls() = 0;
+    CARAPI GetDisplayZoomControls(
+        /* [out] */ Boolean* result);
 
     /**
      * Enables or disables file access within WebView. File access is enabled by
@@ -133,37 +143,39 @@ public:
      * Assets and resources are still accessible using file:///android_asset and
      * file:///android_res.
      */
-    virtual CARAPI SetAllowFileAccess(
-        /* [in] */ Boolean allow) = 0;
+    CARAPI SetAllowFileAccess(
+        /* [in] */ Boolean allow);
 
     /**
      * Gets whether this WebView supports file access.
      *
      * @see #setAllowFileAccess
      */
-    virtual CARAPI_(Boolean) GetAllowFileAccess() = 0;
+    CARAPI GetAllowFileAccess(
+        /* [out] */ Boolean* result);
 
     /**
      * Enables or disables content URL access within WebView.  Content URL
      * access allows WebView to load content from a content provider installed
      * in the system. The default is enabled.
      */
-    virtual CARAPI SetAllowContentAccess(
-        /* [in] */ Boolean allow) = 0;
+    CARAPI SetAllowContentAccess(
+        /* [in] */ Boolean allow);
 
     /**
      * Gets whether this WebView supports content URL access.
      *
      * @see #setAllowContentAccess
      */
-    virtual CARAPI_(Boolean) GetAllowContentAccess() = 0;
+    CARAPI GetAllowContentAccess(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView loads pages in overview mode. The default is
      * false.
      */
-    virtual CARAPI SetLoadWithOverviewMode(
-        /* [in] */ Boolean overview) = 0;
+    CARAPI SetLoadWithOverviewMode(
+        /* [in] */ Boolean overview);
 
     /**
      * Gets whether this WebView loads pages in overview mode.
@@ -171,7 +183,8 @@ public:
      * @return whether this WebView loads pages in overview mode
      * @see #setLoadWithOverviewMode
      */
-    virtual CARAPI_(Boolean) GetLoadWithOverviewMode() = 0;
+    CARAPI GetLoadWithOverviewMode(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView will enable smooth transition while panning or
@@ -182,8 +195,8 @@ public:
      *
      * @deprecated This method is now obsolete, and will become a no-op in future.
      */
-    virtual CARAPI SetEnableSmoothTransition(
-        /* [in] */ Boolean enable) = 0;
+    CARAPI SetEnableSmoothTransition(
+        /* [in] */ Boolean enable);
 
     /**
      * Gets whether the WebView enables smooth transition while panning or
@@ -193,7 +206,8 @@ public:
      *
      * @deprecated This method is now obsolete, and will become a no-op in future.
      */
-    virtual CARAPI_(Boolean) EnableSmoothTransition() = 0;
+    CARAPI EnableSmoothTransition(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView uses its background for over scroll background.
@@ -203,8 +217,8 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI SetUseWebViewBackgroundForOverscrollBackground(
-        /* [in] */ Boolean view) = 0;
+    CARAPI SetUseWebViewBackgroundForOverscrollBackground(
+        /* [in] */ Boolean view);
 
     /**
      * Gets whether this WebView uses WebView's background instead of
@@ -214,14 +228,15 @@ public:
      * @deprecated This method is now obsolete.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Boolean) GetUseWebViewBackgroundForOverscrollBackground() = 0;
+    CARAPI GetUseWebViewBackgroundForOverscrollBackground(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should save form data. The default is true,
      * unless in private browsing mode, when the value is always false.
      */
-    virtual CARAPI SetSaveFormData(
-        /* [in] */ Boolean save) = 0;
+    CARAPI SetSaveFormData(
+        /* [in] */ Boolean save);
 
     /**
      * Gets whether the WebView saves form data. Always false in private
@@ -230,13 +245,14 @@ public:
      * @return whether the WebView saves form data
      * @see #setSaveFormData
      */
-    virtual CARAPI_(Boolean) GetSaveFormData() = 0;
+    CARAPI GetSaveFormData(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should save passwords. The default is true.
      */
-    virtual CARAPI SetSavePassword(
-        /* [in] */ Boolean save) = 0;
+    CARAPI SetSavePassword(
+        /* [in] */ Boolean save);
 
     /**
      * Gets whether the WebView saves passwords.
@@ -244,15 +260,16 @@ public:
      * @return whether the WebView saves passwords
      * @see #setSavePassword
      */
-    virtual CARAPI_(Boolean) GetSavePassword() = 0;
+    CARAPI GetSavePassword(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the text zoom of the page in percent. The default is 100.
      *
      * @param textZoom the text zoom in percent
      */
-    virtual CARAPI SetTextZoom(
-        /* [in] */ Int32 textZoom) = 0;
+    CARAPI SetTextZoom(
+        /* [in] */ Int32 textZoom);
 
     /**
      * Gets the text zoom of the page in percent.
@@ -260,7 +277,8 @@ public:
      * @return the text zoom of the page in percent
      * @see #setTextZoom
      */
-    virtual CARAPI_(Int32) GetTextZoom() = 0;
+    CARAPI GetTextZoom(
+        /* [out] */ Int32* textZoom);
 
     /**
      * Sets the text size of the page. The default is {@link TextSize#NORMAL}.
@@ -268,11 +286,8 @@ public:
      * @param t the text size as a {@link TextSize} value
      * @deprecated Use {@link #setTextZoom} instead.
      */
-    virtual CARAPI SetTextSize(
-        /* [in] */ TextSize t)
-    {
-        return SetTextZoom((Int32)t);
-    }
+    CARAPI SetTextSize(
+        /* [in] */ TextSize t);
 
     /**
      * Gets the text size of the page. If the text size was previously specified
@@ -283,7 +298,8 @@ public:
      * @see #setTextSize
      * @deprecated Use {@link #getTextZoom} instead.
      */
-    virtual CARAPI_(TextSize) GetTextSize();
+    CARAPI GetTextSize(
+        /* [out] */ TextSize* size);
 
     /**
      * Sets the default zoom density of the page. This must be called from the UI
@@ -291,8 +307,8 @@ public:
      *
      * @param zoom the zoom density
      */
-    virtual CARAPI SetDefaultZoom(
-        /* [in] */ ZoomDensity zoom) = 0;
+    CARAPI SetDefaultZoom(
+        /* [in] */ ZoomDensity zoom);
 
     /**
      * Gets the default zoom density of the page. This should be called from
@@ -301,14 +317,15 @@ public:
      * @return the zoom density
      * @see #setDefaultZoom
      */
-    virtual CARAPI_(ZoomDensity) GetDefaultZoom() = 0;
+    CARAPI GetDefaultZoom(
+        /* [out] */ ZoomDensity* zoom);
 
     /**
      * Enables using light touches to make a selection and activate mouseovers.
      * The default is false.
      */
-    virtual CARAPI SetLightTouchEnabled(
-        /* [in] */ Boolean enabled) = 0;
+    CARAPI SetLightTouchEnabled(
+        /* [in] */ Boolean enabled);
 
     /**
      * Gets whether light touches are enabled.
@@ -316,7 +333,8 @@ public:
      * @return whether light touches are enabled
      * @see #setLightTouchEnabled
      */
-    virtual CARAPI_(Boolean) GetLightTouchEnabled() = 0;
+    CARAPI GetLightTouchEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Controlled a rendering optimization that is no longer present. Setting
@@ -325,8 +343,8 @@ public:
      * @deprecated This setting now has no effect.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI SetUseDoubleTree(
-        /* [in] */ Boolean use) = 0;
+    CARAPI SetUseDoubleTree(
+        /* [in] */ Boolean use);
 
     /**
      * Controlled a rendering optimization that is no longer present. Setting
@@ -335,11 +353,8 @@ public:
      * @deprecated This setting now has no effect.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Boolean) GetUseDoubleTree()
-    {
-        // Returns false unconditionally, so no need for derived classes to override.
-        return FALSE;
-    }
+    CARAPI GetUseDoubleTree(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the user-agent string using an integer code.
@@ -354,8 +369,8 @@ public:
      * @deprecated Please use {@link #setUserAgentString} instead.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI SetUserAgent(
-        /* [in] */ Int32 ua) = 0;
+    CARAPI SetUserAgent(
+        /* [in] */ Int32 ua);
 
     /**
      * Gets the user-agent as an integer code.
@@ -371,15 +386,16 @@ public:
      * @deprecated Please use {@link #getUserAgentString} instead.
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
-    virtual CARAPI_(Int32) GetUserAgent() = 0;
+    CARAPI GetUserAgent(
+        /* [out] */ Int32* ua);
 
     /**
      * Tells the WebView to use a wide viewport. The default is false.
      *
      * @param use whether to use a wide viewport
      */
-    virtual CARAPI SetUseWideViewPort(
-        /* [in] */ Boolean use) = 0;
+    CARAPI SetUseWideViewPort(
+        /* [in] */ Boolean use);
 
     /**
      * Gets whether the WebView is using a wide viewport.
@@ -387,7 +403,8 @@ public:
      * @return true if the WebView is using a wide viewport
      * @see #setUseWideViewPort
      */
-    virtual CARAPI_(Boolean) GetUseWideViewPort() = 0;
+    CARAPI GetUseWideViewPort(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView whether supports multiple windows. If set to
@@ -396,8 +413,8 @@ public:
      *
      * @param support whether to suport multiple windows
      */
-    virtual CARAPI SetSupportMultipleWindows(
-        /* [in] */ Boolean support) = 0;
+    CARAPI SetSupportMultipleWindows(
+        /* [in] */ Boolean support);
 
     /**
      * Gets whether the WebView supports multiple windows.
@@ -405,7 +422,8 @@ public:
      * @return true if the WebView supports multiple windows
      * @see #setSupportMultipleWindows
      */
-    virtual CARAPI_(Boolean) SupportMultipleWindows() = 0;
+    CARAPI SupportMultipleWindows(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the underlying layout algorithm. This will cause a relayout of the
@@ -413,8 +431,8 @@ public:
      *
      * @param l the layout algorithm to use, as a {@link LayoutAlgorithm} value
      */
-    virtual CARAPI SetLayoutAlgorithm(
-        /* [in] */ LayoutAlgorithm l) = 0;
+    CARAPI SetLayoutAlgorithm(
+        /* [in] */ LayoutAlgorithm l);
 
     /**
      * Gets the current layout algorithm.
@@ -422,15 +440,16 @@ public:
      * @return the layout algorithm in use, as a {@link LayoutAlgorithm} value
      * @see #setLayoutAlgorithm
      */
-    virtual CARAPI_(LayoutAlgorithm) GetLayoutAlgorithm() = 0;
+    CARAPI GetLayoutAlgorithm(
+        /* [out] */ LayoutAlgorithm* thm);
 
     /**
      * Sets the standard font family name. The default is "sans-serif".
      *
      * @param font a font family name
      */
-    virtual CARAPI SetStandardFontFamily(
-        /* [in] */ const String& font) = 0;
+    CARAPI SetStandardFontFamily(
+        /* [in] */ const String& font);
 
     /**
      * Gets the standard font family name.
@@ -438,15 +457,16 @@ public:
      * @return the standard font family name as a string
      * @see #setStandardFontFamily
      */
-    virtual CARAPI_(String) GetStandardFontFamily() = 0;
+    CARAPI GetStandardFontFamily(
+        /* [out] */ String* family);
 
     /**
      * Sets the fixed font family name. The default is "monospace".
      *
      * @param font a font family name
      */
-    virtual CARAPI SetFixedFontFamily(
-        /* [in] */ const String& font) = 0;
+    CARAPI SetFixedFontFamily(
+        /* [in] */ const String& font);
 
     /**
      * Gets the fixed font family name.
@@ -454,15 +474,16 @@ public:
      * @return the fixed font family name as a string
      * @see #setFixedFontFamily
      */
-    virtual CARAPI_(String) GetFixedFontFamily() = 0;
+    CARAPI GetFixedFontFamily(
+        /* [out] */ String* family);
 
     /**
      * Sets the sans-serif font family name. The default is "sans-serif".
      *
      * @param font a font family name
      */
-    virtual CARAPI SetSansSerifFontFamily(
-        /* [in] */ const String& font) = 0;
+    CARAPI SetSansSerifFontFamily(
+        /* [in] */ const String& font);
 
     /**
      * Gets the sans-serif font family name.
@@ -470,15 +491,16 @@ public:
      * @return the sans-serif font family name as a string
      * @see #setSansSerifFontFamily
      */
-    virtual CARAPI_(String) GetSansSerifFontFamily() = 0;
+    CARAPI GetSansSerifFontFamily(
+        /* [out] */ String* family);
 
     /**
      * Sets the serif font family name. The default is "sans-serif".
      *
      * @param font a font family name
      */
-    virtual CARAPI SetSerifFontFamily(
-        /* [in] */ const String& font) = 0;
+    CARAPI SetSerifFontFamily(
+        /* [in] */ const String& font);
 
     /**
      * Gets the serif font family name. The default is "serif".
@@ -486,15 +508,16 @@ public:
      * @return the serif font family name as a string
      * @see #setSerifFontFamily
      */
-    virtual CARAPI_(String) GetSerifFontFamily() = 0;
+    CARAPI GetSerifFontFamily(
+        /* [out] */ String* family);
 
     /**
      * Sets the cursive font family name. The default is "cursive".
      *
      * @param font a font family name
      */
-    virtual CARAPI SetCursiveFontFamily(
-        /* [in] */ const String& font) = 0;
+    CARAPI SetCursiveFontFamily(
+        /* [in] */ const String& font);
 
     /**
      * Gets the cursive font family name.
@@ -502,15 +525,16 @@ public:
      * @return the cursive font family name as a string
      * @see #setCursiveFontFamily
      */
-    virtual CARAPI_(String) GetCursiveFontFamily() = 0;
+    CARAPI GetCursiveFontFamily(
+        /* [out] */ String* family);
 
     /**
      * Sets the fantasy font family name. The default is "fantasy".
      *
      * @param font a font family name
      */
-    virtual CARAPI SetFantasyFontFamily(
-        /* [in] */ const String& font) = 0;
+    CARAPI SetFantasyFontFamily(
+        /* [in] */ const String& font);
 
     /**
      * Gets the fantasy font family name.
@@ -518,7 +542,8 @@ public:
      * @return the fantasy font family name as a string
      * @see #setFantasyFontFamily
      */
-    virtual CARAPI_(String) GetFantasyFontFamily() = 0;
+    CARAPI GetFantasyFontFamily(
+        /* [out] */ String* family);
 
     /**
      * Sets the minimum font size. The default is 8.
@@ -526,8 +551,8 @@ public:
      * @param size a non-negative integer between 1 and 72. Any number outside
      *             the specified range will be pinned.
      */
-    virtual CARAPI SetMinimumFontSize(
-        /* [in] */ Int32 size) = 0;
+    CARAPI SetMinimumFontSize(
+        /* [in] */ Int32 size);
 
     /**
      * Gets the minimum font size.
@@ -535,7 +560,8 @@ public:
      * @return a non-negative integer between 1 and 72
      * @see #setMinimumFontSize
      */
-    virtual CARAPI_(Int32) GetMinimumFontSize() = 0;
+    CARAPI GetMinimumFontSize(
+        /* [out] */ Int32* size);
 
     /**
      * Sets the minimum logical font size. The default is 8.
@@ -543,8 +569,8 @@ public:
      * @param size a non-negative integer between 1 and 72. Any number outside
      *             the specified range will be pinned.
      */
-    virtual CARAPI SetMinimumLogicalFontSize(
-        /* [in] */ Int32 size) = 0;
+    CARAPI SetMinimumLogicalFontSize(
+        /* [in] */ Int32 size);
 
     /**
      * Gets the minimum logical font size.
@@ -552,7 +578,8 @@ public:
      * @return a non-negative integer between 1 and 72
      * @see #setMinimumLogicalFontSize
      */
-    virtual CARAPI_(Int32) GetMinimumLogicalFontSize() = 0;
+    CARAPI GetMinimumLogicalFontSize(
+        /* [out] */ Int32* size);
 
     /**
      * Sets the default font size. The default is 16.
@@ -560,8 +587,8 @@ public:
      * @param size a non-negative integer between 1 and 72. Any number outside
      *             the specified range will be pinned.
      */
-    virtual CARAPI SetDefaultFontSize(
-        /* [in] */ Int32 size) = 0;
+    CARAPI SetDefaultFontSize(
+        /* [in] */ Int32 size);
 
     /**
      * Gets the default font size.
@@ -569,7 +596,8 @@ public:
      * @return a non-negative integer between 1 and 72
      * @see #setDefaultFontSize
      */
-    virtual CARAPI_(Int32) GetDefaultFontSize() = 0;
+    CARAPI GetDefaultFontSize(
+        /* [out] */ Int32* size);
 
     /**
      * Sets the default fixed font size. The default is 16.
@@ -577,8 +605,8 @@ public:
      * @param size a non-negative integer between 1 and 72. Any number outside
      *             the specified range will be pinned.
      */
-    virtual CARAPI SetDefaultFixedFontSize(
-        /* [in] */ Int32 size) = 0;
+    CARAPI SetDefaultFixedFontSize(
+        /* [in] */ Int32 size);
 
     /**
      * Gets the default fixed font size.
@@ -586,7 +614,8 @@ public:
      * @return a non-negative integer between 1 and 72
      * @see #setDefaultFixedFontSize
      */
-    virtual CARAPI_(Int32) GetDefaultFixedFontSize() = 0;
+    CARAPI GetDefaultFixedFontSize(
+        /* [out] */ Int32* size);
 
     /**
      * Sets whether the WebView should load image resources. Note that this method
@@ -599,8 +628,8 @@ public:
      *
      * @param flag whether the WebView should load image resources
      */
-    virtual CARAPI SetLoadsImagesAutomatically(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetLoadsImagesAutomatically(
+        /* [in] */ Boolean flag);
 
     /**
      * Gets whether the WebView loads image resources. This includes
@@ -609,7 +638,8 @@ public:
      * @return true if the WebView loads image resources
      * @see #setLoadsImagesAutomatically
      */
-    virtual CARAPI_(Boolean) GetLoadsImagesAutomatically() = 0;
+    CARAPI GetLoadsImagesAutomatically(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should not load image resources from the
@@ -626,8 +656,8 @@ public:
      *             network
      * @see #setBlockNetworkLoads
      */
-    virtual CARAPI SetBlockNetworkImage(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetBlockNetworkImage(
+        /* [in] */ Boolean flag);
 
     /**
      * Gets whether the WebView does not load image resources from the network.
@@ -635,7 +665,8 @@ public:
      * @return true if the WebView does not load image resources from the network
      * @see #setBlockNetworkImage
      */
-    virtual CARAPI_(Boolean) GetBlockNetworkImage() = 0;
+    CARAPI GetBlockNetworkImage(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether the WebView should not load resources from the network.
@@ -655,8 +686,8 @@ public:
      *             network
      * @see android.webkit.WebView#reload
      */
-    virtual CARAPI SetBlockNetworkLoads(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetBlockNetworkLoads(
+        /* [in] */ Boolean flag);
 
     /**
      * Gets whether the WebView does not load any resources from the network.
@@ -664,7 +695,8 @@ public:
      * @return true if the WebView does not load any resources from the network
      * @see #setBlockNetworkLoads
      */
-    virtual CARAPI_(Boolean) GetBlockNetworkLoads() = 0;
+    CARAPI GetBlockNetworkLoads(
+        /* [out] */ Boolean* result);
 
     /**
      * Tells the WebView to enable JavaScript execution.
@@ -672,8 +704,8 @@ public:
      *
      * @param flag true if the WebView should execute JavaScript
      */
-    virtual CARAPI SetJavaScriptEnabled(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetJavaScriptEnabled(
+        /* [in] */ Boolean flag);
 
     /**
      * Sets whether JavaScript running in the context of a file scheme URL
@@ -690,8 +722,8 @@ public:
      * @param flag whether JavaScript running in the context of a file scheme
      *             URL should be allowed to access content from any origin
      */
-    virtual CARAPI SetAllowUniversalAccessFromFileURLs(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetAllowUniversalAccessFromFileURLs(
+        /* [in] */ Boolean flag);
 
     /**
      * Sets whether JavaScript running in the context of a file scheme URL
@@ -709,8 +741,8 @@ public:
      *             URL should be allowed to access content from other file
      *             scheme URLs
      */
-    virtual CARAPI SetAllowFileAccessFromFileURLs(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetAllowFileAccessFromFileURLs(
+        /* [in] */ Boolean flag);
 
     /**
      * Sets whether the WebView should enable plugins. The default is false.
@@ -719,8 +751,8 @@ public:
      * @deprecated This method has been deprecated in favor of
      *             {@link #setPluginState}
      */
-    virtual CARAPI SetPluginsEnabled(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetPluginsEnabled(
+        /* [in] */ Boolean flag);
 
     /**
      * Tells the WebView to enable, disable, or have plugins on demand. On
@@ -731,8 +763,8 @@ public:
      *
      * @param state a PluginState value
      */
-    virtual CARAPI SetPluginState(
-        /* [in] */ PluginState state) = 0;
+    CARAPI SetPluginState(
+        /* [in] */ PluginState state);
 
     /**
      * Sets a custom path to plugins used by the WebView. This method is
@@ -742,8 +774,8 @@ public:
      * @deprecated This method is no longer used as plugins are loaded from
      *             their own APK via the system's package manager.
      */
-    virtual CARAPI SetPluginsPath(
-        /* [in] */ const String& pluginsPath) = 0;
+    CARAPI SetPluginsPath(
+        /* [in] */ const String& pluginsPath);
 
     /**
      * Sets the path to where database storage API databases should be saved.
@@ -757,8 +789,8 @@ public:
     // This will update WebCore when the Sync runs in the C++ side.
     // Note that the WebCore Database Tracker only allows the path to be set
     // once.
-    virtual CARAPI SetDatabasePath(
-        /* [in] */ const String& databasePath) = 0;
+    CARAPI SetDatabasePath(
+        /* [in] */ const String& databasePath);
 
     /**
      * Sets the path where the Geolocation databases should be saved. In order
@@ -769,8 +801,8 @@ public:
      *                     saved.
      */
     // This will update WebCore when the Sync runs in the C++ side.
-    virtual CARAPI SetGeolocationDatabasePath(
-        /* [in] */ const String& databasePath) = 0;
+    CARAPI SetGeolocationDatabasePath(
+        /* [in] */ const String& databasePath);
 
     /**
      * Sets whether the Application Caches API should be enabled. The default
@@ -780,8 +812,8 @@ public:
      *
      * @param flag true if the WebView should enable Application Caches
      */
-    virtual CARAPI SetAppCacheEnabled(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetAppCacheEnabled(
+        /* [in] */ Boolean flag);
 
     /**
      * Sets the path to the Application Caches files. In order for the
@@ -793,8 +825,8 @@ public:
      *                     Application Caches files.
      * @see setAppCacheEnabled
      */
-    virtual CARAPI SetAppCachePath(
-        /* [in] */ const String& appCachePath) = 0;
+    CARAPI SetAppCachePath(
+        /* [in] */ const String& appCachePath);
 
     /**
      * Sets the maximum size for the Application Cache content. The passed size
@@ -805,8 +837,8 @@ public:
      *
      * @param appCacheMaxSize the maximum size in bytes
      */
-    virtual CARAPI SetAppCacheMaxSize(
-        /* [in] */ Int64 appCacheMaxSize) = 0;
+    CARAPI SetAppCacheMaxSize(
+        /* [in] */ Int64 appCacheMaxSize);
 
     /**
      * Sets whether the database storage API is enabled. The default value is
@@ -815,16 +847,16 @@ public:
      *
      * @param flag true if the WebView should use the database storage API
      */
-    virtual CARAPI SetDatabaseEnabled(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetDatabaseEnabled(
+        /* [in] */ Boolean flag);
 
     /**
      * Sets whether the DOM storage API is enabled. The default value is false.
      *
      * @param flag true if the WebView should use the DOM storage API
      */
-    virtual CARAPI SetDomStorageEnabled(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetDomStorageEnabled(
+        /* [in] */ Boolean flag);
 
     /**
      * Gets whether the DOM Storage APIs are enabled.
@@ -832,7 +864,8 @@ public:
      * @return true if the DOM Storage APIs are enabled
      * @see #setDomStorageEnabled
      */
-    virtual CARAPI_(Boolean) GetDomStorageEnabled() = 0;
+    CARAPI GetDomStorageEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets the path to where database storage API databases are saved.
@@ -840,7 +873,8 @@ public:
      * @return the String path to the database storage API databases
      * @see #setDatabasePath
      */
-    virtual CARAPI_(String) GetDatabasePath() = 0;
+    CARAPI GetDatabasePath(
+        /* [out] */ String* param);
 
     /**
      * Gets whether the database storage API is enabled.
@@ -848,7 +882,8 @@ public:
      * @return true if the database storage API is enabled
      * @see #setDatabaseEnabled
      */
-    virtual CARAPI_(Boolean) GetDatabaseEnabled() = 0;
+    CARAPI GetDatabaseEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets whether Geolocation is enabled. The default is true. See also
@@ -857,8 +892,8 @@ public:
      *
      * @param flag whether Geolocation should be enabled
      */
-    virtual CARAPI SetGeolocationEnabled(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetGeolocationEnabled(
+        /* [in] */ Boolean flag);
 
     /**
      * Gets whether JavaScript is enabled.
@@ -866,7 +901,8 @@ public:
      * @return true if JavaScript is enabled
      * @see #setJavaScriptEnabled
      */
-    virtual CARAPI_(Boolean) GetJavaScriptEnabled() = 0;
+    CARAPI GetJavaScriptEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets whether JavaScript running in the context of a file scheme URL can
@@ -877,7 +913,8 @@ public:
      *         can access content from any origin
      * @see #setAllowUniversalAccessFromFileURLs
      */
-    virtual CARAPI_(Boolean) GetAllowUniversalAccessFromFileURLs() = 0;
+    CARAPI GetAllowUniversalAccessFromFileURLs(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets whether JavaScript running in the context of a file scheme URL can
@@ -887,7 +924,8 @@ public:
      *         can access content from other file scheme URLs
      * @see #setAllowFileAccessFromFileURLs
      */
-    virtual CARAPI_(Boolean) GetAllowFileAccessFromFileURLs() = 0;
+    CARAPI GetAllowFileAccessFromFileURLs(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets whether plugins are enabled.
@@ -896,7 +934,8 @@ public:
      * @see #setPluginsEnabled
      * @deprecated This method has been replaced by {@link #getPluginState}
      */
-    virtual CARAPI_(Boolean) GetPluginsEnabled() = 0;
+    CARAPI GetPluginsEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Gets the current state regarding whether plugins are enabled.
@@ -904,7 +943,8 @@ public:
      * @return the plugin state as a {@link PluginState} value
      * @see #setPluginState
      */
-    virtual CARAPI_(PluginState) GetPluginState() = 0;
+    CARAPI GetPluginState(
+        /* [out] */ PluginState* state);
 
     /**
      * Gets the directory that contains the plugin libraries. This method is
@@ -914,11 +954,8 @@ public:
      * @deprecated This method is no longer used as plugins are loaded from
      * their own APK via the system's package manager.
      */
-    virtual CARAPI_(String) GetPluginsPath()
-    {
-        // Unconditionally returns empty string, so no need for derived classes to override.
-        return String("");
-    }
+    CARAPI GetPluginsPath(
+        /* [out] */ String* path);
 
     /**
      * Tells JavaScript to open windows automatically. This applies to the
@@ -926,8 +963,8 @@ public:
      *
      * @param flag true if JavaScript can open windows automatically
      */
-    virtual CARAPI SetJavaScriptCanOpenWindowsAutomatically(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetJavaScriptCanOpenWindowsAutomatically(
+        /* [in] */ Boolean flag);
 
     /**
      * Gets whether JavaScript can open windows automatically.
@@ -936,7 +973,8 @@ public:
      *         window.open()
      * @see #setJavaScriptCanOpenWindowsAutomatically
      */
-    virtual CARAPI_(Boolean) GetJavaScriptCanOpenWindowsAutomatically() = 0;
+    CARAPI GetJavaScriptCanOpenWindowsAutomatically(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the default text encoding name to use when decoding html pages.
@@ -944,8 +982,8 @@ public:
      *
      * @param encoding the text encoding name
      */
-    virtual CARAPI SetDefaultTextEncodingName(
-        /* [in] */ const String& encoding) = 0;
+    CARAPI SetDefaultTextEncodingName(
+        /* [in] */ const String& encoding);
 
     /**
      * Gets the default text encoding name.
@@ -953,14 +991,15 @@ public:
      * @return the default text encoding name as a string
      * @see #setDefaultTextEncodingName
      */
-    virtual CARAPI_(String) GetDefaultTextEncodingName() = 0;
+    CARAPI GetDefaultTextEncodingName(
+        /* [out] */ String* name);
 
     /**
      * Sets the WebView's user-agent string. If the string is null or empty,
      * the system default value will be used.
      */
-    virtual CARAPI SetUserAgentString(
-        /* [in] */ const String& ua) = 0;
+    CARAPI SetUserAgentString(
+        /* [in] */ const String& ua);
 
     /**
      * Gets the WebView's user-agent string.
@@ -968,7 +1007,8 @@ public:
      * @return the WebView's user-agent string
      * @see #setUserAgentString
      */
-    virtual CARAPI_(String) GetUserAgentString() = 0;
+    CARAPI GetUserAgentString(
+        /* [out] */ String* ua);
 
     /**
      * Returns the default User-Agent used by a WebView.
@@ -987,8 +1027,8 @@ public:
      *
      * @param flag whether the WebView needs to set a node
      */
-    virtual CARAPI SetNeedInitialFocus(
-        /* [in] */ Boolean flag) = 0;
+    CARAPI SetNeedInitialFocus(
+        /* [in] */ Boolean flag);
 
     /**
      * Sets the priority of the Render thread. Unlike the other settings, this
@@ -997,8 +1037,8 @@ public:
      *
      * @param priority the priority
      */
-    virtual CARAPI SetRenderPriority(
-        /* [in] */ RenderPriority priority) = 0;
+    CARAPI SetRenderPriority(
+        /* [in] */ RenderPriority priority);
 
     /**
      * Overrides the way the cache is used. The way the cache is used is based
@@ -1012,8 +1052,8 @@ public:
      *
      * @param mode the mode to use
      */
-    virtual CARAPI SetCacheMode(
-        /* [in] */ Int32 mode) = 0;
+    CARAPI SetCacheMode(
+        /* [in] */ Int32 mode);
 
     /**
      * Gets the current setting for overriding the cache mode.
@@ -1021,7 +1061,8 @@ public:
      * @return the current setting for overriding the cache mode
      * @see #setCacheMode
      */
-    virtual CARAPI_(Int32) GetCacheMode() = 0;
+    CARAPI GetCacheMode(
+        /* [out] */ Int32* mode);
 
 protected:
     WebSettings();

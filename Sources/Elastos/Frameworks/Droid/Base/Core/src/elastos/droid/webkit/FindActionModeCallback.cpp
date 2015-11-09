@@ -139,6 +139,21 @@ void FindActionModeCallback::SetWebView(
         assert(0);
     }
     mWebView = webView;
+    assert(0);
+    // TODO
+    // mWebView->SetFindDialogFindListener(this);
+}
+
+ECode FindActionModeCallback::OnFindResultReceived(
+    /* [in] */ Int32 activeMatchOrdinal,
+    /* [in] */ Int32 numberOfMatches,
+    /* [in] */ Boolean isDoneCounting)
+{
+    if (isDoneCounting) {
+        UpdateMatchCount(activeMatchOrdinal, numberOfMatches, numberOfMatches == 0);
+    }
+
+    return NOERROR;
 }
 
 /*
@@ -194,7 +209,7 @@ void FindActionModeCallback::UpdateMatchCount(
         UpdateMatchesString();
     }
     else {
-        IView::Probe(mMatches)->SetVisibility(IView::INVISIBLE);
+        IView::Probe(mMatches)->SetVisibility(IView::GONE);
         mNumberOfMatches = 0;
     }
 }
@@ -261,9 +276,11 @@ ECode FindActionModeCallback::OnDestroyActionMode(
     assert(0);
     // TODO
     // mWebView->NotifyFindDialogDismissed();
+    // mWebView->SetFindDialogFindListener(NULL);
     AutoPtr<IBinder> binder;
-//    mWebView->GetWebView()->GetWindowToken((IBinder**)&binder);
-    mInput->HideSoftInputFromWindow(binder, 0, NULL);
+    IView::Probe(mWebView)->GetWindowToken((IBinder**)&binder);
+    Boolean result;
+    mInput->HideSoftInputFromWindow(binder, 0, &result);
 
     return NOERROR;
 }
@@ -293,8 +310,7 @@ ECode FindActionModeCallback::OnActionItemClicked(
     }
 
     AutoPtr<IBinder> binder;
-    assert(0);
-//    mWebView->GetWebView()->GetWindowToken((IBinder**)&binder);
+    IView::Probe(mWebView)->GetWindowToken((IBinder**)&binder);
     mInput->HideSoftInputFromWindow(binder, 0, NULL);
     Int32 id;
     item->GetItemId(&id);

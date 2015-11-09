@@ -54,6 +54,34 @@ public:
     CARAPI AcceptCookie(
         /* [out] */ Boolean* result);
 
+    /**
+     * Sets whether the {@link WebView} should allow third party cookies to be set.
+     * Allowing third party cookies is a per WebView policy and can be set
+     * differently on different WebView instances.
+     * <p>
+     * Apps that target {@link android.os.Build.VERSION_CODES#KITKAT} or below
+     * default to allowing third party cookies. Apps targeting
+     * {@link android.os.Build.VERSION_CODES#LOLLIPOP} or later default to disallowing
+     * third party cookies.
+     *
+     * @param webview the {@link WebView} instance to set the cookie policy on
+     * @param accept whether the {@link WebView} instance should accept
+     *               third party cookies
+     */
+    CARAPI SetAcceptThirdPartyCookies(
+        /* [in] */ IWebView* webview,
+        /* [in] */ Boolean accept);
+
+    /**
+     * Gets whether the {@link WebView} should allow third party cookies to be set.
+     *
+     * @param webview the {@link WebView} instance to get the cookie policy for
+     * @return true if the {@link WebView} accepts third party cookies
+     */
+    CARAPI AcceptThirdPartyCookies(
+        /* [in] */ IWebView* webview,
+        /* [out] */ Boolean* result);
+
      /**
      * Sets a cookie for the given URL. Any existing cookie with the same host,
      * path and name will be replaced with the new cookie. The cookie being set
@@ -114,9 +142,42 @@ public:
     CARAPI RemoveSessionCookie();
 
     /**
+     * Removes all session cookies, which are cookies without an expiration
+     * date.
+     * <p>
+     * This method is asynchronous.
+     * If a {@link ValueCallback} is provided,
+     * {@link ValueCallback#onReceiveValue(T) onReceiveValue()} will be called on the current
+     * thread's {@link android.os.Looper} once the operation is complete.
+     * The value provided to the callback indicates whether any cookies were removed.
+     * You can pass {@code null} as the callback if you don't need to know when the operation
+     * completes or whether any cookie were removed, and in this case it is safe to call the
+     * method from a thread without a Looper.
+     * @param callback a callback which is executed when the session cookies have been removed
+     */
+    CARAPI RemoveSessionCookies(
+        /* [in] */ IValueCallback* callBack);
+
+    /**
      * Removes all cookies.
      */
     CARAPI RemoveAllCookie();
+
+    /**
+     * Removes all cookies.
+     * <p>
+     * This method is asynchronous.
+     * If a {@link ValueCallback} is provided,
+     * {@link ValueCallback#onReceiveValue(T) onReceiveValue()} will be called on the current
+     * thread's {@link android.os.Looper} once the operation is complete.
+     * The value provided to the callback indicates whether any cookies were removed.
+     * You can pass {@code null} as the callback if you don't need to know when the operation
+     * completes or whether any cookies were removed, and in this case it is safe to call the
+     * method from a thread without a Looper.
+     * @param callback a callback which is executed when the cookies have been removed
+     */
+    CARAPI RemoveAllCookies(
+        /* [in] */ IValueCallback* callBack);
 
     /**
      * Gets whether there are stored cookies.
@@ -142,6 +203,13 @@ public:
      * Removes all expired cookies.
      */
     CARAPI RemoveExpiredCookie();
+
+    /**
+     * Ensures all cookies currently accessible through the getCookie API are
+     * written to persistent storage.
+     * This call will block the caller until it is done and may perform I/O.
+     */
+    CARAPI Flush();
 
     /**
      * Gets whether the application's {@link WebView} instances send and accept

@@ -659,10 +659,7 @@ ECode WebView::Destroy()
  */
 void WebView::EnablePlatformNotifications()
 {
-    CheckThread();
-    AutoPtr<IWebViewFactoryProviderStatics> starts;
-    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&starts);
-    starts->SetPlatformNotificationsEnabled(TRUE);
+    // noop
 }
 
 /**
@@ -674,10 +671,7 @@ void WebView::EnablePlatformNotifications()
  */
 void WebView::DisablePlatformNotifications()
 {
-    CheckThread();
-    AutoPtr<IWebViewFactoryProviderStatics> starts;
-    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&starts);
-    starts->SetPlatformNotificationsEnabled(FALSE);
+    // noop
 }
 
 /**
