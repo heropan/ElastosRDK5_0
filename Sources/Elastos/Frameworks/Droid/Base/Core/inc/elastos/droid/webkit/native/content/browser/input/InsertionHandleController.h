@@ -34,7 +34,8 @@ namespace Input {
 /**
  * CursorController for inserting text at the cursor position.
  */
-class InsertionHandleController : public CursorController
+class InsertionHandleController
+    : public CursorController
 {
 public:
     /*
@@ -83,7 +84,7 @@ public:
         /* [in] */ IView* parent,
         /* [in] */ PositionObserver* positionObserver);
 
-    CAR_INTERFACE_DECL();
+    //CAR_INTERFACE_DECL();
 
     /** Allows the handle to be shown automatically when cursor position changes */
     CARAPI_(void) AllowAutomaticShowing();

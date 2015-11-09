@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/input/GamepadList.h"
+#include "elastos/droid/webkit/native/content/api/GamepadList_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/os/Build.h"
 // TODO #include "elastos/droid/view/CInputDeviceHelper.h"
@@ -444,6 +445,8 @@ void GamepadList::NativeSetGamepadData(
     /* [in] */ ArrayOf<Float>* axes,
     /* [in] */ ArrayOf<Float>* buttons)
 {
+    Elastos_GamepadList_nativeSetGamepadData(THIS_PROBE(IInterface), webGamepadsPtr,
+            index, mapping, connected, devicename, timestamp, axes, buttons);
 }
 
 } // namespace Input

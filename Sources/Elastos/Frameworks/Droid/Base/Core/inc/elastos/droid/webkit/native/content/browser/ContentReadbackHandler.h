@@ -24,13 +24,15 @@ namespace Browser {
  * A class for reading back content.
  */
 //@JNINamespace("content")
-class ContentReadbackHandler : public Object
+class ContentReadbackHandler
+    : public Object
 {
 public:
     /**
      * A callback interface for content readback into a bitmap.
      */
-    class GetBitmapCallback : public Object
+    class GetBitmapCallback
+        : public Object
     {
     public:
         /**
@@ -85,6 +87,8 @@ public:
 //        /* [in] */ WindowAndroid* windowAndroid,
 //        /* [in] */ GetBitmapCallback* callback);
 
+    static CARAPI_(void*) ElaContentReadbackHandlerCallback_Init();
+
 protected:
     /**
      * Implemented by the owner of this class to signal whether readback is possible or not.
@@ -93,6 +97,12 @@ protected:
     virtual CARAPI_(Boolean) ReadyForReadback() = 0;
 
 private:
+    static CARAPI_(void) NotifyGetBitmapFinished(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 readbackId,
+        /* [in] */ Boolean success,
+        /* [in] */ IInterface* bitmap);
+
     //@CalledByNative
     CARAPI_(void) NotifyGetBitmapFinished(
         /* [in] */ Int32 readbackId,

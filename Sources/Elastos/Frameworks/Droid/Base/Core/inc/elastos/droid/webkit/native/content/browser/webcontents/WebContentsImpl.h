@@ -29,7 +29,8 @@ namespace Webcontents {
 //TODO(tedchoc): Remove the package restriction once this class moves to a non-public content
 //               package whose visibility will be enforced via DEPS.
 /* package */
-class WebContentsImpl : public WebContents
+class WebContentsImpl
+    : public WebContents
 {
 public:
     //@Override
@@ -44,7 +45,19 @@ public:
     //@Override
     CARAPI_(void) Stop();
 
+    static CARAPI_(void*) ElaWebContentsImplCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ Int64 nativeWebContentsAndroid,
+        /* [in] */ IInterface* navigationController);
+
+    static CARAPI_(void) Destroy(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int64) GetNativePointer(
+        /* [in] */ IInterface* obj);
+
     WebContentsImpl(
         /* [in] */ Int64 nativeWebContentsAndroid,
         /* [in] */ NavigationController* navigationController);

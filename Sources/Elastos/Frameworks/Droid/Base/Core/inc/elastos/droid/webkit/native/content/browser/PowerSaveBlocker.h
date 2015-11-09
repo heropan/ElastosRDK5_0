@@ -36,7 +36,16 @@ namespace Browser {
 
 class PowerSaveBlocker
 {
+public:
+    static CARAPI_(void*) ElaPowerSaveBlockerCallback_Init();
+
 private:
+    static CARAPI_(void) ApplyBlock(
+        /* [in] */ IInterface* view);
+
+    static CARAPI_(void) RemoveBlock(
+        /* [in] */ IInterface* view);
+
     // @CalledByNative
     static CARAPI ApplyBlock(
         /* [in] */ ViewElastos* view);

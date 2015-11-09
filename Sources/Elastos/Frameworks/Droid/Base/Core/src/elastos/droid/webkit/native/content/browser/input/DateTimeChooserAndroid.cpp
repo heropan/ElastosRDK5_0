@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/input/DateTimeChooserAndroid.h"
+#include "elastos/droid/webkit/native/content/api/DateTimeChooserAndroid_dec.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateTimeSuggestion.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 
@@ -52,7 +53,7 @@ void DateTimeChooserAndroid::ShowDialog(
     /* [in] */ Double min,
     /* [in] */ Double max,
     /* [in] */ Double step,
-    /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     mInputDialogContainer->ShowDialog(dialogType, dialogValue, min, max, step, suggestions);
 }
@@ -66,7 +67,7 @@ AutoPtr<DateTimeChooserAndroid> DateTimeChooserAndroid::CreateDateTimeChooser(
     /* [in] */ Double min,
     /* [in] */ Double max,
     /* [in] */ Double step,
-    /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     AutoPtr<DateTimeChooserAndroid> chooser =
             new DateTimeChooserAndroid(
@@ -78,10 +79,10 @@ AutoPtr<DateTimeChooserAndroid> DateTimeChooserAndroid::CreateDateTimeChooser(
 }
 
 //@CalledByNative
-AutoPtr< ArrayOf<DateTimeSuggestion> > DateTimeChooserAndroid::CreateSuggestionsArray(
+AutoPtr<ArrayOf<IInterface*> > DateTimeChooserAndroid::CreateSuggestionsArray(
     /* [in] */ Int32 size)
 {
-    AutoPtr< ArrayOf<DateTimeSuggestion> > array = ArrayOf<DateTimeSuggestion>::Alloc(size);
+    AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(size);
     return array;
 }
 
@@ -94,13 +95,14 @@ AutoPtr< ArrayOf<DateTimeSuggestion> > DateTimeChooserAndroid::CreateSuggestions
  */
 //@CalledByNative
 void DateTimeChooserAndroid::SetDateTimeSuggestionAt(
-    /* [in] */ ArrayOf<DateTimeSuggestion*>* array,
+    /* [in] */ ArrayOf<IInterface*>* array,
     /* [in] */ Int32 index,
     /* [in] */ Double value,
     /* [in] */ const String& localizedValue,
     /* [in] */ const String& label)
 {
-    (*array)[index] = new DateTimeSuggestion(value, localizedValue, label);
+    //(*array)[index] = new DateTimeSuggestion(value, localizedValue, label);
+    array->Set(index, TO_IINTERFACE(new DateTimeSuggestion(value, localizedValue, label)));
 }
 
 //@CalledByNative
@@ -122,11 +124,28 @@ void DateTimeChooserAndroid::NativeReplaceDateTime(
     /* [in] */ Int64 nativeDateTimeChooserAndroid,
     /* [in] */ Double dialogValue)
 {
+    Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserAndroid, dialogValue);
 }
 
 void DateTimeChooserAndroid::NativeCancelDialog(
     /* [in] */ Int64 nativeDateTimeChooserAndroid)
 {
+    Elastos_DateTimeChooserAndroid_nativeCancelDialog(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserAndroid);
+}
+
+AutoPtr<IInterface> DateTimeChooserAndroid::CreateDateTimeChooser(
+    /* [in] */ IInterface* contentViewCore,
+    /* [in] */ Int64 nativeDateTimeChooserAndroid,
+    /* [in] */ Int32 dialogType,
+    /* [in] */ Double dialogValue,
+    /* [in] */ Double min,
+    /* [in] */ Double max,
+    /* [in] */ Double step,
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
+{
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    return TO_IINTERFACE(CreateDateTimeChooser(cvc, nativeDateTimeChooserAndroid,
+                dialogType, dialogValue, min, max, step, suggestions));
 }
 
 } // namespace Input

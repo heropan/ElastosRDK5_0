@@ -72,7 +72,7 @@ private:
 public:
     ChildProcessService();
 
-    CAR_INTERFACE_DECL();
+    //CAR_INTERFACE_DECL();
 
     /* package */
     static AutoPtr<IContext> GetContext();
@@ -88,7 +88,25 @@ public:
         /* [in] */ IIntent* intent,
         /* [out] */ IBinder** binder);
 
+    static CARAPI_(void*) ElaChildProcessServiceCallback_Init();
+
 private:
+    static CARAPI_(void) EstablishSurfaceTexturePeer(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 pid,
+        /* [in] */ IInterface* surfaceObject,
+        /* [in] */ Int32 primaryID,
+        /* [in] */ Int32 secondaryID);
+
+    static CARAPI_(AutoPtr<IInterface>) GetViewSurface(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 surfaceId);
+
+    static CARAPI_(AutoPtr<IInterface>) GetSurfaceTextureSurface(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 primaryId,
+        /* [in] */ Int32 secondaryId);
+
     /**
      * Called from native code to share a surface texture with another child process.
      * Through using the callback object the browser is used as a proxy to route the

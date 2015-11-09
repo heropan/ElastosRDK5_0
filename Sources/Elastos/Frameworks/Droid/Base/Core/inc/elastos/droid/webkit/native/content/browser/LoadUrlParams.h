@@ -30,7 +30,8 @@ namespace Browser {
   * values.
   */
 // @JNINamespace("content")
-class LoadUrlParams : public Object
+class LoadUrlParams
+    : public Object
 {
 public:
     /**
@@ -272,6 +273,7 @@ public:
 
     virtual CARAPI_(Boolean) IsBaseUrlDataScheme();
 
+    static CARAPI_(void*) ElaLoadUrlParamsCallback_Init();
 private:
     CARAPI_(String) GetExtraHeadersString(
         /* [in] */ const String& delimiter,
@@ -279,7 +281,7 @@ private:
 
     // @SuppressWarnings("unused")
     // @CalledByNative
-    static CARAPI InitializeConstants(
+    static CARAPI_(void) InitializeConstants(
         /* [in] */ Int32 load_type_default,
         /* [in] */ Int32 load_type_browser_initiated_http_post,
         /* [in] */ Int32 load_type_data,

@@ -1,9 +1,12 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
+#include "elastos/droid/webkit/native/content/api/ContentVideoView_dec.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::View::EIID_ISurfaceView;
 using Elastos::Droid::Widget::EIID_ILinearLayout;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -589,76 +592,207 @@ Int64 ContentVideoView::GetNativeViewAndroid()
 
 AutoPtr<ContentVideoView> ContentVideoView::NativeGetSingletonJavaContentVideoView()
 {
-    assert(0);
-    return NULL;
+    AutoPtr<IInterface> cvv = Elastos_ContentVideoView_nativeGetSingletonJavaContentVideoView();
+    return (ContentVideoView*)(IObject::Probe(cvv));
 }
 
 void ContentVideoView::NativeExitFullscreen(
     /* [in] */ Int64 nativeContentVideoView,
     /* [in] */ Boolean relaseMediaPlayer)
 {
+    Elastos_ContentVideoView_nativeExitFullscreen(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView, relaseMediaPlayer);
 }
 
 Int32 ContentVideoView::NativeGetCurrentPosition(
     /* [in] */ Int64 nativeContentVideoView)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentVideoView_nativeGetCurrentPosition(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 Int32 ContentVideoView::NativeGetDurationInMilliSeconds(
     /* [in] */ Int64 nativeContentVideoView)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentVideoView_nativeGetDurationInMilliSeconds(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 void ContentVideoView::NativeRequestMediaMetadata(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    Elastos_ContentVideoView_nativeRequestMediaMetadata(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 Int32 ContentVideoView::NativeGetVideoWidth(
     /* [in] */ Int64 nativeContentVideoView)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentVideoView_nativeGetVideoWidth(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 Int32 ContentVideoView::NativeGetVideoHeight(
     /* [in] */ Int64 nativeContentVideoView)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentVideoView_nativeGetVideoHeight(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 Boolean ContentVideoView::NativeIsPlaying(
     /* [in] */ Int64 nativeContentVideoView)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentVideoView_nativeIsPlaying(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 void ContentVideoView::NativePause(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    Elastos_ContentVideoView_nativePause(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 void ContentVideoView::NativePlay(
     /* [in] */ Int64 nativeContentVideoView)
 {
+    Elastos_ContentVideoView_nativePlay(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView);
 }
 
 void ContentVideoView::NativeSeekTo(
     /* [in] */ Int64 nativeContentVideoView,
     /* [in] */ Int32 msec)
 {
+    Elastos_ContentVideoView_nativeSeekTo(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView, msec);
 }
 
 void ContentVideoView::NativeSetSurface(
     /* [in] */ Int64 nativeContentVideoView,
     /* [in] */ ISurface* surface)
 {
+    Elastos_ContentVideoView_nativeSetSurface(THIS_PROBE(IInterface), (Handle32)nativeContentVideoView, TO_IINTERFACE(surface));
+}
+
+void ContentVideoView::OnMediaPlayerError(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 errorType)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OnMediaPlayerError, mObj is NULL");
+        return;
+    }
+    mObj->OnMediaPlayerError(errorType);
+}
+
+void ContentVideoView::OnVideoSizeChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OnVideoSizeChanged, mObj is NULL");
+        return;
+    }
+    mObj->OnVideoSizeChanged(width, height);
+}
+
+void ContentVideoView::OnBufferingUpdate(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 percent)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OnBufferingUpdate, mObj is NULL");
+        return;
+    }
+    mObj->OnBufferingUpdate(percent);
+}
+
+void ContentVideoView::OnPlaybackComplete(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OnPlaybackComplete, mObj is NULL");
+        return;
+    }
+    mObj->OnPlaybackComplete();
+}
+
+void ContentVideoView::OnUpdateMediaMetadata(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 videoWidth,
+    /* [in] */ Int32 videoHeight,
+    /* [in] */ Int32 duration,
+    /* [in] */ Boolean canPause,
+    /* [in] */ Boolean canSeekBack,
+    /* [in] */ Boolean canSeekForward)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OnUpdateMediaMetadata, mObj is NULL");
+        return;
+    }
+    mObj->OnUpdateMediaMetadata(videoWidth, videoHeight, duration, canPause, canSeekBack, canSeekForward);
+}
+
+void ContentVideoView::OpenVideo(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OpenVideo, mObj is NULL");
+        return;
+    }
+    mObj->OpenVideo();
+}
+
+AutoPtr<IInterface> ContentVideoView::CreateContentVideoView(
+    /* [in] */ IInterface* context,
+    /* [in] */ Int64 nativeContentVideoView,
+    /* [in] */ IInterface* client,
+    /* [in] */ Boolean legacy)
+{
+    AutoPtr<ContentVideoViewClient> cvvc = (ContentVideoViewClient*)(IObject::Probe(client));
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(CreateContentVideoView(c, nativeContentVideoView, cvvc, legacy));
+}
+
+void ContentVideoView::OnExitFullscreen(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::OnExitFullscreen, mObj is NULL");
+        return;
+    }
+    mObj->OnExitFullscreen();
+}
+
+void ContentVideoView::DestroyContentVideoView(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean nativeViewDestroyed)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::DestroyContentVideoView, mObj is NULL");
+        return;
+    }
+    mObj->DestroyContentVideoView(nativeViewDestroyed);
+}
+
+Int64 ContentVideoView::GetNativeViewAndroid(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentVideoView> mObj = (ContentVideoView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentVideoView::GetNativeViewAndroid, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetNativeViewAndroid();
 }
 
 } // namespace Browser

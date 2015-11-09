@@ -15,7 +15,8 @@ namespace Input {
  * Date/time suggestion container used to store information for each suggestion that will be shown
  * in the suggestion list dialog. Keep in sync with date_time_suggestion.h.
  */
-class DateTimeSuggestion : public Object
+class DateTimeSuggestion
+    : public Object
 {
 public:
     /**

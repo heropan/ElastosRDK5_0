@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/app/ContentMain.h"
+#include "elastos/droid/webkit/native/content/api/ContentMain_dec.h"
 
 namespace Elastos {
 namespace Droid {
@@ -27,12 +28,13 @@ Int32 ContentMain::Start()
 void ContentMain::NativeInitApplicationContext(
     /* [in] */ IContext* context)
 {
+    AutoPtr<IContext> c = IContext::Probe(context);
+    Elastos_ContentMain_nativeInitApplicationContext(c);
 }
 
 Int32 ContentMain::NativeStart()
 {
-    assert(0);
-    return -1;
+    return Elastos_ContentMain_nativeStart();
 }
 
 } // namespace App

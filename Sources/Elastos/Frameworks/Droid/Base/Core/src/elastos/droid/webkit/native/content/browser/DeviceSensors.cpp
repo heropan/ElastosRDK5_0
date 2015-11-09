@@ -1,17 +1,21 @@
 
 #include "elastos/droid/webkit/native/content/browser/DeviceSensors.h"
+#include "elastos/droid/webkit/native/content/api/DeviceSensors_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 //TODO #include "elastos/droid/hardware/CSensorManagerHelper.h"
 //TODO #include "elastos/droid/os/CHandlerThread.h"
 //TODO #include "elastos/droid/os/CHandler.h"
 //TODO #include "elastos/droid/utility/CHashSet.h"
 
+using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Core::AutoLock;
 using Elastos::Core::EIID_IThread;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Hardware::EIID_ISensorManager;
+using Elastos::Droid::Hardware::EIID_ISensorEventListener;
 using Elastos::Droid::Hardware::ISensorManagerHelper;
 //TODO using Elastos::Droid::Hardware::CSensorManagerHelper;
 //TODO using Elastos::Droid::Os::CHandler;
@@ -22,8 +26,8 @@ using Elastos::Utility::EIID_IIterable;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
 
-using Elastos::Droid::Webkit::Base::ThreadUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -90,6 +94,7 @@ ECode DeviceSensors::InnerCallable::Call(
 //===============================================================
 //                     DeviceSensors
 //===============================================================
+CAR_INTERFACE_IMPL(DeviceSensors, Object, ISensorEventListener);
 
 const String DeviceSensors::TAG("DeviceMotionAndOrientation");
 // The only instance of that class and its associated lock.
@@ -626,6 +631,8 @@ void DeviceSensors::NativeGotOrientation(
     /* [in] */ Double beta,
     /* [in] */ Double gamma)
 {
+    Elastos_DeviceSensors_nativeGotOrientation(THIS_PROBE(IInterface), (Handle32)nativeSensorManagerAndroid,
+            alpha, beta, gamma);
 }
 
 /**
@@ -637,6 +644,8 @@ void DeviceSensors::NativeGotAcceleration(
     /* [in] */ Double y,
     /* [in] */ Double z)
 {
+    Elastos_DeviceSensors_nativeGotAcceleration(THIS_PROBE(IInterface), (Handle32)nativeSensorManagerAndroid,
+            x, y, z);
 }
 
 /**
@@ -648,6 +657,7 @@ void DeviceSensors::NativeGotAccelerationIncludingGravity(
     /* [in] */ Double y,
     /* [in] */ Double z)
 {
+    Elastos_DeviceSensors_nativeGotAccelerationIncludingGravity(THIS_PROBE(IInterface), (Handle32)nativeSensorManagerAndroid, x, y, z);
 }
 
 /**
@@ -659,7 +669,57 @@ void DeviceSensors::NativeGotRotationRate(
     /* [in] */ Double beta,
     /* [in] */ Double gamma)
 {
+    Elastos_DeviceSensors_nativeGotRotationRate(THIS_PROBE(IInterface), (Handle32)nativeSensorManagerAndroid,
+            alpha, beta, gamma);
 }
+
+Boolean DeviceSensors::Start(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativePtr,
+    /* [in] */ Int32 eventType,
+    /* [in] */ Int32 rateInMilliseconds)
+{
+    AutoPtr<DeviceSensors> mObj = (DeviceSensors*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "DeviceSensors::Start, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->Start(nativePtr, eventType, rateInMilliseconds);
+}
+
+Int32 DeviceSensors::GetNumberActiveDeviceMotionSensors(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<DeviceSensors> mObj = (DeviceSensors*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "DeviceSensors::GetNumberActiveDeviceMotionSensors, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetNumberActiveDeviceMotionSensors();
+}
+
+void DeviceSensors::Stop(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 eventType)
+{
+    AutoPtr<DeviceSensors> mObj = (DeviceSensors*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "DeviceSensors::Stop, mObj is NULL");
+        return;
+    }
+    mObj->Stop(eventType);
+}
+
+AutoPtr<IInterface> DeviceSensors::GetInstance(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return TO_IINTERFACE(GetInstance(c));
+}
+
 
 } // namespace Browser
 } // namespace Content

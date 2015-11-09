@@ -28,7 +28,8 @@ class ContentViewCore;
   * to loading a url. A single web contents can have multiple WebContentObserverAndroids.
   */
 // @JNINamespace("content")
-class WebContentsObserverAndroid : public Object
+class WebContentsObserverAndroid
+    : public Object
 {
 public:
     // TODO(yfriedman): Switch everyone to use the WebContents constructor.
@@ -192,7 +193,87 @@ public:
     // @CalledByNative
     virtual CARAPI DetachFromWebContents();
 
+    static CARAPI_(void*) ElaWebContentsObserverAndroidCallback_Init();
+
 private:
+    static CARAPI_(void) RenderProcessGone(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean wasOomProtected);
+
+    static CARAPI_(void) DidStartLoading(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url);
+
+    static CARAPI_(void) DidStopLoading(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url);
+
+    static CARAPI_(void) DidFailLoad(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean isProvisionalLoad,
+        /* [in] */ Boolean isMainFrame,
+        /* [in] */ Int32 errorCode,
+        /* [in] */ const String& description,
+        /* [in] */ const String& failingUrl);
+
+    static CARAPI_(void) DidNavigateMainFrame(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& baseUrl,
+        /* [in] */ Boolean isNavigationToDifferentPage,
+        /* [in] */ Boolean isFragmentNavigation);
+
+    static CARAPI_(void) DidFirstVisuallyNonEmptyPaint(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) DidNavigateAnyFrame(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url,
+        /* [in] */ const String& baseUrl,
+        /* [in] */ Boolean isReload);
+
+    static CARAPI_(void) DidStartProvisionalLoadForFrame(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 frameId,
+        /* [in] */ Int64 parentFrameId,
+        /* [in] */ Boolean isMainFrame,
+        /* [in] */ const String& validatedUrl,
+        /* [in] */ Boolean isErrorPage,
+        /* [in] */ Boolean isIframeSrcdoc);
+
+    static CARAPI_(void) DidCommitProvisionalLoadForFrame(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 frameId,
+        /* [in] */ Boolean isMainFrame,
+        /* [in] */ const String& url,
+        /* [in] */ Int32 transitionType);
+
+    static CARAPI_(void) DidFinishLoad(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 frameId,
+        /* [in] */ const String& validatedUrl,
+        /* [in] */ Boolean isMainFrame);
+
+    static CARAPI_(void) DocumentLoadedInFrame(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 frameId);
+
+    static CARAPI_(void) NavigationEntryCommitted(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) DidAttachInterstitialPage(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) DidDetachInterstitialPage(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) DidChangeThemeColor(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 color);
+
+    static CARAPI_(void) DetachFromWebContents(
+        /* [in] */ IInterface* obj);
+
     CARAPI_(Int64) NativeInit(
         /* [in] */ WebContents* webContents);
 

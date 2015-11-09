@@ -1,13 +1,16 @@
 
 #include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
+#include "elastos/droid/webkit/native/content/api/ImeAdapter_dec.h"
 #include "elastos/droid/webkit/native/content/browser/input/InputDialogContainer.h"
 // TODO #include "os/CHandler.h"
+#include <elastos/utility/logging/Logger.h>
 
 // TODO using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Text::EIID_ISpannableString;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::EIID_IInputEvent;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -325,6 +328,7 @@ void ImeAdapter::SendKeyEventWithKeyCode(
     Int64 eventTime = SystemClock::GetUptimeMillis();
     AutoPtr<IKeyEvent> event1;
     assert(0);
+    assert(eventTime);//TODO remove warning for unused warning
     // TODO
     // CKeyEvent::New(eventTime, eventTime,
     //         IKeyEvent::ACTION_DOWN, keyCode, 0, 0,
@@ -648,8 +652,8 @@ Boolean ImeAdapter::NativeSendSyntheticKeyEvent(
     /* [in] */ Int32 keyCode,
     /* [in] */ Int32 unicodeChar)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ImeAdapter_nativeSendSyntheticKeyEvent(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid,
+            eventType, timestampMs, keyCode, unicodeChar);
 }
 
 Boolean ImeAdapter::NativeSendKeyEvent(
@@ -662,8 +666,8 @@ Boolean ImeAdapter::NativeSendKeyEvent(
     /* [in] */ Boolean isSystemKey,
     /* [in] */ Int32 unicodeChar)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ImeAdapter_nativeSendKeyEvent(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid,
+            TO_IINTERFACE(event), action, modifiers, timestampMs, keyCode, isSystemKey, unicodeChar);
 }
 
 void ImeAdapter::NativeAppendUnderlineSpan(
@@ -671,6 +675,7 @@ void ImeAdapter::NativeAppendUnderlineSpan(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
+    Elastos_ImeAdapter_nativeAppendUnderlineSpan(underlinePtr, start, end);
 }
 
 void ImeAdapter::NativeAppendBackgroundColorSpan(
@@ -679,6 +684,7 @@ void ImeAdapter::NativeAppendBackgroundColorSpan(
     /* [in] */ Int32 end,
     /* [in] */ Int32 backgroundColor)
 {
+    Elastos_ImeAdapter_nativeAppendBackgroundColorSpan(underlinePtr, start, end, backgroundColor);
 }
 
 void ImeAdapter::NativeSetComposingText(
@@ -687,22 +693,27 @@ void ImeAdapter::NativeSetComposingText(
     /* [in] */ const String& textStr,
     /* [in] */ Int32 newCursorPosition)
 {
+    Elastos_ImeAdapter_nativeSetComposingText(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid,
+            TO_IINTERFACE(text), textStr, newCursorPosition);
 }
 
 void ImeAdapter::NativeCommitText(
     /* [in] */ Int64 nativeImeAdapterAndroid,
     /* [in] */ const String& textStr)
 {
+    Elastos_ImeAdapter_nativeCommitText(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid, textStr);
 }
 
 void ImeAdapter::NativeFinishComposingText(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeFinishComposingText(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativeAttachImeAdapter(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeAttachImeAdapter(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativeSetEditableSelectionOffsets(
@@ -710,6 +721,8 @@ void ImeAdapter::NativeSetEditableSelectionOffsets(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
+    Elastos_ImeAdapter_nativeSetEditableSelectionOffsets(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid,
+            start, end);
 }
 
 void ImeAdapter::NativeSetComposingRegion(
@@ -717,6 +730,7 @@ void ImeAdapter::NativeSetComposingRegion(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
+    Elastos_ImeAdapter_nativeSetComposingRegion(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid, start, end);
 }
 
 void ImeAdapter::NativeDeleteSurroundingText(
@@ -724,36 +738,96 @@ void ImeAdapter::NativeDeleteSurroundingText(
     /* [in] */ Int32 before,
     /* [in] */ Int32 after)
 {
+    Elastos_ImeAdapter_nativeDeleteSurroundingText(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid,
+            before, after);
 }
 
 void ImeAdapter::NativeUnselect(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeUnselect(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativeSelectAll(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeSelectAll(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativeCut(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeCut(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativeCopy(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeCopy(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativePaste(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativePaste(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
 }
 
 void ImeAdapter::NativeResetImeAdapter(
     /* [in] */ Int64 nativeImeAdapterAndroid)
 {
+    Elastos_ImeAdapter_nativeResetImeAdapter(THIS_PROBE(IInterface), (Handle32)nativeImeAdapterAndroid);
+}
+
+void ImeAdapter::FocusedNodeChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean isEditable)
+{
+    AutoPtr<ImeAdapter> mObj = (ImeAdapter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ImeAdapter", "ImeAdapter::FocusedNodeChanged, mObj is NULL");
+        return;
+    }
+    mObj->FocusedNodeChanged(isEditable);
+}
+
+void ImeAdapter::PopulateUnderlinesFromSpans(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* text,
+    /* [in] */ Int64 underlines)
+{
+    AutoPtr<ImeAdapter> mObj = (ImeAdapter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ImeAdapter", "ImeAdapter::PopulateUnderlinesFromSpans, mObj is NULL");
+        return;
+    }
+    AutoPtr<ICharSequence> cs = ICharSequence::Probe(text);
+    mObj->PopulateUnderlinesFromSpans(cs, underlines);
+}
+
+void ImeAdapter::CancelComposition(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ImeAdapter> mObj = (ImeAdapter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ImeAdapter", "ImeAdapter::CancelComposition, mObj is NULL");
+        return;
+    }
+    mObj->CancelComposition();
+}
+
+void ImeAdapter::Detach(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ImeAdapter> mObj = (ImeAdapter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ImeAdapter", "ImeAdapter::Detach, mObj is NULL");
+        return;
+    }
+    mObj->Detach();
 }
 
 } // namespace Input

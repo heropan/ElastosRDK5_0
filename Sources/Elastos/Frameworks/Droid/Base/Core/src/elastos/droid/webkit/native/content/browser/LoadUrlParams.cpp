@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
+#include "elastos/droid/webkit/native/content/api/LoadUrlParams_dec.h"
 #include "elastos/droid/webkit/native/content/browser/PageTransitionTypes.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -324,7 +325,7 @@ String LoadUrlParams::GetExtraHeadersString(
     return headerBuilder->ToString();
 }
 
-ECode LoadUrlParams::InitializeConstants(
+void LoadUrlParams::InitializeConstants(
     /* [in] */ Int32 load_type_default,
     /* [in] */ Int32 load_type_browser_initiated_http_post,
     /* [in] */ Int32 load_type_data,
@@ -338,14 +339,12 @@ ECode LoadUrlParams::InitializeConstants(
     assert(UA_OVERRIDE_INHERIT == ua_override_inherit);
     assert(UA_OVERRIDE_FALSE == ua_override_false);
     assert(UA_OVERRIDE_TRUE == ua_override_true);
-
-    return NOERROR;
 }
 
 Boolean LoadUrlParams::NativeIsDataScheme(
     /* [in] */ const String& url)
 {
-    return FALSE;
+    return Elastos_LoadUrlParams_nativeIsDataScheme(url);
 }
 
 } // namespace Browser

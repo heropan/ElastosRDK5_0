@@ -28,7 +28,8 @@ namespace Browser {
  * Android implementation of the battery status APIs.
  */
 //@JNINamespace("content")
-class BatteryStatusManager : public Object
+class BatteryStatusManager
+    : public Object
 {
 private:
   class InnerBroadcastReceiver
@@ -70,6 +71,8 @@ public:
     CARAPI_(void) OnReceive(
       /* [in] */ IIntent* intent);
 
+    static CARAPI_(void*) ElaBatteryStatusManagerCallback_Init();
+
 protected:
     BatteryStatusManager(
       /* [in] */ IContext* context);
@@ -87,6 +90,16 @@ protected:
       /* [in] */ Double level);
 
 private:
+    static CARAPI_(AutoPtr<IInterface>) GetInstance(
+        /* [in] */ IInterface* appContext);
+
+    static CARAPI_(Boolean) Start(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativePtr);
+
+    static CARAPI_(void) Stop(
+        /* [in] */ IInterface* obj);
+
     /**
      * Native JNI call
      * see content/browser/battery_status/battery_status_manager.cc

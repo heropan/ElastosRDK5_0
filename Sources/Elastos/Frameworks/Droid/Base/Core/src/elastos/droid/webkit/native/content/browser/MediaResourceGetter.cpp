@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/MediaResourceGetter.h"
+#include "elastos/droid/webkit/native/content/api/MediaResourceGetter_dec.h"
 #include "elastos/droid/webkit/native/base/PathUtils.h"
 //TODO #include <elastos/core/CInteger32.h>
 #include <elastos/core/StringUtils.h>
@@ -119,6 +120,55 @@ Boolean MediaResourceGetter::MediaMetadata::Equals(
 
     return TRUE;
 }
+
+Int32 MediaResourceGetter::MediaMetadata::GetDurationInMilliseconds(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaResourceGetter::MediaMetadata> mObj = (MediaResourceGetter::MediaMetadata*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "MediaResourceGetter::MediaMetadata::GetDurationInMilliseconds, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetDurationInMilliseconds();
+}
+
+Int32 MediaResourceGetter::MediaMetadata::GetWidth(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaResourceGetter::MediaMetadata> mObj = (MediaResourceGetter::MediaMetadata*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "MediaResourceGetter::MediaMetadata::GetWidth, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetWidth();
+}
+
+Int32 MediaResourceGetter::MediaMetadata::GetHeight(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaResourceGetter::MediaMetadata> mObj = (MediaResourceGetter::MediaMetadata*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "MediaResourceGetter::MediaMetadata::GetHeight, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetHeight();
+}
+
+Boolean MediaResourceGetter::MediaMetadata::IsSuccess(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<MediaResourceGetter::MediaMetadata> mObj = (MediaResourceGetter::MediaMetadata*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "MediaResourceGetter::MediaMetadata::IsSuccess, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->IsSuccess();
+}
+
 
 //=====================================================================
 //                         MediaResourceGetter
@@ -418,13 +468,13 @@ AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::ExtractMediaMet
              context, url, cookies, userAgent);
 }
 
-AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::ExtractMediaMetadataFromFd(
+AutoPtr<IInterface> MediaResourceGetter::ExtractMediaMetadataFromFd(
     /* [in] */ Int32 fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
 {
     AutoPtr<MediaResourceGetter> getter = new MediaResourceGetter();
-    return getter->Extract(fd, offset, length);
+    return TO_IINTERFACE(getter->Extract(fd, offset, length));
 }
 
 AutoPtr<MediaResourceGetter::MediaMetadata> MediaResourceGetter::DoExtractMetadata()
@@ -543,6 +593,16 @@ AutoPtr<IList> MediaResourceGetter::Canonicalize(
     //     Log.w(TAG, "canonicalization of file path failed");
     // }
     // return result;
+}
+
+AutoPtr<IInterface> MediaResourceGetter::ExtractMediaMetadata(
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& url,
+    /* [in] */ const String& cookies,
+    /* [in] */ const String& userAgent)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(ExtractMediaMetadata(context, url, cookies, userAgent));
 }
 
 } // namespace Browser

@@ -45,13 +45,15 @@ namespace Browser {
  * This is a singleton, and stores a reference to the application context.
  */
 //@JNINamespace("content")
-class BrowserStartupController : public Object
+class BrowserStartupController
+    : public Object
 {
 public:
     /**
      * This provides the interface to the callbacks for successful or failed startup
      */
     class StartupCallback
+        : public Object
     {
     public:
         virtual CARAPI_(void) OnSuccess(
@@ -96,27 +98,6 @@ private:
         BrowserStartupController* mOwner;
         StartupCallback* mCallback;
     };
-
-public:
-    // Helper constants for {@link #executeEnqueuedCallbacks(int, boolean)}.
-    //@VisibleForTesting
-    static const Int32 STARTUP_SUCCESS = -1;
-    //@VisibleForTesting
-    static const Int32 STARTUP_FAILURE = 1;
-
-    // Use single-process mode that runs the renderer on a separate thread in
-    // the main application.
-    static const Int32 MAX_RENDERERS_SINGLE_PROCESS = 0;
-
-    // Cap on the maximum number of renderer processes that can be requested.
-    // This is currently set to account for:
-    //  13: The maximum number of sandboxed processes we have available
-    // - 1: The regular New Tab Page
-    // - 1: The incognito New Tab Page
-    // - 1: A regular incognito tab
-    // - 1: Safety buffer (http://crbug.com/251279)
-    static const Int32 MAX_RENDERERS_LIMIT =
-            ChildProcessLauncher::MAX_REGISTERED_SANDBOXED_SERVICES - 4;
 
 public:
     BrowserStartupController(
@@ -181,6 +162,8 @@ public:
      */
     CARAPI_(void) InitChromiumBrowserProcessForTests();
 
+    static CARAPI_(void*) ElaBrowserStartupControllerCallback_Init();
+
 private:
     static CARAPI_(void) SetAsynchronousStartup(
         /* [in] */ Boolean enable);
@@ -209,6 +192,27 @@ private:
     static CARAPI_(Boolean) NativeIsOfficialBuild();
 
     static CARAPI_(Boolean) NativeIsPluginEnabled();
+
+public:
+    // Helper constants for {@link #executeEnqueuedCallbacks(int, boolean)}.
+    //@VisibleForTesting
+    static const Int32 STARTUP_SUCCESS = -1;
+    //@VisibleForTesting
+    static const Int32 STARTUP_FAILURE = 1;
+
+    // Use single-process mode that runs the renderer on a separate thread in
+    // the main application.
+    static const Int32 MAX_RENDERERS_SINGLE_PROCESS = 0;
+
+    // Cap on the maximum number of renderer processes that can be requested.
+    // This is currently set to account for:
+    //  13: The maximum number of sandboxed processes we have available
+    // - 1: The regular New Tab Page
+    // - 1: The incognito New Tab Page
+    // - 1: A regular incognito tab
+    // - 1: Safety buffer (http://crbug.com/251279)
+    static const Int32 MAX_RENDERERS_LIMIT =
+            ChildProcessLauncher::MAX_REGISTERED_SANDBOXED_SERVICES - 4;
 
 private:
     static const String TAG;

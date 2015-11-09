@@ -34,7 +34,8 @@ namespace Browser {
   * Based on android.webkit.GeolocationService.java
   */
 // @VisibleForTesting
-class LocationProviderAdapter : public Object
+class LocationProviderAdapter
+    : public Object
 {
 public:
     class StartRunnable
@@ -108,8 +109,19 @@ public:
 
     static CARAPI NewErrorAvailable(
         /* [in] */ const String& message);
+    static CARAPI_(void*) ElaLocationProviderAdapterCallback_Init();
 
 private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(Boolean) Start(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean gpsEnabled);
+
+    static CARAPI_(void) Stop(
+        /* [in] */ IInterface* obj);
+
     LocationProviderAdapter(
         /* [in] */ IContext* context);
 

@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/BrowserStartupController.h"
+#include "elastos/droid/webkit/native/content/api/BrowserStartupController_dec.h"
 #include "elastos/droid/webkit/native/content/browser/ResourceExtractor.h"
 #include "elastos/droid/webkit/native/content/browser/DeviceUtils.h"
 #include "elastos/droid/webkit/native/content/browser/PepperPluginManager.h"
@@ -354,20 +355,19 @@ void BrowserStartupController::NativeSetCommandLineFlags(
     /* [in] */ Int32 maxRenderProcesses,
     /* [in] */ const String& pluginDescriptor)
 {
+    Elastos_BrowserStartupController_nativeSetCommandLineFlags(maxRenderProcesses, pluginDescriptor);
 }
 
 // Is this an official build of Chrome? Only native code knows for sure. Official build
 // knowledge is needed very early in process startup.
 Boolean BrowserStartupController::NativeIsOfficialBuild()
 {
-    assert(0);
-    return FALSE;
+    return Elastos_BrowserStartupController_nativeIsOfficialBuild();
 }
 
 Boolean BrowserStartupController::NativeIsPluginEnabled()
 {
-    assert(0);
-    return FALSE;
+    return Elastos_BrowserStartupController_nativeIsPluginEnabled();
 }
 
 } // namespace Browser

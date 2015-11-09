@@ -1,8 +1,11 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentReadbackHandler.h"
+#include "elastos/droid/webkit/native/content/api/ContentReadbackHandler_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -124,13 +127,13 @@ void ContentReadbackHandler::GetContentBitmapAsync(
 
 Int64 ContentReadbackHandler::NativeInit()
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentReadbackHandler_nativeInit(THIS_PROBE(IInterface));
 }
 
 void ContentReadbackHandler::NativeDestroy(
     /* [in] */ Int64 nativeContentReadbackHandler)
 {
+    Elastos_ContentReadbackHandler_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeContentReadbackHandler);
 }
 
 void ContentReadbackHandler::NativeGetContentBitmap(
@@ -144,6 +147,7 @@ void ContentReadbackHandler::NativeGetContentBitmap(
     /* [in] */ Float height,
     /* [in] */ IInterface* contentViewCore)
 {
+    Elastos_ContentReadbackHandler_nativeGetContentBitmap(THIS_PROBE(IInterface), (Handle32)nativeContentReadbackHandler, readback_id, scale, config, x, y, width, height, contentViewCore);
 }
 
 void ContentReadbackHandler::NativeGetCompositorBitmap(
@@ -151,6 +155,23 @@ void ContentReadbackHandler::NativeGetCompositorBitmap(
     /* [in] */ Int32 readback_id,
     /* [in] */ Int64 nativeWindowAndroid)
 {
+    Elastos_ContentReadbackHandler_nativeGetCompositorBitmap(THIS_PROBE(IInterface), (Handle32)nativeContentReadbackHandler, readback_id, nativeWindowAndroid);
+}
+
+void ContentReadbackHandler::NotifyGetBitmapFinished(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 readbackId,
+    /* [in] */ Boolean success,
+    /* [in] */ IInterface* bitmap)
+{
+    AutoPtr<ContentReadbackHandler> mObj = (ContentReadbackHandler*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ContentReadbackHandler", "ContentReadbackHandler::NotifyGetBitmapFinished, mObj is NULL");
+        return;
+    }
+    AutoPtr<IBitmap> b = IBitmap::Probe(bitmap);
+    mObj->NotifyGetBitmapFinished(readbackId, success, b);
 }
 
 } // namespace Browser

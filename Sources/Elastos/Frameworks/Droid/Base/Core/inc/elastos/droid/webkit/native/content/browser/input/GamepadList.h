@@ -35,7 +35,8 @@ namespace Input {
  * data.
  */
 //@JNINamespace("content")
-class GamepadList : public Object
+class GamepadList
+    : public Object
 {
 private:
     class LazyHolder
@@ -120,7 +121,10 @@ public:
     static CARAPI_(void) NotifyForGamepadsAccess(
         /* [in] */ Boolean isAccessPaused);
 
+    static CARAPI_(void*) ElaGamepadListCallback_Init();
+
 private:
+
     //@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     GamepadList();
 
@@ -201,7 +205,7 @@ private:
 private:
     static const Int32 MAX_GAMEPADS = 4;
 
-    /*const*/ Object mLock;
+    Object mLock;
 
     AutoPtr< ArrayOf<GamepadDevice*> > mGamepadDevices;
     AutoPtr<IInputManager> mInputManager;

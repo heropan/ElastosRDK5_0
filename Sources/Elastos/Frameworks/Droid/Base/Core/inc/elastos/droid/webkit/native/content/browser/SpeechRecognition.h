@@ -51,7 +51,8 @@ namespace Browser {
   * good local fallback when no data connection is available.
   */
 // @JNINamespace("content")
-class SpeechRecognition : public Object
+class SpeechRecognition
+    : public Object
 {
 public:
     // Internal class to handle events from Android's SpeechRecognizer and route them to native.
@@ -118,7 +119,25 @@ public:
     static CARAPI_(Boolean) Initialize(
         /* [in] */ IContext* context);
 
+    static CARAPI_(void*) ElaSpeechRecognitionCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) CreateSpeechRecognition(
+        /* [in] */ IInterface* context,
+        /* [in] */ Int64 nativeSpeechRecognizerImplAndroid);
+
+    static CARAPI_(void) StartRecognition(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& language,
+        /* [in] */ Boolean continuous,
+        /* [in] */ Boolean interimResults);
+
+    static CARAPI_(void) AbortRecognition(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) StopRecognition(
+        /* [in] */ IInterface* obj);
+
     SpeechRecognition(
         /* [in] */ IContext* context,
         /* [in] */ Int64 nativeSpeechRecognizerImplAndroid);

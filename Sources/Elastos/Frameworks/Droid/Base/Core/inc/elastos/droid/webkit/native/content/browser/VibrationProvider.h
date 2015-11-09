@@ -32,9 +32,23 @@ namespace Browser {
   * This is the implementation of the C++ counterpart VibrationProvider.
   */
 // @JNINamespace("content")
-class VibrationProvider : public Object
+class VibrationProvider
+    : public Object
 {
+public:
+    static CARAPI_(void*) ElaVibrationProviderCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ IInterface* context);
+
+    static CARAPI_(void) Vibrate(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 milliseconds);
+
+    static CARAPI_(void) CancelVibration(
+        /* [in] */ IInterface* obj);
+
     VibrationProvider(
         /* [in] */ IContext* context);
 
@@ -51,9 +65,9 @@ private:
 
 private:
     static const String TAG;
-    /*const*/ AutoPtr<IAudioManager> mAudioManager;
-    /*const*/ AutoPtr<IVibrator> mVibrator;
-    /*const*/ Boolean mHasVibratePermission;
+    AutoPtr<IAudioManager> mAudioManager;
+    AutoPtr<IVibrator> mVibrator;
+    Boolean mHasVibratePermission;
 };
 
 } // namespace Browser

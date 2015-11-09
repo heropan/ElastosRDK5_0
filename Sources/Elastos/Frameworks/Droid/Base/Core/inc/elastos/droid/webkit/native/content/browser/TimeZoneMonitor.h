@@ -32,7 +32,8 @@ namespace Browser {
   * Android implementation details for content::TimeZoneMonitorAndroid.
   */
 // @JNINamespace("content")
-class TimeZoneMonitor : public Object
+class TimeZoneMonitor
+    : public Object
 {
 public:
     class InnerBroadcastReceiver
@@ -66,7 +67,16 @@ public:
     // @CalledByNative
     virtual CARAPI Stop();
 
+    static CARAPI_(void*) ElaTimeZoneMonitorCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) GetInstance(
+        /* [in] */ IInterface* context,
+        /* [in] */ Int64 nativePtr);
+
+    static CARAPI_(void) Stop(
+        /* [in] */ IInterface* obj);
+
     /**
       * Start listening for intents.
       * @param nativePtr The native content::TimeZoneMonitorAndroid to notify of time zone changes.
@@ -84,9 +94,9 @@ private:
 
 private:
     static const String TAG;
-    /*const*/ AutoPtr<IContext> mAppContext;
-    /*const*/ AutoPtr<IIntentFilter> mFilter;
-    /*const*/ AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
+    AutoPtr<IContext> mAppContext;
+    AutoPtr<IIntentFilter> mFilter;
+    AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
     Int64 mNativePtr;
 };
 

@@ -39,3 +39,4 @@ SOURCES += TwoFieldDatePicker.cpp
 SOURCES += TwoFieldDatePickerDialog.cpp
 SOURCES += WeekPicker.cpp
 SOURCES += WeekPickerDialog.cpp
+SOURCES += CursorController.cpp

@@ -50,7 +50,8 @@ namespace Accessibility {
  * accessibility.
  */
 //@JNINamespace("content")
-class BrowserAccessibilityManager : public Object
+class BrowserAccessibilityManager
+    : public Object
 {
 public:
     /**
@@ -70,6 +71,8 @@ public:
      * web coordinates to screen coordinates.
      */
     CARAPI_(void) NotifyFrameInfoInitialized();
+
+    static CARAPI_(void*) ElaBrowserAccessibilityManagerCallback_Init();
 
 protected:
     BrowserAccessibilityManager(
@@ -169,7 +172,221 @@ protected:
         /* [in] */ Float max,
         /* [in] */ Float current);
 
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) Create(
+        /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+        /* [in] */ IInterface* contentViewCore);
+
+    static CARAPI_(void) OnNativeObjectDestroyed(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) HandlePageLoaded(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleFocusChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleCheckStateChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleTextSelectionChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleEditableTextChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleContentChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleNavigate(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) HandleScrollPositionChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleScrolledToAnchor(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) HandleHover(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) AnnounceLiveRegionText(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& text);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoParent(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 parentId);
+
+    static CARAPI_(void) AddAccessibilityNodeInfoChild(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 childId);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoBooleanAttributes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 virtualViewId,
+        /* [in] */ Boolean checkable,
+        /* [in] */ Boolean checked,
+        /* [in] */ Boolean clickable,
+        /* [in] */ Boolean enabled,
+        /* [in] */ Boolean focusable,
+        /* [in] */ Boolean focused,
+        /* [in] */ Boolean password,
+        /* [in] */ Boolean scrollable,
+        /* [in] */ Boolean selected,
+        /* [in] */ Boolean visibleToUser);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoClassName(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ const String& className);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoContentDescription(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ const String& contentDescription,
+        /* [in] */ Boolean annotateAsLink);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoLocation(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 absoluteLeft,
+        /* [in] */ Int32 absoluteTop,
+        /* [in] */ Int32 parentRelativeLeft,
+        /* [in] */ Int32 parentRelativeTop,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Boolean isRootNode);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoKitKatAttributes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Boolean canOpenPopup,
+        /* [in] */ Boolean contentInvalid,
+        /* [in] */ Boolean dismissable,
+        /* [in] */ Boolean multiLine,
+        /* [in] */ Int32 inputType,
+        /* [in] */ Int32 liveRegion);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoCollectionInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 rowCount,
+        /* [in] */ Int32 columnCount,
+        /* [in] */ Boolean hierarchical);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoCollectionItemInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 rowIndex,
+        /* [in] */ Int32 rowSpan,
+        /* [in] */ Int32 columnIndex,
+        /* [in] */ Int32 columnSpan,
+        /* [in] */ Boolean heading);
+
+    static CARAPI_(void) SetAccessibilityNodeInfoRangeInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* node,
+        /* [in] */ Int32 rangeType,
+        /* [in] */ Float min,
+        /* [in] */ Float max,
+        /* [in] */ Float current);
+
+    static CARAPI_(void) SetAccessibilityEventBooleanAttributes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Boolean checked,
+        /* [in] */ Boolean enabled,
+        /* [in] */ Boolean password,
+        /* [in] */ Boolean scrollable);
+
+    static CARAPI_(void) SetAccessibilityEventClassName(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ const String& className);
+
+    static CARAPI_(void) SetAccessibilityEventListAttributes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 currentItemIndex,
+        /* [in] */ Int32 itemCount);
+
+    static CARAPI_(void) SetAccessibilityEventScrollAttributes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 scrollX,
+        /* [in] */ Int32 scrollY,
+        /* [in] */ Int32 maxScrollX,
+        /* [in] */ Int32 maxScrollY);
+
+    static CARAPI_(void) SetAccessibilityEventTextChangedAttrs(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 fromIndex,
+        /* [in] */ Int32 addedCount,
+        /* [in] */ Int32 removedCount,
+        /* [in] */ const String& beforeText,
+        /* [in] */ const String& text);
+
+    static CARAPI_(void) SetAccessibilityEventSelectionAttrs(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 fromIndex,
+        /* [in] */ Int32 addedCount,
+        /* [in] */ Int32 itemCount,
+        /* [in] */ const String& text);
+
+    static CARAPI_(void) SetAccessibilityEventKitKatAttributes(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Boolean canOpenPopup,
+        /* [in] */ Boolean contentInvalid,
+        /* [in] */ Boolean dismissable,
+        /* [in] */ Boolean multiLine,
+        /* [in] */ Int32 inputType,
+        /* [in] */ Int32 liveRegion);
+
+    static CARAPI_(void) SetAccessibilityEventCollectionInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 rowCount,
+        /* [in] */ Int32 columnCount,
+        /* [in] */ Boolean hierarchical);
+
+    static CARAPI_(void) SetAccessibilityEventHeadingFlag(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Boolean heading);
+
+    static CARAPI_(void) SetAccessibilityEventCollectionItemInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 rowIndex,
+        /* [in] */ Int32 rowSpan,
+        /* [in] */ Int32 columnIndex,
+        /* [in] */ Int32 columnSpan);
+
+    static CARAPI_(void) SetAccessibilityEventRangeInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* event,
+        /* [in] */ Int32 rangeType,
+        /* [in] */ Float min,
+        /* [in] */ Float max,
+        /* [in] */ Float current);
+
     /**
      * Create a BrowserAccessibilityManager object, which is owned by the C++
      * BrowserAccessibilityManagerAndroid instance, and connects to the content view.
@@ -384,14 +601,14 @@ private:
 
     AutoPtr<ContentViewCore> mContentViewCore;
     AutoPtr<IAccessibilityManager> mAccessibilityManager;
-    /*const*/ AutoPtr<RenderCoordinates> mRenderCoordinates;
+    AutoPtr<RenderCoordinates> mRenderCoordinates;
     Int64 mNativeObj;
     Int32 mAccessibilityFocusId;
     Boolean mIsHovering;
     Int32 mLastHoverId;
     Int32 mCurrentRootId;
-    /*const*/ AutoPtr< ArrayOf<Int32> > mTempLocation;
-    /*const*/ AutoPtr<IViewGroup> mView;
+    AutoPtr< ArrayOf<Int32> > mTempLocation;
+    AutoPtr<IViewGroup> mView;
     Boolean mUserHasTouchExplored;
     Boolean mPendingScrollToMakeNodeVisible;
 };

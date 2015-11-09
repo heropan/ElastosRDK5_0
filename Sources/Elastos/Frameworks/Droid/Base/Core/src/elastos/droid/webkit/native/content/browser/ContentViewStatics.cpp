@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentViewStatics.h"
+#include "elastos/droid/webkit/native/content/api/ContentViewStatics_dec.h"
 //TODO #include "elastos/droid/webkit/native/net/ProxyChangeListener.h"
 
 //TODO using Elastos::Droid::Webkit::Net::ProxyChangeListener;
@@ -70,13 +71,13 @@ void ContentViewStatics::DisablePlatformNotifications ()
 String ContentViewStatics::NativeFindAddress(
     /* [in] */ const String& addr)
 {
-    assert(0);
-    return String(NULL);
+    return Elastos_ContentViewStatics_nativeFindAddress(addr);
 }
 
 void ContentViewStatics::NativeSetWebKitSharedTimersSuspended(
     /* [in] */ Boolean suspend)
 {
+    Elastos_ContentViewStatics_nativeSetWebKitSharedTimersSuspended(suspend);
 }
 
 } // namespace Browser

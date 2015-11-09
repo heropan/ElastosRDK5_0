@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/ChildProcessLauncher.h"
+#include "elastos/droid/webkit/native/content/api/ChildProcessLauncher_dec.h"
 #include "elastos/droid/webkit/native/content/browser/BindingManagerImpl.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/base/TraceEvent.h"
@@ -26,9 +27,9 @@ ChildProcessLauncher::ChildConnectionAllocator::ChildConnectionAllocator(
             MAX_REGISTERED_SANDBOXED_SERVICES : MAX_REGISTERED_PRIVILEGED_SERVICES;
     // mChildProcessConnections = ArrayOf<ChildProcessConnection>::Alloc(numChildServices);
     // mFreeConnectionIndices = new ArrayList<Integer>(numChildServices);
-    // for (Int32 i = 0; i < numChildServices; i++) {
+    for (Int32 i = 0; i < numChildServices; i++) {
     //     mFreeConnectionIndices->Add(i);
-    // }
+    }
     // SetServiceClass(inSandbox ?
     //         SandboxedProcessService.class : PrivilegedProcessService.class);
 }
@@ -429,7 +430,7 @@ String ChildProcessLauncher::GetSwitchValue(
 //@CalledByNative
 void ChildProcessLauncher::Start(
     /* [in] */ IContext* context,
-    /* [in] */ const ArrayOf<String>* commandLine,
+    /* [in] */ ArrayOf<String>* commandLine,
     /* [in] */ Int32 childProcessId,
     /* [in] */ ArrayOf<Int32>* fileIds,
     /* [in] */ ArrayOf<Int32>* fileFds,
@@ -484,8 +485,8 @@ void ChildProcessLauncher::Start(
 //    Log.d(TAG, "Setting up connection to process: slot=" +
 //            allocatedConnection.getServiceNumber());
     assert(0);
-//    TriggerConnectionSetup(allocatedConnection, commandLine, childProcessId, filesToBeMapped,
-//            callbackType, clientContext);
+    TriggerConnectionSetup(allocatedConnection, commandLine, childProcessId, filesToBeMapped,
+            callbackType, clientContext);
     TraceEvent::End();
 }
 
@@ -640,6 +641,7 @@ void ChildProcessLauncher::NativeOnChildProcessStarted(
     /* [in] */ Int64 clientContext,
     /* [in] */ Int32 pid)
 {
+    Elastos_ChildProcessLauncher_nativeOnChildProcessStarted(clientContext, pid);
 }
 
 void ChildProcessLauncher::NativeEstablishSurfacePeer(
@@ -648,12 +650,42 @@ void ChildProcessLauncher::NativeEstablishSurfacePeer(
     /* [in] */ Int32 primaryID,
     /* [in] */ Int32 secondaryID)
 {
+    Elastos_ChildProcessLauncher_nativeEstablishSurfacePeer(pid, TO_IINTERFACE(surface), primaryID, secondaryID);
 }
 
 Boolean ChildProcessLauncher::NativeIsSingleProcess()
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ChildProcessLauncher_nativeIsSingleProcess();
+}
+
+void ChildProcessLauncher::RegisterViewSurface(
+    /* [in] */ Int32 surfaceId,
+    /* [in] */ IInterface* surface)
+{
+    AutoPtr<ISurface> s = ISurface::Probe(surface);
+    RegisterViewSurface(surfaceId, s);
+}
+
+void ChildProcessLauncher::RegisterSurfaceTexture(
+    /* [in] */ Int32 surfaceTextureId,
+    /* [in] */ Int32 childProcessId,
+    /* [in] */ IInterface* surfaceTexture)
+{
+    AutoPtr<ISurfaceTexture> st = ISurfaceTexture::Probe(surfaceTexture);
+    RegisterSurfaceTexture(surfaceTextureId, childProcessId, st);
+}
+
+void ChildProcessLauncher::Start(
+    /* [in] */ IInterface* context,
+    /* [in] */ ArrayOf<String>* commandLine,
+    /* [in] */ Int32 childProcessId,
+    /* [in] */ ArrayOf<Int32>* fileIds,
+    /* [in] */ ArrayOf<Int32>* fileFds,
+    /* [in] */ ArrayOf<Boolean>* fileAutoClose,
+    /* [in] */ Int64 clientContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    Start(c, commandLine, childProcessId, fileIds, fileFds, fileAutoClose, clientContext);
 }
 
 } // namespace Browser

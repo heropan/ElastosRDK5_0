@@ -21,7 +21,8 @@ class ContentViewCore;
  * from ContentViewCore.getContentSettings().
  */
 //@JNINamespace("content")
-class ContentSettings : public Object
+class ContentSettings
+    : public Object
 {
 
 public:
@@ -40,7 +41,13 @@ public:
      */
     CARAPI_(Boolean) GetJavaScriptEnabled();
 
+    static CARAPI_(void*) ElaContentSettingsCallback_Init();
+
 private:
+    static CARAPI_(void) OnNativeContentSettingsDestroyed(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeContentSettings);
+
     /**
      * Notification from the native side that it is being destroyed.
      * @param nativeContentSettings the native instance that is going away.

@@ -39,7 +39,7 @@ namespace Content {
 namespace Browser {
 namespace Input {
 
-class DateTimeSuggestion;
+//class DateTimeSuggestion;
 class DateTimeSuggestionListAdapter;
 
 /**
@@ -274,7 +274,7 @@ public:
         /* [in] */ Double min,
         /* [in] */ Double max,
         /* [in] */ Double step,
-        /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     CARAPI_(void) ShowDialog(
         /* [in] */ Int32 type,
@@ -282,7 +282,7 @@ public:
         /* [in] */ Double min,
         /* [in] */ Double max,
         /* [in] */ Double step,
-        /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     CARAPI_(void) ShowPickerDialog(
         /* [in] */ Int32 dialogType,

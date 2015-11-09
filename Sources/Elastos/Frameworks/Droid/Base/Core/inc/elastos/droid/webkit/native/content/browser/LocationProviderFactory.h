@@ -29,13 +29,15 @@ namespace Browser {
   * Factory to create a LocationProvider to allow us to inject
   * a mock for tests.
   */
-class LocationProviderFactory : public Object
+class LocationProviderFactory
+    : public Object
 {
 public:
     /**
       * LocationProviderFactory.get() returns an instance of this interface.
       */
-    class LocationProvider : public Object
+    class LocationProvider
+        : public Object
     {
     public:
         virtual CARAPI Start(
@@ -53,8 +55,8 @@ private:
       * ensures that the start/stop calls into this class are done in the UI thread.
       */
     class LocationProviderImpl
-        : public ILocationListener
-        , public LocationProviderFactory::LocationProvider
+        : public LocationProviderFactory::LocationProvider
+        , public ILocationListener
     {
     private:
         class InnerRunnable

@@ -14,7 +14,8 @@ namespace Browser {
 /**
  * The WebContents Java wrapper to allow communicating with the native WebContents object.
  */
-class WebContents : public Object
+class WebContents
+    : public Object
 {
 public:
     /**

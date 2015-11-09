@@ -56,7 +56,7 @@ namespace Browser {
 // @JNINamespace("content")
 class MediaResourceGetter : public Object
 {
-public:
+private:
     // @VisibleForTesting
     class MediaMetadata : public Object
     {
@@ -91,6 +91,18 @@ public:
         // @Override
         CARAPI_(Boolean) Equals(
             /* [in] */ Object* obj);
+
+        static CARAPI_(Int32) GetDurationInMilliseconds(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(Int32) GetWidth(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(Int32) GetHeight(
+            /* [in] */ IInterface* obj);
+
+        static CARAPI_(Boolean) IsSuccess(
+            /* [in] */ IInterface* obj);
 
     private:
         const Int32 mDurationInMilliseconds;
@@ -180,7 +192,15 @@ public:
     virtual CARAPI_(String) ExtractMetadata(
         /* [in] */ Int32 key);
 
+    static CARAPI_(void*) ElaMediaResourceGetterCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) ExtractMediaMetadata(
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& url,
+        /* [in] */ const String& cookies,
+        /* [in] */ const String& userAgent);
+
     // @CalledByNative
     static CARAPI_(AutoPtr<MediaMetadata>) ExtractMediaMetadata(
         /* [in] */ /*const*/ IContext* context,
@@ -188,8 +208,8 @@ private:
         /* [in] */ const String& cookies,
         /* [in] */ const String& userAgent);
 
-    // @CalledByNative
-    static CARAPI_(AutoPtr<MediaMetadata>) ExtractMediaMetadataFromFd(
+    // @CalledByNative return MediaMetadata
+    static CARAPI_(AutoPtr<IInterface>) ExtractMediaMetadataFromFd(
         /* [in] */ Int32 fd,
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length);

@@ -26,7 +26,8 @@ namespace Framehost {
 // TODO(tedchoc): Remove the package restriction once this class moves to a non-public content
 //                package whose visibility will be enforced via DEPS.
 /* package */
-class NavigationControllerImpl : public NavigationController
+class NavigationControllerImpl
+    : public NavigationController
 {
 public:
     //@Override
@@ -53,12 +54,17 @@ public:
     //@Override
     CARAPI_(void) GoForward();
 
+    static CARAPI_(void*) ElaNavigationControllerImplCallback_Init();
+
 private:
+    static CARAPI_(void) Destroy(
+        /* [in] */ IInterface* obj);
+
     NavigationControllerImpl(
         /* [in] */ Int64 nativeNavigationControllerAndroid);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<NavigationControllerImpl>) Create(
+    //@CalledByNative return NavigationControllerImpl
+    static CARAPI_(AutoPtr<IInterface>) Create(
         /* [in] */ Int64 nativeNavigationControllerAndroid);
 
     //@CalledByNative

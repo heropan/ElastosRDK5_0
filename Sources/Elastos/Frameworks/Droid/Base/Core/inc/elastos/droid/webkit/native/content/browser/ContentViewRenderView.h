@@ -174,6 +174,8 @@ public:
     CARAPI_(void) SetLayerTreeBuildHelper(
         /* [in] */ Int64 layerTreeBuildHelperNativePtr);
 
+    static CARAPI_(void*) ElaContentViewRenderViewCallback_Init();
+
 protected:
     /**
      * This method should be subclassed to provide actions to be performed once the view is ready to
@@ -193,10 +195,13 @@ protected:
     //@CalledByNative
     CARAPI_(void) OnCompositorLayout();
 
-protected:
-    AutoPtr<ContentViewCore> mContentViewCore;
-
 private:
+    static CARAPI_(void) OnCompositorLayout(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnSwapBuffersCompleted(
+        /* [in] */ IInterface* obj);
+
     //@CalledByNative
     CARAPI_(void) OnSwapBuffersCompleted();
 
@@ -230,6 +235,9 @@ private:
     CARAPI_(void) NativeSetOverlayVideoMode(
         /* [in] */ Int64 nativeContentViewRenderView,
         /* [in] */ Boolean enabled);
+
+protected:
+    AutoPtr<ContentViewCore> mContentViewCore;
 
 private:
     // The native side of this object.

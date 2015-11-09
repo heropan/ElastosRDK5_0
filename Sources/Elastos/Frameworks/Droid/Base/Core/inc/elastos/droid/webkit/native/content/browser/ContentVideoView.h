@@ -43,7 +43,8 @@ namespace Browser {
  * This class implements accelerated fullscreen video playback using surface view.
  */
 //@JNINamespace("content")
-class ContentVideoView : public Object
+class ContentVideoView
+    : public Object
 //    : public FrameLayout
 //    , public ISurfaceHolderCallback
 //    , public ViewAndroidDelegate
@@ -86,7 +87,8 @@ private:
         const AutoPtr<ITextView> mTextView;
     };
 
-    class InnerRunnable : public Runnable
+    class InnerRunnable
+        : public Runnable
     {
     public:
         InnerRunnable(
@@ -151,6 +153,8 @@ public:
     CARAPI ReleaseAnchorView(
         /* [in] */ IView* anchorView);
 
+    static CARAPI_(void*) ElaContentVideoViewCallback_Init();
+
 protected:
     ContentVideoView(
         /* [in] */ IContext* context,
@@ -203,6 +207,52 @@ protected:
     //@CalledByNative
     virtual CARAPI_(void) DestroyContentVideoView(
         /* [in] */ Boolean nativeViewDestroyed);
+
+private:
+
+    static CARAPI_(void) OnMediaPlayerError(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 errorType);
+
+    static CARAPI_(void) OnVideoSizeChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height);
+
+    static CARAPI_(void) OnBufferingUpdate(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 percent);
+
+    static CARAPI_(void) OnPlaybackComplete(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnUpdateMediaMetadata(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 videoWidth,
+        /* [in] */ Int32 videoHeight,
+        /* [in] */ Int32 duration,
+        /* [in] */ Boolean canPause,
+        /* [in] */ Boolean canSeekBack,
+        /* [in] */ Boolean canSeekForward);
+
+    static CARAPI_(void) OpenVideo(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(AutoPtr<IInterface>) CreateContentVideoView(
+        /* [in] */ IInterface* context,
+        /* [in] */ Int64 nativeContentVideoView,
+        /* [in] */ IInterface* client,
+        /* [in] */ Boolean legacy);
+
+    static CARAPI_(void) OnExitFullscreen(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) DestroyContentVideoView(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean nativeViewDestroyed);
+
+    static CARAPI_(Int64) GetNativeViewAndroid(
+        /* [in] */ IInterface* obj);
 
 private:
     CARAPI_(void) InitResources(
