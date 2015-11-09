@@ -1,10 +1,12 @@
 
 #include "elastos/droid/webkit/native/content/app/ChildProcessService.h"
+#include "elastos/droid/webkit/native/content/api/ChildProcessService_dec.h"
 #include "elastos/droid/webkit/native/content/browser/ChildProcessConnection.h"
+#include "elastos/droid/os/Process.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
-#include "elastos/droid/os/Process.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::AutoLock;
 using Elastos::Core::StringUtils;
@@ -13,6 +15,7 @@ using Elastos::Droid::Os::Process;
 using Elastos::Droid::View::EIID_ISurface;
 using Elastos::Droid::Webkit::Content::Browser::ChildProcessConnection;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -394,6 +397,8 @@ void ChildProcessService::NativeInitChildProcess(
     /* [in] */ Int32 cpuCount,
     /* [in] */ Int64 cpuFeatures)
 {
+    Elastos_ChildProcessService_nativeInitChildProcess(
+            TO_IINTERFACE(applicationContext), TO_IINTERFACE(service), extraFileIds, extraFileFds, cpuCount, cpuFeatures);
 }
 
 /**
@@ -401,10 +406,55 @@ void ChildProcessService::NativeInitChildProcess(
  */
 void ChildProcessService::NativeExitChildProcess()
 {
+    Elastos_ChildProcessService_nativeExitChildProcess();
 }
 
 void ChildProcessService::NativeShutdownMainThread()
 {
+    Elastos_ChildProcessService_nativeShutdownMainThread(THIS_PROBE(IInterface));
+}
+
+void ChildProcessService::EstablishSurfaceTexturePeer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 pid,
+    /* [in] */ IInterface* surfaceObject,
+    /* [in] */ Int32 primaryID,
+    /* [in] */ Int32 secondaryID)
+{
+    AutoPtr<ChildProcessService> mObj = (ChildProcessService*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ChildProcessService::EstablishSurfaceTexturePeer, mObj is NULL");
+        return;
+    }
+    mObj->EstablishSurfaceTexturePeer(pid, surfaceObject, primaryID, secondaryID);
+}
+
+AutoPtr<IInterface> ChildProcessService::GetViewSurface(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 surfaceId)
+{
+    AutoPtr<ChildProcessService> mObj = (ChildProcessService*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ChildProcessService::GetViewSurface, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->GetViewSurface(surfaceId));
+}
+
+AutoPtr<IInterface> ChildProcessService::GetSurfaceTextureSurface(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 primaryId,
+    /* [in] */ Int32 secondaryId)
+{
+    AutoPtr<ChildProcessService> mObj = (ChildProcessService*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ChildProcessService::GetSurfaceTextureSurface, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->GetSurfaceTextureSurface(primaryId, secondaryId));
 }
 
 } // namespace App

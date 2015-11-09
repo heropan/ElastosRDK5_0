@@ -18,13 +18,15 @@ namespace Browser {
   * A wrapper of the android MediaDrmCredentialManager
   */
 // @JNINamespace("content")
-class MediaDrmCredentialManager : public Object
+class MediaDrmCredentialManager
+    : public Object
 {
-public:
+private:
     /**
       * Callback interface for getting notified from credential reset.
       */
     class MediaDrmCredentialManagerCallback
+        : public Object
     {
     public:
         /**
@@ -34,6 +36,11 @@ public:
         // @CalledByNative("MediaDrmCredentialManagerCallback")
         virtual CARAPI OnCredentialResetFinished(
             /* [in] */ Boolean succeeded) = 0;
+
+        static CARAPI_(void) OnCredentialResetFinished(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Boolean succeeded);
+
     };
 
 public:
@@ -43,6 +50,8 @@ public:
       */
     static CARAPI ResetCredentials(
         /* [in] */ MediaDrmCredentialManagerCallback* callback);
+
+    static CARAPI_(void*) ElaMediaDrmCredentialManagerCallback_Init();
 
 private:
     static CARAPI NativeResetCredentials(

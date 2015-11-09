@@ -25,7 +25,8 @@ namespace Input {
  * Plumbing for the different date/time dialog adapters.
  */
 //@JNINamespace("content")
-class DateTimeChooserAndroid : public Object
+class DateTimeChooserAndroid
+    : public Object
 {
 private:
     class InnerInputActionDelegate
@@ -46,7 +47,20 @@ private:
         DateTimeChooserAndroid* mOwner;
     };
 
+public:
+    static CARAPI_(void*) ElaDateTimeChooserAndroidCallback_Init();
+
 private:
+    static CARAPI_(AutoPtr<IInterface>) CreateDateTimeChooser(
+        /* [in] */ IInterface* contentViewCore,
+        /* [in] */ Int64 nativeDateTimeChooserAndroid,
+        /* [in] */ Int32 dialogType,
+        /* [in] */ Double dialogValue,
+        /* [in] */ Double min,
+        /* [in] */ Double max,
+        /* [in] */ Double step,
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
+
     DateTimeChooserAndroid(
         /* [in] */ IContext* context,
         /* [in] */ Int64 nativeDateTimeChooserAndroid);
@@ -57,7 +71,7 @@ private:
         /* [in] */ Double min,
         /* [in] */ Double max,
         /* [in] */ Double step,
-        /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<DateTimeChooserAndroid>) CreateDateTimeChooser(
@@ -68,10 +82,10 @@ private:
         /* [in] */ Double min,
         /* [in] */ Double max,
         /* [in] */ Double step,
-        /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions);
+        /* [in] */ ArrayOf<IInterface*>* suggestions);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr< ArrayOf<DateTimeSuggestion> >) CreateSuggestionsArray(
+    //@CalledByNative return DateTimeSuggestion
+    static CARAPI_(AutoPtr<ArrayOf<IInterface*> >) CreateSuggestionsArray(
         /* [in] */ Int32 size);
 
     /**
@@ -83,7 +97,7 @@ private:
      */
     //@CalledByNative
     static CARAPI_(void) SetDateTimeSuggestionAt(
-        /* [in] */ ArrayOf<DateTimeSuggestion*>* array,
+        /* [in] */ ArrayOf<IInterface*>* array,
         /* [in] */ Int32 index,
         /* [in] */ Double value,
         /* [in] */ const String& localizedValue,
@@ -107,7 +121,7 @@ private:
 
 private:
     const Int64 mNativeDateTimeChooserAndroid;
-    /*const*/ AutoPtr<InputDialogContainer> mInputDialogContainer;
+    AutoPtr<InputDialogContainer> mInputDialogContainer;
 };
 
 } // namespace Input

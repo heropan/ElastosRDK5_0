@@ -1,7 +1,10 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/native/content/browser/DownloadController.h"
+#include "elastos/droid/webkit/native/content/api/DownloadController_dec.h"
 #include "elastos/droid/webkit/native/content/browser/DownloadInfo.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -19,13 +22,13 @@ DownloadController::DownloadController()
 }
 
 //@CalledByNative
-AutoPtr<DownloadController> DownloadController::GetInstance()
+AutoPtr<IInterface> DownloadController::GetInstance()
 {
     if (sInstance == NULL) {
         sInstance = new DownloadController();
     }
 
-    return sInstance;
+    return TO_IINTERFACE(sInstance);
 }
 
 AutoPtr<ContentViewDownloadDelegate> DownloadController::DownloadDelegateFromView(
@@ -180,7 +183,107 @@ void DownloadController::OnDangerousDownload(
 // native methods
 void DownloadController::NativeInit()
 {
+    Elastos_DownloadController_nativeInit(THIS_PROBE(IInterface));
 }
+
+void DownloadController::NewHttpGetDownload(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* view,
+    /* [in] */ const String& url,
+    /* [in] */ const String& userAgent,
+    /* [in] */ const String& contentDisposition,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& cookie,
+    /* [in] */ const String& referer,
+    /* [in] */ const String& filename,
+    /* [in] */ Int64 contentLength)
+{
+    AutoPtr<DownloadController> mObj = (DownloadController*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(LOGTAG, "DownloadController::NewHttpGetDownload, mObj is NULL");
+        return;
+    }
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(view));
+    mObj->NewHttpGetDownload(cvc, url, userAgent, contentDisposition, mimeType, cookie, referer, filename, contentLength);
+}
+
+void DownloadController::OnDownloadStarted(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* view,
+    /* [in] */ const String& filename,
+    /* [in] */ const String& mimeType)
+{
+    AutoPtr<DownloadController> mObj = (DownloadController*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(LOGTAG, "DownloadController::OnDownloadStarted, mObj is NULL");
+        return;
+    }
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(view));
+    mObj->OnDownloadStarted(cvc, filename, mimeType);
+}
+
+void DownloadController::OnDownloadCompleted(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& url,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& filename,
+    /* [in] */ const String& path,
+    /* [in] */ Int64 contentLength,
+    /* [in] */ Boolean successful,
+    /* [in] */ Int32 downloadId)
+{
+    AutoPtr<DownloadController> mObj = (DownloadController*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(LOGTAG, "DownloadController::OnDownloadCompleted, mObj is NULL");
+        return;
+    }
+    AutoPtr<IContext> c = IContext::Probe(context);
+    mObj->OnDownloadCompleted(c, url, mimeType, filename, path, contentLength, successful, downloadId);
+}
+
+void DownloadController::OnDownloadUpdated(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* context,
+    /* [in] */ const String& url,
+    /* [in] */ const String& mimeType,
+    /* [in] */ const String& filename,
+    /* [in] */ const String& path,
+    /* [in] */ Int64 contentLength,
+    /* [in] */ Boolean successful,
+    /* [in] */ Int32 downloadId,
+    /* [in] */ Int32 percentCompleted,
+    /* [in] */ Int64 timeRemainingInMs)
+{
+    AutoPtr<DownloadController> mObj = (DownloadController*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(LOGTAG, "DownloadController::OnDownloadUpdated, mObj is NULL");
+        return;
+    }
+    AutoPtr<IContext> c = IContext::Probe(context);
+    mObj->OnDownloadUpdated(c, url, mimeType, filename, path, contentLength, successful, downloadId, percentCompleted, timeRemainingInMs);
+}
+
+void DownloadController::OnDangerousDownload(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* view,
+    /* [in] */ const String& filename,
+    /* [in] */ Int32 downloadId)
+{
+    AutoPtr<DownloadController> mObj = (DownloadController*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(LOGTAG, "DownloadController::OnDangerousDownload, mObj is NULL");
+        return;
+    }
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(view));
+    mObj->OnDangerousDownload(cvc, filename, downloadId);
+}
+
 
 } // namespace Browser
 } // namespace Content

@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
+#include "elastos/droid/webkit/native/content/api/ContentViewCore_dec.h"
 #include "elastos/droid/webkit/native/content/browser/DeviceUtils.h"
 #include "elastos/droid/webkit/native/content/browser/GestureEventType.h"
 #include "elastos/droid/webkit/native/content/browser/ViewPositionObserver.h"
@@ -24,10 +25,8 @@
 
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::StringUtils;
-//using Elastos::Core::CStringWrapper;
-using Elastos::Utility::IList;
 using Elastos::Droid::App::EIID_IActivity;
 using Elastos::Droid::App::ISearchManager;
 //TODO using Elastos::Droid::Content::CIntent;
@@ -66,6 +65,10 @@ using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::InputMethod::EIID_IInputConnection;
 //TODO using Elastos::Droid::View::CMotionEventHelper;
 using Elastos::Droid::View::IMotionEventHelper;
+using Elastos::Core::StringUtils;
+//using Elastos::Core::CStringWrapper;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -4064,8 +4067,8 @@ AutoPtr<RenderCoordinates> ContentViewCore::GetRenderCoordinates()
     return mRenderCoordinates;
 }
 
-//@CalledByNative
-AutoPtr<IRect> ContentViewCore::CreateRect(
+//@CalledByNative return IRect
+AutoPtr<IInterface> ContentViewCore::CreateRect(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ Int32 right,
@@ -4075,7 +4078,7 @@ AutoPtr<IRect> ContentViewCore::CreateRect(
     assert(0);
     // TODO
     // CRect::New(x, y, right, bottomj, (IRect**)&rect);
-    return rect;
+    return TO_IINTERFACE(rect);
 }
 
 void ContentViewCore::ExtractSmartClipData(
@@ -4177,8 +4180,7 @@ Int64 ContentViewCore::NativeInit(
     /* [in] */ Int64 windowAndroidPtr,
     /* [in] */ IHashSet* retainedObjectSet)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeInit(THIS_PROBE(IInterface), webContentsPtr, viewAndroidPtr, windowAndroidPtr, TO_IINTERFACE(retainedObjectSet));
 }
 
 //@CalledByNative
@@ -4218,13 +4220,14 @@ ECode ContentViewCore::OnScreenOrientationChanged(
 AutoPtr<WebContents> ContentViewCore::NativeGetWebContentsAndroid(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return NULL;
+    AutoPtr<IInterface> wc = Elastos_ContentViewCore_nativeGetWebContentsAndroid(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
+    return (WebContents*)(IObject::Probe(wc));
 }
 
 void ContentViewCore::NativeOnJavaContentViewCoreDestroyed(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeOnJavaContentViewCoreDestroyed(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeLoadUrl(
@@ -4242,13 +4245,15 @@ void ContentViewCore::NativeLoadUrl(
     /* [in] */ Boolean canLoadLocalResources,
     /* [in] */ Boolean isRendererInitiated)
 {
+    Elastos_ContentViewCore_nativeLoadUrl(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, url,
+            loadUrlType, transitionType, referrerUrl, referrerPolicy, uaOverrideOption, extraHeaders,
+            postData, baseUrlForDataUrl, virtualUrlForDataUrl, canLoadLocalResources, isRendererInitiated);
 }
 
 String ContentViewCore::NativeGetURL(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return String(NULL);
+    return Elastos_ContentViewCore_nativeGetURL(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeShowInterstitialPage(
@@ -4256,32 +4261,33 @@ void ContentViewCore::NativeShowInterstitialPage(
     /* [in] */ const String& url,
     /* [in] */ Int64 nativeInterstitialPageDelegateAndroid)
 {
+    Elastos_ContentViewCore_nativeShowInterstitialPage(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, url, nativeInterstitialPageDelegateAndroid);
 }
 
 Boolean ContentViewCore::NativeIsShowingInterstitialPage(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentViewCore_nativeIsShowingInterstitialPage(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 Boolean ContentViewCore::NativeIsIncognito(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentViewCore_nativeIsIncognito(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetFocus(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean focused)
 {
+    Elastos_ContentViewCore_nativeSetFocus(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, focused);
 }
 
 void ContentViewCore::NativeSendOrientationChangeEvent(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Int32 orientation)
 {
+    Elastos_ContentViewCore_nativeSendOrientationChangeEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, orientation);
 }
 
 // All touch events (including flings, scrolls etc) accept coordinates in physical pixels.
@@ -4307,8 +4313,9 @@ Boolean ContentViewCore::NativeOnTouchEvent(
     /* [in] */ Int32 androidToolType1,
     /* [in] */ Int32 androidButtonState)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentViewCore_nativeOnTouchEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, TO_IINTERFACE(event),
+            timeMs, action, pointerCount, historySize, actionIndex, x0, y0, x1, y1, pointerId0, pointerId1, touchMajor0,
+            touchMajor1, rawX, rawY, androidToolType0, androidToolType1, androidButtonState);
 }
 
 Int32 ContentViewCore::NativeSendMouseMoveEvent(
@@ -4317,8 +4324,7 @@ Int32 ContentViewCore::NativeSendMouseMoveEvent(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeSendMouseMoveEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 Int32 ContentViewCore::NativeSendMouseWheelEvent(
@@ -4328,8 +4334,7 @@ Int32 ContentViewCore::NativeSendMouseWheelEvent(
     /* [in] */ Float y,
     /* [in] */ Float verticalAxis)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeSendMouseWheelEvent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, verticalAxis);
 }
 
 void ContentViewCore::NativeScrollBegin(
@@ -4340,12 +4345,14 @@ void ContentViewCore::NativeScrollBegin(
     /* [in] */ Float hintX,
     /* [in] */ Float hintY)
 {
+    Elastos_ContentViewCore_nativeScrollBegin(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, hintX, hintY);
 }
 
 void ContentViewCore::NativeScrollEnd(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs)
 {
+    Elastos_ContentViewCore_nativeScrollEnd(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs);
 }
 
 void ContentViewCore::NativeScrollBy(
@@ -4356,6 +4363,7 @@ void ContentViewCore::NativeScrollBy(
     /* [in] */ Float deltaX,
     /* [in] */ Float deltaY)
 {
+    Elastos_ContentViewCore_nativeScrollBy(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, deltaX, deltaY);
 }
 
 void ContentViewCore::NativeFlingStart(
@@ -4366,12 +4374,14 @@ void ContentViewCore::NativeFlingStart(
     /* [in] */ Float vx,
     /* [in] */ Float vy)
 {
+    Elastos_ContentViewCore_nativeFlingStart(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y, vx, vy);
 }
 
 void ContentViewCore::NativeFlingCancel(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs)
 {
+    Elastos_ContentViewCore_nativeFlingCancel(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs);
 }
 
 void ContentViewCore::NativeSingleTap(
@@ -4380,6 +4390,7 @@ void ContentViewCore::NativeSingleTap(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
+    Elastos_ContentViewCore_nativeSingleTap(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativeDoubleTap(
@@ -4388,6 +4399,7 @@ void ContentViewCore::NativeDoubleTap(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
+    Elastos_ContentViewCore_nativeDoubleTap(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativeLongPress(
@@ -4396,6 +4408,7 @@ void ContentViewCore::NativeLongPress(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
+    Elastos_ContentViewCore_nativeLongPress(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativePinchBegin(
@@ -4404,12 +4417,14 @@ void ContentViewCore::NativePinchBegin(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
+    Elastos_ContentViewCore_nativePinchBegin(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, x, y);
 }
 
 void ContentViewCore::NativePinchEnd(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Int64 timeMs)
 {
+    Elastos_ContentViewCore_nativePinchEnd(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs);
 }
 
 void ContentViewCore::NativePinchBy(
@@ -4419,6 +4434,7 @@ void ContentViewCore::NativePinchBy(
     /* [in] */ Float anchorY,
     /* [in] */ Float deltaScale)
 {
+    Elastos_ContentViewCore_nativePinchBy(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, timeMs, anchorX, anchorY, deltaScale);
 }
 
 void ContentViewCore::NativeSelectBetweenCoordinates(
@@ -4428,6 +4444,7 @@ void ContentViewCore::NativeSelectBetweenCoordinates(
     /* [in] */ Float x2,
     /* [in] */ Float y2)
 {
+    Elastos_ContentViewCore_nativeSelectBetweenCoordinates(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, x1, y1, x2, y2);
 }
 
 void ContentViewCore::NativeMoveCaret(
@@ -4435,82 +4452,97 @@ void ContentViewCore::NativeMoveCaret(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
+    Elastos_ContentViewCore_nativeMoveCaret(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, x, y);
 }
 
 void ContentViewCore::NativeResetGestureDetection(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeResetGestureDetection(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetDoubleTapSupportEnabled(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled)
 {
+    Elastos_ContentViewCore_nativeSetDoubleTapSupportEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled);
 }
 
 void ContentViewCore::NativeSetMultiTouchZoomSupportEnabled(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled)
 {
+    Elastos_ContentViewCore_nativeSetMultiTouchZoomSupportEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled);
 }
 
 void ContentViewCore::NativeLoadIfNecessary(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeLoadIfNecessary(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeRequestRestoreLoad(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeRequestRestoreLoad(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeReload(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean checkForRepost)
 {
+    Elastos_ContentViewCore_nativeReload(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, checkForRepost);
 }
 
 void ContentViewCore::NativeReloadIgnoringCache(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean checkForRepost)
 {
+    Elastos_ContentViewCore_nativeReloadIgnoringCache(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, checkForRepost);
 }
 
 void ContentViewCore::NativeCancelPendingReload(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeCancelPendingReload(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeContinuePendingReload(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeContinuePendingReload(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSelectPopupMenuItems(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ ArrayOf<Int32>* indices)
 {
+    Elastos_ContentViewCore_nativeSelectPopupMenuItems(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, indices);
 }
 
 void ContentViewCore::NativeScrollFocusedEditableNodeIntoView(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeScrollFocusedEditableNodeIntoView(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSelectWordAroundCaret(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeSelectWordAroundCaret(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeClearHistory(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeClearHistory(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeAddStyleSheetByURL(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ const String& stylesheetUrl)
 {
+    Elastos_ContentViewCore_nativeAddStyleSheetByURL(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, stylesheetUrl);
 }
 
 void ContentViewCore::NativeEvaluateJavaScript(
@@ -4519,37 +4551,38 @@ void ContentViewCore::NativeEvaluateJavaScript(
     /* [in] */ JavaScriptCallback* callback,
     /* [in] */ Boolean startRenderer)
 {
+    Elastos_ContentViewCore_nativeEvaluateJavaScript(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl,
+            script, TO_IINTERFACE(callback), startRenderer);
 }
 
 Int64 ContentViewCore::NativeGetNativeImeAdapter(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeGetNativeImeAdapter(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 Int32 ContentViewCore::NativeGetCurrentRenderProcessId(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeGetCurrentRenderProcessId(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 Int32 ContentViewCore::NativeGetBackgroundColor(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeGetBackgroundColor(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeOnShow(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeOnShow(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeOnHide(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeOnHide(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetUseDesktopUserAgent(
@@ -4557,24 +4590,26 @@ void ContentViewCore::NativeSetUseDesktopUserAgent(
     /* [in] */ Boolean enabled,
     /* [in] */ Boolean reloadOnChange)
 {
+    Elastos_ContentViewCore_nativeSetUseDesktopUserAgent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled, reloadOnChange);
 }
 
 Boolean ContentViewCore::NativeGetUseDesktopUserAgent(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentViewCore_nativeGetUseDesktopUserAgent(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeClearSslPreferences(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeClearSslPreferences(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetAllowJavascriptInterfacesInspection(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean allow)
 {
+    Elastos_ContentViewCore_nativeSetAllowJavascriptInterfacesInspection(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, allow);
 }
 
 void ContentViewCore::NativeAddJavascriptInterface(
@@ -4583,20 +4618,21 @@ void ContentViewCore::NativeAddJavascriptInterface(
     /* [in] */ const String& name,
     /* [in] */ IInterface* requiredAnnotation)
 {
+    Elastos_ContentViewCore_nativeAddJavascriptInterface(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, object, name, requiredAnnotation);
 }
 
 void ContentViewCore::NativeRemoveJavascriptInterface(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ const String& name)
 {
+    Elastos_ContentViewCore_nativeRemoveJavascriptInterface(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, name);
 }
 
 Int32 ContentViewCore::NativeGetNavigationHistory(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ IInterface* context)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewCore_nativeGetNavigationHistory(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, context);
 }
 
 void ContentViewCore::NativeGetDirectedNavigationHistory(
@@ -4605,30 +4641,31 @@ void ContentViewCore::NativeGetDirectedNavigationHistory(
     /* [in] */ Boolean isForward,
     /* [in] */ Int32 maxEntries)
 {
+    Elastos_ContentViewCore_nativeGetDirectedNavigationHistory(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, context, isForward, maxEntries);
 }
 
 String ContentViewCore::NativeGetOriginalUrlForActiveNavigationEntry(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return String(NULL);
+    return Elastos_ContentViewCore_nativeGetOriginalUrlForActiveNavigationEntry(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeWasResized(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeWasResized(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 Boolean ContentViewCore::NativeIsRenderWidgetHostViewReady(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentViewCore_nativeIsRenderWidgetHostViewReady(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeExitFullscreen(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeExitFullscreen(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeUpdateTopControlsState(
@@ -4637,17 +4674,20 @@ void ContentViewCore::NativeUpdateTopControlsState(
     /* [in] */ Boolean enableShowing,
     /* [in] */ Boolean animate)
 {
+    Elastos_ContentViewCore_nativeUpdateTopControlsState(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enableHiding, enableShowing, animate);
 }
 
 void ContentViewCore::NativeShowImeIfNeeded(
     /* [in] */ Int64 nativeContentViewCoreImpl)
 {
+    Elastos_ContentViewCore_nativeShowImeIfNeeded(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl);
 }
 
 void ContentViewCore::NativeSetAccessibilityEnabled(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean enabled)
 {
+    Elastos_ContentViewCore_nativeSetAccessibilityEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, enabled);
 }
 
 void ContentViewCore::NativeExtractSmartClipData(
@@ -4657,12 +4697,584 @@ void ContentViewCore::NativeExtractSmartClipData(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
+    Elastos_ContentViewCore_nativeExtractSmartClipData(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, x, y, w, h);
 }
 
 void ContentViewCore::NativeSetBackgroundOpaque(
     /* [in] */ Int64 nativeContentViewCoreImpl,
     /* [in] */ Boolean opaque)
 {
+    Elastos_ContentViewCore_nativeSetBackgroundOpaque(THIS_PROBE(IInterface), (Handle32)nativeContentViewCoreImpl, opaque);
+}
+
+AutoPtr<IInterface> ContentViewCore::GetContext(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetContext, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->GetContext());
+}
+
+void ContentViewCore::OnNativeContentViewCoreDestroyed(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeContentViewCore)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnNativeContentViewCoreDestroyed, mObj is NULL");
+        return;
+    }
+    mObj->OnNativeContentViewCoreDestroyed(nativeContentViewCore);
+}
+
+Int64 ContentViewCore::GetNativeContentViewCore(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetNativeContentViewCore, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetNativeContentViewCore();
+}
+
+void ContentViewCore::OnBackgroundColorChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 color)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnBackgroundColorChanged, mObj is NULL");
+        return;
+    }
+    mObj->OnBackgroundColorChanged(color);
+}
+
+Int32 ContentViewCore::GetViewportWidthPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetViewportWidthPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetViewportWidthPix();
+}
+
+Int32 ContentViewCore::GetViewportHeightPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetViewportHeightPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetViewportHeightPix();
+}
+
+Int32 ContentViewCore::GetPhysicalBackingWidthPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetPhysicalBackingWidthPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetPhysicalBackingWidthPix();
+}
+
+Int32 ContentViewCore::GetPhysicalBackingHeightPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetPhysicalBackingHeightPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetPhysicalBackingHeightPix();
+}
+
+Int32 ContentViewCore::GetOverdrawBottomHeightPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetOverdrawBottomHeightPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetOverdrawBottomHeightPix();
+}
+
+Int32 ContentViewCore::GetViewportSizeOffsetWidthPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetViewportSizeOffsetWidthPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetViewportSizeOffsetWidthPix();
+}
+
+Int32 ContentViewCore::GetViewportSizeOffsetHeightPix(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetViewportSizeOffsetHeightPix, mObj is NULL");
+        return 0;
+    }
+    return mObj->GetViewportSizeOffsetHeightPix();
+}
+
+void ContentViewCore::OnFlingStartEventConsumed(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 vx,
+    /* [in] */ Int32 vy)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnFlingStartEventConsumed, mObj is NULL");
+        return;
+    }
+    mObj->OnFlingStartEventConsumed(vx, vy);
+}
+
+void ContentViewCore::OnFlingStartEventHadNoConsumer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 vx,
+    /* [in] */ Int32 vy)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnFlingStartEventHadNoConsumer, mObj is NULL");
+        return;
+    }
+    mObj->OnFlingStartEventHadNoConsumer(vx, vy);
+}
+
+void ContentViewCore::OnFlingCancelEventAck(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnFlingCancelEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnFlingCancelEventAck();
+}
+
+void ContentViewCore::OnScrollBeginEventAck(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnScrollBeginEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnScrollBeginEventAck();
+}
+
+void ContentViewCore::OnScrollUpdateGestureConsumed(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnScrollUpdateGestureConsumed, mObj is NULL");
+        return;
+    }
+    mObj->OnScrollUpdateGestureConsumed();
+}
+
+void ContentViewCore::OnScrollEndEventAck(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnScrollEndEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnScrollEndEventAck();
+}
+
+void ContentViewCore::OnPinchBeginEventAck(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnPinchBeginEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnPinchBeginEventAck();
+}
+
+void ContentViewCore::OnPinchEndEventAck(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnPinchEndEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnPinchEndEventAck();
+}
+
+void ContentViewCore::OnSingleTapEventAck(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean consumed,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnSingleTapEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnSingleTapEventAck(consumed, x, y);
+}
+
+void ContentViewCore::OnDoubleTapEventAck(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnDoubleTapEventAck, mObj is NULL");
+        return;
+    }
+    mObj->OnDoubleTapEventAck();
+}
+
+Boolean ContentViewCore::FilterTapOrPressEvent(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 type,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::FilterTapOrPressEvent, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->FilterTapOrPressEvent(type, x, y);
+}
+
+void ContentViewCore::UpdateFrameInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Float scrollOffsetX,
+    /* [in] */ Float scrollOffsetY,
+    /* [in] */ Float pageScaleFactor,
+    /* [in] */ Float minPageScaleFactor,
+    /* [in] */ Float maxPageScaleFactor,
+    /* [in] */ Float contentWidth,
+    /* [in] */ Float contentHeight,
+    /* [in] */ Float viewportWidth,
+    /* [in] */ Float viewportHeight,
+    /* [in] */ Float controlsOffsetYCss,
+    /* [in] */ Float contentOffsetYCss,
+    /* [in] */ Float overdrawBottomHeightCss)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::UpdateFrameInfo, mObj is NULL");
+        return;
+    }
+    mObj->UpdateFrameInfo(scrollOffsetX, scrollOffsetY, pageScaleFactor, minPageScaleFactor, maxPageScaleFactor,
+            contentWidth, contentHeight, viewportWidth, viewportHeight, controlsOffsetYCss, contentOffsetYCss, overdrawBottomHeightCss);
+}
+
+void ContentViewCore::UpdateImeAdapter(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeImeAdapterAndroid,
+    /* [in] */ Int32 textInputType,
+    /* [in] */ const String& text,
+    /* [in] */ Int32 selectionStart,
+    /* [in] */ Int32 selectionEnd,
+    /* [in] */ Int32 compositionStart,
+    /* [in] */ Int32 compositionEnd,
+    /* [in] */ Boolean showImeIfNeeded,
+    /* [in] */ Boolean isNonImeChange)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::UpdateImeAdapter, mObj is NULL");
+        return;
+    }
+    mObj->UpdateImeAdapter(nativeImeAdapterAndroid, textInputType, text, selectionStart,
+            selectionEnd, compositionStart, compositionEnd, showImeIfNeeded, isNonImeChange);
+}
+
+void ContentViewCore::SetTitle(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& title)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::SetTitle, mObj is NULL");
+        return;
+    }
+    mObj->SetTitle(title);
+}
+
+void ContentViewCore::ShowSelectPopup(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* bounds,
+    /* [in] */ ArrayOf<String>* items,
+    /* [in] */ ArrayOf<Int32>* enabled,
+    /* [in] */ Boolean multiple,
+    /* [in] */ ArrayOf<Int32>* selectedIndices)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::ShowSelectPopup, mObj is NULL");
+        return;
+    }
+    AutoPtr<IRect> r = IRect::Probe(bounds);
+    mObj->ShowSelectPopup(r, items, enabled, multiple, selectedIndices);
+}
+
+void ContentViewCore::HideSelectPopup(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::HideSelectPopup, mObj is NULL");
+        return;
+    }
+    mObj->HideSelectPopup();
+}
+
+void ContentViewCore::ShowDisambiguationPopup(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* targetRect,
+    /* [in] */ IInterface* zoomedBitmap)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::ShowDisambiguationPopup, mObj is NULL");
+        return;
+    }
+    AutoPtr<IRect> r = IRect::Probe(targetRect);
+    AutoPtr<IBitmap> b = IBitmap::Probe(zoomedBitmap);
+    mObj->ShowDisambiguationPopup(r, b);
+}
+
+AutoPtr<IInterface> ContentViewCore::CreateTouchEventSynthesizer(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::CreateTouchEventSynthesizer, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->CreateTouchEventSynthesizer());
+}
+
+void ContentViewCore::OnSelectionChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& text)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnSelectionChanged, mObj is NULL");
+        return;
+    }
+    mObj->OnSelectionChanged(text);
+}
+
+void ContentViewCore::ShowSelectionHandlesAutomatically(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::ShowSelectionHandlesAutomatically, mObj is NULL");
+        return;
+    }
+    mObj->ShowSelectionHandlesAutomatically();
+}
+
+void ContentViewCore::OnSelectionBoundsChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* anchorRectDip,
+    /* [in] */ Int32 anchorDir,
+    /* [in] */ IInterface* focusRectDip,
+    /* [in] */ Int32 focusDir,
+    /* [in] */ Boolean isAnchorFirst)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnSelectionBoundsChanged, mObj is NULL");
+        return;
+    }
+    AutoPtr<IRect> r1 = IRect::Probe(anchorRectDip);
+    AutoPtr<IRect> r2 = IRect::Probe(focusRectDip);
+    mObj->OnSelectionBoundsChanged(r1, anchorDir, r2, focusDir, isAnchorFirst);
+}
+
+void ContentViewCore::OnEvaluateJavaScriptResult(
+    /* [in] */ const String& jsonResult,
+    /* [in] */ IInterface* callback)
+{
+    AutoPtr<JavaScriptCallback> jcb = (JavaScriptCallback*)(IObject::Probe(callback));
+    OnEvaluateJavaScriptResult(jsonResult, jcb);
+}
+
+void ContentViewCore::ShowPastePopup(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 xDip,
+    /* [in] */ Int32 yDip)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::ShowPastePopup, mObj is NULL");
+        return;
+    }
+    mObj->ShowPastePopup(xDip, yDip);
+}
+
+void ContentViewCore::OnRenderProcessChange(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnRenderProcessChange, mObj is NULL");
+        return;
+    }
+    mObj->OnRenderProcessChange();
+}
+
+Boolean ContentViewCore::HasFocus(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::HasFocus, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->HasFocus();
+}
+
+void ContentViewCore::StartContentIntent(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& contentUrl)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::StartContentIntent, mObj is NULL");
+        return;
+    }
+    mObj->StartContentIntent(contentUrl);
+}
+
+void ContentViewCore::AddToNavigationHistory(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* history,
+    /* [in] */ Int32 index,
+    /* [in] */ const String& url,
+    /* [in] */ const String& virtualUrl,
+    /* [in] */ const String& originalUrl,
+    /* [in] */ const String& title,
+    /* [in] */ IInterface* favicon)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::AddToNavigationHistory, mObj is NULL");
+        return;
+    }
+    AutoPtr<IBitmap> b = IBitmap::Probe(favicon);
+    mObj->AddToNavigationHistory(history, index, url, virtualUrl, originalUrl, title, b);
+}
+
+void ContentViewCore::OnSmartClipDataExtracted(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& text,
+    /* [in] */ const String& html,
+    /* [in] */ IInterface* clipRect)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnSmartClipDataExtracted, mObj is NULL");
+        return;
+    }
+    AutoPtr<IRect> r = IRect::Probe(clipRect);
+    mObj->OnSmartClipDataExtracted(text, html, r);
+}
+
+AutoPtr<IInterface> ContentViewCore::GetContentVideoViewClient(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::GetContentVideoViewClient, mObj is NULL");
+        return NULL;
+    }
+    return TO_IINTERFACE(mObj->GetContentVideoViewClient());
+}
+
+Boolean ContentViewCore::ShouldBlockMediaRequest(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& url)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::ShouldBlockMediaRequest, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->ShouldBlockMediaRequest(url);
+}
+
+void ContentViewCore::OnNativeFlingStopped(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewCore> mObj = (ContentViewCore*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentViewCore::OnNativeFlingStopped, mObj is NULL");
+        return;
+    }
+    mObj->OnNativeFlingStopped();
 }
 
 } // namespace Browser

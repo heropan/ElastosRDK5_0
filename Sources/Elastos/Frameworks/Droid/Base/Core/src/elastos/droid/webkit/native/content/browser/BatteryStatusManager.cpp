@@ -1,5 +1,8 @@
 
 #include "elastos/droid/webkit/native/content/browser/BatteryStatusManager.h"
+#include "elastos/droid/webkit/native/content/api/BatteryStatusManager_dec.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -162,6 +165,40 @@ void BatteryStatusManager::NativeGotBatteryStatus(
   /* [in] */ Double dischargingTime,
   /* [in] */ Double level)
 {
+    Elastos_BatteryStatusManager_nativeGotBatteryStatus(
+            THIS_PROBE(IInterface), (Handle32)nativeBatteryStatusManager, charging, chargingTime, dischargingTime, level);
+}
+
+AutoPtr<IInterface> BatteryStatusManager::GetInstance(
+    /* [in] */ IInterface* appContext)
+{
+    AutoPtr<IContext> c = IContext::Probe(appContext);
+    return TO_IINTERFACE(GetInstance(c));
+}
+
+Boolean BatteryStatusManager::Start(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativePtr)
+{
+    AutoPtr<BatteryStatusManager> mObj = (BatteryStatusManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BatteryStatusManager::Start, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->Start(nativePtr);
+}
+
+void BatteryStatusManager::Stop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<BatteryStatusManager> mObj = (BatteryStatusManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BatteryStatusManager::Stop, mObj is NULL");
+        return;
+    }
+    mObj->Stop();
 }
 
 } // namespace Browser

@@ -262,7 +262,7 @@ void InsertionHandleController::ShowHandleWithPastePopup()
  */
 Boolean InsertionHandleController::IsDragging()
 {
-    Boolean bFlag = FALSE;
+    //Boolean bFlag = FALSE;
     return mHandle != NULL && (mHandle->IsDragging());
 }
 

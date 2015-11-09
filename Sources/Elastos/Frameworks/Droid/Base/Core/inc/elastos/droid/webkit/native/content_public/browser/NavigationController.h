@@ -14,7 +14,8 @@ namespace Browser {
  * The NavigationController Java wrapper to allow communicating with the native
  * NavigationController object.
  */
-class NavigationController : public Object
+class NavigationController
+    : public Object
 {
 public:
     /**

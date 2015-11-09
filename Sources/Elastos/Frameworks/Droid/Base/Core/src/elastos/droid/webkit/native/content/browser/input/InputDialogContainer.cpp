@@ -420,13 +420,14 @@ void InputDialogContainer::ShowPickerDialog(
     }
 }
 
+// DateTimeSuggestion in suggestions
 void InputDialogContainer::ShowSuggestionDialog(
     /* [in] */ Int32 dialogType,
     /* [in] */ Double dialogValue,
     /* [in] */ Double min,
     /* [in] */ Double max,
     /* [in] */ Double step,
-    /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     AutoPtr<IListView> suggestionListView;
     assert(0);
@@ -498,7 +499,7 @@ void InputDialogContainer::ShowDialog(
     /* [in] */ Double min,
     /* [in] */ Double max,
     /* [in] */ Double step,
-    /* [in] */ ArrayOf<DateTimeSuggestion>* suggestions)
+    /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     // When the web page asks to show a dialog while there is one already open,
     // dismiss the old one.
@@ -531,6 +532,7 @@ void InputDialogContainer::ShowPickerDialog(
     }
 
     Int32 stepTime = (Int32) step;
+    assert(stepTime);//TODO remove waring for unused variable
 
     if (dialogType == sTextInputTypeDate) {
         AutoPtr<DateListener> dateListener = new DateListener(this, dialogType);

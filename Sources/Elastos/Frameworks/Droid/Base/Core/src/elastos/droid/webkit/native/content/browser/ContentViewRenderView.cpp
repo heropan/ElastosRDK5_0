@@ -1,5 +1,7 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentViewRenderView.h"
+#include "elastos/droid/webkit/native/content/api/ContentViewRenderView_dec.h"
+#include <elastos/utility/logging/Logger.h>
 //TODO #include "elastos/droid/view/CSurfaceView.h"
 //TODO #include "elastos/droid/webkit/native/ui/base/WindowAndroid.h"
 //TODO #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
@@ -8,6 +10,7 @@ using Elastos::Droid::View::EIID_IView;
 //TODO using Elastos::Droid::View::CSurfaceView;
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 //TODO using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -305,35 +308,39 @@ void ContentViewRenderView::OnSwapBuffersCompleted()
 Int64 ContentViewRenderView::NativeInit(
     /* [in] */ Int64 rootWindowNativePointer)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentViewRenderView_nativeInit(THIS_PROBE(IInterface), rootWindowNativePointer);
 }
 
 void ContentViewRenderView::NativeDestroy(
     /* [in] */ Int64 nativeContentViewRenderView)
 {
+    Elastos_ContentViewRenderView_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView);
 }
 
 void ContentViewRenderView::NativeSetCurrentContentViewCore(
     /* [in] */ Int64 nativeContentViewRenderView,
     /* [in] */ Int64 nativeContentViewCore)
 {
+    Elastos_ContentViewRenderView_nativeSetCurrentContentViewCore(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView, nativeContentViewCore);
 }
 
 void ContentViewRenderView::NativeSetLayerTreeBuildHelper(
     /* [in] */ Int64 nativeContentViewRenderView,
     /* [in] */ Int64 buildHelperNativePtr)
 {
+    Elastos_ContentViewRenderView_nativeSetLayerTreeBuildHelper(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView, buildHelperNativePtr);
 }
 
 void ContentViewRenderView::NativeSurfaceCreated(
     /* [in] */ Int64 nativeContentViewRenderView)
 {
+    Elastos_ContentViewRenderView_nativeSurfaceCreated(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView);
 }
 
 void ContentViewRenderView::NativeSurfaceDestroyed(
     /* [in] */ Int64 nativeContentViewRenderView)
 {
+    Elastos_ContentViewRenderView_nativeSurfaceDestroyed(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView);
 }
 
 void ContentViewRenderView::NativeSurfaceChanged(
@@ -343,12 +350,39 @@ void ContentViewRenderView::NativeSurfaceChanged(
     /* [in] */ Int32 height,
     /* [in] */ ISurface* surface)
 {
+    Elastos_ContentViewRenderView_nativeSurfaceChanged(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView,
+            format, width, height, TO_IINTERFACE(surface));
 }
 
 void ContentViewRenderView::NativeSetOverlayVideoMode(
     /* [in] */ Int64 nativeContentViewRenderView,
     /* [in] */ Boolean enabled)
 {
+    Elastos_ContentViewRenderView_nativeSetOverlayVideoMode(THIS_PROBE(IInterface), (Handle32)nativeContentViewRenderView, enabled);
+}
+
+void ContentViewRenderView::OnCompositorLayout(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewRenderView> mObj = (ContentViewRenderView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ContentViewRenderView", "ContentViewRenderView::OnCompositorLayout, mObj is NULL");
+        return;
+    }
+    mObj->OnCompositorLayout();
+}
+
+void ContentViewRenderView::OnSwapBuffersCompleted(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ContentViewRenderView> mObj = (ContentViewRenderView*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("ContentViewRenderView", "ContentViewRenderView::OnSwapBuffersCompleted, mObj is NULL");
+        return;
+    }
+    mObj->OnSwapBuffersCompleted();
 }
 
 } // namespace Browser

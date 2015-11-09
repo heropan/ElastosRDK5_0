@@ -66,7 +66,8 @@ namespace Browser {
   * is being traced, but the general form is [app package name].GPU_PROFILER_{START,STOP}.
   */
 // @JNINamespace("content")
-class TracingControllerAndroid : public Object
+class TracingControllerAndroid
+    : public Object
 {
 public:
     class TracingBroadcastReceiver
@@ -174,6 +175,8 @@ public:
       */
     virtual CARAPI GetCategoryGroups();
 
+    static CARAPI_(void*) ElaTracingControllerAndroidCallback_Init();
+
 protected:
     /**
       * Called by native code when the profiler's output file is closed.
@@ -185,6 +188,10 @@ protected:
     CARAPI Finalize();
 
 private:
+
+    static CARAPI_(void) OnTracingStopped(
+        /* [in] */ IInterface* obj);
+
     /**
       * Generates a unique filename to be used for tracing in the Downloads directory.
       */
@@ -234,9 +241,9 @@ private:
     // These strings must match the ones expected by adb_profile_chrome.
     static const String PROFILER_STARTED_FMT;
     static const String PROFILER_FINISHED_FMT;
-    /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr<TracingBroadcastReceiver> mBroadcastReceiver;
-    /*const*/ AutoPtr<TracingIntentFilter> mIntentFilter;
+    AutoPtr<IContext> mContext;
+    AutoPtr<TracingBroadcastReceiver> mBroadcastReceiver;
+    AutoPtr<TracingIntentFilter> mIntentFilter;
     Boolean mIsTracing;
     // We might not want to always show toasts when we start the profiler, especially if
     // showing the toast impacts performance.  This gives us the chance to disable them.

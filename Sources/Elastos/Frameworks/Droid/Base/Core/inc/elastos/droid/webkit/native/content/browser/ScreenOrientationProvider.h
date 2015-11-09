@@ -31,12 +31,13 @@ namespace Browser {
   * This is the implementation of the C++ counterpart ScreenOrientationProvider.
   */
 // @JNINamespace("content")
-class ScreenOrientationProvider : public Object
+class ScreenOrientationProvider
+    : public Object
 {
 public:
     // @VisibleForTesting
-    // @CalledByNative
-    static CARAPI_(AutoPtr<ScreenOrientationProvider>) Create();
+    // @CalledByNative return ScreenOrientationProvider
+    static CARAPI_(AutoPtr<IInterface>) Create();
 
     // @CalledByNative
     virtual CARAPI LockOrientation(
@@ -45,7 +46,17 @@ public:
     // @CalledByNative
     virtual CARAPI UnlockOrientation();
 
+    static CARAPI_(void*) ElaScreenOrientationProviderCallback_Init();
+
 private:
+
+    static CARAPI_(void) LockOrientation(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Byte orientations);
+
+    static CARAPI_(void) UnlockOrientation(
+        /* [in] */ IInterface* obj);
+
     ScreenOrientationProvider();
 
     CARAPI_(Int32) GetOrientationFromWebScreenOrientations(

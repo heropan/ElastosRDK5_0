@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/ScreenOrientationProvider.h"
+#include "elastos/droid/webkit/native/content/api/ScreenOrientationProvider_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -22,9 +23,9 @@ ScreenOrientationProvider::ScreenOrientationProvider()
 {
 }
 
-AutoPtr<ScreenOrientationProvider> ScreenOrientationProvider::Create()
+AutoPtr<IInterface> ScreenOrientationProvider::Create()
 {
-    return new ScreenOrientationProvider();
+    return TO_IINTERFACE(new ScreenOrientationProvider());
 }
 
 ECode ScreenOrientationProvider::LockOrientation(
@@ -81,6 +82,31 @@ Int32 ScreenOrientationProvider::GetOrientationFromWebScreenOrientations(
     }
 
     return 0;
+}
+
+void ScreenOrientationProvider::LockOrientation(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Byte orientations)
+{
+    AutoPtr<ScreenOrientationProvider> mObj = (ScreenOrientationProvider*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "ScreenOrientationProvider::LockOrientation, mObj is NULL");
+        return;
+    }
+    mObj->LockOrientation(orientations);
+}
+
+void ScreenOrientationProvider::UnlockOrientation(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<ScreenOrientationProvider> mObj = (ScreenOrientationProvider*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "ScreenOrientationProvider::UnlockOrientation, mObj is NULL");
+        return;
+    }
+    mObj->UnlockOrientation();
 }
 
 } // namespace Browser

@@ -27,7 +27,8 @@ class ContentViewCore;
   * Provides a Java-side implementation for injecting synthetic touch events.
   */
 // @JNINamespace("content")
-class TouchEventSynthesizer : public Object
+class TouchEventSynthesizer
+    : public Object
 {
 public:
     TouchEventSynthesizer(
@@ -46,15 +47,31 @@ public:
         /* [in] */ Int32 pointerCount,
         /* [in] */ Int64 timeInMs);
 
+    static CARAPI_(void*) ElaTouchEventSynthesizerCallback_Init();
+
+private:
+    static CARAPI_(void) SetPointer(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y,
+        /* [in] */ Int32 id);
+
+    static CARAPI_(void) Inject(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 action,
+        /* [in] */ Int32 pointerCount,
+        /* [in] */ Int64 timeInMs);
+
 private:
     static const Int32 MAX_NUM_POINTERS = 16;
     static const Int32 ACTION_START = 0;
     static const Int32 ACTION_MOVE = 1;
     static const Int32 ACTION_CANCEL = 2;
     static const Int32 ACTION_END = 3;
-    /*const*/ AutoPtr<ContentViewCore> mContentViewCore;
-    /*const*/ AutoPtr< ArrayOf<IPointerProperties*> > mPointerProperties;
-    /*const*/ AutoPtr< ArrayOf<IPointerCoords*> > mPointerCoords;
+    AutoPtr<ContentViewCore> mContentViewCore;
+    AutoPtr< ArrayOf<IPointerProperties*> > mPointerProperties;
+    AutoPtr< ArrayOf<IPointerCoords*> > mPointerCoords;
     Int64 mDownTimeInMs;
 };
 

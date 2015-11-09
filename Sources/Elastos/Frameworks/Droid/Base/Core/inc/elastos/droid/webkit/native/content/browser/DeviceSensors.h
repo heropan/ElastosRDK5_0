@@ -48,7 +48,8 @@ public:
     /**
      * Need the an interface for SensorManager for testing.
      */
-    class SensorManagerProxy : public Object
+    class SensorManagerProxy
+        : public Object
     {
     public:
         virtual CARAPI_(Boolean) RegisterListener(
@@ -203,22 +204,7 @@ public:
     static CARAPI_(AutoPtr<DeviceSensors>) GetInstance(
         /* [in] */ IContext* appContext);
 
-public:
-    /**
-     * constants for using in JNI calls, also see
-     * content/browser/device_sensors/sensor_manager_android.cc
-     */
-    static const Int32 DEVICE_ORIENTATION = 0;
-    static const Int32 DEVICE_MOTION = 1;
-
-    static /*const*/ AutoPtr<ISet> DEVICE_ORIENTATION_SENSORS;
-
-    static /*const*/ AutoPtr<ISet> DEVICE_MOTION_SENSORS;
-
-    //@VisibleForTesting
-    const AutoPtr<ISet> mActiveSensors;
-    Boolean mDeviceMotionIsActive;
-    Boolean mDeviceOrientationIsActive;
+    static CARAPI_(void*) ElaDeviceSensorsCallback_Init();
 
 protected:
     DeviceSensors(
@@ -245,6 +231,23 @@ protected:
         /* [in] */ Double gamma);
 
 private:
+
+    static CARAPI_(Boolean) Start(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativePtr,
+        /* [in] */ Int32 eventType,
+        /* [in] */ Int32 rateInMilliseconds);
+
+    static CARAPI_(Int32) GetNumberActiveDeviceMotionSensors(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) Stop(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 eventType);
+
+    static CARAPI_(AutoPtr<IInterface>) GetInstance(
+        /* [in] */ IInterface* appContext);
+
     CARAPI_(void) GetOrientationFromRotationVector(
         /* [in] */ ArrayOf<Float>* rotationVector);
 
@@ -315,6 +318,23 @@ private:
         /* [in] */ Double alpha,
         /* [in] */ Double beta,
         /* [in] */ Double gamma);
+
+public:
+    /**
+     * constants for using in JNI calls, also see
+     * content/browser/device_sensors/sensor_manager_android.cc
+     */
+    static const Int32 DEVICE_ORIENTATION = 0;
+    static const Int32 DEVICE_MOTION = 1;
+
+    static /*const*/ AutoPtr<ISet> DEVICE_ORIENTATION_SENSORS;
+
+    static /*const*/ AutoPtr<ISet> DEVICE_MOTION_SENSORS;
+
+    //@VisibleForTesting
+    const AutoPtr<ISet> mActiveSensors;
+    Boolean mDeviceMotionIsActive;
+    Boolean mDeviceOrientationIsActive;
 
 private:
     static const String TAG;

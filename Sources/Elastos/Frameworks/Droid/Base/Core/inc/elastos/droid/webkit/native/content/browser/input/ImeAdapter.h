@@ -58,13 +58,15 @@ namespace Input {
  * lifetime of the object.
  */
 //@JNINamespace("content")
-class ImeAdapter : public Object
+class ImeAdapter
+    : public Object
 {
 public:
     /**
      * Interface for the delegate that needs to be notified of IME changes.
      */
-    class ImeAdapterDelegate : public Object
+    class ImeAdapterDelegate
+        : public Object
     {
     public:
         /**
@@ -92,7 +94,8 @@ public:
     /**
      * Default factory for AdapterInputConnection classes.
      */
-    class AdapterInputConnectionFactory : public Object
+    class AdapterInputConnectionFactory
+        : public Object
     {
     public:
         virtual CARAPI_(AutoPtr<AdapterInputConnection>) Get(
@@ -283,32 +286,25 @@ public:
     //@CalledByNative
     CARAPI_(void) Detach();
 
-public:
-    // All the constants that are retrieved from the C++ code.
-    // They get set through initializeWebInputEvents and initializeTextInputTypes calls.
-    static Int32 sEventTypeRawKeyDown;
-    static Int32 sEventTypeKeyUp;
-    static Int32 sEventTypeChar;
-    static Int32 sTextInputTypeNone;
-    static Int32 sTextInputTypeText;
-    static Int32 sTextInputTypeTextArea;
-    static Int32 sTextInputTypePassword;
-    static Int32 sTextInputTypeSearch;
-    static Int32 sTextInputTypeUrl;
-    static Int32 sTextInputTypeEmail;
-    static Int32 sTextInputTypeTel;
-    static Int32 sTextInputTypeNumber;
-    static Int32 sTextInputTypeContentEditable;
-    static Int32 sModifierShift;
-    static Int32 sModifierAlt;
-    static Int32 sModifierCtrl;
-    static Int32 sModifierCapsLockOn;
-    static Int32 sModifierNumLockOn;
-
-    //@VisibleForTesting
-    Boolean mIsShowWithoutHideOutstanding;
+    static CARAPI_(void*) ElaImeAdapterCallback_Init();
 
 private:
+
+    static CARAPI_(void) FocusedNodeChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean isEditable);
+
+    static CARAPI_(void) PopulateUnderlinesFromSpans(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* text,
+        /* [in] */ Int64 underlines);
+
+    static CARAPI_(void) CancelComposition(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) Detach(
+        /* [in] */ IInterface* obj);
+
     static CARAPI_(Int32) GetModifiers(
         /* [in] */ Int32 metaState);
 
@@ -440,6 +436,31 @@ private:
     CARAPI_(void) NativeResetImeAdapter(
         /* [in] */ Int64 nativeImeAdapterAndroid);
 
+public:
+    // All the constants that are retrieved from the C++ code.
+    // They get set through initializeWebInputEvents and initializeTextInputTypes calls.
+    static Int32 sEventTypeRawKeyDown;
+    static Int32 sEventTypeKeyUp;
+    static Int32 sEventTypeChar;
+    static Int32 sTextInputTypeNone;
+    static Int32 sTextInputTypeText;
+    static Int32 sTextInputTypeTextArea;
+    static Int32 sTextInputTypePassword;
+    static Int32 sTextInputTypeSearch;
+    static Int32 sTextInputTypeUrl;
+    static Int32 sTextInputTypeEmail;
+    static Int32 sTextInputTypeTel;
+    static Int32 sTextInputTypeNumber;
+    static Int32 sTextInputTypeContentEditable;
+    static Int32 sModifierShift;
+    static Int32 sModifierAlt;
+    static Int32 sModifierCtrl;
+    static Int32 sModifierCapsLockOn;
+    static Int32 sModifierNumLockOn;
+
+    //@VisibleForTesting
+    Boolean mIsShowWithoutHideOutstanding;
+
 private:
     static const Int32 COMPOSITION_KEY_CODE = 229;
 
@@ -453,8 +474,8 @@ private:
     Int64 mNativeImeAdapterAndroid;
     AutoPtr<InputMethodManagerWrapper> mInputMethodManagerWrapper;
     AutoPtr<AdapterInputConnection> mInputConnection;
-    /*const*/ AutoPtr<ImeAdapterDelegate> mViewEmbedder;
-    /*const*/ AutoPtr<IHandler> mHandler;
+    AutoPtr<ImeAdapterDelegate> mViewEmbedder;
+    AutoPtr<IHandler> mHandler;
     AutoPtr<DelayedDismissInput> mDismissInput;
     Int32 mTextInputType;
 };

@@ -1,10 +1,13 @@
 
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/content/browser/LocationProviderAdapter.h"
+#include "elastos/droid/webkit/native/content/api/LocationProviderAdapter_dec.h"
 #include <elastos/utility/concurrent/FutureTask.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Utility::Concurrent::FutureTask;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -121,13 +124,48 @@ ECode LocationProviderAdapter::NativeNewLocationAvailable(
     /* [in] */ Boolean hasSpeed,
     /* [in] */ Double speed)
 {
+    Elastos_LocationProviderAdapter_nativeNewLocationAvailable(latitude, longitude, timeStamp, hasAltitude,
+            altitude, hasAccuracy, accuracy, hasHeading, heading, hasSpeed, speed);
     return NOERROR;
 }
 
 ECode LocationProviderAdapter::NativeNewErrorAvailable(
     /* [in] */ const String& message)
 {
+    Elastos_LocationProviderAdapter_nativeNewErrorAvailable(message);
     return NOERROR;
+}
+
+AutoPtr<IInterface> LocationProviderAdapter::Create(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Create(c));
+}
+
+Boolean LocationProviderAdapter::Start(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Boolean gpsEnabled)
+{
+    AutoPtr<LocationProviderAdapter> mObj = (LocationProviderAdapter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("LocationProviderAdapter", "LocationProviderAdapter::Start, mObj is NULL");
+        return FALSE;
+    }
+    return mObj->Start(gpsEnabled);
+}
+
+void LocationProviderAdapter::Stop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<LocationProviderAdapter> mObj = (LocationProviderAdapter*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("LocationProviderAdapter", "LocationProviderAdapter::Stop, mObj is NULL");
+        return;
+    }
+    mObj->Stop();
 }
 
 } // namespace Browser

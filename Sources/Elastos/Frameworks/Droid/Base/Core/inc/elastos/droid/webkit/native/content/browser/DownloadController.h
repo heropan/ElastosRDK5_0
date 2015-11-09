@@ -23,13 +23,15 @@ class DownloadInfo;
  * Its a singleton class instantiated by the C++ DownloadController.
  */
 //@JNINamespace("content")
-class DownloadController : public Object
+class DownloadController
+    : public Object
 {
 public:
     /**
      * Class for notifying the application that download has completed.
      */
-    class DownloadNotificationService : public Object
+    class DownloadNotificationService
+        : public Object
     {
     public:
         /**
@@ -48,8 +50,8 @@ public:
     };
 
 public:
-    //@CalledByNative
-    static CARAPI_(AutoPtr<DownloadController>) GetInstance();
+    //@CalledByNative return DownloadController
+    static CARAPI_(AutoPtr<IInterface>) GetInstance();
 
     static CARAPI_(void) SetDownloadNotificationService(
         /* [in] */ DownloadNotificationService* service);
@@ -126,7 +128,58 @@ public:
         /* [in] */ const String& filename,
         /* [in] */ Int32 downloadId);
 
+    static CARAPI_(void*) ElaDownloadControllerCallback_Init();
+
 private:
+
+    static CARAPI_(void) NewHttpGetDownload(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* view,
+        /* [in] */ const String& url,
+        /* [in] */ const String& userAgent,
+        /* [in] */ const String& contentDisposition,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& cookie,
+        /* [in] */ const String& referer,
+        /* [in] */ const String& filename,
+        /* [in] */ Int64 contentLength);
+
+    static CARAPI_(void) OnDownloadStarted(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* view,
+        /* [in] */ const String& filename,
+        /* [in] */ const String& mimeType);
+
+    static CARAPI_(void) OnDownloadCompleted(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& url,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& filename,
+        /* [in] */ const String& path,
+        /* [in] */ Int64 contentLength,
+        /* [in] */ Boolean successful,
+        /* [in] */ Int32 downloadId);
+
+    static CARAPI_(void) OnDownloadUpdated(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* context,
+        /* [in] */ const String& url,
+        /* [in] */ const String& mimeType,
+        /* [in] */ const String& filename,
+        /* [in] */ const String& path,
+        /* [in] */ Int64 contentLength,
+        /* [in] */ Boolean successful,
+        /* [in] */ Int32 downloadId,
+        /* [in] */ Int32 percentCompleted,
+        /* [in] */ Int64 timeRemainingInMs);
+
+    static CARAPI_(void) OnDangerousDownload(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* view,
+        /* [in] */ const String& filename,
+        /* [in] */ Int32 downloadId);
+
     DownloadController();
 
     static CARAPI_(AutoPtr<ContentViewDownloadDelegate>) DownloadDelegateFromView(

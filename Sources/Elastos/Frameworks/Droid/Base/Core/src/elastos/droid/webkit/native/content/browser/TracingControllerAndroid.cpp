@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/TracingControllerAndroid.h"
+#include "elastos/droid/webkit/native/content/api/TracingControllerAndroid_dec.h"
 #include "elastos/droid/text/TextUtils.h"
 // TODO #include "elastos/droid/os/CEnvironment.h"
 // TODO #include "elastos/droid/widget/CToastHelper.h"
@@ -366,12 +367,13 @@ ECode TracingControllerAndroid::ShowToast(
 
 Int64 TracingControllerAndroid::NativeInit()
 {
-    return 0;
+    return Elastos_TracingControllerAndroid_nativeInit(THIS_PROBE(IInterface));
 }
 
 ECode TracingControllerAndroid::NativeDestroy(
     /* [in] */ Int64 nativeTracingControllerAndroid)
 {
+    Elastos_TracingControllerAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeTracingControllerAndroid);
     return NOERROR;
 }
 
@@ -380,25 +382,41 @@ Boolean TracingControllerAndroid::NativeStartTracing(
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
-    return FALSE;
+    return Elastos_TracingControllerAndroid_nativeStartTracing(THIS_PROBE(IInterface),
+        (Handle32)nativeTracingControllerAndroid, categories, recordContinuously);
 }
 
 ECode TracingControllerAndroid::NativeStopTracing(
     /* [in] */ Int64 nativeTracingControllerAndroid,
     /* [in] */ const String& filename)
 {
+    Elastos_TracingControllerAndroid_nativeStopTracing(THIS_PROBE(IInterface),
+            (Handle32)nativeTracingControllerAndroid, filename);
     return NOERROR;
 }
 
 Boolean TracingControllerAndroid::NativeGetKnownCategoryGroupsAsync(
     /* [in] */ Int64 nativeTracingControllerAndroid)
 {
-    return FALSE;
+    return Elastos_TracingControllerAndroid_nativeGetKnownCategoryGroupsAsync(THIS_PROBE(IInterface),
+            (Handle32)nativeTracingControllerAndroid);
 }
 
 String TracingControllerAndroid::NativeGetDefaultCategories()
 {
-    return String("");
+    return Elastos_TracingControllerAndroid_nativeGetDefaultCategories(THIS_PROBE(IInterface));
+}
+
+void TracingControllerAndroid::OnTracingStopped(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<TracingControllerAndroid> mObj = (TracingControllerAndroid*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "TracingControllerAndroid::OnTracingStopped, mObj is NULL");
+        return;
+    }
+    mObj->OnTracingStopped();
 }
 
 } // namespace Browser

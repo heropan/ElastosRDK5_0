@@ -1,5 +1,8 @@
 
 #include "elastos/droid/webkit/native/content/browser/framehost/NavigationControllerImpl.h"
+#include "elastos/droid/webkit/native/content/api/NavigationControllerImpl_dec.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -15,11 +18,11 @@ NavigationControllerImpl::NavigationControllerImpl(
 }
 
 //@CalledByNative
-AutoPtr<NavigationControllerImpl> NavigationControllerImpl::Create(
+AutoPtr<IInterface> NavigationControllerImpl::Create(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
     AutoPtr<NavigationControllerImpl> ret = new NavigationControllerImpl(nativeNavigationControllerAndroid);
-    return ret;
+    return TO_IINTERFACE(ret);
 }
 
 //@CalledByNative
@@ -87,45 +90,58 @@ void NavigationControllerImpl::GoForward()
 Boolean NavigationControllerImpl::NativeCanGoBack(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_NavigationControllerImpl_nativeCanGoBack(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
 }
 
 Boolean NavigationControllerImpl::NativeCanGoForward(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_NavigationControllerImpl_nativeCanGoForward(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
 }
 
 Boolean NavigationControllerImpl::NativeCanGoToOffset(
     /* [in] */ Int64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 offset)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_NavigationControllerImpl_nativeCanGoToOffset(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid, offset);
 }
 
 void NavigationControllerImpl::NativeGoBack(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
+    Elastos_NavigationControllerImpl_nativeGoBack(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
 }
 
 void NavigationControllerImpl::NativeGoForward(
     /* [in] */ Int64 nativeNavigationControllerAndroid)
 {
+    Elastos_NavigationControllerImpl_nativeGoForward(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid);
 }
 
 void NavigationControllerImpl::NativeGoToOffset(
     /* [in] */ Int64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 offset)
 {
+    Elastos_NavigationControllerImpl_nativeGoToOffset(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid, offset);
 }
 
 void NavigationControllerImpl::NativeGoToNavigationIndex(
     /* [in] */ Int64 nativeNavigationControllerAndroid,
     /* [in] */ Int32 index)
 {
+    Elastos_NavigationControllerImpl_nativeGoToNavigationIndex(THIS_PROBE(IInterface), (Handle32)nativeNavigationControllerAndroid, index);
+}
+
+void NavigationControllerImpl::Destroy(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<NavigationControllerImpl> mObj = (NavigationControllerImpl*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("NavigationControllerImpl", "NavigationControllerImpl::Destroy, mObj is NULL");
+        return;
+    }
+    mObj->Destroy();
 }
 
 } // namespace Framehost

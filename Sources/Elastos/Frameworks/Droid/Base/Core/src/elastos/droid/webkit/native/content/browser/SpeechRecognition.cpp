@@ -1,9 +1,12 @@
 
 #include "elastos/droid/webkit/native/content/browser/SpeechRecognition.h"
+#include "elastos/droid/webkit/native/content/api/SpeechRecognition_dec.h"
 #include "elastos/droid/webkit/native/content/browser/SpeechRecognitionError.h"
 // TODO #include "elastos/droid/content/CIntent.h"
 // TODO #include "elastos/droid/content/CComponentName.h"
 // TODO #include "elastos/droid/speech/CSpeechRecognizerHelper.h"
+#include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::Logging::Logger;
 
 using Elastos::Core::IString;
 // TODO using Elastos::Droid::Content::CIntent;
@@ -345,24 +348,28 @@ ECode SpeechRecognition::StopRecognition()
 ECode SpeechRecognition::NativeOnAudioStart(
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
 {
+    Elastos_SpeechRecognition_nativeOnAudioStart(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnSoundStart(
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
 {
+    Elastos_SpeechRecognition_nativeOnSoundStart(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnSoundEnd(
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
 {
+    Elastos_SpeechRecognition_nativeOnSoundEnd(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnAudioEnd(
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
 {
+    Elastos_SpeechRecognition_nativeOnAudioEnd(THIS_PROBE(IInterface), (Handle32)nativeSpeechRecognizerImplAndroid);
     return NOERROR;
 }
 
@@ -372,6 +379,8 @@ ECode SpeechRecognition::NativeOnRecognitionResults(
     /* [in] */ ArrayOf<Float>* scores,
     /* [in] */ Boolean provisional)
 {
+    Elastos_SpeechRecognition_nativeOnRecognitionResults(THIS_PROBE(IInterface),
+            (Handle32)nativeSpeechRecognizerImplAndroid, results, scores, provisional);
     return NOERROR;
 }
 
@@ -379,13 +388,64 @@ ECode SpeechRecognition::NativeOnRecognitionError(
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid,
     /* [in] */ Int32 error)
 {
+    Elastos_SpeechRecognition_nativeOnRecognitionError(THIS_PROBE(IInterface),
+            (Handle32)nativeSpeechRecognizerImplAndroid, error);
     return NOERROR;
 }
 
 ECode SpeechRecognition::NativeOnRecognitionEnd(
     /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
 {
+    Elastos_SpeechRecognition_nativeOnRecognitionEnd(THIS_PROBE(IInterface),
+            (Handle32)nativeSpeechRecognizerImplAndroid);
     return NOERROR;
+}
+
+AutoPtr<IInterface> SpeechRecognition::CreateSpeechRecognition(
+    /* [in] */ IInterface* context,
+    /* [in] */ Int64 nativeSpeechRecognizerImplAndroid)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(CreateSpeechRecognition(c, nativeSpeechRecognizerImplAndroid));
+}
+
+void SpeechRecognition::StartRecognition(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& language,
+    /* [in] */ Boolean continuous,
+    /* [in] */ Boolean interimResults)
+{
+    AutoPtr<SpeechRecognition> mObj = (SpeechRecognition*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("SpeechRecognition", "SpeechRecognition::StartRecognition, mObj is NULL");
+        return;
+    }
+    mObj->StartRecognition(language, continuous, interimResults);
+}
+
+void SpeechRecognition::AbortRecognition(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<SpeechRecognition> mObj = (SpeechRecognition*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("SpeechRecognition", "SpeechRecognition::AbortRecognition, mObj is NULL");
+        return;
+    }
+    mObj->AbortRecognition();
+}
+
+void SpeechRecognition::StopRecognition(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<SpeechRecognition> mObj = (SpeechRecognition*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("SpeechRecognition", "SpeechRecognition::StopRecognition, mObj is NULL");
+        return;
+    }
+    mObj->StopRecognition();
 }
 
 } // namespace Browser

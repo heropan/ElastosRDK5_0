@@ -50,10 +50,12 @@ namespace Browser {
  * This class provides the method to start/stop ChildProcess called by native.
  */
 //@JNINamespace("content")
-class ChildProcessLauncher : public Object
+class ChildProcessLauncher
+    : public Object
 {
 private:
-    class ChildConnectionAllocator : public Object
+    class ChildConnectionAllocator
+        : public Object
     {
     public:
         ChildConnectionAllocator(
@@ -123,19 +125,6 @@ private:
     };
 
 public:
-    static const Int32 CALLBACK_FOR_UNKNOWN_PROCESS = 0;
-    static const Int32 CALLBACK_FOR_GPU_PROCESS = 1;
-    static const Int32 CALLBACK_FOR_RENDERER_PROCESS = 2;
-
-    // The upper limit on the number of simultaneous sandboxed and privileged child service process
-    // instances supported. Each limit must not exceed total number of SandboxedProcessServiceX
-    // classes and PrivilegedProcessServiceX classes declared in this package and defined as
-    // services in the embedding application's manifest file.
-    // (See {@link ChildProcessService} for more details on defining the services.)
-    /* package */ static const Int32 MAX_REGISTERED_SANDBOXED_SERVICES = 13;
-    /* package */ static const Int32 MAX_REGISTERED_PRIVILEGED_SERVICES = 3;
-
-public:
     /**
      * Sets service class for sandboxed service and privileged service.
      */
@@ -192,7 +181,7 @@ public:
     //@CalledByNative
     static CARAPI_(void) Start(
         /* [in] */ IContext* context,
-        /* [in] */ const ArrayOf<String>* commandLine,
+        /* [in] */ ArrayOf<String>* commandLine,
         /* [in] */ Int32 childProcessId,
         /* [in] */ ArrayOf<Int32>* fileIds,
         /* [in] */ ArrayOf<Int32>* fileFds,
@@ -233,7 +222,27 @@ public:
     //@VisibleForTesting
     static CARAPI_(Int32) ConnectedServicesCountForTesting();
 
+    static CARAPI_(void*) ElaChildProcessLauncherCallback_Init();
+
 private:
+    static CARAPI_(void) RegisterViewSurface(
+        /* [in] */ Int32 surfaceId,
+        /* [in] */ IInterface* surface);
+
+    static CARAPI_(void) RegisterSurfaceTexture(
+        /* [in] */ Int32 surfaceTextureId,
+        /* [in] */ Int32 childProcessId,
+        /* [in] */ IInterface* surfaceTexture);
+
+    static CARAPI_(void) Start(
+        /* [in] */ IInterface* context,
+        /* [in] */ ArrayOf<String>* commandLine,
+        /* [in] */ Int32 childProcessId,
+        /* [in] */ ArrayOf<Int32>* fileIds,
+        /* [in] */ ArrayOf<Int32>* fileFds,
+        /* [in] */ ArrayOf<Boolean>* fileAutoClose,
+        /* [in] */ Int64 clientContext);
+
     static CARAPI_(AutoPtr<ChildConnectionAllocator>) GetConnectionAllocator(
         /* [in] */ Boolean inSandbox);
 
@@ -299,6 +308,19 @@ private:
         /* [in] */ Int32 secondaryID);
 
     static CARAPI_(Boolean) NativeIsSingleProcess();
+
+public:
+    static const Int32 CALLBACK_FOR_UNKNOWN_PROCESS = 0;
+    static const Int32 CALLBACK_FOR_GPU_PROCESS = 1;
+    static const Int32 CALLBACK_FOR_RENDERER_PROCESS = 2;
+
+    // The upper limit on the number of simultaneous sandboxed and privileged child service process
+    // instances supported. Each limit must not exceed total number of SandboxedProcessServiceX
+    // classes and PrivilegedProcessServiceX classes declared in this package and defined as
+    // services in the embedding application's manifest file.
+    // (See {@link ChildProcessService} for more details on defining the services.)
+    /* package */ static const Int32 MAX_REGISTERED_SANDBOXED_SERVICES = 13;
+    /* package */ static const Int32 MAX_REGISTERED_PRIVILEGED_SERVICES = 3;
 
 private:
     static const String TAG;

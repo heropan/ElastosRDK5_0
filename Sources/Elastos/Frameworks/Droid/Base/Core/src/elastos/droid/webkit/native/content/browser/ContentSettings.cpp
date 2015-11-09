@@ -1,9 +1,12 @@
 
 #include "elastos/droid/webkit/native/content/browser/ContentSettings.h"
+#include "elastos/droid/webkit/native/content/api/ContentSettings_dec.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Webkit::Base::ThreadUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -55,15 +58,26 @@ Boolean ContentSettings::GetJavaScriptEnabled()
 Int64 ContentSettings::NativeInit(
     /* [in] */ Int64 contentViewPtr)
 {
-    assert(0);
-    return 0;
+    return Elastos_ContentSettings_nativeInit(THIS_PROBE(IInterface), contentViewPtr);
 }
 
 Boolean ContentSettings::NativeGetJavaScriptEnabled(
     /* [in] */ Int64 nativeContentSettings)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_ContentSettings_nativeGetJavaScriptEnabled(THIS_PROBE(IInterface), (Handle32)nativeContentSettings);
+}
+
+void ContentSettings::OnNativeContentSettingsDestroyed(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 nativeContentSettings)
+{
+    AutoPtr<ContentSettings> mObj = (ContentSettings*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "ContentSettings::OnNativeContentSettingsDestroyed, mObj is NULL");
+        return;
+    }
+    mObj->OnNativeContentSettingsDestroyed(nativeContentSettings);
 }
 
 } // namespace Browser

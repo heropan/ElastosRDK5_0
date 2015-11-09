@@ -164,7 +164,8 @@ public:
      * implementing container view.
      */
     //@SuppressWarnings("javadoc")
-    class InternalAccessDelegate : public Object
+    class InternalAccessDelegate
+        : public Object
     {
     public:
         /**
@@ -231,7 +232,8 @@ public:
     /**
      * An interface for controlling visibility and state of embedder-provided zoom controls.
      */
-    class ZoomControlsDelegate : public Object
+    class ZoomControlsDelegate
+        : public Object
     {
     public:
         /**
@@ -254,7 +256,8 @@ public:
      * An interface that allows the embedder to be notified when the results of
      * extractSmartClipData are available.
      */
-    class SmartClipDataListener : public Object
+    class SmartClipDataListener
+        : public Object
     {
     public:
         virtual CARAPI_(void) OnSmartClipDataExtracted(
@@ -265,7 +268,7 @@ public:
 
     /** Callback interface for evaluateJavaScript(). */
     class JavaScriptCallback
-        :public Object
+        : public Object
     {
     public:
         virtual CARAPI_(void) HandleJavaScriptResult(
@@ -1731,15 +1734,198 @@ public:
     CARAPI OnScreenOrientationChanged(
         /* [in] */ Int32 orientation);
 
-public:
-    /**
-     * PID used to indicate an invalid render process.
-     */
-    // Keep in sync with the value returned from ContentViewCoreImpl::GetCurrentRendererProcessId()
-    // if there is no render process.
-    static const Int32 INVALID_RENDER_PROCESS_PID = 0;
+    static CARAPI_(void*) ElaContentViewCoreCallback_Init();
 
 private:
+
+    static CARAPI_(AutoPtr<IInterface>) GetContext(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnNativeContentViewCoreDestroyed(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeContentViewCore);
+
+    static CARAPI_(Int64) GetNativeContentViewCore(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnBackgroundColorChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 color);
+
+    static CARAPI_(Int32) GetViewportWidthPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetViewportHeightPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetPhysicalBackingWidthPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetPhysicalBackingHeightPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetOverdrawBottomHeightPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetViewportSizeOffsetWidthPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Int32) GetViewportSizeOffsetHeightPix(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnFlingStartEventConsumed(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 vx,
+        /* [in] */ Int32 vy);
+
+    static CARAPI_(void) OnFlingStartEventHadNoConsumer(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 vx,
+        /* [in] */ Int32 vy);
+
+    static CARAPI_(void) OnFlingCancelEventAck(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnScrollBeginEventAck(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnScrollUpdateGestureConsumed(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnScrollEndEventAck(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnPinchBeginEventAck(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnPinchEndEventAck(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnSingleTapEventAck(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Boolean consumed,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
+    static CARAPI_(void) OnDoubleTapEventAck(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) FilterTapOrPressEvent(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 type,
+        /* [in] */ Int32 x,
+        /* [in] */ Int32 y);
+
+    static CARAPI_(void) UpdateFrameInfo(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Float scrollOffsetX,
+        /* [in] */ Float scrollOffsetY,
+        /* [in] */ Float pageScaleFactor,
+        /* [in] */ Float minPageScaleFactor,
+        /* [in] */ Float maxPageScaleFactor,
+        /* [in] */ Float contentWidth,
+        /* [in] */ Float contentHeight,
+        /* [in] */ Float viewportWidth,
+        /* [in] */ Float viewportHeight,
+        /* [in] */ Float controlsOffsetYCss,
+        /* [in] */ Float contentOffsetYCss,
+        /* [in] */ Float overdrawBottomHeightCss);
+
+    static CARAPI_(void) UpdateImeAdapter(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int64 nativeImeAdapterAndroid,
+        /* [in] */ Int32 textInputType,
+        /* [in] */ const String& text,
+        /* [in] */ Int32 selectionStart,
+        /* [in] */ Int32 selectionEnd,
+        /* [in] */ Int32 compositionStart,
+        /* [in] */ Int32 compositionEnd,
+        /* [in] */ Boolean showImeIfNeeded,
+        /* [in] */ Boolean isNonImeChange);
+
+    static CARAPI_(void) SetTitle(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& title);
+
+    static CARAPI_(void) ShowSelectPopup(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* bounds,
+        /* [in] */ ArrayOf<String>* items,
+        /* [in] */ ArrayOf<Int32>* enabled,
+        /* [in] */ Boolean multiple,
+        /* [in] */ ArrayOf<Int32>* selectedIndices);
+
+    static CARAPI_(void) HideSelectPopup(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) ShowDisambiguationPopup(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* targetRect,
+        /* [in] */ IInterface* zoomedBitmap);
+
+    static CARAPI_(AutoPtr<IInterface>) CreateTouchEventSynthesizer(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnSelectionChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& text);
+
+    static CARAPI_(void) ShowSelectionHandlesAutomatically(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) OnSelectionBoundsChanged(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* anchorRectDip,
+        /* [in] */ Int32 anchorDir,
+        /* [in] */ IInterface* focusRectDip,
+        /* [in] */ Int32 focusDir,
+        /* [in] */ Boolean isAnchorFirst);
+
+    static CARAPI_(void) OnEvaluateJavaScriptResult(
+        /* [in] */ const String& jsonResult,
+        /* [in] */ IInterface* callback);
+
+    static CARAPI_(void) ShowPastePopup(
+        /* [in] */ IInterface* obj,
+        /* [in] */ Int32 xDip,
+        /* [in] */ Int32 yDip);
+
+    static CARAPI_(void) OnRenderProcessChange(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) HasFocus(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(void) StartContentIntent(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& contentUrl);
+
+    static CARAPI_(void) AddToNavigationHistory(
+        /* [in] */ IInterface* obj,
+        /* [in] */ IInterface* history,
+        /* [in] */ Int32 index,
+        /* [in] */ const String& url,
+        /* [in] */ const String& virtualUrl,
+        /* [in] */ const String& originalUrl,
+        /* [in] */ const String& title,
+        /* [in] */ IInterface* favicon);
+
+    static CARAPI_(void) OnSmartClipDataExtracted(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& text,
+        /* [in] */ const String& html,
+        /* [in] */ IInterface* clipRect);
+
+    static CARAPI_(AutoPtr<IInterface>) GetContentVideoViewClient(
+        /* [in] */ IInterface* obj);
+
+    static CARAPI_(Boolean) ShouldBlockMediaRequest(
+        /* [in] */ IInterface* obj,
+        /* [in] */ const String& url);
+
+    static CARAPI_(void) OnNativeFlingStopped(
+        /* [in] */ IInterface* obj);
+
     CARAPI_(AutoPtr<ImeAdapter>) CreateImeAdapter(
         /* [in] */ IContext* context);
 
@@ -1969,8 +2155,8 @@ private:
         /* [in] */ const String& title,
         /* [in] */ IBitmap* favicon);
 
-    //@CalledByNative
-    static CARAPI_(AutoPtr<IRect>) CreateRect(
+    //@CalledByNative return IRect
+    static CARAPI_(AutoPtr<IInterface>) CreateRect(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
         /* [in] */ Int32 right,
@@ -2309,6 +2495,14 @@ private:
         /* [in] */ Int64 nativeContentViewCoreImpl,
         /* [in] */ Boolean opaque);
 
+public:
+    /**
+     * PID used to indicate an invalid render process.
+     */
+    // Keep in sync with the value returned from ContentViewCoreImpl::GetCurrentRendererProcessId()
+    // if there is no render process.
+    static const Int32 INVALID_RENDER_PROCESS_PID = 0;
+
 private:
     static const String TAG;
 
@@ -2357,7 +2551,7 @@ private:
 //    const HashSet<Object> mRetainedJavaScriptObjects = new HashSet<Object>();
     AutoPtr<ISet> mRetainedJavaScriptObjects;
 
-    /*const*/ AutoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;
     AutoPtr<IViewGroup> mContainerView;
     AutoPtr<InternalAccessDelegate> mContainerViewInternals;
     AutoPtr<WebContents> mWebContents;
@@ -2370,8 +2564,8 @@ private:
     // Native pointer to C++ ContentViewCoreImpl object which will be set by nativeInit().
     Int64 mNativeContentViewCore;
 
-    /*const*/ ObserverList mGestureStateListeners;
-    /*const*/ AutoPtr<ObserverList::RewindableIterator> mGestureStateListenersIterator;
+    ObserverList mGestureStateListeners;
+    AutoPtr<ObserverList::RewindableIterator> mGestureStateListenersIterator;
     AutoPtr<ZoomControlsDelegate> mZoomControlsDelegate;
 
     AutoPtr<PopupZoomer> mPopupZoomer;
@@ -2403,11 +2597,11 @@ private:
     Int32 mViewportSizeOffsetHeightPix;
 
     // Cached copy of all positions and scales as reported by the renderer.
-    /*const*/ AutoPtr<RenderCoordinates> mRenderCoordinates;
+    AutoPtr<RenderCoordinates> mRenderCoordinates;
 
-    /*const*/ AutoPtr<RenderCoordinates::NormalizedPoint> mStartHandlePoint;
-    /*const*/ AutoPtr<RenderCoordinates::NormalizedPoint> mEndHandlePoint;
-    /*const*/ AutoPtr<RenderCoordinates::NormalizedPoint> mInsertionHandlePoint;
+    AutoPtr<RenderCoordinates::NormalizedPoint> mStartHandlePoint;
+    AutoPtr<RenderCoordinates::NormalizedPoint> mEndHandlePoint;
+    AutoPtr<RenderCoordinates::NormalizedPoint> mInsertionHandlePoint;
 
     // Tracks whether a selection is currently active.  When applied to selected text, indicates
     // whether the last selected text is still highlighted.

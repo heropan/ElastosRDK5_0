@@ -8,6 +8,7 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 //TODO using Elastos::Droid::Location::CCriteria;
+using Elastos::Droid::Location::EIID_ILocationListener;
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Slogger;
 
@@ -37,6 +38,7 @@ ECode LocationProviderFactory::LocationProviderImpl::InnerRunnable::Run()
 //=====================================================================
 //            LocationProviderFactory::LocationProviderImpl
 //=====================================================================
+CAR_INTERFACE_IMPL(LocationProviderFactory::LocationProviderImpl, LocationProviderFactory::LocationProvider, ILocationListener);
 const String LocationProviderFactory::LocationProviderImpl::TAG("LocationProvider");
 
 LocationProviderFactory::LocationProviderImpl::LocationProviderImpl(

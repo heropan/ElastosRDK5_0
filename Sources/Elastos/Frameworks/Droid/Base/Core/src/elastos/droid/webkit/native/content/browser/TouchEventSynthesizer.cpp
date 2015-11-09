@@ -1,9 +1,11 @@
 
 #include "elastos/droid/webkit/native/content/browser/TouchEventSynthesizer.h"
+#include "elastos/droid/webkit/native/content/api/TouchEventSynthesizer_dec.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 // TODO #include "elastos/droid/view/CPointerCoords.h"
 // TODO #include "elastos/droid/view/CPointerProperties.h"
 // TODO #include "elastos/droid/view/CMotionEventHelper.h"
+#include <elastos/utility/logging/Logger.h>
 
 // TODO using Elastos::Droid::View::CPointerCoords;
 // TODO using Elastos::Droid::View::CPointerProperties;
@@ -11,6 +13,7 @@
 using Elastos::Droid::View::IMotionEventHelper;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::EIID_IInputEvent;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -152,6 +155,37 @@ ECode TouchEventSynthesizer::Inject(
     }
 
     return NOERROR;
+}
+
+void TouchEventSynthesizer::SetPointer(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 x,
+    /* [in] */ Int32 y,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<TouchEventSynthesizer> mObj = (TouchEventSynthesizer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("TouchEventSynthesizer", "TouchEventSynthesizer::SetPointer, mObj is NULL");
+        return;
+    }
+    mObj->SetPointer(index, x, y, id);
+}
+
+void TouchEventSynthesizer::Inject(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 action,
+    /* [in] */ Int32 pointerCount,
+    /* [in] */ Int64 timeInMs)
+{
+    AutoPtr<TouchEventSynthesizer> mObj = (TouchEventSynthesizer*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E("TouchEventSynthesizer", "TouchEventSynthesizer::Inject, mObj is NULL");
+        return;
+    }
+    mObj->Inject(action, pointerCount, timeInMs);
 }
 
 } // namespace Browser

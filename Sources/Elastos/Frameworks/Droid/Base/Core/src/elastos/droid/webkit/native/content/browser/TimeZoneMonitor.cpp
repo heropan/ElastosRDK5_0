@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/TimeZoneMonitor.h"
+#include "elastos/droid/webkit/native/content/api/TimeZoneMonitor_dec.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
@@ -69,7 +70,28 @@ ECode TimeZoneMonitor::Stop()
 ECode TimeZoneMonitor::NativeTimeZoneChangedFromJava(
     /* [in] */ Int64 nativeTimeZoneMonitorAndroid)
 {
+    Elastos_TimeZoneMonitor_nativeTimeZoneChangedFromJava(THIS_PROBE(IInterface), (Handle32)nativeTimeZoneMonitorAndroid);
     return NOERROR;
+}
+
+AutoPtr<IInterface> TimeZoneMonitor::GetInstance(
+    /* [in] */ IInterface* context,
+    /* [in] */ Int64 nativePtr)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(GetInstance(c, nativePtr));
+}
+
+void TimeZoneMonitor::Stop(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<TimeZoneMonitor> mObj = (TimeZoneMonitor*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "TimeZoneMonitor::Stop, mObj is NULL");
+        return;
+    }
+    mObj->Stop();
 }
 
 } // namespace Browser

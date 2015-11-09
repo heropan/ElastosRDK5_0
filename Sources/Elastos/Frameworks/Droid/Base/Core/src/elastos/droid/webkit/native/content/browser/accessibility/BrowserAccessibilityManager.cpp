@@ -1,8 +1,10 @@
 
 #include "elastos/droid/webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
+#include "elastos/droid/webkit/native/content/api/BrowserAccessibilityManager_dec.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanBrowserAccessibilityManager.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/os/Build.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Droid::Os::Build;
@@ -13,6 +15,7 @@ using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfoHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
 using Elastos::Droid::View::EIID_IView;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -979,16 +982,14 @@ void BrowserAccessibilityManager::SetAccessibilityEventRangeInfo(
 Int32 BrowserAccessibilityManager::NativeGetRootId(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid)
 {
-    assert(0);
-    return 0;
+    return Elastos_BrowserAccessibilityManager_nativeGetRootId(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid);
 }
 
 Boolean BrowserAccessibilityManager::NativeIsNodeValid(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_BrowserAccessibilityManager_nativeIsNodeValid(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 void BrowserAccessibilityManager::NativeHitTest(
@@ -996,6 +997,7 @@ void BrowserAccessibilityManager::NativeHitTest(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
+    Elastos_BrowserAccessibilityManager_nativeHitTest(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, x, y);
 }
 
 Boolean BrowserAccessibilityManager::NativePopulateAccessibilityNodeInfo(
@@ -1003,8 +1005,8 @@ Boolean BrowserAccessibilityManager::NativePopulateAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [in] */ Int32 id)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_BrowserAccessibilityManager_nativePopulateAccessibilityNodeInfo(
+            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, TO_IINTERFACE(info), id);
 }
 
 Boolean BrowserAccessibilityManager::NativePopulateAccessibilityEvent(
@@ -1013,31 +1015,36 @@ Boolean BrowserAccessibilityManager::NativePopulateAccessibilityEvent(
     /* [in] */ Int32 id,
     /* [in] */ Int32 eventType)
 {
-    assert(0);
-    return FALSE;
+    return Elastos_BrowserAccessibilityManager_nativePopulateAccessibilityEvent(
+            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, TO_IINTERFACE(event), id, eventType);
 }
 
 void BrowserAccessibilityManager::NativeClick(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
+    Elastos_BrowserAccessibilityManager_nativeClick(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 void BrowserAccessibilityManager::NativeFocus(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
+    Elastos_BrowserAccessibilityManager_nativeFocus(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 void BrowserAccessibilityManager::NativeBlur(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid)
 {
+    Elastos_BrowserAccessibilityManager_nativeBlur(THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid);
 }
 
 void BrowserAccessibilityManager::NativeScrollToMakeNodeVisible(
     /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
     /* [in] */ Int32 id)
 {
+    Elastos_BrowserAccessibilityManager_nativeScrollToMakeNodeVisible(
+            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, id);
 }
 
 Int32 BrowserAccessibilityManager::NativeFindElementType(
@@ -1046,8 +1053,543 @@ Int32 BrowserAccessibilityManager::NativeFindElementType(
     /* [in] */ const String& elementType,
     /* [in] */ Boolean forwards)
 {
-    assert(0);
-    return 0;
+    return Elastos_BrowserAccessibilityManager_nativeFindElementType(
+            THIS_PROBE(IInterface), (Handle32)nativeBrowserAccessibilityManagerAndroid, startId, elementType, forwards);
+}
+
+AutoPtr<IInterface> BrowserAccessibilityManager::Create(
+    /* [in] */ Int64 nativeBrowserAccessibilityManagerAndroid,
+    /* [in] */ IInterface* contentViewCore)
+{
+    AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
+    return TO_IINTERFACE(Create(nativeBrowserAccessibilityManagerAndroid, cvc));
+}
+
+void BrowserAccessibilityManager::OnNativeObjectDestroyed(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::OnNativeObjectDestroyed, mObj is NULL");
+        return;
+    }
+    mObj->OnNativeObjectDestroyed();
+}
+
+void BrowserAccessibilityManager::HandlePageLoaded(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandlePageLoaded, mObj is NULL");
+        return;
+    }
+    mObj->HandlePageLoaded(id);
+}
+
+void BrowserAccessibilityManager::HandleFocusChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleFocusChanged, mObj is NULL");
+        return;
+    }
+    mObj->HandleFocusChanged(id);
+}
+
+void BrowserAccessibilityManager::HandleCheckStateChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleCheckStateChanged, mObj is NULL");
+        return;
+    }
+    mObj->HandleCheckStateChanged(id);
+}
+
+void BrowserAccessibilityManager::HandleTextSelectionChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleTextSelectionChanged, mObj is NULL");
+        return;
+    }
+    mObj->HandleTextSelectionChanged(id);
+}
+
+void BrowserAccessibilityManager::HandleEditableTextChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleEditableTextChanged, mObj is NULL");
+        return;
+    }
+    mObj->HandleEditableTextChanged(id);
+}
+
+void BrowserAccessibilityManager::HandleContentChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleContentChanged, mObj is NULL");
+        return;
+    }
+    mObj->HandleContentChanged(id);
+}
+
+void BrowserAccessibilityManager::HandleNavigate(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleNavigate, mObj is NULL");
+        return;
+    }
+    mObj->HandleNavigate();
+}
+
+void BrowserAccessibilityManager::HandleScrollPositionChanged(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleScrollPositionChanged, mObj is NULL");
+        return;
+    }
+    mObj->HandleScrollPositionChanged(id);
+}
+
+void BrowserAccessibilityManager::HandleScrolledToAnchor(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleScrolledToAnchor, mObj is NULL");
+        return;
+    }
+    mObj->HandleScrolledToAnchor(id);
+}
+
+void BrowserAccessibilityManager::HandleHover(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int32 id)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::HandleHover, mObj is NULL");
+        return;
+    }
+    mObj->HandleHover(id);
+}
+
+void BrowserAccessibilityManager::AnnounceLiveRegionText(
+    /* [in] */ IInterface* obj,
+    /* [in] */ const String& text)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::AnnounceLiveRegionText, mObj is NULL");
+        return;
+    }
+    mObj->AnnounceLiveRegionText(text);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoParent(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 parentId)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoParent, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoParent(ani, parentId);
+}
+
+void BrowserAccessibilityManager::AddAccessibilityNodeInfoChild(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 childId)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::AddAccessibilityNodeInfoChild, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->AddAccessibilityNodeInfoChild(ani, childId);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoBooleanAttributes(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 virtualViewId,
+    /* [in] */ Boolean checkable,
+    /* [in] */ Boolean checked,
+    /* [in] */ Boolean clickable,
+    /* [in] */ Boolean enabled,
+    /* [in] */ Boolean focusable,
+    /* [in] */ Boolean focused,
+    /* [in] */ Boolean password,
+    /* [in] */ Boolean scrollable,
+    /* [in] */ Boolean selected,
+    /* [in] */ Boolean visibleToUser)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoBooleanAttributes, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoBooleanAttributes(ani, virtualViewId, checkable, checked, clickable, enabled, focusable, focused, password, scrollable, selected, visibleToUser);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoClassName(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ const String& className)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoClassName, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoClassName(ani, className);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoContentDescription(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ const String& contentDescription,
+    /* [in] */ Boolean annotateAsLink)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoContentDescription, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoContentDescription(ani, contentDescription, annotateAsLink);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 absoluteLeft,
+    /* [in] */ Int32 absoluteTop,
+    /* [in] */ Int32 parentRelativeLeft,
+    /* [in] */ Int32 parentRelativeTop,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Boolean isRootNode)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoLocation, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoLocation(ani, absoluteLeft, absoluteTop, parentRelativeLeft, parentRelativeTop, width, height, isRootNode);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoKitKatAttributes(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Boolean canOpenPopup,
+    /* [in] */ Boolean contentInvalid,
+    /* [in] */ Boolean dismissable,
+    /* [in] */ Boolean multiLine,
+    /* [in] */ Int32 inputType,
+    /* [in] */ Int32 liveRegion)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoKitKatAttributes, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoKitKatAttributes(ani, canOpenPopup, contentInvalid, dismissable, multiLine, inputType, liveRegion);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 rowCount,
+    /* [in] */ Int32 columnCount,
+    /* [in] */ Boolean hierarchical)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionInfo, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoCollectionInfo(ani, rowCount, columnCount, hierarchical);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionItemInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 rowIndex,
+    /* [in] */ Int32 rowSpan,
+    /* [in] */ Int32 columnIndex,
+    /* [in] */ Int32 columnSpan,
+    /* [in] */ Boolean heading)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoCollectionItemInfo, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoCollectionItemInfo(ani, rowIndex, rowSpan, columnIndex, columnSpan, heading);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityNodeInfoRangeInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* node,
+    /* [in] */ Int32 rangeType,
+    /* [in] */ Float min,
+    /* [in] */ Float max,
+    /* [in] */ Float current)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityNodeInfoRangeInfo, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityNodeInfo> ani = IAccessibilityNodeInfo::Probe(node);
+    mObj->SetAccessibilityNodeInfoRangeInfo(ani, rangeType, min, max, current);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventBooleanAttributes(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Boolean checked,
+    /* [in] */ Boolean enabled,
+    /* [in] */ Boolean password,
+    /* [in] */ Boolean scrollable)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventBooleanAttributes, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventBooleanAttributes(ae, checked, enabled, password, scrollable);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventClassName(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ const String& className)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventClassName, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventClassName(ae, className);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventListAttributes(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 currentItemIndex,
+    /* [in] */ Int32 itemCount)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventListAttributes, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventListAttributes(ae, currentItemIndex, itemCount);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventScrollAttributes(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 scrollX,
+    /* [in] */ Int32 scrollY,
+    /* [in] */ Int32 maxScrollX,
+    /* [in] */ Int32 maxScrollY)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventScrollAttributes, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventScrollAttributes(ae, scrollX, scrollY, maxScrollX, maxScrollY);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventTextChangedAttrs(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 fromIndex,
+    /* [in] */ Int32 addedCount,
+    /* [in] */ Int32 removedCount,
+    /* [in] */ const String& beforeText,
+    /* [in] */ const String& text)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventTextChangedAttrs, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventTextChangedAttrs(ae, fromIndex, addedCount, removedCount, beforeText, text);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventSelectionAttrs(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 fromIndex,
+    /* [in] */ Int32 addedCount,
+    /* [in] */ Int32 itemCount,
+    /* [in] */ const String& text)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventSelectionAttrs, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventSelectionAttrs(ae, fromIndex, addedCount, itemCount, text);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventKitKatAttributes(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Boolean canOpenPopup,
+    /* [in] */ Boolean contentInvalid,
+    /* [in] */ Boolean dismissable,
+    /* [in] */ Boolean multiLine,
+    /* [in] */ Int32 inputType,
+    /* [in] */ Int32 liveRegion)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventKitKatAttributes, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventKitKatAttributes(ae, canOpenPopup, contentInvalid, dismissable, multiLine, inputType, liveRegion);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventCollectionInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 rowCount,
+    /* [in] */ Int32 columnCount,
+    /* [in] */ Boolean hierarchical)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventCollectionInfo, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventCollectionInfo(ae, rowCount, columnCount, hierarchical);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventHeadingFlag(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Boolean heading)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventHeadingFlag, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventHeadingFlag(ae, heading);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventCollectionItemInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 rowIndex,
+    /* [in] */ Int32 rowSpan,
+    /* [in] */ Int32 columnIndex,
+    /* [in] */ Int32 columnSpan)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventCollectionItemInfo, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventCollectionItemInfo(ae, rowIndex, rowSpan, columnIndex, columnSpan);
+}
+
+void BrowserAccessibilityManager::SetAccessibilityEventRangeInfo(
+    /* [in] */ IInterface* obj,
+    /* [in] */ IInterface* event,
+    /* [in] */ Int32 rangeType,
+    /* [in] */ Float min,
+    /* [in] */ Float max,
+    /* [in] */ Float current)
+{
+    AutoPtr<BrowserAccessibilityManager> mObj = (BrowserAccessibilityManager*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Logger::E(TAG, "BrowserAccessibilityManager::SetAccessibilityEventRangeInfo, mObj is NULL");
+        return;
+    }
+    AutoPtr<IAccessibilityEvent> ae = IAccessibilityEvent::Probe(event);
+    mObj->SetAccessibilityEventRangeInfo(ae, rangeType, min, max, current);
 }
 
 } // namespace Accessibility

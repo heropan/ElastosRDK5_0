@@ -1,5 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/browser/VibrationProvider.h"
+#include "elastos/droid/webkit/native/content/api/VibrationProvider_dec.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -52,6 +53,38 @@ ECode VibrationProvider::CancelVibration()
 {
     if (mHasVibratePermission) mVibrator->Cancel();
     return NOERROR;
+}
+
+AutoPtr<IInterface> VibrationProvider::Create(
+    /* [in] */ IInterface* context)
+{
+    AutoPtr<IContext> c = IContext::Probe(context);
+    return TO_IINTERFACE(Create(c));
+}
+
+void VibrationProvider::Vibrate(
+    /* [in] */ IInterface* obj,
+    /* [in] */ Int64 milliseconds)
+{
+    AutoPtr<VibrationProvider> mObj = (VibrationProvider*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "VibrationProvider::Vibrate, mObj is NULL");
+        return;
+    }
+    mObj->Vibrate(milliseconds);
+}
+
+void VibrationProvider::CancelVibration(
+    /* [in] */ IInterface* obj)
+{
+    AutoPtr<VibrationProvider> mObj = (VibrationProvider*)(IObject::Probe(obj));
+    if (NULL == mObj)
+    {
+        Slogger::E(TAG, "VibrationProvider::CancelVibration, mObj is NULL");
+        return;
+    }
+    mObj->CancelVibration();
 }
 
 } // namespace Browser
