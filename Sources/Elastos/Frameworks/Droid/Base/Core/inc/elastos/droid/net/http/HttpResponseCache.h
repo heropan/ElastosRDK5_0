@@ -3,6 +3,16 @@
 #define __ELASTOS_DROID_NET_HTTP_HTTPRESPONSECACHE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/net/ResponseCache.h>
+
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFile;
+using Elastos::Net::ICacheRequest;
+using Elastos::Net::ICacheResponse;
+using Elastos::Net::IURI;
+using Elastos::Net::IURLConnection;
+using Elastos::Net::ResponseCache;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -225,9 +235,9 @@ public:
 
 private:
     constructor(
-        /* [in] */ Elastos::Droid::Okhttp::IHttpResponseCache* delegate);
+        /* [in] */ Elastos::Droid::External::Okhttp::IHttpResponseCache* delegate);
 
-    /* const */ AutoPtr<Elastos::Droid::Okhttp::IHttpResponseCache> mDelegate;
+    /* const */ AutoPtr<Elastos::Droid::External::Okhttp::IHttpResponseCache> mDelegate;
 };
 
 } // namespace Http

@@ -1,47 +1,33 @@
 
-#include "CRequestHandleHelper.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "CRequestHandle.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/net/http/CRequestHandle.h"
+#include "elastos/droid/net/http/CRequestHandleHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+CAR_INTERFACE_IMPL(CRequestHandleHelper, Singleton, IRequestHandleHelper)
+
+CAR_SINGLETON_IMPL(CRequestHandleHelper)
+
 ECode CRequestHandleHelper::ComputeBasicAuthResponse(
     /* [in] */ const String& username,
     /* [in] */ const String& password,
-    /* [out] */ String* response)
+    /* [out] */ String* result)
 {
-    if (username.IsNullOrEmpty() || password.IsNullOrEmpty()) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    // encode username:password to base64
-    // TODO:
-    // AutoPtr<Org::Apache::Commons::Codec::Binary> base64;
-    // CBase64::AcquireSingleton((IBase64**)&pBase64);
-    // AutoPtr<ArrayOf<Byte> > bytesIn;
-    // return String(Base64.encodeBase64((username + ':' + password).getBytes()));
-    return E_NOT_IMPLEMENTED;
+    return CRequestHandle::ComputeBasicAuthResponse(username, password, result);
 }
 
 ECode CRequestHandleHelper::AuthorizationHeader(
     /* [in] */ Boolean isProxy,
-    /* [out] */ String* header)
+    /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(header);
-
-    if (!isProxy) {
-        *header = CRequestHandle::AUTHORIZATION_HEADER;
-    } else {
-        *header = CRequestHandle::PROXY_AUTHORIZATION_HEADER;
-    }
-    return NOERROR;
+    return CRequestHandle::AuthorizationHeader(isProxy, result);
 }
 
-}
-}
-}
-}
-
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

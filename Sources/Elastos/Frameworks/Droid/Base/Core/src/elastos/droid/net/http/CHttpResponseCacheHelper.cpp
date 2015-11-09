@@ -19,11 +19,11 @@ ECode CHttpResponseCacheHelper::GetInstalled(
 }
 
 ECode CHttpResponseCacheHelper::Install(
-        /* [in] */ IFile* directory,
-        /* [in] */ Int64 maxSize,
+    /* [in] */ IFile* directory,
+    /* [in] */ Int64 maxSize,
     /* [out] */ IHttpResponseCache** result)
 {
-    return HttpResponseCache::Installed(directory, maxSize, result);
+    return HttpResponseCache::Install(directory, maxSize, result);
 }
 
 } // namespace Http

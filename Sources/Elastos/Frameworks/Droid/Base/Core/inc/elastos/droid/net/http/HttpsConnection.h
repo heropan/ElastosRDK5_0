@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/http/Connection.h"
+
+using Elastos::IO::IFile;
+using Elastosx::Net::Ssl::ISSLSocketFactory;
 
 namespace Elastos {
 namespace Droid {
@@ -54,7 +58,7 @@ public:
     // @Override
     CARAPI OpenConnection(
         /* [in] */ IRequest* req,
-        /* [out] */ IAndroidHttpClientConnection** result);
+        /* [out] */ IElastosHttpClientConnection** result);
 
     /**
      * Closes the low level connection.
@@ -85,7 +89,7 @@ private:
     /**
      * SSL socket factory
      */
-    static AutoPtr<ISSLSocketFactory> mSslSocketFactory;
+    static AutoPtr<ISSLSocketFactory> sSslSocketFactory;
 
     /**
      * Object to wait on when suspending the SSL connection

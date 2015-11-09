@@ -88,6 +88,8 @@ EXPORT_HEADERS += elastos/utility/TimSort.h
 EXPORT_HEADERS += elastos/utility/TimerTask.h
 EXPORT_HEADERS += elastos/utility/regex/Pattern.h
 
+EXPORT_HEADERS += elastos/net/ResponseCache.h
+
 EXPORT_HEADERS += elastos/io/InputStream.h
 EXPORT_HEADERS += elastos/io/OutputStream.h
 EXPORT_HEADERS += elastos/io/FilterInputStream.h

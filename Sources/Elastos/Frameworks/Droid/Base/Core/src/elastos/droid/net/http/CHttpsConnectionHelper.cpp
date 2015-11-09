@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "elastos/droid/net/http/CHttpsConnection.h"
 #include "elastos/droid/net/http/CHttpsConnectionHelper.h"
+#include "elastos/droid/net/http/HttpsConnection.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,19 +1,13 @@
 
 #include "elastos/droid/net/http/HttpResponseCache.h"
 
-using Elastos::Droid::Content.IContext;
-using Elastos::IO::ICloseable;
-using Elastos::IO::IFile;
-using Elastos::IO::IIOException;
-using Elastos::Net::ICacheRequest;
-using Elastos::Net::ICacheResponse;
+using Elastos::Droid::Content::IContext;
+
+using Elastos::IO::EIID_ICloseable;
 using Elastos::Net::IHttpURLConnection;
-using Elastos::Net::IResponseCache;
-using Elastos::Net::IURI;
-using Elastos::Net::IURLConnection;
 using Elastos::Utility::IList;
-using Elastos::Utility::IMap;
 using Elastosx::Net::Ssl::IHttpsURLConnection;
+
 using Org::Apache::Http::Impl::Client::IDefaultHttpClient;
 
 namespace Elastos {
@@ -21,10 +15,10 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-CAR_INTERFACE_IMPL(HttpResponseCache, ResponseCache, IHttpResponseCache, ICloseable)
+CAR_INTERFACE_IMPL_2(HttpResponseCache, ResponseCache, IHttpResponseCache, ICloseable)
 
 HttpResponseCache::constructor(
-    /* [in] */ Elastos::Droid::Okhttp::IHttpResponseCache* delegate)
+    /* [in] */ Elastos::Droid::External::Okhttp::IHttpResponseCache* delegate)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -187,7 +181,6 @@ ECode HttpResponseCache::Delete()
 
 #endif
 }
-
 
 } // namespace Http
 } // namespace Net

@@ -194,6 +194,7 @@ private:
         /* [in] */ const String& value,
         /* [out] */ String* result);
 
+private:
     static const String REALM_TOKEN;
 
     static const String NONCE_TOKEN;

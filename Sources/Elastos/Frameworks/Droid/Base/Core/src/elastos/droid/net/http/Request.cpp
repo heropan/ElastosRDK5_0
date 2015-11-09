@@ -1,88 +1,52 @@
 
-#include "Request.h"
-// #include "CHttpsConnection.h"
-#include "HttpLog.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "elastos/droid/net/http/Request.h"
 
-using namespace Elastos::Core;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::Zip::IGZIPInputStream;
 
 using Org::Apache::Http::Entity::IInputStreamEntity;
+using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpEntity;
+using Org::Apache::Http::IHttpEntityEnclosingRequest;
+using Org::Apache::Http::IHttpStatus;
+using Org::Apache::Http::IProtocolVersion;
+using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::Message::IBasicHttpEntityEnclosingRequest;
-using Org::Apache::Http::Message::EIID_IBasicHttpEntityEnclosingRequest;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-const String Request::HOST_HEADER = String("Host");
-const String Request::ACCEPT_ENCODING_HEADER = String("Accept-Encoding");
-const String Request::CONTENT_LENGTH_HEADER = String("content-length");
+CAR_INTERFACE_IMPL(Request, Object, IRequest)
 
+const String Request::HOST_HEADER("Host");
+const String Request::ACCEPT_ENCODING_HEADER("Accept-Encoding");
+const String Request::CONTENT_LENGTH_HEADER("content-length");
 AutoPtr<IRequestContent> Request::mRequestContentProcessor = InitRequestContentProcessor();
+
 AutoPtr<IRequestContent> Request::InitRequestContentProcessor()
 {
-    AutoPtr<IRequestContent> reqCon;
-    // CRequestContent::New((IRequestContent**)&reqCon);
-    return reqCon;
+    AutoPtr<IRequestContent> rev;
+#if 0 // TODO: Translated before. Need check.
+    // CRequestContent::New((IRequestContent**)&rev);
+#endif
+    return rev;
 }
 
-CAR_INTERFACE_IMPL(Request, IRequest);
-
-ECode Request::Aggregate(
-    /* [in] */ AggrType aggrType,
-    /* [in] */ PInterface pObject)
+Request::Request()
+    : mCancelled(FALSE)
+    , mFailCount(0)
+    , mReceivedBytes(0)
+    , mLoadingPaused(FALSE)
 {
-    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    mClientResource = new Object();
+#endif
 }
 
-ECode Request::GetDomain(
-    /* [out] */ PInterface *ppObject)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Request::GetClassID(
-    /* [out] */ ClassID *pCLSID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode Request::Equals(
-    /* [in] */ IInterface* other,
-    /* [out] */ Boolean * result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(other);
-
-    IRequest * o = IRequest::Probe(other);
-    if (o != NULL) {
-        *result = (o == THIS_PROBE(IRequest));
-    }
-    return NOERROR;
-}
-
-ECode Request::GetHashCode(
-    /* [out] */ Int32* hash)
-{
-    VALIDATE_NOT_NULL(hash);
-    *hash = (Int32)THIS_PROBE(IRequest);
-    return NOERROR;
-}
-
-ECode Request::ToString(
-    /* [out] */ String* info)
-{
-    VALIDATE_NOT_NULL(info);
-    StringBuilder sb("Request:(");
-    sb += (Int32)THIS_PROBE(IRequest);
-    sb += ")";
-    sb.ToString(info);
-    return NOERROR;
-}
-
-Request::Request(
+ECode Request::constructor(
     /* [in] */ const String& method,
     /* [in] */ IHttpHost* host,
     /* [in] */ IHttpHost* proxyHost,
@@ -90,18 +54,10 @@ Request::Request(
     /* [in] */ IInputStream* bodyProvider,
     /* [in] */ Int32 bodyLength,
     /* [in] */ IEventHandler* eventHandler,
-    /* [in] */ HashMap<String, String>* headers)
-    : mCancelled(FALSE)
-    , mFailCount(0)
-    , mReceivedBytes(0)
-    , mBodyLength(bodyLength)
-    , mLoadingPaused(FALSE)
-    , mEventHandler(eventHandler)
-    , mHost(host)
-    , mProxyHost(proxyHost)
-    , mPath(path)
-    , mBodyProvider(bodyProvider)
+    /* [in] */ IMap* headers)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (bodyProvider == NULL && !method.EqualsIgnoreCase("POST")) {
         // TODO:
         // CBasicHttpRequest::New(method, GetUri(), (IBasicHttpRequest**)&mHttpRequest);
@@ -122,14 +78,14 @@ Request::Request(
        high priority reqs (saving the trouble for images, etc) */
     AddHeader(ACCEPT_ENCODING_HEADER, String("gzip"));
     AddHeaders(headers);
+#endif
 }
 
-Request::~Request()
-{}
-
 ECode Request::SetLoadingPaused(
-     /* [in] */ Boolean pause)
+    /* [in] */ Boolean pause)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mClientResource);
 
     mLoadingPaused = pause;
@@ -141,24 +97,34 @@ ECode Request::SetLoadingPaused(
     }
 
     return NOERROR;
+#endif
 }
 
 ECode Request::SetConnection(
-    /* [in] */ Connection* connection)
+    /* [in] */ IConnection* connection)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     mConnection = connection;
     return NOERROR;
+#endif
 }
 
-IEventHandler* Request::GetEventHandler()
+ECode Request::GetEventHandler(
+    /* [out] */ IEventHandler** result)
 {
-    return mEventHandler;
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+        return mEventHandler;
+#endif
 }
 
 ECode Request::AddHeader(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (name.IsNullOrEmpty()) {
         String damage = String("Null http header name");
         HttpLog::E(damage);
@@ -173,11 +139,14 @@ ECode Request::AddHeader(
     // TODO:
     // return mHttpRequest->AddHeader(name, value);
     return E_NOT_IMPLEMENTED;
+#endif
 }
 
 ECode Request::AddHeaders(
-    /* [in] */ HashMap<String, String>* headers)
+    /* [in] */ IMap* headers)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (headers == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -190,11 +159,14 @@ ECode Request::AddHeaders(
     }
 
     return NOERROR;
+#endif
 }
 
 ECode Request::SendRequest(
     /* [in] */ IElastosHttpClientConnection* httpClientConnection)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (mCancelled){
         return NOERROR; // don't send cancelled requests
     }
@@ -228,11 +200,14 @@ ECode Request::SendRequest(
         // mHost->GetSchemeName(&name);
         HttpLog::V(String("Request.requestSent() ")  + name + String("://") + GetHostPort() + mPath);
     }
+#endif
 }
 
 ECode Request::ReadResponse(
     /* [in] */ IElastosHttpClientConnection* httpClientConnection)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (mCancelled){
         return NOERROR; // don't send cancelled requests
     }
@@ -388,10 +363,13 @@ ECode Request::ReadResponse(
     }
 
     return NOERROR;
+#endif
 }
 
 ECode Request::Cancel()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mClientResource);
 
     if (HttpLog::LOGV) {
@@ -410,10 +388,14 @@ ECode Request::Cancel()
     }
 
     return NOERROR;
+#endif
 }
 
-String Request::GetHostPort()
+ECode Request::GetHostPort(
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     String myScheme;
     // TODO:
     // mHost->GetSchemeName(&myScheme);
@@ -430,10 +412,14 @@ String Request::GetHostPort()
     }
 
     return port;
+#endif
 }
 
-String Request::GetUri()
+ECode Request::GetUri(
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     String name;
     // TODO:
     if (mProxyHost == NULL ||
@@ -442,17 +428,23 @@ String Request::GetUri()
     }
     // mHost->GetSchemeName(&name);
     return name + String("://") + GetHostPort() + mPath;
+#endif
 }
 
 ECode Request::ToString(
-    /* [out] */ String* str)
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     *str = mPath;
     return NOERROR;
+#endif
 }
 
 ECode Request::Reset()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     /* clear content-length header */
     // TODO:
     // mHttpRequest->RemoveHeaders(CONTENT_LENGTH_HEADER);
@@ -478,10 +470,13 @@ ECode Request::Reset()
     }
 
     return NOERROR;
+#endif
 }
 
 ECode Request::WaitUntilComplete()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mClientResource);
 
     if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete()"));
@@ -490,21 +485,28 @@ ECode Request::WaitUntilComplete()
     if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete() done waiting"));
 
     return NOERROR;
+#endif
 }
 
 ECode Request::Complete()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mClientResource);
 
     // TODO:
     // return mClientResource.NotifyAll();
     return E_NOT_IMPLEMENTED;
+#endif
 }
 
-Boolean Request::CanResponseHaveBody(
+ECode Request::CanResponseHaveBody(
     /* [in] */ IHttpRequest* request,
-    /* [in] */ Int32 status)
+    /* [in] */ Int32 status,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<IRequestLine> line;
     // TODO:
     // request->GetRequestLine((IRequestLine**)&line);
@@ -516,12 +518,15 @@ Boolean Request::CanResponseHaveBody(
     return status >= IHttpStatus::SC_OK
         && status != IHttpStatus::SC_NO_CONTENT
         && status != IHttpStatus::SC_NOT_MODIFIED;
+#endif
 }
 
 ECode Request::SetBodyProvider(
     /* [in] */ IInputStream* bodyProvider,
     /* [in] */ Int32 bodyLength)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     // TODO:
     // if (!bodyProvider->MarkSupported()) {
     //     Logger::E(String("bodyProvider must support mark()"));
@@ -535,11 +540,14 @@ ECode Request::SetBodyProvider(
     AutoPtr<IInputStreamEntity> entity;
     // CInputStreamEntity::New(bodyProvider, bodyLength, (IInputStreamEntity**)&entity);
     return request->SetEntity(entity);
+#endif
 }
 
 ECode Request::HandleSslErrorResponse(
     /* [in] */ Boolean proceed)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<IHttpsConnection> connection;
     // TODO:
     // connection = ((CHttpsConnection)(mConnection))->Probe(EIID_IHttpsConnection);
@@ -548,20 +556,24 @@ ECode Request::HandleSslErrorResponse(
     }
 
     return NOERROR;
+#endif
 }
 
 ECode Request::Error(
     /* [in] */ Int32 errorId,
     /* [in] */ Int32 resourceId)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<ICharSequence> cs;
     mConnection->mContext->GetText(resourceId, (ICharSequence**)&cs);
     String str;
     cs->ToString(&str);
     return mEventHandler->Error(errorId, str);
+#endif
 }
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

@@ -3,63 +3,28 @@
 #define __ELASTOS_DROID_NET_HTTP_REQUESTQUEUE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/utility/etl/List.h>
-#include "Request.h"
-#include "Connection.h"
-#include "IdleCache.h"
-#include "RequestFeeder.h"
-#include "../../content/BroadcastReceiver.h"
-
-using namespace Elastos::Core;
-using namespace Elastos::Droid::Content;
-
-using Elastos::Droid::Net::IConnectivityManager;
-using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-typedef List<AutoPtr<Request> > RequestList;
-typedef RequestList::Iterator RequestListIterator;
-
-class ConnectionThread;
-
-class RequestQueue : public RequestFeeder
+/**
+ * {@hide}
+ */
+class RequestQueue
+    : public Object
+    , public IRequestQueue
+    , public IRequestFeeder
 {
 public:
-    /**
-     * This interface is exposed to each connection
-     */
-    class ConnectionManager
-    {
-    public:
-        virtual CARAPI GetProxyHost(
-            /* [out] */ IHttpHost** host) = 0;
-
-        virtual CARAPI GetConnection(
-            /* [in] */ IContext* context,
-            /* [in] */ IHttpHost* host,
-            /* [out] */ Connection** conn) = 0;
-
-        virtual CARAPI RecycleConnection(
-            /* [in] */ Connection* connection,
-            /* [in] */ Boolean* result) = 0;
-    };
-
     class ActivePool
-        : public ConnectionManager
+        : public Object
+        , public IConnectionManager
     {
-        friend class RequestQueue;
-
     public:
-        ActivePool(
-            /* [in] */ Int32 connectionCount,
-            /* [in] */ RequestQueue* parent);
-
-        ~ActivePool();
+        CARAPI constructor(
+            /* [in] */ Int32 connectionCount);
 
         CARAPI Startup();
 
@@ -73,35 +38,35 @@ public:
 
         CARAPI LogState();
 
+        CARAPI GetProxyHost(
+            /* [out] */ IHttpHost** result);
+
         /**
-         * Turns off persistence on all live connections
-         */
+        * Turns off persistence on all live connections
+        */
         CARAPI DisablePersistence();
 
         /* Linear lookup -- okay for small thread counts.  Might use
-           private HashMap<HttpHost, LinkedList<ConnectionThread>> mActiveMap;
-           if this turns out to be a hotspot */
+        private HashMap<HttpHost, LinkedList<ConnectionThread>> mActiveMap;
+        if this turns out to be a hotspot */
         CARAPI GetThread(
             /* [in] */ IHttpHost* host,
-            /* [out] */ ConnectionThread** thread);
-
-        CARAPI GetProxyHost(
-            /* [out] */ IHttpHost** host);
+            /* [out] */ IConnectionThread** result);
 
         CARAPI GetConnection(
             /* [in] */ IContext* context,
             /* [in] */ IHttpHost* host,
-            /* [out] */ Connection** conn);
+            /* [out] */ IConnection** result);
 
         CARAPI RecycleConnection(
-            /* [in] */ Connection* connection,
-            /* [in] */ Boolean* result);
+            /* [in] */ IConnection* connection,
+            /* [out] */ Boolean* result);
 
     public:
         /** Threads used to process requests */
-        AutoPtr<ArrayOf<ConnectionThread*> > mThreads;
+        AutoPtr<ArrayOf<IConnectionThread*> > mThreads;
 
-        IdleCache* mIdleCache;
+        AutoPtr<IIdleCache> mIdleCache;
 
     private:
         Int32 mTotalRequest;
@@ -109,141 +74,192 @@ public:
         Int32 mTotalConnection;
 
         Int32 mConnectionCount;
-
-        RequestQueue* mParent;
-
-        Object mLock;
-
     };
 
 private:
-    class LocalBroadcastReceiver
-        // : public BroadcastReceiver
+    class SyncFeeder
+        : public Object
+        , public IRequestFeeder
     {
     public:
-        LocalBroadcastReceiver(
-            /* [in] */ RequestQueue* parent);
-
-    protected:
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-    private:
-        RequestQueue* mParent;
-
-    };
-
-    class SyncFeeder : public RequestFeeder
-    {
-    public:
-        SyncFeeder(
-            /* [in] */ RequestQueue* parent);
-
         CARAPI GetRequest(
-            /* [out] */ Request** req);
+            /* [out] */ IRequest** result);
 
         CARAPI GetRequest(
             /* [in] */ IHttpHost* host,
-            /* [out] */ Request** req);
+            /* [out] */ IRequest** result);
 
         CARAPI HaveRequest(
             /* [in] */ IHttpHost* host,
             /* [out] */ Boolean* result);
 
         CARAPI RequeueRequest(
-            /* [in] */ Request* request);
+            /* [in] */ IRequest* r);
 
     private:
         // This is used in the case where the request fails and needs to be
         // requeued into the RequestFeeder.
-        Request* mRequest;
+        AutoPtr<IRequest> mRequest;
+    };
 
-        RequestQueue* mParent;
+    class InnerSub_BroadcastReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        CARAPI OnReceive(
+            /* [in] */ IContext* ctx,
+            /* [in] */ IIntent* intent);
     };
 
 public:
-    RequestQueue();
+    CAR_INTERFACE_DECL()
 
-    ~RequestQueue();
+    /**
+     * A RequestQueue class instance maintains a set of queued
+     * requests.  It orders them, makes the requests against HTTP
+     * servers, and makes callbacks to supplied eventHandlers as data
+     * is read.  It supports request prioritization, connection reuse
+     * and pipelining.
+     *
+     * @param context application context
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
-    CARAPI Init(
+    /**
+     * A RequestQueue class instance maintains a set of queued
+     * requests.  It orders them, makes the requests against HTTP
+     * servers, and makes callbacks to supplied eventHandlers as data
+     * is read.  It supports request prioritization, connection reuse
+     * and pipelining.
+     *
+     * @param context application context
+     * @param connectionCount The number of simultaneous connections
+     */
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 connectionCount);
 
+    /**
+     * Enables data state and proxy tracking
+     */
     CARAPI EnablePlatformNotifications();
 
+    /**
+     * If platform notifications have been enabled, call this method
+     * to disable before destroying RequestQueue
+     */
     CARAPI DisablePlatformNotifications();
 
+    /**
+     * used by webkit
+     * @return proxy host if set, null otherwise
+     */
     CARAPI GetProxyHost(
-        /* [out] */ Org::Apache::Http::IHttpHost** host);
+        /* [out] */ IHttpHost** result);
 
+    /**
+     * Queues an HTTP request
+     * @param url The url to load.
+     * @param method "GET" or "POST."
+     * @param headers A hashmap of http headers.
+     * @param eventHandler The event handler for handling returned
+     * data.  Callbacks will be made on the supplied instance.
+     * @param bodyProvider InputStream providing HTTP body, null if none
+     * @param bodyLength length of body, must be 0 if bodyProvider is null
+     */
     CARAPI QueueRequest(
-        /* [in] */ IRequestQueue* reqQueue,
-        /* [in] */ const String& url,
-        /* [in] */ const String& method,
-        /* [in] */ HashMap<String, String>* headers,
-        /* [in] */ Elastos::Droid::Net::Http::IEventHandler* eventHandler,
-        /* [in] */ Elastos::IO::IInputStream* bodyProvider,
+        /* [in] */ String url,
+        /* [in] */ String method,
+        /* [in] */  ,
+        /* [in] */ IString>* headers,
+        /* [in] */ IEventHandler* eventHandler,
+        /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
-        /* [out] */ Elastos::Droid::Net::Http::IRequestHandle** handle);
+        /* [out] */ IRequestHandle** result);
 
+    /**
+     * Queues an HTTP request
+     * @param url The url to load.
+     * @param uri The uri of the url to load.
+     * @param method "GET" or "POST."
+     * @param headers A hashmap of http headers.
+     * @param eventHandler The event handler for handling returned
+     * data.  Callbacks will be made on the supplied instance.
+     * @param bodyProvider InputStream providing HTTP body, null if none
+     * @param bodyLength length of body, must be 0 if bodyProvider is null
+     */
     CARAPI QueueRequest(
-        /* [in] */ IRequestQueue* reqQueue,
-        /* [in] */ const String& url,
-        /* [in] */ Elastos::Droid::Net::IWebAddress* uri,
-        /* [in] */ const String& method,
-        /* [in] */ HashMap<String, String>* headers,
-        /* [in] */ Elastos::Droid::Net::Http::IEventHandler* eventHandler,
-        /* [in] */ Elastos::IO::IInputStream* bodyProvider,
+        /* [in] */ String url,
+        /* [in] */ IWebAddress* uri,
+        /* [in] */ String method,
+        /* [in] */  ,
+        /* [in] */ IString>* headers,
+        /* [in] */ IEventHandler* eventHandler,
+        /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
-        /* [out] */ Elastos::Droid::Net::Http::IRequestHandle** handle);
+        /* [out] */ IRequestHandle** result);
 
     CARAPI QueueSynchronousRequest(
-        /* [in] */ IRequestQueue* reqQueue,
-        /* [in] */ const String& url,
-        /* [in] */ Elastos::Droid::Net::IWebAddress* uri,
-        /* [in] */ const String& method,
-        /* [in] */ HashMap<String, String>* headers,
-        /* [in] */ Elastos::Droid::Net::Http::IEventHandler* eventHandler,
-        /* [in] */ Elastos::IO::IInputStream* bodyProvider,
+        /* [in] */ String url,
+        /* [in] */ IWebAddress* uri,
+        /* [in] */ String method,
+        /* [in] */  ,
+        /* [in] */ IString>* headers,
+        /* [in] */ IEventHandler* eventHandler,
+        /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
-        /* [out] */ Elastos::Droid::Net::Http::IRequestHandle** handle);
+        /* [out] */ IRequestHandle** result);
 
     /**
      * @return true iff there are any non-active requests pending
      */
-    CARAPI_(Boolean) RequestsPending();
+    CARAPI RequestsPending(
+        /* [out] */ Boolean* result);
 
     /**
      * debug tool: prints request queue to log
      */
     CARAPI Dump();
 
+    /*
+     * RequestFeeder implementation
+     */
     CARAPI GetRequest(
-         /* [out] */ Request** req);
+        /* [out] */ IRequest** result);
 
+    /**
+     * @return a request for given host if possible
+     */
     CARAPI GetRequest(
         /* [in] */ IHttpHost* host,
-        /* [out] */ Request** req);
+        /* [out] */ IRequest** result);
 
+    /**
+     * @return true if a request for this host is available
+     */
     CARAPI HaveRequest(
         /* [in] */ IHttpHost* host,
         /* [out] */ Boolean* result);
 
+    /**
+     * Put request back on head of queue
+     */
     CARAPI RequeueRequest(
-        /* [in] */ Request* request);
+        /* [in] */ IRequest* request);
 
+    /**
+     * This must be called to cleanly shutdown RequestQueue
+     */
     CARAPI Shutdown();
+
+    CARAPI QueueRequest(
+        /* [in] */ IRequest* request,
+        /* [in] */ Boolean head);
 
     CARAPI StartTiming();
 
     CARAPI StopTiming();
-
-protected:
-    CARAPI QueueRequest(
-        /* [in] */ Request* request,
-        /* [in] */ Boolean head);
 
 private:
     /**
@@ -253,36 +269,37 @@ private:
     CARAPI SetProxyConfig();
 
     // Chooses between the proxy and the request's host.
-    IHttpHost* DetermineHost(
-        /* [in] */ IHttpHost* host);
+    CARAPI DetermineHost(
+        /* [in] */ IHttpHost* host,
+        /* [out] */ IHttpHost** result);
 
     /* helper */
-    CARAPI_(AutoPtr<Request>) RemoveFirst(
-        /* [in] */ HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> >* requestQueue);
+    CARAPI RemoveFirst(
+        /* [in] */ IHashMap* requestQueue,
+        /* [out] */ IRequest** result);
 
-private:
     /**
      * Requests, indexed by HttpHost (scheme, host, port)
      */
-    HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> > mPending;
+    /* const */ AutoPtr<ILinkedHashMap> mPending;
 
-    AutoPtr<IContext> mContext;
+    /* const */ AutoPtr<IContext> mContext;
 
-    ActivePool* mActivePool;
+    /* const */ AutoPtr<ActivePool> mActivePool;
 
-    AutoPtr<IConnectivityManager> mConnectivityManager;
+    /* const */ AutoPtr<IConnectivityManager> mConnectivityManager;
 
     AutoPtr<IHttpHost> mProxyHost;
 
-    // AutoPtr<IBroadcastReceiver> mProxyChangeReceiver;
-    IBroadcastReceiver* mProxyChangeReceiver;
+    AutoPtr<IBroadcastReceiver> mProxyChangeReceiver;
 
-    Object mLock;
+    /* default simultaneous connection count */
+    static const Int32 CONNECTION_COUNT;
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_REQUESTQUEUE_H__

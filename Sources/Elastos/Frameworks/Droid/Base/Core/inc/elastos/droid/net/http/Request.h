@@ -3,15 +3,14 @@
 #define __ELASTOS_DROID_NET_HTTP_REQUEST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
-#include "Connection.h"
-
-using namespace Elastos::Core;
-using namespace Org::Apache::Http;
-using namespace Org::Apache::Http::Protocol;
 
 using Elastos::IO::IInputStream;
+using Elastos::Utility::IMap;
+
+using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::Message::IBasicHttpRequest;
+using Org::Apache::Http::Protocol::IRequestContent;
 
 namespace Elastos {
 namespace Droid {
@@ -24,32 +23,13 @@ namespace Http {
  * {@hide}
  */
 class Request
-    : public ElRefBase
-    , public IObject
+    : public Object
     , public IRequest
 {
 public:
-    CAR_INTERFACE_DECL();
+    CAR_INTERFACE_DECL()
 
-    CARAPI Aggregate(
-        /* [in] */ AggrType aggrType,
-        /* [in] */ PInterface pObject);
-
-    CARAPI GetDomain(
-        /* [out] */ PInterface *ppObject);
-
-    CARAPI GetClassID(
-        /* [out] */ ClassID *pCLSID);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean * result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hash);
-
-    CARAPI ToString(
-        /* [out] */ String* info);
+    Request();
 
     /**
      * Instantiates a new Request.
@@ -62,7 +42,7 @@ public:
      * this interface
      * @param headers reqeust headers
      */
-    Request(
+    CARAPI constructor(
         /* [in] */ const String& method,
         /* [in] */ IHttpHost* host,
         /* [in] */ IHttpHost* proxyHost,
@@ -70,23 +50,23 @@ public:
         /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
         /* [in] */ IEventHandler* eventHandler,
-        /* [in] */ HashMap<String, String>* headers);
-
-    ~Request();
+        /* [in] */ IMap* headers);
 
     /**
      * @param pause True if the load should be paused.
      */
-     CARAPI SetLoadingPaused(
-         /* [in] */ Boolean pause);
+    CARAPI SetLoadingPaused(
+        /* [in] */ Boolean pause);
 
     /**
      * @param connection Request served by this connection
      */
     CARAPI SetConnection(
-         /* [in] */ Connection* connection);
+        /* [in] */ IConnection* connection);
 
-    IEventHandler* GetEventHandler();
+    /* package */
+    CARAPI GetEventHandler(
+        /* [out] */ IEventHandler** result);
 
     /**
      * Add header represented by given pair to request.  Header will
@@ -103,7 +83,7 @@ public:
      * method: it calls addHeader for each pair in the map.
      */
     CARAPI AddHeaders(
-        /* [in] */ HashMap<String, String>* headers);
+        /* [in] */ IMap* headers);
 
     /**
      * Send the request line and headers
@@ -127,15 +107,17 @@ public:
      */
     CARAPI Cancel();
 
-    String GetHostPort();
+    CARAPI GetHostPort(
+        /* [out] */ String* result);
 
-    String GetUri();
+    CARAPI GetUri(
+        /* [out] */ String* result);
 
     /**
      * for debugging
      */
     CARAPI ToString(
-        /* [out] */ String* str);
+        /* [out] */ String* result);
 
     /**
      * If this request has been sent once and failed, it must be reset
@@ -166,39 +148,6 @@ public:
         /* [in] */ Int32 errorId,
         /* [in] */ Int32 resourceId);
 
-private:
-    static AutoPtr<IRequestContent> InitRequestContentProcessor();
-
-    /**
-     * Decide whether a response comes with an entity.
-     * The implementation in this class is based on RFC 2616.
-     * Unknown methods and response codes are supposed to
-     * indicate responses with an entity.
-     * <br/>
-     * Derived executors can override this method to handle
-     * methods and response codes not specified in RFC 2616.
-     *
-     * @param request   the request, to obtain the executed method
-     * @param response  the response, to obtain the status code
-     */
-
-    static CARAPI_(Boolean) CanResponseHaveBody(
-        /* [in] */ IHttpRequest* request,
-        /* [in] */ Int32 status);
-
-    /**
-     * Supply an InputStream that provides the body of a request.  It's
-     * not great that the caller must also provide the length of the data
-     * returned by that InputStream, but the client needs to know up
-     * front, and I'm not sure how to get this out of the InputStream
-     * itself without a costly readthrough.  I'm not sure skip() would
-     * do what we want.  If you know a better way, please let me know.
-     */
-    CARAPI SetBodyProvider(
-        /* [in] */ IInputStream* bodyProvider,
-        /* [in] */ Int32 bodyLength);
-
-public:
     /** The eventhandler to call as the request progresses */
     AutoPtr<IEventHandler> mEventHandler;
 
@@ -215,14 +164,51 @@ public:
     AutoPtr<IHttpHost> mProxyHost;
 
     /** True if request has been cancelled */
-    /*volatile*/ Boolean mCancelled;
+    /* volatile */ Boolean mCancelled;
 
     Int32 mFailCount;
 
 private:
-    Connection* mConnection;
+    /**
+     * Decide whether a response comes with an entity.
+     * The implementation in this class is based on RFC 2616.
+     * Unknown methods and response codes are supposed to
+     * indicate responses with an entity.
+     * <br/>
+     * Derived executors can override this method to handle
+     * methods and response codes not specified in RFC 2616.
+     *
+     * @param request   the request, to obtain the executed method
+     * @param response  the response, to obtain the status code
+     */
+    static CARAPI CanResponseHaveBody(
+        /* [in] */ IHttpRequest* request,
+        /* [in] */ Int32 status,
+        /* [out] */ Boolean* result);
 
-    // This will be used to set the Range field if we retry a connection. This
+    /**
+     * Supply an InputStream that provides the body of a request.  It's
+     * not great that the caller must also provide the length of the data
+     * returned by that InputStream, but the client needs to know up
+     * front, and I'm not sure how to get this out of the InputStream
+     * itself without a costly readthrough.  I'm not sure skip() would
+     * do what we want.  If you know a better way, please let me know.
+     */
+    CARAPI SetBodyProvider(
+        /* [in] */ IInputStream* bodyProvider,
+        /* [in] */ Int32 bodyLength);
+
+    static CARAPI_(AutoPtr<IRequestContent>) InitRequestContentProcessor();
+
+private:
+    /**
+     * Processor used to set content-length and transfer-encoding
+     * headers.
+     */
+    static AutoPtr<IRequestContent> mRequestContentProcessor;
+
+    AutoPtr<IConnection> mConnection;
+
     // is http/1.1 feature.
     Int32 mReceivedBytes;
 
@@ -231,25 +217,21 @@ private:
     Int32 mBodyLength;
 
     static const String HOST_HEADER;
+
     static const String ACCEPT_ENCODING_HEADER;
+
     static const String CONTENT_LENGTH_HEADER;
 
     /* Used to synchronize waitUntilComplete() requests */
-    Object mClientResource;
+    /* const */ AutoPtr<IInterface> mClientResource;
 
     /** True if loading should be paused **/
     Boolean mLoadingPaused;
-
-    /**
-     * Processor used to set content-length and transfer-encoding
-     * headers.
-     */
-    static AutoPtr<IRequestContent> mRequestContentProcessor;
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_REQUEST_H__

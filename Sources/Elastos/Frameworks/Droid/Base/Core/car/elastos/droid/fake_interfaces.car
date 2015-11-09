@@ -188,4 +188,52 @@ module
         interface ISystemClock {}
 
     }}} // Elastos.Droid.Os
+
+    namespace Elastos {
+    namespace Droid {
+    namespace External {
+    namespace Okhttp {
+
+        interface IHttpResponseCache {}
+
+    }}}} // Elastos.Droid.External.Okhttp
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Message {
+
+        interface IBasicHttpRequest {}
+
+        interface IBasicHttpEntityEnclosingRequest {}
+
+    }}}} // Org.Apache.Http.Message
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Entity {
+
+        interface IInputStreamEntity {}
+
+    }}}} // Org.Apache.Http.Entity
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Protocol {
+
+        interface IRequestContent {}
+
+    }}}} // Org.Apache.Http.Protocol
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Impl {
+    namespace Client {
+
+        interface IDefaultHttpClient {}
+
+    }}}}} // Org.Apache.Http.Impl.Client
 }

@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Net_Http_CHttpsConnectionHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::IO::IFile;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -32,7 +34,6 @@ public:
      */
     CARAPI InitializeEngine(
         /* [in] */ IFile* sessionDir);
-
 };
 
 } // namespace Http

@@ -1,18 +1,40 @@
 
 #include "elastos/droid/net/http/HttpsConnection.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::ILog;
+
+using Elastos::Net::ISocket;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Utility::ILocale;
+using Elastosx::Net::Ssl::ISSLSocket;
+using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::IX509TrustManager;
+
+// using Org::Apache::Harmony::Xnet::Provider::Jsse::IFileClientSessionCache;
+// using Org::Apache::Harmony::Xnet::Provider::Jsse::IOpenSSLContextImpl;
+// using Org::Apache::Harmony::Xnet::Provider::Jsse::ISSLClientSessionCache;
+using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::IHttpStatus;
+using Org::Apache::Http::IProtocolVersion;
+using Org::Apache::Http::IStatusLine;
+// using Org::Apache::Http::Message::IBasicHttpRequest;
+using Org::Apache::Http::Params::IBasicHttpParams;
+using Org::Apache::Http::Params::IHttpConnectionParams;
+using Org::Apache::Http::Params::IHttpParams;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-CAR_INTERFACE_IMPL(HttpsConnection, $SUPER_CLASS$, IHttpsConnection)
+CAR_INTERFACE_IMPL(HttpsConnection, Connection, IHttpsConnection)
 
 // This initialization happens in the zygote. It triggers some
 // lazy initialization that can will benefit later invocations of
 // initializeEngine().
 ECode HttpsConnection::mEnableStaticBlock = InitializeEngine(NULL);
-AutoPtr<ISSLSocketFactory> HttpsConnection::mSslSocketFactory = NULL;
 
 HttpsConnection::HttpsConnection()
     : mSuspended(FALSE)
@@ -76,14 +98,6 @@ ECode HttpsConnection::GetSocketFactory(
 #endif
 }
 
-ECode HttpsConnection::Object(
-    /* [out] */ Inew** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-#endif
-}
-
 ECode HttpsConnection::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHttpHost* host,
@@ -109,7 +123,7 @@ ECode HttpsConnection::SetCertificate(
 
 ECode HttpsConnection::OpenConnection(
     /* [in] */ IRequest* req,
-    /* [out] */ IAndroidHttpClientConnection** result)
+    /* [out] */ IElastosHttpClientConnection** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translated before. Need check.

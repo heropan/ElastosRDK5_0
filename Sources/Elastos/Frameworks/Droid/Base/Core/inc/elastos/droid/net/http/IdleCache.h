@@ -3,9 +3,11 @@
 #define __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Connection.h"
+#include <elastos/core/Thread.h>
 
-using namespace Org::Apache::Http;
+using Elastos::Core::Thread;
+
+using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {
 namespace Droid {
@@ -16,40 +18,32 @@ namespace Http {
  * {@hide}
  */
 class IdleCache
+    : public Object
 {
 public:
     class Entry
+        : public Object
     {
     public:
         AutoPtr<IHttpHost> mHost;
-        Connection* mConnection;
+        AutoPtr<IConnection> mConnection;
         Int64 mTimeout;
     };
 
+private:
     class IdleReaper
-        : public ThreadBase
+        : public Thread
     {
     public:
-        IdleReaper(
-            /* [in] */ IdleCache* parent);
-
-        ~IdleReaper();
-
-        virtual CARAPI Run();
-
-        CARAPI ToString(
-            /* [out] */ String* str);
-
-    private:
-        IdleCache* mParent;
+        CARAPI Run();
     };
 
-    friend class IdleCache::IdleReaper;
-
 public:
+    CAR_INTERFACE_DECL()
+
     IdleCache();
 
-    ~IdleCache();
+    CARAPI constructor();
 
     /**
      * Caches connection, if there is room.
@@ -57,45 +51,46 @@ public:
      */
     CARAPI CacheConnection(
         /* [in] */ IHttpHost* host,
-        /* [in] */ Connection* connection,
+        /* [in] */ IConnection* connection,
         /* [out] */ Boolean* result);
 
     CARAPI GetConnection(
         /* [in] */ IHttpHost* host,
-        /* [out] */ Connection** conn);
+        /* [out] */ IConnection** result);
 
     CARAPI Clear();
 
+private:
     CARAPI ClearIdle();
 
 private:
-    static const Int32 IDLE_CACHE_MAX = 8;
+    static const Int32 IDLE_CACHE_MAX;
 
     /* Allow five consecutive empty queue checks before shutdown */
-    static const Int32 EMPTY_CHECK_MAX = 5;
+    static const Int32 EMPTY_CHECK_MAX;
 
     /* six second timeout for connections */
-    static const Int32 TIMEOUT = 6 * 1000;
+    static const Int32 TIMEOUT;
 
-    static const Int32 CHECK_INTERVAL = 2 * 1000;
+    static const Int32 CHECK_INTERVAL;
 
     AutoPtr<ArrayOf<Entry*> > mEntries;
 
     Int32 mCount;
 
-    IdleReaper* mThread;
+    AutoPtr<IdleReaper> mThread;
 
     /* stats */
     Int32 mCached;
 
     Int32 mReused;
-
-    Object mLock;
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Net::Http::IdleCache::Entry, IInterface)
 
 #endif // __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__

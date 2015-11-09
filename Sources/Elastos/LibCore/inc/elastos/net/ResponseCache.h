@@ -2,14 +2,14 @@
 #ifndef __ELASTOS_NET_RESPONSECACHE_H__
 #define __ELASTOS_NET_RESPONSECACHE_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Net {
 
-class ResponseCache
+class ECO_PUBLIC ResponseCache
     : public Object
     , public IResponseCache
 {
@@ -44,7 +44,7 @@ public:
         /* [out] */ ICacheRequest** cache) = 0;
 
 private:
-    static AutoPtr<IResponseCache> sDefaultResponseCache;
+    ECO_LOCAL static AutoPtr<IResponseCache> sDefaultResponseCache;
 };
 
 } // namespace Net

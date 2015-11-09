@@ -1,33 +1,48 @@
 
-#include "IdleCache.h"
-#include "HttpLog.h"
-// #include "SystemClock.h"
+#include "elastos/droid/net/http/IdleCache.h"
+
+using Elastos::Droid::Os::ISystemClock;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+const Int32 IdleCache::IDLE_CACHE_MAX = 8;
+const Int32 IdleCache::EMPTY_CHECK_MAX = 5;
+const Int32 IdleCache::TIMEOUT = 6 * 1000;
+const Int32 IdleCache::CHECK_INTERVAL = 2 * 1000;
+
 IdleCache::IdleCache()
     : mCount(0)
-    , mThread(NULL)
     , mCached(0)
     , mReused(0)
 {
+#if 0 // TODO: Translate codes below
     mEntries = ArrayOf<Entry*>::Alloc(IDLE_CACHE_MAX);
     for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
         (*mEntries)[i] = new Entry();
     }
+#endif
 }
 
-IdleCache::~IdleCache()
-{}
+ECode IdleCache::constructor()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    for (Int32 i = 0; i < IDLE_CACHE_MAX; i++) {
+        mEntries[i] = new Entry();
+    }
+#endif
+}
 
 ECode IdleCache::CacheConnection(
-        /* [in] */ IHttpHost* host,
-        /* [in] */ Connection* connection,
-        /* [out] */ Boolean* result)
+    /* [in] */ IHttpHost* host,
+    /* [in] */ IConnection* connection,
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mLock);
 
     Boolean ret = FALSE;
@@ -57,12 +72,15 @@ ECode IdleCache::CacheConnection(
         }
     }
     return ret;
+#endif
 }
 
 ECode IdleCache::GetConnection(
     /* [in] */ IHttpHost* host,
-    /* [out] */ Connection** conn)
+    /* [out] */ IConnection** result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mLock);
 
     Connection* ret = NULL;
@@ -85,10 +103,13 @@ ECode IdleCache::GetConnection(
 
     *conn = ret;
     return NOERROR;
+#endif
 }
 
 ECode IdleCache::Clear()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mLock);
 
     for (Int32 i = 0; mCount > 0 && i < IDLE_CACHE_MAX; i++) {
@@ -102,10 +123,13 @@ ECode IdleCache::Clear()
     }
 
     return NOERROR;
+#endif
 }
 
 ECode IdleCache::ClearIdle()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoLock lock(mLock);
 
     if (mCount > 0) {
@@ -123,10 +147,16 @@ ECode IdleCache::ClearIdle()
     }
 
     return NOERROR;
+#endif
 }
 
+//===================================================
+// IdleCache::IdleReaper
+//===================================================
 ECode IdleCache::IdleReaper::Run()
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     Int32 check = 0;
 
     SetName(String("IdleReaper"));
@@ -159,19 +189,10 @@ ECode IdleCache::IdleReaper::Run()
     }
 
     return NOERROR;
+#endif
 }
 
-IdleCache::IdleReaper::IdleReaper(
-    /* [in] */ IdleCache* parent)
-    : mParent(parent)
-{
-    Thread::constructor("IdleReaper");
-}
-
-IdleCache::IdleReaper::~IdleReaper()
-{}
-
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
