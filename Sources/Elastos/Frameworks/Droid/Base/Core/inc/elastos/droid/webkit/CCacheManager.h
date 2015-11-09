@@ -14,37 +14,9 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::Http::IHeaders;
 using Elastos::Droid::Os::Runnable;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-    //must be called first
-    extern void Elastos_CacheManager_Init(Int32 callbacks);
-    extern Int32 Elastos_CacheManager_GetCacheResult(const Elastos::String& url);
-#ifdef __cplusplus
-}
-#endif
-
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
-
-struct ElaCacheManagerCallback
-{
-    Int32 (*createCCacheManagerCacheResult)();
-    Elastos::String (*getCacheFileBaseDir)();
-    void (*setContentdisposition)(Int32 obj, const Elastos::String& contentdisposition);
-    void (*setContentLength)(Int32 obj, Int64 contentLength);
-    void (*setEtag)(Int32 obj, const Elastos::String& etag);
-    void (*setEncoding)(Int32 obj, const Elastos::String& encoding);
-    void (*setExpires)(Int32 obj, Int64 expires);
-    void (*setExpiresString)(Int32 obj, const Elastos::String& expiresString);
-    void (*setHttpStatusCode)(Int32 obj, Int32 httpStatusCode);
-    void (*setLastModified)(Int32 obj, const Elastos::String& lastModified);
-    void (*setLocalPath)(Int32 obj, const Elastos::String& localPath);
-    void (*setLocation)(Int32 obj, const Elastos::String& location);
-    void (*setMimeType)(Int32 obj, const Elastos::String& mimeType);
-};
 
 CarClass(CCacheManager)
     , public Object
@@ -129,32 +101,12 @@ public:
         AutoPtr<IFile> mOutFile;
     };
 
-private:
-    class InnerRunnable
-        : public Runnable
-    {
-    public:
-        InnerRunnable();
-
-        CARAPI Run();
-    };
-
 public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
 
     CARAPI constructor();
-
-    /**
-     * Initializes the HTTP cache. This method must be called before any
-     * CacheManager methods are used. Note that this is called automatically
-     * when a {@link WebView} is created.
-     *
-     * @param context the application context
-     */
-    static CARAPI_(void) Init(
-        /* [in] */ IContext* context);
 
     static CARAPI_(AutoPtr<IFile>) GetCacheFileBaseDir();
 
@@ -181,14 +133,9 @@ public:
         /* [in] */ IMap* headers);
 
     CARAPI GetCacheFile(
-        /* [in] */ const String& url,
-        /* [in] */ IMap* headers,
-        /* [out] */ ICacheManagerCacheResult** cacheFile);
-
-    static CARAPI_(AutoPtr<ICacheManagerCacheResult>) GetCacheFile(
-        /* [in] */ const String& url,
-        /* [in] */ Int64 postIdentifier,
-        /* [in] */ IMap* headers);
+            /* [in] */ const String& url,
+            /* [in] */ IMap* headers,
+            /* [out] */ ICacheManagerCacheResult** cacheResult);
 
     /**
      * Given a URL and its full headers, gets a CacheResult if a local cache
@@ -220,74 +167,6 @@ public:
         /* [in] */ const String& url,
         /* [in] */ Int64 postIdentifier,
         /* [in] */ ICacheManagerCacheResult* cacheRet);
-
-    /**
-     * Removes all cache files.
-     *
-     * @return whether the removal succeeded
-     */
-    static CARAPI_(Boolean) RemoveAllCacheFiles();
-
-private:
-    static CARAPI_(AutoPtr<CacheResult>) NativeGetCacheResult(
-        /* [in] */ const String& url);
-
-    static CARAPI_(Int32) CreateCCacheManagerCacheResult();
-
-    static CARAPI_(String) _GetCacheFileBaseDir();
-
-    static CARAPI_(void) SetContentdisposition(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& contentdisposition);
-
-    static CARAPI_(void) SetContentLength(
-        /* [in] */ Int32 obj,
-        /* [in] */ Int64 contentLength);
-
-    static CARAPI_(void) SetEtag(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& etag);
-
-    static CARAPI_(void) SetEncoding(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& encoding);
-
-    static CARAPI_(void) SetExpires(
-        /* [in] */ Int32 obj,
-        /* [in] */ Int64 expires);
-
-    static CARAPI_(void) SetExpiresString(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& expiresString);
-
-    static CARAPI_(void) SetHttpStatusCode(
-        /* [in] */ Int32 obj,
-        /* [in] */ Int32 httpStatusCode);
-
-    static CARAPI_(void) SetLastModified(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& lastModified);
-
-    static CARAPI_(void) SetLocalPath(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& localPath);
-
-    static CARAPI_(void) SetLocation(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& location);
-
-    static CARAPI_(void) SetMimeType(
-        /* [in] */ Int32 obj,
-        /* [in] */ const Elastos::String& mimeType);
-
-public:
-    static const String HEADER_KEY_IFMODIFIEDSINCE;
-    static const String HEADER_KEY_IFNONEMATCH;
-    static struct ElaCacheManagerCallback sElaCacheManagerCallback;
-
-private:
-    static const String LOGTAG;
-    static AutoPtr<IFile> sBaseDir;
 };
 
 } // namespace Webkit

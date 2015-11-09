@@ -278,6 +278,10 @@ module
             interface IViewOnCreateContextMenuListener;
         }
 
+        singleton class CWebChromeClientFileChooserParamsHelper {
+            interface IWebChromeClientFileChooserParamsHelper;
+        }
+
     } // namespace Webkit
     } // namepsace Droid
     } // namespace Elastos

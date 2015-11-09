@@ -6,18 +6,7 @@ include $(MAKEDIR)/../../../../../../sources.inc
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc
 
-#INCLUDES += $(PREBUILD_INC)/skia/core
-
 C_DEFINES += -DDROID_CORE
-#C_DEFINES += -DASSERT_DISABLED
-#C_DEFINES += -DANDROID
-#C_DEFINES += -DWEBKIT_IMPLEMENTATION
-#C_DEFINES += -DWTF_EXPORT_PRIVATE=" "
-#C_DEFINES += -DNDEBUG
-#C_DEFINES += -DENABLE_DATABASE
-#C_DEFINES += -DENABLE_CAR_BRIDGE
-#C_DEFINES += -DWTF_USE_V8
-#C_DEFINES += -DENABLE_WEB_AUTOFILL
 
 SOURCES += CCacheManager.cpp
 SOURCES += CConsoleMessage.cpp
@@ -49,6 +38,7 @@ SOURCES += CWebViewFragment.cpp
 SOURCES += CWebViewHelper.cpp
 SOURCES += CWebViewHitTestResult.cpp
 SOURCES += CWebViewTransport.cpp
+SOURCES += CWebChromeClientFileChooserParamsHelper.cpp
 #
 SOURCES += ConsoleMessage.cpp
 SOURCES += CookieManager.cpp

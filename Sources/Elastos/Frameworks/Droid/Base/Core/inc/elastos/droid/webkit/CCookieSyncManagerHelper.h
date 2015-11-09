@@ -26,12 +26,6 @@ public:
     CARAPI CreateInstance(
         /* [in] */ IContext* context,
         /* [out] */ ICookieSyncManager** instance);
-
-private:
-    CARAPI CheckInstanceIsCreated();
-
-private:
-    AutoPtr<ICookieSyncManager> sRef;
 };
 
 } // namespace Webkit

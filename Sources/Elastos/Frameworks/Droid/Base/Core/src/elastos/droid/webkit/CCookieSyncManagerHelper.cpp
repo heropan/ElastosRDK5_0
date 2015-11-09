@@ -18,8 +18,11 @@ ECode CCookieSyncManagerHelper::GetInstance(
 {
     AutoLock lock(this);
     VALIDATE_NOT_NULL(instance);
-    CheckInstanceIsCreated();
-    *instance = sRef;
+    CookieSyncManager::CheckInstanceIsAllowed();
+    if (CookieSyncManager::sRef == NULL) {
+        CookieSyncManager::sRef = new CookieSyncManager();
+    }
+    *instance = CookieSyncManager::sRef;
     REFCOUNT_ADD(*instance);
     return NOERROR;
 }
@@ -31,22 +34,8 @@ ECode CCookieSyncManagerHelper::CreateInstance(
     AutoLock lock(this);
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(instance);
-
-    if (sRef == NULL) {
-        sRef = new CookieSyncManager(context);
-    }
-    *instance = sRef;
-    REFCOUNT_ADD(*instance);
-
-    return NOERROR;
-}
-
-ECode CCookieSyncManagerHelper::CheckInstanceIsCreated()
-{
-    if (sRef == NULL) {
-        return E_NOT_IMPLEMENTED;
-    }
-    return NOERROR;
+    CookieSyncManager::SetGetInstanceIsAllowed();
+    return GetInstance(instance);
 }
 
 } // namespace Webkit

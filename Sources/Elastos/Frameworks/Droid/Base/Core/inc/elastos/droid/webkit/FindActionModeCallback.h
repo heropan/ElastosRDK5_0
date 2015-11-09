@@ -85,6 +85,11 @@ public:
     virtual CARAPI_(void) SetWebView(
         /* [in] */ CWebView* webView);
 
+    CARAPI OnFindResultReceived(
+        /* [in] */ Int32 activeMatchOrdinal,
+        /* [in] */ Int32 numberOfMatches,
+        /* [in] */ Boolean isDoneCounting);
+
     /*
      * Highlight all the instances of the string from mEditText in mWebView.
      */

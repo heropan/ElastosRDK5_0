@@ -1637,20 +1637,6 @@ public:
     CARAPI ToString(
         /* [out] */ String* info);
 
-public:
-    /**
-     * URI scheme for telephone number.
-     */
-    static const String SCHEME_TEL;
-    /**
-     * URI scheme for email address.
-     */
-    static const String SCHEME_MAILTO;
-    /**
-     * URI scheme for map address.
-     */
-    static const String SCHEME_GEO;
-
 protected:
     WebView();
 
@@ -1761,6 +1747,20 @@ private:
     static CARAPI_(AutoPtr<IWebViewFactoryProvider>) GetFactory();
 
     static CARAPI CheckThread();
+
+public:
+    /**
+     * URI scheme for telephone number.
+     */
+    static const String SCHEME_TEL;
+    /**
+     * URI scheme for email address.
+     */
+    static const String SCHEME_MAILTO;
+    /**
+     * URI scheme for map address.
+     */
+    static const String SCHEME_GEO;
 
 private:
     static const String LOGTAG;

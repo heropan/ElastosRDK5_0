@@ -70,6 +70,22 @@ ECode CookieManager::AcceptCookie(
     return NOERROR;
 }
 
+ECode CookieManager::SetAcceptThirdPartyCookies(
+    /* [in] */ IWebView* webview,
+    /* [in] */ Boolean accept)
+{
+    assert(0);
+    return NOERROR;
+}
+
+ECode CookieManager::AcceptThirdPartyCookies(
+    /* [in] */ IWebView* webview,
+    /* [out] */ Boolean* result)
+{
+    assert(0);
+    return NOERROR;
+}
+
  /**
  * Sets a cookie for the given URL. Any existing cookie with the same host,
  * path and name will be replaced with the new cookie. The cookie being set
@@ -156,10 +172,24 @@ ECode CookieManager::RemoveSessionCookie()
     return NOERROR;
 }
 
+ECode CookieManager::RemoveSessionCookies(
+    /* [in] */ IValueCallback* callBack)
+{
+    assert(0);
+    return NOERROR;
+}
+
 /**
  * Removes all cookies.
  */
 ECode CookieManager::RemoveAllCookie()
+{
+    assert(0);
+    return NOERROR;
+}
+
+ECode CookieManager::RemoveAllCookies(
+    /* [in] */ IValueCallback* callBack)
 {
     assert(0);
     return NOERROR;
@@ -205,6 +235,12 @@ ECode CookieManager::HasCookies(
 ECode CookieManager::RemoveExpiredCookie()
 {
     assert(0);
+    return NOERROR;
+}
+
+ECode CookieManager::Flush()
+{
+    FlushCookieStore();
     return NOERROR;
 }
 
@@ -263,7 +299,6 @@ IInterface* CookieManager::Clone()
  */
 void CookieManager::FlushCookieStore()
 {
-    assert(0);
 }
 
 /**

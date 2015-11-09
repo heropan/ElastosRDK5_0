@@ -92,14 +92,19 @@ public:
     CARAPI ToString(
         /* [out] */ String* info);
 
+    static CARAPI_(void) SetGetInstanceIsAllowed();
+
 protected:
     CookieSyncManager();
 
     CARAPI_(void) SyncFromRamToFlash();
 
 private:
-    CookieSyncManager(
-        /* [in] */ IContext* context);
+    static CARAPI CheckInstanceIsAllowed();
+
+private:
+    static AutoPtr<ICookieSyncManager> sRef;
+    static Boolean sGetInstanceAllowed;
 };
 
 } // namespace Webkit

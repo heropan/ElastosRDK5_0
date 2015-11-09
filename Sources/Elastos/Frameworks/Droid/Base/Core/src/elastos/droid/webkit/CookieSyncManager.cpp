@@ -7,15 +7,13 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
+AutoPtr<ICookieSyncManager> CookieSyncManager::sRef;
+Boolean CookieSyncManager::sGetInstanceAllowed = FALSE;
+
 CAR_INTERFACE_IMPL(CookieSyncManager, Object, ICookieSyncManager);
 
 CookieSyncManager::CookieSyncManager()
-{
-}
-
-CookieSyncManager::CookieSyncManager(
-    /* [in] */ IContext* context)
-    : WebSyncManager(context, String("CookieSyncManager"))
+    : WebSyncManager(NULL, String(NULL))
 {
 }
 
@@ -54,22 +52,23 @@ ECode CookieSyncManager::ToString(
 
 void CookieSyncManager::SyncFromRamToFlash()
 {
-//    if (DebugFlags.COOKIE_SYNC_MANAGER) {
-//        Log.v(LOGTAG, "CookieSyncManager::syncFromRamToFlash STARTS");
-//    }
+    CookieManager::GetInstance()->Flush();
+}
 
-    AutoPtr<ICookieManager> manager = CookieManager::GetInstance();
+void CookieSyncManager::SetGetInstanceIsAllowed()
+{
+    sGetInstanceAllowed = TRUE;
+}
 
-    assert(0);
-//    if (!manager->AcceptCookie()) {
-//        return;
-//    }
-
-//    manager->FlushCookieStore();
-
-//    if (DebugFlags.COOKIE_SYNC_MANAGER) {
-//        Log.v(LOGTAG, "CookieSyncManager::syncFromRamToFlash DONE");
-//    }
+ECode CookieSyncManager::CheckInstanceIsAllowed()
+{
+    if (!sGetInstanceAllowed) {
+        // throw new IllegalStateException(
+        //             "CookieSyncManager::createInstance() needs to be called "
+        //                     + "before CookieSyncManager::getInstance()");
+        assert(0);
+    }
+    return NOERROR;
 }
 
 } // namespace Webkit

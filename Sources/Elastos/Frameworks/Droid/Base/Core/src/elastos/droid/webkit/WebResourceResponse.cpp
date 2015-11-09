@@ -7,35 +7,6 @@ namespace Webkit {
 
 CAR_INTERFACE_IMPL(WebResourceResponse, Object, IWebResourceResponse);
 
-/**
- * Constructs a resource response with the given MIME type, encoding, and
- * input stream. Callers must implement
- * {@link InputStream#read(byte[]) InputStream.read(byte[])} for the input
- * stream.
- *
- * @param mimeType the resource response's MIME type, for example text/html
- * @param encoding the resource response's encoding
- * @param data the input stream that provides the resource response's data
- */
-WebResourceResponse::WebResourceResponse(
-    /* [in] */ const String& mimeType,
-    /* [in] */ const String& encoding,
-    /* [in] */ IInputStream* data)
-{
-    constructor(mimeType, encoding, data);
-}
-
-WebResourceResponse::WebResourceResponse(
-    /* [in] */ const String& mimeType,
-    /* [in] */ const String& encoding,
-    /* [in] */ Int32 statusCode,
-    /* [in] */ const String& reasonPhrase,
-    /* [in] */ IMap* responseHeaders,
-    /* [in] */ IInputStream* data)
-{
-    constructor(mimeType, encoding, statusCode, reasonPhrase, responseHeaders, data);
-}
-
 WebResourceResponse::WebResourceResponse()
 {
 }
