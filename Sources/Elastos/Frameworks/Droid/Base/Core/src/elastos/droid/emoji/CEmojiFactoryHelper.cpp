@@ -1,22 +1,16 @@
-#include "CEmojiFactoryHelper.h"
+#include "elastos/droid/emoji/CEmojiFactoryHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Emoji {
 
+CAR_OBJECT_IMPL(CEmojiFactoryHelper);
 
-ECode CEmojiFactoryHelper::NewInstance
-    /* [in] */ const String& class_name
-    /* [out] */ IEmojiFactory** emojiFactory)
-{
-    return CEmojiFactory::NewInstance(class_name, emojiFactory);
-}
+CEmojiFactoryHelper::CEmojiFactoryHelper()
+{}
 
-ECode CEmojiFactoryHelper::NewAvailableInstance(
-    /* [out] */ IEmojiFactory** emojiFactory)
-{
-    return CEmojiFactory::NewAvailableInstance(emojiFactory);
-}
+CEmojiFactoryHelper::~CEmojiFactoryHelper()
+{}
 
 } // namespace Emoji
 } // namepsace Droid
