@@ -1,11 +1,12 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_WordIterator_H__
-#define __ELASTOS_DROID_TEXT_METHOD_WordIterator_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_WORDITERATOR_H__
+#define __ELASTOS_DROID_TEXT_METHOD_WORDITERATOR_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::ILocale;
 using Elastos::Core::ICharSequence;
-//using Elastos::Text::IBreakIterator;
+using Elastos::Text::IBreakIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -22,6 +23,9 @@ namespace Method {
  */
 //public
 class WordIterator
+    : public Object
+    , public IWordIterator
+    , public ISelectionPositionIterator
 {
 public:
     /**
@@ -29,14 +33,17 @@ public:
      */
     WordIterator();
 
+    virtual ~WordIterator();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor();
+
     /**
      * Constructs a new WordIterator for the specified locale.
      * @param locale The locale to be used when analysing the text.
      */
-    WordIterator(
-        /* [in] */ ILocale* locale);
-
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ ILocale* locale);
 
     CARAPI/*CARAPI_(void)*/ SetCharSequence(
@@ -45,12 +52,14 @@ public:
         /* [in] */ Int32 end);
 
     /** {@inheritDoc} */
-    CARAPI_(Int32) Preceding(
-        /* [in] */ Int32 offset);
+    CARAPI Preceding(
+        /* [in] */ Int32 offset,
+        /* [out] */ Int32* ret);
 
     /** {@inheritDoc} */
-    CARAPI_(Int32) Following(
-        /* [in] */ Int32 offset);
+    CARAPI Following(
+        /* [in] */ Int32 offset,
+        /* [out] */ Int32* ret);
 
     /** If <code>offset</code> is within a word, returns the index of the first character of that
      * word, otherwise returns BreakIterator.DONE.
@@ -64,8 +73,9 @@ public:
      *
      * @throws IllegalArgumentException is offset is not valid.
      */
-    CARAPI_(Int32) GetBeginning(
-        /* [in] */ Int32 offset);
+    CARAPI GetBeginning(
+        /* [in] */ Int32 offset,
+        /* [out] */ Int32* ret);
 
     /** If <code>offset</code> is within a word, returns the index of the last character of that
      * word plus one, otherwise returns BreakIterator.DONE.
@@ -79,8 +89,9 @@ public:
      *
      * @throws IllegalArgumentException is offset is not valid.
      */
-    CARAPI_(Int32) GetEnd(
-        /* [in] */ Int32 offset);
+    CARAPI GetEnd(
+        /* [in] */ Int32 offset,
+        /* [out] */ Int32* ret);
 
 private:
     CARAPI_(Boolean) IsAfterLetterOrDigit(
@@ -94,13 +105,10 @@ private:
 
 private:
     // Size of the window for the word iterator, should be greater than the longest word's length
-    static const Int32 WINDOW_WIDTH;// = 50;
-
+    static const Int32 WINDOW_WIDTH;
     String mString;
     Int32 mOffsetShift;
-
-    AutoPtr</*IBreakIterator*/IInterface> mIterator;
-
+    AutoPtr<IBreakIterator> mIterator;
 };
 
 } // namespace Method
@@ -108,4 +116,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_WordIterator_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_WORDITERATOR_H__

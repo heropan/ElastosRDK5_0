@@ -130,6 +130,9 @@ module
     interface Elastos.Droid.Text.IParcelableSpan;
     interface Elastos.Droid.Text.IInputFilter;
     interface Elastos.Droid.Text.ISpanWatcher;
+    interface Elastos.Droid.Text.ITextWatcher;
+    interface Elastos.Droid.Text.INoCopySpan;
+    interface Elastos.Droid.Text.ISelectionPositionIterator;
 
 
     namespace Elastos {
@@ -145,7 +148,7 @@ module
         interface IDateUtils;
     }
 
-    singleton class CFormatter{
+    singleton class CFormatter {
         interface IFormatter;
     }
 
@@ -184,7 +187,7 @@ module
         interface ITime;
     }
 
-    singleton class CTimeHelper{
+    singleton class CTimeHelper {
         interface ITimeHelper;
     }
 
@@ -205,58 +208,62 @@ module
     namespace Text {
     namespace Method {
 
-    // [local]
-    // class CAllCapsTransformationMethod{
-    //     interface IAllCapsTransformationMethod;//interface ITransformationMethod2;
+    [local]
+    class CAllCapsTransformationMethod {
+        constructor(
+            [in] IContext* ctx);
 
-    //     constructor(
-    //         [in] IContext* ctx);
-    // }
+        interface IAllCapsTransformationMethod;
+        interface ITransformationMethod2;
+        interface ITransformationMethod;
+    }
 
-    // class CArrowKeyMovementMethod{
-    //     interface IMovementMethod;
-    //     interface IArrowKeyMovementMethod;
-    // }
+    class CArrowKeyMovementMethod {
+        interface IMovementMethod;
+        interface IArrowKeyMovementMethod;
+        interface IBaseMovementMethod;
+    }
 
-    // singleton class CArrowKeyMovementMethodHelper{
-    //     interface IArrowKeyMovementMethodHelper;
-    // }
+    singleton class CArrowKeyMovementMethodHelper {
+        interface IArrowKeyMovementMethodHelper;
+    }
 
-    // class CBaseMovementMethod{
-    //     interface IMovementMethod;
-    // }
+    class CBaseMovementMethod {
+        interface IBaseMovementMethod;
+        interface IMovementMethod;
+    }
 
-    class CDateKeyListener{
+    class CDateKeyListener {
         interface IDateKeyListener;
         interface IInputFilter;
         interface IKeyListener;
     }
 
-    singleton class CDateKeyListenerHelper{
+    singleton class CDateKeyListenerHelper {
         interface IDateKeyListenerHelper;
     }
 
-    class CDateTimeKeyListener{
+    class CDateTimeKeyListener {
         interface IDateTimeKeyListener;
         interface IInputFilter;
         interface IKeyListener;
     }
 
-    singleton class CDateTimeKeyListenerHelper{
+    singleton class CDateTimeKeyListenerHelper {
         interface IDateTimeKeyListenerHelper;
     }
 
-    class CDialerKeyListener{
+    class CDialerKeyListener {
         interface IDialerKeyListener;
         interface IInputFilter;
         interface IKeyListener;
     }
 
-    singleton class CDialerKeyListenerHelper{
+    singleton class CDialerKeyListenerHelper {
         interface IDialerKeyListenerHelper;
     }
 
-    class CDigitsKeyListener{
+    class CDigitsKeyListener {
         /**
          * Allocates a DigitsKeyListener that accepts the digits 0 through 9.
          */
@@ -276,20 +283,22 @@ module
         interface IKeyListener;
     }
 
-    singleton class CDigitsKeyListenerHelper{
+    singleton class CDigitsKeyListenerHelper {
         interface IDigitsKeyListenerHelper;
     }
 
-    // class CLinkMovementMethod{
-    //     interface ILinkMovementMethod;
-    //     interface IMovementMethod;
-    // }
+    class CLinkMovementMethod {
+        interface ILinkMovementMethod;
+        interface IMovementMethod;
+        interface IBaseMovementMethod;
+        interface IScrollingMovementMethod;
+    }
 
-    // singleton class CLinkMovementMethodHelper{
-    //     interface ILinkMovementMethodHelper;
-    // }
+    singleton class CLinkMovementMethodHelper {
+        interface ILinkMovementMethodHelper;
+    }
 
-    class CMultiTapKeyListener{
+    class CMultiTapKeyListener {
         constructor(
             [in] Capitalize cap,
             [in] Boolean autotext);
@@ -299,31 +308,32 @@ module
         interface ISpanWatcher;
     }
 
-    singleton class CMultiTapKeyListenerHelper{
+    singleton class CMultiTapKeyListenerHelper {
         interface IMultiTapKeyListenerHelper;
     }
 
-    // class CHideReturnsTransformationMethod{
-    //     interface IHideReturnsTransformationMethod;
-    //     interface ITransformationMethod;
-    // }
+    class CHideReturnsTransformationMethod {
+        interface IHideReturnsTransformationMethod;
+        interface ITransformationMethod;
+        interface IReplacementTransformationMethod;
+    }
 
-    // singleton class CHideReturnsTransformationMethodHelper{
-    //     interface IHideReturnsTransformationMethodHelper;
-    // }
+    singleton class CHideReturnsTransformationMethodHelper {
+        interface IHideReturnsTransformationMethodHelper;
+    }
 
-    // class CPasswordTransformationMethod{
-    //     interface IPasswordTransformationMethod;
-    //     interface ITextWatcher;
-    // }
+    class CPasswordTransformationMethod {
+        interface IPasswordTransformationMethod;
+        interface ITransformationMethod;
+        interface ITextWatcher;
+        interface INoCopySpan;
+    }
 
-    // singleton class CPasswordTransformationMethodHelper{
-    //     interface IPasswordTransformationMethodHelper;
-    // }
+    singleton class CPasswordTransformationMethodHelper {
+        interface IPasswordTransformationMethodHelper;
+    }
 
-    class CQwertyKeyListener{
-        interface IQwertyKeyListener;
-        interface IKeyListener;
+    class CQwertyKeyListener {
 
         constructor(
             [in] Capitalize cap,
@@ -333,35 +343,36 @@ module
             [in] Capitalize cap,
             [in] Boolean autotext,
             [in] Boolean fullKeyboard);
+
+        interface IQwertyKeyListener;
+        interface IKeyListener;
     }
 
-    singleton class CQwertyKeyListenerHelper{
+    singleton class CQwertyKeyListenerHelper {
         interface IQwertyKeyListenerHelper;
     }
 
-    // class CScrollingMovementMethod{
-    //     interface IScrollingMovementMethod;
-    //     interface IMovementMethod;
-    // }
+    class CScrollingMovementMethod {
+        interface IScrollingMovementMethod;
+        interface IMovementMethod;
+        interface IBaseMovementMethod;
+    }
 
-    // singleton class CScrollingMovementMethodHelper{
-    //     interface IScrollingMovementMethodHelper;
-    // }
+    singleton class CScrollingMovementMethodHelper {
+        interface IScrollingMovementMethodHelper;
+    }
 
-    // class CSingleLineTransformationMethod{
-    //     interface ISingleLineTransformationMethod;
-    //     interface ITransformationMethod;
-    // }
+    class CSingleLineTransformationMethod {
+        interface ISingleLineTransformationMethod;
+        interface ITransformationMethod;
+        interface IReplacementTransformationMethod;
+    }
 
-    // singleton class CSingleLineTransformationMethodHelper{
-    //     interface ISingleLineTransformationMethodHelper;
-    // }
+    singleton class CSingleLineTransformationMethodHelper {
+        interface ISingleLineTransformationMethodHelper;
+    }
 
-    class CTextKeyListener{
-        interface ITextKeyListener;
-        interface IKeyListener;
-        interface ISpanWatcher;
-
+    class CTextKeyListener {
         /**
          * Creates a new TextKeyListener with the specified capitalization
          * and correction properties.
@@ -369,47 +380,52 @@ module
          * @param cap when, if ever, to automatically capitalize.
          * @param autotext whether to automatically do spelling corrections.
          */
-         constructor(
+        constructor(
             [in] Capitalize cap,
             [in] Boolean autotext);
+
+        interface ITextKeyListener;
+        interface IKeyListener;
+        interface ISpanWatcher;
     }
 
-    singleton class CTextKeyListenerHelper{
+    singleton class CTextKeyListenerHelper {
         interface ITextKeyListenerHelper;
     }
 
-    class CTimeKeyListener{
+    class CTimeKeyListener {
         interface ITimeKeyListener;
         interface IKeyListener;
         interface IInputFilter;
     }
 
-    singleton class CTimeKeyListenerHelper{
+    singleton class CTimeKeyListenerHelper {
         interface ITimeKeyListenerHelper;
     }
 
-    // singleton class CTouch{
-    //     interface ITouch;
-    // }
+    singleton class CTouch {
+        interface ITouch;
+    }
 
-    // class CWordIterator{
-    //     interface IWordIterator;
-    //     interface ISelectionPositionIterator;
+    class CWordIterator {
 
-    //     /**
-    //      * Constructs a WordIterator using the default locale.
-    //      */
-    //     //public
-    //     constructor();
+        /**
+         * Constructs a WordIterator using the default locale.
+         */
+        //public
+        constructor();
 
-    //     /**
-    //      * Constructs a new WordIterator for the specified locale.
-    //      * @param locale The locale to be used when analysing the text.
-    //      */
-    //     //public
-    //     constructor(
-    //         [in] ILocale* locale);
-    // }
+        /**
+         * Constructs a new WordIterator for the specified locale.
+         * @param locale The locale to be used when analysing the text.
+         */
+        //public
+        constructor(
+            [in] ILocale* locale);
+
+        interface IWordIterator;
+        interface ISelectionPositionIterator;
+    }
 
     singleton class CMetaKeyKeyListenerHelper {
         interface IMetaKeyKeyListenerHelper;
@@ -922,7 +938,7 @@ module
     namespace Text {
     namespace Utility {
 
-    singleton class CLinkify{
+    singleton class CLinkify {
         interface ILinkify;
     }
 
@@ -936,7 +952,7 @@ module
     namespace Text {
 
     [deprecated]
-    class CAlteredCharSequence{
+    class CAlteredCharSequence {
 
         constructor(
             [in] ICharSequence* source,
@@ -949,15 +965,15 @@ module
         interface ICharSequence;
     }
 
-    singleton class CAlteredCharSequenceHelper{
+    singleton class CAlteredCharSequenceHelper {
         interface IAlteredCharSequenceHelper;
     }
 
-    singleton class CAndroidCharacter{
+    singleton class CAndroidCharacter {
         interface IAndroidCharacter;
     }
 
-    class CAnnotation{
+    class CAnnotation {
         constructor();
 
         constructor(
@@ -969,11 +985,11 @@ module
         interface IParcelable;
     }
 
-    class CAutoText{
+    class CAutoText {
         interface IAutoText;
     }
 
-    singleton class CAutoTextHelper{
+    singleton class CAutoTextHelper {
         interface IAutoTextHelper;
     }
 
@@ -981,7 +997,7 @@ module
         interface IBidiFormatter;
     }
 
-    singleton class CBidiFormatterHelper{
+    singleton class CBidiFormatterHelper {
         interface IBidiFormatterHelper;
     }
 
@@ -1240,7 +1256,7 @@ module
         interface ISpannableStringBuilderHelper;
     }
 
-    class CSpannedString{
+    class CSpannedString {
         constructor(
             [in] ICharSequence* source);
 
@@ -1301,7 +1317,7 @@ module
         interface IIterator;
     }
 
-    singleton class CHtml{
+    singleton class CHtml {
         interface IHtml;
     }
 

@@ -1,17 +1,18 @@
 #include "elastos/droid/text/method/MultiTapKeyListener.h"
+#include "elastos/droid/text/method/CMultiTapKeyListener.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 
+using Elastos::Droid::Os::EIID_IHandler;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Text::Method::CTextKeyListener;
+using Elastos::Droid::Text::Selection;
 using Elastos::Core::Character;
 using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Droid::Text::Selection;
-using Elastos::Droid::Text::Method::CTextKeyListener;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::EIID_IHandler;
 
 namespace Elastos {
 namespace Droid {
@@ -59,32 +60,28 @@ ECode MultiTapKeyListener::Timeout::Run()
 }
 
 /*****************************MultiTapKeyListener*****************************/
-HashMap<Int32, String> MultiTapKeyListener::sRecs = MultiTapKeyListener::InitStaticRecs();
-
-HashMap<Int32, String> MultiTapKeyListener::InitStaticRecs()
+static AutoPtr<HashMap<Int32, String> > InitStaticRecs()
 {
-    HashMap<Int32, String> ret;
-    ret[IKeyEvent::KEYCODE_1] = String(".,1!@#$%^&*:/?'=()");
-    ret[IKeyEvent::KEYCODE_2] = String("abc2ABC");
-    ret[IKeyEvent::KEYCODE_3] = String("def3DEF");
-    ret[IKeyEvent::KEYCODE_4] = String("ghi4GHI");
-    ret[IKeyEvent::KEYCODE_5] = String("jkl5JKL");
-    ret[IKeyEvent::KEYCODE_6] = String("mno6MNO");
-    ret[IKeyEvent::KEYCODE_7] = String("pqrs7PQRS");
-    ret[IKeyEvent::KEYCODE_8] = String("tuv8TUV");
-    ret[IKeyEvent::KEYCODE_9] = String("wxyz9WXYZ");
-    ret[IKeyEvent::KEYCODE_0] = String("0+");
-    ret[IKeyEvent::KEYCODE_POUND] = String(" ");
+    AutoPtr<HashMap<Int32, String> > ret;
+    (*ret)[IKeyEvent::KEYCODE_1] = String(".,1!@#$%^&*:/?'=()");
+    (*ret)[IKeyEvent::KEYCODE_2] = String("abc2ABC");
+    (*ret)[IKeyEvent::KEYCODE_3] = String("def3DEF");
+    (*ret)[IKeyEvent::KEYCODE_4] = String("ghi4GHI");
+    (*ret)[IKeyEvent::KEYCODE_5] = String("jkl5JKL");
+    (*ret)[IKeyEvent::KEYCODE_6] = String("mno6MNO");
+    (*ret)[IKeyEvent::KEYCODE_7] = String("pqrs7PQRS");
+    (*ret)[IKeyEvent::KEYCODE_8] = String("tuv8TUV");
+    (*ret)[IKeyEvent::KEYCODE_9] = String("wxyz9WXYZ");
+    (*ret)[IKeyEvent::KEYCODE_0] = String("0+");
+    (*ret)[IKeyEvent::KEYCODE_POUND] = String(" ");
     return ret;
 }
 
-const Int32 MultiTapKeyListener::CAPITALIZELENGTH /*= 4*/;
-static AutoPtr< ArrayOf< IMultiTapKeyListener* > > InitStatic() {
-    AutoPtr< ArrayOf< IMultiTapKeyListener* > > instance = ArrayOf<IMultiTapKeyListener*>::Alloc(MultiTapKeyListener::CAPITALIZELENGTH * 2);
-    return instance;
-}
+AutoPtr<HashMap<Int32, String> > MultiTapKeyListener::sRecs = InitStaticRecs();
 
-AutoPtr< ArrayOf<IMultiTapKeyListener*> > MultiTapKeyListener::sInstance = InitStatic();
+const Int32 MultiTapKeyListener::CAPITALIZELENGTH = 4;
+
+AutoPtr<ArrayOf<IMultiTapKeyListener*> > MultiTapKeyListener::sInstance = ArrayOf<IMultiTapKeyListener*>::Alloc(MultiTapKeyListener::CAPITALIZELENGTH * 2);
 
 MultiTapKeyListener::MultiTapKeyListener()
 {}
@@ -112,8 +109,8 @@ ECode MultiTapKeyListener::GetInstance(
     Int32 off = cap * 2 + (autotext ? 1 : 0);
 
     if ((*sInstance)[off] == NULL) {
-        AutoPtr<MultiTapKeyListener> listener = new MultiTapKeyListener();
-        listener->constructor(cap, autotext);
+        AutoPtr<IMultiTapKeyListener> listener;
+        CMultiTapKeyListener::New(cap, autotext, (IMultiTapKeyListener**)&listener);
         sInstance->Set(off, listener);
     }
 
@@ -174,9 +171,10 @@ ECode MultiTapKeyListener::OnKeyDown(
     //Java:    int rec = (content.getSpanFlags(TextKeyListener.ACTIVE) & Spannable.SPAN_USER) >>> Spannable.SPAN_USER_SHIFT;
     Int32 rec = (flagsT & ISpanned::SPAN_USER)/ ((Int32)(Elastos::Core::Math::Pow(2, ISpanned::SPAN_USER_SHIFT)));
 
+    Int32 sRecsSize;
     if (activeStart == selStart && activeEnd == selEnd &&
             selEnd - selStart == 1 &&
-            rec >= 0 && rec < sRecs.GetSize()) {
+            rec >= 0 && rec < sRecs->GetSize()) {
         if (keyCode == IKeyEvent::KEYCODE_STAR) {
             Char32 current;
             ICharSequence::Probe(content)->GetCharAt(selStart, &current);
@@ -203,10 +201,10 @@ ECode MultiTapKeyListener::OnKeyDown(
             }
         }
         //Java:    if (sRecs.indexOfKey(keyCode) == rec)
-        if (((keyCode < 8 ? keyCode+10 : keyCode) -8) == rec)
+        if (((keyCode < 8 ? keyCode + 10 : keyCode) - 8) == rec)
         {
             //Java:    String val = sRecs.valueAt(rec);
-            HashMap<Int32, String>::Iterator iterRecs = sRecs.Find(keyCode);
+            HashMap<Int32, String>::Iterator iterRecs = (*sRecs).Find(keyCode);
             String val = (*iterRecs).mSecond;
             Char32 ch;
             ICharSequence::Probe(content)->GetCharAt(selStart, &ch);
@@ -230,7 +228,7 @@ ECode MultiTapKeyListener::OnKeyDown(
         // so that it inserts instead of replaces.
 
         //Java:    rec = sRecs.indexOfKey(keyCode);
-        rec = ((keyCode < 8 ? keyCode+10 : keyCode) -8);
+        rec = ((keyCode < 8 ? keyCode + 10 : keyCode) - 8);
 
         if (rec >= 0) {
             Selection::SetSelection(ISpannable::Probe(content), selEnd, selEnd);
@@ -239,7 +237,7 @@ ECode MultiTapKeyListener::OnKeyDown(
     }
     else {
         //Java:    rec = sRecs.indexOfKey(keyCode);
-        rec = ((keyCode < 8 ? keyCode+10 : keyCode) -8);
+        rec = ((keyCode < 8 ? keyCode + 10 : keyCode) - 8);
     }
 
     if (rec >= 0) {
@@ -247,7 +245,7 @@ ECode MultiTapKeyListener::OnKeyDown(
         // with the first character for that key, and remember what
         // record it came from for next time.
         //Java:    String val = sRecs.valueAt(rec);
-        HashMap<Int32, String>::Iterator iterRecs = sRecs.Find(keyCode);
+        HashMap<Int32, String>::Iterator iterRecs = (*sRecs).Find(keyCode);
         String val = (*iterRecs).mSecond;
 
         Int32 off = 0;

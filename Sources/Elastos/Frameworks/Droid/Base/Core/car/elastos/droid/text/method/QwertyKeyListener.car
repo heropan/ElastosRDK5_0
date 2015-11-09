@@ -37,8 +37,7 @@ module
      * interface IBaseKeyListenerHelper
      */
     [local]
-    interface IQwertyKeyListenerHelper{
-        //---------IQwertyKeyListenerHelper---------
+    interface IQwertyKeyListenerHelper {
         /**
          * Returns a new or existing instance with the specified capitalization
          * and correction properties.
@@ -76,8 +75,8 @@ module
             [in] String original);
     }
 
-    }//namespace Method
-    }//namespace Text
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Method
+    } // namespace Text
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -48,8 +48,8 @@ module
             [out] IMultiTapKeyListener** ret);
     }
 
-    }//namespace Method
-    }//namespace Text
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Method
+    } // namespace Text
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -52,8 +52,8 @@ module
                 [out,callee] ArrayOf<Char32>* ret);
     }
 
-    }//namespace Method
-    }//namespace Text
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Method
+    } // namespace Text
+    } // namespace Droid
+    } // namespace Elastos
 }

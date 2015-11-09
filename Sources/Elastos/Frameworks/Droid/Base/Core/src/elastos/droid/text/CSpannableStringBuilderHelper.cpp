@@ -5,9 +5,9 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 
-CAR_INTERFACE_IMPL(CSpannableStringBuilderHelper, Singleton, ISpannableStringBuilderHelper)
-
 CAR_SINGLETON_IMPL(CSpannableStringBuilderHelper)
+
+CAR_INTERFACE_IMPL(CSpannableStringBuilderHelper, Singleton, ISpannableStringBuilderHelper)
 
 ECode  CSpannableStringBuilderHelper::ValueOf(
     /* [in] */ ICharSequence* source,

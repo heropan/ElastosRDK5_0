@@ -4,11 +4,9 @@
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/os/HandlerRunnable.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::HandlerRunnable;
-//using Elastos::Droid::Text::ITextKeyListener::Capitalize;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -28,19 +26,21 @@ class MultiTapKeyListener
     : public BaseKeyListener
     , public IMultiTapKeyListener
 {
+    friend class TextKeyListener;
+
 private:
     class Timeout
         : public HandlerRunnable
     {
-    public:
-        friend class MultiTapKeyListener;
+
+    friend class MultiTapKeyListener;
+
     public:
         CAR_INTERFACE_DECL()
 
         Timeout(
             /* [in] */ IEditable* buffer);
 
-    public:
         virtual CARAPI Run();
 
     private:
@@ -48,7 +48,6 @@ private:
     };
 
 public:
-    friend class TextKeyListener;
 
     MultiTapKeyListener();
 
@@ -56,7 +55,7 @@ public:
 
     CAR_INTERFACE_DECL()
 
-    constructor(
+    CARAPI constructor(
         /* [in] */ Capitalize cap,
         /* [in] */ Boolean autotext);
 
@@ -108,16 +107,13 @@ public:
         /* [in] */ IEditable* content,
         /* [in] */ Int32 states);
 
-protected:
-    static HashMap<Int32, String> InitStaticRecs();
-
 private:
     static CARAPI_(void) RemoveTimeouts(
         /* [in] */ ISpannable* buf);
 
 protected://private
     //private static final SparseArray<String> sRecs = new SparseArray<String>();
-    static HashMap<Int32, String> sRecs;
+    static AutoPtr<HashMap<Int32, String> > sRecs;
     Capitalize mCapitalize;
     Boolean mAutoText;
 
@@ -125,7 +121,7 @@ private:
     static AutoPtr< ArrayOf< IMultiTapKeyListener* > > sInstance;// = new MultiTapKeyListener[4];
 
 public:
-    static const Int32 CAPITALIZELENGTH = 4;
+    static const Int32 CAPITALIZELENGTH;
 };
 
 } // namespace Method

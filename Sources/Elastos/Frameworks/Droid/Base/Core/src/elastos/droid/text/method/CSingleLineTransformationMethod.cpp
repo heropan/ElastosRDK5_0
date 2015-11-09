@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CSingleLineTransformationMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
 
@@ -7,64 +6,54 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-Char32 CSingleLineTransformationMethod::ORIGINAL[] = { '\n', '\r' };
-Char32 CSingleLineTransformationMethod::REPLACEMENT[] = { ' ', 0xFEFF/*'\uFEFF'*/ };
+static AutoPtr<ArrayOf<Char32> > InitOriginal()
+{
+    Char32 array[] = {'\n', '\r'};
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    ch->Copy(array, ARRAY_SIZE(array));
+    return ch;
+}
+
+static AutoPtr<ArrayOf<Char32> > InitReplacement()
+{
+    Char32 array[] = {' ', 0xFEFF};
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    ch->Copy(array, ARRAY_SIZE(array));
+    return ch;
+}
+
+AutoPtr<ArrayOf<Char32> > CSingleLineTransformationMethod::ORIGINAL = InitOriginal();
+AutoPtr<ArrayOf<Char32> > CSingleLineTransformationMethod::REPLACEMENT = InitReplacement();
 
 AutoPtr<ISingleLineTransformationMethod> CSingleLineTransformationMethod::sInstance;
 
-ECode CSingleLineTransformationMethod::GetTransformation(
-    /* [in] */ ICharSequence* source,
-    /* [in] */ IView* view,
-    /* [out] */ ICharSequence** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<ICharSequence> cs = ReplacementTransformationMethod::GetTransformation(source, view);
-    *ret = cs;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_3(CSingleLineTransformationMethod, Object, ISingleLineTransformationMethod, IReplacementTransformationMethod, ITransformationMethod)
 
-ECode CSingleLineTransformationMethod::OnFocusChanged(
-    /* [in] */ IView* view,
-    /* [in] */ ICharSequence* sourceText,
-    /* [in] */ Boolean focused,
-    /* [in] */ Int32 direction,
-    /* [in] */ IRect* previouslyFocusedRect)
-{
-    ReplacementTransformationMethod::OnFocusChanged(view, sourceText, focused, direction, previouslyFocusedRect);
-    return NOERROR;
-}
+CAR_OBJECT_IMPL(CSingleLineTransformationMethod)
 
-AutoPtr<ISingleLineTransformationMethod> CSingleLineTransformationMethod::GetInstance()
+ECode CSingleLineTransformationMethod::GetInstance(
+    /* [out] */ ISingleLineTransformationMethod** ret)
 {
+    VALIDATE_NOT_NULL(ret)
     if (sInstance == NULL) {
         AutoPtr<CSingleLineTransformationMethod> stm;
         CSingleLineTransformationMethod::NewByFriend((CSingleLineTransformationMethod**)&stm);
         sInstance = (ISingleLineTransformationMethod*)(stm.Get());
     }
-    return sInstance;
+
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
-AutoPtr< ArrayOf<Char32> > CSingleLineTransformationMethod::GetOriginal()
+AutoPtr<ArrayOf<Char32> > CSingleLineTransformationMethod::GetOriginal()
 {
-    Int32 arrayLen = 2;
-    AutoPtr< ArrayOf<Char32> > ret = ArrayOf<Char32>::Alloc(arrayLen);
-    for(Int32 i=0; i<arrayLen; i++)
-    {
-        (*ret)[i] = ORIGINAL[i];
-    }
-    return ret;
+    return ORIGINAL;
 }
 
 AutoPtr< ArrayOf<Char32> > CSingleLineTransformationMethod::GetReplacement()
 {
-    Int32 arrayLen = 2;
-    AutoPtr< ArrayOf<Char32> > ret = ArrayOf<Char32>::Alloc(arrayLen);
-    for(Int32 i=0; i<arrayLen; i++)
-    {
-        (*ret)[i] = REPLACEMENT[i];
-    }
-    return ret;
+    return REPLACEMENT;
 }
 
 } // namespace Method

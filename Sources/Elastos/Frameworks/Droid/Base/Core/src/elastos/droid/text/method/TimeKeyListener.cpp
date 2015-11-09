@@ -1,4 +1,5 @@
 #include "elastos/droid/text/method/TimeKeyListener.h"
+#include "elastos/droid/text/method/CTimeKeyListener.h"
 
 namespace Elastos {
 namespace Droid {
@@ -29,14 +30,12 @@ ECode TimeKeyListener::GetInstance(
     /* [out] */ ITimeKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    if (sInstance != NULL)
-    {
-        *ret = sInstance;
-        REFCOUNT_ADD(*ret);
-        return NOERROR;
+    if (sInstance == NULL) {
+        CTimeKeyListener::New((ITimeKeyListener**)&sInstance);
     }
 
-    sInstance = new TimeKeyListener();
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
@@ -57,7 +56,7 @@ ECode TimeKeyListener::GetCHARACTERS(
     /* [out] */ ArrayOf<Char32>** ret)
 {
     VALIDATE_NOT_NULL(ret)
-    *ret = InitCHARACTERS();
+    *ret = CHARACTERS;
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }

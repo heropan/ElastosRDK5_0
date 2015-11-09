@@ -1,31 +1,62 @@
 #include "elastos/droid/text/method/HideReturnsTransformationMethod.h"
+#include "elastos/droid/text/method/CHideReturnsTransformationMethod.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-Char32 HideReturnsTransformationMethod::ORIGINAL[] = { '\r' };
-Char32 HideReturnsTransformationMethod::REPLACEMENT[] = { 0xFEFF/*'\uFEFF'*/ };
+AutoPtr<IHideReturnsTransformationMethod> HideReturnsTransformationMethod::sInstance;
+
+static AutoPtr<ArrayOf<Char32> > HInitOriginal()
+{
+    Char32 array[] = { '\r' };
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    ch->Copy(array, ARRAY_SIZE(array));
+    return ch;
+}
+
+static AutoPtr<ArrayOf<Char32> > HInitReplacement()
+{
+    Char32 array[] = { 0xFEFF };
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    ch->Copy(array, ARRAY_SIZE(array));
+    return ch;
+}
+
+HideReturnsTransformationMethod::HideReturnsTransformationMethod()
+{}
+
+HideReturnsTransformationMethod::~HideReturnsTransformationMethod()
+{}
+
+CAR_INTERFACE_IMPL_3(HideReturnsTransformationMethod, Object, IHideReturnsTransformationMethod, IReplacementTransformationMethod, ITransformationMethod)
+
+AutoPtr<ArrayOf<Char32> > HideReturnsTransformationMethod::ORIGINAL = HInitOriginal();
+
+AutoPtr<ArrayOf<Char32> > HideReturnsTransformationMethod::REPLACEMENT = HInitReplacement();
 
 AutoPtr< ArrayOf<Char32> > HideReturnsTransformationMethod::GetOriginal()
 {
-    Int32 aryLen = 1;
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(aryLen);
-    for(Int32 i=0; i<aryLen; i++){
-        (*charactersR)[i]=ORIGINAL[i];
-    }
-    return charactersR;
+    return ORIGINAL;
 }
 
 AutoPtr< ArrayOf<Char32> > HideReturnsTransformationMethod::GetReplacement()
 {
-    Int32 aryLen = 1;
-    AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(aryLen);
-    for(Int32 i=0; i<aryLen; i++){
-        (*charactersR)[i]=REPLACEMENT[i];
+    return REPLACEMENT;
+}
+
+ECode HideReturnsTransformationMethod::GetInstance(
+    /* [out] */ IHideReturnsTransformationMethod** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    if (sInstance == NULL) {
+        CHideReturnsTransformationMethod::New((IHideReturnsTransformationMethod**)&sInstance);
     }
-    return charactersR;
+
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 } // namespace Method

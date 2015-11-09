@@ -1,8 +1,7 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_HIDERETURNSTRANSFORMATIONMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_HIDERETURNSTRANSFORMATIONMETHOD_H__
 
 #include "elastos/droid/text/method/ReplacementTransformationMethod.h"
-#include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,10 +14,19 @@ namespace Method {
  * characters (\uFEFF).
  */
 //public class
-class HideReturnsTransformationMethod : public ReplacementTransformationMethod
+class HideReturnsTransformationMethod
+    : public ReplacementTransformationMethod
+    , public IHideReturnsTransformationMethod
 {
 public:
-    //static AutoPtr<IHideReturnsTransformationMethod> GetInstance();
+    HideReturnsTransformationMethod();
+
+    ~HideReturnsTransformationMethod();
+
+    CAR_INTERFACE_DECL()
+
+    static CARAPI GetInstance(
+        /* [out] */ IHideReturnsTransformationMethod** ret);
 
 protected:
     /**
@@ -32,9 +40,9 @@ protected:
     CARAPI_(AutoPtr< ArrayOf<Char32> >) GetReplacement();
 
 private:
-    static Char32 ORIGINAL[];// = new char[] { '\r' };
-    static Char32 REPLACEMENT[];// = new char[] { '\uFEFF' };
-    //static AutoPtr<IHideReturnsTransformationMethod> sInstance;
+    static AutoPtr<ArrayOf<Char32> > ORIGINAL;
+    static AutoPtr<ArrayOf<Char32> > REPLACEMENT;
+    static AutoPtr<IHideReturnsTransformationMethod> sInstance;
 };
 
 
@@ -43,4 +51,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_HIDERETURNSTRANSFORMATIONMETHOD_H__

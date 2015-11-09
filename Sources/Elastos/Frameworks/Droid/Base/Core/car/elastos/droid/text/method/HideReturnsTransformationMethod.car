@@ -15,17 +15,6 @@ module
      * interface IReplacementTransformationMethod
      */
     interface IHideReturnsTransformationMethod {
-        /**
-         * The character to be replaced is \r.
-         */
-        GetOriginal(
-            [out ,callee] ArrayOf<Char32>* ret);
-
-        /**
-         * The character that \r is replaced with is \uFEFF.
-         */
-        GetReplacement(
-            [out ,callee] ArrayOf<Char32>* ret);
     }
 
     interface IHideReturnsTransformationMethodHelper{

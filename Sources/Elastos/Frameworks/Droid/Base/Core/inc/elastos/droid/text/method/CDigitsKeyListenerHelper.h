@@ -5,9 +5,9 @@
 #include "_Elastos_Droid_Text_Method_CDigitsKeyListenerHelper.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IKeyEvent;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -19,9 +19,9 @@ CarClass(CDigitsKeyListenerHelper)
     , public Singleton
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI GetInstance(
         /* [out] */ IDigitsKeyListener** ret);

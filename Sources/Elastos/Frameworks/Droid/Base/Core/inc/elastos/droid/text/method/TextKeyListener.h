@@ -1,4 +1,3 @@
-
 #ifndef __ELASTOS_DROID_TEXT_METHOD_TEXTKEYLISTENER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_TEXTKEYLISTENER_H__
 
@@ -187,6 +186,7 @@ public:
 
     CARAPI ReleaseListener();
 
+    /* package */
     CARAPI GetPrefs(
         /* [in] */ IContext* context,
         /* [out] */ Int32* ret);
@@ -214,25 +214,23 @@ public:
     static const AutoPtr<IInterface> LAST_TYPED;
 
 public:
-    static const Int32 AUTO_CAP;// = 1;
-    static const Int32 AUTO_TEXT;// = 2;
-    static const Int32 AUTO_PERIOD;// = 4;
-    static const Int32 SHOW_PASSWORD;// = 8;
+    static const Int32 AUTO_CAP;
+    static const Int32 AUTO_TEXT;
+    static const Int32 AUTO_PERIOD;
+    static const Int32 SHOW_PASSWORD;
 
-protected://private:
-    static const Int32 CAPITALIZELENGTH = 4;
-    //static AutoPtr<ITextKeyListener> sInstance[CAPITALIZELENGTH * 2];
+protected:
+    static const Int32 CAPITALIZELENGTH;;
+    static AutoPtr<ArrayOf<ITextKeyListener*> > sInstance;
 
 protected:
     Object mLock;
+
 private:
     Capitalize mAutoCap;
     Boolean mAutoText;
-
     Int32 mPrefs;
     Boolean mPrefsInited;
-
-    //WeakReference<ContentResolver> mResolver;
     AutoPtr<IWeakReference> mResolver;
     AutoPtr<SettingsObserver> mObserver;
 };

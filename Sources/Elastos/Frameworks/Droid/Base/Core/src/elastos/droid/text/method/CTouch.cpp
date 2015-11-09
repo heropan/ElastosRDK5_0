@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CTouch.h"
 
 namespace Elastos {
@@ -6,8 +5,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CTouch, Object, ITouch)
-CAR_OBJECT_IMPL(CTouch)
+CAR_SINGLETON_IMPL(CTouch)
+
+CAR_INTERFACE_IMPL(CTouch, Singleton, ITouch)
 
 ECode CTouch::ScrollTo(
     /* [in] */ ITextView* widget,
@@ -15,8 +15,7 @@ ECode CTouch::ScrollTo(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    Touch::ScrollTo(widget, layout, x, y);
-    return NOERROR;
+    return Touch::ScrollTo(widget, layout, x, y);
 }
 
 ECode CTouch::OnTouchEvent(
@@ -25,9 +24,7 @@ ECode CTouch::OnTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = Touch::OnTouchEvent(widget, buffer, event);
-    return NOERROR;
+    return Touch::OnTouchEvent(widget, buffer, event, ret);
 }
 
 ECode CTouch::GetInitialScrollX(
@@ -35,9 +32,7 @@ ECode CTouch::GetInitialScrollX(
     /* [in] */ ISpannable* buffer,
     /* [out] */ Int32* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = Touch::GetInitialScrollX(widget, buffer);
-    return NOERROR;
+    return Touch::GetInitialScrollX(widget, buffer, ret);
 }
 
 ECode CTouch::GetInitialScrollY(
@@ -45,27 +40,21 @@ ECode CTouch::GetInitialScrollY(
     /* [in] */ ISpannable* buffer,
     /* [out] */ Int32* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = Touch::GetInitialScrollY(widget, buffer);
-    return NOERROR;
+    return Touch::GetInitialScrollY(widget, buffer, ret);
 }
 
 ECode CTouch::IsActivelySelecting(
     /* [in] */ ISpannable* buffer,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret)
-    *ret = Touch::IsActivelySelecting(buffer);
-    return NOERROR;
+    return Touch::IsActivelySelecting(buffer, ret);
 }
 
 ECode CTouch::IsSelectionStarted(
     /* [in] */ ISpannable* buffer,
     /* [out] */ Boolean* ret)
 {
-    VALIDATE_NOT_NULL(ret)
-    *ret = Touch::IsSelectionStarted(buffer);
-    return NOERROR;
+    return Touch::IsSelectionStarted(buffer, ret);
 }
 
 } // namespace Method

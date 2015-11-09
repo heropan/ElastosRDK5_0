@@ -2,17 +2,13 @@
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/method/CDigitsKeyListener.h"
 
-using Elastos::Core::CString;
 using Elastos::Droid::Text::Method::CDigitsKeyListener;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
-
-// {f51e1ea9-7721-4c12-9c44-0a6bcd10b9c1}
-extern "C" const InterfaceID EIID_DigitsKeyListener =
-        { 0xf51e1ea9, 0x7721, 0x4c12, { 0x9c, 0x44, 0x0a, 0x6b, 0xcd, 0x10, 0xb9, 0xc1 } };
 
 const Char32 DigitsKeyListener::CHARACTERS0[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 const Char32 DigitsKeyListener::CHARACTERS1[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+' };
@@ -57,21 +53,24 @@ ECode DigitsKeyListener::constructor(
     mDecimal = decimal;
 
     Int32 kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
-    if( 0>kind && kind>3 ) {
+    if( 0 > kind && kind > 3 ) {
         return E_NOT_IMPLEMENTED;
     }
+
     Int32 acceptedLen = 10;
     if(kind == 3) {
         acceptedLen = 12;
     }
-    if( kind==1 && kind==2 ) {
+
+    if( kind == 1 && kind == 2 ) {
         acceptedLen = 11;
     }
 
     AutoPtr< ArrayOf<Char32> > charactersR = ArrayOf<Char32>::Alloc(acceptedLen);
-    for(Int32 i=0; i<acceptedLen; i++){
+    for(Int32 i = 0; i < acceptedLen; i++) {
         (*charactersR)[i] = CHARACTERS[kind][i];
     }
+
     mAccepted = charactersR;
     return NOERROR;
 }
@@ -79,7 +78,7 @@ ECode DigitsKeyListener::constructor(
 ECode DigitsKeyListener::GetInstance(
     /* [out] */ IDigitsKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret)
+    VALIDATE_NOT_NULL(ret);
     return GetInstance(FALSE, FALSE, ret);
 }
 
@@ -88,18 +87,14 @@ ECode DigitsKeyListener::GetInstance(
     /* [in] */ Boolean decimal,
     /* [out] */ IDigitsKeyListener** ret)
 {
-    VALIDATE_NOT_NULL(ret)
+    VALIDATE_NOT_NULL(ret);
     Int32 kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
-    if (sInstance[kind] != NULL)
-    {
-       *ret = (*sInstance)[kind];
-       REFCOUNT_ADD(*ret);
-       return NOERROR;
+    if ((*sInstance)[kind] == NULL) {
+        AutoPtr<IDigitsKeyListener> instance;
+        CDigitsKeyListener::New(sign, decimal, (IDigitsKeyListener**)&instance);
+        sInstance->Set(kind, instance);
     }
 
-    AutoPtr<IDigitsKeyListener> instance;
-    CDigitsKeyListener::New(sign, decimal, (IDigitsKeyListener**)&instance);
-    sInstance->Set(kind, instance);
     *ret = (*sInstance)[kind];
     REFCOUNT_ADD(*ret);
     return NOERROR;
@@ -110,11 +105,11 @@ ECode DigitsKeyListener::GetInstance(
     /* [out] */ IDigitsKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<DigitsKeyListener> dim = new DigitsKeyListener;
-    dim->constructor();
+    AutoPtr<IDigitsKeyListener> dim;
+    CDigitsKeyListener::New((IDigitsKeyListener**)&dim);
 
-    dim->mAccepted = ArrayOf<Char32>::Alloc(accepted.GetLength());
-    dim->mAccepted = accepted.GetChars(0, accepted.GetLength());
+    ((DigitsKeyListener*)dim.Get())->mAccepted = ArrayOf<Char32>::Alloc(accepted.GetLength());
+    ((DigitsKeyListener*)dim.Get())->mAccepted = accepted.GetChars(0, accepted.GetLength());
     *ret = dim;
     REFCOUNT_ADD(*ret);
     return NOERROR;
@@ -128,9 +123,11 @@ ECode DigitsKeyListener::GetInputType(
     if (mSign) {
         contentType |= IInputType::TYPE_NUMBER_FLAG_SIGNED;
     }
+
     if (mDecimal) {
-            contentType |= IInputType::TYPE_NUMBER_FLAG_DECIMAL;
+        contentType |= IInputType::TYPE_NUMBER_FLAG_DECIMAL;
     }
+
     *ret = contentType;
     return NOERROR;
 }

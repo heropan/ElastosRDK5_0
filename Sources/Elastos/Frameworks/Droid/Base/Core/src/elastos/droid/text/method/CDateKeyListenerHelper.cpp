@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CDateKeyListenerHelper.h"
 #include "elastos/droid/text/method/CDateKeyListener.h"
 #include "elastos/droid/text/method/DateKeyListener.h"
@@ -8,9 +7,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CDateKeyListenerHelper, Object, IDateKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CDateKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CDateKeyListenerHelper, Object, IDateKeyListenerHelper)
 
 AutoPtr<IDateKeyListener> CDateKeyListenerHelper::sInstance;
 

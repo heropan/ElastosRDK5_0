@@ -1,8 +1,7 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_SCROLLINGMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_SCROLLINGMOVEMENTMETHOD_H__
 
 #include "elastos/droid/text/method/BaseMovementMethod.h"
-//#include "elastos/droid/os/ElObject.h"
 
 namespace Elastos {
 namespace Droid {
@@ -12,22 +11,32 @@ namespace Method {
 /**
  * A movement method that interprets movement keys by scrolling the text buffer.
  */
-class ScrollingMovementMethod : public BaseMovementMethod /*implements MovementMethod*/
+class ScrollingMovementMethod
+    : public BaseMovementMethod
+    , public IScrollingMovementMethod
 {
 public:
-    //@Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer,
-        /* [in] */ IMotionEvent* event);
+    ScrollingMovementMethod();
+
+    virtual ~ScrollingMovementMethod();
+
+    CAR_INTERFACE_DECL()
 
     //@Override
-    CARAPI_(void) OnTakeFocus(
+    CARAPI OnTouchEvent(
+        /* [in] */ ITextView* widget,
+        /* [in] */ ISpannable* buffer,
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
+
+    //@Override
+    CARAPI OnTakeFocus(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 dir);
 
-    //static AutoPtr<IMovementMethod> GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ IMovementMethod** ret);
 
 protected:
     //@Override
@@ -91,7 +100,7 @@ protected:
         /* [in] */ ISpannable* buffer);
 
 private:
-    //static AutoPtr<IScrollingMovementMethod> sInstance;
+    static AutoPtr<IScrollingMovementMethod> sInstance;
 };
 
 } // namespace Method

@@ -20,9 +20,9 @@ CarClass(CTextKeyListenerHelper)
     , public ITextKeyListenerHelper
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI Clear(
         /* [in] */ IEditable* e);

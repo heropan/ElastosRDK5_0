@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CSingleLineTransformationMethodHelper.h"
 #include "elastos/droid/text/method/CSingleLineTransformationMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -8,14 +7,14 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+CAR_SINGLETON_IMPL(CSingleLineTransformationMethodHelper)
+
+CAR_INTERFACE_IMPL(CSingleLineTransformationMethodHelper, Singleton, ISingleLineTransformationMethodHelper)
+
 ECode CSingleLineTransformationMethodHelper::GetInstance(
     /* [out] */ ISingleLineTransformationMethod** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<ISingleLineTransformationMethod> stm = CSingleLineTransformationMethod::GetInstance();
-    *ret = stm;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return CSingleLineTransformationMethod::GetInstance(ret);
 }
 
 } // namespace Method

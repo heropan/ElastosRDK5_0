@@ -1,12 +1,9 @@
-
 #ifndef __ELASTOS_DROID_TEXT_METHOD_QWERTYKEYLISTENER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_QWERTYKEYLISTENER_H__
 
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
-
-extern "C" const InterfaceID EIID_Replaced;
 
 using Elastos::Utility::Etl::HashMap;
 
@@ -25,12 +22,14 @@ protected:
         , public INoCopySpan
     {
     public:
-        Replaced(
-            /* [in] */ ArrayOf<Char32>* text);
+        Replaced();
 
         ~Replaced();
 
         CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ ArrayOf<Char32>* text);
 
     public:
         AutoPtr<ArrayOf<Char32> > mText;
@@ -112,11 +111,11 @@ public:
     static HashMap<Char32, String> PICKER_SETS;
     static Boolean sInitPickerSet;
 
-private://private:
+private:
     Capitalize mAutoCap;
     Boolean mAutoText;
     Boolean mFullKeyboard;
-    static const Int32 CAPITALIZELENGTH;// = 4;
+    static const Int32 CAPITALIZELENGTH;
     static AutoPtr<ArrayOf<IQwertyKeyListener*> > sInstance;
     static AutoPtr<IQwertyKeyListener> sFullKeyboardInstance;
 };

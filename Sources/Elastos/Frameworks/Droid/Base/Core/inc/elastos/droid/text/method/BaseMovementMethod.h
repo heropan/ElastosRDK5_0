@@ -1,7 +1,8 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_BaseMovementMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_BaseMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_BASEMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_BASEMOVEMENTMETHOD_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::View::IKeyEvent;
@@ -14,11 +15,6 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-    #define Integer_MAX_VALUE 0x7fffffff
-#endif
-    #define Integer_MIN_VALUE 0x80000000
-#endif
-
 /**
  * Base classes for movement methods.
  */
@@ -28,61 +24,70 @@ class BaseMovementMethod
     , public IMovementMethod
 {
 public:
-    CAR_INTERFACE_DECL()
+    BaseMovementMethod();
 
     virtual ~BaseMovementMethod();
 
-    //@Override
-    CARAPI_(Boolean) CanSelectArbitrarily();
+    CAR_INTERFACE_DECL()
 
     //@Override
-    CARAPI_(void) Initialize(
+    CARAPI CanSelectArbitrarily(
+        /* [out] */ Boolean* ret);
+
+    //@Override
+    CARAPI Initialize(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text);
 
     //@Override
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(Boolean) OnKeyOther(
+    CARAPI OnKeyOther(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(void) OnTakeFocus(
+    CARAPI OnTakeFocus(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 direction);
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
+    CARAPI OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
-        /* [in] */ IMotionEvent* event);
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(Boolean) OnTrackballEvent(
+    CARAPI OnTrackballEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
-        /* [in] */ IMotionEvent* event);
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(Boolean) OnGenericMotionEvent(
+    CARAPI OnGenericMotionEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text,
-        /* [in] */ IMotionEvent* event);
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
 
 protected:
     /**
@@ -448,4 +453,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_BaseMovementMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_BASEMOVEMENTMETHOD_H__

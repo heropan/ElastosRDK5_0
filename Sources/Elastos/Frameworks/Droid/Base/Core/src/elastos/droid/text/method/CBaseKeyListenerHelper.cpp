@@ -6,9 +6,9 @@ namespace Droid{
 namespace Text{
 namespace Method{
 
-CAR_INTERFACE_IMPL(CBaseKeyListenerHelper, Object, IBaseKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CBaseKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CBaseKeyListenerHelper, Object, IBaseKeyListenerHelper)
 
 CARAPI CBaseKeyListenerHelper::MakeTextContentType(
     /* [in] */ Capitalize caps,

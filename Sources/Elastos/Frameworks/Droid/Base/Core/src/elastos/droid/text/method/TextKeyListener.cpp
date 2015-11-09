@@ -1,22 +1,22 @@
-
 #include "elastos/droid/text/method/TextKeyListener.h"
-// #include "elastos/droid/text/method/CQwertyKeyListener.h"
-// #include "elastos/droid/text/method/CMultiTapKeyListener.h"
+#include "elastos/droid/text/method/CTextKeyListener.h"
+#include "elastos/droid/text/method/CQwertyKeyListener.h"
+#include "elastos/droid/text/method/CMultiTapKeyListener.h"
 #include "elastos/droid/text/SpannableStringInternal.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/TextUtils.h"
 // #include "elastos/droid/provider/Settings.h"
 #include <elastos/core/AutoLock.h>
 
+using Elastos::Droid::Content::EIID_IContentResolver;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Database::EIID_IContentObserver;
 using Elastos::Droid::Net::IUri;
 // using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
-using Elastos::Droid::Content::EIID_IContentResolver;
+using Elastos::Droid::Text::Method::CQwertyKeyListener;
 using Elastos::Droid::View::IKeyCharacterMap;
-// using Elastos::Droid::Text::Method::CQwertyKeyListener;
 
 
 namespace Elastos {
@@ -33,7 +33,6 @@ ECode TextKeyListener::NullKeyListener::GetInputType(
 {
     VALIDATE_NOT_NULL(inputType);
     *inputType = IInputType::TYPE_NULL;
-
     return NOERROR;
 }
 
@@ -67,7 +66,6 @@ ECode TextKeyListener::NullKeyListener::OnKeyOther(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* res)
 {
-    PEL("TextKeyListener::NullKeyListener::OnKeyOther")
     VALIDATE_NOT_NULL(res);
     *res = FALSE;
     return NOERROR;
@@ -185,8 +183,8 @@ const Int32 TextKeyListener::AUTO_TEXT = 2;
 const Int32 TextKeyListener::AUTO_PERIOD = 4;
 const Int32 TextKeyListener::SHOW_PASSWORD = 8;
 
-const Int32 TextKeyListener::CAPITALIZELENGTH;// = 4;
-//AutoPtr<ITextKeyListener> TextKeyListener::sInstance[TextKeyListener::CAPITALIZELENGTH * 2];
+const Int32 TextKeyListener::CAPITALIZELENGTH = 4;
+AutoPtr<ArrayOf<ITextKeyListener*> > TextKeyListener::sInstance = ArrayOf<ITextKeyListener*>::Alloc(CAPITALIZELENGTH * 2);
 
 CAR_INTERFACE_IMPL_6(TextKeyListener, Object, ITextKeyListener, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener, ISpanWatcher, INoCopySpan)
 
@@ -212,7 +210,8 @@ ECode TextKeyListener::constructor(
 ECode TextKeyListener::GetInstance(
         /* [out] */ ITextKeyListener** ret)
 {
-    return NOERROR;
+    VALIDATE_NOT_NULL(ret);
+    return GetInstance(FALSE, Capitalize_NONE, ret);
 }
 
 /**
@@ -227,6 +226,17 @@ ECode TextKeyListener::GetInstance(
         /* [in] */ Capitalize cap,
         /* [out] */ ITextKeyListener** ret)
 {
+    VALIDATE_NOT_NULL(ret)
+    Int32 off = cap * 2 + (autotext ? 1 : 0);
+
+    if ((*sInstance)[off] == NULL) {
+        AutoPtr<ITextKeyListener> listener;
+        CTextKeyListener::New(cap, autotext, (ITextKeyListener**)&listener);
+        sInstance->Set(off, listener);
+    }
+
+    *ret = (*sInstance)[off];
+    REFCOUNT_ADD(*ret)
     return NOERROR;
 }
 
@@ -381,15 +391,14 @@ AutoPtr<IKeyListener> TextKeyListener::GetKeyListener(
     kmap->GetKeyboardType(&kind);
 
     if (kind == IKeyCharacterMap::ALPHA) {
-        assert(0 && "TODO");
-        AutoPtr<IQwertyKeyListener> qkl; /*= CQwertyKeyListener::GetInstance(mAutoText, mAutoCap);*/
-        AutoPtr<IKeyListener> kl = IKeyListener::Probe(qkl);
-        return kl;
+        AutoPtr<IQwertyKeyListener> qkl;
+        QwertyKeyListener::GetInstance(mAutoText, mAutoCap, (IQwertyKeyListener**)&qkl);
+        return IKeyListener::Probe(qkl);
     }
     else if (kind == IKeyCharacterMap::NUMERIC) {
-        AutoPtr<IMultiTapKeyListener> mtkl /*= CMultiTapKeyListener::GetInstance(mAutoText, mAutoCap)*/;
-        AutoPtr<IKeyListener> kl = IKeyListener::Probe(mtkl);
-        return kl;
+        AutoPtr<IMultiTapKeyListener> mtkl;
+        MultiTapKeyListener::GetInstance(mAutoText, mAutoCap, (IMultiTapKeyListener**)&mtkl);
+        return IKeyListener::Probe(mtkl);
     }
     else if (kind == IKeyCharacterMap::FULL
         || kind == IKeyCharacterMap::SPECIAL_FUNCTION) {
@@ -399,18 +408,13 @@ AutoPtr<IKeyListener> TextKeyListener::GetKeyListener(
         // a special function keyboard using a default key map.  Ideally, as of Honeycomb,
         // these applications should be modified to use KeyCharacterMap.VIRTUAL_KEYBOARD.
 
-        assert(0 && "TODO");
-        AutoPtr<IQwertyKeyListener> listener /*= CQwertyKeyListener::GetInstanceForFullKeyboard()*/;
-        return (IKeyListener*)listener->Probe(EIID_IKeyListener);
-        //Java:    return QwertyKeyListener.getInstanceForFullKeyboard();
-        /*
-        AutoPtr<IQwertyKeyListener> qkl = CQwertyKeyListener::GetInstanceForFullKeyboard();
-        AutoPtr<IKeyListener> kl = IKeyListener::Probe(qkl);
-        return kl;
-        */
+        AutoPtr<IQwertyKeyListener> listener;
+        QwertyKeyListener::GetInstanceForFullKeyboard((IQwertyKeyListener**)&listener);
+        return IKeyListener::Probe(listener);
     }
 
-    return NullKeyListener::GetInstance();
+    AutoPtr<NullKeyListener> nkl = NullKeyListener::GetInstance();
+    return IKeyListener::Probe(nkl);
 }
 
 ECode TextKeyListener::ReleaseListener()
@@ -481,17 +485,10 @@ ECode TextKeyListener::GetPrefs(
     /* [in] */ IContext* context,
     /* [out] */ Int32* ret)
 {
-    AutoLock lock(mLock);
-
-    Boolean needInit = (mResolver == NULL);
-    if (!needInit) {
-        AutoPtr<IInterface> obj;
-        mResolver->Resolve(EIID_IInterface, (IInterface**)&obj);
-        needInit = (obj == NULL);
-    }
-
-    if (!mPrefsInited || needInit) {
-        InitPrefs(context);
+    synchronized (mLock) {
+        if (!mPrefsInited || mResolver == NULL) {
+            InitPrefs(context);
+        }
     }
 
     *ret = mPrefs;

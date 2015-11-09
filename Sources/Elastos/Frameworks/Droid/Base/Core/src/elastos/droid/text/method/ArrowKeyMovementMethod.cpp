@@ -1,38 +1,46 @@
 #include "elastos/droid/text/method/ArrowKeyMovementMethod.h"
-
+#include "elastos/droid/text/method/CArrowKeyMovementMethod.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "elastos/droid/text/method/CWordIterator.h"
 #include "elastos/droid/text/method/Touch.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/view/CKeyEvent.h"
-//#include "elastos/droid/os/ElObject.h"
-//#include <elastos/Core/Object.h>
+// #include "elastos/droid/view/CKeyEvent.h"
 
 using Elastos::Droid::Text::ISelectionPositionIterator;
 using Elastos::Droid::Text::EIID_ISelectionPositionIterator;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::View::CKeyEvent;
+// using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IViewParent;
-//using Elastos::Core::Object;
+using Elastos::Droid::View::IInputEvent;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-const AutoPtr<IInterface> ArrowKeyMovementMethod::LAST_TAP_DOWN/* = (IInterface*)(new Object())*/;// = new ElObject();
+static AutoPtr<IInterface> InitLAST_TAP_DOWN()
+{
+    AutoPtr<IObject> obj = new Object();
+    return (IInterface*)obj.Get();
+}
+
+const AutoPtr<IInterface> ArrowKeyMovementMethod::LAST_TAP_DOWN = InitLAST_TAP_DOWN();
+
+AutoPtr<IArrowKeyMovementMethod> ArrowKeyMovementMethod::sInstance;
 
 CAR_INTERFACE_IMPL_3(ArrowKeyMovementMethod, Object, IArrowKeyMovementMethod, IBaseMovementMethod, IMovementMethod)
 
-ArrowKeyMovementMethod::~ArrowKeyMovementMethod(){}
+ArrowKeyMovementMethod::~ArrowKeyMovementMethod()
+{}
 
 Boolean ArrowKeyMovementMethod::IsSelecting(
     /* [in] */ ISpannable* buffer)
 {
-    return ((MetaKeyKeyListener::GetMetaState(buffer, IMetaKeyKeyListener::META_SHIFT_ON) == 1) ||
-            (MetaKeyKeyListener::GetMetaState(buffer, IMetaKeyKeyListener::META_SELECTING) != 0));
+    Int32 n1, n2;
+    return (MetaKeyKeyListener::GetMetaState(ICharSequence::Probe(buffer), IMetaKeyKeyListener::META_SHIFT_ON == 1, &n1), n1) ||
+            (MetaKeyKeyListener::GetMetaState(ICharSequence::Probe(buffer), IMetaKeyKeyListener::META_SELECTING != 0, &n2), n2);
 }
 
 Int32 ArrowKeyMovementMethod::GetCurrentLineTop(
@@ -41,7 +49,7 @@ Int32 ArrowKeyMovementMethod::GetCurrentLineTop(
 {
     //Java:    return layout.getLineTop(layout.getLineForOffset(Selection.getSelectionEnd(buffer)));
     Int32 selectingEnd;
-    selectingEnd = Selection::GetSelectionEnd(buffer);
+    selectingEnd = Selection::GetSelectionEnd(ICharSequence::Probe(buffer));
     Int32 lineForOffset;
     layout->GetLineForOffset(selectingEnd, &lineForOffset);
     Int32 lineTop;
@@ -58,7 +66,7 @@ Int32 ArrowKeyMovementMethod::GetPageHeight(
     AutoPtr<IRect> rect;
     CRect::New((IRect**)&rect);
     Boolean bGlobalVisibleRect;
-    widget->GetGlobalVisibleRect(rect, &bGlobalVisibleRect);
+    IView::Probe(widget)->GetGlobalVisibleRect(rect, &bGlobalVisibleRect);
     Int32 height;
     return bGlobalVisibleRect ? (rect->GetHeight(&height), height) : 0;
 }
@@ -72,7 +80,8 @@ Boolean ArrowKeyMovementMethod::HandleMovementKey(
 {
     switch (keyCode) {
         case IKeyEvent::KEYCODE_DPAD_CENTER:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+        assert(0 && "TODO");
+           /* if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 Int32 action,repeatCount;
                 if ((event->GetAction(&action), action == IKeyEvent::ACTION_DOWN)
                     && (event->GetRepeatCount(&repeatCount), repeatCount == 0)
@@ -80,7 +89,7 @@ Boolean ArrowKeyMovementMethod::HandleMovementKey(
                     Boolean bShowContextMenu;
                     return (widget->ShowContextMenu(&bShowContextMenu), bShowContextMenu);
                 }
-            }
+            }*/
         break;
     }
     return BaseMovementMethod::HandleMovementKey(widget, buffer, keyCode, movementMetaState, event);
@@ -152,14 +161,14 @@ Boolean ArrowKeyMovementMethod::PageUp(
     const Int32 targetY = GetCurrentLineTop(buffer, layout) - GetPageHeight(widget);
     Boolean handled = FALSE;
     while(TRUE) {
-        const Int32 previousSelectionEnd = Selection::GetSelectionEnd(buffer);
+        const Int32 previousSelectionEnd = Selection::GetSelectionEnd(ICharSequence::Probe(buffer));
         if (selecting) {
             Selection::ExtendUp(buffer, layout);
         }
         else {
             Selection::MoveUp(buffer, layout);
         }
-        if (Selection::GetSelectionEnd(buffer) == previousSelectionEnd) {
+        if (Selection::GetSelectionEnd(ICharSequence::Probe(buffer)) == previousSelectionEnd) {
             break;
         }
         handled = TRUE;
@@ -180,14 +189,14 @@ Boolean ArrowKeyMovementMethod::PageDown(
     const Int32 targetY = GetCurrentLineTop(buffer, layout) + GetPageHeight(widget);
     Boolean handled = FALSE;
     while(TRUE) {
-        const Int32 previousSelectionEnd = Selection::GetSelectionEnd(buffer);
+        const Int32 previousSelectionEnd = Selection::GetSelectionEnd(ICharSequence::Probe(buffer));
         if (selecting) {
             Selection::ExtendDown(buffer, layout);
         }
         else {
             Selection::MoveDown(buffer, layout);
         }
-        if (Selection::GetSelectionEnd(buffer) == previousSelectionEnd) {
+        if (Selection::GetSelectionEnd(ICharSequence::Probe(buffer)) == previousSelectionEnd) {
             break;
         }
         handled = TRUE;
@@ -217,11 +226,11 @@ Boolean ArrowKeyMovementMethod::Bottom(
 {
     if (IsSelecting(buffer)) {
         Int32 length;
-        Selection::ExtendSelection(buffer, (buffer->GetLength(&length), length));
+        Selection::ExtendSelection(buffer, (ICharSequence::Probe(buffer)->GetLength(&length), length));
     }
     else {
         Int32 length;
-        Selection::SetSelection(buffer, (buffer->GetLength(&length), length));
+        Selection::SetSelection(buffer, (ICharSequence::Probe(buffer)->GetLength(&length), length));
     }
     return TRUE;
 }
@@ -262,7 +271,7 @@ Boolean ArrowKeyMovementMethod::LeftWord(
     widget->GetSelectionEnd(&selectionEnd);
     AutoPtr<IWordIterator> wordIterator;
     widget->GetWordIterator((IWordIterator**)&wordIterator);
-    wordIterator->SetCharSequence(buffer, selectionEnd, selectionEnd);
+    wordIterator->SetCharSequence(ICharSequence::Probe(buffer), selectionEnd, selectionEnd);
     return Selection::MoveToPreceding(buffer, (ISelectionPositionIterator*)wordIterator->Probe(EIID_ISelectionPositionIterator), IsSelecting(buffer));
 }
 
@@ -274,7 +283,7 @@ Boolean ArrowKeyMovementMethod::RightWord(
     widget->GetSelectionEnd(&selectionEnd);
     /*const*/ AutoPtr<IWordIterator> wordIterator;
     widget->GetWordIterator((IWordIterator**)&wordIterator);
-    wordIterator->SetCharSequence(buffer, selectionEnd, selectionEnd);
+    wordIterator->SetCharSequence(ICharSequence::Probe(buffer), selectionEnd, selectionEnd);
     return Selection::MoveToFollowing(buffer, (ISelectionPositionIterator*)wordIterator->Probe(EIID_ISelectionPositionIterator), IsSelecting(buffer));
 }
 
@@ -297,14 +306,18 @@ Boolean ArrowKeyMovementMethod::IsTouchSelecting(
     /* [in] */ Boolean isMouse,
     /* [in] */ ISpannable* buffer)
 {
-    return isMouse ? Touch::IsActivelySelecting(buffer) : IsSelecting(buffer);
+    Boolean flag(FALSE);
+    Touch::IsActivelySelecting(buffer, &flag);
+    return isMouse ? flag : IsSelecting(buffer);
 }
 
-Boolean ArrowKeyMovementMethod::OnTouchEvent(
+ECode ArrowKeyMovementMethod::OnTouchEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer,
-    /* [in] */ IMotionEvent* event)
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     Int32 initialScrollX = -1;
     Int32 initialScrollY = -1;
     Int32 action;
@@ -313,16 +326,16 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
     IInputEvent::Probe(event)->IsFromSource(IInputDevice::SOURCE_MOUSE, &isMouse);
 
     if (action == IMotionEvent::ACTION_UP) {
-        initialScrollX = Touch::GetInitialScrollX(widget, buffer);
-        initialScrollY = Touch::GetInitialScrollY(widget, buffer);
+        Touch::GetInitialScrollX(widget, buffer, &initialScrollX);
+        Touch::GetInitialScrollY(widget, buffer, &initialScrollY);
     }
 
     Boolean handled;
-    handled = Touch::OnTouchEvent(widget, buffer, event);
+    Touch::OnTouchEvent(widget, buffer, event, &handled);
 
     Boolean bIsFocused, bDidTouchFocusSelect;
 
-    if ((widget->IsFocused(&bIsFocused), bIsFocused) && !(widget->DidTouchFocusSelect(&bDidTouchFocusSelect), bDidTouchFocusSelect)) {
+    if ((IView::Probe(widget)->IsFocused(&bIsFocused), bIsFocused) && !(widget->DidTouchFocusSelect(&bDidTouchFocusSelect), bDidTouchFocusSelect)) {
         Float x = 0.f, y = 0.f;
         event->GetX(&x);
         event->GetY(&y);
@@ -342,7 +355,7 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
                 // without this, users would get booted out of select
                 // mode once the view detected it needed to scroll.
                 AutoPtr<IViewParent> parent;
-                widget->GetParent((IViewParent**)&parent);
+                IView::Probe(widget)->GetParent((IViewParent**)&parent);
                 assert(parent != NULL);
                 parent->RequestDisallowInterceptTouchEvent(TRUE);
             }
@@ -351,7 +364,8 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
             // Cursor can be active at any location in the text while mouse pointer can start
             // selection from a totally different location. Use LAST_TAP_DOWN span to ensure
             // text selection will start from mouse pointer location.
-            if (isMouse && Touch::IsSelectionStarted(buffer)) {
+            Boolean flag(FALSE);
+            if (isMouse && (Touch::IsSelectionStarted(buffer, &flag), flag)) {
                 Int32 offset;
                 ISpanned::Probe(buffer)->GetSpanStart(LAST_TAP_DOWN, &offset);
                 Selection::SetSelection(buffer, offset);
@@ -364,7 +378,7 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
 
                 // Turn long press off while we're selecting. User needs to
                 // re-tap on the selection to enable long press
-                widget->CancelLongPress();
+                IView::Probe(widget)->CancelLongPress();
 
                 // Update selection as we're moving the selection area.
 
@@ -373,7 +387,8 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
                 widget->GetOffsetForPosition(x, y, &offset);
 
                 Selection::ExtendSelection(buffer, offset);
-                return TRUE;
+                *ret = TRUE;
+                return NOERROR;
             }
         }
         else if (action == IMotionEvent::ACTION_UP) {
@@ -382,11 +397,12 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
             // the current scroll offset to avoid the scroll jumping later
             // to show it.
             Int32 scrollY, scrollX;
-            if ((initialScrollY >= 0 && initialScrollY != (widget->GetScrollY(&scrollY), scrollY)) ||
-                (initialScrollX >= 0 && initialScrollX != (widget->GetScrollX(&scrollX), scrollX))) {
+            if ((initialScrollY >= 0 && initialScrollY != (IView::Probe(widget)->GetScrollY(&scrollY), scrollY)) ||
+                (initialScrollX >= 0 && initialScrollX != (IView::Probe(widget)->GetScrollX(&scrollX), scrollX))) {
                 Boolean bMoveCursorToVisibleOffset;
                 widget->MoveCursorToVisibleOffset(&bMoveCursorToVisibleOffset);
-                return TRUE;
+                *ret = TRUE;
+                return NOERROR;
             }
 
             Int32 offset = 0;
@@ -399,25 +415,31 @@ Boolean ArrowKeyMovementMethod::OnTouchEvent(
             MetaKeyKeyListener::AdjustMetaAfterKeypress(buffer);
             MetaKeyKeyListener::ResetLockedMeta(buffer);
 
-            return TRUE;
+            *ret = TRUE;
+            return NOERROR;
         }
     }
-    return handled;
+    *ret = handled;
+    return NOERROR;
 }
 
-Boolean ArrowKeyMovementMethod::CanSelectArbitrarily()
+ECode ArrowKeyMovementMethod::CanSelectArbitrarily(
+    /* [out] */ Boolean* ret)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(ret);
+    *ret = TRUE;
+    return NOERROR;
 }
 
-void ArrowKeyMovementMethod::Initialize(
+ECode ArrowKeyMovementMethod::Initialize(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text)
 {
     Selection::SetSelection(text, 0);
+    return NOERROR;
 }
 
-void ArrowKeyMovementMethod::OnTakeFocus(
+ECode ArrowKeyMovementMethod::OnTakeFocus(
     /* [in] */ ITextView* view,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 dir)
@@ -428,13 +450,27 @@ void ArrowKeyMovementMethod::OnTakeFocus(
         if (layout == NULL) {
             // This shouldn't be null, but do something sensible if it is.
             Int32 length;
-            Selection::SetSelection(text, (text->GetLength(&length), length));
+            Selection::SetSelection(text, (ICharSequence::Probe(text)->GetLength(&length), length));
         }
     }
     else {
         Int32 length;
-        Selection::SetSelection(text, (text->GetLength(&length), length));
+        Selection::SetSelection(text, (ICharSequence::Probe(text)->GetLength(&length), length));
     }
+    return NOERROR;
+}
+
+ECode ArrowKeyMovementMethod::GetInstance(
+    /* [out] */ IMovementMethod** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    if (sInstance == NULL) {
+        CArrowKeyMovementMethod::New((IArrowKeyMovementMethod**)&sInstance);
+    }
+
+    *ret = IMovementMethod::Probe(sInstance);
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 } // namespace Method

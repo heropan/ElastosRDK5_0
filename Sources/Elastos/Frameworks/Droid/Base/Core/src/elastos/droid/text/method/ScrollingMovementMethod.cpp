@@ -1,4 +1,5 @@
 #include "elastos/droid/text/method/ScrollingMovementMethod.h"
+#include "elastos/droid/text/method/CScrollingMovementMethod.h"
 #include "elastos/droid/text/method/Touch.h"
 
 using Elastos::Droid::View::IView;
@@ -7,6 +8,16 @@ namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
+
+AutoPtr<IScrollingMovementMethod> ScrollingMovementMethod::sInstance;
+
+ScrollingMovementMethod::ScrollingMovementMethod()
+{}
+
+ScrollingMovementMethod::~ScrollingMovementMethod()
+{}
+
+CAR_INTERFACE_IMPL_3(ScrollingMovementMethod, Object, IScrollingMovementMethod, IMovementMethod, IBaseMovementMethod)
 
 Boolean ScrollingMovementMethod::Left(
     /* [in] */ ITextView* widget,
@@ -92,15 +103,17 @@ Boolean ScrollingMovementMethod::End(
         return Bottom(widget, buffer);
 }
 
-Boolean ScrollingMovementMethod::OnTouchEvent(
+ECode ScrollingMovementMethod::OnTouchEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer,
-    /* [in] */ IMotionEvent* event)
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* ret)
 {
-    return Touch::OnTouchEvent(widget, buffer, event);
+    Touch::OnTouchEvent(widget, buffer, event, ret);
+    return NOERROR;
 }
 
-void ScrollingMovementMethod::OnTakeFocus(
+ECode ScrollingMovementMethod::OnTakeFocus(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 dir)
@@ -110,7 +123,7 @@ void ScrollingMovementMethod::OnTakeFocus(
 
     if (layout != NULL && (dir & IView::FOCUS_FORWARD) != 0) {
         Int32 scrollX, lineTop;
-        widget->ScrollTo((widget->GetScrollX(&scrollX), scrollX), (layout->GetLineTop(0, &lineTop), lineTop));
+        IView::Probe(widget)->ScrollTo((IView::Probe(widget)->GetScrollX(&scrollX), scrollX), (layout->GetLineTop(0, &lineTop), lineTop));
     }
     if (layout != NULL && (dir & IView::FOCUS_BACKWARD) != 0) {
         Int32 wTotalPaddingTop, wTotalPaddingBottom, lLineCount, wScrollX, lLineTop, wHeight;
@@ -118,10 +131,24 @@ void ScrollingMovementMethod::OnTakeFocus(
                         (widget->GetTotalPaddingBottom(&wTotalPaddingBottom), wTotalPaddingBottom);
         Int32 line = (layout->GetLineCount(&lLineCount), lLineCount) - 1;
 
-        widget->ScrollTo((widget->GetScrollX(&wScrollX), wScrollX),
+        IView::Probe(widget)->ScrollTo((IView::Probe(widget)->GetScrollX(&wScrollX), wScrollX),
                          (layout->GetLineTop(line + 1, &lLineTop), lLineTop) -
-                         ((widget->GetHeight(&wHeight), wHeight) - padding));
+                         ((IView::Probe(widget)->GetHeight(&wHeight), wHeight) - padding));
     }
+    return NOERROR;
+}
+
+ECode ScrollingMovementMethod::GetInstance(
+    /* [out] */ IMovementMethod** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    if (sInstance == NULL) {
+        CScrollingMovementMethod::New((IScrollingMovementMethod**)&sInstance);
+    }
+
+    *ret = IMovementMethod::Probe(sInstance);
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 } // namespace Method

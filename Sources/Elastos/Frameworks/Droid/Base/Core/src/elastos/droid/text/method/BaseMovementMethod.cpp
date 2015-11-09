@@ -1,50 +1,66 @@
 #include "elastos/droid/text/method/BaseMovementMethod.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "elastos/droid/text/method/Touch.h"
-#include "elastos/droid/view/CKeyEvent.h"
+// #include "elastos/droid/view/CKeyEvent.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::Graphics::IPaint;
+// using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IInputEvent;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
+BaseMovementMethod::BaseMovementMethod()
+{}
+
+BaseMovementMethod::~BaseMovementMethod()
+{}
+
 CAR_INTERFACE_IMPL_2(BaseMovementMethod, Object, IBaseMovementMethod, IMovementMethod)
 
-BaseMovementMethod::~BaseMovementMethod(){}
-
-Boolean BaseMovementMethod::CanSelectArbitrarily() {
-    return FALSE;
+ECode BaseMovementMethod::CanSelectArbitrarily(
+    /* [out] */ Boolean* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    *ret = FALSE;
+    return NOERROR;
 }
 
-void BaseMovementMethod::Initialize(
+ECode BaseMovementMethod::Initialize(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text)
 {}
 
-Boolean BaseMovementMethod::OnKeyDown(
+ECode BaseMovementMethod::OnKeyDown(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     const Int32 movementMetaState = GetMovementMetaState(text, event);
     Boolean handled = HandleMovementKey(widget, text, keyCode, movementMetaState, event);
     if (handled) {
         MetaKeyKeyListener::AdjustMetaAfterKeypress(text);
         MetaKeyKeyListener::ResetLockedMeta(text);
     }
-    return handled;
+
+    *ret = handled;
+    return NOERROR;
 }
 
-Boolean BaseMovementMethod::OnKeyOther(
+ECode BaseMovementMethod::OnKeyOther(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     const Int32 movementMetaState = GetMovementMetaState(text, event);
     /*const*/ Int32 keyCode;
     event->GetKeyCode(&keyCode);
@@ -64,49 +80,64 @@ Boolean BaseMovementMethod::OnKeyOther(
             MetaKeyKeyListener::AdjustMetaAfterKeypress(text);
             MetaKeyKeyListener::ResetLockedMeta(text);
         }
-        return handled;
+        *ret = handled;
+        return NOERROR;
     }
-    return FALSE;
+
+    *ret = FALSE;
+    return NOERROR;
 }
 
-Boolean BaseMovementMethod::OnKeyUp(
+ECode BaseMovementMethod::OnKeyUp(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* ret)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(ret)
+    *ret = FALSE;
+    return NOERROR;
 }
 
-void BaseMovementMethod::OnTakeFocus(
+ECode BaseMovementMethod::OnTakeFocus(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 direction)
-{}
-
-Boolean BaseMovementMethod::OnTouchEvent(
-    /* [in] */ ITextView* widget,
-    /* [in] */ ISpannable* text,
-    /* [in] */ IMotionEvent* event)
 {
-    return FALSE;
+    return NOERROR;
 }
 
-Boolean BaseMovementMethod::OnTrackballEvent(
+ECode BaseMovementMethod::OnTouchEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
-    /* [in] */ IMotionEvent* event)
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* ret)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(ret)
+    *ret = FALSE;
+    return NOERROR;
 }
 
-Boolean BaseMovementMethod::OnGenericMotionEvent(
+ECode BaseMovementMethod::OnTrackballEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text,
-    /* [in] */ IMotionEvent* event)
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    *ret = FALSE;
+    return NOERROR;
+}
+
+ECode BaseMovementMethod::OnGenericMotionEvent(
+    /* [in] */ ITextView* widget,
+    /* [in] */ ISpannable* text,
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* ret)
+{
+    VALIDATE_NOT_NULL(ret);
     Int32 source, action;
-    if (((event->GetSource(&source), source) & IInputDevice::SOURCE_CLASS_POINTER) != 0) {
+    if (((IInputEvent::Probe(event)->GetSource(&source), source) & IInputDevice::SOURCE_CLASS_POINTER) != 0) {
         switch ((event->GetAction(&action), action)) {
             case IMotionEvent::ACTION_SCROLL: {
                 /*const*/ Float vscroll;
@@ -136,11 +167,15 @@ Boolean BaseMovementMethod::OnGenericMotionEvent(
                 else if (vscroll > 0) {
                     handled |= ScrollDown(widget, text, (Int32)Elastos::Core::Math::Ceil(vscroll));
                 }
-                return handled;
+
+                *ret = handled;
+                return NOERROR;
             }
         }
     }
-    return FALSE;
+
+    *ret = FALSE;
+    return NOERROR;
 }
 
 Int32 BaseMovementMethod::GetMovementMetaState(
@@ -148,14 +183,14 @@ Int32 BaseMovementMethod::GetMovementMetaState(
     /* [in] */ IKeyEvent* event)
 {
     // We ignore locked modifiers and SHIFT.
-    Int32 eMetaState;
-    event->GetMetaState(&eMetaState);
     Int32 mkMetaState;
-    mkMetaState = MetaKeyKeyListener::GetMetaState(buffer, event);
+    MetaKeyKeyListener::GetMetaState(ICharSequence::Probe(buffer), event, &mkMetaState);
 
-    Int32 metaState = (eMetaState | mkMetaState)
+    Int32 metaState = mkMetaState
                 & ~(IMetaKeyKeyListener::META_ALT_LOCKED | IMetaKeyKeyListener::META_SYM_LOCKED);
-    return CKeyEvent::NormalizeMetaState(metaState) & ~IKeyEvent::META_SHIFT_MASK;
+    // return CKeyEvent::NormalizeMetaState(metaState) & ~IKeyEvent::META_SHIFT_MASK;
+    assert(0 && "TODO");
+    return 0;
 }
 
 Boolean BaseMovementMethod::HandleMovementKey(
@@ -165,7 +200,8 @@ Boolean BaseMovementMethod::HandleMovementKey(
     /* [in] */ Int32 movementMetaState,
     /* [in] */ IKeyEvent* event)
 {
-    switch (keyCode) {
+    assert(0 && "TODO"); //need CKeyEvent
+/*    switch (keyCode) {
         Boolean bHasModifiersCtrlOn, bHasModifiersAltOn;
         case IKeyEvent::KEYCODE_DPAD_LEFT:
             if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
@@ -244,7 +280,7 @@ Boolean BaseMovementMethod::HandleMovementKey(
                 return Bottom(widget, buffer);
             }
             break;
-        }
+        }*/
     return FALSE;
 }
 
@@ -351,7 +387,7 @@ Int32 BaseMovementMethod::GetTopLine(
 {
     //Java:    return widget.getLayout().getLineForVertical(widget.getScrollY());
     Int32 scrollY;
-    widget->GetScrollY(&scrollY);
+    IView::Probe(widget)->GetScrollY(&scrollY);
 
     AutoPtr<ILayout> layout;
     widget->GetLayout((ILayout**)&layout);
@@ -365,7 +401,7 @@ Int32 BaseMovementMethod::GetBottomLine(
 {
     //Java:    return widget.getLayout().getLineForVertical(widget.getScrollY() + getInnerHeight(widget));
     Int32 scrollY;
-    widget->GetScrollY(&scrollY);
+    IView::Probe(widget)->GetScrollY(&scrollY);
 
     AutoPtr<ILayout> layout;
     widget->GetLayout((ILayout**)&layout);
@@ -379,7 +415,7 @@ Int32 BaseMovementMethod::GetInnerWidth(
 {
     //Java:    return widget.getWidth() - widget.getTotalPaddingLeft() - widget.getTotalPaddingRight();
     Int32 width, totalPaddingLeft, totalPaddingRight;
-    widget->GetWidth(&width);
+    IView::Probe(widget)->GetWidth(&width);
     widget->GetTotalPaddingLeft(&totalPaddingLeft);
     widget->GetTotalPaddingRight(&totalPaddingRight);
     return width-totalPaddingLeft-totalPaddingRight;
@@ -390,7 +426,7 @@ Int32 BaseMovementMethod::GetInnerHeight(
 {
     //Java:    return widget.getHeight() - widget.getTotalPaddingTop() - widget.getTotalPaddingBottom();
     Int32 height, totalPaddingTop, totalPaddingBottom;
-    widget->GetHeight(&height);
+    IView::Probe(widget)->GetHeight(&height);
     widget->GetTotalPaddingTop(&totalPaddingTop);
     widget->GetTotalPaddingBottom(&totalPaddingBottom);
     return height-totalPaddingTop-totalPaddingBottom;
@@ -403,7 +439,7 @@ Int32 BaseMovementMethod::GetCharacterWidth(
     AutoPtr<ITextPaint> textPaint;
     widget->GetPaint((ITextPaint**)&textPaint);
     Float fFontSpacing;
-    textPaint->GetFontSpacing(&fFontSpacing);
+    IPaint::Probe(textPaint)->GetFontSpacing(&fFontSpacing);
     return (Int32)Elastos::Core::Math::Ceil(fFontSpacing);
 }
 
@@ -417,7 +453,7 @@ Int32 BaseMovementMethod::GetScrollBoundsLeft(
     if (topLine > bottomLine) {
         return 0;
     }
-    Int32 left = Integer_MAX_VALUE;//0x7fffffff/*Integer.MAX_VALUE*/;
+    Int32 left = Elastos::Core::Math::INT32_MAX_VALUE;
     Float flineLeft;
     for (Int32 line = topLine; line <= bottomLine; line++) {
         layout->GetLineLeft(line, &flineLeft);
@@ -439,7 +475,7 @@ Int32 BaseMovementMethod::GetScrollBoundsRight(
     if (topLine > bottomLine) {
         return 0;
     }
-    Int32 right = Integer_MIN_VALUE;//0x80000000/*Integer.MIN_VALUE*/;
+    Int32 right = Elastos::Core::Math::INT32_MAX_VALUE;//0x80000000/*Integer.MIN_VALUE*/;
     Float flineRight;
     for (Int32 line = topLine; line <= bottomLine; line++) {
         layout->GetLineRight(line, &flineRight);
@@ -458,12 +494,12 @@ Boolean BaseMovementMethod::ScrollLeft(
 {
     const Int32 minScrollX = GetScrollBoundsLeft(widget);
     Int32 scrollX;
-    widget->GetScrollX(&scrollX);
+    IView::Probe(widget)->GetScrollX(&scrollX);
     if (scrollX > minScrollX) {
         scrollX = Elastos::Core::Math::Max(scrollX - GetCharacterWidth(widget) * amount, minScrollX);
         Int32 scrollY;
-        widget->GetScrollY(&scrollY);
-        widget->ScrollTo(scrollX, scrollY);
+        IView::Probe(widget)->GetScrollY(&scrollY);
+        IView::Probe(widget)->ScrollTo(scrollX, scrollY);
         return TRUE;
     }
     return FALSE;
@@ -476,12 +512,12 @@ Boolean BaseMovementMethod::ScrollRight(
 {
     const Int32 maxScrollX = GetScrollBoundsRight(widget) - GetInnerWidth(widget);
     Int32 scrollX;
-    widget->GetScrollX(&scrollX);
+    IView::Probe(widget)->GetScrollX(&scrollX);
     if (scrollX < maxScrollX) {
         scrollX = Elastos::Core::Math::Min(scrollX + GetCharacterWidth(widget) * amount, maxScrollX);
         Int32 scrollY;
-        widget->GetScrollY(&scrollY);
-        widget->ScrollTo(scrollX, scrollY);
+        IView::Probe(widget)->GetScrollY(&scrollY);
+        IView::Probe(widget)->ScrollTo(scrollX, scrollY);
         return TRUE;
     }
     return FALSE;
@@ -495,7 +531,7 @@ Boolean BaseMovementMethod::ScrollUp(
     AutoPtr<ILayout> layout;
     widget->GetLayout((ILayout**)&layout);
     /*const*/ Int32 top;
-    widget->GetScrollY(&top);
+    IView::Probe(widget)->GetScrollY(&top);
     Int32 topLine;
     layout->GetLineForVertical(top, &topLine);
     Int32 layoutlineTop;
@@ -507,7 +543,7 @@ Boolean BaseMovementMethod::ScrollUp(
     if (topLine >= 0) {
         topLine = Elastos::Core::Math::Max(topLine - amount + 1, 0);
         Int32 scrollX;
-        Touch::ScrollTo(widget, layout, (widget->GetScrollX(&scrollX), scrollX), (layout->GetLineTop(topLine, &layoutlineTop), layoutlineTop));
+        Touch::ScrollTo(widget, layout, (IView::Probe(widget)->GetScrollX(&scrollX), scrollX), (layout->GetLineTop(topLine, &layoutlineTop), layoutlineTop));
         return TRUE;
     }
     return FALSE;
@@ -522,7 +558,7 @@ Boolean BaseMovementMethod::ScrollDown(
     widget->GetLayout((ILayout**)&layout);
     const Int32 innerHeight = GetInnerHeight(widget);
     Int32 scrollY;
-    widget->GetScrollY(&scrollY);
+    IView::Probe(widget)->GetScrollY(&scrollY);
     const Int32 bottom = scrollY + innerHeight;
     Int32 bottomLine;
     layout->GetLineForVertical(bottom, &bottomLine);
@@ -539,7 +575,7 @@ Boolean BaseMovementMethod::ScrollDown(
     if (bottomLine <= limit) {
         bottomLine = Elastos::Core::Math::Min(bottomLine + amount - 1, limit);
         Int32 scrollX;
-        widget->GetScrollX(&scrollX);
+        IView::Probe(widget)->GetScrollX(&scrollX);
         Touch::ScrollTo(widget, layout, scrollX, (layout->GetLineTop(bottomLine + 1, &lineTop), lineTop) - innerHeight);
         return TRUE;
     }
@@ -553,13 +589,13 @@ Boolean BaseMovementMethod::ScrollPageUp(
     AutoPtr<ILayout> layout;
     widget->GetLayout((ILayout**)&layout);
     Int32 scrollY;
-    widget->GetScrollY(&scrollY);
+    IView::Probe(widget)->GetScrollY(&scrollY);
     const Int32 top = scrollY - GetInnerHeight(widget);
     Int32 topLine;
     layout->GetLineForVertical(top, &topLine);
     if (topLine >= 0) {
         Int32 scrollX;
-        widget->GetScrollX(&scrollX);
+        IView::Probe(widget)->GetScrollX(&scrollX);
         Int32 layoutlineTop;
         layout->GetLineTop(topLine, &layoutlineTop);
         Touch::ScrollTo(widget, layout, scrollX, layoutlineTop);
@@ -576,14 +612,14 @@ Boolean BaseMovementMethod::ScrollPageDown(
     widget->GetLayout((ILayout**)&layout);
     const Int32 innerHeight = GetInnerHeight(widget);
     Int32 scrollY;
-    widget->GetScrollY(&scrollY);
+    IView::Probe(widget)->GetScrollY(&scrollY);
     const Int32 bottom = scrollY + innerHeight + innerHeight;
     Int32 bottomLine;
     layout->GetLineForVertical(bottom, &bottomLine);
     Int32 lineCount;
     if (bottomLine <= (layout->GetLineCount(&lineCount), lineCount) - 1) {
         Int32 scrollX;
-        widget->GetScrollX(&scrollX);
+        IView::Probe(widget)->GetScrollX(&scrollX);
         Int32 layoutLineTop;
         layout->GetLineTop(bottomLine + 1, &layoutLineTop);
         Touch::ScrollTo(widget, layout, scrollX, layoutLineTop - innerHeight);
@@ -600,7 +636,7 @@ Boolean BaseMovementMethod::ScrollTop(
     widget->GetLayout((ILayout**)&layout);
     if (GetTopLine(widget) >= 0) {
         Int32 scrollX;
-        widget->GetScrollX(&scrollX);
+        IView::Probe(widget)->GetScrollX(&scrollX);
         Int32 layoutLineTop;
         layout->GetLineTop(0, &layoutLineTop);
         Touch::ScrollTo(widget, layout, scrollX, layoutLineTop);
@@ -619,7 +655,7 @@ Boolean BaseMovementMethod::ScrollBottom(
     layout->GetLineCount(&lineCount);
     if (GetBottomLine(widget) <= lineCount - 1) {
         Int32 scrollX;
-        widget->GetScrollX(&scrollX);
+        IView::Probe(widget)->GetScrollX(&scrollX);
         Int32 layoutLineTop;
         layout->GetLineTop(lineCount, &layoutLineTop);
         Touch::ScrollTo(widget, layout, scrollX, layoutLineTop - GetInnerHeight(widget));
@@ -634,11 +670,11 @@ Boolean BaseMovementMethod::ScrollLineStart(
 {
     const Int32 minScrollX = GetScrollBoundsLeft(widget);
     Int32 scrollX;
-    widget->GetScrollX(&scrollX);
+    IView::Probe(widget)->GetScrollX(&scrollX);
     if (scrollX > minScrollX) {
         Int32 scrollY;
-        widget->GetScrollY(&scrollY);
-        widget->ScrollTo(minScrollX, scrollY);
+        IView::Probe(widget)->GetScrollY(&scrollY);
+        IView::Probe(widget)->ScrollTo(minScrollX, scrollY);
         return TRUE;
     }
     return FALSE;
@@ -650,11 +686,11 @@ Boolean BaseMovementMethod::ScrollLineEnd(
 {
     const Int32 maxScrollX = GetScrollBoundsRight(widget) - GetInnerWidth(widget);
     Int32 scrollX;
-    widget->GetScrollX(&scrollX);
+    IView::Probe(widget)->GetScrollX(&scrollX);
     if (scrollX < maxScrollX) {
         Int32 scrollY;
-        widget->GetScrollY(&scrollY);
-        widget->ScrollTo(maxScrollX, scrollY);
+        IView::Probe(widget)->GetScrollY(&scrollY);
+        IView::Probe(widget)->ScrollTo(maxScrollX, scrollY);
         return TRUE;
     }
     return FALSE;

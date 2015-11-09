@@ -6,6 +6,13 @@
 #include "elastos/droid/text/method/CTimeKeyListener.h"
 #include "elastos/droid/text/method/CDigitsKeyListener.h"
 #include "elastos/droid/text/method/CMultiTapKeyListener.h"
+#include "elastos/droid/text/method/CBaseMovementMethod.h"
+#include "elastos/droid/text/method/CAllCapsTransformationMethod.h"
+#include "elastos/droid/text/method/CArrowKeyMovementMethod.h"
+#include "elastos/droid/text/method/CHideReturnsTransformationMethod.h"
+#include "elastos/droid/text/method/CScrollingMovementMethod.h"
+#include "elastos/droid/text/method/CLinkMovementMethod.h"
+#include "elastos/droid/text/method/CWordIterator.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -21,6 +28,13 @@ CAR_OBJECT_IMPL(CDialerKeyListener)
 CAR_OBJECT_IMPL(CTimeKeyListener)
 CAR_OBJECT_IMPL(CDigitsKeyListener)
 CAR_OBJECT_IMPL(CMultiTapKeyListener)
+CAR_OBJECT_IMPL(CBaseMovementMethod)
+CAR_OBJECT_IMPL(CAllCapsTransformationMethod)
+CAR_OBJECT_IMPL(CArrowKeyMovementMethod)
+CAR_OBJECT_IMPL(CHideReturnsTransformationMethod)
+CAR_OBJECT_IMPL(CLinkMovementMethod)
+CAR_OBJECT_IMPL(CScrollingMovementMethod)
+CAR_OBJECT_IMPL(CWordIterator)
 
 } // namespace Method
 } // namespace Text

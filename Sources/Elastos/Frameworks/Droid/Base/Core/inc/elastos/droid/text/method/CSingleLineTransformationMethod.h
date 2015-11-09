@@ -1,4 +1,3 @@
-
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CSINGLELINETRANSFORMATIONMETHOD_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CSINGLELINETRANSFORMATIONMETHOD_H__
 
@@ -11,22 +10,16 @@ namespace Text {
 namespace Method {
 
 CarClass(CSingleLineTransformationMethod)
-    ,public ReplacementTransformationMethod
+    , public ReplacementTransformationMethod
+    , public ISingleLineTransformationMethod
 {
 public:
-    CARAPI GetTransformation(
-        /* [in] */ ICharSequence* source,
-        /* [in] */ IView* view,
-        /* [out] */ ICharSequence** csq);
+    CAR_INTERFACE_DECL()
 
-    CARAPI OnFocusChanged(
-        /* [in] */ IView* view,
-        /* [in] */ ICharSequence* sourceText,
-        /* [in] */ Boolean focused,
-        /* [in] */ Int32 direction,
-        /* [in] */ IRect* previouslyFocusedRect);
+    CAR_OBJECT_DECL()
 
-    static CARAPI_(AutoPtr<ISingleLineTransformationMethod>) GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ ISingleLineTransformationMethod** ret);
 
 protected:
     /**
@@ -41,9 +34,8 @@ protected:
     CARAPI_(AutoPtr< ArrayOf<Char32> >) GetReplacement();
 
 private:
-    static Char32 ORIGINAL[];// = { '\n', '\r' };
-    static Char32 REPLACEMENT[];// = { ' ', '\uFEFF' };
-
+    static AutoPtr<ArrayOf<Char32> > ORIGINAL;
+    static AutoPtr<ArrayOf<Char32> > REPLACEMENT;
     static AutoPtr<ISingleLineTransformationMethod> sInstance;
 };
 

@@ -1,7 +1,8 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_Touch_H__
-#define __ELASTOS_DROID_TEXT_METHOD_Touch_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_TOUCH_H__
+#define __ELASTOS_DROID_TEXT_METHOD_TOUCH_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Text::Method::ITouchDragState;
 using Elastos::Droid::View::IMotionEvent;
@@ -13,35 +14,22 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-    #define Integer_MAX_VALUE 0x7fffffff
-#endif
-    #define Integer_MIN_VALUE 0x80000000
-#endif
-
 //public
 class Touch
-    : public Object
-    , public ITouch
 {
 private:
     //static
     class DragState
-        : public object
+        : public Object
         , public ITouchDragState
+        , public INoCopySpan
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL();
 
-        CARAPI_(UInt32) AddRef();
+        DragState();
 
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [in] */ InterfaceID* iid);
-    public:
-        DragState(
+        CARAPI constructor(
             /* [in] */ Float x,
             /* [in] */ Float y,
             /* [in] */ Int32 scrollX,
@@ -53,18 +41,18 @@ private:
         Int32 mScrollY;
         Boolean mFarEnough;
         Boolean mUsed;
+        Boolean mIsActivelySelecting;
+        Boolean mIsSelectionStarted;
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
     /**
      * Scrolls the specified widget to the specified coordinates, except
      * constrains the X scrolling position to the horizontal regions of
      * the text that will be visible after scrolling to the specified
      * Y position.
      */
-     static CARAPI_(void) ScrollTo(
+     static CARAPI ScrollTo(
         /* [in] */ ITextView* widget,
         /* [in] */ ILayout* layout,
         /* [in] */ Int32 x,
@@ -74,32 +62,37 @@ public:
      * Handles touch events for dragging.  You may want to do other actions
      * like moving the cursor on touch as well.
      */
-    static CARAPI_(Boolean) OnTouchEvent(
+    static CARAPI OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
-        /* [in] */ IMotionEvent* ev ent);
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
 
     /**
      * @param widget The text view.
      * @param buffer The text buffer.
      */
-    static CARAPI_(Int32) GetInitialScrollX(
+    static CARAPI GetInitialScrollX(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer);
+        /* [in] */ ISpannable* buffer,
+        /* [out] */ Int32* ret);
 
     /**
      * @param widget The text view.
      * @param buffer The text buffer.
      */
-    static CARAPI_(Int32) GetInitialScrollY(
+    static CARAPI GetInitialScrollY(
         /* [in] */ ITextView* widget,
-        /* [in] */ ISpannable* buffer);
+        /* [in] */ ISpannable* buffer,
+        /* [out] */ Int32* ret);
 
-    static CARAPI_(Boolean) IsActivelySelecting(
-        /* [in] */ ISpannable* buffer);
+    static CARAPI IsActivelySelecting(
+        /* [in] */ ISpannable* buffer,
+        /* [out] */ Boolean* ret);
 
-    static CARAPI_(Boolean) IsSelectionStarted(
-        /* [in] */ ISpannable* buffer);
+    static CARAPI IsSelectionStarted(
+        /* [in] */ ISpannable* buffer,
+        /* [out] */ Boolean* ret);
 
 private:
     Touch();
@@ -110,4 +103,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_Touch_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_TOUCH_H__

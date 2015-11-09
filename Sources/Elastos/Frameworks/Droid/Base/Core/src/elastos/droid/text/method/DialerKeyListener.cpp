@@ -1,4 +1,5 @@
 #include "elastos/droid/text/method/DialerKeyListener.h"
+#include "elastos/droid/text/method/CDialerKeyListener.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 // assert(0 && "TODO");
 // #include "elastos/droid/view/CKeyCharacterMap.h"
@@ -37,10 +38,10 @@ AutoPtr< ArrayOf<Char32> > DialerKeyListener::GetAcceptedChars()
 }
 
 ECode DialerKeyListener::GetCHARACTERS(
-    /* [out] */ ArrayOf<Char32>** ret)
+    /* [out,callee] */ ArrayOf<Char32>** ret)
 {
     VALIDATE_NOT_NULL(ret)
-    *ret = InitCHARACTERS();
+    *ret = CHARACTERS;
     REFCOUNT_ADD(*ret)
     return NOERROR;
 }
@@ -132,17 +133,14 @@ ECode DialerKeyListener::GetInstance(
     /* [out] */ IDialerKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    if (sInstance != NULL)
-    {
-        *ret = sInstance;
-        REFCOUNT_ADD(*ret);
-        return NOERROR;
+    if (sInstance == NULL) {
+        CDialerKeyListener::New((IDialerKeyListener**)&sInstance);
     }
 
-    sInstance = new DialerKeyListener();
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
-
 
 } // namespace Method
 } // namespace Text

@@ -4,6 +4,7 @@
 #include "_Elastos_Droid_Text_Method_CTouch.h"
 #include "elastos/droid/text/method/Touch.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -11,11 +12,13 @@ namespace Text {
 namespace Method {
 
 CarClass(CTouch)
-    , public Touch
+    , public Singleton
+    , public ITouch
 {
 public:
+    CAR_SINGLETON_DECL()
+
     CAR_INTERFACE_DECL()
-    CAR_OBJECT_DECL()
 
     CARAPI ScrollTo(
         /* [in] */ ITextView* widget,

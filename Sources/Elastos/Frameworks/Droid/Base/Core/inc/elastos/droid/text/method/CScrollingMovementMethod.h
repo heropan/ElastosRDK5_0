@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_Text_Method_CScrollingMovementMethod.h"
 #include "elastos/droid/text/method/ScrollingMovementMethod.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -14,13 +13,7 @@ namespace Method {
 CarClass(CScrollingMovementMethod)
     , public ScrollingMovementMethod
 {
-public:
-    IBASEMOVEMENTMETHOD_METHODS_DECL();
-
-    static CARAPI_(AutoPtr<IMovementMethod>) GetInstance();
-
-private:
-    static AutoPtr<IScrollingMovementMethod> sInstance;
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Method

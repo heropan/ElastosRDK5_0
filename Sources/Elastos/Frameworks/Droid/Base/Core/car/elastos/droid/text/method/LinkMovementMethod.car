@@ -16,10 +16,7 @@ module
      */
     interface ILinkMovementMethod {}
 
-    /**
-     * @Involve
-     * interface IScrollingMovementMethodHelper
-     */
+
     interface ILinkMovementMethodHelper{
         GetInstance(
             [out] IMovementMethod** ret);

@@ -1,15 +1,17 @@
-
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CPASSWORDTRANSFORMATIONMETHOD_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CPASSWORDTRANSFORMATIONMETHOD_H__
 
 #include "_Elastos_Droid_Text_Method_CPasswordTransformationMethod.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Text::IGetChars;
 using Elastos::Droid::Text::Style::IUpdateLayout;
+using Elastos::Droid::Text::Style::IUpdateAppearance;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IView;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -17,26 +19,27 @@ namespace Text {
 namespace Method {
 
 CarClass(CPasswordTransformationMethod)
+    , public Object
+    , public IPasswordTransformationMethod
+    , public ITransformationMethod
+    , public ITextWatcher
+    , public INoCopySpan
 {
 private:
     //static
     class PasswordCharSequence
-        : public ElRefBase
+        : public Object
         , public IGetChars
+        , public ICharSequence
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL()
 
-        CARAPI_(UInt32) AddRef();
+        PasswordCharSequence();
 
-        CARAPI_(UInt32) Release();
+        CARAPI constructor(
+            /* [in] */ ICharSequence* source);
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [in] */ InterfaceID* iid);
-
-    public:
         CARAPI GetLength(
             /* [out] */ Int32* number);
 
@@ -58,36 +61,31 @@ private:
             /* [in] */ ArrayOf<Char32>* dest,
             /* [in] */ Int32 off);
 
-    public:
-        PasswordCharSequence(
-            /* [in] */ ICharSequence* source);
-
     private:
         AutoPtr<ICharSequence> mSource;
     };
 
     //static
     class Visible
-        : public IPasswordTransformationMethodVisible
-        , public ElRefBase
-        , public Handler
-        , public IHandler
-        , public IUpdateLayout/*extends IUpdateAppearance*/
+        : public Handler
+        , public IUpdateLayout
+        , public IUpdateAppearance
         , public IRunnable
+        , public IPasswordTransformationMethodVisible
     {
         friend class PasswordCharSequence;
 
     public:
-        Visible(
-            /* [in] */ ISpannable* sp,
-            /* [in] */ IPasswordTransformationMethod* ptm);
+        Visible();
 
         CAR_INTERFACE_DECL()
 
-        IHANDLER_METHODS_DECL()
+        CARAPI constructor(
+            /* [in] */ ISpannable* sp,
+            /* [in] */ IPasswordTransformationMethod* ptm);
 
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
+        // CARAPI HandleMessage(
+        //     /* [in] */ IMessage* msg);
 
         CARAPI Run();
 
@@ -101,18 +99,36 @@ private:
      * can use it to check the settings.
      */
     //private static
-    //class ViewReference extends WeakReference<View> implements NoCopySpan
-    //{//public
-    //    ViewReference(/* [in] */ IView* v);
-    //};
+    class ViewReference
+        : public Object
+        , public IWeakReference
+        , public INoCopySpan
+    {
+    public:
+        ViewReference();
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ IView* v);
+    };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CPasswordTransformationMethod();
+
+    virtual ~CPasswordTransformationMethod();
+
     CARAPI GetTransformation(
         /* [in] */ ICharSequence* source,
         /* [in] */ IView* view,
         /* [out] */ ICharSequence** csq);
 
-    static CARAPI_(AutoPtr<IPasswordTransformationMethod>) GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ IPasswordTransformationMethod** ret);
 
     CARAPI BeforeTextChanged(
         /* [in] */ ICharSequence* s,

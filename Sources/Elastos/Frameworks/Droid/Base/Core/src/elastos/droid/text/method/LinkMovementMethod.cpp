@@ -1,15 +1,13 @@
 #include "elastos/droid/text/method/LinkMovementMethod.h"
+#include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/text/Selection.h"
-//#include "elastos/droid/os/ElObject.h"
-#include "elastos/droid/view/CKeyEvent.h"
+// #include "elastos/droid/view/CKeyEvent.h"
 #include <elastos/core/Math.h>
-//#include <elastos/Core/Object.h>
 
-//using Elastos::Core::Object;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Style::EIID_IClickableSpan;
 using Elastos::Droid::Text::Style::IClickableSpan;
-using Elastos::Droid::View::CKeyEvent;
+// using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IView;
 
 namespace Elastos {
@@ -17,15 +15,30 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-const Int32 LinkMovementMethod::CLICK = 1;
-const Int32 LinkMovementMethod::UP = 2;
-const Int32 LinkMovementMethod::DOWN = 3;
-
 AutoPtr<IInterface> LinkMovementMethod::FROM_BELOW /*= (IInterface*)(new Object())*/;//new ElObject();;// = new NoCopySpan.Concrete();
 
-Boolean LinkMovementMethod::CanSelectArbitrarily()
+AutoPtr<ILinkMovementMethod> LinkMovementMethod::sInstance;
+
+const Int32 LinkMovementMethod::CLICK = 1;
+
+const Int32 LinkMovementMethod::UP = 2;
+
+const Int32 LinkMovementMethod::DOWN = 3;
+
+LinkMovementMethod::LinkMovementMethod()
+{}
+
+LinkMovementMethod::~LinkMovementMethod()
+{}
+
+CAR_INTERFACE_IMPL_3(LinkMovementMethod, Object, ILinkMovementMethod, IMovementMethod, IBaseMovementMethod)
+
+ECode LinkMovementMethod::CanSelectArbitrarily(
+    /* [out] */ Boolean* ret)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(ret)
+    *ret = TRUE;
+    return NOERROR;
 }
 
 Boolean LinkMovementMethod::HandleMovementKey(
@@ -38,13 +51,14 @@ Boolean LinkMovementMethod::HandleMovementKey(
     switch (keyCode) {
         case IKeyEvent::KEYCODE_DPAD_CENTER:
         case IKeyEvent::KEYCODE_ENTER:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            assert(0 && "TODO"); // CKeyEvent
+/*            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 Int32 action, repeatCount;
                 if ((event->GetAction(&action), action) == IKeyEvent::ACTION_DOWN &&
                         (event->GetRepeatCount(&repeatCount), repeatCount) == 0 && Action(CLICK, widget, buffer)) {
                     return TRUE;
                 }
-            }
+            }*/
             break;
     }
     return ScrollingMovementMethod::HandleMovementKey(widget, buffer, keyCode, movementMetaState, event);
@@ -98,14 +112,13 @@ Boolean LinkMovementMethod::Action(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer)
 {
-printf("==[%s]--==[%s]--==[%d] \n", __FILE__, __FUNCTION__, __LINE__);
     AutoPtr<ILayout> layout;
     widget->GetLayout((ILayout**)&layout);
     Int32 wTotalpaddingTop, wTotalPaddingBottom, wScrollY, wHeight;
     widget->GetTotalPaddingTop(&wTotalpaddingTop);
     widget->GetTotalPaddingBottom(&wTotalPaddingBottom);
-    widget->GetScrollY(&wScrollY);
-    widget->GetHeight(&wHeight);
+    IView::Probe(widget)->GetScrollY(&wScrollY);
+    IView::Probe(widget)->GetHeight(&wHeight);
 
     Int32 padding = wTotalpaddingTop +
                       wTotalPaddingBottom;
@@ -123,25 +136,25 @@ printf("==[%s]--==[%s]--==[%d] \n", __FILE__, __FUNCTION__, __LINE__);
     layout->GetLineEnd(linebot, &last);
 
     AutoPtr< ArrayOf< IClickableSpan* > > candidates;
-    buffer->GetSpans(first, last, EIID_IClickableSpan, (ArrayOf< IInterface* >**)&candidates);
+    ISpanned::Probe(buffer)->GetSpans(first, last, EIID_IClickableSpan, (ArrayOf< IInterface* >**)&candidates);
 
-    Int32 a = Selection::GetSelectionStart(buffer);
-    Int32 b = Selection::GetSelectionEnd(buffer);
+    Int32 a = Selection::GetSelectionStart(ICharSequence::Probe(buffer));
+    Int32 b = Selection::GetSelectionEnd(ICharSequence::Probe(buffer));
 
     Int32 selStart = Elastos::Core::Math::Min(a, b);
     Int32 selEnd = Elastos::Core::Math::Max(a, b);
 
     if (selStart < 0) {
         Int32 spanStart;
-        if ((buffer->GetSpanStart(FROM_BELOW, &spanStart), spanStart) >= 0) {
+        if ((ISpanned::Probe(buffer)->GetSpanStart(FROM_BELOW, &spanStart), spanStart) >= 0) {
             Int32 bufLen;
-            buffer->GetLength(&bufLen);
+            ICharSequence::Probe(buffer)->GetLength(&bufLen);
             selStart = selEnd = bufLen;
         }
     }
 
     if (selStart > last)
-        selStart = selEnd = Integer_MAX_VALUE;
+        selStart = selEnd = Elastos::Core::Math::INT32_MAX_VALUE;
     if (selEnd < first)
         selStart = selEnd = -1;
 
@@ -152,7 +165,7 @@ printf("==[%s]--==[%s]--==[%d] \n", __FILE__, __FUNCTION__, __LINE__);
             }
 
             AutoPtr< ArrayOf< IClickableSpan* > > link;
-            buffer->GetSpans(selStart, selEnd, EIID_IClickableSpan, (ArrayOf< IInterface* >**)&link);
+            ISpanned::Probe(buffer)->GetSpans(selStart, selEnd, EIID_IClickableSpan, (ArrayOf< IInterface* >**)&link);
 
             if (link->GetLength() != 1)
                 return FALSE;
@@ -169,11 +182,11 @@ printf("==[%s]--==[%s]--==[%d] \n", __FILE__, __FUNCTION__, __LINE__);
 
             for (Int32 i = 0; i < candidates->GetLength(); i++) {
                 Int32 end;
-                buffer->GetSpanEnd((*candidates)[i], &end);
+                ISpanned::Probe(buffer)->GetSpanEnd((*candidates)[i], &end);
 
                 if (end < selEnd || selStart == selEnd) {
                     if (end > bestend) {
-                        buffer->GetSpanStart((*candidates)[i], &beststart);
+                        ISpanned::Probe(buffer)->GetSpanStart((*candidates)[i], &beststart);
                         bestend = end;
                     }
                 }
@@ -189,22 +202,22 @@ printf("==[%s]--==[%s]--==[%d] \n", __FILE__, __FUNCTION__, __LINE__);
 
         case DOWN:{
             Int32 beststart, bestend;
-            beststart = Integer_MAX_VALUE;
-            bestend = Integer_MAX_VALUE;
+            beststart = Elastos::Core::Math::INT32_MAX_VALUE;
+            bestend = Elastos::Core::Math::INT32_MAX_VALUE;
 
             for (Int32 i = 0; i < candidates->GetLength(); i++) {
                 Int32 start;
-                buffer->GetSpanStart( (*candidates)[i], &start);
+                ISpanned::Probe(buffer)->GetSpanStart((*candidates)[i], &start);
 
                 if (start > selStart || selStart == selEnd) {
                     if (start < beststart) {
                         beststart = start;
-                        buffer->GetSpanEnd( (*candidates)[i], &bestend);
+                        ISpanned::Probe(buffer)->GetSpanEnd((*candidates)[i], &bestend);
                     }
                 }
             }
 
-            if (bestend < Integer_MAX_VALUE) {
+            if (bestend < Elastos::Core::Math::INT32_MAX_VALUE) {
                 Selection::SetSelection(buffer, beststart, bestend);
                 return TRUE;
             }
@@ -216,11 +229,13 @@ printf("==[%s]--==[%s]--==[%d] \n", __FILE__, __FUNCTION__, __LINE__);
     return FALSE;
 }
 
-Boolean LinkMovementMethod::OnTouchEvent(
+ECode LinkMovementMethod::OnTouchEvent(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* buffer,
-    /* [in] */ IMotionEvent* event)
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     Int32 action;
     event->GetAction(&action);
 
@@ -237,8 +252,8 @@ Boolean LinkMovementMethod::OnTouchEvent(
         x -= (widget->GetTotalPaddingLeft(&wTotalPaddingLeft), wTotalPaddingLeft);
         y -= (widget->GetTotalPaddingTop(&wTotalPaddingTop), wTotalPaddingTop);
 
-        x += (widget->GetScrollX(&wScrollX), wScrollX);
-        y += (widget->GetScrollY(&wScrollY), wScrollY);
+        x += (IView::Probe(widget)->GetScrollX(&wScrollX), wScrollX);
+        y += (IView::Probe(widget)->GetScrollY(&wScrollY), wScrollY);
 
         AutoPtr<ILayout> layout;
         widget->GetLayout((ILayout**)&layout);
@@ -248,35 +263,36 @@ Boolean LinkMovementMethod::OnTouchEvent(
         layout->GetOffsetForHorizontal(line, x, &off);
 
         AutoPtr< ArrayOf< IClickableSpan* > > link;
-        buffer->GetSpans(off, off,  EIID_IClickableSpan, (ArrayOf< IInterface* >**)&link);
+        ISpanned::Probe(buffer)->GetSpans(off, off,  EIID_IClickableSpan, (ArrayOf< IInterface* >**)&link);
 
         if (link->GetLength() != 0) {
             if (action == IMotionEvent::ACTION_UP) {
                 (*link)[0]->OnClick((IView*)widget);
             } else if (action == IMotionEvent::ACTION_DOWN) {
                 Int32 spanStart, spanEnd;
-                buffer->GetSpanStart((IInterface*)((*link)[0]), &spanStart);
-                buffer->GetSpanEnd((IInterface*)((*link)[0]), &spanEnd);
+                ISpanned::Probe(buffer)->GetSpanStart((IInterface*)((*link)[0]), &spanStart);
+                ISpanned::Probe(buffer)->GetSpanEnd((IInterface*)((*link)[0]), &spanEnd);
                 Selection::SetSelection(buffer, spanStart, spanEnd);
             }
 
-            return TRUE;
+            *ret = TRUE;
+            return NOERROR;
         } else {
             Selection::RemoveSelection(buffer);
         }
     }
-    return ScrollingMovementMethod::OnTouchEvent(widget, buffer, event);
+    return ScrollingMovementMethod::OnTouchEvent(widget, buffer, event, ret);
 }
 
-void LinkMovementMethod::Initialize(
+ECode LinkMovementMethod::Initialize(
     /* [in] */ ITextView* widget,
     /* [in] */ ISpannable* text)
 {
     Selection::RemoveSelection(text);
-    text->RemoveSpan(FROM_BELOW);
+    return text->RemoveSpan(FROM_BELOW);
 }
 
-void LinkMovementMethod::OnTakeFocus(
+ECode LinkMovementMethod::OnTakeFocus(
     /* [in] */ ITextView* view,
     /* [in] */ ISpannable* text,
     /* [in] */ Int32 dir)
@@ -284,10 +300,24 @@ void LinkMovementMethod::OnTakeFocus(
     Selection::RemoveSelection(text);
 
     if ((dir & IView::FOCUS_BACKWARD) != 0) {
-        text->SetSpan(FROM_BELOW, 0, 0, ISpannable::SPAN_POINT_POINT);
+        text->SetSpan(FROM_BELOW, 0, 0, ISpanned::SPAN_POINT_POINT);
     } else {
         text->RemoveSpan(FROM_BELOW);
     }
+    return NOERROR;
+}
+
+ECode LinkMovementMethod::GetInstance(
+    /* [out] */ IMovementMethod** ret)
+{
+    VALIDATE_NOT_NULL(ret);
+    if (sInstance == NULL) {
+        CLinkMovementMethod::New((ILinkMovementMethod**)&sInstance);
+    }
+
+    *ret = IMovementMethod::Probe(sInstance);
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 

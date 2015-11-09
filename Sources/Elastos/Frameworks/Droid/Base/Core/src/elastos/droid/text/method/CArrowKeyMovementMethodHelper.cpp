@@ -1,6 +1,5 @@
-
 #include "elastos/droid/text/method/CArrowKeyMovementMethodHelper.h"
-#include "elastos/droid/text/method/CArrowKeyMovementMethod.h"
+#include "elastos/droid/text/method/ArrowKeyMovementMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,14 +7,14 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+CAR_SINGLETON_IMPL(CArrowKeyMovementMethodHelper)
+
+CAR_INTERFACE_IMPL(CArrowKeyMovementMethodHelper, Singleton, IArrowKeyMovementMethodHelper)
+
 ECode CArrowKeyMovementMethodHelper::GetInstance(
     /* [out] */ IMovementMethod** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IMovementMethod> mm = CArrowKeyMovementMethod::GetInstance();
-    *ret = mm;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return ArrowKeyMovementMethod::GetInstance(ret);
 }
 
 } // namespace Method

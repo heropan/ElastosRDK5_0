@@ -1,7 +1,6 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_ARROWKEYMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_ARROWKEYMOVEMENTMETHOD_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/text/method/BaseMovementMethod.h"
 
 using Elastos::Droid::Text::ISpannable;
@@ -19,10 +18,8 @@ namespace Method {
  * Supports displaying the context menu on DPad Center.
  */
 class ArrowKeyMovementMethod
-    : public Object
+    : public BaseMovementMethod
     , public IArrowKeyMovementMethod
-    , public IBaseMovementMethod
-    , public IMovementMethod
 {
 public:
     CAR_INTERFACE_DECL()
@@ -30,27 +27,29 @@ public:
     virtual ~ArrowKeyMovementMethod();
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
+    CARAPI OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
-        /* [in] */ IMotionEvent* event);
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(Boolean) CanSelectArbitrarily();
+    CARAPI CanSelectArbitrarily(
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(void) Initialize(
+    CARAPI Initialize(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text);
 
     //@Override
-    CARAPI_(void) OnTakeFocus(
+    CARAPI OnTakeFocus(
         /* [in] */ ITextView* view,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 dir);
 
-    //public
-    //static CARAPI_(AutoPtr<IMovementMethod>) GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ IMovementMethod** ret);
 
 protected:
     //@Override
@@ -149,8 +148,8 @@ private:
         /* [in] */ ISpannable* buffer);
 
 private:
-    static const AutoPtr<IInterface> LAST_TAP_DOWN;// = new ElObject();
-    // static ArrowKeyMovementMethod sInstance;
+    static const AutoPtr<IInterface> LAST_TAP_DOWN;
+    static AutoPtr<IArrowKeyMovementMethod> sInstance;
 };
 
 } // namespace Method
@@ -158,4 +157,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_ARROWKEYMOVEMENTMETHOD_H__

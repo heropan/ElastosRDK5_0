@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/method/CPasswordTransformationMethod.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
@@ -11,11 +10,13 @@
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::EIID_ICharSequence;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::Text::Style::EIID_IUpdateLayout;
 using Elastos::Droid::Text::Style::EIID_IUpdateAppearance;
+using Elastos::Droid::Text::Style::IUpdateAppearance;
 using Elastos::Droid::Text::Method::CTextKeyListener;
 
 namespace Elastos {
@@ -27,51 +28,22 @@ AutoPtr<IPasswordTransformationMethod> CPasswordTransformationMethod::sInstance;
 Char32 CPasswordTransformationMethod::DOT = 0x2022/*'\u2022'*/;
 
 /*****************************CPasswordTransformationMethod::PasswordCharSequence*****************************/
-PInterface CPasswordTransformationMethod::PasswordCharSequence::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IGetChars*)this;
-    }
-    else if (riid == EIID_IGetChars) {
-        return (IGetChars*)this;
-    }
-    return NULL;
-}
+CAR_INTERFACE_IMPL_2(CPasswordTransformationMethod::PasswordCharSequence, Object, IGetChars, ICharSequence)
 
-UInt32 CPasswordTransformationMethod::PasswordCharSequence::AddRef()
-{
-    return ElRefBase::AddRef();
-}
+CPasswordTransformationMethod::PasswordCharSequence::PasswordCharSequence()
+{}
 
-UInt32 CPasswordTransformationMethod::PasswordCharSequence::Release()
+ECode CPasswordTransformationMethod::PasswordCharSequence::constructor(
+    /* [in] */ ICharSequence* source)
 {
-    return ElRefBase::Release();
-}
-
-ECode CPasswordTransformationMethod::PasswordCharSequence::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (object == (IInterface*)(IGetChars*)this) {
-        *iID = EIID_IGetChars;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
+    mSource = source;
     return NOERROR;
 }
 
 ECode CPasswordTransformationMethod::PasswordCharSequence::GetLength(
     /* [out] */ Int32* number)
 {
-    mSource->GetLength(number);
-    return NOERROR;
+    return mSource->GetLength(number);
 }
 
 ECode CPasswordTransformationMethod::PasswordCharSequence::GetCharAt(
@@ -93,7 +65,7 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::GetCharAt(
 
         AutoPtr< ArrayOf< IPasswordTransformationMethodVisible* > > visible;
         Int32 spLen;
-        sp->GetSpans(0, (sp->GetLength(&spLen), spLen), EIID_IPasswordTransformationMethodVisible, (ArrayOf< IInterface* >**)&visible);
+        ISpanned::Probe(sp)->GetSpans(0, (ICharSequence::Probe(sp)->GetLength(&spLen), spLen), EIID_IPasswordTransformationMethodVisible, (ArrayOf< IInterface* >**)&visible);
 
         for (Int32 a = 0; a < visible->GetLength(); a++) {
             Int32 start;
@@ -122,7 +94,7 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::SubSequence(
     AutoPtr< ArrayOf<Char32> > buf = ArrayOf<Char32>::Alloc(end - start);
     GetChars(start, end, buf, 0);
     StringBuilder sb;
-    sb.AppendChars(*buf);
+    sb.Append(const_cast<ArrayOf<Char32>& >(*buf));
     AutoPtr<ICharSequence> cs;
     CString::New(sb.ToString(), (ICharSequence**)&cs);
     *ret = cs;
@@ -144,7 +116,7 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::ToString(
 ECode CPasswordTransformationMethod::PasswordCharSequence::GetChars(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
-    /* [out] */ ArrayOf<Char32>* dest,
+    /* [in] */ ArrayOf<Char32>* dest,
     /* [in] */ Int32 off)
 {
     TextUtils::GetChars(mSource, start, end, dest, off);
@@ -162,7 +134,7 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::GetChars(
         Int32 spLen;
         AutoPtr<ArrayOf<IInterface*> > arrayTemp;
 
-        sp->GetSpans(0, (sp->GetLength(&spLen), spLen), EIID_IPasswordTransformationMethodVisible, (ArrayOf<IInterface*>**)&arrayTemp);
+        ISpanned::Probe(sp)->GetSpans(0, (ICharSequence::Probe(sp)->GetLength(&spLen), spLen), EIID_IPasswordTransformationMethodVisible, (ArrayOf<IInterface*>**)&arrayTemp);
         visible = ArrayOf< IPasswordTransformationMethodVisible* >::Alloc(arrayTemp->GetLength());
         for (Int32 len = 0; len < arrayTemp->GetLength(); len++) {
             visible->Set(len, IPasswordTransformationMethodVisible::Probe((*arrayTemp)[len]));
@@ -201,103 +173,57 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::GetChars(
     return NOERROR;
 }
 
-CPasswordTransformationMethod::PasswordCharSequence::PasswordCharSequence(
-    /* [in] */ ICharSequence* source)
-{
-    mSource = source;
-}
-
 /*****************************CPasswordTransformationMethod::Visible*****************************/
-IHANDLER_METHODS_IMPL(CPasswordTransformationMethod::Visible, Handler)
+CPasswordTransformationMethod::Visible::Visible()
+    :mText(NULL), mTransformer(NULL)
+{}
 
-PInterface CPasswordTransformationMethod::Visible::Probe(
-    /* [in] */ REIID riid)
-{// IHandler, IUpdateLayout, IRunnable, IUpdateAppearance
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IHandler*)this;
-    }
-    else if (riid == EIID_IHandler) {
-        return (IHandler*)this;
-    }
-    else if (riid == EIID_IUpdateLayout) {
-        return (IUpdateLayout*)this;
-    }
-    else if (riid == EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-    else if (riid == EIID_IUpdateAppearance) {
-        return (IUpdateAppearance*)this;
-    }
-    else if (riid == EIID_IPasswordTransformationMethodVisible) {
-        return (IPasswordTransformationMethodVisible*)this;
-    }
-    return NULL;
-}
+CAR_INTERFACE_IMPL_5(CPasswordTransformationMethod::Visible, Object, IHandler, IUpdateLayout, IUpdateAppearance, IRunnable, IPasswordTransformationMethodVisible)
 
-UInt32 CPasswordTransformationMethod::Visible::AddRef()
+ECode CPasswordTransformationMethod::Visible::constructor(
+    /* [in] */ ISpannable* sp,
+    /* [in] */ IPasswordTransformationMethod* ptm)
 {
-    return ElRefBase::AddRef();
+    mText = sp;
+    mTransformer = ptm;
+    Boolean result;
+    return IHandler::Probe(this)->PostAtTime(IRunnable::Probe(this), SystemClock::GetUptimeMillis() + 1500, &result);
 }
 
-UInt32 CPasswordTransformationMethod::Visible::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CPasswordTransformationMethod::Visible::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iID)
-{
-    VALIDATE_NOT_NULL(iID);
-    if (iID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (object == (IInterface*)(IHandler*)this) {
-        *iID = EIID_IHandler;
-    }
-    else if (object == (IInterface*)(IUpdateLayout*)this) {
-        *iID = EIID_IUpdateLayout;
-    }
-    else if (object == (IInterface*)(IRunnable*)this) {
-        *iID = EIID_IRunnable;
-    }
-    else if (object == (IInterface*)(IUpdateAppearance*)this) {
-        *iID = EIID_IUpdateAppearance;
-    }
-    else if (object == (IInterface*)(IPasswordTransformationMethodVisible*)this) {
-        *iID = EIID_IPasswordTransformationMethodVisible;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
-
-ECode CPasswordTransformationMethod::Visible::HandleMessage(
-    /* [in] */ IMessage* msg)
-{
-    return NOERROR;
-}
+// ECode CPasswordTransformationMethod::Visible::HandleMessage(
+//     /* [in] */ IMessage* msg)
+// {
+//     return NOERROR;
+// }
 
 ECode CPasswordTransformationMethod::Visible::Run()
 {
-    mText->RemoveSpan(this->Probe(EIID_IInterface));
+    mText->RemoveSpan(THIS_PROBE(IInterface));
     return NOERROR;
 }
 
-CPasswordTransformationMethod::Visible::Visible(
-    /* [in] */ ISpannable* sp,
-    /* [in] */ IPasswordTransformationMethod* ptm)
-    : Handler(FALSE)
-    , mText(sp)
-    , mTransformer(ptm)
+CPasswordTransformationMethod::ViewReference::ViewReference()
+{}
+
+CAR_INTERFACE_IMPL_2(CPasswordTransformationMethod::ViewReference, Object, IWeakReference, INoCopySpan)
+
+ECode CPasswordTransformationMethod::ViewReference::constructor(
+    /* [in] */ IView* v)
 {
-    Boolean result;
-    this->PostDelayed(this, 1500, &result);
+    return NOERROR;
 }
 
 /*****************************CPasswordTransformationMethod*****************************/
+CAR_INTERFACE_IMPL_4(CPasswordTransformationMethod, Object, IPasswordTransformationMethod, ITransformationMethod, ITextWatcher, INoCopySpan)
+
+CAR_OBJECT_IMPL(CPasswordTransformationMethod)
+
+CPasswordTransformationMethod::CPasswordTransformationMethod()
+{}
+
+CPasswordTransformationMethod::~CPasswordTransformationMethod()
+{}
+
 ECode CPasswordTransformationMethod::GetTransformation(
     /* [in] */ ICharSequence* source,
     /* [in] */ IView* view,
@@ -316,7 +242,7 @@ ECode CPasswordTransformationMethod::GetTransformation(
         //Java:    ViewReference[] vr = sp.getSpans(0, sp.length(), ViewReference.class);
         AutoPtr< ArrayOf< IView* > > vr;
         Int32 spLen;
-        sp->GetSpans(0, (sp->GetLength(&spLen), spLen), EIID_IView, (ArrayOf< IInterface* >**)&vr);
+        ISpanned::Probe(sp)->GetSpans(0, (ICharSequence::Probe(sp)->GetLength(&spLen), spLen), EIID_IView, (ArrayOf< IInterface* >**)&vr);
 
         for (Int32 i = 0; i < vr->GetLength(); i++) {
             sp->RemoveSpan((*vr)[i]);
@@ -324,23 +250,27 @@ ECode CPasswordTransformationMethod::GetTransformation(
 
         RemoveVisibleSpans(sp);
 
-        sp->SetSpan(view, 0, 0, ISpannable::SPAN_POINT_POINT);
+        sp->SetSpan(view, 0, 0, ISpanned::SPAN_POINT_POINT);
     }
 
-    AutoPtr<ICharSequence> cs = (ICharSequence*)(IGetChars*)(new PasswordCharSequence(source));
+    AutoPtr<PasswordCharSequence> cs = new PasswordCharSequence();
+    cs->constructor(source);
     *ret = cs;
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
-AutoPtr<IPasswordTransformationMethod> CPasswordTransformationMethod::GetInstance()
+ECode CPasswordTransformationMethod::GetInstance(
+    /* [out] */ IPasswordTransformationMethod** ret)
 {
+    VALIDATE_NOT_NULL(ret);
     if (sInstance == NULL) {
-        AutoPtr<CPasswordTransformationMethod> ptm;
-        CPasswordTransformationMethod::NewByFriend((CPasswordTransformationMethod**)&ptm);
-        sInstance = (IPasswordTransformationMethod*)(ptm.Get());
+        CPasswordTransformationMethod::NewByFriend((CPasswordTransformationMethod**)&sInstance);
     }
-    return sInstance;
+
+    *ret = sInstance;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
 ECode CPasswordTransformationMethod::BeforeTextChanged(
@@ -360,11 +290,11 @@ ECode CPasswordTransformationMethod::OnTextChanged(
     /* [in] */ Int32 count)
 {
     AutoPtr<ISpannable> sp = ISpannable::Probe(s);
-    if(sp!=NULL){
+    if(sp != NULL){
         //Java:    ViewReference[] vr = sp.getSpans(0, s.length(), ViewReference.class);
         AutoPtr< ArrayOf< IView* > > vr;
         Int32 spLen;
-        sp->GetSpans(0, (sp->GetLength(&spLen), spLen), EIID_IView, (ArrayOf< IInterface* >**)&vr);
+        ISpanned::Probe(sp)->GetSpans(0, (ICharSequence::Probe(sp)->GetLength(&spLen), spLen), EIID_IView, (ArrayOf< IInterface* >**)&vr);
         if (vr->GetLength() == 0) {
             return NOERROR;
         }
@@ -386,17 +316,20 @@ ECode CPasswordTransformationMethod::OnTextChanged(
         }
 
         AutoPtr<IContext> context;
+        AutoPtr<ITextKeyListener> tkl;
+        TextKeyListener::GetInstance((ITextKeyListener**)&tkl);
+
         Int32 pref;
-        pref = ((CTextKeyListener*)((CTextKeyListener::GetInstance()).Get()))->GetPrefs((v->GetContext((IContext**)&context), context));
-        if ((pref & CTextKeyListener::SHOW_PASSWORD) != 0) {
+        ((TextKeyListener*)tkl.Get())->GetPrefs((v->GetContext((IContext**)&context), context), &pref);
+        if ((pref & TextKeyListener::SHOW_PASSWORD) != 0) {
             if (count > 0) {
                 RemoveVisibleSpans(sp);
 
                 if (count == 1) {
                     AutoPtr<IPasswordTransformationMethod> tpm = (IPasswordTransformationMethod*)this->Probe(EIID_IPasswordTransformationMethod);
-                    AutoPtr<IPasswordTransformationMethodVisible> visible = new Visible(sp, tpm);
-
-                    sp->SetSpan((IInterface*)( visible->Probe(EIID_IInterface)), start, start + count, ISpannable::SPAN_EXCLUSIVE_EXCLUSIVE);
+                    AutoPtr<Visible> visible = new Visible();
+                    visible->constructor(sp, tpm);
+                    sp->SetSpan(IPasswordTransformationMethod::Probe(visible), start, start + count, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
         }
@@ -433,7 +366,7 @@ void CPasswordTransformationMethod::RemoveVisibleSpans(
     //Java:    Visible[] old = sp.getSpans(0, sp.length(), Visible.class);
     AutoPtr< ArrayOf< IPasswordTransformationMethodVisible* > > old;
     Int32 spLen;
-    sp->GetSpans(0, (sp->GetLength(&spLen), spLen), EIID_IPasswordTransformationMethodVisible, (ArrayOf< IInterface* >**)&old);
+    ISpanned::Probe(sp)->GetSpans(0, (ICharSequence::Probe(sp)->GetLength(&spLen), spLen), EIID_IPasswordTransformationMethodVisible, (ArrayOf< IInterface* >**)&old);
     for (Int32 i = 0; i < old->GetLength(); i++) {
         sp->RemoveSpan((*old)[i]);
     }

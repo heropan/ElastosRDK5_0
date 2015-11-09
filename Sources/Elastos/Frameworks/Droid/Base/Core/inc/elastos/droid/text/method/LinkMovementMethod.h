@@ -1,47 +1,52 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_LINKMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_LINKMOVEMENTMETHOD_H__
 
 #include "elastos/droid/text/method/ScrollingMovementMethod.h"
-//#include "elastos/droid/os/ElObject.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-    #define Integer_MAX_VALUE 0x7fffffff
-#endif
-    #define Integer_MIN_VALUE 0x80000000
-#endif
-
 /**
  * A movement method that traverses links in the text buffer and scrolls if necessary.
  * Supports clicking on links with DPad Center or Enter.
  */
-class LinkMovementMethod : public ScrollingMovementMethod
+class LinkMovementMethod
+    : public ScrollingMovementMethod
+    , public ILinkMovementMethod
 {
 public:
-    //@Override
-    CARAPI_(Boolean) CanSelectArbitrarily();
+    LinkMovementMethod();
+
+    virtual ~LinkMovementMethod();
+
+    CAR_INTERFACE_DECL()
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
+    CARAPI CanSelectArbitrarily(
+        /* [out] */ Boolean* ret);
+
+    //@Override
+    CARAPI OnTouchEvent(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* buffer,
-        /* [in] */ IMotionEvent* event);
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(void) Initialize(
+    CARAPI Initialize(
         /* [in] */ ITextView* widget,
         /* [in] */ ISpannable* text);
 
     //@Override
-    CARAPI_(void) OnTakeFocus(
+    CARAPI OnTakeFocus(
         /* [in] */ ITextView* view,
         /* [in] */ ISpannable* text,
         /* [in] */ Int32 dir);
 
-    //static AutoPtr<IMovementMethod> GetInstance();
+    static CARAPI GetInstance(
+        /* [out] */ IMovementMethod** ret);
 
 protected:
     //@Override
@@ -83,7 +88,7 @@ private:
     static const Int32 DOWN;// = 3;
 
 private:
-    //static AutoPtr<ILinkMovementMethod> sInstance;
+    static AutoPtr<ILinkMovementMethod> sInstance;
 
     static AutoPtr<IInterface> FROM_BELOW;// = new NoCopySpan.Concrete();
 };
@@ -93,4 +98,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_LINKMOVEMENTMETHOD_H__

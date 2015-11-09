@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/QwertyKeyListener.h"
 #include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
@@ -38,14 +37,19 @@ AutoPtr<ArrayOf<IQwertyKeyListener*> > QwertyKeyListener::sInstance =
 
 AutoPtr<IQwertyKeyListener> QwertyKeyListener::sFullKeyboardInstance;
 
-QwertyKeyListener::Replaced::Replaced(
-    /* [in] */ ArrayOf<Char32>* text)
+QwertyKeyListener::Replaced::Replaced()
+    :mText(NULL)
 {
-    mText = text;
 }
 
 QwertyKeyListener::Replaced::~Replaced()
 {
+}
+
+ECode QwertyKeyListener::Replaced::constructor(
+    /* [in] */ ArrayOf<Char32>* text)
+{
+    mText = text;
 }
 
 CAR_INTERFACE_IMPL(QwertyKeyListener::Replaced, Object, INoCopySpan)
@@ -152,8 +156,8 @@ ECode QwertyKeyListener::GetInstance(
     Int32 off = cap * 2 + (autoText ? 1 : 0);
 
     if ((*sInstance)[off] == NULL) {
-        AutoPtr<QwertyKeyListener> listener = new QwertyKeyListener;
-        listener->constructor(cap, autoText);
+        AutoPtr<IQwertyKeyListener> listener;
+        CQwertyKeyListener::New(cap, autoText, (IQwertyKeyListener**)&listener);
         sInstance->Set(off, listener);
     }
 
@@ -167,10 +171,9 @@ ECode QwertyKeyListener::GetInstanceForFullKeyboard(
 {
     VALIDATE_NOT_NULL(ret)
     if (sFullKeyboardInstance == NULL) {
-        AutoPtr<QwertyKeyListener> qkl = new QwertyKeyListener();
-        qkl->constructor(Capitalize_NONE, FALSE, TRUE);
-        sFullKeyboardInstance = (IQwertyKeyListener*)(qkl.Get());
+        CQwertyKeyListener::New(Capitalize_NONE, FALSE, TRUE, (IQwertyKeyListener**)&sFullKeyboardInstance);
     }
+
     *ret = sFullKeyboardInstance;
     REFCOUNT_ADD(*ret);
     return NOERROR;
@@ -404,7 +407,8 @@ ECode QwertyKeyListener::OnKeyDown(
                 //TODO
                 TextUtils::GetChars(ICharSequence::Probe(content), x, oldStart, (ArrayOf<Char32>*)orig.Get(), 0);
 
-                AutoPtr<Replaced> r = new Replaced(orig);
+                AutoPtr<Replaced> r = new Replaced();
+                r->constructor(orig.Get());
                 ISpannable::Probe(content)->SetSpan((INoCopySpan*)r, x, oldStart,
                                 ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 AutoPtr<ICharSequence> cs;
@@ -600,9 +604,9 @@ ECode QwertyKeyListener::MarkAsReplaced(
     AutoPtr<ArrayOf<Char32> > orig = ArrayOf<Char32>::Alloc(len);
     memcpy(orig->GetPayload(), original.string(), len);
 
-    AutoPtr<Replaced> r = new Replaced(orig.Get());
-    content->SetSpan((INoCopySpan*)r, start, end,
-                    ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    AutoPtr<Replaced> r = new Replaced();
+    r->constructor(orig.Get());
+    content->SetSpan(INoCopySpan::Probe(r), start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
     return NOERROR;
 }
 

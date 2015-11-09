@@ -8,8 +8,6 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-extern "C" const InterfaceID EIID_DigitsKeyListener;
-
 /**
  * For digits-only text entry
  * <p></p>
@@ -114,7 +112,7 @@ private:
     static const Char32 CHARACTERS2[];
     static const Char32 CHARACTERS3[];
 
-    static AutoPtr< ArrayOf< IDigitsKeyListener* > > sInstance;// = new DigitsKeyListener[4];
+    static AutoPtr< ArrayOf< IDigitsKeyListener* > > sInstance;
 };
 
 } // namespace Method

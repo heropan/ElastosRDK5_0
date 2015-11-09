@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CDigitsKeyListenerHelper.h"
 #include "elastos/droid/text/method/DigitsKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -8,9 +7,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CDigitsKeyListenerHelper, Singleton, IDigitsKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CDigitsKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CDigitsKeyListenerHelper, Singleton, IDigitsKeyListenerHelper)
 
 ECode CDigitsKeyListenerHelper::GetInstance(
     /* [out] */ IDigitsKeyListener** ret)

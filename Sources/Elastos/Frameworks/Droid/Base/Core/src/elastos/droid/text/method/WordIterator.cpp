@@ -1,19 +1,20 @@
 #include "elastos/droid/text/method/WordIterator.h"
 #include <elastos/core/Math.h>
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Character.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Core::Character;
+using Elastos::Text::IBreakIteratorHelper;
+// assert(0 && "TODO"); // need CBreakIteratorHelper
+// using Elastos::Text::CBreakIteratorHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
-using Elastos::Utility::ILocale;
-using Elastos::Core::Character;
 using Elastos::Utility::Logging::Logger;
-//using Elastos::Text::BreakIterator;
-//using Elastos::Text::IBreakIterator
+using Elastos::Utility::ILocale;
 
 namespace Elastos {
 namespace Droid {
@@ -23,26 +24,31 @@ namespace Method {
 const Int32 WordIterator::WINDOW_WIDTH = 50;
 
 WordIterator::WordIterator()
+    : mString("")
+    , mOffsetShift(0)
+    , mIterator(NULL)
+{}
+
+WordIterator::~WordIterator()
+{}
+
+CAR_INTERFACE_IMPL_2(WordIterator, Object, IWordIterator, ISelectionPositionIterator)
+
+ECode WordIterator::constructor()
 {
     AutoPtr<ILocaleHelper> localeHelp;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
     AutoPtr<ILocale> locale;
     localeHelp->GetDefault((ILocale**)&locale);
-
-    Init(locale.Get());
+    return constructor(locale.Get());
 }
 
-WordIterator::WordIterator(
+ECode WordIterator::constructor(
     /* [in] */ ILocale* locale)
 {
-    Init(locale);
-}
-
-void WordIterator::Init(
-    /* [in] */ ILocale* locale)
-{
-    PRINT_FILE_LINE_EX("TODO");
-//    BreakIterator::GetWordInstance(locale, (IBreakIterator**)&mIterator);
+    AutoPtr<IBreakIteratorHelper> bih;
+    // CBreakIteratorHelper::AcquireSingleton((IBreakIteratorHelper**)&bih);
+    return bih->GetWordInstance(locale, (IBreakIterator**)&mIterator);
 }
 
 ECode WordIterator::SetCharSequence(
@@ -67,88 +73,109 @@ ECode WordIterator::SetCharSequence(
     return NOERROR;
 }
 
-Int32 WordIterator::Preceding(
-    /* [in] */ Int32 offset)
+ECode WordIterator::Preceding(
+    /* [in] */ Int32 offset,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     Int32 shiftedOffset = offset - mOffsetShift;
-    while(TRUE) {
-//        mIterator->Preceding(shiftedOffset, &shiftedOffset);
-        if (shiftedOffset == /*BreakIterator::DONE*/-1) {
-            return /*BreakIterator::DONE*/-1;
+    do {
+        mIterator->GetPreceding(shiftedOffset, &shiftedOffset);
+        if (shiftedOffset == IBreakIterator::DONE) {
+            *ret = IBreakIterator::DONE;
+            return NOERROR;
         }
         if (IsOnLetterOrDigit(shiftedOffset)) {
-            return shiftedOffset + mOffsetShift;
+            *ret = shiftedOffset + mOffsetShift;
+            return NOERROR;
         }
-    }
+    } while(TRUE);
 }
 
-Int32 WordIterator::Following(
-    /* [in] */ Int32 offset)
+ECode WordIterator::Following(
+    /* [in] */ Int32 offset,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     Int32 shiftedOffset = offset - mOffsetShift;
-    while (TRUE){
-//        mIterator->Following(shiftedOffset, &shiftedOffset);
-        if (shiftedOffset == /*BreakIterator::DONE*/-1) {
-            return /*BreakIterator::DONE*/-1;
+    do {
+       mIterator->GetFollowing(shiftedOffset, &shiftedOffset);
+        if (shiftedOffset == IBreakIterator::DONE) {
+            *ret = IBreakIterator::DONE;
+            return NOERROR;
         }
         if (IsAfterLetterOrDigit(shiftedOffset)) {
-            return shiftedOffset + mOffsetShift;
+            *ret = shiftedOffset + mOffsetShift;
+            return NOERROR;
         }
-    }
+    } while (TRUE);
 }
 
-Int32 WordIterator::GetBeginning(
-    /* [in] */ Int32 offset)
+ECode WordIterator::GetBeginning(
+    /* [in] */ Int32 offset,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     const Int32 shiftedOffset = offset - mOffsetShift;
     CheckOffsetIsValid(shiftedOffset);
 
     if (IsOnLetterOrDigit(shiftedOffset)) {
         Boolean bIsBoundary = FALSE;
-//        mIterator->IsBoundary(shiftedOffset, &bIsBoundary);
+        mIterator->IsBoundary(shiftedOffset, &bIsBoundary);
         if (bIsBoundary) {
-            return shiftedOffset + mOffsetShift;
-        }
-        else {
+            *ret = shiftedOffset + mOffsetShift;
+            return NOERROR;
+        } else {
             Int32 preceding = 0;
-//            mIterator->Preceding(shiftedOffset, &preceding);
-            return preceding + mOffsetShift;
+            mIterator->GetPreceding(shiftedOffset, &preceding);
+            *ret = preceding + mOffsetShift;
+            return NOERROR;
         }
     }
     else {
         if (IsAfterLetterOrDigit(shiftedOffset)) {
             Int32 preceding;
-//            mIterator->Preceding(shiftedOffset, &preceding);
-            return preceding + mOffsetShift;
+            mIterator->GetPreceding(shiftedOffset, &preceding);
+            *ret = preceding + mOffsetShift;
+            return NOERROR;
         }
     }
-    return /*BreakIterator::DONE*/-1;
+
+    *ret = IBreakIterator::DONE;
+    return NOERROR;
 }
 
-Int32 WordIterator::GetEnd(
-    /* [in] */ Int32 offset)
+ECode WordIterator::GetEnd(
+    /* [in] */ Int32 offset,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     const Int32 shiftedOffset = offset - mOffsetShift;
     CheckOffsetIsValid(shiftedOffset);
 
     if (IsAfterLetterOrDigit(shiftedOffset)) {
         Boolean bIsBoundary = FALSE;
-//        mIterator->IsBoundary(shiftedOffset, &bIsBoundary);
+        mIterator->IsBoundary(shiftedOffset, &bIsBoundary);
         if (bIsBoundary) {
-            return shiftedOffset + mOffsetShift;
+            *ret = shiftedOffset + mOffsetShift;
+            return NOERROR;
         } else {
             Int32 following = 0;
-//            mIterator->Following(shiftedOffset, &following);
-            return following + mOffsetShift;
+            mIterator->GetFollowing(shiftedOffset, &following);
+            *ret = following + mOffsetShift;
+            return NOERROR;
         }
     } else {
         if (IsOnLetterOrDigit(shiftedOffset)) {
             Int32 following = 0;
-//            mIterator->Following(shiftedOffset, &following);
-            return following + mOffsetShift;
+            mIterator->GetFollowing(shiftedOffset, &following);
+            *ret = following + mOffsetShift;
+            return NOERROR;
         }
     }
-    return /*BreakIterator::DONE*/-1;
+
+    *ret = IBreakIterator::DONE;
+    return NOERROR;
 }
 
 Boolean WordIterator::IsAfterLetterOrDigit(

@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CTextKeyListenerHelper.h"
 #include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -8,9 +7,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CTextKeyListenerHelper, Singleton, ITextKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CTextKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CTextKeyListenerHelper, Singleton, ITextKeyListenerHelper)
 
 ECode CTextKeyListenerHelper::Clear(
     /* [in] */ IEditable* e)

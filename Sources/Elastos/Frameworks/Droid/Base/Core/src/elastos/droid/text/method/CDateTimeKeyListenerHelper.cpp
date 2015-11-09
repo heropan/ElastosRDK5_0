@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CDateTimeKeyListenerHelper.h"
 #include "elastos/droid/text/method/DateTimeKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -8,9 +7,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CDateTimeKeyListenerHelper, Singleton, IDateTimeKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CDateTimeKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CDateTimeKeyListenerHelper, Singleton, IDateTimeKeyListenerHelper)
 
 ECode CDateTimeKeyListenerHelper::GetCHARACTERS(
     /* [out, callee] */ ArrayOf<Char32>** ret)

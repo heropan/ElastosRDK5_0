@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CQwertyKeyListenerHelper.h"
 #include "elastos/droid/text/method/CQwertyKeyListener.h"
 
@@ -7,9 +6,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CQwertyKeyListenerHelper, Singleton, IQwertyKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CQwertyKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CQwertyKeyListenerHelper, Singleton, IQwertyKeyListenerHelper)
 
 ECode CQwertyKeyListenerHelper::GetInstance(
     /* [in] */ Boolean autoText,

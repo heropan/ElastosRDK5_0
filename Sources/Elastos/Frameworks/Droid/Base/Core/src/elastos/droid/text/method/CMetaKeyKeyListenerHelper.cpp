@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CMetaKeyKeyListenerHelper.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 
@@ -7,9 +6,9 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-CAR_INTERFACE_IMPL(CMetaKeyKeyListenerHelper, Singleton, IMetaKeyKeyListenerHelper)
-
 CAR_SINGLETON_IMPL(CMetaKeyKeyListenerHelper)
+
+CAR_INTERFACE_IMPL(CMetaKeyKeyListenerHelper, Singleton, IMetaKeyKeyListenerHelper)
 
 ECode CMetaKeyKeyListenerHelper::ResetMetaState(
     /* [in] */ ISpannable* text)

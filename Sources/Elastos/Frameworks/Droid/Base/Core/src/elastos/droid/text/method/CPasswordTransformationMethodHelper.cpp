@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CPasswordTransformationMethodHelper.h"
 #include "elastos/droid/text/method/CPasswordTransformationMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -8,14 +7,14 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
+CAR_SINGLETON_IMPL(CPasswordTransformationMethodHelper)
+
+CAR_INTERFACE_IMPL(CPasswordTransformationMethodHelper, Object, IPasswordTransformationMethodHelper)
+
 ECode CPasswordTransformationMethodHelper::GetInstance(
     /* [out] */ IPasswordTransformationMethod** ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<IPasswordTransformationMethod> ptm = CPasswordTransformationMethod::GetInstance();
-    *ret = ptm;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
+    return CPasswordTransformationMethod::GetInstance(ret);
 }
 
 } // namespace Method

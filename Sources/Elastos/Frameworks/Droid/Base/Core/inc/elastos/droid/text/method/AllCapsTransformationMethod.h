@@ -1,7 +1,8 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_AllCapsTransformationMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_AllCapsTransformationMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_ALLCAPSTRANSFORMATIONMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_ALLCAPSTRANSFORMATIONMETHOD_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::ILocale;
 using Elastos::Core::ICharSequence;
@@ -19,21 +20,28 @@ namespace Method {
  *
  * @hide
  */
-class AllCapsTransformationMethod{
+class AllCapsTransformationMethod
+    : public Object
+    , public IAllCapsTransformationMethod
+{
 public:
-    AllCapsTransformationMethod(
+    AllCapsTransformationMethod();
+
+    virtual ~AllCapsTransformationMethod();
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CARAPI_(void) Init(
-    /* [in] */ IContext* context);
-
     //@Override
-    CARAPI_(AutoPtr<ICharSequence>) GetTransformation(
+    CARAPI GetTransformation(
         /* [in] */ ICharSequence* source,
-        /* [in] */ IView* view);
+        /* [in] */ IView* view,
+        /* [out] */ ICharSequence** ret);
 
     //@Override
-    CARAPI_(void) OnFocusChanged(
+    CARAPI OnFocusChanged(
         /* [in] */ IView* view,
         /* [in] */ ICharSequence* sourceText,
         /* [in] */ Boolean focused,
@@ -41,16 +49,14 @@ public:
         /* [in] */ IRect* previouslyFocusedRect);
 
     //@Override
-    CARAPI_(void) SetLengthChangesAllowed(
+    CARAPI SetLengthChangesAllowed(
         /* [in] */ Boolean allowLengthChanges);
 
-protected:
-    AllCapsTransformationMethod();
 
 private:
-    static const CString TAG;// = "AllCapsTransformationMethod";
+    static const String TAG;
 
-    Boolean mEnabled;//=FALSE;
+    Boolean mEnabled;
     AutoPtr<ILocale> mLocale;
 };
 
@@ -60,4 +66,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_AllCapsTransformationMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_ALLCAPSTRANSFORMATIONMETHOD_H__

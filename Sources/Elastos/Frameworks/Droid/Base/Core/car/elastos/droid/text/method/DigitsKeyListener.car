@@ -39,7 +39,6 @@ module
      */
     [local]
     interface IDigitsKeyListenerHelper {
-        //---------IDigitsKeyListenerHelper---------
         /**
          * Returns a DigitsKeyListener that accepts the digits 0 through 9.
          */
@@ -66,8 +65,8 @@ module
             [out] IDigitsKeyListener** ret);
     }
 
-    }//namespace Method
-    }//namespace Text
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace Method
+    } // namespace Text
+    } // namespace Droid
+    } // namespace Elastos
 }

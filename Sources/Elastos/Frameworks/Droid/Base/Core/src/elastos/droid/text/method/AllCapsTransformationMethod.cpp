@@ -13,18 +13,18 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-const CString AllCapsTransformationMethod::TAG = "AllCapsTransformationMethod";
+const String AllCapsTransformationMethod::TAG = String("AllCapsTransformationMethod");
 
 AllCapsTransformationMethod::AllCapsTransformationMethod()
+    : mEnabled(FALSE), mLocale(NULL)
 {}
 
-AllCapsTransformationMethod::AllCapsTransformationMethod(
-    /* [in] */ IContext* context)
-{
-    Init(context);
-}
+AllCapsTransformationMethod::~AllCapsTransformationMethod()
+{}
 
-void AllCapsTransformationMethod::Init(
+CAR_INTERFACE_IMPL_3(AllCapsTransformationMethod, Object, IAllCapsTransformationMethod, ITransformationMethod2, ITransformationMethod)
+
+ECode AllCapsTransformationMethod::constructor(
     /* [in] */ IContext* context)
 {
     AutoPtr<IResources> res;
@@ -33,12 +33,15 @@ void AllCapsTransformationMethod::Init(
     res->GetConfiguration((IConfiguration**)&config);
     config->GetLocale((ILocale**)&mLocale);
     mEnabled = FALSE;
+    return NOERROR;
 }
 
-AutoPtr<ICharSequence> AllCapsTransformationMethod::GetTransformation(
+ECode AllCapsTransformationMethod::GetTransformation(
     /* [in] */ ICharSequence* source,
-    /* [in] */ IView* view)
+    /* [in] */ IView* view,
+    /* [out] */ ICharSequence** ret)
 {
+    VALIDATE_NOT_NULL(ret)
     if (mEnabled) {
         if(source != NULL) {
             //Java:    source.toString().toUpperCase(mLocale);
@@ -46,16 +49,21 @@ AutoPtr<ICharSequence> AllCapsTransformationMethod::GetTransformation(
             source->ToString(&strSource);
             AutoPtr<ICharSequence> cs;
             CString::New(strSource.ToUpperCase(), (ICharSequence**)&cs);
-            return cs;
+            *ret = cs;
+            REFCOUNT_ADD(*ret);
+            return NOERROR;
         } else {
-            return NULL;
+            *ret = NULL;
+            return NOERROR;
         }
     }
     Logger::W(TAG, String("Caller did not enable length changes; not transforming text\n") );
-    return source;
+    *ret = source;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
 }
 
-void AllCapsTransformationMethod::OnFocusChanged(
+ECode AllCapsTransformationMethod::OnFocusChanged(
     /* [in] */ IView* view,
     /* [in] */ ICharSequence* sourceText,
     /* [in] */ Boolean focused,
@@ -63,10 +71,11 @@ void AllCapsTransformationMethod::OnFocusChanged(
     /* [in] */ IRect* previouslyFocusedRect)
 {}
 
-void AllCapsTransformationMethod::SetLengthChangesAllowed(
+ECode AllCapsTransformationMethod::SetLengthChangesAllowed(
     /* [in] */ Boolean allowLengthChanges)
 {
     mEnabled = allowLengthChanges;
+    return NOERROR;
 }
 
 

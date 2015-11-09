@@ -20,8 +20,9 @@ CarClass(CMetaKeyKeyListenerHelper)
     , public IMetaKeyKeyListenerHelper
 {
 public:
-    CAR_INTERFACE_DECL()
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI ResetMetaState(
         /* [in] */ ISpannable* text);

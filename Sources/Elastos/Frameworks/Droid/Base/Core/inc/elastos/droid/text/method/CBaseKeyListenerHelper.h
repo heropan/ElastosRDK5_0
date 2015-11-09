@@ -14,18 +14,15 @@ CarClass(CBaseKeyListenerHelper)
     , public IBaseKeyListenerHelper
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI MakeTextContentType(
         /* [in] */ Capitalize caps,
         /* [in] */ Boolean autoText,
         /* [out] */ Int32* ret);
 };
-
-
-
 
 } // namespace Elastos
 } // namespace Droid

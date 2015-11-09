@@ -1,13 +1,14 @@
-#ifndef __ELASTOS_DROID_TEXT_METHOD_ReplacementTransformationMethod_H__
-#define __ELASTOS_DROID_TEXT_METHOD_ReplacementTransformationMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_REPLACEMENTTRANSFORMATIONMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_REPLACEMENTTRANSFORMATIONMETHOD_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Text::IGetChars;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IView;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -20,26 +21,30 @@ namespace Method {
  * {@link #getReplacement} array.
  */
 //public abstract
-class ReplacementTransformationMethod /*implements ITransformationMethod*/
+class ReplacementTransformationMethod
+    : public Object
+    , public IReplacementTransformationMethod
+    , public ITransformationMethod
 {
 private:
     //static
     class ReplacementCharSequence
-        : public ElRefBase
+        : public Object
+        , public ICharSequence
         , public IGetChars
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL()
 
-        CARAPI_(UInt32) AddRef();
+        ReplacementCharSequence();
 
-        CARAPI_(UInt32) Release();
+        ~ReplacementCharSequence();
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [in] */ InterfaceID* iid);
-    public:
+        CARAPI constructor(
+            /* [in] */ ICharSequence* source,
+            /* [in] */ ArrayOf<Char32>* original,
+            /* [in] */ ArrayOf<Char32>* replacement);
+
         CARAPI GetLength(
             /* [out] */ Int32* number);
 
@@ -60,13 +65,9 @@ private:
             /* [in] */ Int32 end,
             /* [out] */ ArrayOf<Char32>* dest,
             /* [out] */ Int32 off);
-    public:
-        ReplacementCharSequence(
-            /* [in] */ ICharSequence* source,
-            /* [in] */ ArrayOf<Char32>* original,
-            /* [in] */ ArrayOf<Char32>* replacement);
+
     private:
-        AutoPtr< ArrayOf<Char32> > mOriginal, mReplacement;
+        AutoPtr<ArrayOf<Char32> > mOriginal, mReplacement;
         AutoPtr<ICharSequence> mSource;
     };
 
@@ -76,17 +77,17 @@ private:
         , public ISpanned
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        SpannedReplacementCharSequence();
 
-        CARAPI_(UInt32) AddRef();
+        ~SpannedReplacementCharSequence();
 
-        CARAPI_(UInt32) Release();
+        CAR_INTERFACE_DECL()
 
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [in] */ InterfaceID* iid);
-    public:
+        constructor(
+            /* [in] */ ISpanned* source,
+            /* [in] */ ArrayOf<Char32>* original,
+            /* [in] */ ArrayOf<Char32>* replacement);
+
         CARAPI GetLength(
             /* [out] */ Int32* number);
 
@@ -126,26 +127,28 @@ private:
             /* [in] */ Int32 end,
             /* [out] */ ICharSequence** csq);
 
-    public:
-        SpannedReplacementCharSequence(
-            /* [in] */ ISpanned* source,
-            /* [in] */ ArrayOf<Char32>* original,
-            /* [in] */ ArrayOf<Char32>* replacement);
     private:
         AutoPtr<ISpanned> mSpanned;
     };
 
 public:
+    ReplacementTransformationMethod();
+
+    virtual ~ReplacementTransformationMethod();
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Returns a CharSequence that will mirror the contents of the
      * source CharSequence but with the characters in {@link #getOriginal}
      * replaced by ones from {@link #getReplacement}.
      */
-    CARAPI_(AutoPtr<ICharSequence>) GetTransformation(
+    CARAPI GetTransformation(
         /* [in] */ ICharSequence* source,
-        /* [in] */ IView* v);
+        /* [in] */ IView* v,
+        /* [out] */ ICharSequence** ret);
 
-    CARAPI_(void) OnFocusChanged(
+    CARAPI OnFocusChanged(
         /* [in] */ IView* view,
         /* [in] */ ICharSequence* sourceText,
         /* [in] */ Boolean focused,
@@ -171,4 +174,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_TEXT_METHOD_ReplacementTransformationMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_REPLACEMENTTRANSFORMATIONMETHOD_H__
