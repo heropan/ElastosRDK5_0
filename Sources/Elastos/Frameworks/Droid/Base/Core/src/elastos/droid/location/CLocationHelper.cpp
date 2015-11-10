@@ -19,7 +19,7 @@ ECode CLocationHelper::Convert(
 }
 
 ECode CLocationHelper::Convert(
-    /* [in] */ String* coordinate,
+    /* [in] */ const String& coordinate,
     /* [out] */ Double* d)
 {
     return Location::Convert(coordinate, d);

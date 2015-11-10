@@ -1,6 +1,7 @@
 
 #include "elastos/droid/location/SettingInjectorService.h"
 #include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/CMessage.h"
 #include "elastos/droid/os/CMessageHelper.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
@@ -10,6 +11,7 @@ using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::CMessage;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IMessenger;
 using Elastos::Core::StringBuilder;
@@ -26,7 +28,7 @@ CAR_INTERFACE_IMPL(SettingInjectorService, Object, ISettingInjectorService)
 
 SettingInjectorService::SettingInjectorService(
     /* [in] */ const String& name)
-        : mName(name)
+    : mName(name)
 {
 }
 
@@ -43,6 +45,7 @@ ECode SettingInjectorService::OnStart(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 startId)
 {
+    assert(0);
     // Service::OnStart(intent, startId);
     return NOERROR;
 }
@@ -55,6 +58,7 @@ ECode SettingInjectorService::OnStartCommand(
 {
     VALIDATE_NOT_NULL(result)
     OnHandleIntent(intent);
+    assert(0);
     // Service::StopSelf(startId);
     *result = IService::START_NOT_STICKY;
     return NOERROR;
@@ -77,14 +81,9 @@ ECode SettingInjectorService::SendStatus(
     /* [in] */ IIntent* intent,
     /* [in] */ Boolean enabled)
 {
-    AutoPtr<IMessageHelper> mh;
-    CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    AutoPtr<IMessage> message;
-    mh->Obtain((IMessage**)&message);
-
+    AutoPtr<IMessage> message = CMessage::Obtain();
     AutoPtr<IBundle> bundle;
     CBundle::New((IBundle**)&bundle);
-
     bundle->PutBoolean(ISettingInjectorService::ENABLED_KEY, enabled);
     message->SetData(bundle);
 
@@ -98,13 +97,11 @@ ECode SettingInjectorService::SendStatus(
     AutoPtr<IParcelable> par;
     intent->GetParcelableExtra(ISettingInjectorService::MESSENGER_KEY, (IParcelable**)&par);
     AutoPtr<IMessenger> messenger = IMessenger::Probe(par);
-
     ECode ec = messenger->Send(message);
     if (FAILED(ec)) {
         StringBuilder sb(mName);
         sb += ": sending dynamic status failed";
         Logger::E(TAG, sb.ToString());
-        return E_REMOTE_EXCEPTION;
     }
     return NOERROR;
 }

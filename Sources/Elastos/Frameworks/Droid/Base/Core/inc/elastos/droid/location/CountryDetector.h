@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_COUNTRYDETECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>
 
@@ -12,7 +13,7 @@ using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Utility::Etl::HashMap;
 
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener);
+// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener);
 
 namespace Elastos {
 namespace Droid {

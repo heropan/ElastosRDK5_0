@@ -43,7 +43,7 @@ public:
      * in one of the valid formats.
      */
     CARAPI Convert(
-        /* [in] */ String* coordinate,
+        /* [in] */ const String& coordinate,
         /* [out] */ Double* d);
 
     /**
