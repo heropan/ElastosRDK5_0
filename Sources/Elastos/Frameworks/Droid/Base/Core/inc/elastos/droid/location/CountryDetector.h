@@ -13,7 +13,7 @@ using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Utility::Etl::HashMap;
 
-// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener);
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener);
 
 namespace Elastos {
 namespace Droid {

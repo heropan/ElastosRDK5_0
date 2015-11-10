@@ -16,9 +16,9 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
 
-// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusListener);
-// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusNmeaListener);
-// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ILocationListener);
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusListener);
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusNmeaListener);
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ILocationListener);
 
 namespace Elastos {
 namespace Droid {
