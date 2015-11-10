@@ -110,7 +110,7 @@ AutoPtr< ArrayOf<Int32> > ViewPositionObserver::MiddleInitMposition()
 
 ECode ViewPositionObserver::NotifyListeners()
 {
-    AutoPtr<IIterable> iterable = (IIterable*)mListeners->Probe(EIID_IIterable);
+    AutoPtr<IIterable> iterable = IIterable::Probe(mListeners);
     AutoPtr<IIterator> iterator;
     iterable->GetIterator((IIterator**)&iterator);
     Boolean bNext = FALSE;

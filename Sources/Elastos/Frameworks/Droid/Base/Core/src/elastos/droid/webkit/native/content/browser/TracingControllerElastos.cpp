@@ -1,6 +1,6 @@
 
-#include "elastos/droid/webkit/native/content/browser/TracingControllerAndroid.h"
-#include "elastos/droid/webkit/native/content/api/TracingControllerAndroid_dec.h"
+#include "elastos/droid/webkit/native/content/browser/TracingControllerElastos.h"
+#include "elastos/droid/webkit/native/content/api/TracingControllerElastos_dec.h"
 #include "elastos/droid/text/TextUtils.h"
 // TODO #include "elastos/droid/os/CEnvironment.h"
 // TODO #include "elastos/droid/widget/CToastHelper.h"
@@ -23,16 +23,16 @@ namespace Content {
 namespace Browser {
 
 //=====================================================================
-//          TracingControllerAndroid::TracingBroadcastReceiver
+//          TracingControllerElastos::TracingBroadcastReceiver
 //=====================================================================
 
-TracingControllerAndroid::TracingBroadcastReceiver::TracingBroadcastReceiver(
-    /* [in] */ TracingControllerAndroid* owner)
+TracingControllerElastos::TracingBroadcastReceiver::TracingBroadcastReceiver(
+    /* [in] */ TracingControllerElastos* owner)
     : mOwner(owner)
 {
 }
 
-ECode TracingControllerAndroid::TracingBroadcastReceiver::OnReceive(
+ECode TracingControllerElastos::TracingBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -80,10 +80,10 @@ ECode TracingControllerAndroid::TracingBroadcastReceiver::OnReceive(
 }
 
 //=====================================================================
-//            TracingControllerAndroid::TracingIntentFilter
+//            TracingControllerElastos::TracingIntentFilter
 //=====================================================================
 
-TracingControllerAndroid::TracingIntentFilter::TracingIntentFilter(
+TracingControllerElastos::TracingIntentFilter::TracingIntentFilter(
     /* [in] */ IContext* context)
 {
     String packageName;
@@ -103,20 +103,20 @@ TracingControllerAndroid::TracingIntentFilter::TracingIntentFilter(
 }
 
 //=====================================================================
-//                       TracingControllerAndroid
+//                       TracingControllerElastos
 //=====================================================================
-const String TracingControllerAndroid::TAG("TracingControllerAndroid");
-const String TracingControllerAndroid::ACTION_START("GPU_PROFILER_START");
-const String TracingControllerAndroid::ACTION_STOP("GPU_PROFILER_STOP");
-const String TracingControllerAndroid::ACTION_LIST_CATEGORIES("GPU_PROFILER_LIST_CATEGORIES");
-const String TracingControllerAndroid::FILE_EXTRA("file");
-const String TracingControllerAndroid::CATEGORIES_EXTRA("categories");
-const String TracingControllerAndroid::RECORD_CONTINUOUSLY_EXTRA("continuous");
-const String TracingControllerAndroid::DEFAULT_CHROME_CATEGORIES_PLACE_HOLDER("_DEFAULT_CHROME_CATEGORIES");
-const String TracingControllerAndroid::PROFILER_STARTED_FMT("Profiler started: %s");
-const String TracingControllerAndroid::PROFILER_FINISHED_FMT("Profiler finished. Results are in %s.");
+const String TracingControllerElastos::TAG("TracingControllerElastos");
+const String TracingControllerElastos::ACTION_START("GPU_PROFILER_START");
+const String TracingControllerElastos::ACTION_STOP("GPU_PROFILER_STOP");
+const String TracingControllerElastos::ACTION_LIST_CATEGORIES("GPU_PROFILER_LIST_CATEGORIES");
+const String TracingControllerElastos::FILE_EXTRA("file");
+const String TracingControllerElastos::CATEGORIES_EXTRA("categories");
+const String TracingControllerElastos::RECORD_CONTINUOUSLY_EXTRA("continuous");
+const String TracingControllerElastos::DEFAULT_CHROME_CATEGORIES_PLACE_HOLDER("_DEFAULT_CHROME_CATEGORIES");
+const String TracingControllerElastos::PROFILER_STARTED_FMT("Profiler started: %s");
+const String TracingControllerElastos::PROFILER_FINISHED_FMT("Profiler finished. Results are in %s.");
 
-TracingControllerAndroid::TracingControllerAndroid(
+TracingControllerElastos::TracingControllerElastos(
     /* [in] */ IContext* context)
     : mContext(context)
 {
@@ -124,40 +124,40 @@ TracingControllerAndroid::TracingControllerAndroid(
     mIntentFilter = new TracingIntentFilter(context);
 }
 
-AutoPtr<IBroadcastReceiver> TracingControllerAndroid::GetBroadcastReceiver()
+AutoPtr<IBroadcastReceiver> TracingControllerElastos::GetBroadcastReceiver()
 {
     return mBroadcastReceiver;
 }
 
-AutoPtr<IIntentFilter> TracingControllerAndroid::GetIntentFilter()
+AutoPtr<IIntentFilter> TracingControllerElastos::GetIntentFilter()
 {
     return mIntentFilter;
 }
 
-ECode TracingControllerAndroid::RegisterReceiver(
+ECode TracingControllerElastos::RegisterReceiver(
     /* [in] */ IContext* context)
 {
     AutoPtr<IIntent> intent;
     return context->RegisterReceiver(GetBroadcastReceiver(), GetIntentFilter(), (IIntent**)&intent);
 }
 
-ECode TracingControllerAndroid::UnregisterReceiver(
+ECode TracingControllerElastos::UnregisterReceiver(
     /* [in] */ IContext* context)
 {
     return context->UnregisterReceiver(GetBroadcastReceiver());
 }
 
-Boolean TracingControllerAndroid::IsTracing()
+Boolean TracingControllerElastos::IsTracing()
 {
     return mIsTracing;
 }
 
-String TracingControllerAndroid::GetOutputPath()
+String TracingControllerElastos::GetOutputPath()
 {
     return mFilename;
 }
 
-Boolean TracingControllerAndroid::StartTracing(
+Boolean TracingControllerElastos::StartTracing(
     /* [in] */ Boolean showToasts,
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
@@ -176,7 +176,7 @@ Boolean TracingControllerAndroid::StartTracing(
     return StartTracing(filePath, showToasts, categories, recordContinuously);
 }
 
-Boolean TracingControllerAndroid::StartTracing(
+Boolean TracingControllerElastos::StartTracing(
     /* [in] */ const String& filename,
     /* [in] */ Boolean showToasts,
     /* [in] */ const String& categories,
@@ -190,7 +190,7 @@ Boolean TracingControllerAndroid::StartTracing(
     }
     // Lazy initialize the native side, to allow construction before the library is loaded.
     InitializeNativeControllerIfNeeded();
-    if (!NativeStartTracing(mNativeTracingControllerAndroid, categories,
+    if (!NativeStartTracing(mNativeTracingControllerElastos, categories,
             recordContinuously)) {
         String str;
         assert(0);
@@ -216,27 +216,27 @@ Boolean TracingControllerAndroid::StartTracing(
     return TRUE;
 }
 
-ECode TracingControllerAndroid::StopTracing()
+ECode TracingControllerElastos::StopTracing()
 {
     if (IsTracing()) {
-        NativeStopTracing(mNativeTracingControllerAndroid, mFilename);
+        NativeStopTracing(mNativeTracingControllerElastos, mFilename);
     }
 
     return NOERROR;
 }
 
-ECode TracingControllerAndroid::GetCategoryGroups()
+ECode TracingControllerElastos::GetCategoryGroups()
 {
     // Lazy initialize the native side, to allow construction before the library is loaded.
     InitializeNativeControllerIfNeeded();
-    if (!NativeGetKnownCategoryGroupsAsync(mNativeTracingControllerAndroid)) {
+    if (!NativeGetKnownCategoryGroupsAsync(mNativeTracingControllerElastos)) {
         Slogger::E(TAG, "Unable to fetch tracing record groups list.");
     }
 
     return NOERROR;
 }
 
-ECode TracingControllerAndroid::OnTracingStopped()
+ECode TracingControllerElastos::OnTracingStopped()
 {
     if (!IsTracing()) {
         // Don't need a toast because this shouldn't happen via the UI.
@@ -258,17 +258,17 @@ ECode TracingControllerAndroid::OnTracingStopped()
     return NOERROR;
 }
 
-ECode TracingControllerAndroid::Finalize()
+ECode TracingControllerElastos::Finalize()
 {
-    if (mNativeTracingControllerAndroid != 0) {
-        NativeDestroy(mNativeTracingControllerAndroid);
-        mNativeTracingControllerAndroid = 0;
+    if (mNativeTracingControllerElastos != 0) {
+        NativeDestroy(mNativeTracingControllerElastos);
+        mNativeTracingControllerElastos = 0;
     }
 
     return NOERROR;
 }
 
-String TracingControllerAndroid::GenerateTracingFilePath()
+String TracingControllerElastos::GenerateTracingFilePath()
 {
     AutoPtr<IEnvironment> env;
     assert(0);
@@ -312,16 +312,16 @@ String TracingControllerAndroid::GenerateTracingFilePath()
     return path;
 }
 
-ECode TracingControllerAndroid::InitializeNativeControllerIfNeeded()
+ECode TracingControllerElastos::InitializeNativeControllerIfNeeded()
 {
-    if (mNativeTracingControllerAndroid == 0) {
-        mNativeTracingControllerAndroid = NativeInit();
+    if (mNativeTracingControllerElastos == 0) {
+        mNativeTracingControllerElastos = NativeInit();
     }
 
     return NOERROR;
 }
 
-ECode TracingControllerAndroid::LogAndToastError(
+ECode TracingControllerElastos::LogAndToastError(
     /* [in] */ const String& str)
 {
     Slogger::E(TAG, str);
@@ -340,14 +340,14 @@ ECode TracingControllerAndroid::LogAndToastError(
     return NOERROR;
 }
 
-ECode TracingControllerAndroid::LogForProfiler(
+ECode TracingControllerElastos::LogForProfiler(
     /* [in] */ const String& str)
 {
     Slogger::I(TAG, str);
     return NOERROR;
 }
 
-ECode TracingControllerAndroid::ShowToast(
+ECode TracingControllerElastos::ShowToast(
     /* [in] */ const String& str)
 {
     if (mShowToasts) {
@@ -365,55 +365,55 @@ ECode TracingControllerAndroid::ShowToast(
     return NOERROR;
 }
 
-Int64 TracingControllerAndroid::NativeInit()
+Int64 TracingControllerElastos::NativeInit()
 {
     return Elastos_TracingControllerAndroid_nativeInit(THIS_PROBE(IInterface));
 }
 
-ECode TracingControllerAndroid::NativeDestroy(
-    /* [in] */ Int64 nativeTracingControllerAndroid)
+ECode TracingControllerElastos::NativeDestroy(
+    /* [in] */ Int64 nativeTracingControllerElastos)
 {
-    Elastos_TracingControllerAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeTracingControllerAndroid);
+    Elastos_TracingControllerAndroid_nativeDestroy(THIS_PROBE(IInterface), (Handle32)nativeTracingControllerElastos);
     return NOERROR;
 }
 
-Boolean TracingControllerAndroid::NativeStartTracing(
-    /* [in] */ Int64 nativeTracingControllerAndroid,
+Boolean TracingControllerElastos::NativeStartTracing(
+    /* [in] */ Int64 nativeTracingControllerElastos,
     /* [in] */ const String& categories,
     /* [in] */ Boolean recordContinuously)
 {
     return Elastos_TracingControllerAndroid_nativeStartTracing(THIS_PROBE(IInterface),
-        (Handle32)nativeTracingControllerAndroid, categories, recordContinuously);
+        (Handle32)nativeTracingControllerElastos, categories, recordContinuously);
 }
 
-ECode TracingControllerAndroid::NativeStopTracing(
-    /* [in] */ Int64 nativeTracingControllerAndroid,
+ECode TracingControllerElastos::NativeStopTracing(
+    /* [in] */ Int64 nativeTracingControllerElastos,
     /* [in] */ const String& filename)
 {
     Elastos_TracingControllerAndroid_nativeStopTracing(THIS_PROBE(IInterface),
-            (Handle32)nativeTracingControllerAndroid, filename);
+            (Handle32)nativeTracingControllerElastos, filename);
     return NOERROR;
 }
 
-Boolean TracingControllerAndroid::NativeGetKnownCategoryGroupsAsync(
-    /* [in] */ Int64 nativeTracingControllerAndroid)
+Boolean TracingControllerElastos::NativeGetKnownCategoryGroupsAsync(
+    /* [in] */ Int64 nativeTracingControllerElastos)
 {
     return Elastos_TracingControllerAndroid_nativeGetKnownCategoryGroupsAsync(THIS_PROBE(IInterface),
-            (Handle32)nativeTracingControllerAndroid);
+            (Handle32)nativeTracingControllerElastos);
 }
 
-String TracingControllerAndroid::NativeGetDefaultCategories()
+String TracingControllerElastos::NativeGetDefaultCategories()
 {
     return Elastos_TracingControllerAndroid_nativeGetDefaultCategories(THIS_PROBE(IInterface));
 }
 
-void TracingControllerAndroid::OnTracingStopped(
+void TracingControllerElastos::OnTracingStopped(
     /* [in] */ IInterface* obj)
 {
-    AutoPtr<TracingControllerAndroid> mObj = (TracingControllerAndroid*)(IObject::Probe(obj));
+    AutoPtr<TracingControllerElastos> mObj = (TracingControllerElastos*)(IObject::Probe(obj));
     if (NULL == mObj)
     {
-        Slogger::E(TAG, "TracingControllerAndroid::OnTracingStopped, mObj is NULL");
+        Slogger::E(TAG, "TracingControllerElastos::OnTracingStopped, mObj is NULL");
         return;
     }
     mObj->OnTracingStopped();

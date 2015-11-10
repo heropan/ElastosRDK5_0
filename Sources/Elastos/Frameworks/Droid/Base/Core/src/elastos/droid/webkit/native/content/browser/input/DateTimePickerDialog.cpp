@@ -114,7 +114,7 @@ ECode DateTimePickerDialog::OnClick(
 ECode DateTimePickerDialog::TryNotifyDateTimeSet()
 {
     if (mCallBack != NULL) {
-        AutoPtr<IView> view = (IView*)mDatePicker->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mDatePicker);
         view->ClearFocus();
         Int32 year, month, dayOfMonth, currentHour, currentMinute;
         mDatePicker->GetYear(&year);

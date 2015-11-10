@@ -28,15 +28,15 @@ class ContentViewCore;
   * to loading a url. A single web contents can have multiple WebContentObserverAndroids.
   */
 // @JNINamespace("content")
-class WebContentsObserverAndroid
+class WebContentsObserverElastos
     : public Object
 {
 public:
     // TODO(yfriedman): Switch everyone to use the WebContents constructor.
-    WebContentsObserverAndroid(
+    WebContentsObserverElastos(
         /* [in] */ ContentViewCore* contentViewCore);
 
-    WebContentsObserverAndroid(
+    WebContentsObserverElastos(
         /* [in] */ WebContents* webContents);
 
     // @CalledByNative
@@ -193,7 +193,7 @@ public:
     // @CalledByNative
     virtual CARAPI DetachFromWebContents();
 
-    static CARAPI_(void*) ElaWebContentsObserverAndroidCallback_Init();
+    static CARAPI_(void*) ElaWebContentsObserverElastosCallback_Init();
 
 private:
     static CARAPI_(void) RenderProcessGone(
@@ -278,10 +278,10 @@ private:
         /* [in] */ WebContents* webContents);
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeWebContentsObserverAndroid);
+        /* [in] */ Int64 nativeWebContentsObserverElastos);
 
 private:
-    Int64 mNativeWebContentsObserverAndroid;
+    Int64 mNativeWebContentsObserverElastos;
 };
 
 } // namespace Browser

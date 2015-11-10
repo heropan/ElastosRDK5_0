@@ -299,10 +299,10 @@ void ChildProcessService::EstablishSurfaceTexturePeer(
     AutoPtr<ISurface> surface;
     Boolean needRelease = FALSE;
     if (surfaceObject->Probe(EIID_ISurface)) {
-        surface = (ISurface*) surfaceObject->Probe(EIID_ISurface);
+        surface = ISurface::Probe(surfaceObject);
     }
     else if (surfaceObject->Probe(EIID_ISurfaceTexture)) {
-        AutoPtr<ISurfaceTexture> surfaceTexture = (ISurfaceTexture*)surfaceObject->Probe(EIID_ISurfaceTexture);
+        AutoPtr<ISurfaceTexture> surfaceTexture = ISurfaceTexture::Probe(surfaceObject);
         assert(0);
         // TODO
         // CSurface::New((SurfaceTexture) surfaceObject, (ISurface**)&surface);

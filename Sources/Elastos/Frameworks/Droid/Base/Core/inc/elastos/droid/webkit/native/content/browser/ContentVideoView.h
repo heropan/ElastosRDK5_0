@@ -254,7 +254,6 @@ private:
     static CARAPI_(Int64) GetNativeViewAndroid(
         /* [in] */ IInterface* obj);
 
-private:
     CARAPI_(void) InitResources(
         /* [in] */ IContext* context);
 

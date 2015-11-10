@@ -88,7 +88,7 @@ ECode SelectPopupDialog::InnerAdapterViewOnItemClickListener::OnItemClick(
     /* [in] */ Int64 id)
 {
     mOwner->mContentViewCore->SelectPopupMenuItems(mOwner->GetSelectedIndices(mListView));
-    AutoPtr<IDialogInterface> dialog = (IDialogInterface*)mOwner->mListBoxPopup->Probe(EIID_IDialogInterface);
+    AutoPtr<IDialogInterface> dialog = IDialogInterface::Probe(mOwner->mListBoxPopup);
     dialog->Dismiss();
     return NOERROR;
 }
@@ -140,13 +140,13 @@ SelectPopupDialog::SelectPopupDialog(
     assert(0);
     // TODO
     // CListView::New(mContext, (IListView**)&listView);
-    AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+    AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
     absListView->SetCacheColorHint(0);
     AutoPtr<IAlertDialogBuilder> b;
     assert(0);
     // TODO
     // CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&b);
-    AutoPtr<IView> _view = (IView*)listView->Probe(EIID_IView);
+    AutoPtr<IView> _view = IView::Probe(listView);
     b->SetView(_view);
     b->SetCancelable(TRUE);
     b->SetInverseBackgroundForced(TRUE);
@@ -171,14 +171,14 @@ SelectPopupDialog::SelectPopupDialog(
     // listView->SetFocusableInTouchMode(TRUE);
 
     if (multiple) {
-        AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+        AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
         absListView->SetChoiceMode(IAbsListView::CHOICE_MODE_MULTIPLE);
         for (Int32 i = 0; i < selected->GetLength(); ++i) {
             absListView->SetItemChecked((*selected)[i], TRUE);
         }
     }
     else {
-        AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+        AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
         absListView->SetChoiceMode(IAbsListView::CHOICE_MODE_SINGLE);
         AutoPtr<IAdapterViewOnItemClickListener> listener = new InnerAdapterViewOnItemClickListener(this, listView);
         assert(0);
@@ -193,8 +193,8 @@ SelectPopupDialog::SelectPopupDialog(
     }
 
     AutoPtr<IDialogInterfaceOnCancelListener> listener = new InnerDialogInterfaceOnCancelListener(this);
-    AutoPtr<IDialog> _dialog = (IDialog*)mListBoxPopup->Probe(EIID_IDialog);
-    _dialog->SetOnCancelListener((IDialogInterfaceOnCancelListener*)this->Probe(EIID_IDialogInterfaceOnCancelListener));
+    AutoPtr<IDialog> _dialog = IDialog::Probe(mListBoxPopup);
+    _dialog->SetOnCancelListener(THIS_PROBE(IDialogInterfaceOnCancelListener));
 }
 
 Int32 SelectPopupDialog::GetSelectDialogLayout(
@@ -217,7 +217,7 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
     /* [in] */ IListView* listView)
 {
     AutoPtr<ISparseBooleanArray> sparseArray;
-    AutoPtr<IAbsListView> absListView = (IAbsListView*)listView->Probe(EIID_IAbsListView);
+    AutoPtr<IAbsListView> absListView = IAbsListView::Probe(listView);
     assert(0);
     // TODO
     // absListView->GetCheckedItemPositions((ISparseBooleanArray**)&sparseArray);
@@ -250,14 +250,14 @@ AutoPtr< ArrayOf<Int32> > SelectPopupDialog::GetSelectedIndices(
 //@Override
 void SelectPopupDialog::Show()
 {
-    AutoPtr<IDialog> dialog = (IDialog*)mListBoxPopup->Probe(EIID_IDialog);
+    AutoPtr<IDialog> dialog = IDialog::Probe(mListBoxPopup);
     dialog->Show();
 }
 
 //@Override
 void SelectPopupDialog::Hide()
 {
-    AutoPtr<IDialog> dialog = (IDialog*)mListBoxPopup->Probe(EIID_IDialog);
+    AutoPtr<IDialog> dialog = IDialog::Probe(mListBoxPopup);
     dialog->Cancel();
 }
 

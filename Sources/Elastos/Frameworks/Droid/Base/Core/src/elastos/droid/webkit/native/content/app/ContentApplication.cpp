@@ -1,6 +1,6 @@
 
 #include "elastos/droid/webkit/native/content/app/ContentApplication.h"
-#include "elastos/droid/webkit/native/content/browser/TracingControllerAndroid.h"
+#include "elastos/droid/webkit/native/content/browser/TracingControllerElastos.h"
 
 using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Os::EIID_IIdleHandler;
@@ -39,7 +39,7 @@ ECode ContentApplication::InnerIdleHandler::QueueIdle(
     // }
 
     // try {
-        AutoPtr<IContext> context = (IContext*)mOwner->Probe(EIID_IContext);
+        AutoPtr<IContext> context = IContext::Probe(mOwner);
         mOwner->GetTracingController()->RegisterReceiver(context);
     // } catch (SecurityException e) {
     //     // Happens if the process is isolated. Ignore.
@@ -55,11 +55,11 @@ ECode ContentApplication::InnerIdleHandler::QueueIdle(
 //                     ContentApplication
 //=====================================================================
 
-AutoPtr<TracingControllerAndroid> ContentApplication::GetTracingController()
+AutoPtr<TracingControllerElastos> ContentApplication::GetTracingController()
 {
     if (mTracingController == NULL) {
         AutoPtr<IContext> context = THIS_PROBE(IContext);
-        mTracingController = new TracingControllerAndroid(context);
+        mTracingController = new TracingControllerElastos(context);
     }
     return mTracingController;
 }

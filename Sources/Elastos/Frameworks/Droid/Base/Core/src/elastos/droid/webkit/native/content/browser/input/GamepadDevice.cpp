@@ -40,7 +40,7 @@ GamepadDevice::GamepadDevice(
     ranges->GetSize(&size);
     mAxes = ArrayOf<Int32>::Alloc(size);
     Int32 i = 0;
-    AutoPtr<IIterator> iter = (IIterator*)ranges->Probe(EIID_IIterator);
+    AutoPtr<IIterator> iter = IIterator::Probe(ranges);
     Boolean bNext = FALSE;
     iter->HasNext(&bNext);
     for (; bNext; iter->HasNext(&bNext)) {
@@ -158,7 +158,7 @@ Boolean GamepadDevice::HandleKeyEvent(
         (*mRawButtons)[keyCode] = 0.0f;
     }
 
-    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
     inputEvent->GetEventTime(&mTimestamp);
 
     return TRUE;
@@ -179,7 +179,7 @@ Boolean GamepadDevice::HandleMotionEvent(
         event->GetAxisValue(axis, &((*mRawAxes)[axis]));
     }
 
-    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
     inputEvent->GetEventTime(&mTimestamp);
 
     return TRUE;

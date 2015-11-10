@@ -1,6 +1,6 @@
 
-#include "elastos/droid/webkit/native/content/browser/input/DateTimeChooserAndroid.h"
-#include "elastos/droid/webkit/native/content/api/DateTimeChooserAndroid_dec.h"
+#include "elastos/droid/webkit/native/content/browser/input/DateTimeChooserElastos.h"
+#include "elastos/droid/webkit/native/content/api/DateTimeChooserElastos_dec.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateTimeSuggestion.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 
@@ -12,42 +12,42 @@ namespace Browser {
 namespace Input {
 
 //==================================================================
-//        DateTimeChooserAndroid::InnerInputActionDelegate
+//        DateTimeChooserElastos::InnerInputActionDelegate
 //==================================================================
 
-DateTimeChooserAndroid::InnerInputActionDelegate::InnerInputActionDelegate(
-    /* [in] */ DateTimeChooserAndroid* owner)
+DateTimeChooserElastos::InnerInputActionDelegate::InnerInputActionDelegate(
+    /* [in] */ DateTimeChooserElastos* owner)
     : mOwner(owner)
 {
 }
 
 //@Override
-void DateTimeChooserAndroid::InnerInputActionDelegate::ReplaceDateTime(
+void DateTimeChooserElastos::InnerInputActionDelegate::ReplaceDateTime(
     /* [in] */ Double value)
 {
-    mOwner->NativeReplaceDateTime(mOwner->mNativeDateTimeChooserAndroid, value);
+    mOwner->NativeReplaceDateTime(mOwner->mNativeDateTimeChooserElastos, value);
 }
 
 //@Override
-void DateTimeChooserAndroid::InnerInputActionDelegate::CancelDateTimeDialog()
+void DateTimeChooserElastos::InnerInputActionDelegate::CancelDateTimeDialog()
 {
-    mOwner->NativeCancelDialog(mOwner->mNativeDateTimeChooserAndroid);
+    mOwner->NativeCancelDialog(mOwner->mNativeDateTimeChooserElastos);
 }
 
 //==================================================================
-//                     DateTimeChooserAndroid
+//                     DateTimeChooserElastos
 //==================================================================
 
-DateTimeChooserAndroid::DateTimeChooserAndroid(
+DateTimeChooserElastos::DateTimeChooserElastos(
     /* [in] */ IContext* context,
-    /* [in] */ Int64 nativeDateTimeChooserAndroid)
-    : mNativeDateTimeChooserAndroid(nativeDateTimeChooserAndroid)
+    /* [in] */ Int64 nativeDateTimeChooserElastos)
+    : mNativeDateTimeChooserElastos(nativeDateTimeChooserElastos)
 {
     AutoPtr<InputDialogContainer::InputActionDelegate> delegate = new InnerInputActionDelegate(this);
     mInputDialogContainer = new InputDialogContainer(context, delegate);
 }
 
-void DateTimeChooserAndroid::ShowDialog(
+void DateTimeChooserElastos::ShowDialog(
     /* [in] */ Int32 dialogType,
     /* [in] */ Double dialogValue,
     /* [in] */ Double min,
@@ -59,9 +59,9 @@ void DateTimeChooserAndroid::ShowDialog(
 }
 
 //@CalledByNative
-AutoPtr<DateTimeChooserAndroid> DateTimeChooserAndroid::CreateDateTimeChooser(
+AutoPtr<DateTimeChooserElastos> DateTimeChooserElastos::CreateDateTimeChooser(
     /* [in] */ ContentViewCore* contentViewCore,
-    /* [in] */ Int64 nativeDateTimeChooserAndroid,
+    /* [in] */ Int64 nativeDateTimeChooserElastos,
     /* [in] */ Int32 dialogType,
     /* [in] */ Double dialogValue,
     /* [in] */ Double min,
@@ -69,17 +69,17 @@ AutoPtr<DateTimeChooserAndroid> DateTimeChooserAndroid::CreateDateTimeChooser(
     /* [in] */ Double step,
     /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
-    AutoPtr<DateTimeChooserAndroid> chooser =
-            new DateTimeChooserAndroid(
+    AutoPtr<DateTimeChooserElastos> chooser =
+            new DateTimeChooserElastos(
                     contentViewCore->GetContext(),
-                    nativeDateTimeChooserAndroid);
+                    nativeDateTimeChooserElastos);
     chooser->ShowDialog(dialogType, dialogValue, min, max, step, suggestions);
 
     return chooser;
 }
 
 //@CalledByNative
-AutoPtr<ArrayOf<IInterface*> > DateTimeChooserAndroid::CreateSuggestionsArray(
+AutoPtr<ArrayOf<IInterface*> > DateTimeChooserElastos::CreateSuggestionsArray(
     /* [in] */ Int32 size)
 {
     AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(size);
@@ -94,7 +94,7 @@ AutoPtr<ArrayOf<IInterface*> > DateTimeChooserAndroid::CreateSuggestionsArray(
  * @param label Label of the suggestion.
  */
 //@CalledByNative
-void DateTimeChooserAndroid::SetDateTimeSuggestionAt(
+void DateTimeChooserElastos::SetDateTimeSuggestionAt(
     /* [in] */ ArrayOf<IInterface*>* array,
     /* [in] */ Int32 index,
     /* [in] */ Double value,
@@ -106,7 +106,7 @@ void DateTimeChooserAndroid::SetDateTimeSuggestionAt(
 }
 
 //@CalledByNative
-void DateTimeChooserAndroid::InitializeDateInputTypes(
+void DateTimeChooserElastos::InitializeDateInputTypes(
     /* [in] */ Int32 textInputTypeDate,
     /* [in] */ Int32 textInputTypeDateTime,
     /* [in] */ Int32 textInputTypeDateTimeLocal,
@@ -120,22 +120,22 @@ void DateTimeChooserAndroid::InitializeDateInputTypes(
             textInputTypeMonth, textInputTypeTime, textInputTypeWeek);
 }
 
-void DateTimeChooserAndroid::NativeReplaceDateTime(
-    /* [in] */ Int64 nativeDateTimeChooserAndroid,
+void DateTimeChooserElastos::NativeReplaceDateTime(
+    /* [in] */ Int64 nativeDateTimeChooserElastos,
     /* [in] */ Double dialogValue)
 {
-    Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserAndroid, dialogValue);
+    Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserElastos, dialogValue);
 }
 
-void DateTimeChooserAndroid::NativeCancelDialog(
-    /* [in] */ Int64 nativeDateTimeChooserAndroid)
+void DateTimeChooserElastos::NativeCancelDialog(
+    /* [in] */ Int64 nativeDateTimeChooserElastos)
 {
-    Elastos_DateTimeChooserAndroid_nativeCancelDialog(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserAndroid);
+    Elastos_DateTimeChooserAndroid_nativeCancelDialog(THIS_PROBE(IInterface), (Handle32)nativeDateTimeChooserElastos);
 }
 
-AutoPtr<IInterface> DateTimeChooserAndroid::CreateDateTimeChooser(
+AutoPtr<IInterface> DateTimeChooserElastos::CreateDateTimeChooser(
     /* [in] */ IInterface* contentViewCore,
-    /* [in] */ Int64 nativeDateTimeChooserAndroid,
+    /* [in] */ Int64 nativeDateTimeChooserElastos,
     /* [in] */ Int32 dialogType,
     /* [in] */ Double dialogValue,
     /* [in] */ Double min,
@@ -144,7 +144,7 @@ AutoPtr<IInterface> DateTimeChooserAndroid::CreateDateTimeChooser(
     /* [in] */ ArrayOf<IInterface*>* suggestions)
 {
     AutoPtr<ContentViewCore> cvc = (ContentViewCore*)(IObject::Probe(contentViewCore));
-    return TO_IINTERFACE(CreateDateTimeChooser(cvc, nativeDateTimeChooserAndroid,
+    return TO_IINTERFACE(CreateDateTimeChooser(cvc, nativeDateTimeChooserElastos,
                 dialogType, dialogValue, min, max, step, suggestions));
 }
 

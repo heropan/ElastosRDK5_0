@@ -128,7 +128,8 @@ ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
     Int32 topMargin = Math::Round(mRenderCoordinates->GetContentOffsetYPix() + y * scale);
     Int32 scaledWidth = Math::Round(width * scale);
     // ContentViewCore currently only supports these two container view types.
-    if (mContainerViewAtCreation->Probe(EIID_IFrameLayout) != NULL) {
+    //if (mContainerViewAtCreation->Probe(EIID_IFrameLayout) != NULL) {
+    if (IFrameLayout::Probe(mContainerViewAtCreation) != NULL) {
         Int32 startMargin;
         if (ApiCompatibilityUtils::IsLayoutRtl(mContainerViewAtCreation)) {
             startMargin = mContainerViewAtCreation->GetMeasuredWidth()
@@ -150,7 +151,8 @@ ECode ContentViewCore::InnerViewAndroidDelegate::SetAnchorViewPosition(
         lp->SetTopMargin(topMargin);
         view->SetLayoutParams(lp);
     }
-    else if (mContainerViewAtCreation->Probe(EIID_IAbsoluteLayout) != NULL) {
+    //else if (mContainerViewAtCreation->Probe(EIID_IAbsoluteLayout) != NULL) {
+    else if (IAbsoluteLayout::Probe(mContainerViewAtCreation) != NULL) {
         // This fixes the offset due to a difference in
         // scrolling model of WebView vs. Chrome.
         // TODO(sgurun) fix this to use mContainerViewAtCreation.getScroll[X/Y]()
@@ -210,7 +212,7 @@ void ContentViewCore::InnerImeAdapterDelegate::OnDismissInput()
 //@Override
 AutoPtr<IView> ContentViewCore::InnerImeAdapterDelegate::GetAttachedView()
 {
-    return (IView*)(mOwner->mContainerView->Probe(EIID_IView));
+    return IView::Probe(mOwner->mContainerView);
 }
 
 //@Override
@@ -311,7 +313,7 @@ void ContentViewCore::InnerZoomControlsDelegate::UpdateZoomControls()
 
 ContentViewCore::InnerWebContentsObserverAndroid::InnerWebContentsObserverAndroid(
     /* [in] */ ContentViewCore* owner)
-    : WebContentsObserverAndroid(owner)
+    : WebContentsObserverElastos(owner)
     , mOwner(owner)
 {
 }
@@ -690,7 +692,7 @@ ECode ContentViewCore::InnerActionHandler::Search()
     String name;
     mOwner->GetContext()->GetPackageName(&name);
     i->PutExtra(IBrowser::EXTRA_APPLICATION_ID, name);
-    if (mOwner->GetContext()->Probe(EIID_IActivity) == NULL) {
+    if (IActivity::Probe(mOwner->GetContext()) == NULL) {
         i->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     }
 
@@ -933,7 +935,7 @@ ContentViewCore::ContentViewCore(
     AutoPtr<ISelection> select;
     // TODO
     //CSelection::AcquireSingleton((ISelection**)&select);
-    AutoPtr<ISpannable> spannable = (ISpannable*)mEditable->Probe(EIID_ISpannable);
+    AutoPtr<ISpannable> spannable = ISpannable::Probe(mEditable);
     select->SetSelection2(spannable, 0);
 }
 
@@ -1123,7 +1125,7 @@ void ContentViewCore::SetContainerView(
     }
 
     mContainerView = containerView;
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     mPositionObserver = new ViewPositionObserver(view);
     String contentDescription("Web View");
     assert(0);
@@ -1351,7 +1353,7 @@ String ContentViewCore::GetTitle()
 //@VisibleForTesting
 void ContentViewCore::ShowInterstitialPage(
     /* [in] */ const String& url,
-    /* [in] */ InterstitialPageDelegateAndroid* delegate)
+    /* [in] */ InterstitialPageDelegateElastos* delegate)
 {
     if (mNativeContentViewCore == 0) {
         return;
@@ -1763,7 +1765,7 @@ Boolean ContentViewCore::OnTouchEvent(
                 state);
 
         if (offset != NULL) {
-            AutoPtr<IInputEvent> inputEvent = (IInputEvent*)offset->Probe(EIID_IInputEvent);
+            AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(offset);
             inputEvent->Recycle();
         }
 
@@ -2200,11 +2202,11 @@ AutoPtr<IInputConnection> ContentViewCore::OnCreateInputConnection(
         outAttrs->SetImeOptions(IEditorInfo::IME_FLAG_NO_FULLSCREEN);
     }
 
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     mInputConnection = mAdapterInputConnectionFactory->Get(view, mImeAdapter,
             mEditable, outAttrs);
 
-    return (IInputConnection*)mInputConnection->Probe(EIID_IInputConnection);
+    return IInputConnection::Probe(mInputConnection);
 }
 
 //@VisibleForTesting
@@ -2243,14 +2245,14 @@ void ContentViewCore::OnConfigurationChanged(
             mImeAdapter->Attach(NativeGetNativeImeAdapter(mNativeContentViewCore),
                     ImeAdapter::GetTextInputTypeNone());
         }
-        AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mContainerView);
         mInputMethodManagerWrapper->RestartInput(view);
     }
     mContainerViewInternals->Super_onConfigurationChanged(newConfig);
 
     // To request layout has side effect, but it seems OK as it only happen in
     // onConfigurationChange and layout has to be changed in most case.
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     view->RequestLayout();
     TraceEvent::End();
 }
@@ -2329,7 +2331,7 @@ void ContentViewCore::UpdateAfterSizeChanged()
         assert(0);
         // TODO
         // CRect::New((IRect**)&rect);
-        AutoPtr<IView> view = (IView*)GetContainerView()->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(GetContainerView());
         view->GetWindowVisibleDisplayFrame(rect);
         Boolean bFlag = FALSE;
         rect->Equals(mFocusPreOSKViewportRect, &bFlag);
@@ -2461,7 +2463,7 @@ Boolean ContentViewCore::OnHoverEvent(
 {
     TraceEvent::Begin(String("onHoverEvent"));
     AutoPtr<IMotionEvent> offset = CreateOffsetMotionEvent(event);
-    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)offset->Probe(EIID_IInputEvent);
+    AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(offset);
     //try {
         if (mBrowserAccessibilityManager != NULL) {
             return mBrowserAccessibilityManager->OnHoverEvent(offset);
@@ -2475,7 +2477,7 @@ Boolean ContentViewCore::OnHoverEvent(
             return TRUE;
         }
 
-        AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mContainerView);
         // assert(0);
         // TODO
         // view->RemoveCallbacks(mFakeMouseMoveRunnable);
@@ -2508,7 +2510,7 @@ Boolean ContentViewCore::OnGenericMotionEvent(
     }
 
     Int32 source;
-    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
     inputEvent->GetSource(&source);
     if ((source & IInputDevice::SOURCE_CLASS_POINTER) != 0) {
         Int32 action;
@@ -2543,7 +2545,7 @@ Boolean ContentViewCore::OnGenericMotionEvent(
                 AutoPtr<IMotionEvent> eventFakeMouseMove;
                 helper->Obtain(event, (IMotionEvent**)&eventFakeMouseMove);
                 mFakeMouseMoveRunnable = new FakeMouseMoveRunnable(this, eventFakeMouseMove);
-                AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+                AutoPtr<IView> view = IView::Probe(mContainerView);
                 Boolean result;
                 view->PostDelayed(mFakeMouseMoveRunnable, 250, &result);
                 return TRUE;
@@ -2704,7 +2706,7 @@ Boolean ContentViewCore::AwakenScrollBars(
     // side, calling this function may get us into a bad state where we keep drawing the
     // scrollBars, so disable it by always returning false.
     Int32 style;
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     view->GetScrollBarStyle(&style);
     if (style == IView::SCROLLBARS_INSIDE_OVERLAY) {
         return FALSE;
@@ -2727,7 +2729,7 @@ void ContentViewCore::UpdateForTapOrPress(
     }
 
     Boolean bFocusable, bTouchMode, bFocused;
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     view->IsFocusable(&bFocusable);
     view->IsFocusableInTouchMode(&bTouchMode);
     view->IsFocused(&bFocused);
@@ -2843,7 +2845,7 @@ AutoPtr<ContentViewDownloadDelegate> ContentViewCore::GetDownloadDelegate()
 AutoPtr<SelectionHandleController> ContentViewCore::GetSelectionHandleController()
 {
     if (mSelectionHandleController == NULL) {
-        AutoPtr<IView> view = (IView*)GetContainerView()->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(GetContainerView());
         mSelectionHandleController = new InnerSelectionHandleController(this,
                 view, mPositionObserver);
     }
@@ -2854,7 +2856,7 @@ AutoPtr<SelectionHandleController> ContentViewCore::GetSelectionHandleController
 AutoPtr<InsertionHandleController> ContentViewCore::GetInsertionHandleController()
 {
     if (mInsertionHandleController == NULL) {
-        AutoPtr<IView> view = (IView*)GetContainerView()->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(GetContainerView());
         mInsertionHandleController = new InnerInsertionHandleController(this,
                 view, mPositionObserver);
 
@@ -2917,7 +2919,7 @@ void ContentViewCore::ShowSelectActionBar()
 
     mActionMode = NULL;
     // On ICS, startActionMode throws an NPE when getParent() is null.
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     AutoPtr<IViewParent> parent;
     view->GetParent((IViewParent**)&parent);
     if (parent != NULL) {
@@ -3018,7 +3020,7 @@ void ContentViewCore::ScheduleTextHandleFadeIn()
         mDeferredHandleFadeInRunnable = new DeferredHandleFadeInRunnable(this);
     }
 
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     // assert(0);
     // TODO
     // view->RemoveCallbacks(mDeferredHandleFadeInRunnable);
@@ -3048,7 +3050,7 @@ void ContentViewCore::HideImeIfNeeded()
     // We cannot trust ContentViewClient#onImeStateChangeRequested to
     // hide the input window because it has an empty default implementation.
     // So we need to explicitly hide the input method window here.
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     if (mInputMethodManagerWrapper->IsActive(view)) {
         AutoPtr<IBinder> binder;
         view->GetWindowToken((IBinder**)&binder);
@@ -3214,7 +3216,7 @@ void ContentViewCore::ShowSelectPopup(
     /* [in] */ Boolean multiple,
     /* [in] */ ArrayOf<Int32>* selectedIndices)
 {
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     AutoPtr<IViewParent> parent;
     view->GetParent((IViewParent**)&parent);
     Int32 visibility;
@@ -3233,7 +3235,7 @@ void ContentViewCore::ShowSelectPopup(
         AutoPtr<SelectPopupItem> item = new SelectPopupItem((*items)[i], (*enabled)[i]);
         //popupItems.add(new SelectPopupItem(items[i], enabled[i]));
         Boolean modified;
-        AutoPtr<IObject> iItem = (IObject*)item->Probe(EIID_IObject);
+        AutoPtr<IObject> iItem = IObject::Probe(TO_IINTERFACE(item));
         popupItems->Add(iItem, &modified);
     }
 
@@ -3346,7 +3348,7 @@ void ContentViewCore::OnSelectionBoundsChanged(
         if (!wereSelectionHandlesShowing && (GetSelectionHandleController()->IsShowing(&isShowing), isShowing)) {
             // TODO(cjhopman): Remove this when there is a better signal that long press caused
             // a selection. See http://crbug.com/150151.
-            AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+            AutoPtr<IView> view = IView::Probe(mContainerView);
             Boolean result;
             view->PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &result);
         }
@@ -3365,7 +3367,7 @@ void ContentViewCore::OnSelectionBoundsChanged(
 
             GetInsertionHandleController()->OnCursorPositionChanged();
             UpdateHandleScreenPositions();
-            AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+            AutoPtr<IView> view = IView::Probe(mContainerView);
             if (mInputMethodManagerWrapper->IsWatchingCursor(view)) {
                 const Int32 xPix = (Int32) mInsertionHandlePoint->GetXPix();
                 const Int32 yPix = (Int32) mInsertionHandlePoint->GetYPix();
@@ -3435,7 +3437,7 @@ void ContentViewCore::AttachImeAdapter()
 //@CalledByNative
 Boolean ContentViewCore::HasFocus()
 {
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     Boolean result;
     view->HasFocus(&result);
     return result;
@@ -3808,7 +3810,7 @@ void ContentViewCore::OnInitializeAccessibilityEvent(
     // event->SetClassName(this.getClass().getName());
 
     // Identify where the top-left of the screen currently points to.
-    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(event);
     record->SetScrollX(mRenderCoordinates->GetScrollXPixInt());
     record->SetScrollY(mRenderCoordinates->GetScrollYPixInt());
 
@@ -4143,7 +4145,7 @@ void ContentViewCore::SetBackgroundOpaque(
  */
 Boolean ContentViewCore::OfferLongPressToEmbedder()
 {
-    AutoPtr<IView> view = (IView*)mContainerView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mContainerView);
     Boolean result;
     view->PerformLongClick(&result);
     return result;

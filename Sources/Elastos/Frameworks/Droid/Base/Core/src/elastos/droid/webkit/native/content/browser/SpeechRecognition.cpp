@@ -234,7 +234,7 @@ Boolean SpeechRecognition::Initialize(
     AutoPtr<IList> list;
     pm->QueryIntentServices(intent, IPackageManager::GET_SERVICES, (IList**)&list);
 
-    AutoPtr<IIterable> iterable = (IIterable*)list->Probe(EIID_IIterable);
+    AutoPtr<IIterable> iterable = IIterable::Probe(list);
     AutoPtr<IIterator> iterator;
     iterable->GetIterator((IIterator**)&iterator);
     Boolean bHasNext;
@@ -245,7 +245,7 @@ Boolean SpeechRecognition::Initialize(
         AutoPtr<IServiceInfo> service;
         resolve->GetServiceInfo((IServiceInfo**)&service);
 
-        AutoPtr<IPackageItemInfo> packageItemInfo = (IPackageItemInfo*)service->Probe(EIID_IPackageItemInfo);
+        AutoPtr<IPackageItemInfo> packageItemInfo = IPackageItemInfo::Probe(service);
         String packageName;
         packageItemInfo->GetPackageName(&packageName);
         if (!packageName.Equals(PROVIDER_PACKAGE_NAME))

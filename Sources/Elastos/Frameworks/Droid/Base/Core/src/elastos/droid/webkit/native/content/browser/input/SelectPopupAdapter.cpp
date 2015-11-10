@@ -33,7 +33,7 @@ SelectPopupAdapter::SelectPopupAdapter(
     // CArrayList::New(items, (IArrayList**)&mItems);
 
     mAreAllItemsEnabled = TRUE;
-    AutoPtr<IIterable> iterable = (IIterable*)mItems->Probe(EIID_IIterable);
+    AutoPtr<IIterable> iterable = IIterable::Probe(mItems);
     Boolean bNext = FALSE;
     AutoPtr<IIterator> iter;
     iterable->GetIterator((IIterator**)&iter);

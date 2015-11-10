@@ -11,8 +11,8 @@ extern "C"
 {
 #endif
     extern Int64 Elastos_InterstitialPageDelegateAndroid_nativeInit(IInterface* caller,const String& htmlContent);
-    extern void Elastos_InterstitialPageDelegateAndroid_nativeProceed(IInterface* caller,Handle32 nativeInterstitialPageDelegateAndroid);
-    extern void Elastos_InterstitialPageDelegateAndroid_nativeDontProceed(IInterface* caller,Handle32 nativeInterstitialPageDelegateAndroid);
+    extern void Elastos_InterstitialPageDelegateAndroid_nativeProceed(IInterface* caller,Handle32 nativeInterstitialPageDelegateElastos);
+    extern void Elastos_InterstitialPageDelegateAndroid_nativeDontProceed(IInterface* caller,Handle32 nativeInterstitialPageDelegateElastos);
     extern void Elastos_InterstitialPageDelegateAndroid_InitCallback(Handle32 cb);
 #ifdef __cplusplus
 }
@@ -33,20 +33,20 @@ struct ElaInterstitialPageDelegateAndroidCallback
     void (*elastos_InterstitialPageDelegateAndroid_onNativeDestroyed)(IInterface* obj);
 };
 
-void* InterstitialPageDelegateAndroid::ElaInterstitialPageDelegateAndroidCallback_Init()
+void* InterstitialPageDelegateElastos::ElaInterstitialPageDelegateElastosCallback_Init()
 {
     static ElaInterstitialPageDelegateAndroidCallback sElaInterstitialPageDelegateAndroidCallback;
 
-    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onProceed = &InterstitialPageDelegateAndroid::OnProceed;
-    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onDontProceed = &InterstitialPageDelegateAndroid::OnDontProceed;
-    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_commandReceived = &InterstitialPageDelegateAndroid::CommandReceived;
-    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onNativeDestroyed = &InterstitialPageDelegateAndroid::OnNativeDestroyed;
+    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onProceed = &InterstitialPageDelegateElastos::OnProceed;
+    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onDontProceed = &InterstitialPageDelegateElastos::OnDontProceed;
+    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_commandReceived = &InterstitialPageDelegateElastos::CommandReceived;
+    sElaInterstitialPageDelegateAndroidCallback.elastos_InterstitialPageDelegateAndroid_onNativeDestroyed = &InterstitialPageDelegateElastos::OnNativeDestroyed;
 
     Elastos_InterstitialPageDelegateAndroid_InitCallback((Handle32)&sElaInterstitialPageDelegateAndroidCallback);
     return &sElaInterstitialPageDelegateAndroidCallback;
 }
 
-static void* sPElaInterstitialPageDelegateAndroidCallback = InterstitialPageDelegateAndroid::ElaInterstitialPageDelegateAndroidCallback_Init();
+static void* sPElaInterstitialPageDelegateElastosCallback = InterstitialPageDelegateElastos::ElaInterstitialPageDelegateElastosCallback_Init();
 
 } // namespace Browser
 } // namespace Content

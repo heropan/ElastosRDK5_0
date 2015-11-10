@@ -105,7 +105,7 @@ ContentViewRenderView::InnerRunnable::InnerRunnable(
 
 ECode ContentViewRenderView::InnerRunnable::Run()
 {
-    AutoPtr<IView> view = (IView*)mOwner->mSurfaceView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mOwner);
     view->SetBackgroundResource(0);
     return NOERROR;
 }
@@ -162,7 +162,7 @@ void ContentViewRenderView::OnNativeLibraryLoaded(
     AutoPtr<ISurfaceHolder> surfaceHolder;
     mSurfaceView->GetHolder((ISurfaceHolder**)&surfaceHolder);
     surfaceHolder->AddCallback(mSurfaceCallback);
-    AutoPtr<IView> view = (IView*)mSurfaceView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mSurfaceView);
     view->SetVisibility(IView::VISIBLE);
 
     mContentReadbackHandler = new InnerContentReadbackHandler(this);
@@ -188,7 +188,7 @@ void ContentViewRenderView::SetSurfaceViewBackgroundColor(
     /* [in] */ Int32 color)
 {
     if (mSurfaceView != NULL) {
-        AutoPtr<IView> view = (IView*)mSurfaceView->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mSurfaceView);
         view->SetBackgroundColor(color);
     }
 }
@@ -295,7 +295,7 @@ void ContentViewRenderView::OnCompositorLayout()
 void ContentViewRenderView::OnSwapBuffersCompleted()
 {
     AutoPtr<IDrawable> draw;
-    AutoPtr<IView> view = (IView*)mSurfaceView->Probe(EIID_IView);
+    AutoPtr<IView> view = IView::Probe(mSurfaceView);
     view->GetBackground((IDrawable**)&draw);
     if (draw != NULL) {
         AutoPtr<IRunnable> runnable = new InnerRunnable(this);
