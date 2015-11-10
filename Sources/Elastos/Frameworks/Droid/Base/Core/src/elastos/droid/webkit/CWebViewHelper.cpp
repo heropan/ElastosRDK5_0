@@ -46,24 +46,19 @@ ECode CWebViewHelper::GetPluginList(
 ECode CWebViewHelper::ClearClientCertPreferences(
     /* [in] */ IRunnable* onCleared)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    WebView::ClearClientCertPreferences(onCleared);
+    return NOERROR;
 }
 
 ECode CWebViewHelper::EnableSlowWholeDocumentDraw()
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    return WebView::EnableSlowWholeDocumentDraw();
 }
 
 ECode CWebViewHelper::SetWebContentsDebuggingEnabled(
     /* [in] */ Boolean enabled)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    return WebView::SetWebContentsDebuggingEnabled(enabled);
 }
 
 } // namespace Webkit

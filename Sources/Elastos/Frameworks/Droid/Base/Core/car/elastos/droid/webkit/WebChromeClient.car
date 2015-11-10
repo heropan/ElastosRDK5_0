@@ -28,22 +28,6 @@ module
         OnCustomViewHidden();
     }
 
-    interface IWebChromeClientFileChooserParamsHelper {
-        /**
-         * Parse the result returned by the file picker activity. This method should be used with
-         * {@link #createIntent}. Refer to {@link #createIntent} for how to use it.
-         *
-         * @param resultCode the integer result code returned by the file picker activity.
-         * @param data the intent returned by the file picker activity.
-         * @return the Uris of selected file(s) or null if the resultCode indicates
-         *         activity canceled or any other error.
-         */
-        ParseResult(
-            [in] Int32 resultCode,
-            [in] IIntent* data,
-            [out, callee] ArrayOf<IUri*>* uriArrayOut);
-    }
-
     /**
      * Parameters used in the {@link #onShowFileChooser} method.
      */
@@ -120,6 +104,22 @@ module
          */
         CreateIntent(
             [out] IIntent** intent);
+    }
+
+    interface IWebChromeClientFileChooserParamsHelper {
+        /**
+         * Parse the result returned by the file picker activity. This method should be used with
+         * {@link #createIntent}. Refer to {@link #createIntent} for how to use it.
+         *
+         * @param resultCode the integer result code returned by the file picker activity.
+         * @param data the intent returned by the file picker activity.
+         * @return the Uris of selected file(s) or null if the resultCode indicates
+         *         activity canceled or any other error.
+         */
+        ParseResult(
+            [in] Int32 resultCode,
+            [in] IIntent* data,
+            [out, callee] ArrayOf<IUri*>* uriArrayOut);
     }
 
     [local]

@@ -130,18 +130,19 @@ void FindActionModeCallback::SetText(
  * Set the WebView to search.  Must be non null, and set before calling
  * startActionMode.
  */
-void FindActionModeCallback::SetWebView(
+ECode FindActionModeCallback::SetWebView(
     /* [in] */ CWebView* webView)
 {
     if (NULL == webView) {
         //throw new AssertionError("WebView supplied to "
         //        + "FindActionModeCallback cannot be null");
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mWebView = webView;
     assert(0);
     // TODO
-    // mWebView->SetFindDialogFindListener(this);
+    // return mWebView->SetFindDialogFindListener(this);
+    return E_NOT_IMPLEMENTED;
 }
 
 ECode FindActionModeCallback::OnFindResultReceived(

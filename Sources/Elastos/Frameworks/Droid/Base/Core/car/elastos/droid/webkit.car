@@ -35,6 +35,7 @@ module
     merge("webkit/WebViewClient.car");
     merge("webkit/WebViewDatabase.car");
     merge("webkit/WebViewFragment.car");
+    merge("webkit/WebViewFactory.car");
     merge("webkit/WebViewFactoryProvider.car");
 
     using interface Elastos.IO.IInputStream;
@@ -280,6 +281,10 @@ module
 
         singleton class CWebChromeClientFileChooserParamsHelper {
             interface IWebChromeClientFileChooserParamsHelper;
+        }
+
+        singleton class CWebViewFactory {
+            interface IWebViewFactory;
         }
 
     } // namespace Webkit

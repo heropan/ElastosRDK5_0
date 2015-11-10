@@ -1,16 +1,29 @@
 
+#include "elastos/droid/R.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Looper.h"
+#include "elastos/droid/webkit/CookieSyncManager.h"
+#include "elastos/droid/webkit/CPluginList.h"
+#include "elastos/droid/webkit/DebugFlags.h"
+#include "elastos/droid/webkit/URLUtil.h"
 #include "elastos/droid/webkit/WebView.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
-#include "elastos/droid/webkit/CPluginList.h"
-#include "elastos/droid/R.h"
 #include <elastos/core/AutoLock.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Core::AutoLock;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -277,6 +290,7 @@ ECode WebView::PrivateAccess::Super_onDrawVerticalScrollBar(
 {
     assert(0);
     // TODO
+    // WebView.super.onDrawVerticalScrollBar(canvas, scrollBar, l, t, r, b);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -310,22 +324,42 @@ ECode WebView::PrivateAccess::ToString(
 }
 
 //=================================================================
-//     WebView
+//                 WebView::FindListenerDistributor
+//=================================================================
+
+CAR_INTERFACE_IMPL(WebView::FindListenerDistributor, Object, IWebViewFindListener)
+
+WebView::FindListenerDistributor::FindListenerDistributor(
+    /* [in] */ WebView* owner)
+    : mOwner(owner)
+{
+}
+
+ECode WebView::FindListenerDistributor::OnFindResultReceived(
+    /* [in] */ Int32 activeMatchOrdinal,
+    /* [in] */ Int32 numberOfMatches,
+    /* [in] */ Boolean isDoneCounting)
+{
+    if (mFindDialogFindListener != NULL) {
+        mFindDialogFindListener->OnFindResultReceived(activeMatchOrdinal, numberOfMatches,
+                isDoneCounting);
+    }
+
+    if (mUserFindListener != NULL) {
+        mUserFindListener->OnFindResultReceived(activeMatchOrdinal, numberOfMatches,
+                isDoneCounting);
+    }
+
+    return NOERROR;
+}
+
+//=================================================================
+//                           WebView
 //=================================================================
 
 const String WebView::LOGTAG("WebView_proxy");
-/**
- * URI scheme for telephone number.
- */
-const String WebView::SCHEME_TEL("tel:");
-/**
- * URI scheme for email address.
- */
-const String WebView::SCHEME_MAILTO("mailto:");
-/**
- * URI scheme for map address.
- */
-const String WebView::SCHEME_GEO("geo:0,0?q=");
+
+volatile Boolean WebView::sEnforceThreadChecking = FALSE;
 
 Object WebView::sLock;
 
@@ -333,68 +367,7 @@ CAR_INTERFACE_IMPL(WebView, Object, IWebView);
 
 WebView::WebView()
 {
-}
-
-/**
- * Constructs a new WebView with a Context object.
- *
- * @param context a Context object used to access application assets
- */
-WebView::WebView(
-    /* [in] */ IContext* context)
-{
-    ASSERT_SUCCEEDED(constructor(context, NULL));
-}
-
-/**
- * Constructs a new WebView with layout parameters.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- */
-WebView::WebView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    ASSERT_SUCCEEDED(constructor(context, attrs, R::attr::webViewStyle));
-}
-
-/**
- * Constructs a new WebView with layout parameters and a default style.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- * @param defStyle the default style resource ID
- */
-WebView::WebView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(constructor(context, attrs, defStyle, FALSE));
-}
-
-/**
- * Constructs a new WebView with layout parameters and a default style.
- *
- * @param context a Context object used to access application assets
- * @param attrs an AttributeSet passed to our parent
- * @param defStyle the default style resource ID
- * @param privateBrowsing whether this WebView will be initialized in
- *                        private mode
- *
- * @deprecated Private browsing is no longer supported directly via
- * WebView and will be removed in a future release. Prefer using
- * {@link WebSettings}, {@link WebViewDatabase}, {@link CookieManager}
- * and {@link WebStorage} for fine-grained control of privacy data.
- */
-WebView::WebView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Boolean privateBrowsing)
-{
-    ASSERT_SUCCEEDED(Init(context, attrs, defStyle, NULL, privateBrowsing));
+    mWebViewThread = Looper::GetMyLooper();
 }
 
 /**
@@ -421,8 +394,25 @@ WebView::WebView(
     /* [in] */ IMap* javaScriptInterfaces,
     /* [in] */ Boolean privateBrowsing)
 {
+    mWebViewThread = Looper::GetMyLooper();
     ASSERT_SUCCEEDED(Init(context, attrs, defStyle, javaScriptInterfaces,
             privateBrowsing));
+}
+
+/**
+ * @hide
+ */
+//@SuppressWarnings("deprecation")  // for super() call into deprecated base class constructor.
+WebView::WebView(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes,
+    /* [in] */ IMap* javaScriptInterfaces,
+    /* [in] */ Boolean privateBrowsing)
+{
+    mWebViewThread = Looper::GetMyLooper();
+    ASSERT_SUCCEEDED(Init(context, attrs, defStyleAttr, defStyleRes, javaScriptInterfaces, privateBrowsing));
 }
 
 ECode WebView::constructor(
@@ -447,12 +437,21 @@ ECode WebView::constructor(
 }
 
 ECode WebView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    return Init(context, attrs, defStyleAttr, defStyleRes, NULL, FALSE);
+}
+
+ECode WebView::constructor(
     /* [in] */ IContext * context,
     /* [in] */ IAttributeSet * attrs,
-    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleAttr,
     /* [in] */ Boolean privateBrowsing)
 {
-    return Init(context, attrs, defStyle, NULL, privateBrowsing);
+    return Init(context, attrs, defStyleAttr, 0, NULL, privateBrowsing);
 }
 
 ECode WebView::Init(
@@ -475,6 +474,40 @@ ECode WebView::Init(
     return mProvider->Init(javaScriptInterfaces, privateBrowsing);
 }
 
+ECode WebView::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes,
+    /* [in] */ IMap* javaScriptInterfaces,
+    /* [in] */ Boolean privateBrowsing)
+{
+    assert(0);
+    // TODO
+    // super(context, attrs, defStyleAttr, defStyleRes);
+    if (context == NULL) {
+        assert(0);
+        //throw new IllegalArgumentException("Invalid context argument");
+    }
+    AutoPtr<IApplicationInfo> appInfo;
+    context->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    Int32 sdkVersion;
+    appInfo->GetTargetSdkVersion(&sdkVersion);
+    sEnforceThreadChecking = sdkVersion >=
+            Build::VERSION_CODES::JELLY_BEAN_MR2;
+    FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "WebView<init>");
+    }
+
+    EnsureProviderCreated();
+    mProvider->Init(javaScriptInterfaces, privateBrowsing);
+    // Post condition of creating a webview is the CookieSyncManager.getInstance() is allowed.
+    CookieSyncManager::SetGetInstanceIsAllowed();
+
+    return NOERROR;
+}
+
 /**
  * Specifies whether the horizontal scrollbar has overlay style.
  *
@@ -484,6 +517,10 @@ ECode WebView::SetHorizontalScrollbarOverlay(
     /* [in] */ Boolean overlay)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setHorizontalScrollbarOverlay=" + overlay);
+    }
+
     return mProvider->SetHorizontalScrollbarOverlay(overlay);
 }
 
@@ -496,6 +533,9 @@ ECode WebView::SetVerticalScrollbarOverlay(
     /* [in] */ Boolean overlay)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setVerticalScrollbarOverlay=" + overlay);
+    }
     return mProvider->SetVerticalScrollbarOverlay(overlay);
 }
 
@@ -564,6 +604,9 @@ ECode WebView::SetCertificate(
     /* [in] */ ISslCertificate* certificate)
 {
     FAIL_RETURN(CheckThread());
+     if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setCertificate=%p", certificate);
+    }
     return mProvider->SetCertificate(certificate);
 }
 
@@ -589,6 +632,9 @@ ECode WebView::SavePassword(
     /* [in] */ const String& password)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "savePassword=%s", (const char*)host);
+    }
     return mProvider->SavePassword(host, username, password);
 }
 
@@ -612,6 +658,9 @@ ECode WebView::SetHttpAuthUsernamePassword(
     /* [in] */ const String& password)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setHttpAuthUsernamePassword=%s", (const char*)host);
+    }
     return mProvider->SetHttpAuthUsernamePassword(host, realm, username, password);
 }
 
@@ -647,6 +696,9 @@ ECode WebView::GetHttpAuthUsernamePassword(
 ECode WebView::Destroy()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "destroy");
+    }
     return mProvider->Destroy();
 }
 
@@ -675,6 +727,18 @@ void WebView::DisablePlatformNotifications()
 }
 
 /**
+ * Used only by internal tests to free up memory.
+ *
+ * @hide
+ */
+void WebView::FreeMemoryForTests()
+{
+    AutoPtr<IWebViewFactoryProviderStatics> statics;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&statics);
+    statics->FreeMemoryForTests();
+}
+
+/**
  * Informs WebView of the network state. This is used to set
  * the JavaScript property window.navigator.isOnline and
  * generates the online/offline event as specified in HTML5, sec. 5.7.7
@@ -685,6 +749,9 @@ ECode WebView::SetNetworkAvailable(
     /* [in] */ Boolean networkUp)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setNetworkAvailable=%d", networkUp);
+    }
     return mProvider->SetNetworkAvailable(networkUp);
 }
 
@@ -705,6 +772,9 @@ ECode WebView::SaveState(
 {
     VALIDATE_NOT_NULL(wfl);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "saveState");
+    }
     return mProvider->SaveState(outState, wfl);
 }
 
@@ -725,6 +795,11 @@ ECode WebView::SavePicture(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        String name;
+        dest->GetName(&name);
+        Logger::D(LOGTAG, "savePicture=%s", (const char*)name);
+    }
     return mProvider->SavePicture(b, dest, result);
 }
 
@@ -744,7 +819,13 @@ ECode WebView::RestorePicture(
     /* [in] */ IFile* src,
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(src);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        String name;
+        src->GetName(&name);
+        Logger::D(LOGTAG, "restorePicture=%s", (const char*)name);
+    }
     return mProvider->RestorePicture(b, src, result);
 }
 
@@ -766,6 +847,9 @@ ECode WebView::RestoreState(
 {
     VALIDATE_NOT_NULL(wfl);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "restoreState");
+    }
     return mProvider->RestoreState(inState, wfl);
 }
 
@@ -785,6 +869,34 @@ ECode WebView::LoadUrl(
     /* [in] */ IMap* additionalHttpHeaders)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        StringBuilder headers;
+        if (additionalHttpHeaders != NULL) {
+            AutoPtr<ISet> entrySet;
+            additionalHttpHeaders->GetEntrySet((ISet**)&entrySet);
+            AutoPtr<IIterator> iter;
+            entrySet->GetIterator((IIterator**)&iter);
+            Boolean bNext = FALSE;
+            iter->HasNext(&bNext);
+            for (; bNext; iter->HasNext(&bNext)) {
+                AutoPtr<IMapEntry> entry;
+                iter->GetNext((IInterface**)&entry);
+                AutoPtr<ICharSequence> iKey, iValue;
+                entry->GetKey((IInterface**)&iKey);
+                entry->GetValue((IInterface**)&iValue);
+                String key, value;
+                iKey->ToString(&key);
+                iValue->ToString(&value);
+                headers.Append(key);
+                headers.Append(":");
+                headers.Append(value);
+                headers.Append("\n");
+            }
+        }
+        String headersStr;
+        headers.ToString(&headersStr);
+        Logger::D(LOGTAG, "loadUrl(extra headers)=%s%s%s", (const char*)url, "\n", (const char*)headersStr);
+    }
     return mProvider->LoadUrl(url, additionalHttpHeaders);
 }
 
@@ -797,6 +909,9 @@ ECode WebView::LoadUrl(
     /* [in] */ const String& url)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "loadUrl=%s", (const char*)url);
+    }
     return mProvider->LoadUrl(url);
 }
 
@@ -813,7 +928,17 @@ ECode WebView::PostUrl(
     /* [in] */ ArrayOf<Byte>* postData)
 {
     FAIL_RETURN(CheckThread());
-    return mProvider->PostUrl(url, postData);
+
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "postUrl=%s", (const char*)url);
+    }
+
+    if (URLUtil::IsNetworkUrl(url)) {
+        return mProvider->PostUrl(url, postData);
+    }
+    else {
+        return mProvider->LoadUrl(url);
+    }
 }
 
 /**
@@ -851,6 +976,9 @@ ECode WebView::LoadData(
     /* [in] */ const String& encoding)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "loadData");
+    }
     return mProvider->LoadData(data, mimeType, encoding);
 }
 
@@ -885,6 +1013,9 @@ ECode WebView::LoadDataWithBaseURL(
     /* [in] */ const String& historyUrl)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "loadDataWithBaseURL=%s", (const char*)baseUrl);
+    }
     return mProvider->LoadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
 }
 
@@ -892,9 +1023,11 @@ ECode WebView::EvaluateJavascript(
     /* [in] */ const String& script,
     /* [in] */ IValueCallback* resultCallback)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "evaluateJavascript=%s", (const char*)script);
+    }
+    return mProvider->EvaluateJavaScript(script, resultCallback);
 }
 
 /**
@@ -927,6 +1060,9 @@ ECode WebView::SaveWebArchive(
     /* [in] */ IValueCallback* callback)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "saveWebArchive(auto)=%s", (const char*)basename);
+    }
     return mProvider->SaveWebArchive(basename, autoname, callback);
 }
 
@@ -936,6 +1072,9 @@ ECode WebView::SaveWebArchive(
 ECode WebView::StopLoading()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "stopLoading");
+    }
     return mProvider->StopLoading();
 }
 
@@ -945,6 +1084,9 @@ ECode WebView::StopLoading()
 ECode WebView::Reload()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "reload");
+    }
     return mProvider->Reload();
 }
 
@@ -967,6 +1109,9 @@ ECode WebView::CanGoBack(
 ECode WebView::GoBack()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "goBack");
+    }
     return mProvider->GoBack();
 }
 
@@ -989,6 +1134,9 @@ ECode WebView::CanGoForward(
 ECode WebView::GoForward()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "goForward");
+    }
     return mProvider->GoForward();
 }
 
@@ -1020,6 +1168,9 @@ ECode WebView::GoBackOrForward(
     /* [in] */ Int32 steps)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "goBackOrForwad=%d", steps);
+    }
     return mProvider->GoBackOrForward(steps);
 }
 
@@ -1046,6 +1197,9 @@ ECode WebView::PageUp(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "pageUp");
+    }
     return mProvider->PageUp(top, result);
 }
 
@@ -1061,6 +1215,9 @@ ECode WebView::PageDown(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "pageDown");
+    }
     return mProvider->PageDown(bottom, result);
 }
 
@@ -1071,6 +1228,9 @@ ECode WebView::PageDown(
 ECode WebView::ClearView()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "clearView");
+    }
     return mProvider->ClearView();
 }
 
@@ -1093,8 +1253,34 @@ ECode WebView::CapturePicture(
 {
     VALIDATE_NOT_NULL(picture);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "capturePicture");
+    }
     return mProvider->CapturePicture(picture);
 }
+
+// TODO
+// ECode WebView::CreatePrintDocumentAdapter(
+//     /* [out] */ IPrintDocumentAdapter** adapter)
+// {
+//     FAIL_RETURN(CheckThread());
+//     if (DebugFlags::TRACE_API) {
+//         Logger::D(LOGTAG, "createPrintDocumentAdapter");
+//     }
+//     return mProvider->CreatePrintDocumentAdapter("default", adapter);
+// }
+
+// TODO
+// ECode WebView::CreatePrintDocumentAdapter(
+//     /* [in] */ const String& documentName,
+//     /* [out] */ IPrintDocumentAdapter** adpter)
+// {
+//     FAIL_RETURN(CheckThread());
+//     if (DebugFlags::TRACE_API) {
+//         Log::D(LOGTAG, "createPrintDocumentAdapter");
+//     }
+//     return mProvider->CreatePrintDocumentAdapter(documentName, adpter);
+// }
 
 /**
  * Gets the current scale of this WebView.
@@ -1127,6 +1313,9 @@ ECode WebView::SetInitialScale(
     /* [in] */ Int32 scaleInPercent)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setInitialScale=%d", scaleInPercent);
+    }
     return mProvider->SetInitialScale(scaleInPercent);
 }
 
@@ -1138,6 +1327,9 @@ ECode WebView::SetInitialScale(
 ECode WebView::InvokeZoomPicker()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "invokeZoomPicker");
+    }
     return mProvider->InvokeZoomPicker();
 }
 
@@ -1164,6 +1356,9 @@ ECode WebView::GetHitTestResult(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "getHitTestResult");
+    }
     return mProvider->GetHitTestResult(result);
 }
 
@@ -1184,6 +1379,9 @@ ECode WebView::RequestFocusNodeHref(
     /* [in] */ IMessage* hrefMsg)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "requestFocusNodeHref");
+    }
     return mProvider->RequestFocusNodeHref(hrefMsg);
 }
 
@@ -1198,6 +1396,9 @@ ECode WebView::RequestImageRef(
     /* [in] */ IMessage* msg)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "requestImageRef");
+    }
     return mProvider->RequestImageRef(msg);
 }
 
@@ -1322,6 +1523,9 @@ ECode WebView::GetContentWidth(
 ECode WebView::PauseTimers()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "pauseTimers");
+    }
     return mProvider->PauseTimers();
 }
 
@@ -1332,6 +1536,9 @@ ECode WebView::PauseTimers()
 ECode WebView::ResumeTimers()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "resumeTimers");
+    }
     return mProvider->ResumeTimers();
 }
 
@@ -1345,6 +1552,9 @@ ECode WebView::ResumeTimers()
 ECode WebView::OnPause()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "onPause");
+    }
     return mProvider->OnPause();
 }
 
@@ -1354,6 +1564,9 @@ ECode WebView::OnPause()
 ECode WebView::OnResume()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "onResume");
+    }
     return mProvider->OnResume();
 }
 
@@ -1377,6 +1590,9 @@ ECode WebView::IsPaused(
 ECode WebView::FreeMemory()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "freeMemory");
+    }
     return mProvider->FreeMemory();
 }
 
@@ -1390,6 +1606,9 @@ ECode WebView::ClearCache(
     /* [in] */ Boolean includeDiskFiles)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "clearCache");
+    }
     return mProvider->ClearCache(includeDiskFiles);
 }
 
@@ -1411,6 +1630,9 @@ ECode WebView::ClearFormData()
 ECode WebView::ClearHistory()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "clearFormData");
+    }
     return mProvider->ClearHistory();
 }
 
@@ -1421,7 +1643,32 @@ ECode WebView::ClearHistory()
 ECode WebView::ClearSslPreferences()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "clearSslPreferences");
+    }
     return mProvider->ClearSslPreferences();
+}
+
+/**
+ * Clears the client certificate preferences stored in response
+ * to proceeding/cancelling client cert requests. Note that Webview
+ * automatically clears these preferences when it receives a
+ * {@link KeyChain#ACTION_STORAGE_CHANGED} intent. The preferences are
+ * shared by all the webviews that are created by the embedder application.
+ *
+ * @param onCleared  A runnable to be invoked when client certs are cleared.
+ *                   The embedder can pass null if not interested in the
+ *                   callback. The runnable will be called in UI thread.
+ */
+void WebView::ClearClientCertPreferences(
+    /* [in] */ IRunnable* onCleared)
+{
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "clearClientCertPreferences");
+    }
+    AutoPtr<IWebViewFactoryProviderStatics> statics;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&statics);
+    statics->ClearClientCertPreferences(onCleared);
 }
 
 /**
@@ -1450,7 +1697,9 @@ ECode WebView::SetFindListener(
     /* [in] */ IWebViewFindListener* listener)
 {
     FAIL_RETURN(CheckThread());
-    return mProvider->SetFindListener(listener);
+    SetupFindListenerIfNeeded();
+    mFindListener->mUserFindListener = listener;
+    return NOERROR;
 }
 
 /**
@@ -1467,6 +1716,9 @@ ECode WebView::FindNext(
     /* [in] */ Boolean forward)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "findNext");
+    }
     return mProvider->FindNext(forward);
 }
 
@@ -1485,6 +1737,9 @@ ECode WebView::FindAll(
 {
     VALIDATE_NOT_NULL(all);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "findAll");
+    }
     assert(0);
     // TODO
     // StrictMode.noteSlowCall("findAll blocks UI: prefer findAllAsync");
@@ -1503,6 +1758,9 @@ ECode WebView::FindAllAsync(
     /* [in] */ const String& find)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "findAllAsync");
+    }
     return mProvider->FindAllAsync(find);
 }
 
@@ -1524,6 +1782,9 @@ ECode WebView::ShowFindDialog(
 {
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "showFindDialog");
+    }
     return mProvider->ShowFindDialog(text, showIme, result);
 }
 
@@ -1552,11 +1813,34 @@ ECode WebView::ShowFindDialog(
 String WebView::FindAddress(
     /* [in] */ const String& addr)
 {
-    AutoPtr<IWebViewFactoryProviderStatics> starts;
-    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&starts);
+    // TODO: Rewrite this in Java so it is not needed to start up chromium
+    // Could also be deprecated
+    AutoPtr<IWebViewFactoryProviderStatics> statics;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&statics);
     String str;
-    starts->FindAddress(addr, &str);
+    statics->FindAddress(addr, &str);
     return str;
+}
+
+/**
+ * For apps targeting the L release, WebView has a new default behavior that reduces
+ * memory footprint and increases performance by intelligently choosing
+ * the portion of the HTML document that needs to be drawn. These
+ * optimizations are transparent to the developers. However, under certain
+ * circumstances, an App developer may want to disable them:
+ * 1. When an app uses {@link #onDraw} to do own drawing and accesses portions
+ * of the page that is way outside the visible portion of the page.
+ * 2. When an app uses {@link #capturePicture} to capture a very large HTML document.
+ * Note that capturePicture is a deprecated API.
+ *
+ * Enabling drawing the entire HTML document has a significant performance
+ * cost. This method should be called before any WebViews are created.
+ */
+ECode WebView::EnableSlowWholeDocumentDraw()
+{
+    AutoPtr<IWebViewFactoryProviderStatics> statics;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&statics);
+    return statics->EnableSlowWholeDocumentDraw();
 }
 
 /**
@@ -1566,6 +1850,9 @@ String WebView::FindAddress(
 ECode WebView::ClearMatches()
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "clearMatches");
+    }
     return mProvider->ClearMatches();
 }
 
@@ -1635,6 +1922,9 @@ ECode WebView::SetPictureListener(
     /* [in] */ IWebViewPictureListener* listener)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "setPictureListener=%p", listener);
+    }
     return mProvider->SetPictureListener(listener);
 }
 
@@ -1687,6 +1977,9 @@ ECode WebView::AddJavascriptInterface(
     /* [in] */ const String& name)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "addJavascriptInterface=%s", (const char*)name);
+    }
     return mProvider->AddJavascriptInterface(object, name);
 }
 
@@ -1701,6 +1994,9 @@ ECode WebView::RemoveJavascriptInterface(
     /* [in] */ const String& name)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "removeJavascriptInterface=%s", (const char*)name);
+    }
     return mProvider->RemoveJavascriptInterface(name);
 }
 
@@ -1720,6 +2016,25 @@ ECode WebView::GetSettings(
 }
 
 /**
+ * Enables debugging of web contents (HTML / CSS / JavaScript)
+ * loaded into any WebViews of this application. This flag can be enabled
+ * in order to facilitate debugging of web layouts and JavaScript
+ * code running inside WebViews. Please refer to WebView documentation
+ * for the debugging guide.
+ *
+ * The default is false.
+ *
+ * @param enabled whether to enable web contents debugging
+ */
+ECode WebView::SetWebContentsDebuggingEnabled(
+    /* [in] */ Boolean enabled)
+{
+    AutoPtr<IWebViewFactoryProviderStatics> statics;
+    GetFactory()->GetStatics((IWebViewFactoryProviderStatics**)&statics);
+    return statics->SetWebContentsDebuggingEnabled(enabled);
+}
+
+/**
  * Gets the list of currently loaded plugins.
  *
  * @return the list of currently loaded plugins
@@ -1729,7 +2044,6 @@ ECode WebView::GetSettings(
 AutoPtr<IPluginList> WebView::GetPluginList()
 {
     AutoLock lock(sLock);
-    CheckThread();
     AutoPtr<IPluginList> pl;
     CPluginList::New((IPluginList**)&pl);
     return pl;
@@ -1810,6 +2124,9 @@ ECode WebView::FlingScroll(
     /* [in] */ Int32 vy)
 {
     FAIL_RETURN(CheckThread());
+    if (DebugFlags::TRACE_API) {
+        Logger::D(LOGTAG, "flingScroll");
+    }
     return mProvider->FlingScroll(vx, vy);
 }
 
@@ -1870,9 +2187,20 @@ ECode WebView::CanZoomOut(
 ECode WebView::ZoomBy(
         /* [in] */ Float zoomFactor)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    FAIL_RETURN(CheckThread());
+
+    if (zoomFactor < 0.01) {
+        //throw new IllegalArgumentException("zoomFactor must be greater than 0.01.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (zoomFactor > 100.0) {
+        //throw new IllegalArgumentException("zoomFactor must be less than 100.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Boolean result;
+    return mProvider->ZoomBy(zoomFactor, &result);
 }
 
 /**
@@ -1959,6 +2287,30 @@ ECode WebView::GetWebViewProvider(
 // Private internal stuff
 //-------------------------------------------------------------------------
 
+// Only used by android.webkit.FindActionModeCallback.
+void WebView::SetFindDialogFindListener(
+    /* [in] */ IWebViewFindListener* listener)
+{
+    CheckThread();
+    SetupFindListenerIfNeeded();
+    mFindListener->mFindDialogFindListener = listener;
+}
+
+// Only used by android.webkit.FindActionModeCallback.
+void WebView::NotifyFindDialogDismissed()
+{
+    CheckThread();
+    mProvider->NotifyFindDialogDismissed();
+}
+
+void WebView::SetupFindListenerIfNeeded()
+{
+    if (mFindListener == NULL) {
+        mFindListener = new FindListenerDistributor(this);
+        mProvider->SetFindListener(mFindListener);
+    }
+}
+
 void WebView::EnsureProviderCreated()
 {
     CheckThread();
@@ -1975,24 +2327,29 @@ void WebView::EnsureProviderCreated()
 AutoPtr<IWebViewFactoryProvider> WebView::GetFactory()
 {
     AutoLock lock(sLock);
-
-    // For now the main purpose of this function (and the factory abstration) is to keep
-    // us honest and minimize usage of WebViewClassic internals when binding the proxy.
-    CheckThread();
     return WebViewFactory::GetProvider();
 }
 
 ECode WebView::CheckThread()
 {
-    if (Looper::GetMyLooper() != Looper::GetMainLooper()) {
+    // Ignore mWebViewThread == null because this can be called during in the super class
+    // constructor, before this class's own constructor has even started.
+    if (mWebViewThread != NULL && Looper::GetMyLooper() != mWebViewThread) {
         assert(0);
-//        Throwable throwable = new Throwable(
-//                "Warning: A WebView method was called on thread '" +
-//                Thread.currentThread().getName() + "'. " +
-//                "All WebView methods must be called on the UI thread. " +
-//                "Future versions of WebView may not support use on other threads.");
-//        Log.w(LOGTAG, Log.getStackTraceString(throwable));
-//        StrictMode.onWebViewMethodCalledOnWrongThread(throwable);
+        // TODO
+        // Throwable throwable = new Throwable(
+        //         "A WebView method was called on thread '" +
+        //         Thread.currentThread().getName() + "'. " +
+        //         "All WebView methods must be called on the same thread. " +
+        //         "(Expected Looper " + mWebViewThread + " called on " + Looper.myLooper() +
+        //         ", FYI main Looper is " + Looper.getMainLooper() + ")");
+        // Log.w(LOGTAG, Log.getStackTraceString(throwable));
+        // StrictMode.onWebViewMethodCalledOnWrongThread(throwable);
+
+        if (sEnforceThreadChecking) {
+            //throw new RuntimeException(throwable);
+            return E_RUNTIME_EXCEPTION;
+        }
     }
 
     return E_NOT_IMPLEMENTED;
@@ -2015,7 +2372,7 @@ ECode WebView::OnAttachedToWindow()
     return viewDelegate->OnAttachedToWindow();
 }
 
-ECode WebView::OnDetachedFromWindow()
+ECode WebView::OnDetachedFromWindowInternal()
 {
     AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
     mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
@@ -2042,9 +2399,8 @@ ECode WebView::SetOverScrollMode(
     // TODO
     // FAIL_RETURN(AbsoluteLayout::SetOverScrollMode(mode));
 
-    // This method may called in the constructor chain, before the WebView provider is
-    // created. (Fortunately, this is the only method we override that can get called by
-    // any of the base class constructors).
+    // This method may be called in the constructor chain, before the WebView provider is
+    // created.
     EnsureProviderCreated();
     AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
     mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
@@ -2191,6 +2547,24 @@ Boolean WebView::OnKeyMultiple(
     return result;
 }
 
+ECode WebView::GetAccessibilityNodeProvider(
+    /* [out] */ IAccessibilityNodeProvider** provider)
+{
+    VALIDATE_NOT_NULL(provider);
+
+    AutoPtr<IWebViewProviderViewDelegate> delegate;
+    mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&delegate);
+    delegate->GetAccessibilityNodeProvider(provider);
+    if (provider == NULL) {
+        assert(0);
+        // TODO
+        // return super.getAccessibilityNodeProvider(provider);
+    }
+    else {
+        return NOERROR;
+    }
+}
+
 Boolean WebView::ShouldDelayChildPressedState()
 {
     AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
@@ -2319,6 +2693,9 @@ void WebView::OnVisibilityChanged(
     assert(0);
     // TODO
     // AbsoluteLayout::OnVisibilityChanged(changedView, visibility);
+    // This method may be called in the constructor chain, before the WebView provider is
+    // created.
+    EnsureProviderCreated();
     AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
     mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
     viewDelegate->OnVisibilityChanged(changedView, visibility);
@@ -2424,6 +2801,17 @@ void WebView::OnMeasure(
     viewDelegate->OnMeasure(widthMeasureSpec, heightMeasureSpec);
 }
 
+void WebView::DispatchDraw(
+    /* [in] */ ICanvas* canvas)
+{
+    AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
+    mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
+    viewDelegate->PreDispatchDraw(canvas);
+    assert(0);
+    // TODO
+    // super.dispatchDraw(canvas);
+}
+
 Boolean WebView::RequestChildRectangleOnScreen(
     /* [in] */ IView* child,
     /* [in] */ IRect* rect,
@@ -2454,6 +2842,26 @@ ECode WebView::SetLayerType(
     AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
     mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
     return viewDelegate->SetLayerType(layerType, paint);
+}
+
+ECode WebView::OnStartTemporaryDetach()
+{
+    assert(0);
+    // TODO
+    // super.onStartTemporaryDetach();
+    AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
+    mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
+    return viewDelegate->OnStartTemporaryDetach();
+}
+
+ECode WebView::OnFinishTemporaryDetach()
+{
+    assert(0);
+    // TODO
+    // super.onFinishTemporaryDetach();
+    AutoPtr<IWebViewProviderViewDelegate> viewDelegate;
+    mProvider->GetViewDelegate((IWebViewProviderViewDelegate**)&viewDelegate);
+    return viewDelegate->OnFinishTemporaryDetach();
 }
 
 ECode WebView::ToString(

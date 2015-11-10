@@ -359,8 +359,7 @@ ECode WebChromeClient::OnGeolocationPermissionsHidePrompt()
 ECode WebChromeClient::OnPermissionRequest(
     /* [in] */ IPermissionRequest* request)
 {
-    request->Deny();
-    return NOERROR;
+    return request->Deny();
 }
 
 /**

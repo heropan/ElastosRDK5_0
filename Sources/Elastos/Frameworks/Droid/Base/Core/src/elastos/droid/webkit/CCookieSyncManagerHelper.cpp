@@ -18,7 +18,7 @@ ECode CCookieSyncManagerHelper::GetInstance(
 {
     AutoLock lock(this);
     VALIDATE_NOT_NULL(instance);
-    CookieSyncManager::CheckInstanceIsAllowed();
+    FAIL_RETURN(CookieSyncManager::CheckInstanceIsAllowed());
     if (CookieSyncManager::sRef == NULL) {
         CookieSyncManager::sRef = new CookieSyncManager();
     }
@@ -34,7 +34,7 @@ ECode CCookieSyncManagerHelper::CreateInstance(
     AutoLock lock(this);
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(instance);
-    CookieSyncManager::SetGetInstanceIsAllowed();
+    FAIL_RETURN(CookieSyncManager::SetGetInstanceIsAllowed());
     return GetInstance(instance);
 }
 

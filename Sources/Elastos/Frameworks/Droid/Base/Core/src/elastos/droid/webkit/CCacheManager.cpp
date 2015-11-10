@@ -1,4 +1,5 @@
 
+#include "elastos/droid/webkit/CacheManager.h"
 #include "elastos/droid/webkit/CCacheManager.h"
 #include "elastos/droid/webkit/DebugFlags.h"
 #include <elastos/utility/logging/Logger.h>
@@ -166,71 +167,39 @@ ECode CCacheManager::CacheResult::SetContentLength(
 
 CAR_INTERFACE_IMPL(CCacheManager, Object, ICacheManager);
 
-CAR_OBJECT_IMPL(CCacheManager);
-
-ECode CCacheManager::constructor()
-{
-    return NOERROR;
-}
-
-AutoPtr<IFile> CCacheManager::GetCacheFileBaseDir()
-{
-    return NULL;
-}
+CAR_SINGLETON_IMPL(CCacheManager);
 
 ECode CCacheManager::GetCacheFileBaseDir(
     /* [out] */ IFile** dir)
 {
     VALIDATE_NOT_NULL(dir);
-    *dir = GetCacheFileBaseDir();
+    *dir = CacheManager::GetCacheFileBaseDir();
     REFCOUNT_ADD(*dir);
     return NOERROR;
-}
-
-Boolean CCacheManager::CacheDisabled()
-{
-    return FALSE;
 }
 
 ECode CCacheManager::CacheDisabled(
     /* [out] */ Boolean* disabled)
 {
     VALIDATE_NOT_NULL(disabled);
-    *disabled = CacheDisabled();
+    *disabled = CacheManager::CacheDisabled();
     return NOERROR;
-}
-
-Boolean CCacheManager::StartCacheTransaction()
-{
-    return FALSE;
 }
 
 ECode CCacheManager::StartCacheTransaction(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = StartCacheTransaction();
+    *result = CacheManager::StartCacheTransaction();
     return NOERROR;
-}
-
-Boolean CCacheManager::EndCacheTransaction()
-{
-    return FALSE;
 }
 
 ECode CCacheManager::EndCacheTransaction(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = EndCacheTransaction();
+    *result = CacheManager::EndCacheTransaction();
     return NOERROR;
-}
-
-AutoPtr<ICacheManagerCacheResult> CCacheManager::GetCacheFile(
-    /* [in] */ const String& url,
-    /* [in] */ IMap* headers)
-{
-    return NULL;
 }
 
 ECode CCacheManager::GetCacheFile(
@@ -239,79 +208,17 @@ ECode CCacheManager::GetCacheFile(
     /* [out] */ ICacheManagerCacheResult** cacheResult)
 {
     VALIDATE_NOT_NULL(cacheResult);
-    *cacheResult = GetCacheFile(url,  headers);
+    *cacheResult = CacheManager::GetCacheFile(url,  headers);
     REFCOUNT_ADD(*cacheResult);
     return NOERROR;
-}
-
-/**
- * Given a URL and its full headers, gets a CacheResult if a local cache
- * can be stored. Otherwise returns null. The mimetype is passed in so that
- * the function can use the mimetype that will be passed to WebCore which
- * could be different from the mimetype defined in the headers.
- * forceCache is for out-of-package callers to force creation of a
- * CacheResult, and is used to supply surrogate responses for URL
- * interception.
- *
- * @return a CacheResult for a given URL
- */
-AutoPtr<ICacheManagerCacheResult> CCacheManager::CreateCacheFile(
-    /* [in] */ const String& url,
-    /* [in] */ Int32 statusCode,
-    /* [in] */ IHeaders* headers,
-    /* [in] */ const String& mimeType,
-    /* [in] */ Boolean forceCache)
-{
-    // This method is public but hidden. We break functionality.
-    return NULL;
-}
-
-void CCacheManager::_SaveCacheFile(
-    /* [in] */ const String& url,
-    /* [in] */ ICacheManagerCacheResult* cacheResult)
-{
-    SaveCacheFile(url, 0, cacheResult);
 }
 
 ECode CCacheManager::SaveCacheFile(
     /* [in] */ const String& url,
     /* [in] */ ICacheManagerCacheResult* cacheResult)
 {
-    _SaveCacheFile(url, cacheResult);
+    CacheManager::SaveCacheFile(url, cacheResult);
     return NOERROR;
-}
-
-void CCacheManager::SaveCacheFile(
-    /* [in] */ const String& url,
-    /* [in] */ Int64 postIdentifier,
-    /* [in] */ ICacheManagerCacheResult* cacheRet)
-{
-    //try {
-    AutoPtr<IOutputStream> outStream;
-    cacheRet->GetOutputStream((IOutputStream**)&outStream);
-    outStream->Close();
-    //} catch (IOException e) {
-    //    return;
-    //}
-
-    // This method is exposed in the public API but the API provides no
-    // way to obtain a new CacheResult object with a non-null output
-    // stream ...
-    // - CacheResult objects returned by getCacheFile() have a null
-    //   output stream.
-    // - new CacheResult objects have a null output stream and no
-    //   setter is provided.
-    // Since this method throws a null pointer exception in this case,
-    // it is effectively useless from the point of view of the public
-    // API.
-    //
-    // With the Chromium HTTP stack we continue to throw the same
-    // exception for 'backwards compatibility' with the Android HTTP
-    // stack.
-    //
-    // This method is not used from within this package, and for public API
-    // use, we should already have thrown an exception above.
-    assert(FALSE);
 }
 
 } // namespace Webkit

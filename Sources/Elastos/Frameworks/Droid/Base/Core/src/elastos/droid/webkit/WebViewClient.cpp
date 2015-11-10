@@ -3,6 +3,8 @@
 //#include "elastos/droid/view/ViewRootImpl.h"
 
 //using Elastos::Droid::View::ViewRootImpl;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::View::IViewRootImpl;
 
 namespace Elastos {
 namespace Droid {
@@ -150,9 +152,14 @@ ECode WebViewClient::ShouldInterceptRequest(
     /* [in] */ IWebResourceRequest* request,
     /* [out] */ IWebResourceResponse** wrr)
 {
+    VALIDATE_NOT_NULL(request);
+    AutoPtr<IUri> url;
+    request->GetUrl((IUri**)&url);
+    String str;
     assert(0);
     // TODO
-    return E_NOT_IMPLEMENTED;
+    // url->ToString(&str);
+    return ShouldInterceptRequest(view, str, wrr);
 }
 
 /**
@@ -250,9 +257,8 @@ ECode WebViewClient::OnReceivedClientCertRequest(
     /* [in] */ IWebView* view,
     /* [in] */ IClientCertRequest* request)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(request);
+    return request->Cancel();
 }
 
 /**
@@ -312,13 +318,7 @@ ECode WebViewClient::OnUnhandledKeyEvent(
     /* [in] */ IWebView* view,
     /* [in] */ IKeyEvent* event)
 {
-#if 0
-    AutoPtr<ViewRootImpl> root;
-//    view->GetViewRootImpl((ViewRootImpl**)&root);
-    if (root != NULL) {
-        root->DispatchUnhandledKey(event);
-    }
-#endif
+    OnUnhandledInputEventInternal(view, IInputEvent::Probe(event));
     return NOERROR;
 }
 
@@ -326,9 +326,13 @@ ECode WebViewClient::OnUnhandledInputEvent(
     /* [in] */ IWebView* view,
     /* [in] */ IInputEvent* event)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    if (IKeyEvent::Probe(event) != NULL) {
+        return OnUnhandledKeyEvent(view, IKeyEvent::Probe(event));
+    }
+
+    OnUnhandledInputEventInternal(view, event);
+
+    return NOERROR;
 }
 
 /**
@@ -372,6 +376,19 @@ ECode WebViewClient::ToString(
     VALIDATE_NOT_NULL(info);
     *info = "WebViewClient";
     return NOERROR;
+}
+
+void WebViewClient::OnUnhandledInputEventInternal(
+    /* [in] */ IWebView* view,
+    /* [in] */ IInputEvent* event)
+{
+    AutoPtr<IViewRootImpl> root;
+    assert(0);
+    // TODO
+    // view->GetViewRootImpl((IViewRootImpl**)&root);
+    if (root != NULL) {
+        root->DispatchUnhandledInputEvent(event);
+    }
 }
 
 } // namespace Webkit

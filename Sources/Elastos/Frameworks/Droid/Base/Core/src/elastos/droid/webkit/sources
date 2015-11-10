@@ -8,6 +8,7 @@ INCLUDES += $(MAKEDIR)/../../../../inc
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += CacheManager.cpp
 SOURCES += CCacheManager.cpp
 SOURCES += CConsoleMessage.cpp
 SOURCES += CCookieManagerHelper.cpp
@@ -34,6 +35,7 @@ SOURCES += CWebStorageHelper.cpp
 SOURCES += CWebViewClient.cpp
 SOURCES += CWebView.cpp
 SOURCES += CWebViewDatabaseHelper.cpp
+SOURCES += CWebViewFactory.cpp
 SOURCES += CWebViewFragment.cpp
 SOURCES += CWebViewHelper.cpp
 SOURCES += CWebViewHitTestResult.cpp

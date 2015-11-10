@@ -82,7 +82,7 @@ public:
      * Set the WebView to search.  Must be non null, and set before calling
      * startActionMode.
      */
-    virtual CARAPI_(void) SetWebView(
+    virtual CARAPI SetWebView(
         /* [in] */ CWebView* webView);
 
     CARAPI OnFindResultReceived(

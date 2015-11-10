@@ -91,17 +91,49 @@ ECode WebResourceResponse::SetStatusCodeAndReasonPhrase(
     /* [in] */ Int32 statusCode,
     /* [in] */ const String& reasonPhrase)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    if (statusCode < 100) {
+        assert(0);
+        //throw new IllegalArgumentException("statusCode can't be less than 100.");
+    }
+    if (statusCode > 599) {
+        assert(0);
+        //throw new IllegalArgumentException("statusCode can't be greater than 599.");
+    }
+    if (statusCode > 299 && statusCode < 400) {
+        assert(0);
+        //throw new IllegalArgumentException("statusCode can't be in the [300, 399] range.");
+    }
+    if (reasonPhrase == NULL) {
+        assert(0);
+        //throw new IllegalArgumentException("reasonPhrase can't be null.");
+    }
+    if (reasonPhrase.Trim().IsEmpty()) {
+        assert(0);
+        //throw new IllegalArgumentException("reasonPhrase can't be empty.");
+    }
+
+    Int32 length = reasonPhrase.GetLength();
+    for (Int32 i = 0; i < length; i++) {
+        Int32 c = reasonPhrase.GetChar(i);
+        if (c > 0x7F) {
+            assert(0);
+            // throw new IllegalArgumentException(
+            //         "reasonPhrase can't contain non-ASCII characters.");
+        }
+    }
+
+    mStatusCode = statusCode;
+    mReasonPhrase = reasonPhrase;
+
+    return NOERROR;
 }
 
 ECode WebResourceResponse::GetStatusCode(
     /* [out] */ Int32* statusCode)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(statusCode);
+    *statusCode = mStatusCode;
+    return NOERROR;
 }
 
 /**
@@ -112,17 +144,16 @@ ECode WebResourceResponse::GetStatusCode(
 ECode WebResourceResponse::GetReasonPhrase(
     /* [out] */ String* reasonPhrase)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(reasonPhrase);
+    *reasonPhrase = mReasonPhrase;
+    return NOERROR;
 }
 
 ECode WebResourceResponse::SetResponseHeaders(
     /* [in] */ IMap* headers)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    mResponseHeaders = headers;
+    return NOERROR;
 }
 
 /**
@@ -133,9 +164,9 @@ ECode WebResourceResponse::SetResponseHeaders(
 ECode WebResourceResponse::GetResponseHeaders(
     /* [out] */ IMap** headers)
 {
-    assert(0);
-    // TODO
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(headers);
+    *headers = mResponseHeaders;
+    return NOERROR;
 }
 
 /**

@@ -48,9 +48,7 @@ AutoPtr<ICookieManager> CookieManager::GetInstance()
 ECode CookieManager::SetAcceptCookie(
     /* [in] */ Boolean accept)
 {
-    AutoLock lock(this);
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -63,27 +61,21 @@ ECode CookieManager::SetAcceptCookie(
 ECode CookieManager::AcceptCookie(
     /* [out] */ Boolean* result)
 {
-    AutoLock lock(this);
-    VALIDATE_NOT_NULL(result);
-    assert(0);
-    *result = FALSE;
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 ECode CookieManager::SetAcceptThirdPartyCookies(
     /* [in] */ IWebView* webview,
     /* [in] */ Boolean accept)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 ECode CookieManager::AcceptThirdPartyCookies(
     /* [in] */ IWebView* webview,
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
  /**
@@ -100,8 +92,7 @@ ECode CookieManager::SetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -115,10 +106,7 @@ ECode CookieManager::GetCookie(
     /* [in] */ const String& url,
     /* [out] */ String* cookie)
 {
-    VALIDATE_NOT_NULL(cookie);
-    assert(0);
-    *cookie = String(NULL);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -135,10 +123,7 @@ ECode CookieManager::GetCookie(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ String* cookie)
 {
-    VALIDATE_NOT_NULL(cookie);
-    assert(0);
-    *cookie = String(NULL);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -155,11 +140,7 @@ ECode CookieManager::GetCookie(
     /* [in] */ IWebAddress* uri,
     /* [out] */ String* cookie)
 {
-    AutoLock lock(this);
-    VALIDATE_NOT_NULL(cookie);
-    assert(0);
-    *cookie = String(NULL);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -168,15 +149,13 @@ ECode CookieManager::GetCookie(
  */
 ECode CookieManager::RemoveSessionCookie()
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 ECode CookieManager::RemoveSessionCookies(
     /* [in] */ IValueCallback* callBack)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -184,15 +163,13 @@ ECode CookieManager::RemoveSessionCookies(
  */
 ECode CookieManager::RemoveAllCookie()
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 ECode CookieManager::RemoveAllCookies(
     /* [in] */ IValueCallback* callBack)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -204,11 +181,7 @@ ECode CookieManager::RemoveAllCookies(
 ECode CookieManager::HasCookies(
     /* [out] */ Boolean* result)
 {
-    AutoLock lock(this);
-    VALIDATE_NOT_NULL(result);
-    assert(0);
-    *result = FALSE;
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -222,11 +195,7 @@ ECode CookieManager::HasCookies(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ Boolean* result)
 {
-    AutoLock lock(this);
-    VALIDATE_NOT_NULL(result);
-    assert(0);
-    *result = FALSE;
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -234,8 +203,7 @@ ECode CookieManager::HasCookies(
  */
 ECode CookieManager::RemoveExpiredCookie()
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 ECode CookieManager::Flush()

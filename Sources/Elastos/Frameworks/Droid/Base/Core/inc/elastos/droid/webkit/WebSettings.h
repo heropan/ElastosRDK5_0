@@ -104,8 +104,7 @@ public:
     // and the separate zoom controls. The latter were obtained using
     // {@link WebView#getZoomControls}, which is now hidden.
     CARAPI SetBuiltInZoomControls(
-        /* [in] */ Boolean enabled,
-        /* [out] */ Boolean* result);
+        /* [in] */ Boolean enabled);
 
     /**
      * Gets whether the zoom mechanisms built into WebView are being used.
@@ -279,6 +278,22 @@ public:
      */
     CARAPI GetTextZoom(
         /* [out] */ Int32* textZoom);
+
+    /**
+     * Sets policy for third party cookies.
+     * Developers should access this via {@link CookieManager#setShouldAcceptThirdPartyCookies}.
+     * @hide Internal API.
+     */
+    CARAPI SetAcceptThirdPartyCookies(
+        /* [in] */ Boolean accept);
+
+    /**
+     * Gets policy for third party cookies.
+     * Developers should access this via {@link CookieManager#getShouldAcceptThirdPartyCookies}.
+     * @hide Internal API
+     */
+    CARAPI GetAcceptThirdPartyCookies(
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the text size of the page. The default is {@link TextSize#NORMAL}.

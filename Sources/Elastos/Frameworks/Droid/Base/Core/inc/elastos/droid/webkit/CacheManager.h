@@ -1,11 +1,9 @@
 
-#ifndef __ELASTOS_DROID_WEBKIT_CCACHEMANAGER_H__
-#define __ELASTOS_DROID_WEBKIT_CCACHEMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CACHEMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_CACHEMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "_Elastos_Droid_Webkit_CCacheManager.h"
 #include "elastos/droid/os/Runnable.h"
-#include <elastos/core/Singleton.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
@@ -19,9 +17,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 
-CarClass(CCacheManager)
-    , public Singleton
-    , public ICacheManager
+class CacheManager
 {
 public:
     class CacheResult
@@ -103,30 +99,44 @@ public:
     };
 
 public:
-    CAR_INTERFACE_DECL()
+    static CARAPI_(AutoPtr<IFile>) GetCacheFileBaseDir();
 
-    CAR_SINGLETON_DECL()
+    static CARAPI_(Boolean) CacheDisabled();
 
-    CARAPI GetCacheFileBaseDir(
-        /* [out] */ IFile** dir);
+    static CARAPI_(Boolean) StartCacheTransaction();
 
-    CARAPI CacheDisabled(
-        /* [out] */ Boolean* disabled);
+    static CARAPI_(Boolean) EndCacheTransaction();
 
-    CARAPI StartCacheTransaction(
-        /* [out] */ Boolean* result);
+    static CARAPI_(AutoPtr<ICacheManagerCacheResult>) GetCacheFile(
+        /* [in] */ const String& url,
+        /* [in] */ IMap* headers);
 
-    CARAPI EndCacheTransaction(
-        /* [out] */ Boolean* result);
+    /**
+     * Given a URL and its full headers, gets a CacheResult if a local cache
+     * can be stored. Otherwise returns null. The mimetype is passed in so that
+     * the function can use the mimetype that will be passed to WebCore which
+     * could be different from the mimetype defined in the headers.
+     * forceCache is for out-of-package callers to force creation of a
+     * CacheResult, and is used to supply surrogate responses for URL
+     * interception.
+     *
+     * @return a CacheResult for a given URL
+     */
+    static CARAPI_(AutoPtr<ICacheManagerCacheResult>) CreateCacheFile(
+        /* [in] */ const String& url,
+        /* [in] */ Int32 statusCode,
+        /* [in] */ IHeaders* headers,
+        /* [in] */ const String& mimeType,
+        /* [in] */ Boolean forceCache);
 
-    CARAPI GetCacheFile(
-            /* [in] */ const String& url,
-            /* [in] */ IMap* headers,
-            /* [out] */ ICacheManagerCacheResult** cacheResult);
-
-    CARAPI SaveCacheFile(
+    static CARAPI_(void) SaveCacheFile(
         /* [in] */ const String& url,
         /* [in] */ ICacheManagerCacheResult* cacheResult);
+
+    static CARAPI_(void) SaveCacheFile(
+        /* [in] */ const String& url,
+        /* [in] */ Int64 postIdentifier,
+        /* [in] */ ICacheManagerCacheResult* cacheRet);
 };
 
 } // namespace Webkit

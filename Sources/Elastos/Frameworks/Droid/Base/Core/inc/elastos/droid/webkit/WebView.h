@@ -5,9 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 // TODO #include "elastos/droid/widget/AbsoluteLayout.h"
 
-using Elastos::IO::IBufferedWriter;
-using Elastos::IO::IFile;
-using Elastos::Utility::IMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::IBitmap;
@@ -17,11 +14,13 @@ using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IPicture;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Net::Http::ISslCertificate;
 // TODO using Elastos::Droid::Widget::AbsoluteLayout;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::IKeyEvent;
@@ -29,6 +28,10 @@ using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IBufferedWriter;
+using Elastos::IO::IFile;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -410,59 +413,37 @@ public:
         WebView* mHost;
     };
 
+private:
+    /**
+     * In addition to the FindListener that the user may set via the WebView.setFindListener
+     * API, FindActionModeCallback will register it's own FindListener. We keep them separate
+     * via this class so that that the two FindListeners can potentially exist at once.
+     */
+    class FindListenerDistributor
+        : public Object
+        , public IWebViewFindListener
+    {
+        friend class WebView;
+    public:
+        CAR_INTERFACE_DECL()
+
+        FindListenerDistributor(
+            /* [in] */ WebView* owner);
+
+        CARAPI OnFindResultReceived(
+            /* [in] */ Int32 activeMatchOrdinal,
+            /* [in] */ Int32 numberOfMatches,
+            /* [in] */ Boolean isDoneCounting);
+
+    private:
+        WebView* mOwner;
+        AutoPtr<IWebViewFindListener> mFindDialogFindListener;
+        AutoPtr<IWebViewFindListener> mUserFindListener;
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
-    /**
-     * Constructs a new WebView with a Context object.
-     *
-     * @param context a Context object used to access application assets
-     */
-    WebView(
-        /* [in] */ IContext* context);
-
-    /**
-     * Constructs a new WebView with layout parameters.
-     *
-     * @param context a Context object used to access application assets
-     * @param attrs an AttributeSet passed to our parent
-     */
-    WebView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    /**
-     * Constructs a new WebView with layout parameters and a default style.
-     *
-     * @param context a Context object used to access application assets
-     * @param attrs an AttributeSet passed to our parent
-     * @param defStyle the default style resource ID
-     */
-    WebView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-    /**
-     * Constructs a new WebView with layout parameters and a default style.
-     *
-     * @param context a Context object used to access application assets
-     * @param attrs an AttributeSet passed to our parent
-     * @param defStyle the default style resource ID
-     * @param privateBrowsing whether this WebView will be initialized in
-     *                        private mode
-     *
-     * @deprecated Private browsing is no longer supported directly via
-     * WebView and will be removed in a future release. Prefer using
-     * {@link WebSettings}, {@link WebViewDatabase}, {@link CookieManager}
-     * and {@link WebStorage} for fine-grained control of privacy data.
-     */
-    WebView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Boolean privateBrowsing);
-
     CARAPI constructor(
         /* [in] */ IContext* context);
 
@@ -473,12 +454,18 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
         /* [in] */ Boolean privateBrowsing);
 
     /**
@@ -623,6 +610,13 @@ public:
      * @hide Since API level {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1}
      */
     static CARAPI_(void) DisablePlatformNotifications();
+
+    /**
+     * Used only by internal tests to free up memory.
+     *
+     * @hide
+     */
+    static CARAPI_(void) FreeMemoryForTests();
 
     /**
      * Informs WebView of the network state. This is used to set
@@ -943,6 +937,33 @@ public:
         /* [out] */ IPicture** pic);
 
     /**
+     * @deprecated Use {@link #createPrintDocumentAdapter(String)} which requires user
+     *             to provide a print document name.
+     */
+    //@Deprecated
+    // TODO
+    // CARAPI CreatePrintDocumentAdapter(
+    //     /* [out] */ IPrintDocumentAdapter** adapter);
+
+/**
+     * Creates a PrintDocumentAdapter that provides the content of this Webview for printing.
+     *
+     * The adapter works by converting the Webview contents to a PDF stream. The Webview cannot
+     * be drawn during the conversion process - any such draws are undefined. It is recommended
+     * to use a dedicated off screen Webview for the printing. If necessary, an application may
+     * temporarily hide a visible WebView by using a custom PrintDocumentAdapter instance
+     * wrapped around the object returned and observing the onStart and onFinish methods. See
+     * {@link android.print.PrintDocumentAdapter} for more information.
+     *
+     * @param documentName  The user-facing name of the printed document. See
+     *                      {@link android.print.PrintDocumentInfo}
+     */
+    // TODO
+    // CARAPI CreatePrintDocumentAdapter(
+    //     /* [in] */ const String& documentName,
+    //     /* [out] */ IPrintDocumentAdapter** adpter);
+
+    /**
      * Gets the current scale of this WebView.
      *
      * @return the current scale
@@ -1167,6 +1188,20 @@ public:
     CARAPI ClearSslPreferences();
 
     /**
+     * Clears the client certificate preferences stored in response
+     * to proceeding/cancelling client cert requests. Note that Webview
+     * automatically clears these preferences when it receives a
+     * {@link KeyChain#ACTION_STORAGE_CHANGED} intent. The preferences are
+     * shared by all the webviews that are created by the embedder application.
+     *
+     * @param onCleared  A runnable to be invoked when client certs are cleared.
+     *                   The embedder can pass null if not interested in the
+     *                   callback. The runnable will be called in UI thread.
+     */
+    static CARAPI_(void) ClearClientCertPreferences(
+        /* [in] */ IRunnable* onCleared);
+
+    /**
      * Gets the WebBackForwardList for this WebView. This contains the
      * back/forward list for use in querying each item in the history stack.
      * This is a copy of the private WebBackForwardList so it contains only a
@@ -1263,6 +1298,22 @@ public:
      */
     static CARAPI_(String) FindAddress(
         /* [in] */ const String& addr);
+
+    /**
+     * For apps targeting the L release, WebView has a new default behavior that reduces
+     * memory footprint and increases performance by intelligently choosing
+     * the portion of the HTML document that needs to be drawn. These
+     * optimizations are transparent to the developers. However, under certain
+     * circumstances, an App developer may want to disable them:
+     * 1. When an app uses {@link #onDraw} to do own drawing and accesses portions
+     * of the page that is way outside the visible portion of the page.
+     * 2. When an app uses {@link #capturePicture} to capture a very large HTML document.
+     * Note that capturePicture is a deprecated API.
+     *
+     * Enabling drawing the entire HTML document has a significant performance
+     * cost. This method should be called before any WebViews are created.
+     */
+    static CARAPI EnableSlowWholeDocumentDraw();
 
     /**
      * Clears the highlighting surrounding text matches created by
@@ -1386,6 +1437,20 @@ public:
      */
     CARAPI GetSettings(
         /* [out] */ IWebSettings** webSetting);
+
+     /**
+     * Enables debugging of web contents (HTML / CSS / JavaScript)
+     * loaded into any WebViews of this application. This flag can be enabled
+     * in order to facilitate debugging of web layouts and JavaScript
+     * code running inside WebViews. Please refer to WebView documentation
+     * for the debugging guide.
+     *
+     * The default is false.
+     *
+     * @param enabled whether to enable web contents debugging
+     */
+    static CARAPI SetWebContentsDebuggingEnabled(
+        /* [in] */ Boolean enabled);
 
     /**
      * Gets the list of currently loaded plugins.
@@ -1595,6 +1660,9 @@ public:
         /* [in] */ Int32 repeatCount,
         /* [in] */ IKeyEvent* event);
 
+    CARAPI GetAccessibilityNodeProvider(
+        /* [out] */ IAccessibilityNodeProvider** provider);
+
     CARAPI_(Boolean) ShouldDelayChildPressedState();
 
     CARAPI OnInitializeAccessibilityNodeInfo(
@@ -1634,6 +1702,10 @@ public:
         /* [in] */ Int32 layerType,
         /* [in] */ IPaint* paint);
 
+    CARAPI OnStartTemporaryDetach();
+
+    CARAPI OnFinishTemporaryDetach();
+
     CARAPI ToString(
         /* [out] */ String* info);
 
@@ -1664,9 +1736,21 @@ protected:
         /* [in] */ IMap* javaScriptInterfaces,
         /* [in] */ Boolean privateBrowsing);
 
+    /**
+     * @hide
+     */
+    //@SuppressWarnings("deprecation")  // for super() call into deprecated base class constructor.
+    WebView(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes,
+        /* [in] */ IMap* javaScriptInterfaces,
+        /* [in] */ Boolean privateBrowsing);
+
     CARAPI OnAttachedToWindow();
 
-    CARAPI OnDetachedFromWindow();
+    CARAPI OnDetachedFromWindowInternal();
 
     CARAPI_(Int32) ComputeHorizontalScrollRange();
 
@@ -1734,6 +1818,9 @@ protected:
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
+    CARAPI_(void) DispatchDraw(
+        /* [in] */ ICanvas* canvas);
+
 private:
     CARAPI Init(
         /* [in] */ IContext* context,
@@ -1742,34 +1829,44 @@ private:
         /* [in] */ IMap* javaScriptInterfaces,
         /* [in] */ Boolean privateBrowsing);
 
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes,
+        /* [in] */ IMap* javaScriptInterfaces,
+        /* [in] */ Boolean privateBrowsing);
+
+    // Only used by android.webkit.FindActionModeCallback.
+    CARAPI_(void) SetFindDialogFindListener(
+        /* [in] */ IWebViewFindListener* listener);
+
+    // Only used by android.webkit.FindActionModeCallback.
+    CARAPI_(void) NotifyFindDialogDismissed();
+
+    CARAPI_(void) SetupFindListenerIfNeeded();
+
     CARAPI_(void) EnsureProviderCreated();
 
     static CARAPI_(AutoPtr<IWebViewFactoryProvider>) GetFactory();
 
-    static CARAPI CheckThread();
-
-public:
-    /**
-     * URI scheme for telephone number.
-     */
-    static const String SCHEME_TEL;
-    /**
-     * URI scheme for email address.
-     */
-    static const String SCHEME_MAILTO;
-    /**
-     * URI scheme for map address.
-     */
-    static const String SCHEME_GEO;
+    CARAPI CheckThread();
 
 private:
     static const String LOGTAG;
+
+    // Throwing an exception for incorrect thread usage if the
+    // build target is JB MR2 or newer. Defaults to false, and is
+    // set in the WebView constructor.
+    static volatile Boolean sEnforceThreadChecking;
 
     //-------------------------------------------------------------------------
     // Private internal stuff
     //-------------------------------------------------------------------------
 
     AutoPtr<IWebViewProvider> mProvider;
+    AutoPtr<FindListenerDistributor> mFindListener;
+    AutoPtr<ILooper> mWebViewThread;
 
     static Object sLock;
 };

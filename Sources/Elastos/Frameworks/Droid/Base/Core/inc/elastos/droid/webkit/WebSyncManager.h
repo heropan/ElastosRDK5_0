@@ -20,23 +20,6 @@ class WebViewDatabase;
 
 class WebSyncManager : public Runnable
 {
-private:
-    class SyncHandler : public Handler
-    {
-    public:
-        SyncHandler(
-            /* [in] */ WebSyncManager* owner);
-
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-
-        CARAPI ToString(
-            /* [out] */ String* info);
-
-    private:
-        WebSyncManager* mOwner;
-    };
-
 public:
     CARAPI Run();
 
@@ -78,28 +61,9 @@ protected:
     virtual CARAPI_(void) OnSyncInit();
 
 protected:
-    // handler of the sync thread
-    AutoPtr<IHandler> mHandler;
-
-    // database for the persistent storage
-    IWebViewDatabase* mDataBase;
-    // log tag
     static const String LOGTAG;
-
-private:
-    // message code for sync message
-    static const Int32 SYNC_MESSAGE;
-    // time delay in millisec for a sync (now) message
-    static Int32 SYNC_NOW_INTERVAL;
-    // time delay in millisec for a sync (later) message
-    static Int32 SYNC_LATER_INTERVAL;
-    // thread for syncing
-    AutoPtr<IThread> mSyncThread;
-
-    // Name of thread
-    String mThreadName;
-    // Ref count for calls to start/stop sync
-    Int32 mStartSyncRefCount;
+    AutoPtr<IWebViewDatabase> mDataBase;
+    AutoPtr<IHandler> mHandler;
 };
 
 } // namespace Webkit

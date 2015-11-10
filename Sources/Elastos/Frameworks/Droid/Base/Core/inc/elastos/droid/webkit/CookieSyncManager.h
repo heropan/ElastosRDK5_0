@@ -92,7 +92,7 @@ public:
     CARAPI ToString(
         /* [out] */ String* info);
 
-    static CARAPI_(void) SetGetInstanceIsAllowed();
+    static CARAPI SetGetInstanceIsAllowed();
 
 protected:
     CookieSyncManager();

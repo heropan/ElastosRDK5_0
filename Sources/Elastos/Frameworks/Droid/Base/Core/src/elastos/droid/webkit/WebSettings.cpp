@@ -41,8 +41,7 @@ String WebSettings::GetDefaultUserAgent(
 ECode WebSettings::SetNavDump(
     /* [in] */ Boolean enabled)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -56,8 +55,7 @@ ECode WebSettings::SetNavDump(
 ECode WebSettings::GetNavDump(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -72,8 +70,7 @@ ECode WebSettings::GetNavDump(
 ECode WebSettings::SetSupportZoom(
     /* [in] */ Boolean support)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -85,8 +82,7 @@ ECode WebSettings::SetSupportZoom(
 ECode WebSettings::SupportZoom(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -98,8 +94,7 @@ ECode WebSettings::SupportZoom(
 ECode WebSettings::SetMediaPlaybackRequiresUserGesture(
     /* [in] */ Boolean require)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -111,8 +106,7 @@ ECode WebSettings::SetMediaPlaybackRequiresUserGesture(
 ECode WebSettings::GetMediaPlaybackRequiresUserGesture(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -131,11 +125,9 @@ ECode WebSettings::GetMediaPlaybackRequiresUserGesture(
 // and the separate zoom controls. The latter were obtained using
 // {@link WebView#getZoomControls}, which is now hidden.
 ECode WebSettings::SetBuiltInZoomControls(
-    /* [in] */ Boolean enabled,
-    /* [out] */ Boolean* result)
+    /* [in] */ Boolean enabled)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -147,8 +139,7 @@ ECode WebSettings::SetBuiltInZoomControls(
 ECode WebSettings::GetBuiltInZoomControls(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -161,8 +152,7 @@ ECode WebSettings::GetBuiltInZoomControls(
 ECode WebSettings::SetDisplayZoomControls(
     /* [in] */ Boolean enabled)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -176,8 +166,7 @@ ECode WebSettings::SetDisplayZoomControls(
 ECode WebSettings::GetDisplayZoomControls(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -189,8 +178,7 @@ ECode WebSettings::GetDisplayZoomControls(
 ECode WebSettings::SetAllowFileAccess(
     /* [in] */ Boolean allow)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -201,8 +189,7 @@ ECode WebSettings::SetAllowFileAccess(
 ECode WebSettings::GetAllowFileAccess(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -213,8 +200,7 @@ ECode WebSettings::GetAllowFileAccess(
 ECode WebSettings::SetAllowContentAccess(
     /* [in] */ Boolean allow)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -225,8 +211,7 @@ ECode WebSettings::SetAllowContentAccess(
 ECode WebSettings::GetAllowContentAccess(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -236,8 +221,7 @@ ECode WebSettings::GetAllowContentAccess(
 ECode WebSettings::SetLoadWithOverviewMode(
     /* [in] */ Boolean overview)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -249,8 +233,7 @@ ECode WebSettings::SetLoadWithOverviewMode(
 ECode WebSettings::GetLoadWithOverviewMode(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -265,8 +248,7 @@ ECode WebSettings::GetLoadWithOverviewMode(
 ECode WebSettings::SetEnableSmoothTransition(
     /* [in] */ Boolean enable)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -280,8 +262,7 @@ ECode WebSettings::SetEnableSmoothTransition(
 ECode WebSettings::EnableSmoothTransition(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -295,8 +276,7 @@ ECode WebSettings::EnableSmoothTransition(
 ECode WebSettings::SetUseWebViewBackgroundForOverscrollBackground(
     /* [in] */ Boolean view)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -310,8 +290,7 @@ ECode WebSettings::SetUseWebViewBackgroundForOverscrollBackground(
 ECode WebSettings::GetUseWebViewBackgroundForOverscrollBackground(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -321,8 +300,7 @@ ECode WebSettings::GetUseWebViewBackgroundForOverscrollBackground(
 ECode WebSettings::SetSaveFormData(
     /* [in] */ Boolean save)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -335,8 +313,7 @@ ECode WebSettings::SetSaveFormData(
 ECode WebSettings::GetSaveFormData(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -345,8 +322,7 @@ ECode WebSettings::GetSaveFormData(
 ECode WebSettings::SetSavePassword(
     /* [in] */ Boolean save)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -358,8 +334,7 @@ ECode WebSettings::SetSavePassword(
 ECode WebSettings::GetSavePassword(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -370,8 +345,7 @@ ECode WebSettings::GetSavePassword(
 ECode WebSettings::SetTextZoom(
     /* [in] */ Int32 textZoom)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -383,8 +357,29 @@ ECode WebSettings::SetTextZoom(
 ECode WebSettings::GetTextZoom(
     /* [out] */ Int32* textZoom)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
+}
+
+/**
+ * Sets policy for third party cookies.
+ * Developers should access this via {@link CookieManager#setShouldAcceptThirdPartyCookies}.
+ * @hide Internal API.
+ */
+ECode WebSettings::SetAcceptThirdPartyCookies(
+    /* [in] */ Boolean accept)
+{
+    return E_MUST_OVERRIDE_EXCEPTION;
+}
+
+/**
+ * Gets policy for third party cookies.
+ * Developers should access this via {@link CookieManager#getShouldAcceptThirdPartyCookies}.
+ * @hide Internal API
+ */
+ECode WebSettings::GetAcceptThirdPartyCookies(
+    /* [out] */ Boolean* result)
+{
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -447,8 +442,7 @@ ECode WebSettings::GetTextSize(
 ECode WebSettings::SetDefaultZoom(
     /* [in] */ ZoomDensity zoom)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -461,8 +455,7 @@ ECode WebSettings::SetDefaultZoom(
 ECode WebSettings::GetDefaultZoom(
     /* [out] */ ZoomDensity* zoom)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -472,8 +465,7 @@ ECode WebSettings::GetDefaultZoom(
 ECode WebSettings::SetLightTouchEnabled(
     /* [in] */ Boolean enabled)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -485,8 +477,7 @@ ECode WebSettings::SetLightTouchEnabled(
 ECode WebSettings::GetLightTouchEnabled(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -499,8 +490,7 @@ ECode WebSettings::GetLightTouchEnabled(
 ECode WebSettings::SetUseDoubleTree(
     /* [in] */ Boolean use)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -535,8 +525,7 @@ ECode WebSettings::GetUseDoubleTree(
 ECode WebSettings::SetUserAgent(
     /* [in] */ Int32 ua)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -556,8 +545,7 @@ ECode WebSettings::SetUserAgent(
 ECode WebSettings::GetUserAgent(
     /* [out] */ Int32* ua)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -568,8 +556,7 @@ ECode WebSettings::GetUserAgent(
 ECode WebSettings::SetUseWideViewPort(
     /* [in] */ Boolean use)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -581,8 +568,7 @@ ECode WebSettings::SetUseWideViewPort(
 ECode WebSettings::GetUseWideViewPort(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -595,8 +581,7 @@ ECode WebSettings::GetUseWideViewPort(
 ECode WebSettings::SetSupportMultipleWindows(
     /* [in] */ Boolean support)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -608,8 +593,7 @@ ECode WebSettings::SetSupportMultipleWindows(
 ECode WebSettings::SupportMultipleWindows(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -621,8 +605,7 @@ ECode WebSettings::SupportMultipleWindows(
 ECode WebSettings::SetLayoutAlgorithm(
     /* [in] */ LayoutAlgorithm l)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -634,8 +617,7 @@ ECode WebSettings::SetLayoutAlgorithm(
 ECode WebSettings::GetLayoutAlgorithm(
     /* [out] */ LayoutAlgorithm* thm)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -646,8 +628,7 @@ ECode WebSettings::GetLayoutAlgorithm(
 ECode WebSettings::SetStandardFontFamily(
     /* [in] */ const String& font)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -659,8 +640,7 @@ ECode WebSettings::SetStandardFontFamily(
 ECode WebSettings::GetStandardFontFamily(
     /* [out] */ String* family)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -671,8 +651,7 @@ ECode WebSettings::GetStandardFontFamily(
 ECode WebSettings::SetFixedFontFamily(
     /* [in] */ const String& font)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -684,8 +663,7 @@ ECode WebSettings::SetFixedFontFamily(
 ECode WebSettings::GetFixedFontFamily(
     /* [out] */ String* family)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -696,8 +674,7 @@ ECode WebSettings::GetFixedFontFamily(
 ECode WebSettings::SetSansSerifFontFamily(
     /* [in] */ const String& font)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -709,8 +686,7 @@ ECode WebSettings::SetSansSerifFontFamily(
 ECode WebSettings::GetSansSerifFontFamily(
     /* [out] */ String* family)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -721,8 +697,7 @@ ECode WebSettings::GetSansSerifFontFamily(
 ECode WebSettings::SetSerifFontFamily(
     /* [in] */ const String& font)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -734,8 +709,7 @@ ECode WebSettings::SetSerifFontFamily(
 ECode WebSettings::GetSerifFontFamily(
     /* [out] */ String* family)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -746,8 +720,7 @@ ECode WebSettings::GetSerifFontFamily(
 ECode WebSettings::SetCursiveFontFamily(
     /* [in] */ const String& font)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -759,8 +732,7 @@ ECode WebSettings::SetCursiveFontFamily(
 ECode WebSettings::GetCursiveFontFamily(
     /* [out] */ String* family)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -771,8 +743,7 @@ ECode WebSettings::GetCursiveFontFamily(
 ECode WebSettings::SetFantasyFontFamily(
     /* [in] */ const String& font)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -784,8 +755,7 @@ ECode WebSettings::SetFantasyFontFamily(
 ECode WebSettings::GetFantasyFontFamily(
     /* [out] */ String* family)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -797,8 +767,7 @@ ECode WebSettings::GetFantasyFontFamily(
 ECode WebSettings::SetMinimumFontSize(
     /* [in] */ Int32 size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -810,8 +779,7 @@ ECode WebSettings::SetMinimumFontSize(
 CARAPI GetMinimumFontSize(
     /* [out] */ Int32* size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -823,8 +791,7 @@ CARAPI GetMinimumFontSize(
 ECode WebSettings::SetMinimumLogicalFontSize(
     /* [in] */ Int32 size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -836,8 +803,7 @@ ECode WebSettings::SetMinimumLogicalFontSize(
 ECode WebSettings::GetMinimumLogicalFontSize(
     /* [out] */ Int32* size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -849,8 +815,7 @@ ECode WebSettings::GetMinimumLogicalFontSize(
 ECode WebSettings::SetDefaultFontSize(
     /* [in] */ Int32 size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -862,8 +827,7 @@ ECode WebSettings::SetDefaultFontSize(
 ECode WebSettings::GetDefaultFontSize(
     /* [out] */ Int32* size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -875,8 +839,7 @@ ECode WebSettings::GetDefaultFontSize(
 ECode WebSettings::SetDefaultFixedFontSize(
     /* [in] */ Int32 size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -888,8 +851,7 @@ ECode WebSettings::SetDefaultFixedFontSize(
 ECode WebSettings::GetDefaultFixedFontSize(
     /* [out] */ Int32* size)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -906,8 +868,7 @@ ECode WebSettings::GetDefaultFixedFontSize(
 ECode WebSettings::SetLoadsImagesAutomatically(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -920,8 +881,7 @@ ECode WebSettings::SetLoadsImagesAutomatically(
 ECode WebSettings::GetLoadsImagesAutomatically(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -942,8 +902,7 @@ ECode WebSettings::GetLoadsImagesAutomatically(
 ECode WebSettings::SetBlockNetworkImage(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -955,8 +914,7 @@ ECode WebSettings::SetBlockNetworkImage(
 ECode WebSettings::GetBlockNetworkImage(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -980,8 +938,7 @@ ECode WebSettings::GetBlockNetworkImage(
 ECode WebSettings::SetBlockNetworkLoads(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -993,8 +950,7 @@ ECode WebSettings::SetBlockNetworkLoads(
 ECode WebSettings::GetBlockNetworkLoads(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1006,8 +962,7 @@ ECode WebSettings::GetBlockNetworkLoads(
 ECode WebSettings::SetJavaScriptEnabled(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1028,8 +983,7 @@ ECode WebSettings::SetJavaScriptEnabled(
 ECode WebSettings::SetAllowUniversalAccessFromFileURLs(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1051,8 +1005,7 @@ ECode WebSettings::SetAllowUniversalAccessFromFileURLs(
 ECode WebSettings::SetAllowFileAccessFromFileURLs(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1065,8 +1018,7 @@ ECode WebSettings::SetAllowFileAccessFromFileURLs(
 ECode WebSettings::SetPluginsEnabled(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1081,8 +1033,7 @@ ECode WebSettings::SetPluginsEnabled(
 ECode WebSettings::SetPluginState(
     /* [in] */ PluginState state)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1096,8 +1047,7 @@ ECode WebSettings::SetPluginState(
 ECode WebSettings::SetPluginsPath(
     /* [in] */ const String& pluginsPath)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1115,8 +1065,7 @@ ECode WebSettings::SetPluginsPath(
 ECode WebSettings::SetDatabasePath(
     /* [in] */ const String& databasePath)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1131,8 +1080,7 @@ ECode WebSettings::SetDatabasePath(
 ECode WebSettings::SetGeolocationDatabasePath(
     /* [in] */ const String& databasePath)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1146,8 +1094,7 @@ ECode WebSettings::SetGeolocationDatabasePath(
 ECode WebSettings::SetAppCacheEnabled(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1163,8 +1110,7 @@ ECode WebSettings::SetAppCacheEnabled(
 ECode WebSettings::SetAppCachePath(
     /* [in] */ const String& appCachePath)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1179,8 +1125,7 @@ ECode WebSettings::SetAppCachePath(
 ECode WebSettings::SetAppCacheMaxSize(
     /* [in] */ Int64 appCacheMaxSize)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1193,8 +1138,7 @@ ECode WebSettings::SetAppCacheMaxSize(
 ECode WebSettings::SetDatabaseEnabled(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1205,8 +1149,7 @@ ECode WebSettings::SetDatabaseEnabled(
 ECode WebSettings::SetDomStorageEnabled(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1218,8 +1161,7 @@ ECode WebSettings::SetDomStorageEnabled(
 ECode WebSettings::GetDomStorageEnabled(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1231,8 +1173,7 @@ ECode WebSettings::GetDomStorageEnabled(
 ECode WebSettings::GetDatabasePath(
     /* [out] */ String* param)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1244,8 +1185,7 @@ ECode WebSettings::GetDatabasePath(
 ECode WebSettings::GetDatabaseEnabled(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1258,8 +1198,7 @@ ECode WebSettings::GetDatabaseEnabled(
 ECode WebSettings::SetGeolocationEnabled(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1271,8 +1210,7 @@ ECode WebSettings::SetGeolocationEnabled(
 ECode WebSettings::GetJavaScriptEnabled(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1287,8 +1225,7 @@ ECode WebSettings::GetJavaScriptEnabled(
 ECode WebSettings::GetAllowUniversalAccessFromFileURLs(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1302,8 +1239,7 @@ ECode WebSettings::GetAllowUniversalAccessFromFileURLs(
 ECode WebSettings::GetAllowFileAccessFromFileURLs(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1316,8 +1252,7 @@ ECode WebSettings::GetAllowFileAccessFromFileURLs(
 ECode WebSettings::GetPluginsEnabled(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1329,8 +1264,7 @@ ECode WebSettings::GetPluginsEnabled(
 ECode WebSettings::GetPluginState(
     /* [out] */ PluginState* state)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1346,7 +1280,7 @@ ECode WebSettings::GetPluginsPath(
 {
     VALIDATE_NOT_NULL(path);
     // Unconditionally returns empty string, so no need for derived classes to override.
-    *path = String("");
+    *path = "";
     return NOERROR;
 }
 
@@ -1359,8 +1293,7 @@ ECode WebSettings::GetPluginsPath(
 ECode WebSettings::SetJavaScriptCanOpenWindowsAutomatically(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1373,8 +1306,7 @@ ECode WebSettings::SetJavaScriptCanOpenWindowsAutomatically(
 ECode WebSettings::GetJavaScriptCanOpenWindowsAutomatically(
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1386,8 +1318,7 @@ ECode WebSettings::GetJavaScriptCanOpenWindowsAutomatically(
 ECode WebSettings::SetDefaultTextEncodingName(
     /* [in] */ const String& encoding)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1399,8 +1330,7 @@ ECode WebSettings::SetDefaultTextEncodingName(
 ECode WebSettings::GetDefaultTextEncodingName(
     /* [out] */ String* name)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1410,8 +1340,7 @@ ECode WebSettings::GetDefaultTextEncodingName(
 ECode WebSettings::SetUserAgentString(
     /* [in] */ const String& ua)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1423,8 +1352,7 @@ ECode WebSettings::SetUserAgentString(
 ECode WebSettings::GetUserAgentString(
     /* [out] */ String* ua)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 
@@ -1438,8 +1366,7 @@ ECode WebSettings::GetUserAgentString(
 ECode WebSettings::SetNeedInitialFocus(
     /* [in] */ Boolean flag)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1452,8 +1379,7 @@ ECode WebSettings::SetNeedInitialFocus(
 ECode WebSettings::SetRenderPriority(
     /* [in] */ RenderPriority priority)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1471,8 +1397,7 @@ ECode WebSettings::SetRenderPriority(
 ECode WebSettings::SetCacheMode(
     /* [in] */ Int32 mode)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 /**
@@ -1484,8 +1409,7 @@ ECode WebSettings::SetCacheMode(
 ECode WebSettings::GetCacheMode(
     /* [out] */ Int32* mode)
 {
-    assert(0);
-    return NOERROR;
+    return E_MUST_OVERRIDE_EXCEPTION;
 }
 
 } // namespace Webkit

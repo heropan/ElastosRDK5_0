@@ -140,6 +140,9 @@ protected:
     // Accessed by jni, do not rename without modifying the jni code.
     String mMimeType;
     String mEncoding;
+    Int32 mStatusCode;
+    String mReasonPhrase;
+    AutoPtr<IMap> mResponseHeaders;
     AutoPtr<IInputStream> mInputStream;
 };
 

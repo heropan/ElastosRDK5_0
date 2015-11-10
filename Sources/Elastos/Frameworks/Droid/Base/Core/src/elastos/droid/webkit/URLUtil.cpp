@@ -388,8 +388,7 @@ String URLUtil::GuessFileName(
             }
         }
         if (extension.IsNull()) {
-            assert(0);
-            if (!mimeType.IsNull() && mimeType/*TODO .ToLowerCase(ILocale::ROOT)*/.StartWithIgnoreCase("text/")) {
+            if (!mimeType.IsNull() && mimeType.ToLowerCase(/*TODOILocale::ROOT*/).StartWithIgnoreCase("text/")) {
                 if (mimeType.EqualsIgnoreCase("text/html")) {
                     extension = ".html";
                 }

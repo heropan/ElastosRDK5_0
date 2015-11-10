@@ -55,9 +55,10 @@ void CookieSyncManager::SyncFromRamToFlash()
     CookieManager::GetInstance()->Flush();
 }
 
-void CookieSyncManager::SetGetInstanceIsAllowed()
+ECode CookieSyncManager::SetGetInstanceIsAllowed()
 {
     sGetInstanceAllowed = TRUE;
+    return NOERROR;
 }
 
 ECode CookieSyncManager::CheckInstanceIsAllowed()
@@ -66,7 +67,7 @@ ECode CookieSyncManager::CheckInstanceIsAllowed()
         // throw new IllegalStateException(
         //             "CookieSyncManager::createInstance() needs to be called "
         //                     + "before CookieSyncManager::getInstance()");
-        assert(0);
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
     return NOERROR;
 }
