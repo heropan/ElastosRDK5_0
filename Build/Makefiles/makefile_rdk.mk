@@ -62,48 +62,28 @@ ifndef EXTERN_BIN
 EXTERN_BIN= $(EXTERN_SDK)/bin
 endif
 
-ifndef EXTERN_INC
-  ifeq "$(XDK_COMPILER)" "msvc"
-      EXTERN_INC= $(EXTERN_SDK)/include; $(EXTERN_SDK)/include/crt
-  else
-    ifeq "$(XDK_TARGET_PLATFORM)" "win32"
-      EXTERN_INC= /usr/include/mingw; /usr/lib/gcc/i686-pc-mingw32/3.4.4/include;
-      EXTERN_INC+= /usr/lib/gcc/i686-pc-mingw32/3.4.4/include/c++;
-      EXTERN_INC+= /usr/lib/gcc/i686-pc-mingw32/3.4.4/include/c++/i686-pc-mingw32;
-      EXTERN_INC+= /usr/lib/gcc/i686-pc-mingw32/3.4.4/include/c++/i686-pc-mingw32/bits; /usr/include/w32api;
-    endif
-  endif
-endif
+#ifndef EXTERN_INC
+#EXTERN_INC=
+#endif
 
-ifndef EXTERN_LIB
-ifeq "$(XDK_COMPILER)" "msvc"
-EXTERN_LIB= $(EXTERN_SDK)/lib
-else
-EXTERN_LIB= /usr/lib/mingw
-endif
-endif
+#ifndef EXTERN_LIB
+#EXTERN_LIB=
+#endif
 
 ifneq "$(XDK_TARGET_PRODUCT)" "devtools"
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-ifeq "$(XDK_TARGET_PRODUCT)" "anyka"
-      PREBUILD_PATH = $(XDK_COMPILER_PATH)
-      PREBUILD_INC = $(PREBUILD_PATH)/include
-      PREBUILD_LIB = $(PREBUILD_PATH)/lib
-else
       PREBUILD_LIB = /usr/lib32
 endif
-else
 ifndef PREBUILD_PATH
 ifeq "$(XDK_TARGET_PLATFORM)" "android"
       PREBUILD_PATH = $(XDK_BUILD_PATH)/Prebuilt/Linux
-endif
-endif
 endif
 ifndef PREBUILD_INC
       PREBUILD_INC = $(PREBUILD_PATH)/usr/include
 endif
 ifndef PREBUILD_LIB
       PREBUILD_LIB = $(PREBUILD_PATH)/usr/lib
+endif
 endif
 endif
 
@@ -169,31 +149,23 @@ endif
 # SYSTEM INCLUDE PATH
 ifeq "$(XDK_TARGET_PRODUCT)" "devtools"
 INCLUDES = .; $(XDK_USER_INC); \
-          $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
           $(MAKEDIR);
-else
+endif
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-ifneq "$(XDK_TARGET_PRODUCT)" "anyka"
 INCLUDES = .; $(XDK_USER_INC); $(XDK_INC_PATH); \
-          $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
-          $(MAKEDIR);
-else
-INCLUDES = .; $(PREBUILD_INC); $(XDK_USER_INC); $(XDK_INC_PATH); \
-          $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
           $(MAKEDIR);
 endif
-else
+ifeq "$(XDK_TARGET_PLATFORM)" "android"
 INCLUDES = .; $(PREBUILD_INC); $(XDK_USER_INC); $(XDK_INC_PATH); \
-          $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
           $(MAKEDIR);
-endif
 endif
 SYSTEM_INCLUDES := $(INCLUDES)
 
+#$(warning makefile_rdk)
+#$(warning PREBUILD_INC=$(PREBUILD_INC))
+#$(warning INCLUDES=$(INCLUDES))
+
 # default C_FLAGS
-ifeq "$(XDK_COMPILER)" "msvc"
-C_FLAGS= -GR-
-endif
 ifeq "$(XDK_COMPILER)" "gnu"
 C_FLAGS= -fno-exceptions
 endif
@@ -245,9 +217,6 @@ TARGET_TYPE:= $(strip $(TARGET_TYPE))
 
 ifneq "$(TARGET_NAME)" ""
   TARGET:= $(TARGET_NAME)
-  ifeq "$(LANG_PACK)" ""
-    LANG_PACK= $(TARGET_NAME)
-  endif
   ifneq "$(TARGET_TYPE)" ""
     TARGET:= $(TARGET).$(TARGET_TYPE)
   endif
