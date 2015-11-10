@@ -19,8 +19,6 @@ ECode LocationProvider::constructor(
     if (name.RegionMatches(0, ILocationProvider::BAD_CHARS_REGEX, 0, length)) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    assert(properties != NULL);
     mName = name;
     mProperties = properties;
     return NOERROR;
@@ -61,36 +59,47 @@ Boolean LocationProvider::PropertiesMeetCriteria(
         return FALSE;
     }
     criteria->GetAccuracy(&value);
-    properties->GetAccuracy(&value2);
-    if (value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
-        return FALSE;
+    if (value != ICriteria::Criteria_NO_REQUIREMENT) {
+        properties->GetAccuracy(&value2);
+        if (value < value2) {
+            return FALSE;
+        }
     }
     criteria->GetPowerRequirement(&value);
-    properties->GetPowerRequirement(&value2);
-    if (value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
-        return FALSE;
+    if (value != ICriteria::Criteria_NO_REQUIREMENT) {
+        properties->GetPowerRequirement(&value2);
+        if (value < value2) {
+            return FALSE;
+        }
     }
-
     criteria->IsAltitudeRequired(&bValue);
-    properties->GetSupportsAltitude(&bValue2);
-    if (bValue && !bValue2) {
-        return FALSE;
+    if (bValue) {
+        properties->GetSupportsAltitude(&bValue2);
+        if (!bValue2) {
+            return FALSE;
+        }
     }
 
     criteria->IsSpeedRequired(&bValue);
-    properties->GetSupportsSpeed(&bValue2);
-    if (bValue && !bValue2) {
-        return FALSE;
+    if (bValue) {
+        properties->GetSupportsSpeed(&bValue2);
+        if (!bValue2) {
+            return FALSE;
+        }
     }
     criteria->IsBearingRequired(&bValue);
-    properties->GetSupportsBearing(&bValue2);
-    if (bValue && !bValue2) {
-        return FALSE;
+    if (bValue) {
+        properties->GetSupportsBearing(&bValue2);
+        if (!bValue2) {
+            return FALSE;
+        }
     }
     criteria->IsCostAllowed(&bValue);
-    properties->GetHasMonetaryCost(&bValue2);
-    if (bValue && !bValue2) {
-        return FALSE;
+    if (bValue) {
+        properties->GetHasMonetaryCost(&bValue2);
+        if (!bValue2) {
+            return FALSE;
+        }
     }
     return TRUE;
 }
@@ -99,72 +108,63 @@ ECode LocationProvider::RequiresNetwork(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetRequiresNetwork(result);
-    return NOERROR;
+    return mProperties->GetRequiresNetwork(result);
 }
 
 ECode LocationProvider::RequiresSatellite(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetRequiresSatellite(result);
-    return NOERROR;
+    return mProperties->GetRequiresSatellite(result);
 }
 
 ECode LocationProvider::RequiresCell(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetRequiresCell(result);
-    return NOERROR;
+    return mProperties->GetRequiresCell(result);
 }
 
 ECode LocationProvider::HasMonetaryCost(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetHasMonetaryCost(result);
-    return NOERROR;
+    return mProperties->GetHasMonetaryCost(result);
 }
 
 ECode LocationProvider::SupportsAltitude(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetSupportsAltitude(result);
-    return NOERROR;
+    return mProperties->GetSupportsAltitude(result);
 }
 
 ECode LocationProvider::SupportsSpeed(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetSupportsSpeed(result);
-    return NOERROR;
+    return mProperties->GetSupportsSpeed(result);
 }
 
 ECode LocationProvider::SupportsBearing(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    mProperties->GetSupportsBearing(result);
-    return NOERROR;
+    return mProperties->GetSupportsBearing(result);
 }
 
 ECode LocationProvider::GetPowerRequirement(
     /* [out] */ Int32* pr)
 {
     VALIDATE_NOT_NULL(pr);
-    mProperties->GetPowerRequirement(pr);
-    return NOERROR;
+    return mProperties->GetPowerRequirement(pr);
 }
 
 ECode LocationProvider::GetAccuracy(
     /* [out] */ Int32* accuracy)
 {
     VALIDATE_NOT_NULL(accuracy);
-    mProperties->GetAccuracy(accuracy);
-    return NOERROR;
+    return mProperties->GetAccuracy(accuracy);
 }
 
 } // namespace Location

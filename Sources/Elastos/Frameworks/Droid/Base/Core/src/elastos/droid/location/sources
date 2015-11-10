@@ -24,6 +24,7 @@ SOURCES += GpsMeasurement.cpp
 SOURCES += GpsSatellite.cpp
 SOURCES += GpsStatus.cpp
 SOURCES += LocalListenerHelper.cpp
+
 SOURCES += Location.cpp
 SOURCES += CLocationHelper.cpp
 SOURCES += SettingInjectorService.cpp
@@ -31,3 +32,10 @@ SOURCES += LocationProvider.cpp
 SOURCES += CLocationProviderHelper.cpp
 SOURCES += LocationRequest.cpp
 SOURCES += CLocationRequestHelper.cpp
+
+SOURCES += GpsMeasurementListenerTransport.cpp
+SOURCES += GpsMeasurementsEvent.cpp
+SOURCES += GpsNavigationMessageListenerTransport.cpp
+SOURCES += GpsNavigationMessage.cpp
+SOURCES += GpsNavigationMessageEvent.cpp
+SOURCES += LocationManager.cpp

@@ -17,26 +17,13 @@ using Elastos::Core::CSystem;
 using Elastos::Text::CDecimalFormat;
 using Elastos::Text::IDecimalFormat;
 using Elastos::Text::INumberFormat;
+using Elastos::Utility::CStringTokenizer;
+using Elastos::Utility::IStringTokenizer;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
-
-struct ElaLocationCallback Location::sElaLocationCallback =
-{
-    &Location::GetLatitude,
-    &Location::GetLongitude,
-    &Location::HasAltitude,
-    &Location::GetAltitude,
-    &Location::HasAccuracy,
-    &Location::GetAccuracy,
-    &Location::HasBearing,
-    &Location::GetBearing,
-    &Location::HasSpeed,
-    &Location::GetSpeed,
-    &Location::GetTime
-};
 
 CAR_INTERFACE_IMPL_2(Location, Object, ILocation, IParcelable)
 
@@ -167,44 +154,45 @@ ECode Location::Convert(
             coordinate *= 60.0;
         }
     }
-    AutoPtr<INumberFormat> nf = INumberFormat::Probe(df.Get());
     String format;
-    nf->Format(coordinate, &format);
+    INumberFormat::Probe(df)->Format(coordinate, &format);
     sb += format;
-    *representation = (String)sb.ToString();
+    *representation = sb.ToString();
 
     return NOERROR;
 
 }
 
 ECode Location::Convert(
-    /* [in] */ String* coordinate,
+    /* [in] */ const String& coordinate,
     /* [out] */ Double* representation)
 {
     VALIDATE_NOT_NULL(representation);
 
     // IllegalArgumentException if bad syntax
-    if (coordinate == NULL) {
+    if (coordinate.IsNull()) {
         Logger::E("Location", "coordinate");
         return E_NULL_POINTER_EXCEPTION;
     }
 
     Boolean negative = FALSE;
-    if (coordinate->GetChar(0) == '-') {
-        *coordinate = coordinate->Substring(1);
+    String _coordinate(coordinate);
+    if (_coordinate.GetChar(0) == '-') {
+        _coordinate = _coordinate.Substring(1);
         negative = TRUE;
     }
 
-    AutoPtr<ArrayOf<String> > values;
-    StringUtils::Split(*coordinate, String(":"), (ArrayOf<String>**)&values);
-    if (values == NULL || values->GetLength() < 1) {
-        Logger::E("Location", "coordinate=%s", coordinate->string());
+    AutoPtr<IStringTokenizer> st;
+    CStringTokenizer::New(_coordinate, String(":"), (IStringTokenizer**)&st);
+    Int32 tokens;
+    st->CountTokens(&tokens);
+    if (tokens < 1) {
+        Logger::E("Location", "coordinate=%s", _coordinate.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 index = 0;
-    Int32 tokens = values->GetLength();
-    String degrees = (*values)[index++];
+    String degrees;
+    st->GetNextToken(&degrees);
     Double val;
     if (tokens == 1) {
         val = StringUtils::ParseDouble(degrees);
@@ -212,14 +200,18 @@ ECode Location::Convert(
         return NOERROR;
     }
 
-    String minutes = (*values)[index++];
+    String minutes;
+    st->GetNextToken(&minutes);
     Int32 deg = StringUtils::ParseInt32(degrees);
     Double min;
     Double sec = 0.0;
 
-    if (tokens > 2) {
+    Boolean hasMoreTokens = FALSE;
+    st->HasMoreTokens(&hasMoreTokens);
+    if (hasMoreTokens) {
         min = StringUtils::ParseInt32(minutes);
-        String seconds = (*values)[index++];
+        String seconds;
+        st->GetNextToken(&seconds);
         sec = StringUtils::ParseDouble(seconds);
     }
     else {
@@ -231,19 +223,21 @@ ECode Location::Convert(
 
     // deg must be in [0, 179] except for the case of -180 degrees
     if ((deg < 0.0) || (deg > 179 && !isNegative180)) {
+        Logger::E("Location", "coordinate=%s", _coordinate.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (min < 0 || min > 59) {
+        Logger::E("Location", "coordinate=%s", _coordinate.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (sec < 0 || sec > 59) {
+        Logger::E("Location", "coordinate=%s", _coordinate.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     val = deg * 3600.0 + min * 60.0 + sec;
     val /= 3600.0;
     *representation = negative ? -val : val;
-
     return NOERROR;
 }
 
@@ -368,10 +362,8 @@ ECode Location::DistanceBetween(
         Logger::E("Location", "results is null or has length < 1");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    ComputeDistanceAndBearing(startLatitude, startLongitude,
+    return ComputeDistanceAndBearing(startLatitude, startLongitude,
         endLatitude, endLongitude, results);
-
-    return NOERROR;
 }
 
 ECode Location::DistanceTo(
@@ -436,7 +428,6 @@ ECode Location::SetProvider(
     /* [in] */ const String& provider)
 {
     mProvider = provider;
-
     return NOERROR;
 }
 
@@ -536,7 +527,6 @@ ECode Location::HasSpeed(
 {
     VALIDATE_NOT_NULL(result);
     *result = mHasSpeed;
-
     return NOERROR;
 }
 
@@ -588,10 +578,8 @@ ECode Location::SetBearing(
     while (bearing >= 360.0f) {
         bearing -= 360.0f;
     }
-
     mBearing = bearing;
     mHasBearing = TRUE;
-
     return NOERROR;
 }
 
@@ -623,7 +611,6 @@ ECode Location::SetAccuracy(
 {
     mAccuracy = accuracy;
     mHasAccuracy = TRUE;
-
     return NOERROR;
 }
 
@@ -631,7 +618,6 @@ ECode Location::RemoveAccuracy()
 {
     mAccuracy = 0.0f;
     mHasAccuracy = FALSE;
-
     return NOERROR;
 }
 
@@ -640,41 +626,36 @@ ECode Location::IsComplete(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (mProvider == "") {
+    if (mProvider.Equals("")) {
         *result = FALSE;
         return NOERROR;
     }
-
     if (!mHasAccuracy) {
         *result = FALSE;
         return NOERROR;
     }
-
     if (mTime == 0) {
         *result = FALSE;
         return NOERROR;
     }
-
     if (mElapsedRealtimeNanos == 0) {
         *result = FALSE;
         return NOERROR;
     }
-
     *result = TRUE;
-
     return NOERROR;
 }
 
 ECode Location::MakeComplete()
 {
-    if (mProvider == "") mProvider = "?";
+    if (mProvider.Equals("")) mProvider = String("?");
     if (!mHasAccuracy) {
         mHasAccuracy = TRUE;
         mAccuracy = 100.0f;
     }
     AutoPtr<ISystem> system;
-    CSystem::AcquireSingleton((ISystem**)&system);
     if (mTime == 0) {
+        CSystem::AcquireSingleton((ISystem**)&system);
         system->GetCurrentTimeMillis(&mTime);
     }
     if (mElapsedRealtimeNanos == 0) {
@@ -689,7 +670,6 @@ ECode Location::GetExtras(
     VALIDATE_NOT_NULL(extras);
     *extras = mExtras;
     REFCOUNT_ADD(*extras);
-
     return NOERROR;
 }
 
@@ -697,7 +677,6 @@ ECode Location::SetExtras(
     /* [in] */ IBundle* extras)
 {
     mExtras = extras;
-
     return NOERROR;
 }
 
@@ -758,6 +737,7 @@ ECode Location::ReadFromParcel(
     in->ReadInt32(&tempInt32);
     mHasAccuracy = tempInt32 != 0;
     in->ReadFloat(&mAccuracy);
+    assert(0);
     // in->ReadBundle(&mExtras);
     // l.mIsFromMockProvider = in.readInt() != 0;
 
@@ -783,6 +763,7 @@ ECode Location::WriteToParcel(
     parcel->WriteFloat(mBearing);
     parcel->WriteInt32(mHasAccuracy ? 1 : 0);
     parcel->WriteFloat(mAccuracy);
+    assert(0);
     // parcel->WriteBundle(mExtras);
     // parcel.writeInt(mIsFromMockProvider? 1 : 0);
     return NOERROR;
@@ -797,7 +778,6 @@ ECode Location::GetExtraLocation(
     if (mExtras != NULL) {
         AutoPtr<IParcelable> value;
         mExtras->GetParcelable(key, (IParcelable**)&value);
-
         AutoPtr<ILocation> loc = ILocation::Probe(value);
         if (loc != NULL) {
             *location = loc;
@@ -833,105 +813,6 @@ ECode Location::SetIsFromMockProvider(
 {
     mIsFromMockProvider = isFromMockProvider;
     return NOERROR;
-}
-
-Double Location::GetLatitude(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Double result;
-    location->GetLatitude(&result);
-    return result;
-}
-
-Double Location::GetLongitude(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Double result;
-    location->GetLongitude(&result);
-    return result;
-}
-
-Boolean Location::HasAltitude(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Boolean result;
-    location->HasAltitude(&result);
-    return result;
-}
-
-Double Location::GetAltitude(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Double result;
-    location->GetAltitude(&result);
-    return result;
-}
-
-Boolean Location::HasAccuracy(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Boolean result;
-    location->HasAccuracy(&result);
-    return result;
-}
-
-Float Location::GetAccuracy(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Float result;
-    location->GetAccuracy(&result);
-    return result;
-}
-
-Boolean Location::HasBearing(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Boolean result;
-    location->HasBearing(&result);
-    return result;
-}
-
-Float Location::GetBearing(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Float result;
-    location->GetBearing(&result);
-    return result;
-}
-
-Boolean Location::HasSpeed(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Boolean result;
-    location->HasSpeed(&result);
-    return result;
-}
-
-Float Location::GetSpeed(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Float result;
-    location->GetSpeed(&result);
-    return result;
-}
-
-Int64 Location::GetTime(
-    /* [in] */ IInterface* obj)
-{
-    AutoPtr<ILocation> location = (ILocation*)(obj);
-    Int64 result;
-    location->GetTime(&result);
-    return result;
 }
 
 } // namespace Location

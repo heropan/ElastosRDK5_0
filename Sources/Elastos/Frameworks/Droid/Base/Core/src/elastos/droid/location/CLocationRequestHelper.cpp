@@ -13,7 +13,8 @@ ECode CLocationRequestHelper::Create(
     /* [out] */ ILocationRequest** lr)
 {
     VALIDATE_NOT_NULL(lr)
-    *lr = LocationRequest::Create().Get();
+    AutoPtr<ILocationRequest> request = LocationRequest::Create();
+    *lr = request.Get();
     REFCOUNT_ADD(*lr)
     return NOERROR;
 }
@@ -26,7 +27,8 @@ ECode CLocationRequestHelper::CreateFromDeprecatedProvider(
     /* [out] */ ILocationRequest** lr)
 {
     VALIDATE_NOT_NULL(lr)
-    *lr = LocationRequest::CreateFromDeprecatedProvider(provider,minTime,minDistance,singleShot).Get();
+    AutoPtr<ILocationRequest> request = LocationRequest::CreateFromDeprecatedProvider(provider,minTime,minDistance,singleShot);
+    *lr = request.Get();
     REFCOUNT_ADD(*lr)
     return NOERROR;
 }
@@ -39,7 +41,8 @@ ECode CLocationRequestHelper::CreateFromDeprecatedCriteria(
     /* [out] */ ILocationRequest** lr)
 {
     VALIDATE_NOT_NULL(lr)
-    *lr = LocationRequest::CreateFromDeprecatedCriteria(criteria, minTime,minDistance,singleShot).Get();
+    AutoPtr<ILocationRequest> request = LocationRequest::CreateFromDeprecatedCriteria(criteria, minTime,minDistance,singleShot);
+    *lr = request.Get();
     REFCOUNT_ADD(*lr)
     return NOERROR;
 }

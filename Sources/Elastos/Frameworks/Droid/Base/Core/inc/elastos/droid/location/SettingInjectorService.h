@@ -31,17 +31,17 @@ public:
         /* [in] */ const String& name);
 
     // @Override
-    virtual CARAPI OnBind(
+    CARAPI OnBind(
         /* [in] */ IIntent* intent,
         /* [out] */ IBinder** binder);
 
     // @Override
-    virtual CARAPI OnStart(
+    CARAPI OnStart(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 startId);
 
     // @Override
-    virtual CARAPI OnStartCommand(
+    CARAPI OnStartCommand(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 startId,

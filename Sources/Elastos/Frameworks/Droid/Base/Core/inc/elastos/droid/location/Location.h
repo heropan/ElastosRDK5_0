@@ -6,21 +6,6 @@
 
 using Elastos::Droid::Os::IBundle;
 
-struct ElaLocationCallback
-{
-    Double (*getLatitude)(IInterface* obj);
-    Double (*getLongitude)(IInterface* obj);
-    Boolean (*hasAltitude)(IInterface* obj);
-    Double (*getAltitude)(IInterface* obj);
-    Boolean (*hasAccuracy)(IInterface* obj);
-    Float (*getAccuracy)(IInterface* obj);
-    Boolean (*hasBearing)(IInterface* obj);
-    Float (*getBearing)(IInterface* obj);
-    Boolean (*hasSpeed)(IInterface* obj);
-    Float (*getSpeed)(IInterface* obj);
-    Int64 (*getTime)(IInterface* obj);
-};
-
 namespace Elastos {
 namespace Droid {
 namespace Location {
@@ -99,7 +84,7 @@ public:
      * in one of the valid formats.
      */
     static CARAPI Convert(
-        /* [in] */ String* coordinate,
+        /* [in] */ const String& coordinate,
         /* [out] */ Double* val);
 
     /**
@@ -508,39 +493,6 @@ public:
     CARAPI SetIsFromMockProvider(
         /* [in] */ Boolean isFromMockProvider);
 
-    static Double GetLatitude(
-        /* [in] */ IInterface* obj);
-
-    static Double GetLongitude(
-        /* [in] */ IInterface* obj);
-
-    static Boolean HasAltitude(
-        /* [in] */ IInterface* obj);
-
-    static Double GetAltitude(
-        /* [in] */ IInterface* obj);
-
-    static Boolean HasAccuracy(
-        /* [in] */ IInterface* obj);
-
-    static Float GetAccuracy(
-        /* [in] */ IInterface* obj);
-
-    static Boolean HasBearing(
-        /* [in] */ IInterface* obj);
-
-    static Float GetBearing(
-        /* [in] */ IInterface* obj);
-
-    static Boolean HasSpeed(
-        /* [in] */ IInterface* obj);
-
-    static Float GetSpeed(
-        /* [in] */ IInterface* obj);
-
-    static Int64 GetTime(
-        /* [in] */ IInterface* obj);
-
 private:
     static CARAPI ComputeDistanceAndBearing(
         /* [in] */ Double lat1,
@@ -548,9 +500,6 @@ private:
         /* [in] */ Double lat2,
         /* [in] */ Double lon2,
         /* [in] */ ArrayOf<Float>* results);
-
-public:
-    static struct ElaLocationCallback sElaLocationCallback;
 
 private:
     String mProvider;

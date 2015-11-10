@@ -25,7 +25,6 @@ LocationRequest::LocationRequest()
     , mExpireAt(Elastos::Core::Math::INT64_MAX_VALUE)
     , mNumUpdates(Elastos::Core::Math::INT32_MAX_VALUE)
     , mSmallestDisplacement(0.0f)
-    , mWorkSource(NULL)
     , mHideFromAppOps(FALSE)
     , mProvider(ILocationManager::FUSED_PROVIDER)
 {}
@@ -105,9 +104,9 @@ AutoPtr<ILocationRequest> LocationRequest::CreateFromDeprecatedCriteria(
     if (minDistance < 0) minDistance = 0;
 
     Int32 quality;
-    Int32 _quality;
-    criteria->GetAccuracy(&_quality);
-    switch (_quality) {
+    Int32 accuracy;
+    criteria->GetAccuracy(&accuracy);
+    switch (accuracy) {
         case ICriteria::Criteria_ACCURACY_COARSE:
             quality = ACCURACY_BLOCK;
             break;
@@ -115,8 +114,8 @@ AutoPtr<ILocationRequest> LocationRequest::CreateFromDeprecatedCriteria(
             quality = ACCURACY_FINE;
             break;
         default: {
-            criteria->GetPowerRequirement(&_quality);
-            switch (_quality) {
+            criteria->GetPowerRequirement(&accuracy);
+            switch (accuracy) {
                 case ICriteria::Criteria_POWER_HIGH:
                     quality = POWER_HIGH;
                 default:
@@ -156,7 +155,7 @@ ECode LocationRequest::GetQuality(
 ECode LocationRequest::SetInterval(
     /* [in] */ Int64 millis)
 {
-    CheckInterval(millis);
+    FAIL_RETURN(CheckInterval(millis));
     mInterval = millis;
     if (!mExplicitFastestInterval) {
         mFastestInterval = (Int64)(mInterval / FASTEST_INTERVAL_FACTOR);
@@ -175,7 +174,7 @@ ECode LocationRequest::GetInterval(
 ECode LocationRequest::SetFastestInterval(
     /* [in] */ Int64 millis)
 {
-    CheckInterval(millis);
+    FAIL_RETURN(CheckInterval(millis));
     mExplicitFastestInterval = TRUE;
     mFastestInterval = millis;
     return NOERROR;
@@ -196,12 +195,11 @@ ECode LocationRequest::SetExpireIn(
 
     // Check for > Long.MAX_VALUE overflow (elapsedRealtime > 0):
     if (millis > Elastos::Core::Math::INT64_MAX_VALUE - elapsedRealtime) {
-      mExpireAt = Elastos::Core::Math::INT64_MAX_VALUE;
+        mExpireAt = Elastos::Core::Math::INT64_MAX_VALUE;
     }
     else {
-      mExpireAt = millis + elapsedRealtime;
+        mExpireAt = millis + elapsedRealtime;
     }
-
     if (mExpireAt < 0) mExpireAt = 0;
     return NOERROR;
 }
@@ -228,7 +226,6 @@ ECode LocationRequest::SetNumUpdates(
     if (numUpdates <= 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
     mNumUpdates = numUpdates;
     return NOERROR;
 }
@@ -255,7 +252,7 @@ ECode LocationRequest::DecrementNumUpdates()
 ECode LocationRequest::SetProvider(
     /* [in] */ const String& provider)
 {
-    CheckProvider(provider);
+    FAIL_RETURN(CheckProvider(provider));
     mProvider = provider;
     return NOERROR;
 }
@@ -271,7 +268,7 @@ ECode LocationRequest::GetProvider(
 ECode LocationRequest::SetSmallestDisplacement(
     /* [in] */ Float meters)
 {
-    CheckDisplacement(meters);
+    FAIL_RETURN(CheckDisplacement(meters));
     mSmallestDisplacement = meters;
     return NOERROR;
 }
@@ -320,29 +317,15 @@ ECode LocationRequest::ReadFromParcel(
 {
     VALIDATE_NOT_NULL(in);
 
-    Int32 tempInt32;
-    in->ReadInt32(&tempInt32);
-    SetQuality(tempInt32);
-    Int64 tempInt64;
-    in->ReadInt64(&tempInt64);
-    SetFastestInterval(tempInt64);
-    in->ReadInt64(&tempInt64);
-    SetInterval(tempInt64);
-    in->ReadInt64(&tempInt64);
-    SetExpireAt(tempInt64);
-    in->ReadInt32(&tempInt32);
-    SetNumUpdates(tempInt32);
-    Float smallestDisplacement;
-    in->ReadFloat(&smallestDisplacement);
-    SetSmallestDisplacement(smallestDisplacement);
-    Int32 hideFromAppOps;
-    in->ReadInt32(&hideFromAppOps);
-    SetHideFromAppOps(hideFromAppOps);
-    String provider;
-    in->ReadString(&provider);
-    if (!provider.IsNull()) {
-        SetProvider(provider);
-    }
+    in->ReadInt32(&mQuality);
+    in->ReadInt64(&mFastestInterval);
+    in->ReadInt64(&mInterval);
+    in->ReadInt64(&mExpireAt);
+    in->ReadInt32(&mNumUpdates);
+    in->ReadFloat(&mSmallestDisplacement);
+    in->ReadBoolean(&mHideFromAppOps);
+    in->ReadString(&mProvider);
+    assert(0);
     // WorkSource workSource = in.readParcelable(null);
     // if (workSource != null) request.setWorkSource(workSource);
     return NOERROR;
@@ -361,6 +344,7 @@ ECode LocationRequest::WriteToParcel(
     parcel->WriteFloat(mSmallestDisplacement);
     parcel->WriteInt32(mHideFromAppOps ? 1 : 0);
     parcel->WriteString(mProvider);
+    assert(0);
     // parcel.writeParcelable(mWorkSource, 0);
     return NOERROR;
 }
@@ -368,49 +352,21 @@ ECode LocationRequest::WriteToParcel(
 String LocationRequest::QualityToString(
     /* [in] */ Int32 quality)
 {
-    String str;
     switch (quality) {
         case ACCURACY_FINE:
-            {
-                str = "ACCURACY_FINE";
-                return str;
-            }
-
+            return String("ACCURACY_FINE");
         case ACCURACY_BLOCK:
-            {
-                str = "ACCURACY_BLOCK";
-                return str;
-            }
-
+            return String("ACCURACY_BLOCK");
         case ACCURACY_CITY:
-            {
-                str = "ACCURACY_CITY";
-                return str;
-            }
-
+            return String("ACCURACY_CITY");
         case POWER_NONE:
-            {
-                str = "POWER_NONE";
-                return str;
-            }
-
+            return String("POWER_NONE");
         case POWER_LOW:
-            {
-                str = "POWER_LOW";
-                return str;
-            }
-
+            return String("POWER_LOW");
         case POWER_HIGH:
-            {
-                str = "POWER_HIGH";
-                return str;
-            }
-
+            return String("POWER_HIGH");
         default:
-            {
-                str = "???";
-                return str;
-            }
+            return String("???");
     }
 }
 

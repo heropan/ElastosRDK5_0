@@ -1,19 +1,24 @@
 #ifndef __ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__
 #define __ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__
 
-#ifdef DROID_CORE
-#include "elastos/droid/location/CGpsStatusListenerTransport.h"
-#include "elastos/droid/location/CListenerTransport.h"
-#endif
-
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkhash.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
+
+// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusListener);
+// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusNmeaListener);
+// DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ILocationListener);
 
 namespace Elastos {
 namespace Droid {
@@ -39,13 +44,181 @@ namespace Location {
  * return location results, but the update rate will be throttled and the exact
  * location will be obfuscated to a coarse level of accuracy.
  */
-class CGpsStatusListenerTransport;
-class CListenerTransport;
-
 class LocationManager
+    : public Object
+    , public ILocationManager
 {
 public:
-    LocationManager() {}
+    class ListenerTransport
+        : public Object
+        , public IILocationListener
+        , public IBinder
+    {
+        friend class LocationManager;
+    public:
+        class ListenerTransportHandler
+            : public Handler
+        {
+            friend class ListenerTransport;
+        public:
+            ListenerTransportHandler(
+                /* [in] */ ListenerTransport* listener);
+
+            ListenerTransportHandler(
+                /* [in] */ ListenerTransport* listener,
+                /* [in] */ ILooper* looper);
+
+            CARAPI HandleMessage(
+                /* [in] */ IMessage* msg);
+
+        private:
+            ListenerTransport* mLTHost;
+        };
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        ListenerTransport();
+
+        CARAPI constructor(
+            /* [in] */ Handle32 host,
+            /* [in] */ ILocationListener* listener,
+            /* [in] */ ILooper* looper);
+
+        // @Override
+        CARAPI OnLocationChanged(
+            /* [in] */ ILocation* location);
+
+        // @Override
+        CARAPI OnStatusChanged(
+            /* [in] */ const String& provider,
+            /* [in] */ Int32 status,
+            /* [in] */ IBundle* extras);
+
+        // @Override
+        CARAPI OnProviderEnabled(
+            /* [in] */ const String& provider);
+
+        // @Override
+        CARAPI OnProviderDisabled(
+            /* [in] */ const String& provider);
+
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    private:
+        CARAPI _handleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        const static Int32 TYPE_LOCATION_CHANGED = 1;
+        const static Int32 TYPE_STATUS_CHANGED = 2;
+        const static Int32 TYPE_PROVIDER_ENABLED = 3;
+        const static Int32 TYPE_PROVIDER_DISABLED = 4;
+
+        AutoPtr<ILocationListener> mListener;
+        AutoPtr<IHandler> mListenerHandler;
+        LocationManager* mLMHost;
+    };
+
+    // --- GPS-specific support ---
+
+    // This class is used to send GPS status events to the client's main thread.
+    class GpsStatusListenerTransport
+        : public Object
+        , public IIGpsStatusListener
+        , public IBinder
+    {
+        friend class LocationManager;
+    public:
+        class Nmea
+            : public Object
+        {
+        public:
+            Nmea(
+                /* [in] */ Int64 timestamp,
+                /* [in] */ String nmea);
+
+        protected:
+            Int64 mTimestamp;
+            String mNmea;
+        };
+
+        class GpsHandler
+            : public Handler
+        {
+            friend class GpsStatusListenerTransport;
+        public:
+            GpsHandler(
+                /* [in] */ GpsStatusListenerTransport* host);
+
+            CARAPI HandleMessage(
+                /* [in] */ IMessage* msg);
+
+        private:
+            GpsStatusListenerTransport* mGLTHost;
+            Object mLock;
+        };
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        GpsStatusListenerTransport();
+
+        CARAPI constructor(
+            /* [in] */ Handle32 host,
+            /* [in] */ IGpsStatusListener* listener);
+
+        CARAPI constructor(
+            /* [in] */ Handle32 host,
+            /* [in] */ IGpsStatusNmeaListener* listener);
+
+        // @Override
+        CARAPI OnGpsStarted();
+
+        // @Override
+        CARAPI OnGpsStopped();
+
+        // @Override
+        CARAPI OnFirstFix(
+            /* [in] */ Int32 ttff);
+
+        // @Override
+        CARAPI OnSvStatusChanged(
+            /* [in] */ Int32 svCount,
+            /* [in] */ ArrayOf<Int32>* prns,
+            /* [in] */ ArrayOf<Float>* snrs,
+            /* [in] */ ArrayOf<Float>* elevations,
+            /* [in] */ ArrayOf<Float>* azimuths,
+            /* [in] */ Int32 ephemerisMask,
+            /* [in] */ Int32 almanacMask,
+            /* [in] */ Int32 usedInFixMask);
+
+        // @Override
+        CARAPI OnNmeaReceived(
+            /* [in] */ Int64 timestamp,
+            /* [in] */ const String& nmea);
+
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    private:
+        AutoPtr<IGpsStatusListener> mListener;
+        AutoPtr<IGpsStatusNmeaListener> mNmeaListener;
+
+        // This must not equal any of the GpsStatus event IDs
+        const static Int32 NMEA_RECEIVED = 1000;
+        AutoPtr<IArrayList> mNmeaBuffer;
+        AutoPtr<IHandler> mGpsHandler;
+        LocationManager* mLMHost;
+    };
+
+public:
+    CAR_INTERFACE_DECL()
+
+    LocationManager();
 
     /**
      * @hide - hide this constructor because it has a parameter
@@ -53,7 +226,7 @@ public:
      * right way to create an instance of this class is using the
      * factory Context.getSystemService.
      */
-    LocationManager(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IILocationManager* service);
 
@@ -65,7 +238,7 @@ public:
      * @return list of Strings containing names of the provider
      */
     virtual CARAPI GetAllProviders(
-        /* [out] */ IObjectContainer** allProvders);
+        /* [out] */ IList** allProvders);
 
     /**
      * Returns a list of the names of location providers.
@@ -76,7 +249,7 @@ public:
      */
     virtual CARAPI GetProviders(
         /* [in] */ Boolean enabledOnly,
-        /* [out] */ IObjectContainer** providers);
+        /* [out] */ IList** providers);
 
     /**
      * Returns the information associated with the location provider of the
@@ -106,7 +279,7 @@ public:
     virtual CARAPI GetProviders(
         /* [in] */ ICriteria* criteria,
         /* [in] */ Boolean enabledOnly,
-        /* [out] */ IObjectContainer** providers);
+        /* [out] */ IList** providers);
 
     /**
      * Returns the name of the provider that best meets the given criteria. Only providers
@@ -382,6 +555,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
+    //@SystemApi
     virtual CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ ILocationListener* listener,
@@ -400,6 +574,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
+    //@SystemApi
     virtual CARAPI RequestSingleUpdate(
         /* [in] */ const String& provider,
         /* [in] */ IPendingIntent* intent);
@@ -685,11 +860,20 @@ public:
      * <p>If the user has enabled this provider in the Settings menu, true
      * is returned otherwise false is returned
      *
+     * <p>Callers should instead use
+     * {@link android.provider.Settings.Secure#LOCATION_MODE}
+     * unless they depend on provider-specific APIs such as
+     * {@link #requestLocationUpdates(String, long, float, LocationListener)}.
+     *
+     * <p>
+     * Before API version {@link android.os.Build.VERSION_CODES#LOLLIPOP}, this
+     * method would throw {@link SecurityException} if the location permissions
+     * were not sufficient to use the specified provider.
+     *
      * @param provider the name of the provider
-     * @return true if the provider is enabled
+     * @return true if the provider exists and is enabled
      *
      * @throws IllegalArgumentException if provider is null
-     * @throws SecurityException if no suitable permission is present
      */
     virtual CARAPI IsProviderEnabled(
         /* [in] */ const String& provider,
@@ -789,7 +973,7 @@ public:
      * @throws IllegalArgumentException if the location is incomplete
      */
     virtual CARAPI SetTestProviderLocation(
-        /* [in] */ const String provider,
+        /* [in] */ const String& provider,
         /* [in] */ ILocation* loc);
 
     /**
@@ -911,6 +1095,50 @@ public:
     virtual CARAPI RemoveNmeaListener(
         /* [in] */ IGpsStatusNmeaListener* listener);
 
+    /**
+     * Adds a GPS Measurement listener.
+     *
+     * @param listener a {@link GpsMeasurementsEvent.Listener} object to register.
+     * @return {@code true} if the listener was successfully registered, {@code false} otherwise.
+     *
+     * @hide
+     */
+    virtual CARAPI AddGpsMeasurementListener(
+        /* [in] */ IGpsMeasurementsEventListener* listener,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Removes a GPS Measurement listener.
+     *
+     * @param listener a {@link GpsMeasurementsEvent.Listener} object to remove.
+     *
+     * @hide
+     */
+    virtual CARAPI RemoveGpsMeasurementListener(
+        /* [in] */ IGpsMeasurementsEventListener* listener);
+
+    /**
+     * Adds a GPS Navigation Message listener.
+     *
+     * @param listener a {@link GpsNavigationMessageEvent.Listener} object to register.
+     * @return {@code true} if the listener was successfully registered, {@code false} otherwise.
+     *
+     * @hide
+     */
+    virtual CARAPI AddGpsNavigationMessageListener(
+        /* [in] */ IGpsNavigationMessageEventListener* listener,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Removes a GPS Navigation Message listener.
+     *
+     * @param listener a {@link GpsNavigationMessageEvent.Listener} object to remove.
+     *
+     * @hide
+     */
+    virtual CARAPI RemoveGpsNavigationMessageListener(
+        /* [in] */ IGpsNavigationMessageEventListener* listener);
+
      /**
      * Retrieves information about the current status of the GPS engine.
      * This should only be called from the {@link GpsStatus.Listener#onGpsStatusChanged}
@@ -954,16 +1182,6 @@ public:
         /* [in] */ Int32 userResponse,
         /* [out] */ Boolean* result);
 
-protected:
-    /**
-     * @hide - hide this constructor because it has a parameter
-     * of type ILocationManager, which is a system private class. The
-     * right way to create an instance of this class is using the
-     * factory Context.getSystemService.
-     */
-    virtual CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IILocationManager* service);
 private:
     CARAPI_(AutoPtr<ILocationProvider>) CreateProvider(
         /* [in] */ const String& name,
@@ -995,20 +1213,18 @@ private:
         /* [in] */ IGeofence* fence);
 
 private:
-    static const String TAG;// = "LocationManager";
+    static const String TAG;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IILocationManager> mService;
-    HashMap<AutoPtr<IGpsStatusListener>, AutoPtr<IGpsStatusListenerTransport> > mGpsStatusListeners;
-    HashMap<AutoPtr<IGpsStatusNmeaListener>, AutoPtr<IGpsStatusListenerTransport> > mNmeaListeners;
+    AutoPtr<IGpsMeasurementListenerTransport> mGpsMeasurementListenerTransport;
+    AutoPtr<IGpsNavigationMessageListenerTransport> mGpsNavigationMessageListenerTransport;
+    HashMap<AutoPtr<IGpsStatusListener>, AutoPtr<GpsStatusListenerTransport> > mGpsStatusListeners;
+    HashMap<AutoPtr<IGpsStatusNmeaListener>, AutoPtr<GpsStatusListenerTransport> > mNmeaListeners;
     AutoPtr<IGpsStatus> mGpsStatus;
 
     // Map from LocationListeners to their associated ListenerTransport objects
     HashMap<AutoPtr<ILocationListener>, AutoPtr<IILocationListener> > mListeners;
-    Object mutexListeners;
-    Object mGpsStatusLock;
-    friend class CGpsStatusListenerTransport;
-    friend class CListenerTransport;
 };
 
 } // namespace Location

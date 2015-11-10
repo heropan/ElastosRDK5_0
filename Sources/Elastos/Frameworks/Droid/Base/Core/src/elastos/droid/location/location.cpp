@@ -12,6 +12,16 @@
 #include "elastos/droid/location/CLocation.h"
 #include "elastos/droid/location/CLocationProvider.h"
 #include "elastos/droid/location/CLocationRequest.h"
+#include "elastos/droid/location/CGpsMeasurementListenerTransport.h"
+#include "elastos/droid/location/CGpsMeasurementListenerTransportListenerTransport.h"
+#include "elastos/droid/location/CGpsMeasurementsEvent.h"
+#include "elastos/droid/location/CGpsNavigationMessageListenerTransport.h"
+#include "elastos/droid/location/CGpsNavigationMessageListenerTransportListenerTransport.h"
+#include "elastos/droid/location/CGpsNavigationMessage.h"
+#include "elastos/droid/location/CGpsNavigationMessageEvent.h"
+#include "elastos/droid/location/CLocationManager.h"
+#include "elastos/droid/location/CLocationManagerListenerTransport.h"
+#include "elastos/droid/location/CLocationManagerGpsStatusListenerTransport.h"
 
 namespace Elastos {
 namespace Droid {
@@ -31,7 +41,16 @@ CAR_OBJECT_IMPL(CGpsStatus)
 CAR_OBJECT_IMPL(CLocation)
 CAR_OBJECT_IMPL(CLocationProvider)
 CAR_OBJECT_IMPL(CLocationRequest)
-
+CAR_OBJECT_IMPL(CGpsMeasurementListenerTransport)
+CAR_OBJECT_IMPL(CGpsMeasurementListenerTransportListenerTransport)
+CAR_OBJECT_IMPL(CGpsMeasurementsEvent)
+CAR_OBJECT_IMPL(CGpsNavigationMessageListenerTransport)
+CAR_OBJECT_IMPL(CGpsNavigationMessageListenerTransportListenerTransport)
+CAR_OBJECT_IMPL(CGpsNavigationMessage)
+CAR_OBJECT_IMPL(CGpsNavigationMessageEvent)
+CAR_OBJECT_IMPL(CLocationManager)
+CAR_OBJECT_IMPL(CLocationManagerListenerTransport)
+CAR_OBJECT_IMPL(CLocationManagerGpsStatusListenerTransport)
 } // Location
 } // Droid
 } // Elastos

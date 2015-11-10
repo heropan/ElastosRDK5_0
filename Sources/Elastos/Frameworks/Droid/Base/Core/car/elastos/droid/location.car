@@ -48,6 +48,8 @@ module
 
     interface Elastos.Utility.ILocale;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
@@ -177,14 +179,37 @@ module
             interface ILocationHelper;
         }
 
-//        [deprecated, local]
-//        class CLocationManager {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] IILocationManager* service);
+        [deprecated, local]
+        class CLocationManager {
+            constructor(
+                [in] IContext* ctx,
+                [in] IILocationManager* service);
 
-//            interface ILocationManager;
-//        }
+            interface ILocationManager;
+        }
+
+        class CLocationManagerListenerTransport {
+            constructor(
+                [in] Handle32 host,
+                [in] ILocationListener* listener,
+                [in] ILooper* looper);
+
+            interface IILocationListener;
+            interface IBinder;
+        }
+
+        class CLocationManagerGpsStatusListenerTransport {
+            constructor(
+                [in] Handle32 host1,
+                [in] IGpsStatusListener* listener);
+
+            constructor(
+                [in] Handle32 host2,
+                [in] IGpsStatusNmeaListener* listener);
+
+            interface IIGpsStatusListener;
+            interface IBinder;
+        }
 
         class CLocationProvider {
             constructor(
@@ -197,29 +222,6 @@ module
         singleton class CLocationProviderHelper{
             interface ILocationProviderHelper;
         }
-
-//        class CGpsStatusListenerTransport {
-//            constructor(
-//                [in] Handle32 host,
-//                [in] IGpsStatusListener* listener);
-
-//            constructor(
-//                [in] Handle32 hostPtr,
-//                [in] IGpsStatusNmeaListener* l);
-
-//            interface IGpsStatusListenerTransport;
-//        }
-
-
-//        class CListenerTransport {
-//            constructor(
-//                [in] Handle32 host,
-//                [in] ILocationListener* listener,
-//                [in] ILooper* looper);
-
-//            interface IILocationListener;
-//            interface IBinder;
-//        }
 
         class CLocationRequest {
             constructor();
@@ -279,6 +281,67 @@ module
 
 //            interface IGpsNiResponse;
 //        }
+
+        [local]
+        class CGpsMeasurementListenerTransport {
+            constructor(
+                [in] IContext* context,
+                [in] IILocationManager* locationManager);
+
+            interface ILocalListenerHelper;
+            interface IGpsMeasurementListenerTransport;
+        }
+
+        class CGpsMeasurementListenerTransportListenerTransport {
+            constructor(
+                [in] Handle32 host);
+
+            interface IIGpsMeasurementsListener;
+            interface IBinder;
+        }
+
+        [deprecated]
+        class CGpsMeasurementsEvent {
+            constructor(
+                [in] IGpsClock* clock,
+                [in] ArrayOf<IGpsMeasurement*>* measurements);
+
+            interface IGpsMeasurementsEvent;
+            interface IParcelable;
+        }
+
+        [local]
+        class CGpsNavigationMessageListenerTransport {
+            constructor(
+                [in] IContext* context,
+                [in] IILocationManager* locationManager);
+
+            interface ILocalListenerHelper;
+            interface IGpsNavigationMessageListenerTransport;
+        }
+
+        class CGpsNavigationMessageListenerTransportListenerTransport {
+            constructor(
+                [in] Handle32 host);
+
+            interface IIGpsNavigationMessageListener;
+            interface IBinder;
+        }
+
+        class CGpsNavigationMessage {
+            constructor();
+
+            interface IGpsNavigationMessage;
+            interface IParcelable;
+        }
+
+        class CGpsNavigationMessageEvent {
+            constructor(
+                [in] IGpsNavigationMessage* measurements);
+
+            interface IGpsNavigationMessageEvent;
+            interface IParcelable;
+        }
 
     } // namespace Location
     } // namepsace Droid
