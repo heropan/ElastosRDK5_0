@@ -3617,10 +3617,12 @@ ECode Activity::ConvertFromTranslucent()
     // }
 }
 
-Boolean Activity::ConvertToTranslucent(
+ECode Activity::ConvertToTranslucent(
     /* [in] */ ITranslucentConversionListener* callback,
-    /* [in] */ IActivityOptions* options)
+    /* [in] */ IActivityOptions* options,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     Boolean drawComplete;
 
     AutoPtr<IIActivityManager> defaultAM = ActivityManagerNative::GetDefault();
@@ -3642,7 +3644,9 @@ Boolean Activity::ConvertToTranslucent(
         // Window is already translucent.
         mTranslucentCallback->OnTranslucentConversionComplete(drawComplete);
     }
-    return mChangeCanvasToTranslucent;
+
+    *result = mChangeCanvasToTranslucent;
+    return NOERROR;
 }
 
 ECode Activity::OnTranslucentConversionComplete(

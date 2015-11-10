@@ -1,5 +1,9 @@
 
 #include "elastos/droid/app/ActivityTransitionState.h"
+#include "elastos/droid/app/CActivityOptions.h"
+#include "elastos/droid/app/EnterTransitionCoordinator.h"
+// #include "elastos/droid/app/ExitTransitionCoordinator.h"
+#include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::Os::IResultReceiver;
 using Elastos::Droid::Transition::ITransition;
@@ -42,32 +46,35 @@ ECode ActivityTransitionState::AddExitTransitionCoordinator(
         mExitTransitionCoordinators = new HashMap<Int32, AutoPtr<IWeakReference> >();
     }
 
+
+    // clean up old references:
+    HashMap<Int32, AutoPtr<IWeakReference> >::Iterator it = mExitTransitionCoordinators->Begin();
+    for (; it != mExitTransitionCoordinators->End();) {
+        AutoPtr<IWeakReference> oldRef = it->mSecond;
+        if (oldRef) {
+            mExitTransitionCoordinators->Erase(it++);
+        }
+        else {
+            ++it;
+        }
+    }
+
     AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(exitTransitionCoordinator);
     AutoPtr<IWeakReference> ref;
     wrs->GetWeakReference((IWeakReference**)&ref);
-    // clean up old references:
-    Int32 size;
-    mExitTransitionCoordinators->GetSize(&size);
-    for (Int32 i = size - 1; i >= 0; i--) {
-        AutoPtr<IInterface> oldRef;
-        mExitTransitionCoordinators->GetValueAt(i, (IInterface**)&oldRef);
-        if (oldRef == NULL) {
-            mExitTransitionCoordinators->RemoveAt(i);
-        }
-    }
     Int32 newKey = mExitTransitionCoordinatorsKey++;
-    mExitTransitionCoordinators->Append(newKey, ref);
+    (*mExitTransitionCoordinators)[newKey] = ref;
     *result = newKey;
     return NOERROR;
 }
 
 ECode ActivityTransitionState::ReadState(
-    /* [in] */ IBundle* bundle);
+    /* [in] */ IBundle* bundle)
 {
     if (bundle != NULL) {
         Boolean bval;
         if (mEnterTransitionCoordinator == NULL
-            || (mEnterTransitionCoordinator->isReturning(&bval), bval)) {
+            || (mEnterTransitionCoordinator->IsReturning(&bval), bval)) {
             mEnteringNames = NULL;
             bundle->GetStringArrayList(ENTERING_SHARED_ELEMENTS, (IArrayList**)&mEnteringNames);
         }
@@ -82,7 +89,7 @@ ECode ActivityTransitionState::ReadState(
 }
 
 ECode ActivityTransitionState::SaveState(
-    /* [in] */ IBundle* bundle);
+    /* [in] */ IBundle* bundle)
 {
     if (mEnteringNames != NULL) {
         bundle->PutStringArrayList(ENTERING_SHARED_ELEMENTS, mEnteringNames);
@@ -96,17 +103,17 @@ ECode ActivityTransitionState::SaveState(
 
 ECode ActivityTransitionState::SetEnterActivityOptions(
     /* [in] */ IActivity* activity,
-    /* [in] */ IActivityOptions* options);
+    /* [in] */ IActivityOptions* options)
 {
     AutoPtr<IWindow> window;
     activity->GetWindow((IWindow**)&window);
     Boolean hasFeature;
-    window->HasFeature(Window.FEATURE_ACTIVITY_TRANSITIONS, &hasFeature)
+    window->HasFeature(IWindow::FEATURE_ACTIVITY_TRANSITIONS, &hasFeature);
     if (hasFeature && options != NULL && mEnterActivityOptions == NULL
             && mEnterTransitionCoordinator == NULL) {
         Int32 type;
         options->GetAnimationType(&type);
-        if (type == ActivityOptions.ANIM_SCENE_TRANSITION) {
+        if (type == IActivityOptions::ANIM_SCENE_TRANSITION) {
             mEnterActivityOptions = options;
             mIsEnterTriggered = FALSE;
             Boolean bval;
@@ -127,7 +134,7 @@ ECode ActivityTransitionState::SetEnterActivityOptions(
 }
 
 ECode ActivityTransitionState::EnterReady(
-    /* [in] */ IActivity* activity);
+    /* [in] */ IActivity* activity)
 {
     if (mEnterActivityOptions == NULL || mIsEnterTriggered) {
         return NOERROR;
@@ -149,11 +156,11 @@ ECode ActivityTransitionState::EnterReady(
         view->SetVisibility(IView::VISIBLE);
     }
     mEnterActivityOptions->IsReturning(&bval);
-    mEnterTransitionCoordinator = new EnterTransitionCoordinator(
-        activity, resultReceiver, sharedElementNames, bval);
-
+    AutoPtr<EnterTransitionCoordinator> etc = new EnterTransitionCoordinator();
+    etc->constructor(activity, resultReceiver, sharedElementNames, bval);
+    mEnterTransitionCoordinator = (IEnterTransitionCoordinator*)etc.Get();
     if (!mIsEnterPostponed) {
-        return StartEnter();
+        StartEnter();
     }
     return NOERROR;
 }
@@ -189,7 +196,7 @@ void ActivityTransitionState::StartEnter()
     } else {
         mEnterTransitionCoordinator->NamedViewsReady(NULL, NULL);
         mEnteringNames = NULL;
-        mEnterTransitionCoordinator->GetAllSharedElementNames((IArrayList**)&mEnteringNames);
+        IActivityTransitionCoordinator::Probe(mEnterTransitionCoordinator)->GetAllSharedElementNames((IArrayList**)&mEnteringNames);
     }
 
     mExitingFrom = NULL;
@@ -250,23 +257,27 @@ ECode ActivityTransitionState::StartExitBackTransition(
             AutoPtr<ITransition> enterViewsTransition;
             AutoPtr<IViewGroup> decor;
             if (mEnterTransitionCoordinator != NULL) {
+                IActivityTransitionCoordinator* atc = IActivityTransitionCoordinator::Probe(mEnterTransitionCoordinator);
                 mEnterTransitionCoordinator->GetEnterViewsTransition((ITransition**)&enterViewsTransition);
-                mEnterTransitionCoordinator->GetDecor((IViewGroup**)&decor);
+                atc->GetDecor((IViewGroup**)&decor);
                 mEnterTransitionCoordinator->CancelEnter();
                 mEnterTransitionCoordinator = NULL;
                 if (enterViewsTransition != NULL && decor != NULL) {
-                    enterViewsTransition->Pause(decor);
+                    enterViewsTransition->Pause(IView::Probe(decor));
                 }
             }
 
-            mReturnExitCoordinator = new ExitTransitionCoordinator(
-                activity, mEnteringNames, NULL, NULL, TRUE);
-            if (enterViewsTransition != NULL && decor != NULL) {
-                enterViewsTransition->Resume(decor);
-            }
+            assert(0 && "TODO");
+            // AutoPtr<ExitTransitionCoordinator> etc = new ExitTransitionCoordinator();
+            // etc->constructor(activity, mEnteringNames, NULL, NULL, TRUE);
 
-            Activity* act = (Activity*)activity;
-            mReturnExitCoordinator->StartExit(act->mResultCode, act->mResultData);
+            // if (enterViewsTransition != NULL && decor != NULL) {
+            //     enterViewsTransition->Resume(IView::Probe(decor));
+            // }
+
+            // Activity* act = (Activity*)activity;
+            // etc->StartExit(act->mResultCode, act->mResultData);
+            // mReturnExitCoordinator = (IExitTransitionCoordinator*)etc.Get();
         }
 
         *result = TRUE;
@@ -294,27 +305,33 @@ ECode ActivityTransitionState::StartExitOutTransition(
     if (type == IActivityOptions::ANIM_SCENE_TRANSITION) {
         Int32 key;
         activityOptions->GetExitCoordinatorKey(&key);
-        Int32 index;
-        mExitTransitionCoordinators->IndexOfKey(key, &index);
-        if (index >= 0) {
-            AutoPtr<IInterface> obj;
-            mExitTransitionCoordinators->GetValueAt(index, (IInterface**)&obj);
-            IWeakReference* wr = IWeakReference::Probe(obj);
+        HashMap<Int32, AutoPtr<IWeakReference> >::Iterator it = mExitTransitionCoordinators->Find(key);
+        if (it != mExitTransitionCoordinators->End()) {
+            AutoPtr<IWeakReference> wr = it->mSecond;
             AutoPtr<IInterface> cec;
             wr->Resolve(EIID_IExitTransitionCoordinator, (IInterface**)&cec);
             mCalledExitCoordinator = IExitTransitionCoordinator::Probe(cec);
-            mExitTransitionCoordinators->RemoveAt(index);
+            mExitTransitionCoordinators->Erase(it);
             if (mCalledExitCoordinator != NULL) {
                 mExitingFrom = NULL;
                 mExitingTo = NULL;
                 mExitingToView = NULL;
-                mCalledExitCoordinator->GetAcceptedNames((IArrayList**)&mExitingFrom);
-                mCalledExitCoordinator->GetMappedNames((IArrayList**)&mExitingTo);
-                mCalledExitCoordinator->CopyMappedViews((IArrayList**)&mExitingToView);
+                IActivityTransitionCoordinator* atc = IActivityTransitionCoordinator::Probe(mCalledExitCoordinator);
+                atc->GetAcceptedNames((IArrayList**)&mExitingFrom);
+                atc->GetMappedNames((IArrayList**)&mExitingTo);
+                atc->CopyMappedViews((IArrayList**)&mExitingToView);
                 mCalledExitCoordinator->StartExit();
             }
         }
     }
+    return NOERROR;
+}
+
+ECode ActivityTransitionState::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = String("ActivityTransitionState");
     return NOERROR;
 }
 

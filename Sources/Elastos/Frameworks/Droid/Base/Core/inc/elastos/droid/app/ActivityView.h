@@ -40,7 +40,49 @@ class ActivityView
     : public ViewGroup
     , public IActivityView
 {
+public:
+    class ActivityContainerCallback
+        : public Object
+        , public IActivityContainerCallback
+        , public IBinder
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        ActivityContainerCallback();
+
+        virtual ~ActivityContainerCallback();
+
+        CARAPI constructor(
+            /* [in] */ IActivityView* activityView);
+
+        CARAPI SetVisible(
+            /* [in] */ IBinder* container,
+            /* [in] */ Boolean visible);
+
+        CARAPI OnAllActivitiesComplete(
+            /* [in] */ IBinder* container);
+
+    private:
+        AutoPtr<IWeakReference> mActivityViewWeakReference;
+    };
+
 private:
+
+    class AllActivitiesCompleteRunnable
+        : public Runnable
+    {
+    public:
+        AllActivitiesCompleteRunnable(
+            /* [in] */ IActivityViewCallback* callback,
+            /* [in] */ IActivityView* view);
+
+        CARAPI Run();
+
+    private:
+        AutoPtr<IActivityViewCallback> mCallback;
+        AutoPtr<IActivityView> mActivityView;
+    };
 
     class ActivityViewSurfaceTextureListener
         : public Object
@@ -48,6 +90,9 @@ private:
     {
     public:
         CAR_INTERFACE_DECL()
+
+        ActivityViewSurfaceTextureListener(
+            /* [in] */ ActivityView* host);
 
         CARAPI OnSurfaceTextureAvailable(
             /* [in] */ ISurfaceTexture* surfaceTexture,
@@ -65,31 +110,12 @@ private:
 
         CARAPI OnSurfaceTextureUpdated(
             /* [in] */ ISurfaceTexture* surfaceTexture);
-    };
-
-    class ActivityContainerCallback
-        : public Object
-        , public IActivityContainerCallback
-        , public IBinder
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        ActivityContainerCallback(
-            /* [in] */ IActivityView* activityView);
-
-        CARAPI SetVisible(
-            /* [in] */ IBinder* container,
-            /* [in] */ Boolean visible);
-
-        CARAPI OnAllActivitiesComplete(
-            /* [in] */ IBinder* container);
 
     private:
-        AutoPtr<IWeakReference> mActivityViewWeakReference;
+        ActivityView* mHost;
     };
 
-    static class ActivityContainerWrapper
+    class ActivityContainerWrapper
         : public Object
     {
     public:
@@ -133,7 +159,7 @@ private:
         void Finalize();
 
     private:
-        AutoPtr<IActivityContainer> mIActivityContainer;
+        AutoPtr<IActivityContainer> mActivityContainer;
         AutoPtr<ICloseGuard> mGuard;// = CloseGuard.get();
         Boolean mOpened; // Protected by mGuard.
     };
@@ -211,9 +237,11 @@ private:
     CARAPI AttachToSurfaceWhenReady();
 
 private:
+    friend class ActivityViewSurfaceTextureListener;
+    friend class ActivityContainerWrapper;
 
-    static const String TAG;// = "ActivityView";
-    static const Boolean DEBUG;// = false;
+    static const String TAG;;
+    static const Boolean DEBUG;
 
     AutoPtr<IDisplayMetrics> mMetrics;
     AutoPtr<ITextureView> mTextureView;

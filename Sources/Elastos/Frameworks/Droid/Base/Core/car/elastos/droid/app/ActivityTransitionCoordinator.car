@@ -9,6 +9,9 @@ module
     namespace Droid {
     namespace App {
 
+    interface ISharedElementOriginalState {
+    }
+
     /**
      * Base class for ExitTransitionCoordinator and EnterTransitionCoordinator, classes
      * that manage activity transitions and the communications coordinating them between

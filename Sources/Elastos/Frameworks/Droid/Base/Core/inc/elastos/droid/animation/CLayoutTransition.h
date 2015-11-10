@@ -18,8 +18,6 @@ using Elastos::Droid::View::IViewOnLayoutChangeListener;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
 using Elastos::Utility::IList;
 
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::View::IView);
-
 namespace Elastos {
 namespace Droid {
 namespace Animation {

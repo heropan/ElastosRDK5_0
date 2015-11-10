@@ -3,32 +3,19 @@
 #define __ELASTOS_DROID_APP_EXIT_TRANSITION_COORDINATOR_H__
 
 #include "elastos/droid/app/ActivityTransitionCoordinator.h"
-#include <elastos/core/Object.h>
+
+using Elastos::Droid::Animation::IObjectAnimator;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Transition::ITransition;
+using Elastos::Droid::View::IViewGroup;
+
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
-
-
-// using Elastos::Droid::animation.Animator;
-// using Elastos::Droid::animation.AnimatorListenerAdapter;
-// using Elastos::Droid::animation.ObjectAnimator;
-// using Elastos::Droid::content.Intent;
-// using Elastos::Droid::graphics.Color;
-// using Elastos::Droid::graphics.Matrix;
-// using Elastos::Droid::graphics.RectF;
-// using Elastos::Droid::graphics.drawable.ColorDrawable;
-// using Elastos::Droid::graphics.drawable.Drawable;
-// using Elastos::Droid::os.Bundle;
-// using Elastos::Droid::os.Handler;
-// using Elastos::Droid::os.Message;
-// using Elastos::Droid::transition.Transition;
-// using Elastos::Droid::transition.TransitionManager;
-// using Elastos::Droid::view.View;
-// using Elastos::Droid::view.ViewGroup;
-// using Elastos::Droid::view.ViewTreeObserver;
-
-// import java.util.ArrayList;
 
 /**
  * This ActivityTransitionCoordinator is created in ActivityOptions#makeSceneTransitionAnimation
@@ -106,7 +93,6 @@ private:
 
     CARAPI_(void) ExitTransitionComplete();
 
-
     CARAPI_(void) SharedElementTransitionComplete();
 
     AutoPtr<IBundle> CaptureExitSharedElementsState();
@@ -116,8 +102,8 @@ private:
     CARAPI_(void) Finish();
 
 private:
-    static const String TAG = "ExitTransitionCoordinator";
-    static const Int64 MAX_WAIT_MS = 1000;
+    static const String TAG;
+    static const Int64 MAX_WAIT_MS;
 
     Boolean mExitComplete;
 

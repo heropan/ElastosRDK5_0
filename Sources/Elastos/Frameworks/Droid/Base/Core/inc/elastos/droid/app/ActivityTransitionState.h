@@ -67,13 +67,15 @@ public:
         /* [in] */ IActivity* activity,
         /* [in] */ IBundle* options);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
     CARAPI_(void) StartEnter();
 
     CARAPI_(void) RestoreExitedViews();
 
 private:
-
     static const String ENTERING_SHARED_ELEMENTS;
     static const String EXITING_MAPPED_FROM;
     static const String EXITING_MAPPED_TO;

@@ -603,6 +603,13 @@ private:
         /* [in] */ Int32 uid,
         /* [in] */ const String& packageName);
 
+public:
+    /**
+     * This maps each operation to the string constant for it.
+     * If it doesn't have a string constant, it maps to null.
+     */
+    static String sOpToString[54];
+
 private:
     AutoPtr<IContext> mContext;
     AutoPtr<IIAppOpsService> mService;
@@ -619,12 +626,6 @@ private:
      * make them all controlled by the same single operation.
      */
     static Int32 sOpToSwitch[48];
-
-    /**
-     * This maps each operation to the string constant for it.
-     * If it doesn't have a string constant, it maps to null.
-     */
-    static String sOpToString[54];
 
     /**
      * This provides a simple name for each operation to be used
@@ -667,48 +668,7 @@ private:
      */
     static Boolean sOpDisableReset[48];
 
-    static HashMap<String, Int32> sOpStrToOp;
-
-    static {
-        if (sOpToSwitch.length != _NUM_OP) {
-            throw new IllegalStateException("sOpToSwitch length " + sOpToSwitch.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpToString.length != _NUM_OP) {
-            throw new IllegalStateException("sOpToString length " + sOpToString.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpNames.length != _NUM_OP) {
-            throw new IllegalStateException("sOpNames length " + sOpNames.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpPerms.length != _NUM_OP) {
-            throw new IllegalStateException("sOpPerms length " + sOpPerms.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpDefaultMode.length != _NUM_OP) {
-            throw new IllegalStateException("sOpDefaultMode length " + sOpDefaultMode.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpDisableReset.length != _NUM_OP) {
-            throw new IllegalStateException("sOpDisableReset length " + sOpDisableReset.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpRestrictions.length != _NUM_OP) {
-            throw new IllegalStateException("sOpRestrictions length " + sOpRestrictions.length
-                    + " should be " + _NUM_OP);
-        }
-        if (sOpAllowSystemRestrictionBypass.length != _NUM_OP) {
-            throw new IllegalStateException("sOpAllowSYstemRestrictionsBypass length "
-                    + sOpRestrictions.length + " should be " + _NUM_OP);
-        }
-        for (Int32 i=0; i<_NUM_OP; i++) {
-            if (sOpToString[i] != null) {
-                sOpStrToOp.put(sOpToString[i], i);
-            }
-        }
-    }
-
+    static AutoPtr<HashMap<String, Int32> > sOpStrToOp;
 };
 
 } // namespace App

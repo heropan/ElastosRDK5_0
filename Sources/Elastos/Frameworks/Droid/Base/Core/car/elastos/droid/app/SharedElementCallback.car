@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.IRectF;
@@ -103,7 +104,8 @@ module
          *                       will be filled into sharedElements based on the transitionNames.
          */
         OnMapSharedElements(
-            [in] IList* sharedElements);
+            [in] IList* sharedElementsNames,
+            [in] IMap* sharedElements);
 
         /**
          * Creates a snapshot of a shared element to be used by the remote Activity and reconstituted

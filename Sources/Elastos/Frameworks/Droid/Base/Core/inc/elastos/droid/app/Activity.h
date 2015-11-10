@@ -2655,9 +2655,10 @@ public:
      *
      * @hide
      */
-    Boolean ConvertToTranslucent(
+    CARAPI ConvertToTranslucent(
         /* [in] */ ITranslucentConversionListener* callback,
-        /* [in] */ IActivityOptions* options);
+        /* [in] */ IActivityOptions* options,
+        /* [out] */ Boolean* result);
 
     /** @hide */
     CARAPI OnTranslucentConversionComplete(

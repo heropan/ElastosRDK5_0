@@ -3,32 +3,25 @@
 #include "elastos/droid/app/CActivityManagerRunningAppProcessInfo.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-// using Elastos::Droid::Content::IContext;
-// using Elastos::Droid::Os::IHandler;
-// using Elastos::Droid::Os::ILooper;
-// using Elastos::Droid::Os::IMessage;
+//=================================================================================
+// AppImportanceMonitor::AppEntry
+//=================================================================================
 
-
-    class AppEntry
-        : Object
-    {
-    public:
-        Int32 mUid;
-        HashMap<Int32, Int32> mProcs;
-        Int32 mImportance;
-
-        AppEntry(
-            /* [in] */ Int32 uid)
-            : mUid(uid)
-            , mImportance(IActivityManagerRunningAppProcessInfo.IMPORTANCE_GONE)
-        {
-            uid = _uid;
-        }
-    };
+AppImportanceMonitor::AppEntry::AppEntry(
+    /* [in] */ Int32 uid)
+    : mUid(uid)
+    , mImportance(IActivityManagerRunningAppProcessInfo.IMPORTANCE_GONE)
+{
+}
 
 //=================================================================================
 // AppImportanceMonitor::ProcessObserver

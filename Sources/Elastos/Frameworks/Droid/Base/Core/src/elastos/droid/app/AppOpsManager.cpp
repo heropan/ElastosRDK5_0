@@ -1,10 +1,9 @@
 
 #include "elastos/droid/app/IAppOpsManager::h"
 
-using Elastos::Droid::annotation.SystemApi;
-using Elastos::Droid::app.usage.UsageStatsManager;
-using Elastos::Droid::content.Context;
-using Elastos::Droid::media.AudioAttributes.AttributeUsage;
+using Elastos::Droid::App::Usage::UsageStatsManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::AudioAttributes.AttributeUsage;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IIBinder;
 using Elastos::Droid::Os::IParcel;
@@ -12,7 +11,7 @@ using Elastos::Droid::Os::IParcelable;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::IRemoteException;
 using Elastos::Droid::Os::IUserManager;
-using Elastos::Droid::util.ArrayMap;
+using Elastos::Droid::Utility::CArrayMap;
 
 using Elastos::Droid::Internal::App::IAppOpsCallback;
 using Elastos::Droid::Internal::App::IAppOpsService;
@@ -25,29 +24,6 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-/**
- * <p>App ops allows callers to:</p>
- *
- * <ul>
- * <li> Note when operations are happening, and find out if they are allowed for the current
- * caller.</li>
- * <li> Disallow specific apps from doing specific operations.</li>
- * <li> Collect all of the current information about operations that have been executed or
- * are not being allowed.</li>
- * <li> Monitor for changes in whether an operation is allowed.</li>
- * </ul>
- *
- * <p>Each operation is identified by a single integer; these integers are a fixed set of
- * operations, enumerated by the OP_* constants.
- *
- * <p></p>When checking operations, the result is a "mode" integer indicating the current
- * setting for the operation under that caller: MODE_ALLOWED, MODE_IGNORED (don't execute
- * the operation but fake its behavior enough so that the caller doesn't crash),
- * MODE_ERRORED (throw a SecurityException back to the caller; the normal operation calls
- * will do this for you).
- */
-
-public:
 /**
  * Class holding all of the operation information associated with an app.
  * @hide
@@ -601,7 +577,7 @@ Int32 AppOpsManager::sOpDefaultMode[] = {
         IAppOpsManager::MODE_IGNORED, // OP_ACTIVATE_VPN
 };
 
-Boolean sOpDisableReset[] = {
+Boolean AppOpsManager::sOpDisableReset[] = {
         FALSE,
         FALSE,
         FALSE,
@@ -652,63 +628,20 @@ Boolean sOpDisableReset[] = {
         FALSE,
 };
 
-private static HashMap<String, Integer> sOpStrToOp = new HashMap<String, Integer>();
-
-static {
-    if (sOpToSwitch.length != _NUM_OP) {
-        throw new IllegalStateException("sOpToSwitch length " + sOpToSwitch.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpToString.length != _NUM_OP) {
-        throw new IllegalStateException("sOpToString length " + sOpToString.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpNames.length != _NUM_OP) {
-        throw new IllegalStateException("sOpNames length " + sOpNames.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpPerms.length != _NUM_OP) {
-        throw new IllegalStateException("sOpPerms length " + sOpPerms.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpDefaultMode.length != _NUM_OP) {
-        throw new IllegalStateException("sOpDefaultMode length " + sOpDefaultMode.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpDisableReset.length != _NUM_OP) {
-        throw new IllegalStateException("sOpDisableReset length " + sOpDisableReset.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpRestrictions.length != _NUM_OP) {
-        throw new IllegalStateException("sOpRestrictions length " + sOpRestrictions.length
-                + " should be " + _NUM_OP);
-    }
-    if (sOpAllowSystemRestrictionBypass.length != _NUM_OP) {
-        throw new IllegalStateException("sOpAllowSYstemRestrictionsBypass length "
-                + sOpRestrictions.length + " should be " + _NUM_OP);
-    }
-    for (Int32 i=0; i<_NUM_OP; i++) {
-        if (sOpToString[i] != null) {
-            sOpStrToOp.put(sOpToString[i], i);
+static AutoPtr<HashMap<String, Int32> > InitOpStrToOp()
+{
+    AutoPtr<HashMap<String, Int32> > map = new HashMap<String, Int32>();
+    for (Int32 i = 0; i < IAppOpsManager::_NUM_OP; i++) {
+        if (!AppOpsManager::sOpToString[i].IsNull()) {
+            (*map)[AppOpsManager::sOpToString[i]] = i;
         }
     }
+    return map;
 }
 
+AutoPtr<HashMap<String, Int32> > AppOpsManager::sOpStrToOp = InitOpStrToOp();
 
-/**
- * API for interacting with "application operation" tracking.
- *
- * <p>This API is not generally intended for third party application developers; most
- * features are only available to system applications.  Obtain an instance of it through
- * {@link Context#getSystemService(String) Context.getSystemService} with
- * {@link Context#APP_OPS_SERVICE Context.APP_OPS_SERVICE}.</p>
- */
-class AppOpsManager
-    : public Object
-    , public IAppOpsManager
-{
-public:
-CAR_INTERFACE_DECL()
+CAR_INTERFACE_IMPL(AppOpsManager, Object, IAppOpsManager)
 
 AppOpsManager();
 

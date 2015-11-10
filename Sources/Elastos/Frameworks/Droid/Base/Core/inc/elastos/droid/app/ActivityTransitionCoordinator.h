@@ -8,33 +8,28 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::ResultReceiver;
+using Elastos::Droid::Transition::Transition;
+using Elastos::Droid::Transition::ITransition;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IWindow;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IOnPreDrawListener;
 using Elastos::Droid::Widget::ImageViewScaleType;
 using Elastos::Droid::Transition::Transition;
+using Elastos::Droid::Transition::IEpicenterCallback;
 using Elastos::Droid::Utility::IArrayMap;
 
-// using Elastos::Droid::content.Context;
-// using Elastos::Droid::graphics.Matrix;
-// using Elastos::Droid::graphics.Rect;
-// using Elastos::Droid::graphics.RectF;
-// using Elastos::Droid::os.Bundle;
-// using Elastos::Droid::os.Handler;
-// using Elastos::Droid::os.Parcelable;
-// using Elastos::Droid::os.ResultReceiver;
-// using Elastos::Droid::transition.Transition;
-// using Elastos::Droid::transition.TransitionSet;
-// using Elastos::Droid::View::IGhostView;
-// using Elastos::Droid::View::IView;
-// using Elastos::Droid::View::IViewGroup;
-// using Elastos::Droid::View::IViewGroupOverlay;
-// using Elastos::Droid::View::IViewParent;
-// using Elastos::Droid::View::IViewTreeObserver;
-// using Elastos::Droid::View::IWindow;
-
-using Elastos::Utility::List;
-using Elastos::Utility::HashMap;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -118,10 +113,13 @@ class ActivityTransitionCoordinator
     , public IActivityTransitionCoordinator
 {
 public:
-    static class SharedElementOriginalState
+    class SharedElementOriginalState
         : public Object
+        , public ISharedElementOriginalState
     {
     public:
+        CAR_INTERFACE_DECL()
+
         SharedElementOriginalState();
 
         CARAPI ToString(
@@ -141,7 +139,7 @@ public:
 
 protected:
     class ContinueTransitionListener
-        : public Transition::TransitionListenerAdapter
+        : public Elastos::Droid::Transition::Transition::TransitionListenerAdapter
     {
     public:
         ContinueTransitionListener(
@@ -149,6 +147,10 @@ protected:
 
         CARAPI OnTransitionStart(
             /* [in] */ ITransition* transition);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+
     private:
         ActivityTransitionCoordinator* mHost;
     };
@@ -158,16 +160,22 @@ protected:
         , public IOnPreDrawListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         DecorViewOnPreDrawListener(
             /* [in] */ ActivityTransitionCoordinator* host,
-            /* [in] */ IView* decorView);
+            /* [in] */ IView* decorView,
+            /* [in] */ IArrayList* snapshots);
 
         CARAPI OnPreDraw(
             /* [out] */ Boolean* result);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         ActivityTransitionCoordinator* mHost;
         AutoPtr<IView> mDecorView;
+        AutoPtr<IArrayList> mSnapshots;
     };
 
     class GhostVisibilityOnPreDrawListener
@@ -175,6 +183,8 @@ protected:
         , public IOnPreDrawListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         GhostVisibilityOnPreDrawListener(
             /* [in] */ ActivityTransitionCoordinator* host,
             /* [in] */ IView* decorView,
@@ -183,6 +193,8 @@ protected:
         CARAPI OnPreDraw(
             /* [out] */ Boolean* result);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         ActivityTransitionCoordinator* mHost;
         AutoPtr<IView> mDecorView;
@@ -204,6 +216,8 @@ private:
             /* [in] */ ITransition* transition,
             /* [out] */ IRect** rect);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         AutoPtr<IRect> mEpicenter;
     };
@@ -213,6 +227,8 @@ private:
         , public IOnPreDrawListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         GhostViewListeners(
             /* [in] */ IView* view,
             /* [in] */ IView* parent,
@@ -223,11 +239,13 @@ private:
         CARAPI OnPreDraw(
             /* [out] */ Boolean* result);
 
+        CARAPI ToString(
+            /* [out] */ String* str);
     private:
         AutoPtr<IView> mView;
         AutoPtr<IViewGroup> mDecor;
         AutoPtr<IView> mParent;
-        AutoPtr<IAutoPtr<IMatrix> mMatrix;// = new Matrix();
+        AutoPtr<IMatrix> mMatrix;// = new Matrix();
     };
 
 public:
@@ -304,7 +322,7 @@ protected:
         /* [in] */ IView* view,
         /* [in] */ IMatrix* matrix);
 
-    CARAPI_(AutoPtr<List<SharedElementOriginalState> >) SetSharedElementState(
+    CARAPI_(AutoPtr<IArrayList>) SetSharedElementState(
         /* [in] */ IBundle* sharedElementState,
         /* [in] */ IArrayList* snapshots); //ArrayList<View>
 
@@ -320,7 +338,7 @@ protected:
 
     static CARAPI SetOriginalSharedElementState(
         /* [in] */ IArrayList* sharedElements, //ArrayList<View>
-        /* [in] */ List<SharedElementOriginalState>* originalState); //ArrayList<SharedElementOriginalState>
+        /* [in] */ IArrayList* originalState); //ArrayList<SharedElementOriginalState>
 
     CARAPI_(AutoPtr<IBundle>) CaptureSharedElementState();
 
@@ -369,6 +387,8 @@ protected:
     CARAPI ScheduleGhostVisibilityChange(
         /* [in] */ Int32 visibility);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
 private:
 
     CARAPI SetSharedElementState(
@@ -404,6 +424,12 @@ protected:
 
     static const AutoPtr<ArrayOf<ImageViewScaleType> > SCALE_TYPE_VALUES;// = ImageView.ScaleType.values();
 
+    /**
+     * For Activity transitions, the called Activity's listener to receive calls
+     * when transitions complete.
+     */
+    static const String KEY_REMOTE_RECEIVER;// = "android:remoteReceiver";
+
     AutoPtr<IArrayList> mAllSharedElementNames; //ArrayList<String>
     AutoPtr<IArrayList> mSharedElements;// = new ArrayList<View>();
     AutoPtr<IArrayList> mSharedElementNames;// = new ArrayList<String>();
@@ -417,19 +443,13 @@ protected:
 private:
     static const String TAG;// = "ActivityTransitionCoordinator";
 
-    /**
-     * For Activity transitions, the called Activity's listener to receive calls
-     * when transitions complete.
-     */
-    static const String KEY_REMOTE_RECEIVER;// = "android:remoteReceiver";
-
     AutoPtr<IWindow> mWindow;
 
-    AutoPtr<IFixedEpicenterCallback> mEpicenterCallback;// = new FixedEpicenterCallback();
+    AutoPtr<FixedEpicenterCallback> mEpicenterCallback;// = new FixedEpicenterCallback();
     AutoPtr<IRunnable> mPendingTransition;
     Boolean mIsStartingTransition;
     List<AutoPtr<GhostViewListeners> > mGhostViewListeners;
-    HashMap<AutoPtr<IView>, Float> > mOriginalAlphas;
+    HashMap<AutoPtr<IView>, Float> mOriginalAlphas;
 };
 
 } // namespace App

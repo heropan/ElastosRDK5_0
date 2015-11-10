@@ -8,6 +8,7 @@ module
     merge("app/ActivityOptions.car");
     merge("app/ActivityThread.car");
     merge("app/ActivityTransitionCoordinator.car");
+    merge("app/EnterTransitionCoordinator.car");
     merge("app/ExitTransitionCoordinator.car");
     merge("app/ActivityTransitionState.car");
     merge("app/ActivityView.car");
@@ -140,6 +141,10 @@ module
     interface Elastos.Droid.Content.IIntentReceiver;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.View.IViewGroup;
+    interface Elastos.Droid.View.IViewManager;
+    interface Elastos.Droid.View.IViewParent;
+    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Utility.IArrayMap;
 
@@ -371,6 +376,34 @@ module
 //         interface IIBackupAgent;
 //         interface IBinder;
 //     }
+
+    // class CActivityView {
+    //     constructor(
+    //         [in] IContext* ctx);
+
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] IAttributeSet* attrs);
+
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] IAttributeSet* attrs,
+    //         [in] Int32 style);
+
+    //     interface IActivityView;
+    //     interface IViewGroup;
+    //     interface IViewManager;
+    //     interface IViewParent;
+    //     interface IView;
+    // }
+
+    // class CActivityViewActivityContainerCallback {
+    //     constructor(
+    //         [in] IActivityView* activityView);
+
+    //     interface IActivityContainerCallback;
+    //     interface IBinder;
+    // }
 
     [local]
     class CActivityNonConfigurationInstances {

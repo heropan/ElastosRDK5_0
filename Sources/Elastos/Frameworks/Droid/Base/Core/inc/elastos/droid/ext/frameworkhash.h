@@ -6,9 +6,21 @@
 
 DEFINE_OBJECT_HASH_FUNC_FOR(IInterface)
 
+//
+// Os
+//
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Os::IBinder)
 
+//
+// Accounts
+//
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccount)
+
+//
+// View
+//
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::View::IView)
+
 
 #endif // __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
 
