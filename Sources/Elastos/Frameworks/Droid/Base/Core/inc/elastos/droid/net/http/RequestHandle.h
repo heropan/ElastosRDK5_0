@@ -4,6 +4,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
+using Elastos::IO::IInputStream;
+using Elastos::Utility::IMap;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -21,6 +24,8 @@ class RequestHandle
 {
 public:
     CAR_INTERFACE_DECL()
+
+    RequestHandle();
 
     /**
      * Creates a new request session.
@@ -216,7 +221,7 @@ private:
 
     String mMethod;
 
-    IMap<String,* mHeaders;
+    AutoPtr<IMap> mHeaders;
 
     AutoPtr<IRequestQueue> mRequestQueue;
 

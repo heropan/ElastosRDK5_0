@@ -1,29 +1,23 @@
 
 #include "elastos/droid/net/http/RequestQueue.h"
 
-using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::IProxy;
+// using Elastos::Droid::Net::IProxy;
 using Elastos::Droid::Net::IWebAddress;
 using Elastos::Droid::Utility::ILog;
-using Elastos::IO::IInputStream;
+
 using Elastos::Utility::IIterator;
-using Elastos::Utility::ILinkedHashMap;
 using Elastos::Utility::ILinkedList;
 using Elastos::Utility::IListIterator;
-using Elastos::Utility::IMap;
-using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-CAR_INTERFACE_IMPL(RequestQueue, Object, IRequestQueue, IRequestFeeder)
+CAR_INTERFACE_IMPL_2(RequestQueue, Object, IRequestQueue, IRequestFeeder)
 
 const Int32 RequestQueue::CONNECTION_COUNT = 4;
 
@@ -137,8 +131,8 @@ ECode RequestQueue::GetProxyHost(
 }
 
 ECode RequestQueue::QueueRequest(
-    /* [in] */ String url,
-    /* [in] */ String method,
+    /* [in] */ const String& url,
+    /* [in] */ const String& method,
     /* [in] */ IMap* headers,
     /* [in] */ IEventHandler* eventHandler,
     /* [in] */ IInputStream* bodyProvider,
@@ -156,9 +150,9 @@ ECode RequestQueue::QueueRequest(
 }
 
 ECode RequestQueue::QueueRequest(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ IWebAddress* uri,
-    /* [in] */ String method,
+    /* [in] */ const String& method,
     /* [in] */ IMap* headers,
     /* [in] */ IEventHandler* eventHandler,
     /* [in] */ IInputStream* bodyProvider,
@@ -221,9 +215,9 @@ ECode RequestQueue::QueueRequest(
 }
 
 ECode RequestQueue::QueueSynchronousRequest(
-    /* [in] */ String url,
+    /* [in] */ const String& url,
     /* [in] */ IWebAddress* uri,
-    /* [in] */ String method,
+    /* [in] */ const String& method,
     /* [in] */ IMap* headers,
     /* [in] */ IEventHandler* eventHandler,
     /* [in] */ IInputStream* bodyProvider,
@@ -507,13 +501,14 @@ ECode RequestQueue::RemoveFirst(
 //============================================================
 // RequestQueue::ActivePool
 //============================================================
-ECode RequestQueue::ActivePool::ActivePool(
+CAR_INTERFACE_IMPL(RequestQueue::ActivePool, Object, IRequestQueueConnectionManager)
+
+RequestQueue::ActivePool::ActivePool(
     /* [in] */ Int32 connectionCount)
     : mTotalRequest(0)
     , mTotalConnection(0)
     , mConnectionCount(connectionCount)
 {
-    return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     mIdleCache = new IdleCache();
     mThreads = ArrayOf<ConnectionThread*>::Alloc(mConnectionCount);
@@ -641,7 +636,7 @@ ECode RequestQueue::ActivePool::DisablePersistence()
 
 ECode RequestQueue::ActivePool::GetThread(
     /* [in] */ IHttpHost* host,
-    /* [out] */ IConnectionThread** result)
+    /* [out] */ ConnectionThread** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -702,11 +697,11 @@ ECode RequestQueue::ActivePool::RecycleConnection(
 // RequestQueue::SyncFeeder
 //===============================================
 ECode RequestQueue::SyncFeeder::GetRequest(
-    /* [out] */ Request** req)
+    /* [out] */ IRequest** req)
 {
     VALIDATE_NOT_NULL(*req);
 
-    AutoPtr<Request> r = mRequest;
+    AutoPtr<IRequest> r = mRequest;
     mRequest = NULL;
     *req = r;
     REFCOUNT_ADD(*req);
@@ -715,7 +710,7 @@ ECode RequestQueue::SyncFeeder::GetRequest(
 
 ECode RequestQueue::SyncFeeder::GetRequest(
     /* [in] */ IHttpHost* host,
-    /* [out] */ Request** req)
+    /* [out] */ IRequest** req)
 {
     VALIDATE_NOT_NULL(*req)
     *req = NULL;
@@ -736,7 +731,7 @@ ECode RequestQueue::SyncFeeder::HaveRequest(
 }
 
 ECode RequestQueue::SyncFeeder::RequeueRequest(
-    /* [in] */ Request* request)
+    /* [in] */ IRequest* request)
 {
     VALIDATE_NOT_NULL(request)
 
@@ -748,8 +743,13 @@ ECode RequestQueue::InnerSub_BroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    return SetProxyConfig();
+    return mHost->SetProxyConfig();
 }
+
+RequestQueue::InnerSub_BroadcastReceiver::InnerSub_BroadcastReceiver(
+    /* [in] */ RequestQueue* host)
+    : mHost(host)
+{}
 
 } // namespace Http
 } // namespace Net

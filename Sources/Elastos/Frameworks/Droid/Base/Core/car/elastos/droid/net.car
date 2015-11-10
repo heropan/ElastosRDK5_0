@@ -109,6 +109,7 @@ module
     interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContextWrapper;
+    interface Elastos.Droid.Net.IWebAddress;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.ILooper;
 
@@ -117,10 +118,14 @@ module
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IInputStream;
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInterfaceAddress;
     using interface Elastos.Net.IResponseCache;
     using interface Elastos.Security.Cert.ICertificate;
+    using interface Elastos.Security.Cert.IX509Certificate;
+    using interface Elastos.Utility.IDate;
+    using interface Elastos.Utility.IMap;
     using interface Elastosx.Net.ISocketFactory;
     using interface Elastosx.Net.Ssl.ISSLSession;
     using interface Elastosx.Net.Ssl.ISSLSocketFactory;
@@ -1027,34 +1032,123 @@ module
         interface ILoggingEventHandler;
     }
 
-    // class CRequestHandle {
+    class CRequestHandle {
+        constructor(
+            [in] IRequestQueue* requestQueue,
+            [in] String url,
+            [in] IWebAddress* uri,
+            [in] String method,
+            [in] IMap* headers,
+            [in] IInputStream* bodyProvider,
+            [in] Int32 bodyLength,
+            [in] IRequest* request);
+
+        constructor(
+            [in] IRequestQueue* requestQueue,
+            [in] String url,
+            [in] IWebAddress* uri,
+            [in] String method,
+            [in] IMap* headers,
+            [in] IInputStream* bodyProvider,
+            [in] Int32 bodyLength,
+            [in] IRequest* request,
+            [in] IConnection* conn);
+
+        interface IRequestHandle;
+
+    }
+
+    singleton class CRequestHandleHelper {
+        interface IRequestHandleHelper;
+    }
+
+    class CRequestQueue {
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] Int32 connectionCount);
+
+        interface IRequestFeeder;
+        interface IRequestQueue;
+    }
+
+    class CSslCertificate {
+        constructor(
+            [in] String issuedTo,
+            [in] String issuedBy,
+            [in] String validNotBefore,
+            [in] String validNotAfter);
+
+        constructor(
+            [in] String issuedTo2,
+            [in] String issuedBy,
+            [in] IDate* validNotBefore,
+            [in] IDate* validNotAfter);
+
+        constructor(
+            [in] IX509Certificate* certificate);
+
+        interface ISslCertificate;
+    }
+
+    singleton class CSslCertificateHelper {
+        interface ISslCertificateHelper;
+    }
+
+    class CSslCertificateDName {
+        constructor(
+            [in] String dName);
+
+        interface ISslCertificateDName;
+    }
+
+    [local]
+    class CSslError {
+        constructor(
+            [in] Int32 error,
+            [in] ISslCertificate* certificate);
+
+        constructor(
+            [in] Int32 error2,
+            [in] IX509Certificate* certificate);
+
+        constructor(
+            [in] Int32 error,
+            [in] ISslCertificate* certificate,
+            [in] String url);
+
+        constructor(
+            [in] Int32 error2,
+            [in] IX509Certificate* certificate,
+            [in] String url);
+
+        interface ISslError;
+    }
+
+    singleton class CSslErrorHelper {
+        interface ISslErrorHelper;
+    }
+
+    // class CX509TrustManagerExtensions {
         // constructor(
-            // [in] IRequestQueue* requestQueue,
-            // [in] const String& url,
-            // [in] IWebAddress* uri,
-            // [in] const String& method,
-            // [in] IMap* headers,
-            // [in] IInputStream* bodyProvider,
-            // [in] Int32 bodyLength,
-            // [in] IRequest* request);
+            // [in] IX509TrustManager* tm);
 
-        // constructor(
-            // [in] IRequestQueue* requestQueue,
-            // [in] const String& url,
-            // [in] IWebAddress* uri,
-            // [in] const String& method,
-            // [in] IMap* headers,
-            // [in] IInputStream* bodyProvider,
-            // [in] Int32 bodyLength,
-            // [in] IRequest* request,
-            // [in] IConnection* conn);
-
-        // interface IRequestHandle;
-
+        // interface IX509TrustManagerExtensions;
     // }
 
-    // singleton class CRequestHandleHelper {
-        // interface IRequestHandleHelper;
+    // class CDnsSdTxtRecord {
+        // constructor();
+
+        // constructor(
+            // [in] ArrayOf<Byte>* data);
+
+        // constructor(
+            // [in] IDnsSdTxtRecord* src);
+
+        // interface IParcelable;
+        // interface IDnsSdTxtRecord;
     // }
 
     } // namespace Http

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATEHELPER_H__
 
 #include "_Elastos_Droid_Net_Http_CSslCertificateHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Os::IBundle;
 
@@ -11,9 +12,18 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
+/**
+ * SSL certificate info (certificate details) class
+ */
 CarClass(CSslCertificateHelper)
+    , public Singleton
+    , public ISslCertificateHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Saves the certificate state to a bundle
      * @param certificate The SSL certificate to store
@@ -31,13 +41,11 @@ public:
     CARAPI RestoreState(
         /* [in] */ IBundle* bundle,
         /* [out] */ ISslCertificate** certificate);
-
-private:
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
-#endif // __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATEHELPER_H__
+#endif //  __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATEHELPER_H__

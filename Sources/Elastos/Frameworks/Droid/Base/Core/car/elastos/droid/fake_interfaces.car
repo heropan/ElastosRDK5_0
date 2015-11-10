@@ -222,4 +222,23 @@ module
         interface IDefaultHttpClient {}
 
     }}}}} // Org.Apache.Http.Impl.Client
+
+    namespace Org {
+    namespace Apache {
+    namespace Commons {
+    namespace Codec {
+    namespace Binary {
+
+        interface IBase64 {}
+
+    }}}}} // Org.Apache.Commons.Codec.Binary
+
+    namespace Org {
+    namespace Bouncycastle {
+    namespace Asn1 {
+    namespace X509 {
+
+        interface IX509Name {}
+
+    }}}} // Org.Bouncycastle.Asn1.X509
 }

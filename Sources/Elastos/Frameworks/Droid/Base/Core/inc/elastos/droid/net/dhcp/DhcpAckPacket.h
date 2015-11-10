@@ -19,8 +19,6 @@ class DhcpAckPacket
     : public DhcpPacket
 {
 public:
-    CAR_INTERFACE_DECL()
-
     DhcpAckPacket();
 
     CARAPI constructor(

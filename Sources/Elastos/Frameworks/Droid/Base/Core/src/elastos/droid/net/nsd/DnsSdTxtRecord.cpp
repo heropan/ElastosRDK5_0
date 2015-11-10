@@ -1,52 +1,56 @@
-#include "CDnsSdTxtRecord.h"
-#include "elastos/droid/ext/frameworkdef.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringBuilder.h>
+
+#include "elastos/droid/net/http/DnsSdTxtRecord.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::IArrays;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Nsd {
 
-const Byte CDnsSdTxtRecord::mSeperator = '=';
+CAR_INTERFACE_IMPL_2(DnsSdTxtRecord, Object, IParcelable, IDnsSdTxtRecord)
 
-CDnsSdTxtRecord::CDnsSdTxtRecord()
-{
-}
+const Byte DnsSdTxtRecord::mSeperator = '=';
 
-CDnsSdTxtRecord::~CDnsSdTxtRecord()
+ECode DnsSdTxtRecord::constructor()
 {
-}
-
-ECode CDnsSdTxtRecord::constructor()
-{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     mData = ArrayOf<Byte>::Alloc(0);
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::constructor(
+ECode DnsSdTxtRecord::constructor(
     /* [in] */ ArrayOf<Byte>* data)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     mData = data->Clone();
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::constructor(
+ECode DnsSdTxtRecord::constructor(
     /* [in] */ IDnsSdTxtRecord* src)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (src != NULL) {
         src->GetRawData((ArrayOf<Byte>**)&mData);
     }
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::Set(
+ECode DnsSdTxtRecord::Set(
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     if (key.IsNull()) {
         Slogger::E("CDnsSdTxtRecord", "key can not be null.");
         return NOERROR;
@@ -87,12 +91,15 @@ ECode CDnsSdTxtRecord::Set(
 
     Insert(keyBytes, valBytes, currentLoc);
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::Get(
+ECode DnsSdTxtRecord::Get(
     /* [in] */ const String& key,
-    /* [out] */ String* str)
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(str);
 
     AutoPtr<ArrayOf<Byte> > val;
@@ -104,12 +111,15 @@ ECode CDnsSdTxtRecord::Get(
         *str = String(NULL);
     }
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::Remove(
+ECode DnsSdTxtRecord::Remove(
     /* [in] */ const String& key,
-    /* [out] */ Int32* val)
+    /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(val);
     *val = -1;
 
@@ -134,11 +144,14 @@ ECode CDnsSdTxtRecord::Remove(
     }
 
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::KeyCount(
-    /* [out] */ Int32* val)
+ECode DnsSdTxtRecord::KeyCount(
+    /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(val);
 
     Int32 count = 0, nextKey;
@@ -147,12 +160,15 @@ ECode CDnsSdTxtRecord::KeyCount(
     }
     *val = count;
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::Contains(
+ECode DnsSdTxtRecord::Contains(
     /* [in] */ const String& key,
-    /* [out] */ Boolean* val)
+    /* [out] */ Boolean* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(val);
 
     String s;
@@ -165,32 +181,39 @@ ECode CDnsSdTxtRecord::Contains(
 
     *val = FALSE;
     return NOERROR;
+#endif
 }
 
-/* Gets the size in bytes */
-ECode CDnsSdTxtRecord::Size(
-    /* [out] */ Int32* val)
+ECode DnsSdTxtRecord::Size(
+    /* [out] */ Int32* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(val);
     *val = mData->GetLength();
     return NOERROR;
+#endif
 }
 
-/* Gets the raw data in bytes */
-ECode CDnsSdTxtRecord::GetRawData(
-    /* [out, callee] */ ArrayOf<Byte>** data)
+ECode DnsSdTxtRecord::GetRawData(
+    /* [out, callee] */ ArrayOf<Byte>* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(data);
     *data = mData->Clone();
     REFCOUNT_ADD(*data);
     return NOERROR;
+#endif
 }
 
-void CDnsSdTxtRecord::Insert(
+ECode DnsSdTxtRecord::Insert(
     /* [in] */ ArrayOf<Byte>* keyBytes,
     /* [in] */ ArrayOf<Byte>* value,
     /* [in] */ Int32 index)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<ArrayOf<Byte> > oldBytes = mData;
     Int32 valLen = (value != NULL) ? value->GetLength() : 0;
     Int32 insertion = 0;
@@ -216,11 +239,15 @@ void CDnsSdTxtRecord::Insert(
         (*mData)[insertion + 1 + keyBytes->GetLength()] = mSeperator;
         mData->Copy(insertion + keyBytes->GetLength() + 2, value, 0, valLen);
     }
+#endif
 }
 
-String CDnsSdTxtRecord::GetKey(
-    /* [in] */ Int32 index)
+ECode DnsSdTxtRecord::GetKey(
+    /* [in] */ Int32 index,
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     Int32 avStart = 0;
 
     for (Int32 i=0; i < index && avStart < mData->GetLength(); i++) {
@@ -238,12 +265,15 @@ String CDnsSdTxtRecord::GetKey(
         return String((const char*)mData->GetPayload() + avStart + 1, aLen);
     }
     return String(NULL);
+#endif
 }
 
-ECode CDnsSdTxtRecord::GetValue(
+ECode DnsSdTxtRecord::GetValue(
     /* [in] */ Int32 index,
-    /* [out] */ ArrayOf<Byte>** value)
+    /* [out, callee] */ ArrayOf<Byte>* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(value);
 
     Int32 avStart = 0;
@@ -268,20 +298,27 @@ ECode CDnsSdTxtRecord::GetValue(
     *value = array;
     REFCOUNT_ADD(*value);
     return NOERROR;
+#endif
 }
 
-String CDnsSdTxtRecord::GetValueAsString(
-    /* [in] */ Int32 index)
+ECode DnsSdTxtRecord::GetValueAsString(
+    /* [in] */ Int32 index,
+    /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     AutoPtr<ArrayOf<Byte> > value;
     GetValue(index, (ArrayOf<Byte>**)&value);
     return value != NULL ? String((const char*)value->GetPayload()) : String(NULL);
+#endif
 }
 
-ECode CDnsSdTxtRecord::GetValue(
+ECode DnsSdTxtRecord::GetValue(
     /* [in] */ const String& forKey,
-    /* [out, callee] */ ArrayOf<Byte>** val)
+    /* [out, callee] */ ArrayOf<Byte>* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(val);
 
     String s;
@@ -292,62 +329,14 @@ ECode CDnsSdTxtRecord::GetValue(
     }
 
     return NOERROR;
+#endif
 }
 
-ECode CDnsSdTxtRecord::Equals(
-    /* [in] */ IInterface* o,
-    /* [out] */ Boolean* val)
+ECode DnsSdTxtRecord::ToString(
+    /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(val);
-    return Equals(IDnsSdTxtRecord::Probe(o), val);
-}
-
-ECode CDnsSdTxtRecord::Equals(
-    /* [in] */ IDnsSdTxtRecord* o,
-    /* [out] */ Boolean* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = FALSE;
-
-    if (IDnsSdTxtRecord::Probe(o)) {
-        *val = TRUE;
-        return NOERROR;
-    }
-
-    CDnsSdTxtRecord* record = (CDnsSdTxtRecord*)o;
-    if (record == NULL) {
-        *val = FALSE;
-        return NOERROR;
-    }
-
-    *val = ArrayOf<Byte>::Equals(record->mData, mData);
-    return NOERROR;
-}
-
-ECode CDnsSdTxtRecord::GetHashCode(
-    /* [out] */ Int32* val)
-{
-    VALIDATE_NOT_NULL(val);
-    *val = (Int32)mData.Get();
-    return NOERROR;
-}
-
-ECode CDnsSdTxtRecord::WriteToParcel(
-    /* [in] */ IParcel* dest)
-{
-    return dest->WriteArrayOf((Handle32)mData.Get());
-}
-
-ECode CDnsSdTxtRecord::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    mData = NULL;
-    return source->ReadArrayOf((Handle32*)&mData);
-}
-
-ECode CDnsSdTxtRecord::ToString(
-    /* [out] */ String* info)
-{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(info);
 
     String a, result, val;
@@ -372,9 +361,65 @@ ECode CDnsSdTxtRecord::ToString(
     result = av.ToString();
     *info = !result.IsNull() ? result : String("");
     return NOERROR;
+#endif
 }
 
+ECode DnsSdTxtRecord::Equals(
+    /* [in] */ IInterface* o,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(val);
+    *val = FALSE;
+
+    if (IDnsSdTxtRecord::Probe(o)) {
+        *val = TRUE;
+        return NOERROR;
+    }
+
+    CDnsSdTxtRecord* record = (CDnsSdTxtRecord*)o;
+    if (record == NULL) {
+        *val = FALSE;
+        return NOERROR;
+    }
+
+    *val = ArrayOf<Byte>::Equals(record->mData, mData);
+    return NOERROR;
+#endif
 }
+
+ECode DnsSdTxtRecord::GetHashCode(
+        /* [out] */ Int32* val)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(val);
+    *val = (Int32)mData.Get();
+    return NOERROR;
+#endif
 }
+
+ECode DnsSdTxtRecord::WriteToParcel(
+        /* [in] */ IParcel* dest)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    return dest->WriteArrayOf((Handle32)mData.Get());
+#endif
 }
+
+ECode DnsSdTxtRecord::ReadFromParcel(
+        /* [in] */ IParcel* source)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    mData = NULL;
+    return source->ReadArrayOf((Handle32*)&mData);
+#endif
 }
+
+} // namespace Nsd
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos

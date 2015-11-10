@@ -3,6 +3,23 @@
 #define __ELASTOS_DROID_NET_HTTP_REQUESTQUEUE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/http/ConnectionThread.h"
+#include "elastos/droid/net/http/IdleCache.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Net::Http::ConnectionThread;
+using Elastos::Droid::Net::Http::IdleCache;
+
+using Elastos::IO::IInputStream;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::ILinkedHashMap;
+using Elastos::Utility::IMap;
+
+using Org::Apache::Http::IHttpHost;
 
 namespace Elastos {
 namespace Droid {
@@ -20,10 +37,12 @@ class RequestQueue
 public:
     class ActivePool
         : public Object
-        , public IConnectionManager
+        , public IRequestQueueConnectionManager
     {
     public:
-        CARAPI constructor(
+        CAR_INTERFACE_DECL()
+
+        ActivePool(
             /* [in] */ Int32 connectionCount);
 
         CARAPI Startup();
@@ -51,7 +70,7 @@ public:
         if this turns out to be a hotspot */
         CARAPI GetThread(
             /* [in] */ IHttpHost* host,
-            /* [out] */ IConnectionThread** result);
+            /* [out] */ ConnectionThread** result);
 
         CARAPI GetConnection(
             /* [in] */ IContext* context,
@@ -64,9 +83,9 @@ public:
 
     public:
         /** Threads used to process requests */
-        AutoPtr<ArrayOf<IConnectionThread*> > mThreads;
+        AutoPtr<ArrayOf<ConnectionThread*> > mThreads;
 
-        AutoPtr<IIdleCache> mIdleCache;
+        AutoPtr<IdleCache> mIdleCache;
 
     private:
         Int32 mTotalRequest;
@@ -106,9 +125,14 @@ private:
         : public BroadcastReceiver
     {
     public:
+        InnerSub_BroadcastReceiver(
+            /* [in] */ RequestQueue* host);
+
         CARAPI OnReceive(
             /* [in] */ IContext* ctx,
             /* [in] */ IIntent* intent);
+    private:
+        RequestQueue* mHost;
     };
 
 public:
@@ -169,10 +193,9 @@ public:
      * @param bodyLength length of body, must be 0 if bodyProvider is null
      */
     CARAPI QueueRequest(
-        /* [in] */ String url,
-        /* [in] */ String method,
-        /* [in] */  ,
-        /* [in] */ IString>* headers,
+        /* [in] */ const String& url,
+        /* [in] */ const String& method,
+        /* [in] */ IMap* headers,
         /* [in] */ IEventHandler* eventHandler,
         /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
@@ -190,22 +213,20 @@ public:
      * @param bodyLength length of body, must be 0 if bodyProvider is null
      */
     CARAPI QueueRequest(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ IWebAddress* uri,
-        /* [in] */ String method,
-        /* [in] */  ,
-        /* [in] */ IString>* headers,
+        /* [in] */ const String& method,
+        /* [in] */ IMap* headers,
         /* [in] */ IEventHandler* eventHandler,
         /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
         /* [out] */ IRequestHandle** result);
 
     CARAPI QueueSynchronousRequest(
-        /* [in] */ String url,
+        /* [in] */ const String& url,
         /* [in] */ IWebAddress* uri,
-        /* [in] */ String method,
-        /* [in] */  ,
-        /* [in] */ IString>* headers,
+        /* [in] */ const String& method,
+        /* [in] */ IMap* headers,
         /* [in] */ IEventHandler* eventHandler,
         /* [in] */ IInputStream* bodyProvider,
         /* [in] */ Int32 bodyLength,
@@ -295,6 +316,8 @@ private:
 
     /* default simultaneous connection count */
     static const Int32 CONNECTION_COUNT;
+
+    friend InnerSub_BroadcastReceiver;
 };
 
 } // namespace Http

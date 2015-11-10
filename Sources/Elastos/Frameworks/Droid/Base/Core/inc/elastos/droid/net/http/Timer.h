@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_TIMER_H__
 #define __ELASTOS_DROID_NET_HTTP_TIMER_H__
 
-#include "elastos.h"
+#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,11 +14,14 @@ namespace Http {
  * Debugging tool
  */
 class Timer
+    : public Object
 {
 public:
     Timer();
 
     ~Timer();
+
+    CARAPI constructor();
 
     CARAPI Mark(
         /* [in] */ const String& message);
@@ -29,9 +32,9 @@ private:
     Int64 mLast;
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_TIMER_H__

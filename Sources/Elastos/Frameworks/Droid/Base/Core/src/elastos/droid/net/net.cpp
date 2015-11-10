@@ -66,8 +66,13 @@
 #include "elastos/droid/net/http/CHttpResponseCache.h"
 #include "elastos/droid/net/http/CHttpsConnection.h"
 #include "elastos/droid/net/http/CLoggingEventHandler.h"
-// #include "elastos/droid/net/http/CRequestHandle.h"
-// #include "elastos/droid/net/http/CRequestQueue.h"
+#include "elastos/droid/net/http/CRequestHandle.h"
+#include "elastos/droid/net/http/CRequestQueue.h"
+#include "elastos/droid/net/http/CSslCertificate.h"
+#include "elastos/droid/net/http/CSslCertificateDName.h"
+#include "elastos/droid/net/http/CSslError.h"
+// #include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
+// #include "elastos/droid/net/http/CDnsSdTxtRecord.h"
 
 namespace Elastos {
 namespace Droid {
@@ -214,11 +219,32 @@ CAR_OBJECT_IMPL(CHttpsConnection)
 
 CAR_OBJECT_IMPL(CLoggingEventHandler)
 
-// CAR_OBJECT_IMPL(CRequestHandle)
+CAR_OBJECT_IMPL(CRequestHandle)
 
-// CAR_OBJECT_IMPL(CRequestQueue)
+CAR_OBJECT_IMPL(CRequestQueue)
+
+CAR_OBJECT_IMPL(CSslCertificate)
+
+CAR_OBJECT_IMPL(CSslCertificateDName)
+
+CAR_OBJECT_IMPL(CSslError)
+
+// CAR_OBJECT_IMPL(CX509TrustManagerExtensions)
 
 } // namespace Http
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
+
+namespace Elastos {
+namespace Droid {
+namespace Net {
+namespace Nsd {
+
+// CAR_OBJECT_IMPL(CDnsSdTxtRecord)
+
+} // namespace Nsd
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
+

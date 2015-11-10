@@ -71,4 +71,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Net::Http::ConnectionThread, IInterface)
+
 #endif // __ELASTOS_DROID_NET_HTTP_CONNECTIONTHREAD_H__

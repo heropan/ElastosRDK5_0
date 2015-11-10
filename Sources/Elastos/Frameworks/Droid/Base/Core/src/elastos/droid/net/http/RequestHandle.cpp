@@ -1,17 +1,14 @@
 
 #include "elastos/droid/net/http/RequestHandle.h"
 
-using Elastos::Droid::Net::IParseException;
 using Elastos::Droid::Net::IWebAddress;
-using Elastos::Droid::Webkit::CookieManager;
-using Org::Apache::Commons::Codec::Binary::Base64;
-using Elastos::IO::IInputStream;
-using Elastos::lang::Math;
+using Elastos::Droid::Webkit::ICookieManager;
+
 using Elastos::Security::IMessageDigest;
-using Elastos::Security::INoSuchAlgorithmException;
 using Elastos::Utility::IHashMap;
-using Elastos::Utility::IMap;
 using Elastos::Utility::IRandom;
+
+using Org::Apache::Commons::Codec::Binary::IBase64;
 
 namespace Elastos {
 namespace Droid {
@@ -618,7 +615,6 @@ ECode RequestHandle::CreateAndQueueNewRequest()
     return NOERROR;
 #endif
 }
-
 
 } // namespace Http
 } // namespace Net

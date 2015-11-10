@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_CX509TRUSTMANAGEREXTENSIONS_H__
 
 #include "_Elastos_Droid_Net_Http_CX509TrustManagerExtensions.h"
-#include "elautoptr.h"
+#include "elastos/droid/net/http/X509TrustManagerExtensions.h"
 
 using Org::Apache::Harmony::Xnet::Provider::Jsse::ITrustManagerImpl;
 
@@ -14,46 +14,22 @@ namespace Http {
 
 /**
  * X509TrustManager wrapper exposing Android-added features.
- *
- * <p> The checkServerTrusted method allows callers to perform additional
- * verification of certificate chains after they have been successfully
- * verified by the platform.</p>
+ * <p>
+ * The checkServerTrusted method allows callers to perform additional
+ * verification of certificate chains after they have been successfully verified
+ * by the platform.
+ * </p>
  */
 CarClass(CX509TrustManagerExtensions)
+    , public X509TrustManagerExtensions
 {
 public:
-    /**
-     * Constructs a new X509TrustManagerExtensions wrapper.
-     *
-     * @param tm A {@link X509TrustManager} as returned by TrustManagerFactory.getInstance();
-     * @throws IllegalArgumentException If tm is an unsupported TrustManager type.
-     */
-    CARAPI constructor(
-        /* [in] */ Elastos::Net::Ssl::IX509TrustManager* tm);
-
-    /**
-     * Verifies the given certificate chain.
-     *
-     * <p>See {@link X509TrustManager#checkServerTrusted(X509Certificate[], String)} for a
-     * description of the chain and authType parameters. The final parameter, host, should be the
-     * hostname of the server.</p>
-     *
-     * @throws CertificateException if the chain does not verify correctly.
-     * @return the properly ordered chain used for verification as a list of X509Certificates.
-     */
-    CARAPI CheckServerTrusted(
-        /* [in] */ const ArrayOf<Elastos::Security::Cert::IX509Certificate *> & chain,
-        /* [in] */ const String& authType,
-        /* [in] */ const String& host,
-        /* [out] */ IObjectContainer** certificates);
-
-private:
-    AutoPtr<ITrustManagerImpl> mDelegate;
+    CAR_OBJECT_DECL()
 };
 
-}
-}
-}
-}
+} // namespace Http
+} // namespace Net
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_NET_HTTP_CX509TRUSTMANAGEREXTENSIONS_H__
