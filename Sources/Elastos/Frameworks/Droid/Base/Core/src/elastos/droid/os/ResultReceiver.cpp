@@ -60,6 +60,7 @@ ECode ResultReceiver::MyResultReceiver::Send(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL_2(ResultReceiver, Object, IResultReceiver, IParcelable)
 
 ResultReceiver::ResultReceiver()
     : mLocal(FALSE)

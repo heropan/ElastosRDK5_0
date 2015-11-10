@@ -1,6 +1,8 @@
 
 #include "elastos/droid/app/ActivityView.h"
 
+#include <elastos/utility/logging/Logger.h>
+
 // using Elastos::Droid::Content::IContext;
 // using Elastos::Droid::Content::IContextWrapper;
 // using Elastos::Droid::Content::IIIntentSender;
@@ -21,6 +23,10 @@
 // using Elastos::Droid::View::IViewGroup;
 // using Elastos::Droid::View::IWindowManager;
 
+using Elastos::Core::ICloseGuardHelper;
+using Elastos::Core::CCloseGuardHelper;
+using Elastos::Utility::Logging::Logger;
+
 namespace Elastos {
 namespace Droid {
 namespace App {
@@ -28,251 +34,307 @@ namespace App {
 //=========================================================================
 // ActivityView::ActivityViewSurfaceTextureListener
 //=========================================================================
-class ActivityViewSurfaceTextureListener
-    : public Object
-    , public ISurfaceTextureListener
+
+CAR_INTERFACE_IMPL(ActivityView::ActivityViewSurfaceTextureListener, Object, ISurfaceTextureListener)
+
+ActivityView::ActivityViewSurfaceTextureListener::ActivityViewSurfaceTextureListener(
+    /* [in] */ ActivityView* host)
+    : mHost(host)
 {
-public:
-    CAR_INTERFACE_DECL()
+}
 
-    CARAPI OnSurfaceTextureAvailable(
-        /* [in] */ ISurfaceTexture* surfaceTexture,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height)
-    {
-        if (mActivityContainer == NULL) {
-            return;
-        }
-        if (DEBUG) Log.d(TAG, "onSurfaceTextureAvailable: width=" + width + " height="
-                + height);
-        mWidth = width;
-        mHeight = height;
-        attachToSurfaceWhenReady();
+ECode ActivityView::ActivityViewSurfaceTextureListener::OnSurfaceTextureAvailable(
+    /* [in] */ ISurfaceTexture* surfaceTexture,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    if (mHost->mActivityContainer == NULL) {
+        return NOERROR;
+    }
+    if (ActivityView::DEBUG)
+        Logger::D("ActivityView::ActivityViewSurfaceTextureListener",
+            "onSurfaceTextureAvailable: width=%d height=%d", width, height);
+
+    mHost->mWidth = width;
+    mHost->mHeight = height;
+    mHost->AttachToSurfaceWhenReady();
+    return NOERROR;
+}
+
+ECode ActivityView::ActivityViewSurfaceTextureListener::OnSurfaceTextureSizeChanged(
+    /* [in] */ ISurfaceTexture* surfaceTexture,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    if (mHost->mActivityContainer == NULL) {
+        return NOERROR;
     }
 
-    CARAPI OnSurfaceTextureSizeChanged(
-        /* [in] */ ISurfaceTexture* surfaceTexture,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height)
-    {
-        if (mActivityContainer == NULL)
-        {
-            return;
-        }
-        if (DEBUG) Log.d(TAG, "onSurfaceTextureSizeChanged: w=" + width + " h=" + height);
-    }
+    if (ActivityView::DEBUG)
+        Logger::D("ActivityView::ActivityViewSurfaceTextureListener",
+            "onSurfaceTextureSizeChanged: width=%d height=%d", width, height);
+}
 
-    CARAPI OnSurfaceTextureDestroyed(
-        /* [in] */ ISurfaceTexture* surfaceTexture,
-        /* [out] */ Boolean* bval)
-    {
-        if (mActivityContainer == NULL) {
-            return TRUE;
-        }
-        if (DEBUG) Log.d(TAG, "onSurfaceTextureDestroyed");
-        mSurface->Release();
-        mSurface = NULL;
-        try {
-            mActivityContainer->SetSurface(NULL, mWidth, mHeight, mMetrics.densityDpi);
-        } catch (RemoteException e) {
-            throw new RuntimeException(
-                    "ActivityView: Unable to set surface of ActivityContainer. " + e);
-        }
-        return TRUE;
-    }
+ECode ActivityView::ActivityViewSurfaceTextureListener::OnSurfaceTextureDestroyed(
+    /* [in] */ ISurfaceTexture* surfaceTexture,
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+    *bval = TRUE;
 
-    CARAPI OnSurfaceTextureUpdated(
-        /* [in] */ ISurfaceTexture* surfaceTexture)
-    {
-//            Log.d(TAG, "onSurfaceTextureUpdated");
+    if (mHost->mActivityContainer == NULL) {
+        return NOERROR;
     }
+    if (ActivityView::DEBUG)
+        Logger::D("ActivityView::ActivityViewSurfaceTextureListener",
+            "OnSurfaceTextureDestroyed");
 
-};
+    mHost->mSurface->ReleaseResources();
+    mHost->mSurface = NULL;
+    // try {
+    Int32 dpi;
+    mHost->mMetrics->GetDensityDpi(&dpi);
+    ECode ec = mHost->mActivityContainer->SetSurface(
+        NULL, mHost->mWidth, mHost->mHeight, dpi);
+    // } catch (RemoteException e) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E("ActivityView::ActivityViewSurfaceTextureListener",
+            "Unable to set surface of ActivityContainer. ");
+        return E_RUNTIME_EXCEPTION;
+    }
+    // }
+    return NOERROR;
+}
+
+ECode ActivityView::ActivityViewSurfaceTextureListener::OnSurfaceTextureUpdated(
+    /* [in] */ ISurfaceTexture* surfaceTexture)
+{
+    Logger::D("ActivityView::ActivityViewSurfaceTextureListener", "onSurfaceTextureUpdated");
+}
+
+//=========================================================================
+// ActivityView::AllActivitiesCompleteRunnable
+//=========================================================================
+ActivityView::AllActivitiesCompleteRunnable::AllActivitiesCompleteRunnable(
+    /* [in] */ IActivityViewCallback* callback,
+    /* [in] */ IActivityView* view)
+    : mCallback(callback)
+    , mActivityView(view)
+{}
+
+ECode ActivityView::AllActivitiesCompleteRunnable::Run()
+{
+    return mCallback->OnAllActivitiesComplete(mActivityView);
+}
 
 //=========================================================================
 // ActivityView::ActivityContainerCallback
 //=========================================================================
-class ActivityContainerCallback
-    : public Object
-    , public IActivityContainerCallback
-    , public IBinder
+
+CAR_INTERFACE_IMPL(ActivityView::ActivityContainerCallback, Object, IActivityContainerCallback, IBinder)
+
+ActivityView::ActivityContainerCallback::ActivityContainerCallback()
 {
-public:
-    CAR_INTERFACE_DECL()
+}
 
-    ActivityContainerCallback(
-        /* [in] */ IActivityView* activityView)
-    {
-        mActivityViewWeakReference = new WeakReference<ActivityView>(activityView);
-    }
+ActivityView::ActivityContainerCallback::~ActivityContainerCallback()
+{
+}
 
-    CARAPI SetVisible(
-        /* [in] */ IBinder* container,
-        /* [in] */ Boolean visible)
-    {
-        if (DEBUG) Logger::V(TAG, "setVisible(): container=" + container + " visible=" + visible +
-                " ActivityView=" + mActivityViewWeakReference->Get());
-    }
+ECode ActivityView::ActivityContainerCallback::constructor(
+    /* [in] */ IActivityView* activityView)
+{
+    AutoPtr<IWeakReferenceSource> wrs = IWeakReferenceSource::Probe(activityView);
+    return wrs->GetWeakReference((IWeakReference**)&mActivityViewWeakReference);
+}
 
-    CARAPI OnAllActivitiesComplete(
-        /* [in] */ IBinder* container)
-    {
-        final ActivityView activityView = mActivityViewWeakReference->Get();
-        if (activityView != NULL) {
-            final ActivityViewCallback callback = activityView.mActivityViewCallback;
-            if (callback != NULL) {
-                activityView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onAllActivitiesComplete(activityView);
-                    }
-                });
-            }
+ECode ActivityView::ActivityContainerCallback::SetVisible(
+    /* [in] */ IBinder* container,
+    /* [in] */ Boolean visible)
+{
+    if (ActivityView::DEBUG)
+        Logger::V("ActivityView::ActivityContainerCallback",
+            "setVisible(): container=%s visible=%d.",
+            Object::ToString(container).string(), visible);
+    return NOERROR;
+}
+
+ECode ActivityView::ActivityContainerCallback::OnAllActivitiesComplete(
+    /* [in] */ IBinder* container)
+{
+    AutoPtr<IActivityView> activityView;
+    mActivityViewWeakReference->Resolve(EIID_IActivityView, (IInterface**)&activityView);
+
+    if (activityView != NULL) {
+        ActivityView* av = (ActivityView*)activityView.Get();
+        AutoPtr<IActivityViewCallback> callback = av->mActivityViewCallback;
+        if (callback != NULL) {
+            AutoPtr<IRunnable> runnable = new AllActivitiesCompleteRunnable(callback, activityView);
+            Boolean result;
+            av->Post(runnable, &result);
         }
     }
 
-private:
-    AutoPtr<IWeakReference> mActivityViewWeakReference;
-};
-
+    return NOERROR;
+}
 
 //=========================================================================
 // ActivityView::ActivityContainerWrapper
 //=========================================================================
-static class ActivityContainerWrapper
-    : public Object
+
+ActivityView::ActivityContainerWrapper::ActivityContainerWrapper(
+    /* [in] */ IActivityContainer* container)
+    : mOpened(TRUE)
 {
-public:
-    ActivityContainerWrapper(
-        /* [in] */ IActivityContainer* container)
-    {
-        mIActivityContainer = container;
-        mOpened = TRUE;
-        mGuard.open("release");
-    }
+    mActivityContainer = container;
+    mOpened = TRUE;
 
-    virtual ~ActivityContainerWrapper()
-    {
-        Finalize();
-    }
+    AutoPtr<ICloseGuardHelper> helper;
+    CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
+    helper->Get((ICloseGuard**)&mGuard)
+    mGuard->Open(String("release"));
+}
 
-    CARAPI AttachToDisplay(
-        /* [in] */ Int32 displayId)
-    {
-        try {
-            mIActivityContainer.attachToDisplay(displayId);
-        } catch (RemoteException e) {
+ActivityView::ActivityContainerWrapper::~ActivityContainerWrapper()
+{
+    Finalize();
+}
+
+ECode ActivityView::ActivityContainerWrapper::AttachToDisplay(
+    /* [in] */ Int32 displayId)
+{
+    // try {
+    return mActivityContainer->AttachToDisplay(displayId);
+    // } catch (RemoteException e) {
+    // }
+}
+
+ECode ActivityView::ActivityContainerWrapper::SetSurface(
+    /* [in] */ Surface surface,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 density)
+{
+    return mActivityContainer->SetSurface(surface, width, height, density);
+}
+
+ECode ActivityView::ActivityContainerWrapper::StartActivity(
+    /* [in] */ IIntent* intent,
+    /* [out] */ Int32* status)
+{
+    VALIDATE_NOT_NULL(status)
+
+    // try {
+    ECode ec = mActivityContainer->StartActivity(intent, status);
+    // } catch (RemoteException e) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E("ActivityView::ActivityContainerWrapper", "Unable to startActivity. ");
+        ec = E_RUNTIME_EXCEPTION;
+    }
+    // }
+    return ec;
+}
+
+ECode ActivityView::ActivityContainerWrapper::StartActivityIntentSender(
+    /* [in] */ IIIntentSender* intentSender,
+    /* [out] */ Int32* status)
+{
+    VALIDATE_NOT_NULL(status)
+    // try {
+    ECode ec = mActivityContainer->StartActivityIntentSender(intentSender, status);
+    // } catch (RemoteException e) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E("ActivityView::ActivityContainerWrapper", "Unable to startActivity from IntentSender. ");
+        ec = E_RUNTIME_EXCEPTION;
+    }
+    // }
+    return ec;
+}
+
+ECode ActivityView::ActivityContainerWrapper::CheckEmbeddedAllowed(
+    /* [in] */ IIntent* intent)
+{
+    // try {
+    ECode ec = mActivityContainer->CheckEmbeddedAllowed(intent);
+    // } catch (RemoteException e) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E("ActivityView::ActivityContainerWrapper", "Unable to startActivity from Intent.");
+        ec = E_RUNTIME_EXCEPTION;
+    }
+    // }
+    return ec;
+}
+
+ECode ActivityView::ActivityContainerWrapper::CheckEmbeddedAllowedIntentSender(
+    /* [in] */ IIIntentSender* intentSender)
+{
+    // try {
+    ECode ec = mActivityContainer->CheckEmbeddedAllowedIntentSender(intentSender);
+    // } catch (RemoteException e) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        Logger::E("ActivityView::ActivityContainerWrapper", "Unable to startActivity from IntentSender.");
+        ec = E_RUNTIME_EXCEPTION;
+    }
+    // }
+    return ec;
+}
+
+ECode ActivityView::ActivityContainerWrapper::GetDisplayId(
+    /* [out] */ Int32* status)
+{
+    VALIDATE_NOT_NULL(status)
+
+    ECode ec = mActivityContainer->GetDisplayId(status);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        ec = NOERROR;
+        *status = -1;
+    }
+    return ec;
+}
+
+ECode ActivityView::ActivityContainerWrapper::InjectEvent(
+    /* [in] */ IInputEvent* event,
+    /* [out] */ Boolean* bval)
+{
+    VALIDATE_NOT_NULL(bval)
+
+    ECode ec = mActivityContainer->InjectEvent(event, bval);
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        ec = NOERROR;
+        *bval = FALSE;
+    }
+    return ec;
+}
+
+ECode ActivityView::ActivityContainerWrapper::ReleaseSources()
+{
+    synchronized (mGuard) {
+        if (mOpened) {
+            if (ActivityView::DEBUG)
+                Logger::V("ActivityView", "ActivityContainerWrapper: release called");
+            // try {
+                mActivityContainer->ReleaseSources();
+                mGuard->Close();
+            // } catch (RemoteException e) {
+            // }
+            mOpened = FALSE;
         }
     }
+}
 
-    CARAPI SetSurface(
-        /* [in] */ Surface surface,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 density)
-    {
-        mIActivityContainer->SetSurface(surface, width, height, density);
-    }
-
-    CARAPI StartActivity(
-        /* [in] */ IIntent* intent,
-        /* [out] */ Int32* status)
-    {
-        try {
-            return mIActivityContainer->StartActivity(intent);
-        } catch (RemoteException e) {
-            throw new RuntimeException("ActivityView: Unable to startActivity. " + e);
+void ActivityView::ActivityContainerWrapper::Finalize()
+{
+    if (ActivityView::DEBUG)
+        Logger::V("ActivityView", "ActivityContainerWrapper: finalize called");
+    // try {
+        if (mGuard != NULL) {
+            mGuard->WarnIfOpen();
+            ReleaseSources();
         }
-    }
-
-    CARAPI StartActivityIntentSender(
-        /* [in] */ IIIntentSender* intentSender,
-        /* [out] */ Int32* status)
-    {
-        try {
-            return mIActivityContainer->StartActivityIntentSender(intentSender);
-        } catch (RemoteException e) {
-            throw new RuntimeException(
-                    "ActivityView: Unable to startActivity from IntentSender. " + e);
-        }
-    }
-
-    CARAPI CheckEmbeddedAllowed(
-        /* [in] */ IIntent* intent)
-    {
-        try {
-            mIActivityContainer->CheckEmbeddedAllowed(intent);
-        } catch (RemoteException e) {
-            throw new RuntimeException(
-                    "ActivityView: Unable to startActivity from Intent. " + e);
-        }
-    }
-
-    CARAPI CheckEmbeddedAllowedIntentSender(
-        /* [in] */ IIIntentSender* intentSender)
-    {
-        try {
-            mIActivityContainer->CheckEmbeddedAllowedIntentSender(intentSender);
-        } catch (RemoteException e) {
-            throw new RuntimeException(
-                    "ActivityView: Unable to startActivity from IntentSender. " + e);
-        }
-    }
-
-    CARAPI GetDisplayId(
-        /* [out] */ Int32* status)
-    {
-        try {
-            return mIActivityContainer->GetDisplayId();
-        } catch (RemoteException e) {
-            return -1;
-        }
-    }
-
-    CARAPI InjectEvent(
-        /* [in] */ IInputEvent* event,
-        /* [out] */ Boolean* bval)
-    {
-        try {
-            return mIActivityContainer->InjectEvent(event);
-        } catch (RemoteException e) {
-            return FALSE;
-        }
-    }
-
-    CARAPI ReleaseSources()
-    {
-        synchronized (mGuard) {
-            if (mOpened) {
-                if (DEBUG) Logger::V(TAG, "ActivityContainerWrapper: release called");
-                try {
-                    mIActivityContainer->Release();
-                    mGuard->Close();
-                } catch (RemoteException e) {
-                }
-                mOpened = FALSE;
-            }
-        }
-    }
-
-    void Finalize()
-    {
-        if (DEBUG) Logger::V(TAG, "ActivityContainerWrapper: finalize called");
-        try {
-            if (mGuard != NULL) {
-                mGuard.warnIfOpen();
-                release();
-            }
-        } finally {
-            super.finalize();
-        }
-    }
-
-private:
-    AutoPtr<IActivityContainer> mIActivityContainer;
-    AutoPtr<ICloseGuard> mGuard;// = CloseGuard->Get();
-    Boolean mOpened; // Protected by mGuard.
-};
+    // } finally {
+    //     super.finalize();
+    // }
+}
 
 //=========================================================================
 // ActivityView

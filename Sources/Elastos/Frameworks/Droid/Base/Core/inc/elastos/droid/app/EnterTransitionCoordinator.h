@@ -1,652 +1,402 @@
 
+#ifndef __ELASTOS_DROID_APP_ENTER_TRANSITION_COORDINATOR_H__
+#define __ELASTOS_DROID_APP_ENTER_TRANSITION_COORDINATOR_H__
+
+#include "elastos/droid/app/ActivityTransitionCoordinator.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/transition/Transition.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
+#include <elastos/utility/etl/List.h>
 
 
-package android.app;
+using Elastos::Droid::Animation::IObjectAnimator;
+using Elastos::Droid::Animation::AnimatorListenerAdapter;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::Transition::ITransition;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
 
-using Elastos::Droid::animation.Animator;
-using Elastos::Droid::animation.AnimatorListenerAdapter;
-using Elastos::Droid::animation.ObjectAnimator;
-using Elastos::Droid::graphics.Matrix;
-using Elastos::Droid::graphics.drawable.Drawable;
-using Elastos::Droid::os.Bundle;
-using Elastos::Droid::os.ResultReceiver;
-using Elastos::Droid::text.TextUtils;
-using Elastos::Droid::transition.Transition;
-using Elastos::Droid::transition.TransitionManager;
-using Elastos::Droid::util.ArrayMap;
-using Elastos::Droid::view.View;
-using Elastos::Droid::view.ViewGroup;
-using Elastos::Droid::view.ViewGroupOverlay;
-using Elastos::Droid::view.ViewTreeObserver;
-using Elastos::Droid::view.Window;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::List;
 
-import java.util.ArrayList;
+namespace Elastos {
+namespace Droid {
+namespace App {
 
 /**
  * This ActivityTransitionCoordinator is created by the Activity to manage
  * the enter scene and shared element transfer into the Scene, either during
  * launch of an Activity or returning from a launched Activity.
  */
-class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
-    private static final String TAG = "EnterTransitionCoordinator";
+class EnterTransitionCoordinator
+    : public ActivityTransitionCoordinator
+    , public IEnterTransitionCoordinator
+{
+private:
+    class DecorViewOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-    private static final int MIN_ANIMATION_FRAMES = 2;
+        DecorViewOnPreDrawListener(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IView* decorView);
 
-    private boolean mSharedElementTransitionStarted;
-    private Activity mActivity;
-    private boolean mHasStopped;
-    private boolean mIsCanceled;
-    private ObjectAnimator mBackgroundAnimator;
-    private boolean mIsExitTransitionComplete;
-    private boolean mIsReadyForTransition;
-    private Bundle mSharedElementsBundle;
-    private boolean mWasOpaque;
-    private boolean mAreViewsReady;
-    private boolean mIsViewsTransitionStarted;
-    private boolean mIsViewsTransitionComplete;
-    private boolean mIsSharedElementTransitionComplete;
-    private ArrayList<Matrix> mSharedElementParentMatrices;
-    private Transition mEnterViewsTransition;
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
 
-    public EnterTransitionCoordinator(Activity activity, ResultReceiver resultReceiver,
-            ArrayList<String> sharedElementNames, boolean isReturning) {
-        super(activity.getWindow(), sharedElementNames,
-                getListener(activity, isReturning), isReturning);
-        mActivity = activity;
-        setResultReceiver(resultReceiver);
-        prepareEnter();
-        Bundle resultReceiverBundle = new Bundle();
-        resultReceiverBundle.putParcelable(KEY_REMOTE_RECEIVER, this);
-        mResultReceiver.send(MSG_SET_REMOTE_RECEIVER, resultReceiverBundle);
-        final View decorView = getDecor();
-        if (decorView != null) {
-            decorView.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            if (mIsReadyForTransition) {
-                                decorView.getViewTreeObserver().removeOnPreDrawListener(this);
-                            }
-                            return mIsReadyForTransition;
-                        }
-                    });
-        }
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IView> mDecorView;
+    };
 
-    public void viewInstancesReady(ArrayList<String> accepted, ArrayList<String> localNames,
-            ArrayList<View> localViews) {
-        boolean remap = false;
-        for (int i = 0; i < localViews.size(); i++) {
-            View view = localViews.get(i);
-            if (!TextUtils.equals(view.getTransitionName(), localNames.get(i))
-                    || !view.isAttachedToWindow()) {
-                remap = true;
-                break;
-            }
-        }
-        if (remap) {
-            triggerViewsReady(mapNamedElements(accepted, localNames));
-        } else {
-            triggerViewsReady(mapSharedElements(accepted, localViews));
-        }
-    }
+    class DestinationDecorViewOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-    public void namedViewsReady(ArrayList<String> accepted, ArrayList<String> localNames) {
-        triggerViewsReady(mapNamedElements(accepted, localNames));
-    }
+        DestinationDecorViewOnPreDrawListener(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IView* decorView);
 
-    public Transition getEnterViewsTransition() {
-        return mEnterViewsTransition;
-    }
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
 
-    @Override
-    protected void viewsReady(ArrayMap<String, View> sharedElements) {
-        super.viewsReady(sharedElements);
-        mIsReadyForTransition = true;
-        hideViews(mSharedElements);
-        if (getViewsTransition() != null && mTransitioningViews != null) {
-            hideViews(mTransitioningViews);
-        }
-        if (mIsReturning) {
-            sendSharedElementDestination();
-        } else {
-            setSharedElementMatrices();
-            moveSharedElementsToOverlay();
-        }
-        if (mSharedElementsBundle != null) {
-            onTakeSharedElements();
-        }
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IView> mDecorView;
+    };
 
-    private void triggerViewsReady(final ArrayMap<String, View> sharedElements) {
-        if (mAreViewsReady) {
-            return;
-        }
-        mAreViewsReady = true;
-        // Ensure the views have been laid out before capturing the views -- we need the epicenter.
-        if (sharedElements.isEmpty() || !sharedElements.valueAt(0).isLayoutRequested()) {
-            viewsReady(sharedElements);
-        } else {
-            final View sharedElement = sharedElements.valueAt(0);
-            sharedElement.getViewTreeObserver()
-                    .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                    viewsReady(sharedElements);
-                    return true;
-                }
-            });
-        }
-    }
+    class SharedElementOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-    private ArrayMap<String, View> mapNamedElements(ArrayList<String> accepted,
-            ArrayList<String> localNames) {
-        ArrayMap<String, View> sharedElements = new ArrayMap<String, View>();
-        ViewGroup decorView = getDecor();
-        if (decorView != null) {
-            decorView.findNamedViews(sharedElements);
-        }
-        if (accepted != null) {
-            for (int i = 0; i < localNames.size(); i++) {
-                String localName = localNames.get(i);
-                String acceptedName = accepted.get(i);
-                if (localName != null && !localName.equals(acceptedName)) {
-                    View view = sharedElements.remove(localName);
-                    if (view != null) {
-                        sharedElements.put(acceptedName, view);
-                    }
-                }
-            }
-        }
-        return sharedElements;
-    }
+        SharedElementOnPreDrawListener(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IArrayMap* sharedElements,
+            /* [in] */ IView* sharedElement);
 
-    private void sendSharedElementDestination() {
-        boolean allReady;
-        final View decorView = getDecor();
-        if (allowOverlappingTransitions() && getEnterViewsTransition() != null) {
-            allReady = false;
-        } else if (decorView == null) {
-            allReady = true;
-        } else {
-            allReady = !decorView.isLayoutRequested();
-            if (allReady) {
-                for (int i = 0; i < mSharedElements.size(); i++) {
-                    if (mSharedElements.get(i).isLayoutRequested()) {
-                        allReady = false;
-                        break;
-                    }
-                }
-            }
-        }
-        if (allReady) {
-            Bundle state = captureSharedElementState();
-            setSharedElementMatrices();
-            moveSharedElementsToOverlay();
-            mResultReceiver.send(MSG_SHARED_ELEMENT_DESTINATION, state);
-        } else if (decorView != null) {
-            decorView.getViewTreeObserver()
-                    .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            decorView.getViewTreeObserver().removeOnPreDrawListener(this);
-                            if (mResultReceiver != null) {
-                                Bundle state = captureSharedElementState();
-                                setSharedElementMatrices();
-                                moveSharedElementsToOverlay();
-                                mResultReceiver.send(MSG_SHARED_ELEMENT_DESTINATION, state);
-                            }
-                            return true;
-                        }
-                    });
-        }
-        if (allowOverlappingTransitions()) {
-            startEnterTransitionOnly();
-        }
-    }
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
 
-    private static SharedElementCallback getListener(Activity activity, boolean isReturning) {
-        return isReturning ? activity.mExitTransitionListener : activity.mEnterTransitionListener;
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IArrayMap> mSharedElements;
+        AutoPtr<IView> mSharedElement;
+    };
 
-    @Override
-    protected void onReceiveResult(int resultCode, Bundle resultData) {
-        switch (resultCode) {
-            case MSG_TAKE_SHARED_ELEMENTS:
-                if (!mIsCanceled) {
-                    mSharedElementsBundle = resultData;
-                    onTakeSharedElements();
-                }
-                break;
-            case MSG_EXIT_TRANSITION_COMPLETE:
-                if (!mIsCanceled) {
-                    mIsExitTransitionComplete = true;
-                    if (mSharedElementTransitionStarted) {
-                        onRemoteExitTransitionComplete();
-                    }
-                }
-                break;
-            case MSG_CANCEL:
-                cancel();
-                break;
-        }
-    }
+    class TakeSharedElementsOnPreDrawListener
+        : public Object
+        , public IOnPreDrawListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
 
-    private void cancel() {
-        if (!mIsCanceled) {
-            mIsCanceled = true;
-            if (getViewsTransition() == null || mIsViewsTransitionStarted) {
-                showViews(mSharedElements, true);
-            } else if (mTransitioningViews != null) {
-                mTransitioningViews.addAll(mSharedElements);
-            }
-            mSharedElementNames.clear();
-            mSharedElements.clear();
-            mAllSharedElementNames.clear();
-            startSharedElementTransition(null);
-            onRemoteExitTransitionComplete();
-        }
-    }
+        TakeSharedElementsOnPreDrawListener(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IView* decorView,
+            /* [in] */ IBundle* sharedElementState);
 
-    public boolean isReturning() {
-        return mIsReturning;
-    }
+        CARAPI OnPreDraw(
+            /* [out] */ Boolean* result);
 
-    protected void prepareEnter() {
-        ViewGroup decorView = getDecor();
-        if (mActivity == null || decorView == null) {
-            return;
-        }
-        mActivity.overridePendingTransition(0, 0);
-        if (!mIsReturning) {
-            mWasOpaque = mActivity.convertToTranslucent(null, null);
-            Drawable background = decorView.getBackground();
-            if (background != null) {
-                getWindow().setBackgroundDrawable(null);
-                background = background.mutate();
-                background.setAlpha(0);
-                getWindow().setBackgroundDrawable(background);
-            }
-        } else {
-            mActivity = null; // all done with it now.
-        }
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IView> mDecorView;
+        AutoPtr<IBundle> mSharedElementState;
+    };
 
-    @Override
-    protected Transition getViewsTransition() {
-        Window window = getWindow();
-        if (window == null) {
-            return null;
-        }
-        if (mIsReturning) {
-            return window.getReenterTransition();
-        } else {
-            return window.getEnterTransition();
-        }
-    }
+    class OnAnimationRunnable
+        : public Runnable
+    {
+    public:
+        OnAnimationRunnable(
+            /* [in] */ EnterTransitionCoordinator* host);
 
-    protected Transition getSharedElementTransition() {
-        Window window = getWindow();
-        if (window == null) {
-            return null;
-        }
-        if (mIsReturning) {
-            return window.getSharedElementReenterTransition();
-        } else {
-            return window.getSharedElementEnterTransition();
-        }
-    }
+        CARAPI Run();
 
-    private void startSharedElementTransition(Bundle sharedElementState) {
-        ViewGroup decorView = getDecor();
-        if (decorView == null) {
-            return;
-        }
-        // Remove rejected shared elements
-        ArrayList<String> rejectedNames = new ArrayList<String>(mAllSharedElementNames);
-        rejectedNames.removeAll(mSharedElementNames);
-        ArrayList<View> rejectedSnapshots = createSnapshots(sharedElementState, rejectedNames);
-        if (mListener != null) {
-            mListener.onRejectSharedElements(rejectedSnapshots);
-        }
-        startRejectedAnimations(rejectedSnapshots);
+        CARAPI ToString(
+            /* [out] */ String* str);
+    public:
+        Int32 mAnimations;
+    private:
+        EnterTransitionCoordinator* mHost;
+    };
 
-        // Now start shared element transition
-        ArrayList<View> sharedElementSnapshots = createSnapshots(sharedElementState,
-                mSharedElementNames);
-        showViews(mSharedElements, true);
-        scheduleSetSharedElementEnd(sharedElementSnapshots);
-        ArrayList<SharedElementOriginalState> originalImageViewState =
-                setSharedElementState(sharedElementState, sharedElementSnapshots);
-        requestLayoutForSharedElements();
+    class TransitionRunnable
+        : public Runnable
+    {
+    public:
+        TransitionRunnable(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IBundle* sharedElementState);
 
-        boolean startEnterTransition = allowOverlappingTransitions() && !mIsReturning;
-        boolean startSharedElementTransition = true;
-        setGhostVisibility(View.INVISIBLE);
-        scheduleGhostVisibilityChange(View.INVISIBLE);
-        Transition transition = beginTransition(decorView, startEnterTransition,
-                startSharedElementTransition);
-        scheduleGhostVisibilityChange(View.VISIBLE);
-        setGhostVisibility(View.VISIBLE);
+        CARAPI Run();
 
-        if (startEnterTransition) {
-            startEnterTransition(transition);
-        }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IBundle> mSharedElementState;
+    };
 
-        setOriginalSharedElementState(mSharedElements, originalImageViewState);
+    class SharedElementTransitionListener
+        : public Elastos::Droid::Transition::Transition::TransitionListenerAdapter
+    {
+    public:
+        SharedElementTransitionListener(
+            /* [in] */ EnterTransitionCoordinator* host);
 
-        if (mResultReceiver != null) {
-            // We can't trust that the view will disappear on the same frame that the shared
-            // element appears here. Assure that we get at least 2 frames for double-buffering.
-            decorView.postOnAnimation(new Runnable() {
-                int mAnimations;
+        CARAPI OnTransitionStart(
+            /* [in] */ ITransition* transition);
 
-                @Override
-                public void run() {
-                    if (mAnimations++ < MIN_ANIMATION_FRAMES) {
-                        View decorView = getDecor();
-                        if (decorView != null) {
-                            decorView.postOnAnimation(this);
-                        }
-                    } else if (mResultReceiver != null) {
-                        mResultReceiver.send(MSG_HIDE_SHARED_ELEMENTS, null);
-                        mResultReceiver = null; // all done sending messages.
-                    }
-                }
-            });
-        }
-    }
+        CARAPI OnTransitionEnd(
+            /* [in] */ ITransition* transition);
 
-    private void onTakeSharedElements() {
-        if (!mIsReadyForTransition || mSharedElementsBundle == null) {
-            return;
-        }
-        final Bundle sharedElementState = mSharedElementsBundle;
-        mSharedElementsBundle = null;
-        final View decorView = getDecor();
-        if (decorView != null) {
-            decorView.getViewTreeObserver()
-                    .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            decorView.getViewTreeObserver().removeOnPreDrawListener(this);
-                            startTransition(new Runnable() {
-                                @Override
-                                public void run() {
-                                    startSharedElementTransition(sharedElementState);
-                                }
-                            });
-                            return false;
-                        }
-                    });
-            decorView.invalidate();
-        }
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+    };
 
-    private void requestLayoutForSharedElements() {
-        int numSharedElements = mSharedElements.size();
-        for (int i = 0; i < numSharedElements; i++) {
-            mSharedElements.get(i).requestLayout();
-        }
-    }
+    class MyContinueTransitionListener
+        : public EnterTransitionCoordinator::ContinueTransitionListener
+    {
+    public:
+        MyContinueTransitionListener(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IArrayList* transitioningViews);
 
-    private Transition beginTransition(ViewGroup decorView, boolean startEnterTransition,
-            boolean startSharedElementTransition) {
-        Transition sharedElementTransition = null;
-        if (startSharedElementTransition) {
-            if (!mSharedElementNames.isEmpty()) {
-                sharedElementTransition = configureTransition(getSharedElementTransition(), false);
-            }
-            if (sharedElementTransition == null) {
-                sharedElementTransitionStarted();
-                sharedElementTransitionComplete();
-            } else {
-                sharedElementTransition.addListener(new Transition.TransitionListenerAdapter() {
-                    @Override
-                    public void onTransitionStart(Transition transition) {
-                        sharedElementTransitionStarted();
-                    }
+        CARAPI OnTransitionStart(
+            /* [in] */ ITransition* transition);
 
-                    @Override
-                    public void onTransitionEnd(Transition transition) {
-                        transition.removeListener(this);
-                        sharedElementTransitionComplete();
-                    }
-                });
-            }
-        }
-        Transition viewsTransition = null;
-        if (startEnterTransition) {
-            mIsViewsTransitionStarted = true;
-            if (mTransitioningViews != null && !mTransitioningViews.isEmpty()) {
-                viewsTransition = configureTransition(getViewsTransition(), true);
-                if (viewsTransition != null && !mIsReturning) {
-                    stripOffscreenViews();
-                }
-            }
-            if (viewsTransition == null) {
-                viewTransitionComplete();
-            } else {
-                viewsTransition.forceVisibility(View.INVISIBLE, true);
-                final ArrayList<View> transitioningViews = mTransitioningViews;
-                viewsTransition.addListener(new ContinueTransitionListener() {
-                    @Override
-                    public void onTransitionStart(Transition transition) {
-                        mEnterViewsTransition = transition;
-                        if (transitioningViews != null) {
-                            showViews(transitioningViews, false);
-                        }
-                        super.onTransitionStart(transition);
-                    }
+        CARAPI OnTransitionEnd(
+            /* [in] */ ITransition* transition);
 
-                    @Override
-                    public void onTransitionEnd(Transition transition) {
-                        mEnterViewsTransition = null;
-                        transition.removeListener(this);
-                        viewTransitionComplete();
-                        super.onTransitionEnd(transition);
-                    }
-                });
-            }
-        }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IArrayList> mTransitioningViews;
+    };
 
-        Transition transition = mergeTransitions(sharedElementTransition, viewsTransition);
-        if (transition != null) {
-            transition.addListener(new ContinueTransitionListener());
-            TransitionManager.beginDelayedTransition(decorView, transition);
-            if (startSharedElementTransition && !mSharedElementNames.isEmpty()) {
-                mSharedElements.get(0).invalidate();
-            } else if (startEnterTransition && mTransitioningViews != null &&
-                    !mTransitioningViews.isEmpty()) {
-                mTransitioningViews.get(0).invalidate();
-            }
-        } else {
-            transitionStarted();
-        }
-        return transition;
-    }
+    class MyAnimatorListenerAdapter
+        : public AnimatorListenerAdapter
+    {
+    public:
+        MyAnimatorListenerAdapter(
+            /* [in] */ EnterTransitionCoordinator* host);
 
-    private void viewTransitionComplete() {
-        mIsViewsTransitionComplete = true;
-        if (mIsSharedElementTransitionComplete) {
-            moveSharedElementsFromOverlay();
-        }
-    }
+        CARAPI OnAnimationEnd(
+            /* [in] */ IAnimator* animation);
 
-    private void sharedElementTransitionComplete() {
-        mIsSharedElementTransitionComplete = true;
-        if (mIsViewsTransitionComplete) {
-            moveSharedElementsFromOverlay();
-        }
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+    };
 
-    private void sharedElementTransitionStarted() {
-        mSharedElementTransitionStarted = true;
-        if (mIsExitTransitionComplete) {
-            send(MSG_EXIT_TRANSITION_COMPLETE, null);
-        }
-    }
+    class EnterTransitionListener
+        : public Elastos::Droid::Transition::Transition::TransitionListenerAdapter
+    {
+    public:
+        EnterTransitionListener(
+            /* [in] */ EnterTransitionCoordinator* host);
 
-    private void startEnterTransition(Transition transition) {
-        ViewGroup decorView = getDecor();
-        if (!mIsReturning && decorView != null) {
-            Drawable background = decorView.getBackground();
-            if (background != null) {
-                background = background.mutate();
-                getWindow().setBackgroundDrawable(background);
-                mBackgroundAnimator = ObjectAnimator.ofInt(background, "alpha", 255);
-                mBackgroundAnimator.setDuration(getFadeDuration());
-                mBackgroundAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        makeOpaque();
-                    }
-                });
-                mBackgroundAnimator.start();
-            } else if (transition != null) {
-                transition.addListener(new Transition.TransitionListenerAdapter() {
-                    @Override
-                    public void onTransitionEnd(Transition transition) {
-                        transition.removeListener(this);
-                        makeOpaque();
-                    }
-                });
-            } else {
-                makeOpaque();
-            }
-        }
-    }
+        CARAPI OnTransitionEnd(
+            /* [in] */ ITransition* transition);
 
-    public void stop() {
-        // Restore the background to its previous state since the
-        // Activity is stopping.
-        if (mBackgroundAnimator != null) {
-            mBackgroundAnimator.end();
-            mBackgroundAnimator = null;
-        } else if (mWasOpaque) {
-            ViewGroup decorView = getDecor();
-            if (decorView != null) {
-                Drawable drawable = decorView.getBackground();
-                if (drawable != null) {
-                    drawable.setAlpha(1);
-                }
-            }
-        }
-        makeOpaque();
-        mIsCanceled = true;
-        mResultReceiver = null;
-        mActivity = null;
-        moveSharedElementsFromOverlay();
-        if (mTransitioningViews != null) {
-            showViews(mTransitioningViews, true);
-        }
-        showViews(mSharedElements, true);
-        clearState();
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+    };
 
-    public void cancelEnter() {
-        setGhostVisibility(View.INVISIBLE);
-        mHasStopped = true;
-        mIsCanceled = true;
-        mResultReceiver = null;
-        if (mBackgroundAnimator != null) {
-            mBackgroundAnimator.cancel();
-            mBackgroundAnimator = null;
-        }
-        mActivity = null;
-        clearState();
-    }
+    class RejectedAnimatorListenerAdapter
+        : public AnimatorListenerAdapter
+    {
+    public:
+        RejectedAnimatorListenerAdapter(
+            /* [in] */ EnterTransitionCoordinator* host,
+            /* [in] */ IView* decorView,
+            /* [in] */ IArrayList* rejectedSnapshots);
 
-    private void makeOpaque() {
-        if (!mHasStopped && mActivity != null) {
-            if (mWasOpaque) {
-                mActivity.convertFromTranslucent();
-            }
-            mActivity = null;
-        }
-    }
+        CARAPI OnAnimationEnd(
+            /* [in] */ IAnimator* animation);
 
-    private boolean allowOverlappingTransitions() {
-        return mIsReturning ? getWindow().getAllowExitTransitionOverlap()
-                : getWindow().getAllowEnterTransitionOverlap();
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+        AutoPtr<IView> mDecorView;
+        AutoPtr<IArrayList> mRejectedSnapshots;
+    };
 
-    private void startRejectedAnimations(final ArrayList<View> rejectedSnapshots) {
-        if (rejectedSnapshots == null || rejectedSnapshots.isEmpty()) {
-            return;
-        }
-        final ViewGroup decorView = getDecor();
-        if (decorView != null) {
-            ViewGroupOverlay overlay = decorView.getOverlay();
-            ObjectAnimator animator = null;
-            int numRejected = rejectedSnapshots.size();
-            for (int i = 0; i < numRejected; i++) {
-                View snapshot = rejectedSnapshots.get(i);
-                overlay.add(snapshot);
-                animator = ObjectAnimator.ofFloat(snapshot, View.ALPHA, 1, 0);
-                animator.start();
-            }
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    ViewGroupOverlay overlay = decorView.getOverlay();
-                    int numRejected = rejectedSnapshots.size();
-                    for (int i = 0; i < numRejected; i++) {
-                        overlay.remove(rejectedSnapshots.get(i));
-                    }
-                }
-            });
-        }
-    }
+    class TransitionOnlyRunnable
+        : public Runnable
+    {
+    public:
+        TransitionOnlyRunnable(
+            /* [in] */ EnterTransitionCoordinator* host);
 
-    protected void onRemoteExitTransitionComplete() {
-        if (!allowOverlappingTransitions()) {
-            startEnterTransitionOnly();
-        }
-    }
+        CARAPI Run();
 
-    private void startEnterTransitionOnly() {
-        startTransition(new Runnable() {
-            @Override
-            public void run() {
-                boolean startEnterTransition = true;
-                boolean startSharedElementTransition = false;
-                ViewGroup decorView = getDecor();
-                if (decorView != null) {
-                    Transition transition = beginTransition(decorView, startEnterTransition,
-                            startSharedElementTransition);
-                    startEnterTransition(transition);
-                }
-            }
-        });
-    }
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        EnterTransitionCoordinator* mHost;
+    };
 
-    private void setSharedElementMatrices() {
-        int numSharedElements = mSharedElements.size();
-        if (numSharedElements > 0) {
-            mSharedElementParentMatrices = new ArrayList<Matrix>(numSharedElements);
-        }
-        for (int i = 0; i < numSharedElements; i++) {
-            View view = mSharedElements.get(i);
+public:
+    CAR_INTERFACE_DECL()
 
-            // Find the location in the view's parent
-            ViewGroup parent = (ViewGroup) view.getParent();
-            Matrix matrix = new Matrix();
-            parent.transformMatrixToLocal(matrix);
+    EnterTransitionCoordinator();
 
-            mSharedElementParentMatrices.add(matrix);
-        }
-    }
+    virtual ~EnterTransitionCoordinator();
 
-    @Override
-    protected void getSharedElementParentMatrix(View view, Matrix matrix) {
-        int index = mSharedElementParentMatrices == null ? -1 : mSharedElements.indexOf(view);
-        if (index < 0) {
-            super.getSharedElementParentMatrix(view, matrix);
-        } else {
-            matrix.set(mSharedElementParentMatrices.get(index));
-        }
-    }
-}
+    CARAPI constructor(
+        /* [in] */ IActivity* activity,
+        /* [in] */ IResultReceiver* resultReceiver,
+        /* [in] */ IArrayList* sharedElementNames,
+        /* [in] */ Boolean isReturning);
 
+    CARAPI ViewInstancesReady(
+        /* [in] */ IArrayList* accepted,    //ArrayList<String>
+        /* [in] */ IArrayList* localNames,  //ArrayList<String>
+        /* [in] */ IArrayList* localViews);  //ArrayList<View>
+
+    CARAPI NamedViewsReady(
+        /* [in] */ IArrayList* accepted,    //ArrayList<String>
+        /* [in] */ IArrayList* localNames);
+
+    CARAPI GetEnterViewsTransition(
+        /* [out] */ ITransition** transition);
+
+    CARAPI IsReturning(
+        /* [out] */ Boolean* returning);
+
+    CARAPI Stop();
+
+    CARAPI CancelEnter();
+
+protected:
+    //@Override
+    CARAPI ViewsReady(
+        /* [in] */ IArrayMap* sharedElements); //ArrayMap<String, View>
+
+    //@Override
+    void OnReceiveResult(
+        /* [in] */ Int32 resultCode,
+        /* [in] */ IBundle* resultData);
+
+    void PrepareEnter();
+
+    //@Override
+    AutoPtr<ITransition> GetViewsTransition();
+
+    AutoPtr<ITransition> GetSharedElementTransition();
+
+    void OnRemoteExitTransitionComplete();
+
+    //@Override
+    void GetSharedElementParentMatrix(
+        /* [in] */ IView* view,
+        /* [in] */ IMatrix* matrix);
+
+private:
+
+    CARAPI TriggerViewsReady(
+        /* [in] */ IArrayMap* sharedElements); //ArrayMap<String, View>
+
+    AutoPtr<IArrayMap> MapNamedElements( //ArrayMap<String, View>
+        /* [in] */ IArrayList* accepted,    //<String>
+        /* [in] */ IArrayList* localNames);  //<String>
+
+    void SendSharedElementDestination();
+
+    static AutoPtr<ISharedElementCallback> GetListener(
+        /* [in] */ IActivity* activity,
+        /* [in] */ Boolean isReturning);
+
+    void Cancel();
+
+    void StartSharedElementTransition(
+        /* [in] */ IBundle* sharedElementState);
+
+    void OnTakeSharedElements();
+
+    void RequestLayoutForSharedElements();
+
+    AutoPtr<ITransition> BeginTransition(
+        /* [in] */ IViewGroup* decorView,
+        /* [in] */ Boolean StartEnterTransition,
+        /* [in] */ Boolean StartSharedElementTransition);
+
+    void ViewTransitionComplete();
+
+    void SharedElementTransitionComplete();
+
+    void SharedElementTransitionStarted();
+
+    void StartEnterTransition(
+        /* [in] */ ITransition* transition);
+
+    void MakeOpaque();
+
+    Boolean AllowOverlappingTransitions();
+
+    void StartRejectedAnimations(
+        /* [in] */ IArrayList* rejectedSnapshots); //ArrayList<View>
+
+    void StartEnterTransitionOnly();
+
+    void SetSharedElementMatrices();
+
+private:
+    friend class DecorViewOnPreDrawListener;
+    friend class OnAnimationRunnable;
+
+    static const String TAG;
+    static const Int32 MIN_ANIMATION_FRAMES;
+
+    Boolean mSharedElementTransitionStarted;
+    AutoPtr<IActivity> mActivity;
+    Boolean mHasStopped;
+    Boolean mIsCanceled;
+    AutoPtr<IObjectAnimator> mBackgroundAnimator;
+    Boolean mIsExitTransitionComplete;
+    Boolean mIsReadyForTransition;
+    AutoPtr<IBundle> mSharedElementsBundle;
+    Boolean mWasOpaque;
+    Boolean mAreViewsReady;
+    Boolean mIsViewsTransitionStarted;
+    Boolean mIsViewsTransitionComplete;
+    Boolean mIsSharedElementTransitionComplete;
+    AutoPtr<List<AutoPtr<IMatrix> > > mSharedElementParentMatrices;
+    AutoPtr<ITransition> mEnterViewsTransition;
+};
+
+} // namespace App
+} // namespace Droid
+} // namespace Elastos
+
+#endif //__ELASTOS_DROID_APP_ENTER_TRANSITION_COORDINATOR_H__

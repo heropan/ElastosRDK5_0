@@ -32,14 +32,15 @@ SOURCES += CActivityOptions.cpp
 SOURCES += CActivityOptionsHelper.cpp
 SOURCES += CActivityOptionsAnimationStartedListener.cpp
 
-#SOURCES += ActivityTransitionCoordinator.cpp
-#SOURCES += ActivityTransitionState.cpp
+SOURCES += ActivityTransitionCoordinator.cpp
+SOURCES += ActivityTransitionState.cpp
+
+#SOURCES += ActivityView.cpp
 
 SOURCES += AppGlobals.cpp
 
 SOURCES += Application.cpp
 #SOURCES += CApplicationThread.cpp
-
 SOURCES += CApplicationErrorReport.cpp
 SOURCES += CApplicationErrorReportHelper.cpp
 SOURCES += CApplicationErrorReportAnrInfo.cpp
@@ -55,7 +56,7 @@ SOURCES += CBackStackRecordTransitionState.cpp
 
 SOURCES += CContentProviderHolder.cpp
 
-#SOURCES += EnterTransitionCoordinator.cpp
+SOURCES += EnterTransitionCoordinator.cpp
 #SOURCES += ExitTransitionCoordinator.cpp
 
 SOURCES += Fragment.cpp

@@ -67,6 +67,7 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
 
     ResultReceiver();
 
