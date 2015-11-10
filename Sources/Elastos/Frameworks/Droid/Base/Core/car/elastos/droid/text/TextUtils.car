@@ -60,11 +60,22 @@ module
      * interface IStringSplitter
      */
     interface ISimpleStringSplitter {
+        SetString(
+            [in] String string);
+
         GetIterator(
             [out] IIterator** it);
 
+        HasNext(
+            [out] Boolean* result);
+
+        GetNext(
+            [out] IInterface** object);
+
         GetNext(
             [out] String* str);
+
+        Remove();
     }
 
     interface ITextUtilsEllipsizeCallback {

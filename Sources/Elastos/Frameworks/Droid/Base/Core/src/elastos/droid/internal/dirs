@@ -1,5 +1,6 @@
 DIRS += content
 DIRS += database
 DIRS += http
+DIRS += inputmethod
 DIRS += os
 DIRS += utility

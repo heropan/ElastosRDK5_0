@@ -70,7 +70,8 @@ module
         BuildAndPutEnabledInputMethodsStrRemovingIdLocked(
             [in] IStringBuilder* builder,
             [in] IList* imsList,
-            [in] String id);
+            [in] String id,
+            [out] Boolean* result);
 
         GetEnabledInputMethodsStr(
             [out] String* str);
@@ -118,8 +119,10 @@ module
             [in] IContext* context,
             [out] IHashMap** hashmap);
     }
+
     /**
-     * Helper for parsing an HTTP date.
+     * InputMethodManagerUtils contains some static methods that provides IME informations.
+     * This methods are supposed to be used in both the framework and the Settings application.
      */
     [local]
     interface IInputMethodUtils {
@@ -157,7 +160,8 @@ module
             [out] ILocale** locale);
 
         GetSystemLocaleFromContext(
-            [in] IContext* context);
+            [in] IContext* context,
+            [out] ILocale** locale);
 
         GetDefaultEnabledImes(
             [in] IContext* context,
@@ -248,7 +252,7 @@ module
             [in] String mode,
             [in] String locale,
             [in] Boolean canIgnoreLocaleAsLastResort,
-            [out] IInputMethodSubtype**subtype );
+            [out] IInputMethodSubtype** subtype);
 
         CanAddToLastInputMethod(
             [in] IInputMethodSubtype* subtype,

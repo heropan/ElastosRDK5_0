@@ -1,5 +1,6 @@
 module
 {
+    using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
 
     interface Elastos.Droid.Content.IContext;
@@ -18,6 +19,41 @@ module
      */
     [local]
     interface IImeSubtypeListItem {
+        GetImeName(
+            [out] ICharSequence** imeName);
+
+        SetImeName(
+            [in] ICharSequence* imeName);
+
+        GetSubtypeName(
+            [out] ICharSequence** subtypeName);
+
+        SetSubtypeName(
+            [in] ICharSequence* subtypeName);
+
+        GetImi(
+            [out] IInputMethodInfo** imi);
+
+        SetImi(
+            [in] IInputMethodInfo* imi);
+
+        GetSubtypeId(
+            [out] Int32* subtypeId);
+
+        SetSubtypeId(
+            [in] Int32 subtypeId);
+
+        GetIsSystemLocale(
+            [out] Boolean* isSystemLocale);
+
+        SetIsSystemLocale(
+            [in] Boolean isSystemLocale);
+
+        GetIsSystemLanguage(
+            [out] Boolean* isSystemLanguage);
+
+        SetIsSystemLanguage(
+            [in] Boolean isSystemLanguage);
     }
 
     /**
