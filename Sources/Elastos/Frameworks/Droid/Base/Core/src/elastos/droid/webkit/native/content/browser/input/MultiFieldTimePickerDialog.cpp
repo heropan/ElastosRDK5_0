@@ -102,13 +102,13 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     max -= maxHour * HOUR_IN_MILLIS;
 
     if (minHour == maxHour) {
-        AutoPtr<IView> view = (IView*)mHourSpinner->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mHourSpinner);
         view->SetEnabled(FALSE);
         hour = minHour;
     }
 
     if (is24hourFormat) {
-        AutoPtr<IView> view = (IView*)mAmPmSpinner->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mAmPmSpinner);
         view->SetVisibility(IView::GONE);
     }
     else {
@@ -133,7 +133,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
         }
 
         if (minAmPm == maxAmPm) {
-            AutoPtr<IView> view = (IView*)mAmPmSpinner->Probe(EIID_IView);
+            AutoPtr<IView> view = IView::Probe(mAmPmSpinner);
             view->SetEnabled(FALSE);
             amPm = minAmPm;
 
@@ -157,7 +157,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     }
 
     if (minHour == maxHour) {
-        AutoPtr<IView> view = (IView*)mHourSpinner->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mHourSpinner);
         view->SetEnabled(FALSE);
     }
 
@@ -185,7 +185,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
             (*array)[0] = format;
 
             mMinuteSpinner->SetDisplayedValues(array);
-            AutoPtr<IView> view = (IView*)mMinuteSpinner->Probe(EIID_IView);
+            AutoPtr<IView> view = IView::Probe(mMinuteSpinner);
             view->SetEnabled(FALSE);
             minute = minMinute;
         }
@@ -196,7 +196,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
     }
 
     if (step >= HOUR_IN_MILLIS) {
-        AutoPtr<IView> view = (IView*)mMinuteSpinner->Probe(EIID_IView);
+        AutoPtr<IView> view = IView::Probe(mMinuteSpinner);
         view->SetEnabled(FALSE);
     }
 
@@ -210,7 +210,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
         // TODO
         // view->FindViewById(R::id::second_colon, (IView**)&secondColon);
         secondColon->SetVisibility(IView::GONE);
-        AutoPtr<IView> secSpinnerView = (IView*)mSecSpinner->Probe(EIID_IView);
+        AutoPtr<IView> secSpinnerView = IView::Probe(mSecSpinner);
         secSpinnerView->SetVisibility(IView::GONE);
     }
 
@@ -229,7 +229,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
             twoDigitPaddingFormatter->Format(minSecond, &str);
             (*array)[0] = str;
             mSecSpinner->SetDisplayedValues(array);
-            AutoPtr<IView> view = (IView*)mSecSpinner->Probe(EIID_IView);
+            AutoPtr<IView> view = IView::Probe(mSecSpinner);
             view->SetEnabled(FALSE);
             second = minSecond;
         }
@@ -249,7 +249,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
         // TODO
         // view->FindViewById(R::id::second_dot);
         secondDot->SetVisibility(IView::GONE);
-        AutoPtr<IView> milliSpinnerView = (IView*)mMilliSpinner->Probe(EIID_IView);
+        AutoPtr<IView> milliSpinnerView = IView::Probe(mMilliSpinner);
         milliSpinnerView->SetVisibility(IView::GONE);
     }
 
@@ -262,7 +262,7 @@ MultiFieldTimePickerDialog::MultiFieldTimePickerDialog(
             mMilliSpinner->SetMaxValue(max / step);
 
             if (min == max) {
-                AutoPtr<IView> view = (IView*)mMilliSpinner->Probe(EIID_IView);
+                AutoPtr<IView> view = IView::Probe(mMilliSpinner);
                 view->SetEnabled(FALSE);
                 milli = min;
             }

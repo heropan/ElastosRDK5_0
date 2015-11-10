@@ -102,7 +102,7 @@ SelectPopupDropdown::SelectPopupDropdown(
     AutoPtr<IListAdapter> listView;
     assert(0);
     // TODO
-    // listView = (IListAdapter*)adapter->Probe(EIID_IListAdapter);
+    // listView = IListAdapter::Probe(adapter);
     mDropdownPopupWindow->SetAdapter(listView);
     AutoPtr<RenderCoordinates> renderCoordinates = mContentViewCore->GetRenderCoordinates();
     Int32 left;

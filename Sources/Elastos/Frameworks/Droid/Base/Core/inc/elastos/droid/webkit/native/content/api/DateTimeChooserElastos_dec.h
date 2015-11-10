@@ -10,8 +10,8 @@
 extern "C"
 {
 #endif
-    extern void Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(IInterface* caller,Handle32 nativeDateTimeChooserAndroid,Double dialogValue);
-    extern void Elastos_DateTimeChooserAndroid_nativeCancelDialog(IInterface* caller,Handle32 nativeDateTimeChooserAndroid);
+    extern void Elastos_DateTimeChooserAndroid_nativeReplaceDateTime(IInterface* caller,Handle32 nativeDateTimeChooserElastos,Double dialogValue);
+    extern void Elastos_DateTimeChooserAndroid_nativeCancelDialog(IInterface* caller,Handle32 nativeDateTimeChooserElastos);
     extern void Elastos_DateTimeChooserAndroid_InitCallback(Handle32 cb);
 #ifdef __cplusplus
 }
@@ -33,20 +33,20 @@ struct ElaDateTimeChooserAndroidCallback
     void (*elastos_DateTimeChooserAndroid_initializeDateInputTypes)(Int32 textInputTypeDate, Int32 textInputTypeDateTime, Int32 textInputTypeDateTimeLocal, Int32 textInputTypeMonth, Int32 textInputTypeTime, Int32 textInputTypeWeek);
 };
 
-void* DateTimeChooserAndroid::ElaDateTimeChooserAndroidCallback_Init()
+void* DateTimeChooserElastos::ElaDateTimeChooserElastosCallback_Init()
 {
     static ElaDateTimeChooserAndroidCallback sElaDateTimeChooserAndroidCallback;
 
-    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_createDateTimeChooser = &DateTimeChooserAndroid::CreateDateTimeChooser;
-    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_createSuggestionsArray = &DateTimeChooserAndroid::CreateSuggestionsArray;
-    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_setDateTimeSuggestionAt = &DateTimeChooserAndroid::SetDateTimeSuggestionAt;
-    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_initializeDateInputTypes = &DateTimeChooserAndroid::InitializeDateInputTypes;
+    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_createDateTimeChooser = &DateTimeChooserElastos::CreateDateTimeChooser;
+    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_createSuggestionsArray = &DateTimeChooserElastos::CreateSuggestionsArray;
+    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_setDateTimeSuggestionAt = &DateTimeChooserElastos::SetDateTimeSuggestionAt;
+    sElaDateTimeChooserAndroidCallback.elastos_DateTimeChooserAndroid_initializeDateInputTypes = &DateTimeChooserElastos::InitializeDateInputTypes;
 
     Elastos_DateTimeChooserAndroid_InitCallback((Handle32)&sElaDateTimeChooserAndroidCallback);
     return &sElaDateTimeChooserAndroidCallback;
 }
 
-static void* sPElaDateTimeChooserAndroidCallback = DateTimeChooserAndroid::ElaDateTimeChooserAndroidCallback_Init();
+static void* sPElaDateTimeChooserElastosCallback = DateTimeChooserElastos::ElaDateTimeChooserElastosCallback_Init();
 
 } // namespace Input
 } // namespace Browser

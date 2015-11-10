@@ -11,7 +11,7 @@ extern "C"
 {
 #endif
     extern Int64 Elastos_WebContentsObserverAndroid_nativeInit(IInterface* caller,IInterface* webContents);
-    extern void Elastos_WebContentsObserverAndroid_nativeDestroy(IInterface* caller,Handle32 nativeWebContentsObserverAndroid);
+    extern void Elastos_WebContentsObserverAndroid_nativeDestroy(IInterface* caller,Handle32 nativeWebContentsObserverElastos);
     extern void Elastos_WebContentsObserverAndroid_InitCallback(Handle32 cb);
 #ifdef __cplusplus
 }
@@ -44,32 +44,32 @@ struct ElaWebContentsObserverAndroidCallback
     void (*elastos_WebContentsObserverAndroid_detachFromWebContents)(IInterface* obj);
 };
 
-void* WebContentsObserverAndroid::ElaWebContentsObserverAndroidCallback_Init()
+void* WebContentsObserverElastos::ElaWebContentsObserverElastosCallback_Init()
 {
     static ElaWebContentsObserverAndroidCallback sElaWebContentsObserverAndroidCallback;
 
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_renderProcessGone = &WebContentsObserverAndroid::RenderProcessGone;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didStartLoading = &WebContentsObserverAndroid::DidStartLoading;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didStopLoading = &WebContentsObserverAndroid::DidStopLoading;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didFailLoad = &WebContentsObserverAndroid::DidFailLoad;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didNavigateMainFrame = &WebContentsObserverAndroid::DidNavigateMainFrame;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didFirstVisuallyNonEmptyPaint = &WebContentsObserverAndroid::DidFirstVisuallyNonEmptyPaint;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didNavigateAnyFrame = &WebContentsObserverAndroid::DidNavigateAnyFrame;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didStartProvisionalLoadForFrame = &WebContentsObserverAndroid::DidStartProvisionalLoadForFrame;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didCommitProvisionalLoadForFrame = &WebContentsObserverAndroid::DidCommitProvisionalLoadForFrame;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didFinishLoad = &WebContentsObserverAndroid::DidFinishLoad;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_documentLoadedInFrame = &WebContentsObserverAndroid::DocumentLoadedInFrame;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_navigationEntryCommitted = &WebContentsObserverAndroid::NavigationEntryCommitted;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didAttachInterstitialPage = &WebContentsObserverAndroid::DidAttachInterstitialPage;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didDetachInterstitialPage = &WebContentsObserverAndroid::DidDetachInterstitialPage;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didChangeThemeColor = &WebContentsObserverAndroid::DidChangeThemeColor;
-    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_detachFromWebContents = &WebContentsObserverAndroid::DetachFromWebContents;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_renderProcessGone = &WebContentsObserverElastos::RenderProcessGone;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didStartLoading = &WebContentsObserverElastos::DidStartLoading;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didStopLoading = &WebContentsObserverElastos::DidStopLoading;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didFailLoad = &WebContentsObserverElastos::DidFailLoad;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didNavigateMainFrame = &WebContentsObserverElastos::DidNavigateMainFrame;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didFirstVisuallyNonEmptyPaint = &WebContentsObserverElastos::DidFirstVisuallyNonEmptyPaint;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didNavigateAnyFrame = &WebContentsObserverElastos::DidNavigateAnyFrame;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didStartProvisionalLoadForFrame = &WebContentsObserverElastos::DidStartProvisionalLoadForFrame;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didCommitProvisionalLoadForFrame = &WebContentsObserverElastos::DidCommitProvisionalLoadForFrame;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didFinishLoad = &WebContentsObserverElastos::DidFinishLoad;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_documentLoadedInFrame = &WebContentsObserverElastos::DocumentLoadedInFrame;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_navigationEntryCommitted = &WebContentsObserverElastos::NavigationEntryCommitted;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didAttachInterstitialPage = &WebContentsObserverElastos::DidAttachInterstitialPage;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didDetachInterstitialPage = &WebContentsObserverElastos::DidDetachInterstitialPage;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_didChangeThemeColor = &WebContentsObserverElastos::DidChangeThemeColor;
+    sElaWebContentsObserverAndroidCallback.elastos_WebContentsObserverAndroid_detachFromWebContents = &WebContentsObserverElastos::DetachFromWebContents;
 
     Elastos_WebContentsObserverAndroid_InitCallback((Handle32)&sElaWebContentsObserverAndroidCallback);
     return &sElaWebContentsObserverAndroidCallback;
 }
 
-static void* sPElaWebContentsObserverAndroidCallback = WebContentsObserverAndroid::ElaWebContentsObserverAndroidCallback_Init();
+static void* sPElaWebContentsObserverElastosCallback = WebContentsObserverElastos::ElaWebContentsObserverElastosCallback_Init();
 
 } // namespace Browser
 } // namespace Content

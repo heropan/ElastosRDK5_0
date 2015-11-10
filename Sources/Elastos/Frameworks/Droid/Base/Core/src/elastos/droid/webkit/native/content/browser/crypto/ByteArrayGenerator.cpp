@@ -26,7 +26,7 @@ AutoPtr< ArrayOf<Byte> > ByteArrayGenerator::GetBytes(
         // CFileInputStream::New(String("/dev/urandom"), (IFileInputStream**)&fis);
         AutoPtr< ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(numBytes);
         Int32 readLen;
-        AutoPtr<IInputStream> inputStream = (IInputStream*)fis->Probe(EIID_IInputStream);
+        AutoPtr<IInputStream> inputStream = IInputStream::Probe(fis);
         inputStream->Read(bytes, &readLen);
         if (bytes->GetLength() != readLen) {
             //throw new GeneralSecurityException("Not enough random data available");

@@ -294,7 +294,7 @@ String LoadUrlParams::GetExtraHeadersString(
     AutoPtr<StringBuilder> headerBuilder = new StringBuilder();
     AutoPtr<ISet> set;
     mExtraHeaders->GetEntrySet((ISet**)&set);
-    AutoPtr<IIterable> iterable = (IIterable*)set->Probe(EIID_IIterable);
+    AutoPtr<IIterable> iterable = IIterable::Probe(set);
     AutoPtr<IIterator> iter;
     iterable->GetIterator((IIterator**)&iter);
     Boolean bHasNext = FALSE;

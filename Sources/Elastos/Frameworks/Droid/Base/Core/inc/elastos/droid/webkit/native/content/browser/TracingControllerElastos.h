@@ -66,7 +66,7 @@ namespace Browser {
   * is being traced, but the general form is [app package name].GPU_PROFILER_{START,STOP}.
   */
 // @JNINamespace("content")
-class TracingControllerAndroid
+class TracingControllerElastos
     : public Object
 {
 public:
@@ -75,7 +75,7 @@ public:
     {
     public:
         TracingBroadcastReceiver(
-          /* [in] */ TracingControllerAndroid* owner);
+          /* [in] */ TracingControllerElastos* owner);
 
         // @Override
         CARAPI OnReceive(
@@ -83,7 +83,7 @@ public:
             /* [in] */ IIntent* intent);
 
     private:
-        TracingControllerAndroid* mOwner;
+        TracingControllerElastos* mOwner;
     };
 
 private:
@@ -96,7 +96,7 @@ private:
     };
 
 public:
-    TracingControllerAndroid(
+    TracingControllerElastos(
         /* [in] */ IContext* context);
 
     /**
@@ -175,7 +175,7 @@ public:
       */
     virtual CARAPI GetCategoryGroups();
 
-    static CARAPI_(void*) ElaTracingControllerAndroidCallback_Init();
+    static CARAPI_(void*) ElaTracingControllerElastosCallback_Init();
 
 protected:
     /**
@@ -213,19 +213,19 @@ private:
     CARAPI_(Int64) NativeInit();
 
     CARAPI NativeDestroy(
-        /* [in] */ Int64 nativeTracingControllerAndroid);
+        /* [in] */ Int64 nativeTracingControllerElastos);
 
     CARAPI_(Boolean) NativeStartTracing(
-        /* [in] */ Int64 nativeTracingControllerAndroid,
+        /* [in] */ Int64 nativeTracingControllerElastos,
         /* [in] */ const String& categories,
         /* [in] */ Boolean recordContinuously);
 
     CARAPI NativeStopTracing(
-        /* [in] */ Int64 nativeTracingControllerAndroid,
+        /* [in] */ Int64 nativeTracingControllerElastos,
         /* [in] */ const String& filename);
 
     CARAPI_(Boolean) NativeGetKnownCategoryGroupsAsync(
-        /* [in] */ Int64 nativeTracingControllerAndroid);
+        /* [in] */ Int64 nativeTracingControllerElastos);
 
     CARAPI_(String) NativeGetDefaultCategories();
 
@@ -249,7 +249,7 @@ private:
     // showing the toast impacts performance.  This gives us the chance to disable them.
     Boolean mShowToasts;
     String mFilename;
-    Int64 mNativeTracingControllerAndroid;
+    Int64 mNativeTracingControllerElastos;
 };
 
 } // namespace Browser

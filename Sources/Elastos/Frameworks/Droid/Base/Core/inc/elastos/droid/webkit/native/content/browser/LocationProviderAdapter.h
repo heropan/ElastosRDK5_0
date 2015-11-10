@@ -109,6 +109,7 @@ public:
 
     static CARAPI NewErrorAvailable(
         /* [in] */ const String& message);
+
     static CARAPI_(void*) ElaLocationProviderAdapterCallback_Init();
 
 private:

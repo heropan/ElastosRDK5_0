@@ -193,7 +193,7 @@ AdapterInputConnection::AdapterInputConnection(
     // TODO
     // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 start, end;
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     selection->GetSelectionStart(editableCS, &start);
     selection->GetSelectionEnd(editableCS, &end);
     outAttrs->SetInitialSelStart(start);
@@ -206,7 +206,7 @@ AdapterInputConnection::AdapterInputConnection(
     // TODO
     // selection->GetinitialSelStart(&initialSelStart);
     // selection->GetinitialSelEnd(&initialSelEnd)
-    AutoPtr<ISpannable> spannable = (ISpannable*)mEditable->Probe(EIID_ISpannable);
+    AutoPtr<ISpannable> spannable = ISpannable::Probe(mEditable);
     selection->SetSelection(spannable, initialSelStart, initialSelEnd);
     UpdateSelectionIfRequired();
 }
@@ -283,7 +283,7 @@ void AdapterInputConnection::UpdateState(
     assert(0);
     // TODO
     // CSelection::AcquireSingleton((ISelection**)&selection);
-    AutoPtr<ISpannable> spannable = (ISpannable*)mEditable->Probe(EIID_ISpannable);
+    AutoPtr<ISpannable> spannable = ISpannable::Probe(mEditable);
     selection->SetSelection(spannable, selectionStart, selectionEnd);
 
     if (compositionStart == compositionEnd) {
@@ -325,7 +325,7 @@ void AdapterInputConnection::UpdateSelectionIfRequired()
     // TODO
     // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 selectionStart;
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     selection->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
     selection->GetSelectionEnd(editableCS, &selectionEnd);
@@ -524,7 +524,7 @@ ECode AdapterInputConnection::GetExtractedText(
     assert(0);
     // TODO
     // CExtractedText::New((IExtractedText**)&et);
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     et->SetText(editableCS);
     Int32 length;
     editableCS->GetLength(&length);
@@ -621,7 +621,7 @@ ECode AdapterInputConnection::DeleteSurroundingText(
     // TODO
     // CSelection::AcquireSingleton((ISelection**)&selection);
     Int32 availableBefore;
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     selection->GetSelectionStart(editableCS, &availableBefore);
     Int32 end;
     selection->GetSelectionEnd(editableCS, &end);
@@ -692,7 +692,7 @@ ECode AdapterInputConnection::SendKeyEvent(
                 // TODO
                 // CSelection::AcquireSingleton((ISelection**)&selection);
                 Int32 selectionStart;
-                AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+                AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
                 selection->GetSelectionStart(editableCS, &selectionStart);
                 Int32 selectionEnd;
                 selection->GetSelectionEnd(editableCS, &selectionEnd);
@@ -706,7 +706,7 @@ ECode AdapterInputConnection::SendKeyEvent(
                 assert(0);
                 // TODO
                 // CString::New(StringUtils::ToString(unicodeChar), (IString**)&iString);
-                AutoPtr<ICharSequence> strCS = (ICharSequence*)iString->Probe(EIID_ICharSequence);
+                AutoPtr<ICharSequence> strCS = ICharSequence::Probe(iString);
                 mEditable->Replace(selectionStart, selectionEnd, strCS);
             }
         }
@@ -794,7 +794,7 @@ ECode AdapterInputConnection::SetSelection(
     }
 
     Int32 textLength;
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     editableCS->GetLength(&textLength);
     if (start < 0 || end < 0 || start > textLength || end > textLength) {
         *result = TRUE;
@@ -843,7 +843,7 @@ ECode AdapterInputConnection::SetComposingRegion(
     }
 
     Int32 textLength;
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     editableCS->GetLength(&textLength);
     Int32 a = Elastos::Core::Math::Min(start, end);
     Int32 b = Elastos::Core::Math::Max(start, end);
@@ -896,7 +896,7 @@ Boolean AdapterInputConnection::MaybePerformEmptyCompositionWorkaround(
     assert(0);
     // TODO
     // CSelection::AcquireSingleton((ISelection**)&sel);
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     Int32 selectionStart;
     sel->GetSelectionStart(editableCS, &selectionStart);
     Int32 selectionEnd;
@@ -927,7 +927,7 @@ Boolean AdapterInputConnection::MaybePerformEmptyCompositionWorkaround(
 AutoPtr<AdapterInputConnection::ImeState> AdapterInputConnection::GetImeStateForTesting()
 {
     String text;
-    AutoPtr<ICharSequence> editableCS = (ICharSequence*)mEditable->Probe(EIID_ICharSequence);
+    AutoPtr<ICharSequence> editableCS = ICharSequence::Probe(mEditable);
     editableCS->ToString(&text);
     AutoPtr<ISelection> selection;
     Int32 selectionStart;

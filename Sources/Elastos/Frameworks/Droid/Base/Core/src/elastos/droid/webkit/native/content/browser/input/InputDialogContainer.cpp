@@ -120,7 +120,7 @@ InputDialogContainer::InnerDialogInterfaceOnDismissListener::InnerDialogInterfac
 ECode InputDialogContainer::InnerDialogInterfaceOnDismissListener::OnDismiss(
     /* [in] */ IDialogInterface* dialog)
 {
-    AutoPtr<IDialogInterface> dialogInterface = (IDialogInterface*)mOwner->mDialog->Probe(EIID_IDialogInterface);
+    AutoPtr<IDialogInterface> dialogInterface = IDialogInterface::Probe(mOwner);
     if (dialogInterface.Get() == dialog && !mOwner->mDialogAlreadyDismissed) {
         mOwner->mDialogAlreadyDismissed = TRUE;
         mOwner->mInputActionDelegate->CancelDateTimeDialog();
@@ -360,7 +360,7 @@ void InputDialogContainer::ShowPickerDialog(
             assert(0);
             // TODO
             // gregorianCalendar->SetTimeInMillis((Int64) dialogValue);
-            cal =  (ICalendar*)gregorianCalendar->Probe(EIID_ICalendar);
+            cal =  ICalendar::Probe(gregorianCalendar);
         }
     }
     if (dialogType == sTextInputTypeDate) {
@@ -476,7 +476,7 @@ void InputDialogContainer::ShowSuggestionDialog(
     // TODO
     // CAlertDialogBuilder::New(mContext, (IAlertDialogBuilder**)&dialogBuilder);
     dialogBuilder->SetTitle(dialogTitleId);
-    dialogBuilder->SetView((IView*)suggestionListView->Probe(EIID_IView));
+    dialogBuilder->SetView(IView::Probe(suggestionListView));
     AutoPtr<ICharSequence> text;
     assert(0);
     // TODO
@@ -490,7 +490,7 @@ void InputDialogContainer::ShowSuggestionDialog(
     // TODO
     // mDialog->SetOnDismissListener(dismissListener);
     mDialogAlreadyDismissed = FALSE;
-    ((IDialog*)mDialog->Probe(EIID_IDialog))->Show();
+    (IDialog::Probe(mDialog))->Show();
 }
 
 void InputDialogContainer::ShowDialog(
@@ -527,7 +527,7 @@ void InputDialogContainer::ShowPickerDialog(
     /* [in] */ Double step)
 {
     if (IsDialogShowing()) {
-        AutoPtr<IDialogInterface> dialog = (IDialogInterface*)mDialog->Probe(EIID_IDialogInterface);
+        AutoPtr<IDialogInterface> dialog = IDialogInterface::Probe(mDialog);
         dialog->Dismiss();
     }
 
@@ -551,7 +551,7 @@ void InputDialogContainer::ShowPickerDialog(
         // TODO
         // mContext->GetText(R::string::date_picker_dialog_title, (ICharSequence**)&text);
         // dialog->SetTitle(text);
-        mDialog = (IAlertDialog*)dialog->Probe(EIID_IAlertDialog);
+        mDialog = IAlertDialog::Probe(dialog);
     }
     else if (dialogType == sTextInputTypeTime) {
         AutoPtr<FullTimeListener> listener = new FullTimeListener(this, dialogType);
@@ -631,7 +631,7 @@ void InputDialogContainer::ShowPickerDialog(
 
     AutoPtr<SetOnDismissListenerDialogInterfaceOnDismissListener> onDismissListener =
             new SetOnDismissListenerDialogInterfaceOnDismissListener(this);
-    AutoPtr<IDialog> _dialog = (IDialog*)mDialog->Probe(EIID_IDialog);
+    AutoPtr<IDialog> _dialog = IDialog::Probe(mDialog);
     _dialog->SetOnDismissListener(onDismissListener);
 
     mDialogAlreadyDismissed = FALSE;
@@ -641,14 +641,14 @@ void InputDialogContainer::ShowPickerDialog(
 Boolean InputDialogContainer::IsDialogShowing()
 {
     Boolean bFlag = FALSE;
-    AutoPtr<IDialog> dialog = (IDialog*)mDialog->Probe(EIID_IDialog);
+    AutoPtr<IDialog> dialog = IDialog::Probe(mDialog);
     return mDialog != NULL && (dialog->IsShowing(&bFlag), bFlag);
 }
 
 void InputDialogContainer::DismissDialog()
 {
     if (IsDialogShowing()) {
-        AutoPtr<IDialogInterface> dialog = (IDialogInterface*)mDialog->Probe(EIID_IDialogInterface);
+        AutoPtr<IDialogInterface> dialog = IDialogInterface::Probe(mDialog);
         dialog->Dismiss();
     }
 }

@@ -418,7 +418,7 @@ Boolean ImeAdapter::TranslateAndSendNativeEvents(
     event->GetMetaState(&metaState);
     Int32 _action;
     event->GetAction(&_action);
-    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
     Int64 eventTime;
     inputEvent->GetEventTime(&eventTime);
     Int32 keyCode;
@@ -608,11 +608,11 @@ void ImeAdapter::PopulateUnderlinesFromSpans(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int64 underlines)
 {
-    if (text->Probe(EIID_ISpannableString) == NULL) return;
+    if (ISpannableString::Probe(text) == NULL) return;
 
     assert(0);
     // TODO
-    // AutoPtr<ISpannableString> spannableString = (ISpannableString*)text->Probe(EIID_ISpannableString);
+    // AutoPtr<ISpannableString> spannableString = ISpannableString::Probe(text);
     // CharacterStyle spans[] =
     //         spannableString.getSpans(0, text.length(), CharacterStyle.class);
     // for (CharacterStyle span : spans) {

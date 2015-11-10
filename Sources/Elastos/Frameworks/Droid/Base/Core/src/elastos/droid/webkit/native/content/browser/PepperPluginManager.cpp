@@ -48,7 +48,7 @@ String PepperPluginManager::GetPlugins(
             IPackageManager::GET_SERVICES | IPackageManager::GET_META_DATA,
             (IList**)&plugins);
 
-    AutoPtr<IIterable> iterable = (IIterable*)plugins->Probe(EIID_IIterable);
+    AutoPtr<IIterable> iterable = IIterable::Probe(plugins);
     AutoPtr<IIterator> iter;
     iterable->GetIterator((IIterator**)&iter);
     Boolean bNext = FALSE;
@@ -60,7 +60,7 @@ String PepperPluginManager::GetPlugins(
         info->GetServiceInfo((IServiceInfo**)&serviceInfo);
         AutoPtr<IBundle> metaData;
         String packageName;
-        AutoPtr<IPackageItemInfo> packageItemInfo = (IPackageItemInfo*)serviceInfo->Probe(EIID_IPackageItemInfo);
+        AutoPtr<IPackageItemInfo> packageItemInfo = IPackageItemInfo::Probe(serviceInfo);
         if (serviceInfo == NULL || (packageItemInfo->GetMetaData((IBundle**)&metaData), metaData == NULL) ||
                 (packageItemInfo->GetPackageName(&packageName), packageName == NULL)) {
             String strLog("Can't get service information from ");

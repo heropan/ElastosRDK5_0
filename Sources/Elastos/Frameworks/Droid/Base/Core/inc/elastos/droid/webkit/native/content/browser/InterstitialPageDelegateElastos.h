@@ -21,7 +21,7 @@ namespace Browser {
   * Allows the specification and handling of Interstitial pages in java.
   */
 // @JNINamespace("content")
-class InterstitialPageDelegateAndroid
+class InterstitialPageDelegateElastos
     : public Object
 {
 public:
@@ -30,7 +30,7 @@ public:
       *
       * @param htmlContent The HTML content for the interstitial.
       */
-    InterstitialPageDelegateAndroid(
+    InterstitialPageDelegateElastos(
         /* [in] */ const String& htmlContent);
 
     /**
@@ -38,7 +38,7 @@ public:
       */
     virtual CARAPI_(Int64) GetNative();
 
-    static CARAPI_(void*) ElaInterstitialPageDelegateAndroidCallback_Init();
+    static CARAPI_(void*) ElaInterstitialPageDelegateElastosCallback_Init();
 
 protected:
     /**
@@ -93,10 +93,10 @@ private:
         /* [in] */ const String& htmlContent);
 
     CARAPI NativeProceed(
-        /* [in] */ Int64 nativeInterstitialPageDelegateAndroid);
+        /* [in] */ Int64 nativeInterstitialPageDelegateElastos);
 
     CARAPI NativeDontProceed(
-        /* [in] */ Int64 nativeInterstitialPageDelegateAndroid);
+        /* [in] */ Int64 nativeInterstitialPageDelegateElastos);
 
 private:
     Int64 mNativePtr;

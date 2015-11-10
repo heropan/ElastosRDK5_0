@@ -148,8 +148,7 @@ ECode VideoCaptureTango::OnPreviewFrame(
   /* [in] */ IHardwareCamera* camera)
 {
     //mPreviewBufferLock->Lock();
-    AutoPtr<ILock> lock;
-    mPreviewBufferLock->Probe(EIID_ILock);
+    AutoPtr<ILock> lock = ILock::Probe( mPreviewBufferLock);
     lock->Lock();
     AutoPtr<IByteBufferHelper> bfHelper;
     CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bfHelper);
@@ -246,7 +245,7 @@ ECode VideoCaptureTango::OnPreviewFrame(
                 return NOERROR;
             }
 
-            AutoPtr<IBuffer> ibuf = (IBuffer*)(mFrameBuffer->Probe(EIID_IBuffer));
+            AutoPtr<IBuffer> ibuf = IBuffer::Probe(mFrameBuffer);
             ibuf->Rewind();  // Important!
             Int32 capacity;
             ibuf->GetCapacity(&capacity);

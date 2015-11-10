@@ -3,7 +3,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/android_webview/permission/AwPermissionRequest.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
-#include "elastos/droid/webkit/native/content/browser/WebContentsObserverAndroid.h"
+#include "elastos/droid/webkit/native/content/browser/WebContentsObserverElastos.h"
 #include "elastos/droid/webkit/native/android_webview/AwWebResourceResponse.h"
 #include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
 #include "elastos/droid/webkit/native/android_webview/JsPromptResultReceiver.h"
@@ -26,7 +26,7 @@ using Elastos::Droid::View::IView;
 using Elastos::Utility::Etl::Map;
 using Elastos::Droid::Webkit::AndroidWebview::Permission::AwPermissionRequest;
 using Elastos::Droid::Webkit::Content::Browser::ContentViewCore;
-using Elastos::Droid::Webkit::Content::Browser::WebContentsObserverAndroid;
+using Elastos::Droid::Webkit::Content::Browser::WebContentsObserverElastos;
 using Elastos::Security::IPrincipal;
 
 namespace Elastos {
@@ -48,7 +48,7 @@ class AwContentsClient
 {
 public:
     class AwWebContentsObserver
-    : public WebContentsObserverAndroid
+    : public WebContentsObserverElastos
     {
     public:
         AwWebContentsObserver(

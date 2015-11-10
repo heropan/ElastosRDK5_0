@@ -88,7 +88,7 @@ ECode TouchEventSynthesizer::Inject(
                     0, 0, 1, 1, 0, 0, 0, 0,
                     (IMotionEvent**)&event);
             mContentViewCore->OnTouchEvent(event);
-            AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+            AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
             inputEvent->Recycle();
 
             if (pointerCount > 1) {
@@ -99,7 +99,7 @@ ECode TouchEventSynthesizer::Inject(
                         0, 0, 1, 1, 0, 0, 0, 0,
                         (IMotionEvent**)&event);
                 mContentViewCore->OnTouchEvent(event);
-                AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+                AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
                 inputEvent->Recycle();
             }
             break;
@@ -112,7 +112,7 @@ ECode TouchEventSynthesizer::Inject(
                     0, 0, 1, 1, 0, 0, 0, 0,
                     (IMotionEvent**)&event);
             mContentViewCore->OnTouchEvent(event);
-            AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+            AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
             inputEvent->Recycle();
             break;
         }
@@ -124,7 +124,7 @@ ECode TouchEventSynthesizer::Inject(
                     0, 0, 1, 1, 0, 0, 0, 0,
                     (IMotionEvent**)&event);
             mContentViewCore->OnTouchEvent(event);
-            AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+            AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
             inputEvent->Recycle();
             break;
         }
@@ -137,7 +137,7 @@ ECode TouchEventSynthesizer::Inject(
                     0, 0, 1, 1, 0, 0, 0, 0,
                     (IMotionEvent**)&event);
                 mContentViewCore->OnTouchEvent(event);
-                AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+                AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
                 inputEvent->Recycle();
             }
 
@@ -148,7 +148,7 @@ ECode TouchEventSynthesizer::Inject(
                     0, 0, 1, 1, 0, 0, 0, 0,
                     (IMotionEvent**)&event);
             mContentViewCore->OnTouchEvent(event);
-            AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+            AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
             inputEvent->Recycle();
             break;
         }

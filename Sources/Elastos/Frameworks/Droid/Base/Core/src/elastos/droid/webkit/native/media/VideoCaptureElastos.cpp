@@ -181,7 +181,7 @@ AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureElastos::GetDeviceSu
             //listFpsRange = new ArrayList<int[]>();
             AutoPtr<IArrayList> arrayList;
             //TODO CArrayList::New((IArrayList**)&arrayList);
-            listFpsRange = IList::Probe(arrayList);//(IList*)(arrayList->Probe(EIID_IList));
+            listFpsRange = IList::Probe(arrayList);
         }
         Int32 count;
         listFpsRange->GetSize(&count);

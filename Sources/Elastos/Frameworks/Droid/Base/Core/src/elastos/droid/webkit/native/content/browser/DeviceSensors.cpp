@@ -176,7 +176,7 @@ Int32 DeviceSensors::GetNumberActiveDeviceMotionSensors()
     assert(0);
     // TODO
     // CHashSet::New(DEVICE_MOTION_SENSORS, (ISet**)&deviceMotionSensors);
-    AutoPtr<ICollection> activeSensors = (ICollection*)mActiveSensors->Probe(EIID_ICollection);
+    AutoPtr<ICollection> activeSensors = ICollection::Probe(mActiveSensors);
     deviceMotionSensors->RemoveAll(activeSensors);
     Int32 size1, size2;
     DEVICE_MOTION_SENSORS->GetSize(&size1);
@@ -207,13 +207,13 @@ void DeviceSensors::Stop(
         switch (eventType) {
             case DEVICE_ORIENTATION:
                 if (mDeviceMotionIsActive) {
-                    AutoPtr<ICollection> collection = (ICollection*)DEVICE_MOTION_SENSORS->Probe(EIID_ICollection);
+                    AutoPtr<ICollection> collection = ICollection::Probe(DEVICE_MOTION_SENSORS);
                     sensorsToRemainActive->AddAll(collection);
                 }
                 break;
             case DEVICE_MOTION:
                 if (mDeviceOrientationIsActive) {
-                    AutoPtr<ICollection> collection = (ICollection*)DEVICE_ORIENTATION_SENSORS->Probe(EIID_ICollection);
+                    AutoPtr<ICollection> collection = ICollection::Probe(DEVICE_ORIENTATION_SENSORS);
                     sensorsToRemainActive->AddAll(collection);
                 }
                 break;
@@ -226,9 +226,9 @@ void DeviceSensors::Stop(
         assert(0);
         // TODO
         // CHashSet::New(mActiveSensors, (ISet**)&sensorsToDeactivate);
-        AutoPtr<ICollection> collection = (ICollection*)sensorsToDeactivate->Probe(EIID_ICollection);
+        AutoPtr<ICollection> collection = ICollection::Probe(sensorsToDeactivate);
         sensorsToDeactivate->RemoveAll(collection);
-        AutoPtr<IIterable> iterable = (IIterable*)sensorsToDeactivate->Probe(EIID_IIterable);
+        AutoPtr<IIterable> iterable = IIterable::Probe(sensorsToDeactivate);
         UnregisterSensors(iterable);
         SetEventTypeActive(eventType, FALSE);
         Boolean bIsEmpty = FALSE;
@@ -426,7 +426,8 @@ AutoPtr<DeviceSensors::SensorManagerProxy> DeviceSensors::GetSensorManagerProxy(
     }
 
     AutoPtr<ICallable> callable = new InnerCallable(this);
-    AutoPtr<ISensorManager> sensorManager = (ISensorManager*)ThreadUtils::RunOnUiThreadBlockingNoException(callable)->Probe(EIID_ISensorManager);
+    AutoPtr<ISensorManager> sensorManager =
+        ISensorManager::Probe(ThreadUtils::RunOnUiThreadBlockingNoException(callable));
 
     if (sensorManager != NULL) {
         mSensorManagerProxy = new SensorManagerProxyImpl(sensorManager);
@@ -472,7 +473,7 @@ Boolean DeviceSensors::RegisterSensors(
     assert(0);
     // TODO
     // CHashSet::New(sensorTypes, (ISet**)&sensorsToActivate);
-    AutoPtr<ICollection> collection = (ICollection*)mActiveSensors->Probe(EIID_ICollection);
+    AutoPtr<ICollection> collection = ICollection::Probe(mActiveSensors);
     sensorsToActivate->RemoveAll(collection);
     Boolean success = FALSE;
 
@@ -487,7 +488,7 @@ Boolean DeviceSensors::RegisterSensors(
         Boolean result = RegisterForSensorType(sensorType, rateInMilliseconds);
         if (!result && failOnMissingSensor) {
             // restore the previous state upon failure
-            AutoPtr<IIterable> iterable = (IIterable*)sensorsToActivate->Probe(EIID_IIterable);
+            AutoPtr<IIterable> iterable = IIterable::Probe(sensorsToActivate);
             UnregisterSensors(iterable);
             return FALSE;
         }
@@ -593,7 +594,7 @@ AutoPtr<IHandler> DeviceSensors::GetHandler()
         assert(0);
         // TODO
         // CHandlerThread::New(String("DeviceMotionAndOrientation"), (IHandlerThread**)&thread);
-        AutoPtr<IThread> thread = (IThread*)handlerThread->Probe(EIID_IThread);
+        AutoPtr<IThread> thread = IThread::Probe(handlerThread);
         thread->Start();
         AutoPtr<ILooper> looper;
         handlerThread->GetLooper((ILooper**)&looper);

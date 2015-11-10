@@ -227,7 +227,7 @@ ECode PopupZoomer::SetBitmap(
     assert(0);
     // TODO
     // CPorterDuffXfermode::New(IMode::SRC, (IPorterDuffXfermode**)&porterDuffXfermode);
-    AutoPtr<IXfermode> xfermode = (IXfermode*)porterDuffXfermode->Probe(EIID_IXfermode);
+    AutoPtr<IXfermode> xfermode = IXfermode::Probe(porterDuffXfermode);
     clearPaint->SetXfermode(xfermode);
     clearPaint->SetColor(IColor::TRANSPARENT);
     canvas->DrawPaint(clearPaint);
@@ -554,6 +554,8 @@ ECode PopupZoomer::InitDimensions()
     Float r = l + zoomedBitmapWidth;
     Float b = t + zoomedBitmapHeight;
     assert(0);
+    assert(r);//TODO remove suppress the warning here
+    assert(b);//TODO remove, here only for warning.
     // TODO
     // CRectF::New(l, t, r, b, (IRectF**)&mClipRect);
     Int32 width;//TODO = GetWidth();

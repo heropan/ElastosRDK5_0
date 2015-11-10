@@ -187,7 +187,7 @@ AutoPtr<ISet> sRefsInit()
     assert(0);
     // TODO
     // CHashSet::New((IHashSet**)&hashSet);
-    AutoPtr<ISet> set = (ISet*)hashSet->Probe(EIID_IHashSet);
+    AutoPtr<ISet> set = ISet::Probe(hashSet);
     return set;
 }
 AutoPtr<ISet> CleanupReference::sRefs = sRefsInit();

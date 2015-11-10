@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/webkit/native/content/browser/WebContentsObserverAndroid.h"
+#include "elastos/droid/webkit/native/content/browser/WebContentsObserverElastos.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -16,7 +16,7 @@ using Elastos::Droid::Speech::Tts::ITextToSpeech;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-using Elastos::Droid::Webkit::Content::Browser::WebContentsObserverAndroid;
+using Elastos::Droid::Webkit::Content::Browser::WebContentsObserverElastos;
 
 // import com.googlecode.eyesfree.braille.selfbraille.SelfBrailleClient;
 // import com.googlecode.eyesfree.braille.selfbraille.WriteData;
@@ -50,7 +50,8 @@ namespace Accessibility {
 /**
  * Responsible for accessibility injection and management of a {@link ContentViewCore}.
  */
-class AccessibilityInjector : public WebContentsObserverAndroid
+class AccessibilityInjector
+    : public WebContentsObserverElastos
 {
 private:
     /**
@@ -59,7 +60,8 @@ private:
      *
      * Also only exposes methods we *want* to expose, no others for the class.
      */
-    class VibratorWrapper : public Object
+    class VibratorWrapper
+        : public Object
     {
     public:
         VibratorWrapper(
@@ -93,7 +95,8 @@ private:
     /**
      * Used to protect the TextToSpeech class, only exposing the methods we want to expose.
      */
-    class TextToSpeechWrapper : public Object
+    class TextToSpeechWrapper
+        : public Object
     {
         friend class AccessibilityInjector;
     public:

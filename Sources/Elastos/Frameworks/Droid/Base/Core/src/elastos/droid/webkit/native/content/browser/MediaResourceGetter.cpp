@@ -338,7 +338,7 @@ Boolean MediaResourceGetter::FilePathAcceptable(
     String pathLog("canonicalized file path: ");
     pathLog += path;
     Slogger::D(TAG, pathLog);
-    AutoPtr<IIterable> iterable = (IIterable*)acceptablePaths->Probe(EIID_IIterable);
+    AutoPtr<IIterable> iterable = IIterable::Probe(acceptablePaths);
     AutoPtr<IIterator> iter;
     iterable->GetIterator((IIterator**)&iter);
     Boolean bNext = FALSE;
@@ -568,7 +568,7 @@ AutoPtr<IList> MediaResourceGetter::Canonicalize(
     // CArrayList::New(size, (IList**)&result);
 
     // try {
-        AutoPtr<IIterable> iterable = (IIterable*)paths->Probe(EIID_IIterable);
+        AutoPtr<IIterable> iterable = IIterable::Probe(paths);
         AutoPtr<IIterator> iter;
         paths->GetIterator((IIterator**)&iter);
         AutoPtr<ICharSequence> pathCS;

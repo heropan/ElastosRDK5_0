@@ -12,7 +12,7 @@
 #include "elastos/droid/webkit/native/content/browser/ContentSettings.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewClient.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewDownloadDelegate.h"
-#include "elastos/droid/webkit/native/content/browser/InterstitialPageDelegateAndroid.h"
+#include "elastos/droid/webkit/native/content/browser/InterstitialPageDelegateElastos.h"
 #include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
 #include "elastos/droid/webkit/native/content/browser/NavigationClient.h"
 #include "elastos/droid/webkit/native/content/browser/PopupZoomer.h"
@@ -21,7 +21,7 @@
 #include "elastos/droid/webkit/native/content/browser/SelectActionModeCallback.h"
 #include "elastos/droid/webkit/native/content/browser/ScreenOrientationListener.h"
 #include "elastos/droid/webkit/native/content/browser/TouchEventSynthesizer.h"
-#include "elastos/droid/webkit/native/content/browser/WebContentsObserverAndroid.h"
+#include "elastos/droid/webkit/native/content/browser/WebContentsObserverElastos.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/AccessibilityInjector.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
 #include "elastos/droid/webkit/native/content/browser/input/AdapterInputConnection.h"
@@ -384,7 +384,7 @@ private:
     };
 
     class InnerWebContentsObserverAndroid
-        : public WebContentsObserverAndroid
+        : public WebContentsObserverElastos
     {
     public:
         InnerWebContentsObserverAndroid(
@@ -827,7 +827,7 @@ public:
     //@VisibleForTesting
     CARAPI_(void) ShowInterstitialPage(
         /* [in] */ const String& url,
-        /* [in] */ InterstitialPageDelegateAndroid* delegate);
+        /* [in] */ InterstitialPageDelegateElastos* delegate);
 
     /**
      * @return Whether the page is currently showing an interstitial, such as a bad HTTPS page.
@@ -2555,7 +2555,7 @@ private:
     AutoPtr<IViewGroup> mContainerView;
     AutoPtr<InternalAccessDelegate> mContainerViewInternals;
     AutoPtr<WebContents> mWebContents;
-    AutoPtr<WebContentsObserverAndroid> mWebContentsObserver;
+    AutoPtr<WebContentsObserverElastos> mWebContentsObserver;
 
     AutoPtr<ContentViewClient> mContentViewClient;
 

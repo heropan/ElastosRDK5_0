@@ -274,6 +274,7 @@ public:
     virtual CARAPI_(Boolean) IsBaseUrlDataScheme();
 
     static CARAPI_(void*) ElaLoadUrlParamsCallback_Init();
+
 private:
     CARAPI_(String) GetExtraHeadersString(
         /* [in] */ const String& delimiter,

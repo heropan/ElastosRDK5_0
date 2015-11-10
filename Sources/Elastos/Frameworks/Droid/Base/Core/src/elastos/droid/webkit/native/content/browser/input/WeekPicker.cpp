@@ -139,14 +139,14 @@ ECode WeekPicker::SetCurrentDate(
 {
     AutoPtr<ICalendar> date = CreateDateFromWeek(year, week);
     Boolean bBefore, bAfter;
-    AutoPtr<IDate> _date = (IDate*)date->Probe(EIID_IDate);
-    _date->IsBefore((IDate*)GetMinDate()->Probe(EIID_IDate), &bBefore);
+    AutoPtr<IDate> _date = IDate::Probe(date);
+    _date->IsBefore(IDate::Probe(GetMinDate()), &bBefore);
     if (bBefore) {
         assert(0);
         // TODO
         // SetCurrentDate(GetMinDate());
     }
-    else if (_date->IsAfter((IDate*)GetMaxDate()->Probe(EIID_IDate), &bAfter), bAfter) {
+    else if (_date->IsAfter(IDate::Probe(GetMaxDate()), &bAfter), bAfter) {
         assert(0);
         // TODO
         // SetCurrentDate(GetMaxDate());

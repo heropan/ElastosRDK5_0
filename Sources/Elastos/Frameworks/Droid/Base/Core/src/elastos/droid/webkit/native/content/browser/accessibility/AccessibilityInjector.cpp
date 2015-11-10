@@ -228,7 +228,7 @@ const String AccessibilityInjector::TOGGLE_CHROME_VOX_JAVASCRIPT(
  */
 AccessibilityInjector::AccessibilityInjector(
     /* [in] */ ContentViewCore* view)
-    : WebContentsObserverAndroid(view)
+    : WebContentsObserverElastos(view)
     , mContentViewCore(view)
     , mAccessibilityScreenReaderUrl(CommandLine::GetInstance()->GetSwitchValue(
             ContentSwitches::ACCESSIBILITY_JAVASCRIPT_URL,
@@ -449,7 +449,7 @@ void AccessibilityInjector::AddAccessibilityApis()
     if (context != NULL) {
         // Enabled, we should try to add if we have to.
         if (mTextToSpeech == NULL) {
-            AutoPtr<IView> view = (IView*)mContentViewCore->GetContainerView()->Probe(EIID_IView);
+            AutoPtr<IView> view = IView::Probe(mContentViewCore->GetContainerView());
             mTextToSpeech = new TextToSpeechWrapper(view,
                     context);
             mContentViewCore->AddJavascriptInterface((IObject*)mTextToSpeech,
@@ -492,7 +492,7 @@ Int32 AccessibilityInjector::GetAxsUrlParameterValue()
         // AutoPtr<IList> params = URLEncodedUtils::Parse(uri,
         //         NULL);
 
-        // AutoPtr<IIterable> iterable = (IIterable*)params->Probe(EIID_IIterable);
+        // AutoPtr<IIterable> iterable = IIterable::Probe(params);
         // AutoPtr<IIterator> iter;
         // iterable->GetIIterator((IIterator**)&iter);
         // AutoPtr<INameValuePair> param;

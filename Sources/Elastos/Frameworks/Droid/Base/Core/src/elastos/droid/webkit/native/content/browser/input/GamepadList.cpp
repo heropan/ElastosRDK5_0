@@ -257,7 +257,7 @@ Boolean GamepadList::HandleKeyEvent(
     AutoLock lock(mLock);
 
     if (!mIsGamepadAccessed) return FALSE;
-    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent((IInputEvent*)event->Probe(EIID_IInputEvent));
+    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent(IInputEvent::Probe(event));
     if (gamepad == NULL) return FALSE;
     return gamepad->HandleKeyEvent(event);
 }
@@ -280,7 +280,7 @@ Boolean GamepadList::HandleMotionEvent(
     AutoLock lock(mLock);
 
     if (!mIsGamepadAccessed) return FALSE;
-    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent((IInputEvent*)event->Probe(EIID_IInputEvent));
+    AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent(IInputEvent::Probe(event));
     if (gamepad == NULL) return FALSE;
     return gamepad->HandleMotionEvent(event);
 }
@@ -347,7 +347,7 @@ AutoPtr<GamepadDevice> GamepadList::GetGamepadForEvent(
 Boolean GamepadList::IsGamepadEvent(
     /* [in] */ IMotionEvent* event)
 {
-    AutoPtr<IInputEvent> inputEvent = (IInputEvent*)event->Probe(EIID_IInputEvent);
+    AutoPtr<IInputEvent> inputEvent = IInputEvent::Probe(event);
     Int32 source;
     inputEvent->GetSource(&source);
     return ((source & IInputDevice::SOURCE_JOYSTICK) == IInputDevice::SOURCE_JOYSTICK);

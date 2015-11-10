@@ -25,7 +25,7 @@ namespace Input {
  * Plumbing for the different date/time dialog adapters.
  */
 //@JNINamespace("content")
-class DateTimeChooserAndroid
+class DateTimeChooserElastos
     : public Object
 {
 private:
@@ -34,7 +34,7 @@ private:
     {
     public:
         InnerInputActionDelegate(
-            /* [in] */ DateTimeChooserAndroid* owner);
+            /* [in] */ DateTimeChooserElastos* owner);
 
         //@Override
         CARAPI_(void) ReplaceDateTime(
@@ -44,16 +44,16 @@ private:
         CARAPI_(void) CancelDateTimeDialog();
 
     private:
-        DateTimeChooserAndroid* mOwner;
+        DateTimeChooserElastos* mOwner;
     };
 
 public:
-    static CARAPI_(void*) ElaDateTimeChooserAndroidCallback_Init();
+    static CARAPI_(void*) ElaDateTimeChooserElastosCallback_Init();
 
 private:
     static CARAPI_(AutoPtr<IInterface>) CreateDateTimeChooser(
         /* [in] */ IInterface* contentViewCore,
-        /* [in] */ Int64 nativeDateTimeChooserAndroid,
+        /* [in] */ Int64 nativeDateTimeChooserElastos,
         /* [in] */ Int32 dialogType,
         /* [in] */ Double dialogValue,
         /* [in] */ Double min,
@@ -61,9 +61,9 @@ private:
         /* [in] */ Double step,
         /* [in] */ ArrayOf<IInterface*>* suggestions);
 
-    DateTimeChooserAndroid(
+    DateTimeChooserElastos(
         /* [in] */ IContext* context,
-        /* [in] */ Int64 nativeDateTimeChooserAndroid);
+        /* [in] */ Int64 nativeDateTimeChooserElastos);
 
     CARAPI_(void) ShowDialog(
         /* [in] */ Int32 dialogType,
@@ -74,9 +74,9 @@ private:
         /* [in] */ ArrayOf<IInterface*>* suggestions);
 
     //@CalledByNative
-    static CARAPI_(AutoPtr<DateTimeChooserAndroid>) CreateDateTimeChooser(
+    static CARAPI_(AutoPtr<DateTimeChooserElastos>) CreateDateTimeChooser(
         /* [in] */ ContentViewCore* contentViewCore,
-        /* [in] */ Int64 nativeDateTimeChooserAndroid,
+        /* [in] */ Int64 nativeDateTimeChooserElastos,
         /* [in] */ Int32 dialogType,
         /* [in] */ Double dialogValue,
         /* [in] */ Double min,
@@ -113,14 +113,14 @@ private:
         /* [in] */ Int32 textInputTypeWeek);
 
     CARAPI_(void) NativeReplaceDateTime(
-        /* [in] */ Int64 nativeDateTimeChooserAndroid,
+        /* [in] */ Int64 nativeDateTimeChooserElastos,
         /* [in] */ Double dialogValue);
 
     CARAPI_(void) NativeCancelDialog(
-        /* [in] */ Int64 nativeDateTimeChooserAndroid);
+        /* [in] */ Int64 nativeDateTimeChooserElastos);
 
 private:
-    const Int64 mNativeDateTimeChooserAndroid;
+    const Int64 mNativeDateTimeChooserElastos;
     AutoPtr<InputDialogContainer> mInputDialogContainer;
 };
 

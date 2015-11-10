@@ -23,7 +23,7 @@ namespace AndroidWebview {
 AwContentsClient::AwWebContentsObserver::AwWebContentsObserver(
     /* [in] */ AwContentsClient* owner,
     /* [in] */ ContentViewCore* contentViewCore)
-    : WebContentsObserverAndroid(contentViewCore)
+    : WebContentsObserverElastos(contentViewCore)
     , mOwner(owner)
 {
 }

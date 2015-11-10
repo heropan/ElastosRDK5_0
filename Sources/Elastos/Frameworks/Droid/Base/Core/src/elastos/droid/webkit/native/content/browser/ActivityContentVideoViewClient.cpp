@@ -36,7 +36,7 @@ Boolean ActivityContentVideoViewClient::OnShowCustomView(
     //     IViewGroupLayoutParams::MATCH_PARENT,
     //     IGravity::CENTER,
     //     (IFrameLayoutLayoutParams**)&params);
-    AutoPtr<IView> decorView = (IView*)decor->Probe(EIID_IView);
+    AutoPtr<IView> decorView = IView::Probe(decor);
     // decor->AddView(view, 0, params);
     SetSystemUiVisibility(decorView, TRUE);
     mView = view;

@@ -1,14 +1,16 @@
 
 #include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePicker.h"
 
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::Widget::EIID_IFrameLayout;
+using Elastos::Droid::Widget::EIID_INumberPickerOnValueChangeListener;
 using Elastos::Core::IString;
 using Elastos::Utility::IList;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::ITimeZoneHelper;
-using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
-using Elastos::Droid::View::Accessibility::EIID_IAccessibilityRecord;
-using Elastos::Droid::Widget::EIID_IFrameLayout;
-using Elastos::Droid::Widget::EIID_INumberPickerOnValueChangeListener;
 
 namespace Elastos {
 namespace Droid {
@@ -213,10 +215,13 @@ ECode TwoFieldDatePicker::OnPopulateAccessibilityEvent(
     String selectedDateUtterance;
     assert(0);
     // TODO
-    // dateUtils->FormatDateTime(GetContext(),
-    //         millis, flags);
+    AutoPtr<IContext> c;
+    AutoPtr<IView> view = THIS_PROBE(IView);
+    view->GetContext((IContext**)&c);
+    dateUtils->FormatDateTime(c,
+             millis, flags, (String*)&selectedDateUtterance);
     AutoPtr<IList> text;
-    AutoPtr<IAccessibilityRecord> record = (IAccessibilityRecord*)event->Probe(EIID_IAccessibilityRecord);
+    AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(event);
     record->GetText((IList**)&text);
     AutoPtr<IString> str;
     assert(0);

@@ -19,7 +19,7 @@ namespace Webkit {
 namespace Content {
 namespace Browser {
 
-class TracingControllerAndroid;
+class TracingControllerElastos;
 
 } // namespace Browser
 } // namespace Content
@@ -27,7 +27,7 @@ class TracingControllerAndroid;
 } // namespace Droid
 } // namespace Elastos
 
-using Elastos::Droid::Webkit::Content::Browser::TracingControllerAndroid;
+using Elastos::Droid::Webkit::Content::Browser::TracingControllerElastos;
 
 namespace Elastos {
 namespace Droid {
@@ -60,7 +60,7 @@ private:
     };
 
 public:
-    CARAPI_(AutoPtr<TracingControllerAndroid>) GetTracingController();
+    CARAPI_(AutoPtr<TracingControllerElastos>) GetTracingController();
 
     //@Override
     CARAPI OnCreate();
@@ -74,7 +74,7 @@ public:
     CARAPI OnTerminate();
 
 private:
-    AutoPtr<TracingControllerAndroid> mTracingController;
+    AutoPtr<TracingControllerElastos> mTracingController;
 };
 
 } // namespace App

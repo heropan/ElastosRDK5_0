@@ -102,7 +102,7 @@ ECode CipherFactory::InnerCallable::Call(
         generator->Init(128, random);
         AutoPtr<ISecretKey> secretKey;
         generator->GenerateKey((ISecretKey**)&secretKey);
-        AutoPtr<IKey> key = (IKey*)secretKey->Probe(EIID_IKey);
+        AutoPtr<IKey> key = IKey::Probe(secretKey);
         AutoPtr<CipherData> cipherData = new CipherData(key, iv);
         *result = (IInterface*)(IObject*)cipherData;
         REFCOUNT_ADD(*result);
@@ -160,7 +160,7 @@ AutoPtr<ICipher> CipherFactory::GetCipher(
             // TODO
             // CIvParameterSpec::New((IIvParameterSpec**)&ivParameterSpec);
             AutoPtr<IAlgorithmParameterSpec> algorithmParameterSpec =
-                   (IAlgorithmParameterSpec*)ivParameterSpec->Probe(EIID_IAlgorithmParameterSpec);
+                   IAlgorithmParameterSpec::Probe(ivParameterSpec);
             cipher->Init(opmode, data->key, algorithmParameterSpec);
             return cipher;
         // } catch (GeneralSecurityException e) {
