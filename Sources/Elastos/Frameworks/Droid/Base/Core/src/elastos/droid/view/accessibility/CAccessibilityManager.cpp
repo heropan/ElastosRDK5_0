@@ -5,63 +5,116 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/ServiceManager.h"
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/Manifest.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Slogger;
-
+using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Content::Pm::IResolveInfo;
-using Elastos::Droid::Content::Pm::IServiceInfo;
-using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Concurrent::CCopyOnWriteArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
-const Int32 CAccessibilityManager::STATE_FLAG_ACCESSIBILITY_ENABLED = 0x00000001;
-const Int32 CAccessibilityManager::STATE_FLAG_TOUCH_EXPLORATION_ENABLED = 0x00000002;
-const Int32 CAccessibilityManager::DO_SET_STATE = 10;
 const Boolean CAccessibilityManager::DEBUG = FALSE;
-const String CAccessibilityManager::localLOG_TAG = String("AccessibilityManager");
+const String CAccessibilityManager::localLOG_TAG("AccessibilityManager");
 
 AutoPtr<IAccessibilityManager> CAccessibilityManager::sInstance = NULL;
-Mutex CAccessibilityManager::sInstanceSync;
+Object CAccessibilityManager::sInstanceSync;
+
+const Int32 CAccessibilityManager::MyHandler::MSG_NOTIFY_ACCESSIBILITY_STATE_CHANGED = 1;
+const Int32 CAccessibilityManager::MyHandler::MSG_NOTIFY_EXPLORATION_STATE_CHANGED = 2;
+const Int32 CAccessibilityManager::MyHandler::MSG_NOTIFY_HIGH_TEXT_CONTRAST_STATE_CHANGED = 3;
+const Int32 CAccessibilityManager::MyHandler::MSG_SET_STATE = 4;
+
+CAccessibilityManager::MyHandler::MyHandler(
+    /* [in] */ CAccessibilityManager* host,
+    /* [in] */ ILooper* looper)
+    : Handler::Handler(looper, NULL, FALSE)
+    , mHost(host)
+{}
+
+CAccessibilityManager::MyHandler::~MyHandler()
+{}
 
 ECode CAccessibilityManager::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Int32 what, arg1;
+    Int32 what;
     msg->GetWhat(&what);
-    msg->GetArg1(&arg1);
-
-    switch(what) {
-        case CAccessibilityManager::DO_SET_STATE:
-            mHost->HandleDoSetState(arg1);
+    switch (what) {
+        case MSG_NOTIFY_ACCESSIBILITY_STATE_CHANGED:
+            mHost->HandleNotifyAccessibilityStateChanged();
             break;
+        case MSG_NOTIFY_EXPLORATION_STATE_CHANGED:
+            mHost->HandleNotifyTouchExplorationStateChanged();
+            break;
+        case MSG_NOTIFY_HIGH_TEXT_CONTRAST_STATE_CHANGED:
+            mHost->HandleNotifyHighTextContrastStateChanged();
+            break;
+        case MSG_SET_STATE: {
+            // See comment at mClient
+            Int32 state;
+            msg->GetArg1(&state);
+            Object& lock = mHost->mLock;
+            synchronized (lock) {
+                mHost->SetStateLocked(state);
+            }
+        } break;
     }
-
     return NOERROR;
 }
+
+CAR_INTERFACE_IMPL(CAccessibilityManager, Object, IAccessibilityManager)
+
+CAR_OBJECT_IMPL(CAccessibilityManager)
 
 CAccessibilityManager::CAccessibilityManager()
     : mUserId(0)
     , mIsEnabled(FALSE)
     , mIsTouchExplorationEnabled(FALSE)
+    , mIsHighTextContrastEnabled(FALSE)
 {
-    CAccessibilityManagerClient::New((Handle32)this,
-            (IAccessibilityManagerClient**)&mClient);
+    CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mAccessibilityStateChangeListeners);
+    CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mTouchExplorationStateChangeListeners);
+    CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mHighTextContrastStateChangeListeners);
+    CAccessibilityManagerClient::New((Handle32)this, (IIAccessibilityManagerClient**)&mClient);
 }
 
-void CAccessibilityManager::HandleDoSetState(
-    /* [in] */ Int32 state)
+CAccessibilityManager::~CAccessibilityManager()
+{}
+
+ECode CAccessibilityManager::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IIAccessibilityManager* service,
+    /* [in] */ Int32 userId)
 {
-    SetState(state);
+    assert(context != NULL && service != NULL);
+    AutoPtr<ILooper> looper;
+    context->GetMainLooper((ILooper**)&looper);
+
+    mHandler = new MyHandler(this, looper);
+    mService = service;
+    mUserId = userId;
+    synchronized (mLock) {
+        TryConnectToServiceLocked();
+    }
+    return NOERROR;
 }
 
 ECode CAccessibilityManager::GetInstance(
@@ -71,28 +124,40 @@ ECode CAccessibilityManager::GetInstance(
     VALIDATE_NOT_NULL(manager);
     *manager = NULL;
 
-    AutoLock lock(sInstanceSync);
-    if (sInstance == NULL) {
-        FAIL_RETURN(CreateSingletonInstance(context, UserHandle::GetMyUserId()));
+    synchronized (sInstanceSync) {
+        if (sInstance == NULL) {
+            Int32 userId;
+            Int32 result1, result2;
+            if (Binder::GetCallingUid() == IProcess::SYSTEM_UID
+                    || context->CheckCallingOrSelfPermission(
+                            Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS, &result1), result1
+                                    == IPackageManager::PERMISSION_GRANTED
+                    || context->CheckCallingOrSelfPermission(
+                            Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL, &result2), result2
+                                    == IPackageManager::PERMISSION_GRANTED) {
+                userId = IUserHandle::USER_CURRENT;
+            }
+            else {
+                userId = UserHandle::GetMyUserId();
+            }
+            AutoPtr<IInterface> iBinder = ServiceManager::GetService(IContext::ACCESSIBILITY_SERVICE);
+            AutoPtr<IIAccessibilityManager> service =IIAccessibilityManager::Probe(iBinder);
+            AutoPtr<CAccessibilityManager> caManager;
+            CAccessibilityManager::NewByFriend(context, service, userId, (CAccessibilityManager**)&caManager);
+            sInstance = (IAccessibilityManager*)caManager.Get();
+        }
     }
     *manager = sInstance;
     REFCOUNT_ADD(*manager);
     return NOERROR;
 }
 
-ECode CAccessibilityManager::CreateSingletonInstance(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 userId)
+ECode CAccessibilityManager::GetClient(
+    /* [out] */ IIAccessibilityManagerClient** client)
 {
-    assert(sInstance == NULL);
-    AutoPtr<IIAccessibilityManager> service =
-            (IIAccessibilityManager*)ServiceManager::GetService(
-                    IContext::ACCESSIBILITY_SERVICE).Get();
-    assert(service != NULL);
-    AutoPtr<CAccessibilityManager> cinstance;
-    CAccessibilityManager::NewByFriend(context, service, userId,
-            (CAccessibilityManager**)&cinstance);
-    sInstance = cinstance;
+    VALIDATE_NOT_NULL(client);
+    *client = mClient;
+    REFCOUNT_ADD(*client);
     return NOERROR;
 }
 
@@ -100,8 +165,14 @@ ECode CAccessibilityManager::IsEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mHandlerLock);
-    *result = mIsEnabled;
+    synchronized (mLock) {
+        AutoPtr<IIAccessibilityManager> service = GetServiceLocked();
+        if (service == NULL) {
+            *result = FALSE;
+            return NOERROR;
+        }
+        *result = mIsEnabled;
+    }
     return NOERROR;
 }
 
@@ -109,24 +180,50 @@ ECode CAccessibilityManager::IsTouchExplorationEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mHandlerLock);
-    *result = mIsTouchExplorationEnabled;
+    synchronized (mLock) {
+        AutoPtr<IIAccessibilityManager> service = GetServiceLocked();
+        if (service == NULL) {
+            *result = FALSE;
+            return NOERROR;
+        }
+        *result = mIsTouchExplorationEnabled;
+    }
     return NOERROR;
 }
 
-AutoPtr<IAccessibilityManagerClient> CAccessibilityManager::GetClient()
+ECode CAccessibilityManager::IsHighTextContrastEnabled(
+    /* [out] */ Boolean* result)
 {
-    return mClient;
+    VALIDATE_NOT_NULL(result);
+    synchronized (mLock) {
+        AutoPtr<IIAccessibilityManager> service = GetServiceLocked();
+        if (service == NULL) {
+            *result = FALSE;
+            return NOERROR;
+        }
+        *result = mIsHighTextContrastEnabled;
+    }
+    return NOERROR;
 }
 
 ECode CAccessibilityManager::SendAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    if (!mIsEnabled) {
-        Slogger::E(localLOG_TAG, "Accessibility off. Did you forget to check that?");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalStateException("Accessibility off. Did you forget to check that?");
+    AutoPtr<IIAccessibilityManager> service;
+    Int32 userId;
+    synchronized (mLock) {
+        service = GetServiceLocked();
+        if (service == NULL) {
+            return NOERROR;
+        }
+        if (!mIsEnabled) {
+            Logger::E(localLOG_TAG, "Accessibility off. Did you forget to check that?");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            // throw new IllegalStateException("Accessibility off. Did you forget to check that?");
+        }
+        userId = mUserId;
     }
+
     Boolean doRecycle = FALSE;
     // try {
     event->SetEventTime(SystemClock::GetUptimeMillis());
@@ -134,20 +231,20 @@ ECode CAccessibilityManager::SendAccessibilityEvent(
     // client using it is called through Binder from another process. Example: MMS
     // app adds a SMS notification and the NotificationManagerService calls this method
     Int64 identityToken = Binder::ClearCallingIdentity();
-    ECode ec = mService->SendAccessibilityEvent(event, mUserId, &doRecycle);
+    ECode ec = service->SendAccessibilityEvent(event, userId, &doRecycle);
     Binder::RestoreCallingIdentity(identityToken);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "Error during sending %p 0x%08x", event, ec);
+        Logger::E(localLOG_TAG, "Error during sending %p 0x%08x", event, ec);
         return ec;
+    }
+    if (DEBUG) {
+        Logger::I(localLOG_TAG, " %p sent", event);
     }
 
     if (doRecycle) {
-        event->Recycle();
+        IAccessibilityRecord::Probe(event)->Recycle();
     }
     return NOERROR;
-    // if (DEBUG) {
-    //     Log.i(localLOG_TAG, event + " sent");
-    // }
     // } catch (RemoteException re) {
     //     Log.e(localLOG_TAG, "Error during sending " + event + " ", re);
     // } finally {
@@ -159,154 +256,261 @@ ECode CAccessibilityManager::SendAccessibilityEvent(
 
 ECode CAccessibilityManager::Interrupt()
 {
-    if (!mIsEnabled) {
-        Slogger::E(localLOG_TAG, "Accessibility off. Did you forget to check that?");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalStateException("Accessibility off. Did you forget to check that?");
+    AutoPtr<IIAccessibilityManager> service;
+    Int32 userId;
+    synchronized (mLock) {
+        service = GetServiceLocked();
+        if (service == NULL) {
+            return NOERROR;
+        }
+        if (!mIsEnabled) {
+            Logger::E(localLOG_TAG, "Accessibility off. Did you forget to check that?");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            // throw new IllegalStateException("Accessibility off. Did you forget to check that?");
+        }
+        userId = mUserId;
     }
+
     // try {
-    ECode ec = mService->Interrupt(mUserId);
+    ECode ec = service->Interrupt(userId);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "Error while requesting interrupt from all services. 0x%08x", ec);
+        Logger::E(localLOG_TAG, "Error while requesting interrupt from all services. 0x%08x", ec);
         return ec;
     }
+    if (DEBUG) {
+        Logger::I(localLOG_TAG, "Requested interrupt from all services");
+    }
     return NOERROR;
-    // if (DEBUG) {
-    //     Log.i(localLOG_TAG, "Requested interrupt from all services");
-    // }
     // } catch (RemoteException re) {
     //     Log.e(localLOG_TAG, "Error while requesting interrupt from all services. ", re);
     // }
 }
 
 ECode CAccessibilityManager::GetAccessibilityServiceList(
-    /* [out] */ IObjectContainer** serviceList)
+    /* [out] */ IList** serviceList)
 {
     VALIDATE_NOT_NULL(serviceList);
 
-    AutoPtr<IObjectContainer> infos;
-    FAIL_RETURN(GetInstalledAccessibilityServiceList((IObjectContainer**)&infos));
-    AutoPtr<IObjectContainer> services;
-    CObjectContainer::New((IObjectContainer**)&services);
-    AutoPtr<IObjectEnumerator> objEmu;
-    infos->GetObjectEnumerator((IObjectEnumerator**)&objEmu);
-    Boolean isSucceeded;
-    while (objEmu->MoveNext(&isSucceeded), isSucceeded) {
-        AutoPtr<IAccessibilityServiceInfo> info;
-        objEmu->Current((IInterface**)&info);
-        AutoPtr<IResolveInfo> ri;
-        ASSERT_SUCCEEDED(info->GetResolveInfo((IResolveInfo**)&ri));
+    AutoPtr<IList> infos;
+    GetInstalledAccessibilityServiceList((IList**)&infos);
+    AutoPtr<IList> services;
+    CArrayList::New((IList**)&services);
+    Int32 infoCount;
+    infos->GetSize(&infoCount);
+    for (Int32 i = 0; i < infoCount; i++) {
+        AutoPtr<IInterface> obj;
+        infos->Get(i, (IInterface**)&obj);
+        AutoPtr<IAccessibilityServiceInfo> info = IAccessibilityServiceInfo::Probe(obj);
+        AutoPtr<IResolveInfo> resolveInfo;
+        info->GetResolveInfo((IResolveInfo**)&resolveInfo);
         AutoPtr<IServiceInfo> serviceInfo;
-        ri->GetServiceInfo((IServiceInfo**)&serviceInfo);
+        resolveInfo->GetServiceInfo((IServiceInfo**)&serviceInfo);
         services->Add(serviceInfo);
     }
-    *serviceList = services;
-    REFCOUNT_ADD(*serviceList);
-    return NOERROR;
+    AutoPtr<ICollections> coll;
+    CCollections::AcquireSingleton((ICollections**)&coll);
+    return coll->UnmodifiableList(services, serviceList);
 }
 
 ECode CAccessibilityManager::GetInstalledAccessibilityServiceList(
-    /* [out] */ IObjectContainer** serviceList)
+    /* [out] */ IList** serviceList)
 {
     VALIDATE_NOT_NULL(serviceList);
 
+    AutoPtr<IIAccessibilityManager> service;
+    Int32 userId;
+    synchronized (mLock) {
+        service = GetServiceLocked();
+        if (service == NULL) {
+            AutoPtr<ICollections> coll;
+            CCollections::AcquireSingleton((ICollections**)&coll);
+            return coll->GetEmptyList(serviceList);
+        }
+        userId = mUserId;
+    }
+
+    AutoPtr<IList> services;
     // try {
-    ECode ec = mService->GetInstalledAccessibilityServiceList(mUserId, serviceList);
+    ECode ec = service->GetInstalledAccessibilityServiceList(userId, (IList**)&services);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "Error while obtaining the installed AccessibilityServices. 0x%08x", ec);
+        Logger::E(localLOG_TAG, "Error while obtaining the installed AccessibilityServices. 0x%08x", ec);
         return ec;
     }
-    // if (DEBUG) {
-    //     Log.i(localLOG_TAG, "Installed AccessibilityServices " + services);
-    // }
+    if (DEBUG) {
+        Logger::I(localLOG_TAG, "Installed AccessibilityServices %p", services.Get());
+    }
     // } catch (RemoteException re) {
     //     Log.e(localLOG_TAG, "Error while obtaining the installed AccessibilityServices. ", re);
     // }
+    if (services != NULL) {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->UnmodifiableList(services, serviceList);
+    }
+    else {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->GetEmptyList(serviceList);
+    }
     return NOERROR;
 }
 
 ECode CAccessibilityManager::GetEnabledAccessibilityServiceList(
     /* [in] */ Int32 feedbackTypeFlags,
-    /* [out] */ IObjectContainer** serviceList)
+    /* [out] */ IList** serviceList)
 {
     VALIDATE_NOT_NULL(serviceList);
 
+    AutoPtr<IIAccessibilityManager> service;
+    Int32 userId;
+    synchronized (mLock) {
+        service = GetServiceLocked();
+        if (service == NULL) {
+            AutoPtr<ICollections> coll;
+            CCollections::AcquireSingleton((ICollections**)&coll);
+            return coll->GetEmptyList(serviceList);
+        }
+        userId = mUserId;
+    }
+
+    AutoPtr<IList> services;
     // try {
-    ECode ec = mService->GetEnabledAccessibilityServiceList(feedbackTypeFlags,
-            mUserId, serviceList);
+    ECode ec = service->GetEnabledAccessibilityServiceList(feedbackTypeFlags,
+            userId, (IList**)&services);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "Error while obtaining the installed AccessibilityServices. 0x%08x", ec);
+        Logger::E(localLOG_TAG, "Error while obtaining the installed AccessibilityServices. 0x%08x", ec);
         return ec;
     }
-    // if (DEBUG) {
-    //     Log.i(localLOG_TAG, "Installed AccessibilityServices " + services);
-    // }
+    if (DEBUG) {
+        Logger::I(localLOG_TAG, "Installed AccessibilityServices %p", services.Get());
+    }
     // } catch (RemoteException re) {
     //     Log.e(localLOG_TAG, "Error while obtaining the installed AccessibilityServices. ", re);
     // }
+    if (services != NULL) {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->UnmodifiableList(services, serviceList);
+    }
+    else {
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        return coll->GetEmptyList(serviceList);
+    }
     return NOERROR;
 }
 
 ECode CAccessibilityManager::AddAccessibilityStateChangeListener(
     /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
-    /* [out] */ Boolean* add)
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(add);
-    mAccessibilityStateChangeListeners.PushBack(listener);
-    *add = TRUE;
-    return NOERROR;
+    // Final CopyOnArrayList - no lock needed.
+    VALIDATE_NOT_NULL(result);
+    return ICollection::Probe(mAccessibilityStateChangeListeners)->Add(listener, result);
 }
 
 ECode CAccessibilityManager::RemoveAccessibilityStateChangeListener(
     /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
-    /* [out] */ Boolean* remove)
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(remove);
-    mAccessibilityStateChangeListeners.Remove(listener);
-    *remove = TRUE;
-    return NOERROR;
+    // Final CopyOnArrayList - no lock needed.
+    VALIDATE_NOT_NULL(result);
+    return ICollection::Probe(mAccessibilityStateChangeListeners)->Remove(listener, result);
 }
 
-void CAccessibilityManager::SetState(
+ECode CAccessibilityManager::AddTouchExplorationStateChangeListener(
+    /* [in] */ IAccessibilityManagerTouchExplorationStateChangeListener* listener,
+    /* [out] */ Boolean* result)
+{
+    // Final CopyOnArrayList - no lock needed.
+    VALIDATE_NOT_NULL(result);
+    return ICollection::Probe(mTouchExplorationStateChangeListeners)->Add(listener, result);
+}
+
+ECode CAccessibilityManager::RemoveTouchExplorationStateChangeListener(
+    /* [in] */ IAccessibilityManagerTouchExplorationStateChangeListener* listener,
+    /* [out] */ Boolean* result)
+{
+    // Final CopyOnArrayList - no lock needed.
+    VALIDATE_NOT_NULL(result);
+    return ICollection::Probe(mTouchExplorationStateChangeListeners)->Remove(listener, result);
+}
+
+ECode CAccessibilityManager::AddHighTextContrastStateChangeListener(
+    /* [in] */ IAccessibilityManagerHighTextContrastChangeListener* listener,
+    /* [out] */ Boolean* result)
+{
+    // Final CopyOnArrayList - no lock needed.
+    VALIDATE_NOT_NULL(result);
+    return ICollection::Probe(mHighTextContrastStateChangeListeners)->Add(listener, result);
+}
+
+ECode CAccessibilityManager::RemoveHighTextContrastStateChangeListener(
+    /* [in] */ IAccessibilityManagerHighTextContrastChangeListener* listener,
+    /* [out] */ Boolean* result)
+{
+    // Final CopyOnArrayList - no lock needed.
+    VALIDATE_NOT_NULL(result);
+    return ICollection::Probe(mHighTextContrastStateChangeListeners)->Remove(listener, result);
+}
+
+void CAccessibilityManager::SetStateLocked(
     /* [in] */ Int32 stateFlags)
 {
-    Boolean accessibilityEnabled = (stateFlags & STATE_FLAG_ACCESSIBILITY_ENABLED) != 0;
-    SetAccessibilityState(accessibilityEnabled);
-    mIsTouchExplorationEnabled = (stateFlags & STATE_FLAG_TOUCH_EXPLORATION_ENABLED) != 0;
-}
+    const Boolean enabled = (stateFlags & STATE_FLAG_ACCESSIBILITY_ENABLED) != 0;
+    const Boolean touchExplorationEnabled =
+            (stateFlags & STATE_FLAG_TOUCH_EXPLORATION_ENABLED) != 0;
+    const Boolean highTextContrastEnabled =
+            (stateFlags & STATE_FLAG_HIGH_TEXT_CONTRAST_ENABLED) != 0;
 
-void CAccessibilityManager::SetAccessibilityState(
-    /* [in] */ Boolean isEnabled)
-{
-    AutoLock lock(mHandlerLock);
-    if (isEnabled != mIsEnabled) {
-        mIsEnabled = isEnabled;
-        NotifyAccessibilityStateChanged();
+    const Boolean wasEnabled = mIsEnabled;
+    const Boolean wasTouchExplorationEnabled = mIsTouchExplorationEnabled;
+    const Boolean wasHighTextContrastEnabled = mIsHighTextContrastEnabled;
+
+    // Ensure listeners get current state from isZzzEnabled() calls.
+    mIsEnabled = enabled;
+    mIsTouchExplorationEnabled = touchExplorationEnabled;
+    mIsHighTextContrastEnabled = highTextContrastEnabled;
+
+    Boolean res;
+    if (wasEnabled != enabled) {
+        mHandler->SendEmptyMessage(MyHandler::MSG_NOTIFY_ACCESSIBILITY_STATE_CHANGED, &res);
     }
-}
 
-void CAccessibilityManager::NotifyAccessibilityStateChanged()
-{
-    List<AutoPtr<IAccessibilityManagerAccessibilityStateChangeListener> >::Iterator it
-            = mAccessibilityStateChangeListeners.Begin();
-    for (; it != mAccessibilityStateChangeListeners.End(); ++it) {
-        (*it)->OnAccessibilityStateChanged(mIsEnabled);
+    if (wasTouchExplorationEnabled != touchExplorationEnabled) {
+        mHandler->SendEmptyMessage(MyHandler::MSG_NOTIFY_EXPLORATION_STATE_CHANGED, &res);
+    }
+
+    if (wasHighTextContrastEnabled != highTextContrastEnabled) {
+        mHandler->SendEmptyMessage(MyHandler::MSG_NOTIFY_HIGH_TEXT_CONTRAST_STATE_CHANGED, &res);
     }
 }
 
 ECode CAccessibilityManager::AddAccessibilityInteractionConnection(
     /* [in] */ IIWindow* windowToken,
-    /* [in] */ IAccessibilityInteractionConnection* connection,
+    /* [in] */ IIAccessibilityInteractionConnection* connection,
     /* [out] */ Int32* add)
 {
     VALIDATE_NOT_NULL(add);
+
+    AutoPtr<IIAccessibilityManager> service;
+    Int32 userId;
+    synchronized (mLock) {
+        service = GetServiceLocked();
+        if (service == NULL) {
+            *add = IView::NO_ID;
+            return NOERROR;
+        }
+        userId = mUserId;
+    }
+
     // try {
-    ECode ec = mService->AddAccessibilityInteractionConnection(windowToken, connection, mUserId, add);
+    ECode ec = service->AddAccessibilityInteractionConnection(windowToken, connection, userId, add);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "Error while adding an accessibility interaction connection. 0x%08x", ec);
-        *add = IView::NO_ID;
+        Logger::E(localLOG_TAG, "Error while adding an accessibility interaction connection. 0x%08x", ec);
         return ec;
     }
+    *add = IView::NO_ID;
     return NOERROR;
     // } catch (RemoteException re) {
     //     Log.e(localLOG_TAG, "Error while adding an accessibility interaction connection. ", re);
@@ -317,10 +521,18 @@ ECode CAccessibilityManager::AddAccessibilityInteractionConnection(
 ECode CAccessibilityManager::RemoveAccessibilityInteractionConnection(
     /* [in] */ IIWindow* windowToken)
 {
+    AutoPtr<IIAccessibilityManager> service;
+    synchronized (mLock) {
+        service = GetServiceLocked();
+        if (service == NULL) {
+            return NOERROR;
+        }
+    }
+
     // try {
-    ECode ec = mService->RemoveAccessibilityInteractionConnection(windowToken);
+    ECode ec = service->RemoveAccessibilityInteractionConnection(windowToken);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "Error while removing an accessibility interaction connection. 0x%08x", ec);
+        Logger::E(localLOG_TAG, "Error while removing an accessibility interaction connection. 0x%08x", ec);
     }
     return NOERROR;
     // } catch (RemoteException re) {
@@ -328,32 +540,78 @@ ECode CAccessibilityManager::RemoveAccessibilityInteractionConnection(
     // }
 }
 
-ECode CAccessibilityManager::constructor(
-    /* [in] */ IContext* base,
-    /* [in] */ IIAccessibilityManager* service,
-    /* [in] */ Int32 userId)
+AutoPtr<IIAccessibilityManager> CAccessibilityManager::GetServiceLocked()
 {
-    assert(base != NULL && service != NULL);
-    AutoPtr<ILooper> looper;
-    base->GetMainLooper((ILooper**)&looper);
+    if (mService == NULL) {
+        TryConnectToServiceLocked();
+    }
+    return mService;
+}
 
-    mHandler = new MyHandler(this);
-    mService = service;
-    mUserId = userId;
+void CAccessibilityManager::TryConnectToServiceLocked()
+{
+    AutoPtr<IInterface> iBinder = ServiceManager::GetService(IContext::ACCESSIBILITY_SERVICE);
+    if (iBinder == NULL) {
+        return;
+    }
+    AutoPtr<IIAccessibilityManager> service =IIAccessibilityManager::Probe(iBinder);
 
     // try {
     Int32 stateFlags;
-    ECode ec = mService->AddClient(mClient, userId, &stateFlags);
+    ECode ec = service->AddClient(mClient, mUserId, &stateFlags);
     if (FAILED(ec)) {
-        Slogger::E(localLOG_TAG, "AccessibilityManagerService is dead 0x%08x", ec);
-        return ec;
+        Logger::E(LOG_TAG, "AccessibilityManagerService is dead, 0x%08x", ec);
     }
-
-    SetState(stateFlags);
-    return NOERROR;
+    SetStateLocked(stateFlags);
+    mService = service;
     // } catch (RemoteException re) {
-    //     Log.e(localLOG_TAG, "AccessibilityManagerService is dead", re);
+    //     Log.e(LOG_TAG, "AccessibilityManagerService is dead", re);
     // }
+}
+
+void CAccessibilityManager::HandleNotifyAccessibilityStateChanged()
+{
+    Boolean isEnabled;
+    synchronized (mLock) {
+        isEnabled = mIsEnabled;
+    }
+    Int32 listenerCount;
+    IList::Probe(mAccessibilityStateChangeListeners)->GetSize(&listenerCount);
+    for (Int32 i = 0; i < listenerCount; i++) {
+        AutoPtr<IInterface> obj;
+        IList::Probe(mAccessibilityStateChangeListeners)->Get(i, (IInterface**)&obj);
+        IAccessibilityManagerAccessibilityStateChangeListener::Probe(obj)->OnAccessibilityStateChanged(isEnabled);
+    }
+}
+
+void CAccessibilityManager::HandleNotifyTouchExplorationStateChanged()
+{
+    Boolean isTouchExplorationEnabled;
+    synchronized (mLock) {
+        isTouchExplorationEnabled = mIsTouchExplorationEnabled;
+    }
+    Int32 listenerCount;
+    IList::Probe(mTouchExplorationStateChangeListeners)->GetSize(&listenerCount);
+    for (Int32 i = 0; i < listenerCount; i++) {
+        AutoPtr<IInterface> obj;
+        IList::Probe(mTouchExplorationStateChangeListeners)->Get(i, (IInterface**)&obj);
+        IAccessibilityManagerTouchExplorationStateChangeListener::Probe(obj)->OnTouchExplorationStateChanged(isTouchExplorationEnabled);
+    }
+}
+
+void CAccessibilityManager::HandleNotifyHighTextContrastStateChanged()
+{
+    Boolean isHighTextContrastEnabled;
+    synchronized (mLock) {
+        isHighTextContrastEnabled = mIsHighTextContrastEnabled;
+    }
+    Int32 listenerCount;
+    IList::Probe(mHighTextContrastStateChangeListeners)->GetSize(&listenerCount);
+    for (Int32 i = 0; i < listenerCount; i++) {
+        AutoPtr<IInterface> obj;
+        IList::Probe(mHighTextContrastStateChangeListeners)->Get(i, (IInterface**)&obj);
+        IAccessibilityManagerHighTextContrastChangeListener::Probe(obj)->OnHighTextContrastStateChanged(isHighTextContrastEnabled);
+    }
 }
 
 } // Accessibility

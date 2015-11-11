@@ -46,8 +46,9 @@ CAR_OBJECT_IMPL(CAccessibilityServiceInfo)
 
 static AutoPtr<ISparseArray> InitsAvailableCapabilityInfos()
 {
-    AutoPtr<ISparseArray> availableCapabilityInfos;
-    CSparseArray::New((ISparseArray**)&availableCapabilityInfos);
+    AutoPtr<CSparseArray> infos;
+    CSparseArray::NewByFriend((CSparseArray**)&infos);
+    AutoPtr<ISparseArray> availableCapabilityInfos = (ISparseArray*)infos.Get();
 
     AutoPtr<IAccessibilityServiceInfoCapabilityInfo> info;
     CAccessibilityServiceInfoCapabilityInfo::New(
@@ -477,12 +478,6 @@ ECode CAccessibilityServiceInfo::ReadFromParcel(
     source->ReadString(&mNonLocalizedDescription);
 
     return NOERROR;
-}
-
-void CAccessibilityServiceInfo::InitFromParcel(
-    /* [in] */ IParcel* parcel)
-{
-    ReadFromParcel(parcel);
 }
 
 ECode CAccessibilityServiceInfo::GetHashCode(

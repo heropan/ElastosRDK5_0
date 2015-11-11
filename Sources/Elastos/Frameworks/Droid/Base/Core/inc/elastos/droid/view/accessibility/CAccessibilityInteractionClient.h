@@ -418,13 +418,13 @@ private:
 
     static const Int64 TIMEOUT_INTERACTION_MILLIS;
 
-    static const AutoPtr<Object> sStaticLock;
+    static Object sStaticLock;
 
     static const AutoPtr<IInt64SparseArray> sClients;
 
     AutoPtr<IAtomicInteger32> mInteractionIdCounter;
 
-    AutoPtr<Object> mInstanceLock;
+    Object mInstanceLock;
 
     Int32 mInteractionId;
 

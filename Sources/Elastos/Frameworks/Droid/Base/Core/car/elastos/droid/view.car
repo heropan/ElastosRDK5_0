@@ -197,6 +197,8 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoRangeInfoHelper;
     interface Elastos.Droid.View.Accessibility.IAccessibilityRecord;
     interface Elastos.Droid.View.Accessibility.IAccessibilityRecordHelper;
+    interface Elastos.Droid.View.Accessibility.ICaptioningManagerCaptionStyle;
+    interface Elastos.Droid.View.Accessibility.ICaptioningManagerCaptionStyleHelper;
     interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
@@ -1687,26 +1689,27 @@ module
         interface IAccessibilityEventHelper;
     }
 
-    // [local]
-    // class CAccessibilityManager {
-    //     constructor(
-    //         [in] IContext* base,
-    //         [in] IIAccessibilityManager* service,
-    //         [in] Int32 userId);
+    [local]
+    class CAccessibilityManager {
+        constructor(
+            [in] IContext* base,
+            [in] IIAccessibilityManager* service,
+            [in] Int32 userId);
 
-    //     interface IAccessibilityManager;
-    // }
+        interface IAccessibilityManager;
+    }
 
-    // singleton class CAccessibilityManagerHelper {
-    //     interface IAccessibilityManagerHelper;
-    // }
+    singleton class CAccessibilityManagerHelper {
+        interface IAccessibilityManagerHelper;
+    }
 
-    // class CAccessibilityManagerClient {
-    //     constructor(
-    //         [in] Handle32 host);
+    class CAccessibilityManagerClient {
+        constructor(
+            [in] Handle32 host);
 
-    //     interface IAccessibilityManagerClient;
-    // }
+        interface IIAccessibilityManagerClient;
+        interface IBinder;
+    }
 
     class CAccessibilityInteractionClient {
         constructor();
@@ -1729,6 +1732,22 @@ module
 
     singleton class CAccessibilityWindowInfoHelper {
         interface IAccessibilityWindowInfoHelper;
+    }
+
+    class CCaptioningManagerCaptionStyle {
+        constructor(
+            [in] Int32 foregroundColor,
+            [in] Int32 backgroundColor,
+            [in] Int32 edgeType,
+            [in] Int32 edgeColor,
+            [in] Int32 windowColor,
+            [in] String rawTypeface);
+
+        interface ICaptioningManagerCaptionStyle;
+    }
+
+    singleton class CCaptioningManagerCaptionStyleHelper {
+        interface ICaptioningManagerCaptionStyleHelper;
     }
 
     } // Accessibility

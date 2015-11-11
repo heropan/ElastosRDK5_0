@@ -26,7 +26,7 @@ using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IIWindow;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::IAccessibilityManagerClient;
+using Elastos::Droid::View::Accessibility::IIAccessibilityManagerClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnectionCallback;
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
@@ -121,7 +121,7 @@ private:
 
         List<AutoPtr<IIAccessibilityServiceConnection> > mServices;
 
-        AutoPtr<IRemoteCallbackList> mClients;//= new RemoteCallbackList<IAccessibilityManagerClient>();
+        AutoPtr<IRemoteCallbackList> mClients;//= new RemoteCallbackList<IIAccessibilityManagerClient>();
 
         HashMap<AutoPtr<IComponentName>, AutoPtr<IIAccessibilityServiceConnection> >
                 mComponentNameToServiceMap;
@@ -366,7 +366,7 @@ public:
         /* [in] */ IContext* context);
 
     CARAPI AddClient(
-        /* [in] */ IAccessibilityManagerClient* client,
+        /* [in] */ IIAccessibilityManagerClient* client,
         /* [in] */ Int32 userId,
         /* [out] */ Int32* result);
 

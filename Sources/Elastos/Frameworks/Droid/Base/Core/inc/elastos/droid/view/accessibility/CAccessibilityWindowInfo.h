@@ -264,14 +264,11 @@ public:
      */
     CARAPI Recycle();
 
-    CARAPI DescribeContents(
-        /* [out] */ Int32* result);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel* parcel);
 
     CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
+        /* [in] */ IParcel* parcel);
 
     CARAPI GetHashCode(
         /* [out] */ Int32* hash);
@@ -298,9 +295,6 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    CARAPI_(void) InitFromParcel(
-        /* [in] */ IParcel* parcel);
-
     CARAPI_(void) Clear();
 
     /**
@@ -346,7 +340,7 @@ private:
     Int32 mConnectionId;
 
     static const Int32 MAX_POOL_SIZE;
-    static AutoPtr<Pools::SynchronizedPool<IAccessibilityWindowInfo> > sPool;
+    static AutoPtr< Pools::SynchronizedPool<IAccessibilityWindowInfo> > sPool;
 };
 
 } // Accessibility

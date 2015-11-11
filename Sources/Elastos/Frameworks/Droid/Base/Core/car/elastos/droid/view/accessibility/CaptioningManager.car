@@ -15,7 +15,7 @@ module
      * Specifies visual properties for video captions, including foreground and
      * background colors, edge properties, and typeface.
      */
-    interface ICaptionStyle {
+    interface ICaptioningManagerCaptionStyle {
         /** @hide */
         const Int32 PRESET_CUSTOM = -1;
 
@@ -37,14 +37,11 @@ module
         /** Edge type value specifying depressed bevel character edges. */
         const Int32 EDGE_TYPE_DEPRESSED = 4;
 
-        SetEdgeType(
-            [in] Int32 type);
+        GetForegroundColor(
+            [out] Int32* color);
 
-        SetEdgeColor(
-            [in] Int32 color);
-
-        SetWindowColor(
-            [in] Int32 color);
+        GetBackgroundColor(
+            [out] Int32* color);
 
         GetEdgeType(
             [out] Int32* type);
@@ -54,6 +51,21 @@ module
 
         GetWindowColor(
             [out] Int32* color);
+
+        GetRawTypeface(
+            [out] String* str);
+
+        /**
+         * Applies a caption style, overriding any properties that are specified
+         * in the overlay caption.
+         *
+         * @param overlay The style to apply
+         * @return A caption style with the overlay style applied
+         * @hide
+         */
+        ApplyStyle(
+            [in] ICaptioningManagerCaptionStyle* overlay,
+            [out] ICaptioningManagerCaptionStyle** style);
 
         /**
          * @return {@code true} if the user has specified a background color
@@ -101,17 +113,19 @@ module
          */
         GetTypeface(
             [out] ITypeface** face);
+    }
 
+    interface ICaptioningManagerCaptionStyleHelper {
         GetCustomStyle(
             [in] IContentResolver* cr,
-            [out] ICaptionStyle** style);
+            [out] ICaptioningManagerCaptionStyle** style);
     }
 
     /**
      * Listener for changes in captioning properties, including enabled state
      * and user style preferences.
      */
-    interface ICaptioningChangeListener {
+    interface ICaptioningManagerCaptioningChangeListener {
         /**
          * Called when the captioning enabled state changes.
          *
@@ -127,7 +141,7 @@ module
          * @see CaptioningManager#getUserStyle()
          */
         OnUserStyleChanged(
-            [in] ICaptionStyle* userStyle);
+            [in] ICaptioningManagerCaptionStyle* userStyle);
 
         /**
          * Called when the captioning locale changes.
@@ -160,29 +174,65 @@ module
      * </code>
      */
     interface ICaptioningManager {
+        /**
+         * @return the user's preferred captioning enabled state
+         */
         IsEnabled(
             [out] Boolean* result);
 
+        /**
+         * @return the raw locale string for the user's preferred captioning
+         *         language
+         * @hide
+         */
         GetRawLocale(
             [out] String* locale);
 
+        /**
+         * @return the locale for the user's preferred captioning language, or null
+         *         if not specified
+         */
         GetLocale(
             [out] ILocale** locale);
 
+        /**
+         * @return the user's preferred font scaling factor for video captions, or 1 if not
+         *         specified
+         */
         GetFontScale(
             [out] Float* scale);
 
+        /**
+         * @return the raw preset number, or the first preset if not specified
+         * @hide
+         */
         GetRawUserStyle(
             [out] Int32* style);
 
+        /**
+         * @return the user's preferred visual properties for captions as a
+         *         {@link CaptionStyle}, or the default style if not specified
+         */
         GetUserStyle(
-            [out] ICaptionStyle** style);
+            [out] ICaptioningManagerCaptionStyle** style);
 
+        /**
+         * Adds a listener for changes in the user's preferred captioning enabled
+         * state and visual properties.
+         *
+         * @param listener the listener to add
+         */
         AddCaptioningChangeListener(
-            [in] ICaptioningChangeListener* listener);
+            [in] ICaptioningManagerCaptioningChangeListener* listener);
 
+        /**
+         * Removes a listener previously added using
+         * {@link #addCaptioningChangeListener}.
+         *
+         * @param listener the listener to remove
+         */
         RemoveCaptioningChangeListener(
-            [in] ICaptioningChangeListener* listener);
+            [in] ICaptioningManagerCaptioningChangeListener* listener);
     }
 
     } // namespace Accessibility

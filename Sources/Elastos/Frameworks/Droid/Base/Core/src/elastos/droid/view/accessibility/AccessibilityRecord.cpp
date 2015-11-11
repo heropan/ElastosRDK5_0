@@ -37,7 +37,7 @@ const Int32 AccessibilityRecord::GET_SOURCE_PREFETCH_FLAGS =
         | IAccessibilityNodeInfo::FLAG_PREFETCH_DESCENDANTS;
 const Int32 AccessibilityRecord::MAX_POOL_SIZE = 10;
 
-const AutoPtr<Object> AccessibilityRecord::sPoolLock = new Object();
+Object AccessibilityRecord::sPoolLock;
 AutoPtr<AccessibilityRecord> AccessibilityRecord::sPool;
 Int32 AccessibilityRecord::sPoolSize = 0;
 
@@ -64,6 +64,9 @@ AccessibilityRecord::AccessibilityRecord()
     mSourceNodeId = CAccessibilityNodeInfo::MakeNodeId(UNDEFINED, UNDEFINED);
     CArrayList::New((IList**)&mText);
 }
+
+AccessibilityRecord::~AccessibilityRecord()
+{}
 
 ECode AccessibilityRecord::constructor()
 {
@@ -492,7 +495,7 @@ ECode AccessibilityRecord::EnforceSealed()
 {
     if (!IsSealed()) {
         Slogger::E(TAG, "Cannot perform this action on a not sealed instance.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_STATE_EXCEPTION;
         // throw new IllegalStateException("Cannot perform this "
         //         + "action on a not sealed instance.");
     }
@@ -503,7 +506,7 @@ ECode AccessibilityRecord::EnforceNotSealed()
 {
     if (IsSealed()) {
         Slogger::E(TAG, "Cannot perform this action on a sealed instance.");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_STATE_EXCEPTION;
         // throw new IllegalStateException("Cannot perform this "
         //         + "action on a sealed instance.");
     }
@@ -569,7 +572,7 @@ ECode AccessibilityRecord::Recycle()
 {
     if (mIsInPool) {
         Slogger::E(TAG, "Record already recycled!");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return E_ILLEGAL_STATE_EXCEPTION;
         // throw new IllegalStateException("Record already recycled!");
     }
     Clear();

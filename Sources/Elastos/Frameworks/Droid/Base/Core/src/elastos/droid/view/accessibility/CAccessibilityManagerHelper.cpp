@@ -6,6 +6,10 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
+CAR_INTERFACE_IMPL(CAccessibilityManagerHelper, Singleton, IAccessibilityManagerHelper)
+
+CAR_SINGLETON_IMPL(CAccessibilityManagerHelper)
+
 ECode CAccessibilityManagerHelper::GetInstance(
     /* [in] */ IContext* context,
     /* [out] */ IAccessibilityManager** manager)

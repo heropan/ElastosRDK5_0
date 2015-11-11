@@ -238,25 +238,25 @@ ECode CAccessibilityEvent::Obtain(
     VALIDATE_NOT_NULL(resultEvent);
     AutoPtr<IAccessibilityEvent> eventClone;
     Obtain((IAccessibilityEvent**)&eventClone);
-    AutoPtr<CAccessibilityEvent> eventCloneCls = (CAccessibilityEvent*)eventClone.Get();
-    eventCloneCls->Init(event);
+    AutoPtr<CAccessibilityEvent> eventCloneObj = (CAccessibilityEvent*)eventClone.Get();
+    eventCloneObj->Init(event);
 
-    AutoPtr<CAccessibilityEvent> eventCls = (CAccessibilityEvent*)event;
-    if (eventCls->mRecords != NULL) {
+    AutoPtr<CAccessibilityEvent> eventObj = (CAccessibilityEvent*)event;
+    if (eventObj->mRecords != NULL) {
         Int32 recordCount;
-        eventCls->mRecords->GetSize(&recordCount);
-        CArrayList::New(recordCount, (IArrayList**)&eventCloneCls->mRecords);
+        eventObj->mRecords->GetSize(&recordCount);
+        CArrayList::New(recordCount, (IArrayList**)&eventCloneObj->mRecords);
         for (Int32 i = 0; i < recordCount; i++) {
             AutoPtr<IInterface> obj;
-            eventCls->mRecords->Get(i, (IInterface**)&obj);
+            eventObj->mRecords->Get(i, (IInterface**)&obj);
             AutoPtr<IAccessibilityRecord> record = IAccessibilityRecord::Probe(obj);
             AutoPtr<IAccessibilityRecord> recordClone;
             AccessibilityRecord::Obtain(record, (IAccessibilityRecord**)&recordClone);
-            eventCloneCls->mRecords->Add(recordClone);
+            eventCloneObj->mRecords->Add(recordClone);
         }
     }
 
-    *resultEvent = (IAccessibilityEvent*)eventCloneCls.Get();
+    *resultEvent = (IAccessibilityEvent*)eventCloneObj.Get();
     REFCOUNT_ADD(*resultEvent);
     return NOERROR;
 }
@@ -299,35 +299,6 @@ void CAccessibilityEvent::Clear()
     }
 }
 
-ECode CAccessibilityEvent::InitFromParcel(
-    /* [in] */ IParcel* parcel)
-{
-    parcel->ReadBoolean(&mSealed);
-    parcel->ReadInt32(&mEventType);
-    parcel->ReadInt32(&mMovementGranularity);
-    parcel->ReadInt32(&mAction);
-    parcel->ReadInt32(&mContentChangeTypes);
-    // mPackageName = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
-    parcel->ReadInt64(&mEventTime);
-    parcel->ReadInt32(&mConnectionId);
-    ReadAccessibilityRecordFromParcel((IAccessibilityRecord*)this, parcel);
-
-    // Read the records.
-    Int32 recordCount;
-    parcel->ReadInt32(&recordCount);
-    if (recordCount > 0) {
-        CArrayList::New(recordCount, (IArrayList**)&mRecords);
-        for (Int32 i = 0; i < recordCount; i++) {
-            AutoPtr<IAccessibilityRecord> record;
-            CAccessibilityRecord::Obtain((IAccessibilityRecord**)&record);
-            ReadAccessibilityRecordFromParcel(record, parcel);
-            ((CAccessibilityRecord*)record.Get())->mConnectionId = mConnectionId;
-            mRecords->Add(record);
-        }
-    }
-    return NOERROR;
-}
-
 void CAccessibilityEvent::ReadAccessibilityRecordFromParcel(
     /* [in] */ IAccessibilityRecord* record,
     /* [in] */ IParcel* parcel)
@@ -344,6 +315,7 @@ void CAccessibilityEvent::ReadAccessibilityRecordFromParcel(
     parcel->ReadInt32(&cls->mMaxScrollY);
     parcel->ReadInt32(&cls->mAddedCount);
     parcel->ReadInt32(&cls->mRemovedCount);
+    assert(0);
     // cls->mClassName = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
     // cls->mContentDescription = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
     // cls->mBeforeText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
@@ -368,6 +340,7 @@ ECode CAccessibilityEvent::WriteToParcel(
     parcel->WriteInt32(mMovementGranularity);
     parcel->WriteInt32(mAction);
     parcel->WriteInt32(mContentChangeTypes);
+    assert(0);
     // TextUtils::WriteToParcel(mPackageName, parcel);
     parcel->WriteInt64(mEventTime);
     parcel->WriteInt32(mConnectionId);
@@ -425,9 +398,31 @@ void CAccessibilityEvent::WriteAccessibilityRecordToParcel(
 ECode CAccessibilityEvent::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    AutoPtr<IAccessibilityEvent> event;
-    FAIL_RETURN(Obtain((IAccessibilityEvent**)&event));
-    return event->InitFromParcel(parcel);
+    parcel->ReadBoolean(&mSealed);
+    parcel->ReadInt32(&mEventType);
+    parcel->ReadInt32(&mMovementGranularity);
+    parcel->ReadInt32(&mAction);
+    parcel->ReadInt32(&mContentChangeTypes);
+    assert(0);
+    // mPackageName = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
+    parcel->ReadInt64(&mEventTime);
+    parcel->ReadInt32(&mConnectionId);
+    ReadAccessibilityRecordFromParcel((IAccessibilityRecord*)this, parcel);
+
+    // Read the records.
+    Int32 recordCount;
+    parcel->ReadInt32(&recordCount);
+    if (recordCount > 0) {
+        CArrayList::New(recordCount, (IArrayList**)&mRecords);
+        for (Int32 i = 0; i < recordCount; i++) {
+            AutoPtr<IAccessibilityRecord> record;
+            CAccessibilityRecord::Obtain((IAccessibilityRecord**)&record);
+            ReadAccessibilityRecordFromParcel(record, parcel);
+            ((CAccessibilityRecord*)record.Get())->mConnectionId = mConnectionId;
+            mRecords->Add(record);
+        }
+    }
+    return NOERROR;
 }
 
 ECode CAccessibilityEvent::ToString(

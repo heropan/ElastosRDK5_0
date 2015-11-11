@@ -1544,91 +1544,6 @@ ECode CAccessibilityNodeInfo::WriteToParcel(
 }
 
 ECode CAccessibilityNodeInfo::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    AutoPtr<IAccessibilityNodeInfo> info;
-    Obtain((IAccessibilityNodeInfo**)&info);
-    ((CAccessibilityNodeInfo*)info.Get())->InitFromParcel(source);
-    return NOERROR;
-}
-
-void CAccessibilityNodeInfo::Init(
-    /* [in] */ IAccessibilityNodeInfo* other)
-{
-    AutoPtr<CAccessibilityNodeInfo> cOther = (CAccessibilityNodeInfo*)other;
-    mSealed = cOther->mSealed;
-    mSourceNodeId = cOther->mSourceNodeId;
-    mParentNodeId = cOther->mParentNodeId;
-    mLabelForId = cOther->mLabelForId;
-    mLabeledById = cOther->mLabeledById;
-    mWindowId = cOther->mWindowId;
-    mConnectionId = cOther->mConnectionId;
-    mBoundsInParent->Set(cOther->mBoundsInParent);
-    mBoundsInScreen->Set(cOther->mBoundsInScreen);
-    mPackageName = cOther->mPackageName;
-    mClassName = cOther->mClassName;
-    mText = cOther->mText;
-    mText = cOther->mError;
-    mContentDescription = cOther->mContentDescription;
-    mViewIdResourceName = cOther->mViewIdResourceName;
-
-    AutoPtr<IArrayList> otherActions = cOther->mActions;
-    Int32 size;
-    if (otherActions != NULL && (otherActions->GetSize(&size), size) > 0) {
-        if (mActions == NULL) {
-            CArrayList::New(ICollection::Probe(otherActions), (IArrayList**)&mActions);
-        }
-        else {
-            mActions->Clear();
-            mActions->AddAll(ICollection::Probe(mActions));
-        }
-    }
-    mBooleanProperties = cOther->mBooleanProperties;
-    mMaxTextLength = cOther->mMaxTextLength;
-    mMovementGranularities = cOther->mMovementGranularities;
-
-    AutoPtr<IInt64Array> otherChildNodeIds = cOther->mChildNodeIds;
-    if (otherChildNodeIds != NULL && (otherChildNodeIds->GetSize(&size), size) > 0) {
-        if (mChildNodeIds == NULL) {
-            AutoPtr<IInterface> obj;
-            ICloneable::Probe(otherChildNodeIds)->Clone((IInterface**)&obj);
-            mChildNodeIds = IInt64Array::Probe(obj);
-        }
-        else {
-            mChildNodeIds->Clear();
-            mChildNodeIds->AddAll(otherChildNodeIds);
-        }
-    }
-
-    mTextSelectionStart = cOther->mTextSelectionStart;
-    mTextSelectionEnd = cOther->mTextSelectionEnd;
-    mInputType = cOther->mInputType;
-    mLiveRegion = cOther->mLiveRegion;
-
-    Boolean res;
-    if (cOther->mExtras != NULL && (cOther->mExtras->IsEmpty(&res), !res)) {
-        AutoPtr<IBundle> bundle;
-        GetExtras((IBundle**)&bundle);
-        bundle->PutAll(cOther->mExtras);
-    }
-
-    mRangeInfo = NULL;
-    if (cOther->mRangeInfo != NULL) {
-        AccessibilityNodeInfoRangeInfo::Obtain(cOther->mRangeInfo, (IAccessibilityNodeInfoRangeInfo**)&mRangeInfo);
-    }
-
-    mCollectionInfo = NULL;
-    if (cOther->mCollectionInfo != NULL) {
-        AccessibilityNodeInfoCollectionInfo::Obtain(cOther->mCollectionInfo, (IAccessibilityNodeInfoCollectionInfo**)&mCollectionInfo);
-    }
-
-    mCollectionItemInfo = NULL;
-    if (cOther->mCollectionItemInfo != NULL) {
-        AccessibilityNodeInfoCollectionItemInfo::Obtain(cOther->mCollectionItemInfo, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
-    }
-}
-
-void CAccessibilityNodeInfo::InitFromParcel(
     /* [in] */ IParcel* parcel)
 {
     parcel->ReadBoolean(&mSealed);
@@ -1752,7 +1667,83 @@ void CAccessibilityNodeInfo::InitFromParcel(
         AccessibilityNodeInfoCollectionItemInfo::Obtain(rowIndex, rowSpan, columnIndex, columnSpan,
                 heading, selected, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
     }
+    return NOERROR;
+}
 
+void CAccessibilityNodeInfo::Init(
+    /* [in] */ IAccessibilityNodeInfo* other)
+{
+    AutoPtr<CAccessibilityNodeInfo> cOther = (CAccessibilityNodeInfo*)other;
+    mSealed = cOther->mSealed;
+    mSourceNodeId = cOther->mSourceNodeId;
+    mParentNodeId = cOther->mParentNodeId;
+    mLabelForId = cOther->mLabelForId;
+    mLabeledById = cOther->mLabeledById;
+    mWindowId = cOther->mWindowId;
+    mConnectionId = cOther->mConnectionId;
+    mBoundsInParent->Set(cOther->mBoundsInParent);
+    mBoundsInScreen->Set(cOther->mBoundsInScreen);
+    mPackageName = cOther->mPackageName;
+    mClassName = cOther->mClassName;
+    mText = cOther->mText;
+    mText = cOther->mError;
+    mContentDescription = cOther->mContentDescription;
+    mViewIdResourceName = cOther->mViewIdResourceName;
+
+    AutoPtr<IArrayList> otherActions = cOther->mActions;
+    Int32 size;
+    if (otherActions != NULL && (otherActions->GetSize(&size), size) > 0) {
+        if (mActions == NULL) {
+            CArrayList::New(ICollection::Probe(otherActions), (IArrayList**)&mActions);
+        }
+        else {
+            mActions->Clear();
+            mActions->AddAll(ICollection::Probe(mActions));
+        }
+    }
+    mBooleanProperties = cOther->mBooleanProperties;
+    mMaxTextLength = cOther->mMaxTextLength;
+    mMovementGranularities = cOther->mMovementGranularities;
+
+    AutoPtr<IInt64Array> otherChildNodeIds = cOther->mChildNodeIds;
+    if (otherChildNodeIds != NULL && (otherChildNodeIds->GetSize(&size), size) > 0) {
+        if (mChildNodeIds == NULL) {
+            AutoPtr<IInterface> obj;
+            ICloneable::Probe(otherChildNodeIds)->Clone((IInterface**)&obj);
+            mChildNodeIds = IInt64Array::Probe(obj);
+        }
+        else {
+            mChildNodeIds->Clear();
+            mChildNodeIds->AddAll(otherChildNodeIds);
+        }
+    }
+
+    mTextSelectionStart = cOther->mTextSelectionStart;
+    mTextSelectionEnd = cOther->mTextSelectionEnd;
+    mInputType = cOther->mInputType;
+    mLiveRegion = cOther->mLiveRegion;
+
+    Boolean res;
+    if (cOther->mExtras != NULL && (cOther->mExtras->IsEmpty(&res), !res)) {
+        AutoPtr<IBundle> bundle;
+        GetExtras((IBundle**)&bundle);
+        bundle->PutAll(cOther->mExtras);
+    }
+
+    mRangeInfo = NULL;
+    if (cOther->mRangeInfo != NULL) {
+        AccessibilityNodeInfoRangeInfo::Obtain(cOther->mRangeInfo, (IAccessibilityNodeInfoRangeInfo**)&mRangeInfo);
+    }
+
+    mCollectionInfo = NULL;
+    if (cOther->mCollectionInfo != NULL) {
+        AccessibilityNodeInfoCollectionInfo::Obtain(cOther->mCollectionInfo, (IAccessibilityNodeInfoCollectionInfo**)&mCollectionInfo);
+    }
+
+    mCollectionItemInfo = NULL;
+    if (cOther->mCollectionItemInfo != NULL) {
+        AccessibilityNodeInfoCollectionItemInfo::Obtain(cOther->mCollectionItemInfo, (IAccessibilityNodeInfoCollectionItemInfo**)&mCollectionItemInfo);
+    }
 }
 
 void CAccessibilityNodeInfo::Clear()

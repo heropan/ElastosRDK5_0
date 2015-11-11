@@ -6,7 +6,7 @@
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 #include <libcore/utility/EmptyArray.h>
 
 using Elastos::Droid::Internal::Utility::ArrayUtils;
@@ -14,7 +14,7 @@ using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
 using Elastos::Core::Math;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringBuilder;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 using Libcore::Utility::EmptyArray;
 
 namespace Elastos {
@@ -141,7 +141,7 @@ ECode SparseArray::RemoveAtRange(
 
 void SparseArray::Gc()
 {
-    Slogger::E("SparseArray", "gc start with %d", mSize);
+    Logger::E("SparseArray", "gc start with %d", mSize);
 
     Int32 o = 0;
     AutoPtr< ArrayOf<Int32> > keys = mKeys;
@@ -164,7 +164,7 @@ void SparseArray::Gc()
     mGarbage = FALSE;
     mSize = o;
 
-    Slogger::E("SparseArray", "gc end with %d", mSize);
+    Logger::E("SparseArray", "gc end with %d", mSize);
 }
 
 ECode SparseArray::Put(

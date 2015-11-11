@@ -361,15 +361,6 @@ module
          */
         GetAction(
             [out] Int32* action);
-
-        /**
-         * Creates a new instance from a {@link Parcel}.
-         *
-         * @param parcel A parcel containing the state of a {@link AccessibilityEvent}.
-         */
-        InitFromParcel(
-            [in] IParcel* parcel);
-
     }
 
     interface IAccessibilityEventHelper {

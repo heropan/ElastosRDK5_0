@@ -882,7 +882,7 @@ void CAccessibilityManagerService::RegisterBroadcastReceivers()
 }
 
 ECode CAccessibilityManagerService::AddClient(
-    /* [in] */ IAccessibilityManagerClient* client,
+    /* [in] */ IIAccessibilityManagerClient* client,
     /* [in] */ Int32 userId,
     /* [out] */ Int32* result)
 {
@@ -2261,7 +2261,7 @@ void CAccessibilityManagerService::SendStateToClients(
     Int32 userClientCount;
     clients->BeginBroadcast(&userClientCount);
     for (Int32 i = 0; i < userClientCount; i++) {
-        AutoPtr<IAccessibilityManagerClient> client;
+        AutoPtr<IIAccessibilityManagerClient> client;
         clients->GetBroadcastItem(i, (IInterface**)&client);
         // try {
         client->SetState(clientState);

@@ -7,6 +7,8 @@ namespace Droid {
 namespace View {
 namespace Accessibility {
 
+CAR_INTERFACE_IMPL(AccessibilityNodeProvider, Object, IAccessibilityNodeProvider)
+
 ECode AccessibilityNodeProvider::CreateAccessibilityNodeInfo(
     /* [in] */ Int32 virtualViewId,
     /* [out] */ IAccessibilityNodeInfo** nodeInfo)

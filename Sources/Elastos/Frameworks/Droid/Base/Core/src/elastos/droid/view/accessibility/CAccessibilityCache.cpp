@@ -4,17 +4,17 @@
 #include "elastos/droid/view/accessibility/CAccessibilityWindowInfo.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CArraySet.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::CInt64SparseArray;
 using Elastos::Droid::Utility::IInt64SparseArray;
 using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Utility::IInt64Array;
-using Elastos::Utility::CArrayList;
 using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::IArraySet;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +24,6 @@ namespace Accessibility {
 const String CAccessibilityCache::TAG("AccessibilityCache");
 const Boolean CAccessibilityCache::DEBUG = FALSE;
 const Boolean CAccessibilityCache::CHECK_INTEGRITY = String("eng").Equals(Build::TYPE);
-const AutoPtr<Object> CAccessibilityCache::mLock = new Object();
 
 CAR_INTERFACE_IMPL(CAccessibilityCache, Object, IAccessibilityCache)
 
@@ -53,7 +52,7 @@ ECode CAccessibilityCache::AddWindow(
         Int32 windowId;
         window->GetId(&windowId);
         if (DEBUG) {
-            Slogger::E(TAG, "Caching window: %d", windowId);
+            Logger::I(TAG, "Caching window: %d", windowId);
         }
         AutoPtr<IInterface> obj;
         mWindowCache->Get(windowId, (IInterface**)&obj);
@@ -61,7 +60,6 @@ ECode CAccessibilityCache::AddWindow(
         if (oldWindow != NULL) {
             oldWindow->Recycle();
         }
-
         AutoPtr<IAccessibilityWindowInfo> cloneInfo;
         CAccessibilityWindowInfo::Obtain(window, (IAccessibilityWindowInfo**)&cloneInfo);
         mWindowCache->Put(windowId, cloneInfo);
@@ -75,21 +73,26 @@ ECode CAccessibilityCache::OnAccessibilityEvent(
     synchronized (mLock) {
         Int32 eventType;
         event->GetEventType(&eventType);
-        Int32 windowId;
-        IAccessibilityRecord::Probe(event)->GetWindowId(&windowId);
-        Int64 sourceId;
-        IAccessibilityRecord::Probe(event)->GetSourceNodeId(&sourceId);
         switch (eventType) {
             case IAccessibilityEvent::TYPE_VIEW_FOCUSED:
             case IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUSED:
             case IAccessibilityEvent::TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
             case IAccessibilityEvent::TYPE_VIEW_SELECTED:
             case IAccessibilityEvent::TYPE_VIEW_TEXT_CHANGED:
-            case IAccessibilityEvent::TYPE_VIEW_TEXT_SELECTION_CHANGED:
+            case IAccessibilityEvent::TYPE_VIEW_TEXT_SELECTION_CHANGED:{
+                Int32 windowId;
+                IAccessibilityRecord::Probe(event)->GetWindowId(&windowId);
+                Int64 sourceId;
+                IAccessibilityRecord::Probe(event)->GetSourceNodeId(&sourceId);
                 RefreshCachedNodeLocked(windowId, sourceId);
                 break;
+            }
             case IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED: {
                 synchronized (mLock) {
+                    Int32 windowId;
+                    IAccessibilityRecord::Probe(event)->GetWindowId(&windowId);
+                    Int64 sourceId;
+                    IAccessibilityRecord::Probe(event)->GetSourceNodeId(&sourceId);
                     Int32 type;
                     event->GetContentChangeTypes(&type);
                     if ((type & IAccessibilityEvent::CONTENT_CHANGE_TYPE_SUBTREE) != 0) {
@@ -102,6 +105,10 @@ ECode CAccessibilityCache::OnAccessibilityEvent(
                 break;
             }
             case IAccessibilityEvent::TYPE_VIEW_SCROLLED: {
+                Int32 windowId;
+                IAccessibilityRecord::Probe(event)->GetWindowId(&windowId);
+                Int64 sourceId;
+                IAccessibilityRecord::Probe(event)->GetSourceNodeId(&sourceId);
                 ClearSubTreeLocked(windowId, sourceId);
                 break;
             }
@@ -126,7 +133,7 @@ void CAccessibilityCache::RefreshCachedNodeLocked(
     /* [in] */ Int64 sourceId)
 {
     if (DEBUG) {
-        Slogger::I(TAG, "Refreshing cached node.");
+        Logger::I(TAG, "Refreshing cached node.");
     }
 
     AutoPtr<IInterface> obj;
@@ -177,7 +184,7 @@ ECode CAccessibilityCache::GetNode(
             _info = otherInfo;
         }
         if (DEBUG) {
-            Slogger::I(TAG, "get(%lld) = %p ", accessibilityNodeId, _info.Get());
+            Logger::I(TAG, "get(%lld) = %p ", accessibilityNodeId, _info.Get());
         }
 
         *info = _info;
@@ -256,7 +263,7 @@ ECode CAccessibilityCache::Add(
 {
     synchronized(mLock) {
         if (DEBUG) {
-            Slogger::I(TAG, "add(%p) ", info);
+            Logger::I(TAG, "add(%p) ", info);
         }
 
         Int32 windowId;
@@ -300,7 +307,7 @@ ECode CAccessibilityCache::Add(
             Int64 oldParentId;
             oldInfo->GetParentNodeId(&oldParentId);
             Int64 id;
-            if ((info->GetParentNodeId(&id), id) != oldParentId) {
+            if (info->GetParentNodeId(&id), id != oldParentId) {
                 ClearSubTreeLocked(windowId, oldParentId);
             }
        }
@@ -318,7 +325,7 @@ ECode CAccessibilityCache::Clear()
 {
     synchronized(mLock) {
         if (DEBUG) {
-            Slogger::I(TAG, "clear()");
+            Logger::I(TAG, "clear()");
         }
         Int32 windowCount;
         mWindowCache->GetSize(&windowCount);
@@ -344,7 +351,7 @@ void CAccessibilityCache::ClearNodesForWindowLocked(
     /* [in] */ Int32 windowId)
 {
     if (DEBUG) {
-        Slogger::I(TAG, "clearNodesForWindowLocked(%d)", windowId);
+        Logger::I(TAG, "clearNodesForWindowLocked(%d)", windowId);
     }
     AutoPtr<IInterface> obj;
     mNodeCache->Get(windowId, (IInterface**)&obj);
@@ -370,7 +377,7 @@ void CAccessibilityCache::ClearSubTreeLocked(
     /* [in] */ Int64 rootNodeId)
 {
     if (DEBUG) {
-        Slogger::I(TAG, "Clearing cached subtree.");
+        Logger::I(TAG, "Clearing cached subtree.");
     }
     AutoPtr<IInterface> obj;
     mNodeCache->Get(windowId, (IInterface**)&obj);
@@ -407,7 +414,7 @@ ECode CAccessibilityCache::CheckIntegrity()
         Int32 size1, size2;
         Boolean res;
         AutoPtr<IInterface> obj;
-        if ((mWindowCache->GetSize(&size1), size1) <= 0 && (mNodeCache->GetSize(&size2), size2) == 0) {
+        if (mWindowCache->GetSize(&size1), size1 <= 0 && mNodeCache->GetSize(&size2), size2 == 0) {
             return NOERROR;
         }
 
@@ -422,9 +429,9 @@ ECode CAccessibilityCache::CheckIntegrity()
             AutoPtr<IAccessibilityWindowInfo> window = IAccessibilityWindowInfo::Probe(obj);
 
             // Check for one active window.
-            if ((window->IsActive(&res), res)) {
+            if (window->IsActive(&res), res) {
                 if (activeWindow != NULL) {
-                    Slogger::E(TAG, "Duplicate active window: %p", window.Get());
+                    Logger::E(TAG, "Duplicate active window: %p", window.Get());
                 }
                 else {
                     activeWindow = window;
@@ -432,9 +439,9 @@ ECode CAccessibilityCache::CheckIntegrity()
             }
 
             // Check for one focused window.
-            if ((window->IsFocused(&res), res)) {
+            if (window->IsFocused(&res), res) {
                 if (focusedWindow != NULL) {
-                    Slogger::E(TAG, "Duplicate focused window: %p", window.Get());
+                    Logger::E(TAG, "Duplicate focused window: %p", window.Get());
                 }
                 else {
                     focusedWindow = window;
@@ -453,7 +460,7 @@ ECode CAccessibilityCache::CheckIntegrity()
             mNodeCache->ValueAt(i, (IInterface**)&obj);
             AutoPtr<IInt64SparseArray> nodes = IInt64SparseArray::Probe(obj);
             Int32 size;
-            if ((nodes->GetSize(&size), size) <= 0) {
+            if (nodes->GetSize(&size), size <= 0) {
                 continue;
             }
 
@@ -470,16 +477,16 @@ ECode CAccessibilityCache::CheckIntegrity()
                 AutoPtr<IAccessibilityNodeInfo> node = IAccessibilityNodeInfo::Probe(obj);
 
                 // Check for duplicates
-                if ((ICollection::Probe(seen)->Add(node, &res), !res)) {
-                    Slogger::E(TAG, "Duplicate node: %p, in window: %d", node.Get(), windowId);
+                if (ICollection::Probe(seen)->Add(node, &res), !res) {
+                    Logger::E(TAG, "Duplicate node: %p, in window: %d", node.Get(), windowId);
                     // Stop now as we potentially found a loop.
                     continue;
                 }
 
                 // Check for one accessibility focus.
-                if ((node->IsAccessibilityFocused(&res), res)) {
+                if (node->IsAccessibilityFocused(&res), res) {
                     if (accessFocus != NULL) {
-                        Slogger::E(TAG, "Duplicate accessibility focus: %p, in window: %d", node.Get(), windowId);
+                        Logger::E(TAG, "Duplicate accessibility focus: %p, in window: %d", node.Get(), windowId);
                     }
                     else {
                         accessFocus = node;
@@ -487,9 +494,9 @@ ECode CAccessibilityCache::CheckIntegrity()
                 }
 
                 // Check for one input focus.
-                if ((node->IsFocused(&res), res)) {
+                if (node->IsFocused(&res), res) {
                     if (inputFocus != NULL) {
-                        Slogger::E(TAG, "Duplicate input focus: %p, in window: %d", node.Get(), windowId);
+                        Logger::E(TAG, "Duplicate input focus: %p, in window: %d", node.Get(), windowId);
                     }
                     else {
                         inputFocus = node;
@@ -518,7 +525,7 @@ ECode CAccessibilityCache::CheckIntegrity()
                         }
                     }
                     if (!childOfItsParent) {
-                        Slogger::E(TAG, "Invalid parent-child relation between parent: %p, and child: %p", nodeParent.Get(), node.Get());
+                        Logger::E(TAG, "Invalid parent-child relation between parent: %p, and child: %p", nodeParent.Get(), node.Get());
                     }
                 }
 
@@ -536,7 +543,7 @@ ECode CAccessibilityCache::CheckIntegrity()
                         nodes->Get(parentId, (IInterface**)&obj);
                         AutoPtr<IAccessibilityNodeInfo> parent = IAccessibilityNodeInfo::Probe(obj);
                         if (parent != node) {
-                            Slogger::E(TAG, "Invalid child-parent relation between child: %p, and parent: %p", node.Get(), nodeParent.Get());
+                            Logger::E(TAG, "Invalid child-parent relation between child: %p, and parent: %p", node.Get(), nodeParent.Get());
                         }
                     }
                 }

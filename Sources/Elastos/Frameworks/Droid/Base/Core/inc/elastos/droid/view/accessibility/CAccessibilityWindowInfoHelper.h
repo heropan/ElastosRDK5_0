@@ -24,7 +24,6 @@ public:
     CARAPI Obtain(
         /* [in] */ IAccessibilityWindowInfo* info,
         /* [out] */ IAccessibilityWindowInfo** cloneInfo);
-
 };
 
 } // Accessibility

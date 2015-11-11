@@ -4,19 +4,35 @@
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityManagerClient.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
 
+using Elastos::Droid::Os::IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Accessibility {
 
 CarClass(CAccessibilityManagerClient)
+    , public Object
+    , public IIAccessibilityManagerClient
+    , public IBinder
 {
 public:
-    CARAPI SetState(
-        /* [in] */ Int32 stateFlags);
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CAccessibilityManagerClient();
+
+    ~CAccessibilityManagerClient();
 
     CARAPI constructor(
         /* [in] */ Handle32 host);
+
+    CARAPI SetState(
+        /* [in] */ Int32 stateFlags);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     AutoPtr<CAccessibilityManager> mHost;

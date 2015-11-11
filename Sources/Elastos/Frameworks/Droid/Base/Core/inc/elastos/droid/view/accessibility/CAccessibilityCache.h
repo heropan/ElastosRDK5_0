@@ -125,10 +125,10 @@ private:
     static const String TAG;
     static const Boolean DEBUG;
     static const Boolean CHECK_INTEGRITY;
-    static const AutoPtr<Object> mLock;
-    const AutoPtr<ISparseArray> mWindowCache;
-    const AutoPtr<ISparseArray> mNodeCache;
-    const AutoPtr<ISparseArray> mTempWindowArray;
+    Object mLock;
+    AutoPtr<ISparseArray> mWindowCache;
+    AutoPtr<ISparseArray> mNodeCache;
+    AutoPtr<ISparseArray> mTempWindowArray;
 };
 
 } // Accessibility

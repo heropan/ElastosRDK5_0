@@ -1,6 +1,7 @@
 #include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::Os::CHandlerCaller;
@@ -8,6 +9,7 @@ using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -115,20 +117,17 @@ ECode CAccessibilityServiceClientWrapper::ExecuteMessage(
                 mCallback->OnAccessibilityEvent(event);
                 // Make sure the event is recycled.
                 // try {
-                ec = IAccessibilityRecord::Probe(event)->Recycle();
-                if (ec != NOERROR) {
-                    return E_ILLEGAL_STATE_EXCEPTION;
-                }
+                IAccessibilityRecord::Probe(event)->Recycle();
                 // } catch (IllegalStateException ise) {
                 //             /* ignore - best effort */
                 // }
             }
-            break;
+            return NOERROR;
         }
 
         case DO_ON_INTERRUPT :
             mCallback->OnInterrupt();
-            break;
+            return NOERROR;
 
         case DO_SET_SET_CONNECTION : {
             AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
@@ -147,7 +146,7 @@ ECode CAccessibilityServiceClientWrapper::ExecuteMessage(
                 client->ClearCache();
                 mCallback->OnSetConnectionId(IAccessibilityInteractionClient::NO_ID);
             }
-            break;
+            return NOERROR;
         }
 
         case DO_ON_GESTURE : {
@@ -158,7 +157,7 @@ ECode CAccessibilityServiceClientWrapper::ExecuteMessage(
         case DO_CLEAR_ACCESSIBILITY_CACHE : {
             AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
             client->ClearCache();
-            break;
+            return NOERROR;
         }
 
         case DO_ON_KEY_EVENT : {
@@ -174,33 +173,26 @@ ECode CAccessibilityServiceClientWrapper::ExecuteMessage(
                 mCallback->OnKeyEvent(event, &result);
                 Int32 sequence = arg1;
                 // try {
-                ec = connection->SetOnKeyEventResult(result, sequence);
+                connection->SetOnKeyEventResult(result, sequence);
                 // } catch (RemoteException re) {
                             /* ignore */
-                if (ec != NOERROR) {
-                    return E_REMOTE_EXCEPTION;
-                }
                 // }
             }
             // } finally {
                     // Make sure the event is recycled.
                     // try {
-            ec = IAccessibilityRecord::Probe(event)->Recycle();
+            IAccessibilityRecord::Probe(event)->Recycle();
                     // } catch (IllegalStateException ise) {
                         /* ignore - best effort */
-            if (ec != NOERROR) {
-                return E_ILLEGAL_STATE_EXCEPTION;
-            }
                     // // }
             // }
-            break;
+            return NOERROR;
         }
 
         default :
-            // Logger::W(LOG_TAG, "Unknown message type %d", what);
-            break;
+            Logger::W(LOG_TAG, "Unknown message type %d", what);
+            return NOERROR;
     }
-    return NOERROR;
 }
 
 ECode CAccessibilityServiceClientWrapper::ToString(

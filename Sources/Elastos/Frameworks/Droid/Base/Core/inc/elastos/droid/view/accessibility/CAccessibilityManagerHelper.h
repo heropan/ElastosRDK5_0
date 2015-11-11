@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAccessibilityManager_H__
 
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -12,15 +13,14 @@ namespace View {
 namespace Accessibility {
 
 CarClass(CAccessibilityManagerHelper)
+    , public Singleton
+    , public IAccessibilityManagerHelper
 {
 public:
-    /**
-     * Get an AccessibilityManager instance (create one if necessary).
-     *
-     * @param context Context in which this manager operates.
-     *
-     * @hide
-     */
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [in] */ IContext* context,
         /* [out] */ IAccessibilityManager** manager);

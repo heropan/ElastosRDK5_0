@@ -248,14 +248,6 @@ public:
     static CARAPI Obtain(
         /* [out] */ IAccessibilityEvent** event);
 
-    /**
-     * Creates a new instance from a {@link Parcel}.
-     *
-     * @param parcel A parcel containing the state of a {@link AccessibilityEvent}.
-     */
-    CARAPI InitFromParcel(
-        /* [in] */ IParcel* parcel);
-
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 

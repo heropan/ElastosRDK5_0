@@ -1,10 +1,12 @@
 #include "elastos/droid/accessibilityservice/AccessibilityService.h"
 #include "elastos/droid/accessibilityservice/CAccessibilityServiceClientWrapper.h"
 #include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::View::Accessibility::CAccessibilityInteractionClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -77,7 +79,6 @@ ECode AccessibilityService::GetWindows(
     /* [out] */ IList** windows)
 {
     VALIDATE_NOT_NULL(windows)
-    *windows = NULL;
 
     AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     return client->GetWindows(mConnectionId, windows);
@@ -87,7 +88,6 @@ ECode AccessibilityService::GetRootInActiveWindow(
     /* [out] */ IAccessibilityNodeInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    *info = NULL;
 
     AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     return client->GetRootInActiveWindow(mConnectionId, info);
@@ -98,7 +98,6 @@ ECode AccessibilityService::PerformGlobalAction(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = FALSE;
 
     AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     AutoPtr<IIAccessibilityServiceConnection> connection;
@@ -106,11 +105,17 @@ ECode AccessibilityService::PerformGlobalAction(
 
     if (connection != NULL) {
         // try {
-        return connection->PerformGlobalAction(action, result);
+        ECode ec = connection->PerformGlobalAction(action, result);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            Logger::W(TAG, "Error while calling performGlobalAction");
+        }
+        return ec;
         // } catch (RemoteException re) {
         //     Log.w(TAG, "Error while calling performGlobalAction", re);
         // }
     }
+
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -119,7 +124,6 @@ ECode AccessibilityService::FindFocus(
     /* [out] */ IAccessibilityNodeInfo** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret = NULL;
 
     AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     return client->FindFocus(mConnectionId,
@@ -131,7 +135,6 @@ ECode AccessibilityService::GetServiceInfo(
     /* [out] */ IAccessibilityServiceInfo** info)
 {
     VALIDATE_NOT_NULL(info);
-    *info = NULL;
 
     AutoPtr<IAccessibilityInteractionClient> client = CAccessibilityInteractionClient::GetInstance();
     AutoPtr<IIAccessibilityServiceConnection> connection;
@@ -139,8 +142,11 @@ ECode AccessibilityService::GetServiceInfo(
 
     if (connection != NULL) {
         // try {
-        connection->GetServiceInfo(info);
-        return NOERROR;
+        ECode ec = connection->GetServiceInfo(info);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            Logger::W(TAG, "Error while getting AccessibilityServiceInfo");
+        }
+        return ec;
         // } catch (RemoteException re) {
         //     Log.w(TAG, "Error while getting AccessibilityServiceInfo", re);
         // }
@@ -205,7 +211,10 @@ void AccessibilityService::SendServiceInfo()
 
     if (mInfo != NULL && connection != NULL) {
         // try {
-        connection->SetServiceInfo(mInfo);
+        ECode ec = connection->SetServiceInfo(mInfo);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            Logger::W(TAG, "Error while setting AccessibilityServiceInfo");
+        }
         mInfo = NULL;
         client->ClearCache();
         // } catch (RemoteException re) {

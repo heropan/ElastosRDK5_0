@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICEINFO_H__
 
 #include "_Elastos_Droid_AccessibilityService_CAccessibilityServiceInfo.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
-#include "elastos/droid/utility/CSparseArray.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
@@ -245,9 +245,6 @@ public:
         /* [out] */ IList** infos);
 
 private:
-    CARAPI_(void) InitFromParcel(
-        /* [in] */ IParcel* parcel);
-
     static CARAPI_(void) AppendFeedbackTypes(
         /* [in] */ StringBuilder* stringBuilder,
         /* [in] */ Int32 feedbackTypes);

@@ -3,13 +3,14 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_View_Accessibility_CAccessibilityManager.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::View::IIWindow;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::View::IIWindow;
+using Elastos::Utility::IList;
+using Elastos::Utility::Concurrent::ICopyOnWriteArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -17,27 +18,54 @@ namespace View {
 namespace Accessibility {
 
 CarClass(CAccessibilityManager)
+    , public Object
+    , public IAccessibilityManager
 {
+    friend class CAccessibilityManagerClient;
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler
+        : public Handler
     {
     public:
         MyHandler(
-            /* [in] */ CAccessibilityManager* host)
-            : mHost(host)
-        {}
+            /* [in] */ CAccessibilityManager* host,
+            /* [in] */ ILooper* looper);
+
+        ~MyHandler();
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+    public:
+        static const Int32 MSG_NOTIFY_ACCESSIBILITY_STATE_CHANGED;
+        static const Int32 MSG_NOTIFY_EXPLORATION_STATE_CHANGED;
+        static const Int32 MSG_NOTIFY_HIGH_TEXT_CONTRAST_STATE_CHANGED;
+        static const Int32 MSG_SET_STATE;
     private:
         CAccessibilityManager* mHost;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAccessibilityManager();
 
-    CARAPI_(void) HandleDoSetState(
-        /* [in] */ Int32 state);
+    ~CAccessibilityManager();
+
+    /**
+     * Create an instance.
+     *
+     * @param context A {@link Context}.
+     * @param service An interface to the backing service.
+     * @param userId User id under which to run.
+     *
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IIAccessibilityManager* service,
+        /* [in] */ Int32 userId);
 
     /**
      * Get an AccessibilityManager instance (create one if necessary).
@@ -49,6 +77,12 @@ public:
     static CARAPI GetInstance(
         /* [in] */ IContext* context,
         /* [out] */ IAccessibilityManager** manager);
+
+    /**
+     * @hide
+     */
+    CARAPI GetClient(
+        /* [out] */ IIAccessibilityManagerClient** client);
 
     CARAPI IsEnabled(
         /* [out] */ Boolean* result);
@@ -62,14 +96,18 @@ public:
         /* [out] */ Boolean* result);
 
     /**
-     * Returns the client interface this instance registers in
-     * the centralized accessibility manager service.
+     * Returns if the high text contrast in the system is enabled.
+     * <p>
+     * <strong>Note:</strong> You need to query this only if you application is
+     * doing its own rendering and does not rely on the platform rendering pipeline.
+     * </p>
      *
-     * @return The client.
+     * @return True if high text contrast is enabled, false otherwise.
      *
      * @hide
      */
-    CARAPI_(AutoPtr<IAccessibilityManagerClient>) GetClient();
+    CARAPI IsHighTextContrastEnabled(
+        /* [out] */ Boolean* result);
 
     /**
      * Sends an {@link AccessibilityEvent}.
@@ -101,7 +139,7 @@ public:
      */
     // @Deprecated
     CARAPI GetAccessibilityServiceList(
-        /* [out] */ IObjectContainer** serviceList);
+        /* [out] */ IList** serviceList);
 
     /**
      * Returns the {@link AccessibilityServiceInfo}s of the installed accessibility services.
@@ -109,7 +147,7 @@ public:
      * @return An unmodifiable list with {@link AccessibilityServiceInfo}s.
      */
     CARAPI GetInstalledAccessibilityServiceList(
-        /* [out] */ IObjectContainer** serviceList);
+        /* [out] */ IList** serviceList);
 
     /**
      * Returns the {@link AccessibilityServiceInfo}s of the enabled accessibility services
@@ -123,10 +161,11 @@ public:
      * @see AccessibilityServiceInfo#FEEDBACK_HAPTIC
      * @see AccessibilityServiceInfo#FEEDBACK_SPOKEN
      * @see AccessibilityServiceInfo#FEEDBACK_VISUAL
+     * @see AccessibilityServiceInfo#FEEDBACK_BRAILLE
      */
     CARAPI GetEnabledAccessibilityServiceList(
         /* [in] */ Int32 feedbackTypeFlags,
-        /* [out] */ IObjectContainer** serviceList);
+        /* [out] */ IList** serviceList);
 
     /**
      * Registers an {@link AccessibilityStateChangeListener} for changes in
@@ -137,7 +176,7 @@ public:
      */
     CARAPI AddAccessibilityStateChangeListener(
         /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
-        /* [out] */ Boolean* add);
+        /* [out] */ Boolean* result);
 
     /**
      * Unregisters an {@link AccessibilityStateChangeListener}.
@@ -147,7 +186,53 @@ public:
      */
     CARAPI RemoveAccessibilityStateChangeListener(
         /* [in] */ IAccessibilityManagerAccessibilityStateChangeListener* listener,
-        /* [out] */ Boolean* remove);
+        /* [out] */ Boolean* result);
+
+    /**
+     * Registers a {@link TouchExplorationStateChangeListener} for changes in
+     * the global touch exploration state of the system.
+     *
+     * @param listener The listener.
+     * @return True if successfully registered.
+     */
+    CARAPI AddTouchExplorationStateChangeListener(
+        /* [in] */ IAccessibilityManagerTouchExplorationStateChangeListener* listener,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Unregisters a {@link TouchExplorationStateChangeListener}.
+     *
+     * @param listener The listener.
+     * @return True if successfully unregistered.
+     */
+    CARAPI RemoveTouchExplorationStateChangeListener(
+        /* [in] */ IAccessibilityManagerTouchExplorationStateChangeListener* listener,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Registers a {@link HighTextContrastChangeListener} for changes in
+     * the global high text contrast state of the system.
+     *
+     * @param listener The listener.
+     * @return True if successfully registered.
+     *
+     * @hide
+     */
+    CARAPI AddHighTextContrastStateChangeListener(
+        /* [in] */ IAccessibilityManagerHighTextContrastChangeListener* listener,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Unregisters a {@link HighTextContrastChangeListener}.
+     *
+     * @param listener The listener.
+     * @return True if successfully unregistered.
+     *
+     * @hide
+     */
+    CARAPI RemoveHighTextContrastStateChangeListener(
+        /* [in] */ IAccessibilityManagerHighTextContrastChangeListener* listener,
+        /* [out] */ Boolean* result);
 
     /**
      * Adds an accessibility interaction connection interface for a given window.
@@ -158,7 +243,7 @@ public:
      */
     CARAPI AddAccessibilityInteractionConnection(
         /* [in] */ IIWindow* windowToken,
-        /* [in] */ IAccessibilityInteractionConnection* connection,
+        /* [in] */ IIAccessibilityInteractionConnection* connection,
         /* [out] */ Int32* add);
 
     /**
@@ -170,76 +255,65 @@ public:
     CARAPI RemoveAccessibilityInteractionConnection(
         /* [in] */ IIWindow* windowToken);
 
-    CARAPI constructor(
-        /* [in] */ IContext* base,
-        /* [in] */ IIAccessibilityManager* service,
-        /* [in] */ Int32 userId);
-
 private:
     /**
-     * Creates the singleton instance.
-     *
-     * @param context Context in which this manager operates.
-     * @param userId The user id under which to operate.
-     */
-    static CARAPI CreateSingletonInstance(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 userId);
-
-    /**
-     * Sets the current state.
+     * Sets the current state and notifies listeners, if necessary.
      *
      * @param stateFlags The state flags.
      */
-    CARAPI_(void) SetState(
+    CARAPI_(void) SetStateLocked(
         /* [in] */ Int32 stateFlags);
 
-    /**
-     * Sets the enabled state.
-     *
-     * @param isEnabled The accessibility state.
-     */
-    CARAPI_(void) SetAccessibilityState(
-        /* [in] */ Boolean isEnabled);
+    CARAPI_(AutoPtr<IIAccessibilityManager>) GetServiceLocked();
+
+    CARAPI_(void) TryConnectToServiceLocked();
 
     /**
      * Notifies the registered {@link AccessibilityStateChangeListener}s.
      */
-    CARAPI_(void) NotifyAccessibilityStateChanged();
+    CARAPI_(void) HandleNotifyAccessibilityStateChanged();
+
+    /**
+     * Notifies the registered {@link TouchExplorationStateChangeListener}s.
+     */
+    CARAPI_(void) HandleNotifyTouchExplorationStateChanged();
+
+    /**
+     * Notifies the registered {@link HighTextContrastChangeListener}s.
+     */
+    CARAPI_(void) HandleNotifyHighTextContrastStateChanged();
 
 public:
-    /** @hide */
-    static const Int32 STATE_FLAG_ACCESSIBILITY_ENABLED;
-
-    /** @hide */
-    static const Int32 STATE_FLAG_TOUCH_EXPLORATION_ENABLED;
-
-    static AutoPtr<IAccessibilityManager> sInstance;
-    static Object sInstanceSync;
-
-    static const Int32 DO_SET_STATE;
-
-    AutoPtr<IIAccessibilityManager> mService;
-
     Int32 mUserId;
 
     AutoPtr<IHandler> mHandler;
-    Object mHandlerLock;
 
     Boolean mIsEnabled;
 
     Boolean mIsTouchExplorationEnabled;
 
-    // CopyOnWriteArrayList<AutoPtr<IAccessibilityStateChangeListener> > mAccessibilityStateChangeListeners =
-    //     new CopyOnWriteArrayList<AccessibilityStateChangeListener>();
-    List<AutoPtr<IAccessibilityManagerAccessibilityStateChangeListener> > mAccessibilityStateChangeListeners;
-
-    AutoPtr<IAccessibilityManagerClient> mClient;
+    Boolean mIsHighTextContrastEnabled;
 
 private:
     static const Boolean DEBUG;
 
     static const String localLOG_TAG;
+
+    static Object sInstanceSync;
+
+    static AutoPtr<IAccessibilityManager> sInstance;
+
+    Object mLock;
+
+    AutoPtr<IIAccessibilityManager> mService;
+
+    AutoPtr<ICopyOnWriteArrayList> mAccessibilityStateChangeListeners;
+
+    AutoPtr<ICopyOnWriteArrayList> mTouchExplorationStateChangeListeners;
+
+    AutoPtr<ICopyOnWriteArrayList> mHighTextContrastStateChangeListeners;
+
+    AutoPtr<IIAccessibilityManagerClient> mClient;
 };
 
 } // Accessibility

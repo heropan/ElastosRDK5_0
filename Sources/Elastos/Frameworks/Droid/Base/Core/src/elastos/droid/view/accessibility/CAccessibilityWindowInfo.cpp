@@ -142,8 +142,7 @@ ECode CAccessibilityWindowInfo::SetConnectionId(
 ECode CAccessibilityWindowInfo::GetBoundsInScreen(
     /* [in, out] */ IRect* outBounds)
 {
-    outBounds->Set(mBoundsInScreen);
-    return NOERROR;
+    return outBounds->Set(mBoundsInScreen);
 }
 
 ECode CAccessibilityWindowInfo::SetBoundsInScreen(
@@ -299,15 +298,7 @@ ECode CAccessibilityWindowInfo::Obtain(
 ECode CAccessibilityWindowInfo::Recycle()
 {
     Clear();
-    sPool->ReleaseItem(THIS_PROBE(IAccessibilityWindowInfo));
-    return NOERROR;
-}
-
-ECode CAccessibilityWindowInfo::DescribeContents(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
+    sPool->ReleaseItem((IAccessibilityWindowInfo*)this);
     return NOERROR;
 }
 
@@ -329,8 +320,7 @@ ECode CAccessibilityWindowInfo::WriteToParcel(
         Int32 childCount;
         childIds->GetSize(&childCount);
         parcel->WriteInt32(childCount);
-        for (Int32 i = 0; i < childCount; ++i)
-        {
+        for (Int32 i = 0; i < childCount; ++i) {
             Int64 id;
             childIds->Get(i, &id);
             parcel->WriteInt32((Int32)id);
@@ -342,15 +332,6 @@ ECode CAccessibilityWindowInfo::WriteToParcel(
 }
 
 ECode CAccessibilityWindowInfo::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    AutoPtr<IAccessibilityWindowInfo> info;
-    Obtain((IAccessibilityWindowInfo**)&info);
-    ((CAccessibilityWindowInfo*)info.Get())->InitFromParcel(source);
-    return NOERROR;
-}
-
-void CAccessibilityWindowInfo::InitFromParcel(
     /* [in] */ IParcel* parcel)
 {
     parcel->ReadInt32(&mType);
@@ -378,6 +359,7 @@ void CAccessibilityWindowInfo::InitFromParcel(
     }
 
     parcel->ReadInt32(&mConnectionId);
+    return NOERROR;
 }
 
 ECode CAccessibilityWindowInfo::GetHashCode(
@@ -395,7 +377,7 @@ ECode CAccessibilityWindowInfo::Equals(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    if (THIS_PROBE(IAccessibilityWindowInfo) == IAccessibilityWindowInfo::Probe(obj)) {
+    if ((IAccessibilityWindowInfo*)this == IAccessibilityWindowInfo::Probe(obj)) {
         *result = TRUE;
         return NOERROR;
     }

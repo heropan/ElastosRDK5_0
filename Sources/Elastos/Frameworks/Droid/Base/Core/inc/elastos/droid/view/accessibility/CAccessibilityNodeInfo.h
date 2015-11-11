@@ -1539,7 +1539,7 @@ public:
         /* [in] */ IParcel* dest);
 
     CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
+        /* [in] */ IParcel* parcel);
 
     CARAPI Equals(
         /* [in] */ IInterface* other,
@@ -1611,14 +1611,6 @@ private:
     // @SuppressWarnings("unchecked")
     CARAPI_(void) Init(
         /* [in] */ IAccessibilityNodeInfo* other);
-
-    /**
-     * Creates a new instance from a {@link Parcel}.
-     *
-     * @param parcel A parcel containing the state of a {@link AccessibilityNodeInfo}.
-     */
-    CARAPI_(void) InitFromParcel(
-        /* [in] */ IParcel* parcel);
 
     /**
      * Clears the state of this instance.

@@ -28,6 +28,8 @@ public:
 
     AccessibilityRecord();
 
+    ~AccessibilityRecord();
+
     CARAPI constructor();
 
     /**
@@ -613,7 +615,7 @@ private:
 
     // Housekeeping
     static const Int32 MAX_POOL_SIZE;
-    static const AutoPtr<Object> sPoolLock;
+    static Object sPoolLock;
     static AutoPtr<AccessibilityRecord> sPool;
     static Int32 sPoolSize;
 

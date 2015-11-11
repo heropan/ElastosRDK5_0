@@ -8,6 +8,7 @@
 #include "elastos/droid/os/CMessage.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/SystemClock.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Thread.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -42,7 +43,7 @@ const String CAccessibilityInteractionClient::TAG("CAccessibilityInteractionClie
 const Boolean CAccessibilityInteractionClient::DEBUG = FALSE;
 const Boolean CAccessibilityInteractionClient::CHECK_INTEGRITY = TRUE;
 const Int64 CAccessibilityInteractionClient::TIMEOUT_INTERACTION_MILLIS = 5000;
-const AutoPtr<Object> CAccessibilityInteractionClient::sStaticLock = new Object();
+Object CAccessibilityInteractionClient::sStaticLock;
 
 static AutoPtr<IInt64SparseArray> InitsClients()
 {
@@ -77,7 +78,6 @@ CAccessibilityInteractionClient::CAccessibilityInteractionClient()
     , mPerformAccessibilityActionResult(FALSE)
 {
     ASSERT_SUCCEEDED(CAtomicInteger32::New((IAtomicInteger32**)&mInteractionIdCounter));
-    mInstanceLock = new Object();
     CAccessibilityNodeInfo::New((IAccessibilityNodeInfo**)&mFindAccessibilityNodeInfoResult);
     CArrayList::New((IList**)&mFindAccessibilityNodeInfosResult);
     CPoint::New((IPoint**)&mComputeClickPointResult);
@@ -130,9 +130,8 @@ ECode CAccessibilityInteractionClient::SetSameThreadMessage(
     /* [in] */ IMessage* message)
 {
     synchronized (mInstanceLock) {
-        AutoLock lock(mInstanceLock);
         mSameThreadMessage = message;
-        mInstanceLock->NotifyAll();
+        mInstanceLock.NotifyAll();
     }
     return NOERROR;
 }
@@ -649,7 +648,7 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfoResult(
             mFindAccessibilityNodeInfoResult = info;
             mInteractionId = interactionId;
         }
-        mInstanceLock->NotifyAll();
+        mInstanceLock.NotifyAll();
     }
     return NOERROR;
 }
@@ -688,6 +687,7 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfosResult(
                 // instantiate new result list to avoid passing internal instances to clients.
                 Boolean isIpcCall = (Binder::GetCallingPid() != Process::MyPid());
                 if (!isIpcCall){
+                    mFindAccessibilityNodeInfosResult = NULL;
                     CArrayList::New(ICollection::Probe(infos), (IList**)&mFindAccessibilityNodeInfosResult);
                 }
                 else {
@@ -697,11 +697,12 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfosResult(
             else {
                 AutoPtr<ICollections> collections;
                 CCollections::AcquireSingleton((ICollections**)&collections);
+                mFindAccessibilityNodeInfosResult = NULL;
                 collections->GetEmptyList((IList**)&mFindAccessibilityNodeInfosResult);
             }
             mInteractionId = interactionId;
         }
-        mInstanceLock->NotifyAll();
+        mInstanceLock.NotifyAll();
     }
     return NOERROR;
 }
@@ -727,7 +728,7 @@ ECode CAccessibilityInteractionClient::SetPerformAccessibilityActionResult(
             mPerformAccessibilityActionResult = succeeded;
             mInteractionId = interactionId;
         }
-        mInstanceLock->NotifyAll();
+        mInstanceLock.NotifyAll();
     }
     return NOERROR;
 }
@@ -753,7 +754,7 @@ ECode CAccessibilityInteractionClient::SetComputeClickPointInScreenActionResult(
             mComputeClickPointResult = point;
             mInteractionId = interactionId;
         }
-        mInstanceLock->NotifyAll();
+        mInstanceLock.NotifyAll();
     }
     return NOERROR;
 }
@@ -793,7 +794,7 @@ Boolean CAccessibilityInteractionClient::WaitForResultTimedLocked(
         if (waitTimeMillis <= 0) {
             return FALSE;
         }
-        mInstanceLock->Wait(waitTimeMillis);
+        mInstanceLock.Wait(waitTimeMillis);
         // } catch (InterruptedException ie) {
         //     /* ignore */
         // }
@@ -847,8 +848,7 @@ ECode CAccessibilityInteractionClient::GetConnection(
     synchronized (sConnectionCache) {
         AutoPtr<IInterface> obj;
         sConnectionCache->Get(connectionId, (IInterface**)&obj);
-        AutoPtr<IIAccessibilityServiceConnection> conn = IIAccessibilityServiceConnection::Probe(obj);
-        *connection = conn;
+        *connection = IIAccessibilityServiceConnection::Probe(obj);
         REFCOUNT_ADD(*connection);
     }
     return NOERROR;

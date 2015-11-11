@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEPROVIDER_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Utility::IList;
@@ -12,8 +13,12 @@ namespace View {
 namespace Accessibility {
 
 class AccessibilityNodeProvider
+    : public Object
+    , public IAccessibilityNodeProvider
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Returns an {@link AccessibilityNodeInfo} representing a virtual view,
      * i.e. a descendant of the host View, with the given <code>virtualViewId</code>
@@ -37,7 +42,7 @@ public:
      * @see View#createAccessibilityNodeInfo()
      * @see AccessibilityNodeInfo
      */
-    virtual CARAPI CreateAccessibilityNodeInfo(
+    CARAPI CreateAccessibilityNodeInfo(
         /* [in] */ Int32 virtualViewId,
         /* [out] */ IAccessibilityNodeInfo** nodeInfo);
 
@@ -55,7 +60,7 @@ public:
      * @see #createAccessibilityNodeInfo(int)
      * @see AccessibilityNodeInfo
      */
-    virtual CARAPI PerformAction(
+    CARAPI PerformAction(
         /* [in] */ Int32 virtualViewId,
         /* [in] */ Int32 action,
         /* [in] */ IBundle* arguments,
@@ -75,7 +80,7 @@ public:
      * @see #createAccessibilityNodeInfo(int)
      * @see AccessibilityNodeInfo
      */
-    virtual CARAPI FindAccessibilityNodeInfosByText(
+    CARAPI FindAccessibilityNodeInfosByText(
         /* [in] */ const String& text,
         /* [in] */ Int32 virtualViewId,
         /* [out] */ IList** nodeInfos);
@@ -91,7 +96,7 @@ public:
      * @see AccessibilityNodeInfo#FOCUS_INPUT
      * @see AccessibilityNodeInfo#FOCUS_ACCESSIBILITY
      */
-    virtual CARAPI FindFocus(
+    CARAPI FindFocus(
         /* [in] */ Int32 focus,
         /* [out] */  IAccessibilityNodeInfo** info);
 };
