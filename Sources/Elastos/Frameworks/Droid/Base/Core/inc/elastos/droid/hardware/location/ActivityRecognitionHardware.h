@@ -36,6 +36,8 @@ public:
 
     CAR_INTERFACE_DECL()
 
+    ActivityRecognitionHardware();
+
     virtual ~ActivityRecognitionHardware();
 
     static CARAPI GetInstance(
@@ -132,8 +134,7 @@ private:
     /**
      * Initializes and connect the callbacks handlers in the HAL.
      */
-    CARAPI_(void) NativeInitialize(
-        /* [in] */ ActivityRecognitionHardware* mHost);
+    CARAPI_(void) NativeInitialize();
 
     /**
      * De-initializes the ActivityRecognitionHardware from the native side.

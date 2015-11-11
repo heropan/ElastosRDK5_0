@@ -2,6 +2,8 @@
 module
 {
     interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Utility.ISize;
+    interface Elastos.Droid.Graphics.IPointF;
 
     namespace Elastos {
     namespace Droid {
@@ -37,7 +39,7 @@ module
      * @see CameraCharacteristics#SCALER_STREAM_CONFIGURATION_MAP
      * @see CameraDevice#createCaptureSession
      */
-    [deprecated]
+    [deprecated, local]
     interface IStreamConfigurationMap {
 
         /**
@@ -84,9 +86,9 @@ module
          *
          * @hide
          */
-//        GetInputSizes(
-//            [in] Int32 format,
-//            [out, callee] ArrayOf<ISize>* outarr);
+        GetInputSizes(
+            [in] Int32 format,
+            [out, callee] ArrayOf<ISize*>* outarr);
 
         /**
          * Determine whether or not output surfaces with a particular user-defined format can be passed
@@ -176,9 +178,9 @@ module
          *
          * @see #isOutputSupportedFor(Class)
          */
-//        GetOutputSizes(
-//            [in] IInterface* klass,
-//            [out, callee] ArrayOf<ISize*>* outarr);
+        GetOutputSizes(
+            [in] IClassInfo* klass,
+            [out, callee] ArrayOf<ISize*>* outarr);
 
         /**
          * Get a list of sizes compatible with the requested image {@code format}.
@@ -195,9 +197,9 @@ module
          * @see PixelFormat
          * @see #getOutputFormats
          */
-//        GetOutputSizes(
-//            [in] Int32 format,
-//            [out, callee] ArrayOf<ISize*>* outarr);
+        GetOutputSizes(
+            [in] Int32 format,
+            [out, callee] ArrayOf<ISize*>* outarr);
 
         /**
          * Get a list of supported high speed video recording sizes.
@@ -227,8 +229,8 @@ module
          *
          * @see #getHighSpeedVideoFpsRangesFor(Size)
          */
-//        GetHighSpeedVideoSizes(
-//            [out, callee] ArrayOf<ISize*>* outarr);
+        GetHighSpeedVideoSizes(
+            [out, callee] ArrayOf<ISize*>* outarr);
 
         /**
          * Get the frame per second ranges (fpsMin, fpsMax) for input high speed video size.
@@ -253,9 +255,9 @@ module
          *         getHighSpeedVideoSizes
          * @see #getHighSpeedVideoSizes()
          */
-//        GetHighSpeedVideoFpsRangesFor(
-//            [in] ISize* size,
-//            [out, callee] ArrayOf<IRange*>* outarr);
+        GetHighSpeedVideoFpsRangesFor(
+            [in] ISize* size,
+            [out, callee] ArrayOf<Handle32>* outarr);
 
         /**
          * Get a list of supported high speed video recording FPS ranges.
@@ -289,8 +291,8 @@ module
          * @see #getHighSpeedVideoSizesFor
          */
         // @SuppressWarnings("unchecked")
-//        GetHighSpeedVideoFpsRanges(
-//            [out, callee] ArrayOf<IRange*>* outarr);
+        GetHighSpeedVideoFpsRanges(
+            [out, callee] ArrayOf<Handle32>* outarr);
 
         /**
          * Get the supported video sizes for input FPS range.
@@ -313,9 +315,9 @@ module
          *         getHighSpeedVideoFpsRanges
          * @see #getHighSpeedVideoFpsRanges()
          */
-//        GetHighSpeedVideoSizesFor(
-//            [in] IRange* fpsRange,
-//            [out, callee] ArrayOf<ISize*>* outarr);
+        GetHighSpeedVideoSizesFor(
+            [in] Handle32 fpsRange,
+            [out, callee] ArrayOf<ISize*>* outarr);
 
         /**
          * Get the minimum {@link CaptureRequest#SENSOR_FRAME_DURATION frame duration}
@@ -355,10 +357,10 @@ module
          * @see ImageFormat
          * @see PixelFormat
          */
-//        GetOutputMinFrameDuration(
-//            [in] Int32 format,
-//            [in] ISize* size,
-//            [out] Int64* value);
+        GetOutputMinFrameDuration(
+            [in] Int32 format,
+            [in] ISize* size,
+            [out] Int64* value);
 
         /**
          * Get the minimum {@link CaptureRequest#SENSOR_FRAME_DURATION frame duration}
@@ -404,10 +406,10 @@ module
          * @see ImageFormat
          * @see PixelFormat
          */
-//        GetOutputMinFrameDuration(
-//            [in] IInterface* klass,
-//            [in] ISize* size,
-//            [out] Int64* value);
+        GetOutputMinFrameDuration(
+            [in] IClassInfo* klass,
+            [in] ISize* size,
+            [out] Int64* value);
 
         /**
          * Get the stall duration for the format/size combination (in nanoseconds).
@@ -491,10 +493,10 @@ module
          * @see ImageFormat
          * @see PixelFormat
          */
-//        GetOutputStallDuration(
-//            [in] Int32 format,
-//            [in] ISize* size,
-//            [out] Int64* value);
+        GetOutputStallDuration(
+            [in] Int32 format,
+            [in] ISize* size,
+            [out] Int64* value);
 
         /**
          * Get the stall duration for the class/size combination (in nanoseconds).
@@ -524,10 +526,10 @@ module
          * @see ImageFormat
          * @see PixelFormat
          */
-//        GetOutputStallDuration(
-//            [in] IInterface* klass,
-//            [in] ISize* size,
-//            [out] Int64* value);
+        GetOutputStallDuration(
+            [in] IClassInfo* klass,
+            [in] ISize* size,
+            [out] Int64* value);
 
         /**
          * Check if this {@link StreamConfigurationMap} is equal to another
@@ -550,7 +552,7 @@ module
             [out] Int32* value);
     }
 
-    [deprecated]
+    [deprecated, local]
     interface IStreamConfigurationMapHelper {
 
         /**
@@ -592,9 +594,8 @@ module
          * @see #isOutputSupportedFor(Surface)
          */
         IsOutputSupportedFor(
-            [in] IInterface* klass,
+            [in] IClassInfo* clazz,
             [out] Boolean* value);
-
 
         /**
          * Ensures that the format is either user-defined or implementation defined.
@@ -683,8 +684,7 @@ module
          * @see #imageFormatToPublic
          */
         ImageFormatToPublic(
-            [in] ArrayOf<Int32>* formats,
-            [out, callee] ArrayOf<Int32>* outarr);
+            [in] ArrayOf<Int32>* formats);
 
         /**
          * Convert a public format compatible with {@code ImageFormat} to an internal format
@@ -728,8 +728,7 @@ module
          * @hide
          */
         ImageFormatToInternal(
-            [in] ArrayOf<Int32>* formats,
-            [out, callee] ArrayOf<Int32>* outarr);
+            [in] ArrayOf<Int32>* formats);
     }
 
     } // namespace Params

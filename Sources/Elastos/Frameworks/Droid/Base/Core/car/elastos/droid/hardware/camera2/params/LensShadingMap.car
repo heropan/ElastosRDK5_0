@@ -13,6 +13,12 @@ module
      */
     [deprecated]
     interface ILensShadingMap {
+        /**
+         * The smallest gain factor in this map.
+         *
+         * <p>All values in this map will be at least this large.</p>
+         */
+        const Float MINIMUM_GAIN_FACTOR = 1.0;
 
         /**
          * Get the number of rows in this map.

@@ -6,6 +6,7 @@
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Core::IComparable;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
