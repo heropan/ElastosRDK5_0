@@ -13,7 +13,7 @@
 #include "elastos/droid/location/Geofence.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/os/CMessage.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
@@ -22,8 +22,8 @@
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::EIID_IBinder;
-using Elastos::Droid::Os::CMessageHelper;
-using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Os::CMessage;
+using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Core::AutoLock;
 using Elastos::Core::CString;
@@ -69,7 +69,7 @@ LocationManager::ListenerTransport::ListenerTransport()
 }
 
 ECode LocationManager::ListenerTransport::constructor(
-    /* [in] */ Handle32 host,
+    /* [in] */ ILocationManager* host,
     /* [in] */ ILocationListener* listener,
     /* [in] */ ILooper* looper)
 {
@@ -89,12 +89,9 @@ ECode LocationManager::ListenerTransport::constructor(
 ECode LocationManager::ListenerTransport::OnLocationChanged(
     /* [in] */ ILocation* location)
 {
-    AutoPtr<IMessageHelper> mh;
-    CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    AutoPtr<IMessage> msg;
-    mh->Obtain((IMessage**)&msg);
+    AutoPtr<IMessage> msg = CMessage::Obtain();
     msg->SetWhat(TYPE_LOCATION_CHANGED);
-    // msg->SetObj(IInterface::Probe(location));
+    msg->SetObj(location);
     Boolean result = FALSE;
     mListenerHandler->SendMessage(msg, &result);
     return NOERROR;
@@ -105,10 +102,7 @@ ECode LocationManager::ListenerTransport::OnStatusChanged(
     /* [in] */ Int32 status,
     /* [in] */ IBundle* extras)
 {
-    AutoPtr<IMessageHelper> mh;
-    CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    AutoPtr<IMessage> msg;
-    mh->Obtain((IMessage**)&msg);
+    AutoPtr<IMessage> msg = CMessage::Obtain();
     msg->SetWhat(TYPE_STATUS_CHANGED);
     AutoPtr<IBundle> b;
     CBundle::New((IBundle**)&b);
@@ -126,10 +120,7 @@ ECode LocationManager::ListenerTransport::OnStatusChanged(
 ECode LocationManager::ListenerTransport::OnProviderEnabled(
     /* [in] */ const String& provider)
 {
-    AutoPtr<IMessageHelper> mh;
-    CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    AutoPtr<IMessage> msg;
-    mh->Obtain((IMessage**)&msg);
+    AutoPtr<IMessage> msg = CMessage::Obtain();
     msg->SetWhat(TYPE_PROVIDER_ENABLED);
     AutoPtr<IString> istr;
     CString::New(provider, (IString**)&istr);
@@ -142,10 +133,7 @@ ECode LocationManager::ListenerTransport::OnProviderEnabled(
 LocationManager::ListenerTransport::OnProviderDisabled(
     /* [in] */ const String& provider)
 {
-    AutoPtr<IMessageHelper> mh;
-    CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-    AutoPtr<IMessage> msg;
-    mh->Obtain((IMessage**)&msg);
+    AutoPtr<IMessage> msg = CMessage::Obtain();
     msg->SetWhat(TYPE_PROVIDER_DISABLED);
     AutoPtr<IString> istr;
     CString::New(provider, (IString**)&istr);
@@ -161,8 +149,8 @@ ECode LocationManager::ListenerTransport::_handleMessage(
     Int32 what;
     msg->GetWhat(&what);
     AutoPtr<IInterface> obj;
-    AutoPtr<ILocation> location;
     AutoPtr<IBundle> extras, b;
+    AutoPtr<ILocation> location;
     String provider;
     AutoPtr<ICharSequence> cs;
     switch (what) {
@@ -172,7 +160,6 @@ ECode LocationManager::ListenerTransport::_handleMessage(
             mListener->OnLocationChanged(location.Get());
             break;
         case TYPE_STATUS_CHANGED:
-            // AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
             b = IBundle::Probe(obj);
             b->GetString(String("provider"), &provider);
@@ -211,7 +198,7 @@ ECode LocationManager::ListenerTransport::ToString(
 //--------------LocationManager::GpsStatusListenerTransport::Nmea------//
 LocationManager::GpsStatusListenerTransport::Nmea::Nmea(
     /* [in] */ Int64 timestamp,
-    /* [in] */ String nmea)
+    /* [in] */ const String& nmea)
     : mTimestamp(timestamp)
     , mNmea(nmea)
 {
@@ -262,7 +249,7 @@ LocationManager::GpsStatusListenerTransport::GpsStatusListenerTransport()
 }
 
 ECode LocationManager::GpsStatusListenerTransport::constructor(
-    /* [in] */ Handle32 host,
+    /* [in] */ ILocationManager* host,
     /* [in] */ IGpsStatusListener* listener)
 {
     mListener = listener;
@@ -274,7 +261,7 @@ ECode LocationManager::GpsStatusListenerTransport::constructor(
 }
 
 ECode LocationManager::GpsStatusListenerTransport::constructor(
-    /* [in] */ Handle32 host,
+    /* [in] */ ILocationManager* host,
     /* [in] */ IGpsStatusNmeaListener* listener)
 {
     mNmeaListener = listener;
@@ -289,10 +276,7 @@ ECode LocationManager::GpsStatusListenerTransport::constructor(
 ECode LocationManager::GpsStatusListenerTransport::OnGpsStarted()
 {
     if (mListener != NULL) {
-        AutoPtr<IMessageHelper> mh;
-        CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        AutoPtr<IMessage> msg;
-        mh->Obtain((IMessage**)&msg);
+        AutoPtr<IMessage> msg = CMessage::Obtain();
         msg->SetWhat(IGpsStatus::GpsStatus_GPS_EVENT_STARTED);
         Boolean result = FALSE;
         mGpsHandler->SendMessage(msg, &result);
@@ -303,10 +287,7 @@ ECode LocationManager::GpsStatusListenerTransport::OnGpsStarted()
 ECode LocationManager::GpsStatusListenerTransport::OnGpsStopped()
 {
     if (mListener != NULL) {
-        AutoPtr<IMessageHelper> mh;
-        CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        AutoPtr<IMessage> msg;
-        mh->Obtain((IMessage**)&msg);
+        AutoPtr<IMessage> msg = CMessage::Obtain();
         msg->SetWhat(IGpsStatus::GpsStatus_GPS_EVENT_STOPPED);
         Boolean result = FALSE;
         mGpsHandler->SendMessage(msg, &result);
@@ -319,10 +300,7 @@ ECode LocationManager::GpsStatusListenerTransport::OnFirstFix(
 {
     if (mListener != NULL) {
         mLMHost->mGpsStatus->SetTimeToFirstFix(ttff);
-        AutoPtr<IMessageHelper> mh;
-        CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        AutoPtr<IMessage> msg;
-        mh->Obtain((IMessage**)&msg);
+        AutoPtr<IMessage> msg = CMessage::Obtain();
         msg->SetWhat(IGpsStatus::GpsStatus_GPS_EVENT_FIRST_FIX);
         Boolean result = FALSE;
         mGpsHandler->SendMessage(msg, &result);
@@ -343,10 +321,7 @@ ECode LocationManager::GpsStatusListenerTransport::OnSvStatusChanged(
     if (mListener != NULL) {
         mLMHost->mGpsStatus->SetStatus(svCount, prns, snrs, elevations, azimuths,
                 ephemerisMask, almanacMask, usedInFixMask);
-        AutoPtr<IMessageHelper> mh;
-        CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        AutoPtr<IMessage> msg;
-        mh->Obtain((IMessage**)&msg);
+        AutoPtr<IMessage> msg = CMessage::Obtain();
         msg->SetWhat(IGpsStatus::GpsStatus_GPS_EVENT_SATELLITE_STATUS);
         // remove any SV status messages already in the queue
         mGpsHandler->RemoveMessages(IGpsStatus::GpsStatus_GPS_EVENT_SATELLITE_STATUS);
@@ -368,10 +343,7 @@ ECode LocationManager::GpsStatusListenerTransport::OnNmeaReceived(
             // Boolean result = FALSE;
             // mNmeaBuffer->Add(IInterface::Probe(nmea), &result);
         }
-        AutoPtr<IMessageHelper> mh;
-        CMessageHelper::AcquireSingleton((IMessageHelper**)&mh);
-        AutoPtr<IMessage> msg;
-        mh->Obtain((IMessage**)&msg);
+        AutoPtr<IMessage> msg = CMessage::Obtain();
         msg->SetWhat(NMEA_RECEIVED);
         // remove any NMEA_RECEIVED messages already in the queue
         mGpsHandler->RemoveMessages(NMEA_RECEIVED);
@@ -894,13 +866,12 @@ ECode LocationManager::AddGpsStatusListener(
     }
 
     AutoPtr<IIGpsStatusListener> transport;
-    CLocationManagerGpsStatusListenerTransport::New((Handle32)this, listener, (IIGpsStatusListener**)&transport);
+    CLocationManagerGpsStatusListenerTransport::New(THIS_PROBE(ILocationManager), listener, (IIGpsStatusListener**)&transport);
 
     String packageName;
     mContext->GetPackageName(&packageName);
     ECode ec = mService->AddGpsStatusListener(IIGpsStatusListener::Probe(transport), packageName, result);
-    if(FAILED(ec))
-    {
+    if(FAILED(ec)) {
         return ec;
     }
     if (*result) {
@@ -941,14 +912,13 @@ ECode LocationManager::AddNmeaListener(
     }
 
     AutoPtr<IIGpsStatusListener> transport;
-    CLocationManagerGpsStatusListenerTransport::New((Handle32)this, listener, (IIGpsStatusListener**)&transport);
+    CLocationManagerGpsStatusListenerTransport::New(THIS_PROBE(ILocationManager), listener, (IIGpsStatusListener**)&transport);
 
     String packageName;
     mContext->GetPackageName(&packageName);
     ECode ec = mService->AddGpsStatusListener(IIGpsStatusListener::Probe(transport), packageName, result);
 
-    if(FAILED(ec))
-    {
+    if(FAILED(ec)) {
         return NOERROR;
     }
 
@@ -978,7 +948,7 @@ ECode LocationManager::AddGpsMeasurementListener(
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<ILocalListenerHelper> lh = ILocalListenerHelper::Probe(mGpsMeasurementListenerTransport);
-    lh->Add(IInterface::Probe(listener), result);
+    lh->Add(listener, result);
     return NOERROR;
 }
 
@@ -986,7 +956,7 @@ ECode LocationManager::RemoveGpsMeasurementListener(
     /* [in] */ IGpsMeasurementsEventListener* listener)
 {
     AutoPtr<ILocalListenerHelper> lh = ILocalListenerHelper::Probe(mGpsMeasurementListenerTransport);
-    lh->Remove(IInterface::Probe(listener));
+    lh->Remove(listener);
     return NOERROR;
 }
 
@@ -996,7 +966,7 @@ ECode LocationManager::AddGpsNavigationMessageListener(
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<ILocalListenerHelper> lh = ILocalListenerHelper::Probe(mGpsNavigationMessageListenerTransport);
-    lh->Add(IInterface::Probe(listener), result);
+    lh->Add(listener, result);
     return NOERROR;
 }
 
@@ -1004,7 +974,7 @@ ECode LocationManager::RemoveGpsNavigationMessageListener(
     /* [in] */ IGpsNavigationMessageEventListener* listener)
 {
     AutoPtr<ILocalListenerHelper> lh = ILocalListenerHelper::Probe(mGpsNavigationMessageListenerTransport);
-    lh->Remove(IInterface::Probe(listener));
+    lh->Remove(listener);
     return NOERROR;
 }
 
@@ -1059,8 +1029,8 @@ AutoPtr<IILocationListener> LocationManager::WrapListener(
         AutoPtr<IILocationListener> transport;
         if ((it == mListeners.End()) || (it->mSecond == NULL)) {
             AutoPtr<IILocationListener> lt;
-            CLocationManagerListenerTransport::New((Handle32)this, listener, looper, (IILocationListener**)&lt);
-            transport = IILocationListener::Probe(lt.Get());
+            CLocationManagerListenerTransport::New(THIS_PROBE(ILocationManager), listener, looper, (IILocationListener**)&lt);
+            transport = lt.Get();
         }
         mListeners[tempKey] = transport;
         return transport;

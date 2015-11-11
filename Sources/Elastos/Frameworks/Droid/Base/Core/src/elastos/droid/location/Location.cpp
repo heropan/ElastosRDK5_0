@@ -176,7 +176,7 @@ ECode Location::Convert(
     }
 
     Boolean negative = FALSE;
-    String _coordinate(coordinate);
+    String _coordinate = coordinate;
     if (_coordinate.GetChar(0) == '-') {
         _coordinate = _coordinate.Substring(1);
         negative = TRUE;
@@ -648,7 +648,7 @@ ECode Location::IsComplete(
 
 ECode Location::MakeComplete()
 {
-    if (mProvider.Equals("")) mProvider = String("?");
+    if (mProvider.Equals("")) mProvider = "?";
     if (!mHasAccuracy) {
         mHasAccuracy = TRUE;
         mAccuracy = 100.0f;

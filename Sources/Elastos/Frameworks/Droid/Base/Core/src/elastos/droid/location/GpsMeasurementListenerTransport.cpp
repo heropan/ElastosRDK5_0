@@ -38,7 +38,7 @@ GpsMeasurementListenerTransport::ListenerTransport::ListenerTransport()
 }
 
 ECode GpsMeasurementListenerTransport::ListenerTransport::constructor(
-    /* [in] */ Handle32 host)
+    /* [in] */ IGpsMeasurementListenerTransport* host)
 {
     mHost = (GpsMeasurementListenerTransport*)host;
     return NOERROR;
@@ -67,7 +67,7 @@ GpsMeasurementListenerTransport::GpsMeasurementListenerTransport()
     : LocalListenerHelper(String("GpsMeasurementListenerTransport"))
 {
     AutoPtr<IIGpsMeasurementsListener> lt;
-    CGpsMeasurementListenerTransportListenerTransport::New((Handle32)this, (IIGpsMeasurementsListener**)&lt);
+    CGpsMeasurementListenerTransportListenerTransport::New(THIS_PROBE(IGpsMeasurementListenerTransport), (IIGpsMeasurementsListener**)&lt);
     mListenerTransport = IIGpsMeasurementsListener::Probe(lt);
 }
 

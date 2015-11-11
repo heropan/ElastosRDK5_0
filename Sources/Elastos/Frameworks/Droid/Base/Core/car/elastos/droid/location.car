@@ -188,9 +188,10 @@ module
             interface ILocationManager;
         }
 
+        [local]
         class CLocationManagerListenerTransport {
             constructor(
-                [in] Handle32 host,
+                [in] ILocationManager* host,
                 [in] ILocationListener* listener,
                 [in] ILooper* looper);
 
@@ -198,13 +199,14 @@ module
             interface IBinder;
         }
 
+        [local]
         class CLocationManagerGpsStatusListenerTransport {
             constructor(
-                [in] Handle32 host1,
+                [in] ILocationManager* host1,
                 [in] IGpsStatusListener* listener);
 
             constructor(
-                [in] Handle32 host2,
+                [in] ILocationManager* host2,
                 [in] IGpsStatusNmeaListener* listener);
 
             interface IIGpsStatusListener;
@@ -237,51 +239,6 @@ module
             interface ILocationRequestHelper;
         }
 
-//        class CProviderProperties {
-//            constructor();
-
-//            constructor(
-//                [in] Boolean mRequiresNetwork,
-//                [in] Boolean mRequiresSatellite,
-//                [in] Boolean mRequiresCell,
-//                [in] Boolean mHasMonetaryCost,
-//                [in] Boolean mSupportsAltitude,
-//                [in] Boolean mSupportsSpeed,
-//                [in] Boolean mSupportsBearing,
-//                [in] Int32 mPowerRequirement,
-//                [in] Int32 mAccuracy);
-
-//            interface IProviderProperties;
-//            interface IParcelable;
-//        }
-
-//        class CProviderRequest {
-//            constructor();
-
-//            interface IProviderRequest;
-//            interface IParcelable;
-//        }
-
-//        [local]
-//        class CGpsNetInitiatedHandler {
-//            constructor(
-//                [in] IContext* ctx);
-
-//            interface IGpsNetInitiatedHandler;
-//        }
-
-//        class CGpsNiNotification {
-//            constructor();
-
-//            interface IGpsNiNotification;
-//        }
-
-//        class CGpsNiResponse {
-//            constructor();
-
-//            interface IGpsNiResponse;
-//        }
-
         [local]
         class CGpsMeasurementListenerTransport {
             constructor(
@@ -294,7 +251,7 @@ module
 
         class CGpsMeasurementListenerTransportListenerTransport {
             constructor(
-                [in] Handle32 host);
+                [in] IGpsMeasurementListenerTransport* host);
 
             interface IIGpsMeasurementsListener;
             interface IBinder;
@@ -322,7 +279,7 @@ module
 
         class CGpsNavigationMessageListenerTransportListenerTransport {
             constructor(
-                [in] Handle32 host);
+                [in] IGpsNavigationMessageListenerTransport* host);
 
             interface IIGpsNavigationMessageListener;
             interface IBinder;

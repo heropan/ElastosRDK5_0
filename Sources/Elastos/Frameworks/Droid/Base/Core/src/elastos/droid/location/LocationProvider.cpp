@@ -58,46 +58,29 @@ Boolean LocationProvider::PropertiesMeetCriteria(
         // that have not finished binding yet
         return FALSE;
     }
-    criteria->GetAccuracy(&value);
-    if (value != ICriteria::Criteria_NO_REQUIREMENT) {
-        properties->GetAccuracy(&value2);
-        if (value < value2) {
+    if (criteria->GetAccuracy(&value), properties->GetAccuracy(&value2), value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
+        return FALSE;
+    }
+    if (criteria->GetPowerRequirement(&value), properties->GetPowerRequirement(&value2), value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
+        return FALSE;
+    }
+    if (criteria->IsAltitudeRequired(&bValue), bValue) {
+        if (properties->GetSupportsAltitude(&bValue2), !bValue2) {
             return FALSE;
         }
     }
-    criteria->GetPowerRequirement(&value);
-    if (value != ICriteria::Criteria_NO_REQUIREMENT) {
-        properties->GetPowerRequirement(&value2);
-        if (value < value2) {
+    if (criteria->IsSpeedRequired(&bValue), bValue) {
+        if (properties->GetSupportsSpeed(&bValue2), !bValue2) {
             return FALSE;
         }
     }
-    criteria->IsAltitudeRequired(&bValue);
-    if (bValue) {
-        properties->GetSupportsAltitude(&bValue2);
-        if (!bValue2) {
+    if (criteria->IsBearingRequired(&bValue), bValue) {
+        if (properties->GetSupportsBearing(&bValue2), !bValue2) {
             return FALSE;
         }
     }
-
-    criteria->IsSpeedRequired(&bValue);
-    if (bValue) {
-        properties->GetSupportsSpeed(&bValue2);
-        if (!bValue2) {
-            return FALSE;
-        }
-    }
-    criteria->IsBearingRequired(&bValue);
-    if (bValue) {
-        properties->GetSupportsBearing(&bValue2);
-        if (!bValue2) {
-            return FALSE;
-        }
-    }
-    criteria->IsCostAllowed(&bValue);
-    if (bValue) {
-        properties->GetHasMonetaryCost(&bValue2);
-        if (!bValue2) {
+    if (criteria->IsCostAllowed(&bValue), bValue) {
+        if (properties->GetHasMonetaryCost(&bValue2), !bValue2) {
             return FALSE;
         }
     }

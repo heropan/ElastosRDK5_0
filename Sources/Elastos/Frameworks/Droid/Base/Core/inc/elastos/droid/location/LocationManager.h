@@ -16,10 +16,6 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IList;
 
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusListener);
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusNmeaListener);
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ILocationListener);
-
 namespace Elastos {
 namespace Droid {
 namespace Location {
@@ -81,7 +77,7 @@ public:
         ListenerTransport();
 
         CARAPI constructor(
-            /* [in] */ Handle32 host,
+            /* [in] */ ILocationManager* host,
             /* [in] */ ILocationListener* listener,
             /* [in] */ ILooper* looper);
 
@@ -138,7 +134,7 @@ public:
         public:
             Nmea(
                 /* [in] */ Int64 timestamp,
-                /* [in] */ String nmea);
+                /* [in] */ const String& nmea);
 
         protected:
             Int64 mTimestamp;
@@ -167,11 +163,11 @@ public:
         GpsStatusListenerTransport();
 
         CARAPI constructor(
-            /* [in] */ Handle32 host,
+            /* [in] */ ILocationManager* host,
             /* [in] */ IGpsStatusListener* listener);
 
         CARAPI constructor(
-            /* [in] */ Handle32 host,
+            /* [in] */ ILocationManager* host,
             /* [in] */ IGpsStatusNmeaListener* listener);
 
         // @Override
@@ -237,7 +233,7 @@ public:
      *
      * @return list of Strings containing names of the provider
      */
-    virtual CARAPI GetAllProviders(
+    CARAPI GetAllProviders(
         /* [out] */ IList** allProvders);
 
     /**
@@ -247,7 +243,7 @@ public:
      * enabled are returned.
      * @return list of Strings containing names of the providers
      */
-    virtual CARAPI GetProviders(
+    CARAPI GetProviders(
         /* [in] */ Boolean enabledOnly,
         /* [out] */ IList** providers);
 
@@ -262,7 +258,7 @@ public:
      * @throws SecurityException if the caller is not permitted to access the
      * given provider.
      */
-    virtual CARAPI GetProvider(
+    CARAPI GetProvider(
         /* [in] */ const String& name,
         /* [out] */ ILocationProvider** provider);
 
@@ -276,7 +272,7 @@ public:
      * enabled are returned.
      * @return list of Strings containing names of the providers
      */
-    virtual CARAPI GetProviders(
+    CARAPI GetProviders(
         /* [in] */ ICriteria* criteria,
         /* [in] */ Boolean enabledOnly,
         /* [out] */ IList** providers);
@@ -303,7 +299,7 @@ public:
      * @param enabledOnly if true then only a provider that is currently enabled is returned
      * @return name of the provider that best matches the requirements
      */
-    virtual CARAPI GetBestProvider(
+    CARAPI GetBestProvider(
         /* [in] */ ICriteria* criteria,
         /* [in] */ Boolean enabledOnly,
         /* [out] */ String* provider);
@@ -328,7 +324,7 @@ public:
      * @throws RuntimeException if the calling thread has no Looper
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
@@ -355,7 +351,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
@@ -384,7 +380,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ICriteria* criteria,
@@ -408,7 +404,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ const String& provider,
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
@@ -505,7 +501,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ Int64 minTime,
         /* [in] */ Float minDistance,
         /* [in] */ ICriteria* criteria,
@@ -530,7 +526,7 @@ public:
      * @throws IllegalArgumentException if listener is null
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestSingleUpdate(
+    CARAPI RequestSingleUpdate(
         /* [in] */ const String& provider,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
@@ -556,7 +552,7 @@ public:
      * @throws SecurityException if no suitable permission is present
      */
     //@SystemApi
-    virtual CARAPI RequestSingleUpdate(
+    CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
@@ -575,7 +571,7 @@ public:
      * @throws SecurityException if no suitable permission is present
      */
     //@SystemApi
-    virtual CARAPI RequestSingleUpdate(
+    CARAPI RequestSingleUpdate(
         /* [in] */ const String& provider,
         /* [in] */ IPendingIntent* intent);
 
@@ -593,7 +589,7 @@ public:
      * @throws IllegalArgumentException if intent is null
      * @throws SecurityException if no suitable permission is present
      */
-    virtual CARAPI RequestSingleUpdate(
+    CARAPI RequestSingleUpdate(
         /* [in] */ ICriteria* criteria,
         /* [in] */ IPendingIntent* intent);
 
@@ -654,7 +650,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ ILocationRequest* request,
         /* [in] */ ILocationListener* listener,
         /* [in] */ ILooper* looper);
@@ -679,7 +675,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI RequestLocationUpdates(
+    CARAPI RequestLocationUpdates(
         /* [in] */ ILocationRequest* request,
         /* [in] */ IPendingIntent* intent);
 
@@ -692,7 +688,7 @@ public:
      * @param listener listener object that no longer needs location updates
      * @throws IllegalArgumentException if listener is null
      */
-    virtual CARAPI RemoveUpdates(
+    CARAPI RemoveUpdates(
         /* [in] */ ILocationListener* listener);
 
     /**
@@ -703,7 +699,7 @@ public:
      * @param intent pending intent object that no longer needs location updates
      * @throws IllegalArgumentException if intent is null
      */
-    virtual CARAPI RemoveUpdates(
+    CARAPI RemoveUpdates(
         /* [in] */ IPendingIntent* intent);
 
     /**
@@ -753,7 +749,7 @@ public:
      * @throws SecurityException if {@link android.Manifest.permission#ACCESS_FINE_LOCATION}
      * permission is not present
      */
-    virtual CARAPI AddProximityAlert(
+    CARAPI AddProximityAlert(
         /* [in] */ Double latitude,
         /* [in] */ Double longitude,
         /* [in] */ Float radius,
@@ -796,7 +792,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI AddGeofence(
+    CARAPI AddGeofence(
         /* [in] */ ILocationRequest* request,
         /* [in] */ IGeofence* fence,
         /* [in] */ IPendingIntent* intent);
@@ -817,7 +813,7 @@ public:
      * @throws SecurityException if {@link android.Manifest.permission#ACCESS_FINE_LOCATION}
      * permission is not present
      */
-    virtual CARAPI RemoveProximityAlert(
+    CARAPI RemoveProximityAlert(
         /* [in] */ IPendingIntent* intent);
 
     /**
@@ -836,7 +832,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI RemoveGeofence(
+    CARAPI RemoveGeofence(
         /* [in] */ IGeofence* fence,
         /* [in] */ IPendingIntent* intent);
 
@@ -851,7 +847,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI RemoveAllGeofences(
+    CARAPI RemoveAllGeofences(
         /* [in] */ IPendingIntent* intent);
 
     /**
@@ -875,7 +871,7 @@ public:
      *
      * @throws IllegalArgumentException if provider is null
      */
-    virtual CARAPI IsProviderEnabled(
+    CARAPI IsProviderEnabled(
         /* [in] */ const String& provider,
         /* [out] */ Boolean* result);
 
@@ -893,7 +889,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI GetLastLocation(
+    CARAPI GetLastLocation(
         /* [out] */ ILocation** location);
 
     /**
@@ -913,7 +909,7 @@ public:
      * @throws SecurityException if no suitable permission is present
      * @throws IllegalArgumentException if provider is null or doesn't exist
      */
-    virtual CARAPI GetLastKnownLocation(
+    CARAPI GetLastKnownLocation(
         /* [in] */ const String& provider,
         /* [out] */ ILocation** location);
 
@@ -931,7 +927,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION} system setting is not enabled
      * @throws IllegalArgumentException if a provider with the given name already exists
      */
-    virtual CARAPI AddTestProvider(
+    CARAPI AddTestProvider(
         /* [in] */ const String& name,
         /* [in] */ Boolean requiresNetwork,
         /* [in] */ Boolean requiresSatellite,
@@ -953,7 +949,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION}} system setting is not enabled
      * @throws IllegalArgumentException if no provider with the given name exists
      */
-    virtual CARAPI RemoveTestProvider(
+    CARAPI RemoveTestProvider(
         /* [in] */ const String& provider);
 
     /**
@@ -972,7 +968,7 @@ public:
      * @throws IllegalArgumentException if no provider with the given name exists
      * @throws IllegalArgumentException if the location is incomplete
      */
-    virtual CARAPI SetTestProviderLocation(
+    CARAPI SetTestProviderLocation(
         /* [in] */ const String& provider,
         /* [in] */ ILocation* loc);
 
@@ -986,7 +982,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION}} system setting is not enabled
      * @throws IllegalArgumentException if no provider with the given name exists
      */
-    virtual CARAPI ClearTestProviderLocation(
+    CARAPI ClearTestProviderLocation(
         /* [in] */ const String& provider);
 
     /**
@@ -1001,7 +997,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION}} system setting is not enabled
      * @throws IllegalArgumentException if no provider with the given name exists
      */
-    virtual CARAPI SetTestProviderEnabled(
+    CARAPI SetTestProviderEnabled(
         /* [in] */ const String& provider,
         /* [in] */ Boolean enabled);
 
@@ -1015,7 +1011,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION}} system setting is not enabled
      * @throws IllegalArgumentException if no provider with the given name exists
      */
-    virtual CARAPI ClearTestProviderEnabled(
+    CARAPI ClearTestProviderEnabled(
         /* [in] */ const String& provider);
 
     /**
@@ -1032,7 +1028,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION}} system setting is not enabled
      * @throws IllegalArgumentException if no provider with the given name exists
      */
-    virtual CARAPI SetTestProviderStatus(
+    CARAPI SetTestProviderStatus(
         /* [in] */ const String& provider,
         /* [in] */ Int32 status,
         /* [in] */ IBundle* extras,
@@ -1048,7 +1044,7 @@ public:
      * Settings.Secure.ALLOW_MOCK_LOCATION}} system setting is not enabled
      * @throws IllegalArgumentException if no provider with the given name exists
      */
-    virtual CARAPI ClearTestProviderStatus(
+    CARAPI ClearTestProviderStatus(
         /* [in] */ const String& provider);
 
     // --- GPS-specific support ---
@@ -1062,7 +1058,7 @@ public:
      *
      * @throws SecurityException if the ACCESS_FINE_LOCATION permission is not present
      */
-    virtual CARAPI AddGpsStatusListener(
+    CARAPI AddGpsStatusListener(
         /* [in] */ IGpsStatusListener* listener,
         /* [out] */ Boolean* result);
 
@@ -1071,7 +1067,7 @@ public:
      *
      * @param listener GPS status listener object to remove
      */
-    virtual CARAPI RemoveGpsStatusListener(
+    CARAPI RemoveGpsStatusListener(
         /* [in] */ IGpsStatusListener* listener);
 
     /**
@@ -1083,7 +1079,7 @@ public:
      *
      * @throws SecurityException if the ACCESS_FINE_LOCATION permission is not present
      */
-    virtual CARAPI AddNmeaListener(
+    CARAPI AddNmeaListener(
         /* [in] */ IGpsStatusNmeaListener* listener,
         /* [out] */ Boolean* result);
 
@@ -1092,7 +1088,7 @@ public:
      *
      * @param listener a {@link GpsStatus.NmeaListener} object to remove
      */
-    virtual CARAPI RemoveNmeaListener(
+    CARAPI RemoveNmeaListener(
         /* [in] */ IGpsStatusNmeaListener* listener);
 
     /**
@@ -1103,7 +1099,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI AddGpsMeasurementListener(
+    CARAPI AddGpsMeasurementListener(
         /* [in] */ IGpsMeasurementsEventListener* listener,
         /* [out] */ Boolean* result);
 
@@ -1114,7 +1110,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI RemoveGpsMeasurementListener(
+    CARAPI RemoveGpsMeasurementListener(
         /* [in] */ IGpsMeasurementsEventListener* listener);
 
     /**
@@ -1125,7 +1121,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI AddGpsNavigationMessageListener(
+    CARAPI AddGpsNavigationMessageListener(
         /* [in] */ IGpsNavigationMessageEventListener* listener,
         /* [out] */ Boolean* result);
 
@@ -1136,7 +1132,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI RemoveGpsNavigationMessageListener(
+    CARAPI RemoveGpsNavigationMessageListener(
         /* [in] */ IGpsNavigationMessageEventListener* listener);
 
      /**
@@ -1150,7 +1146,7 @@ public:
      * @param status object containing GPS status details, or null.
      * @return status object containing updated GPS status.
      */
-    virtual CARAPI GetGpsStatus(
+    CARAPI GetGpsStatus(
         /* [in] */ IGpsStatus* inStatus,
         /* [out] */ IGpsStatus** outStatus);
 
@@ -1165,7 +1161,7 @@ public:
      *
      * @return true if the command succeeds.
      */
-    virtual CARAPI SendExtraCommand(
+    CARAPI SendExtraCommand(
         /* [in] */ const String& provider,
         /* [in] */ const String& command,
         /* [out] */ IBundle* extras,
@@ -1177,7 +1173,7 @@ public:
      *
      * @hide
      */
-    virtual CARAPI SendNiResponse(
+    CARAPI SendNiResponse(
         /* [in] */ Int32 notifId,
         /* [in] */ Int32 userResponse,
         /* [out] */ Boolean* result);

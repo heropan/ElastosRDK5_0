@@ -21,6 +21,14 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccount)
 //
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::View::IView)
 
+//
+// Location
+//
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ICountryListener)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusListener)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::IGpsStatusNmeaListener)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Location::ILocationListener)
+
 
 #endif // __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
 

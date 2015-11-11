@@ -17,11 +17,11 @@ CAR_INTERFACE_IMPL_2(GpsNavigationMessage, Object, IGpsNavigationMessage, IParce
 
 GpsNavigationMessage::GpsNavigationMessage()
 {
-    Initialize();
 }
 
 ECode GpsNavigationMessage::constructor()
 {
+    Initialize();
     return NOERROR;
 }
 

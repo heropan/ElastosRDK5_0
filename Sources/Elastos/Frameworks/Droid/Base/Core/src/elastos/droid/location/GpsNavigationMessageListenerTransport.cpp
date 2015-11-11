@@ -38,7 +38,7 @@ GpsNavigationMessageListenerTransport::ListenerTransport::ListenerTransport()
 }
 
 ECode GpsNavigationMessageListenerTransport::ListenerTransport::constructor(
-    /* [in] */ Handle32 host)
+    /* [in] */ IGpsNavigationMessageListenerTransport* host)
 {
     mHost = (GpsNavigationMessageListenerTransport*)host;
     return NOERROR;
@@ -67,7 +67,7 @@ GpsNavigationMessageListenerTransport::GpsNavigationMessageListenerTransport()
     : LocalListenerHelper(String("GpsNavigationMessageListenerTransport"))
 {
     AutoPtr<IIGpsNavigationMessageListener> lt;
-    CGpsNavigationMessageListenerTransportListenerTransport::New((Handle32)this, (IIGpsNavigationMessageListener**)&lt);
+    CGpsNavigationMessageListenerTransportListenerTransport::New(THIS_PROBE(IGpsNavigationMessageListenerTransport), (IIGpsNavigationMessageListener**)&lt);
     mListenerTransport = IIGpsNavigationMessageListener::Probe(lt);
 }
 

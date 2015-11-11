@@ -52,7 +52,7 @@ public:
         ListenerTransport();
 
         CARAPI constructor(
-            /* [in] */ Handle32 host);
+            /* [in] */ IGpsNavigationMessageListenerTransport* host);
 
         // @Override
         CARAPI OnGpsNavigationMessageReceived(
