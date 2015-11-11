@@ -5,6 +5,29 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
+//=============================================================
+// VpnService::Callback
+//=============================================================
+ECode VpnService::Callback::OnTransact(
+    /* [in] */ Int32 code,
+    /* [in] */ IParcel* data,
+    /* [in] */ IParcel* reply,
+    /* [in] */ Int32 flags,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+            if (code == IBinder.LAST_CALL_TRANSACTION) {
+                onRevoke();
+                return true;
+            }
+            return false;
+#endif
+}
+
+//=============================================================
+// VpnService
+//=============================================================
 #if 0 // TODO: Waiting for Service
 CAR_INTERFACE_IMPL(VpnService, Service, IVpnService)
 #else
@@ -23,7 +46,6 @@ ECode VpnService::GetService(
 #if 0 // TODO: Translate codes below
         return IConnectivityManager.Stub.asInterface(
                 ServiceManager.getService(Context.CONNECTIVITY_SERVICE));
-
 #endif
 }
 
@@ -41,7 +63,6 @@ ECode VpnService::Prepare(
             // ignore
         }
         return VpnConfig.getIntentForConfirmation();
-
 #endif
 }
 
@@ -52,7 +73,6 @@ ECode VpnService::Protect(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return NetworkUtils.protectFromVpn(socket);
-
 #endif
 }
 
@@ -63,7 +83,6 @@ ECode VpnService::Protect(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return protect(socket.getFileDescriptor$().getInt$());
-
 #endif
 }
 
@@ -74,7 +93,6 @@ ECode VpnService::Protect(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return protect(socket.getFileDescriptor$().getInt$());
-
 #endif
 }
 
@@ -91,7 +109,6 @@ ECode VpnService::AddAddress(
         } catch (RemoteException e) {
             throw new IllegalStateException(e);
         }
-
 #endif
 }
 
@@ -108,7 +125,6 @@ ECode VpnService::RemoveAddress(
         } catch (RemoteException e) {
             throw new IllegalStateException(e);
         }
-
 #endif
 }
 
@@ -122,7 +138,6 @@ ECode VpnService::OnBind(
             return new Callback();
         }
         return null;
-
 #endif
 }
 
@@ -131,7 +146,6 @@ ECode VpnService::OnRevoke()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         stopSelf();
-
 #endif
 }
 
@@ -155,7 +169,6 @@ ECode VpnService::Check(
         } else {
             throw new IllegalArgumentException("Unsupported family");
         }
-
 #endif
 }
 
@@ -200,7 +213,6 @@ ECode VpnServiceBuilder::constructor()
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 mConfig.user = VpnService.this.getClass().getName();
-
 #endif
 }
 
@@ -212,7 +224,6 @@ ECode VpnServiceBuilder::SetSession(
 #if 0 // TODO: Translate codes below
                 mConfig.session = session;
                 return this;
-
 #endif
 }
 
@@ -224,7 +235,6 @@ ECode VpnServiceBuilder::SetConfigureIntent(
 #if 0 // TODO: Translate codes below
                 mConfig.configureIntent = intent;
                 return this;
-
 #endif
 }
 
@@ -239,7 +249,6 @@ ECode VpnServiceBuilder::SetMtu(
                 }
                 mConfig.mtu = mtu;
                 return this;
-
 #endif
 }
 
@@ -257,7 +266,6 @@ ECode VpnServiceBuilder::AddAddress(
                 mAddresses.add(new LinkAddress(address, prefixLength));
                 mConfig.updateAllowedFamilies(address);
                 return this;
-
 #endif
 }
 
@@ -269,7 +277,6 @@ ECode VpnServiceBuilder::AddAddress(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 return addAddress(InetAddress.parseNumericAddress(address), prefixLength);
-
 #endif
 }
 
@@ -293,7 +300,6 @@ ECode VpnServiceBuilder::AddRoute(
                 mRoutes.add(new RouteInfo(new LinkAddress(address, prefixLength), null));
                 mConfig.updateAllowedFamilies(address);
                 return this;
-
 #endif
 }
 
@@ -305,7 +311,6 @@ ECode VpnServiceBuilder::AddRoute(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 return addRoute(InetAddress.parseNumericAddress(address), prefixLength);
-
 #endif
 }
 
@@ -323,7 +328,6 @@ ECode VpnServiceBuilder::AddDnsServer(
                 }
                 mConfig.dnsServers.add(address.getHostAddress());
                 return this;
-
 #endif
 }
 
@@ -334,7 +338,6 @@ ECode VpnServiceBuilder::AddDnsServer(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
                 return addDnsServer(InetAddress.parseNumericAddress(address));
-
 #endif
 }
 
@@ -349,7 +352,6 @@ ECode VpnServiceBuilder::AddSearchDomain(
                 }
                 mConfig.searchDomains.add(domain);
                 return this;
-
 #endif
 }
 
@@ -368,7 +370,6 @@ ECode VpnServiceBuilder::AllowFamily(
                             AF_INET6);
                 }
                 return this;
-
 #endif
 }
 
@@ -384,7 +385,6 @@ ECode VpnServiceBuilder::VerifyApp(
                 } catch (RemoteException e) {
                     throw new IllegalStateException(e);
                 }
-
 #endif
 }
 
@@ -403,7 +403,6 @@ ECode VpnServiceBuilder::AddAllowedApplication(
                 }
                 mConfig.allowedApplications.add(packageName);
                 return this;
-
 #endif
 }
 
@@ -422,7 +421,6 @@ ECode VpnServiceBuilder::AddDisallowedApplication(
                 }
                 mConfig.disallowedApplications.add(packageName);
                 return this;
-
 #endif
 }
 
@@ -433,7 +431,6 @@ ECode VpnServiceBuilder::AllowBypass(
 #if 0 // TODO: Translate codes below
                 mConfig.allowBypass = true;
                 return this;
-
 #endif
 }
 
@@ -445,7 +442,6 @@ ECode VpnServiceBuilder::SetBlocking(
 #if 0 // TODO: Translate codes below
                 mConfig.blocking = blocking;
                 return this;
-
 #endif
 }
 
@@ -461,7 +457,6 @@ ECode VpnServiceBuilder::Establish(
                 } catch (RemoteException e) {
                     throw new IllegalStateException(e);
                 }
-
 #endif
 }
 

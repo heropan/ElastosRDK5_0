@@ -7,6 +7,7 @@
 
 using Elastos::Core::IArrayOf;
 using Elastos::Security::IPrivateKey;
+using Elastos::Security::Cert::IX509Certificate;
 using Elastosx::Net::Ssl::IKeyManager;
 using Elastosx::Net::Ssl::ITrustManager;
 using Elastosx::Net::Ssl::SSLSocketFactory;
@@ -54,15 +55,17 @@ class SSLCertificateSocketFactory
 {
 private:
     class InnerSub_TrustManager {
-#if 0 // TODO: Translate codes below.
-        private static final TrustManager[] INSECURE_TRUST_MANAGER = new TrustManager[] {
-            new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() { return null; }
-                public void checkClientTrusted(X509Certificate[] certs, String authType) { }
-                public void checkServerTrusted(X509Certificate[] certs, String authType) { }
-            }
-        }
-#endif
+    public:
+        CARAPI GetAcceptedIssuers(
+            /* [out, callee] */ ArrayOf<IX509Certificate*>** result);
+
+        CARAPI CheckClientTrusted(
+            /* [in] */ ArrayOf<IX509Certificate*>* certs,
+            /* [in] */ const String& authType);
+
+        CARAPI CheckServerTrusted(
+            /* [in] */ ArrayOf<IX509Certificate*>* certs,
+            /* [in] */ const String& authType);
     };
 
 public:

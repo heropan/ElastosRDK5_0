@@ -149,7 +149,7 @@ public:
         /* [out] */ IView** result);
 
 private:
-    SslCertificate(
+    CARAPI constructor(
         /* [in] */ const String& issuedTo,
         /* [in] */ const String& issuedBy,
         /* [in] */ Elastos::Utility::IDate* validNotBefore,

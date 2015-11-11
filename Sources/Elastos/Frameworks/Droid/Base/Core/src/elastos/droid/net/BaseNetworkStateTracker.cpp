@@ -1,5 +1,11 @@
 
 #include "elastos/droid/net/BaseNetworkStateTracker.h"
+#include "elastos/droid/net/CNetwork.h"
+#include "elastos/droid/net/CConnectivityManagerHelper.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CNetworkInfo.h"
+#include "elastos/droid/net/CNetworkCapabilities.h"
 
 using Elastos::Droid::Os::IMessage;
 
@@ -18,11 +24,7 @@ BaseNetworkStateTracker::BaseNetworkStateTracker()
     , mNetworkCapabilities(NULL)
     , mTarget(NULL)
 {
-#if 0 // TODO: Waiting for INetwork
     CNetwork::New(IConnectivityManager::NETID_UNSET, (INetwork**)&mNetwork);
-#else
-    assert(0);
-#endif
     CAtomicBoolean::New((IAtomicBoolean**)&mTeardownRequested);
     CAtomicBoolean::New((IAtomicBoolean**)&mPrivateDnsRouteSet);
     CAtomicBoolean::New((IAtomicBoolean**)&mDefaultRouteSet);
@@ -39,20 +41,12 @@ ECode BaseNetworkStateTracker::constructor(
 {
 
     AutoPtr<IConnectivityManagerHelper> CMHelper;
-#if 0 // TODO: Waiting for IConnectivityManagerHelper
     CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&CMHelper);
-#else
-    assert(0);
-#endif
     String typeName;
     CMHelper->GetNetworkTypeName(networkType, &typeName);
-#if 0 // TODO: Waiting for INetworkInfo, ILinkProperties, ILinkCapabilities
     CNetworkInfo::New(networkType, -1, typeName, String(NULL), (INetworkInfo**)&mNetworkInfo);
     CLinkProperties::New((ILinkProperties**)&mLinkProperties);
-    CLinkCapabilities::New((ILinkCapabilities**)&mLinkCapabilities);
-#else
-    assert(0);
-#endif
+    CNetworkCapabilities::New((INetworkCapabilities**)&mNetworkCapabilities);
 
     return NOERROR;
 }
@@ -109,12 +103,9 @@ ECode BaseNetworkStateTracker::GetNetworkInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
-#if 0 // TODO: Waiting for INetworkInfo
-    return CNetworkInfo::New(mNetworkInfo, info);
-#else
-    assert(0);
+    CNetworkInfo::New(mNetworkInfo, info);
+    REFCOUNT_ADD(*info)
     return NOERROR;
-#endif
 }
 
 ECode BaseNetworkStateTracker::GetLinkProperties(
@@ -123,26 +114,9 @@ ECode BaseNetworkStateTracker::GetLinkProperties(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-#if 0 // TODO: Waiting for ILinkProperties
-    return CLinkProperties::New(mLinkProperties, result);
-#else
-    assert(0);
+    CLinkProperties::New(mLinkProperties, result);
+    REFCOUNT_ADD(*result)
     return NOERROR;
-#endif
-}
-
-ECode BaseNetworkStateTracker::GetLinkCapabilities(
-    /* [out] */ ILinkCapabilities** result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-#if 0 // TODO: Waiting for ILinkCapabilities
-    return CLinkCapabilities::New(mLinkCapabilities, result);
-#else
-    assert(0);
-    return NOERROR;
-#endif
 }
 
 ECode BaseNetworkStateTracker::GetLinkQualityInfo(
@@ -251,12 +225,8 @@ ECode BaseNetworkStateTracker::AddStackedLink(
 {
     VALIDATE_NOT_NULL(link)
 
-#if 0 // TODO: Waiting for ILinkProperties
-    return mLinkProperties->AddStackedLink(link);
-#else
-    assert(0);
-    return NOERROR;
-#endif
+    Boolean b;
+    return mLinkProperties->AddStackedLink(link, &b);
 }
 
 ECode BaseNetworkStateTracker::RemoveStackedLink(
@@ -264,12 +234,8 @@ ECode BaseNetworkStateTracker::RemoveStackedLink(
 {
     VALIDATE_NOT_NULL(link)
 
-#if 0 // TODO: Waiting for ILinkProperties
-    return mLinkProperties->RemoveStackedLink(link);
-#else
-    assert(0);
-    return NOERROR;
-#endif
+    Boolean b;
+    return mLinkProperties->RemoveStackedLink(link, &b);
 }
 
 
@@ -319,12 +285,9 @@ ECode BaseNetworkStateTracker::StopSampling(
 ECode BaseNetworkStateTracker::SetNetId(
     /* [in] */ Int32 netId)
 {
-#if 0 // TODO: Waiting for INetwork
-    return CNetwork::New(netId, (INetwork**)&mNetwork);
-#else
-    assert(0);
+    CNetwork::New(netId, (INetwork**)&mNetwork);
+    REFCOUNT_ADD(mNetwork);
     return NOERROR;
-#endif
 }
 
 ECode BaseNetworkStateTracker::GetNetwork(
@@ -343,14 +306,10 @@ ECode BaseNetworkStateTracker::GetNetworkCapabilities(
     VALIDATE_NOT_NULL(*result)
     *result = NULL;
 
-#if 0 // TODO: Waiting for CNetworkCapabilities
     CNetworkCapabilities::New(mNetworkCapabilities, result);
-#else
-    assert(0);
-#endif
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
-
 
 } // namespace Net
 } // namepsace Droid

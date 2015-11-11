@@ -9,6 +9,12 @@ AutoPtr<IProxySelector> ProxySelector::sDefaultSelector;
 
 CAR_INTERFACE_IMPL(ProxySelector, Object, IProxySelector)
 
+ProxySelector::ProxySelector()
+{}
+
+ProxySelector::~ProxySelector()
+{}
+
 ECode ProxySelector::GetDefault(
     /* [out] */ IProxySelector** defaultSelector)
 {

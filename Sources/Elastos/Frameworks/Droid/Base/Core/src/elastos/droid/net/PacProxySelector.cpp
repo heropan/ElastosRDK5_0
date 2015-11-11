@@ -5,11 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-#if 0 // TODO: Waiting for outport ProxySelector
 CAR_INTERFACE_IMPL(PacProxySelector, ProxySelector, IPacProxySelector)
-#else
-CAR_INTERFACE_IMPL(PacProxySelector, Object, IPacProxySelector)
-#endif
 
 const String PacProxySelector::TAG = String("PacProxySelector");
 const String PacProxySelector::SOCKS = String("SOCKS ");

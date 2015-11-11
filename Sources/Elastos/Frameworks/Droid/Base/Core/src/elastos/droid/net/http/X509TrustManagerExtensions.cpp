@@ -1,14 +1,15 @@
 
 #include "elastos/droid/net/http/X509TrustManagerExtensions.h"
 
-using Elastos::Utility::Logging::Logger;
+using Elastosx::Net::Ssl::ISSLParameters;
+using Elastosx::Net::Ssl::ISSLSocket;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
-CAR_INTERFACE_IMPL(X509TrustManagerExtensions, $SUPER_CLASS$, IX509TrustManagerExtensions)
+CAR_INTERFACE_IMPL(X509TrustManagerExtensions, Object, IX509TrustManagerExtensions)
 
 ECode X509TrustManagerExtensions::constructor(
     /* [in] */ IX509TrustManager* tm)
@@ -34,8 +35,8 @@ ECode X509TrustManagerExtensions::constructor(
 
 ECode X509TrustManagerExtensions::CheckServerTrusted(
     /* [in] */ ArrayOf<IX509Certificate*>* chain,
-    /* [in] */ String authType,
-    /* [in] */ String host,
+    /* [in] */ const String& authType,
+    /* [in] */ const String& host,
     /* [out] */ IList** result)
 {
     return E_NOT_IMPLEMENTED;

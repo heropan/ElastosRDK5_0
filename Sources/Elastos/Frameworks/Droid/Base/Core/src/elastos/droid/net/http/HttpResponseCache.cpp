@@ -17,13 +17,12 @@ namespace Http {
 
 CAR_INTERFACE_IMPL_2(HttpResponseCache, ResponseCache, IHttpResponseCache, ICloseable)
 
-HttpResponseCache::constructor(
-    /* [in] */ Elastos::Droid::External::Okhttp::IHttpResponseCache* delegate)
+ECode HttpResponseCache::constructor(
+    /* [in] */ Com::Squareup::Okhttp::IHttpResponseCache* delegate)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         this.delegate = delegate;
-
 #endif
 }
 
@@ -38,7 +37,6 @@ ECode HttpResponseCache::GetInstalled(
                     (com.android.okhttp.HttpResponseCache) installed);
         }
         return null;
-
 #endif
 }
 
@@ -67,7 +65,6 @@ ECode HttpResponseCache::Install(
                 new com.android.okhttp.HttpResponseCache(directory, maxSize);
         ResponseCache.setDefault(responseCache);
         return new HttpResponseCache(responseCache);
-
 #endif
 }
 
@@ -80,7 +77,6 @@ ECode HttpResponseCache::Get(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.get(uri, requestMethod, requestHeaders);
-
 #endif
 }
 
@@ -92,7 +88,6 @@ ECode HttpResponseCache::Put(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.put(uri, urlConnection);
-
 #endif
 }
 
@@ -102,7 +97,6 @@ ECode HttpResponseCache::Size(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getSize();
-
 #endif
 }
 
@@ -112,7 +106,6 @@ ECode HttpResponseCache::MaxSize(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getMaxSize();
-
 #endif
 }
 
@@ -124,7 +117,6 @@ ECode HttpResponseCache::Flush()
             delegate.flush();
         } catch (IOException ignored) {
         }
-
 #endif
 }
 
@@ -134,7 +126,6 @@ ECode HttpResponseCache::GetNetworkCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getNetworkCount();
-
 #endif
 }
 
@@ -144,7 +135,6 @@ ECode HttpResponseCache::GetHitCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getHitCount();
-
 #endif
 }
 
@@ -154,7 +144,6 @@ ECode HttpResponseCache::GetRequestCount(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return delegate.getRequestCount();
-
 #endif
 }
 
@@ -166,7 +155,6 @@ ECode HttpResponseCache::Close()
             ResponseCache.setDefault(null);
         }
         delegate.close();
-
 #endif
 }
 
@@ -178,7 +166,6 @@ ECode HttpResponseCache::Delete()
             ResponseCache.setDefault(null);
         }
         delegate.delete();
-
 #endif
 }
 

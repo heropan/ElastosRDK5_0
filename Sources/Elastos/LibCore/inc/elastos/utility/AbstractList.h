@@ -12,12 +12,12 @@ using Elastos::Utility::IRandomAccess;
 namespace Elastos {
 namespace Utility {
 
-class AbstractList
+class ECO_PUBLIC AbstractList
     : public AbstractCollection
     , public IList
 {
 private:
-    class SimpleListIterator
+    class ECO_LOCAL SimpleListIterator
         : public Object
         , public IIterator
     {
@@ -42,7 +42,7 @@ private:
         AutoPtr<AbstractList> mOwner;
     };
 
-    class FullListIterator
+    class ECO_LOCAL FullListIterator
         : public SimpleListIterator
         , public IListIterator
     {

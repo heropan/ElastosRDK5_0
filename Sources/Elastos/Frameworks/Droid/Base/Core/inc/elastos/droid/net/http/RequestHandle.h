@@ -215,6 +215,7 @@ private:
      */
     CARAPI CreateAndQueueNewRequest();
 
+private:
     String mUrl;
 
     AutoPtr<IWebAddress> mUri;

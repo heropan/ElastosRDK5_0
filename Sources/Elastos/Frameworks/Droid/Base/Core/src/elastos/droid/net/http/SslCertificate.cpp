@@ -33,14 +33,14 @@ const String SslCertificate::X509_CERTIFICATE("x509-certificate");
 SslCertificate::SslCertificate()
 {}
 
-SslCertificate::SslCertificate(
+ECode SslCertificate::constructor(
         /* [in] */ const String& issuedTo,
         /* [in] */ const String& issuedBy,
         /* [in] */ Elastos::Utility::IDate* validNotBefore,
         /* [in] */ Elastos::Utility::IDate* validNotAfter,
         /* [in] */ IX509Certificate* x509Certificate)
 {
-    Init(issuedTo, issuedBy, validNotBefore, validNotAfter, x509Certificate);
+    return Init(issuedTo, issuedBy, validNotBefore, validNotAfter, x509Certificate);
 }
 
 ECode SslCertificate::SaveState(
@@ -187,7 +187,7 @@ ECode SslCertificate::constructor(
 #endif
 }
 
-SslCertificate::Init(
+ECode SslCertificate::Init(
     /* [in] */ const String& issuedTo,
     /* [in] */ const String& issuedBy,
     /* [in] */ IDate* validNotBefore,
@@ -640,7 +640,6 @@ ECode SslCertificateDName::GetUName(
     return NOERROR;
 #endif
 }
-
 
 } // namespace Http
 } // namespace Net

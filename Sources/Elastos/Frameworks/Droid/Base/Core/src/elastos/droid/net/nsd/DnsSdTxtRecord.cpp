@@ -1,18 +1,19 @@
 
-#include "elastos/droid/net/http/DnsSdTxtRecord.h"
+#include "elastos/droid/net/nsd/DnsSdTxtRecord.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::IArrays;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Nsd {
 
-CAR_INTERFACE_IMPL_2(DnsSdTxtRecord, Object, IParcelable, IDnsSdTxtRecord)
-
 const Byte DnsSdTxtRecord::mSeperator = '=';
+
+CAR_INTERFACE_IMPL_2(DnsSdTxtRecord, Object, IParcelable, IDnsSdTxtRecord)
 
 ECode DnsSdTxtRecord::constructor()
 {
@@ -196,7 +197,7 @@ ECode DnsSdTxtRecord::Size(
 }
 
 ECode DnsSdTxtRecord::GetRawData(
-    /* [out, callee] */ ArrayOf<Byte>* result)
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -270,7 +271,7 @@ ECode DnsSdTxtRecord::GetKey(
 
 ECode DnsSdTxtRecord::GetValue(
     /* [in] */ Int32 index,
-    /* [out, callee] */ ArrayOf<Byte>* result)
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
@@ -315,7 +316,7 @@ ECode DnsSdTxtRecord::GetValueAsString(
 
 ECode DnsSdTxtRecord::GetValue(
     /* [in] */ const String& forKey,
-    /* [out, callee] */ ArrayOf<Byte>* result)
+    /* [out, callee] */ ArrayOf<Byte>** result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below

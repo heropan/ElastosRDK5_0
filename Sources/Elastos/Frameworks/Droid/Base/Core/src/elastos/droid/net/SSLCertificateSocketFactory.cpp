@@ -1,13 +1,62 @@
 
 #include "elastos/droid/net/SSLCertificateSocketFactory.h"
 
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Utility::ILog;
+
+using Elastos::Net::IInetAddress;
+using Elastos::Net::ISocket;
+using Elastos::Security::IPrivateKey;
+using Elastosx::Net::ISocketFactory;
+using Elastosx::Net::Ssl::IHostnameVerifier;
+using Elastosx::Net::Ssl::IHttpsURLConnection;
+using Elastosx::Net::Ssl::IKeyManager;
+using Elastosx::Net::Ssl::ISSLSession;
+using Elastosx::Net::Ssl::ISSLSocket;
+using Elastosx::Net::Ssl::ISSLSocketFactory;
+using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::IX509TrustManager;
+
+using Org::Conscrypt::IOpenSSLContextImpl;
+using Org::Conscrypt::IOpenSSLSocketImpl;
+using Org::Conscrypt::ISSLClientSessionCache;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+//==========================================================
+// SSLCertificateSocketFactory::InnerSub_TrustManager
+//==========================================================
+ECode SSLCertificateSocketFactory::InnerSub_TrustManager::GetAcceptedIssuers(
+    /* [out, callee] */ ArrayOf<IX509Certificate*>** result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    *result = NULL;
+    return NOERROR;
+}
+
+ECode SSLCertificateSocketFactory::InnerSub_TrustManager::CheckClientTrusted(
+    /* [in] */ ArrayOf<IX509Certificate*>* certs,
+    /* [in] */ const String& authType)
+{
+    return NOERROR;
+}
+
+ECode SSLCertificateSocketFactory::InnerSub_TrustManager::CheckServerTrusted(
+    /* [in] */ ArrayOf<IX509Certificate*>* certs,
+    /* [in] */ const String& authType)
+{
+    return NOERROR;
+}
+
+//==========================================================
+// SSLCertificateSocketFactory
+//==========================================================
 CAR_INTERFACE_IMPL(SSLCertificateSocketFactory, SSLSocketFactory, ISSLCertificateSocketFactory)
 
-const String SSLCertificateSocketFactory::TAG = String("SSLCertificateSocketFactory");
+const String SSLCertificateSocketFactory::TAG("SSLCertificateSocketFactory");
 
 SSLCertificateSocketFactory::SSLCertificateSocketFactory()
     : mInsecureFactory(NULL)

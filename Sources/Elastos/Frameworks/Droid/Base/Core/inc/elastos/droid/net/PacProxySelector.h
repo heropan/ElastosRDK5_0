@@ -3,12 +3,13 @@
 #define __ELASTOS_DROID_NET_PACPROXYSELECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-// #include <elastos/net/ProxySelector.h>
+#include <elastos/net/ProxySelector.h>
 
 using Elastos::Droid::Net::IIProxyService;
 
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::IURI;
+using Elastos::Net::ProxySelector;
 using Elastos::Net::ProxyType;
 using Elastos::Utility::IList;
 
@@ -20,11 +21,7 @@ namespace Net {
  * @hide
  */
 class PacProxySelector
-#if 0 // TODO: Waiting for outport ProxySelector
     : public ProxySelector
-#else
-    : public Object
-#endif
     , public IPacProxySelector
 {
 public:

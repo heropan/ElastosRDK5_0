@@ -100,6 +100,16 @@ module
      */
     interface INsdManager {
         /**
+         * Broadcast intent action to indicate whether network service discovery is
+         * enabled or disabled. An extra {@link #EXTRA_NSD_STATE} provides the state
+         * information as int.
+         *
+         * @see #EXTRA_NSD_STATE
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_NSD_STATE_CHANGED = "android.net.nsd.STATE_CHANGED";
+
+        /**
          * The lookup key for an int that indicates whether network service discovery is enabled
          * or disabled. Retrieve it with {@link android.content.Intent#getIntExtra(String,int)}.
          *

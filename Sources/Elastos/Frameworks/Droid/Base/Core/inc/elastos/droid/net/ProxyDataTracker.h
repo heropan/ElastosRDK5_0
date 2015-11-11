@@ -9,6 +9,7 @@
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IHandler;
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
@@ -31,35 +32,10 @@ private:
     class InnerSub_BroadcastReceiver
         : public BroadcastReceiver
     {
-#if 0 // TODO: Translate codes below.
-    private final BroadcastReceiver mProxyStatusServiceListener = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ACTION_PROXY_STATUS_CHANGE)) {
-                mIsProxyAvailable.set(intent.getBooleanExtra(KEY_IS_PROXY_AVAILABLE, false));
-                if (mIsProxyAvailable.get()) {
-                    Bundle bundle = intent.getBundleExtra(KEY_REPLY_TO_MESSENGER_BINDER_BUNDLE);
-                    if (bundle == null || bundle.getBinder(KEY_REPLY_TO_MESSENGER_BINDER) == null) {
-                        Log.e(TAG, "no messenger binder in the intent to send future requests");
-                        mIsProxyAvailable.set(false);
-                        return;
-                    }
-                    mProxyStatusService =
-                            new Messenger(bundle.getBinder(KEY_REPLY_TO_MESSENGER_BINDER));
-                    // If there is a pending reconnect request, do it now.
-                    if (mReconnectRequested.get()) {
-                        reconnect();
-                    }
-                } else {
-                    setDetailedState(NetworkInfo.DetailedState.DISCONNECTED,
-                            REASON_PROXY_DOWN, null);
-                }
-            } else {
-                Log.d(TAG, "Unrecognized broadcast intent");
-            }
-        }
-    };
-#endif
+    public:
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
     };
 
 public:

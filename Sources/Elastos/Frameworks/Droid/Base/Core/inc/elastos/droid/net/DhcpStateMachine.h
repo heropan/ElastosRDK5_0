@@ -5,9 +5,11 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/internal/utility/State.h"
 #include "elastos/droid/internal/utility/StateMachine.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -162,9 +164,7 @@ public:
 
 private:
     class MyBroadcastReceiver
-#if 0 // TODO: Waiting for BroadcastReceiver
         : public BroadcastReceiver
-#endif
     {
     public:
         MyBroadcastReceiver(

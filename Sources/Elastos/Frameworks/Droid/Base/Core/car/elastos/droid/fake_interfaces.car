@@ -145,7 +145,10 @@ module
     namespace Conscrypt {
         interface IPSKKeyManager {}
         interface IOpenSSLSocketImpl {}
+        interface IOpenSSLContextImpl {}
         interface ISSLClientSessionCache {}
+        interface ISSLParametersImpl {}
+        interface ITrustManagerImpl {}
     }} // Org.Conscrypt
 
     namespace Org {
@@ -175,14 +178,13 @@ module
 
     }}} // Elastos.Droid.Os
 
-    namespace Elastos {
-    namespace Droid {
-    namespace External {
+    namespace Com {
+    namespace Squareup {
     namespace Okhttp {
 
         interface IHttpResponseCache {}
 
-    }}}} // Elastos.Droid.External.Okhttp
+    }}} // Com.Squareup.Okhttp
 
     namespace Org {
     namespace Apache {

@@ -234,10 +234,10 @@ public:
     CARAPI Delete();
 
 private:
-    constructor(
-        /* [in] */ Elastos::Droid::External::Okhttp::IHttpResponseCache* delegate);
+    CARAPI constructor(
+        /* [in] */ Com::Squareup::Okhttp::IHttpResponseCache* delegate);
 
-    /* const */ AutoPtr<Elastos::Droid::External::Okhttp::IHttpResponseCache> mDelegate;
+    /* const */ AutoPtr<Com::Squareup::Okhttp::IHttpResponseCache> mDelegate;
 };
 
 } // namespace Http

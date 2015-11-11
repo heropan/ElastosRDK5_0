@@ -1,11 +1,56 @@
 
 #include "elastos/droid/net/http/CertificateChainValidator.h"
+#include "elastos/droid/net/http/CCertificateChainValidator.h"
+
+using Elastos::Droid::Utility::ISlog;
+
+using Elastos::IO::IByteArrayInputStream;
+using Elastos::Security::Cert::ICertificate;
+using Elastos::Security::Cert::ICertificateFactory;
+using Elastos::Security::IKeyStore;
+using Elastosx::Net::Ssl::IHttpsURLConnection;
+using Elastosx::Net::Ssl::IHttpsURLConnectionHelper;
+using Elastosx::Net::Ssl::ISSLSession;
+using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::ITrustManagerFactory;
+
+using Org::Conscrypt::ISSLParametersImpl;
+using Org::Conscrypt::ITrustManagerImpl;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
 
+//==============================================================================
+// CertificateChainValidator::NoPreloadHolder
+//==============================================================================
+const AutoPtr<ICertificateChainValidator> CertificateChainValidator::NoPreloadHolder::sInstance = InitInstance();
+const AutoPtr<IHostnameVerifier> CertificateChainValidator::NoPreloadHolder::sVerifier = InitVerifier();
+
+AutoPtr<ICertificateChainValidator> CertificateChainValidator::NoPreloadHolder::InitInstance()
+{
+    AutoPtr<ICertificateChainValidator> ret;
+    CCertificateChainValidator::New((ICertificateChainValidator**)&ret);
+    return ret;
+}
+
+AutoPtr<IHostnameVerifier> CertificateChainValidator::NoPreloadHolder::InitVerifier()
+{
+    AutoPtr<IHostnameVerifier> ret;
+    AutoPtr<IHttpsURLConnectionHelper> huc;
+
+    // TODO: Waiting for CHttpsURLConnectionHelper
+    assert(0);
+    // CHttpsURLConnectionHelper::AcquireSingleton((IHttpsURLConnectionHelper**)&huc);
+    // huc->GetDefaultHostnameVerifier(&ret);
+
+    return ret;
+}
+
+//==============================================================================
+// CertificateChainValidator
+//==============================================================================
 CAR_INTERFACE_IMPL(CertificateChainValidator, Object, ICertificateChainValidator)
 
 const String CertificateChainValidator::TAG("CertificateChainValidator");

@@ -50,7 +50,6 @@ ECode ProxyDataTracker::constructor()
         } catch (UnknownHostException e) {
             Log.e(TAG, "Could not add DNS address", e);
         }
-
 #endif
 }
 
@@ -60,7 +59,6 @@ ECode ProxyDataTracker::Clone(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         throw new CloneNotSupportedException();
-
 #endif
 }
 
@@ -76,7 +74,6 @@ ECode ProxyDataTracker::StartMonitoring(
                 new IntentFilter(ACTION_PROXY_STATUS_CHANGE),
                 PERMISSION_PROXY_STATUS_SENDER,
                 null);
-
 #endif
 }
 
@@ -97,7 +94,6 @@ ECode ProxyDataTracker::Teardown(
         }
         setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, REASON_DISABLED, null);
         return true;
-
 #endif
 }
 
@@ -124,7 +120,6 @@ ECode ProxyDataTracker::Reconnect(
         // received afterwards to indicate any failure.
         setDetailedState(NetworkInfo.DetailedState.CONNECTED, REASON_ENABLED, null);
         return true;
-
 #endif
 }
 
@@ -134,7 +129,6 @@ ECode ProxyDataTracker::GetDefaultGatewayAddr(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return mDefaultGatewayAddr.get();
-
 #endif
 }
 
@@ -144,7 +138,6 @@ ECode ProxyDataTracker::GetTcpBufferSizesPropName(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
         return "net.tcp.buffersize.wifi";
-
 #endif
 }
 
@@ -158,10 +151,47 @@ ECode ProxyDataTracker::SetDetailedState(
         mNetworkInfo.setDetailedState(state, reason, extraInfo);
         Message msg = mTarget.obtainMessage(EVENT_STATE_CHANGED, mNetworkInfo);
         msg.sendToTarget();
-
 #endif
 }
 
+//===================================================
+// ProxyDataTracker::InnerSub_BroadcastReceiver
+//===================================================
+ECode ProxyDataTracker::InnerSub_BroadcastReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    private final BroadcastReceiver mProxyStatusServiceListener = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_PROXY_STATUS_CHANGE)) {
+                mIsProxyAvailable.set(intent.getBooleanExtra(KEY_IS_PROXY_AVAILABLE, false));
+                if (mIsProxyAvailable.get()) {
+                    Bundle bundle = intent.getBundleExtra(KEY_REPLY_TO_MESSENGER_BINDER_BUNDLE);
+                    if (bundle == null || bundle.getBinder(KEY_REPLY_TO_MESSENGER_BINDER) == null) {
+                        Log.e(TAG, "no messenger binder in the intent to send future requests");
+                        mIsProxyAvailable.set(false);
+                        return;
+                    }
+                    mProxyStatusService =
+                            new Messenger(bundle.getBinder(KEY_REPLY_TO_MESSENGER_BINDER));
+                    // If there is a pending reconnect request, do it now.
+                    if (mReconnectRequested.get()) {
+                        reconnect();
+                    }
+                } else {
+                    setDetailedState(NetworkInfo.DetailedState.DISCONNECTED,
+                            REASON_PROXY_DOWN, null);
+                }
+            } else {
+                Log.d(TAG, "Unrecognized broadcast intent");
+            }
+        }
+    };
+#endif
+}
 
 } // namespace Net
 } // namespace Droid

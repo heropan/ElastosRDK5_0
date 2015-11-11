@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_NET_PROXYSELECTOR_H__
 #define __ELASTOS_NET_PROXYSELECTOR_H__
 
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::Object;
@@ -13,12 +13,16 @@ using Elastos::Net::INetPermission;
 namespace Elastos {
 namespace Net {
 
-class ProxySelector
+class ECO_PUBLIC ProxySelector
     : public Object
     , public IProxySelector
 {
 public:
     CAR_INTERFACE_DECL()
+
+    ProxySelector();
+
+    virtual ~ProxySelector();
 
     static CARAPI GetDefault(
         /* [out] */ IProxySelector** defaultSelector);
@@ -36,7 +40,7 @@ public:
         /* [in] */ ECode ec) = 0;
 
 private:
-    static AutoPtr<IProxySelector> sDefaultSelector;
+    ECO_LOCAL static AutoPtr<IProxySelector> sDefaultSelector;
 };
 
 } // namespace Net

@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Net_Http_CX509TrustManagerExtensions.h"
 #include "elastos/droid/net/http/X509TrustManagerExtensions.h"
 
-using Org::Apache::Harmony::Xnet::Provider::Jsse::ITrustManagerImpl;
+using Org::Conscrypt::ITrustManagerImpl;
 
 namespace Elastos {
 namespace Droid {

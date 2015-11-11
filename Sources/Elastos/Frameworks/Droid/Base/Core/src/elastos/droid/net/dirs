@@ -1,7 +1,7 @@
 
 DIRS += dhcp
 DIRS += http
-#DIRS += nsd
+DIRS += nsd
 #DIRS += wifi
 #DIRS += ethernet
 #DIRS += pppoe

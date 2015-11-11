@@ -46,6 +46,7 @@
 #include "elastos/droid/net/CScoredNetwork.h"
 #include "elastos/droid/net/CSntpClient.h"
 #include "elastos/droid/net/CStaticIpConfiguration.h"
+#include "elastos/droid/net/CUriBuilder.h"
 #include "elastos/droid/net/CUidRange.h"
 #include "elastos/droid/net/CUrlQuerySanitizer.h"
 #include "elastos/droid/net/CUrlQuerySanitizerIllegalCharacterValueSanitizer.h"
@@ -71,8 +72,11 @@
 #include "elastos/droid/net/http/CSslCertificate.h"
 #include "elastos/droid/net/http/CSslCertificateDName.h"
 #include "elastos/droid/net/http/CSslError.h"
-// #include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
-// #include "elastos/droid/net/http/CDnsSdTxtRecord.h"
+#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
+
+#include "elastos/droid/net/nsd/CDnsSdTxtRecord.h"
+#include "elastos/droid/net/nsd/CNsdManager.h"
+#include "elastos/droid/net/nsd/CNsdServiceInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -172,6 +176,8 @@ CAR_OBJECT_IMPL(CSntpClient)
 
 CAR_OBJECT_IMPL(CStaticIpConfiguration)
 
+CAR_OBJECT_IMPL(CUriBuilder)
+
 CAR_OBJECT_IMPL(CUidRange)
 
 CAR_OBJECT_IMPL(CUrlQuerySanitizer)
@@ -229,7 +235,7 @@ CAR_OBJECT_IMPL(CSslCertificateDName)
 
 CAR_OBJECT_IMPL(CSslError)
 
-// CAR_OBJECT_IMPL(CX509TrustManagerExtensions)
+CAR_OBJECT_IMPL(CX509TrustManagerExtensions)
 
 } // namespace Http
 } // namespace Net
@@ -241,7 +247,11 @@ namespace Droid {
 namespace Net {
 namespace Nsd {
 
-// CAR_OBJECT_IMPL(CDnsSdTxtRecord)
+CAR_OBJECT_IMPL(CDnsSdTxtRecord)
+
+CAR_OBJECT_IMPL(CNsdManager)
+
+CAR_OBJECT_IMPL(CNsdServiceInfo)
 
 } // namespace Nsd
 } // namespace Net

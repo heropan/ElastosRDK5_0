@@ -5,11 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-#if 0 // // TODO: Waiting for StaticIpConfiguration.h
 CAR_INTERFACE_IMPL(DhcpResults, StaticIpConfiguration, IDhcpResults)
-#else
-CAR_INTERFACE_IMPL(DhcpResults, Object, IDhcpResults)
-#endif
 
 const String DhcpResults::TAG = String("DhcpResults");
 

@@ -6,7 +6,6 @@ C_DEFINES += -DDROID_CORE
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../../../inc/
 
-SOURCES += CNsdServiceInfo.cpp
-SOURCES += CDnsSdTxtRecord.cpp
-SOURCES += CNsdManager.cpp
-
+SOURCES += DnsSdTxtRecord.cpp
+SOURCES += NsdManager.cpp
+SOURCES += NsdServiceInfo.cpp

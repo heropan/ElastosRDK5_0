@@ -129,6 +129,7 @@ module
     using interface Elastosx.Net.ISocketFactory;
     using interface Elastosx.Net.Ssl.ISSLSession;
     using interface Elastosx.Net.Ssl.ISSLSocketFactory;
+    using interface Elastosx.Net.Ssl.IX509TrustManager;
 
     using interface Org.Apache.Http.Client.IHttpClient;
     using interface Org.Apache.Http.IHttpConnection;
@@ -843,6 +844,12 @@ module
         interface ITrafficStats;
     }
 
+    class CUriBuilder {
+        constructor();
+
+        interface IUriBuilder;
+    }
+
     class CUidRange {
         constructor(
             [in] Int32 startUid,
@@ -1131,27 +1138,57 @@ module
         interface ISslErrorHelper;
     }
 
-    // class CX509TrustManagerExtensions {
-        // constructor(
-            // [in] IX509TrustManager* tm);
+    class CX509TrustManagerExtensions {
+        constructor(
+            [in] IX509TrustManager* tm);
 
-        // interface IX509TrustManagerExtensions;
-    // }
-
-    // class CDnsSdTxtRecord {
-        // constructor();
-
-        // constructor(
-            // [in] ArrayOf<Byte>* data);
-
-        // constructor(
-            // [in] IDnsSdTxtRecord* src);
-
-        // interface IParcelable;
-        // interface IDnsSdTxtRecord;
-    // }
+        interface IX509TrustManagerExtensions;
+    }
 
     } // namespace Http
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+    namespace Nsd {
+
+    [deprecated]
+    class CDnsSdTxtRecord {
+        constructor();
+
+        constructor(
+            [in] ArrayOf<Byte>* data);
+
+        constructor(
+            [in] IDnsSdTxtRecord* src);
+
+        interface IParcelable;
+        interface IDnsSdTxtRecord;
+    }
+
+    class CNsdManager {
+        constructor(
+            [in] IContext* context,
+            [in] IINsdManager* service);
+
+        interface INsdManager;
+    }
+
+    class CNsdServiceInfo {
+        constructor();
+
+        constructor(
+            [in] String sn,
+            [in] String rt);
+
+        interface IParcelable;
+        interface INsdServiceInfo;
+    }
+
+    } // namespace Nsd
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos

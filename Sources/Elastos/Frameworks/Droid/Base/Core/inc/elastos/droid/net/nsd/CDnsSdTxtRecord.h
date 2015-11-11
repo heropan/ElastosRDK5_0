@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_NSD_CDNSSDTXTRECORD_H__
 
 #include "_Elastos_Droid_Net_Nsd_CDnsSdTxtRecord.h"
-#include "elastos/droid/net/http/DnsSdTxtRecord.h"
+#include "elastos/droid/net/nsd/DnsSdTxtRecord.h"
 
 namespace Elastos {
 namespace Droid {

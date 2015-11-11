@@ -3,6 +3,14 @@
 #define __ELASTOS_DROID_NET_HTTP_X509TRUSTMANAGEREXTENSIONS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
+using Elastosx::Net::Ssl::IX509TrustManager;
+
+using Org::Conscrypt::ITrustManagerImpl;
 
 namespace Elastos {
 namespace Droid {
@@ -45,8 +53,8 @@ public:
      */
     CARAPI CheckServerTrusted(
         /* [in] */ ArrayOf<IX509Certificate*>* chain,
-        /* [in] */ String authType,
-        /* [in] */ String host,
+        /* [in] */ const String& authType,
+        /* [in] */ const String& host,
         /* [out] */ IList** result);
 
     /**
@@ -63,6 +71,7 @@ public:
         /* [in] */ IX509Certificate* cert,
         /* [out] */ Boolean* result);
 
+public:
     AutoPtr<ITrustManagerImpl> mDelegate;
 };
 

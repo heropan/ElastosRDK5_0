@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_DHCPRESULTS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/StaticIpConfiguration.h"
 
 using Elastos::Net::IInetAddress;
 
@@ -17,11 +18,7 @@ namespace Net {
  * @hide
  */
 class DhcpResults
-#if 0 // TODO: Waiting for StaticIpConfiguration.h
     : public StaticIpConfiguration
-#else
-    : public Object
-#endif
     , public IDhcpResults
 {
 public:

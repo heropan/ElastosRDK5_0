@@ -6,6 +6,7 @@
 
 using Elastos::Core::IArrayOf;
 using Elastos::Security::Cert::IX509Certificate;
+using Elastosx::Net::Ssl::IHostnameVerifier;
 using Elastosx::Net::Ssl::ISSLSocket;
 using Elastosx::Net::Ssl::IX509TrustManager;
 
@@ -27,14 +28,21 @@ private:
     class NoPreloadHolder
         : public Object
     {
-#if 0 // TODO: Translate codes below.
-        static final CertificateChainValidator sInstance = new CertificateChainValidator();
-            /**
-             * The singleton instance of the hostname verifier.
-             */
-            private static final HostnameVerifier sVerifier = HttpsURLConnection
-                    .getDefaultHostnameVerifier();
-#endif
+    private:
+        static CARAPI_(AutoPtr<ICertificateChainValidator>) InitInstance();
+
+        static CARAPI_(AutoPtr<IHostnameVerifier>) InitVerifier();
+
+    private:
+        /**
+         * The singleton instance of the certificate chain validator.
+         */
+        static const AutoPtr<ICertificateChainValidator> sInstance;
+
+        /**
+         * The singleton instance of the hostname verifier.
+         */
+        static const AutoPtr<IHostnameVerifier> sVerifier;
     };
 
 public:

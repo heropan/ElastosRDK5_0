@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_VPNSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Binder.h"
 
 using Elastos::Droid::App::IPendingIntent;
@@ -89,11 +90,7 @@ namespace Net {
  * @see Builder
  */
 class VpnService
-#if 0 // TODO: Waiting for Service
-    : public Service
-#else
-    : public Object
-#endif
+    : public Elastos::Droid::App::Service
     , public IVpnService
 {
 private:
@@ -105,15 +102,12 @@ private:
     {
     protected:
         // @Override
-#if 0 // TODO: Translate codes below
-         boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
-            if (code == IBinder.LAST_CALL_TRANSACTION) {
-                onRevoke();
-                return true;
-            }
-            return false;
-        }
-#endif
+        CARAPI OnTransact(
+            /* [in] */ Int32 code,
+            /* [in] */ IParcel* data,
+            /* [in] */ IParcel* reply,
+            /* [in] */ Int32 flags,
+            /* [out] */ Boolean* result);
     };
 
 public:

@@ -17,9 +17,266 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
-CAR_INTERFACE_IMPL_2(RequestQueue, Object, IRequestQueue, IRequestFeeder)
+//============================================================
+// RequestQueue::ActivePool
+//============================================================
+CAR_INTERFACE_IMPL(RequestQueue::ActivePool, Object, IRequestQueueConnectionManager)
 
+RequestQueue::ActivePool::ActivePool(
+    /* [in] */ Int32 connectionCount)
+    : mTotalRequest(0)
+    , mTotalConnection(0)
+    , mConnectionCount(connectionCount)
+{
+#if 0 // TODO: Translate codes below
+    mIdleCache = new IdleCache();
+    mThreads = ArrayOf<ConnectionThread*>::Alloc(mConnectionCount);
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        (*mThreads)[i] = new ConnectionThread(
+                mParent->mContext, i, this, mParent);
+    }
+#endif
+}
+
+ECode RequestQueue::ActivePool::Startup()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        ((*mThreads)[i])->Start();
+    }
+
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::Shutdown()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        ((*mThreads)[i])->RequestStop();
+    }
+
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::StartConnectionThread()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                synchronized (RequestQueue.this) {
+                    RequestQueue.this.notify();
+                }
+
+#endif
+}
+
+ECode RequestQueue::ActivePool::StartTiming()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        ConnectionThread* rt = (*mThreads)[i];
+        rt->mCurrentThreadTime = -1;
+        rt->mTotalThreadTime = 0;
+    }
+    mTotalRequest = 0;
+    mTotalConnection = 0;
+
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::StopTiming()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    Int32 totalTime = 0;
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        ConnectionThread* rt = (*mThreads)[i];
+        if (rt->mCurrentThreadTime != -1) {
+            totalTime += rt->mTotalThreadTime;
+        }
+        rt->mCurrentThreadTime = 0;
+    }
+    Logger::D(String("Http"), String("Http thread used ") + StringUtils::Int32ToString(totalTime) + String(" ms ")
+        + String(" for ") + StringUtils::Int32ToString(mTotalRequest) + String(" requests and ")
+        + StringUtils::Int32ToString(mTotalConnection) + String(" new connections"));
+
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::LogState()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    AutoPtr<StringBuilder> dump = new StringBuilder();
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        String str;
+        ((*mThreads)[i])->ToString(&str);
+        dump->AppendString(str + String("\n"));
+    }
+    HttpLog::V(dump->ToString());
+
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::GetProxyHost(
+    /* [out] */ IHttpHost** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(host);
+    *host = mParent->mProxyHost;
+    REFCOUNT_ADD(*host);
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::DisablePersistence()
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    for (Int32 i = 0; i < mConnectionCount; i++) {
+        Connection* connection = ((*mThreads)[i])->mConnection;
+        if (connection != NULL) {
+            // connection->SetCanPersist(false);
+        }
+    }
+    mIdleCache->Clear();
+
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::GetThread(
+    /* [in] */ IHttpHost* host,
+    /* [out] */ ConnectionThread** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(thread);
+
+    AutoLock lock(mLock);
+
+    for (Int32 i = 0; i < mThreads->GetLength(); i++) {
+        ConnectionThread* ct = (*mThreads)[i];
+        Connection* connection = ct->mConnection;
+        // TODO:
+        // if (connection != NULL && connection->mHost->Equals(host)) {
+        //     *thread = ct;
+        //     REFCOUNT_ADD(*thread);
+        //     return NOERROR;
+        // }
+    }
+
+    *thread = NULL;
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::GetConnection(
+    /* [in] */ IContext* context,
+    /* [in] */ IHttpHost* host,
+    /* [out] */ IConnection** result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(conn);
+
+    // host = mParent->DetermineHost(host);
+    Connection* con;
+    // con = mIdleCache->GetConnection(host);
+    if (con == NULL) {
+        mTotalConnection++;
+        // con = Connection::GetConnection(mParent->mContext, host, mParent->mProxyHost, mParent);
+    }
+    *conn = con;
+    REFCOUNT_ADD(*conn);
+    return NOERROR;
+#endif
+}
+
+ECode RequestQueue::ActivePool::RecycleConnection(
+    /* [in] */ IConnection* connection,
+    /* [out] */ Boolean* result)
+{
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: Translate codes below
+                return mIdleCache.cacheConnection(connection.getHost(), connection);
+
+#endif
+}
+
+//===============================================
+// RequestQueue::SyncFeeder
+//===============================================
+ECode RequestQueue::SyncFeeder::GetRequest(
+    /* [out] */ IRequest** req)
+{
+    VALIDATE_NOT_NULL(req);
+
+    AutoPtr<IRequest> r = mRequest;
+    mRequest = NULL;
+    *req = r;
+    REFCOUNT_ADD(*req);
+    return NOERROR;
+}
+
+ECode RequestQueue::SyncFeeder::GetRequest(
+    /* [in] */ IHttpHost* host,
+    /* [out] */ IRequest** req)
+{
+    VALIDATE_NOT_NULL(req)
+    *req = NULL;
+
+    return GetRequest(req);
+}
+
+ECode RequestQueue::SyncFeeder::HaveRequest(
+    /* [in] */ IHttpHost* host,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mRequest != NULL;
+
+    return NOERROR;
+}
+
+ECode RequestQueue::SyncFeeder::RequeueRequest(
+    /* [in] */ IRequest* request)
+{
+    VALIDATE_NOT_NULL(request)
+
+    mRequest = request;
+    return NOERROR;
+}
+
+//===============================================
+// RequestQueue::InnerSub_BroadcastReceiver
+//===============================================
+ECode RequestQueue::InnerSub_BroadcastReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    return mHost->SetProxyConfig();
+}
+
+RequestQueue::InnerSub_BroadcastReceiver::InnerSub_BroadcastReceiver(
+    /* [in] */ RequestQueue* host)
+    : mHost(host)
+{}
+
+//===============================================
+// RequestQueue
+//===============================================
 const Int32 RequestQueue::CONNECTION_COUNT = 4;
+
+CAR_INTERFACE_IMPL_2(RequestQueue, Object, IRequestQueue, IRequestFeeder)
 
 ECode RequestQueue::constructor(
     /* [in] */ IContext* context)
@@ -497,259 +754,6 @@ ECode RequestQueue::RemoveFirst(
     return ret;
 #endif
 }
-
-//============================================================
-// RequestQueue::ActivePool
-//============================================================
-CAR_INTERFACE_IMPL(RequestQueue::ActivePool, Object, IRequestQueueConnectionManager)
-
-RequestQueue::ActivePool::ActivePool(
-    /* [in] */ Int32 connectionCount)
-    : mTotalRequest(0)
-    , mTotalConnection(0)
-    , mConnectionCount(connectionCount)
-{
-#if 0 // TODO: Translate codes below
-    mIdleCache = new IdleCache();
-    mThreads = ArrayOf<ConnectionThread*>::Alloc(mConnectionCount);
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        (*mThreads)[i] = new ConnectionThread(
-                mParent->mContext, i, this, mParent);
-    }
-#endif
-}
-
-ECode RequestQueue::ActivePool::Startup()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        ((*mThreads)[i])->Start();
-    }
-
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::Shutdown()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        ((*mThreads)[i])->RequestStop();
-    }
-
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::StartConnectionThread()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                synchronized (RequestQueue.this) {
-                    RequestQueue.this.notify();
-                }
-
-#endif
-}
-
-ECode RequestQueue::ActivePool::StartTiming()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        ConnectionThread* rt = (*mThreads)[i];
-        rt->mCurrentThreadTime = -1;
-        rt->mTotalThreadTime = 0;
-    }
-    mTotalRequest = 0;
-    mTotalConnection = 0;
-
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::StopTiming()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    Int32 totalTime = 0;
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        ConnectionThread* rt = (*mThreads)[i];
-        if (rt->mCurrentThreadTime != -1) {
-            totalTime += rt->mTotalThreadTime;
-        }
-        rt->mCurrentThreadTime = 0;
-    }
-    Logger::D(String("Http"), String("Http thread used ") + StringUtils::Int32ToString(totalTime) + String(" ms ")
-        + String(" for ") + StringUtils::Int32ToString(mTotalRequest) + String(" requests and ")
-        + StringUtils::Int32ToString(mTotalConnection) + String(" new connections"));
-
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::LogState()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    AutoPtr<StringBuilder> dump = new StringBuilder();
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        String str;
-        ((*mThreads)[i])->ToString(&str);
-        dump->AppendString(str + String("\n"));
-    }
-    HttpLog::V(dump->ToString());
-
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::GetProxyHost(
-    /* [out] */ IHttpHost** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(host);
-    *host = mParent->mProxyHost;
-    REFCOUNT_ADD(*host);
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::DisablePersistence()
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    for (Int32 i = 0; i < mConnectionCount; i++) {
-        Connection* connection = ((*mThreads)[i])->mConnection;
-        if (connection != NULL) {
-            // connection->SetCanPersist(false);
-        }
-    }
-    mIdleCache->Clear();
-
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::GetThread(
-    /* [in] */ IHttpHost* host,
-    /* [out] */ ConnectionThread** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(thread);
-
-    AutoLock lock(mLock);
-
-    for (Int32 i = 0; i < mThreads->GetLength(); i++) {
-        ConnectionThread* ct = (*mThreads)[i];
-        Connection* connection = ct->mConnection;
-        // TODO:
-        // if (connection != NULL && connection->mHost->Equals(host)) {
-        //     *thread = ct;
-        //     REFCOUNT_ADD(*thread);
-        //     return NOERROR;
-        // }
-    }
-
-    *thread = NULL;
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::GetConnection(
-    /* [in] */ IContext* context,
-    /* [in] */ IHttpHost* host,
-    /* [out] */ IConnection** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(conn);
-
-    // host = mParent->DetermineHost(host);
-    Connection* con;
-    // con = mIdleCache->GetConnection(host);
-    if (con == NULL) {
-        mTotalConnection++;
-        // con = Connection::GetConnection(mParent->mContext, host, mParent->mProxyHost, mParent);
-    }
-    *conn = con;
-    REFCOUNT_ADD(*conn);
-    return NOERROR;
-#endif
-}
-
-ECode RequestQueue::ActivePool::RecycleConnection(
-    /* [in] */ IConnection* connection,
-    /* [out] */ Boolean* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                return mIdleCache.cacheConnection(connection.getHost(), connection);
-
-#endif
-}
-
-//===============================================
-// RequestQueue::SyncFeeder
-//===============================================
-ECode RequestQueue::SyncFeeder::GetRequest(
-    /* [out] */ IRequest** req)
-{
-    VALIDATE_NOT_NULL(*req);
-
-    AutoPtr<IRequest> r = mRequest;
-    mRequest = NULL;
-    *req = r;
-    REFCOUNT_ADD(*req);
-    return NOERROR;
-}
-
-ECode RequestQueue::SyncFeeder::GetRequest(
-    /* [in] */ IHttpHost* host,
-    /* [out] */ IRequest** req)
-{
-    VALIDATE_NOT_NULL(*req)
-    *req = NULL;
-    VALIDATE_NOT_NULL(host)
-
-    return GetRequest(req);
-}
-
-ECode RequestQueue::SyncFeeder::HaveRequest(
-    /* [in] */ IHttpHost* host,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = mRequest != NULL;
-    VALIDATE_NOT_NULL(host)
-
-    return NOERROR;
-}
-
-ECode RequestQueue::SyncFeeder::RequeueRequest(
-    /* [in] */ IRequest* request)
-{
-    VALIDATE_NOT_NULL(request)
-
-    mRequest = request;
-    return NOERROR;
-}
-
-ECode RequestQueue::InnerSub_BroadcastReceiver::OnReceive(
-    /* [in] */ IContext* context,
-    /* [in] */ IIntent* intent)
-{
-    return mHost->SetProxyConfig();
-}
-
-RequestQueue::InnerSub_BroadcastReceiver::InnerSub_BroadcastReceiver(
-    /* [in] */ RequestQueue* host)
-    : mHost(host)
-{}
 
 } // namespace Http
 } // namespace Net

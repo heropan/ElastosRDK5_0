@@ -149,7 +149,6 @@ public:
      * The URL associated with the error set.
      */
     /* const */ String mUrl;
-
 };
 
 } // namespace Http

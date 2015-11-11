@@ -80,7 +80,7 @@ public:
 
     /* Gets the raw data in bytes */
     CARAPI GetRawData(
-        /* [out, callee] */ ArrayOf<Byte>* result);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
     /**
      * Return a string representation.
@@ -124,7 +124,7 @@ private:
      */
     CARAPI GetValue(
         /* [in] */ Int32 index,
-        /* [out, callee] */ ArrayOf<Byte>* result);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
     CARAPI GetValueAsString(
         /* [in] */ Int32 index,
@@ -132,11 +132,12 @@ private:
 
     CARAPI GetValue(
         /* [in] */ const String& forKey,
-        /* [out, callee] */ ArrayOf<Byte>* result);
+        /* [out, callee] */ ArrayOf<Byte>** result);
 
+private:
     static const Byte mSeperator;
 
-    ArrayOf<Byte>* mData;
+    AutoPtr<ArrayOf<Byte> > mData;
 };
 
 } // namespace Nsd

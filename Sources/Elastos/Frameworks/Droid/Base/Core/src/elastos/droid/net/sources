@@ -99,6 +99,6 @@ SOURCES += WifiLinkQualityInfo.cpp
 
 LIBRARIES += dhcp/dhcp.lib
 LIBRARIES += http/http.lib
-// LIBRARIES += nsd/nsd.lib
+LIBRARIES += nsd/nsd.lib
 // LIBRARIES += etherethernet.lib
 // LIBRARIES += pppoe/pppoe.lib

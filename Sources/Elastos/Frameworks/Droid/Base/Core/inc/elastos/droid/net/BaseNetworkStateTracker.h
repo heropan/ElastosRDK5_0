@@ -45,9 +45,6 @@ public:
     CARAPI GetNetworkCapabilities(
         /* [out] */ INetworkCapabilities** result);
 
-    virtual CARAPI GetLinkCapabilities(
-        /* [out] */ ILinkCapabilities** result);
-
     virtual CARAPI GetLinkQualityInfo(
         /* [out] */ ILinkQualityInfo** result);
 
@@ -138,7 +135,6 @@ protected:
     AutoPtr<IContext> mContext;
     AutoPtr<INetworkInfo> mNetworkInfo;
     AutoPtr<ILinkProperties> mLinkProperties;
-    AutoPtr<ILinkCapabilities> mLinkCapabilities;
     AutoPtr<INetwork> mNetwork;
     AutoPtr<INetworkCapabilities> mNetworkCapabilities;
 
