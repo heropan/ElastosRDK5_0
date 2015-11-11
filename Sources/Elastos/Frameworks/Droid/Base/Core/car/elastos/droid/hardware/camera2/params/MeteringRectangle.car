@@ -1,7 +1,7 @@
 
 module
 {
-//    interface Elastos.Droid.Hardware.Graphics.IPoint;
+    interface Elastos.Droid.Graphics.IPoint;
 
     namespace Elastos {
     namespace Droid {
@@ -38,6 +38,22 @@ module
      * </p>
      */
     interface IMeteringRectangle {
+        /**
+         * The minimum value of valid metering weight.
+         */
+        const Int32 METERING_WEIGHT_MIN = 0;
+
+        /**
+         * The maximum value of valid metering weight.
+         */
+        const Int32 METERING_WEIGHT_MAX = 1000;
+
+        /**
+         * Weights set to this value will cause the camera device to ignore this rectangle.
+         * If all metering rectangles are weighed with 0, the camera device will choose its own metering
+         * rectangles.
+         */
+        const Int32 METERING_WEIGHT_DONT_CARE = 0;
 
         /**
          * Return the X coordinate of the left side of the rectangle.

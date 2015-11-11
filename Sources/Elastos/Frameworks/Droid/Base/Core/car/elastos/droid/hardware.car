@@ -131,6 +131,10 @@ module
     merge("hardware/camera2/params/MeteringRectangle.car");
     merge("hardware/camera2/params/StreamConfigurationMap.car");
     merge("hardware/camera2/params/TonemapCurve.car");
+    merge("hardware/camera2/params/HighSpeedVideoConfiguration.car");
+    merge("hardware/camera2/params/ReprocessFormatsMap.car");
+    merge("hardware/camera2/params/StreamConfiguration.car");
+    merge("hardware/camera2/params/StreamConfigurationDuration.car");
 
     merge("hardware/camera2/utils/ArrayUtils.car");
     merge("hardware/camera2/utils/CloseableLock.car");
@@ -142,11 +146,16 @@ module
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
     merge("hardware/camera2/utils/TypeReference.car");
 
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.View.IRotationWatcher;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Media.IAudioFormat;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Utility.IRational;
+    interface Elastos.Droid.Utility.ISize;
 
     using interface Elastos.Utility.IUUID;
 
@@ -233,6 +242,177 @@ module
 
             interface IRotationWatcher;
         }
+
+    namespace Camera2 {
+    namespace Params {
+        [deprecated]
+        class CBlackLevelPattern {
+            constructor();
+
+            constructor(
+                [in] ArrayOf<Int32>* offsets);
+
+            interface IBlackLevelPattern;
+        }
+
+        [deprecated]
+        class CColorSpaceTransform {
+            constructor();
+
+            constructor(
+                [in] ArrayOf<IRational*>* elements);
+
+            constructor(
+                [in] ArrayOf<Int32>* _elements);
+
+            interface IColorSpaceTransform;
+        }
+
+        class CFace {
+            constructor();
+
+            constructor(
+                [in] IRect* bounds,
+                [in] Int32 score,
+                [in] Int32 id,
+                [in] IPoint* leftEyePosition,
+                [in] IPoint* rightEyePosition,
+                [in] IPoint* mouthPosition);
+
+            constructor(
+                [in] IRect* bounds,
+                [in] Int32 score);
+
+            interface IFace;
+        }
+
+        class CHighSpeedVideoConfiguration {
+            constructor();
+
+            constructor(
+                [in] Int32 width,
+                [in] Int32 height,
+                [in] Int32 fpsMin,
+                [in] Int32 fpsMax);
+
+            interface IHighSpeedVideoConfiguration;
+        }
+
+        [deprecated]
+        class CLensShadingMap {
+            constructor();
+
+            constructor(
+                [in] ArrayOf<Float>* elements,
+                [in] Int32 rows,
+                [in] Int32 columns);
+
+            interface ILensShadingMap;
+        }
+
+        class CMeteringRectangle {
+            constructor();
+
+            constructor(
+                [in] Int32 x,
+                [in] Int32 y,
+                [in] Int32 width,
+                [in] Int32 height,
+                [in] Int32 meteringWeight);
+
+            constructor(
+                [in] IPoint* xy,
+                [in] ISize* dimensions,
+                [in] Int32 meteringWeight);
+
+            constructor(
+                [in] IRect* rect,
+                [in] Int32 meteringWeight);
+
+            interface IMeteringRectangle;
+        }
+
+        [deprecated]
+        class CReprocessFormatsMap {
+            constructor();
+
+            constructor(
+                [in] ArrayOf<Int32>* entry);
+
+            interface IReprocessFormatsMap;
+        }
+
+        class CRggbChannelVector {
+            constructor();
+
+            constructor(
+                [in] Float red,
+                [in] Float greenEven,
+                [in] Float greenOdd,
+                [in] Float blue);
+
+            interface IRggbChannelVector;
+        }
+
+        class CStreamConfiguration {
+            constructor();
+
+            constructor(
+                [in] Int32 format,
+                [in] Int32 width,
+                [in] Int32 height,
+                [in] Boolean input);
+
+            interface IStreamConfiguration;
+        }
+
+        class CStreamConfigurationDuration {
+            constructor();
+
+            constructor(
+                [in] Int32 format,
+                [in] Int32 width,
+                [in] Int32 height,
+                [in] Int64 durationNs);
+
+            interface IStreamConfigurationDuration;
+        }
+
+        [deprecated]
+        class CTonemapCurve {
+            constructor();
+
+            constructor(
+                [in] ArrayOf<Float>* red,
+                [in] ArrayOf<Float>* green,
+                [in] ArrayOf<Float>* blue);
+
+            interface ITonemapCurve;
+        }
+
+        [deprecated]
+        class CStreamConfigurationMap {
+            constructor();
+
+            constructor(
+                [in] ArrayOf<IStreamConfiguration*>* configurations,
+                [in] ArrayOf<IStreamConfigurationDuration*>* minFrameDurations,
+                [in] ArrayOf<IStreamConfigurationDuration*>* stallDurations,
+                [in] ArrayOf<IHighSpeedVideoConfiguration*>* highSpeedVideoConfigurations);
+
+            interface IStreamConfigurationMap;
+        }
+
+    } // namespace Params
+    } // namespace Camera2
+
+    namespace Location {
+        class CActivityRecognitionHardware {
+            interface IActivityRecognitionHardware;
+            interface IIActivityRecognitionHardware;
+            interface IBinder;
+        }
+    } // namespace Location
 
     namespace Display {
         /**

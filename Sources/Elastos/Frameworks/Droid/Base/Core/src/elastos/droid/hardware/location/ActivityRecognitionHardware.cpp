@@ -40,11 +40,16 @@ Object ActivityRecognitionHardware::sSingletonInstanceLock;
 // native bindings
 ECode ActivityRecognitionHardware::sStaticBlockInit = NativeClassInit();
 
+ActivityRecognitionHardware::ActivityRecognitionHardware()
+{
+
+}
+
 ActivityRecognitionHardware::ActivityRecognitionHardware(
     /* [in] */ IContext* context)
     : mContext(context)
 {
-    NativeInitialize(this);
+    NativeInitialize();
 
     FetchSupportedActivities((ArrayOf<String>**)&mSupportedActivities);
     CRemoteCallbackList::New((IRemoteCallbackList**)&mSinks);
@@ -85,7 +90,7 @@ ECode ActivityRecognitionHardware::GetSupportedActivities(
 {
     VALIDATE_NOT_NULL(activities);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     *activities = mSupportedActivities;
     REFCOUNT_ADD(*activities);
     return NOERROR;
@@ -97,7 +102,7 @@ ECode ActivityRecognitionHardware::IsActivitySupported(
 {
     VALIDATE_NOT_NULL(supported);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     Int32 activityType = GetActivityType(activity);
     *supported = activityType != INVALID_ACTIVITY_TYPE;
     return NOERROR;
@@ -109,7 +114,7 @@ ECode ActivityRecognitionHardware::RegisterSink(
 {
     VALIDATE_NOT_NULL(result);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     return mSinks->Register(sink, result);
 }
 
@@ -119,7 +124,7 @@ ECode ActivityRecognitionHardware::UnregisterSink(
 {
     VALIDATE_NOT_NULL(result);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     return mSinks->Unregister(sink, result);
 }
 
@@ -131,7 +136,7 @@ ECode ActivityRecognitionHardware::EnableActivityEvent(
 {
     VALIDATE_NOT_NULL(result);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     Int32 activityType = GetActivityType(activity);
     if (activityType == INVALID_ACTIVITY_TYPE) {
         *result = FALSE;
@@ -150,7 +155,7 @@ ECode ActivityRecognitionHardware::DisableActivityEvent(
 {
     VALIDATE_NOT_NULL(result);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     Int32 activityType = GetActivityType(activity);
     if (activityType == INVALID_ACTIVITY_TYPE) {
         *result = FALSE;
@@ -167,7 +172,7 @@ ECode ActivityRecognitionHardware::Flush(
 {
     VALIDATE_NOT_NULL(result);
 
-    CheckPermissions();
+    FAIL_RETURN(CheckPermissions())
     Int32 _result = NativeFlush();
     *result = _result == NATIVE_SUCCESS_RESULT;
     return NOERROR;
@@ -188,13 +193,12 @@ ECode ActivityRecognitionHardware::OnActivityChanged(
     for (Int32 i = 0; i < eventsLength; ++i) {
         AutoPtr<Event> event = (*events)[i];
         String activityName = GetActivityName(event->mActivity);
-        AutoPtr<IActivityRecognitionEvent> tmp = new ActivityRecognitionEvent();
-        FAIL_RETURN(((ActivityRecognitionEvent*)tmp.Get())->constructor(activityName,
-                event->mType, event->mTimestamp))
-        activityRecognitionEventArray->Set(i, tmp);
+        AutoPtr<ActivityRecognitionEvent> tmp = new ActivityRecognitionEvent();
+        tmp->constructor(activityName, event->mType, event->mTimestamp);
+        activityRecognitionEventArray->Set(i, tmp.Get());
     }
-    AutoPtr<IActivityChangedEvent> activityChangedEvent = new ActivityChangedEvent();
-    FAIL_RETURN(((ActivityChangedEvent*)activityChangedEvent.Get())->constructor(activityRecognitionEventArray))
+    AutoPtr<ActivityChangedEvent> activityChangedEvent = new ActivityChangedEvent();
+    activityChangedEvent->constructor(activityRecognitionEventArray);
 
     Int32 size;
     mSinks->BeginBroadcast(&size);
@@ -202,10 +206,9 @@ ECode ActivityRecognitionHardware::OnActivityChanged(
     for (Int32 i = 0; i < size; ++i) {
         AutoPtr<IInterface> obj;
         mSinks->GetBroadcastItem(i, (IInterface**)&obj);
-        AutoPtr<IIActivityRecognitionHardwareSink> sink;
-        sink = IIActivityRecognitionHardwareSink::Probe(obj);
+        AutoPtr<IIActivityRecognitionHardwareSink> sink = IIActivityRecognitionHardwareSink::Probe(obj);
         //try {
-        ec = sink->OnActivityChanged(activityChangedEvent);
+        ec = sink->OnActivityChanged(activityChangedEvent.Get());
         //} catch (RemoteException e) {
         if (FAILED(ec)) {
             Slogger::E(TAG, String("Error delivering activity changed event.")/*, e*/);
@@ -284,15 +287,15 @@ ECode ActivityRecognitionHardware::ToString(
 static activity_recognition_module_t* sModule = NULL;
 static activity_recognition_device_t* sDevice = NULL;
 
-static ActivityRecognitionHardware* sCallbacksObject = NULL;
+static AutoPtr<ActivityRecognitionHardware> sCallbacksObject = NULL;
 
 /**
  * Handle activity recognition events from HAL.
  */
 static void activity_callback(
-        const activity_recognition_callback_procs_t* procs,
-        const activity_event_t* events,
-        int count)
+    const activity_recognition_callback_procs_t* procs,
+    const activity_event_t* events,
+    int count)
 {
     if (events == NULL || count <= 0) {
         ALOGE("Invalid activity_callback. Count: %d, Events: %p", count, events);
@@ -316,7 +319,6 @@ static void activity_callback(
     sCallbacksObject->OnActivityChanged(events_array);
 
     // TODO: ideally we'd let the HAL register the callback thread only once
-    //detach_thread();
     thread->Detach();
 }
 
@@ -354,11 +356,10 @@ Boolean ActivityRecognitionHardware::NativeIsSupported()
     return FALSE;
 }
 
-void ActivityRecognitionHardware::NativeInitialize(
-    /* [in] */ ActivityRecognitionHardware* mHost)
+void ActivityRecognitionHardware::NativeInitialize()
 {
     if (sCallbacksObject == NULL) {
-        sCallbacksObject = mHost;
+        sCallbacksObject = this;
     }
     else {
         Slogger::D(TAG, "Callbacks Object was already initialized.");

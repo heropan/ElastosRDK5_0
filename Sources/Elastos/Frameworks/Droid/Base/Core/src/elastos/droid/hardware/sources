@@ -31,3 +31,4 @@ LIBRARIES += input/input.lib
 LIBRARIES += usb/usb.lib
 LIBRARIES += soundtrigger/soundtrigger.lib
 LIBRARIES += location/location.lib
+LIBRARIES += camera2/params/params.lib

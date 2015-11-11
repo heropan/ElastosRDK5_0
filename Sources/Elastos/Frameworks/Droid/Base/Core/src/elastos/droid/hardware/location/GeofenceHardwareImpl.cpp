@@ -1249,15 +1249,15 @@ ECode GeofenceHardwareImpl::GetAllowedResolutionLevel(
     VALIDATE_NOT_NULL(level);
 
     Int32 result;
-    mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION,
-            pid, uid, &result);
+    FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_FINE_LOCATION,
+            pid, uid, &result))
     if (result == IPackageManager::PERMISSION_GRANTED) {
         *level = RESOLUTION_LEVEL_FINE;
         return NOERROR;
     }
     else {
-        mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_COARSE_LOCATION,
-            pid, uid, &result);
+        FAIL_RETURN(mContext->CheckPermission(Elastos::Droid::Manifest::permission::ACCESS_COARSE_LOCATION,
+            pid, uid, &result))
         if (result == IPackageManager::PERMISSION_GRANTED) {
             *level = RESOLUTION_LEVEL_COARSE;
             return NOERROR;

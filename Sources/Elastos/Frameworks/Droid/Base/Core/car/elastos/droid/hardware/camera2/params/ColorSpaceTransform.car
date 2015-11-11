@@ -9,6 +9,15 @@ module
     namespace Camera2 {
     namespace Params {
 
+    /**
+     * Immutable class for describing a 3x3 matrix of {@link Rational} values in row-major order.
+     *
+     * <p>This matrix maps a transform from one color space to another. For the particular color space
+     * source and target, see the appropriate camera metadata documentation for the key that provides
+     * this value.</p>
+     *
+     * @see CameraMetadata
+     */
     [deprecated]
     interface IColorSpaceTransform {
 

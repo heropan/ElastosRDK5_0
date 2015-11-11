@@ -1,8 +1,8 @@
 
 module
 {
-//    interface Elastos.Droid.Hardware.Graphics.IRect;
-//    interface Elastos.Droid.Hardware.Graphics.IPoint;
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Graphics.IPoint;
 
     namespace Elastos {
     namespace Droid {
@@ -10,7 +10,31 @@ module
     namespace Camera2 {
     namespace Params {
 
+    /**
+     * Describes a face detected in an image.
+     */
     interface IFace {
+        /**
+         * The ID is {@code -1} when the optional set of fields is unsupported.
+         *
+         * @see Face#Face(Rect, int)
+         * @see #getId()
+         */
+        const Int32 ID_UNSUPPORTED = -1;
+
+        /**
+         * The minimum possible value for the confidence level.
+         *
+         * @see #getScore()
+         */
+        const Int32 SCORE_MIN = 1;
+
+        /**
+         * The maximum possible value for the confidence level.
+         *
+         * @see #getScore()
+         */
+        const Int32 SCORE_MAX = 100;
 
         /**
          * Bounds of the face.
@@ -22,8 +46,8 @@ module
          * <p>There is no constraints on the the Rectangle value other than it
          * is not-{@code null}.</p>
          */
-//        GetBounds(
-//            [out] IRect** outrect);
+        GetBounds(
+            [out] IRect** outrect);
 
         /**
          * The confidence level for the detection of the face.
@@ -79,8 +103,8 @@ module
          *
          * @return The left eye position, or {@code null} if unknown.
          */
-//        GetLeftEyePosition(
-//            [out] IPoint** outpoint);
+        GetLeftEyePosition(
+            [out] IPoint** outpoint);
 
         /**
          * The coordinates of the center of the right eye.
@@ -94,8 +118,8 @@ module
          *
          * @return The right eye position, or {@code null} if unknown.
          */
-//        GetRightEyePosition(
-//            [out] IPoint** outpoint);
+        GetRightEyePosition(
+            [out] IPoint** outpoint);
 
         /**
          * The coordinates of the center of the mouth.
@@ -110,8 +134,8 @@ module
          *
          * @return The mouth position, or {@code null} if unknown.
          */
-//        GetMouthPosition(
-//            [out] IPoint** outpoint);
+        GetMouthPosition(
+            [out] IPoint** outpoint);
 
         /**
          * Represent the Face as a string for debugging purposes.

@@ -7,8 +7,17 @@ module
     namespace Camera2 {
     namespace Params {
 
+    /**
+     * Immutable class to store a 4-element vector of integers corresponding to a 2x2 pattern
+     * of color channel offsets used for the black level offsets of each color channel.
+     */
     [deprecated]
     interface IBlackLevelPattern {
+        /**
+         * The number of offsets in this vector.
+         */
+        const Int32 COUNT = 4;
+
         /**
          * Return the color channel offset for a given index into the array of raw pixel values.
          *

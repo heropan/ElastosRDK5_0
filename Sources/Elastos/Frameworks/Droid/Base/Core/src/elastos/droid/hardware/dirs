@@ -4,3 +4,4 @@ DIRS += input
 DIRS += usb
 DIRS += soundtrigger
 DIRS += location
+DIRS += camera2
