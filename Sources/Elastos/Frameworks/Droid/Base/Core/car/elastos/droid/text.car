@@ -43,7 +43,6 @@ module
     merge("text/method/ArrowKeyMovementMethod.car");
     merge("text/method/BaseKeyListener.car");
     merge("text/method/BaseMovementMethod.car");
-    merge("text/method/CharacterPickerDialog.car");
     merge("text/method/DateKeyListener.car");
     merge("text/method/DateTimeKeyListener.car");
     merge("text/method/DialerKeyListener.car");

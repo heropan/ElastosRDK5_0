@@ -13,6 +13,7 @@
 #include "elastos/droid/text/method/CScrollingMovementMethod.h"
 #include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/text/method/CWordIterator.h"
+// #include "elastos/droid/text/method/CCharacterPickerDialog.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -35,6 +36,7 @@ CAR_OBJECT_IMPL(CHideReturnsTransformationMethod)
 CAR_OBJECT_IMPL(CLinkMovementMethod)
 CAR_OBJECT_IMPL(CScrollingMovementMethod)
 CAR_OBJECT_IMPL(CWordIterator)
+// CAR_OBJECT_IMPL(CCharacterPickerDialog)
 
 } // namespace Method
 } // namespace Text

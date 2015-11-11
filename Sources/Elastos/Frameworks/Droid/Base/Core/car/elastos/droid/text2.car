@@ -2,8 +2,17 @@ module
 {
     merge("text/utility/Rfc822Token.car");
     merge("text/utility/Rfc822Tokenizer.car");
+    merge("text/method/CharacterPickerDialog.car");
 
+ //   interface Elastos.Droid.App.IDialog;
+ //   interface Elastos.Droid.Content.IDialogInterface;
+ //   interface Elastos.Droid.View.IWindowCallback;
+ //   interface Elastos.Droid.View.IKeyEventCallback;
+ //   interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
+ //   interface Elastos.Droid.View.IOnWindowDismissedCallback;
+ //   interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.Widget.ITokenizer;
+ //   interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
 
     namespace Elastos {
     namespace Droid {
@@ -37,4 +46,27 @@ module
     } // Text
     } // Droid
     } // Elastos
+
+//    namespace Elastos {
+//    namespace Droid {
+//    namespace Text {
+//    namespace Method {
+
+//    class CCharacterPickerDialog {
+//        constructor();
+//        interface ICharacterPickerDialog;
+//        interface IDialog;
+//        interface IDialogInterface;
+//        interface IWindowCallback;
+//        interface IKeyEventCallback;
+//        interface IViewOnCreateContextMenuListener;
+//        interface IOnWindowDismissedCallback;
+//        interface IAdapterViewOnItemClickListener;
+//        interface IViewOnClickListener;
+//    }
+
+//    } // namespace Method
+//    } // namespace Text
+//    } // namepsace Droid
+//    } // namespace Elastos
 }
