@@ -96,6 +96,8 @@ ECode CAccessibilityInteractionClient::constructor()
 ECode CAccessibilityInteractionClient::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
+    *str = "CAccessibilityInteractionClient";
     return NOERROR;
 }
 

@@ -135,10 +135,12 @@ Int64 CPathMeasure::NativeCreate(
     const SkPath* path = reinterpret_cast<SkPath*>(pathHandle);
     bool forceClosed = (forceClosedHandle == TRUE);
     PathMeasurePair* pair;
-    if(path)
+    if (path) {
         pair = new PathMeasurePair(*path, forceClosed);
-    else
+    }
+    else {
         pair = new PathMeasurePair;
+    }
     return reinterpret_cast<Int64>(pair);
 }
 

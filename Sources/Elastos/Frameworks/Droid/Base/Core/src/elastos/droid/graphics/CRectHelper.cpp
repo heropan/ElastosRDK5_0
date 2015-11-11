@@ -13,7 +13,8 @@ ECode CRectHelper::UnflattenFromString(
     /* [out] */ IRect** rect)
 {
     VALIDATE_NOT_NULL(rect);
-    *rect = CRect::UnflattenFromString(str);
+    AutoPtr<IRect> r = CRect::UnflattenFromString(str);
+    *rect = r;
     REFCOUNT_ADD(*rect);
     return NOERROR;
 }

@@ -157,15 +157,16 @@ AutoPtr<IRect> CRect::UnflattenFromString(
 {
     AutoPtr<IMatcher> matcher = UnflattenHelper::GetMatcher(str);
     Boolean matched = FALSE;
-    if (!(matcher->Matches(&matched), matched)) {
+    if (matcher->Matches(&matched), !matched) {
         return NULL;
     }
-    AutoPtr<IRect> rect;
+    IMatchResult* matchResult = IMatchResult::Probe(matcher);
     String g1, g2, g3, g4;
-    IMatchResult::Probe(matcher)->Group(1, &g1);
-    IMatchResult::Probe(matcher)->Group(2, &g2);
-    IMatchResult::Probe(matcher)->Group(3, &g3);
-    IMatchResult::Probe(matcher)->Group(4, &g4);
+    matchResult->Group(1, &g1);
+    matchResult->Group(2, &g2);
+    matchResult->Group(3, &g3);
+    matchResult->Group(4, &g4);
+    AutoPtr<IRect> rect;
     CRect::New(StringUtils::ParseInt32(g1),
             StringUtils::ParseInt32(g2),
             StringUtils::ParseInt32(g3),
