@@ -124,7 +124,7 @@ ECode LocationManager::ListenerTransport::OnProviderEnabled(
     msg->SetWhat(TYPE_PROVIDER_ENABLED);
     AutoPtr<IString> istr;
     CString::New(provider, (IString**)&istr);
-    // msg->SetObj(IInterface::Probe(istr));
+    msg->SetObj((IInterface*)istr);
     Boolean result = FALSE;
     mListenerHandler->SendMessage(msg, &result);
     return NOERROR;
@@ -137,7 +137,7 @@ LocationManager::ListenerTransport::OnProviderDisabled(
     msg->SetWhat(TYPE_PROVIDER_DISABLED);
     AutoPtr<IString> istr;
     CString::New(provider, (IString**)&istr);
-    // msg->SetObj(IInterface::Probe(istr));
+    msg->SetObj((IInterface*)istr);
     Boolean result = FALSE;
     mListenerHandler->SendMessage(msg, &result);
     return NOERROR;
@@ -148,18 +148,19 @@ ECode LocationManager::ListenerTransport::_handleMessage(
 {
     Int32 what;
     msg->GetWhat(&what);
-    AutoPtr<IInterface> obj;
-    AutoPtr<IBundle> extras, b;
-    AutoPtr<ILocation> location;
-    String provider;
-    AutoPtr<ICharSequence> cs;
     switch (what) {
-        case TYPE_LOCATION_CHANGED:
+        case TYPE_LOCATION_CHANGED: {
+            AutoPtr<IInterface> obj;
+            AutoPtr<ILocation> location;
             msg->GetObj((IInterface**)&obj);
             CLocation::New(ILocation::Probe(obj), (ILocation**)&location);
             mListener->OnLocationChanged(location.Get());
             break;
-        case TYPE_STATUS_CHANGED:
+        }
+        case TYPE_STATUS_CHANGED: {
+            AutoPtr<IInterface> obj;
+            String provider;
+            AutoPtr<IBundle> extras, b;
             msg->GetObj((IInterface**)&obj);
             b = IBundle::Probe(obj);
             b->GetString(String("provider"), &provider);
@@ -168,18 +169,26 @@ ECode LocationManager::ListenerTransport::_handleMessage(
             b->GetBundle(String("extras"), (IBundle**)&extras);
             mListener->OnStatusChanged(provider, status, extras.Get());
             break;
-        case TYPE_PROVIDER_ENABLED:
+        }
+        case TYPE_PROVIDER_ENABLED: {
+            AutoPtr<IInterface> obj;
+            String provider;
             msg->GetObj((IInterface**)&obj);
-            cs = ICharSequence::Probe(obj);
+            AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
             cs->ToString(&provider);
             mListener->OnProviderEnabled(provider);
             break;
-        case TYPE_PROVIDER_DISABLED:
+        }
+
+        case TYPE_PROVIDER_DISABLED: {
+            AutoPtr<IInterface> obj;
+            String provider;
             msg->GetObj((IInterface**)&obj);
             AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
             cs->ToString(&provider);
             mListener->OnProviderDisabled(provider);
             break;
+        }
     }
     ECode ec = mLMHost->mService->LocationCallbackFinished(THIS_PROBE(IILocationListener));
     if (FAILED(ec)) {
@@ -866,7 +875,7 @@ ECode LocationManager::AddGpsStatusListener(
     }
 
     AutoPtr<IIGpsStatusListener> transport;
-    CLocationManagerGpsStatusListenerTransport::New(THIS_PROBE(ILocationManager), listener, (IIGpsStatusListener**)&transport);
+    CLocationManagerGpsStatusListenerTransport::New((ILocationManager*)this, listener, (IIGpsStatusListener**)&transport);
 
     String packageName;
     mContext->GetPackageName(&packageName);
@@ -912,7 +921,7 @@ ECode LocationManager::AddNmeaListener(
     }
 
     AutoPtr<IIGpsStatusListener> transport;
-    CLocationManagerGpsStatusListenerTransport::New(THIS_PROBE(ILocationManager), listener, (IIGpsStatusListener**)&transport);
+    CLocationManagerGpsStatusListenerTransport::New((ILocationManager*)this, listener, (IIGpsStatusListener**)&transport);
 
     String packageName;
     mContext->GetPackageName(&packageName);
@@ -1029,7 +1038,7 @@ AutoPtr<IILocationListener> LocationManager::WrapListener(
         AutoPtr<IILocationListener> transport;
         if ((it == mListeners.End()) || (it->mSecond == NULL)) {
             AutoPtr<IILocationListener> lt;
-            CLocationManagerListenerTransport::New(THIS_PROBE(ILocationManager), listener, looper, (IILocationListener**)&lt);
+            CLocationManagerListenerTransport::New((ILocationManager*)this, listener, looper, (IILocationListener**)&lt);
             transport = lt.Get();
         }
         mListeners[tempKey] = transport;

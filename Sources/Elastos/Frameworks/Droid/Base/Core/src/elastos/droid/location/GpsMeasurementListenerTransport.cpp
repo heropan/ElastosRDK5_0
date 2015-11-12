@@ -67,7 +67,7 @@ GpsMeasurementListenerTransport::GpsMeasurementListenerTransport()
     : LocalListenerHelper(String("GpsMeasurementListenerTransport"))
 {
     AutoPtr<IIGpsMeasurementsListener> lt;
-    CGpsMeasurementListenerTransportListenerTransport::New(THIS_PROBE(IGpsMeasurementListenerTransport), (IIGpsMeasurementsListener**)&lt);
+    CGpsMeasurementListenerTransportListenerTransport::New((IGpsMeasurementListenerTransport*)this, (IIGpsMeasurementsListener**)&lt);
     mListenerTransport = IIGpsMeasurementsListener::Probe(lt);
 }
 

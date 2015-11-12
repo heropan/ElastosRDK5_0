@@ -64,25 +64,17 @@ Boolean LocationProvider::PropertiesMeetCriteria(
     if (criteria->GetPowerRequirement(&value), properties->GetPowerRequirement(&value2), value != ICriteria::Criteria_NO_REQUIREMENT && value < value2) {
         return FALSE;
     }
-    if (criteria->IsAltitudeRequired(&bValue), bValue) {
-        if (properties->GetSupportsAltitude(&bValue2), !bValue2) {
+    if (criteria->IsAltitudeRequired(&bValue), properties->GetSupportsAltitude(&bValue2), bValue && !bValue2) {
             return FALSE;
-        }
     }
-    if (criteria->IsSpeedRequired(&bValue), bValue) {
-        if (properties->GetSupportsSpeed(&bValue2), !bValue2) {
+    if (criteria->IsSpeedRequired(&bValue), properties->GetSupportsSpeed(&bValue2), bValue && !bValue2) {
             return FALSE;
-        }
     }
-    if (criteria->IsBearingRequired(&bValue), bValue) {
-        if (properties->GetSupportsBearing(&bValue2), !bValue2) {
+    if (criteria->IsBearingRequired(&bValue), properties->GetSupportsBearing(&bValue2), bValue && ! bValue2) {
             return FALSE;
-        }
     }
-    if (criteria->IsCostAllowed(&bValue), bValue) {
-        if (properties->GetHasMonetaryCost(&bValue2), !bValue2) {
+    if (criteria->IsCostAllowed(&bValue), properties->GetHasMonetaryCost(&bValue2), bValue && ! bValue2) {
             return FALSE;
-        }
     }
     return TRUE;
 }
