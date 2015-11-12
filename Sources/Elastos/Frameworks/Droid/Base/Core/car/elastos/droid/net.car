@@ -1192,58 +1192,6 @@ module
     } // namespace Net
     } // namespace Droid
     } // namespace Elastos
-
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Internal {
-//    namespace Net {
-
-//    class CLegacyVpnInfo {
-//        constructor();
-
-//        interface ILegacyVpnInfo;
-//        interface IParcelable;
-//    }
-
-//    class CNetworkStatsFactory {
-//        constructor();
-
-//        constructor(
-//            [in] IFile* procRoot);
-
-//        interface INetworkStatsFactory;
-//    }
-
-//    class CVpnConfig {
-//        constructor();
-
-//        interface IVpnConfig;
-//        interface IParcelable;
-//    }
-
-//    singleton class CVpnConfigHelper {
-//        interface IVpnConfigHelper;
-//    }
-
-//    class CVpnProfile {
-//        constructor();
-
-//        constructor(
-//            [in] String key);
-
-//        interface IVpnProfile;
-//        interface IParcelable;
-//    }
-
-//    singleton class CVpnProfileHelper {
-//        interface IVpnProfileHelper;
-//    }
-
-//    } // namespace Net
-//    } // namespace Internal
-//    } // namespace Droid
-//    } // namespace Elastos
-
 //
 //    class CCaptivePortalTracker {
 //        interface ICaptivePortalTracker;

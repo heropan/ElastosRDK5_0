@@ -106,6 +106,10 @@ public:
         /* [in] */ ArrayOf<T>* array,
         /* [in] */ T value);
 
+    static CARAPI_(Int32) IndexOf(
+        /* [in] */ ArrayOf<IInterface*>* array,
+        /* [in] */ IInterface* value);
+
     /**
      * Test if all {@code check} items are contained in {@code array}.
      */
@@ -114,17 +118,8 @@ public:
         /* [in] */ ArrayOf<T>* array,
         /* [in] */ ArrayOf<T>* check);
 
-    static CARAPI_(Boolean) Contains(
-        /* [in] */ ArrayOf<Int32>* array,
-        /* [in] */ Int32 value);
-
-    static CARAPI_(Boolean) Contains(
-        /* [in] */ ArrayOf<Int64>* array,
-        /* [in] */ Int64 value);
-
     static CARAPI_(Int64) Total(
         /* [in] */ ArrayOf<Int64> *array);
-
 
     /**
      * Appends an element to a copy of the array and returns the copy.
@@ -245,8 +240,7 @@ Int32 ArrayUtils::IndexOf(
                 return i;
         }
         else {
-            Boolean res;
-            if (value != NULL && (IObject::Probe((*array)[i]).Equals(value, &res), res))
+            if (value == (*array)[i])
                 return i;
         }
     }

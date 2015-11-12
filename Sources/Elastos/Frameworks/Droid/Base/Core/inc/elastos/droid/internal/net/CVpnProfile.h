@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_INTERNAL_NET_CVPNPROFILE_H__
 
 #include "_Elastos_Droid_Internal_Net_CVpnProfile.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::ICloneable;
 
 namespace Elastos {
 namespace Droid {
@@ -10,9 +13,17 @@ namespace Internal {
 namespace Net {
 
 CarClass(CVpnProfile)
+    , public Object
+    , public IVpnProfile
+    , public ICloneable
+    , public IParcelable
 {
 public:
     CVpnProfile();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -134,6 +145,9 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
+
+    CARAPI Clone(
+        /* [out] */ IInterface** object);
 
     static CARAPI Decode(
         /* [in] */ const String& key,

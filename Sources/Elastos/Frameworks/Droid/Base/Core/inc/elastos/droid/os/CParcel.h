@@ -7,6 +7,7 @@
 using Elastos::Core::IClassLoader;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -203,7 +204,7 @@ public:
      * loader of the Bundle for later retrieval of Parcelable objects.
      * Returns null if the previously written Bundle object was null.
      */
-     static AutoPtr<IBundle> ReadBundle(
+    static AutoPtr<IBundle> ReadBundle(
         /* [in] */ IParcel* source,
         /* [in] */ IClassLoader* loader);
 
@@ -214,6 +215,55 @@ public:
     static CARAPI WriteBundle(
         /* [in] */ IParcel* dest,
         /* [in] */ IBundle* val);
+
+    /**
+     * Flatten a List containing a particular object type into the parcel, at
+     * the current dataPosition() and growing dataCapacity() if needed.  The
+     * type of the objects in the list must be one that implements Parcelable.
+     * Unlike the generic writeList() method, however, only the raw data of the
+     * objects is written and not their type, so you must use the corresponding
+     * readTypedList() to unmarshall them.
+     *
+     * @param val The list of objects to be written.
+     *
+     * @see #createTypedArrayList
+     * @see #readTypedList
+     * @see Parcelable
+     */
+    static CARAPI WriteTypedList(
+        /* [in] */ IParcel* dest,
+        /* [in] */ IList* val);
+
+    /**
+     * Flatten a List containing String objects into the parcel, at
+     * the current dataPosition() and growing dataCapacity() if needed.  They
+     * can later be retrieved with {@link #createStringArrayList} or
+     * {@link #readStringList}.
+     *
+     * @param val The list of strings to be written.
+     *
+     * @see #createStringArrayList
+     * @see #readStringList
+     */
+    static CARAPI WriteStringList(
+        /* [in] */ IParcel* dest,
+        /* [in] */ IList* val);
+
+    /**
+     * Read into the given List items containing a particular object type
+     * that were written with {@link #writeTypedList} at the
+     * current dataPosition().  The list <em>must</em> have
+     * previously been written via {@link #writeTypedList} with the same object
+     * type.
+     *
+     * @return A newly created ArrayList containing objects with the same data
+     *         as those that were previously written.
+     *
+     * @see #writeTypedList
+     */
+    static CARAPI ReadTypedList(
+        /* [in] */ IParcel* source,
+        /* [in] */ IList* val);
 
 private:
     CARAPI ReadValue(

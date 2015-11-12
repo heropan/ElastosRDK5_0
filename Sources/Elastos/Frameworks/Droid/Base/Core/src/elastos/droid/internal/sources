@@ -12,5 +12,6 @@ LIBRARIES += content/content.lib
 LIBRARIES += database/database.lib
 LIBRARIES += http/http.lib
 LIBRARIES += inputmethod/inputmethod.lib
+LIBRARIES += net/net.lib
 LIBRARIES += os/os.lib
 LIBRARIES += utility/utility.lib
