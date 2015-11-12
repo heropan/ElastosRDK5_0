@@ -3,9 +3,10 @@
 #define __ELASTOS_DROID_INTERNAL_NET_CNETWORKSTATSFACTORY_H__
 
 #include "_Elastos_Droid_Internal_Net_CNetworkStatsFactory.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::INetworkStats;
-
+using Elastos::Droid::Utility::IArrayMap;
 using Elastos::IO::IFile;
 
 namespace Elastos {
@@ -14,8 +15,14 @@ namespace Internal {
 namespace Net {
 
 CarClass(CNetworkStatsFactory)
+    , public Object
+    , public INetworkStatsFactory
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -53,15 +60,65 @@ public:
      */
     CARAPI ReadNetworkStatsDetail(
         /* [in] */ Int32 limitUid,
+        /* [in] */ ArrayOf<String>* limitIfaces,
+        /* [in] */ Int32 limitTag,
+        /* [in] */ INetworkStats* lastStats,
+        /* [out] */ INetworkStats** stats);
+
+    CARAPI AssertEquals(
+        /* [in] */ INetworkStats* expected,
+        /* [in] */ INetworkStats* actual);
+
+    static CARAPI NoteStackedIface(
+        /* [in] */ const String& stackedIface,
+        /* [in] */ const String& baseIface);
+
+    /**
+     * Parse and return {@link NetworkStats} with UID-level details. Values are
+     * expected to monotonically increase since device boot.
+     */
+    // @VisibleForTesting
+    static CARAPI JavaReadNetworkStatsDetail(
+        /* [in] */ IFile* detailPath,
+        /* [in] */ Int32 limitUid,
+        /* [in] */ ArrayOf<String>* limitIfaces,
+        /* [in] */ Int32 limitTag,
+        /* [out] */ INetworkStats** stats);
+
+    /**
+     * Parse statistics from file into given {@link NetworkStats} object. Values
+     * are expected to monotonically increase since device boot.
+     */
+    // @VisibleForTesting
+    static CARAPI_(Int32) NativeReadNetworkStatsDetail(
+        /* [in] */ INetworkStats* stats,
+        /* [in] */ const String& path,
+        /* [in] */ Int32 limitUid,
+        /* [in] */ ArrayOf<String>* limitIfaces,
+        /* [in] */ Int32 limitTag);
+
+private:
+    CARAPI ReadNetworkStatsDetailInternal(
+        /* [in] */ Int32 limitUid,
+        /* [in] */ ArrayOf<String>* limitIfaces,
+        /* [in] */ Int32 limitTag,
+        /* [in] */ INetworkStats* lastStats,
         /* [out] */ INetworkStats** stats);
 
 private:
+    static const String TAG;
+    static const Boolean USE_NATIVE_PARSING;
+    static const Boolean SANITY_CHECK_NATIVE;
+
     /** Path to {@code /proc/net/xt_qtaguid/iface_stat_all}. */
     AutoPtr<IFile> mStatsXtIfaceAll;
     /** Path to {@code /proc/net/xt_qtaguid/iface_stat_fmt}. */
     AutoPtr<IFile> mStatsXtIfaceFmt;
     /** Path to {@code /proc/net/xt_qtaguid/stats}. */
     AutoPtr<IFile> mStatsXtUid;
+
+    // @GuardedBy("sStackedIfaces")
+    static AutoPtr<IArrayMap> sStackedIfaces;
 };
 
 } // namespace Net

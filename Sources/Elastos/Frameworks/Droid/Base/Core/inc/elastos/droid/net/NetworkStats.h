@@ -9,6 +9,18 @@ using Elastos::Utility::IHashSet;
 
 namespace Elastos {
 namespace Droid {
+namespace Internal {
+namespace Net {
+
+class CNetworkStatsFactory;
+
+} // namespace Net
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
+
+namespace Elastos {
+namespace Droid {
 namespace Net {
 
 /**
@@ -25,6 +37,7 @@ class NetworkStats
     , public IParcelable
     , public INetworkStats
 {
+    friend class Elastos::Droid::Internal::Net::CNetworkStatsFactory;
 public:
     CAR_INTERFACE_DECL()
 

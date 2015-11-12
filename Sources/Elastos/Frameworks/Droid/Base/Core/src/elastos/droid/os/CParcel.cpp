@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 using Elastos::Core::CoreUtils;
+using Elastos::Core::ICharSequence;
 using Elastos::IO::CFileDescriptor;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Slogger;
@@ -472,6 +473,76 @@ ECode CParcel::WriteBundle(
     }
 
     return IParcelable::Probe(val)->WriteToParcel(dest);
+}
+
+ECode CParcel::WriteTypedList(
+    /* [in] */ IParcel* dest,
+    /* [in] */ IList* val)
+{
+    if (val == NULL) {
+        dest->WriteInt32(-1);
+        return NOERROR;
+    }
+    Int32 N;
+    val->GetSize(&N);
+    Int32 i = 0;
+    dest->WriteInt32(N);
+    while (i < N) {
+        AutoPtr<IInterface> item;
+        val->Get(i, (IInterface**)&item);
+        dest->WriteInterfacePtr(item);
+        i++;
+    }
+    return NOERROR;
+}
+
+ECode CParcel::WriteStringList(
+    /* [in] */ IParcel* dest,
+    /* [in] */ IList* val)
+{
+    if (val == NULL) {
+        dest->WriteInt32(-1);
+        return NOERROR;
+    }
+    Int32 N;
+    val->GetSize(&N);
+    Int32 i = 0;
+    dest->WriteInt32(N);
+    while (i < N) {
+        AutoPtr<IInterface> item;
+        val->Get(i, (IInterface**)&item);
+        String str;
+        if (ICharSequence::Probe(item))
+            ICharSequence::Probe(item)->ToString(&str);
+        dest->WriteString(str);
+        i++;
+    }
+    return NOERROR;
+}
+
+ECode CParcel::ReadTypedList(
+    /* [in] */ IParcel* source,
+    /* [in] */ IList* list)
+{
+    Int32 M;
+    list->GetSize(&M);
+    Int32 N;
+    source->ReadInt32(&N);
+    Int32 i = 0;
+    for (; i < M && i < N; i++) {
+        AutoPtr<IInterface> item;
+        source->ReadInterfacePtr((Handle32*)&item);
+        list->Set(i, item);
+    }
+    for (; i < N; i++) {
+        AutoPtr<IInterface> item;
+        source->ReadInterfacePtr((Handle32*)&item);
+        list->Add(item);
+    }
+    for (; i < M; i++) {
+        list->Remove(N);
+    }
+    return NOERROR;
 }
 
 } // namespace Os

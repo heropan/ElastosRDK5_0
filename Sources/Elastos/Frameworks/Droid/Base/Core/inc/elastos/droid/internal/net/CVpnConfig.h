@@ -3,10 +3,14 @@
 #define __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIG_H__
 
 #include "_Elastos_Droid_Internal_Net_CVpnConfig.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Core::ICharSequence;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -14,11 +18,27 @@ namespace Internal {
 namespace Net {
 
 CarClass(CVpnConfig)
+    , public Object
+    , public IVpnConfig
+    , public IParcelable
 {
 public:
     CVpnConfig();
 
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
+
+    CARAPI UpdateAllowedFamilies(
+        /* [in] */ IInetAddress* address);
+
+    CARAPI AddLegacyRoutes(
+        /* [in] */ const String& routesStr);
+
+    CARAPI AddLegacyAddresses(
+        /* [in] */ const String& addressesStr);
 
     CARAPI GetUser(
         /* [out] */ String* user);
@@ -45,28 +65,40 @@ public:
         /* [in] */ Int32 mtu);
 
     CARAPI GetAddresses(
-        /* [out] */ String* addresses);
+        /* [out] */ IList** addresses);
 
     CARAPI SetAddresses(
-        /* [in] */ const String& addresses);
+        /* [in] */ IList* addresses);
 
     CARAPI GetRoutes(
-        /* [out] */ String* routes);
+        /* [out] */ IList** routes);
 
     CARAPI SetRoutes(
-        /* [in] */ const String& routes);
+        /* [in] */ IList* routes);
 
     CARAPI GetDnsServers(
-        /* [out] */ IObjectContainer** dnsServers);
+        /* [out] */ IList** dnsServers);
 
     CARAPI SetDnsServers(
-        /* [in] */ IObjectContainer* dnsServers);
+        /* [in] */ IList* dnsServers);
 
     CARAPI GetSearchDomains(
-        /* [out] */ IObjectContainer** searchDomains);
+        /* [out] */ IList** searchDomains);
 
     CARAPI SetSearchDomains(
-        /* [in] */ IObjectContainer* searchDomains);
+        /* [in] */ IList* searchDomains);
+
+    CARAPI GetAllowedApplications(
+        /* [out] */ IList** allowedApplications);
+
+    CARAPI SetAllowedApplications(
+        /* [in] */ IList* allowedApplications);
+
+    CARAPI GetDisallowedApplications(
+        /* [out] */ IList** disallowedApplications);
+
+    CARAPI SetDisallowedApplications(
+        /* [in] */ IList* disallowedApplications);
 
     CARAPI GetConfigureIntent(
         /* [out] */ IPendingIntent** configureIntent);
@@ -86,6 +118,30 @@ public:
     CARAPI SetLegacy(
         /* [in] */ Boolean legacy);
 
+    CARAPI GetBlocking(
+        /* [out] */ Boolean* blocking);
+
+    CARAPI SetBlocking(
+        /* [in] */ Boolean blocking);
+
+    CARAPI GetAllowBypass(
+        /* [out] */ Boolean* allowBypass);
+
+    CARAPI SetAllowBypass(
+        /* [in] */ Boolean allowBypass);
+
+    CARAPI GetAllowIPv4(
+        /* [out] */ Boolean* allowIPv4);
+
+    CARAPI SetAllowIPv4(
+        /* [in] */ Boolean allowIPv4);
+
+    CARAPI GetAllowIPv6(
+        /* [out] */ Boolean* allowIPv6);
+
+    CARAPI SetAllowIPv6(
+        /* [in] */ Boolean allowIPv6);
+
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
@@ -97,21 +153,31 @@ public:
 
     static CARAPI GetIntentForStatusPanel(
         /* [in] */ IContext* context,
-        /* [in] */ IVpnConfig* config,
         /* [out] */ IPendingIntent** intent);
+
+    static CARAPI GetVpnLabel(
+        /* [in] */ IContext* context,
+        /* [in] */ const String& packageName,
+        /* [out] */ ICharSequence** label);
 
 public:
     String mUser;
     String mInterfaze;
     String mSession;
     Int32 mMtu;
-    String mAddresses;
-    String mRoutes;
-    AutoPtr<IObjectContainer> mDnsServers;
-    AutoPtr<IObjectContainer> mSearchDomains;
+    AutoPtr<IList> mAddresses;
+    AutoPtr<IList> mRoutes;
+    AutoPtr<IList> mDnsServers;
+    AutoPtr<IList> mSearchDomains;
+    AutoPtr<IList> mAllowedApplications;
+    AutoPtr<IList> mDisallowedApplications;
     AutoPtr<IPendingIntent> mConfigureIntent;
     Int64 mStartTime;
     Boolean mLegacy;
+    Boolean mBlocking;
+    Boolean mAllowBypass;
+    Boolean mAllowIPv4;
+    Boolean mAllowIPv6;
 };
 
 } // namespace Net

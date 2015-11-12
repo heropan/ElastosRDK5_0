@@ -92,34 +92,24 @@ Boolean ArrayUtils::Equals(
     return TRUE;
 }
 
-Boolean ArrayUtils::Contains(
-    /* [in] */ ArrayOf<Int32>* array,
-    /* [in] */ Int32 value)
+Int32 ArrayUtils::IndexOf(
+    /* [in] */ ArrayOf<IInterface*>* array,
+    /* [in] */ IInterface* value)
 {
     if (array == NULL)
-        return FALSE;
-
+        return -1;
     for (Int32 i = 0; i < array->GetLength(); i++) {
-        if ((*array)[i] == value) {
-            return TRUE;
+        if ((*array)[i] == NULL) {
+            if (value == NULL)
+                return i;
+        }
+        else {
+            Boolean res;
+            if (value != NULL && (IObject::Probe((*array)[i])->Equals(value, &res), res))
+                return i;
         }
     }
-    return FALSE;
-}
-
-Boolean ArrayUtils::Contains(
-    /* [in] */ ArrayOf<Int64>* array,
-    /* [in] */ Int64 value)
-{
-    if (array == NULL)
-        return FALSE;
-
-    for (Int32 i = 0; i < array->GetLength(); i++) {
-        if ((*array)[i] == value) {
-            return TRUE;
-        }
-    }
-    return FALSE;
+    return -1;
 }
 
 Int64 ArrayUtils::Total(
