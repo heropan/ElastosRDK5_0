@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__
 #define __ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/Learner.h"
 
 using Elastos::Core::IComparator;
@@ -12,7 +12,6 @@ namespace Gesture {
 
 class InstanceLearner
     : public Learner
-    , public ILearner
     , public IInstanceLearner
 {
 private:
@@ -21,7 +20,7 @@ private:
         , public IComparator
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI Compare(
             /* [in] */ IInterface* object1,
@@ -30,18 +29,30 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     InstanceLearner();
+
     virtual ~InstanceLearner();
 
-    //@Override
+    CARAPI GetInstances(
+        /* [in] */ IArrayList** instances);
+
     CARAPI_(AutoPtr<IArrayList>) Classify(
         /* [in] */ Int32 sequenceType,
         /* [in] */ Int32 orientationType,
         /* [in] */ ArrayOf<Float> *vec);
 
-private:
-    AutoPtr<IComparator> mComparator;
+    CARAPI AddInstance(
+        /* [in] */ IInstance *instance);
 
+    CARAPI Classify(
+        /* [in] */ Int32 sequenceType,
+        /* [in] */ Int32 orientationType,
+        /* [in] */ ArrayOf<Float> *vec,
+        /* [out] */ IArrayList** predictions);
+public:
+    AutoPtr<IComparator> mComparator;
 };
 
 } // namespace Gesture

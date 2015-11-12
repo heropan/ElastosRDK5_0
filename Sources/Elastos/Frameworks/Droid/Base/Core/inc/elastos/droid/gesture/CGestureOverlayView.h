@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CGESTUREOVERLAYVIEW_H__
 #define __ELASTOS_DROID_GESTURE_CGESTUREOVERLAYVIEW_H__
 
-#include "_Elastos_Droid_Gesture_CGestureOverlayView.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/GestureOverlayView.h"
 
 namespace Elastos {
@@ -15,6 +15,7 @@ public:
     CAR_OBJECT_DECL();
 
     CGestureOverlayView();
+
     virtual ~CGestureOverlayView();
 };
 

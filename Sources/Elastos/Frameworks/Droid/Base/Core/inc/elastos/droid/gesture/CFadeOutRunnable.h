@@ -1,8 +1,11 @@
 #ifndef __ELASTOS_DROID_GESTURE_CFADEOUTRUNNABLE_H__
-#define __GFADEOUTRUNNABLE_H__
+#define __ELASTOS_DROID_GESTURE_CFADEOUTRUNNABLE_H__
 
-#include "_Elastos_Droid_Gesture_CFadeOutRunnable.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/GestureOverlayView.h"
+#include "_Elastos_Droid_Gesture_CFadeOutRunnable.h"
+
+using Elastos::Droid::Gesture::CFadeOutRunnable;
 
 namespace Elastos {
 namespace Droid {

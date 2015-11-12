@@ -14,6 +14,7 @@ public:
     CAR_OBJECT_DECL();
 
     CGestureUtils();
+
     virtual ~CGestureUtils();
 };
 

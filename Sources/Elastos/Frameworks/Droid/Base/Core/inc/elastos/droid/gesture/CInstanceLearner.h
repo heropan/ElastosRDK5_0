@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_CINSTANCELEARNER_H__
 
 #include "_Elastos_Droid_Gesture_CInstanceLearner.h"
-#include "InsatnceLearner.h"
+#include "elastos/droid/gesture/InsatnceLearner.h"
 
 namespace Elastos {
 namespace Droid {

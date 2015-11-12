@@ -7,8 +7,6 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CAR_INTERFACE_IMPL(Instance, Object, IInstance);
-
 static AutoPtr<ArrayOf<Float> > InitORIENTATIONS()
 {
     AutoPtr<ArrayOf<Float> > orientations = ArrayOf<Float>::Alloc(10);
@@ -26,6 +24,8 @@ static AutoPtr<ArrayOf<Float> > InitORIENTATIONS()
 }
 
 const AutoPtr<ArrayOf<Float> > Instance::ORIENTATIONS = InitORIENTATIONS();
+
+CAR_INTERFACE_IMPL(Instance, Object, IInstance);
 
 Instance::Instance(
     /* [in] */ Int64 id,

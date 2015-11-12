@@ -5,48 +5,93 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-void Learner::AddInstance(
-    /* [in] */ Instance *instance)
+CAR_INTERFACE_IMPL(Learner, Object, ILearner);
+
+Learner::Learner()
+{}
+
+Learner::~Learner()
+{}
+
+ECode Learner::AddInstance(
+    /* [in] */ IInstance *instance)
 {
-    mInstances->PushBack(instance);
+    mInstances->Add(instance);
+    return NOERROR;
 }
 
-AutoPtr<List<AutoPtr<Instance> > > Learner::GetInstances()
+AutoPtr<IArrayList> Learner::GetInstances()
 {
     return mInstances;
 }
 
-void Learner::RemoveInstance(
+ECode Learner::RemoveInstance(
     /* [in] */ Int64 id)
 {
-    AutoPtr< List< AutoPtr<Instance> > > instances = mInstances;
-    List< AutoPtr<Instance> >::Iterator it;
-    for (it = instances->Begin(); it != instances->End(); ++it) {
-        AutoPtr<Instance> instance = *it;
+    AutoPtr<IArrayList> instances = mInstances;
+    Int32 size;
+
+    instances->GetSize(&size);
+    for (Int32 i = 0;  i < size;  i++) {
+        AutoPtr<IInstance> instance;
+
+        instances->Get(i, (IInterface **)&instance);
+
+        /* TODO WAITING
         if (id == instance->mId) {
-            it = instances->Erase(it);
-            return;
+            instances->Remove(i);
+            return NOERROR;
         }
+        */
     }
+    return NOERROR;
 }
 
-void Learner::RemoveInstances(
+ECode Learner::RemoveInstances(
     /* [in] */ const String& name)
 {
-    AutoPtr<List<AutoPtr<Instance> > > toDelete = new List<AutoPtr<Instance> >();
-    AutoPtr<List<AutoPtr<Instance> > > instances = mInstances;
+    AutoPtr<IArrayList> instances = mInstances;
+    Int32 size;
 
-    List<AutoPtr<Instance> >::Iterator it;
-    for (it = instances->Begin(); it != instances->End(); ++it) {
-    // for (int i = 0; i < count; i++) {
-        AutoPtr<Instance> instance = *it;
-        // the label can be null, as specified in Instance
+    instances->GetSize(&size);
+    for (Int32 i = 0;  i < size;  i++) {
+        AutoPtr<IInstance> instance;
+
+        instances->Get(i, (IInterface **)&instance);
+
+        /* TODO WAITING
         if ((instance->mLabel.IsNull() && name.IsNull())
                 || (!instance->mLabel.IsNull() && instance->mLabel.Equals(name))) {
             toDelete->PushBack(instance);
             it = instances->Erase(it);
-        }
+        */
     }
+    return NOERROR;
+}
+
+ECode Learner::GetInstances(
+    /* [in] */ IArrayList** instances)
+{
+    *instances = mInstances;
+    REFCOUNT_ADD(mInstances);
+    return NOERROR;
+}
+
+CARAPI_(AutoPtr<IArrayList>) Classify(
+    /* [in] */ Int32 sequenceType,
+    /* [in] */ Int32 orientationType,
+    /* [in] */ ArrayOf<Float> vec)
+{
+    return NULL;
+}
+
+ECode Learner::Classify(
+    /* [in] */ Int32 sequenceType,
+    /* [in] */ Int32 orientationType,
+    /* [in] */ ArrayOf<Float> *vec,
+    /* [out] */ IArrayList** predictions)
+{
+    return  NOERROR;
 }
 
 } // namespace Gesture

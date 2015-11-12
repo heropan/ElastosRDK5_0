@@ -1,9 +1,11 @@
 #ifndef __ELASTOS_DROID_GESTURE_INSTANCE_H__
 #define __ELASTOS_DROID_GESTURE_INSTANCE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Droid::Gesture::IGesture;
+using Elastos::Droid::Gesture::IInstance;
 
 namespace Elastos {
 namespace Droid {
@@ -20,6 +22,7 @@ public:
     CAR_INTERFACE_DECL();
 
     Instance();
+
     virtual ~Instance();
 
     /**
@@ -67,8 +70,6 @@ private:
     const static Int32 PATCH_SAMPLE_SIZE = 16;
 
     const static AutoPtr<ArrayOf<Float> > ORIENTATIONS;
-
-
 };
 
 } // namespace Gesture

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
 
 #include "elastos/droid/gesture/GestureStore.h"
+#include "_Elastos_Droid_Gesture_CGestureStore.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,6 +15,7 @@ public:
     CAR_OBJECT_DECL();
 
     CGestureStore();
+
     virtual ~CGestureStore();
 };
 

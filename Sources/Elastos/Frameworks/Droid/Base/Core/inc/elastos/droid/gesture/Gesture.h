@@ -13,6 +13,7 @@ using Elastos::Droid::Graphics::IRectF;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -24,11 +25,10 @@ class Gesture
     , public IParcelable
 {
 public:
-    static CARAPI_(AutoPtr<IAtomicInteger32>) InitGestureCount();
-
     CAR_INTERFACE_DECL();
 
-    CGesture();
+    Gesture();
+
     virtual ~Gesture();
 
     CARAPI constructor();
@@ -37,7 +37,7 @@ public:
      * @return all the strokes of the gesture
      */
     CARAPI GetStrokes(
-        /* [out] */ IObjectContainer **container);
+        /* [out] */  IArrayList **container);
 
     /**
      * @return the number of strokes included by this gesture
@@ -89,6 +89,14 @@ public:
         /* [in] */ Int32 edge,
         /* [in] */ Int32 numSample,
         /* [out] */ IPath **outPath);
+
+    /**
+     * Sets the id of the gesture.
+     *
+     * @param id
+     */
+    CARAPI SetID(
+        /* [in] */ Int64 id);
 
     /**
      * @return the id of the gesture
@@ -158,20 +166,9 @@ public:
         }
     };*/
 
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel *out,
-        /* [in] */ Int32 flags);
-
     CARAPI DescribeContents(
         /* [out] */ Int32 *result);
 
-    /**
-     * Sets the id of the gesture.
-     *
-     * @param id
-     */
-    CARAPI SetID(
-        /* [in] */ Int64 id);
 
     CARAPI Serialize(
         /* [in] */ IDataOutputStream *out);
@@ -189,8 +186,7 @@ public:
         /* [out] */ IGesture** gesture);
 
 private:
-    static CARAPI_(AutoPtr<IRectF>) InitBoundingBox();
-    static CARAPI_(AutoPtr<IObjectContainer>) InitObjectContainer();
+    static CARAPI_(AutoPtr<IAtomicInteger32>) InitGestureCount();
 
 private:
     static Int64 GESTURE_ID_BASE;
@@ -207,8 +203,7 @@ private:
     // the same as its instance ID
     Int64 mGestureID;
 
-    AutoPtr<List<AutoPtr<IGestureStroke> > > mStrokes;
-
+    AutoPtr<IArrayList>  mStrokes;
 };
 
 } // namespace Gesture

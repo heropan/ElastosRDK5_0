@@ -5,7 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-const String GestureConstants::LOG_TAG = String("Gestures");
+const String GestureConstants::myLOG_TAG("Gestures");
 
 } // namespace Gesture
 } // namespace Droid

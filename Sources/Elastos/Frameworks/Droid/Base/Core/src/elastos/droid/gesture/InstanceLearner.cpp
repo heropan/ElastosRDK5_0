@@ -2,22 +2,22 @@
 #include "elastos/droid/gesture/CPrediction.h"
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/InstanceLearner.h"
-#include <elastos/Map.h>
 #include <elastos/core/Math.h>
 
 using Elastos::Core::EIID_IComparator;
-using Elastos::Utility::Map;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::IList;
+using Elastos::Utility::INavigableMap;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CAR_INTERFACE_IMPL(InstanceLearner::PredictionComparator, IComparator)
+CAR_INTERFACE_IMPL(InstanceLearner, Object, IComparator);
+CAR_INTERFACE_IMPL(InstanceLearner::PredictionComparator, Object, IComparator);
 
 ECode InstanceLearner::PredictionComparator::Compare(
     /* [in] */ IInterface* object1,
@@ -46,18 +46,26 @@ InstanceLearner::InstanceLearner()
 AutoPtr<IArrayList> InstanceLearner::Classify(
     /* [in] */ Int32 sequenceType,
     /* [in] */ Int32 orientationType,
-    /* [in] */ ArrayOf<Float> *vec)
+    /* [in] */ ArrayOf<Float>* vec)
 {
+    return NULL;
+/*
     AutoPtr<IArrayList> predictions;
     CArrayList::New((IArrayList**)&predictions);
 
-    AutoPtr<List<AutoPtr<Instance> > > instances = GetInstances();
+    AutoPtr<IArrayList> instances = Learner::GetInstances();
 
-    Map<String, Double> label2score;
+    AutoPtr<INavigableMap> label2score;
+    CTreeMap::New((INavigableMap**)&label2score);
 
-    List<AutoPtr<Instance> >::Iterator it;
-    for (it = instances->Begin(); it != instances->End(); ++it) {
-        AutoPtr<Instance> sample = *it;
+    Int32 count;
+    instances->GetSize(&count);
+
+    for (int i = 0; i < count; i++) {
+        AutoPtr<IInstance> sample;
+
+        instances->Get(i, (IInterface *)&sample);
+
         if (sample->mVector->GetLength() != vec->GetLength()) {
             continue;
         }
@@ -81,6 +89,13 @@ AutoPtr<IArrayList> InstanceLearner::Classify(
         }
     }
 
+    label2score->GetSize(&count);
+    for (int i = 0; i < count; i++) {
+        AutoPtr<IInstance> sample;
+
+        label2score->Get(i, (IInterface *)&sample);
+
+
     Map<String, Double>::Iterator iter;
     for (iter = label2score.Begin(); iter != label2score.End(); ++iter) {
         String name = iter->mFirst;
@@ -96,6 +111,27 @@ AutoPtr<IArrayList> InstanceLearner::Classify(
     collections->Sort(IList::Probe(predictions), mComparator);
 
     return predictions;
+*/
+}
+
+ECode InstanceLearner::AddInstance(
+    /* [in] */ IInstance *instance)
+{
+    mInstances->Add(instance);
+    return NOERROR;
+}
+
+ECode InstanceLearner::Classify(
+    /* [in] */ Int32 sequenceType,
+    /* [in] */ Int32 orientationType,
+    /* [in] */ ArrayOf<Float>* vec,
+    /* [out] */ IArrayList** predictions)
+{
+    AutoPtr<IArrayList> list;
+
+    list = Classify(sequenceType, orientationType, vec);
+    *predictions = list;
+    return NOERROR;
 }
 
 } // namespace Gesture

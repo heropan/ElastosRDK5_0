@@ -1,20 +1,23 @@
+#include "elastos/droid/gesture/OrientedBoundingBox.h"
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/gesture/COrientedBoundingBox.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CMatrix.h"
 
 using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Graphics::CMatrix;
+
+using Elastos::Droid::Gesture::IOrientedBoundingBox;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CAR_INTERFACE_IMPL(COrientedBoundingBox, Object, IOrientedBoundingBox);
+CAR_INTERFACE_IMPL(OrientedBoundingBox, Object, IOrientedBoundingBox);
 
-COrientedBoundingBox()
+OrientedBoundingBox::OrientedBoundingBox()
     : mSquareness(0)
     , mWidth(0)
     , mHeight(0)
@@ -23,10 +26,10 @@ COrientedBoundingBox()
     , mCenterY(0)
 {}
 
-~COrientedBoundingBox()
+OrientedBoundingBox::~OrientedBoundingBox()
 {}
 
-COrientedBoundingBox::constructor(
+ECode OrientedBoundingBox::constructor(
     /* [in] */ Float angle,
     /* [in] */ Float cx,
     /* [in] */ Float cy,
@@ -41,12 +44,15 @@ COrientedBoundingBox::constructor(
     Float ratio = w / h;
     if (ratio > 1) {
         mSquareness = 1 / ratio;
-    } else {
+    }
+    else {
         mSquareness = ratio;
     }
+
+    return NOERROR;
 }
 
-ECode COrientedBoundingBox::ToPath(
+ECode OrientedBoundingBox::ToPath(
     /* [out] */ IPath **outPath)
 {
     VALIDATE_NOT_NULL(outPath);
@@ -86,7 +92,7 @@ ECode COrientedBoundingBox::ToPath(
     return NOERROR;
 }
 
-ECode COrientedBoundingBox::GetSquareness(
+ECode OrientedBoundingBox::GetSquareness(
     /* [out] */ Float* squareness)
 {
     VALIDATE_NOT_NULL(squareness);
@@ -95,7 +101,7 @@ ECode COrientedBoundingBox::GetSquareness(
     return NOERROR;
 }
 
-ECode COrientedBoundingBox::GetWidth(
+ECode OrientedBoundingBox::GetWidth(
     /* [out] */ Float *width)
 {
     VALIDATE_NOT_NULL(width);
@@ -103,7 +109,7 @@ ECode COrientedBoundingBox::GetWidth(
     return NOERROR;
 }
 
-ECode COrientedBoundingBox::GetHeight(
+ECode OrientedBoundingBox::GetHeight(
     /* [out] */ Float *height)
 {
     VALIDATE_NOT_NULL(height);
@@ -111,7 +117,7 @@ ECode COrientedBoundingBox::GetHeight(
     return NOERROR;
 }
 
-ECode COrientedBoundingBox::GetOrientation(
+ECode OrientedBoundingBox::GetOrientation(
     /* [out] */ Float *orientation)
 {
     VALIDATE_NOT_NULL(orientation);
@@ -119,7 +125,7 @@ ECode COrientedBoundingBox::GetOrientation(
     return NOERROR;
 }
 
-ECode COrientedBoundingBox::GetCenterX(
+ECode OrientedBoundingBox::GetCenterX(
     /* [out] */ Float *centerX)
 {
     VALIDATE_NOT_NULL(centerX);
@@ -127,7 +133,7 @@ ECode COrientedBoundingBox::GetCenterX(
     return NOERROR;
 }
 
-ECode COrientedBoundingBox::GetCenterY(
+ECode OrientedBoundingBox::GetCenterY(
     /* [out] */ Float *centerY)
 {
     VALIDATE_NOT_NULL(centerY);

@@ -2,25 +2,43 @@
 #define __ELASTOS_DROID_GESTURE_CGESTURELIBRARIES_H__
 
 #include "_Elastos_Droid_Gesture_CGestureLibraries.h"
-#include "elastos/droid/gesture/GestureLibrary.h"
-#include "elastos/droid/gesture/GestureLibraries.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::IO::IFile;
-using Elastos::IO::CFile;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Gesture::IGestureLibraries;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
 CarClass(CGestureLibraries)
-    , public GestureLibraries
+    , public Singleton
+    , public IGestureLibraries
 {
 public:
-    CAR_OBJECT_DECL();
+    CAR_SINGLETON_DECL()
 
-    CGestureLibraries();
-    virtual ~CGestureLibraries();
+    CAR_INTERFACE_DECL()
+
+    CARAPI FromFile(
+        /* [in] */  const String& path,
+        /* [out] */ IGestureLibrary** gestureLib);
+
+    CARAPI FromFile(
+        /* [in] */ IFile* path,
+        /* [out] */ IGestureLibrary** gestureLib);
+
+    CARAPI FromPrivateFile(
+        /* [in] */ IContext* ctx,
+        /* [in] */ String name,
+        /* [out] */ IGestureLibrary** gestureLib);
+
+    CARAPI FromRawResource(
+        /* [in] */ IContext* ctx,
+        /* [in] */ Int32 resourceId,
+        /* [out] */ IGestureLibrary** gestureLib);
 };
 
 } // namespace Gesture

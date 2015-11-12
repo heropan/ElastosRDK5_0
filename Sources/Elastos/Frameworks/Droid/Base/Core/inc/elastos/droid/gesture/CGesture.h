@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_GESTURE_CGESTURE_H__
 #define __ELASTOS_DROID_GESTURE_CGESTURE_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/Gesture.h"
-#include "_Elastos_Droid_Gesture_CGesture.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,6 +15,7 @@ public:
     CAR_OBJECT_DECL();
 
     CGesture();
+
     virtual ~CGesture();
 };
 

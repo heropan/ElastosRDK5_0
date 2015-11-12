@@ -1,15 +1,25 @@
 #ifndef __ELASTOS_DROID_GESTURE_PREDICTION_H__
 #define __ELASTOS_DROID_GESTURE_PREDICTION_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+#include "elastos/droid/ext/frameworkext.h"
+
+using Elastos::Core::Object;
+
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
 class Prediction
-	: Object
+	: public Object
+    , public IPrediction
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Prediction();
+
     virtual ~Prediction();
 
     CARAPI constructor(

@@ -1,6 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/gesture/GesturePoint.h"
+#include "elastos/droid/gesture/CGesturePoint.h"
 
 using Elastos::IO::IDataInput;
 
@@ -24,7 +25,6 @@ ECode GesturePoint::constructor(
     mX = x;
     mY = y;
     mTimestamp = t;
-
     return NOERROR;
 }
 
@@ -52,11 +52,11 @@ ECode GesturePoint::GetTimestamp(
     return NOERROR;
 }
 
-ECode GesturePoint::Deserialize(
-    /* [in] */ IDataInputStream *in,
-    /* [out] */ IGesturePoint **instance)
+AutoPtr<IGesturePoint> GesturePoint::Deserialize(
+    /* [in] */ IDataInputStream *in)
 {
-    VALIDATE_NOT_NULL(instance);
+    AutoPtr<IGesturePoint> instance;
+
     // Read X and Y
     Float x = 0;
     IDataInput::Probe(in)->ReadFloat(&x);
@@ -66,7 +66,29 @@ ECode GesturePoint::Deserialize(
     Int64 timeStamp = 0;
     IDataInput::Probe(in)->ReadInt64(&timeStamp);
 
-    return GesturePoint::New(x, y, timeStamp, instance);
+    ECode ec = CGesturePoint::New(x, y, timeStamp, (IGesturePoint **)&instance);
+
+    if (FAILED(ec))
+        return  NULL;
+
+    REFCOUNT_ADD(instance);
+    return instance;
+}
+
+ECode GesturePoint::Deserialize(
+    /* [in] */ IDataInputStream *in,
+    /* [out] */ IGesturePoint **instance)
+{
+    AutoPtr<IGesturePoint> inst;
+
+    VALIDATE_NOT_NULL(instance);
+    inst = Deserialize(in);
+    *instance = inst;
+
+    if (*instance != NULL)
+        return NOERROR;
+
+    return E_OUT_OF_MEMORY_ERROR;
 }
 
 } // namespace Gesture

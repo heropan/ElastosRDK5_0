@@ -1,9 +1,12 @@
-#ifndef __ELASTOS_DROID_GESTURE_CGESTUREPOINT_H__
-#define __ELASTOS_DROID_GESTURE_CGESTUREPOINT_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTUREPOINT_H__
+#define __ELASTOS_DROID_GESTURE_GESTUREPOINT_H__
 
-#include "_Elastos_Droid_Gesture_CGesturePoint.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::IDataInputStream;
+using Elastos::Droid::Gesture::IGesturePoint;
+using Elastos::Droid::Gesture::IGesturePointHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +18,10 @@ class GesturePoint
     , public IGesturePointHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
     GesturePoint();
+
     virtual ~GesturePoint();
 
     CARAPI constructor(
@@ -32,7 +38,10 @@ public:
     CARAPI GetTimestamp(
         /* [out] */ Int64 * timestamp);
 
-    static CARAPI Deserialize(
+    static CARAPI_(AutoPtr<IGesturePoint>) Deserialize(
+        /* [in] */ IDataInputStream *in);
+
+    CARAPI Deserialize(
         /* [in] */ IDataInputStream *in,
         /* [out] */ IGesturePoint **instance);
 
@@ -47,4 +56,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_GESTURE_CGESTUREPOINT_H__
+#endif //__ELASTOS_DROID_GESTURE_GESTUREPOINT_H__

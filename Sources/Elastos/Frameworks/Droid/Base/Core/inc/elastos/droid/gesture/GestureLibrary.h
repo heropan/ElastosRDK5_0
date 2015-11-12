@@ -1,8 +1,13 @@
 #ifndef __ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__
 #define __ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__
 
-#include "elastos/droid/gesture/CGestureStore.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/Learner.h"
+#include "elastos/core/Object.h"
+
+using Elastos::Droid::Gesture::IGestureLibrary;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +21,7 @@ public:
     CAR_INTERFACE_DECL();
 
     GestureLibrary();
+
     virtual ~GestureLibrary();
 
     CARAPI Save(
@@ -43,7 +49,7 @@ public:
         /* [out] */ Int32 *type);
 
     CARAPI GetGestureEntries(
-        /* [out] */ IObjectContainer **entries);
+        /* [out] */ IList **entries);
 
     CARAPI Recognize(
         /* [in] */ IGesture *gesture,
@@ -62,11 +68,9 @@ public:
 
     CARAPI GetGestures(
         /* [in] */ const String& entryName,
-        /* [out] */ IObjectContainer** gestures);
-
-private:
+        /* [out] */ IArrayList** gestures);
+public:
     AutoPtr<IGestureStore> mStore;
-
 };
 
 } // namespace Gesture

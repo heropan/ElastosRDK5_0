@@ -10,6 +10,8 @@ using Elastos::IO::IDataInput;
 using Elastos::IO::IDataOutput;
 using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -29,19 +31,19 @@ GestureStroke::~GestureStroke()
 
 
 ECode GestureStroke::constructor(
-    /* [in] */ IObjectContainer *points)
+    /* [in] */ IList *points)
 {
     Int32 count;
-    points->GetObjectCount(&count);
+    points->GetSize(&count);
     AutoPtr<ArrayOf<Float> > tmpPoints = ArrayOf<Float>::Alloc(count * 2);
     AutoPtr<ArrayOf<Int64> > times = ArrayOf<Int64>::Alloc(count);
 
-    AutoPtr<IRectF> bx = NULL;
+    AutoPtr<IRectF> bx;
     Float len = 0;
     Int32 index = 0;
 
-    AutoPtr<IObjectEnumerator> pointsIt;
-    points->GetObjectEnumerator((IObjectEnumerator**)&pointsIt);
+    AutoPtr<IListIterator> pointsIt;
+    points->GetListIterator((IListIterator**)&pointsIt);
     Boolean hasNext;
     Int32 i = 0;
     while (pointsIt->MoveNext(&hasNext), hasNext) {
@@ -80,13 +82,15 @@ GestureStroke::GestureStroke(
     /* [in] */ ArrayOf<Float> *pts,
     /* [in] */ ArrayOf<Int64> *times)
     : mLength(len)
-    , mPoints(pts)
-    , mTimestamps(times)
 {
-    AutoPtr<IParcel> source;
-    IParcelable::Probe(bbx)->WriteToParcel(source);
-    CRectF::New((IRectF**)&mBoundingBox);
-    IParcelable::Probe(mBoundingBox)->ReadFromParcel(source);
+
+    Float left, top, right, bottom;
+
+    bbx->Get(&left, &top, &right, &bottom);
+    CRectF::New(left, top, right, bottom, (IRectF **)&mBoundingBox);
+
+    mPoints = pts->Clone();
+    mTimestamps = times->Clone();
 }
 
 ECode GestureStroke::Draw(

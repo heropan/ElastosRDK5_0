@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_CGESTUREPOINT_H__
 
 #include "elastos/droid/gesture/GesturePoint.h"
+#include "_Elastos_Droid_Gesture_CGesturePoint.h"
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +14,9 @@ CarClass(CGesturePoint)
 public:
     CAR_OBJECT_DECL();
 
-    GesturePoint();
-    virtual ~GesturePoint();
+    CGesturePoint();
+
+    virtual ~CGesturePoint();
 };
 
 } // namespace Gesture

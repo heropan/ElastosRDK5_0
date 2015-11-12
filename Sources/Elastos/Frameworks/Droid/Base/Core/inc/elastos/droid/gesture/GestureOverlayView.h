@@ -1,6 +1,29 @@
 #ifndef __ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__
 #define __ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Droid::Gesture::IGestureOverlayView;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Utility::IList;
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Utility::IArrayList;
+using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
+using Elastos::Core::Object;
+using Elastos::Core::IRunnable;
+using Elastos::Utility::Etl::List;
+
+//WAITING
+//using Elastos::Droid::Widget::FrameLayout;
+
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
@@ -8,8 +31,43 @@ namespace Gesture {
 class GestureOverlayView
     : public Object
     , public IGestureOverlayView
-    , public FrameLayout
+//WAITING
+//    , public FrameLayout
 {
+public:
+    /*
+     * Android: private class FadeOutRunnable implements Runnable
+     */
+    class FadeOutRunnable
+        : public Object
+        , public IRunnable
+    {
+    public:
+        FadeOutRunnable();
+
+        virtual ~FadeOutRunnable();
+
+        CARAPI constructor();
+
+        CARAPI Run();
+
+        CARAPI GetFireActionPerformed(
+            /* [out] */ Boolean *fireActionPerformed);
+
+        CARAPI GetResetMultipleStrokes(
+            /* [out] */ Boolean *resetMultipleStrokes);
+
+        CARAPI SetFireActionPerformed(
+            /* [in] */ Boolean fireActionPerformed);
+
+        CARAPI SetResetMultipleStrokes(
+            /* [in] */ Boolean resetMultipleStrokes);
+
+    public:
+        Boolean mFireActionPerformed;
+        Boolean mResetMultipleStrokes;
+    };
+
 public:
     CAR_INTERFACE_DECL();
 
@@ -36,7 +94,7 @@ public:
         /* [in] */ Int32 defStyleRes);
 
     CARAPI GetCurrentStroke(
-        /* [out] */ IObjectContainer **stroke);
+        /* [out] */ IList **stroke);
 
     CARAPI GetOrientation(
         /* [out] */ Int32 *orientation);
@@ -255,11 +313,11 @@ private:
 
     // current gesture
     AutoPtr<IGesture> mCurrentGesture;
-    const AutoPtr<IObjectContainer> mStrokeBuffer;
+    IArrayList *mStrokeBuffer;
 
-    const AutoPtr<List<IOnGestureListener *> > mOnGestureListeners;
-    const AutoPtr<List<IOnGesturePerformedListener *> > mOnGesturePerformedListeners;
-    const AutoPtr<List<IOnGesturingListener *> > mOnGesturingListeners;
+    const AutoPtr< List< AutoPtr<IOnGestureListener> > > mOnGestureListeners;
+    const AutoPtr< List< AutoPtr<IOnGesturePerformedListener> > > mOnGesturePerformedListeners;
+    const AutoPtr< List< AutoPtr<IOnGesturingListener> > > mOnGesturingListeners;
 
     Boolean mHandleGestureActions;
 
@@ -267,39 +325,7 @@ private:
     Boolean mIsFadingOut;
     Float mFadingAlpha;
     const AutoPtr<IAccelerateDecelerateInterpolator> mInterpolator;
-    const AutoPtr<IFadeOutRunnable *> mFadingOut;
-private:
-    /*
-     * Android: private class FadeOutRunnable implements Runnable
-     */
-    class FadeOutRunnable
-        : public Object
-        , public IRunnable
-    {
-    public:
-        FadeOutRunnable();
-        virtual ~FadeOutRunnable();
-
-        CARAPI constructor();
-
-        CARAPI Run();
-
-        CARAPI GetFireActionPerformed(
-            /* [out] */ Boolean *fireActionPerformed);
-
-        CARAPI GetResetMultipleStrokes(
-            /* [out] */ Boolean *resetMultipleStrokes);
-
-        CARAPI SetFireActionPerformed(
-            /* [in] */ Boolean fireActionPerformed);
-
-        CARAPI SetResetMultipleStrokes(
-            /* [in] */ Boolean resetMultipleStrokes);
-
-    public:
-        Boolean mFireActionPerformed;
-        Boolean mResetMultipleStrokes;
-    };
+    const AutoPtr<IFadeOutRunnable> mFadingOut;
 };
 
 } // namespace Gesture

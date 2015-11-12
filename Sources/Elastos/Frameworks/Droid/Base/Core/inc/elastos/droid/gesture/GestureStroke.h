@@ -1,7 +1,8 @@
-#ifndef __ELASTOS_DROID_GESTURE_CGESTURESTROKE_H__
-#define __ELASTOS_DROID_GESTURE_CGESTURESTROKE_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTURESTROKE_H__
+#define __ELASTOS_DROID_GESTURE_GESTURESTROKE_H__
 
-#include "_Elastos_Droid_Gesture_CGestureStroke.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::IDataOutputStream;
@@ -9,6 +10,9 @@ using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Gesture::IGestureStroke;
+using Elastos::Utility::IList;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -20,11 +24,13 @@ namespace Gesture {
 class GestureStroke
     : public Object
     , public IGestureStroke
-    , public IGestureStrokeHelper
 {
 public:
-    CGestureStroke();
-    virtual ~CGestureStroke();
+    CAR_INTERFACE_DECL();
+
+    GestureStroke();
+
+    virtual ~GestureStroke();
 
     /**
      * A constructor that constructs a gesture stroke from a list of gesture points.
@@ -32,7 +38,7 @@ public:
      * @param points
      */
     CARAPI constructor(
-        /* [in] */ IObjectContainer *points);
+        /* [in] */ IList *points);
 
     CARAPI GetPath(
         /* [out] */ IPath **outPath);
@@ -121,4 +127,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GESTURESTROKE_H__
+#endif // __ELASTOS_DROID_GESTURE_GESTURESTROKE_H__

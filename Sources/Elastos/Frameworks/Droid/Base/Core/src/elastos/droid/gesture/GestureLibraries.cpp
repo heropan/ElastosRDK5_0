@@ -5,61 +5,47 @@ using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IFileOutputStream;
 using Elastos::IO::CFileOutputStream;
+using Elastos::IO::IFile;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CAR_INTERFACE_IMPL(GestureLibraries, Object, IGestureLibraries);
-
-GestureLibraries::GestureLibraries()
-{}
-
-GestureLibraries::~GestureLibraries()
-{}
-
-ECode GestureLibraries::FromFile(
-    /* [in] */ const String& path,
-    /* [out] */ IGestureLibrary **instance)
+AutoPtr<IGestureLibrary> GestureLibraries::FromFile(
+    /* [in] */ const String& path)
 {
     AutoPtr<IFile> file;
     CFile::New(path, (IFile**)&file);
-    return FromFile(file, instance);
+    return FromFile((IFile*)file);
 }
 
-ECode GestureLibraries::FromFile(
-    /* [in] */ IFile *path,
-    /* [out] */ IGestureLibrary **instance)
+AutoPtr<IGestureLibrary> GestureLibraries::FromFile(
+    /* [in] */ IFile *path)
 {
-    VALIDATE_NOT_NULL(instance);
     AutoPtr<FileGestureLibrary> fgl = new FileGestureLibrary(path);
-    *instance = (IGestureLibrary*)fgl;
-    REFCOUNT_ADD(*instance);
-    return NOERROR;
+    REFCOUNT_ADD((IGestureLibrary*)fgl);
+    return (IGestureLibrary*)fgl;
 }
 
-ECode GestureLibraries::FromPrivateFile(
+AutoPtr<IGestureLibrary> GestureLibraries::FromPrivateFile(
     /* [in] */ IContext *context,
-    /* [in] */ const String& name,
-    /* [out] */ IGestureLibrary **instance)
+    /* [in] */ const String& name)
 {
     AutoPtr<IFile> file;
     context->GetFileStreamPath(name, (IFile**)&file);
-    return FromFile(file, instance);
+    return FromFile(file);
 }
 
-ECode GestureLibraries::FromRawResource(
+AutoPtr<IGestureLibrary> GestureLibraries::FromRawResource(
     /* [in] */ IContext *context,
-    /* [in] */ Int32 resourceId,
-    /* [out] */ IGestureLibrary **instance)
+    /* [in] */ Int32 resourceId)
 {
     AutoPtr<ResourceGestureLibrary> rgl = new ResourceGestureLibrary(context, resourceId);
-    *instance = (IGestureLibrary*)rgl;
-    REFCOUNT_ADD(*instance);
-    return NOERROR;
+    REFCOUNT_ADD((IGestureLibrary*)rgl);
+    return (IGestureLibrary*)rgl;
 }
-
-CAR_INTERFACE_IMPL(GestureLibraries::FileGestureLibrary, IGestureLibrary)
 
 GestureLibraries::FileGestureLibrary::FileGestureLibrary(
     /* [in] */ IFile *path)
@@ -87,9 +73,8 @@ ECode GestureLibraries::FileGestureLibrary::Save(
         return NOERROR;
     }
 
-    const AutoPtr<IFile> file = mPath;
-
-    const AutoPtr<IFile> parentFile;
+    AutoPtr<IFile> file = mPath;
+    AutoPtr<IFile> parentFile;
     file->GetParentFile((IFile**)&parentFile);
     parentFile->Exists(&b);
     if (!b) {
@@ -105,13 +90,21 @@ ECode GestureLibraries::FileGestureLibrary::Save(
     //noinspection ResultOfMethodCallIgnored
     file->CreateNewFile(&b);
     AutoPtr<IFileOutputStream> fos;
-    CFileOutputStream::New(file, (IFileOutputStream**)&fos);
-    mStore->Save(fos, TRUE);
+    ECode ec = CFileOutputStream::New(file, (IFileOutputStream**)&fos);
+    if (FAILED(ec)) {
+        *isSaved = FALSE;
+        return E_FILE_NOT_FOUND_EXCEPTION;
+    }
+
+    AutoPtr<IOutputStream> stream;
+    stream = IOutputStream::Probe(fos);
+
+    mStore->Save(stream, TRUE);
     result = TRUE;
     //} catch (FileNotFoundException e) {
-    //    Log.d(LOG_TAG, "Could not save the gesture library in " + mPath, e);
+    //    Log.d(myLOG_TAG, "Could not save the gesture library in " + mPath, e);
     //} catch (IOException e) {
-    //    Log.d(LOG_TAG, "Could not save the gesture library in " + mPath, e);
+    //    Log.d(myLOG_TAG, "Could not save the gesture library in " + mPath, e);
     //}
     *isSaved = result;
     return NOERROR;
@@ -130,12 +123,16 @@ ECode GestureLibraries::FileGestureLibrary::Load(
         //try {
         AutoPtr<IFileInputStream> fis;
         CFileInputStream::New(file, (IFileInputStream**)&fis);
-        mStore->Load(fis, TRUE);
+
+        AutoPtr<IInputStream> stream;
+        stream = IInputStream::Probe(fis);
+
+        mStore->Load(stream, TRUE);
         result = TRUE;
         //} catch (FileNotFoundException e) {
-        //    Log.d(LOG_TAG, "Could not load the gesture library from " + mPath, e);
+        //    Log.d(myLOG_TAG, "Could not load the gesture library from " + mPath, e);
         //} catch (IOException e) {
-        //    Log.d(LOG_TAG, "Could not load the gesture library from " + mPath, e);
+        //    Log.d(myLOG_TAG, "Could not load the gesture library from " + mPath, e);
         //}
     }
     *isLoaded = result;
@@ -167,7 +164,7 @@ ECode GestureLibraries::FileGestureLibrary::GetSequenceType(
 }
 
 ECode GestureLibraries::FileGestureLibrary::GetGestureEntries(
-    /* [out] */ IObjectContainer **entries)
+    /* [out] */ IList **entries)
 {
     return GestureLibrary::GetGestureEntries(entries);
 }
@@ -201,30 +198,41 @@ ECode GestureLibraries::FileGestureLibrary::RemoveEntry(
 
 ECode GestureLibraries::FileGestureLibrary::GetGestures(
     /* [in] */ const String& entryName,
-    /* [out] */ IObjectContainer **gestures)
+    /* [out] */ IArrayList **gestures)
 {
     return GestureLibrary::GetGestures(entryName, gestures);
 }
 
-CAR_INTERFACE_IMPL(GestureLibraries::ResourceGestureLibrary, IGestureLibrary)
+CARAPI GestureLibraries::FileGestureLibrary::GetLearner(
+    /* [out] */ ILearner** learner)
+{
+    AutoPtr<ILearner> lnr;
+
+    lnr = GestureLibrary::GetLearner();
+    *learner = lnr;
+    REFCOUNT_ADD(*learner)
+    return  NOERROR;
+}
 
 GestureLibraries::ResourceGestureLibrary::ResourceGestureLibrary(
     /* [in] */ IContext *context,
     /* [in] */ Int32 resourceId)
     : mResourceId(resourceId)
 {
-//    mContext = new WeakReference<Context>(context);
+    AutoPtr<IWeakReference> iwp;
+
+    IWeakReferenceSource::Probe(context)->GetWeakReference((IWeakReference **)&iwp);
+    mContext = iwp;
 }
 
 GestureLibraries::ResourceGestureLibrary::~ResourceGestureLibrary()
 {}
 
-ECode CResourceGestureLibrary::constructor(
+ECode GestureLibraries::ResourceGestureLibrary::constructor(
     /* [in] */ IContext *context,
     /* [in] */ Int32 resourceId)
 {
-    GestureLibraries::ResourceGestureLibrary::
-            ResourceGestureLibrary(context, resourceId);
+//    GestureLibraries::ResourceGestureLibrary::ResourceGestureLibrary(context, resourceId);
     return NOERROR;
 }
 
@@ -256,7 +264,7 @@ ECode GestureLibraries::ResourceGestureLibrary::Load(
 //        mStore->Load(in, TRUE);
 //        result = TRUE;
         //} catch (IOException e) {
-        //    Log.d(LOG_TAG, "Could not load the gesture library from raw resource " +
+        //    Log.d(myLOG_TAG, "Could not load the gesture library from raw resource " +
         //            context.getResources().getResourceName(mResourceId), e);
         //}
 //    }
@@ -289,7 +297,7 @@ ECode GestureLibraries::ResourceGestureLibrary::GetSequenceType(
 }
 
 ECode GestureLibraries::ResourceGestureLibrary::GetGestureEntries(
-    /* [out] */ IObjectContainer **entries)
+    /* [out] */ IList **entries)
 {
     return GestureLibrary::GetGestureEntries(entries);
 }
@@ -323,9 +331,20 @@ ECode GestureLibraries::ResourceGestureLibrary::RemoveEntry(
 
 ECode GestureLibraries::ResourceGestureLibrary::GetGestures(
     /* [in] */ const String& entryName,
-    /* [out] */ IObjectContainer **gestures)
+    /* [out] */ IArrayList **gestures)
 {
     return GestureLibrary::GetGestures(entryName, gestures);
+}
+
+CARAPI GestureLibraries::ResourceGestureLibrary::GetLearner(
+    /* [out] */ ILearner** learner)
+{
+    AutoPtr<ILearner> lnr;
+
+    lnr = GestureLibrary::GetLearner();
+    *learner = lnr;
+    REFCOUNT_ADD(*learner)
+    return  NOERROR;
 }
 
 } // namespace Gesture

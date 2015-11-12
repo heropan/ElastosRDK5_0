@@ -1,15 +1,20 @@
-
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/gesture/GestureLibrary.h"
+#include "elastos/droid/gesture/CGestureStore.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
+CAR_INTERFACE_IMPL(GestureLibrary, Object, IGestureLibrary);
+
 GestureLibrary::GestureLibrary()
 {
     CGestureStore::NewByFriend((CGestureStore**)&mStore);
 }
+
+GestureLibrary::~GestureLibrary()
+{}
 
 ECode GestureLibrary::IsReadOnly(
     /* [out] */ Boolean *isReadOnly)
@@ -51,7 +56,7 @@ ECode GestureLibrary::GetSequenceType(
 }
 
 ECode GestureLibrary::GetGestureEntries(
-    /* [out] */ IObjectContainer **entries)
+    /* [out] */ IList **entries)
 {
     return mStore->GetGestureEntries(entries);
 }
@@ -85,7 +90,7 @@ ECode GestureLibrary::RemoveEntry(
 
 ECode GestureLibrary::GetGestures(
     /* [in] */ const String& entryName,
-    /* [out] */ IObjectContainer** gestures)
+    /* [out] */ IArrayList** gestures)
 {
     return mStore->GetGestures(entryName, gestures);
 }

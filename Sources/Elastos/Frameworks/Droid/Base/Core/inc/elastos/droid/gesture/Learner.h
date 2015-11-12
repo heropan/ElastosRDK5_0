@@ -1,12 +1,16 @@
 #ifndef __ELASTOS_DROID_GESTURE_LEARNER_H__
 #define __ELASTOS_DROID_GESTURE_LEARNER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/gesture/Instance.h"
+#include "elastos/core/Object.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IArrayList;
+using Elastos::Droid::Gesture::ILearner;
+using Elastos::Droid::Gesture::IInstance;
+
 
 namespace Elastos {
 namespace Droid {
@@ -16,10 +20,13 @@ namespace Gesture {
  */
 class Learner
     : public Object
+    , public ILearner
 {
 public:
+    CAR_INTERFACE_DECL();
 
     Learner();
+
     virtual ~Learner();
 
     /**
@@ -27,22 +34,25 @@ public:
      *
      * @param instance
      */
-    virtual CARAPI_(void) AddInstance(
-        /* [in] */ Instance *instance);
+    CARAPI AddInstance(
+        /* [in] */ IInstance *instance);
 
     /**
      * Retrieve all the instances
      *
      * @return instances
      */
-    virtual CARAPI_(AutoPtr<List<AutoPtr<Instance> > >) GetInstances();
+    CARAPI_(AutoPtr<IArrayList>) GetInstances();
+
+    CARAPI GetInstances(
+        /* [in] */ IArrayList** instances);
 
     /**
      * Remove an instance based on its id
      *
      * @param id
      */
-    virtual CARAPI_(void) RemoveInstance(
+    CARAPI RemoveInstance(
         /* [in] */ Int64 id);
 
     /**
@@ -50,16 +60,21 @@ public:
      *
      * @param name the category name
      */
-    virtual CARAPI_(void) RemoveInstances(
+    CARAPI RemoveInstances(
         /* [in] */ const String& name);
 
-    virtual CARAPI_(AutoPtr<IArrayList>) Classify(
+    CARAPI_(AutoPtr<IArrayList>) Classify(
         /* [in] */ Int32 sequenceType,
         /* [in] */ Int32 orientationType,
-        /* [in] */ ArrayOf<Float> *vec) = 0;
+        /* [in] */ ArrayOf<Float> vec);
 
-private:
-    AutoPtr< List< AutoPtr<Instance> > > mInstances;
+    CARAPI Classify(
+        /* [in] */ Int32 sequenceType,
+        /* [in] */ Int32 orientationType,
+        /* [in] */ ArrayOf<Float> *vec,
+        /* [out] */ IArrayList** predictions);
+public:
+    AutoPtr<IArrayList> mInstances;
 };
 
 } // namespace Gesture

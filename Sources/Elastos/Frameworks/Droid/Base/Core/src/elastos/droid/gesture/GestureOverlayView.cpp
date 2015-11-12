@@ -160,8 +160,7 @@ ECode GestureOverlayView::constructor(
     /* [in] */ IContext *context,
     /* [in] */ IAttributeSet *attrs)
 {
-    constructor(context, attrs, com.android.internal.R.attr.gestureOverlayViewStyle);
-    return NOERROR;
+    return constructor(context, attrs, com.android.internal.R.attr.gestureOverlayViewStyle);
 }
 
 /*
@@ -172,8 +171,7 @@ ECode GestureOverlayView::constructor(
     /* [in] */ IAttributeSet *attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    constructor(context, attrs, defStyleAttr, 0);
-    return NOERROR;
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
 /*
@@ -404,9 +402,9 @@ ECode GestureOverlayView::SetGesture(
     mCurrentGesture = gesture;
 
     const AutoPtr<IPath> path;
-    mCurrentGesture->ToPath((IPath *)&path);
+    mCurrentGesture->ToPath((IPath **)&path);
     const AutoPtr<IRectF> bounds;
-    CRectF::New((IRectF**)&bounds);
+    CRectF::New((IRectF **)&bounds);
     path->ComputeBounds(bounds, TRUE);
 
     // TODO: The path should also be scaled to fit inside this view
@@ -623,7 +621,8 @@ ECode GestureOverlayView::Clear(
         mFadingStart = millis + mFadeOffset;
 
         PostDelayed(mFadingOut, mFadeOffset);
-    } else {
+    }
+    else {
         mFadingAlpha = 1.0f;
         mIsFadingOut = FALSE;
         mFadingHasStarted = FALSE;
@@ -665,7 +664,7 @@ ECode GestureOverlayView::CancelGesture()
 
     // add the stroke to the current gesture
     AutoPtr<IGestureStroke> stroke;
-    CGestureStroke::New(mStrokeBuffer, (IGestureStroke **)&stroke);
+    CGestureStroke::New(mStrokeBuffer, (IGestureStroke**)&stroke);
     mCurrentGesture->AddStroke(stroke);
 
     // pass the event to handlers
@@ -676,14 +675,11 @@ ECode GestureOverlayView::CancelGesture()
             ACTION_CANCEL, 0.0f, 0.0f, 0, (IMotionEvent**)&event);
 
     AutoPtr<List<IOnGestureListener *> > listeners = mOnGestureListeners;
-    Int32 count = listeners->GetSize();
     List<IOnGestureListener *>::Iterator iter = listeners->Begin();
-    for (Int32 i = 0; i < count; i++) {
-        if (iter != listeners->End()) {
-            IOnGestureListener *listener = *iter;
-            listener->OnGestureCancelled((IGestureOverlayView *)this);
-        }
-        ++iter;
+    while (iter != listeners->End()) {
+        IOnGestureListener *listener = *iter;
+        listener->OnGestureCancelled((IGestureOverlayView *)this);
+        iter++;
     }
 
     event->Recycle();
@@ -694,14 +690,11 @@ ECode GestureOverlayView::CancelGesture()
     mStrokeBuffer->Clear();
 
     AutoPtr<List<IOnGesturingListener *> > otherListeners = mOnGesturingListeners;
-    count = otherListeners->GetSize();
     List<IOnGesturingListener *>::Iterator it = otherListeners->Begin();
-    for (Int32 i = 0; i < count; i++) {
-        if (it != otherListeners->End()) {
-            IOnGesturingListener *otherListener = *it;
-            otherListener->onGesturingEnded((IGestureOverlayView *)this);
-        }
-        ++it;
+    while (it != otherListeners->End()) {
+        IOnGesturingListener *otherListener = *it;
+        otherListener->onGesturingEnded((IGestureOverlayView *)this);
+        it++;
     }
 
     return NOERROR;
@@ -709,7 +702,7 @@ ECode GestureOverlayView::CancelGesture()
 
 ECode GestureOverlayView::OnDetachedFromWindow()
 {
-    onDetachedFromWindow();
+    FrameLayout::onDetachedFromWindow();
     return CancelClearAnimation();
 }
 
@@ -854,14 +847,11 @@ ECode GestureOverlayView::TouchDown(
 
     // pass the event to handlers
     AutoPtr<List<IOnGestureListener *> > listeners = mOnGestureListeners;
-    const Int32 count = listeners->GetSize();
     List<IOnGestureListener *>::Iterator iter = listeners->Begin();
-    for (Int32 i = 0; i < count; i++) {
-        if (iter != listeners->End()) {
-            IOnGestureListener *listener = *iter;
-            listener->onGestureStarted(THIS_PROBE(IGestureOverlayView), event);
-        }
-        ++iter;
+    while (iter != listeners->End()) {
+        IOnGestureListener *listener = *iter;
+        listener->onGestureStarted(THIS_PROBE(IGestureOverlayView), event);
+        iter++;
     }
 
     return NOERROR;
@@ -1069,15 +1059,16 @@ ECode GestureOverlayView::FireOnGesturePerformed()
 CAR_INTERFACE_IMPL(GestureOverlayView::FadeOutRunnable, Object, IFadeOutRunnable);
 
 GestureOverlayView::FadeOutRunnable::FadeOutRunnable()
-    : fireActionPerformed(FALSE), resetMultipleStrokes(FALSE)
+    : fireActionPerformed(FALSE)
+    , resetMultipleStrokes(FALSE)
 {
 }
 
-~CFadeOutRunnable()
+GestureOverlayView::FadeOutRunnable::~CFadeOutRunnable()
 {
 }
 
-CARAPI constructor()
+CARAPI GestureOverlayView::FadeOutRunnable::constructor()
 {
     GestureOverlayView::FadeOutRunnable::FadeOutRunnable();
     return NOERROR;
@@ -1100,7 +1091,8 @@ ECode GestureOverlayView::FadeOutRunnable::Run()
             mPath->Rewind();
             mCurrentGesture = NULL;
             SetPaintAlpha(255);
-        } else {
+        }
+        else {
             mFadingHasStarted = TRUE;
             Float interpolatedTime = Elastos::Core::Math::Max(0.0f,
                     Elastos::Core::Math::Min(1.0f, duration / (Float)mFadeDuration));
@@ -1111,9 +1103,11 @@ ECode GestureOverlayView::FadeOutRunnable::Run()
             SetPaintAlpha((Int32) (255 * mFadingAlpha));
             PostDelayed(this, FADE_ANIMATION_RATE);
         }
-    } else if (mResetMultipleStrokes) {
+    }
+    else if (mResetMultipleStrokes) {
         mResetGesture = TRUE;
-    } else {
+    }
+    else {
         FireOnGesturePerformed();
 
         mFadingHasStarted = FALSE;

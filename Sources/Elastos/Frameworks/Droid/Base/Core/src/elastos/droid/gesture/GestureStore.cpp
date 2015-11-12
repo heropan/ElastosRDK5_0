@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/gesture/GestureStore.h"
 #include "elastos/droid/gesture/GestureUtils.h"
@@ -11,8 +10,9 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Gesture::IGestureStore;
+using Elastos::Droid::Os::SystemClock;
 using Elastos::Core::ICharSequence;
-
 using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::IO::ICloseable;
@@ -28,25 +28,22 @@ using Elastos::IO::CDataOutputStream;
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IFlushable;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Gesture::IGestureStore;
-using Elastos::Droid::Os::SystemClock;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
-CAR_INTERFACE_IMPL(GestureStore, Object, IGestureStore);
-
 const Int16 GestureStore::FILE_FORMAT_VERSION = 1;
-
 const Boolean GestureStore::PROFILE_LOADING_SAVING = FALSE;
 
+CAR_INTERFACE_IMPL(GestureStore, Object, IGestureStore);
+
 GestureStore::GestureStore()
-{
-    mSequenceType =  IGestureStore::SEQUENCE_SENSITIVE;
-    mOrientationStyle = IGestureStore::ORIENTATION_SENSITIVE;
-    mChanged = FALSE;
-}
+    : mSequenceType(IGestureStore::SEQUENCE_SENSITIVE)
+    , mOrientationStyle(IGestureStore::ORIENTATION_SENSITIVE)
+    , mChanged(FALSE)
+
+{}
 
 GestureStore::~GestureStore()
 {}
@@ -89,11 +86,11 @@ ECode GestureStore::GetSequenceType(
 }
 
 ECode GestureStore::GetGestureEntries(
-    /* [out] */ IObjectContainer **entries)
+    /* [out] */ IList** entries)
 {
     VALIDATE_NOT_NULL(entries);
 
-    AutoPtr<IObjectContainer> container;
+    AutoPtr<IList> container;
     HashMap<String, AutoPtr<GestureList> >::Iterator iter = mNamedGestures.Begin();
     for (; iter != mNamedGestures.End(); ++iter) {
         AutoPtr<ICharSequence> keystr = NULL;
@@ -114,7 +111,9 @@ ECode GestureStore::Recognize(
 
     AutoPtr<Instance> instance = Instance::CreateInstance(mSequenceType, mOrientationStyle,
         gesture, String(NULL));
-    *list = mClassifier->Classify(mSequenceType, mOrientationStyle, instance->mVector);
+    AutoPtr<IArrayList> tmplist = mClassifier->Classify(mSequenceType, mOrientationStyle,
+        instance->mVector);
+    *list = tmpList;
     REFCOUNT_ADD(*list);
     return NOERROR;
 }
@@ -130,7 +129,7 @@ ECode GestureStore::AddGesture(
     AutoPtr<GestureList> gestures;
     HashMap<String, AutoPtr<GestureList> >::Iterator iter;
     for (iter = mNamedGestures.Begin(); iter != mNamedGestures.End(); ++iter) {
-        if ((iter->mFirst).Equals(entryName) ) {
+        if (iter->mFirst.Equals(entryName) ) {
             gestures = iter->mSecond;
         }
     }
@@ -273,7 +272,7 @@ ECode GestureStore::Save(
         Int64 diff= end - start;
         String tmp = StringUtils::ToString(diff);
         String log = String("Saving gestures library = ") + tmp + String(" ms");
-        Logger::D(GestureConstants::LOG_TAG, log.string());
+        Logger::D(GestureConstants::myLOG_TAG, log.string());
     }
 
     mChanged = FALSE;
@@ -325,7 +324,7 @@ ECode GestureStore::Load(
         Int64 diff= end - start;
         String tmp = StringUtils::ToString(diff);
         String log = String("Loading gestures library = ") + tmp + String(" ms");
-        Logger::D(GestureConstants::LOG_TAG, log.string());
+        Logger::D(GestureConstants::myLOG_TAG, log.string());
     }
     //} finally {
     if (closeStream) GestureUtils::CloseStream((ICloseable *)in);

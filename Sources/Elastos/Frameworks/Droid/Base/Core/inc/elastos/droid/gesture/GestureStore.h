@@ -1,8 +1,8 @@
-#ifndef __ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
-#define __ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTURESTORE_H__
+#define __ELASTOS_DROID_GESTURE_GESTURESTORE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "_Elastos_Droid_Gesture_CGestureStore.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/gesture/CGesture.h"
 #include "elastos/droid/gesture/Learner.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -13,6 +13,10 @@ using Elastos::IO::IInputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
+using Elastos::Core::Object;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Droid::Gesture::IGestureStore;
 
 namespace Elastos {
 namespace Droid {
@@ -23,8 +27,11 @@ class GestureStore
     , public IGestureStore
 {
 public:
-    CGestureStore();
-    virtual ~CGestureStore();
+    CAR_INTERFACE_DECL();
+
+    GestureStore();
+
+    virtual ~GestureStore();
 
     CARAPI constructor();
 
@@ -58,7 +65,7 @@ public:
      * @return a set of strings
      */
     CARAPI GetGestureEntries(
-        /* [out] */ IObjectContainer **entries);
+        /* [out] */ IList **entries);
 
     /**
      * Recognize a gesture
@@ -107,7 +114,7 @@ public:
      */
     CARAPI GetGestures(
         /* [in] */ const String& entryName,
-        /* [out] */ IObjectContainer** value);
+        /* [out] */ IArrayList** value);
 
     CARAPI HasChanged(
         /* [out] */  Boolean *hasChanged);
@@ -160,4 +167,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
+#endif //__ELASTOS_DROID_GESTURE_GESTURESTORE_H__

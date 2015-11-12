@@ -3,35 +3,37 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/gesture/GestureLibrary.h"
+#include "elastos/core/Object.h"
 
-#include "_Elastos_Droid_Gesture_GestureLibraries.h"
-
+using Elastos::Droid::Content::IContext;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
-using Elastos::Droid::Content::IContext;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Droid::Gesture::IGestureLibraries;
+using Elastos::Droid::Gesture::IGestureUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
 
+/*
+ * Java: public final class GestureLibraries
+ */
 class GestureLibraries
-    : public Object
-    , public IGestureLibraries
 {
-private:
+public:
     class FileGestureLibrary
-        : public GestureLibraries
+        : public GestureLibrary
     {
     public:
-        CAR_INTERFACE_DECL();
-
         FileGestureLibrary(
             /* [in] */ IFile *path);
 
         virtual ~FileGestureLibrary();
 
-        CARAPI constructor(
-            /* [in] */ IFile *path);
+        CARAPI IsReadOnly(
+            /* [out] */ Boolean *isReadOnly);
 
         CARAPI Save(
             /* [out] */ Boolean *isSaved);
@@ -39,14 +41,8 @@ private:
         CARAPI Load(
             /* [out] */ Boolean *isLoaded);
 
-        CARAPI IsReadOnly(
-            /* [out] */ Boolean *isReadOnly);
-
-        CARAPI GetLearner(
-            /* [out] */ ILearner **learner);
-
         CARAPI SetOrientationStyle(
-            /* [out] */ Int32 style);
+            /* [in] */ Int32 style);
 
         CARAPI GetOrientationStyle(
             /* [out] */ Int32 *style);
@@ -58,15 +54,18 @@ private:
             /* [out] */ Int32 *type);
 
         CARAPI GetGestureEntries(
-            /* [out] */ IObjectContainer **entries);
+            /* [out] */ IList **entries);
+
+        CARAPI GetLearner(
+            /* [out] */ ILearner** learner);
 
         CARAPI Recognize(
             /* [in] */ IGesture *gesture,
-            /* [out] */ IObjectContainer **predictions);
+            /* [out] */ IArrayList **predictions);
 
         CARAPI AddGesture(
-            /* [in] */ const String& entryName,
-            /* [in] */ IGesture *gesture);
+            /* [in] */  const String& entryName,
+            /* [in] */  IGesture *gesture);
 
         CARAPI RemoveGesture(
             /* [in] */ const String& entryName,
@@ -77,55 +76,95 @@ private:
 
         CARAPI GetGestures(
             /* [in] */ const String& entryName,
-            /* [out] */ IObjectContainer **gestures);
+            /* [out] */ IArrayList **gestures);
 
     private:
         const AutoPtr<IFile> mPath;
     };
 
     class ResourceGestureLibrary
-        : public GestureLibraries
+        : public GestureLibrary
     {
     public:
-        CAR_INTERFACE_DECL();
-
         ResourceGestureLibrary(
             /* [in] */ IContext *context,
             /* [in] */ Int32 resourceId);
 
         virtual ~ResourceGestureLibrary();
 
+        CARAPI constructor(
+            /* [in] */ IContext *context,
+            /* [in] */ Int32 resourceId);
+
+        CARAPI IsReadOnly(
+            /* [out] */ Boolean *isReadOnly);
+
+        CARAPI Save(
+            /* [out] */ Boolean *isSaved);
+
+        CARAPI Load(
+            /* [out] */ Boolean *isLoaded);
+
+        CARAPI SetOrientationStyle(
+            /* [in] */ Int32 style);
+
+        CARAPI GetOrientationStyle(
+            /* [out] */ Int32 *style);
+
+        CARAPI SetSequenceType(
+            /* [in] */ Int32 type);
+
+        CARAPI GetSequenceType(
+            /* [out] */ Int32 *type);
+
+        CARAPI GetGestureEntries(
+            /* [out] */ IList **entries);
+
+        CARAPI GetLearner(
+            /* [out] */ ILearner** learner);
+
+        CARAPI Recognize(
+            /* [in] */ IGesture *gesture,
+            /* [out] */ IArrayList **predictions);
+
+        CARAPI AddGesture(
+            /* [in] */  const String& entryName,
+            /* [in] */  IGesture *gesture);
+
+        CARAPI RemoveGesture(
+            /* [in] */ const String& entryName,
+            /* [in] */ IGesture *gesture);
+
+        CARAPI RemoveEntry(
+            /* [in] */ const String& entryName);
+
+        CARAPI GetGestures(
+            /* [in] */ const String& entryName,
+            /* [out] */ IArrayList **gestures);
+
     private:
-//        private final WeakReference<Context> mContext;
         AutoPtr<IWeakReference> mContext;
         const Int32 mResourceId;
-
     };
 
 public:
-    CAR_OBJECT_DECL();
+    static CARAPI_(AutoPtr<IGestureLibrary>) FromFile(
+        /* [in] */ const String& path);
 
+    static CARAPI_(AutoPtr<IGestureLibrary>) FromFile(
+        /* [in] */ IFile* path);
+
+    static CARAPI_(AutoPtr<IGestureLibrary>) FromPrivateFile(
+        /* [in] */ IContext* context,
+        /* [in] */ const String& name);
+
+    static CARAPI_(AutoPtr<IGestureLibrary>) FromRawResource(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 resourceId);
+
+private:
     GestureLibraries();
-    virtual ~GestureLibraries();
-
-    CARAPI FromFile(
-        /* [in] */ const String& path,
-        /* [out] */ IGestureLibrary **instance);
-
-    CARAPI FromFileEx(
-        /* [in] */ IFile *path,
-        /* [out] */ IGestureLibrary **instance);
-
-    CARAPI FromPrivateFile(
-        /* [in] */ IContext *context,
-        /* [in] */ const String& name,
-        /* [out] */ IGestureLibrary **instance);
-
-    CARAPI FromRawResource(
-        /* [in] */ IContext *context,
-        /* [in] */ Int32 resourceId,
-        /* [out] */ IGestureLibrary **instance);
-
+    GestureLibraries(const GestureLibraries&);
 };
 
 } // namespace Gesture

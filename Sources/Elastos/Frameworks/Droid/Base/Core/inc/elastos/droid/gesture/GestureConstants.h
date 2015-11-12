@@ -15,7 +15,7 @@ public:
 
     static const Int32 IO_BUFFER_SIZE = 32 * 1024; // 32K
 
-    static const String LOG_TAG;
+    static const String myLOG_TAG;
 };
 
 } // namespace Gesture

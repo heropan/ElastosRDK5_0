@@ -1,6 +1,6 @@
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/gesture/Gesture.h"
+#include "elastos/droid/gesture/CGesture.h"
 #include "elastos/droid/gesture/GestureUtils.h"
 #include "elastos/droid/gesture/CGestureStroke.h"
 #include "elastos/droid/gesture/GestureConstants.h"
@@ -10,10 +10,10 @@
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CRectF.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-
 using Elastos::IO::IDataOutput;
 using Elastos::IO::IDataInput;
 using Elastos::IO::CDataOutputStream;
@@ -22,6 +22,7 @@ using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
+using Elastos::IO::IDataOutputStream;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::PaintStyle_STROKE;
 using Elastos::Droid::Graphics::PaintJoin_ROUND;
@@ -35,12 +36,13 @@ using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::IList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Gesture {
-
-CAR_INTERFACE_IMPL_2(Gesture, Object, IGesture, IParcelable);
 
 Int64 Gesture::GESTURE_ID_BASE = -1;
 const Boolean Gesture::BITMAP_RENDERING_ANTIALIAS = TRUE;
@@ -54,11 +56,13 @@ AutoPtr<IAtomicInteger32> Gesture::InitGestureCount()
     return temp;
 }
 
+CAR_INTERFACE_IMPL_2(Gesture, Object, IGesture, IParcelable);
+
 Gesture::Gesture()
     : mGestureID(0)
 {
     CRectF::New((IRectF**)&mBoundingBox);
-    mStrokes = new List<AutoPtr<IGestureStroke> >();
+    CArrayList::New((IArrayList**)&mStrokes);
 
 }
 
@@ -80,13 +84,10 @@ ECode Gesture::constructor()
 }
 
 ECode Gesture::GetStrokes(
-    /* [out] */ IObjectContainer **container)
+    /* [out] */ IArrayList **container)
 {
-    CObjectContainer::New(container);
-    List<AutoPtr<IGestureStroke> >::Iterator it;
-    for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
-        (*container)->Add(*it);
-    }
+    *container = mStrokes;
+    REFCOUNT_ADD(mStrokes);
     return NOERROR;
 }
 
@@ -95,14 +96,14 @@ ECode Gesture::GetStrokesCount(
 {
     VALIDATE_NOT_NULL(count);
 
-    *count = mStrokes->GetSize();
+    mStrokes->GetSize(count);
     return NOERROR;
 }
 
 ECode Gesture::AddStroke(
     /* [in] */ IGestureStroke *stroke)
 {
-    mStrokes->PushBack(stroke);
+    mStrokes->Add(IInterface::Probe(stroke));
     AutoPtr<IRectF> r;
     stroke->GetBoundingBox((IRectF**)&r);
     mBoundingBox->Union(r);
@@ -115,11 +116,22 @@ ECode Gesture::GetLength(
     VALIDATE_NOT_NULL(len);
     *len = 0;
 
-    AutoPtr<List<AutoPtr<IGestureStroke> > > strokes = mStrokes;
-    List<AutoPtr<IGestureStroke> >::Iterator it;
-    for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
-        Float length = 0;
-        (*it)->GetLength(&length);
+    AutoPtr<IArrayList> strokes = mStrokes;
+
+    Int32 count;
+    Float length;
+
+    strokes->GetSize(&count);
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> obj;
+        AutoPtr<IGestureStroke> stroke;
+
+        strokes->Get(i, (IInterface**)&obj);
+
+        stroke = IGestureStroke::Probe(obj);
+        stroke->GetLength(&length);
+
         *len += length;
     }
 
@@ -150,10 +162,12 @@ ECode Gesture::ToPath(
     if (path == NULL)
         CPath::New((IPath**)&path);
 
-    List<AutoPtr<IGestureStroke> >::Iterator it;
-    for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
+    Int32 count;
+    mStrokes->GetSize(&count);
+
+    for (Int32 i = 0; i < count; i++) {
         AutoPtr<IPath> tempPath;
-        (*it)->GetPath((IPath**)&tempPath);
+        mStrokes->Get(i, (IInterface**)&tempPath);
         path->AddPath(tempPath);
     }
 
@@ -185,12 +199,18 @@ ECode Gesture::ToPath(
     if (path == NULL)
         CPath::New((IPath**)&path);
 
-    List<AutoPtr<IGestureStroke> >::Iterator it;
-    for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
+    Int32 count;
+    mStrokes->GetSize(&count);
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IGestureStroke> it;
         AutoPtr<IPath> tempPath;
-        (*it)->ToPath(width - 2 * edge, height - 2 * edge, numSample, (IPath**)&tempPath);
+
+        mStrokes->Get(i, (IInterface**)&it);
+        it->ToPath(width - 2 * edge, height - 2 * edge, numSample, (IPath**)&tempPath);
         path->AddPath(tempPath);
     }
+
     *outPath = path;
     REFCOUNT_ADD(*outPath);
     return NOERROR;
@@ -240,11 +260,16 @@ ECode Gesture::ToBitmap(
     paint->SetStrokeCap(PaintCap_ROUND);
     paint->SetStrokeWidth(BITMAP_RENDERING_WIDTH);
 
-    List<AutoPtr<IGestureStroke> >::Iterator it;
-    for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
-        AutoPtr<IPath> path;
-        (*it)->ToPath(width - 2 * edge, height - 2 * edge, numSample, (IPath**)&path);
-        canvas->DrawPath(path, paint);
+    Int32 count;
+    mStrokes->GetSize(&count);
+
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IGestureStroke> it;
+        AutoPtr<IPath> tempPath;
+
+        mStrokes->Get(i, (IInterface**)&it);
+        it->ToPath(width - 2 * edge, height - 2 * edge, numSample, (IPath**)&tempPath);
+        canvas->DrawPath(tempPath, paint);
     }
 
     *bm = bitmap;
@@ -314,16 +339,20 @@ ECode Gesture::Serialize(
 {
     VALIDATE_NOT_NULL(out);
 
-    Int32 count = mStrokes->GetSize();
+    Int32 count;
+    mStrokes->GetSize(&count);
 
     // Write gesture ID
     IDataOutput::Probe(out)->WriteInt64(mGestureID);
     // Write number of strokes
     IDataOutput::Probe(out)->WriteInt32(count);
 
-    List<AutoPtr<IGestureStroke> >::Iterator it;
-    for (it = mStrokes->Begin(); it != mStrokes->End(); ++it) {
-        (*it)->Serialize(out);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IGestureStroke> it;
+        AutoPtr<IPath> tempPath;
+
+        mStrokes->Get(i, (IInterface**)&it);
+        it->Serialize(out);
     }
 
     return NOERROR;
@@ -338,15 +367,21 @@ ECode Gesture::WriteToParcel(
     AutoPtr<IByteArrayOutputStream> byteStream;
     CByteArrayOutputStream::New(GestureConstants::IO_BUFFER_SIZE, (IByteArrayOutputStream**)&byteStream);
     AutoPtr<IDataOutputStream> outStream;
-    CDataOutputStream::New(byteStream, (IDataOutputStream**)&outStream);
+    AutoPtr<IOutputStream> os;
+    os = IOutputStream::Probe(byteStream);
+    CDataOutputStream::New((IOutputStream *)os, (IDataOutputStream**)&outStream);
 
     ECode ec = Serialize(outStream);
     if (FAILED(ec))
-        Logger::E(GestureConstants::LOG_TAG, "Error writing Gesture to parcel:0x%x", ec);
+        Logger::E(GestureConstants::myLOG_TAG, "Error writing Gesture to parcel:0x%x", ec);
     result = TRUE;
 
-    GestureUtils::CloseStream(outStream);
-    GestureUtils::CloseStream(byteStream);
+    AutoPtr<ICloseable> ic, ic2;
+    ic = ICloseable::Probe(outStream);
+    ic2 = ICloseable::Probe(byteStream);
+
+    GestureUtils::CloseStreamStatic(ic);
+    GestureUtils::CloseStreamStatic(ic2);
 
     if (result) {
         AutoPtr<ArrayOf<Byte> > streamBytes;
@@ -361,12 +396,12 @@ ECode Gesture::ReadFromParcel(
 {
     Int64 gestureID;
     in->ReadInt64(&gestureID);
-
+#if 0
     AutoPtr<ArrayOf<Byte> > bytes;
 
     bytes = ArrayOf<Byte>::Alloc(in->dataCapacity);
     if (bytes == NULL)
-        Logger::E(GestureConstants::LOG_TAG, "No Memory");
+        Logger::E(GestureConstants::myLOG_TAG, "No Memory");
 
     in->read(bytes->GetPayload(), in->dataCapacity);
 
@@ -386,14 +421,13 @@ ECode Gesture::ReadFromParcel(
     }
 
     if (FAILED(ec1) || FAILED(ec2))
-        Logger::E(GestureConstants::LOG_TAG, "Error reading Gesture from parcel:0x%x || 0x%x", ec1, ec2);
+        Logger::E(GestureConstants::myLOG_TAG, "Error reading Gesture from parcel:0x%x || 0x%x", ec1, ec2);
 
     GestureUtils::CloseStream(inStream);
 
-
     if (FAILED(ec1) || FAILED(ec2))
         mGestureID = gestureID;
-
+#endif
     return NOERROR;
 }
 
@@ -401,7 +435,7 @@ ECode Gesture::Deserialize(
     /* [in] */ IDataInputStream *in,
     /* [out] */ IGesture** gesture)
 {
-    Gesture::New(gesture);
+    CGesture::New(gesture);
 
     Int64 gestureID;
     FAIL_RETURN(IDataInput::Probe(in)->ReadInt64(&gestureID));
@@ -417,35 +451,6 @@ ECode Gesture::Deserialize(
     }
 
     return NOERROR;
-}
-
-ECode Gesture::WriteToParcel(
-    /* [in] */ IParcel *out,
-    /* [in] */ Int32 flags)
-{
-    VALIDATE_NOT_NULL(out);
-
-    out->WriteInt64(mGestureID);
-
-    AutoPtr<IByteArrayOutputStream> byteStream;
-    CByteArrayOutputStream::New(GestureConstants::IO_BUFFER_SIZE, (IByteArrayOutputStream**)&byteStream);
-    AutoPtr<IDataOutputStream> outStream;
-    CDataOutputStream::New(byteStream, (IDataOutputStream**)&outStream);
-
-    ECode ec = Serialize(outStream);
-    if (FAILED(ec))
-        Logger::E(GestureConstants::LOG_TAG, "Error writing Gesture to parcel:0x%x", ec);
-
-    GestureUtils::CloseStream(outStream);
-    GestureUtils::CloseStream(byteStream);
-
-    if (SUCCEEDED(ec)) {
-        AutoPtr<ArrayOf<Byte> > bytes;
-        byteStream->ToByteArray((ArrayOf<Byte>**)&bytes);
-        out->WriteArrayOf((Handle32)bytes.Get());
-    }
-
-    return ec;
 }
 
 ECode Gesture::DescribeContents(
