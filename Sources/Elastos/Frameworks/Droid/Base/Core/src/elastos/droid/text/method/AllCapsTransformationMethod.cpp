@@ -13,10 +13,10 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-const String AllCapsTransformationMethod::TAG = String("AllCapsTransformationMethod");
+const String AllCapsTransformationMethod::TAG("AllCapsTransformationMethod");
 
 AllCapsTransformationMethod::AllCapsTransformationMethod()
-    : mEnabled(FALSE), mLocale(NULL)
+    : mEnabled(FALSE)
 {}
 
 AllCapsTransformationMethod::~AllCapsTransformationMethod()
@@ -69,7 +69,9 @@ ECode AllCapsTransformationMethod::OnFocusChanged(
     /* [in] */ Boolean focused,
     /* [in] */ Int32 direction,
     /* [in] */ IRect* previouslyFocusedRect)
-{}
+{
+    return NOERROR;
+}
 
 ECode AllCapsTransformationMethod::SetLengthChangesAllowed(
     /* [in] */ Boolean allowLengthChanges)

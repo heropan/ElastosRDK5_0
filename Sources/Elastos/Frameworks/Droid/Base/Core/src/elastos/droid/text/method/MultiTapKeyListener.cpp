@@ -63,17 +63,17 @@ ECode MultiTapKeyListener::Timeout::Run()
 static AutoPtr<HashMap<Int32, String> > InitStaticRecs()
 {
     AutoPtr<HashMap<Int32, String> > ret;
-    (*ret)[IKeyEvent::KEYCODE_1] = String(".,1!@#$%^&*:/?'=()");
-    (*ret)[IKeyEvent::KEYCODE_2] = String("abc2ABC");
-    (*ret)[IKeyEvent::KEYCODE_3] = String("def3DEF");
-    (*ret)[IKeyEvent::KEYCODE_4] = String("ghi4GHI");
-    (*ret)[IKeyEvent::KEYCODE_5] = String("jkl5JKL");
-    (*ret)[IKeyEvent::KEYCODE_6] = String("mno6MNO");
-    (*ret)[IKeyEvent::KEYCODE_7] = String("pqrs7PQRS");
-    (*ret)[IKeyEvent::KEYCODE_8] = String("tuv8TUV");
-    (*ret)[IKeyEvent::KEYCODE_9] = String("wxyz9WXYZ");
-    (*ret)[IKeyEvent::KEYCODE_0] = String("0+");
-    (*ret)[IKeyEvent::KEYCODE_POUND] = String(" ");
+    (*ret)[IKeyEvent::KEYCODE_1] = ".,1!@#$%^&*:/?'=()";
+    (*ret)[IKeyEvent::KEYCODE_2] = "abc2ABC";
+    (*ret)[IKeyEvent::KEYCODE_3] = "def3DEF";
+    (*ret)[IKeyEvent::KEYCODE_4] = "ghi4GHI";
+    (*ret)[IKeyEvent::KEYCODE_5] = "jkl5JKL";
+    (*ret)[IKeyEvent::KEYCODE_6] = "mno6MNO";
+    (*ret)[IKeyEvent::KEYCODE_7] = "pqrs7PQRS";
+    (*ret)[IKeyEvent::KEYCODE_8] = "tuv8TUV";
+    (*ret)[IKeyEvent::KEYCODE_9] = "wxyz9WXYZ";
+    (*ret)[IKeyEvent::KEYCODE_0] = "0+";
+    (*ret)[IKeyEvent::KEYCODE_POUND] = " ";
     return ret;
 }
 
@@ -171,7 +171,6 @@ ECode MultiTapKeyListener::OnKeyDown(
     //Java:    int rec = (content.getSpanFlags(TextKeyListener.ACTIVE) & Spannable.SPAN_USER) >>> Spannable.SPAN_USER_SHIFT;
     Int32 rec = (flagsT & ISpanned::SPAN_USER)/ ((Int32)(Elastos::Core::Math::Pow(2, ISpanned::SPAN_USER_SHIFT)));
 
-    Int32 sRecsSize;
     if (activeStart == selStart && activeEnd == selEnd &&
             selEnd - selStart == 1 &&
             rec >= 0 && rec < sRecs->GetSize()) {
@@ -204,8 +203,8 @@ ECode MultiTapKeyListener::OnKeyDown(
         if (((keyCode < 8 ? keyCode + 10 : keyCode) - 8) == rec)
         {
             //Java:    String val = sRecs.valueAt(rec);
-            HashMap<Int32, String>::Iterator iterRecs = (*sRecs).Find(keyCode);
-            String val = (*iterRecs).mSecond;
+            HashMap<Int32, String>::Iterator iterRecs = sRecs->Find(keyCode);
+            String val = iterRecs->mSecond;
             Char32 ch;
             ICharSequence::Probe(content)->GetCharAt(selStart, &ch);
             Int32 ix = val.IndexOf(ch);

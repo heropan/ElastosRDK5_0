@@ -21,6 +21,8 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 };
 
 } // namespace Text

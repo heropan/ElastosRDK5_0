@@ -38,7 +38,6 @@ AutoPtr<ArrayOf<IQwertyKeyListener*> > QwertyKeyListener::sInstance =
 AutoPtr<IQwertyKeyListener> QwertyKeyListener::sFullKeyboardInstance;
 
 QwertyKeyListener::Replaced::Replaced()
-    :mText(NULL)
 {
 }
 
@@ -50,6 +49,7 @@ ECode QwertyKeyListener::Replaced::constructor(
     /* [in] */ ArrayOf<Char32>* text)
 {
     mText = text;
+    return NOERROR;
 }
 
 CAR_INTERFACE_IMPL(QwertyKeyListener::Replaced, Object, INoCopySpan)

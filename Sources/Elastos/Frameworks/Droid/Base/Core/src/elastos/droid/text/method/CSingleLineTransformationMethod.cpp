@@ -10,7 +10,8 @@ static AutoPtr<ArrayOf<Char32> > InitOriginal()
 {
     Char32 array[] = {'\n', '\r'};
     AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
-    ch->Copy(array, ARRAY_SIZE(array));
+    (*ch)[0] = '\n';
+    (*ch)[1] = '\r';
     return ch;
 }
 
@@ -18,7 +19,8 @@ static AutoPtr<ArrayOf<Char32> > InitReplacement()
 {
     Char32 array[] = {' ', 0xFEFF};
     AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
-    ch->Copy(array, ARRAY_SIZE(array));
+    (*ch)[0] = ' ';
+    (*ch)[1] = 0xFEFF;
     return ch;
 }
 
@@ -30,6 +32,11 @@ AutoPtr<ISingleLineTransformationMethod> CSingleLineTransformationMethod::sInsta
 CAR_INTERFACE_IMPL_3(CSingleLineTransformationMethod, Object, ISingleLineTransformationMethod, IReplacementTransformationMethod, ITransformationMethod)
 
 CAR_OBJECT_IMPL(CSingleLineTransformationMethod)
+
+ECode CSingleLineTransformationMethod::constructor()
+{
+    return NOERROR;
+}
 
 ECode CSingleLineTransformationMethod::GetInstance(
     /* [out] */ ISingleLineTransformationMethod** ret)

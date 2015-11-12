@@ -73,6 +73,11 @@ CBidiFormatter::CBidiFormatter()
 {
 }
 
+ECode CBidiFormatter::constructor()
+{
+    return NOERROR;
+}
+
 ECode CBidiFormatter::IsRtlContext(
     /* [out] */ Boolean* ret)
 {

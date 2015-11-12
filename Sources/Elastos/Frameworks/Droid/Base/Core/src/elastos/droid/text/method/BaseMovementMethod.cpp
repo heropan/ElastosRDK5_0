@@ -20,6 +20,11 @@ BaseMovementMethod::BaseMovementMethod()
 BaseMovementMethod::~BaseMovementMethod()
 {}
 
+ECode BaseMovementMethod::constructor()
+{
+    return NOERROR;
+}
+
 CAR_INTERFACE_IMPL_2(BaseMovementMethod, Object, IBaseMovementMethod, IMovementMethod)
 
 ECode BaseMovementMethod::CanSelectArbitrarily(
@@ -125,6 +130,7 @@ ECode BaseMovementMethod::OnTrackballEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* ret)
 {
+    VALIDATE_NOT_NULL(ret);
     *ret = FALSE;
     return NOERROR;
 }

@@ -5,11 +5,11 @@
 //assert(0 && "TODO"); not implemented
 // #include "elastos/droid/view/CKeyEventHelper.h"
 
-using Elastos::Core::CString;
-using Elastos::Droid::View::IKeyEventHelper;
-// using Elastos::Droid::View::CKeyEventHelper;
-using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
 using Elastos::Droid::Text::CSelection;
+using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
+// using Elastos::Droid::View::CKeyEventHelper;
+using Elastos::Droid::View::IKeyEventHelper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {

@@ -12,6 +12,7 @@ namespace Method {
 CarClass(CWordIterator)
     , public WordIterator
 {
+public:
     CAR_OBJECT_DECL()
 };
 

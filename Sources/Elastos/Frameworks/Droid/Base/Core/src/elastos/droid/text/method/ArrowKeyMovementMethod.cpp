@@ -7,26 +7,20 @@
 #include "elastos/droid/graphics/CRect.h"
 // #include "elastos/droid/view/CKeyEvent.h"
 
-using Elastos::Droid::Text::ISelectionPositionIterator;
-using Elastos::Droid::Text::EIID_ISelectionPositionIterator;
-using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Text::EIID_ISelectionPositionIterator;
+using Elastos::Droid::Text::ISelectionPositionIterator;
 // using Elastos::Droid::View::CKeyEvent;
-using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IViewParent;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Method {
 
-static AutoPtr<IInterface> InitLAST_TAP_DOWN()
-{
-    AutoPtr<IObject> obj = new Object();
-    return (IInterface*)obj.Get();
-}
-
-const AutoPtr<IInterface> ArrowKeyMovementMethod::LAST_TAP_DOWN = InitLAST_TAP_DOWN();
+const AutoPtr<IInterface> ArrowKeyMovementMethod::LAST_TAP_DOWN = (IObject*)new Object();
 
 AutoPtr<IArrowKeyMovementMethod> ArrowKeyMovementMethod::sInstance;
 
@@ -34,6 +28,11 @@ CAR_INTERFACE_IMPL_3(ArrowKeyMovementMethod, Object, IArrowKeyMovementMethod, IB
 
 ArrowKeyMovementMethod::~ArrowKeyMovementMethod()
 {}
+
+ECode ArrowKeyMovementMethod::constructor()
+{
+    return NOERROR;
+}
 
 Boolean ArrowKeyMovementMethod::IsSelecting(
     /* [in] */ ISpannable* buffer)
@@ -306,9 +305,8 @@ Boolean ArrowKeyMovementMethod::IsTouchSelecting(
     /* [in] */ Boolean isMouse,
     /* [in] */ ISpannable* buffer)
 {
-    Boolean flag(FALSE);
-    Touch::IsActivelySelecting(buffer, &flag);
-    return isMouse ? flag : IsSelecting(buffer);
+    Boolean flag = FALSE;
+    return isMouse ? (Touch::IsActivelySelecting(buffer, &flag), flag) : IsSelecting(buffer);
 }
 
 ECode ArrowKeyMovementMethod::OnTouchEvent(

@@ -105,12 +105,12 @@ ECode DigitsKeyListener::GetInstance(
     /* [out] */ IDigitsKeyListener** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<IDigitsKeyListener> dim;
-    CDigitsKeyListener::New((IDigitsKeyListener**)&dim);
+    AutoPtr<CDigitsKeyListener> dim;
+    CDigitsKeyListener::NewByFriend((CDigitsKeyListener**)&dim);
 
-    ((DigitsKeyListener*)dim.Get())->mAccepted = ArrayOf<Char32>::Alloc(accepted.GetLength());
-    ((DigitsKeyListener*)dim.Get())->mAccepted = accepted.GetChars(0, accepted.GetLength());
-    *ret = dim;
+    dim->mAccepted = ArrayOf<Char32>::Alloc(accepted.GetLength());
+    dim->mAccepted = accepted.GetChars(0, accepted.GetLength());
+    *ret = (IDigitsKeyListener*)dim.Get();
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
@@ -283,7 +283,6 @@ CARAPI DigitsKeyListener::ClearMetaKeyState(
 {
     return MetaKeyKeyListener::ClearMetaKeyState(view, content, states);
 }
-
 
 } // namespace Method
 } // namespace Text

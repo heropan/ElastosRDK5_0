@@ -26,6 +26,11 @@ TimeKeyListener::~TimeKeyListener()
 
 CAR_INTERFACE_IMPL(TimeKeyListener, Object, ITimeKeyListener);
 
+ECode TimeKeyListener::constructor()
+{
+    return NOERROR;
+}
+
 ECode TimeKeyListener::GetInstance(
     /* [out] */ ITimeKeyListener** ret)
 {

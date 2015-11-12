@@ -28,6 +28,8 @@ public:
 
     virtual ~BaseMovementMethod();
 
+    CARAPI constructor();
+
     CAR_INTERFACE_DECL()
 
     //@Override

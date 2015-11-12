@@ -41,7 +41,7 @@ private:
         Timeout(
             /* [in] */ IEditable* buffer);
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         AutoPtr<IEditable> mBuffer;

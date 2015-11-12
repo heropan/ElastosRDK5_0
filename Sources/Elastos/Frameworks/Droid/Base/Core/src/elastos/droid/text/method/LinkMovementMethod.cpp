@@ -33,6 +33,11 @@ LinkMovementMethod::~LinkMovementMethod()
 
 CAR_INTERFACE_IMPL_3(LinkMovementMethod, Object, ILinkMovementMethod, IMovementMethod, IBaseMovementMethod)
 
+ECode LinkMovementMethod::constructor()
+{
+    return NOERROR;
+}
+
 ECode LinkMovementMethod::CanSelectArbitrarily(
     /* [out] */ Boolean* ret)
 {

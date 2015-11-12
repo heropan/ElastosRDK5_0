@@ -5,11 +5,11 @@
 #include "elastos/droid/os/Handler.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Text::IGetChars;
 using Elastos::Droid::Text::Style::IUpdateLayout;
 using Elastos::Droid::Text::Style::IUpdateAppearance;
-using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IView;
 using Elastos::Core::ICharSequence;
 
@@ -121,6 +121,8 @@ public:
     CPasswordTransformationMethod();
 
     virtual ~CPasswordTransformationMethod();
+
+    CARAPI constructor();
 
     CARAPI GetTransformation(
         /* [in] */ ICharSequence* source,

@@ -20,6 +20,11 @@ const AutoPtr<ArrayOf<Char32> > DateTimeKeyListener::CHARACTERS = InitCHARACTERS
 
 CAR_INTERFACE_IMPL_6(DateTimeKeyListener, Object, IDateTimeKeyListener, INumberKeyListener, IBaseKeyListener, IMetaKeyKeyListener, IKeyListener, IInputFilter)
 
+ECode DateTimeKeyListener::constructor()
+{
+    return NOERROR;
+}
+
 ECode DateTimeKeyListener::GetInputType(
     /* [out] */ Int32* ret)
 {

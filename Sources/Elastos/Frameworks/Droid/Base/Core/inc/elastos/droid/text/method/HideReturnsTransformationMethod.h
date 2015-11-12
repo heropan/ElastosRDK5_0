@@ -25,6 +25,8 @@ public:
 
     CAR_INTERFACE_DECL()
 
+    CARAPI constructor();
+
     static CARAPI GetInstance(
         /* [out] */ IHideReturnsTransformationMethod** ret);
 

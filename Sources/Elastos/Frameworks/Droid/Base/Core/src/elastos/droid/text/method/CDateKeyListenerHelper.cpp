@@ -9,7 +9,7 @@ namespace Method {
 
 CAR_SINGLETON_IMPL(CDateKeyListenerHelper)
 
-CAR_INTERFACE_IMPL(CDateKeyListenerHelper, Object, IDateKeyListenerHelper)
+CAR_INTERFACE_IMPL(CDateKeyListenerHelper, Singleton, IDateKeyListenerHelper)
 
 AutoPtr<IDateKeyListener> CDateKeyListenerHelper::sInstance;
 

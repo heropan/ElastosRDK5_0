@@ -20,6 +20,8 @@ public:
 
     CAR_OBJECT_DECL()
 
+    CARAPI constructor();
+
     CARAPI Filter(
         /* [in] */ ICharSequence* source,
         /* [in] */ Int32 start,

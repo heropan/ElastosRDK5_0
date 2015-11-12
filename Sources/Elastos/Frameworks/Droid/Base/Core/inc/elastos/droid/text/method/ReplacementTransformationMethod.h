@@ -83,7 +83,7 @@ private:
 
         CAR_INTERFACE_DECL()
 
-        constructor(
+        CARAPI constructor(
             /* [in] */ ISpanned* source,
             /* [in] */ ArrayOf<Char32>* original,
             /* [in] */ ArrayOf<Char32>* replacement);
@@ -166,7 +166,6 @@ protected:
      * that are to be replaced.
      */
     virtual CARAPI_(AutoPtr< ArrayOf<Char32> >) GetReplacement() = 0;
-
 };
 
 } // namespace Method

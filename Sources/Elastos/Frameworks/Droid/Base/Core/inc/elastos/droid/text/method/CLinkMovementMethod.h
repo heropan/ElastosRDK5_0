@@ -12,6 +12,7 @@ namespace Method {
 CarClass(CLinkMovementMethod)
     , public LinkMovementMethod
 {
+public:
     CAR_OBJECT_DECL()
 };
 

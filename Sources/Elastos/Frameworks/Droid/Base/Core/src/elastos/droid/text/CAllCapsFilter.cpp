@@ -16,6 +16,11 @@ CAR_INTERFACE_IMPL_2(CAllCapsFilter, Object, IAllCapsFilter, IAllCapsFilter)
 
 CAR_OBJECT_IMPL(CAllCapsFilter)
 
+ECode CAllCapsFilter::constructor()
+{
+    return NOERROR;
+}
+
 ECode CAllCapsFilter::Filter(
     /* [in] */ ICharSequence* source,
     /* [in] */ Int32 start,

@@ -9,7 +9,7 @@ namespace Method {
 
 CAR_SINGLETON_IMPL(CPasswordTransformationMethodHelper)
 
-CAR_INTERFACE_IMPL(CPasswordTransformationMethodHelper, Object, IPasswordTransformationMethodHelper)
+CAR_INTERFACE_IMPL(CPasswordTransformationMethodHelper, Singleton, IPasswordTransformationMethodHelper)
 
 ECode CPasswordTransformationMethodHelper::GetInstance(
     /* [out] */ IPasswordTransformationMethod** ret)

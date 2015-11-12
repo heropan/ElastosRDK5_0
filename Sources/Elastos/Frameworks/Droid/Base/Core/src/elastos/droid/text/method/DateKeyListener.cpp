@@ -1,6 +1,5 @@
 #include "elastos/droid/text/method/DateKeyListener.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -25,6 +24,11 @@ DateKeyListener::DateKeyListener()
 
 DateKeyListener::~DateKeyListener()
 {}
+
+ECode DateKeyListener::constructor()
+{
+    return NOERROR;
+}
 
 ECode DateKeyListener::GetInputType(
     /* [out] */ Int32* ret)

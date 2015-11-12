@@ -27,7 +27,6 @@ public:
 
     CARAPI GetInstance(
         /* [out] */ IDialerKeyListener** ret);
-
 };
 
 } // namespace Method

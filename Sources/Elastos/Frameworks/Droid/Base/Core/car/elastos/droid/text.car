@@ -118,6 +118,7 @@ module
     interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Res.IColorStateList;
+    interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Graphics.IBitmap;
@@ -193,7 +194,7 @@ module
     class CTimeFormatter {
         constructor();
 
-    interface ITimeFormatter;
+        interface ITimeFormatter;
     }
 
     } // namespace Format
@@ -218,6 +219,8 @@ module
     }
 
     class CArrowKeyMovementMethod {
+        constructor();
+
         interface IMovementMethod;
         interface IArrowKeyMovementMethod;
         interface IBaseMovementMethod;
@@ -228,11 +231,15 @@ module
     }
 
     class CBaseMovementMethod {
+        constructor();
+
         interface IBaseMovementMethod;
         interface IMovementMethod;
     }
 
     class CDateKeyListener {
+        constructor();
+
         interface IDateKeyListener;
         interface IInputFilter;
         interface IKeyListener;
@@ -243,6 +250,8 @@ module
     }
 
     class CDateTimeKeyListener {
+        constructor();
+
         interface IDateTimeKeyListener;
         interface IInputFilter;
         interface IKeyListener;
@@ -253,6 +262,8 @@ module
     }
 
     class CDialerKeyListener {
+        constructor();
+
         interface IDialerKeyListener;
         interface IInputFilter;
         interface IKeyListener;
@@ -287,6 +298,8 @@ module
     }
 
     class CLinkMovementMethod {
+        constructor();
+
         interface ILinkMovementMethod;
         interface IMovementMethod;
         interface IBaseMovementMethod;
@@ -312,6 +325,8 @@ module
     }
 
     class CHideReturnsTransformationMethod {
+        constructor();
+
         interface IHideReturnsTransformationMethod;
         interface ITransformationMethod;
         interface IReplacementTransformationMethod;
@@ -322,6 +337,8 @@ module
     }
 
     class CPasswordTransformationMethod {
+        constructor();
+
         interface IPasswordTransformationMethod;
         interface ITransformationMethod;
         interface ITextWatcher;
@@ -352,6 +369,8 @@ module
     }
 
     class CScrollingMovementMethod {
+        constructor();
+
         interface IScrollingMovementMethod;
         interface IMovementMethod;
         interface IBaseMovementMethod;
@@ -362,6 +381,8 @@ module
     }
 
     class CSingleLineTransformationMethod {
+        constructor();
+
         interface ISingleLineTransformationMethod;
         interface ITransformationMethod;
         interface IReplacementTransformationMethod;
@@ -393,6 +414,8 @@ module
     }
 
     class CTimeKeyListener {
+        constructor();
+
         interface ITimeKeyListener;
         interface IKeyListener;
         interface IInputFilter;
@@ -984,7 +1007,13 @@ module
         interface IParcelable;
     }
 
+    [deprecated]
     class CAutoText {
+        constructor();
+
+        constructor(
+            [in] IResources* resources);
+
         interface IAutoText;
     }
 
@@ -993,6 +1022,8 @@ module
     }
 
     class CBidiFormatter {
+        constructor();
+
         interface IBidiFormatter;
     }
 
@@ -1070,6 +1101,8 @@ module
     }
 
     class CBoringLayoutMetrics {
+        constructor();
+
         interface IBoringLayoutMetrics;
         interface IPaintFontMetricsInt;
     }
@@ -1136,6 +1169,8 @@ module
     }
 
     class CNoCopySpanConcrete {
+        constructor();
+
         interface INoCopySpan;
     }
 
@@ -1295,6 +1330,8 @@ module
     }
 
     class CAllCapsFilter {
+        constructor();
+
         interface IAllCapsFilter;
         interface IInputFilter;
     }

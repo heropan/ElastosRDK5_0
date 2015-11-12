@@ -43,6 +43,11 @@ CAutoText::CAutoText()
 {
 }
 
+ECode CAutoText::constructor()
+{
+    return NOERROR;
+}
+
 ECode CAutoText::constructor(
     /* [in] */ IResources* resources)
 {

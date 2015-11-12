@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CAllCapsTransformationMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
 

@@ -16,6 +16,7 @@ ECode CDialerKeyListenerHelper::GetCHARACTERS(
 {
     VALIDATE_NOT_NULL(ret)
     *ret = DialerKeyListener::CHARACTERS;
+    REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 

@@ -8,7 +8,7 @@ namespace Method{
 
 CAR_SINGLETON_IMPL(CBaseKeyListenerHelper)
 
-CAR_INTERFACE_IMPL(CBaseKeyListenerHelper, Object, IBaseKeyListenerHelper)
+CAR_INTERFACE_IMPL(CBaseKeyListenerHelper, Singleton, IBaseKeyListenerHelper)
 
 CARAPI CBaseKeyListenerHelper::MakeTextContentType(
     /* [in] */ Capitalize caps,

@@ -23,6 +23,8 @@ public:
 
     CBoringLayoutMetrics();
 
+    CARAPI constructor();
+
     CARAPI GetTop(
         /* [out] */ Int32* top);
 

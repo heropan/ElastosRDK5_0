@@ -24,6 +24,8 @@ public:
 
     virtual ~DialerKeyListener();
 
+    CARAPI constructor();
+
     CAR_INTERFACE_DECL()
 
     static CARAPI GetInstance(

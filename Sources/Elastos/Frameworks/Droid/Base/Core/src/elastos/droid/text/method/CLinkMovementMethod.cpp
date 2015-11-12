@@ -1,4 +1,3 @@
-
 #include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/ext/frameworkext.h"
 
