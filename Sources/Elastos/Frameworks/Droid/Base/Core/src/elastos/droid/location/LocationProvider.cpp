@@ -65,16 +65,16 @@ Boolean LocationProvider::PropertiesMeetCriteria(
         return FALSE;
     }
     if ( (criteria->IsAltitudeRequired(&bValue), bValue) && (properties->GetSupportsAltitude(&bValue2), !bValue2) ) {
-            return FALSE;
+        return FALSE;
     }
     if ( (criteria->IsSpeedRequired(&bValue), bValue) && (properties->GetSupportsSpeed(&bValue2), !bValue2) ) {
-            return FALSE;
+        return FALSE;
     }
     if ( (criteria->IsBearingRequired(&bValue), bValue) && (properties->GetSupportsBearing(&bValue2), !bValue2) ) {
-            return FALSE;
+        return FALSE;
     }
     if ( (criteria->IsCostAllowed(&bValue), bValue) && (properties->GetHasMonetaryCost(&bValue2), !bValue2) ) {
-            return FALSE;
+        return FALSE;
     }
     return TRUE;
 }
