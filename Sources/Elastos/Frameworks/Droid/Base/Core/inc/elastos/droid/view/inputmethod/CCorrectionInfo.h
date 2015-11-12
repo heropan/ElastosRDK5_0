@@ -3,18 +3,26 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CCORRECTIONINFO_H__
 
 #include "_Elastos_Droid_View_InputMethod_CCorrectionInfo.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace InputMethod {
 
-
 CarClass(CCorrectionInfo)
+    , public Object
+    , public ICorrectionInfo
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CCorrectionInfo();
 
     CARAPI constructor();
@@ -28,12 +36,6 @@ public:
         /* [in] */ Int32 offset,
         /* [in] */ ICharSequence* oldText,
         /* [in] */ ICharSequence* newText);
-
-    // private CorrectionInfo(Parcel source) {
-    //     mOffset = source.readInt();
-    //     mOldText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
-    //     mNewText = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
-    // }
 
     /**
      * Return the offset position of this correction in the text. Both the {@link #getOldText()} and
@@ -55,9 +57,8 @@ public:
         /* [out] */ ICharSequence** text);
 
     // @Override
-    // public String ToString() {
-    //     return "CorrectionInfo{#" + mOffset + " \"" + mOldText + "\" -> \"" + mNewText + "\"}";
-    // }
+    CARAPI ToString(
+        /* [out] */ String* result);
 
     /**
      * Used to package this object into a {@link Parcel}.
@@ -68,27 +69,8 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
-
-    /**
-     * Used to make this class parcelable.
-     */
-    // public static final Parcelable.Creator<CorrectionInfo> CREATOR
-    //         = new Parcelable.Creator<CorrectionInfo>() {
-    //     public CorrectionInfo createFromParcel(Parcel source) {
-    //         return new CorrectionInfo(source);
-    //     }
-
-    //     public CorrectionInfo[] newArray(int size) {
-    //         return new CorrectionInfo[size];
-    //     }
-    // };
-
-    // public int DescribeContents() {
-    //     return 0;
-    // }
 
 private:
     Int32 mOffset;

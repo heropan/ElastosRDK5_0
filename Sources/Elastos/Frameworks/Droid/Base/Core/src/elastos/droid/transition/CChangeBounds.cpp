@@ -412,7 +412,7 @@ ECode CChangeBounds::Clone(
     CChangeBounds::New((IChangeBounds**)&changes);
 
     CloneImpl(changes);
-    *obj = IInterface::Probe(changes);
+    *obj = changes;
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }
@@ -422,9 +422,7 @@ ECode CChangeBounds::CloneImpl(
 {
     VALIDATE_NOT_NULL(obj);
 
-    Transition::CloneImpl(ITransition::Probe(obj));
-
-    return NOERROR;
+    return Transition::CloneImpl(ITransition::Probe(obj));
 }
 
 //===============================================================

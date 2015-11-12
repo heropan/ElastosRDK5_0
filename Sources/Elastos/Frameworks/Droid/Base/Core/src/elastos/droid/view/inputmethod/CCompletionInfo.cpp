@@ -9,6 +9,13 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
+//========================================================================================
+//              CCompletionInfo::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(CCompletionInfo, Object, ICompletionInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CCompletionInfo)
+
 CCompletionInfo::CCompletionInfo()
     : mId(0)
     , mPosition(0)

@@ -5,7 +5,6 @@
 #include "_Elastos_Droid_View_InputMethod_CBaseInputConnection.h"
 #include "elastos/droid/view/inputmethod/BaseInputConnection.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace View {
@@ -17,21 +16,11 @@ namespace InputMethod {
  * Implementors of this class will want to be sure to implement
  * {@link #getEditable} to provide access to their own editable object.
  */
-CarClass(CBaseInputConnection), public BaseInputConnection
+CarClass(CBaseInputConnection)
+    , public BaseInputConnection
 {
 public:
-    BASEINPUTCONNECTION_METHODS_DECL();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IInputMethodManager* mgr,
-        /* [in] */ Boolean fullEditor);
-
-    CARAPI constructor(
-        /* [in] */ IView* targetView,
-        /* [in] */ Boolean fullEditor);
+    CAR_OBJECT_DECL();
 };
 
 } // namespace InputMethod

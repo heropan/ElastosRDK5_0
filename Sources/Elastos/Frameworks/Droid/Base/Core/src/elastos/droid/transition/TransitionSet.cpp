@@ -651,7 +651,7 @@ ECode TransitionSet::Clone(
     CTransitionSet::New((ITransitionSet**)&trans);
 
     CloneImpl(trans);
-    *obj = IInterface::Probe(trans);
+    *obj = trans;
     REFCOUNT_ADD(*obj)
     return NOERROR;
 }

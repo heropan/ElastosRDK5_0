@@ -7,6 +7,12 @@ namespace Droid {
 namespace View {
 namespace InputMethod {
 
+//========================================================================================
+//              CInputConnectionWrapper::
+//========================================================================================
+CAR_INTERFACE_IMPL(CInputConnectionWrapper, Object, IInputConnection)
+
+CAR_OBJECT_IMPL(CInputConnectionWrapper)
 
 CInputConnectionWrapper::CInputConnectionWrapper()
     : mMutable(FALSE)
@@ -14,9 +20,9 @@ CInputConnectionWrapper::CInputConnectionWrapper()
 
 ECode CInputConnectionWrapper::constructor(
     /* [in] */ IInputConnection* target,
-    /* [in] */ Boolean mutables)
+    /* [in] */ Boolean mutble)
 {
-    mMutable = mutables;
+    mMutable = mutble;
     mTarget = target;
     return NOERROR;
 }
@@ -184,6 +190,13 @@ ECode CInputConnectionWrapper::PerformPrivateCommand(
     /* [out] */ Boolean* flag)
 {
     return mTarget->PerformPrivateCommand(action, data, flag);
+}
+
+ECode CInputConnectionWrapper::RequestCursorUpdates(
+    /* [in] */ Int32 cursorUpdateMode,
+    /* [out] */ Boolean* result)
+{
+    return mTarget->RequestCursorUpdates(cursorUpdateMode, result);
 }
 
 } // namespace InputMethod

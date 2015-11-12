@@ -3,9 +3,12 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CEDITORINFO_H__
 
 #include "_Elastos_Droid_View_InputMethod_CEditorInfo.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Text::IInputType;
 
 using Elastos::Core::ICharSequence;
-using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +16,16 @@ namespace View {
 namespace InputMethod {
 
 CarClass(CEditorInfo)
+    , public Object
+    , public IEditorInfo
+    , public IInputType
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CEditorInfo();
 
     ~CEditorInfo();

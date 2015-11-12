@@ -2,9 +2,10 @@
 module
 {
     interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
-    interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Os.IBundle;
+
+    interface Elastos.Core.ICharSequence;
 
     namespace Elastos {
     namespace Droid {

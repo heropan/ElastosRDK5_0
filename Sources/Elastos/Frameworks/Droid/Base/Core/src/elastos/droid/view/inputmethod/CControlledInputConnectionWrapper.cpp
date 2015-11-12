@@ -15,14 +15,14 @@ CControlledInputConnectionWrapper::CControlledInputConnectionWrapper()
 {
 }
 
-PInterface CControlledInputConnectionWrapper::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInputConnectionWrapper) {
-        return reinterpret_cast<PInterface>((IInputConnectionWrapper*)this);
-    }
-    return _CControlledInputConnectionWrapper::Probe(riid);
-}
+// PInterface CControlledInputConnectionWrapper::Probe(
+//     /* [in] */ REIID riid)
+// {
+//     if (riid == EIID_IInputConnectionWrapper) {
+//         return reinterpret_cast<PInterface>((IInputConnectionWrapper*)this);
+//     }
+//     return _CControlledInputConnectionWrapper::Probe(riid);
+// }
 
 ECode CControlledInputConnectionWrapper::constructor(
     /* [in] */ ILooper* mainLooper,

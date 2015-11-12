@@ -24,6 +24,24 @@ namespace Droid {
 namespace View {
 
 //========================================================================================
+//              TextureView::OnFrameAvailableListener::
+//========================================================================================
+CAR_INTERFACE_IMPL(TextureView::OnFrameAvailableListener, Object, IOnFrameAvailableListener)
+
+TextureView::OnFrameAvailableListener::OnFrameAvailableListener(
+    /* [in] */ TextureView* h) : mHost(h)
+{
+}
+
+ECode TextureView::OnFrameAvailableListener::OnFrameAvailable(
+    /* [in] */ ISurfaceTexture* surfaceTexture)
+{
+    mHost->UpdateLayer();
+    mHost->Invalidate();
+    return NOERROR;
+}
+
+//========================================================================================
 //              TextureView::
 //========================================================================================
 //const String TextureView::LOG_TAG("TextureView");
@@ -39,9 +57,9 @@ TextureView::TextureView()
 {
     CMatrix::New((IMatrix**)&mMatrix);
 
-    mLock = ArrayOf<IInterface*>::Alloc(1);
+//    mLock = ArrayOf<IInterface*>::Alloc(1);
 
-    mNativeWindowLock = ArrayOf<IInterface*>::Alloc(1);
+//    mNativeWindowLock = ArrayOf<IInterface*>::Alloc(1);
 
     mUpdateListener = new OnFrameAvailableListener(this);
 }
@@ -49,18 +67,18 @@ TextureView::TextureView()
 ECode TextureView::constructor(
     /* [in] */ IContext* context)
 {
-    ECode ec = View::constructor(context);
+    FAIL_RETURN(View::constructor(context));
     Init();
-    return ec;
+    return NOERROR;
 }
 
 ECode TextureView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ECode ec = View::constructor(context, attrs);
+    FAIL_RETURN(View::constructor(context, attrs));
     Init();
-    return ec;
+    return NOERROR;
 }
 
 ECode TextureView::constructor(
@@ -140,7 +158,7 @@ void TextureView::DestroySurface()
         }
 
         {
-            AutoLock lock(this);
+            AutoLock lock(mNativeWindowLock);
             NativeDestroyNativeWindow();
         }
 
@@ -249,6 +267,7 @@ AutoPtr<IHardwareLayer> TextureView::GetHardwareLayer()
             return NULL;
         }
 
+    assert(0 && "TODO");
     //    mLayer = mAttachInfo->mHardwareRenderer->CreateTextureLayer();
         if (!mUpdateSurface) {
             // Create a new SurfaceTexture for the layer.
@@ -319,7 +338,7 @@ ECode TextureView::OnVisibilityChanged(
 void TextureView::UpdateLayer()
 {
     {
-        AutoLock lock(this);
+        AutoLock lock(mLock);
         mUpdateLayer = TRUE;
     }
 }
@@ -327,7 +346,7 @@ void TextureView::UpdateLayer()
 void TextureView::UpdateLayerAndInvalidate()
 {
     {
-        AutoLock lock(this);
+        AutoLock lock(mLock);
         mUpdateLayer = TRUE;
     }
     Invalidate();
@@ -340,7 +359,7 @@ void TextureView::ApplyUpdate()
     }
 
     {
-        AutoLock lock(this);
+        AutoLock lock(mLock);
         if (mUpdateLayer) {
             mUpdateLayer = FALSE;
         }
@@ -376,13 +395,14 @@ ECode TextureView::GetTransform(
 {
     VALIDATE_NOT_NULL(result)
 
-    if (transform == NULL) {
-        CMatrix::New((IMatrix**)&transform);
+    AutoPtr<IMatrix> tf = transform;
+    if (tf == NULL) {
+        CMatrix::New((IMatrix**)&tf);
     }
 
-    transform->Set(mMatrix);
+    tf->Set(mMatrix);
 
-    *result = transform;
+    *result = tf.Get();
     REFCOUNT_ADD(*result)
     return NOERROR;
 }
@@ -491,7 +511,7 @@ ECode TextureView::LockCanvas(
     }
 
     {
-        AutoLock lock(this);
+        AutoLock lock(mNativeWindowLock);
         if (!NativeLockCanvas(mNativeWindow, mCanvas, dirty)) {
             *canvas = NULL;
             return NOERROR;
@@ -507,12 +527,12 @@ ECode TextureView::LockCanvas(
 ECode TextureView::UnlockCanvasAndPost(
     /* [in] */ ICanvas* canvas)
 {
-    if (mCanvas != NULL && Object::Equals(canvas->Probe(EIID_IInterface), mCanvas->Probe(EIID_IInterface))) {
+    if (mCanvas != NULL && canvas == mCanvas.Get()) {
         canvas->RestoreToCount(mSaveCount);
         mSaveCount = 0;
 
         {
-            AutoLock lock(this);
+            AutoLock lock(mNativeWindowLock);
             NativeUnlockCanvasAndPost(mNativeWindow, mCanvas);
         }
     }
@@ -536,7 +556,7 @@ ECode TextureView::SetSurfaceTexture(
         return E_NULL_POINTER_EXCEPTION;
     }
     if (mSurface != NULL) {
-        mSurface->Release();
+        mSurface->ReleaseBuffers();
     }
     mSurface = surfaceTexture;
     mUpdateSurface = TRUE;
@@ -564,10 +584,12 @@ ECode TextureView::SetSurfaceTextureListener(
 void TextureView::NativeCreateNativeWindow(
     /* [in] */ ISurfaceTexture* surface)
 {
+    assert(0 && "TODO");
 }
 
 void TextureView::NativeDestroyNativeWindow()
 {
+    assert(0 && "TODO");
 }
 
 Boolean TextureView::NativeLockCanvas(
@@ -575,6 +597,7 @@ Boolean TextureView::NativeLockCanvas(
     /* [in] */ ICanvas* canvas,
     /* [in] */ IRect* dirty)
 {
+    assert(0 && "TODO");
     return FALSE;
 }
 
@@ -582,25 +605,7 @@ void TextureView::NativeUnlockCanvasAndPost(
     /* [in] */ Int64 nativeWindow,
     /* [in] */ ICanvas* canvas)
 {
-}
-
-//========================================================================================
-//              TextureView::OnFrameAvailableListener::
-//========================================================================================
-CAR_INTERFACE_IMPL(TextureView::OnFrameAvailableListener, Object, IOnFrameAvailableListener)
-
-TextureView::OnFrameAvailableListener::OnFrameAvailableListener(
-    /* [in] */ TextureView* h)
-{
-    mHost = h;
-}
-
-ECode TextureView::OnFrameAvailableListener::OnFrameAvailable(
-    /* [in] */ ISurfaceTexture* surfaceTexture)
-{
-    mHost->UpdateLayer();
-    mHost->Invalidate();
-    return NOERROR;
+    assert(0 && "TODO");
 }
 
 } // namespace View
