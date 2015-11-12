@@ -30,4 +30,4 @@ SOURCES += SinkChannel.cpp
 SOURCES += SourceChannel.cpp
 SOURCES += Pipe.cpp
 
-LIBRARIES += spi/spi.lib
+ELASTOS_LIBS += spi/spi.lib

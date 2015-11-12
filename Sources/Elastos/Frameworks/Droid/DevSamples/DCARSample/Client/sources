@@ -10,8 +10,8 @@ IMPORTS = Elastos.CoreLibrary.eco
 SOURCES = main.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/DCARServiceManager.lib
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Runtime.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/DCARServiceManager.lib
 LIBRARIES += -lm -llog -licuuc

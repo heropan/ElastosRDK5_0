@@ -21,8 +21,8 @@ SOURCES += ColorPickerMoreButton.cpp
 SOURCES += ColorPickerAdvanced.cpp              
 SOURCES += ColorPickerDialog.cpp               
 
-LIBRARIES += autofill/autofill.lib
-LIBRARIES += base/base.lib
-LIBRARIES += gfx/gfx.lib
-LIBRARIES += gl/gl.lib
-LIBRARIES += interpolators/interpolators.lib
+ELASTOS_LIBS += autofill/autofill.lib
+ELASTOS_LIBS += base/base.lib
+ELASTOS_LIBS += gfx/gfx.lib
+ELASTOS_LIBS += gl/gl.lib
+ELASTOS_LIBS += interpolators/interpolators.lib

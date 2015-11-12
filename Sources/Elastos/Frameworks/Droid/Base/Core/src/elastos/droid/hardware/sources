@@ -26,9 +26,9 @@ SOURCES += CameraInfo.cpp
 SOURCES += CTriggerEvent.cpp
 SOURCES += hardware.cpp
 
-LIBRARIES += display/display.lib
-LIBRARIES += input/input.lib
-LIBRARIES += usb/usb.lib
-LIBRARIES += soundtrigger/soundtrigger.lib
-LIBRARIES += location/location.lib
-LIBRARIES += camera2/params/params.lib
+ELASTOS_LIBS += display/display.lib
+ELASTOS_LIBS += input/input.lib
+ELASTOS_LIBS += usb/usb.lib
+ELASTOS_LIBS += soundtrigger/soundtrigger.lib
+ELASTOS_LIBS += location/location.lib
+ELASTOS_LIBS += camera2/params/params.lib

@@ -29,4 +29,4 @@ SOURCES += CSQLWarning.cpp
 SOURCES += CDriverManager.cpp
 SOURCES += CTime.cpp
 
-LIBRARIES += sqlite/sqlite.lib
+ELASTOS_LIBS += sqlite/sqlite.lib

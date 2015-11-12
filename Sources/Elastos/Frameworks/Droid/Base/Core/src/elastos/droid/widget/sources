@@ -283,4 +283,4 @@ SOURCES += CStackViewLayoutParams.cpp
 SOURCES += ActivityChooserModel.cpp
 SOURCES += CActivityChooserModelHelper.cpp
 
-#LIBRARIES += internal/internal.lib
+#ELASTOS_LIBS += internal/internal.lib

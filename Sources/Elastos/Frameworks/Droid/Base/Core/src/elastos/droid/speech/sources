@@ -21,5 +21,5 @@ SOURCES += RecognizerIntent.cpp
 SOURCES += RecognizerResultsIntent.cpp
 SOURCES += SpeechRecognizer.cpp
 
-LIBRARIES += srec/srec.lib
-LIBRARIES += tts/tts.lib
+ELASTOS_LIBS += srec/srec.lib
+ELASTOS_LIBS += tts/tts.lib

@@ -177,5 +177,5 @@ SOURCES += CTaskStackBuilderHelper.cpp
 #SOURCES += CBackupAgentBackupServiceBinder.cpp
 #SOURCES += ListActivity.cpp
 
-#LIBRARIES += admin/admin.lib
-#LIBRARIES += backup/backup.lib
+#ELASTOS_LIBS += admin/admin.lib
+#ELASTOS_LIBS += backup/backup.lib

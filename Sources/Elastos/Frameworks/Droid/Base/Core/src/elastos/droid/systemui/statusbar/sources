@@ -25,6 +25,6 @@ SOURCES += CLatestItemView.cpp
 SOURCES += RotationToggle.cpp
 SOURCES += CRotationToggle.cpp
 
-LIBRARIES += policy/policy.lib
-LIBRARIES += phone/phone.lib
-LIBRARIES += tablet/tablet.lib
+ELASTOS_LIBS += policy/policy.lib
+ELASTOS_LIBS += phone/phone.lib
+ELASTOS_LIBS += tablet/tablet.lib

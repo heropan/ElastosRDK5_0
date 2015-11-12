@@ -27,12 +27,12 @@ ELASTOS_LIBS += ../../reflection/reflection.lib
 ELASTOS_LIBS += ../../../Library/clsmodule/clsinfo.lib
 
 ifeq "$(XDK_TARGET_PLATFORM)" "win32"
-LIBRARIES += ../../elapi/elapi.lib
-LIBRARIES += ../../marshal/others/marshal.lib
-LIBRARIES += $(XDK_USER_LIB)/libz.lib
-LIBRARIES += ../../../PortingLayer/win32/win32_porting.lib
+ELASTOS_LIBS += ../../elapi/elapi.lib
+ELASTOS_LIBS += ../../marshal/others/marshal.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/libz.lib
+ELASTOS_LIBS += ../../../PortingLayer/win32/win32_porting.lib
 LIBRARIES += -lpthread
-LIBRARIES += $(XDK_LIB_PATH)/dbus-1.lib
+ELASTOS_LIBS += $(XDK_LIB_PATH)/dbus-1.lib
 else
 ELASTOS_LIBS += ../../elapi/elapi.lib
 ifeq "$(XDK_TARGET_PLATFORM)" "android"
@@ -43,13 +43,13 @@ LIBRARIES += -lm -ldl -llog -lz -lcutils -lutils -lbinder
 ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
 else
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-LIBRARIES += ../../marshal/others_rpc/marshal.lib
+ELASTOS_LIBS += ../../marshal/others_rpc/marshal.lib
 LIBRARIES += -lm -lc -ldl -lpthread -lstdc++ -ldbus-1 -lz -lrt
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
 else
-LIBRARIES += ../../marshal/others/marshal.lib
+ELASTOS_LIBS += ../../marshal/others/marshal.lib
 LIBRARIES += -lm -lc -ldl -lpthread -lstdc++ -ldbus-1 -lz -lrt
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
 endif
 endif
 endif

@@ -104,9 +104,9 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 #SOURCES += Media_Utils.cpp
 
 
-LIBRARIES += audiofx/audiofx.lib
-LIBRARIES += audiopolicy/audiopolicy.lib
-LIBRARIES += browse/browse.lib
-LIBRARIES += projection/projection.lib
-LIBRARIES += session/session.lib
-#LIBRARIES += tv/tv.lib
+ELASTOS_LIBS += audiofx/audiofx.lib
+ELASTOS_LIBS += audiopolicy/audiopolicy.lib
+ELASTOS_LIBS += browse/browse.lib
+ELASTOS_LIBS += projection/projection.lib
+ELASTOS_LIBS += session/session.lib
+#ELASTOS_LIBS += tv/tv.lib

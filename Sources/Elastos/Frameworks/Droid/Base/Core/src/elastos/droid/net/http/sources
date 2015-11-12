@@ -38,4 +38,4 @@ SOURCES += CSslErrorHelper.cpp
 SOURCES += Timer.cpp
 SOURCES += X509TrustManagerExtensions.cpp
 
-#LIBRARIES += multipart/multipart.lib
+#ELASTOS_LIBS += multipart/multipart.lib

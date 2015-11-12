@@ -53,7 +53,7 @@ SOURCES += TextPaint.cpp
 SOURCES += TextUtils.cpp
 SOURCES += CTextUtils.cpp
 
-LIBRARIES += format/format.lib
-LIBRARIES += method/method.lib
-LIBRARIES += style/style.lib
-LIBRARIES += utility/utility.lib
+ELASTOS_LIBS += format/format.lib
+ELASTOS_LIBS += method/method.lib
+ELASTOS_LIBS += style/style.lib
+ELASTOS_LIBS += utility/utility.lib

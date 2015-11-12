@@ -22,5 +22,5 @@ SOURCES += CSubject.cpp
 SOURCES += CSubjectHelper.cpp
 SOURCES += CSubjectDomainCombiner.cpp
 
-LIBRARIES += callback/callback.lib
-LIBRARIES += x500/x500.lib
+ELASTOS_LIBS += callback/callback.lib
+ELASTOS_LIBS += x500/x500.lib

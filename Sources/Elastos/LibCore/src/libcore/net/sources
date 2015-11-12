@@ -26,6 +26,6 @@ SOURCES += CMimeUtils.cpp
 SOURCES += UriCodec.cpp
 SOURCES += CUriCodecHelper.cpp
 
-LIBRARIES += event/event.lib
-LIBRARIES += http/http.lib
-LIBRARIES += url/url.lib
+ELASTOS_LIBS += event/event.lib
+ELASTOS_LIBS += http/http.lib
+ELASTOS_LIBS += url/url.lib

@@ -16,9 +16,9 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/logging;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
 
-LIBRARIES += datatype/datatype.lib
-LIBRARIES += namespace/namespace.lib
-LIBRARIES += parsers/parsers.lib
-LIBRARIES += transform/transform.lib
-LIBRARIES += validation/validation.lib
-LIBRARIES += xpath/xpath.lib
+ELASTOS_LIBS += datatype/datatype.lib
+ELASTOS_LIBS += namespace/namespace.lib
+ELASTOS_LIBS += parsers/parsers.lib
+ELASTOS_LIBS += transform/transform.lib
+ELASTOS_LIBS += validation/validation.lib
+ELASTOS_LIBS += xpath/xpath.lib

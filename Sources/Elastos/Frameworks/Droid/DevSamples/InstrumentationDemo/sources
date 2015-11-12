@@ -15,13 +15,13 @@ SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Elastos.Droid.Test.cpp
 SOURCES += Eunit.cpp
 
-LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.Test.lib
-LIBRARIES += $(XDK_USER_LIB)/Eunit.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
+ELASTOS_LIBS  = $(XDK_USER_LIB)/Elastos.Runtime.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Droid.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Droid.Test.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/Eunit.lib
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += -lm -licuuc -llog
 
 APPPACK = 1

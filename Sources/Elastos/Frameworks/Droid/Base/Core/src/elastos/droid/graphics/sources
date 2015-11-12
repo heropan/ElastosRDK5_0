@@ -120,5 +120,5 @@ SOURCES += FontFamily.cpp
 SOURCES += FontListParser.cpp
 SOURCES += COutline.cpp
 
-LIBRARIES += drawable/drawable.lib
-LIBRARIES += pdf/pdf.lib
+ELASTOS_LIBS += drawable/drawable.lib
+ELASTOS_LIBS += pdf/pdf.lib

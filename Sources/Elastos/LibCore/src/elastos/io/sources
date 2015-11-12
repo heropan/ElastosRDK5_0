@@ -135,5 +135,5 @@ SOURCES += DatagramChannelImpl.cpp
 # SerializationHandleMap
 #
 
-LIBRARIES += channels/channels.lib
-LIBRARIES += charset/charset.lib
+ELASTOS_LIBS += channels/channels.lib
+ELASTOS_LIBS += charset/charset.lib

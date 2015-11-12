@@ -78,5 +78,5 @@ SOURCES += UndoOwner.cpp
 SOURCES += CUriMatcher.cpp
 SOURCES += CUriPermission.cpp
 
-LIBRARIES += pm/pm.lib
-LIBRARIES += res/res.lib
+ELASTOS_LIBS += pm/pm.lib
+ELASTOS_LIBS += res/res.lib

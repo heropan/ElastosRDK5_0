@@ -62,4 +62,4 @@ SOURCES += RippleDrawable.cpp
 SOURCES += CRippleDrawable.cpp
 SOURCES += RippleBackground.cpp
 
-LIBRARIES += shapes/shapes.lib
+ELASTOS_LIBS += shapes/shapes.lib

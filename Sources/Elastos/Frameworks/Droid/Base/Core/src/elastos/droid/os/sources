@@ -106,4 +106,4 @@ SOURCES += NativeBinder.cpp
 #SOURCES += CParcelStringList.cpp
 #SOURCES += CZigbeeManager.cpp
 
-#LIBRARIES += storage/storage.lib
+#ELASTOS_LIBS += storage/storage.lib

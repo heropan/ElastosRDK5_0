@@ -51,4 +51,4 @@ SOURCES += AwScrollOffsetManager.cpp
 SOURCES += AwContents.cpp
 SOURCES += AwSettings.cpp
 
-LIBRARIES = permission/permission.lib
+ELASTOS_LIBS = permission/permission.lib

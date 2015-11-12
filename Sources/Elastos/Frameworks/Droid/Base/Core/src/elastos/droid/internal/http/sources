@@ -11,4 +11,4 @@ C_DEFINES += -DDROID_CORE
 SOURCES = CHttpDateTime.cpp
 SOURCES += HttpDateTime.cpp
 
-LIBRARIES += multipart/multipart.lib
+ELASTOS_LIBS += multipart/multipart.lib

@@ -31,12 +31,12 @@ SOURCES += ElastosGeckoWrapper.cpp
 SOURCES += CLauncherHelper.cpp
 SOURCES += Elastos.Droid.Core.cpp
 
-LIBRARIES = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
-#LIBRARIES += $(MAKEDIR)/lib/libjansson.so.4.4.0
+ELASTOS_LIBS = $(XDK_USER_LIB)/Elastos.Runtime.lib
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Droid.lib
+#ELASTOS_LIBS += $(MAKEDIR)/lib/libjansson.so.4.4.0
 LIBRARIES += -lm -ldl -licuuc -lskia -lutils -lcutils -lmedia -lbinder
 
 APPPACK = 1

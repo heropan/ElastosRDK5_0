@@ -9,7 +9,7 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Security
 #SOURCES += CPublicKeyImpl.cpp
 #SOURCES += CSystemScope.cpp
 
-LIBRARIES += asn1/asn1.lib
-LIBRARIES += fortress/fortress.lib
-LIBRARIES += pkcs7/pkcs7.lib
-LIBRARIES += utils/utils.lib
+ELASTOS_LIBS += asn1/asn1.lib
+ELASTOS_LIBS += fortress/fortress.lib
+ELASTOS_LIBS += pkcs7/pkcs7.lib
+ELASTOS_LIBS += utils/utils.lib

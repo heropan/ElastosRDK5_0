@@ -13,4 +13,4 @@ SOURCES += CPrivacySettings.cpp
 SOURCES += PrivacySettingsStub.cpp
 SOURCES += CPrivacySettingsManager.cpp
 
-LIBRARIES += surrogate/surrogate.lib
+ELASTOS_LIBS += surrogate/surrogate.lib

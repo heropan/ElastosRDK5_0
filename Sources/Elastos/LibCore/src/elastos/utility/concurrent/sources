@@ -56,5 +56,5 @@ SOURCES += RecursiveAction.cpp
 SOURCES += RecursiveTask.cpp
 SOURCES += concurrent.cpp
 
-LIBRARIES += atomic/atomic.lib
-LIBRARIES += locks/locks.lib
+ELASTOS_LIBS += atomic/atomic.lib
+ELASTOS_LIBS += locks/locks.lib

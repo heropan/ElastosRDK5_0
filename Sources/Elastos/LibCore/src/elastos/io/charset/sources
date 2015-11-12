@@ -32,4 +32,4 @@ SOURCES += CModifiedUtf8.cpp
 SOURCES += StandardCharsets.cpp
 SOURCES += CStandardCharsets.cpp
 
-LIBRARIES += spi/spi.lib
+ELASTOS_LIBS += spi/spi.lib

@@ -34,4 +34,4 @@ SOURCES += CrossProcessCursorWrapper.cpp
 SOURCES += CBulkCursorDescriptor.cpp
 SOURCES += database.cpp
 
-LIBRARIES = sqlite/sqlite.lib
+ELASTOS_LIBS = sqlite/sqlite.lib

@@ -23,6 +23,6 @@ SOURCES += CDessertCaseView.cpp
 //SOURCES += UniverseBackground.cpp
 //SOURCES += CUniverseBackground.cpp
 
-//LIBRARIES += statusbar/statusbar.lib
-//LIBRARIES += recent/recent.lib
-//LIBRARIES += media/media.lib
+//ELASTOS_LIBS += statusbar/statusbar.lib
+//ELASTOS_LIBS += recent/recent.lib
+//ELASTOS_LIBS += media/media.lib

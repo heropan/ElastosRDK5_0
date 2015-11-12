@@ -38,4 +38,4 @@ SOURCES += TableResult.cpp
 SOURCES += CTableResult.cpp
 SOURCES += CVm.cpp
 
-LIBRARIES += jdbc/jdbc.lib
+ELASTOS_LIBS += jdbc/jdbc.lib

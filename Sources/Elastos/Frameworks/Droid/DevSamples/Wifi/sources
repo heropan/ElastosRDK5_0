@@ -5,7 +5,7 @@ TARGET_TYPE= exe
 SOURCES = WifiNative.cpp
 SOURCES += main.cpp
 
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
+ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Runtime.lib
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += -lgcc -lc -lstdc++ -lm -ldl -llog -lz -lcutils -lutils -lbinder
 LIBRARIES += -lhardware_legacy -lnetutils

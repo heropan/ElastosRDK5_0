@@ -9,6 +9,6 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-LIBRARIES += app/app.lib
-LIBRARIES += browser/browser.lib
-LIBRARIES += common/common.lib
+ELASTOS_LIBS += app/app.lib
+ELASTOS_LIBS += browser/browser.lib
+ELASTOS_LIBS += common/common.lib

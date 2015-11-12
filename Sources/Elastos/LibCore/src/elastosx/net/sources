@@ -18,4 +18,4 @@ SOURCES += CServerSocketFactoryHelper.cpp
 SOURCES += CDefaultServerSocketFactory.cpp
 SOURCES += CDefaultSocketFactory.cpp
 
-LIBRARIES += ssl/ssl.lib
+ELASTOS_LIBS += ssl/ssl.lib

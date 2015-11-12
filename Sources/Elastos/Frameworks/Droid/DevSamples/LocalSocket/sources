@@ -10,12 +10,12 @@ ifneq "$(TEST_TYPE)" ""
 C_DEFINES:= $(C_DEFINES) -DAutoExit
 endif
 
-LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
-LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
-LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
-LIBRARIES += $(XDK_USER_LIB)/crt0.lib
-LIBRARIES += $(XDK_USER_LIB)/tstcom.lib
+ELASTOS_LIBS  = $(XDK_USER_LIB)/Elastos.Runtime.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/Elastos.Droid.lib
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.Runtime.eco
+ELASTOS_LIBS += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
+ELASTOS_LIBS += $(XDK_USER_LIB)/crt0.lib
+ELASTOS_LIBS += $(XDK_USER_LIB)/tstcom.lib
 LIBRARIES += -lm -licuuc -llog
 LIBRARIES += -licuuc -lcutils -lutils
 

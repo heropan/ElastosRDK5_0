@@ -13,6 +13,6 @@ SOURCES = elquintet.cpp
 SOURCES += elstringapi.cpp
 SOURCES += ucase.cpp
 
-LIBRARIES = elstring/elstring.lib
-LIBRARIES += elrefbase/elrefbase.lib
-LIBRARIES += elcontainer/elcontainer.lib
+ELASTOS_LIBS = elstring/elstring.lib
+ELASTOS_LIBS += elrefbase/elrefbase.lib
+ELASTOS_LIBS += elcontainer/elcontainer.lib

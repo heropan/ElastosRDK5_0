@@ -91,9 +91,9 @@ SOURCES += Vector.cpp
 SOURCES += CWeakHashMap.cpp
 SOURCES += utility.cpp
 
-LIBRARIES += concurrent/concurrent.lib
-LIBRARIES += jar/jar.lib
-LIBRARIES += logging/logging.lib
-LIBRARIES += prefs/prefs.lib
-LIBRARIES += regex/regex.lib
-LIBRARIES += zip/zip.lib
+ELASTOS_LIBS += concurrent/concurrent.lib
+ELASTOS_LIBS += jar/jar.lib
+ELASTOS_LIBS += logging/logging.lib
+ELASTOS_LIBS += prefs/prefs.lib
+ELASTOS_LIBS += regex/regex.lib
+ELASTOS_LIBS += zip/zip.lib

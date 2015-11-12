@@ -62,8 +62,8 @@ SOURCES += VibrationProvider.cpp
 SOURCES += ViewPositionObserver.cpp
 SOURCES += WebContentsObserverElastos.cpp
 
-LIBRARIES += accessibility/accessibility.lib
-LIBRARIES += crypto/crypto.lib
-LIBRARIES += framehost/framehost.lib
-LIBRARIES += input/input.lib
-LIBRARIES += webcontents/webcontents.lib
+ELASTOS_LIBS += accessibility/accessibility.lib
+ELASTOS_LIBS += crypto/crypto.lib
+ELASTOS_LIBS += framehost/framehost.lib
+ELASTOS_LIBS += input/input.lib
+ELASTOS_LIBS += webcontents/webcontents.lib

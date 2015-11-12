@@ -15,5 +15,5 @@ ifeq "$(XDK_TARGET_PLATFORM)" "win32"
   endif
   SOURCES+=mark.c
 
-  LIBRARIES+=$(XDK_USER_LIB)/math0.lib
+  ELASTOS_LIBS+=$(XDK_USER_LIB)/math0.lib
 endif

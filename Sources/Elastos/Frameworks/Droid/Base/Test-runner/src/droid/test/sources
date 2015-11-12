@@ -21,4 +21,4 @@ SOURCES += TestCaseUtil.cpp
 SOURCES += TestFilePrinter.cpp
 SOURCES += TestPrinter.cpp
 
-LIBRARIES += suitebuilder/suitebuilder.lib
+ELASTOS_LIBS += suitebuilder/suitebuilder.lib

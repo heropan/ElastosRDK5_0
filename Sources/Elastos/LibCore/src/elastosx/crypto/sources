@@ -42,4 +42,4 @@ SOURCES += CSecretKeyFactoryHelper.cpp
 SOURCES += CSealedObject.cpp
 SOURCES += CNullCipher.cpp
 
-LIBRARIES += spec/spec.lib
+ELASTOS_LIBS += spec/spec.lib

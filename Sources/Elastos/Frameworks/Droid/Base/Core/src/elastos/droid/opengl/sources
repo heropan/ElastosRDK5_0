@@ -45,4 +45,4 @@ SOURCES += GLErrorWrapper.cpp
 SOURCES += EGLLogWrapper.cpp
 SOURCES += GLLogWrapper.cpp
 
-// LIBRARIES += gles/gles.lib
+// ELASTOS_LIBS += gles/gles.lib
