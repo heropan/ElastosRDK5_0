@@ -18,7 +18,7 @@ extern "C"
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
-namespace Ui {
+namespace Api {
 
 struct ElaSurfaceCallback
 {
@@ -35,29 +35,29 @@ struct ElaSurfaceCallback
     AutoPtr<IInterface> (*elastos_Surface_Constructor)(IInterface* p0);
 };
 
-void* Surface::ElaSurfaceCallback_Init()
+void* AwSurface::ElaSurfaceCallback_Init()
 {
     static ElaSurfaceCallback sElaSurfaceCallback;
 
-    sElaSurfaceCallback.elastos_Surface_finalize = &Surface::Finalize;
-    sElaSurfaceCallback.elastos_Surface_release = &Surface::ReleaseResource;
-    sElaSurfaceCallback.elastos_Surface_isValid = &Surface::IsValid;
-    sElaSurfaceCallback.elastos_Surface_lockCanvas = &Surface::LockCanvas;
-    sElaSurfaceCallback.elastos_Surface_unlockCanvasAndPost = &Surface::UnlockCanvasAndPost;
-    sElaSurfaceCallback.elastos_Surface_unlockCanvas = &Surface::UnlockCanvas;
-    sElaSurfaceCallback.elastos_Surface_describeContents = &Surface::DescribeContents;
-    sElaSurfaceCallback.elastos_Surface_readFromParcel = &Surface::ReadFromParcel;
-    sElaSurfaceCallback.elastos_Surface_writeToParcel = &Surface::WriteToParcel;
-    sElaSurfaceCallback.elastos_Surface_toString = &Surface::ToString;
-    sElaSurfaceCallback.elastos_Surface_Constructor = &Surface::Constructor;
+    sElaSurfaceCallback.elastos_Surface_finalize = &AwSurface::Finalize;
+    sElaSurfaceCallback.elastos_Surface_release = &AwSurface::ReleaseResources;
+    sElaSurfaceCallback.elastos_Surface_isValid = &AwSurface::IsValid;
+    sElaSurfaceCallback.elastos_Surface_lockCanvas = &AwSurface::LockCanvas;
+    sElaSurfaceCallback.elastos_Surface_unlockCanvasAndPost = &AwSurface::UnlockCanvasAndPost;
+    sElaSurfaceCallback.elastos_Surface_unlockCanvas = &AwSurface::UnlockCanvas;
+    sElaSurfaceCallback.elastos_Surface_describeContents = &AwSurface::DescribeContents;
+    sElaSurfaceCallback.elastos_Surface_readFromParcel = &AwSurface::ReadFromParcel;
+    sElaSurfaceCallback.elastos_Surface_writeToParcel = &AwSurface::WriteToParcel;
+    sElaSurfaceCallback.elastos_Surface_toString = &AwSurface::ToString;
+    sElaSurfaceCallback.elastos_Surface_Constructor = &AwSurface::Constructor;
 
     Elastos_Surface_InitCallback((Handle32)&sElaSurfaceCallback);
     return &sElaSurfaceCallback;
 }
 
-static void* sPElaSurfaceCallback = Surface::ElaSurfaceCallback_Init();
+static void* sPElaSurfaceCallback = AwSurface::ElaSurfaceCallback_Init();
 
-} // namespace Ui
+} // namespace Api
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

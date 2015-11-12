@@ -16,7 +16,7 @@ extern "C"
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
-namespace AndroidWebview {
+namespace Api {
 
 struct ElaByteBufferCallback
 {
@@ -24,20 +24,20 @@ struct ElaByteBufferCallback
     Int64 (*elastos_ByteBuffer_GetDirectBufferCapacity)(IInterface* obj);
 };
 
-void* ByteBuffer::ElaByteBufferCallback_Init()
+void* AwByteBuffer::ElaByteBufferCallback_Init()
 {
     static ElaByteBufferCallback sElaByteBufferCallback;
 
-    sElaByteBufferCallback. (*elastos_ByteBuffer_GetDirectBufferAddress = &ByteBuffer::GetDirectBufferAddress;
-    sElaByteBufferCallback.elastos_ByteBuffer_GetDirectBufferCapacity = &ByteBuffer::GetDirectBufferCapacity;
+    sElaByteBufferCallback.elastos_ByteBuffer_GetDirectBufferAddress = &AwByteBuffer::GetDirectBufferAddress;
+    sElaByteBufferCallback.elastos_ByteBuffer_GetDirectBufferCapacity = &AwByteBuffer::GetDirectBufferCapacity;
 
     Elastos_ByteBuffer_InitCallback((Handle32)&sElaByteBufferCallback);
     return &sElaByteBufferCallback;
 }
 
-static void* sPElaByteBufferCallback = ByteBuffer::ElaByteBufferCallback_Init();
+static void* sPElaByteBufferCallback = AwByteBuffer::ElaByteBufferCallback_Init();
 
-} // namespace AndroidWebview
+} // namespace Api
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

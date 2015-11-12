@@ -18,8 +18,7 @@ extern "C"
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
-namespace Content {
-namespace Browser {
+namespace Api {
 
 struct ElaHashSetCallback
 {
@@ -37,31 +36,30 @@ struct ElaHashSetCallback
     AutoPtr<IInterface> (*elastos_HashSet_ConstructorJUHS_JUC)(IInterface* extends);
 };
 
-void* HashSet::ElaHashSetCallback_Init()
+void* AwHashSet::ElaHashSetCallback_Init()
 {
     static ElaHashSetCallback sElaHashSetCallback;
 
-    sElaHashSetCallback.elastos_HashSet_add = &HashSet::Add;
-    sElaHashSetCallback.elastos_HashSet_clear = &HashSet::Clear;
-    sElaHashSetCallback.elastos_HashSet_clone = &HashSet::Clone;
-    sElaHashSetCallback.elastos_HashSet_contains = &HashSet::Contains;
-    sElaHashSetCallback.elastos_HashSet_isEmpty = &HashSet::IsEmpty;
-    sElaHashSetCallback.elastos_HashSet_iterator = &HashSet::Iterator;
-    sElaHashSetCallback.elastos_HashSet_remove = &HashSet::Remove;
-    sElaHashSetCallback.elastos_HashSet_size = &HashSet::Size;
-    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS = &HashSet::ConstructorJUHS;
-    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS_I = &HashSet::HashSet_ConstructorJUHS::I;
-    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS_I_F = &HashSet::HashSet_ConstructorJUHS_I::F;
-    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS_JUC = &HashSet::HashSet_ConstructorJUHS::JUC;
+    sElaHashSetCallback.elastos_HashSet_add = &AwHashSet::Add;
+    sElaHashSetCallback.elastos_HashSet_clear = &AwHashSet::Clear;
+    sElaHashSetCallback.elastos_HashSet_clone = &AwHashSet::Clone;
+    sElaHashSetCallback.elastos_HashSet_contains = &AwHashSet::Contains;
+    sElaHashSetCallback.elastos_HashSet_isEmpty = &AwHashSet::IsEmpty;
+    sElaHashSetCallback.elastos_HashSet_iterator = &AwHashSet::Iterator;
+    sElaHashSetCallback.elastos_HashSet_remove = &AwHashSet::Remove;
+    sElaHashSetCallback.elastos_HashSet_size = &AwHashSet::Size;
+    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS = &AwHashSet::ConstructorJUHS;
+    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS_I = &AwHashSet::ConstructorJUHSI;
+    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS_I_F = &AwHashSet::ConstructorJUHSIF;
+    sElaHashSetCallback.elastos_HashSet_ConstructorJUHS_JUC = &AwHashSet::ConstructorJUHSJUC;
 
     Elastos_HashSet_InitCallback((Handle32)&sElaHashSetCallback);
     return &sElaHashSetCallback;
 }
 
-static void* sPElaHashSetCallback = HashSet::ElaHashSetCallback_Init();
+static void* sPElaHashSetCallback = AwHashSet::ElaHashSetCallback_Init();
 
-} // namespace Browser
-} // namespace Content
+} // namespace Api
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

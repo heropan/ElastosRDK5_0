@@ -3,7 +3,8 @@
 //so the type definition used in this file will be found
 #ifndef ELASTOS_NATIVEWINDOW_CALLBACK_DEC_HH
 #define ELASTOS_NATIVEWINDOW_CALLBACK_DEC_HH
-#include "elastos/native_window.h"
+//#include "elastos/native_window.h"
+#include <android/native_window.h>
 
 //the implementation for below functioin refer to frameworks/base/core/jni/android_view_Surface.cpp:android_view_Surface_getSurface
 //the implementation should be defined in Elastos/Frameworks/Droid/Base/Core/inc/view/CSurface.h
@@ -30,26 +31,26 @@ extern "C"
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
-namespace Base {
+namespace Api {
 
 struct ElaNativeWindowCallback
 {
     ANativeWindow* (*elastos_NativeWindow_GetFromSurface)(IInterface* obj);
 };
 
-void* NativeWindow::ElaNativeWindowCallback_Init()
+void* AwNativeWindow::ElaNativeWindowCallback_Init()
 {
     static ElaNativeWindowCallback sElaNativeWindowCallback;
 
-    sElaNativeWindowCallback. (*elastos_NativeWindow_GetFromSurface = &NativeWindow::GetFromSurface;
+    sElaNativeWindowCallback.elastos_NativeWindow_GetFromSurface = &AwNativeWindow::GetFromSurface;
 
     Elastos_NativeWindow_InitCallback((Handle32)&sElaNativeWindowCallback);
     return &sElaNativeWindowCallback;
 }
 
-static void* sPElaNativeWindowCallback = NativeWindow::ElaNativeWindowCallback_Init();
+static void* sPElaNativeWindowCallback = AwNativeWindow::ElaNativeWindowCallback_Init();
 
-} // namespace Base
+} // namespace Api
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

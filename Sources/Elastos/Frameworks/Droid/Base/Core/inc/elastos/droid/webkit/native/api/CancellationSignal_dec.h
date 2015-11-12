@@ -18,8 +18,9 @@ extern "C"
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
-namespace AndroidWebview {
+namespace Api {
 
+//TODO no user found for this callback function in chromium_org
 struct ElaCancellationSignalCallback
 {
     Boolean (*elastos_CancellationSignal_isCanceled)(IInterface* obj);
@@ -29,23 +30,23 @@ struct ElaCancellationSignalCallback
     AutoPtr<IInterface> (*elastos_CancellationSignal_Constructor)();
 };
 
-void* CancellationSignal::ElaCancellationSignalCallback_Init()
+void* AwCancellationSignal::ElaCancellationSignalCallback_Init()
 {
     static ElaCancellationSignalCallback sElaCancellationSignalCallback;
 
-    sElaCancellationSignalCallback.elastos_CancellationSignal_isCanceled = &CancellationSignal::IsCanceled;
-    sElaCancellationSignalCallback.elastos_CancellationSignal_throwIfCanceled = &CancellationSignal::ThrowIfCanceled;
-    sElaCancellationSignalCallback.elastos_CancellationSignal_cancel = &CancellationSignal::Cancel;
-    sElaCancellationSignalCallback.elastos_CancellationSignal_setOnCancelListener = &CancellationSignal::SetOnCancelListener;
-    sElaCancellationSignalCallback.elastos_CancellationSignal_Constructor = &CancellationSignal::Constructor;
-
-    Elastos_CancellationSignal_InitCallback((Handle32)&sElaCancellationSignalCallback);
+    sElaCancellationSignalCallback.elastos_CancellationSignal_isCanceled = &AwCancellationSignal::IsCanceled;
+    sElaCancellationSignalCallback.elastos_CancellationSignal_throwIfCanceled = &AwCancellationSignal::ThrowIfCanceled;
+    sElaCancellationSignalCallback.elastos_CancellationSignal_cancel = &AwCancellationSignal::Cancel;
+    sElaCancellationSignalCallback.elastos_CancellationSignal_setOnCancelListener = &AwCancellationSignal::SetOnCancelListener;
+    sElaCancellationSignalCallback.elastos_CancellationSignal_Constructor = &AwCancellationSignal::Constructor;
+    //no user for these callbacks in chromium.so
+    //Elastos_CancellationSignal_InitCallback((Handle32)&sElaCancellationSignalCallback);
     return &sElaCancellationSignalCallback;
 }
 
-static void* sPElaCancellationSignalCallback = CancellationSignal::ElaCancellationSignalCallback_Init();
+//static void* sPElaCancellationSignalCallback = AwCancellationSignal::ElaCancellationSignalCallback_Init();
 
-} // namespace AndroidWebview
+} // namespace Api
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos

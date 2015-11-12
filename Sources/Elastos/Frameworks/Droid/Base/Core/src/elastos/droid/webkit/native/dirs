@@ -1,4 +1,5 @@
-DIRS = android_webview
+DIRS = api
+DIRS += android_webview
 DIRS += base
 DIRS += components
 DIRS += content
