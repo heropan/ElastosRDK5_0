@@ -3,16 +3,24 @@
 #define __ELASTOS_DROID_VIEW_CGRAVITY_H__
 
 #include "_Elastos_Droid_View_CGravity.h"
+#include "elastos/droid/view/Gravity.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Graphics::IRect;
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CGravity)
+    , public Singleton
+    , public IGravity
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Apply a gravity constant to an object. This suppose that the layout direction is LTR.
      *

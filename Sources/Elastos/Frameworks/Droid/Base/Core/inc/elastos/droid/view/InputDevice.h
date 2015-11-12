@@ -359,7 +359,7 @@ public:
      */
     CARAPI HasKeys(
         /* [in] */ ArrayOf<Int32>* keys,
-        /* [out] */ ArrayOf<Boolean>** rsts);
+        /* [out, callee] */ ArrayOf<Boolean>** rsts);
 
     /**
      * Gets information about the range of values for a particular {@link MotionEvent} axis.

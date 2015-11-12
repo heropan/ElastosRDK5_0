@@ -5,6 +5,9 @@
 namespace Elastos {
 namespace Droid {
 namespace View {
+CAR_SINGLETON_IMPL(CGravity)
+
+CAR_INTERFACE_IMPL(CGravity, Singleton, IGravity)
 
 ECode CGravity::Apply(
     /* [in] */ Int32 gravity,

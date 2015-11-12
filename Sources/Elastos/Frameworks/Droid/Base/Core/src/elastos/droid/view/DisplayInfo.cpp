@@ -12,6 +12,8 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
+CAR_INTERFACE_IMPL_2(DisplayInfo, Object, IDisplayInfo, IParcelable)
+
 DisplayInfo::DisplayInfo()
     : mLayerStack(0)
     , mFlags(0)
@@ -30,6 +32,100 @@ DisplayInfo::DisplayInfo()
     , mPhysicalXDpi(0.0f)
     , mPhysicalYDpi(0.0f)
 {
+}
+
+ECode DisplayInfo::constructor()
+{
+    return NOERROR;
+}
+
+ECode DisplayInfo::constructor(
+    /* [in] */ IDisplayInfo* other)
+{
+    return CopyFrom(other);
+}
+
+ECode DisplayInfo::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    source->ReadInt32(&mLayerStack);
+    source->ReadInt32(&mFlags);
+    source->ReadInt32(&mType);
+    source->ReadString(&mAddress);
+    source->ReadString(&mName);
+    source->ReadInt32(&mAppWidth);
+    source->ReadInt32(&mAppHeight);
+    source->ReadInt32(&mSmallestNominalAppWidth);
+    source->ReadInt32(&mSmallestNominalAppHeight);
+    source->ReadInt32(&mLargestNominalAppWidth);
+    source->ReadInt32(&mLargestNominalAppHeight);
+    source->ReadInt32(&mLogicalWidth);
+    source->ReadInt32(&mLogicalHeight);
+    source->ReadInt32(&mOverscanLeft);
+    source->ReadInt32(&mOverscanTop);
+    source->ReadInt32(&mOverscanRight);
+    source->ReadInt32(&mOverscanBottom);
+    source->ReadInt32(&mRotation);
+    source->ReadFloat(&mRefreshRate);
+
+    Int32 count;
+    source->ReadInt32(&count);
+    mSupportedRefreshRates = ArrayOf<Float>::Alloc(count);
+    for (Int32 i = 0; i < count; i++) {
+        Float tmp;
+        source->ReadFloat(&tmp);
+        mSupportedRefreshRates->Set(i, tmp);
+    };
+
+    source->ReadInt32(&mLogicalDensityDpi);
+    source->ReadFloat(&mPhysicalXDpi);
+    source->ReadFloat(&mPhysicalYDpi);
+    source->ReadInt64(&mAppVsyncOffsetNanos);
+    source->ReadInt64(&mPresentationDeadlineNanos);
+    source->ReadInt32(&mState);
+    source->ReadInt32(&mOwnerUid);
+    source->ReadString(&mOwnerPackageName);
+    return NOERROR;
+}
+
+ECode DisplayInfo::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    dest->WriteInt32(mLayerStack);
+    dest->WriteInt32(mFlags);
+    dest->WriteInt32(mType);
+    dest->WriteString(mAddress);
+    dest->WriteString(mName);
+    dest->WriteInt32(mAppWidth);
+    dest->WriteInt32(mAppHeight);
+    dest->WriteInt32(mSmallestNominalAppWidth);
+    dest->WriteInt32(mSmallestNominalAppHeight);
+    dest->WriteInt32(mLargestNominalAppWidth);
+    dest->WriteInt32(mLargestNominalAppHeight);
+    dest->WriteInt32(mLogicalWidth);
+    dest->WriteInt32(mLogicalHeight);
+    dest->WriteInt32(mOverscanLeft);
+    dest->WriteInt32(mOverscanTop);
+    dest->WriteInt32(mOverscanRight);
+    dest->WriteInt32(mOverscanBottom);
+    dest->WriteInt32(mRotation);
+    dest->WriteFloat(mRefreshRate);
+
+    Int32 count = mSupportedRefreshRates->GetLength();
+    dest->WriteInt32(count);
+    for (Int32 i = 0; i < count; i++) {
+        dest->WriteFloat((*mSupportedRefreshRates)[i]);
+    }
+
+    dest->WriteInt32(mLogicalDensityDpi);
+    dest->WriteFloat(mPhysicalXDpi);
+    dest->WriteFloat(mPhysicalYDpi);
+    dest->WriteInt64(mAppVsyncOffsetNanos);
+    dest->WriteInt64(mPresentationDeadlineNanos);
+    dest->WriteInt32(mState);
+    dest->WriteInt32(mOwnerUid);
+    dest->WriteString(mOwnerPackageName);
+    return NOERROR;
 }
 
 ECode DisplayInfo::GetLayerStack(
@@ -576,81 +672,6 @@ ECode DisplayInfo::CopyFrom(
     mState = other->mState;
     mOwnerUid = other->mOwnerUid;
     mOwnerPackageName = other->mOwnerPackageName;
-
-    return NOERROR;
-}
-
-ECode DisplayInfo::ReadFromParcel(
-    /* [in] */ IParcel* source)
-{
-    FAIL_RETURN(source->ReadInt32(&mLayerStack));
-    FAIL_RETURN(source->ReadInt32(&mFlags));
-    FAIL_RETURN(source->ReadInt32(&mType));
-    FAIL_RETURN(source->ReadString(&mAddress));
-    FAIL_RETURN(source->ReadString(&mName));
-    FAIL_RETURN(source->ReadInt32(&mAppWidth));
-    FAIL_RETURN(source->ReadInt32(&mAppHeight));
-    FAIL_RETURN(source->ReadInt32(&mSmallestNominalAppWidth));
-    FAIL_RETURN(source->ReadInt32(&mSmallestNominalAppHeight));
-    FAIL_RETURN(source->ReadInt32(&mLargestNominalAppWidth));
-    FAIL_RETURN(source->ReadInt32(&mLargestNominalAppHeight));
-    FAIL_RETURN(source->ReadInt32(&mLogicalWidth));
-    FAIL_RETURN(source->ReadInt32(&mLogicalHeight));
-    FAIL_RETURN(source->ReadInt32(&mOverscanLeft));
-    FAIL_RETURN(source->ReadInt32(&mOverscanTop));
-    FAIL_RETURN(source->ReadInt32(&mOverscanRight));
-    FAIL_RETURN(source->ReadInt32(&mOverscanBottom));
-    FAIL_RETURN(source->ReadInt32(&mRotation));
-    FAIL_RETURN(source->ReadFloat(&mRefreshRate));
-    Handle32 array;
-    FAIL_RETURN(source->ReadArrayOf(&array));
-    mSupportedRefreshRates = reinterpret_cast<ArrayOf<Float>* >(array);
-    mSupportedRefreshRates->Release();
-    FAIL_RETURN(source->ReadInt32(&mLogicalDensityDpi));
-    FAIL_RETURN(source->ReadFloat(&mPhysicalXDpi));
-    FAIL_RETURN(source->ReadFloat(&mPhysicalYDpi));
-    FAIL_RETURN(source->ReadInt64(&mAppVsyncOffsetNanos));
-    FAIL_RETURN(source->ReadInt64(&mPresentationDeadlineNanos));
-    FAIL_RETURN(source->ReadInt32(&mState));
-    FAIL_RETURN(source->ReadInt32(&mOwnerUid));
-    FAIL_RETURN(source->ReadString(&mOwnerPackageName));
-    return NOERROR;
-}
-
-ECode DisplayInfo::WriteToParcel(
-    /* [in] */ IParcel* dest)
-{
-    FAIL_RETURN(dest->WriteInt32(mLayerStack));
-    FAIL_RETURN(dest->WriteInt32(mFlags));
-    FAIL_RETURN(dest->WriteInt32(mType));
-    FAIL_RETURN(dest->WriteString(mAddress));
-    FAIL_RETURN(dest->WriteString(mName));
-    FAIL_RETURN(dest->WriteInt32(mAppWidth));
-    FAIL_RETURN(dest->WriteInt32(mAppHeight));
-    FAIL_RETURN(dest->WriteInt32(mSmallestNominalAppWidth));
-    FAIL_RETURN(dest->WriteInt32(mSmallestNominalAppHeight));
-    FAIL_RETURN(dest->WriteInt32(mLargestNominalAppWidth));
-    FAIL_RETURN(dest->WriteInt32(mLargestNominalAppHeight));
-    FAIL_RETURN(dest->WriteInt32(mLogicalWidth));
-    FAIL_RETURN(dest->WriteInt32(mLogicalHeight));
-    FAIL_RETURN(dest->WriteInt32(mOverscanLeft));
-    FAIL_RETURN(dest->WriteInt32(mOverscanTop));
-    FAIL_RETURN(dest->WriteInt32(mOverscanRight));
-    FAIL_RETURN(dest->WriteInt32(mOverscanBottom));
-    FAIL_RETURN(dest->WriteInt32(mRotation));
-    FAIL_RETURN(dest->WriteFloat(mRefreshRate));
-    Handle32 array;
-    array = reinterpret_cast<Handle32>(mSupportedRefreshRates.Get());
-    FAIL_RETURN(dest->WriteArrayOf(array));
-    REFCOUNT_ADD(mSupportedRefreshRates)
-    FAIL_RETURN(dest->WriteInt32(mLogicalDensityDpi));
-    FAIL_RETURN(dest->WriteFloat(mPhysicalXDpi));
-    FAIL_RETURN(dest->WriteFloat(mPhysicalYDpi));
-    FAIL_RETURN(dest->WriteInt64(mAppVsyncOffsetNanos));
-    FAIL_RETURN(dest->WriteInt64(mPresentationDeadlineNanos));
-    FAIL_RETURN(dest->WriteInt32(mState));
-    FAIL_RETURN(dest->WriteInt32(mOwnerUid));
-    FAIL_RETURN(dest->WriteString(mOwnerPackageName));
 
     return NOERROR;
 }

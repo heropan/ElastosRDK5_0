@@ -3,14 +3,23 @@
 #define __ELASTOS_DROID_VIEW_CINPUTCHANNELHELPER_H__
 
 #include "_Elastos_Droid_View_CInputChannelHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CInputChannelHelper)
+    , public Singleton
+    , public IInputChannelHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Creates a new input channel pair.  One channel should be provided to the input
      * dispatcher and the other to the application's input queue.
@@ -19,8 +28,7 @@ public:
      */
     CARAPI OpenInputChannelPair(
         /* [in] */ const String& name,
-        /* [out] */ IInputChannel** inputChannel0,
-        /* [out] */ IInputChannel** inputChannel1);
+        /* [out, callee] */ ArrayOf<IInputChannel*>** icp);
 };
 
 } // namespace View

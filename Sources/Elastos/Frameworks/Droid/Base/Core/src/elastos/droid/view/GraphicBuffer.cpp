@@ -1,8 +1,9 @@
 #include "elastos/droid/view/GraphicBuffer.h"
-#include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/graphics/NativeCanvas.h"
 #include "elastos/droid/graphics/Canvas.h"
 #include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/view/CGraphicBuffer.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #include <binder/Parcel.h>
 
@@ -64,6 +65,11 @@ CAR_INTERFACE_IMPL_2(GraphicBuffer, Object, IGraphicBuffer, IParcelable)
 GraphicBuffer::GraphicBuffer()
 {
     mInit = FALSE;
+}
+
+ECode GraphicBuffer::constructor()
+{
+    return NOERROR;
 }
 
 ECode GraphicBuffer::ReadFromParcel(
@@ -304,8 +310,7 @@ ECode GraphicBuffer::Create(
 {
     Int64 nativeObject = nCreateGraphicBuffer(width, height, format, usage);
     if (nativeObject != 0) {
-        *buf = new GraphicBuffer(width, height, format, usage, nativeObject);
-        REFCOUNT_ADD(*buf)
+        CGraphicBuffer::New(width, height, format, usage, nativeObject, buf);
         return NOERROR;
     }
     *buf = NULL;
@@ -351,91 +356,35 @@ ECode GraphicBuffer::nWriteGraphicBufferToParcel(
 {
     GraphicBufferWrapper* wrapper =
                 reinterpret_cast<GraphicBufferWrapper*>(nativeObject);
-
-    sp<NativeGraphicBuffer> buffer = wrapper->buffer;
-    Int32 flattenedSize = buffer->getFlattenedSize();
-    AutoPtr<ArrayOf<Int32> > arrayBuf = ArrayOf<Int32>::Alloc(flattenedSize);
-    (*arrayBuf)[0] = 'GBFR';
-    (*arrayBuf)[1] = buffer->width;
-    (*arrayBuf)[2] = buffer->height;
-    (*arrayBuf)[3] = buffer->stride;
-    (*arrayBuf)[4] = buffer->format;
-    (*arrayBuf)[5] = buffer->usage;
-    (*arrayBuf)[6] = static_cast<int32_t>(buffer->getId() >> 32);
-    (*arrayBuf)[7] = static_cast<int32_t>(buffer->getId() & 0xFFFFFFFFull);
-    (*arrayBuf)[8] = 0;
-    (*arrayBuf)[9] = 0;
-    native_handle_t const* const h = buffer->handle;
-    if (h) {
-        (*arrayBuf)[8] = h->numFds;
-        (*arrayBuf)[9] = h->numInts;
-        const int* data = h->data + h->numFds;
-        for (Int32 i = 0; i < h->numInts; i++) {
-            (*arrayBuf)[10 + i] = data[i];
-        }
-    }
-
-    Handle32 bufHandle = reinterpret_cast<Handle32>(arrayBuf.Get());
-    FAIL_RETURN(dest->WriteArrayOf(bufHandle))
-
-    for (size_t i = 0; i < buffer->getFdCount(); i++) {
-        FAIL_RETURN(dest->WriteDupFileDescriptor(h->data[i]))
+    android::Parcel* parcel;
+    dest->GetElementPayload((Handle32*)&parcel);
+    if (parcel) {
+        parcel->write(*wrapper->buffer);
     }
 
     return NOERROR;
 }
 
 ECode GraphicBuffer::nReadGraphicBufferFromParcel(
-    /* [in] */ IParcel* in,
+    /* [in] */ IParcel* source,
     /* [out] */ Int64* nativeObject)
 {
-    sp<NativeGraphicBuffer> buffer = new NativeGraphicBuffer();
-    Handle32 arrayHandle;
-    in->ReadArrayOf(&arrayHandle);
-    AutoPtr<ArrayOf<Int32> > array = reinterpret_cast<ArrayOf<Int32>* >(arrayHandle);
+    VALIDATE_NOT_NULL(nativeObject)
+    *nativeObject = 0;
 
-    if((*array)[0] != 'GBFR')
-        return E_ILLEGAL_STATE_EXCEPTION;
-    const Int32 numFds  = (*array)[8];
-    const Int32 numInts = (*array)[9];
+    if (source == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    if (numFds || numInts) {
-        buffer->width  = (*array)[1];
-        buffer->height = (*array)[2];
-        buffer->stride = (*array)[3];
-        buffer->format = (*array)[4];
-        buffer->usage  = (*array)[5];
-        native_handle* h = native_handle_create(numFds, numInts);
-        Int32 fds[numFds];
-
-        android::status_t err = android::NO_ERROR;
-        for (Int32 i = 0 ; i < numFds && err == android::NO_ERROR ; i++) {
-            Int32 oldfd;
-            in->ReadFileDescriptor(&oldfd);
-            fds[i] = dup(oldfd);
-            if (fds[i] < 0) {
-                int dupErrno = errno;
-                err = android::BAD_VALUE;
-                int flags = fcntl(oldfd, F_GETFD);
-                int fcntlErrno = errno;
-                ALOGE("dup failed in GraphicBuffer::nReadGraphicBufferFromParcel, fd %zu of %zu\n"
-                    "  dup(%d) = %d [errno: %d (%s)]\n"
-                    "  fcntl(%d, F_GETFD) = %d [errno: %d (%s)]\n",
-                    i, numFds,
-                    oldfd, fds[i], dupErrno, strerror(dupErrno),
-                    oldfd, flags, fcntlErrno, strerror(fcntlErrno));
-                return E_ILLEGAL_STATE_EXCEPTION;
-            }
-        }
-
-        memcpy(h->data,          fds,     numFds*sizeof(int));
-        memcpy(h->data + numFds, &((*array)[10]), numInts*sizeof(int));
-        buffer->handle = h;
-    } else {
-        buffer->width = buffer->height = buffer->stride = buffer->format = buffer->usage = 0;
-        buffer->handle = NULL;
     }
-    *nativeObject = reinterpret_cast<Int64>(new GraphicBufferWrapper(buffer));
+    android::Parcel* parcel;
+    source->GetElementPayload((Handle32*)&parcel);
+
+    if (parcel) {
+        sp<android::GraphicBuffer> buffer = new android::GraphicBuffer();
+        parcel->read(*buffer);
+        *nativeObject = reinterpret_cast<Int64>(new GraphicBufferWrapper(buffer));
+    }
+
     return NOERROR;
 }
 
@@ -517,7 +466,7 @@ Boolean GraphicBuffer::nUnlockCanvasAndPost(
     return FALSE;
 }
 
-GraphicBuffer::GraphicBuffer(
+CARAPI GraphicBuffer::constructor(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 format,
@@ -530,6 +479,7 @@ GraphicBuffer::GraphicBuffer(
     mUsage = usage;
     mNativeObject = nativeObject;
     mInit = TRUE;
+    return NOERROR;
 }
 
 } // namespace View

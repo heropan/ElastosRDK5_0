@@ -175,7 +175,7 @@ module
     // interface Elastos.Droid.Internal.View.IIInputMethodSession;
     interface Elastos.Droid.Os.IBinder;
     // interface Elastos.Droid.Os.ILooper;
-    // interface Elastos.Droid.Os.IHandler;
+     interface Elastos.Droid.Os.IHandler;
     // interface Elastos.Droid.View.IKeyEventCallback;
     // interface Elastos.Droid.View.IInputMethodCallback;
     // interface Elastos.Droid.View.IWindowManagerPolicyThread;
@@ -201,6 +201,10 @@ module
     interface Elastos.Droid.View.Accessibility.ICaptioningManagerCaptionStyle;
     interface Elastos.Droid.View.Accessibility.ICaptioningManagerCaptionStyleHelper;
     interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnectionCallback;
+    interface Elastos.Droid.Hardware.Display.IDisplayManagerGlobal;
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Graphics.ISurfaceTexture;
+
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
     // interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
@@ -224,22 +228,34 @@ module
     namespace Elastos {
     namespace Droid {
     namespace View {
-    //     singleton class CChoreographerHelper {
-    //         interface IChoreographerHelper;
-    //     }
-    //     /**
-    //      * Describes the characteristics of a particular logical display.
-    //      * @hide
-    //      */
-    //     class CDisplayInfo {
-    //         constructor();
 
-    //         constructor(
-    //             [in] IDisplayInfo* other);
+    singleton class CChoreographerHelper {
+        interface IChoreographerHelper;
+    }
+    /**
+    * Describes the characteristics of a particular logical display.
+    * @hide
+    */
 
-    //         interface IDisplayInfo;
-    //         interface IParcelable;
-    //     }
+    class CDisplay {
+        constructor(
+            [in] IDisplayManagerGlobal* global,
+            [in] Int32 displayId,
+            [in] IDisplayInfo* displayInfo,
+            [in] IDisplayAdjustments* daj);
+
+        interface IDisplay;
+    }
+
+     class CDisplayInfo {
+         constructor();
+
+         constructor(
+             [in] IDisplayInfo* other);
+
+         interface IDisplayInfo;
+         interface IParcelable;
+     }
 
     //     class CDisplayManagerAw {
     //         constructor();
@@ -288,27 +304,40 @@ module
     //         interface IDragShadowBuilder;
     //     }
 
-    //     singleton class CGravity {
-    //         interface IGravity;
-    //     }
+    singleton class CGravity {
+        interface IGravity;
+    }
 
-    //     /**
-    //      * An input channel specifies the file descriptors used to send input events to
-    //      * a window in another process.  It is Parcelable so that it can be sent
-    //      * to the process that is to receive events.  Only one thread should be reading
-    //      * from an InputChannel at a time.
-    //      * @hide
-    //      */
-    //     class CInputChannel {
-    //         constructor();
+    class CGraphicBuffer {
+        constructor();
 
-    //         interface IInputChannel;
-    //         interface IParcelable;
-    //     }
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 format,
+            [in] Int32 usage,
+            [in] Int64 nativeObject);
 
-    //     singleton class CInputChannelHelper {
-    //         interface IInputChannelHelper;
-    //     }
+        interface IGraphicBuffer;
+    }
+
+     /**
+      * An input channel specifies the file descriptors used to send input events to
+      * a window in another process.  It is Parcelable so that it can be sent
+      * to the process that is to receive events.  Only one thread should be reading
+      * from an InputChannel at a time.
+      * @hide
+      */
+     class CInputChannel {
+         constructor();
+
+         interface IInputChannel;
+         interface IParcelable;
+     }
+
+     singleton class CInputChannelHelper {
+         interface IInputChannelHelper;
+     }
 
     //     /**
     //      * An input queue provides a mechanism for an application to receive incoming
@@ -336,23 +365,37 @@ module
     //      * the appropriate interpretation.
     //      * </p>
     //      */
-    //     class CInputDevice {
-    //         constructor();
+     class CInputDevice {
+         constructor();
 
-    //         constructor(
-    //             [in] Int32 id,
-    //             [in] Int32 generation,
-    //             [in] String name,
-    //             [in] String descriptor,
-    //             [in] Boolean isExternal,
-    //             [in] Int32 sources,
-    //             [in] Int32 keyboardType,
-    //             [in] IKeyCharacterMap* keyCharacterMap,
-    //             [in] Boolean hasVibrator);
+         constructor(
+            [in] Int32 id,
+            [in] Int32 generation,
+            [in] Int32 controllerNumber,
+            [in] String name,
+            [in] Int32 vendorId,
+            [in] Int32 productId,
+            [in] String descriptor,
+            [in] Boolean isExternal,
+            [in] Int32 sources,
+            [in] Int32 keyboardType,
+            [in] IKeyCharacterMap* keyCharacterMap,
+            [in] Boolean hasVibrator,
+            [in] Boolean hasButtonUnderPad);
 
-    //         interface IInputDevice;
-    //         interface IParcelable;
-    //     }
+         interface IInputDevice;
+         interface IParcelable;
+     }
+
+    class CTouchDelegate {
+        constructor();
+
+        constructor(
+            [in] IRect* bounds,
+            [in] IView* delegateView);
+
+        interface ITouchDelegate;
+    }
 
     //     singleton class CInputDeviceHelper {
     //         interface IInputDeviceHelper;
@@ -621,11 +664,18 @@ module
     //         interface IPointerIconHelper;
     //     }
 
-    //     class CDragEvent {
-    //         constructor();
-    //         interface IDragEvent;
-    //         interface IParcelable;
-    //     }
+     class CDragEvent {
+         constructor();
+
+         interface IDragEvent;
+         interface IParcelable;
+     }
+
+     singleton class CFocusFinderHelper {
+         constructor();
+
+         interface IFocusFinderHelper;
+     }
 
     //     singleton class CDragEventHelper {
     //         interface IDragEventHelper;
@@ -717,68 +767,75 @@ module
     //         interface IAccessibilityInteractionController;
     //     }
 
-    //     class CSurface {
-    //         /**
-    //          * Create an empty surface, which will later be filled in by readFromParcel().
-    //          * @hide
-    //          */
-    //         constructor();
+     class CSurface {
+         /**
+          * Create an empty surface, which will later be filled in by readFromParcel().
+          * @hide
+          */
+         constructor();
 
-    //         /**
-    //          * Create a surface with a name.
-    //          *
-    //          * The surface creation flags specify what kind of surface to create and
-    //          * certain options such as whether the surface can be assumed to be opaque
-    //          * and whether it should be initially hidden.  Surfaces should always be
-    //          * created with the {@link #HIDDEN} flag set to ensure that they are not
-    //          * made visible prematurely before all of the surface's properties have been
-    //          * configured.
-    //          *
-    //          * Good practice is to first create the surface with the {@link #HIDDEN} flag
-    //          * specified, open a transaction, set the surface layer, layer stack, alpha,
-    //          * and position, call {@link #show} if appropriate, and close the transaction.
-    //          *
-    //          * @param session The surface session, must not be null.
-    //          * @param name The surface name, must not be null.
-    //          * @param w The surface initial width.
-    //          * @param h The surface initial height.
-    //          * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
-    //          * in the creation flags.
-    //          * @hide
-    //          */
-    //         constructor(
-    //             [in] ISurfaceSession* session,
-    //             [in] String name,
-    //             [in] Int32 w,
-    //             [in] Int32 h,
-    //             [in] Int32 format,
-    //             [in] Int32 flags);
+         /**
+          * Create a surface with a name.
+          *
+          * The surface creation flags specify what kind of surface to create and
+          * certain options such as whether the surface can be assumed to be opaque
+          * and whether it should be initially hidden.  Surfaces should always be
+          * created with the {@link #HIDDEN} flag set to ensure that they are not
+          * made visible prematurely before all of the surface's properties have been
+          * configured.
+          *
+          * Good practice is to first create the surface with the {@link #HIDDEN} flag
+          * specified, open a transaction, set the surface layer, layer stack, alpha,
+          * and position, call {@link #show} if appropriate, and close the transaction.
+          *
+          * @param session The surface session, must not be null.
+          * @param name The surface name, must not be null.
+          * @param w The surface initial width.
+          * @param h The surface initial height.
+          * @param flags The surface creation flags.  Should always include {@link #HIDDEN}
+          * in the creation flags.
+          * @hide
+          */
+         constructor(
+             [in] Int64 nativeObject);
 
-    //         /**
-    //          * Create Surface from a {@link SurfaceTexture}.
-    //          *
-    //          * Images drawn to the Surface will be made available to the {@link
-    //          * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
-    //          * SurfaceTexture#updateTexImage}.
-    //          *
-    //          * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
-    //          * Surface.
-    //          */
-    //         constructor(
-    //             [in] ISurfaceTexture* surfaceTexture);
+         /**
+          * Create Surface from a {@link SurfaceTexture}.
+          *
+          * Images drawn to the Surface will be made available to the {@link
+          * SurfaceTexture}, which can attach them to an OpenGL ES texture via {@link
+          * SurfaceTexture#updateTexImage}.
+          *
+          * @param surfaceTexture The {@link SurfaceTexture} that is updated by this
+          * Surface.
+          */
+         constructor(
+             [in] ISurfaceTexture* surfaceTexture);
 
-    //         interface ISurface;
-    //         interface IParcelable;
-    //     }
+         interface ISurface;
+         interface IParcelable;
+     }
 
-    //     singleton class CSurfaceHelper {
-    //         interface ISurfaceHelper;
-    //     }
+     singleton class CSurfaceControlHelper {
+         interface ISurfaceControlHelper;
+     }
 
     class CSurfaceSession {
         constructor();
 
         interface ISurfaceSession;
+    }
+
+    class CSurfaceControl {
+        constructor(
+            [in] ISurfaceSession* session,
+            [in] String name,
+            [in] Int32 w,
+            [in] Int32 h,
+            [in] Int32 format,
+            [in] Int32 flags);
+
+        interface ISurfaceControl;
     }
 
     class CPhysicalDisplayInfo {
@@ -812,13 +869,13 @@ module
     //         interface ISurfaceViewHelper;
     //     }
 
-    //     class CSurfaceViewWindow {
-    //         constructor(
-    //             [in] Handle32 surfaceView);
+     class CSurfaceViewWindow {
+         constructor(
+             [in] ISurfaceView* surfaceView);
 
-    //         interface IIWindow;
-    //         interface IBinder;
-    //     }
+         interface IIWindow;
+         interface IBinder;
+     }
 
     //     [local]
     //     class CViewRootImplW {
@@ -986,32 +1043,33 @@ module
     //     interface IContextThemeWrapper;
     // }
 
-    // [local]
-    // class CGestureDetector {
-    //     constructor(
-    //         [in] IOnGestureListener* listener,
-    //         [in] IHandler* handler);
+    [local]
+    class CGestureDetector {
+        constructor(
+            [in] IOnGestureListener* listener,
+            [in] IHandler* handler);
 
-    //     constructor(
-    //         [in] IOnGestureListener* listener);
+        constructor(
+            [in] IOnGestureListener* listener);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IOnGestureListener* listener);
+        constructor(
+            [in] IContext* ctx,
+            [in] IOnGestureListener* listener);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IOnGestureListener* listener,
-    //         [in] IHandler* handler);
+        constructor(
+            [in] IContext* ctx,
+            [in] IOnGestureListener* listener,
+            [in] IHandler* handler);
 
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IOnGestureListener* listener,
-    //         [in] IHandler* handler,
-    //         [in] Boolean unused);
+        constructor(
+            [in] IContext* ctx,
+            [in] IOnGestureListener* listener,
+            [in] IHandler* handler,
+            [in] Boolean unused);
 
-    //     interface IGestureDetector;
-    // }
+        interface IGestureDetector;
+    }
+
 
     // [local]
     // class CScaleGestureDetector {

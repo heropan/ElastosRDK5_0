@@ -4,11 +4,13 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -39,7 +41,9 @@ public:
      *
      * @hide
      */
-    Display(
+    Display();
+
+    CARAPI constructor(
         /* [in] */ IDisplayManagerGlobal* global,
         /* [in] */ Int32 displayId,
         /* [in] */ IDisplayInfo* displayInfo /*not NULL*/,

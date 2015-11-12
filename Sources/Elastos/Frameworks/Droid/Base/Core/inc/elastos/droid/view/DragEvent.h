@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
-#define __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
+#ifndef __ELASTOS_DROID_VIEW_DRAGEVENT_H__
+#define __ELASTOS_DROID_VIEW_DRAGEVENT_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
@@ -21,6 +21,19 @@ class DragEvent
 {
 public:
     CAR_INTERFACE_DECL()
+
+    CARAPI constructor();
+
+    DragEvent();
+
+    CARAPI Init(
+        /* [in] */ Int32 action,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ IClipDescription* description,
+        /* [in] */ IClipData* data,
+        /* [in] */ IInterface* localState,
+        /* [in] */ Boolean result);
 
     /**
      * Inspect the action value of this event.
@@ -174,17 +187,6 @@ public:
         /* [in] */ IClipDescription* description,
         /* [in] */ IClipData* data,
         /* [in] */ Boolean result);
-private:
-    DragEvent();
-
-    CARAPI Init(
-        /* [in] */ Int32 action,
-        /* [in] */ Float x,
-        /* [in] */ Float y,
-        /* [in] */ IClipDescription* description,
-        /* [in] */ IClipData* data,
-        /* [in] */ IInterface* localState,
-        /* [in] */ Boolean result);
 
 private:
     static const Int32 MAX_RECYCLED = 10;
@@ -207,4 +209,4 @@ private:
 }
 }
 
-#endif // __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
+#endif // __ELASTOS_DROID_VIEW_DRAGEVENT_H__

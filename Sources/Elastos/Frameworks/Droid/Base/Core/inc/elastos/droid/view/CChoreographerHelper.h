@@ -3,14 +3,22 @@
 #define __ELASTOS_DROID_VIEW_CCHOREOGRAPHERHELPER_H__
 
 #include "_Elastos_Droid_View_CChoreographerHelper.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
 CarClass(CChoreographerHelper)
+    , public Singleton
+    , public IChoreographerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
     /**
      * Gets the choreographer for the calling thread.  Must be called from
      * a thread that already has a {@link android.os.Looper} associated with it.

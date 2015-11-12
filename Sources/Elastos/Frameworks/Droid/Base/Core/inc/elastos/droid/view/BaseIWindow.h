@@ -3,14 +3,16 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_BASEIWINDOW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elautoptr.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::View::IWindowSession;
 using Elastos::Droid::View::IDragEvent;
+using Elastos::Droid::View::IIWindow;
 
 namespace Elastos {
 namespace Droid {
@@ -18,18 +20,22 @@ namespace Internal {
 namespace View {
 
 class BaseIWindow
+    : public Object
+    , public IIWindow
+    , public IBinder
 {
 public:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid) = 0;
+    CAR_INTERFACE_DECL()
 
     virtual CARAPI SetSession(
         /* [in] */ IWindowSession* session);
 
     virtual CARAPI Resized(
         /* [in] */ IRect* frame,
+        /* [in] */ IRect* overscanInsets,
         /* [in] */ IRect* contentInsets,
         /* [in] */ IRect* visibleInsets,
+        /* [in] */ IRect* stableInsets,
         /* [in] */ Boolean reportDraw,
         /* [in] */ IConfiguration* newConfig);
 

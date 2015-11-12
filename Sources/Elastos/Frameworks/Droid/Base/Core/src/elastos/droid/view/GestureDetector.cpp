@@ -93,6 +93,8 @@ ECode GestureDetector::GestureHandler::HandleMessage(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(GestureDetector, Object, IGestureDetector)
+
 GestureDetector::GestureDetector()
     : mTouchSlopSquare(0)
     , mDoubleTapTouchSlopSquare(0)
@@ -147,9 +149,9 @@ ECode GestureDetector::constructor(
    /* [in] */ IOnGestureListener* listener,
    /* [in] */ IHandler* handler)
 {
-    if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
-        mInputEventConsistencyVerifier = new InputEventConsistencyVerifier(this->Probe(EIID_IGestureDetector), 0);
-    }
+    // if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
+        // mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IGestureDetector*)this, 0);
+    // }  zhangjingcheng
 
     if (handler != NULL) {
         AutoPtr<ILooper> looper;

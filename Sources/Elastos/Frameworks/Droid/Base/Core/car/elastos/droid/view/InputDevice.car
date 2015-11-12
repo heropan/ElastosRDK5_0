@@ -109,6 +109,7 @@ module
      * @Involve
      * interface IParcelable
      */
+     [deprecated]
     interface IInputDevice {
 
         /**
@@ -582,9 +583,10 @@ module
          * @return An array of booleans where each member specifies whether the device is capable of
          * generating the keycode given by the corresponding value at the same index in the keys array.
          */
+
          HasKeys(
-            [in] ArrayOf<Int32> keys,
-            [out] Boolean* result);
+            [in] ArrayOf<Int32>* keys,
+            [out, callee] ArrayOf<Boolean>* result);
 
         /**
          * Gets information about the range of values for a particular {@link MotionEvent} axis.
@@ -663,7 +665,8 @@ module
             [in] Float min,
             [in] Float max,
             [in] Float flat,
-            [in] Float fuzz);
+            [in] Float fuzz,
+            [in] Float resolution);
 
         ToString(
             [out] String* str);

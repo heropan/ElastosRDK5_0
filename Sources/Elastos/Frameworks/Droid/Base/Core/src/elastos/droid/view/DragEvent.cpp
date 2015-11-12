@@ -203,6 +203,11 @@ DragEvent::DragEvent()
     , mRecycled(FALSE)
 {}
 
+ECode DragEvent::constructor()
+{
+    return NOERROR;
+}
+
 ECode DragEvent::Init(
         /* [in] */ Int32 action,
         /* [in] */ Float x,

@@ -94,7 +94,7 @@ ECode InputChannel::constructor()
 
 ECode InputChannel::OpenInputChannelPair(
     /* [in] */ const String& _name,
-    /* [out] */ ArrayOf<IInputChannel*>** icp)
+    /* [out, callee] */ ArrayOf<IInputChannel*>** icp)
 {
     VALIDATE_NOT_NULL(icp);
 

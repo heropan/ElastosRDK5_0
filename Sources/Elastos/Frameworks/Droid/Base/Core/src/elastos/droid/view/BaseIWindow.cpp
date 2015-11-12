@@ -2,14 +2,15 @@
 #include "elastos/droid/view/BaseIWindow.h"
 
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::View::IIWindow;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::View::EIID_IIWindow;
 
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace View {
+CAR_INTERFACE_IMPL_2(BaseIWindow, Object, IIWindow, IBinder)
 
 ECode BaseIWindow::SetSession(
     /* [in] */ IWindowSession* session)
@@ -20,13 +21,15 @@ ECode BaseIWindow::SetSession(
 
 ECode BaseIWindow::Resized(
     /* [in] */ IRect* frame,
+    /* [in] */ IRect* overscanInsets,
     /* [in] */ IRect* contentInsets,
     /* [in] */ IRect* visibleInsets,
+    /* [in] */ IRect* stableInsets,
     /* [in] */ Boolean reportDraw,
     /* [in] */ IConfiguration* newConfig)
 {
     if (reportDraw) {
-        mSession->FinishDrawing((IIWindow*)this->Probe(EIID_IIWindow));
+        mSession->FinishDrawing(this);
     }
 
     return NOERROR;
@@ -85,7 +88,7 @@ ECode BaseIWindow::DispatchWallpaperOffsets(
     /* [in] */ Boolean sync)
 {
     if (sync) {
-        mSession->WallpaperOffsetsComplete((IBinder*)this->Probe(EIID_IBinder));
+        mSession->WallpaperOffsetsComplete(this);
     }
     return NOERROR;
 }
@@ -115,8 +118,7 @@ ECode BaseIWindow::DispatchWallpaperCommand(
     /* [in] */ Boolean sync)
 {
     if (sync) {
-        mSession->WallpaperCommandComplete(
-            (IBinder*)this->Probe(EIID_IBinder), NULL);
+        mSession->WallpaperCommandComplete(this, NULL);
     }
     return NOERROR;
 }

@@ -318,7 +318,7 @@ ECode InputDevice::GetKeyCharacterMap(
 
 ECode InputDevice::HasKeys(
     /* [in] */ ArrayOf<Int32>* keys,
-    /* [out] */ ArrayOf<Boolean>** rsts)
+    /* [out, calleee] */ ArrayOf<Boolean>** rsts)
 {
     VALIDATE_NOT_NULL(rsts)
     AutoPtr<IInputManagerHelper> helper;

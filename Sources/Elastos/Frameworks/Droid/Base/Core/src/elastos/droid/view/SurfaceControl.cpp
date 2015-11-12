@@ -42,6 +42,7 @@ namespace Droid {
 namespace View {
 
 Object SurfaceControl::sLock;
+const String SurfaceControl::TAG("SurfaceControl");
 
 static void assert_premultiplied(const SkBitmap& bitmap, bool isPremultiplied) {
     // kOpaque_SkAlphaType and kIgnore_SkAlphaType mean that isPremultiplied is
@@ -84,6 +85,8 @@ void DeleteScreenshot(void* addr, void* context) {
     SkASSERT(addr == ((android::ScreenshotClient*) context)->getPixels());
     delete ((android::ScreenshotClient*) context);
 }
+
+CAR_INTERFACE_IMPL(SurfaceControl, Object, ISurfaceControl)
 
 SurfaceControl::SurfaceControl()
     : mNativeObject(0)

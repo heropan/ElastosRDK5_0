@@ -22,6 +22,15 @@ public:
 
     GraphicBuffer();
 
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 format,
+        /* [in] */ Int32 usage,
+        /* [in] */ Int64 nativeObject);
+
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
@@ -163,13 +172,6 @@ private:
     static CARAPI_(Boolean) nUnlockCanvasAndPost(
         /* [in] */ Int64 nativeObject,
         /* [in] */ ICanvas* canvas);
-
-    GraphicBuffer(
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height,
-        /* [in] */ Int32 format,
-        /* [in] */ Int32 usage,
-        /* [in] */ Int64 nativeObject);
 
 private:
     Int32 mWidth;

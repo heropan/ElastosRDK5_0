@@ -68,19 +68,19 @@ ECode SurfaceView::MyHandler::HandleMessage(
 }
 
 //==============================================================================
-//          SurfaceView::_SurfaceHolder
+//          SurfaceView::MySurfaceHolder
 //==============================================================================
-CAR_INTERFACE_IMPL(SurfaceView::_SurfaceHolder, ISurfaceHolder)
+CAR_INTERFACE_IMPL(SurfaceView::MySurfaceHolder, ISurfaceHolder)
 
-SurfaceView::_SurfaceHolder::_SurfaceHolder(
+SurfaceView::MySurfaceHolder::MySurfaceHolder(
     /* [in] */ SurfaceView* host)
     : mHost(host)
 {}
 
-SurfaceView::_SurfaceHolder::~_SurfaceHolder()
+SurfaceView::MySurfaceHolder::~MySurfaceHolder()
 {}
 
-ECode SurfaceView::_SurfaceHolder::IsCreating(
+ECode SurfaceView::MySurfaceHolder::IsCreating(
     /* [in] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -88,7 +88,7 @@ ECode SurfaceView::_SurfaceHolder::IsCreating(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::AddCallback(
+ECode SurfaceView::MySurfaceHolder::AddCallback(
     /* [in] */ ISurfaceHolderCallback* callback)
 {
     AutoLock lock(mHost->mCallbacksLock);
@@ -104,7 +104,7 @@ ECode SurfaceView::_SurfaceHolder::AddCallback(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::RemoveCallback(
+ECode SurfaceView::MySurfaceHolder::RemoveCallback(
     /* [in] */ ISurfaceHolderCallback* callback)
 {
     AutoLock lock(mHost->mCallbacksLock);
@@ -118,7 +118,7 @@ ECode SurfaceView::_SurfaceHolder::RemoveCallback(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::SetFixedSize(
+ECode SurfaceView::MySurfaceHolder::SetFixedSize(
     /* [in] */ Int32 width,
     /* [in] */ Int32 height)
 {
@@ -131,7 +131,7 @@ ECode SurfaceView::_SurfaceHolder::SetFixedSize(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::SetSizeFromLayout()
+ECode SurfaceView::MySurfaceHolder::SetSizeFromLayout()
 {
     if (mHost->mRequestedWidth != -1 || mHost->mRequestedHeight != -1) {
         mHost->mRequestedWidth = mHost->mRequestedHeight = -1;
@@ -141,7 +141,7 @@ ECode SurfaceView::_SurfaceHolder::SetSizeFromLayout()
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::SetFormat(
+ECode SurfaceView::MySurfaceHolder::SetFormat(
     /* [in] */ Int32 format)
 {
     // for backward compatibility reason, OPAQUE always
@@ -158,13 +158,13 @@ ECode SurfaceView::_SurfaceHolder::SetFormat(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::SetType(
+ECode SurfaceView::MySurfaceHolder::SetType(
     /* [in] */ Int32 type)
 {
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::SetKeepScreenOn(
+ECode SurfaceView::MySurfaceHolder::SetKeepScreenOn(
     /* [in] */ Boolean screenOn)
 {
     AutoPtr<IMessage> msg;
@@ -174,7 +174,7 @@ ECode SurfaceView::_SurfaceHolder::SetKeepScreenOn(
     return mHost->mHandler->SendMessage(msg, &result);
 }
 
-ECode SurfaceView::_SurfaceHolder::LockCanvas(
+ECode SurfaceView::MySurfaceHolder::LockCanvas(
     /* [out] */ ICanvas** canvas)
 {
     VALIDATE_NOT_NULL(canvas);
@@ -184,7 +184,7 @@ ECode SurfaceView::_SurfaceHolder::LockCanvas(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::LockCanvas(
+ECode SurfaceView::MySurfaceHolder::LockCanvas(
     /* [in]*/ IRect* dirty,
     /* [out]*/ ICanvas** canvas)
 {
@@ -195,7 +195,7 @@ ECode SurfaceView::_SurfaceHolder::LockCanvas(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::UnlockCanvasAndPost(
+ECode SurfaceView::MySurfaceHolder::UnlockCanvasAndPost(
     /* [in]*/ ICanvas* canvas)
 {
     mHost->mSurface->UnlockCanvasAndPost(canvas);
@@ -203,7 +203,7 @@ ECode SurfaceView::_SurfaceHolder::UnlockCanvasAndPost(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::GetSurface(
+ECode SurfaceView::MySurfaceHolder::GetSurface(
     /* [out]*/ ISurface** surface)
 {
     VALIDATE_NOT_NULL(surface);
@@ -212,7 +212,7 @@ ECode SurfaceView::_SurfaceHolder::GetSurface(
     return NOERROR;
 }
 
-ECode SurfaceView::_SurfaceHolder::GetSurfaceFrame(
+ECode SurfaceView::MySurfaceHolder::GetSurfaceFrame(
     /* [out]*/ IRect** rect)
 {
     VALIDATE_NOT_NULL(rect);
@@ -221,7 +221,7 @@ ECode SurfaceView::_SurfaceHolder::GetSurfaceFrame(
     return NOERROR;
 }
 
-AutoPtr<ICanvas> SurfaceView::_SurfaceHolder::InternalLockCanvas(
+AutoPtr<ICanvas> SurfaceView::MySurfaceHolder::InternalLockCanvas(
     /* [in]*/ IRect* _dirty)
 {
     AutoLock lock(mHost->mSurfaceLock);
@@ -271,22 +271,22 @@ AutoPtr<ICanvas> SurfaceView::_SurfaceHolder::InternalLockCanvas(
 }
 
 //==============================================================================
-//          SurfaceView::_OnPreDrawListener
+//          SurfaceView::MyOnPreDrawListener
 //==============================================================================
 
-CAR_INTERFACE_IMPL(SurfaceView::_OnPreDrawListener, IOnPreDrawListener)
+CAR_INTERFACE_IMPL(SurfaceView::MyOnPreDrawListener, IOnPreDrawListener)
 
-SurfaceView::_OnPreDrawListener::_OnPreDrawListener(
+SurfaceView::MyOnPreDrawListener::MyOnPreDrawListener(
     /* [in] */ SurfaceView* host)
     : mHost(host)
 {
 }
 
-SurfaceView::_OnPreDrawListener::~_OnPreDrawListener()
+SurfaceView::MyOnPreDrawListener::~MyOnPreDrawListener()
 {
 }
 
-ECode SurfaceView::_OnPreDrawListener::OnPreDraw(
+ECode SurfaceView::MyOnPreDrawListener::OnPreDraw(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -299,22 +299,22 @@ ECode SurfaceView::_OnPreDrawListener::OnPreDraw(
 }
 
 //==============================================================================
-//          SurfaceView::_OnScrollChangedListener
+//          SurfaceView::MyOnScrollChangedListener
 //==============================================================================
 
-CAR_INTERFACE_IMPL(SurfaceView::_OnScrollChangedListener, IOnScrollChangedListener)
+CAR_INTERFACE_IMPL(SurfaceView::MyOnScrollChangedListener, IOnScrollChangedListener)
 
-SurfaceView::_OnScrollChangedListener::_OnScrollChangedListener(
+SurfaceView::MyOnScrollChangedListener::MyOnScrollChangedListener(
     /* [in] */ SurfaceView* host)
     : mHost(host)
 {
 }
 
-SurfaceView::_OnScrollChangedListener::~_OnScrollChangedListener()
+SurfaceView::MyOnScrollChangedListener::~MyOnScrollChangedListener()
 {
 }
 
-ECode SurfaceView::_OnScrollChangedListener::OnScrollChanged()
+ECode SurfaceView::MyOnScrollChangedListener::OnScrollChanged()
 {
     mHost->UpdateWindow(FALSE, FALSE);
     return NOERROR;
@@ -425,7 +425,7 @@ ECode SurfaceView::AdjustSurfaceViewMotion(
 
 void SurfaceView::InitMem()
 {
-    mSurfaceHolder = new _SurfaceHolder(this);
+    mSurfaceHolder = new MySurfaceHolder(this);
     mLocation = ArrayOf<Int32>::Alloc(2);// = new Int32[2];
 
     //ReentrantLock mSurfaceLock = new ReentrantLock();
@@ -446,7 +446,7 @@ void SurfaceView::InitMem()
     mIsCreating = FALSE;
 
     mHandler = new MyHandler(this);
-    mScrollChangedListener = new _OnScrollChangedListener(this);
+    mScrollChangedListener = new MyOnScrollChangedListener(this);
 
     mRequestedVisible = FALSE;
     mWindowVisibility = FALSE;
@@ -474,37 +474,69 @@ void SurfaceView::InitMem()
     mUpdateWindowNeeded = FALSE;
     mReportDrawNeeded = FALSE;
 
-    mDrawListener = new _OnPreDrawListener(this);
+    mDrawListener = new MyOnPreDrawListener(this);
 
     mGlobalListenersAdded = FALSE;
 }
 
 SurfaceView::SurfaceView()
+    : mDrawingStopped(TRUE)
+    ,
 {
+    mLocation = ArrayOf<Int32>::Alloc(2);
+
+    CSurface::New((ISurface**)&mSurface);       // Current surface in use
+    CSurface::New((ISurface**)&mNewSurface);    // New surface we are switching to
+
+    final WindowManager.LayoutParams mLayout
+            = new WindowManager.LayoutParams();
+    IWindowSession mSession;
+    CRect::New((IRect**)&mVisibleInsets);
+    CRect::New((IRect**)&mWinFrame);
+    CRect::New((IRect**)&mOverscanInsets);
+    CRect::New((IRect**)&mContentInsets);
+    CRect::New((IRect**)&mStableInsets);
+    final Configuration mConfiguration = new Configuration();
+
+    int mWindowType = WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;
+
+    boolean mIsCreating = false;
+
+    mHandler = new MyHandler();
+
+    mScrollChangedListener = new MyOnScrollChangedListener();
+
+    boolean mRequestedVisible = false;
+    boolean mWindowVisibility = false;
+    boolean mViewVisibility = false;
+    int mRequestedWidth = -1;
+    int mRequestedHeight = -1;
+    /* Set SurfaceView's format to 565 by default to maintain backward
+     * compatibility with applications assuming this format.
+     */
+    int mRequestedFormat = PixelFormat.RGB_565;
+
+    boolean mHaveFrame = false;
+    boolean mSurfaceCreated = false;
+    long mLastLockTime = 0;
+
+    boolean mVisible = false;
+    int mLeft = -1;
+    int mTop = -1;
+    int mWidth = -1;
+    int mHeight = -1;
+    int mFormat = -1;
+    final Rect mSurfaceFrame = new Rect();
+    int mLastSurfaceWidth = -1, mLastSurfaceHeight = -1;
+    boolean mUpdateWindowNeeded;
+    boolean mReportDrawNeeded;
+    private Translator mTranslator;
+
+    mDrawListener = new MyOnPreDrawListener();
+    private boolean mGlobalListenersAdded;
 }
 
-SurfaceView::SurfaceView(
-    /* [in] */ IContext* context)
-    : View(context)
-{
-}
-
-SurfaceView::SurfaceView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : View(context, attrs)
-{
-}
-
-SurfaceView::SurfaceView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : View(context, attrs, defStyle)
-{
-}
-
-ECode SurfaceView::Init(
+ECode SurfaceView::constructor(
     /* [in] */ IContext* context)
 {
     FAIL_RETURN(View::Init(context));
@@ -512,7 +544,7 @@ ECode SurfaceView::Init(
     return NOERROR;
 }
 
-ECode SurfaceView::Init(
+ECode SurfaceView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
@@ -521,7 +553,7 @@ ECode SurfaceView::Init(
     return NOERROR;
 }
 
-ECode SurfaceView::Init(
+ECode SurfaceView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)

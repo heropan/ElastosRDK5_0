@@ -753,20 +753,20 @@ ECode CCallbackParcel::GetElementSize(
     return NOERROR;
 }
 
+_ELASTOS_NAMESPACE_END
+
 ELAPI _CCallbackParcel_New(
     /* [out] */ IParcel** parcel)
 {
     if (parcel == NULL) return E_INVALID_ARGUMENT;
-    CCallbackParcel* obj = NULL;
-    void* location = calloc(sizeof(CCallbackParcel), 1);
+    Elastos::CCallbackParcel* obj = NULL;
+    void* location = calloc(sizeof(Elastos::CCallbackParcel), 1);
     if (!location) return E_OUT_OF_MEMORY;
 
-    obj = (CCallbackParcel *)new(location) CCallbackParcel;
+    obj = (Elastos::CCallbackParcel *)new(location) Elastos::CCallbackParcel;
     obj->AddRef();
 
     *parcel = (IParcel*)obj;
 
     return NOERROR;
 }
-
-_ELASTOS_NAMESPACE_END

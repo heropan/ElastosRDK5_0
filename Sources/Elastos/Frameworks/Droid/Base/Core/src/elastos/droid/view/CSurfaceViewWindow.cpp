@@ -1,9 +1,9 @@
 
 #include "elastos/droid/view/CSurfaceViewWindow.h"
-#include "elastos/droid/os/Handler.h"
-#include "elastos/droid/view/CSurfaceView.h"
-#include "elastos/droid/view/SurfaceView.h"
+// #include "elastos/droid/view/CSurfaceView.h"
+// #include "elastos/droid/view/SurfaceView.h"
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
@@ -12,34 +12,16 @@ using Elastos::Droid::Os::EIID_IBinder;
 namespace Elastos {
 namespace Droid {
 namespace View {
+CAR_OBJECT_IMPL(CSurfaceViewWindow)
 
 CSurfaceViewWindow::CSurfaceViewWindow()
-    : mCurWidth(-1)
-    , mCurHeight(-1)
-    , mSeq(0)
-{
-}
+{}
 
 ECode CSurfaceViewWindow::constructor(
-    /* [in] */ Handle32 surfaceView)
+    /* [in] */ ISurfaceView* surfaceView)
 {
-    mSurfaceView = (SurfaceView*)surfaceView;
-    //mSurfaceView = new WeakReference<SurfaceView>(surfaceView);
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::SetSession(
-   /* [in] */ IWindowSession* session)
-{
-    mSession = session;
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::ExecuteCommand(
-    /* [in] */ const String& command,
-    /* [in] */ const String& parameters,
-    /* [in] */ IParcelFileDescriptor* out)
-{
+    // SurfaceView* viewImpl = (SurfaceView*)surfaceView;
+    // return viewImpl->GetWeakReference((IWeakReference**)&mSurfaceView);
     return NOERROR;
 }
 
@@ -50,70 +32,57 @@ ECode CSurfaceViewWindow::Resized(
     /* [in] */ Boolean reportDraw,
     /* [in] */ IConfiguration* newConfig)
 {
-    SurfaceView* surfaceView = mSurfaceView;
-    if (surfaceView != NULL) {
-        Int32 w, h, winW, winH;
-        frame->GetWidth(&w);
-        frame->GetHeight(&h);
-        surfaceView->mWinFrame->GetWidth(&winW);
-        surfaceView->mWinFrame->GetHeight(&winH);
+    // AutoPtr<IInterface> obj;
+    // receiverObj->Resolve(EIID_IInterface, (IInterface**)&obj);
+    // if(obj != NULL) {
+    //     AutoPtr<ISurfaceView> tmp = ISurfaceView::Probe(obj);
+    //     SurfaceView* surfaceView = (SurfaceView*)tmp;
 
-        if (SurfaceView::DEBUG) {
-            Logger::V("SurfaceView", "surfaceView %p got resized: w=%d h=%d, cur w=%d h=%d\n",
-                surfaceView, w, h, mCurWidth, mCurHeight);
-        }
+    //     if (surfaceView != NULL) {
+    //         Int32 w, h, winW, winH;
+    //         frame->GetWidth(&w);
+    //         frame->GetHeight(&h);
+    //         surfaceView->mWinFrame->GetWidth(&winW);
+    //         surfaceView->mWinFrame->GetHeight(&winH);
 
-        {
-            AutoLock lock(surfaceView->mSurfaceLock);
-            Boolean result;
-//        try {
-            if (reportDraw) {
-                surfaceView->mUpdateWindowNeeded = TRUE;
-                surfaceView->mReportDrawNeeded = TRUE;
-                surfaceView->mHandler->SendEmptyMessage(
-                    SurfaceView::UPDATE_WINDOW_MSG, &result);
-            }
-            else if (winW != w || winH != h) {
-                surfaceView->mUpdateWindowNeeded = TRUE;
-                surfaceView->mHandler->SendEmptyMessage(
-                    SurfaceView::UPDATE_WINDOW_MSG, &result);
-            }
+    //         if (SurfaceView::DEBUG) {
+    //             Logger::V("SurfaceView", "surfaceView %p got resized: w=%d h=%d, cur w=%d h=%d\n",
+    //                 surfaceView, w, h, mCurWidth, mCurHeight);
+    //         }
 
-//        } finally {
-//            surfaceView.mSurfaceLock.unlock();
-//        }
-        }
-    }
-    return NOERROR;
-}
+    //         {
+    //             AutoLock lock(surfaceView->mSurfaceLock);
+    //             Boolean result;
+    // //        try {
+    //             if (reportDraw) {
+    //                 surfaceView->mUpdateWindowNeeded = TRUE;
+    //                 surfaceView->mReportDrawNeeded = TRUE;
+    //                 surfaceView->mHandler->SendEmptyMessage(
+    //                     SurfaceView::UPDATE_WINDOW_MSG, &result);
+    //             }
+    //             else if (winW != w || winH != h) {
+    //                 surfaceView->mUpdateWindowNeeded = TRUE;
+    //                 surfaceView->mHandler->SendEmptyMessage(
+    //                     SurfaceView::UPDATE_WINDOW_MSG, &result);
+    //             }
 
-ECode CSurfaceViewWindow::Moved(
-    /* [in] */ Int32 newX,
-    /* [in] */ Int32 newY)
-{
-    return NOERROR;
-}
+    // //        } finally {
+    // //            surfaceView.mSurfaceLock.unlock();
+    // //        }
+    //         }
+    //     }
+    // }
 
-ECode CSurfaceViewWindow::DispatchAppVisibility(
-    /* [in] */ Boolean visible)
-{
-    // The point of SurfaceView is to let the app control the surface.
     return NOERROR;
 }
 
 ECode CSurfaceViewWindow::DispatchGetNewSurface()
 {
-    if (mSurfaceView != NULL) {
-        Boolean result;
-        mSurfaceView->mHandler->SendEmptyMessage(
-            SurfaceView::GET_NEW_SURFACE_MSG, &result);
-    }
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::DispatchScreenState(
-     /* [in] */ Boolean on)
-{
+    // if (mSurfaceView != NULL) {
+    //     Boolean result;
+    //     mSurfaceView->mHandler->SendEmptyMessage(
+    //         SurfaceView::GET_NEW_SURFACE_MSG, &result);
+    // }
     return NOERROR;
 }
 
@@ -123,66 +92,6 @@ ECode CSurfaceViewWindow::WindowFocusChanged(
 {
     Logger::W("CSurfaceViewWindow", "Unexpected focus in surface: focus=%d, touchEnabled=%d\n",
             hasFocus, touchEnabled);
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::CloseSystemDialogs(
-    /* [in] */ const String& reason)
-{
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::DispatchWallpaperOffsets(
-    /* [in] */ Float x,
-    /* [in] */ Float y,
-    /* [in] */ Float xStep,
-    /* [in] */ Float yStep,
-    /* [in] */ Boolean sync)
-{
-    if (sync) {
-//        try {
-        mSession->WallpaperOffsetsComplete(THIS_PROBE(IBinder));
-//        } catch (RemoteException e) {
-//        }
-    }
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::DispatchWallpaperCommand(
-    /* [in] */ const String& action,
-    /* [in] */ Int32 x,
-    /* [in] */ Int32 y,
-    /* [in] */ Int32 z,
-    /* [in] */ IBundle* extras,
-    /* [in] */ Boolean sync)
-{
-    if (sync) {
-//        try {
-        mSession->WallpaperCommandComplete(THIS_PROBE(IBinder), NULL);
-//        } catch (RemoteException e) {
-//        }
-    }
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::DispatchDragEvent(
-     /* [in] */ IDragEvent* event)
-{
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::DispatchSystemUiVisibilityChanged(
-     /* [in] */ Int32 seq,
-     /* [in] */ Int32 globalVisibility,
-     /* [in] */ Int32 localValue,
-     /* [in] */ Int32 localChanges)
-{
-    mSeq = seq;
-    return NOERROR;
-}
-
-ECode CSurfaceViewWindow::DoneAnimating()
-{
     return NOERROR;
 }
 

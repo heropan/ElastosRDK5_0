@@ -36,8 +36,10 @@ module
 
         Resized(
             [in] IRect* frame,
-            [in] IRect* coveredInsets,
+            [in] IRect* overscanInsets,
+            [in] IRect* contentInsets,
             [in] IRect* visibleInsets,
+            [in] IRect* stableInsets,
             [in] Boolean reportDraw,
             [in] IConfiguration* newConfig);
 

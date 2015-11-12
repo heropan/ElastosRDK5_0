@@ -4,22 +4,25 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/View.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Content::Res::ICompatibilityInfoTranslator;
+
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 
-class CSurfaceViewWindow;
-
-class SurfaceView : public View
+class SurfaceView
+    : public View
+    , public ISurfaceView
 {
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler : public Handler
     {
     public:
         MyHandler(
@@ -33,16 +36,15 @@ private:
         SurfaceView* mHost;
     };
 
-private:
-    class _SurfaceHolder:
-        public ElRefBase,
+    class MySurfaceHolder:
+        public Object,
         public ISurfaceHolder
     {
     public:
-        _SurfaceHolder(
+        MySurfaceHolder(
             /* [in] */ SurfaceView* host);
 
-        virtual ~_SurfaceHolder();
+        virtual ~MySurfaceHolder();
 
         CAR_INTERFACE_DECL()
 
@@ -98,17 +100,17 @@ private:
         SurfaceView*    mHost;
     };
 
-    class _OnPreDrawListener
+    class MyOnPreDrawListener
         : public ElRefBase
         , public IOnPreDrawListener
     {
     public:
         CAR_INTERFACE_DECL()
 
-        _OnPreDrawListener(
+        MyOnPreDrawListener(
             /* [in] */ SurfaceView* host);
 
-        virtual ~_OnPreDrawListener();
+        virtual ~MyOnPreDrawListener();
 
         CARAPI OnPreDraw(
             /* [out] */Boolean* result);
@@ -117,17 +119,17 @@ private:
         SurfaceView*    mHost;
     };
 
-    class _OnScrollChangedListener
+    class MyOnScrollChangedListener
         : public ElRefBase
         , public IOnScrollChangedListener
     {
     public:
         CAR_INTERFACE_DECL()
 
-        _OnScrollChangedListener(
+        MyOnScrollChangedListener(
             /* [in] */ SurfaceView* host);
 
-        virtual ~_OnScrollChangedListener();
+        virtual ~MyOnScrollChangedListener();
 
         CARAPI OnScrollChanged();
 
@@ -137,18 +139,6 @@ private:
 
 public:
     SurfaceView();
-
-    SurfaceView(
-        /* [in] */ IContext* context);
-
-    SurfaceView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    SurfaceView(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 
     virtual ~SurfaceView();
 
@@ -270,14 +260,14 @@ public:
         /* [in] */ IMotionEvent* evt);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
@@ -334,7 +324,7 @@ public:
     static const Int32 UPDATE_WINDOW_MSG;
 
 private:
-//    friend class _SurfaceHolder;
+//    friend class MySurfaceHolder;
     friend class CSurfaceViewWindow;
 
     AutoPtr<ISurfaceHolder> mSurfaceHolder;
@@ -355,7 +345,9 @@ private:
     AutoPtr<IIWindow> mWindow;
     AutoPtr<IRect> mVisibleInsets;// = new Rect();
     AutoPtr<IRect> mWinFrame;// = new Rect();
+    AutoPtr<IRect> mOverscanInsets
     AutoPtr<IRect> mContentInsets;// = new Rect();
+    AutoPtr<IRect> mStableInsets;
     AutoPtr<IConfiguration> mConfiguration;// = new Configuration();
 
     Int32 mWindowType;// = WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;

@@ -37,7 +37,7 @@ public:
 
     static CARAPI OpenInputChannelPair(
         /* [in] */ const String& name,
-        /* [out] */ ArrayOf<IInputChannel*>** icp);
+        /* [out, callee] */ ArrayOf<IInputChannel*>** icp);
 
     /**
      * Gets the name of the input channel.

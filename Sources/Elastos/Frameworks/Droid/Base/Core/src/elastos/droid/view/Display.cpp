@@ -30,20 +30,23 @@ const Int32 Display::CACHED_APP_SIZE_DURATION_MILLIS;
 
 CAR_INTERFACE_IMPL(Display, Object, IDisplay);
 
-Display::Display(
+Display::Display()
+    : mIsValid(TRUE)
+    , mLastCachedAppSizeUpdate(0)
+    , mCachedAppWidthCompat(0)
+    , mCachedAppHeightCompat(0)
+{}
+
+ECode Display::constructor(
     /* [in] */ IDisplayManagerGlobal* global,
     /* [in] */ Int32 displayId,
     /* [in] */ IDisplayInfo* displayInfo /*not NULL*/,
     /* [in] */ IDisplayAdjustments* daj)
-    : mGlobal(global)
-    , mDisplayId(displayId)
-    , mDisplayInfo(displayInfo)
-    , mIsValid(TRUE)
-    , mLastCachedAppSizeUpdate(0)
-    , mCachedAppWidthCompat(0)
-    , mCachedAppHeightCompat(0)
 {
     assert(displayInfo);
+    mGlobal = global;
+    mDisplayId = displayId;
+    mDisplayInfo = displayInfo;
     mDisplayAdjustments = new DisplayAdjustments(daj);
     // Cache properties that cannot change as Int64 as the display is valid.
     displayInfo->GetLayerStack(&mLayerStack);
@@ -53,6 +56,8 @@ Display::Display(
     displayInfo->GetOwnerUid(&mOwnerUid);
     displayInfo->GetOwnerPackageName(&mOwnerPackageName);
     CDisplayMetrics::New((IDisplayMetrics**)&mTempMetrics);
+
+    return NOERROR;
 }
 
 ECode Display::GetDisplayId(

@@ -22,8 +22,6 @@ private:
     class GestureHandler : public Handler
     {
     public:
-        CAR_INTERFACE_DECL()
-
         GestureHandler(
             /* [in] */ GestureDetector* host)
             : mHost(host)

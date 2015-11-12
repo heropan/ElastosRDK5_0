@@ -15,6 +15,8 @@ class SurfaceControl
     , public ISurfaceControl
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SurfaceControl();
 
     ~SurfaceControl();
@@ -237,7 +239,6 @@ public:
     /** flag the transaction as an animation */
     static CARAPI_(void) SetAnimationTransaction();
 
-protected:
     /**
      * Create a surface with a name.
      * <p>

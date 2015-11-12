@@ -20,11 +20,23 @@ namespace View {
 class DisplayInfo
     : public Object
     , public IDisplayInfo
+    , public IParcelable
 {
 public:
     CAR_INTERFACE_DECL()
 
     DisplayInfo();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IDisplayInfo* other);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* source);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
 
     CARAPI GetLayerStack(
         /* [out] */ Int32* layerStack);
@@ -224,13 +236,6 @@ public:
         /* [in] */ IDisplayMetrics* outMetrics,
         /* [in] */ ICompatibilityInfo* ci,
         /* [in] */ IBinder* token);
-
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest);
 
     CARAPI GetNaturalWidth(
         /* [out] */ Int32* width);
